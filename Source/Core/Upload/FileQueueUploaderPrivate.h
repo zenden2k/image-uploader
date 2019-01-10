@@ -42,7 +42,7 @@ public:
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
     FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager,
-        IUploadErrorHandler* uploadErrorHandler
+        IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory
         );
     virtual ~FileQueueUploaderPrivate();
     void start();
@@ -66,7 +66,7 @@ public:
     friend class CFileQueueUploader;
 protected:
     bool onNeedStopHandler();
-    void OnConfigureNetworkClient(CUploader*, NetworkClient* nm);
+    void OnConfigureNetworkClient(CUploader*, INetworkClient* nm);
     void onErrorMessage(CUploader*, ErrorInfo);
     void onDebugMessage(CUploader*, const std::string& msg, bool isResponseBody);
     void onTaskAdded(UploadSession*, UploadTask*);
@@ -83,6 +83,7 @@ protected:
     UploadEngineManager* uploadEngineManager_;
     ScriptsManager* scriptsManager_; 
     IUploadErrorHandler* uploadErrorHandler_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 
 #endif

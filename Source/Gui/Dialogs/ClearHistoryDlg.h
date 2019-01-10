@@ -18,8 +18,8 @@
 
  */
 
-#ifndef ClearHistoryDlg_H
-#define ClearHistoryDlg_H
+#ifndef GUI_DIALOGS_CLEARHISTORYDIALOG_H
+#define GUI_DIALOGS_CLEARHISTORYDIALOG_H
 
 #pragma once
 

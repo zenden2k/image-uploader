@@ -395,7 +395,7 @@ CWindowHandlesRegion::CWindowHandlesRegion(HWND wnd)
 }
 
 void CWindowHandlesRegion::init() {
-    topWindow = 0;
+    topWindow = nullptr;
     m_WindowHidingDelay = 0;
     m_ClearBackground = false;
     m_RemoveCorners = true;

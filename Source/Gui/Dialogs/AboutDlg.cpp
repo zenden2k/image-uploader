@@ -67,15 +67,12 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     m_Documentation.SetLabel(TR("Documentation"));
 
-
-
     CString memoText;
     
     memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
-
    
     CString translatorName = TR("translator_name");
     if ( translatorName == "translator_name") {
@@ -200,7 +197,7 @@ LRESULT CAboutDlg::OnDocumentationClicked(WORD /*wNotifyCode*/, WORD wID, HWND /
 }
 
 LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-    HDC hdcStatic = (HDC) wParam;
+    HDC hdcStatic = reinterpret_cast<HDC>(wParam);
     HWND hwndStatic = WindowFromDC(hdcStatic);
 
     if ( hwndStatic != GetDlgItem(IDC_IMAGEUPLOADERLABEL) ) {
@@ -212,6 +209,5 @@ LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
         SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
     }
     
-
     return reinterpret_cast<LRESULT>(GetSysColorBrush(COLOR_BTNFACE));
 }

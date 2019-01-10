@@ -22,6 +22,7 @@
 #define _UPLOADER_H_
 
 #include <string>
+#include <memory>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
@@ -30,7 +31,7 @@
 class CUploader
 {
     public:
-        CUploader(void);
+        explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
         ~CUploader(void);
         
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
@@ -47,7 +48,7 @@ class CUploader
         fastdelegate::FastDelegate4<CUploader*, StatusType, int, std::string> onStatusChanged;
         fastdelegate::FastDelegate3<CUploader*, const std::string&, bool> onDebugMessage;
         fastdelegate::FastDelegate2<CUploader*, ErrorInfo> onErrorMessage;
-        fastdelegate::FastDelegate2<CUploader*, NetworkClient*> onConfigureNetworkClient;
+        fastdelegate::FastDelegate2<CUploader*, INetworkClient*> onConfigureNetworkClient;
 
         void DebugMessage(const std::string& message, bool isServerResponseBody = false);
         void SetStatus(StatusType status, int param1=0, std::string param="");
@@ -66,7 +67,7 @@ class CUploader
         
         void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1);
         void ErrorMessage(const ErrorInfo&);
-        NetworkClient m_NetworkClient;
+        std::unique_ptr<INetworkClient> m_NetworkClient;
         CAbstractUploadEngine *m_CurrentEngine;
         std::shared_ptr<UploadTask> currentTask_;
         void Cleanup();

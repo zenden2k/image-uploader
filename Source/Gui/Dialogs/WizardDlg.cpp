@@ -62,6 +62,7 @@
 #include "Core/AppParams.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/ScreenCapture/Utils.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 using namespace Gdiplus;
 namespace
@@ -99,7 +100,7 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     scriptsManager_ = new ScriptsManager();
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler);
-    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler);
+    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, std::make_shared<NetworkClientFactory>());
     ServiceLocator::instance()->setUploadManager(uploadManager_);
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);

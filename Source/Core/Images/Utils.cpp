@@ -42,7 +42,6 @@
 
 namespace ImageUtils {
 
-
 using namespace Gdiplus;
 
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
@@ -1516,7 +1515,7 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, b
         if (SUCCEEDED(hr)) {
             CopyDataToClipboardInDataUriFormat(stats.cbSize.QuadPart, mimeTypeA, html, [&](void* buffer, size_t size) -> size_t {
                 unsigned long readBytes;
-                HRESULT hr = stream->Read(buffer, size, &readBytes);
+                hr = stream->Read(buffer, size, &readBytes);
                 if (!SUCCEEDED(hr)) {
                     return 0;
                 }
@@ -1527,7 +1526,6 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, b
     return res;
 
 }
-
 
 ImageInfo GetImageInfo(const wchar_t* fileName) {
     std::unique_ptr<Bitmap> bm(LoadImageFromFileExtended(fileName));

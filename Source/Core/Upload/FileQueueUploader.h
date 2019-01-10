@@ -31,14 +31,14 @@ class ScriptsManager;
 class UploadEngineManager;
 class UploadFilter;
 class NetworkClient;
-
+class INetworkClientFactory;
 class FileQueueUploaderPrivate;
 
 // TODO: rewrite this class using queue and regular thread pool
 class CFileQueueUploader
 {
     public:
-        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
+        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory);
         void addSession(std::shared_ptr<UploadSession> uploadSession);
         void addTask(std::shared_ptr<UploadTask> task);
         void removeSession(std::shared_ptr<UploadSession> uploadSession);
@@ -56,7 +56,7 @@ class CFileQueueUploader
         fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
         fastdelegate::FastDelegate1<UploadTask*> OnTaskAdded;
 
-        fastdelegate::FastDelegate2<CFileQueueUploader*, NetworkClient*> OnConfigureNetworkClient;
+        fastdelegate::FastDelegate2<CFileQueueUploader*, INetworkClient*> OnConfigureNetworkClient;
         friend class FileQueueUploaderPrivate;
     private:
         DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);

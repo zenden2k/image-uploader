@@ -38,7 +38,6 @@
 #include "Func/IuCommonFunctions.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Core/Upload/FileUploadTask.h"
-#include "Core/CoreFunctions.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -545,13 +544,6 @@ void CImageReuploaderDlg::OnQueueFinished(UploadSession* uploadSession) {
         processFinished();
     }
 }
-
-bool  CImageReuploaderDlg::OnConfigureNetworkClient(CFileQueueUploader* ,NetworkClient* nm) {
-    CoreFunctions::ConfigureProxy(nm);
-    return true;
-}
-
-
 
 void CImageReuploaderDlg::generateOutputText() {
     bool showSourceCode = GuiTools::GetCheck(m_hWnd, IDC_SOURCECODERADIO);

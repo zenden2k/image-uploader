@@ -16,7 +16,8 @@ class CUploadEngineList;
 class UploadManager : public CFileQueueUploader
 {
 public:
-    UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler);
+    UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, 
+        std::shared_ptr<INetworkClientFactory> networkClientFactory);
     ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session);
     void setEnableHistory(bool enable);
@@ -30,7 +31,6 @@ protected:
     UploadEngineManager* uploadEngineManager_;
     bool enableHistory_;
 
-    void configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient);
     void sessionAdded(UploadSession* session) override;
     void onSessionFinished(UploadSession* session);
     void onTaskFinished(UploadTask* task, bool ok);

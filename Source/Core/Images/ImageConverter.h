@@ -1,9 +1,10 @@
 #ifndef IU_IMAGECONVERTER_H
 #define IU_IMAGECONVERTER_H
 
+#include <string>
+
 #include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
-#include <string>
 
 class AbstractImage;
 

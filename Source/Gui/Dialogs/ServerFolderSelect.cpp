@@ -23,9 +23,9 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "NewFolderDlg.h"
 #include "Core/Settings.h"
-#include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/Upload/AdvancedUploadEngine.h"
 #include "Func/WinUtils.h"
-#include "Core/CoreFunctions.h"
+#include <Core/Network/NetworkClientFactory.h>
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
@@ -33,6 +33,8 @@ CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEng
     uploadEngineManager_ = uploadEngineManager;
     m_FolderOperationType = foGetFolders;
     runningScript_ = nullptr;
+    NetworkClientFactory factory;
+    m_NetworkClient = factory.create();
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -72,8 +74,6 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     m_FolderTree.SetImageList(m_PlaceSelectorImageList);
     m_FolderMap[L""] = 0;
-
-    CoreFunctions::ConfigureProxy(&m_NetworkClient);
    
     m_FolderOperationType = foGetFolders;
     CAdvancedUploadEngine *uploadScript=nullptr;
@@ -89,8 +89,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
                  (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 
-
-    uploadScript->setNetworkClient(&m_NetworkClient);
+    uploadScript->setNetworkClient(m_NetworkClient.get());
     uploadScript->getAccessTypeList(m_accessTypeList);
     CreateLoadingThread();
     
@@ -142,19 +141,18 @@ DWORD CServerFolderSelect::Run()
     runningScript_ = script;
     runningScriptMutex_.unlock();
 
-    script->setNetworkClient(&m_NetworkClient);
-    m_NetworkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+    script->setNetworkClient(m_NetworkClient.get());
+    m_NetworkClient->setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
 
 
     if (m_FolderOperationType == foGetFolders)
     {
         m_FolderList.Clear();
         m_FolderMap.clear();
-       
-        NetworkClient networkClient;
-        CoreFunctions::ConfigureProxy(&networkClient);
-        script->setNetworkClient(&networkClient);
-        networkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+        NetworkClientFactory factory;
+        auto networkClient = factory.create();
+        script->setNetworkClient(networkClient.get());
+        networkClient->setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
 
         int retCode = script->getFolderList(m_FolderList);
         if (retCode < 1)

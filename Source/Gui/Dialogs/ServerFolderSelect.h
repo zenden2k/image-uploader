@@ -57,14 +57,14 @@ class CServerFolderSelect :
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
-          COMMAND_HANDLER(ID_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)
-          COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
-          COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
+        COMMAND_HANDLER(ID_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)
+        COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
+        COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
         CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
-     END_MSG_MAP()
+    END_MSG_MAP()
 
-         BEGIN_DLGRESIZE_MAP(CServerFolderSelect)
+    BEGIN_DLGRESIZE_MAP(CServerFolderSelect)
         DLGRESIZE_CONTROL(IDC_FOLDERLISTLABEL, DLSZ_SIZE_X)
         DLGRESIZE_CONTROL(IDC_FOLDERTREE, DLSZ_SIZE_X|DLSZ_SIZE_Y)
         DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X| DLSZ_MOVE_Y)
@@ -106,7 +106,7 @@ protected:
     ServerProfile& serverProfile_;
     //IU_PLUGIN_FolderItem * m_folderItems;
     FolderOperationType m_FolderOperationType;
-    NetworkClient m_NetworkClient;
+    std::unique_ptr<INetworkClient> m_NetworkClient;
     void BlockWindow(bool Block);
     void NewFolder(const CString& parentFolderId);
     int progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);

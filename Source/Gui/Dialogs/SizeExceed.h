@@ -64,6 +64,7 @@ class CSizeExceed :
         std::unique_ptr<CServerSelectorControl> imageServerSelector_;
         UploadEngineManager* uploadEngineManager_;
         CString m_szFileName;
+        bool checkAccount();
 };
 
 #endif // SIZEEXCEED_H

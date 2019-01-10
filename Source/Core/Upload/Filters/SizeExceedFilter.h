@@ -17,6 +17,13 @@ public:
 protected:
     CUploadEngineList* engineList_;
     UploadEngineManager* uploadEngineManager_;
+    struct UploadSessionData {
+        ServerProfile newImageServer, newFileServer;
+        bool callbackAdded = false;
+    };
+    std::mutex uploadSessionDataMapMutex_;
+    std::unordered_map<UploadSession*, UploadSessionData> uploadSessionDataMap_;
+    void onSessionFinished(UploadSession* session);
 };
 
 #endif

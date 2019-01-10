@@ -24,7 +24,6 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
-#include "Func/myutils.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/FileUploadTask.h"
 #include <Func/IuCommonFunctions.h>
@@ -87,10 +86,11 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     CString name;
     CString params; 
+    CString onlyFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_szFileName), 40);
     if (isImage) {
-        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(WinUtils::myExtractFileName(m_szFileName)), img.ImageWidth, img.ImageHeight, static_cast<LPCTSTR>(buf2));
+        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.ImageWidth, img.ImageHeight, static_cast<LPCTSTR>(buf2));
     } else {
-        params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(WinUtils::myExtractFileName(m_szFileName)), static_cast<LPCTSTR>(buf2));
+        params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(onlyFileName), static_cast<LPCTSTR>(buf2));
     }
    
     name = TR("File") + params;
@@ -98,10 +98,9 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     SetDlgItemText(IDC_FILEEXCEEDNAME, name);
     WinUtils::NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);
 
-    TCHAR szBuf[1000];
-    wsprintf(szBuf, TR("File exceeds filesize limit of \"%s\" server (%s)."),
-        static_cast<LPCTSTR>(U2W(fileTask_->serverProfile().serverName())), buf2);
-    SetDlgItemText(IDC_FILEEXCEEDSIZE2, szBuf);
+    CString message;
+    message.Format(TR("File exceeds filesize limit of \"%s\" server (%s)."), static_cast<LPCTSTR>(U2W(fileTask_->serverProfile().serverName())), buf2);
+    SetDlgItemText(IDC_FILEEXCEEDSIZE2, message);
     Translate();
 
     return 1;  // Let the system set the focus
@@ -109,17 +108,9 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CSizeExceed::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::string serverName = imageServerSelector_->serverProfile().serverName();
-    if (serverName.empty()) {
-        MessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
-        return 0;
-    } else if (!imageServerSelector_->isAccountChosen()) {
-        CString message;
-        message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());
-        MessageBox(message, TR("Error"), MB_ICONERROR);
+    if (!checkAccount()) {
         return 0;
     }
-
     fileTask_->setServerProfile(imageServerSelector_->serverProfile());
     EndDialog(wID);
     return 0;
@@ -133,7 +124,26 @@ LRESULT CSizeExceed::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 LRESULT CSizeExceed::OnBnClickedForall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    if (!checkAccount()) {
+        return 0;
+    }
     fileTask_->setServerProfile(imageServerSelector_->serverProfile());
-    EndDialog(3);
+    EndDialog(IDC_FORALL);
     return 0;
+}
+
+bool CSizeExceed::checkAccount() {
+    std::string serverName = imageServerSelector_->serverProfile().serverName();
+    if (serverName.empty()) {
+        MessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
+        return false;
+    } 
+    if (!imageServerSelector_->isAccountChosen()) {
+        CString message;
+        message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());
+        MessageBox(message, TR("Error"), MB_ICONERROR);
+        return false;
+    }
+    return true;
+
 }

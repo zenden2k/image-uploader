@@ -58,7 +58,7 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 }
 
 FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
-    ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) {
+    ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) {
     threadCount_ = 3;
     stopSignal_ = false;
     isRunning_ = false;
@@ -69,6 +69,7 @@ FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUplo
     scriptsManager_ = scriptsManager;
     uploadErrorHandler_ = uploadErrorHandler;
     autoStart_ = true;
+    networkClientFactory_ = networkClientFactory;
 }
 
 FileQueueUploaderPrivate::~FileQueueUploaderPrivate() {
@@ -116,7 +117,7 @@ void FileQueueUploaderPrivate::taskAdded(UploadTask* task)
     queueUploader_->taskAdded(task);
 }
 
-void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, NetworkClient* nm)
+void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, INetworkClient* nm)
 {
     if (  queueUploader_->OnConfigureNetworkClient )
     {
@@ -239,7 +240,7 @@ void FileQueueUploaderPrivate::run()
         //LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
         if (!it)
             break;
-        CUploader uploader;
+        CUploader uploader(networkClientFactory_);
         uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
 
         // TODO

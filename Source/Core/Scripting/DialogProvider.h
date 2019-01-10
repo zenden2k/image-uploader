@@ -13,7 +13,7 @@ public:
     virtual ~IDialogProvider() {};
     virtual std::string askUserCaptcha(NetworkClient *nm, const std::string& url) = 0;
     virtual std::string inputDialog(const std::string& text, const std::string& defaultValue) = 0;
-    friend class SizeExceedFilter;
+    std::mutex& getMutex() { return dialogMutex_; }
 protected:
     std::mutex dialogMutex_;
 };

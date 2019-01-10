@@ -20,7 +20,6 @@
 
 #include "HistoryTreeControl.h"
 
-#include "Func/Myutils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Core/ServiceLocator.h"
@@ -449,7 +448,9 @@ HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
     } 
 
     HICON ico = reinterpret_cast<HICON>(LoadImage(0, IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + serverName + _T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
-    m_serverIconCache[serverName] = ico;
+    if (ico) {
+        m_serverIconCache[serverName] = ico;
+    }
     return ico;        
 }
 
@@ -780,14 +781,14 @@ void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
         return;
     }
     HBITMAP bm = hti->thumbnail;
-    if(bm) DeleteObject(bm);
+    if (bm) {
+        DeleteObject(bm);
+    }
     if (!m_thumbLoadingQueue.empty()) {
         LOG(WARNING) << "m_thumbLoadingQueue is not empty";
     } 
     item->setUserData(nullptr);
     delete hti;
-    
-    
 }
 
 void CHistoryTreeControl::threadsFinished()

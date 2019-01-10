@@ -8,10 +8,9 @@
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings.h"
 #include "UploadEngineManager.h"
-#include "Core/CoreFunctions.h"
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler) :
-                CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler),
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) :
+CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory),
                 userFilter(scriptsManager)
 #ifdef IU_WTL_APP
                 ,sizeExceedFilter_(engineList, uploadEngineManager)
@@ -29,7 +28,6 @@ UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEn
     enableHistory_ = true;
     setMaxThreadCount(Settings.MaxThreads);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
-    OnConfigureNetworkClient.bind(this, &UploadManager::configureNetwork);
 }
 
 UploadManager::~UploadManager() {
@@ -58,10 +56,6 @@ void UploadManager::setEnableHistory(bool enable) {
     enableHistory_ = enable;
 }
 
-void UploadManager::configureNetwork(CFileQueueUploader* uploader, NetworkClient* networkClient)
-{
-    CoreFunctions::ConfigureProxy(networkClient);
-}
 
 void UploadManager::sessionAdded(UploadSession* session)
 {

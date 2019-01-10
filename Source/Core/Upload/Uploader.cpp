@@ -24,7 +24,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include <cmath>
 
-CUploader::CUploader(void)
+CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory)
 {
     srand((unsigned int)time(0));
     m_bShouldStop = false;
@@ -34,6 +34,7 @@ CUploader::CUploader(void)
     m_PrInfo.Total = 0;
     m_PrInfo.Uploaded = 0;
     isFatalError_ = false;
+    m_NetworkClient = networkClientFactory->create();
 }
 
 CUploader::~CUploader(void)
@@ -96,7 +97,7 @@ int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dl
 }
 
 bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName) {
-    return Upload(std::shared_ptr<UploadTask>(new FileUploadTask(FileName, displayFileName)));
+    return Upload(std::make_shared<FileUploadTask>(FileName, displayFileName));
 }
 
 bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
@@ -127,10 +128,10 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     m_FileName = FileName;
     m_bShouldStop = false;
     if (onConfigureNetworkClient)
-        onConfigureNetworkClient(this, &m_NetworkClient);
-    m_NetworkClient.setLogger(nullptr);
+        onConfigureNetworkClient(this, m_NetworkClient.get());
+    m_NetworkClient->setLogger(nullptr);
 
-    m_CurrentEngine->setNetworkClient(&m_NetworkClient);
+    m_CurrentEngine->setNetworkClient(m_NetworkClient.get());
     m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
     m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);
     m_CurrentEngine->onStatusChanged.bind(this, &CUploader::SetStatus);
@@ -156,7 +157,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
-    m_NetworkClient.setProgressCallback(NetworkClient::ProgressCallback(this, &CUploader::pluginProgressFunc));
+    m_NetworkClient->setProgressCallback(INetworkClient::ProgressCallback(this, &CUploader::pluginProgressFunc));
     int EngineRes = 0;
     int i = 0;
     do
