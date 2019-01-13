@@ -73,6 +73,7 @@ class CUploadParamsDlg : public CDialogImpl<CUploadParamsDlg>
         CColorButton ThumbBackground_;
         ImageUploadParams params_;
         ServerProfile&  serverProfile_;
+        CComboBox profileCombo_, thumbTemplateCombo_;
         bool defaultServer_;
         bool showImageProcessingParams_;
 };

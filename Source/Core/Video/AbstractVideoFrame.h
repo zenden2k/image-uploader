@@ -1,6 +1,7 @@
 #ifndef ABSTRACTVIDEOFRAME_H
 #define ABSTRACTVIDEOFRAME_H
 
+#include <string>
 #include "Core/Utils/CoreTypes.h"
 #include "AbstractImage.h"
 

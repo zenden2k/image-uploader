@@ -76,6 +76,7 @@ public:
         std::map<std::string, Thumbnail*> thumb_cache_;
         bool m_CatchFormChanges;
         CColorButton ThumbBackground;
+        CComboBox thumbsCombo_;
 };
 
 #endif // THUMBSETTINGSPAGE_H

@@ -17,8 +17,7 @@ public:
     virtual void abort() override;
 protected:
     int64_t duration_;
-protected:
-  DirectshowFrameGrabberPrivate * const d_ptr;
+    DirectshowFrameGrabberPrivate * const d_ptr;
 };
 
 #endif // DIRECTSHOWFRAMEGRABBER_H

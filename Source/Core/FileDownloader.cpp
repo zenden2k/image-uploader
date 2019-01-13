@@ -25,6 +25,7 @@
 
 #include "Func/WinUtils.h"
 #include "Core/3rdpart/UriParser.h"
+#include "Utils/StringUtils.h"
 
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
@@ -95,6 +96,7 @@ void CFileDownloader::memberThreadFunc()
         std::string url = curItem.url;
         if (url.empty())
             break;
+        url = IuStringUtils::Replace(url, " ", "%20");
 
         nm->setOutputFile(curItem.fileName);
         if ( !curItem.referer.empty() ) {

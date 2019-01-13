@@ -76,6 +76,8 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_DEVELOPERMODE, "Developer mode");
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
     SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
+
+    langListCombo_ = GetDlgItem(IDC_LANGLIST);
     
     GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
     TCHAR buf[MAX_PATH];
@@ -133,15 +135,16 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
     
 bool CGeneralSettings::Apply()
 {
-    int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
-    if(Index < 0) return 0;
+    int Index = langListCombo_.GetCurSel();
+    if (Index < 0) {
+        return 0;
+    }
     
-    TCHAR szBuf[256];
-    SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, (WPARAM)szBuf);
-    Settings.Language = szBuf;
+    CString buf;
+    langListCombo_.GetLBText(Index, buf);
+    Settings.Language = buf;
 
-    GetDlgItemText(IDC_IMAGEEDITORPATH, szBuf, 256);
-    Settings.ImageEditorPath = szBuf;
+    Settings.ImageEditorPath = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH));
     
     Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
     Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;

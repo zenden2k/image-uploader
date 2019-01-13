@@ -188,9 +188,9 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     ::EnableWindow(GetDlgItem(IDC_SELECTVIDEO), 0);
     ::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_SHOW);
 
-    int videoEngineIndex = SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_GETCURSEL );
-    TCHAR buf[256];
-    SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_GETLBTEXT, videoEngineIndex, (LPARAM)buf );
+    int videoEngineIndex = videoEngineCombo_.GetCurSel();
+    CString buf;
+    videoEngineCombo_.GetLBText(videoEngineIndex, buf);
     Settings.VideoSettings.Engine = buf;
     /*if (  videoEngineIndex == 0) {
     Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
@@ -358,11 +358,11 @@ int CVideoGrabberPage::ThreadTerminated()
 LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     TimerInc--;
-    TCHAR szBuffer[256];
     if (TimerInc > 0)
     {
-        wsprintf(szBuffer, CString(TR("Stop")) + _T(" (%d)"), TimerInc);
-        SetDlgItemText(IDC_STOP, szBuffer);
+        CString buffer;
+        buffer.Format(CString(TR("Stop")) + _T(" (%d)"), TimerInc);
+        SetDlgItemText(IDC_STOP, buffer);
     }
     else
     {

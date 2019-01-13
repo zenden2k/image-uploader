@@ -15,7 +15,7 @@ namespace IuCommonFunctions {
      //CString IUCommonTempFolder;
 
 #ifndef IU_SHELLEXT
-const CString GetDataFolder()
+CString GetDataFolder()
 {
     CString result;
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)&& !defined(IU_TESTS)
@@ -48,10 +48,24 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
     DWORD pid = GetCurrentProcessId() ^ 0xa1234568;
     IUCommonTempFolder.Format(_T("%stmd_iu_temp"), static_cast<LPCTSTR>(TempPath));
 
-    CreateDirectory(IUCommonTempFolder, 0);
+    if (!CreateDirectory(IUCommonTempFolder, 0)) {
+        DWORD errorCode = GetLastError();
+        if (errorCode != ERROR_ALREADY_EXISTS) {
+            LOG(ERROR) << "Unable to create temp folder: " << std::endl 
+                << IUCommonTempFolder << std::endl << WinUtils::ErrorCodeToString(errorCode);
+            return false;
+        }
+    }
     IUTempFolder.Format(_T("%s\\iu_temp_%x"), static_cast<LPCTSTR>(IUCommonTempFolder), pid);
 
-    CreateDirectory(IUTempFolder, 0);
+    if (!CreateDirectory(IUTempFolder, 0) ) {
+        DWORD errorCode = GetLastError();
+        if (errorCode != ERROR_ALREADY_EXISTS) {
+            LOG(ERROR) << "Unable to create temp folder: " << std::endl 
+                << IUTempFolder << std::endl  << WinUtils::ErrorCodeToString(errorCode);
+            return false;
+        }
+    }
 
     IUTempFolder += _T("\\");
     return TRUE;
@@ -60,16 +74,13 @@ BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
 WIN32_FIND_DATA wfd;
 HANDLE findfile = 0;
 
-int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength)
+int GetNextImgFile(LPCTSTR folder, CString& szBuffer)
 {
-    TCHAR szBuffer2[MAX_PATH], TempPath[256];
-
-    GetTempPath(256, TempPath);
-    wsprintf(szBuffer2, _T("%s*.*"), folder);
+    CString buffer2 = folder + CString(_T("*.*"));
 
     if (!findfile)
     {
-        findfile = FindFirstFile(szBuffer2, &wfd);
+        findfile = FindFirstFile(buffer2, &wfd);
         if (!findfile)
             goto error;
     }
@@ -80,7 +91,8 @@ int GetNextImgFile(LPCTSTR folder, LPTSTR szBuffer, int nLength)
     }
     if (lstrlen(wfd.cFileName) < 1)
         goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, nLength);
+
+    szBuffer = wfd.cFileName;
 
     return TRUE;
 
@@ -90,20 +102,31 @@ error:
     return FALSE;
 
 }
-void ClearTempFolder(LPCTSTR folder)
+void ClearTempFolder(CString folder)
 {
-    TCHAR szBuffer[256] = _T("\0");
-    TCHAR szBuffer2[MAX_PATH], TempPath[256];
-    GetTempPath(256, TempPath);
+    if (folder.IsEmpty()) {
+        return;
+    }
+    int lastCharPos = folder.GetLength() - 1;
+    if (folder[lastCharPos] != _T('\\') && folder[lastCharPos] != _T('/')) {
+        folder += _T("\\");
+    }
+    CString buffer;
+    CString buffer2;
+
     findfile = 0;
-    while (GetNextImgFile(folder, szBuffer, 256))
+    while (GetNextImgFile(folder, buffer))
     {
 #ifdef DEBUG
-        if (!lstrcmpi(szBuffer, _T("log.txt")))
+        if (buffer == _T("log.txt")) {
             continue;
+        }
 #endif
-        wsprintf(szBuffer2, _T("%s%s"), folder, (LPCTSTR)szBuffer);
-        DeleteFile(szBuffer2);
+        if (buffer == _T(".") || buffer == _T("..")) {
+            continue;
+        }
+        buffer2 = CString(folder) + buffer;
+        DeleteFile(buffer2);
     }
     if (!RemoveDirectory(folder))
     {

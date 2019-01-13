@@ -553,7 +553,7 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
         DeleteObject(out);
         return true;
     } else {
-        LOG(ERROR) << ("Cannot copy image to clipboard.") << "\r\n" << WinUtils::GetLastErrorAsString();
+        LOG(ERROR) << ("Cannot copy image to clipboard.") << std::endl << WinUtils::GetLastErrorAsString();
     }
     return false;
 }
@@ -679,8 +679,8 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
     
     TCHAR szImgTypes[3][4] = { _T("jpg"), _T("png"), _T("gif") };
     
-    CString szNameBuffer;
-    TCHAR szBuffer2[MAX_PATH];
+    CString szNameBuffer, buffer2;
+ 
     if (IuCommonFunctions::IsImage(szFilename))
         szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
     else
@@ -690,10 +690,9 @@ bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int F
         userFolder = Folder;
     if (userFolder.Right(1) != _T('\\'))
         userFolder += _T('\\');
-    wsprintf(szBuffer2, _T(
-        "%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
-        /*(int)GetTickCount(),*/ szImgTypes[Format]);
-    CString resultFilename = WinUtils::GetUniqFileName(szBuffer2);
+    buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
+                    szImgTypes[Format]);
+    CString resultFilename = WinUtils::GetUniqFileName(buffer2);
     WinUtils::CreateFilePath(resultFilename);
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
     

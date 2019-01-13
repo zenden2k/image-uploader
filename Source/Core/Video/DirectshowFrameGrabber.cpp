@@ -19,8 +19,11 @@
 */
 
 #include "DirectshowFrameGrabber.h"
+
+#include <mutex>
 #include "atlheaders.h"
 #include "Core/Utils/CoreUtils.h"
+#include <windows.h>
 #define __AFX_H__ // little hack for avoiding __POSITION type redefinition
 #include <objbase.h>
 #include <streams.h>
@@ -29,14 +32,13 @@
 #include <comdef.h>
 #include <comip.h>
 #include <Strmif.h>
-#include <atlbase.h>
+
 #include "AbstractVideoFrame.h"
 #include "Core/Logging.h"
-#include <windows.h>
 #include "Core/3rdpart/dxerr.h"
 #include "DirectShowUtil.h"
+
 #define tr(arg) (arg)
-#include <mutex>
 
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
@@ -112,8 +114,6 @@ inline std::string GetMessageForHresult(HRESULT hr) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)cs); 
 } 
 
-
-
 typedef struct tagVIDEOINFOHEADER2
 {
     RECT rcSource;
@@ -185,8 +185,6 @@ public:
     virtual HRESULT STDMETHODCALLTYPE CreatedFilter( /* [in] */ IBaseFilter* pFil) { return S_OK; }
 };
 
-
-
 class CSampleGrabberCB : public ISampleGrabberCB
 {
 public:
@@ -211,16 +209,14 @@ public:
     LONGLONG prev; // не используется
 
     // Fake out any COM ref counting
-    STDMETHODIMP_(ULONG) AddRef();
-    STDMETHODIMP_(ULONG) Release();
+    STDMETHODIMP_(ULONG) AddRef() override;
+    STDMETHODIMP_(ULONG) Release() override;
 
     // Fake out any COM QI'ing
-    STDMETHODIMP QueryInterface(REFIID riid, void** ppv);
-    STDMETHODIMP SampleCB( double SampleTime, IMediaSample* pSample );
+    STDMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
+    STDMETHODIMP SampleCB(double SampleTime, IMediaSample* pSample) override;
 
-
-    STDMETHODIMP BufferCB( double SampleTime, BYTE* pBuffer, long BufferSize );
-
+    STDMETHODIMP BufferCB(double SampleTime, BYTE* pBuffer, long BufferSize) override;
 };
 
 class DirectshowFrameGrabberPrivate {
@@ -305,10 +301,6 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
 {
     LONGLONG time = LONGLONG(SampleTime * 10000000);
     prev = time;
-    TCHAR buf[256];
-    wsprintf(buf, TEXT("%02d:%02d:%02d"), int(SampleTime / 3600), (int)(long(SampleTime) / 60) % 60,
-             (int)long(long(SampleTime) % 60) /*,long(SampleTime/100)*/);
-
 
     DirectshowVideoFrame *frame = new DirectshowVideoFrame(pBuffer, BufferSize, static_cast<int64_t>(SampleTime), Width, Height);
     directShowPrivate->setCurrentFrame( frame);
@@ -320,10 +312,6 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
 void GrabInfo(std::string text){
     OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
     //LOG(ERROR) << text;
-}
-
-bool ShouldStop() {
-    return false;
 }
 
 DirectshowFrameGrabber::DirectshowFrameGrabber() : 
@@ -594,11 +582,6 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
     
     //for ( int i = 0; i < NumOfFrames; i++ )
     {
-        if (ShouldStop())
-        {
-            //CanceledByUser = true;
-           // break;
-        }
         // set position
 
         REFERENCE_TIME Start = /*(i + 1) * step - step*/ time /*/ 5 * 3*/; // **/(duration/NUM_FRAMES_TO_GRAB);//** UNITS*40*/;

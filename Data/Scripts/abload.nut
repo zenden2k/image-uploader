@@ -62,7 +62,13 @@ function UploadFile(FileName, options) {
     local form = doc.find("form");
     
     if ( form.length() ) {
-        nm.setUrl(form.attr("action"));
+        local url = form.attr("action");
+        
+        if (url.slice(0, 2) == "//" ) {
+            url = "https:" + url;
+        }
+
+        nm.setUrl(url);
         form.find("input").each( function(index,elem) {    
             nm.addQueryParam(elem.attr("name"), elem.attr("value"));  
         });
@@ -72,7 +78,7 @@ function UploadFile(FileName, options) {
         nm.doPost("");
         if ( nm.responseCode() == 200) {
             local data = nm.responseBody();
-            local reg = CRegExp("Direktlink.+?value=\"(https://abload\\.de/img/.+?)\"", "smi");
+            local reg = CRegExp("Direktlink.+?value=\"(https?://abload\\.de/img/.+?)\"", "smi");
             local directUrl = "";
             local viewUrl = "";
             local thumbUrl = "";
@@ -88,7 +94,7 @@ function UploadFile(FileName, options) {
                 options.setViewUrl(viewUrl);
                 options.setThumbUrl(thumbUrl);
             }
-            if (directUrl != "") {
+            if (directUrl != "" || viewUrl != "") {
                 return 1;
             }        
         }

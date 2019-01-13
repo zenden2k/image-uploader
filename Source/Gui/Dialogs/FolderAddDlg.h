@@ -22,7 +22,6 @@ private:
     WIN32_FIND_DATA wfd;
     HANDLE findfile;
     CStatusDlg dlg;
-    int GetNextImgFile(LPTSTR szBuffer, int nLength);
     int ProcessDir(CString currentDir, bool bRecursive /* = true  */);
 };
 

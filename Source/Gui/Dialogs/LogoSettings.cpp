@@ -123,7 +123,12 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
-    ShowParams(U2W(Settings.imageServer.getImageUploadParams().ImageProfileName));
+    CString profileName = U2W(Settings.imageServer.getImageUploadParams().ImageProfileName);
+
+    if (ñonvert_profiles_.find(profileName) == ñonvert_profiles_.end()) {
+        profileName = _T("Default");
+    }
+    ShowParams(profileName);
     UpdateProfileList();
     return 1; 
 }
@@ -329,7 +334,10 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 
 void CLogoSettings::ShowParams(const CString profileName)
 {
-   if(CurrentProfileName == profileName) return;
+    if (CurrentProfileName == profileName) {
+        return;
+    }
+
     CurrentProfileName = profileName;
     CurrentProfileOriginalName = profileName; 
     ShowParams(ñonvert_profiles_[profileName]);

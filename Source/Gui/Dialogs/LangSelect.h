@@ -47,14 +47,14 @@ class CLangSelect : public CDialogImpl<CLangSelect>
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     
-         int GetNextLngFile(LPTSTR szBuffer, int nLength);
-        TCHAR Language[128];
+        int GetNextLngFile(LPTSTR szBuffer, int nLength);
+        CString Language;
 
     private:
         WIN32_FIND_DATA wfd;
         HANDLE findfile;
         CMyImage LogoImage;
-
+        CComboBox langListCombo_;
         void SelectLang(LPCTSTR Lang);
 };
 

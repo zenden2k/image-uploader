@@ -238,8 +238,8 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
 
     for (int i = 0; i < count; i++) {
         CString AudioTotal;
-        TCHAR buf[256];
-        wsprintf(buf, CString(TR("Audio")) + _T(" #%d: "), i + 1);
+        CString buf;
+        buf.Format(CString(TR("Audio")) + _T(" #%d: "), i + 1);
 
         if (count > 1)
             AudioTotal = buf;

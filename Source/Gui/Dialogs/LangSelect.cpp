@@ -28,7 +28,6 @@
 CLangSelect::CLangSelect()
 {
     findfile = NULL;
-    *Language = 0;
     memset(&wfd, 0, sizeof(wfd));
 }
 
@@ -65,16 +64,17 @@ error:     // File not found
 
 LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    langListCombo_ = GetDlgItem(IDC_LANGLIST);
     TCHAR buf[256];
     CString buf2;
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
+    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
     GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
-    // Russian language is always in language list
-    SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)_T("English"));
+    // English language is always in language list
+    langListCombo_.AddString(_T("English"));
 
     int n = 0;
     while (GetNextLngFile(buf, sizeof(buf) / sizeof(TCHAR)) )
@@ -85,14 +85,14 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         if (buf2 == _T("English")) {
             continue;
         }
-        SendDlgItemMessage(IDC_LANGLIST, CB_ADDSTRING, 0, (WPARAM)(LPCTSTR)buf2);
+        langListCombo_.AddString(buf2);
         n++;
     }
 
     if (!n)
     {
         EndDialog(IDOK);
-        lstrcpy(Language, _T("English"));
+        Language = _T("English");
         return 0;
     }
 
@@ -112,10 +112,11 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    int Index = SendDlgItemMessage(IDC_LANGLIST, CB_GETCURSEL);
-    if (Index < 0)
+    int Index = langListCombo_.GetCurSel();
+    if (Index < 0) {
         return 0;
-    SendDlgItemMessage(IDC_LANGLIST, CB_GETLBTEXT, Index, reinterpret_cast<WPARAM>(Language));
+    }
+    langListCombo_.GetLBText(Index, Language);
     return EndDialog(wID);
 }
 
@@ -127,8 +128,9 @@ LRESULT CLangSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 void CLangSelect::SelectLang(LPCTSTR Lang)
 {
-    int Index = SendDlgItemMessage(IDC_LANGLIST, CB_FINDSTRING, 0, (WPARAM)Lang);
-    if (Index < 0)
+    int Index = langListCombo_.FindStringExact(0, Lang);
+    if (Index < 0) {
         return;
-    SendDlgItemMessage(IDC_LANGLIST, CB_SETCURSEL, Index);
+    }
+    langListCombo_.SetCurSel(Index);
 }

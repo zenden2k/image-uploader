@@ -56,6 +56,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         HANDLE findfile;
         CMyImage img;
         WIN32_FIND_DATA wfd;
+        CComboBox langListCombo_;
 };
 
 #endif // GENERALSETTINGS_H

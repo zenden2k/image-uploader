@@ -1,6 +1,7 @@
 #ifndef ABSTRACTFRAMEGRABBER_H
 #define ABSTRACTFRAMEGRABBER_H
 
+#include <string>
 #include "AbstractVideoFrame.h"
 #include "Core/Utils/CoreTypes.h"
 

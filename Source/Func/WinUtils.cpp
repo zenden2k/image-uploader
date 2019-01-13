@@ -756,7 +756,7 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
 
 bool FontToString(const LOGFONT * lFont, CString &Result)
 {
-    TCHAR  szBuffer[1024];
+    CString buffer;
     if( !lFont  ) return false;
 
     int nPixelsPerInch;
@@ -788,9 +788,9 @@ bool FontToString(const LOGFONT * lFont, CString &Result)
     if(lFont->lfItalic) bItalic = true;
     if(lFont->lfStrikeOut == (char)true) bStrikeOut = true;
 
-    wsprintf(szBuffer,_T("%s, %d, %s%s%s%s, %d"),lFont->lfFaceName,nFontSize,
+    buffer.Format(_T("%s, %d, %s%s%s%s, %d"),lFont->lfFaceName,nFontSize,
         szBold[bBold],szItalic[bItalic],szUnderline[bUnderline],szStrikeOut[bStrikeOut],(int)lFont->lfCharSet);
-    Result = szBuffer;
+    Result = buffer;
     return true;
 }
 

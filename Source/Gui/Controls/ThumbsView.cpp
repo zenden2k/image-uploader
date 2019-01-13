@@ -410,7 +410,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             format.SetLineAlignment(StringAlignmentCenter);
             Font font(L"Tahoma", 8, FontStyleRegular );
             LPCTSTR Filename = GetFileName(ItemID);
-            WCHAR Buffer[256];
+            CString Buffer;
             //int f = MyGetFileSize(GetFileName(ItemID));
             WCHAR buf2[25];
             std::string fileSizeStr = IuCoreUtils::fileSizeToString(IuCoreUtils::getFileSize(WCstringToUtf8(Filename)));
@@ -420,14 +420,11 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
             if(!lstrcmpi(FileExt, _T("jpg"))) 
                 lstrcpy(FileExt,_T("JPEG"));
-            if(IuCommonFunctions::IsImage(filename) && bm)
-            {
-                wsprintf(Buffer,_T("%s %dx%d (%s)"),(LPCTSTR)FileExt,imgwidth, imgheight, (LPCTSTR)buf2 );
+            if(IuCommonFunctions::IsImage(filename) && bm) {
+                Buffer.Format(_T("%s %dx%d (%s)"), (LPCTSTR)FileExt, imgwidth, imgheight, (LPCTSTR)buf2);
             }
-            else
-            {
-                wsprintf(Buffer,_T("%s"), (LPCTSTR)buf2 );
-
+            else {
+                Buffer = buf2;
             }
             gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);
         }

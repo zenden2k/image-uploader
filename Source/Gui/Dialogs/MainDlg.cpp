@@ -883,26 +883,6 @@ LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
         if (isImageFile) {
             WinUtils::DisplaySystemPrintDialogForImage(selectedFiles, m_hWnd);
         }
-        /*std::wstring cmdLine;
-        /*SHELLEXECUTEINFO TempInfo = { 0 };
-        TCHAR filePath[1024];
-        WinUtils::ExtractFilePath(selectedFiles[0], filePath);
-        /*TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-        TempInfo.hwnd = m_hWnd;
-        TempInfo.lpVerb = _T("open");
-      
-        TempInfo.lpDirectory = filePath;
-        TempInfo.nShow = SW_NORMAL;
-        
-        for (const auto& file : selectedFiles) {
-            ArgvQuote(static_cast<LPCTSTR>(file), cmdLine, true);
-        }
-        HINSTANCE hinst = ShellExecute(m_hWnd, _T("print"), selectedFiles[0], /*cmdLine.c_str()*0, filePath, SW_SHOWNORMAL);
-        
-        if (reinterpret_cast<int>(hinst) <= 32) {
-            TCHAR buffer[256];
-            wsprintf(buffer, _T("ShellExecute failed. Error code=%d"), reinterpret_cast<int>(hinst));
-        }*/
     }
     return 0;
 }

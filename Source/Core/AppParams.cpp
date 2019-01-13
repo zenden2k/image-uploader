@@ -4,6 +4,13 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 
+const char kPathSeparator =
+#ifdef _WIN32
+    '\\';
+#else
+    '/';
+#endif
+
 AppParams::AppParams() {
     isGui_ = true;
     versionInfo_.FullVersion = IU_APP_VER;
@@ -57,6 +64,12 @@ void AppParams::setLanguageFile(const std::string& languageFile)
 
 void AppParams::setTempDirectory(const std::string& directory) {
     tempDirectory_ = directory;
+    if (!tempDirectory_.empty()) {
+        int pos = tempDirectory_.length() - 1;
+        if (tempDirectory_[pos] != '\\' && tempDirectory_[pos] != '/') {
+            tempDirectory_ += kPathSeparator;
+        }
+    }
 }
 
 std::string AppParams::tempDirectory() const {

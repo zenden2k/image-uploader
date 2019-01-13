@@ -116,28 +116,3 @@ DWORD CFolderAdd::Run()
     dlg.m_hWnd = NULL;
     return 0;
 }
-
-int CFolderAdd::GetNextImgFile(LPTSTR szBuffer, int nLength)
-{
-    TCHAR szBuffer2[MAX_PATH], TempPath[256];
-
-    GetTempPath(256, TempPath);
-    wsprintf(szBuffer2, _T("%s*.*"), (LPCTSTR)m_szPath);
-
-    if (!findfile) {
-        findfile = FindFirstFile(szBuffer2, &wfd);
-        if (!findfile) goto error;
-    } else {
-        if (!FindNextFile(findfile, &wfd))
-            goto error;
-
-    }
-    if (lstrlen(wfd.cFileName) < 1) goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, nLength);
-
-    return TRUE;
-
-error:
-    if (findfile) FindClose(findfile);
-    return FALSE;
-}

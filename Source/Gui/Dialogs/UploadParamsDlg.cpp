@@ -67,6 +67,8 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
     TRC(IDC_THUMBBACKGROUNDLABEL, "Background color:");
 
+    profileCombo_ = GetDlgItem(IDC_PROFILECOMBO);
+    thumbTemplateCombo_ = GetDlgItem(IDC_THUMBTEMPLATECOMBO);
     //Fill profile combobox
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
     std::map<CString, ImageConvertingParams>::const_iterator it;
@@ -144,17 +146,17 @@ LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         params_.getThumbRef().AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
         params_.getThumbRef().Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
         
-        int profileIndex = SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETCURSEL, 0, 0);
-        TCHAR buf[256] = _T("");
-        SendDlgItemMessage(IDC_PROFILECOMBO, CB_GETLBTEXT, profileIndex, reinterpret_cast<WPARAM>(buf));
+        int profileIndex = profileCombo_.GetCurSel();
+        CString buf;
+        profileCombo_.GetLBText(profileIndex, buf);
         params_.ImageProfileName = W2U(buf);
         params_.getThumbRef().Size = GetDlgItemInt(IDC_WIDTHEDIT);
 
-        buf[0] = 0;
-        profileIndex = SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETCURSEL, 0, 0);
-        SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_GETLBTEXT, profileIndex, reinterpret_cast<WPARAM>(buf));
+        CString buf2;
+        profileIndex = thumbTemplateCombo_.GetCurSel();
+        thumbTemplateCombo_.GetLBText(profileIndex, buf2);
         ThumbCreatingParams& Thumb = params_.getThumbRef();
-        Thumb.TemplateName = W2U(buf);
+        Thumb.TemplateName = W2U(buf2);
 
         Thumb.ResizeMode = static_cast<ThumbCreatingParams::ThumbResizeEnum>(SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_GETCURSEL, 0, 0));
 

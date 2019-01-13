@@ -71,6 +71,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
     //img.Create(m_hWnd, rc);
     img.LoadImage(0);
+    thumbsCombo_.m_hWnd = GetDlgItem(IDC_THUMBSCOMBO);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
@@ -177,10 +178,14 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
 
 std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 {
-    TCHAR buf[256];
-    int index = SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETCURSEL);
-    if(index < 0) return "";
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, reinterpret_cast<WPARAM>(buf));
+    CString buf;
+    int index = thumbsCombo_.GetCurSel();
+    if (index < 0) {
+        return std::string();
+    }
+    if (thumbsCombo_.GetLBText(index, buf) < 0) {
+        return std::string();
+    }
     CString thumbFileName = buf;
     Thumbnail thumb;
     CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
@@ -189,10 +194,12 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
 
 std::string CThumbSettingsPage::getSelectedThumbnailName()
 {
-    TCHAR buf[256];
-    int index = SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETCURSEL);
-    if(index < 0) return "";
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_GETLBTEXT, index, reinterpret_cast<WPARAM>(buf));
+    CString buf;
+    int index = thumbsCombo_.GetCurSel();
+    if (index < 0) {
+        return std::string();
+    }
+    thumbsCombo_.GetLBText(index, buf);
     return WCstringToUtf8(buf);
 }
 

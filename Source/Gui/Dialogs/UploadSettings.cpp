@@ -178,7 +178,11 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"));
     
     ShowParams();
-    ShowParams(U2W(sessionImageServer_.getImageUploadParams().ImageProfileName));
+    CString profileName = U2W(sessionImageServer_.getImageUploadParams().ImageProfileName);
+    if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
+        profileName = _T("Default");
+    }
+    ShowParams(profileName);
     UpdateProfileList();
     UpdateAllPlaceSelectors();
     return 1;  // Let the system set the focus
@@ -368,7 +372,11 @@ bool CUploadSettings::OnShow()
         ShowParams();
     }
 
-    ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
+    CString profileName = U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName);
+    if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
+        profileName = _T("Default");
+    }
+    ShowParams(profileName);
     UpdateProfileList();
     UpdateAllPlaceSelectors();
     OnBnClickedCreatethumbnails(0, 0, 0, temp);
@@ -1184,22 +1192,23 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
     m_CatchChanges = true;
  }
 
- void CUploadSettings::ShowParams(const CString& profileName)
- {
-    if(sessionImageServer_.getImageUploadParams().getThumb().ResizeMode!= ThumbCreatingParams::trByHeight)
-   {
-      TRC(IDC_WIDTHLABEL, "Width:");
-      SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
-   }
-   else
-   {
+void CUploadSettings::ShowParams(const CString& profileName) {
+    if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
+        return;
+    }
+    if (sessionImageServer_.getImageUploadParams().getThumb().ResizeMode!= ThumbCreatingParams::trByHeight){
+        TRC(IDC_WIDTHLABEL, "Width:");
+        SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
+    } else {
       TRC(IDC_WIDTHLABEL, "Height:");
       SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
-   }
-    if(CurrentProfileName == profileName) return;
-   CurrentProfileName = profileName;
-   CurrentProfileOriginalName = profileName; 
-   ShowParams(convert_profiles_[profileName]);
+    }
+    if (CurrentProfileName == profileName) {
+        return;
+    }
+    CurrentProfileName = profileName;
+    CurrentProfileOriginalName = profileName; 
+    ShowParams(convert_profiles_[profileName]);
    
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
  }

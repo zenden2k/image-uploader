@@ -69,6 +69,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
         
         BEGIN_DDX_MAP(CVideoGrabberPage)
             DDX_CONTROL_HANDLE(IDC_FILEEDIT, fileEdit_)
+            DDX_CONTROL_HANDLE(IDC_VIDEOENGINECOMBO, videoEngineCombo_)
         END_DDX_MAP()
 
 		// Handler prototypes:
@@ -120,6 +121,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		bool CanceledByUser;
 		CMainDlg* MainDlg;
         CEdit fileEdit_;
+        CComboBox videoEngineCombo_;
 		UploadEngineManager * uploadEngineManager_;
         HwndScopedWrapper engineComboToolTip_;
 };

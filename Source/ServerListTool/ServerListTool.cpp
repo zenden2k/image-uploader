@@ -20,6 +20,7 @@
 #include "Core/Settings.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 CAppModule _Module;
 
@@ -88,7 +89,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     ScriptsManager scriptsManager;
     UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler);
+    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, std::make_shared<NetworkClientFactory>());
     uploadManager.setEnableHistory(false);
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);

@@ -623,7 +623,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             format.SetLineAlignment(StringAlignmentCenter);
             Font font(L"Tahoma", 8, FontStyleRegular );
             LPCTSTR Filename = filename;
-            WCHAR Buffer[256];
+            CString Buffer;
             int64_t fileSize = IuCoreUtils::getFileSize(W2U(filename));
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
@@ -633,12 +633,11 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
                 lstrcpy(FileExt,_T("JPEG"));
             if(IuCommonFunctions::IsImage(filename) && bm)
             {
-                wsprintf(Buffer,_T("%s %dx%d (%s)"),static_cast<LPCTSTR>(FileExt),(int)bm->GetWidth(),(int)bm->GetHeight(), (LPCTSTR)buf2 );
+                Buffer.Format( _T("%s %dx%d (%s)"), static_cast<LPCTSTR>(FileExt), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
             }
             else
             {
-                wsprintf(Buffer,_T("%s"), static_cast<LPCTSTR>(buf2) );
-
+                Buffer = buf2;
             }
             gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);
         }

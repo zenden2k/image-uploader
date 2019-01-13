@@ -293,9 +293,9 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
     res.Format(TR("Links (%d)"), CurPos);
 
     if (Total) {
-        TCHAR szBuffer[MAX_PATH];
-        wsprintf(szBuffer, _T("%d %%"), static_cast<int>(100 * (static_cast<double>(CurPos) / Total)));
-        SetDlgItemText(IDC_COMMONPERCENTS, szBuffer);
+        CString buffer;
+        buffer.Format(_T("%d %%"), static_cast<int>(100 * (static_cast<double>(CurPos) / Total)));
+        SetDlgItemText(IDC_COMMONPERCENTS, buffer);
     }
     toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
