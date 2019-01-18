@@ -638,11 +638,8 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl)
     return false;
 }
 
- #define CF_HTML 2
 LRESULT CImageReuploaderDlg::OnClickedPasteHtml(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    //OnEditControlPaste(&sourceTextEditControl);
     pasteHtml();
-    //sourceTextEditControl.SendMessage(WM_PASTE, 0, 0);
     return 0;
 }
 

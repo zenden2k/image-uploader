@@ -188,9 +188,3 @@ LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     return 0;
 }
-
-BOOL CALLBACK CScreenshotDlg::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-    
-    return TRUE;
-}

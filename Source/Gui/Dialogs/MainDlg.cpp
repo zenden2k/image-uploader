@@ -669,13 +669,13 @@ int CMainDlg::getSelectedFiles(std::vector<CString>& selectedFiles) {
 LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     int nCurItem = -1;
 
-    std::vector<LPCTSTR> selectedFiles;
+    std::vector<CString> selectedFiles;
     while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
         LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
         if ( !FileName ) {
             continue;
         }
-        selectedFiles.push_back( FileName );
+        selectedFiles.push_back(FileName);
 
     }
     if ( selectedFiles.empty() ) {
@@ -683,6 +683,7 @@ LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     }
 
     if ( selectedFiles.size() == 1) {
+        // If just one file is selected, copy it in two different formats
         SystemUtils::CopyFileAndImageToClipboard(selectedFiles[0]);
     } else {
         SystemUtils::CopyFilesToClipboard(selectedFiles);

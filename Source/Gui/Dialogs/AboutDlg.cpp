@@ -56,16 +56,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_CommitHashLink.SetLabel(CString(ver->CommitHashShort.c_str()));
     m_CommitHashLink.SetHyperLink(CString(("https://github.com/zenden2k/image-uploader/commit/" + ver->CommitHash).c_str()));
 
-
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_EmailLink.SetLabel((Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
         : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@yandex.ru)")));
     m_EmailLink.SetHyperLink(_T("mailto:zenden2k@yandex.ru"));
-
-    m_Documentation.SubclassWindow(GetDlgItem(IDC_DOCUMENTATION));
-    m_Documentation.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    m_Documentation.SetLabel(TR("Documentation"));
 
     CString memoText;
     

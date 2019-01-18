@@ -287,7 +287,6 @@ BEGIN
     LTEXT           "Sergey Svistunov (serjook@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
     EDITTEXT        IDC_MEMO,5,155,263,121,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
-    LTEXT           "Документация",IDC_DOCUMENTATION,10,285,106,8,NOT WS_VISIBLE
     LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
     LTEXT           "#",IDC_COMMITHASH,158,46,75,8
 END

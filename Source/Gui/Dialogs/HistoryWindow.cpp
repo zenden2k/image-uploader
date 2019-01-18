@@ -386,7 +386,7 @@ void CHistoryWindow::SelectedMonthChanged() {
 void CHistoryWindow::OpenInBrowser(TreeItem* item) {
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
     std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
-    ShellExecute(NULL, _T("open"), Utf8ToWCstring(url), NULL, NULL, SW_SHOWNORMAL);
+    WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
 }
 
 void CHistoryWindow::threadsFinished()

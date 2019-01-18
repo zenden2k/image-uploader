@@ -18,10 +18,9 @@
 
 */
 
-#include "atlheaders.h"
 #include "StatusDlg.h"
-#include "Func/Common.h"
-#include "Func/MyUtils.h"
+
+#include "atlheaders.h"
 #include "Func/LangClass.h"
 #include "Gui/GuiTools.h"
 // CStatusDlg

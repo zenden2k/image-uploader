@@ -76,7 +76,12 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    value_ = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
+    CString val = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
+    if (val.FindOneOf(forbiddenCharacters_) >= 0) { 
+        MessageBox(TR("Text contains forbidden characters!"), APPNAME, MB_ICONERROR);
+        return 0;
+    }
+    value_ = val;
     EndDialog(wID);
     return 0;
 }
@@ -90,4 +95,8 @@ LRESULT CInputDialog::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 CString CInputDialog::getValue() const
 {
     return value_;
+}
+
+void CInputDialog::setForbiddenCharacters(CString chars) {
+    forbiddenCharacters_ = chars;
 }

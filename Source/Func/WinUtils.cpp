@@ -1384,6 +1384,28 @@ bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
     return !proxy_address.IsEmpty();
 }
 
+bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
+    SHELLEXECUTEINFO ShInfo;
+
+    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShInfo.nShow = SW_SHOWNORMAL;
+    ShInfo.fMask = SEE_MASK_DEFAULT;
+    ShInfo.hwnd = wnd;
+    ShInfo.lpVerb = TEXT("open");
+    ShInfo.lpFile = path;
+    ShInfo.lpDirectory = directory;
+
+    if (ShellExecuteEx(&ShInfo) == FALSE) {
+        DWORD error = GetLastError();
+        if (error != ERROR_CANCELLED) {
+            LOG(ERROR) << "ShellExecute failed. " << std::endl << WinUtils::FormatWindowsErrorMessage(error);
+        }
+        return false;
+    }
+    return true;
+}
+
 };
 
 const std::wstring Utf8ToWstring(const std::string &str)

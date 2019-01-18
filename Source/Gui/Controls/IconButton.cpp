@@ -21,7 +21,7 @@
 //
 
 #include "IconButton.h"
-#include "Func/Common.h"
+
 #include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 // local functions
 static int image_left (int cx, const CRect& Rect, DWORD style);

@@ -42,8 +42,8 @@ class CInputDialog :
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         END_MSG_MAP()
 
-    public:
         CString getValue() const;
+        void setForbiddenCharacters(CString chars);
 
     protected:
         // Handler prototypes:
@@ -57,6 +57,7 @@ class CInputDialog :
         CString description_;
         CString value_;
         CString image_;
+        CString forbiddenCharacters_;
         CMyImage imgControl;
 };
 

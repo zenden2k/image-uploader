@@ -27,10 +27,9 @@
 #include "Func/LangClass.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/myutils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Images/Utils.h"
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120

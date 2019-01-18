@@ -33,7 +33,6 @@ class CAboutDlg : public CDialogImpl<CAboutDlg>
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
             COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
-            COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentationClicked)
             MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
         END_MSG_MAP()
         CMyImage LogoImage;
@@ -41,7 +40,6 @@ class CAboutDlg : public CDialogImpl<CAboutDlg>
         CHyperLink m_GoogleCodeLink;
         CHyperLink m_ReportBugLink;
         CHyperLink m_EmailLink;
-        CHyperLink m_Documentation;
         CHyperLink m_CommitHashLink;
         CFont thanksToLabelFont_;
         // Handler prototypes (uncomment arguments if needed):

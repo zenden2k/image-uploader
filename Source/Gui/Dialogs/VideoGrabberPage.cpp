@@ -679,9 +679,6 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 }
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    HINSTANCE  hinst = ShellExecute(NULL, L"open", snapshotsFolder, 0, 0, SW_SHOWDEFAULT);
-    if (reinterpret_cast<int>(hinst) <= 32) {
-        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
-    }
+    WinUtils::ShellOpenFileOrUrl(snapshotsFolder, m_hWnd);
     return 0;
 }

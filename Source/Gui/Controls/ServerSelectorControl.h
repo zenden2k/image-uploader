@@ -87,7 +87,7 @@ virtual ~CServerSelectorControl();
     void setServerProfile(ServerProfile serverProfile);
     void setShowDefaultServerItem(bool show);
     void setServersMask(int mask);
-    void setShowFilesizeLimis(bool show);
+    void setShowFilesizeLimits(bool show);
     void notifyChange();
     void notifyServerListChanged();
     void updateServerList();

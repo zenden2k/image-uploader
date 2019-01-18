@@ -58,6 +58,7 @@ protected:
     std::vector<CString> addresses_;
     std::vector<CString> sharedFolders_;
     CIconButton presetButton_;
+    CIcon presetButtonIcon_;
     CString computerName_;
 public:
     LRESULT OnBnClickedBrowsebutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

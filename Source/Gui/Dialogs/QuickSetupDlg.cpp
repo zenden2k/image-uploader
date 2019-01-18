@@ -21,7 +21,6 @@
 #include "QuickSetupDlg.h"
 
 #include "Core/CommonDefs.h"
-#include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings.h"
@@ -86,21 +85,31 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     //CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
     std::string selectedServerName = "directupload.net" ;
-    for (int i = 0; i < myEngineList->count(); i++) {
-        CUploadEngineData * ue = myEngineList->byIndex(i);
-        if (!ue->hasType(CUploadEngineData::TypeImageServer) && !ue->hasType(CUploadEngineData::TypeFileServer)) {
-            continue;
+    TCHAR line[40];
+    for (int i = 0; i < ARRAY_SIZE(line) - 1; i++) {
+        line[i] = '-';
+    }
+    line[ARRAY_SIZE(line) - 1] = 0;
+    for (int j = 0; j < 2; j++) {
+        for (int i = 0; i < myEngineList->count(); i++) {
+            CUploadEngineData * ue = myEngineList->byIndex(i);
+            if ((!ue->hasType(CUploadEngineData::TypeImageServer) && j == 0)|| (!ue->hasType(CUploadEngineData::TypeFileServer) && j == 1)) {
+                continue;
+            }
+            HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
+            int nImageIndex = -1;
+            if (hImageIcon) {
+                nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
+            }
+            char *serverName = new char[ue->Name.length() + 1];
+            lstrcpyA(serverName, ue->Name.c_str());
+            int itemIndex = serverComboBox_.AddItem(Utf8ToWCstring(ue->Name), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
+            if (ue->Name == selectedServerName) {
+                selectedIndex = itemIndex;
+            }
         }
-        HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
-        int nImageIndex = -1;
-        if ( hImageIcon) {
-            nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
-        }
-        char *serverName = new char[ue->Name.length() + 1];
-        lstrcpyA( serverName, ue->Name.c_str() );
-        int itemIndex = serverComboBox_.AddItem( Utf8ToWCstring( ue->Name ), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>( serverName ) );
-        if ( ue->Name == selectedServerName ){
-            selectedIndex = itemIndex;
+        if (j == 0) {
+            serverComboBox_.AddItem(line, -1, -1, 0);
         }
     }
     serverComboBox_.SetImageList( comboBoxImageList_ );
@@ -225,8 +234,15 @@ LRESULT CQuickSetupDlg::OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 void  CQuickSetupDlg::serverChanged() {
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     int serverComboElementIndex = serverComboBox_.GetCurSel();
-    if ( serverComboElementIndex > 0 ) {
-        std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
+    if ( serverComboElementIndex >= 0 ) {
+        const char* serverName = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
+        if (!serverName) { // If the selected item is separator
+            if (serverComboElementIndex != 0) {
+                serverComboBox_.SetCurSel(0);
+            }
+            return;
+        }
+        std::string serverNameA = serverName;
         CUploadEngineData * uploadEngineData = ((CUploadEngineList *)myEngineList)->byName(serverNameA);
         if ( !uploadEngineData ) {
             return ;

@@ -76,7 +76,7 @@ protected:
     bool ignoreExistingAccount_;
     bool serverSupportsBeforehandAuthorization_;
     void enableControls(bool enable);
-    NetworkClient NetworkClient_;
+    std::unique_ptr<INetworkClient> NetworkClient_;
     CPictureExWnd wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
     

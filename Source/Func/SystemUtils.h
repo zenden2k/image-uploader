@@ -1,12 +1,12 @@
 #ifndef FUNC_SYSTEM_UTILS_H
 #define FUNC_SYSTEM_UTILS_H
 
+#include <vector>
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
-#include <vector>
 
 namespace SystemUtils {
-    bool CopyFilesToClipboard(const std::vector<LPCTSTR>& fileNames, bool clearClipboard = true);
+    bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipboard = true);
     bool CopyFileAndImageToClipboard(LPCTSTR fileName);
     bool CopyImageToClipboard(LPCTSTR fileName);
     bool CopyImageToClipboard(Gdiplus::Bitmap* image);

@@ -31,7 +31,6 @@ limitations under the License.
 #include <secext.h>
 #include "Core/CommonDefs.h"
 #include <Lm.h>
-#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 
 CAddDirectoryServerDialog::CAddDirectoryServerDialog(CUploadEngineList* uploadEngineList)
@@ -56,8 +55,8 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     TRC(IDC_ADDFILEPROTOCOL, "Convert UNC path \"\\\\\" to \"file://///\"");
  
-    HICON ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16,16,0));
-    SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(ico)));
+    presetButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
     presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     LoadComputerAddresses();

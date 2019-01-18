@@ -25,7 +25,7 @@
 #include "Core/Settings.h"
 #include "Core/Upload/AdvancedUploadEngine.h"
 #include "Func/WinUtils.h"
-#include <Core/Network/NetworkClientFactory.h>
+#include "Core/Network/NetworkClientFactory.h"
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
@@ -334,7 +334,7 @@ LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hW
     CString str = folder.viewUrl.c_str();
     if (!str.IsEmpty())
     {
-        ShellExecute(0, _T("open"), str, _T(""), 0, SW_SHOWNORMAL);
+        WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
     }
     return 0;
 }

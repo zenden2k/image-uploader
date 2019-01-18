@@ -30,7 +30,6 @@
 #include "Gui/Dialogs/LoginDlg.h"
 #include "Gui/Dialogs/AddFtpServerDialog.h"
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
-#include "Core/Logging.h"
 #include "Core/ServiceLocator.h"
 
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
@@ -198,7 +197,7 @@ void CServerSelectorControl::serverChanged() {
         lpstrServerName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
     }
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    if ( serverComboElementIndex > 0 && lpstrServerName ) {
+    if ( serverComboElementIndex >= 0 && lpstrServerName ) {
         std::string serverName = lpstrServerName;
         CString serverNameW = Utf8ToWCstring( serverName );
         serverProfile_.setServerName(serverName);
@@ -345,7 +344,7 @@ void CServerSelectorControl::setServersMask(int mask) {
     serversMask_ = mask;
 }
 
-void CServerSelectorControl::setShowFilesizeLimis(bool show) {
+void CServerSelectorControl::setShowFilesizeLimits(bool show) {
     showFileSizeLimits_ = show;
 }
 
@@ -416,7 +415,7 @@ void CServerSelectorControl::updateServerList()
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
             std::string displayName = ue->Name;
-            if (showFileSizeLimits_ && ue->MaxFileSize) {
+            if (showFileSizeLimits_ && ue->MaxFileSize > 0) {
                 displayName += " (" + IuCoreUtils::fileSizeToString(ue->MaxFileSize) + ")";
             }
             int itemIndex = serverComboBox_.AddItem(U2W(displayName), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));

@@ -78,7 +78,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        CResultsPanel *ResultsPanel;
+        std::unique_ptr<CResultsPanel> ResultsPanel;
         bool m_childWindow;
         CTabCtrl resultsTabCtrl_;
         std::map<int, int> tabPageToCodeLang;

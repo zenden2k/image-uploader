@@ -66,12 +66,10 @@ bool CMyEngineList::loadFromFile(const CString& filename)
     if (!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
     {
         m_ErrorStr = "File not found.";
-        return 0;
+        return false;
     }
     return CUploadEngineList::loadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
-
-
 
 HICON CMyEngineList::getIconForServer(const std::string& name) {
     auto iconIt = serverIcons_.find(name);

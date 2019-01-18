@@ -20,7 +20,6 @@
 
 #include "NewFolderDlg.h"
 
-#include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"

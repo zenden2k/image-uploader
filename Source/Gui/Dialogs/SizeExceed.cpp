@@ -26,7 +26,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/FileUploadTask.h"
-#include <Func/IuCommonFunctions.h>
+#include "Func/IuCommonFunctions.h"
 #include "Func/MyEngineList.h"
 
 // CSizeExceed
@@ -65,6 +65,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SERVERPLACEHOLDER);
     imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, true));
+    imageServerSelector_->setShowFilesizeLimits(true);
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Server for uploading images") : TR("Server for other file types"));
     if (!fileTask_->isImage()) {
@@ -72,8 +73,8 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     }
     
     imageServerSelector_->ShowWindow(SW_SHOW);
-    imageServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
-                                        serverSelectorRect.bottom - serverSelectorRect.top, 0);
+    imageServerSelector_->SetWindowPos(nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
+                                        serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
     imageServerSelector_->setServerProfile(Settings.imageServer);
     
     //CString serverName = U2W(fileTask_->serverProfile().serverName());

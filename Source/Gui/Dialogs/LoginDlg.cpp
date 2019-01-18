@@ -26,7 +26,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
-#include "Core/CoreFunctions.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -36,13 +36,16 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     serverSupportsBeforehandAuthorization_ = false;
     uploadEngineManager_ = uem;
     
-    if (!m_UploadEngine->PluginName.empty() ) {
-        CScriptUploadEngine* plugin_ = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+    if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
+        CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
         if ( plugin_ ) {
             serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
         }
     }
     createNew_ = createNew;
+
+    NetworkClientFactory factory;
+    NetworkClient_ = factory.create();
 }
 
 CLoginDlg::~CLoginDlg()
@@ -190,15 +193,14 @@ DWORD CLoginDlg::Run()
         li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
         ServerSettingsStruct& ss = serverProfile_.serverSettings();
         ss.authData = li;
-        CScriptUploadEngine* plugin_ = dynamic_cast<CScriptUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+        CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
         if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
             OnProcessFinished();
             return 0;
         }
 
-        CoreFunctions::ConfigureProxy(&NetworkClient_);
-        plugin_->setNetworkClient(&NetworkClient_);
+        plugin_->setNetworkClient(NetworkClient_.get());
         int res = plugin_->doLogin();
         if ( res ) {
             OnProcessFinished();

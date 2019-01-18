@@ -2,19 +2,14 @@
 
 #include "CoreUtils.h"
 #ifdef _WIN32
-#include <shellapi.h>
+#include "Func/WinUtils.h"
 #endif
 
 namespace DesktopUtils {
 
 bool ShellOpenUrl(const std::string& url) {
 #ifdef _WIN32
-    HINSTANCE hinst = ShellExecute(0, L"open", IuCoreUtils::Utf8ToWstring(url).c_str(), NULL, NULL, SW_SHOWNORMAL);
-    if ( reinterpret_cast<int>(hinst) <= 32) {
-        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
-        return false;
-    }
-    return true;
+    return WinUtils::ShellOpenFileOrUrl(U2W(url));
 #else
 #ifdef __APPLE__
     return system(("open \"" + url + "\"").c_str());

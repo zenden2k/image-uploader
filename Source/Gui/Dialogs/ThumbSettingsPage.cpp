@@ -254,6 +254,8 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string newName = IuCoreUtils::ExtractFileNameNoExt(fileName) + "_copy";
     
     CInputDialog dlg(TR("Creating new thumbnail preset"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
+    dlg.setForbiddenCharacters(_T("\\/:*?\"<>|"));
+
     if (dlg.DoModal() == IDOK) {
         newName = WCstringToUtf8(dlg.getValue());
     } else {
@@ -274,10 +276,24 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     }
     std::string sprite = thumb->getSpriteFileName();
     thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
-    if ((sprite.empty() || IuCoreUtils::copyFile(sprite, srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite))) && IuCoreUtils::copyFile(fileName, destination) && thumb->SaveToFile(destination)) {
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
-
+    if (!sprite.empty()) {
+        std::string newSpriteName = srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite); 
+        if (!IuCoreUtils::copyFile(sprite, newSpriteName)) {
+            LOG(ERROR) << "Unable to copy file: " << std::endl << std::endl << "Source: " << sprite << std::endl << "Destination: " << newSpriteName;
+            return false;
+        }
     }
+
+    if (!IuCoreUtils::copyFile(fileName, destination) ) {
+        LOG(ERROR) << "Unable to copy file: " << std::endl << std::endl << "Source: " << fileName << std::endl << "Destination: " << destination;
+        return false;
+    }
+
+    if (!thumb->SaveToFile(destination)) {
+        LOG(ERROR) << "Unable to save thumbnail template to file '" << destination << "'";
+        return false;
+    }
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
     SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)Utf8ToWCstring(newName));
     GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
     showSelectedThumbnailPreview();

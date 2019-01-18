@@ -982,7 +982,7 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
     CString str = Utf8ToWCstring(serverProfile.serverSettings().params["FolderUrl"]);
     if(!str.IsEmpty())
     {
-        ShellExecute(0,_T("open"),str,_T(""),0,SW_SHOWNORMAL);
+        WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
     }
     return 0;
 }
@@ -1037,8 +1037,9 @@ LRESULT CUploadSettings::OnOpenSignupPage(WORD /*wNotifyCode*/, WORD wID, HWND /
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
 
     CUploadEngineData *ue = serverProfile.uploadEngineData();
-    if(ue && !ue->RegistrationUrl.empty())
-        ShellExecute(0,_T("open"), Utf8ToWCstring(ue->RegistrationUrl), _T(""), 0, SW_SHOWNORMAL);
+    if (ue && !ue->RegistrationUrl.empty()) {
+        WinUtils::ShellOpenFileOrUrl(U2W(ue->RegistrationUrl), m_hWnd);
+    }
     return 0;
 }
 
