@@ -100,11 +100,12 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TRC(IDC_CODETYPELABEL, "Code type:");
     if(rectNeeded.left != -1)
     {
-    
     SetWindowPos(  0, rectNeeded.left, rectNeeded.top, rectNeeded.right,  rectNeeded.bottom, 0);
     }
-    if(GetStyle()&WS_CHILD)
-    TabBackgroundFix(m_hWnd);
+
+    if (GetStyle() & WS_CHILD) {
+        TabBackgroundFix(m_hWnd);
+    }
     CBitmap hBitmap;
 
     HIMAGELIST m_hToolBarImageList;
@@ -122,7 +123,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
         ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
     }
-    CDC hdc = GetDC();
+    CWindowDC hdc(m_hWnd);
     float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 

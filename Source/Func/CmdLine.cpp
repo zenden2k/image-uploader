@@ -126,6 +126,20 @@ bool CCmdLine::IsOption(LPCTSTR Option, bool bUsePrefix) const
     return false;
 }
 
+bool CCmdLine::RemoveOption(LPCTSTR option) {
+    CString temp = CString(_T("/")) + option;
+    bool res = false;
+    for (auto it = params_.begin(); it != params_.end();) {
+        if (lstrcmpi(*it, temp) == 0) {
+            it = params_.erase(it);
+            res = true;
+        } else {
+            ++it;
+        }
+    }
+    return res;
+}
+
 size_t CCmdLine::GetCount() const
 {
     return params_.size();

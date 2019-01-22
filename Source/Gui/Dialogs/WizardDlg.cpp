@@ -401,7 +401,9 @@ bool CWizardDlg::ParseCmdLine()
             
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Profile \"%s\" not found."),TR("Error"),MB_ICONWARNING);
+                msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), serverProfileName);
+                MessageBox(msg, APPNAME, MB_ICONWARNING); 
+                CmdLine.RemoveOption(_T("quick"));
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
                 CUploadEngineData *ued = sp.uploadEngineData();
@@ -460,7 +462,7 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     if(floatWnd.m_hWnd)
     { 
         ShowWindow(SW_HIDE);
-        if(Pages[2] && CurPage == 4)
+        if(Pages[2] && CurPage == wpUploadPage)
             ((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
         ShowPage(wpWelcomePage); 
     }
@@ -2073,7 +2075,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             screenshotIndex++;
             if ( CopyToClipboard )
             {
-                CDC dc = GetDC();
+                CWindowDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {

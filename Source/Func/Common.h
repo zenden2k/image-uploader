@@ -67,7 +67,6 @@ extern CCmdLine CmdLine;
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 
 const CString IU_GetVersion();
-void DeleteDir2(LPCTSTR Dir);
 bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
 

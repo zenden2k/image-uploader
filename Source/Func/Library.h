@@ -24,7 +24,6 @@ limitations under the License.
 #pragma once 
 
 #include <windows.h>
-#include <mutex>
 
 class Library {
 public:

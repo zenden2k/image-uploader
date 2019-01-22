@@ -97,8 +97,8 @@ public:
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
     enum { IDM_OPENSCREENSHOTS_FOLDER = 9889 };
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual BOOL OnIdle();
+    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
+    virtual BOOL OnIdle() override;
     CString m_bCurrentFunc;
     BEGIN_UPDATE_UI_MAP(CWizardDlg)
     END_UPDATE_UI_MAP()
@@ -238,27 +238,27 @@ public:
     //CSpecialHyperLink m_UpdateLink;
     HACCEL hLocalHotkeys;
     //    IUnknown methods
-         STDMETHODIMP_(ULONG) AddRef();
+    STDMETHODIMP_(ULONG) AddRef() override;
 
-         STDMETHODIMP_(ULONG) Release();
-         STDMETHODIMP QueryInterface( REFIID riid, void** ppv );
+    STDMETHODIMP_(ULONG) Release() override;
+    STDMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
     //    IDropTarget methods
-         STDMETHODIMP DragEnter( 
+    STDMETHODIMP DragEnter( 
               /* [unique][in] */ IDataObject *pDataObj,
               /* [in] */ DWORD grfKeyState,
               /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect);
-         STDMETHODIMP DragOver( 
+              /* [out][in] */ DWORD *pdwEffect) override;
+    STDMETHODIMP DragOver( 
               /* [in] */ DWORD grfKeyState,
               /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect);
+              /* [out][in] */ DWORD *pdwEffect) override;
 
-         STDMETHODIMP DragLeave( void);
-         STDMETHODIMP Drop( 
+    STDMETHODIMP DragLeave(void) override;
+    STDMETHODIMP Drop( 
               /* [unique][in] */ IDataObject *pDataObj,
               /* [in] */ DWORD grfKeyState,
               /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect);
+              /* [out][in] */ DWORD *pdwEffect) override;
 
     void AddFolder(LPCTSTR szFolder, bool SubDirs = false);
     

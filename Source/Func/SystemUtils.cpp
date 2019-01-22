@@ -5,6 +5,7 @@
 #include <strsafe.h>
 
 #include "IuCommonFunctions.h"
+#include "Core/Images/Utils.h"
 
 namespace SystemUtils {
 
@@ -49,8 +50,13 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipb
 }
 
 bool CopyImageToClipboard(LPCTSTR fileName) {
-    Gdiplus::Bitmap bitmap(fileName);
-    return CopyImageToClipboard(&bitmap);
+    std::unique_ptr<Bitmap> src(ImageUtils::LoadImageFromFileExtended(fileName));
+    if (!src || src->GetLastStatus() != Ok) {
+        LOG(ERROR) << "Unable to load image:" << std::endl << fileName;
+        return false;
+    }
+
+    return CopyImageToClipboard(src.get());
 }
 
 bool CopyImageToClipboard(Gdiplus::Bitmap* image) {

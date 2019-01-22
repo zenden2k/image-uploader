@@ -96,7 +96,13 @@ DWORD CFolderAdd::Run()
         if (dlg.NeedStop()) break;
     }
 
+    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+        m_pWizardDlg->SetActiveWindow();
+    });
+    
+    
     dlg.Hide();
+
     EnableWindow(m_pWizardDlg->m_hWnd, true);
 
     if (!count)
@@ -112,7 +118,9 @@ DWORD CFolderAdd::Run()
             ((CMainDlg*)m_pWizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
         }
     }
+    
     dlg.DestroyWindow();
     dlg.m_hWnd = NULL;
+
     return 0;
 }

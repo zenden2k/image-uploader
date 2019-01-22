@@ -26,7 +26,6 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "resource.h"       // main symbols
 #include "3rdpart/thread.h"
-#include "Func/common.h"
 #include <atlcrack.h>
 #include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"

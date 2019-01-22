@@ -164,7 +164,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
             return false;
         }
     } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
-        CDC dc = GetDC();
+        CWindowDC dc(m_hWnd);
         ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {

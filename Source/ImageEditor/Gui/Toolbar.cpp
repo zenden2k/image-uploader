@@ -159,7 +159,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     }
     //lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
     //::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
-    CDC hdc = GetDC();
+    CWindowDC hdc(m_hWnd);
     dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     backBufferDc_.CreateCompatibleDC(hdc);

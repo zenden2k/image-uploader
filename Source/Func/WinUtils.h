@@ -83,7 +83,6 @@ namespace WinUtils {
     CString StringSection(const CString& str,TCHAR sep, int index);
     bool IsWindows64Bit();
 
-    void DeleteDir2(LPCTSTR Dir);
     CString GetAppFolder();
     float GetMonitorScaleFactor();
     CString GetLastErrorAsString();

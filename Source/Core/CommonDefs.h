@@ -11,7 +11,7 @@
 #define U2Q(str) QString::fromUtf8(str.c_str())
 #define _(str) str
 
-// CString <-> std::string(utf - 8) conversion macroses
+// CString <-> std::string(utf-8) conversion macroses
 #define W2U(str) IuCoreUtils::WstringToUtf8(((LPCTSTR)(str)))
 #define U2W(str) CString(IuCoreUtils::Utf8ToWstring(str).c_str())
 

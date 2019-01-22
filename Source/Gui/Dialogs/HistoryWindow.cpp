@@ -320,7 +320,7 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     }
     else if(IuCoreUtils::DirectoryExists(directory))
     {
-        ShellExecute(NULL, _T("open"), Utf8ToWCstring(directory), NULL, NULL, SW_SHOWNORMAL);
+        WinUtils::ShellOpenFileOrUrl(U2W(directory), m_hWnd);
     }
     return 0;
 }
@@ -330,7 +330,7 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
-    ShellExecute(0, _T("open"), U2W(historyItem->editUrl), NULL, NULL, SW_SHOWNORMAL);
+    WinUtils::ShellOpenFileOrUrl(U2W(historyItem->editUrl), m_hWnd);
     return 0;
 }
 
@@ -439,7 +439,7 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
             SetDlgItemText(IDC_UPLOADTRAFFICLABEL, L"0");
             LoadMonthList();
             SelectedMonthChanged();
-            MessageBox(TR("History has been cleared succesfully."), APPNAME, MB_ICONINFORMATION);
+            MessageBox(TR("History has been cleared successfully."), APPNAME, MB_ICONINFORMATION);
         }
     }
     return 0;

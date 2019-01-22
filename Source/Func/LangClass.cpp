@@ -29,17 +29,15 @@
 
 CLang Lang;
 
+namespace {
 // TODO: rewrite this shit
 // check it's compatibility with 64 bit platforms
 BYTE hex_digit(TCHAR f)
 {
     BYTE p;
-    if (f >= _T('0') && f <= _T('9'))
-    {
+    if (f >= _T('0') && f <= _T('9')) {
         p = static_cast<BYTE>(f - _T('0'));
-    }
-    else
-    {
+    } else {
         p = static_cast<BYTE>(f - _T('a') + 10);
     }
     return p;
@@ -53,9 +51,8 @@ int hexstr2int(LPTSTR hex)
     BYTE b[4];
     if (len > 8)
         return 0;
-    for (int i = 0; i < len; i += 2)
-    {
-        ATLASSERT(i / 2 <= 3);
+    for (int i = 0; i < len; i += 2) {
+        //ATLASSERT(i / 2 <= 3);
         b[i / 2] = hex_digit(hex[i]) * 16 + hex_digit(hex[i + 1]);
         step *= 16;
     }
@@ -65,12 +62,13 @@ int hexstr2int(LPTSTR hex)
 int myhash(PBYTE key, int len)
 {
     int hash = 222;
-    for (int i = 0; i < len; ++i)
-    {
+    for (int i = 0; i < len; ++i) {
         hash = (hash ^ key[i]) + ((hash << 26) + (hash >> 6));
     }
 
     return hash;
+}
+
 }
 
 CLang::CLang()
@@ -162,7 +160,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     return true;
 }
 
-LPCTSTR CLang::GetString(LPCTSTR Name) {
+LPCTSTR CLang::GetString(LPCTSTR Name) const {
     int hash = myhash((PBYTE)Name, lstrlen(Name) * sizeof(TCHAR));
     auto it = StringList.find(hash);
     if (it != StringList.end()) {
@@ -173,7 +171,7 @@ LPCTSTR CLang::GetString(LPCTSTR Name) {
     return Name;
 }
 
-CString CLang::GetLanguageName()
+CString CLang::GetLanguageName() const
 {
     return m_sLang;
 }

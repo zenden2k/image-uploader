@@ -74,7 +74,7 @@ LRESULT CFloatingWindow::OnClose(void)
     return 0;
 }
 
-bool MyInsertMenu(HMENU hMenu, int pos, UINT id, const LPCTSTR szTitle,  HBITMAP bm = NULL)
+bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle,  HBITMAP bm = NULL)
 {
     MENUITEMINFO MenuItem;
 

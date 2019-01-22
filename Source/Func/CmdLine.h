@@ -39,6 +39,7 @@ class CCmdLine
         CString ModuleName() const;
         bool GetNextFile(CString& FileName, size_t& nIndex) const;
         bool IsOption(LPCTSTR Option, bool bUsePrefix = true) const;
+        bool RemoveOption(LPCTSTR option);
         size_t GetCount() const;
         std::vector<CString>::const_iterator begin() const;
         std::vector<CString>::const_iterator end() const;

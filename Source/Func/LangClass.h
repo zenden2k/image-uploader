@@ -32,10 +32,10 @@ class CLang : public ITranslator
     public:
         CLang();
         ~CLang();
-        LPCTSTR GetString(LPCTSTR Name);
+        LPCTSTR GetString(LPCTSTR Name) const;
         bool SetDirectory(LPCTSTR Directory);
         bool LoadLanguage(LPCTSTR Lang);
-        CString GetLanguageName();
+        CString GetLanguageName() const;
         CString getLanguage() const;
         CString getLocale() const;
         CString getLanguageFileNameForLocale(const CString& locale);

@@ -67,7 +67,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     uploadListView_.AddColumn(TR("File"), 1);
     uploadListView_.AddColumn(TR("Status"), 1);
     uploadListView_.AddColumn(TR("Thumbnail"), 2);
-    CDC hdc = GetDC();
+    CWindowDC hdc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     uploadListView_.SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));

@@ -323,7 +323,7 @@ int CVideoGrabberPage::ThreadTerminated()
     RECT grabInfoLabelRect;
     HWND grabInfoLabelHwnd = GetDlgItem(IDC_GRABINFOLABEL);
     ::GetClientRect(grabInfoLabelHwnd, &grabInfoLabelRect);
-    ::SetWindowPos(grabInfoLabelHwnd, NULL, 0,0,left,grabInfoLabelRect.bottom, SWP_NOMOVE);
+    ::SetWindowPos(grabInfoLabelHwnd, NULL, 0,0,left,grabInfoLabelRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
     if ( !originalGrabInfoLabelWidth_ ) {
         originalGrabInfoLabelWidth_ = grabInfoLabelRect.right;
     }

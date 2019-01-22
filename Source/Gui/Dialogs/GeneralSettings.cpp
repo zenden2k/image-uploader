@@ -83,7 +83,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TCHAR buf[MAX_PATH];
     CString buf2;
 
-    SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)_T("English"));
+    langListCombo_.AddString(_T("English"));
 
     while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
     {
@@ -92,7 +92,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         if (buf2 == _T("English")) {
             continue;
         }
-        SendDlgItemMessage(IDC_LANGLIST,CB_ADDSTRING,0,(WPARAM)(LPCTSTR)buf2);
+        langListCombo_.AddString(buf2);
     }
 
     int Index = SendDlgItemMessage(IDC_LANGLIST,CB_FINDSTRING, 0, (WPARAM)(LPCTSTR)Settings.Language);

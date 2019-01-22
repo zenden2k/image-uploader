@@ -28,7 +28,6 @@
 #include "Core/CommonDefs.h"
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
-#include "Core/CoreFunctions.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 
 // CShortenUrlDlg

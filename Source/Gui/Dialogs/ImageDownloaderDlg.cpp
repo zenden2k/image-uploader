@@ -176,18 +176,6 @@ void CImageDownloaderDlg::OnDrawClipboard()
     if (PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
-CString GetExtensionByMime(CString mime)
-{
-    TCHAR szImgTypes[3][4]={_T("jpg"),_T("png"),_T("gif")};
-    TCHAR szMimeTypes[3][12]={_T("jpeg"),_T("png"),_T("gif")};
-    for(int i=0;i<3;i++)
-    {
-        if(mime.Find(szMimeTypes[i])>=0)
-            return szImgTypes[i];
-    }
-    return _T(".dat");
-}
-
 bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
 {
     if(ok)
@@ -202,13 +190,13 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
         bool add = true;
         if(!IuCommonFunctions::IsImage(ais.RealFileName))
         {
-            CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8(ais.RealFileName)));
-            if(mimeType.Find(_T("image/"))>=0)
+            std::string mimeType = IuCoreUtils::GetFileMimeType(W2U(ais.RealFileName));
+            if (mimeType.find("image/") != std::string::npos)
             {
-                CString ext = GetExtensionByMime(mimeType);
+                CString ext = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(mimeType));
                 if(!ext.IsEmpty())
                 {
-                    CString newFileName = ais.RealFileName + _T(".")+ext;
+                    CString newFileName = ais.RealFileName + _T(".") + ext;
                     MoveFile(ais.RealFileName, newFileName);
                      ais.RealFileName = newFileName;
                     ais.VirtualFileName+=_T(".")+ext;
@@ -218,8 +206,9 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
             {
                 add = false;
                 CString errorStr;
-                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."),(LPCTSTR)(Utf8ToWstring(it.url).c_str()),
-                    static_cast<LPCTSTR>(mimeType));
+                CString url = U2W(it.url);
+                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."), static_cast<LPCTSTR>(url),
+                    static_cast<LPCTSTR>(U2W(mimeType)));
                 ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
             }
         }

@@ -20,8 +20,6 @@
 
 #include "ContextMenuItemDlg.h"
 
-#include "wizarddlg.h"
-#include "Func/Common.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
