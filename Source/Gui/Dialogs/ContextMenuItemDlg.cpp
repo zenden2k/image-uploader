@@ -46,7 +46,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Choose server"));
     imageServerSelector_->ShowWindow( SW_SHOW );
-    imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    imageServerSelector_->SetWindowPos( nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , SWP_NOZORDER);
     imageServerSelector_->setServerProfile(Settings.imageServer);
 
     SetWindowText(TR("Add Menu Item"));

@@ -167,6 +167,13 @@ public:
     virtual WindowHandle getHandle() override;
     virtual WindowNativeHandle getNativeHandle() override;
     virtual void ShowUpdateMessage(const CString& msg) override;
+
+    template<class T> T* getPage(WizardPageId id) {
+        if (id < 0 || id >= ARRAY_SIZE(Pages)) {
+            return nullptr;
+        }
+        return dynamic_cast<T*>(Pages[id]);
+    }
 protected:
     ServerProfile sessionImageServer_, sessionFileServer_;
     bool serversChanged_;
@@ -177,7 +184,7 @@ public:
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
     LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    HBITMAP GenHeadBitmap(int PageID);
+    HBITMAP GenHeadBitmap(WizardPageId PageID);
     void PasteBitmap(HBITMAP);
     int m_StartingThreadId;
     LRESULT OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

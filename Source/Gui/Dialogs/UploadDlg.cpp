@@ -88,7 +88,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
         CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
 
-        if (vg && lstrlen(vg->m_szFileName))
+        if (vg && !vg->m_szFileName.IsEmpty())
             IsLastVideo = true;
     }
 
@@ -197,9 +197,9 @@ bool CUploadDlg::OnShow()
     bool IsLastVideo=false;
 
     if ( MediaInfoHelper::IsMediaInfoAvailable()) {
-        CVideoGrabberPage *vg = (CVideoGrabberPage *) WizardDlg->Pages[1];
-
-        if(vg && lstrlen(vg->m_szFileName))
+        CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
+        
+        if(vg && !vg->m_szFileName.IsEmpty())
             IsLastVideo=true;
     }
     resultsWindow_->InitUpload();

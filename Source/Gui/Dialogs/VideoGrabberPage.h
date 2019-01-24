@@ -107,7 +107,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		CHyperLink openInFolderLink_;
 		std::unique_ptr<VideoGrabber> videoGrabber_ ;
 
-		TCHAR szBufferFileName[256];
 //		CImgSavingThread SavingThread;
 		CString ErrorStr;
 		CString snapshotsFolder;
@@ -117,7 +116,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		int NumOfFrames;
 		int TimerInc;
 		bool SetFileName(LPCTSTR FileName);
-		TCHAR m_szFileName[MAX_PATH];
+		CString m_szFileName;
 		bool CanceledByUser;
 		CMainDlg* MainDlg;
         CEdit fileEdit_;

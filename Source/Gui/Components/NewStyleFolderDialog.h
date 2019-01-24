@@ -50,7 +50,7 @@ public:
                 
                 HRESULT hresult = ParseDisplayName_(initialFolder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
                 if (SUCCEEDED(hresult)) {
-                    newStyleDialog_->m_spFileDlg->SetDefaultFolder(psi);
+                    newStyleDialog_->GetPtr()->SetDefaultFolder(psi);
                     psi->Release();
                 }
             }
@@ -73,7 +73,7 @@ public:
                 IShellItem *psi;
                 HRESULT hresult = ParseDisplayName_(folder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
                 if (SUCCEEDED(hresult)) {
-                    newStyleDialog_->m_spFileDlg->SetFolder(psi);
+                    newStyleDialog_->GetPtr()->SetFolder(psi);
                     psi->Release();
                 }
             }
@@ -86,6 +86,29 @@ public:
         } else {
             return newStyleDialog_->DoModal(hWndParent);
         }
+    }
+
+    bool AddCheckbox(DWORD controlId, CString title, bool isChecked) {
+        CComPtr<IFileDialogCustomize> pfdc;
+        HRESULT hr = newStyleDialog_->GetPtr()->QueryInterface(IID_PPV_ARGS(&pfdc));
+        if (SUCCEEDED(hr)) {
+            hr = pfdc->AddCheckButton(controlId, title, isChecked ? TRUE : FALSE);
+            return SUCCEEDED(hr);
+        }
+        return false;
+    }
+
+    bool IsCheckboxChecked(DWORD controlId){
+        CComPtr<IFileDialogCustomize> pfdc;
+        HRESULT hr = newStyleDialog_->GetPtr()->QueryInterface(IID_PPV_ARGS(&pfdc));
+        if (SUCCEEDED(hr)) {
+            BOOL isChecked = FALSE;
+            hr = pfdc->GetCheckButtonState(controlId, &isChecked);
+            if (SUCCEEDED(hr)) {
+                return isChecked == TRUE;
+            }
+        }
+        return false;
     }
 
     CString GetFolderPath()
@@ -102,7 +125,7 @@ public:
 
     void SetOkButtonLabel(const CString& label) {
         if (newStyleDialog_) {
-            newStyleDialog_->m_spFileDlg->SetOkButtonLabel(label);
+            newStyleDialog_->GetPtr()->SetOkButtonLabel(label);
         }
     }
 protected:

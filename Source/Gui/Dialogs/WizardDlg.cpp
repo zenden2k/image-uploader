@@ -63,6 +63,7 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/ScreenCapture/Utils.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Gui/Components/NewStyleFolderDialog.h"
 
 using namespace Gdiplus;
 namespace
@@ -93,15 +94,16 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     updateDlg = 0;
     Settings.setEngineList(&m_EngineList);
     m_bScreenshotFromTray = false;
-    ServiceLocator::instance()->setEngineList(&m_EngineList);
-    ServiceLocator::instance()->setMyEngineList(&m_EngineList);
-    ServiceLocator::instance()->setTaskDispatcher(this);
+    auto serviceLocator = ServiceLocator::instance();
+    serviceLocator->setEngineList(&m_EngineList);
+    serviceLocator->setMyEngineList(&m_EngineList);
+    serviceLocator->setTaskDispatcher(this);
     serversChanged_ = false;
     scriptsManager_ = new ScriptsManager();
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler);
     uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, std::make_shared<NetworkClientFactory>());
-    ServiceLocator::instance()->setUploadManager(uploadManager_);
+    serviceLocator->setUploadManager(uploadManager_);
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
@@ -135,7 +137,7 @@ bool CWizardDlg::pasteFromClipboard() {
         CString outFileName;
         if (ImageUtils::SaveImageFromCliboardDataUriFormat(text, outFileName)) {
             CreatePage(wpMainPage);
-            CMainDlg* MainDlg = dynamic_cast<CMainDlg*>(Pages[wpMainPage]);
+            CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             if (MainDlg) {
                 MainDlg->AddToFileList(outFileName, L"", true, nullptr, true);
                 MainDlg->ThumbsView.LoadThumbnails();
@@ -155,10 +157,9 @@ CWizardDlg::~CWizardDlg()
 {
     //Detach();
     delete updateDlg;
-    for(int i=0; i<5; i++) 
-    {
-        CWizardPage *p = Pages[i];
-        if(Pages[i]) delete p;
+
+    for (auto page: Pages) {
+        delete page;
     }
     delete uploadManager_;
     delete uploadEngineManager_;
@@ -435,8 +436,8 @@ bool CWizardDlg::ParseCmdLine()
 	{
 		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
 		{
-			ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])?2:3);
-			CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
+			ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
+            CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
 			dlg->SetFileName(FileName);			
 			return true;
 		}	
@@ -462,8 +463,9 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     if(floatWnd.m_hWnd)
     { 
         ShowWindow(SW_HIDE);
-        if(Pages[2] && CurPage == wpUploadPage)
-            ((CMainDlg*)Pages[2])->ThumbsView.MyDeleteAllItems();
+        if (Pages[wpMainPage] && CurPage == wpUploadPage) {
+            getPage<CMainDlg>(wpMainPage)->ThumbsView.MyDeleteAllItems();
+        }
         ShowPage(wpWelcomePage); 
     }
     else
@@ -490,7 +492,7 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
         {
             if( !lstrcmpi(Buffer,_T("Button"))){
                 ::SendMessage(pMsg->hwnd, BM_CLICK, 0 ,0); return TRUE;}
-            else if (Pages[0] && pMsg->hwnd==::GetDlgItem(Pages[0]->PageWnd,IDC_LISTBOX))
+            else if (Pages[wpWelcomePage] && pMsg->hwnd==::GetDlgItem(Pages[wpWelcomePage]->PageWnd,IDC_LISTBOX))
                 return FALSE;
         }
         
@@ -713,7 +715,7 @@ WindowNativeHandle CWizardDlg::getNativeHandle() {
 }
 
 void CWizardDlg::ShowUpdateMessage(const CString& msg) {
-    if ((CurPage == 2 || CurPage == 0) && !IsWindowVisible() && IsWindowEnabled() && floatWnd.m_hWnd) {
+    if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && floatWnd.m_hWnd) {
         CString title;
         title.Format(TR("%s - Updates available"), static_cast<LPCTSTR>(APPNAME));
         floatWnd.ShowBaloonTip(msg, title, 8000, [&] {
@@ -726,9 +728,11 @@ void CWizardDlg::ShowUpdateMessage(const CString& msg) {
 }
 
 // Функция генерации заголовка страницы (если он нужен)
-HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
+HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID)
 {
-    if(PageID!=3 && PageID!=4) return 0;
+    if (PageID != wpUploadSettingsPage && PageID != wpUploadPage) {
+        return nullptr;
+    }
     RECT rc;
     GetClientRect(&rc);
     int width=rc.right-rc.left;
@@ -767,7 +771,6 @@ HBITMAP CWizardDlg::GenHeadBitmap(int PageID)
 
 LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    // TODO: Add your control notification handler code here
     CAboutDlg dlg;
     dlg.DoModal();
     return 0;
@@ -789,7 +792,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
     int n = DragQueryFile(hDrop,    0xFFFFFFFF, 0, 0);
 
-    CMainDlg* MainDlg = NULL;
+    CMainDlg* MainDlg = nullptr;
     CStringList Paths;
     
     for (int i=0; i<n; i++)
@@ -803,13 +806,13 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
                 if(Settings.DropVideoFilesToTheList || MessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"),APPNAME,MB_YESNO)==IDNO)
                     goto filehost;
             }
-            ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])?2:3);
-            CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
+            ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
+            CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
             dlg->SetFileName(szBuffer);
             
             break;
         }
-        else if(CurPage == 0 || CurPage == 2)
+        else if(CurPage == wpWelcomePage || CurPage == wpMainPage)
         {
             filehost:
             if(WinUtils::FileExists(szBuffer) || WinUtils::IsDirectory(szBuffer))
@@ -822,7 +825,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         CreatePage(wpMainPage);
         FolderAdd.Do(Paths, false, true);
         ShowPage(wpMainPage);
-        MainDlg = dynamic_cast<CMainDlg*>(Pages[wpMainPage]);
+        MainDlg = getPage<CMainDlg>(wpMainPage);
         if (MainDlg) {
             MainDlg->ThumbsView.LoadThumbnails();
         }
@@ -883,8 +886,9 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
         AcceptFile = false;
     }
 
-    if(CurPage != 0 && CurPage!=2 && CurPage!=1) 
+    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != wpVideoGrabberPage) {
         AcceptFile = false;
+    }
 
     if(!AcceptFile) 
     {
@@ -1131,8 +1135,8 @@ LRESULT CWizardDlg::OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 LRESULT CWizardDlg::OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-        LogWindow.Show();
-        return 0;
+    LogWindow.Show();
+    return 0;
 }
 
 LRESULT CWizardDlg::OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -1147,7 +1151,7 @@ LRESULT CWizardDlg::OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
-    if (CurPage != 0 && CurPage != 2 && CurPage != -1) return;
+    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != -1) return;
    
     CString buf2;
     SIZE dim;
@@ -1158,7 +1162,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
         ImageUtils::MySaveImage(&bm,_T("clipboard"),buf2,1,100);
 
         CreatePage(wpMainPage);
-        CMainDlg* MainDlg = (CMainDlg*) Pages[2];
+        CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
         MainDlg->AddToFileList( buf2, L"", true, nullptr, true);
         MainDlg->ThumbsView.LoadThumbnails();
         ShowPage(wpMainPage);
@@ -1180,8 +1184,10 @@ void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileName, bool Show)
 {
     CreatePage(wpMainPage);
-    CMainDlg* MainDlg = (CMainDlg*) Pages[2];
-    if(!MainDlg) return false;
+    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    if (!MainDlg) {
+        return false;
+    }
     MainDlg->AddToFileList(FileName, VirtualFileName);
     if(Show){
         MainDlg->ThumbsView.LoadThumbnails();
@@ -1208,7 +1214,8 @@ CMyFolderDialog::CMyFolderDialog(HWND hWnd):
 void CMyFolderDialog::OnInitialized()
 {
     HWND wnd = CreateWindowEx(0, _T("button"), TR("Including subdirectories"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,30, 200,24, m_hWnd, 0,0, 0);
-    SendMessage(wnd, WM_SETFONT, (WPARAM)SendMessage(m_hWnd, WM_GETFONT, 0,0),  MAKELPARAM(false, 0));
+    HFONT font = reinterpret_cast<HFONT>(SendMessage(m_hWnd, WM_GETFONT, 0, 0));
+    SendMessage(wnd, WM_SETFONT, (WPARAM)font,  MAKELPARAM(false, 0));
     SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED    :BST_UNCHECKED),0);
     SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
     OldProc  = reinterpret_cast<DLGPROC>(SetWindowLongPtr(m_hWnd, DWLP_DLGPROC, reinterpret_cast<LONG_PTR>(DialogProc)));    
@@ -1399,6 +1406,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
 
         CreatePage(wpMainPage);
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
         do
         {
             FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
@@ -1410,8 +1418,9 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
 
             lstrcat(Buffer, FileName);
-            if (((CMainDlg*)Pages[2])->AddToFileList(Buffer))
-            nCount++;
+            if (mainDlg->AddToFileList(Buffer)) {
+                nCount++;
+            }
         
         } while (true);
 
@@ -1422,10 +1431,12 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     
     if (nCount) {
         ShowPage(wpMainPage, 0, 3);
-        ((CMainDlg*)Pages[2])->UpdateStatusLabel();
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        mainDlg->UpdateStatusLabel();
 
-        if (CurPage == 2)
-        ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
+        if (CurPage == wpMainPage) {
+            mainDlg->ThumbsView.LoadThumbnails();
+        }
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     }
@@ -1505,7 +1516,7 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
     CreatePage(wpVideoGrabberPage);
     LastVideoFile = fileName;
-    ((CVideoGrabberPage*)Pages[1])->SetFileName(fileName); // C-style conversion .. 
+    getPage<CVideoGrabberPage>(wpVideoGrabberPage)->SetFileName(fileName);
     ShowPage(wpVideoGrabberPage, prevPage, (Pages[2]) ? 2 : 3);
     return true;
 }
@@ -1563,10 +1574,11 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 
     if(Result )
     {
-        if((CMainDlg*)Pages[2])
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        if (mainDlg)
         {
-            ((CMainDlg*)Pages[2])->ThumbsView.SetFocus();
-            ((CMainDlg*)Pages[2])->ThumbsView.SelectLastItem();
+            mainDlg->ThumbsView.SetFocus();
+            mainDlg->ThumbsView.SelectLastItem();
         }
     }
     else if (m_bHandleCmdLineFunc)
@@ -1583,10 +1595,14 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
     if(FileName && lstrlen(FileName))
     {
         CreatePage(wpMainPage);
-        ((CMainDlg*)Pages[2])->AddToFileList(FileName);
-        if(CurPage == 2)
-        ((CMainDlg*)Pages[2])->ThumbsView.LoadThumbnails();
-        ShowPage(wpMainPage,0,3);
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        if (mainDlg) {
+            mainDlg->AddToFileList(FileName);
+            if (CurPage == wpMainPage) {
+                mainDlg->ThumbsView.LoadThumbnails();
+            }
+            ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
+        }
     }
 }
 
@@ -1604,18 +1620,28 @@ bool CWizardDlg::funcWindowScreenshot(bool Delay)
 
 bool CWizardDlg::funcAddFolder()
 {
-    CMyFolderDialog fd(m_hWnd);
-    fd.m_bSubdirs = Settings.ParseSubDirs;
-    if(fd.DoModal(m_hWnd) == IDOK)
-    {
-        Settings.ParseSubDirs = fd.m_bSubdirs;
-        ShowWindow(SW_SHOW);
-        m_bShowWindow = true;
-        AddFolder(fd.GetFolderPath(),fd.m_bSubdirs);
-        
-        return true;
+    if (WinUtils::IsVistaOrLater()) {
+        const DWORD kCheckboxId = 2000;
+        CNewStyleFolderDialog dlg(m_hWnd, CString(), TR("Choose folder"), true);
+        dlg.AddCheckbox(kCheckboxId, TR("Including subdirectories"), Settings.ParseSubDirs);
+        if (dlg.DoModal(m_hWnd) == IDOK) {
+            Settings.ParseSubDirs = dlg.IsCheckboxChecked(kCheckboxId);
+            m_bShowWindow = true;
+            AddFolder(dlg.GetFolderPath(), Settings.ParseSubDirs);
+        }   
+        return false;
+    } else {
+        CMyFolderDialog fd(m_hWnd);
+        fd.m_bSubdirs = Settings.ParseSubDirs;
+        if (fd.DoModal(m_hWnd) == IDOK) {
+            Settings.ParseSubDirs = fd.m_bSubdirs;
+            ShowWindow(SW_SHOW);
+            m_bShowWindow = true;
+            AddFolder(fd.GetFolderPath(), fd.m_bSubdirs);
+
+            return true;
+        } else return false;
     }
-    else return false;
 }
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -1712,8 +1738,9 @@ bool CWizardDlg::RegisterLocalHotkeys()
     ACCEL *Accels;
     m_hotkeys = Settings.Hotkeys;
     int n=m_hotkeys.size();
-    Accels = new ACCEL [n];
-    int j =0;
+    Accels = new ACCEL [n+1];
+    Accels[0] = { FVIRTKEY, VK_F1, IDC_DOCUMENTATION };
+    int j = 1;
     for(int i =0; i<n; i++)
     {
         if(!m_hotkeys[i].localKey.keyCode) continue;
@@ -1747,13 +1774,6 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
     hLocalHotkeys = 0;
     return true;
 }
-
-/*bool CWizardDlg::funcPaste()
-{
-    BOOL b;
-    OnPaste(0,0,0,b);
-    return true;
-}*/
 
 bool CWizardDlg::funcSettings()
 {
@@ -1822,7 +1842,7 @@ bool CWizardDlg::funcAddFiles()
 
     if (!files.empty()) {
         CreatePage(wpMainPage);
-        CMainDlg* mainDlg = (CMainDlg*)Pages[2];
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
         int nCount = 0;
         for (const auto& fileName : files) {
             if (mainDlg->AddToFileList(fileName)) {
@@ -1832,53 +1852,16 @@ bool CWizardDlg::funcAddFiles()
 
         Settings.ImagesFolder = fileDialog->getFolderPath();
         if (nCount) {
-            ShowPage(wpMainPage, 0, 3);
+            ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
         }
         mainDlg->UpdateStatusLabel();
 
-        if (CurPage == 2) {
+        if (CurPage == wpMainPage) {
             mainDlg->ThumbsView.LoadThumbnails();
         }
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     }
-    /*TCHAR Buf[MAX_PATH*4];
-    GuiTools::SelectDialogFilter(Buf, sizeof(Buf)/sizeof(TCHAR),1, TR("Any file"), _T("*.*"));
-
-    int nCount=0;
-    CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
-    
-    TCHAR Buffer[1000];
-    fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
-
-    if(fd.DoModal(m_hWnd) != IDOK) return 0;
-    LPCTSTR FileName = 0;
-    fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-    CreatePage(2);
-    do
-    {
-        
-        FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
-        if(!FileName) break;
-        fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-        if(Buffer[lstrlen(Buffer)-1] != '\\')
-        lstrcat(Buffer, _T("\\"));
-        
-        if(FileName)
-        {
-            lstrcat(Buffer, FileName);
-            if(((CMainDlg*)Pages[2])->AddToFileList(Buffer))
-                nCount++;
-        
-        }
-    } while (FileName);
-     
-    
-    fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-    Settings.ImagesFolder = Buffer;
-    */
     
     return true;
 }
@@ -1894,7 +1877,7 @@ LRESULT CWizardDlg::OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 bool CWizardDlg::CanShowWindow()
 {
-    return (CurPage == 2 || CurPage == 0) && IsWindowVisible() && IsWindowEnabled();
+    return (CurPage == wpMainPage || CurPage == wpWelcomePage) && IsWindowVisible() && IsWindowEnabled();
 }
 
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
@@ -2087,12 +2070,12 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             if(!m_bScreenshotFromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
             {
                 CreatePage(wpMainPage);
-                CMainDlg* mainDlg = (CMainDlg*)Pages[2];
+                CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
                 mainDlg->AddToFileList(buf);
-                mainDlg->ThumbsView.EnsureVisible(((CMainDlg*)Pages[2])->ThumbsView.GetItemCount() - 1, true);
+                mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
                 mainDlg->ThumbsView.LoadThumbnails();
                 mainDlg->ThumbsView.SetFocus();
-                ShowPage(wpMainPage,0,3);
+                ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
             }
             else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
             {
@@ -2186,7 +2169,7 @@ bool CWizardDlg::funcFromClipboard(bool fromCmdLine) {
         if (fromCmdLine && CmdLine.IsOption(_T("quick"))) {
             ShowPage(wpUploadPage, wpMainPage);
         } else {
-            ShowPage(wpMainPage, 0, 3);
+            ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
         }
         m_bShowWindow = true;
         return true;
@@ -2203,7 +2186,7 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
     popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
-    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation"));
+    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")));
     popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
