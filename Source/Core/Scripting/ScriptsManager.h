@@ -11,7 +11,7 @@
 class ScriptsManager {
 public:
     enum ScriptType {TypeUploadFilterScript};
-    ScriptsManager();
+    explicit ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory);
     ~ScriptsManager();
     Script* getScript(std::string &fileName, ScriptType type);
     void unloadScripts();
@@ -24,6 +24,7 @@ protected:
     typedef std::string ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 private:
     DISALLOW_COPY_AND_ASSIGN(ScriptsManager);
 };

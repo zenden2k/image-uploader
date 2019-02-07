@@ -19,14 +19,18 @@ class ServerProfile;
 class UploadEngineManager
 {
 public:
-    UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler);
+    UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> factory);
     ~UploadEngineManager();
 
     /**
     Load and create upload engine. Object is owned by UploadEngineManager.
-    CScriptUploadEngine function can be called only in the thread it has been created.
+    CScriptUploadEngine functions can be called only in the thread it has been created.
     **/
     CAbstractUploadEngine* getUploadEngine(ServerProfile &serverProfile);
+
+    /*
+    Same as getUploadEngine(), but result is casted to CScriptUploadEngine
+    */
     CScriptUploadEngine* getScriptUploadEngine(ServerProfile &serverProfile);
     
     /** 
@@ -61,6 +65,7 @@ protected:
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;
     IUploadErrorHandler* uploadErrorHandler_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 
 #endif

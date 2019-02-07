@@ -99,6 +99,7 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
         ht.uploadFileSize = allEntries[i].AttributeInt64("UploadFileSize");
         std::string sortIndex = allEntries[i].Attribute("Index");
         ht.sortIndex = sortIndex.empty() ? i : std::stoi(sortIndex);
+        // Fix invalid file size
         if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
              ht.uploadFileSize  = 0;
         }
@@ -269,8 +270,6 @@ int CHistoryReader::getSessionCount() const
     return d_ptr->m_sessions.size();
 }
 
-// The pointer returned by this function is only valid
-//  during lifetime of CHistoryReader object
 CHistorySession* CHistoryReader::getSession(size_t index)
 {
     return &d_ptr->m_sessions[index];
@@ -280,10 +279,13 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
 {
     if(IuCoreUtils::FileExists(filename))
     {
-        d_ptr->m_xml.LoadFromFile(filename);
+        if (!d_ptr->m_xml.LoadFromFile(filename)) {
+            return false;
+        }
     }
-    else 
+    else {
         return false;
+    }
     SimpleXmlNode root = d_ptr->m_xml.getRoot("History");
     std::vector<SimpleXmlNode> allSessions;
     root.GetChilds("Session", allSessions);

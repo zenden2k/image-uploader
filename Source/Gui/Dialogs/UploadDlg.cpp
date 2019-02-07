@@ -53,7 +53,6 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsW
 
 CUploadDlg::~CUploadDlg()
 {
-    delete resultsWindow_;
 }
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -210,7 +209,7 @@ bool CUploadDlg::OnShow()
     EnableNext(false);
     isEnableNextButtonTimerRunning_ = true;
     SetTimer(kEnableNextButtonTimer, 1000);
-    MainDlg = (CMainDlg*) WizardDlg->Pages[2];
+    MainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
     //Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
     urlList_.clear();
     resultsWindow_->Clear();
@@ -349,16 +348,16 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 void CUploadDlg::createToolbar()
 {
     CBitmap hBitmap;
-    HIMAGELIST m_hToolBarImageList;
+
     if (GuiTools::Is32BPP()) {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP32BIT));
-        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32, 0, 6);
-        ImageList_Add(m_hToolBarImageList, hBitmap, NULL);
+        toolbarImageList_.Create(16, 16, ILC_COLOR32, 0, 6);
+        toolbarImageList_.Add(hBitmap, nullptr);
     }
     else {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP16BIT));
-        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
-        ImageList_AddMasked(m_hToolBarImageList, hBitmap, RGB(255, 0, 255));
+        toolbarImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+        toolbarImageList_.Add(hBitmap, RGB(255, 0, 255));
     }
 
     RECT rc = { 0, 0, 100, 24 };
@@ -371,7 +370,7 @@ void CUploadDlg::createToolbar()
 
     toolbar_.SetButtonStructSize();
     toolbar_.SetButtonSize(30, 18);
-    toolbar_.SetImageList(m_hToolBarImageList);
+    toolbar_.SetImageList(toolbarImageList_);
     toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 5, TR("Upload progress"), 0);
     toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Links"), 0);
     toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Log"), 0);
@@ -382,6 +381,9 @@ void CUploadDlg::createToolbar()
 }
 
 void CUploadDlg::updateTotalProgress() {
+    if (!uploadSession_) {
+        return;
+    }
     int n = uploadSession_->taskCount();
     int totalPercent = 0;
     for (int i = 0; i < n; i++) {

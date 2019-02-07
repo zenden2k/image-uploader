@@ -63,7 +63,7 @@ class CRectRegion : public CScreenshotRegion
     public:
         CRectRegion();
         CRectRegion(int x, int y, int width, int height);
-        CRectRegion(HRGN region);
+        explicit CRectRegion(HRGN region);
         virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
         bool IsEmpty() override;
         ~CRectRegion();
@@ -81,7 +81,7 @@ class CWindowHandlesRegion : public CRectRegion
             bool RemoveBackground;
         };
         CWindowHandlesRegion();
-        CWindowHandlesRegion(HWND wnd);
+        explicit CWindowHandlesRegion(HWND wnd);
         void AddWindow(HWND wnd, bool Include);
         void RemoveWindow(HWND wnd);
         void Clear();

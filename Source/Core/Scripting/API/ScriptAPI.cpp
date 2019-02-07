@@ -43,7 +43,6 @@
 #ifndef _WIN32
 #include <unistd.h>
 #endif
-#include "Core/3rdpart/tinyxml.h"
 
 namespace ScriptAPI {;
 
@@ -76,11 +75,6 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
     // std::wstring text =  Utf8ToWstring(buffer);
     squirrelOutput[v] += buffer;
     delete[] buffer;
-}
-
-// Actually we do not need this since migrating to Sqrat
-void CompilerErrorHandler(HSQUIRRELVM, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
-    LOG(ERROR) << "Script compilation failed\r\n" << "File:  " << source << "\r\nLine:" << line << "   Column:" << column << "\r\n\r\n" << desc;
 }
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {

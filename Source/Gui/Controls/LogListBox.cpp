@@ -20,12 +20,29 @@
 
 #include "LogListBox.h"
 
-#include "Gui/GuiTools.h"
-#include "Core/Logging.h"
 #include <algorithm>
+
+#include "Gui/GuiTools.h"
+#include <Gui/Dialogs/LogWindow.h>
+
+namespace {
 
 const int LLB_VertDivider = 10;
 const int LLB_VertMargin = 5;
+
+CString trim(const CString& Str)
+{
+    CString Result = Str;
+    if (!Result.IsEmpty())
+        for (int i = Result.GetLength() - 1; i >= 0; i--) {
+            if (Result[i] == _T('\n'))
+                Result.Delete(i);
+            else break;
+        }
+    return Result;
+}
+
+}
 
 // CLogListBox
 CLogListBox::CLogListBox()
@@ -151,17 +168,23 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     return 0;
 }
 
-CString trim(const CString& Str)
-{
-    CString Result = Str;
-    if(!Result.IsEmpty())
-        for(int i = Result.GetLength()-1;  i>=0;i--)
-        {
-            if(Result[i]==_T('\n'))
-            Result.Delete(i);
-            else break;
-        }
-    return Result;
+LRESULT CLogListBox::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    
+    bool ctrlPressed = (GetKeyState(VK_CONTROL) & 0x80 ) != 0;
+
+    if (wParam == _T('C') && ctrlPressed) {
+        // Ctrl + C has been pressed
+        ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CLogWindow::IDC_COPYTEXTTOCLIPBOARD, 0), 0);
+    } else if (wParam == _T('A') && ctrlPressed) {
+        SelectAll();   
+    } else {
+        bHandled = FALSE;
+    }
+    return 0;
+}
+
+LRESULT CLogListBox::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    return 0;
 }
 
 int CLogListBox::AddString(LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo)
@@ -229,6 +252,18 @@ void CLogListBox::Clear()
     }
     ResetContent();
     SetRedraw(true);
+}
+
+void CLogListBox::SelectAll() {
+    //Select all items
+    int itemCount = GetCount();
+    if (itemCount) {
+        SetRedraw(FALSE);
+        for (int i = 0; i < itemCount; i++) {
+            SetSel(i, TRUE);
+        }
+        SetRedraw(TRUE);
+    }
 }
 
 LogListBoxItem* CLogListBox::getItemFromIndex(int index) {

@@ -41,7 +41,7 @@ class CUploader
         bool Upload(std::shared_ptr<UploadTask> task);
         void stop();
         bool needStop();
-        std::shared_ptr<UploadTask> currentTask();
+        std::shared_ptr<UploadTask> currentTask() const;
         // events
         fastdelegate::FastDelegate0<bool> onNeedStop;
         fastdelegate::FastDelegate2<CUploader*,InfoProgress> onProgress;

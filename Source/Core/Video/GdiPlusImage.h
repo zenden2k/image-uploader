@@ -24,6 +24,7 @@ protected:
     std::shared_ptr<Gdiplus::Bitmap> bm_;
     uint8_t* data_;
     void init();
+    DISALLOW_COPY_AND_ASSIGN(GdiPlusImage);
 };
 
 #endif

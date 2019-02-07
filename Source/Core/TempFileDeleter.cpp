@@ -18,10 +18,11 @@ void TempFileDeleter::addFile(const std::string& fileName)
 
 bool TempFileDeleter::cleanup()
 {
-    for (size_t i = 0; i<m_files.size(); i++)
+    bool result = true;
+    for (const auto& fileName: m_files)
     {
-        IuCoreUtils::RemoveFile(m_files[i]);
+        result = result && IuCoreUtils::RemoveFile(fileName);
     }
     m_files.clear();
-    return true;
+    return result;
 }

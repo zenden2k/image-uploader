@@ -427,7 +427,7 @@ int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
         return 0;
     }
     int res = 0;
-    for (auto it = childTasks_.begin(); it != childTasks_.end(); it++)
+    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it)
     {
         UploadTask* task = it->get();
         if (!task->isFinished() && !task->isRunning() && acceptor->canAcceptUploadTask(task))

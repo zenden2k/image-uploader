@@ -96,7 +96,8 @@ public:
     virtual ~CWizardDlg();
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889 };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889};
+    static const WPARAM kWmMyExitParam = 5;
     virtual BOOL PreTranslateMessage(MSG* pMsg) override;
     virtual BOOL OnIdle() override;
     CString m_bCurrentFunc;
@@ -162,10 +163,13 @@ public:
     void setSessionFileServer(const ServerProfile& server);
     ServerProfile getSessionImageServer() const;
     ServerProfile getSessionFileServer() const;
+
+    // IProgramWindow methods
     void setServersChanged(bool changed) override;
     bool serversChanged() const;
     virtual WindowHandle getHandle() override;
     virtual WindowNativeHandle getNativeHandle() override;
+
     virtual void ShowUpdateMessage(const CString& msg) override;
 
     template<class T> T* getPage(WizardPageId id) {

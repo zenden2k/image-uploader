@@ -10,3 +10,7 @@ File "error_code.ipp" line 403
 bjam --toolset=msvc -j4 debug release link=static 
 
 bjam  --with-system --toolset=msvc -j4 debug release link=static runtime-link=static 
+
+To build shared libraries:
+
+bjam  --with-filesystem --toolset=msvc -j4 debug release link=static runtime-link=shared 

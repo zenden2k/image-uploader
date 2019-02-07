@@ -24,15 +24,15 @@ limitations under the License.
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/Logging.h"
 #include "Core/ThreadSync.h"
-#include "Core/CoreFunctions.h"
 
-Script::Script(const std::string& fileName, ThreadSync* serverSync, bool doLoad)
+Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
     m_CreationTime = time(0);
     m_SquirrelScript = 0;
     m_bIsPluginLoaded = false;
     sync_ = serverSync;
     owningThread_ = std::this_thread::get_id();
+    networkClientFactory_ = networkClientFactory;
     fileName_ = fileName;
     if (doLoad) {
         load(fileName);
@@ -52,12 +52,10 @@ void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * so
 
 void Script::InitScriptEngine()
 {
-   
     ScriptAPI::SetPrintCallback(vm_, ScriptAPI::PrintCallback(this, &Script::PrintCallback));
     sqstd_seterrorhandlers(vm_.GetVM());
     ScriptAPI::SetScriptName(vm_, fileName_);
     sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
-
 }
 
 void Script::DestroyScriptEngine()
@@ -72,7 +70,7 @@ void Script::FlushSquirrelOutput()
 
 bool Script::preLoad()
 {
-    networkClient_ = CoreFunctions::createNetworkClient();
+    networkClient_ = networkClientFactory_->create();
     networkClient_->setCurlShare(sync_->getCurlShare());
     Sqrat::RootTable& rootTable = vm_.GetRootTable();
     rootTable.SetInstance("Sync", sync_);

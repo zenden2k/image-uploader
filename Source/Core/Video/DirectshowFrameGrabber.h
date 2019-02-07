@@ -18,6 +18,7 @@ public:
 protected:
     int64_t duration_;
     DirectshowFrameGrabberPrivate * const d_ptr;
+    DISALLOW_COPY_AND_ASSIGN(DirectshowFrameGrabber);
 };
 
 #endif // DIRECTSHOWFRAMEGRABBER_H

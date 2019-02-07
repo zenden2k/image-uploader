@@ -50,7 +50,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         CLogWindow();
         ~CLogWindow();
         enum { IDD = IDD_LOGWINDOW };
-        enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, MYWM_WRITELOG = WM_USER + 100 };
+        enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, IDC_SELECTALLITEMS, MYWM_WRITELOG = WM_USER + 100 };
         virtual BOOL PreTranslateMessage(MSG* pMsg) override;
 
         BEGIN_MSG_MAP(CLogWindow)
@@ -60,6 +60,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             MESSAGE_HANDLER(MYWM_WRITELOG, OnWmWriteLog)
             COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
+            COMMAND_ID_HANDLER(IDC_SELECTALLITEMS, OnSelectAllItems)
             COMMAND_HANDLER(IDC_CLEARLOGBUTTON, BN_CLICKED, OnBnClickedClearLogButtonClicked)
             CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
             REFLECT_NOTIFICATIONS() 
@@ -83,6 +84,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
         LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
         LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
+        LRESULT OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void TranslateUI();
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         static void WriteLog(LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());

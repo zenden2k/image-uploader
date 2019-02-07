@@ -49,7 +49,7 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
     ThumbsView.SetDeletePhysicalFiles(true);
     IsStopTimer = false;
     NumOfFrames = 0;
-    TimerInc = 0;
+    TimerCounter = 0;
     CanceledByUser = false;
     MainDlg = nullptr;
 }
@@ -98,15 +98,18 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
     openInFolderLink_.m_clrLink = CSettings::DefaultLinkColor;
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_VIDEOENGINECOMBO, 3, CSettings::VideoEngineAuto, CSettings::VideoEngineDirectshow,CSettings::VideoEngineFFmpeg);
-    int itemIndex = SendDlgItemMessage( IDC_VIDEOENGINECOMBO, CB_FINDSTRING, 0, (LPARAM)(LPCTSTR) Settings.VideoSettings.Engine );
+    videoEngineCombo_.AddString(CSettings::VideoEngineAuto);
+    videoEngineCombo_.AddString(CSettings::VideoEngineDirectshow);
+    videoEngineCombo_.AddString(CSettings::VideoEngineFFmpeg);
+
+    int itemIndex = videoEngineCombo_.FindString(0, Settings.VideoSettings.Engine);
     if ( itemIndex == CB_ERR){
         itemIndex = 0;
     }
     if ( !CSettings::IsFFmpegAvailable() ){
-        ::EnableWindow( GetDlgItem(IDC_VIDEOENGINECOMBO), false);
+        videoEngineCombo_.EnableWindow(FALSE);
     }
-    SendDlgItemMessage(IDC_VIDEOENGINECOMBO, CB_SETCURSEL, itemIndex );
+    videoEngineCombo_.SetCurSel(itemIndex);
     // Заносим в текстовое поле имя файла, полученное от главного окна
     fileEdit_.SetWindowText(m_szFileName);
 
@@ -135,10 +138,10 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
         if(videoGrabber_) {
             videoGrabber_->abort();
         }
-        //SignalStop();           //  Посылаем потоку граббинга сигнал останова
+
         if (!IsStopTimer)
         {
-            TimerInc = 8;           // Ждем 8 секунд, прежде чем убиваем поток
+            TimerCounter = 8;           // Ждем 8 секунд, прежде чем убиваем поток
             SetTimer(1, 1000, NULL);
             IsStopTimer = true;
         }
@@ -216,7 +219,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
         RECT grabInfoLabelRect;
         ::GetClientRect(GetDlgItem(IDC_GRABINFOLABEL), &grabInfoLabelRect);
         SetDlgItemText(IDC_GRABINFOLABEL, L"");
-        ::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), NULL, 0,0,originalGrabInfoLabelWidth_,grabInfoLabelRect.bottom, SWP_NOMOVE);
+        ::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), nullptr, 0, 0, originalGrabInfoLabelWidth_, grabInfoLabelRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
         ::InvalidateRect(GetDlgItem(IDC_GRABINFOLABEL), 0, true);
     }
     Run();
@@ -243,7 +246,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     using namespace Gdiplus;
     CString fileNameBuffer;
 
-    GrabInfo(CString(TR("Extracting frame ")) + title);
+    SetGrabbingStatusText(CString(TR("Extracting frame ")) + title);
 
     if (SendDlgItemMessage(IDC_DEINTERLACE, BM_GETCHECK) == BST_CHECKED)
     {
@@ -305,7 +308,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     return true;
 }
 
-bool CVideoGrabberPage::GrabInfo(LPCTSTR String)
+bool CVideoGrabberPage::SetGrabbingStatusText(LPCTSTR String)
 {
     ErrorStr = String;
     SetDlgItemText(IDC_GRABINFOLABEL, String);
@@ -334,7 +337,7 @@ int CVideoGrabberPage::ThreadTerminated()
     ::ShowWindow(GetDlgItem(IDC_STOP), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_HIDE);
     if (CanceledByUser)
-        GrabInfo(TR("Extracting video frames was stopped by user."));
+        SetGrabbingStatusText(TR("Extracting video frames was stopped by user."));
 
     ::ShowWindow(GetDlgItem(IDC_FRAMELABEL), SW_SHOW);
     ::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_SHOW);
@@ -352,11 +355,11 @@ int CVideoGrabberPage::ThreadTerminated()
 
 LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TimerInc--;
-    if (TimerInc > 0)
+    TimerCounter--;
+    if (TimerCounter > 0)
     {
         CString buffer;
-        buffer.Format(CString(TR("Stop")) + _T(" (%d)"), TimerInc);
+        buffer.Format(CString(TR("Stop")) + _T(" (%d)"), TimerCounter);
         SetDlgItemText(IDC_STOP, buffer);
     }
     else
@@ -539,7 +542,7 @@ bool CVideoGrabberPage::OnShow()
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(m_szFileName);
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
-    GrabInfo(_T(""));
+    SetGrabbingStatusText(_T(""));
     EnableNext(true);
     ShowPrev();
     ShowNext();
@@ -572,7 +575,7 @@ void CVideoGrabberPage::OnFrameGrabbingFinished()
     ThreadTerminated();
     if (!CanceledByUser)
     {
-        GrabInfo(TR("Extracting video frames was finished."));
+        SetGrabbingStatusText(TR("Extracting video frames was finished."));
     }
 }
 

@@ -236,7 +236,7 @@ public:
      CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
     protected:
-    CString ShowHotkey(CString funcName, CString menuItemText);
+    static CString HotkeyToString(CString funcName, CString menuItemText);
 };
 extern CFloatingWindow floatWnd;
 void CreateFloatWindow();

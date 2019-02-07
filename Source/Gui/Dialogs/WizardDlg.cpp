@@ -99,10 +99,11 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     serviceLocator->setMyEngineList(&m_EngineList);
     serviceLocator->setTaskDispatcher(this);
     serversChanged_ = false;
-    scriptsManager_ = new ScriptsManager();
+    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
+    scriptsManager_ = new ScriptsManager(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler);
-    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, std::make_shared<NetworkClientFactory>());
+    uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler, networkClientFactory);
+    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, networkClientFactory);
     serviceLocator->setUploadManager(uploadManager_);
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
@@ -195,7 +196,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     pLoop->AddMessageFilter(this);
     pLoop->AddIdleHandler(this);
     OleInitialize(NULL);
-    
     ::RegisterDragDrop(m_hWnd, this);
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
@@ -315,9 +315,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
  
     CreatePage(wpWelcomePage); 
     ShowPage(wpWelcomePage);
-    ::SetFocus(Pages[0]->PageWnd);
-	//win7JumpList_->CreateJumpList();
-    //webServer_.start();
+    ::SetFocus(Pages[wpWelcomePage]->PageWnd);
 
     if(CmdLine.IsOption(_T("update")))
     {
@@ -626,7 +624,9 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
     RECT rc2 = {3,100,636,500};
     RECT rcc;
     GetClientRect(&rcc);
-    if(((PVOID)Pages[PageID])!=0) return true;;
+    if (Pages[PageID] != nullptr) {
+        return true;
+    }
     switch(PageID)
     {
         case 0:
@@ -737,11 +737,10 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID)
     GetClientRect(&rc);
     int width=rc.right-rc.left;
     RectF bounds(0.0,0.0, float(width), float(50));
-    Bitmap *BackBuffer;
+   
     Graphics g(m_hWnd,true);
-    
-    BackBuffer = new Bitmap(width, 50, &g);
-    Graphics gr(BackBuffer);
+    std::unique_ptr<Bitmap> BackBuffer(new Bitmap(width, 50, &g));
+    Graphics gr(BackBuffer.get());
     
     LinearGradientBrush 
         brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235), 
@@ -763,9 +762,8 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID)
     else if(PageID==4)
         gr.DrawString(TR("Uploading file on server"), -1, &font, bounds, &format, &br2);
 
-    HBITMAP bmp=0;
+    HBITMAP bmp = nullptr;
     BackBuffer->GetHBITMAP(Color(255,255,255), &bmp);
-    delete BackBuffer;
     return bmp;
 }
 
@@ -801,7 +799,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         DragQueryFile(hDrop,    i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
         if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
         {
-            if(CurPage == 2)
+            if(CurPage == wpMainPage)
             {
                 if(Settings.DropVideoFilesToTheList || MessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"),APPNAME,MB_YESNO)==IDNO)
                     goto filehost;
@@ -1151,16 +1149,14 @@ LRESULT CWizardDlg::OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 void CWizardDlg::PasteBitmap(HBITMAP Bmp)
 {
-    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != -1) return;
+    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != -1) {
+        return;
+    }
    
     CString buf2;
-    SIZE dim;
-    GetBitmapDimensionEx(Bmp, &dim);
-    Bitmap bm(Bmp,0);
-    if(bm.GetLastStatus()==Ok)
-    {
+    Bitmap bm(Bmp, nullptr);
+    if (bm.GetLastStatus() == Ok) {
         ImageUtils::MySaveImage(&bm,_T("clipboard"),buf2,1,100);
-
         CreatePage(wpMainPage);
         CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
         MainDlg->AddToFileList( buf2, L"", true, nullptr, true);
@@ -1168,7 +1164,6 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
         ShowPage(wpMainPage);
     }
 }
-
 
 void CWizardDlg::AddFolder(LPCTSTR szFolder, bool SubDirs )
 {
@@ -1253,7 +1248,6 @@ LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
     msg->callback();
     if (msg->async) {
         delete msg;
-        msg = nullptr;
     }
     return 0;
 }
@@ -1868,7 +1862,7 @@ bool CWizardDlg::funcAddFiles()
 
 LRESULT CWizardDlg::OnWmMyExit(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if(wParam  == 5)
+    if (wParam == kWmMyExitParam )
     {
         CloseDialog(0);
     }

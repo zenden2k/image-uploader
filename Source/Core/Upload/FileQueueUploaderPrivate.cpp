@@ -1,13 +1,15 @@
 ﻿#include "FileQueueUploaderPrivate.h"
 
+#include <thread>
+#include <algorithm>
+
 #include "FileQueueUploader.h"
 #include "Uploader.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
 #include "Core/CommonDefs.h"
-#include <thread>
-#include <algorithm>
+
 
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex )
 {

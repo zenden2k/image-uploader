@@ -30,10 +30,12 @@ limitations under the License.
 #include "Core/Upload/UploadErrorHandler.h"
 #include "MegaNzUploadEngine.h"
 
-UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler)
+UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler, 
+    std::shared_ptr<INetworkClientFactory> factory)
 {
     uploadEngineList_ = uploadEngineList;
     uploadErrorHandler_ = uploadErrorHandler;
+    networkClientFactory_ = factory;
 }
 
 UploadEngineManager::~UploadEngineManager()
@@ -51,45 +53,41 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     if (serverProfile.serverName().empty())
     {
         LOG(ERROR) << "UploadEngineManager::getUploadEngine" << " empty server name";
-        return 0;
+        return nullptr;
     }
     CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
     if (!ue)
     {
         LOG(ERROR) << "No such server " << serverProfile.serverName();
-        return 0;
+        return nullptr;
     }
-    CAbstractUploadEngine* result = NULL;
+    CAbstractUploadEngine* result = nullptr;
     std::string serverName = serverProfile.serverName();
     std::thread::id threadId = std::this_thread::get_id();
     ServerSettingsStruct& params = serverProfile.serverSettings();
     
     if (ue->UsingPlugin) {
+        // Try to load Squirrel (.nut) script
         result = getPlugin(serverProfile, ue->PluginName);
         if (!result) {
             LOG(ERROR) << "Cannot load plugin '" << ue->PluginName << "'";
-            return NULL;
+            return nullptr;
         }
-        
     } else {
         std::lock_guard<std::mutex> guard(pluginsMutex_);
-        CAbstractUploadEngine* plugin = m_plugins[threadId][serverName];
+        CAbstractUploadEngine* plugin = nullptr;
+        auto it = m_plugins.find(threadId);
+        if (it != m_plugins.end()) {
+            auto it2 = it->second.find(serverName);
+            if (it2 != it->second.end()) {
+                plugin = it2->second;
+            }
+        }
+
         if (plugin &&  plugin->serverSettings()->authData.Login == params.authData.Login) {
             return plugin;
         }
-        /*if (m_prevUpEngine) {
-            if (m_prevUpEngine->getUploadData()->Name == data->Name &&
-                m_prevUpEngine->serverSettings().authData.Login == serverSettings.authData.Login
 
-                )
-                result = m_prevUpEngine;
-            else
-            {
-                delete m_prevUpEngine;
-                m_prevUpEngine = 0;
-            }
-        }
-        if (!m_prevUpEngine)*/
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
         if (ue->Engine == "MegaNz") {
@@ -120,7 +118,16 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     std::string serverName = serverProfile.serverName();
     ServerSettingsStruct& params = serverProfile.serverSettings();
     std::thread::id threadId = std::this_thread::get_id();
-    CScriptUploadEngine* plugin = dynamic_cast<CScriptUploadEngine*>(m_plugins[threadId][serverName]);
+    CScriptUploadEngine* plugin = nullptr;
+
+    auto it = m_plugins.find(threadId);
+    if (it != m_plugins.end()) {
+        auto it2 = it->second.find(serverName);
+        if (it2 != it->second.end()) {
+            plugin = dynamic_cast<CScriptUploadEngine*>(it2->second);;
+        }
+    }
+
     if (plugin && (time(0)- plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
         UseExisting = true;
 
@@ -136,11 +143,11 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     if (plugin) {
         delete plugin;
         plugin = 0;
-        m_plugins[threadId][serverName] = 0;
+        m_plugins[threadId][serverName] = nullptr;
     }
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params);
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params, networkClientFactory_);
     newPlugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][serverName] = newPlugin;
@@ -149,7 +156,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     else {
         delete newPlugin;
     }
-    return NULL;
+    return nullptr;
 }
 
 void UploadEngineManager::unloadUploadEngines() {

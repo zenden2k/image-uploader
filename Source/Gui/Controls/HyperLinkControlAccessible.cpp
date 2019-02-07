@@ -33,29 +33,29 @@ ULONG CHyperLinkControlAccessible::Release() {
     return ulRefCount;
 }*/
 
-HRESULT CHyperLinkControlAccessible::GetTypeInfoCount(UINT* pctinfo) {
+STDMETHODIMP CHyperLinkControlAccessible::GetTypeInfoCount(UINT* pctinfo) {
     *pctinfo = NULL;
     return E_NOTIMPL;
 }
 
-HRESULT CHyperLinkControlAccessible::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) {
+STDMETHODIMP CHyperLinkControlAccessible::GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) {
     *ppTInfo = NULL;
     return E_NOTIMPL;
 }
 
-HRESULT CHyperLinkControlAccessible::GetIDsOfNames(const IID& riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId) {
+STDMETHODIMP CHyperLinkControlAccessible::GetIDsOfNames(const IID& riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId) {
     return E_NOTIMPL;
 }
 
-HRESULT CHyperLinkControlAccessible::Invoke(DISPID dispIdMember, const IID& riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) {
+STDMETHODIMP CHyperLinkControlAccessible::Invoke(DISPID dispIdMember, const IID& riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) {
     return E_NOTIMPL;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accParent(IDispatch** ppdispParent) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accParent(IDispatch** ppdispParent) {
     return pBase_->get_accParent(ppdispParent);
 }
 
-HRESULT CHyperLinkControlAccessible::get_accChildCount(long* pcountChildren) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accChildCount(long* pcountChildren) {
     HRESULT hr = CheckAlive();
     if (SUCCEEDED(hr)) {
         *pcountChildren = control_->ItemCount();
@@ -63,7 +63,7 @@ HRESULT CHyperLinkControlAccessible::get_accChildCount(long* pcountChildren) {
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accChild(VARIANT varChild, IDispatch** ppdispChild) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accChild(VARIANT varChild, IDispatch** ppdispChild) {
     // This IAccessible doesn't use Child IDs, so this just does param
     // validation, and returns S_OK with *ppdispChild as NULL.
     *ppdispChild = NULL;
@@ -74,7 +74,7 @@ HRESULT CHyperLinkControlAccessible::get_accChild(VARIANT varChild, IDispatch** 
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accName(VARIANT varChild, BSTR* pszName) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accName(VARIANT varChild, BSTR* pszName) {
     // Let the base IAccessible handle the name of the overall control - 
     // default support in OLEACC will look for a label if the control
     // is in a dialog. Otherwise, return the string for the appropriate
@@ -94,13 +94,13 @@ HRESULT CHyperLinkControlAccessible::get_accName(VARIANT varChild, BSTR* pszName
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accValue(VARIANT varChild, BSTR* pszValue) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accValue(VARIANT varChild, BSTR* pszValue) {
     *pszValue = NULL;
     HRESULT hr = ValidateChildId(varChild);
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accDescription(VARIANT varChild, BSTR* pszDescription) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accDescription(VARIANT varChild, BSTR* pszDescription) {
     *pszDescription = NULL;
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
@@ -116,7 +116,7 @@ HRESULT CHyperLinkControlAccessible::get_accDescription(VARIANT varChild, BSTR* 
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accRole(VARIANT varChild, VARIANT* pvarRole) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accRole(VARIANT varChild, VARIANT* pvarRole) {
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
         pvarRole->vt = VT_I4;
@@ -131,7 +131,7 @@ HRESULT CHyperLinkControlAccessible::get_accRole(VARIANT varChild, VARIANT* pvar
 
 }
 
-HRESULT CHyperLinkControlAccessible::get_accState(VARIANT varChild, VARIANT* pvarState) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accState(VARIANT varChild, VARIANT* pvarState) {
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
         if (varChild.lVal == CHILDID_SELF) {
@@ -151,22 +151,22 @@ HRESULT CHyperLinkControlAccessible::get_accState(VARIANT varChild, VARIANT* pva
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accHelp(VARIANT varChild, BSTR* pszHelp) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accHelp(VARIANT varChild, BSTR* pszHelp) {
     *pszHelp = NULL;
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accHelpTopic(BSTR* pszHelpFile, VARIANT varChild, long* pidTopic) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accHelpTopic(BSTR* pszHelpFile, VARIANT varChild, long* pidTopic) {
     *pidTopic = NULL;
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accKeyboardShortcut(VARIANT varChild, BSTR* pszKeyboardShortcut) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accKeyboardShortcut(VARIANT varChild, BSTR* pszKeyboardShortcut) {
     *pszKeyboardShortcut = NULL;
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accFocus(VARIANT* pvarChild) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accFocus(VARIANT* pvarChild) {
     int selectedIndex = control_->SelectedIndex();
     if (selectedIndex == -1) {
         pvarChild->vt = VT_EMPTY;
@@ -177,12 +177,12 @@ HRESULT CHyperLinkControlAccessible::get_accFocus(VARIANT* pvarChild) {
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accSelection(VARIANT* pvarChildren) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accSelection(VARIANT* pvarChildren) {
     pvarChildren->vt = VT_EMPTY;
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::get_accDefaultAction(VARIANT varChild, BSTR* pszDefaultAction) {
+STDMETHODIMP CHyperLinkControlAccessible::get_accDefaultAction(VARIANT varChild, BSTR* pszDefaultAction) {
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
         if (varChild.lVal == CHILDID_SELF) {
@@ -194,7 +194,7 @@ HRESULT CHyperLinkControlAccessible::get_accDefaultAction(VARIANT varChild, BSTR
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::accSelect(long flagsSelect, VARIANT varChild) {
+STDMETHODIMP CHyperLinkControlAccessible::accSelect(long flagsSelect, VARIANT varChild) {
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
         if (varChild.lVal != CHILDID_SELF && (flagsSelect & SELFLAG_TAKEFOCUS)) {
@@ -206,7 +206,7 @@ HRESULT CHyperLinkControlAccessible::accSelect(long flagsSelect, VARIANT varChil
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::accLocation(long* pxLeft, long* pyTop, long* pcxWidth, long* pcyHeight, VARIANT varChild) {
+STDMETHODIMP CHyperLinkControlAccessible::accLocation(long* pxLeft, long* pyTop, long* pcxWidth, long* pcyHeight, VARIANT varChild) {
     *pxLeft = *pyTop = *pcxWidth = *pcyHeight = 0;
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
@@ -225,7 +225,7 @@ HRESULT CHyperLinkControlAccessible::accLocation(long* pxLeft, long* pyTop, long
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::accNavigate(long navDir, VARIANT varStart, VARIANT* pvarEndUpAt) {
+STDMETHODIMP CHyperLinkControlAccessible::accNavigate(long navDir, VARIANT varStart, VARIANT* pvarEndUpAt) {
     pvarEndUpAt->vt = VT_EMPTY;
     HRESULT hr = ValidateChildId(varStart);
     if (SUCCEEDED(hr)) {
@@ -276,7 +276,7 @@ HRESULT CHyperLinkControlAccessible::accNavigate(long navDir, VARIANT varStart, 
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::accHitTest(long xLeft, long yTop, VARIANT* pvarChild) {
+STDMETHODIMP CHyperLinkControlAccessible::accHitTest(long xLeft, long yTop, VARIANT* pvarChild) {
     pvarChild->vt = VT_EMPTY;
     HRESULT hr = CheckAlive();
     if (SUCCEEDED(hr)) {
@@ -294,7 +294,7 @@ HRESULT CHyperLinkControlAccessible::accHitTest(long xLeft, long yTop, VARIANT* 
     return hr;
 }
 
-HRESULT CHyperLinkControlAccessible::accDoDefaultAction(VARIANT varChild) {
+STDMETHODIMP CHyperLinkControlAccessible::accDoDefaultAction(VARIANT varChild) {
     if (varChild.vt != VT_I4) {
         return E_INVALIDARG;
     }
@@ -307,11 +307,11 @@ HRESULT CHyperLinkControlAccessible::accDoDefaultAction(VARIANT varChild) {
     return S_OK;
 }
 
-HRESULT CHyperLinkControlAccessible::put_accName(VARIANT varChild, BSTR szName) {
+STDMETHODIMP CHyperLinkControlAccessible::put_accName(VARIANT varChild, BSTR szName) {
     return E_NOTIMPL;
 }
 
-HRESULT CHyperLinkControlAccessible::put_accValue(VARIANT varChild, BSTR szValue) {
+STDMETHODIMP CHyperLinkControlAccessible::put_accValue(VARIANT varChild, BSTR szValue) {
     return E_NOTIMPL;
 }
 

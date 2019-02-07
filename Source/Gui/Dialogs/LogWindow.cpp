@@ -108,8 +108,9 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
     CMenu FolderMenu;
     FolderMenu.CreatePopupMenu();
     if ( index != 0xffff && !bOutside ) {
-        FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Copy"));
+        FolderMenu.AppendMenu(MF_STRING, IDC_COPYTEXTTOCLIPBOARD, TR("Copy") + CString(_T("\tCtrl+C")));
     }
+    FolderMenu.AppendMenu(MF_STRING, IDC_SELECTALLITEMS, TR("Select all") + CString(_T("\tCtrl+A")));
     FolderMenu.AppendMenu(MF_STRING, IDC_CLEARLIST, TR("Clear list"));
 
     FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -136,6 +137,11 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
         WinUtils::CopyTextToClipboard(result);
     }
     
+    return 0;
+}
+
+LRESULT CLogWindow::OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    MsgList.SelectAll();
     return 0;
 }
 

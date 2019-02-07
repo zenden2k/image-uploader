@@ -4,8 +4,10 @@
 
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadManager.h"
+/*
 #include "CoreFunctions.h"
 #include "Utils/CryptoUtils.h"
+*/
 #include "Core/Utils/DesktopUtils.h"
 #include "Upload/FileUploadTask.h"
 #include "Core/Settings.h"

@@ -287,7 +287,7 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
 
     m_Modal = false;
     if (m_bClose == 2)
-        ::PostMessage(GetParent(), WM_MY_EXIT, 5, 0);
+        ::PostMessage(GetParent(), WM_MY_EXIT, CWizardDlg::kWmMyExitParam, 0);
 
     ::EnableWindow(GetParent(), true);
     ShowWindow(SW_HIDE);

@@ -15,7 +15,7 @@ class AvcodecFrameGrabber: public AbstractFrameGrabber {
         int64_t duration() override;
 protected:
     AvcodecFrameGrabberPrivate * const d_ptr;
-
+    DISALLOW_COPY_AND_ASSIGN(AvcodecFrameGrabber);
 };
 
 #endif // FRAMEGRABBER_H

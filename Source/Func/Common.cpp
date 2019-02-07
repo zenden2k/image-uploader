@@ -22,7 +22,6 @@
 
 #include "atlheaders.h"
 #include "Func/CmdLine.h"
-#include "Func/MyUtils.h"
 #include "Func/WinUtils.h"
 
 CString IUCommonTempFolder;

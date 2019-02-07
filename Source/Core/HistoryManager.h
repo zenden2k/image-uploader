@@ -98,6 +98,9 @@ class CHistoryReader
         // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename);
         int getSessionCount() const;
+
+        // The pointer returned by this function is only valid
+        //  during lifetime of CHistoryReader object
         CHistorySession* getSession(size_t index);
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);

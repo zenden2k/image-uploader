@@ -59,8 +59,6 @@ class CFileDownloader
         void setOnFileFinishedCallback(decltype(onFileFinished_) callback);
         fastdelegate::FastDelegate0<> onQueueFinished;
         fastdelegate::FastDelegate1<INetworkClient*> onConfigureNetworkClient;
-        
-        ///fastdelegate::FastDelegate3<bool, int, DownloadFileListItem, bool> onFileFinished;
     protected:
         CString errorStr_;
         std::mutex mutex_;

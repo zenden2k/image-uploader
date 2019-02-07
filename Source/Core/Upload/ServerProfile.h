@@ -69,7 +69,7 @@ public:
 
     bool shortenLinks() const;
     void setShortenLinks(bool shorten);
-    bool isNull();
+    bool isNull() const;
     bool UseDefaultSettings;
     void clearFolderInfo();
     ServerProfile deepCopy();

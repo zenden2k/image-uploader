@@ -21,7 +21,6 @@
 #include "Core/ScreenCapture.h"
 
 #include <assert.h>
-#include <cmath>
 #include <deque>
 
 #include <Dwmapi.h>

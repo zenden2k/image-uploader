@@ -8,12 +8,6 @@
 
 namespace CoreFunctions {
 
-std::unique_ptr<NetworkClient> createNetworkClient() {
-    std::unique_ptr<NetworkClient> cl(new NetworkClient());
-    ConfigureProxy(cl.get());
-    return cl;
-}
-
 void ConfigureProxy(INetworkClient* nm)
 {
 #ifdef _WIN32

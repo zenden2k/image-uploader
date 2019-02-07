@@ -71,7 +71,7 @@ void ServerProfile::setShortenLinks(bool shorten)
     shortenLinks_ = shorten;
 }
 
-bool ServerProfile::isNull()
+bool ServerProfile::isNull() const
 {
     return serverName_.empty();
 }

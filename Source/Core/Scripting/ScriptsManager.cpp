@@ -23,7 +23,8 @@ limitations under the License.
 #include "UploadFilterScript.h"
 #include "Core/Settings.h"
 
-ScriptsManager::ScriptsManager()
+ScriptsManager::ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory) :
+    networkClientFactory_(networkClientFactory)
 {
 }
 
@@ -41,7 +42,14 @@ Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
     std::lock_guard<std::mutex> lock(scriptsMutex_);
     bool UseExisting = false;
     std::thread::id threadId = std::this_thread::get_id();
-    Script* plugin = scripts_[threadId][fileName];
+    Script* plugin = nullptr;
+    auto it = scripts_.find(threadId);
+    if (it != scripts_.end()) {
+        auto it2 = it->second.find(fileName);
+        if (it2 != it->second.end()) {
+            plugin = it2->second;
+        }
+    }
     if (plugin && (time(0) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
         UseExisting = true;
 
@@ -60,10 +68,10 @@ Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
     Script* newPlugin;
     if (type == TypeUploadFilterScript)
     {
-        newPlugin = new UploadFilterScript(fileName, serverSync);
+        newPlugin = new UploadFilterScript(fileName, serverSync, networkClientFactory_);
     } else
     {
-        newPlugin  = new Script(fileName, serverSync);
+        newPlugin  = new Script(fileName, serverSync, networkClientFactory_);
     }
   
     if (newPlugin->isLoaded()) {

@@ -82,6 +82,7 @@ public :
     unsigned char *data_;
     unsigned int dataSize_;
     AVFrame* frame_;
+    DISALLOW_COPY_AND_ASSIGN(AvcodecVideoFrame);
 };
 
 

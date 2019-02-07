@@ -347,6 +347,11 @@ function UploadFile(FileName, options)
                 }
                 return 1;
             }  
+        } else if (nm.responseCode() == 400) {
+            local e = ParseJSON(nm.responseBody());
+            if ( "error" in e && "message" in e.error) {
+                WriteLog("error", "gphotos: " + e.error.message+"\r\nYou can add photos only to an album which was created by Image Uploader.");
+            }
         }
 	}
 	

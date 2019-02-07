@@ -259,7 +259,7 @@ bool CUploader::needStop()
     return m_bShouldStop;
 }
 
-std::shared_ptr<UploadTask> CUploader::currentTask()
+std::shared_ptr<UploadTask> CUploader::currentTask() const
 {
     return currentTask_;
 }

@@ -65,7 +65,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         bool startUpload();
         CMainDlg *MainDlg;
-        CResultsWindow *resultsWindow_;
+        std::unique_ptr<CResultsWindow> resultsWindow_;
         int ThreadTerminated(void);
         std::vector<CUrlListItem> urlList_;
         bool OnShow() override;
@@ -117,6 +117,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         UploadManager* uploadManager_;
         CToolBarCtrl toolbar_;
         CFont commonProgressLabelFont_, commonPercentLabelFont_;
+        CImageList toolbarImageList_;
 };
 
 

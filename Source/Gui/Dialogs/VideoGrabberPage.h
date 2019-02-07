@@ -91,7 +91,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		
 		int GrabBitmaps(const CString& szFile );
 		DWORD Run();
-		bool GrabInfo(LPCTSTR String);
+		bool SetGrabbingStatusText(LPCTSTR String);
 		int ThreadTerminated();
 		bool OnAddImage(Gdiplus::Bitmap *bm, CString title);
 		void SavingMethodChanged(void);
@@ -114,7 +114,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		int originalGrabInfoLabelWidth_;
 		int grabbedFramesCount;
 		int NumOfFrames;
-		int TimerInc;
+		int TimerCounter;
 		bool SetFileName(LPCTSTR FileName);
 		CString m_szFileName;
 		bool CanceledByUser;

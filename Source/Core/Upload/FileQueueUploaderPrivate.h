@@ -31,7 +31,7 @@ struct ServerThreadsInfo {
 class TaskAcceptorBase : public UploadTaskAcceptor
 {
 public:
-    TaskAcceptorBase(bool useMutex = true);
+    explicit TaskAcceptorBase(bool useMutex = true);
     bool canAcceptUploadTask(UploadTask* task) override;
     std::map<std::string, ServerThreadsInfo> serverThreads_;
     std::recursive_mutex serverThreadsMutex_;

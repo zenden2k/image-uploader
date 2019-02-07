@@ -24,6 +24,7 @@ public:
 protected:
     static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
     std::vector<MonitorInfo> monitors_;
+    DISALLOW_COPY_AND_ASSIGN(MonitorEnumerator);
 };
 
 #endif

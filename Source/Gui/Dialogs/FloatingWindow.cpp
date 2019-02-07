@@ -38,19 +38,42 @@
 #include "Core/ScreenCapture/Utils.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
 
+namespace {
+
+bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
+{
+    MENUITEMINFO MenuItem;
+
+    MenuItem.cbSize = sizeof(MenuItem);
+    if (szTitle)
+        MenuItem.fType = MFT_STRING;
+    else
+        MenuItem.fType = MFT_SEPARATOR;
+    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
+    if (bm)
+        MenuItem.fMask |= MIIM_CHECKMARKS;
+    MenuItem.wID = id;
+    MenuItem.hbmpChecked = bm;
+    MenuItem.hbmpUnchecked = bm;
+    MenuItem.dwTypeData = (LPWSTR)szTitle;
+    return InsertMenuItem(hMenu, pos, TRUE, &MenuItem) != 0;
+}
+
+}
+
 // FloatingWindow
 CFloatingWindow::CFloatingWindow()
 {
     m_bFromHotkey = false;
-    m_ActiveWindow = 0;
+    m_ActiveWindow = nullptr;
     EnableClicks = true;
-    hMutex = NULL;
-    m_PrevActiveWindow = 0;
+    hMutex = nullptr;
+    m_PrevActiveWindow = nullptr;
     m_bStopCapturingWindows = false;
     WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
     m_bIsUploading = 0;
-    uploadEngineManager_ = 0;
-    lastUploadedItem_ = 0;
+    uploadEngineManager_ = nullptr;
+    lastUploadedItem_ = nullptr;
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
@@ -72,25 +95,6 @@ void CFloatingWindow::setWizardDlg(CWizardDlg* wizardDlg) {
 LRESULT CFloatingWindow::OnClose(void)
 {
     return 0;
-}
-
-bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle,  HBITMAP bm = NULL)
-{
-    MENUITEMINFO MenuItem;
-
-    MenuItem.cbSize = sizeof(MenuItem);
-    if (szTitle)
-        MenuItem.fType = MFT_STRING;
-    else
-        MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
-    if (bm)
-        MenuItem.fMask |= MIIM_CHECKMARKS;
-    MenuItem.wID = id;
-    MenuItem.hbmpChecked = bm;
-    MenuItem.hbmpUnchecked = bm;
-    MenuItem.dwTypeData = (LPWSTR)szTitle;
-    return InsertMenuItem(hMenu, pos, TRUE, &MenuItem) != 0;
 }
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
@@ -209,8 +213,8 @@ LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
     RemoveIcon();
     UnRegisterHotkeys();
     DestroyWindow();
-    hMutex = NULL;
-    m_hWnd = 0;
+    hMutex = nullptr;
+    m_hWnd = nullptr;
     return 0;
 }
 
@@ -440,8 +444,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
         // Inserting menu items
         int i = 0;
-        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, ShowHotkey("addimages", TR("Upload files") + CString(_T("..."))));
-        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, ShowHotkey("addfolder", TR("Upload folder") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, HotkeyToString("addimages", TR("Upload files") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, HotkeyToString("addfolder", TR("Upload folder") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         bool isBitmapInClipboard = false;
         bool urlInClipboard = false;
@@ -458,20 +462,20 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             //CloseClipboard();
         }
         if (isBitmapInClipboard) {
-            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, ShowHotkey("paste", TR("Paste")));
+            MyInsertMenu(TrayMenu, i++, IDM_PASTEFROMCLIPBOARD, HotkeyToString("paste", TR("Paste")));
         }
         if (isBitmapInClipboard || urlInClipboard) {
-            MyInsertMenu(TrayMenu, i++, IDM_QUICKUPLOADFROMCLIPBOARD, ShowHotkey("uploadfromclipboard", TR("Quick upload image from clipboard")));
+            MyInsertMenu(TrayMenu, i++, IDM_QUICKUPLOADFROMCLIPBOARD, HotkeyToString("uploadfromclipboard", TR("Quick upload image from clipboard")));
             MyInsertMenu(TrayMenu, i++, 0, 0);
         }
-        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, ShowHotkey("importvideo", TR("Import Video File")));
+        MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, HotkeyToString("importvideo", TR("Import Video File")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, ShowHotkey("screenshotdlg", TR("Screenshot") + CString(_T("..."))));
-        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, ShowHotkey("regionscreenshot", TR("Capture Selected Area")));
-        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, ShowHotkey("fullscreenshot", TR("Capture the Entire Screen")));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, ShowHotkey("windowscreenshot", TR("Capture the Active Window")));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, ShowHotkey("windowhandlescreenshot", TR("Capture Selected Object")));
-        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, ShowHotkey("freeformscreenshot", TR("Freehand Capture")));
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, HotkeyToString("screenshotdlg", TR("Screenshot") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, HotkeyToString("regionscreenshot", TR("Capture Selected Area")));
+        MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, HotkeyToString("fullscreenshot", TR("Capture the Entire Screen")));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, HotkeyToString("windowhandlescreenshot", TR("Capture Selected Object")));
+        MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, HotkeyToString("freeformscreenshot", TR("Freehand Capture")));
 
         MonitorEnumerator enumerator;
 
@@ -539,15 +543,15 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
         SubMenu.Detach();
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, ShowHotkey("shortenurl",TR("Shorten a link")));
+        MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, HotkeyToString("shortenurl",TR("Shorten a link")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, ShowHotkey("showmainwindow", TR("Show program's window")));
-        MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, ShowHotkey("open_screenshot_folder", TR("Open screenshots folder")));
+        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, HotkeyToString("showmainwindow", TR("Show program's window")));
+        MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, HotkeyToString("open_screenshot_folder", TR("Open screenshots folder")));
         if (lastUploadedItem_) {
             MyInsertMenu(TrayMenu, i++, IDM_SHOWLASTUPLOADRESULTS, TR("Show results of last upload"));
         }
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, ShowHotkey("settings",TR("Settings") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings",TR("Settings") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         if (Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
@@ -808,68 +812,6 @@ void CFloatingWindow::showLastUploadedCode() {
     }
 }
 
-/*
-bool CFloatingWindow::OnQueueFinished(CFileQueueUploader*) {
-    m_bIsUploading = false;
-    bool usedDirectLink = true;
-
-    if ( uploadType_ == utImage ) {
-        CString url;
-        if ((Settings.UseDirectLinks || lastUploadedItem_.fileListItem.downloadUrl.empty()) && !lastUploadedItem_.fileListItem.imageUrl.empty() )
-            url = Utf8ToWstring(lastUploadedItem_.fileListItem.imageUrl).c_str();
-        else if ((!Settings.UseDirectLinks || lastUploadedItem_.fileListItem.imageUrl.empty()) && !lastUploadedItem_.fileListItem.downloadUrl.empty() ) {
-            url = Utf8ToWstring(lastUploadedItem_.fileListItem.downloadUrl).c_str();
-            usedDirectLink = false;
-        }
-
-
-        if (url.IsEmpty())
-        {
-            ShowBaloonTip(TR("Could not upload screenshot :("), _T("Image Uploader"));
-            return true;
-        }
-
-        CHistoryManager* mgr = ZBase::get()->historyManager();
-        std::shared_ptr<CHistorySession> session = mgr->newSession();
-        HistoryItem hi;
-        hi.localFilePath = source_file_name_;
-        hi.serverName = server_name_;
-        hi.directUrl =  (lastUploadedItem_.fileListItem.imageUrl);
-        hi.thumbUrl = (lastUploadedItem_.fileListItem.thumbUrl);
-        hi.viewUrl = (lastUploadedItem_.fileListItem.downloadUrl);
-        hi.uploadFileSize = lastUploadedItem_.fileListItem.fileSize; // IuCoreUtils::getFileSize(WCstringToUtf8(ImageFileName));
-        session->AddItem(hi);
-
-        if ( Settings.TrayIconSettings.ShortenLinks ) {
-            std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
-
-            CUploadEngineData *ue = Settings.urlShorteningServer.uploadEngineData();
-            if ( !ue ) {
-                ShowImageUploadedMessage(url);
-                return false;
-
-            }
-            CAbstractUploadEngine * e = _EngineList->getUploadEngine(ue,Settings.urlShorteningServer.serverSettings());
-            if ( !e ) {
-                ShowImageUploadedMessage(url);
-                return false;
-            }
-            e->setUploadData(ue);
-            ServerSettingsStruct& settings = Settings.urlShorteningServer.serverSettings();
-            e->setServerSettings(settings);
-            e->setUploadData(ue);
-            uploadType_ = utShorteningImageUrl;
-            UploadTaskUserData* uploadTaskUserData = new UploadTaskUserData;
-            uploadTaskUserData->linkTypeToShorten = usedDirectLink ? _T("ImageUrl") : _T("DownloadUrl");
-            m_FileQueueUploader->AddUploadTask(task, reinterpret_cast<UploadTaskUserData*>(uploadTaskUserData), e);
-            m_FileQueueUploader->start();
-        } else {
-            ShowImageUploadedMessage(url);
-        }
-    }
-    return true;
-}
-*/
 void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 {
     if (task->type() == UploadTask::TypeUrl ) {
@@ -934,7 +876,7 @@ void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
     setStatusText(statusText, kStatusHideTimeout);
 }
 
-CString CFloatingWindow::ShowHotkey(CString funcName, CString menuItemText) {
+CString CFloatingWindow::HotkeyToString(CString funcName, CString menuItemText) {
     int cur = Settings.Hotkeys.getFuncIndex(funcName);
     if (cur<0) {
         return menuItemText;

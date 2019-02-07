@@ -20,21 +20,19 @@
 
 #include "ScriptUploadEngine.h"
 
+#include <thread>
+#include <unordered_map>
+
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
-#include "Core/Logging.h"
-#include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
-#include <thread>
-#include <unordered_map>
 
-
-
-CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings) : 
-                                            CAdvancedUploadEngine(serverSync, settings), Script(fileName, serverSync, false)
+CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings, std::shared_ptr<INetworkClientFactory> factory) :
+    CAdvancedUploadEngine(serverSync, settings), 
+    Script(fileName, serverSync, factory, false)
 {
     setServerSettings(settings);
     name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);

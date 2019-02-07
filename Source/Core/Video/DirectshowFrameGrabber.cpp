@@ -102,6 +102,7 @@ public :
  protected:
     unsigned char *data_;
     size_t dataSize_;
+    DISALLOW_COPY_AND_ASSIGN(DirectshowVideoFrame);
 };
 
 inline std::string GetMessageForHresult(HRESULT hr) { 

@@ -1,17 +1,15 @@
+#include "codepages.h"
 
 #include <string>
-#include "codepages.h"
-#include "Core/Utils/StringUtils.h"
 #include <unordered_map>
 #include <algorithm>
 
-namespace {
-
 /*
-struct lang_t {
-    const char *name;
-    int  codepage_id;
-};*/
+http://rsdn.ru/forum/src/257031.1.aspx
+codepagebyname.h
+*/
+
+namespace {
 
 std::unordered_map<std::string,int> langs = {
     { "437", 437 },
@@ -281,7 +279,7 @@ int CodepageByName(const std::string& name)
     {
         return it->second;
     }
-    return 65001;
+    return 65001; // utf-8
 }
 
 std::string NameByCodepage( int code )

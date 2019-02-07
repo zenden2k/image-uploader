@@ -33,7 +33,6 @@
 #include "Core/Utils/SystemUtils.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
-#include "Core/CoreFunctions.h"
 #include "Core/AppParams.h"
 
 #ifdef IU_CLI
@@ -55,6 +54,7 @@ bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
     if(!xml.LoadFromFile(W2U(filename)))    
     {
         ServiceLocator::instance()->logger()->write(logError, _T("Update Engine"), CString(_T("Failed to load update file ")) + filename + _T("\r\n"));
+        return false;
     }
     m_FileName = filename;
     Parse(xml);
@@ -264,7 +264,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     m_localUpdateInfo.push_back(localPackage);
     CUpdateInfo remotePackage;
-    auto nm = CoreFunctions::createNetworkClient();
+    auto nm = networkClientFactory_->create();
     nm->setTreatErrorsAsWarnings(true);
     nm->enableResponseCodeChecking(false);
     nm->setProgressCallback(NetworkClient::ProgressCallback(this,&CUpdateManager::progressCallback));

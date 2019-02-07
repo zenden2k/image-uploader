@@ -7,12 +7,13 @@
 #include <string>
 #include <thread>
 #include "Core/ThreadSync.h"
+#include "Core/Network/INetworkClient.h"
 
 class ServerSync;
 class NetworkClient;
 class Script {
     public:
-        Script(const std::string& fileName, ThreadSync* serverSync, bool load = true);
+        Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool load = true);
         virtual ~Script();
         Sqrat::SqratVM& getVM();
         bool isLoaded();
@@ -38,7 +39,8 @@ class Script {
         bool m_bIsPluginLoaded;
         std::thread::id owningThread_;
         ThreadSync* sync_;
-        std::unique_ptr<NetworkClient> networkClient_;
+        std::unique_ptr<INetworkClient> networkClient_;
+        std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     private:
         DISALLOW_COPY_AND_ASSIGN(Script);
 };

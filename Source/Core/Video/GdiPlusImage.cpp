@@ -25,7 +25,7 @@ GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm, bool takeOwnership)
 
 void GdiPlusImage::init()
 {
-    data_ = 0;
+    data_ = nullptr;
     width_ = 0;
     height_ = 0;
 }
@@ -89,7 +89,6 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 {
     if ( dt == AbstractImage::dfRGB888 )  {
         int lineSizeInBytes = reinterpret_cast<int>(parameter);
-//        int dataSize = dataSize;
         size_t newLineSize = width * 3;
         newLineSize = ((newLineSize + 3) & ~3);
         size_t newDataSize = /*dataSize*2/**2*//*+100000**/newLineSize * height;

@@ -10,7 +10,6 @@
 #include "resource.h"
 #include <atlcrack.h>
 #include "Core/Logging/Logger.h"
-#define LOGMSGTYPE
 
 struct LogListBoxItem
 {
@@ -45,6 +44,8 @@ class CLogListBox :
             MESSAGE_HANDLER(OCM_DRAWITEM, OnDrawitem)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem)
+            MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+            MESSAGE_HANDLER(WM_CHAR, OnChar)
          END_MSG_MAP()
 
          // Handler prototypes:
@@ -52,9 +53,10 @@ class CLogListBox :
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
-        
-         LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
+        LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
         LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
+        LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         int AddString(LogMsgType Type, const CString& szTitle,const CString& szText, const CString& szInfo=CString());
         LogListBoxItem* getItemFromIndex(int index);
         LRESULT OnKillFocus(HWND hwndNewFocus);
@@ -63,6 +65,7 @@ class CLogListBox :
         BOOL SubclassWindow(HWND hWnd);
         void Init();
         void Clear();
+        void SelectAll();
         
 };
 
