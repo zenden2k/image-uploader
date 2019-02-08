@@ -29,6 +29,7 @@
 #include "regionselect.h"
 #include "Gui/Controls/hyperlinkcontrol.h"
 #include "Core/ScreenCapture.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 #define IDC_FULLSCREEN WM_USER + 219
 #define IDC_VIEWSETTINGS WM_USER + 220
@@ -36,8 +37,9 @@
 #define IDC_FREEFORMREGION WM_USER + 222
 #define IDC_HWNDSREGION WM_USER + 223
 
+
 class CScreenshotDlg : 
-    public /*aero::*/CDialogImpl<CScreenshotDlg>    , 
+    public /*aero::*/CCustomDialogIndirectImpl<CScreenshotDlg>,
     public CWinDataExchange<CScreenshotDlg>
 {
     public:

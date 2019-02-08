@@ -53,14 +53,38 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
-    TRC(IDC_ADDFILEPROTOCOL, "Convert UNC path \"\\\\\" to \"file://///\"");
- 
+    CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
+
+    if (!WinUtils::IsVistaOrLater()) {
+        // Try to remove Unicode Left-To-Right marks from text on Windows XP
+        // addFileProcotolLabelText.Replace(L"\u200E", L"");
+        // Actually we do not need this, because installing of language pack for RTL languages solves this problem on Windows XP
+    }
+    SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
+   
     presetButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
     presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     LoadComputerAddresses();
     GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
+
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        HWND downloadUrlEditHwnd = GetDlgItem(IDC_DOWNLOADURLEDIT);
+        LONG styleEx = ::GetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+
+        HWND directoryEditHwnd = GetDlgItem(IDC_DIRECTORYEDIT);
+        styleEx = ::GetWindowLong(directoryEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(directoryEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+
+        HWND exampleUrlLabel = GetDlgItem(IDC_EXAMPLEURLLABEL);
+        styleEx = ::GetWindowLong(exampleUrlLabel, GWL_EXSTYLE);
+        ::SetWindowLong(exampleUrlLabel, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING & ~WS_EX_LAYOUTRTL);
+        LONG style = ::GetWindowLong(exampleUrlLabel, GWL_STYLE);
+        ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
+    }
     
     CenterWindow(GetParent());
     return 0;  // Let the system set the focus
@@ -72,7 +96,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     connectionName.TrimLeft(L" ");
     connectionName.TrimRight(L" ");
     if ( connectionName.IsEmpty() ) {
-        MessageBox(TR("Connection name cannot be empty"),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Connection name cannot be empty"),TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -80,7 +104,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     downloadUrl.TrimLeft(L" ");
     downloadUrl.TrimRight(L" ");
     if ( downloadUrl.IsEmpty() ) {
-        MessageBox(TR("Download URL cannot be empty."),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Download URL cannot be empty."), TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -102,7 +126,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
         if ( !reason.IsEmpty() ) {
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
-        MessageBox(errorMessage,TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
 
     }    
     return 0;
@@ -415,13 +439,25 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
     int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
+
     for( size_t i =0; i< sharedFolders_.size(); i++ ) {
-        popupMenu.AppendMenu(MF_STRING, id++, sharedFolders_[i]);
+        // Adding Unicode Left-To-Right marks to text to be rendered correctly if RTL language is choosen
+        CString itemTitle = L"\u200E" + sharedFolders_[i];
+        if (Lang.isRTL()) {
+            itemTitle.Replace(L"\\", L"\\\u200E");
+            itemTitle.Replace(L"/", L"/\u200E");
+        }
+        popupMenu.AppendMenu(MF_STRING, id++, itemTitle);
 
     }
     id =  IDC_PRESETMENU_FIRST_ID;
     for (size_t i = 0; i< addresses_.size(); i++) {
-        popupMenu.AppendMenu(MF_STRING, id++, addresses_[i]);
+        CString itemTitle = L"\u200E" +  addresses_[i];
+        if (Lang.isRTL()) {
+            itemTitle.Replace(L"\\", L"\\\u200E");
+            itemTitle.Replace(L"/", L"/\u200E");
+        }
+        popupMenu.AppendMenu(MF_STRING, id++, itemTitle);
     }
      
     popupMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);

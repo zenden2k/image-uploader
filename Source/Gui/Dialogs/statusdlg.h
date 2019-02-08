@@ -24,11 +24,12 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "3rdpart/thread.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CStatusDlg
 
 class CStatusDlg :
-    public CDialogImpl<CStatusDlg>
+    public CCustomDialogIndirectImpl<CStatusDlg>
 {
     public:
         CStatusDlg();

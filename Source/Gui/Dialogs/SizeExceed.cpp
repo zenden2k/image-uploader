@@ -136,13 +136,13 @@ LRESULT CSizeExceed::OnBnClickedForall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 bool CSizeExceed::checkAccount() {
     std::string serverName = imageServerSelector_->serverProfile().serverName();
     if (serverName.empty()) {
-        MessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
         return false;
     } 
     if (!imageServerSelector_->isAccountChosen()) {
         CString message;
         message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());
-        MessageBox(message, TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
         return false;
     }
     return true;

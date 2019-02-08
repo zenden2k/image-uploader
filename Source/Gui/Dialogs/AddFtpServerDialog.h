@@ -4,12 +4,13 @@
 #pragma once
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
+#include "Gui/Controls/DialogIndirect.h"
 
 class CUploadEngineList;
 // CAddFtpServerDialog
 
 class CAddFtpServerDialog : 
-    public CDialogImpl<CAddFtpServerDialog>    
+    public CCustomDialogIndirectImpl<CAddFtpServerDialog>
 {
 public:
     CAddFtpServerDialog(CUploadEngineList* uploadEngineList);

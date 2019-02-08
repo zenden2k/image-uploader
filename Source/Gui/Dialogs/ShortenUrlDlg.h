@@ -12,9 +12,10 @@
 #include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/CustomEditControl.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CShortenUrlDlg
-class CShortenUrlDlg:    public CDialogImpl <CShortenUrlDlg>,
+class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
                            public CDialogResize <CShortenUrlDlg>
 {
     public:

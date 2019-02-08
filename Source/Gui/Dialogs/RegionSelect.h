@@ -49,6 +49,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 
     protected:
         BEGIN_MSG_MAP(CRegionSelect)
+            MESSAGE_HANDLER(WM_NCCREATE, OnNcCreate)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_CREATE, OnCreate)
             MESSAGE_HANDLER(WM_PAINT, OnPaint)
@@ -68,6 +69,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnNcCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

@@ -151,7 +151,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
             Settings.imageServer.setProfileName(WCstringToUtf8(login));
             CString password = GuiTools::GetDlgItemText( m_hWnd, IDC_PASSWORDEDIT );
             if ( login.IsEmpty() ) {
-                MessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);
+                LocalizedMessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);
                 return 0;
             }
             LoginInfo& loginInfo = Settings.ServersSettings[W2U(Settings.getServerName())][W2U(login)].authData;

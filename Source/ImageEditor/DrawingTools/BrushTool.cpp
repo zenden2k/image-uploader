@@ -128,7 +128,6 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
     float y = static_cast<float>(y0);
     SolidBrush br( foregroundColor_ );
     if ( x1 == x0 ) {
-        //    MessageBox(0,0,0,0);
         for( int y = yStart; y <= yEnd; y++ ) {
             x = static_cast<float>(x0);
             RECT rc = { static_cast<LONG>(x)-penSize_ - 1, static_cast<LONG>(y) - penSize_ - 1, penSize_ * 2 + 1, penSize_ * 2 + 2 };

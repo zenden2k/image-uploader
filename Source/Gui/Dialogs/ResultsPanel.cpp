@@ -109,20 +109,30 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     CBitmap hBitmap;
 
     HIMAGELIST m_hToolBarImageList;
+    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+
     if (Is32BPP())
     {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
         
-        m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32,0,6);
+        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | rtlStyle, 0, 6);
         ImageList_Add(m_hToolBarImageList,hBitmap,NULL);
     }
     else
     {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP4));
 
-        m_hToolBarImageList = ImageList_Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
         ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
     }
+
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        HWND codeEditHwnd = GetDlgItem(IDC_CODEEDIT);
+        LONG styleEx = ::GetWindowLong(codeEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(codeEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+    }
+
     CWindowDC hdc(m_hWnd);
     float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;

@@ -366,7 +366,8 @@ void CServerSelectorControl::updateServerList()
 {
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
-    comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
+    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if ( showDefaultServerItem_ ) {
@@ -856,6 +857,9 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
             WS_EX_TOPMOST*/; // with this style window is overlapping modal dialogs (server params dialog, add ftp server, etc...)
 
         pMyDlgTemplate->style = pMyDlgTemplate->style | WS_POPUP | WS_BORDER/* | WS_CAPTION*/ ;
+    }
+    if (Lang.isRTL()) {
+        pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
     }
     return reinterpret_cast<DLGTEMPLATE*>(pMyDlgTemplate);
 }

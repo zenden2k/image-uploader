@@ -1064,9 +1064,9 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
 
     rc.top -= scrollOffset_.x;
     rc.left -= scrollOffset_.y;
-        
+    DWORD rtlStyle = Lang.isRTL() ? (WS_EX_LAYOUTRTL | WS_EX_RTLREADING) : 0;
     /*HWND wnd =*/ inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
-            |  ES_NOHIDESEL /*| ES_LEFT */,WS_EX_TRANSPARENT );
+        | ES_NOHIDESEL /*| ES_LEFT */, WS_EX_TRANSPARENT | rtlStyle);
 
     inputBox_->SetWindowPos(HWND_TOP,0,0,0,0, SWP_NOSIZE|SWP_NOMOVE);
     inputBox_->setFont(font_,  CFM_FACE | CFM_SIZE | CFM_CHARSET 

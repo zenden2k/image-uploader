@@ -22,11 +22,13 @@
 
 #pragma once
 
+#include <memory>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/myimage.h"
 #include "Gui/Controls/ServerSelectorControl.h"
-#include <memory>
+#include "Gui/Controls/DialogIndirect.h"
 
 class FileUploadTask;
 struct FullUploadProfile;
@@ -34,7 +36,7 @@ struct ImageConvertingParams;
 class CUploadEngineList;
 
 class CSizeExceed :
-    public CDialogImpl<CSizeExceed>
+    public CCustomDialogIndirectImpl<CSizeExceed>
 {
     public:
         CSizeExceed(FileUploadTask * fileTask, CUploadEngineList* EngineList, UploadEngineManager* uploadEngineManager);

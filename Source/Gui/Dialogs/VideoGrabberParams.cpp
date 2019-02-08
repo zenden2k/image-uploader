@@ -62,6 +62,14 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Folder for snapshots:");
     TRC(IDC_VIDEOSNAPSHOTSFOLDERBUTTON, "Select...");
+    
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        HWND snapshotsFolderEditHwnd = GetDlgItem(IDC_VIDEOSNAPSHOTSFOLDEREDIT);
+        LONG styleEx = ::GetWindowLong(snapshotsFolderEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(snapshotsFolderEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+    }
+
     Color1.SubclassWindow(GetDlgItem(IDC_TEXTCOLOR));
     Color1.SetColor(Settings.VideoSettings.TextColor);
     SetDlgItemText(IDC_VIDEOSNAPSHOTSFOLDEREDIT, Settings.VideoSettings.SnapshotsFolder);

@@ -33,6 +33,27 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
 
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        HWND serverEditHwnd = GetDlgItem(IDC_SERVEREDIT);
+        LONG styleEx = ::GetWindowLong(serverEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(serverEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+
+        HWND remoteDirectoryEditHwnd = GetDlgItem(IDC_REMOTEDIRECTORYEDIT);
+        styleEx = ::GetWindowLong(remoteDirectoryEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(remoteDirectoryEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+
+        HWND downloadUrlEditHwnd = GetDlgItem(IDC_DOWNLOADURLEDIT);
+        styleEx = ::GetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE);
+        ::SetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
+
+        HWND exampleUrlLabel = GetDlgItem(IDC_EXAMPLEURLLABEL);
+        styleEx = ::GetWindowLong(exampleUrlLabel, GWL_EXSTYLE);
+        ::SetWindowLong(exampleUrlLabel, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING & ~WS_EX_LAYOUTRTL);
+        LONG style = ::GetWindowLong(exampleUrlLabel, GWL_STYLE);
+        ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
+    }
+
     //TRC(IDC_CONNECTIONNAMEEDIT, "New FTP Connection");
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     SetDlgItemText(IDC_REMOTEDIRECTORYEDIT, _T("/"));
@@ -54,7 +75,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     connectionName.TrimLeft(L" ");
     connectionName.TrimRight(L" ");
     if ( connectionName.IsEmpty() ) {
-        MessageBox(TR("Connection name cannot be empty"),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Connection name cannot be empty"), TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -62,7 +83,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     downloadUrl.TrimLeft(L" ");
     downloadUrl.TrimRight(L" ");
     if ( downloadUrl.IsEmpty() ) {
-        MessageBox(TR("Download URL cannot be empty."),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Download URL cannot be empty."), TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -90,7 +111,7 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
         if ( !reason.IsEmpty() ) {
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
-        MessageBox(errorMessage,TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
 
     }
 

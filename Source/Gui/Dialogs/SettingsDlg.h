@@ -36,7 +36,7 @@
 
 //const int SettingsPageCount = 10;
 
-class CSettingsDlg : public CDialogImpl<CSettingsDlg>
+class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
 {
     public:
         CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);

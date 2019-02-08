@@ -147,6 +147,10 @@ LRESULT CLogWindow::OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 void CLogWindow::TranslateUI()
 {
+    if (Lang.isRTL()) {
+        SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING); 
+        MsgList.SetWindowLong(GWL_EXSTYLE, MsgList.GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING);
+    }
     TRC(IDCANCEL, "Hide");
     TRC(IDC_CLEARLOGBUTTON, "Clear");
     SetWindowText(TR("Error log"));

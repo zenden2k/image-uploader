@@ -26,6 +26,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "3rdpart/thread.h"
 #include "Gui/Controls/PictureExWnd.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 class ServerProfile;
 class UploadEngineManager;
@@ -33,7 +34,7 @@ class UploadEngineManager;
 
 LoginInfo LoadLogin(int ServerId);
 
-class CLoginDlg : public CDialogImpl<CLoginDlg>    , public CThreadImpl<CLoginDlg>
+class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>, public CThreadImpl<CLoginDlg>
 {
     public:
         CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );

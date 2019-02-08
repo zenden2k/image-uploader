@@ -28,9 +28,10 @@
 #include "Func/UpdatePackage.h"
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ResultsListView.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 class CUpdateDlg : 
-    public CDialogImpl<CUpdateDlg>,
+    public CCustomDialogIndirectImpl<CUpdateDlg>,
     public CDialogResize<CUpdateDlg>,
     public CThreadImpl<CUpdateDlg>, 
     public CUpdateStatusCallback

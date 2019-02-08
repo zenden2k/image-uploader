@@ -39,10 +39,15 @@ class CLang : public ITranslator
         CString getLanguage() const;
         CString getLocale() const;
         CString getLanguageFileNameForLocale(const CString& locale);
+        /**
+            The RTL option is not being changed during program lifetime
+        **/
+        bool isRTL() const;
         virtual std::string getCurrentLanguage() override;
         virtual std::string getCurrentLocale() override;
         CLang(const CLang&) = delete;
         CLang& operator=(const CLang) = delete;
+        int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
     private:
         struct TranslateListItem
         {
@@ -55,6 +60,7 @@ class CLang : public ITranslator
         std::vector<CString> LanguagesList;
         CString locale_;
         CString language_;
+        bool isRTL_;
 };
 #if defined(IU_WTL_APP) || defined(IU_SERVERLISTTOOL) || defined(IU_SHELLEXT)
 extern CLang Lang;

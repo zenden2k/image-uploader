@@ -74,4 +74,40 @@ public:
     }
 };
 
+
+template <class T, class TBase = CWindow>
+class ATL_NO_VTABLE CCustomDialogIndirectImpl : public CDialogIndirectImpl< T > {
+
+public:
+    HGLOBAL m_hDlgTemplate = nullptr;
+    DLGTEMPLATE* CCustomDialogIndirectImpl::GetTemplate()
+    {
+        HINSTANCE hInst = _Module.GetResourceInstance();
+        HRSRC res = FindResource(hInst, MAKEINTRESOURCE(static_cast<T*>(this)->IDD), RT_DIALOG);
+        DLGTEMPLATE* dit = (DLGTEMPLATE*)LockResource(LoadResource(hInst, res));
+
+        size_t sizeDlg = ::SizeofResource(hInst, res);
+        m_hDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
+        DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(m_hDlgTemplate);
+        ::memcpy(pMyDlgTemplate, dit, sizeDlg);
+
+        if (Lang.isRTL()) {
+            pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
+        }
+        return (DLGTEMPLATE*)pMyDlgTemplate;
+    }
+
+    ~CCustomDialogIndirectImpl()
+    {
+        if (m_hDlgTemplate) {
+            GlobalFree(m_hDlgTemplate);
+        }
+    }
+
+    int LocalizedMessageBox(LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK) {
+        return Lang.LocalizedMessageBox(m_hWnd, lpText, lpCaption, uType);
+    }
+    
+};
+
 #endif // DIALOGINDIRECT_H

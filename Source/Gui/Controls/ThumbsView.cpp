@@ -53,7 +53,8 @@ void CThumbsView::Init(bool Extended)
 {
     ExtendedView = Extended;
     ImageView.Create(m_hWnd);
-    ImageList.Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT + (ExtendedView?20:0), ILC_COLOR24, 0, 3);
+    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    ImageList.Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT + (ExtendedView ? 20 : 0), ILC_COLOR24 | rtlStyle, 0, 3);
     SetImageList(ImageList, LVSIL_NORMAL);
     DWORD style = GetExtendedListViewStyle();
     style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;

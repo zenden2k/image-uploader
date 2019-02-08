@@ -26,11 +26,12 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/HistoryManager.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CClearHistoryDlg
 
 class CClearHistoryDlg :
-    public CDialogImpl<CClearHistoryDlg>
+    public CCustomDialogIndirectImpl<CClearHistoryDlg>
 {
     public:
         CClearHistoryDlg();

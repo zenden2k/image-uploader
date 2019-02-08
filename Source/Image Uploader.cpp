@@ -40,6 +40,7 @@
 //#include <vld.h>
 #endif
 #include "Func/GdiPlusInitializer.h"
+#include "Gui/Dialogs/LangSelect.h"
 CAppModule _Module;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
@@ -91,6 +92,36 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     ServiceLocator::instance()->setProgramWindow(&dlgMain);
     floatWnd.setWizardDlg(&dlgMain);
 
+    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
+    bool isFirstRun = Settings.Language.IsEmpty() || FALSE;
+    for (size_t i = 0; i<CmdLine.GetCount(); i++) {
+        CString CurrentParam = CmdLine[i];
+        if (CurrentParam.Left(10) == _T("/language=")) {
+            CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
+            CString foundName = Lang.getLanguageFileNameForLocale(shortLanguageName);
+            if (!foundName.IsEmpty()) {
+                Settings.Language = foundName;
+            }
+        }
+    }
+    if (isFirstRun) {
+        CLangSelect LS;
+        if (LS.DoModal(nullptr) == IDCANCEL) {
+            //*DlgCreationResult = 1;
+            return 0;
+        }
+        Settings.Language = LS.Language;
+        Lang.LoadLanguage(Settings.Language);
+        Settings.SaveSettings();
+    } else {
+        Lang.LoadLanguage(Settings.Language);
+    }
+
+    if (Lang.isRTL()) {
+        SetProcessDefaultLayout(LAYOUT_RTL);
+    }
+
+    dlgMain.setIsFirstRun(isFirstRun);
     if ( dlgMain.Create( 0, reinterpret_cast<LPARAM>(&DlgCreationResult) ) == NULL ) {
             ATLTRACE( _T("Main dialog creation failed!  :( sorry\n") );
             dlgMain.m_hWnd = 0;

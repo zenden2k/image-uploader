@@ -100,17 +100,17 @@ LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 {    
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
     if ( url.IsEmpty() ) {
-        MessageBox(TR("Please enter an URL"), TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Please enter an URL"), TR("Error"), MB_ICONERROR);
         return 0;
     }
     
     if (urlShortenerServerSelector_->serverProfile().serverName().empty()) {
-        MessageBox(TR("You have not selected server"), TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("You have not selected server"), TR("Error"), MB_ICONERROR);
         return 0;
     } else if (!urlShortenerServerSelector_->isAccountChosen()) {
             CString message;
             message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(urlShortenerServerSelector_->serverProfile().serverName()).c_str());
-            MessageBox(message, TR("Error"), MB_ICONERROR);
+            LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
             return 0;
     } 
     

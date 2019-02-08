@@ -104,10 +104,11 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     RECT toolbarRect;
     HWND toolbarPlaceholder = GetDlgItem(IDC_TOOLBARPLACEHOLDER);
     ::GetWindowRect(toolbarPlaceholder, &toolbarRect);
-    ScreenToClient(&toolbarRect);
+    ::MapWindowPoints(nullptr, m_hWnd, (LPPOINT)&toolbarRect, 2);
     int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-    toolbarImageList_.Create(iconWidth, iconHeight, (WinUtils::IsWinXPOrLater()) ?  ILC_COLOR32 : ILC_COLOR8| ILC_MASK,3,3);
+    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    toolbarImageList_.Create(iconWidth, iconHeight, ((WinUtils::IsWinXPOrLater()) ? ILC_COLOR32 : ILC_COLOR8 | ILC_MASK) | rtlStyle, 3, 3);
     /*if ( WinUtils::IsWinXP() || WinUtils::IsVista() )*/ {
         iconBold_ = GuiTools::LoadSmallIcon(IDI_ICONBOLD);
         toolbarImageList_.AddIcon(iconBold_);

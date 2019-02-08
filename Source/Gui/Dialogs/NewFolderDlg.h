@@ -26,11 +26,12 @@
 #include "resource.h"       // main symbols
 #include <string>
 #include <vector>
+#include "Gui/Controls/DialogIndirect.h"
 
 class CFolderItem;
 
 class CNewFolderDlg : 
-    public CDialogImpl<CNewFolderDlg>,
+    public CCustomDialogIndirectImpl<CNewFolderDlg>,
     public CDialogResize<CNewFolderDlg>    
 {
     public:

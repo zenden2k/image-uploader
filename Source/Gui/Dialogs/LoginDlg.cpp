@@ -137,7 +137,7 @@ LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if (MessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APPNAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
+    if (LocalizedMessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APPNAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
         return 0;
     }
     std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
@@ -176,7 +176,7 @@ DWORD CLoginDlg::Run()
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
         if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
-            MessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
+            LocalizedMessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
             OnProcessFinished();
             return 0;
         }
@@ -204,7 +204,7 @@ DWORD CLoginDlg::Run()
         int res = plugin_->doLogin();
         if ( res ) {
             OnProcessFinished();
-            MessageBox(TR("Authenticated succesfully."));
+            LocalizedMessageBox(TR("Authenticated succesfully."));
             Accept();
             
             return 0;
@@ -232,12 +232,12 @@ void CLoginDlg::Accept()
     li.Login = WCstringToUtf8(Buffer);
 
     if ( li.Login.empty() ) {
-        MessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
         return;
     }
     std::string serverNameA = serverProfile_.serverName();
     if ( !ignoreExistingAccount_ &&  createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
-        MessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
         return;
     }
 

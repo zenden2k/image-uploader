@@ -38,12 +38,13 @@
 #include "Core/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
 #include <mutex>
+#include "Gui/Controls/DialogIndirect.h"
 
 class CFileQueueUploader;
 class CMyEngineList;
 class CServerSelectorControl;
 // CImageReuploaderDlg
-class CImageReuploaderDlg:    public CDialogImpl <CImageReuploaderDlg>,
+class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDlg>,
                            public CDialogResize <CImageReuploaderDlg>
 {
     public:

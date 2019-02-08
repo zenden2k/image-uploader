@@ -22,6 +22,7 @@
 
 
 #pragma once
+#include <atomic>
 #include "atlheaders.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "resource.h"       // main symbols
@@ -30,19 +31,19 @@
 #include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/FolderList.h"
+#include "Core/Upload/AdvancedUploadEngine.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CServerFolderSelect
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
-#include <atomic>
-#include "Core/Upload/AdvancedUploadEngine.h"
 
 class UploadEngineManager;
 class ServerProfile;
 
 class CServerFolderSelect : 
-    public CDialogImpl<CServerFolderSelect>, 
+    public CCustomDialogIndirectImpl<CServerFolderSelect>,
     public CThreadImpl<CServerFolderSelect>, 
     public CDialogResize<CServerFolderSelect>    
 {

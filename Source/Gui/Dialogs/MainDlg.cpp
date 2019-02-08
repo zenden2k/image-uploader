@@ -726,7 +726,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         }
 
         if (!CopyFile(FileName, dlg->getFile(), false)) {
-            MessageBox(TR("Cannot copy file: ")+WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
+            Lang.LocalizedMessageBox(m_hWnd, TR("Cannot copy file: ")+WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
         }
     } else {
         CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
@@ -751,7 +751,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
-            MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -761,7 +761,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
-            MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -785,7 +785,7 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     if (!result.IsEmpty()) {
         if (!WinUtils::CopyTextToClipboard(result)) {
-			MessageBox(_T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+			Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
 		}
 	}
 	return 0;

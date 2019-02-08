@@ -76,6 +76,7 @@ CLang::CLang()
     *m_Directory = 0;
     locale_ = "en_US";
     language_ = "en";
+    isRTL_ = false;
 }
 
 bool CLang::SetDirectory(LPCTSTR Directory)
@@ -146,7 +147,15 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
             delete[] pName;
             delete[] pText;
             continue;
-        };
+        } else if (Name == CString(_T("RTL"))) {
+            CString lowerText = CString(pText).MakeLower();
+            if (lowerText == "yes" || lowerText == "1" || lowerText == "true") {
+                isRTL_ = true;
+            }
+            delete[] pName;
+            delete[] pText;
+            continue;
+        }
 
         TranslateListItem tli = {NULL, NULL};
         tli.Name = pName;
@@ -194,6 +203,13 @@ std::string CLang::getCurrentLocale() {
     return W2U(locale_);
 }
 
+int CLang::LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType) {
+    if (isRTL()) {
+        uType |= MB_RTLREADING;
+    }
+    return MessageBox(hWnd, lpText, lpCaption, uType);
+}
+
 CString CLang::getLanguageFileNameForLocale(const CString& locale)
 {
     std::vector<CString> list;
@@ -239,6 +255,10 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
         fclose(f);
     }
     return foundName;
+}
+
+bool CLang::isRTL() const {
+    return isRTL_;
 }
 
 CLang::~CLang()

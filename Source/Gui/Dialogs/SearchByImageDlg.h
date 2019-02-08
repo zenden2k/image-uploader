@@ -25,12 +25,13 @@
 #include "resource.h"       // main symbols
 #include "Core/SearchByImage.h"
 #include "Gui/Controls/PictureExWnd.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CSearchByImageDlg
 class SearchByImage;
 
 class CSearchByImageDlg :
-    public CDialogImpl<CSearchByImageDlg>
+    public CCustomDialogIndirectImpl<CSearchByImageDlg>
 {
     public:
         explicit CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName);

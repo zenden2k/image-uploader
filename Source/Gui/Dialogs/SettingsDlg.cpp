@@ -50,7 +50,6 @@ CSettingsDlg::~CSettingsDlg()
 
 LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    //SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
     // center the dialog on the screen
     CenterWindow();
     saveStatusLabel_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
@@ -101,7 +100,7 @@ LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
         } catch (ValidationException& ex) {
             ShowPage(i);
             if (ex.errors_.size()) {
-                MessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
+                LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
                     ::SetFocus(ex.errors_[0].Control);
                 }
@@ -175,7 +174,7 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         } catch (ValidationException& ex) {
             ShowPage(i);
             if (ex.errors_.size()) {
-                MessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
+                LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
                     ::SetFocus(ex.errors_[0].Control);
                 }

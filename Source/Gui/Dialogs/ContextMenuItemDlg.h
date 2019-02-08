@@ -21,18 +21,19 @@
 #define ContextMenuItemDlg_H
 
 #pragma once
+#include <memory>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/Controls/ServerSelectorControl.h"
-#include <memory>
+#include "Gui/Controls/DialogIndirect.h"
 
 class ServerProfile;
 class CServerSelectorControl;
 // CContextMenuItemDlg
 
 class UploadEngineManager;
-class CContextMenuItemDlg : public CDialogImpl<CContextMenuItemDlg>    
+class CContextMenuItemDlg : public CCustomDialogIndirectImpl<CContextMenuItemDlg>
 {
     public:
         int ServerId;

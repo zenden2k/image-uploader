@@ -26,6 +26,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/HistoryTreeControl.h"
 #include "Gui/Controls/PictureExWnd.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 class CWizardDlg;
 class CHistoryReader;
@@ -40,7 +41,7 @@ class CHistoryReader;
 #define ID_DELETEFILEONSERVER ID_OPENINBROWSER + 5
 #define WM_MY_OPENHISTORYFILE WM_USER + 101
 
-class CHistoryWindow : public CDialogImpl <CHistoryWindow>,
+class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
     public CDialogResize <CHistoryWindow>,
     public CWinDataExchange <CHistoryWindow>,
     public CMessageFilter

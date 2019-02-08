@@ -30,11 +30,12 @@
 #pragma once
 #include "atlheaders.h"
 #include "maindlg.h"
-#include "resource.h"       
+#include "resource.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CMediaInfoDlg
 
-class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
+class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
                                 public CDialogResize <CMediaInfoDlg>,
                                 public CThreadImpl <CMediaInfoDlg>
 {
@@ -81,6 +82,7 @@ class CMediaInfoDlg:        public CDialogImpl <CMediaInfoDlg>,
         LRESULT OnShowInEnglishCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         DWORD Run();
         void GenerateInfo();
+        void FixEditRTL();
         CString m_FileName;
         CFont editFont_;
         InfoType infoType_;

@@ -27,6 +27,7 @@
 #include "3rdpart/vkCodes.h"
 #include "HotkeySettings.h"
 #include "Func/LangClass.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CHotkeyEditor
 struct MYHOTKEY
@@ -169,7 +170,7 @@ class CHotkeyItem
 };
 
 class CHotkeyEditor :
-    public CDialogImpl<CHotkeyEditor>,
+    public CCustomDialogIndirectImpl<CHotkeyEditor>,
     public CWinDataExchange<CHotkeyEditor>
 {
     public:

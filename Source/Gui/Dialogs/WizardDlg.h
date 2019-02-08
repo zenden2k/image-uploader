@@ -39,7 +39,7 @@
 #include "Gui/HwndScopedWrapper.h"
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
-
+#include "Gui/Controls/DialogIndirect.h"
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
@@ -78,7 +78,7 @@ class UploadEngineManager;
 class ScriptsManager;
 class Win7JumpList;
 class CWizardDlg : 
-    public CDialogImpl<CWizardDlg>    , public CUpdateUI<CWizardDlg>,
+    public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
         public CUpdateDlg::CUpdateDlgCallback,
         public IProgramWindow,
@@ -213,6 +213,7 @@ public:
     bool QuickUploadMarker;
     CString LastVideoFile;
     bool m_bShowAfter;
+    bool isFirstRun_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);
@@ -241,7 +242,7 @@ public:
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);
-
+    void setIsFirstRun(bool isFirstRun);
     public:
     CUpdateDlg *updateDlg;
     bool CanShowWindow() override;

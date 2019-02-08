@@ -433,13 +433,13 @@ bool CImageReuploaderDlg::BeginDownloading()
         if ( uri.scheme().empty() ) {
             CString message;
             message.Format(TR("Invalid source URL: '%s'. Absolute URL is needed, including schema (http,https,etc)"), static_cast<LPCTSTR>(sourceUrl) );
-            MessageBox(message, APPNAME, MB_OK | MB_ICONEXCLAMATION);
+            LocalizedMessageBox(message, APPNAME, MB_OK | MB_ICONEXCLAMATION);
             return false;
         }
     }
 
     if ( !links.size() ) {
-        MessageBox(TR("Could not find links in the given text!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
+        LocalizedMessageBox(TR("Could not find links in the given text!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
         return false;
     } else {
         uploadSession_.reset(new UploadSession());

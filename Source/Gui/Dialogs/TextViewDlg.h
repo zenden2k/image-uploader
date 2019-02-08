@@ -23,11 +23,12 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Func/LangClass.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CTextViewDlg
 
 class CTextViewDlg :
-    public CDialogImpl<CTextViewDlg>,
+    public CCustomDialogIndirectImpl<CTextViewDlg>,
     public CDialogResize<CTextViewDlg>
 {
     public:

@@ -216,6 +216,9 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
         pMyDlgTemplate->exStyle|=WS_EX_APPWINDOW;
         pMyDlgTemplate->style = pMyDlgTemplate->style |  WS_POPUP | WS_CAPTION;
     }
+    if (Lang.isRTL()) {
+        pMyDlgTemplate->exStyle |= WS_EX_RTLREADING | WS_EX_LAYOUTRTL;
+    }
     return (DLGTEMPLATE*)pMyDlgTemplate;
 }
 

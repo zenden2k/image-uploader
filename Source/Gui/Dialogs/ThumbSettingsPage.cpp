@@ -161,7 +161,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            MessageBox(TR("Couldn't load thumbnail preset!"));
+            Lang.LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
             return 0;
         }
     }
@@ -229,7 +229,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     conv.setThumbnail(thumb);
     std::unique_ptr<Bitmap> bm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
     if(!bm) {
-        MessageBox(TR("Couldn't load thumbnail preset!"));
+        Lang.LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
         return;
     }
     
@@ -264,7 +264,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
     std::string destination = srcFolder + newName + ".xml";
     if (IuCoreUtils::FileExists(destination)) {
-        MessageBox(TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
+        Lang.LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
         return false;
     }
     Thumbnail * thumb = 0;

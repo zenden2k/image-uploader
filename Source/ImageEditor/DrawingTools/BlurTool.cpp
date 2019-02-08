@@ -88,7 +88,6 @@ void BlurTool::drawLine(int x0, int y0, int x1, int y1)
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         affectedRegion_.Union(&reg);*/
         
-        //    MessageBox(0,0,0,0);
         for( int y = yStart; y <= yEnd; y++ ) {
             x = x0;
             RectF sourceRect(x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2);

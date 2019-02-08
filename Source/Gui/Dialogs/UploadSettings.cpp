@@ -307,7 +307,7 @@ bool CUploadSettings::OnNext()
         { 
             CString errorMsg;
             errorMsg.Format(TR("Upload to server '%s' is impossible without account.\r\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
-            MessageBox(errorMsg, APPNAME, MB_ICONERROR);
+            Lang.LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
             return false;
         }
     }
@@ -318,7 +318,7 @@ bool CUploadSettings::OnNext()
         {
             CString errorMsg;
             errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(ue2->Name)));
-            MessageBox(errorMsg, APPNAME, MB_ICONWARNING);
+            Lang.LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
     }
@@ -430,7 +430,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 
     if(checked && !WinUtils::FileExists(IuCommonFunctions::GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
     {
-        MessageBox(TR("File \"Data\\Thumb.png\" not found!"), APPNAME, MB_ICONWARNING);
+        Lang.LocalizedMessageBox(m_hWnd, TR("File \"Data\\Thumb.png\" not found!"), APPNAME, MB_ICONWARNING);
         SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_SETCHECK, false);
         return 0;
     }
@@ -873,7 +873,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         
     RECT rc;
     ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
-    CurrentToolbar.ClientToScreen(&rc);
+    ::MapWindowPoints(CurrentToolbar.m_hWnd, nullptr, (LPPOINT)&rc, 2);
+    //CurrentToolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
     excludeArea.cbSize = sizeof(excludeArea);
@@ -1019,7 +1020,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
     CUploadEngineData *ue = serverProfile.uploadEngineData();
     if (!ue->UsingPlugin && ue->Engine.empty()) {
-        MessageBox(TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
+        Lang.LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
         return false;
     }
 

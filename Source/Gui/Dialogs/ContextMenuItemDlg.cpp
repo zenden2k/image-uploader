@@ -63,19 +63,19 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 {    
     title_ = GuiTools::GetDlgItemText(m_hWnd, IDC_MENUITEMTITLEEDIT);
     if ( title_.IsEmpty() ) {
-        MessageBox(TR("Name cannot be empty"),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("Name cannot be empty"), TR("Error"), MB_ICONERROR);
         return 0;
     }
     serverProfile_ = imageServerSelector_->serverProfile();
     if ( serverProfile_.isNull() ) {
-        MessageBox(TR("You have not selected server"),TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(TR("You have not selected server"), TR("Error"), MB_ICONERROR);
         return 0;
     }
 
     if ( !imageServerSelector_->isAccountChosen() ) {
         CString message;
         message.Format(TR("You have not selected account for server \"%s\""), U2W(imageServerSelector_->serverProfile().serverName()));
-        MessageBox(message, TR("Error"), MB_ICONERROR);
+        LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
         return 0;
     }
 

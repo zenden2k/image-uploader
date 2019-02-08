@@ -175,13 +175,13 @@ CWizardDlg::~CWizardDlg()
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    //SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL);  // test :))
     srand(unsigned int(time(0)));
     m_bShowWindow = true;
-       
-    LPDWORD DlgCreationResult = reinterpret_cast<LPDWORD>(lParam); 
-    
+
+    LPDWORD DlgCreationResult = reinterpret_cast<LPDWORD>(lParam);
+
     ATLASSERT(DlgCreationResult != NULL);
+
     // center the dialog on the screen
     CenterWindow();
     hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
@@ -209,44 +209,6 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
     helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
 
-
-    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
-    bool isFirstRun =  Settings.Language.IsEmpty() || FALSE;
-    for(size_t i=0; i<CmdLine.GetCount(); i++)
-    {
-        CString CurrentParam = CmdLine[i];
-        if(CurrentParam .Left(10)==_T("/language="))
-        {
-            CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength()-10);
-            CString foundName = Lang.getLanguageFileNameForLocale(shortLanguageName);
-            if ( !foundName.IsEmpty() ) {
-                Settings.Language = foundName;
-            }
-        }
-    }
-    if(isFirstRun)
-    {
-        CLangSelect LS;
-        if(LS.DoModal(m_hWnd) == IDCANCEL)
-        {
-            *DlgCreationResult = 1;
-            return 0;
-        }
-        Settings.Language = LS.Language;
-        Lang.LoadLanguage(Settings.Language);
-        
-        /*if(MessageBox(TR("Enable integration in Explorer's context menu?"),APPNAME, MB_YESNO|MB_ICONQUESTION)==IDYES)
-        {
-            Settings.ExplorerContextMenu = true;
-            Settings.ExplorerContextMenu_changed = true;
-            Settings.ExplorerVideoContextMenu = true;
-        }    */
-        Settings.SaveSettings();
-    }
-    else 
-    {
-        Lang.LoadLanguage(Settings.Language);
-    }
     LogWindow.TranslateUI();
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
@@ -256,7 +218,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         CString ErrBuf;
         ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
     
-        if(MessageBox(ErrBuf, APPNAME, MB_ICONERROR|MB_YESNO)==IDNO)
+        if (LocalizedMessageBox(ErrBuf, APPNAME, MB_ICONERROR | MB_YESNO) == IDNO)
         {
             *DlgCreationResult = 2;
             return 0;
@@ -288,7 +250,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
 
 	Settings.fixInvalidServers();
-    if ( isFirstRun ) {
+    if ( isFirstRun_ ) {
         CQuickSetupDlg quickSetupDialog;
 		if (quickSetupDialog.DoModal(m_hWnd) != IDOK){
 			*DlgCreationResult = 2;
@@ -401,7 +363,7 @@ bool CWizardDlg::ParseCmdLine()
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
                 msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), serverProfileName);
-                MessageBox(msg, APPNAME, MB_ICONWARNING); 
+                LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
@@ -777,7 +739,7 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 void CWizardDlg::Exit()
 {
     if (!Settings.SaveSettings()) {
-        MessageBox(TR("Could not save settings file. See error log for details."), APPNAME, MB_ICONERROR);
+        LocalizedMessageBox(TR("Could not save settings file. See error log for details."), APPNAME, MB_ICONERROR);
     }
 }
 
@@ -801,7 +763,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         {
             if(CurPage == wpMainPage)
             {
-                if(Settings.DropVideoFilesToTheList || MessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"),APPNAME,MB_YESNO)==IDNO)
+                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
                     goto filehost;
             }
             ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
@@ -1076,6 +1038,10 @@ bool CWizardDlg::HandleDropBitmap(IDataObject *pDataObj)
         }
     }
     return false;
+}
+
+void CWizardDlg::setIsFirstRun(bool isFirstRun) {
+    isFirstRun_ = isFirstRun;
 }
 
 STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
@@ -1721,7 +1687,7 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 void CWizardDlg::CloseWizard()
 {
     if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
-        if(MessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
+        if(LocalizedMessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
     
     CloseDialog(0);
 }
@@ -2080,7 +2046,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         }
         else
         {
-            MessageBox(_T("Невозможно сделать снимок экрана!"));
+            LocalizedMessageBox(_T("Невозможно сделать снимок экрана!"));
         }
     }
 

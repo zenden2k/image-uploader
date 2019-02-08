@@ -26,11 +26,11 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
-
+#include "Gui/Controls/DialogIndirect.h"
 // CQuickSetupDlg
 
 
-class CQuickSetupDlg : public CDialogImpl<CQuickSetupDlg>	
+class CQuickSetupDlg : public CCustomDialogIndirectImpl<CQuickSetupDlg>
 {
 	public:
 		CQuickSetupDlg();

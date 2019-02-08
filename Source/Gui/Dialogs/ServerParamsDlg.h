@@ -28,9 +28,11 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
+#include "Gui/Controls/DialogIndirect.h"
+
 class ServerProfile;
 class CServerParamsDlg : 
-    public CDialogImpl<CServerParamsDlg>,
+    public CCustomDialogIndirectImpl<CServerParamsDlg>,
     public CDialogResize<CServerParamsDlg>    
 {
     public:

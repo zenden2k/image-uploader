@@ -19,11 +19,13 @@
 */
 
 #pragma once
-#include "atlheaders.h"
-#include "Gui/Controls/MyImage.h"
 #include "resource.h"
 #include <vector>
 #include <thread>
+
+#include "atlheaders.h"
+#include "Gui/Controls/MyImage.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 class FontEnumerator;
 class TextParamsWindow;
@@ -47,9 +49,9 @@ public:
 protected:
     TextParamsWindow* textParamsWindow_;
 };
-class TextParamsWindow : public CDialogImpl<TextParamsWindow>
+class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
 {
-    typedef CDialogImpl<TextParamsWindow> TBase;
+    typedef CDialogImpl<CCustomDialogIndirectImpl> TBase;
     public:
         enum { IDD = IDD_TEXTPARAMSWINDOW, TPWM_FONTCHANGED = WM_USER + 123, IDC_BOLD = 1500, IDC_ITALIC, IDC_UNDERLINE};
         TextParamsWindow();

@@ -439,7 +439,7 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
             SetDlgItemText(IDC_UPLOADTRAFFICLABEL, L"0");
             LoadMonthList();
             SelectedMonthChanged();
-            MessageBox(TR("History has been cleared successfully."), APPNAME, MB_ICONINFORMATION);
+            LocalizedMessageBox(TR("History has been cleared successfully."), APPNAME, MB_ICONINFORMATION);
         }
     }
     return 0;

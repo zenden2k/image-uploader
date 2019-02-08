@@ -68,7 +68,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     
     ::SetFocus(GetDlgItem(IDOK));
-
+    FixEditRTL();
     GenerateInfo(); 
     return 0; 
 }
@@ -116,6 +116,26 @@ void CMediaInfoDlg::GenerateInfo() {
     }
 }
 
+void CMediaInfoDlg::FixEditRTL() {
+    HWND editControl = GetDlgItem(IDC_FILEINFOEDIT);
+
+    if (Lang.isRTL()) {
+        LONG styleEx = ::GetWindowLong(editControl, GWL_EXSTYLE);
+        LONG style = ::GetWindowLong(editControl, GWL_STYLE);
+        //DWORD isStyle = style & ES_RIGHT;
+
+        if (generateTextInEnglish_) {
+            styleEx = styleEx & ~(WS_EX_RTLREADING | WS_EX_LAYOUTRTL | WS_EX_RIGHT);
+            style = style & (~ES_RIGHT);
+        } else {
+            styleEx = styleEx | WS_EX_RTLREADING | WS_EX_LAYOUTRTL | WS_EX_RIGHT;
+            style = style | ES_RIGHT;
+        }
+        ::SetWindowLong(editControl, GWL_EXSTYLE, styleEx);
+        ::SetWindowLong(editControl, GWL_STYLE, style);
+    }
+}
+
 LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     // Copying text to clipboard
@@ -135,6 +155,8 @@ LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
 
 LRESULT CMediaInfoDlg::OnShowInEnglishCheckboxClicked(WORD, WORD, HWND, BOOL&) {
     generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
+    
+    FixEditRTL();
     Settings.MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;
     GenerateInfo();
     return 0;

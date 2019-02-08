@@ -13,7 +13,6 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
-
 function  UploadFile(FileName, options)
 {
 
@@ -34,13 +33,13 @@ function  UploadFile(FileName, options)
 	}
 	local res = CopyFile(FileName, targetFile, true);
 	if ( !res ) {
-		print("Copying file from "+FileName+" to " + targetFile " failed");
+		WriteLog("error", "Copying file from \r\n"+FileName+" to \r\n" + targetFile + " failed");
 		return 0;
 	}
 	
 	local downloadUrl =  ServerParams.getParam("downloadUrl");
 	if (downloadUrl == "") {
-		print("downloadUrl parameter should not be empty");
+		WriteLog("error", "downloadUrl parameter should not be empty");
 		return 0;
 	}
 	local encodedFileName = newFilename;

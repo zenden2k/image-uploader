@@ -32,9 +32,10 @@
 #include "resource.h"       
 #include "Core/FileDownloader.h"
 #include "WizardDlg.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 // CImageDownloaderDlg
-class CImageDownloaderDlg:    public CDialogImpl <CImageDownloaderDlg>,
+class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDlg>,
                            public CDialogResize <CImageDownloaderDlg>,
                            public CMessageFilter
 {

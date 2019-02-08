@@ -36,7 +36,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     if (!imageFileName.IsEmpty()) {
         CString ext = WinUtils::GetFileExt(imageFileName);
         if (ext == "webp") {
-            ::MessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
+            Lang.LocalizedMessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
         }
     }
     currentDoc_ = new ImageEditor::Document(imageFileName);
@@ -293,7 +293,7 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode)
 {
     if (currentDoc_->isNull()) {
-        ::MessageBox(0, _T("Invalid image file."), APPNAME, MB_ICONERROR);
+        Lang.LocalizedMessageBox(nullptr, _T("Invalid image file."), APPNAME, MB_ICONERROR);
         return drCancel;
     }
     //int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -495,6 +495,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
     
     return dialogResult_;
+}
+
+LRESULT ImageEditorWindow::OnNcCreate(UINT, WPARAM, LPARAM, BOOL&) {
+    SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & ~WS_EX_LAYOUTRTL);
+    return TRUE;
 }
 
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1067,7 +1072,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     DialogResult dr = drCancel;
     if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
-        int msgBoxResult = MessageBox(TR("Save changes?"), APPNAME, MB_YESNOCANCEL|MB_ICONQUESTION);
+        int msgBoxResult = Lang.LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if ( msgBoxResult == IDYES ) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
             OnClickedSave();

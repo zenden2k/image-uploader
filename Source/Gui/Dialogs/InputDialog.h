@@ -26,10 +26,11 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
+#include "Gui/Controls/DialogIndirect.h"
 // CInputDialog
 
 class CInputDialog :
-    public CDialogImpl<CInputDialog>
+    public CCustomDialogIndirectImpl<CInputDialog>
 {
     public:
         CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image = _T(""));

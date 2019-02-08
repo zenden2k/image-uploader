@@ -27,12 +27,13 @@
 #include "resource.h"       // main symbols
 #include <atlframe.h>
 #include "3rdpart/ColorButton.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 class Thumbnail;
 // CThumbEditor
 
 class CThumbEditor : 
-    public CDialogImpl<CThumbEditor>
+    public CCustomDialogIndirectImpl<CThumbEditor>
 {
 public:
     CThumbEditor(Thumbnail *thumb);

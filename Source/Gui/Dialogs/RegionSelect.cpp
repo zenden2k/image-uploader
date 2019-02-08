@@ -174,7 +174,6 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         if(RectCount) 
             if(AlphaBlend(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w,h, alphaDC, ps.rcPaint.left, ps.rcPaint.top, w,h, bf)==FALSE)
             {
-                //MessageBox(_T("Alphablend failed"));
             };
         newRegion.DeleteObject();
         newRegion.CreateRectRgn(0,0,rc.right,rc.bottom);
@@ -522,6 +521,12 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
     m_Width = width;
     m_Height = height;
+
+    RECT r = { 0, 0, m_Width, m_Height };
+    if (!m_hWnd) {
+        Create(0, r, _T("ImageUploader_RegionWnd"), WS_POPUP, WS_EX_TOPMOST);
+    }
+
     BITMAPINFOHEADER    bmi;
     memset(&bmi, 0, sizeof(bmi));
     bmi.biSize        = sizeof(bmi);
@@ -531,7 +536,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
     bmi.biBitCount        = 4 * 8;
     bmi.biCompression    = BI_RGB;
 
-    HDC dstDC = ::GetDC(0);
+    HDC dstDC = ::GetDC(m_hWnd);
      //doubleBm.
   ///* m_hBitmap = */CreateDIBSection(dstDC, (BITMAPINFO*)&bmi, DIB_RGB_COLORS, 0, NULL, NULL);
 
@@ -563,14 +568,10 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
     br2.CreateSolidBrush(RGB(0,0,150));
     alphaDC.CreateCompatibleDC(dstDC);
     HBITMAP oldAlphaBm = alphaDC.SelectBitmap(alphaBm);
-    RECT r = {0, 0, m_Width, m_Height};
+
     alphaDC.FillRect(&r, br2);    
     m_bPictureChanged = true;
     
-    if(!m_hWnd)
-    {
-        Create(0,r,_T("ImageUploader_RegionWnd"),WS_POPUP,WS_EX_TOPMOST    );
-    }
 
     //RECT screenBounds;
     GuiTools::GetScreenBounds(m_screenBounds);
@@ -600,7 +601,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
     alphaBm.DeleteObject();
 
-    ::ReleaseDC(0, dstDC);
+    ::ReleaseDC(m_hWnd, dstDC);
     ShowWindow(SW_HIDE);
     return m_bResult;
 }
@@ -771,6 +772,11 @@ CScreenshotRegion* CRegionSelect::region() const
     return m_ResultRegion;
 }
 
+
+LRESULT CRegionSelect::OnNcCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & ~WS_EX_LAYOUTRTL);
+    return TRUE;
+}
 
 LRESULT CRegionSelect::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {

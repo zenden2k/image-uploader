@@ -348,15 +348,17 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 void CUploadDlg::createToolbar()
 {
     CBitmap hBitmap;
+    
+    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
 
     if (GuiTools::Is32BPP()) {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP32BIT));
-        toolbarImageList_.Create(16, 16, ILC_COLOR32, 0, 6);
+        toolbarImageList_.Create(16, 16, ILC_COLOR32 | rtlStyle, 0, 6);
         toolbarImageList_.Add(hBitmap, nullptr);
     }
     else {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP16BIT));
-        toolbarImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+        toolbarImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
         toolbarImageList_.Add(hBitmap, RGB(255, 0, 255));
     }
 
@@ -533,7 +535,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
              return;
          }
          taskDispatcher->runInGuiThread([&]{
-             uploadListView_.SetItemText(fps->tableRow, 2, _T("Готово"));
+             uploadListView_.SetItemText(fps->tableRow, 2, TR("Finished"));
          });
          
      }
