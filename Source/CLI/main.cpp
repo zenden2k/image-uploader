@@ -477,13 +477,14 @@ int func() {
 
     Settings.setEngineList(&list);
     ServiceLocator::instance()->setEngineList(&list);
-    ScriptsManager scriptsManager;
+    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
+    ScriptsManager scriptsManager(networkClientFactory);
     std::unique_ptr<UploadEngineManager> uploadEngineManager;
-    uploadEngineManager.reset( new UploadEngineManager(&list, &uploadErrorHandler));
+    uploadEngineManager.reset(new UploadEngineManager(&list, &uploadErrorHandler, networkClientFactory));
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     std::unique_ptr<UploadManager> uploadManager;
-    uploadManager.reset( new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler));
+    uploadManager.reset(new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler, networkClientFactory));
     uploadManager->setMaxThreadCount(1);
     uploadManager->setEnableHistory(false);
 

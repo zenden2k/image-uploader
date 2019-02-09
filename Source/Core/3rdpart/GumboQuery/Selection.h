@@ -19,6 +19,7 @@
 #include "Object.h"
 #include <vector>
 #include <string>
+#include <functional>
 #include <gumbo.h>
 #include "Core/Scripting/Squirrelnc.h"
 

@@ -56,6 +56,13 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDOK, "Shorten");
     TRC(IDCANCEL, "Close");
     TRC(IDC_SHORTENURLTIP, "Paste a link to shorten it:");
+
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_INPUTEDIT), WS_EX_RTLREADING);
+        GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_RESULTSEDIT), WS_EX_RTLREADING);
+    }
+
     GuiTools::MakeLabelBold(GetDlgItem(IDC_RESULTSLABEL));
 
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);

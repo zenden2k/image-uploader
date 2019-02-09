@@ -84,10 +84,6 @@ Google Mock     https://github.com/abseil/googletest
 Before compiling install the following packages:
 
 sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot libgtest-dev libboost-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libssl-dev libpcre3-dev libc-ares-dev liburiparser-dev libicu-dev libsqlite3-dev libreadline-dev libfreeimage-dev libcurl4-openssl-dev
-#libuv1-dev
-#libcrypto++-dev
-#libgumbo-dev
-#libgoogle-glog-dev
 
 Image Uploadeer is using Google Mock library for tests. If you want to run them, you have to build gmock library from source:
 
@@ -96,7 +92,10 @@ sudo cmake .
 sudo make
 sudo mv libg* /usr/lib/
 
-debian package dependencies:
+Note that the following libraries: glog, gflags, libuv, cryptopp, gumbo, jsoncpp have to be statically built from source. 
+Before building glog remove package libgflags-dev from your system.
+
+Debian package dependencies:
 libpcre3
 #libgumbo1
 #libcrypto++9v5
@@ -104,12 +103,9 @@ libcurl3
 libssl1.0.0
 #libgoogle-glog0
 
--- For mega:
+Including those for mega.nz:
 libc-ares2
 libuv1
 libsqlite3-0
 libfreeimage3
 
-Note that the following libraries: glog, gflags, libuv, cryptopp, gumbo have to be statically built from source. 
-Before building glog remove package libgflags-dev from your system.
-Also libjsoncpp has to build (from Contrib folder)

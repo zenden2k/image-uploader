@@ -6,6 +6,7 @@
 #include "Core/Network/Tests/NetworkClientMock.h"
 #include "Tests/TestHelpers.h"
 #include "Core/Upload/ScriptUploadEngine.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 using namespace ::testing;
 
@@ -35,7 +36,7 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings);
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
 
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
@@ -96,7 +97,7 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings);
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
 
     engine.setServerSettings(&serverSettings);
 
@@ -158,7 +159,7 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings);
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
 
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;

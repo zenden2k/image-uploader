@@ -88,6 +88,13 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_DESCRIPTION, "Reuploading images in the text with preserving it's original markup");
     TRC(IDC_SHOWLOG, "Show Error Log");
 
+    if (Lang.isRTL()) {
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_INPUTTEXT), WS_EX_RTLREADING);
+        GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_SOURCEURLEDIT), WS_EX_RTLREADING);
+        GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_OUTPUTTEXT), WS_EX_RTLREADING);
+    }
+
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ .reset(new CServerSelectorControl(uploadEngineManager_, true));
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);

@@ -2046,7 +2046,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         }
         else
         {
-            LocalizedMessageBox(_T("Невозможно сделать снимок экрана!"));
+            LocalizedMessageBox(TR("Unable to make screenshot!"));
         }
     }
 

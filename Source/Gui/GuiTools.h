@@ -41,6 +41,7 @@ namespace GuiTools
     RECT GetDialogItemRect(HWND dialog, int itemId);
     void ShowDialogItem(HWND dlg, int itemId, bool show);
     void EnableDialogItem(HWND dlg, int itemId, bool enable);
+    void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx);
     
     // Converts pixels to Win32 dialog units
     int dlgX(int WidthInPixels);

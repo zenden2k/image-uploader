@@ -35,7 +35,7 @@ std::unordered_map<std::string,int> langs = {
     { "cp866", 866 },
     { "cp870", 870 },
     { "cp_acp", 0},
-    { "cp_oem", CP_OEMCP },
+    { "cp_oem", /*CP_OEMCP*/1 },
     { "csascii", 1252 },
     { "csbig5", 950 },
     { "cseuckr", 51949 },

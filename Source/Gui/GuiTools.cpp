@@ -593,4 +593,8 @@ HICON LoadBigIcon(int resourceId) {
     return reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
+void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx) {
+    LONG oldStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
+    ::SetWindowLong(hWnd, GWL_EXSTYLE, oldStyle & ~styleEx);
+}
 };
