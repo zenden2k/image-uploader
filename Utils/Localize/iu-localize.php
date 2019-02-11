@@ -111,7 +111,6 @@
 
         if ( $filename != "default" && $filename != "English" ) {
             $english_strings = read_language_file( $path . "\\English.lng.src" );
-            //echo "OLOLO<br>";
             //var_dump( $english_strings );
         }
 
@@ -124,7 +123,7 @@
             $hash = trim( $hash );
 
             $k = isset($hashes[$hash]) ? $hashes[$hash] : false;
-            if ( $hash === 'language' || !( $k === false ) ) {
+            if ( $hash === 'language' || $hash === 'RTL' || !( $k === false ) ) {
                 fwrite( $file, $item . "\r\n" );
                 unset( $hashes[$hash] );
             }

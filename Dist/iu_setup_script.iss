@@ -6,7 +6,7 @@
 #define MyAppName "Image Uploader"
 #define MyAppVersion IU_APP_VER
 #define MyAppPublisher "Sergey Svistunov"
-#define MyAppURL "http://zenden.ws/imageuploader"
+#define MyAppURL "http://zenden2k.atwebpages.com/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
 #include "it_download.iss"
@@ -28,15 +28,7 @@ DefaultDirName={pf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 OutputDir=output\
-#ifdef WIN2K
-OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup-win2k
-#else 
-#ifdef FFMPEG
-OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup-ffmpeg
-#else 
 OutputBaseFilename=image-uploader-{#IU_APP_VER}-build-{#IU_BUILD_NUMBER}-setup
-#endif
-#endif
 Compression=lzma/max 
 SolidCompression=yes
 ;SignTool=zenden2k
@@ -55,6 +47,7 @@ Name: "tr"; MessagesFile: "Languages\Turkish.isl"
 Name: "ko"; MessagesFile: "Languages\Korean.isl"
 Name: "hu"; MessagesFile: "Languages\Hungarian.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
+Name: "ar"; MessagesFile: "Languages\Arabic.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (better video formats support)
 Additional=Additional
@@ -100,7 +93,6 @@ Source: "..\Data\Update\iu_ffmpeg.xml"; DestDir: "{tmp}\"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils"; Flags: ignoreversion
 
-Source: "unzip.exe"; DestDir: "{tmp}"; Flags: ignoreversion
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
@@ -108,10 +100,9 @@ Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIn
 Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
-#ifdef FFMPEG
-Source: "..\Build\release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion
-#endif
+Source: "..\Build\release optimized\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\release optimized\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
@@ -176,25 +167,14 @@ end;
 
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
-
  
 end;
-
-
 
 procedure CurPageChanged(CurPageID: Integer);
   var Version: TWindowsVersion;
 begin
       if CurPageID = wpReady then begin
       ITD_ClearFiles;
-
-       if IsTaskSelected('installffmpeg') then begin
- 
-
-    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/inst_iu_ffmpeg_1426149762.zip', expandconstant('{tmp}\ffmpeg.zip'));
-    // ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/iu_ffmpeg.xml', expandconstant('{tmp}\iu_ffmpeg.xml'));
-
-    end;
     GetWindowsVersionEx(Version);
    if (Version.NTPlatform and
      (Version.Major = 5) 
@@ -228,16 +208,6 @@ begin
   filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
   end;
 
-    if IsTaskSelected('installffmpeg') then
-    begin
-    Cmd :=  ' -o "'+expandconstant('{tmp}\ffmpeg.zip')+'" -d "'+expandconstant('{app}') + '"';
-    
-          Exec(expandconstant('{tmp}\unzip.exe'),cmd ,expandconstant('{app}'), SW_HIDE, ewWaitUntilTerminated, ResultCode);
-
-          //MsgBox(GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'), mbInformation, MB_OK);
-
-            filecopy(expandconstant('{tmp}\iu_ffmpeg.xml'),GetDataFolder('p') + expandconstant('\Image Uploader\Update\iu_ffmpeg.xml'),false);
-    end;
 
     if IsWine then
     RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Wine\DllOverrides',

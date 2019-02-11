@@ -147,7 +147,7 @@ public:
 
         // Register all formats and codecs
         if (! initialized_) {
-            av_register_all();
+            //av_register_all();
             initialized_ = true;
         }
         pFormatCtx = 0;
@@ -206,11 +206,11 @@ public:
             pCodecCtx->time_base.den=1000;
 
        // Allocate video frame
-        pFrame = avcodec_alloc_frame();
+        pFrame = av_frame_alloc();
         //avpicture_fill((AVPicture *)pFrame, decoded_yuv_frame, PIX_FMT_YUV420P, srcX , srcY);
 
        // Allocate an AVFrame structure
-        pFrameRGB = avcodec_alloc_frame();
+        pFrameRGB = av_frame_alloc();
         
         if ( pFrameRGB == NULL ){
             return false;
@@ -220,7 +220,7 @@ public:
        // Determine required buffer size and allocate buffer
         allocatedFrameWidth_ = pCodecCtx->width;
         allocatedFrameHeight_ = pCodecCtx->height;
-        numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
+        numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
         buffer=/*(uint8_t *)av_malloc(numBytes*sizeof(uint8_t));**/new uint8_t[numBytes];
         allocatedBufferSize_ = numBytes;
         memset(buffer, 0, numBytes);
@@ -228,7 +228,7 @@ public:
 
 
        // Assign appropriate parts of buffer to image planes in pFrameRGB
-       avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, PIX_FMT_RGB24,
+       avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, AV_PIX_FMT_RGB24,
         pCodecCtx->width, pCodecCtx->height);
 
        // Read frames and save first five frames to disk
@@ -409,7 +409,7 @@ public:
     bool seek(int64_t time) {  
         {
             if (allocatedFrameWidth_ != pCodecCtx->width || allocatedFrameHeight_ != pCodecCtx->height) {  
-                numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
+                numBytes = avpicture_get_size(AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height) + 64;
                 if (allocatedBufferSize_ < numBytes) {
                     delete[] buffer;
                     buffer = nullptr;
@@ -420,7 +420,7 @@ public:
                 allocatedFrameWidth_ = pCodecCtx->width;
                 allocatedFrameHeight_ = pCodecCtx->height;
             }
-            avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
+            avpicture_fill((AVPicture *)pFrameRGB, buffer+headerlen, AV_PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
             if(NeedStop) {
                 //break;
             }
@@ -451,10 +451,10 @@ public:
             avcodec_flush_buffers(pCodecCtx) ;
             AVPixelFormat pixelFormat = 
 #ifdef IU_QT
-                PIX_FMT_RGB24;
+                AV_PIX_FMT_RGB24;
 #else
                 
-                PIX_FMT_BGR24;
+                AV_PIX_FMT_BGR24;
                 //PIX_FMT_RGB24 ;
 #endif
             while (av_read_frame(pFormatCtx, &packet)>=0) {
