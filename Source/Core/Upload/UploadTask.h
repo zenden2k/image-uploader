@@ -104,6 +104,7 @@ class UploadTask {
         void stop();
         virtual std::string title() const = 0;
         bool isStopped();
+        void clearStopFlag();
         void setStatus(Status status);
         void setStatusText(const std::string& text);
         Status status() const;

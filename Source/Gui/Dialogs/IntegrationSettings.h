@@ -25,7 +25,6 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/MyImage.h"
 #include "Gui/Dialogs/settingspage.h"
 #include "Core/Settings.h"
 #include "Gui/Controls/IconButton.h"

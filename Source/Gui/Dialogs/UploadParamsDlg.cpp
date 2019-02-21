@@ -24,13 +24,11 @@
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/Myutils.h"
 #include "Func/IuCommonFunctions.h"
 
 // CUploadParamsDlg
 CUploadParamsDlg::CUploadParamsDlg(ServerProfile &serverProfile, bool showImageProcessingParams, bool defaultServer) : serverProfile_(serverProfile)
 {
-
     params_ = serverProfile.getImageUploadParams();
     defaultServer_ = defaultServer;
     showImageProcessingParams_ = showImageProcessingParams;

@@ -1,8 +1,9 @@
 #include "UploadTask.h"
 
+#include <boost/format.hpp>
+
 #include "UploadSession.h"
 #include "Core/Upload/ScriptUploadEngine.h"
-#include <boost/format.hpp>
 
 #undef TR
 #define TR(a) a
@@ -294,7 +295,7 @@ void UploadTask::stop()
     {
         currentUploadEngine_->stop();
     }
-    if ( status_ != StatusRunning )
+    if (status_ == StatusInQueue || status_ == StatusPostponed)
     {
         finishTask(StatusStopped);
     }
@@ -310,6 +311,14 @@ bool UploadTask::isStopped()
     return status_ == StatusStopped;
 }
 
+void UploadTask::clearStopFlag() {
+    stopSignal_ = false;
+
+    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+    for (auto& it : childTasks_) {
+        it->clearStopFlag();
+    }
+}
 
 void UploadTask::setStatus(Status status)
 {

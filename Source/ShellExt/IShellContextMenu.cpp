@@ -55,9 +55,9 @@ CString GetStartMenuPath()
 
 CString GetDllFolder()
 {
-	TCHAR szFileName[256],szPath[256];
+	TCHAR szFileName[1024],szPath[256];
 	GetModuleFileName(hDllInstance, szFileName, 1023);
-	WinUtils::ExtractFilePath(szFileName, szPath);
+	WinUtils::ExtractFilePath(szFileName, szPath, 256);
 	return szPath;
 }
 

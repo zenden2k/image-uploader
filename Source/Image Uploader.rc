@@ -1591,7 +1591,7 @@ BEGIN
             VALUE "FileDescription", "Image Uploader"
             VALUE "FileVersion", "1.3.2.0"
             VALUE "InternalName", "Image Uploader"
-            VALUE "LegalCopyright", "Copyright 2007-2018 by Sergey Svistunov (http://zenden2k.atwebpages.com)"
+            VALUE "LegalCopyright", "Copyright 2007-2019 by Sergey Svistunov (http://zenden2k.atwebpages.com)"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
             VALUE "ProductVersion", "1.3.2.0"

@@ -174,6 +174,28 @@ void UploadSession::stop()
     }
 }
 
+void UploadSession::clearStopFlag() {
+    stopSignal_ = false;
+    for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
+        it->get()->clearStopFlag();
+
+    }
+}
+
+void UploadSession::restartFailedTasks() {
+    if (isRunning()) {
+        return;
+    }
+    finishedSignalSent_ = false;
+    for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
+        auto status = it->get()->status();
+
+        if (status == UploadTask::StatusFailure || status == UploadTask::StatusStopped) {
+            it->get()->setStatus(UploadTask::StatusInQueue);
+        }
+    }
+}
+
 bool UploadSession::isFatalErrorSet(const std::string& serverName, const std::string& profileName)
 {
     std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);

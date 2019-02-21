@@ -25,6 +25,7 @@ limitations under the License.
 #include <propvarutil.h>
 #include "resource.h"
 
+/*
 PCWSTR const c_rgpszFiles[] =
 {
 	L"Microsoft_Sample_1.txt",
@@ -32,6 +33,7 @@ PCWSTR const c_rgpszFiles[] =
 	L"Microsoft_Sample_3.doc",
 	L"Microsoft_Sample_4.doc"
 };
+*/
 
 namespace
 {

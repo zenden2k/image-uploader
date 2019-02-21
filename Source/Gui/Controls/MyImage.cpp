@@ -21,7 +21,6 @@
 #include "MyImage.h"
 
 #include "Func/LangClass.h"
-#include "Core/Settings.h"
 #include "Core/Images/Utils.h"
 
 using namespace Gdiplus;

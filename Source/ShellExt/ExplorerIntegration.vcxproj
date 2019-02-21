@@ -532,6 +532,8 @@
     <ClCompile Include="..\Core\Logging.cpp" />
     <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
+    <ClCompile Include="..\Core\Utils\CryptoUtils_win.cpp" />
+    <ClCompile Include="..\Core\Utils\Utils_win.cpp" />
     <ClCompile Include="ExplorerIntegration.cpp" />
     <ClCompile Include="IconBitmapUtils.cpp" />
     <ClCompile Include="IShellContextMenu.cpp">

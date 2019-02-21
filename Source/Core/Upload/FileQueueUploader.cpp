@@ -109,3 +109,7 @@ void CFileQueueUploader::removeSession(std::shared_ptr<UploadSession> uploadSess
 {
     _impl->removeSession(uploadSession);
 }
+
+void CFileQueueUploader::retrySession(std::shared_ptr<UploadSession> uploadSession) {
+    _impl->retrySession(uploadSession);
+}

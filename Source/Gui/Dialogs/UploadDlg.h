@@ -46,7 +46,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         enum {
             IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1,
             kEnableNextButtonTimer = 5,
-            kProgressTimer = 6
+            kProgressTimer = 6,
+            ID_RETRYUPLOAD = 14000
         };
         
          BEGIN_MSG_MAP(CUploadDlg)
@@ -55,14 +56,16 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             COMMAND_HANDLER(IDC_UPLOADPROCESSTAB, BN_CLICKED, OnUploadProcessButtonClick)
             COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
             COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
+            COMMAND_ID_HANDLER(ID_RETRYUPLOAD, OnRetryUpload)
+            NOTIFY_HANDLER(IDC_UPLOADTABLE, NM_DBLCLK, OnUploadTableDoubleClick)
+            MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         END_MSG_MAP()
 
          // Handler prototypes:
          //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        
         bool startUpload();
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
@@ -83,9 +86,14 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void OnFolderUsed(UploadTask* task);
         void onShortenUrlChanged(bool shortenUrl);
     protected:
+        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
@@ -118,6 +126,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CToolBarCtrl toolbar_;
         CFont commonProgressLabelFont_, commonPercentLabelFont_;
         CImageList toolbarImageList_;
+        CProgressBarCtrl uploadProgressBar_;
+        CImageView imageViewWindow_;
 };
 
 

@@ -203,6 +203,16 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
     }
 }
 
+void FileQueueUploaderPrivate::retrySession(std::shared_ptr<UploadSession> uploadSession) {
+    startFromSession_ = 0;
+    uploadSession->clearStopFlag();
+    uploadSession->restartFailedTasks();
+    
+    if (autoStart_) {
+        start();
+    }
+}
+
 int FileQueueUploaderPrivate::sessionCount()
 {
     std::lock_guard<std::recursive_mutex> lock(mutex_);

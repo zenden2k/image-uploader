@@ -53,6 +53,7 @@ public:
     void removeSession(std::shared_ptr<UploadSession> uploadSession);
     void addUploadFilter(UploadFilter* filter);
     void removeUploadFilter(UploadFilter* filter);
+    void retrySession(std::shared_ptr<UploadSession> uploadSession);
     int sessionCount();
     std::shared_ptr<UploadSession> session(int index);
     CFileQueueUploader *queueUploader_;

@@ -21,6 +21,8 @@
 #include "UploadDlg.h"
 
 #include <shobjidl.h>
+#include <boost/format.hpp>
+
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadEngine.h"
@@ -36,6 +38,7 @@
 #include "Core/AppParams.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Upload/UrlShorteningTask.h"
+
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -57,6 +60,8 @@ CUploadDlg::~CUploadDlg()
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    uploadProgressBar_ = GetDlgItem(IDC_UPLOADPROGRESS);
+    imageViewWindow_.Create(m_hWnd);
     // Initializing Windows 7 taskbar related stuff
     RECT rc;
     ::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
@@ -116,8 +121,8 @@ bool CUploadDlg::startUpload() {
     SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
     showUploadProgressTab();
     int n = MainDlg->FileList.GetCount();
-    SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, 0);
-    SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, n));
+    uploadProgressBar_.SetPos(0);
+    uploadProgressBar_.SetRange(0, n);
     SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
     TotalUploadProgress(0, n);
@@ -169,6 +174,50 @@ LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     } else if (wParam == kProgressTimer) {
         updateTotalProgress();
     }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
+    POINT ClientPoint, ScreenPoint;
+    if (hwnd != GetDlgItem(IDC_UPLOADTABLE)) {
+        return 0;
+    }
+
+    if (!uploadSession_ || uploadSession_->isRunning()) {
+        return 0;
+    }
+
+    if (lParam == -1) {
+        ClientPoint.x = 0;
+        ClientPoint.y = 0;
+        ScreenPoint = ClientPoint;
+        ::ClientToScreen(hwnd, &ScreenPoint);
+    } else {
+        ScreenPoint.x = GET_X_LPARAM(lParam);
+        ScreenPoint.y = GET_Y_LPARAM(lParam);
+        ClientPoint = ScreenPoint;
+        ::ScreenToClient(hwnd, &ClientPoint);
+    }
+
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    bool menuItemEnabled = false;
+    if (nCurItem >= 0) {
+        auto task = uploadSession_->getTask(nCurItem);
+        if (task) {
+            auto status = task->status();
+            if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
+                menuItemEnabled = true;
+            }
+
+        }
+    }
+
+    CMenu menu;
+    menu.CreatePopupMenu();
+    menu.AppendMenu(MF_STRING, ID_RETRYUPLOAD, TR("Retry"));
+    menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
+    menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }
 
@@ -277,7 +326,7 @@ void CUploadDlg::GenerateOutput()
 
 void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 {
-    SendDlgItemMessage(IDC_UPLOADPROGRESS, PBM_SETPOS, CurPos);
+    uploadProgressBar_.SetPos(CurPos);
 #if  WINVER    >= 0x0601 // Windows 7 related stuff
     if(ptl)
     {
@@ -408,6 +457,41 @@ LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
+LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    LPNMITEMACTIVATE lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+    int row = lpnmitem->iItem;
+    if (row >= 0) {
+        auto item = files_[row];
+        if (IuCommonFunctions::IsImage(item->fileName)) {
+            CImageViewItem imgViewItem;
+            imgViewItem.index = 0;
+            imgViewItem.fileName = item->fileName;
+            HWND wizardDlg = WizardDlg->m_hWnd;
+            imageViewWindow_.ViewImage(imgViewItem, wizardDlg);
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        auto task = uploadSession_->getTask(nCurItem);
+        if (task) {
+            UploadTask::Status status = task->status();
+            if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
+                if (!uploadManager_->IsRunning()) {
+                    SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
+                    backgroundThreadStarted();
+                    uploadManager_->retrySession(uploadSession_);
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
 void CUploadDlg::showUploadResultsTab() {
     if (currentTab_ == IDC_UPLOADRESULTSTAB) {
         return;
@@ -479,7 +563,7 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
     }
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
-        TCHAR ProgressBuffer[256] = _T("");
+        
         bool isThumb = task->role() == UploadTask::ThumbRole;
         int percent = 0;
         UploadProgress* progress = task->progress();
@@ -487,11 +571,13 @@ void CUploadDlg::onTaskUploadProgress(UploadTask* task)
             percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
         }
         CString uploadSpeed = Utf8ToWCstring(progress->speed);
-        _stprintf(ProgressBuffer, TR("%s of %s (%d%%) %s"), (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->uploaded)),
-            (LPCTSTR)Utf8ToWCstring(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
+        CString progressText;
+        progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->uploaded)),
+            (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
+       
         int columnIndex = isThumb ? 2 : 1;
         ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {  
-            uploadListView_.SetItemText(fps->tableRow, columnIndex, ProgressBuffer); 
+            uploadListView_.SetItemText(fps->tableRow, columnIndex, progressText);
         });
        
     }

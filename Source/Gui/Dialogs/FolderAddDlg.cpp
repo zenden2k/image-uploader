@@ -1,10 +1,11 @@
 #include "FolderAddDlg.h"
 
+#include <io.h>
+
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "WizardDlg.h"
 #include "MainDlg.h"
-#include <io.h>
 #include "Func/IuCommonFunctions.h"
 
 CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg) : 
@@ -112,10 +113,8 @@ DWORD CFolderAdd::Run()
 
             m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
         } else {
-
             m_pWizardDlg->ShowPage(CWizardDlg::wpMainPage);
-
-            ((CMainDlg*)m_pWizardDlg->Pages[2])->ThumbsView.LoadThumbnails();
+            m_pWizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage)->ThumbsView.LoadThumbnails();
         }
     }
     

@@ -42,6 +42,7 @@ class CFileQueueUploader
         void addSession(std::shared_ptr<UploadSession> uploadSession);
         void addTask(std::shared_ptr<UploadTask> task);
         void removeSession(std::shared_ptr<UploadSession> uploadSession);
+        void retrySession(std::shared_ptr<UploadSession> uploadSession);
         virtual ~CFileQueueUploader();
         bool start();
         void stop();

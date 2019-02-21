@@ -559,7 +559,7 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf, size_t bufferSize)
         if (FileName[i] == _T('\\') || FileName[i] == _T('/'))
             break;
     }
-    lstrcpyn(buf, FileName, std::min(i + 2, static_cast<int>(bufferSize)-1));
+    lstrcpyn(buf, FileName, min(i + 2, static_cast<int>(bufferSize)-1));
     return buf;
 }
 

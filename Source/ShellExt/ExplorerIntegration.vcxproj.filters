@@ -88,6 +88,12 @@
     <ClCompile Include="..\Core\Logging.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="..\Core\Utils\CryptoUtils_win.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Core\Utils\Utils_win.cpp">
+      <Filter>Source Files\Core\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ExplorerIntegration.def">

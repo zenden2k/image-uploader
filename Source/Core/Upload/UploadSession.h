@@ -28,6 +28,11 @@ class UploadSession
         void addSessionFinishedCallback(const SessionFinishedCallback& callback);
         void addTaskAddedCallback(const TaskAddedCallback& callback);
         void stop();
+        void clearStopFlag();
+
+        // Should be called only after session has been finished
+        void restartFailedTasks();
+
         bool isFatalErrorSet(const std::string& serverName, const std::string& profileName);
         void setFatalErrorForServer(const std::string& serverName, const std::string& profileName);
         void clearErrorsForServer(const std::string& serverName, const std::string& profileName);
