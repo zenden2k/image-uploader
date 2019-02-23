@@ -187,10 +187,17 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if (!uploadSession_ || uploadSession_->isRunning()) {
         return 0;
     }
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
 
     if (lParam == -1) {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
+        if (nCurItem >= 0) {
+            CRect rc;
+            if (uploadListView_.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
+                ClientPoint = rc.CenterPoint();
+            }
+        }
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     } else {
@@ -200,9 +207,11 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         ::ScreenToClient(hwnd, &ClientPoint);
     }
 
-    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    
     bool menuItemEnabled = false;
+    bool isImage = false;
     if (nCurItem >= 0) {
+        isImage = IuCommonFunctions::IsImage(files_[nCurItem]->fileName);
         auto task = uploadSession_->getTask(nCurItem);
         if (task) {
             auto status = task->status();
@@ -215,7 +224,11 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     CMenu menu;
     menu.CreatePopupMenu();
+    if (isImage) {
+        menu.AppendMenu(MF_STRING, ID_VIEWIMAGE, TR("View"));
+    }
     menu.AppendMenu(MF_STRING, ID_RETRYUPLOAD, TR("Retry"));
+    menu.SetMenuDefaultItem(ID_VIEWIMAGE, FALSE);
     menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
     menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
@@ -460,8 +473,13 @@ LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     LPNMITEMACTIVATE lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
     int row = lpnmitem->iItem;
-    if (row >= 0) {
-        auto item = files_[row];
+    viewImage(row);
+    return 0;
+}
+
+void CUploadDlg::viewImage(int itemIndex) {
+    if (itemIndex >= 0) {
+        auto item = files_[itemIndex];
         if (IuCommonFunctions::IsImage(item->fileName)) {
             CImageViewItem imgViewItem;
             imgViewItem.index = 0;
@@ -470,7 +488,6 @@ LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHa
             imageViewWindow_.ViewImage(imgViewItem, wizardDlg);
         }
     }
-    return 0;
 }
 
 LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -489,6 +506,14 @@ LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
         }
     }
 
+    return 0;
+}
+
+LRESULT CUploadDlg::OnViewImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        viewImage(nCurItem);
+    }
     return 0;
 }
 

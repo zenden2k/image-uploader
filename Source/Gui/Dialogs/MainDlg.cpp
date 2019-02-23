@@ -134,8 +134,15 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
     if(lParam == -1) 
     {
-        ClientPoint.x = 0;
-        ClientPoint.y = 0;
+        int nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        if (nCurItem >= 0) {
+            CRect rc;
+            ThumbsView.GetItemRect(nCurItem, &rc, LVIR_ICON);
+            ClientPoint = rc.CenterPoint();
+        } else {
+            ClientPoint.x = 0;
+            ClientPoint.y = 0;
+        }
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     }

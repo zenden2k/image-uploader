@@ -19,18 +19,15 @@
 */
 #include "WizardDlg.h"
 
-
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
 #include "Core/HistoryManager.h"
-
 #include "welcomedlg.h"
 #include "maindlg.h"
 #include "VideoGrabberPage.h"
 #include "uploadsettings.h"
 #include "uploaddlg.h"
 #include "aboutdlg.h"
-#include "langselect.h"
 #include "floatingwindow.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
@@ -108,7 +105,6 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
-    win7JumpList_ = std::make_unique<Win7JumpList>();
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -180,6 +176,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     srand(unsigned int(time(0)));
     m_bShowWindow = true;
 
+    win7JumpList_ = std::make_unique<Win7JumpList>();
+
     LPDWORD DlgCreationResult = reinterpret_cast<LPDWORD>(lParam);
 
     ATLASSERT(DlgCreationResult != NULL);
@@ -238,7 +236,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     list.clear();
 
     CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
-    //MessageBox(userServersFolder);
+
     if ( userServersFolder != serversFolder) {
         
         WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));

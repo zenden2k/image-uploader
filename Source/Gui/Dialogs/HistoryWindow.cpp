@@ -79,7 +79,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
     SelectedMonthChanged();
     m_treeView.SetFocus();
-    return 1;  // Let the system set the focus
+    return 0; 
 }
 
 BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
@@ -151,11 +151,22 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_HISTORYTREE)) return 0;
+    bool isSessionItem = false;
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) return 0;
 
     if(lParam == -1) 
     {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
+        int itemIndex = m_treeView.GetCurSel();
+        if (itemIndex >= 0) {
+            CRect rc; 
+            if (m_treeView.GetItemRect(itemIndex, &rc) != LB_ERR) {
+                ClientPoint = rc.CenterPoint();
+            }
+        }
+        
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     }
@@ -166,10 +177,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         ClientPoint = ScreenPoint;
         ::ScreenToClient(hwnd, &ClientPoint);
     }
-    bool isSessionItem  = false;
-    TreeItem* item = m_treeView.selectedItem();
-    if(!item) return 0;
-    
+   
     isSessionItem = item->level()==0;
     
     HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());

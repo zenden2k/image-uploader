@@ -44,10 +44,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         ~CUploadDlg();
         enum { IDD = IDD_UPLOADDLG };
         enum {
-            IDC_UPLOADPROCESSTAB = WM_USER + 100, IDC_UPLOADRESULTSTAB = IDC_UPLOADPROCESSTAB + 1,
+            IDC_UPLOADPROCESSTAB = 14000, IDC_UPLOADRESULTSTAB, ID_RETRYUPLOAD, ID_VIEWIMAGE,
             kEnableNextButtonTimer = 5,
             kProgressTimer = 6,
-            ID_RETRYUPLOAD = 14000
         };
         
          BEGIN_MSG_MAP(CUploadDlg)
@@ -57,6 +56,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             COMMAND_HANDLER(IDC_UPLOADRESULTSTAB, BN_CLICKED, OnUploadResultsButtonClick)
             COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
             COMMAND_ID_HANDLER(ID_RETRYUPLOAD, OnRetryUpload)
+            COMMAND_ID_HANDLER(ID_VIEWIMAGE, OnViewImage)
             NOTIFY_HANDLER(IDC_UPLOADTABLE, NM_DBLCLK, OnUploadTableDoubleClick)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         END_MSG_MAP()
@@ -94,6 +94,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnViewImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
@@ -104,6 +105,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void backgroundThreadStarted();
         void createToolbar();
         void updateTotalProgress();
+        void viewImage(int itemIndex);
         int currentTab_;
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;

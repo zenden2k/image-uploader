@@ -2,6 +2,8 @@
 
 Before building you should copy file "Source\versioninfo.h.dist" to "Source\versioninfo.h". This file will be regenerated 
 by "versioninc.py" utility and will contain information about build number, version, date, git commit hash.
+Also python 2.7 interpreter should be installed for performing pre-build and post-build events. Ensure that your %PATH% environment 
+variable includes the directory of your Python distribution.
 
 You need Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 
 Installing Update 4 for Visual Studio 2013  is strongly recommended (older versions corrupt .rc files after editing)
@@ -9,7 +11,7 @@ If you are using a newer MSVC version, you may experience some compilation error
 (if you fix these errors, please provide a patch or pull request). But also you need to recompile 3rd-party 
 libraries (boost, glog, jsoncpp, etc) against your compiler version.
 
-All libraries have to be built statically with static runtime. To enable Windows XP support the corresponding 
+All libraries (except ffmpeg) have to be built statically with static runtime. To enable Windows XP support the corresponding 
 toolset has to be chosen (for example, "v120_xp" in VS 2013, "v141_xp" in Visual Studio 2017).
  
 You can download all necessary libraries (including header-only libraries in "Include" subfolder) by following link:
@@ -85,7 +87,7 @@ Before compiling install the following packages:
 
 sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot libgtest-dev libboost-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libssl-dev libpcre3-dev libc-ares-dev liburiparser-dev libicu-dev libsqlite3-dev libreadline-dev libfreeimage-dev libcurl4-openssl-dev
 
-Image Uploadeer is using Google Mock library for tests. If you want to run them, you have to build gmock library from source:
+Image Uploader is using Google Mock library for tests. If you want to run them, you have to build gmock library from source:
 
 cd /usr/src/gtest
 sudo cmake .
