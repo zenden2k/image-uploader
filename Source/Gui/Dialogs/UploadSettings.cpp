@@ -292,33 +292,27 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
     return 0;
 }
 
-LRESULT CUploadSettings::OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    // TODO: remove me! 
-    return 0;
-}
-
 bool CUploadSettings::OnNext()
 {    
     if(!sessionImageServer_.serverName().empty())
     {
         CUploadEngineData *ue = sessionImageServer_.uploadEngineData();
-        if(ue->NeedAuthorization ==2 && sessionImageServer_.profileName().empty())
+        if (ue->NeedAuthorization == CUploadEngineData::naObligatory && sessionImageServer_.profileName().empty())
         { 
             CString errorMsg;
             errorMsg.Format(TR("Upload to server '%s' is impossible without account.\r\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
-            Lang.LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
             return false;
         }
     }
     if(!sessionFileServer_.serverName().empty())
     {
         CUploadEngineData *ue2 =sessionFileServer_.uploadEngineData();
-        if(ue2->NeedAuthorization == 2 && sessionFileServer_.profileName().empty())
+        if (ue2->NeedAuthorization == CUploadEngineData::naObligatory && sessionFileServer_.profileName().empty())
         {
             CString errorMsg;
             errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(ue2->Name)));
-            Lang.LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
+            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
     }
@@ -430,7 +424,7 @@ LRESULT CUploadSettings::OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD 
 
     if(checked && !WinUtils::FileExists(IuCommonFunctions::GetDataFolder() + _T("thumb.png")) && wID == IDC_USETHUMBTEMPLATE)
     {
-        Lang.LocalizedMessageBox(m_hWnd, TR("File \"Data\\Thumb.png\" not found!"), APPNAME, MB_ICONWARNING);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("File \"Data\\Thumb.png\" not found!"), APPNAME, MB_ICONWARNING);
         SendDlgItemMessage(IDC_USETHUMBTEMPLATE, BM_SETCHECK, false);
         return 0;
     }
@@ -1020,7 +1014,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
     CUploadEngineData *ue = serverProfile.uploadEngineData();
     if (!ue->UsingPlugin && ue->Engine.empty()) {
-        Lang.LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
         return false;
     }
 

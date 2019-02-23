@@ -109,7 +109,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     CBitmap hBitmap;
 
     HIMAGELIST m_hToolBarImageList;
-    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
 
     if (Is32BPP())
     {
@@ -126,7 +126,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
     }
 
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND codeEditHwnd = GetDlgItem(IDC_CODEEDIT);
         LONG styleEx = ::GetWindowLong(codeEditHwnd, GWL_EXSTYLE);

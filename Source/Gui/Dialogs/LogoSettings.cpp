@@ -320,7 +320,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 {
     if(m_ProfileChanged)
     {
-        if(Lang.LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APPNAME, MB_YESNO|MB_ICONWARNING)!= IDYES) 
+        if (GuiTools::LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APPNAME, MB_YESNO | MB_ICONWARNING) != IDYES)
         {
             SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
             return 0;
@@ -390,7 +390,7 @@ LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     CString question;
     question.Format(TR("Are you sure you want to delete profile '%s'?"), CurrentProfileName);
-    if(Lang.LocalizedMessageBox(m_hWnd, question,TR("Image settings"),MB_ICONQUESTION|MB_YESNO) != IDYES)
+    if (GuiTools::LocalizedMessageBox(m_hWnd, question, TR("Image settings"), MB_ICONQUESTION | MB_YESNO) != IDYES)
         return 0;
     if(CurrentProfileName=="Default") return 0;
     if(ñonvert_profiles_.count(CurrentProfileName)>0)

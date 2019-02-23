@@ -20,7 +20,7 @@
 
 #include "MyImage.h"
 
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Core/Images/Utils.h"
 
 using namespace Gdiplus;

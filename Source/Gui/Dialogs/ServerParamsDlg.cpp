@@ -20,7 +20,7 @@
 
 #include "atlheaders.h"
 #include "ServerParamsDlg.h"
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerFolderSelect.h"

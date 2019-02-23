@@ -24,7 +24,7 @@
 
 #include "Core/CommonDefs.h"
 #include "Core/3rdpart/MediaInfoDLL.h"
-#include "LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "WinUtils.h"
 
 #include "Core/AppParams.h"

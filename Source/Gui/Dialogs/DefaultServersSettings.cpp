@@ -133,12 +133,12 @@ bool CDefaultServersSettings::Apply()
         if (controls[i]->serverProfile().serverName().empty()) {
             CString message;
             message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle());
-            Lang.LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return 0;
         } else if ( !controls[i]->isAccountChosen() ) {
             CString message;
             message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
-            Lang.LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return 0;
         }
     }

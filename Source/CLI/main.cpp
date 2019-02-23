@@ -32,7 +32,6 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
 #include "Core/Upload/UploadManager.h"
-#include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/ConsoleUploadErrorHandler.h"
@@ -116,7 +115,7 @@ void PrintWelcomeMessage() {
     std::cerr << "imgupload v" << IU_CLI_VER << " (based on core of IU v" << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
 }
 
-class Translator: public ITranslator{
+class Translator : public ITranslator {
 public:
     virtual std::string getCurrentLanguage() override {
         return "English";
@@ -124,7 +123,14 @@ public:
     virtual std::string getCurrentLocale() override {
         return "en_US";
     }
-
+    virtual std::string translate(const char* str) override{
+        return str;
+    }
+#ifdef _WIN32
+    virtual const wchar_t* translateW(const wchar_t* str) override {
+        return str;
+    }
+#endif
 };
 Translator translator; // dummy translator
 
@@ -171,12 +177,11 @@ void PrintHelp() {
 
 void PrintServerList()
 {
-	for(int i=0; i<list.count(); i++) {
-        CUploadEngineData* ued = list.byIndex(i);
-        if (!ued->hasType(CUploadEngineData::TypeImageServer) && !ued->hasType(CUploadEngineData::TypeFileServer)) {
+    for (const auto& ued : list) {
+        if (!ued.hasType(CUploadEngineData::TypeImageServer) && !ued.hasType(CUploadEngineData::TypeFileServer)) {
 		   continue;
         }
-        std::cout << ued->Name << std::endl;
+        std::cout << ued.Name << std::endl;
    }
 }
 
@@ -309,7 +314,7 @@ bool parseCommandLine(int argc, char *argv[])
             types["socks4a"] = CURLPROXY_SOCKS4A;
             types["socks5"] = CURLPROXY_SOCKS5;
             types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
-            std::map<std::string, int>::const_iterator it = types.find(type);
+            auto it = types.find(type);
             if ( it != types.end() ) {
                 proxyType = it->second;
             } else {
@@ -514,7 +519,7 @@ int func() {
         uploadEngineData = list.byIndex(index);
     }
 
-	if(uploadEngineData->NeedAuthorization == 2 && login.empty())
+    if (uploadEngineData->NeedAuthorization == CUploadEngineData::naObligatory && login.empty())
 	{
 		std::cerr<<"Server '"<<uploadEngineData->Name<<"' requires authentication! Use -u and -p options."<<std::endl;
 		return -1;
@@ -645,12 +650,6 @@ char ** convertArgv(int argc, _TCHAR* argvW[]) {
 int _tmain(int argc, _TCHAR* argvW[]) {	
 	char **argv = convertArgv(argc, argvW);
 	FLAGS_logtostderr = true;
-	//google::SetLogDestination(google::GLOG_INFO,"d:/" );
-
-
-	/*UINT oldcp = GetConsoleOutputCP();
-	SetConsoleOutputCP(CP_UTF8);*/
-	//_setmode(_fileno(stdout), _O_U16TEXT);
 #else
 int main(int argc, char *argv[]){
 #endif

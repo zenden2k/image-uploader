@@ -22,8 +22,7 @@
 
 #include "3rdpart/GdiplusH.h"
 #include <GdiPlusPixelFormats.h>
-#include "LogWindow.h"
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Thumbnail.h"
@@ -161,7 +160,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            Lang.LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
             return 0;
         }
     }
@@ -229,7 +228,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     conv.setThumbnail(thumb);
     std::unique_ptr<Bitmap> bm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
     if(!bm) {
-        Lang.LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
         return;
     }
     
@@ -264,7 +263,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
     std::string destination = srcFolder + newName + ".xml";
     if (IuCoreUtils::FileExists(destination)) {
-        Lang.LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
         return false;
     }
     Thumbnail * thumb = 0;

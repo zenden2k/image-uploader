@@ -6,6 +6,7 @@
 #include "Core/Images/ImageConverter.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/CommonDefs.h"
+#include "Core/i18n/Translator.h"
 
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {

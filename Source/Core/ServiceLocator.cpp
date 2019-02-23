@@ -8,31 +8,52 @@ class UploadManager;
 class ServiceLocatorPrivate{
 public:
     ServiceLocatorPrivate() {
+        logger_ = nullptr;
+        translator_ = nullptr;
+#ifndef IU_SHELLEXT
+        uploadErrorHandler_ = nullptr;
         engineList_ = nullptr;
         programWindow_ = nullptr;
-        uploadErrorHandler_ = nullptr;
-        logger_ = nullptr;
         dialogProvider_ = nullptr;
-        translator_ = nullptr;
         uploadManager_ = nullptr;
         myEngineList_ = nullptr;
         dispatcher_ = nullptr;
+#endif
     }
+    ILogger* logger_;
+    ITranslator* translator_;
+#ifndef IU_SHELLEXT
     CUploadEngineListBase* engineList_;
     CHistoryManager historyManager;
     IProgramWindow* programWindow_;
     IUploadErrorHandler* uploadErrorHandler_;
-    ILogger* logger_;
     IDialogProvider* dialogProvider_;
-    ITranslator* translator_;
     ITaskDispatcher* dispatcher_;
     UploadManager* uploadManager_;
     CMyEngineList* myEngineList_;
+#endif
 };
+
+ILogger* ServiceLocator::logger() {
+    return  d_ptr->logger_;
+}
+
+void ServiceLocator::setLogger(ILogger* logger) {
+    d_ptr->logger_ = logger;
+}
+
+ITranslator* ServiceLocator::translator() {
+    return d_ptr->translator_;
+}
+
+void ServiceLocator::setTranslator(ITranslator* transl) {
+    d_ptr->translator_ = transl;
+}
 
 ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
 }
 
+#ifndef IU_SHELLEXT
 void ServiceLocator::setEngineList(CUploadEngineListBase* engineList) {
     d_ptr->engineList_ = engineList;
 }
@@ -61,13 +82,7 @@ void ServiceLocator::setUploadErrorHandler(IUploadErrorHandler* errorHandler) {
     d_ptr->uploadErrorHandler_ = errorHandler;
 }
 
-ILogger* ServiceLocator::logger() {
-    return  d_ptr->logger_;
-}
 
-void ServiceLocator::setLogger(ILogger* logger) {
-    d_ptr->logger_ = logger;
-}
 
 IDialogProvider* ServiceLocator::dialogProvider() {
     return d_ptr->dialogProvider_;
@@ -75,14 +90,6 @@ IDialogProvider* ServiceLocator::dialogProvider() {
 
 void ServiceLocator::setDialogProvider(IDialogProvider* dialogProvider) {
     d_ptr->dialogProvider_ = dialogProvider;
-}
-
-ITranslator* ServiceLocator::translator() {
-    return d_ptr->translator_;
-}
-
-void ServiceLocator::setTranslator(ITranslator* transl) {
-    d_ptr->translator_ = transl;
 }
 
 ITaskDispatcher* ServiceLocator::taskDispatcher() {
@@ -113,3 +120,4 @@ void ServiceLocator::setMyEngineList(CMyEngineList* list) {
 CMyEngineList* ServiceLocator::myEngineList() const {
     return d_ptr->myEngineList_;
 }
+#endif

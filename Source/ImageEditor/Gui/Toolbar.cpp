@@ -8,6 +8,7 @@
 #include "Core/Images/Utils.h"
 #include "Func/WinUtils.h"
 #include "../Canvas.h"
+#include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
 

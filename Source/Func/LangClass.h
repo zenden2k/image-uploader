@@ -42,12 +42,13 @@ class CLang : public ITranslator
         /**
             The RTL option is not being changed during program lifetime
         **/
-        bool isRTL() const;
+        bool isRTL() const override;
         virtual std::string getCurrentLanguage() override;
         virtual std::string getCurrentLocale() override;
+        std::string translate(const char* str) override;
+        const wchar_t* translateW(const wchar_t* str) override;
         CLang(const CLang&) = delete;
         CLang& operator=(const CLang) = delete;
-        int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
     private:
         struct TranslateListItem
         {
@@ -66,20 +67,5 @@ class CLang : public ITranslator
 extern CLang Lang;
 
 #endif
-
-// Begin: translation macros
-#ifdef IU_TESTS
-#define TR(str) _T(str)
-#else
-#define TR(str) Lang.GetString(_T(str))
-#endif
-
-#ifdef NDEBUG
-#define TRC(c, str) SetDlgItemText(c, Lang.GetString(_T(str)))
-#else
-#define TRC(c, str) (ATLASSERT(GetDlgItem(c)),SetDlgItemText(c, Lang.GetString(_T(str))), (void)0)
-#endif
-#define TR_CONST(str) const_cast<LPWSTR>(TR(str))
-// End
 
 #endif  // LANGCLASS_H

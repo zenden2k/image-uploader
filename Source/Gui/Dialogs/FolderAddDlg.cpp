@@ -107,7 +107,7 @@ DWORD CFolderAdd::Run()
     EnableWindow(m_pWizardDlg->m_hWnd, true);
 
     if (!count)
-        Lang.LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APPNAME, MB_ICONINFORMATION);
+        GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APPNAME, MB_ICONINFORMATION);
     else {
         if (m_pWizardDlg->QuickUploadMarker) {
 

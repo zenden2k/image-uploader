@@ -16,13 +16,14 @@
 
 namespace ServersListTool {
 
-ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* uploadManager) :
+ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* uploadManager, std::shared_ptr<INetworkClientFactory> networkClientFactory) :
     model_(model),
     uploadManager_(uploadManager),
     useAccounts_(true),
     checkImageServers_(true),
     checkFileServers_(true),
-    checkURLShorteners_(true)
+    checkURLShorteners_(true),
+    networkClientFactory_(networkClientFactory)
 
 {
     needStop_ = false;
@@ -205,7 +206,7 @@ bool ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 }
 
 void ServersChecker::checkShortUrl(UploadTask* task) {
-    auto client = CoreFunctions::createNetworkClient();
+    auto client = networkClientFactory_->create();
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
     ServerData& data = *model_->getDataByIndex(userData->rowIndex);

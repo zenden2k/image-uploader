@@ -27,9 +27,11 @@
 #ifndef IU_CLI
 #include "Core/Settings.h"
 #else
-#define TR(a) _T(a)
+//#define TR(a) _T(a)
 #endif
-#include <Func/Library.h>
+#include "Func/Library.h"
+#include "Core/ServiceLocator.h"
+#include "Core/i18n/Translator.h"
 
 namespace GuiTools
 {
@@ -596,5 +598,12 @@ HICON LoadBigIcon(int resourceId) {
 void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx) {
     LONG oldStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
     ::SetWindowLong(hWnd, GWL_EXSTYLE, oldStyle & ~styleEx);
+}
+
+int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
+        uType |= MB_RTLREADING;
+    }
+    return MessageBox(hWnd, lpText, lpCaption, uType);
 }
 };

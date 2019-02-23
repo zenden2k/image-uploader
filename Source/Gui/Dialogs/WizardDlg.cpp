@@ -175,6 +175,8 @@ CWizardDlg::~CWizardDlg()
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    auto translator = ServiceLocator::instance()->translator();
+    ATLASSERT(translator != nullptr);
     srand(unsigned int(time(0)));
     m_bShowWindow = true;
 

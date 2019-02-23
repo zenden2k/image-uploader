@@ -21,6 +21,7 @@
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Func/langclass.h"
 
 CAppModule _Module;
 
@@ -86,10 +87,11 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
    
     Settings.setEngineList(&engineList);
 
-    ScriptsManager scriptsManager;
-    UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler);
+    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
+    ScriptsManager scriptsManager(networkClientFactory);
+    UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler, networkClientFactory);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, std::make_shared<NetworkClientFactory>());
+    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, networkClientFactory);
     uploadManager.setEnableHistory(false);
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
@@ -118,7 +120,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     int nRet = 0;
     // BLOCK: Run application
     {
-        CMainDlg dlgMain(&uploadEngineManager, &uploadManager, &engineList);
+        CMainDlg dlgMain(&uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
         nRet = dlgMain.DoModal(0);
     }
 

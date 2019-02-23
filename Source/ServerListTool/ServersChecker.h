@@ -4,7 +4,8 @@
 #include <memory>
 #include <vector>
 #include "Core/Upload/UploadSession.h"
-#include <Core/FileDownloader.h>
+#include "Core/FileDownloader.h"
+#include "Core/Network/NetworkClientFactory.h"
 #include "Helpers.h"
 
 class CFileDownloader;
@@ -26,7 +27,7 @@ struct UploadTaskUserData {
 
 class ServersChecker {
 public:
-    ServersChecker(ServersCheckerModel* model, UploadManager* uploadManager);
+    ServersChecker(ServersCheckerModel* model, UploadManager* uploadManager, std::shared_ptr<INetworkClientFactory> networkClientFactory);
     bool start(const std::string& testFileName, const std::string& testUrl = "");
     void stop();
     bool isRunning() const;
@@ -57,6 +58,7 @@ protected:
     std::function<void()> onFinishedCallback_;
     Helpers::MyFileInfo m_sourceFileInfo;
     std::string srcFileHash_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 }
 #endif

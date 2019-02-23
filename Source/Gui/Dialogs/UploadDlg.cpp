@@ -398,7 +398,7 @@ void CUploadDlg::createToolbar()
 {
     CBitmap hBitmap;
     
-    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
 
     if (GuiTools::Is32BPP()) {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP32BIT));

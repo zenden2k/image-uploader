@@ -16,7 +16,7 @@
 #include "Core/Upload/ConsoleUploadErrorHandler.h"
 #include "Core/Logging/MyLogSink.h"
 #include "Core/ServiceLocator.h"
-
+#include "Core/i18n/Translator.h"
 
 #ifdef _WIN32
 #include "atlheaders.h"
@@ -44,6 +44,24 @@ void errorHandler(HSQUIRRELVM vm, const SQChar *s, ...)
 #ifdef _WIN32
 
 CAppModule _Module;
+
+class Translator : public ITranslator {
+public:
+    virtual std::string getCurrentLanguage() override {
+        return "English";
+    }
+    virtual std::string getCurrentLocale() override {
+        return "en_US";
+    }
+    virtual std::string translate(const char* str) override{
+        return str;
+    }
+#ifdef _WIN32
+    virtual const wchar_t* translateW(const wchar_t* str) override {
+        return str;
+    }
+#endif
+};
 
 // Convert UNICODE (UCS-2) command line arguments to utf-8
 char ** convertArgv(int argc, _TCHAR* argvW[]) {
@@ -149,9 +167,11 @@ int main(int argc, char *argv[]){
     FLAGS_alsologtostderr = true;
     ConsoleLogger defaultLogger;
     ConsoleUploadErrorHandler uploadErrorHandler;
+    Translator translator;
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     serviceLocator->setLogger(&defaultLogger);
+    serviceLocator->setTranslator(&translator);
     MyLogSink logSink(&defaultLogger);
     google::AddLogSink(&logSink);
 

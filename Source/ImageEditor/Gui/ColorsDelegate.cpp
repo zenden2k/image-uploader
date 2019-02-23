@@ -1,6 +1,7 @@
 #include "ColorsDelegate.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
+#include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
 

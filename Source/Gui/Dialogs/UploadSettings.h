@@ -95,7 +95,6 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_CREATETHUMBNAILS, BN_CLICKED, OnBnClickedCreatethumbnails)
         COMMAND_HANDLER(IDC_USETHUMBTEMPLATE, BN_CLICKED, OnBnClickedUseThumbTemplate)
         COMMAND_HANDLER(IDC_USESERVERTHUMBNAILS, BN_CLICKED, OnBnClickedUseServerThumbnails)
-        COMMAND_HANDLER(IDC_LOGOOPTIONS, BN_CLICKED, OnBnClickedLogooptions)
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON, BN_CLICKED, OnBnClickedLogin)
         COMMAND_HANDLER(IDC_LOGINTOOLBUTTON+1, BN_CLICKED, OnBnClickedLogin)
         COMMAND_HANDLER(IDC_SELECTFOLDER, BN_CLICKED, OnBnClickedSelectFolder)
@@ -152,7 +151,6 @@ class CUploadSettings :
     LRESULT OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedUseThumbTemplate(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedLogooptions(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedLogin(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnImageServerSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnFileServerSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -161,7 +159,6 @@ class CUploadSettings :
     LRESULT OnServerParamsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnOpenSignupPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnQualityEditKillFocus(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnResizePresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -174,9 +171,9 @@ class CUploadSettings :
     void ShowParams();
     CToolBarCtrl Toolbar;
     CToolBarCtrl FileServerSelectBar;
-    bool OnNext();
-    bool OnShow();
-    virtual bool OnHide();
+    bool OnNext() override;
+    bool OnShow() override;
+    virtual bool OnHide() override;
     void UpdateAllPlaceSelectors();
     void UpdatePlaceSelector(bool ImageServer);
     void UpdateToolbarIcons();
@@ -193,7 +190,7 @@ protected:
     CIconButton m_ProfileEditButton;
     CIconButton m_ShorteningServerButton;
     CToolBarCtrl m_ProfileEditToolbar;
-    CPercentEdit m_ThumbSizeEdit;
+    //CPercentEdit m_ThumbSizeEdit;
     void UpdateProfileList();
     ServerProfile sessionImageServer_, sessionFileServer_;
     std::string imageServerLogin_;

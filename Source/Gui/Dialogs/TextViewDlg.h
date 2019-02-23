@@ -22,7 +22,6 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Func/LangClass.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CTextViewDlg

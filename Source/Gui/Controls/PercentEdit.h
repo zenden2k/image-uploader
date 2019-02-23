@@ -3,6 +3,8 @@
 
 #include "atlheaders.h"
 
+// Actually this class is not being used
+
 class CPercentEdit : public CWindowImpl<CPercentEdit>
 {
     public:

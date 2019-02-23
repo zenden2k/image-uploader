@@ -4,6 +4,7 @@
 #include "WinHotkeyCtrl.h"
 #include "vkCodes.h"
 #include "3rdpart/MemberFunctionCallback.h"
+#include "Core/i18n/Translator.h"
 
 // CWinHotkeyCtrl
 

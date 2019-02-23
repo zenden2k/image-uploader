@@ -37,6 +37,7 @@ limitations under the License.
 #include "Core/AppParams.h"
 #include "Core/Utils/StringUtils.h"
 #include "Gui/Dialogs/FloatingWindow.h"
+#include "Core/i18n/Translator.h"
 
 #ifndef CheckBounds
 #define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }

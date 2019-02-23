@@ -366,7 +366,7 @@ void CServerSelectorControl::updateServerList()
 {
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
-    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
     comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
@@ -858,7 +858,7 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
 
         pMyDlgTemplate->style = pMyDlgTemplate->style | WS_POPUP | WS_BORDER/* | WS_CAPTION*/ ;
     }
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
     }
     return reinterpret_cast<DLGTEMPLATE*>(pMyDlgTemplate);

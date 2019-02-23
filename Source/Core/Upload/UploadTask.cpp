@@ -4,9 +4,7 @@
 
 #include "UploadSession.h"
 #include "Core/Upload/ScriptUploadEngine.h"
-
-#undef TR
-#define TR(a) a
+#include "Core/i18n/Translator.h"
 
 UploadTask::UploadTask()
 {
@@ -326,26 +324,26 @@ void UploadTask::setStatus(Status status)
 
     switch (status) {
         case StatusRunning:
-            progress_.statusText = "Begin upload";
+            progress_.statusText = tr("Begin upload");
             break;
         case StatusStopped:
-            progress_.statusText = "Stopped";
+            progress_.statusText = tr("Stopped");
             break;
         case StatusFinished:
-            progress_.statusText = "Finished";
+            progress_.statusText = tr("Finished");
             break;
         case StatusFailure:
-            progress_.statusText = "Error";
+            progress_.statusText = tr("Error");
             break;
         case StatusInQueue:
-            progress_.statusText = "In queue";
+            progress_.statusText = tr("In queue");
             break;
         case StatusPostponed:
-            progress_.statusText = "Postponed";
+            progress_.statusText = tr("Postponed");
             break;
                 
         default:
-            progress_.statusText = "Unknown status";
+            progress_.statusText = tr("Unknown status");
             
     }
     statusChanged();
@@ -453,19 +451,19 @@ std::string UploadTask::UploaderStatusToString(StatusType status, int actionInde
     switch (status)
     {
     case stWaitingAnswer:
-        result = TR("Waiting response from server...");
+        result = tr("Waiting response from server...");
         break;
     case stCreatingFolder:
-        result = TR("Creating folder \"") + param + "\"...";
+        result = tr("Creating folder \"") + param + "\"...";
         break;
     case stUploading:
-        result = TR("Sending file to server...");
+        result = tr("Sending file to server...");
         break;
     case stAuthorization:
-        result = TR("Autorization on server...");
+        result = tr("Autorization on server...");
         break;
     case stPerformingAction:
-        result = str(boost::format(TR("Performing action #%d..."))% actionIndex);
+        result = str(boost::format(tr("Performing action #%d..."))% actionIndex);
         break;
     case stUserDescription:
         result = param;

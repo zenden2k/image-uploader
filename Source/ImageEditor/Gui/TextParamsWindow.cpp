@@ -20,13 +20,14 @@
 
 #include "TextParamsWindow.h"
 
+#include <vector>
+#include <thread>
+#include <memory>
+
 #include "resource.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "ImageEditor/Helpers/FontEnumerator.h"
-#include <vector>
-#include <thread>
-#include <memory>
 
 TextParamsWindow::TextParamsWindow() : fontSizeComboboxCustomEdit_(this), windowDc_(nullptr)
 {
@@ -107,7 +108,7 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     ::MapWindowPoints(nullptr, m_hWnd, (LPPOINT)&toolbarRect, 2);
     int iconWidth =  ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
-    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
     toolbarImageList_.Create(iconWidth, iconHeight, ((WinUtils::IsWinXPOrLater()) ? ILC_COLOR32 : ILC_COLOR8 | ILC_MASK) | rtlStyle, 3, 3);
     /*if ( WinUtils::IsWinXP() || WinUtils::IsVista() )*/ {
         iconBold_ = GuiTools::LoadSmallIcon(IDI_ICONBOLD);

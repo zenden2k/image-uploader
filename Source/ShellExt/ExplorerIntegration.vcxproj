@@ -530,6 +530,7 @@
     <ClCompile Include="..\Core\AppParams.cpp" />
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
     <ClCompile Include="..\Core\Logging.cpp" />
+    <ClCompile Include="..\Core\ServiceLocator.cpp" />
     <ClCompile Include="..\Core\Utils\CoreUtils.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils.cpp" />
     <ClCompile Include="..\Core\Utils\CryptoUtils_win.cpp" />

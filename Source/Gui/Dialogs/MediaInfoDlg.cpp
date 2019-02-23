@@ -47,6 +47,8 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     
     editFont_.CreateFontIndirect(&logFont);
     SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, reinterpret_cast<WPARAM>(editFont_.m_hFont), MAKELPARAM(false, 0));
+    editControl_.AttachToDlgItem(m_hWnd, IDC_FILEINFOEDIT);
+
     // Translating controls' text
     TRC(IDOK, "OK");
     SetWindowText(TR("Information about file"));
@@ -67,7 +69,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     GuiTools::SetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX, generateTextInEnglish_);
 
     
-    ::SetFocus(GetDlgItem(IDOK));
+    ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     FixEditRTL();
     GenerateInfo(); 
     return 0; 
@@ -119,7 +121,7 @@ void CMediaInfoDlg::GenerateInfo() {
 void CMediaInfoDlg::FixEditRTL() {
     HWND editControl = GetDlgItem(IDC_FILEINFOEDIT);
 
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         LONG styleEx = ::GetWindowLong(editControl, GWL_EXSTYLE);
         LONG style = ::GetWindowLong(editControl, GWL_STYLE);
         //DWORD isStyle = style & ES_RIGHT;

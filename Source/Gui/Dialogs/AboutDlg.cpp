@@ -39,6 +39,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
     auto ver = AppParams::instance()->GetAppVersion();
+    auto translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
     m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
@@ -58,9 +59,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-    m_EmailLink.SetLabel((Lang.GetLanguageName() == _T("Russian") ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@yandex.ru)")));
-    m_EmailLink.SetHyperLink(_T("mailto:zenden2k@yandex.ru"));
+    m_EmailLink.SetLabel((translator->getCurrentLanguage() == "Russian" ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
+        : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@gmail.com)")));
+    m_EmailLink.SetHyperLink(_T("mailto:zenden2k@gmail.com"));
 
     CString memoText;
     
@@ -77,7 +78,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += TR("Translators:") + CString("\r\n");
 
         CString trans;
-        trans.Format(TR("%s translation:"),Lang.GetLanguageName());
+        trans.Format(TR("%s translation:"), translator->getCurrentLanguage());
         memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
     } 
 

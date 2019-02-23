@@ -35,6 +35,7 @@
 #include "Func/DefaultLogger.h"
 #include "Func/WtlScriptDialogProvider.h"
 #include "Core/AppParams.h"
+#include "Func/LangClass.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -174,7 +175,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     std::locale::global(boost::locale::generator().generate(""));
     // Make boost.filesystem use it
     boost::filesystem::path::imbue(std::locale());
-    //BOOL res = SetProcessDefaultLayout(LAYOUT_RTL);
 
 #if defined(_WIN32) && !defined(NDEBUG)
     // These global strings in GLOG are initially reserved with a small

@@ -13,7 +13,6 @@
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Func/MyUtils.h"
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
@@ -28,7 +27,6 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
     allowAltTab_ = false;
 
     init();
-    
 }
 
 ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
@@ -36,7 +34,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     if (!imageFileName.IsEmpty()) {
         CString ext = WinUtils::GetFileExt(imageFileName);
         if (ext == "webp") {
-            Lang.LocalizedMessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
         }
     }
     currentDoc_ = new ImageEditor::Document(imageFileName);
@@ -293,7 +291,7 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode)
 {
     if (currentDoc_->isNull()) {
-        Lang.LocalizedMessageBox(nullptr, _T("Invalid image file."), APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APPNAME, MB_ICONERROR);
         return drCancel;
     }
     //int screenWidth = GetSystemMetrics(SM_CXSCREEN);
@@ -1072,7 +1070,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 {
     DialogResult dr = drCancel;
     if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
-        int msgBoxResult = Lang.LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
+        int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if ( msgBoxResult == IDYES ) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
             OnClickedSave();

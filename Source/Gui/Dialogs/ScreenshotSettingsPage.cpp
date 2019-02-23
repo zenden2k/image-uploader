@@ -62,7 +62,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
     
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND screenshotFolderEditHwnd = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
         LONG styleEx = ::GetWindowLong(screenshotFolderEditHwnd, GWL_EXSTYLE);
@@ -114,7 +114,7 @@ bool CScreenshotSettingsPagePage::Apply()
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
     if(!CheckFileName(fileName))
     {
-        Lang.LocalizedMessageBox(m_hWnd, TR("File name cannot contains forbidden characters!"));
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("File name cannot contains forbidden characters!"));
         ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
         return false;
     }

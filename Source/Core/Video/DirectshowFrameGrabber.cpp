@@ -37,8 +37,7 @@
 #include "Core/Logging.h"
 #include "Core/3rdpart/dxerr.h"
 #include "DirectShowUtil.h"
-
-#define tr(arg) (arg)
+#include "Core/i18n/Translator.h"
 
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
@@ -383,7 +382,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     {
         pGraph2.CoCreateInstance( CLSID_FilterGraph );
 
-        GrabInfo( tr("Поиск необходимых кодеков...") );
+        GrabInfo( t_r("Поиск необходимых кодеков...") );
         CComQIPtr<IVideoWindow, & IID_IVideoWindow> pWindow2 = pGraph2;
         if (pWindow2)
         {
@@ -394,7 +393,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         if ( FAILED( hr ) )
         {
             LOG(ERROR) << "Couldn't find suitable codecs (probably format is not supported)" << GetMessageForHresult(hr);
-            GrabInfo( tr("Невозможно подобрать кодеки (формат не поддерживается).") );
+            GrabInfo( t_r("Невозможно подобрать кодеки (формат не поддерживается).") );
             Error = true;
         }
         CComQIPtr<IMediaControl, & IID_IMediaControl> pControl2( pGraph2);
@@ -439,7 +438,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     {
         d_ptr->pLoad = ( /*pASF*/ d_ptr->pSource);
         if (!Error) {
-            GrabInfo( tr("Загрузка файла...") );
+            GrabInfo( tr("Loading file...") );
         }
         hr = d_ptr->pLoad->Load(fileNameW, NULL );
     }
@@ -474,16 +473,16 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     // ... and connect them
     //
     if (!Error)
-        GrabInfo( tr("Подключение кодеков...") );
+        GrabInfo( tr("Connecting codecs") );
     else
-        GrabInfo( tr("Ещё одна попытка подключения кодеков...") );
+        GrabInfo( tr("Trying again to connect filters...") );
     
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
     {
         LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
-        GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
+        GrabInfo(  tr("Cannot connect filters (format probably is not supported).") );
         return false;
     }
 
@@ -493,7 +492,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     if ( FAILED( hr ) )
     {
         LOG(ERROR) << "GetConnectedMediaType failed"<<GetMessageForHresult(hr);
-        //GrabInfo(  tr("Ошибка соединения фильтров (формат не поддерживается).") );
         return false;
     }
 

@@ -32,6 +32,7 @@
 #include "maindlg.h"
 #include "resource.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/CustomEditControl.h"
 
 // CMediaInfoDlg
 
@@ -88,6 +89,7 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
         InfoType infoType_;
         bool generateTextInEnglish_;
         CString summary_, fullInfo_;
+        CCustomEditControl editControl_;
 };
 
 

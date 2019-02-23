@@ -22,6 +22,9 @@
 #define DIALOGINDIRECT_H
 
 #include "atlheaders.h"
+#include "Core/ServiceLocator.h"
+#include "Core/i18n/Translator.h"
+#include "Gui/GuiTools.h"
 
 template <class T, class TBase = CWindow>
 class ATL_NO_VTABLE CDialogIndirectImpl : public CDialogImplBaseT< TBase >
@@ -91,7 +94,7 @@ public:
         DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(m_hDlgTemplate);
         ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
-        if (Lang.isRTL()) {
+        if (ServiceLocator::instance()->translator()->isRTL()) {
             pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
         }
         return (DLGTEMPLATE*)pMyDlgTemplate;
@@ -105,7 +108,7 @@ public:
     }
 
     int LocalizedMessageBox(LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK) {
-        return Lang.LocalizedMessageBox(m_hWnd, lpText, lpCaption, uType);
+        return GuiTools::LocalizedMessageBox(m_hWnd, lpText, lpCaption, uType);
     }
     
 };

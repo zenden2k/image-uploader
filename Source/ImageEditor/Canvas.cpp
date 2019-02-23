@@ -29,6 +29,7 @@
 #include <cassert>
 #include <algorithm>
 #include "3rdpart/GdiplusH.h"
+#include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
     
@@ -1064,7 +1065,7 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
 
     rc.top -= scrollOffset_.x;
     rc.left -= scrollOffset_.y;
-    DWORD rtlStyle = Lang.isRTL() ? (WS_EX_LAYOUTRTL | WS_EX_RTLREADING) : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? (WS_EX_LAYOUTRTL | WS_EX_RTLREADING) : 0;
     /*HWND wnd =*/ inputBox_->Create( parentWindow_, rc, _T(""), WS_CHILD |ES_MULTILINE|/*ES_AUTOHSCROLL|*/ES_AUTOVSCROLL|  ES_WANTRETURN
         | ES_NOHIDESEL /*| ES_LEFT */, WS_EX_TRANSPARENT | rtlStyle);
 

@@ -69,7 +69,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     LoadComputerAddresses();
     GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
 
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND downloadUrlEditHwnd = GetDlgItem(IDC_DOWNLOADURLEDIT);
         LONG styleEx = ::GetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE);
@@ -443,7 +443,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     for( size_t i =0; i< sharedFolders_.size(); i++ ) {
         // Adding Unicode Left-To-Right marks to text to be rendered correctly if RTL language is choosen
         CString itemTitle = L"\u200E" + sharedFolders_[i];
-        if (Lang.isRTL()) {
+        if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");
         }
@@ -453,7 +453,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     id =  IDC_PRESETMENU_FIRST_ID;
     for (size_t i = 0; i< addresses_.size(); i++) {
         CString itemTitle = L"\u200E" +  addresses_[i];
-        if (Lang.isRTL()) {
+        if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");
             itemTitle.Replace(L"/", L"/\u200E");
         }

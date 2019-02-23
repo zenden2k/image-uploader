@@ -21,7 +21,7 @@
 #include "StatusDlg.h"
 
 #include "atlheaders.h"
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 // CStatusDlg
 CStatusDlg::CStatusDlg() : m_bNeedStop(false)

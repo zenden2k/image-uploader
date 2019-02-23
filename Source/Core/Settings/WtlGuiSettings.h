@@ -5,7 +5,6 @@
 
 #include "atlheaders.h"
 #include "CommonGuiSettings.h"
-#include "Func/langclass.h"
 #include "Func/Common.h"
 #include "Func/WinUtils.h"
 #include "Gui/Dialogs/HotkeySettings.h"

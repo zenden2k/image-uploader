@@ -23,6 +23,7 @@
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
 #include "ImageEditor/Canvas.h"
+#include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
 // CLogListBox

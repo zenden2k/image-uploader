@@ -21,7 +21,7 @@
 #include "SearchByImageDlg.h"
 
 #include "atlheaders.h"
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Core/SearchByImage.h"
 #include "Func/WinUtils.h"

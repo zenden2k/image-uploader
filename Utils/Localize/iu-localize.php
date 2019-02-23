@@ -146,12 +146,13 @@
 
 	function parse_source_file( $filename ) {
         $content = file_get_contents( $filename ); //"/(?<=TR\(\")[\S]*(=\"\))/i"
-        preg_match_all( "/TR\(\"(.*?[^\\x5c])\"\)/", $content, $matches );
+        preg_match_all( "/TR\(\"(.*?[^\\x5c])\"\)/i", $content, $matches );
 
         foreach ( $matches[1] as $item ) {
             //echo "<br>$item";
             add_string( $item );
         }
+        
         
         preg_match_all( "/TR_CONST\(\"(.*?[^\\x5c])\"\)/", $content, $matches );
 
@@ -178,7 +179,8 @@
                     parse_source_file( $path . '\\' . $file );
                 }
                 else {
-                    if ( is_dir( $path . '\\' . $file ) ) {
+                    if ( is_dir( $path . '\\' . $file ) && $file != 'qimageuploader' ) {
+                        
                         echo "<p><B>$i. Parsing subdir $file<br /></b>";
                         parse_dir( $path . '\\' . $file . '\\' );
 

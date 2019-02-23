@@ -77,7 +77,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
     SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
 
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND imageEditorPathHwnd = GetDlgItem(IDC_IMAGEEDITORPATH);
         LONG styleEx = ::GetWindowLong(imageEditorPathHwnd, GWL_EXSTYLE);

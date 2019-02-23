@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "Core/Upload/UploadFilter.h"
 #include "Core/Upload/UploadTask.h"
 

@@ -45,7 +45,7 @@ class CMainDlg :
 public:
     enum { IDD = IDD_MAINDLG };
     enum { ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL };
-    CMainDlg(UploadEngineManager *uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList);
+    CMainDlg(UploadEngineManager *uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
@@ -121,6 +121,7 @@ public:
         checkFileServersCheckBox_, checkUrlShortenersCheckBox_;
 
     std::unique_ptr<ServersChecker> serversChecker_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     bool OnNeedStop();
     void processFinished();
     int Run();

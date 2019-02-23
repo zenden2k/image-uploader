@@ -24,7 +24,7 @@
 #include "Func/mydataobject.h"
 #include "Func/common.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include "Func/LangClass.h"
+#include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -53,7 +53,7 @@ void CThumbsView::Init(bool Extended)
 {
     ExtendedView = Extended;
     ImageView.Create(m_hWnd);
-    DWORD rtlStyle = Lang.isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
     ImageList.Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT + (ExtendedView ? 20 : 0), ILC_COLOR24 | rtlStyle, 0, 3);
     SetImageList(ImageList, LVSIL_NORMAL);
     DWORD style = GetExtendedListViewStyle();

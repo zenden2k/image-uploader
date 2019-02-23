@@ -24,6 +24,7 @@ limitations under the License.
 #include <propkey.h>
 #include <propvarutil.h>
 #include "resource.h"
+#include "Core/i18n/Translator.h"
 
 /*
 PCWSTR const c_rgpszFiles[] =

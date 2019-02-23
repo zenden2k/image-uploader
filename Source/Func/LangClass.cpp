@@ -203,11 +203,13 @@ std::string CLang::getCurrentLocale() {
     return W2U(locale_);
 }
 
-int CLang::LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType) {
-    if (isRTL()) {
-        uType |= MB_RTLREADING;
-    }
-    return MessageBox(hWnd, lpText, lpCaption, uType);
+std::string CLang::translate(const char* str) {
+    std::wstring wideStr = IuCoreUtils::Utf8ToWstring(str);
+    return IuCoreUtils::WstringToUtf8(GetString(wideStr.c_str()));
+}
+
+const wchar_t* CLang::translateW(const wchar_t* str)  {
+    return GetString(str);
 }
 
 CString CLang::getLanguageFileNameForLocale(const CString& locale)

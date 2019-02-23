@@ -4,6 +4,7 @@
 #include "Gui/Dialogs/TextViewDlg.h"
 #endif
 #include "Func/WinUtils.h"
+#include "Core/i18n/Translator.h"
 
 DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
     logger_ = logger;

@@ -156,7 +156,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     {
         CMenu FolderMenu;
         FolderMenu.LoadMenu(IDR_CONTEXTMENU2);
-        CMenu sub = FolderMenu.GetSubMenu(0);
+        CMenuHandle sub(FolderMenu.GetSubMenu(0));
         bool IsClipboard=    WizardDlg->IsClipboardDataAvailable();
         sub.EnableMenuItem(IDC_PASTE, (IsClipboard) ? MF_ENABLED : MF_GRAYED);
         mi.cbSize = sizeof(mi);
@@ -196,7 +196,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         mi.fMask = MIIM_TYPE;
         mi.fType = MFT_STRING;
 
-        CMenu sub = menu.GetSubMenu(0);
+        CMenuHandle sub(menu.GetSubMenu(0));
         sub.SetMenuDefaultItem(0, true);
 
 		CString fileName = FileList[hti.iItem].FileName;
@@ -313,10 +313,6 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
 
     FileList.Add(fl);
 
-    CString Buf;
-    if(IuCommonFunctions::IsImage(FileName))
-    Buf = WinUtils::GetOnlyFileName(FileName );
-    else Buf = WinUtils::myExtractFileName(FileName);
     int itemIndex = ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
         
     EnableNext(FileList.GetCount()>0);
@@ -726,7 +722,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         }
 
         if (!CopyFile(FileName, dlg->getFile(), false)) {
-            Lang.LocalizedMessageBox(m_hWnd, TR("Cannot copy file: ")+WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("Cannot copy file: ") + WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
         }
     } else {
         CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
@@ -751,7 +747,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
-            Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -761,7 +757,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
-            Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -785,7 +781,7 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     if (!result.IsEmpty()) {
         if (!WinUtils::CopyTextToClipboard(result)) {
-			Lang.LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
 		}
 	}
 	return 0;
@@ -823,13 +819,13 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
 void CMainDlg::UpdateStatusLabel() {
     int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
-    std::string statusText;
+    std::wstring statusText;
     if (selectedItemsCount) {
-        statusText = str(boost::format("%1% files selected/%2% files total") % selectedItemsCount % totalCount);
+        statusText = str(boost::wformat(TR("%1% files selected/%2% files total")) % selectedItemsCount % totalCount);
     } else {
-        statusText = str(boost::format("%d files") % totalCount);
+        statusText = str(boost::wformat(TR("%d files")) % totalCount);
     }
-    SetDlgItemText(IDC_STATUSLABEL, U2W(statusText));
+    SetDlgItemText(IDC_STATUSLABEL, statusText.c_str());
     listChanged_ = false;
 }
 

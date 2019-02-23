@@ -26,7 +26,6 @@
 #include "3rdpart/WinHotkeyCtrl.h"
 #include "3rdpart/vkCodes.h"
 #include "HotkeySettings.h"
-#include "Func/LangClass.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CHotkeyEditor

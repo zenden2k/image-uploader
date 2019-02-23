@@ -21,6 +21,7 @@
 
 #include "Core/Settings.h"
 #include "Func/WinUtils.h"
+#include "Core/i18n/Translator.h"
 
 // CLogWindow
 CLogWindow::CLogWindow()
@@ -147,7 +148,7 @@ LRESULT CLogWindow::OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
 void CLogWindow::TranslateUI()
 {
-    if (Lang.isRTL()) {
+    if (ServiceLocator::instance()->translator()->isRTL()) {
         SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING); 
         MsgList.SetWindowLong(GWL_EXSTYLE, MsgList.GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING);
     }

@@ -31,7 +31,7 @@
     #ifndef IU_CLI
         #include "Func/IuCommonFunctions.h"
 #ifdef IU_WTL
-        #include "Func/LangClass.h"
+        #include "Core/i18n/Translator.h"
 #endif
         #include "Func/WinUtils.h"
     #endif
@@ -173,7 +173,7 @@ const std::string Translate(const std::string& key, const std::string& originalT
     }
 
 #ifdef IU_WTL_APP
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)Lang.GetString(IuCoreUtils::Utf8ToWstring(originalText).c_str()));
+    return ServiceLocator::instance()->translator()->translate(originalText.c_str());
 #else
     return originalText;
 #endif

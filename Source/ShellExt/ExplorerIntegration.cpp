@@ -82,6 +82,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             
 
             Lang.LoadLanguage(lang);
+            ServiceLocator::instance()->setTranslator(&Lang);
         }
 
         return _AtlModule.DllMain(dwReason, lpReserved); 

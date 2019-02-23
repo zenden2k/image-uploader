@@ -18,8 +18,9 @@
 
 namespace ServersListTool
 {
-CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList) :
-model_(engineList), m_ListView(&model_)
+CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, 
+                    std::shared_ptr<INetworkClientFactory> factory) :
+                    model_(engineList), m_ListView(&model_), networkClientFactory_(factory)
 {
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
@@ -69,7 +70,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
     //iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 
-    serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_);
+    serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
     serversChecker_->setOnFinishedCallback(std::bind(&CMainDlg::processFinished, this));
     m_ImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_ListView.SetImageList(m_ImageList, LVSIL_NORMAL);

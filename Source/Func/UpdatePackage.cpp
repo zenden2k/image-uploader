@@ -34,6 +34,7 @@
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
+#include "Core/i18n/Translator.h"
 
 #ifdef IU_CLI
     #undef TR

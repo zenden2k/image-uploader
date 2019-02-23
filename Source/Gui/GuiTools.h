@@ -85,5 +85,6 @@ namespace GuiTools
     LOGFONT CharFormatToLogFont(const CHARFORMAT & cf);
     HICON LoadSmallIcon(int resourceId);
     HICON LoadBigIcon(int resourceId);
+    int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
 };
 #endif
