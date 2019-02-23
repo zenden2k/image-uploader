@@ -19,6 +19,9 @@
 AppId={{24F211C6-2732-4564-B602-CDA2DE2A13FC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
+AppVerName=Image Uploader {#MyAppVersion} Build {#IU_BUILD_NUMBER}
+UninstallDisplayName=Image Uploader {#MyAppVersion}
+VersionInfoVersion={#IU_APP_VER_CLEAN}.{#IU_BUILD_NUMBER}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
