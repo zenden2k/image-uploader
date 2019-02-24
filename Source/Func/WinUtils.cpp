@@ -798,9 +798,9 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 {
     TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
 
-    TCHAR szFontSize[MAX_PATH];
-    TCHAR szFormat[MAX_PATH];
-    TCHAR szCharset[MAX_PATH];
+    TCHAR szFontSize[MAX_PATH]=_T("");
+    TCHAR szFormat[MAX_PATH] = _T("");
+    TCHAR szCharset[MAX_PATH] = _T("");
     bool bBold=false;
     bool bItalic=false;
     bool bUnderline=false;
@@ -867,7 +867,9 @@ bool ExtractStrFromList(
 
     while (*szString == _T(' ')) szString++;
 
-    //if(nStringLen<=0) goto lbl_copydef;
+    nStringLen = lstrlen(szString);
+
+    if(nStringLen<=0) goto lbl_copydef;
 
     szPrevSep=szString;
 

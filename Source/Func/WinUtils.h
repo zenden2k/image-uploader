@@ -78,7 +78,7 @@ namespace WinUtils {
         int nIndex, /* Zero based item index */
         LPTSTR szBuffer /* Destination buffer */,
         LONG nSize ,/* Length in characters of destination buffer */
-        LPCTSTR szDefString = NULL,
+        LPCTSTR szDefString = _T(""),
         TCHAR cSeparator = _T(',') /* Character to be separator in list */);
     CString StringSection(const CString& str,TCHAR sep, int index);
     bool IsWindows64Bit();
