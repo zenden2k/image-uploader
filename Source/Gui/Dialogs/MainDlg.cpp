@@ -401,7 +401,7 @@ LRESULT CMainDlg::OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 bool CMainDlg::OnHide()
 {
-    ThumbsView.StopAndWait();
+    ThumbsView.StopBackgroundThread();
     if(IsRunning())
     {
         WaitThreadStop.SetEvent(); // Sending stop message destinated for child thread

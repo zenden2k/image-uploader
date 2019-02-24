@@ -216,9 +216,6 @@
     <ClInclude Include="Source\Gui\Dialogs\UploadSettingsPage.h">
       <Filter>Header Files\Gui\Dialogs</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Gui\Dialogs\VideoGrabber.h">
-      <Filter>Header Files\Gui\Dialogs</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberParams.h">
       <Filter>Header Files\Gui\Dialogs</Filter>
     </ClInclude>

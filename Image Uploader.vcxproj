@@ -825,7 +825,6 @@
     <ClInclude Include="Source\Gui\Dialogs\UploadDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\UploadSettings.h" />
     <ClInclude Include="Source\Gui\Dialogs\UploadSettingsPage.h" />
-    <ClInclude Include="Source\Gui\Dialogs\VideoGrabber.h" />
     <ClInclude Include="Source\Gui\Dialogs\VideoGrabberParams.h" />
     <ClInclude Include="Source\Gui\Dialogs\WelcomeDlg.h" />
     <ClInclude Include="Source\Gui\Dialogs\WizardDlg.h" />

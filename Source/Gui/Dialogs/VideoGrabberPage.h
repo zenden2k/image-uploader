@@ -122,7 +122,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
         CEdit fileEdit_;
         CComboBox videoEngineCombo_;
 		UploadEngineManager * uploadEngineManager_;
-        HwndScopedWrapper engineComboToolTip_;
+        HwndScopedWrapper engineComboToolTip_, deinterlacingCheckboxTooltip_;
 };
 
 #endif // VIDEOGRABBER_H

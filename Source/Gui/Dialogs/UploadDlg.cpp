@@ -253,6 +253,9 @@ int CUploadDlg::ThreadTerminated(void)
 
 bool CUploadDlg::OnShow()
 {
+    EnableNext(false);
+    ShowNext();
+    ShowPrev();
     sessionFileServer_ = WizardDlg->getSessionFileServer();
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     bool IsLastVideo=false;
@@ -266,9 +269,7 @@ bool CUploadDlg::OnShow()
     resultsWindow_->InitUpload();
     resultsWindow_->EnableMediaInfo(IsLastVideo);
     CancelByUser = false;
-    ShowNext();
-    ShowPrev();
-    EnableNext(false);
+   
     isEnableNextButtonTimerRunning_ = true;
     SetTimer(kEnableNextButtonTimer, 1000);
     MainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
@@ -343,9 +344,9 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 #if  WINVER    >= 0x0601 // Windows 7 related stuff
     if(ptl)
     {
-        int NewCurrent = CurPos * 50 + FileProgress;
-        int NewTotal = Total * 50;
-        ptl->SetProgressValue(GetParent(), NewCurrent, NewTotal);
+        int NewCurrent = CurPos * 100 + FileProgress;
+        int NewTotal = Total * 100;
+        ptl->SetProgressValue(WizardDlg->m_hWnd, NewCurrent, NewTotal);
     }
 #endif
     progressCurrent = CurPos;
@@ -461,8 +462,7 @@ void CUploadDlg::updateTotalProgress() {
             }
         }
     }
-    TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(),
-        static_cast<int>(((float)totalPercent) / 100 * 50));
+    TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), totalPercent);
 }
 
 LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
@@ -500,6 +500,7 @@ LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
                 if (!uploadManager_->IsRunning()) {
                     SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
                     backgroundThreadStarted();
+                    SetTimer(kProgressTimer, 1000);
                     uploadManager_->retrySession(uploadSession_);
                 }
             }

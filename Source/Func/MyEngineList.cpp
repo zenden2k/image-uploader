@@ -79,10 +79,23 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     CUploadEngineData *ued = CUploadEngineList::byName(name);
     std::string newName =  name;
     HICON icon = 0;
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico");
+    CString serverName = Utf8ToWCstring(newName);
+    serverName.Replace(_T("\\"), _T("_"));
+    serverName.Replace(_T("/"), _T("_"));
+    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+ serverName +_T(".ico");
 
-    if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
-        iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");
+    if ( !WinUtils::FileExists(iconFileName) ) {
+        if (ued && !ued->PluginName.empty()) {
+            iconFileName = IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
+            if (!WinUtils::FileExists(iconFileName)) {
+                serverIcons_[name] = nullptr;
+                return nullptr;
+            }
+        } else {
+            serverIcons_[name] = nullptr;
+            return nullptr;
+        }
+        
     }
 
     int w = GetSystemMetrics(SM_CXSMICON);

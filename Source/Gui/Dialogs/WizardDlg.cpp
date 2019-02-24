@@ -507,44 +507,39 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
 {
     if(idPage == CurPage) return true;
 
-    if(GetCurrentThreadId()!=GetWindowThreadProcessId(m_hWnd, NULL))
-    {
-        return SendMessage(WM_MY_SHOWPAGE, (WPARAM)(int)idPage)!=FALSE;
+    if (GetCurrentThreadId() != GetWindowThreadProcessId(m_hWnd, NULL)) {
+        return SendMessage(WM_MY_SHOWPAGE, (WPARAM)(int)idPage) != FALSE;
     }
-   
-    if (CurPage >= 0) {
-        Pages[CurPage]->OnHide();
+
+    int oldCurPage = CurPage;
+
+    if (oldCurPage >= 0) {
+        Pages[oldCurPage]->OnHide();
     }
-   
 
-    if(!CreatePage(idPage)) return false;
+    if (!CreatePage(idPage)) return false;
 
-    SetDlgItemText(IDC_NEXT,TR("Next >"));
+    SetDlgItemText(IDC_NEXT, TR("Next >"));
 
     HBITMAP bmp = Pages[idPage]->HeadBitmap;
-    if(!bmp) ::ShowWindow(GetDlgItem(IDC_HEADBITMAP),SW_HIDE);
-    else
-    {
-        ::ShowWindow(GetDlgItem(IDC_HEADBITMAP),SW_SHOW);
-        SendDlgItemMessage(IDC_HEADBITMAP,STM_SETIMAGE,IMAGE_BITMAP,(LPARAM)bmp);
+    if (!bmp) ::ShowWindow(GetDlgItem(IDC_HEADBITMAP), SW_HIDE);
+    else {
+        ::ShowWindow(GetDlgItem(IDC_HEADBITMAP), SW_SHOW);
+        SendDlgItemMessage(IDC_HEADBITMAP, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmp);
     }
 
-    ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
-    ::SetFocus(Pages[idPage]->PageWnd);
-    Pages[idPage]->OnShow();
-    
-        ::ShowWindow(GetDlgItem(IDC_UPDATESLABEL), idPage == 0);
-    ::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == 0);
-    int oldCurPage = CurPage;
     PrevPage = prev;
     NextPage = next;
     CurPage = idPage;
-    if (oldCurPage >= 0)
-    {
+    ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
+    ::SetFocus(Pages[idPage]->PageWnd);
+    Pages[idPage]->OnShow();
+
+    ::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == wpWelcomePage);
+
+    if (oldCurPage >= 0) {
         ::ShowWindow(Pages[oldCurPage]->PageWnd, SW_HIDE);
     }
-    
-   
     return false;
 }
 

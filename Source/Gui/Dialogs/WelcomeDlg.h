@@ -61,7 +61,6 @@ public:
         COMMAND_HANDLER(IDC_REUPLOADIMAGES, BN_CLICKED, OnBnClickedReuploadImages)
         COMMAND_HANDLER(IDC_SHORTENURL, BN_CLICKED, OnBnClickedShortenUrl)
         MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
-        MESSAGE_HANDLER(WM_SHOWWINDOW, OnShowWindow)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
         REFLECT_NOTIFICATIONS()
@@ -100,10 +99,9 @@ public:
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-    LRESULT OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     HWND PrevClipboardViewer;
     CBrush br; 
-    bool OnShow();
+    bool OnShow() override;
     bool QuickRegionPrint;
     CMyImage LeftImage;CMyImage LogoImage;
     CFont NewFont;

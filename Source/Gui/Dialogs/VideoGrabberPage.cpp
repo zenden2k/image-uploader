@@ -26,7 +26,6 @@
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/MediaInfoHelper.h"
 #include "Func/WinUtils.h"
-#include "LogWindow.h"
 #include "mediainfodlg.h"
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
@@ -127,7 +126,8 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     engineComboToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
         TR("Video engine which is used to extract frames from a video file."));
 
-
+    deinterlacingCheckboxTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_DEINTERLACE),
+        TR("Deinterlace video"));
     return 1;  // Let the system set the focus
 }
 

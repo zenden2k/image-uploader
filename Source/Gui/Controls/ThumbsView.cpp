@@ -128,7 +128,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
     if(GetItemState(ItemIndex, LVIS_SELECTED) != LVIS_SELECTED)
     {
         // Удаляем только элемент под указателем
-        bool NeedRestart = StopAndWait();
+        bool NeedRestart = StopBackgroundThread(true);
         MyDeleteItem(ItemIndex);
         UpdateImageIndexes(ItemIndex);
         if(NeedRestart)
@@ -535,27 +535,29 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
     if(GetItemCount() < 1) return 0;
 
     //NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;  
-DWORD dwEffect = 0;
+    DWORD dwEffect = 0;
 
-CMyDropSource *pDropSource = new CMyDropSource();
-CMyDataObject *pDataObject = new CMyDataObject();
+    CMyDropSource* pDropSource = new CMyDropSource();
+    CMyDataObject* pDataObject = new CMyDataObject();
 
-int nItem = -1;
-do {
-    nItem = GetNextItem(nItem, LVNI_SELECTED);
-    if (nItem == -1) break;
-    pDataObject->AddFile(GetFileName(nItem));
-} while (true);
+    int nItem = -1;
+    do {
+        nItem = GetNextItem(nItem, LVNI_SELECTED);
+        if (nItem == -1) break;
+        pDataObject->AddFile(GetFileName(nItem));
+    }
+    while (true);
 
-//Disable drag-n-drop to parent window
-SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);
+    //Disable drag-n-drop to parent window
+    SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 0, 0);
 
-/*DWORD dwResult = */::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
-pDropSource->Release();
-pDataObject->Release();
+    /*DWORD dwResult = */
+    ::DoDragDrop(pDataObject, pDropSource, DROPEFFECT_COPY, &dwEffect);
+    pDropSource->Release();
+    pDataObject->Release();
 
-SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 1, 0);
-return 0;
+    SendMessage(GetParent(), MYWM_ENABLEDROPTARGET, 1, 0);
+    return 0;
 }
 
 LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -565,6 +567,7 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         delete tvi;
     }
+    StopBackgroundThread(true);
     return 0;
 }
 
@@ -588,13 +591,14 @@ void CThumbsView::LockImagelist(bool bLock)
     else ImageListCS.Unlock();*/
 }
 
-bool CThumbsView::StopAndWait()
+bool CThumbsView::StopBackgroundThread(bool wait)
 {
     bool IsRun = IsRunning();
     if (IsRun) {
         SignalStop();
-        MsgWaitForSingleObject(m_hThread, INFINITE);
-        ATLTRACE(_T("StopAndWait() finished!!!\r\n"));
+        if (wait) {
+            MsgWaitForSingleObject(m_hThread, INFINITE);
+        }
     }
     return IsRun;
 }

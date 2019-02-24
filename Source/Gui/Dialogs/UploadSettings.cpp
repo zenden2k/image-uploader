@@ -355,6 +355,8 @@ bool CUploadSettings::OnNext()
 
 bool CUploadSettings::OnShow()
 {
+    ShowPrev();
+    ShowNext();
     BOOL temp;
 
     if (WizardDlg->serversChanged()) {
@@ -375,8 +377,8 @@ bool CUploadSettings::OnShow()
     UpdateAllPlaceSelectors();
     OnBnClickedCreatethumbnails(0, 0, 0, temp);
     OnBnClickedKeepasis(0, 0, 0, temp);
-    EnableNext();
     SetNextCaption(TR("&Upload"));
+    EnableNext();
     return true;
 }
 

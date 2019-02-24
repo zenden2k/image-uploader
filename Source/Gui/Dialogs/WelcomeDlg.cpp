@@ -148,11 +148,11 @@ LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 
 bool CWelcomeDlg::OnShow()
 {
+    ShowPrev(false);
     EnableNext();
-    
     ShowNext(WizardDlg->Pages[2] && ((CMainDlg*)WizardDlg->Pages[2])->FileList.GetCount() > 0);
     EnableExit();
-    ShowPrev(false);
+    
     return 0;
 }
 
@@ -168,12 +168,6 @@ LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
     
-LRESULT CWelcomeDlg::OnShowWindow(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{    
-    bHandled = true;
-    return 0;
-}    
-
 LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("mediainfo"));

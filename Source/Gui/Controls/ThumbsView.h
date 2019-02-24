@@ -92,7 +92,7 @@ public:
     void OutDateThumb(int nIndex);
     void UpdateOutdated();
     void LockImagelist(bool bLock = true);
-    bool StopAndWait();
+    bool StopBackgroundThread(bool wait = false);
     void SelectLastItem();
     bool CopySelectedItemsToClipboard();
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
