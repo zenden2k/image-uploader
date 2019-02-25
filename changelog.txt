@@ -2,6 +2,24 @@
 #
 # http://zenden2k.atwebpages.com/imageuploader
 
+1.3.2.4713 (RC)
+[+] Added ge.tt, lostpic.net, imgbb.com file hostings
+[+] Fixed crash in VideoGrabber
+[+] Paste image from clipboard from data:URL format
+[f] Fixed "size exceed" dialog ("For all" button was not working)
+[f] Fixed server abload.de
+[~] Use Vista-style folder dialog for "Add folder" function
+[-] Removed server Picasa WebAlbums
+[+] Added support of RTL languages
+[+] Added Arabic translation
+[~] FFmpeg upgrade to v4.1.1
+[~] FFmpeg libraries now are included in installer
+[+] View images on wizard's upload page by double-clicking file name
+[+] Added "Retry" menu item to file's context menu on wizard's upload page
+[f] Fixed translation of program's jump list
+[f] Small fixes
+
+
 1.3.2.4615 beta
 [+] Added option to use system proxy
 [+] Added "Markdown" tab to results panel

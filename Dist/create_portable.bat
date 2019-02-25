@@ -87,8 +87,8 @@ Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Update\iu_serversinfo.xml" %temp_dir%\Data\Update\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\
-if ERRORLEVEL 1 goto CopyFailed
+rem Copy "..\Data\Update\iu_ffmpeg.xml" %temp_dir%\Data\Update\
+rem if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Thumbnails\*.*" %temp_dir%\Data\Thumbnails\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\

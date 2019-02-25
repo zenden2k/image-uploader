@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_core" TimeStamp="1544357771" Date="09.12.2018 15:06:25" DownloadUrl="http://zenden2k.atwebpages.com/imageuploader_downloads" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php" CoreUpdate="1" DisplayName="Image Uploader 1.3.2-beta build 4664">
-  <Info>[f] Do not close popup menus on hotkey
-[~] Remember last folder when saving multiple images from images list
-[~] Added file filters to "Add files" dialog
+<UpdateInfo Name="iu_core" TimeStamp="1551102969" ManualUpdate="1" CoreUpdate="0" Date="25.02.2019 14:56:09" DownloadPage="http://zenden2k.atwebpages.com/imageuploader_downloads" UpdateUrl="http://zenden2k.atwebpages.com/updates/update.php" DisplayName="Image Uploader 1.3.2-RC build 4713">
+  <Info>[+] Added ge.tt, lostpic.net, imgbb.com file hostings
+[+] Fixed crash in VideoGrabber
+[+] Paste image from clipboard from data:URL format
+[f] Fixed &quot;size exceed&quot; dialog (&quot;For all&quot; button was not working)
+[f] Fixed server abload.de
+[~] Use Vista-style folder dialog for &quot;Add folder&quot; function
+[-] Removed server Picasa WebAlbums
+[+] Added support of RTL languages
+[+] Added Arabic translation
+[~] FFmpeg upgrade to v4.1.1
+[~] FFmpeg libraries now are included in installer
+[+] View images on wizard&#39;s upload page by double-clicking file name
+[+] Added &quot;Retry&quot; menu item to file&#39;s context menu on wizard&#39;s upload page
+[f] Fixed translation of program&#39;s jump list
+[f] Small fixes
 </Info>
 </UpdateInfo>

@@ -9,7 +9,7 @@ pacman -s yasm diffutils
 Finally, run:
 
 For MSVC:
-./configure --enable-asm --enable-yasm --arch=i386 --disable-ffserver --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network    --disable-network  --toolchain=msvc
+./configure --enable-asm --enable-yasm --arch=i386 --disable-ffserver --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc
 
 For ICL:
 ./configure --toolchain=icl
