@@ -2,9 +2,7 @@
 
 #include "Core/Upload/UploadSession.h"
 #include "Core/Settings.h"
-#include "Core/Network/NetworkClientFactory.h"
 #include "Core/AppParams.h"
-#include "Core/CoreFunctions.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Upload/UploadManager.h"
@@ -12,7 +10,8 @@
 #include "Func/WinUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "ServerListTool/Helpers.h"
-
+#include "Core/ServiceLocator.h"
+#include "Core/TaskDispatcher.h"
 
 namespace ServersListTool {
 
@@ -29,14 +28,14 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     needStop_ = false;
     isRunning_ = false;
     using namespace std::placeholders;
-    fileDownloader_ = std::make_unique<CFileDownloader>(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory());
+    fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
     fileDownloader_->setOnFileFinishedCallback(std::bind(&ServersChecker::OnFileFinished, this, _1, _2, _3));
 }
 
 bool ServersChecker::start(const std::string& testFileName, const std::string& testUrl) {
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
-    uploadSession_.reset(new UploadSession());
+    uploadSession_ = std::make_shared<UploadSession>();
     uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &ServersChecker::onSessionFinished));
     int taskCount = 0;
     for (size_t i = 0; i < model_->getCount(); i++) {
@@ -77,12 +76,12 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
         }
 
         if ((ue->NeedAuthorization == CUploadEngineData::naObligatory || (onlyAccs_ && ue->NeedAuthorization)) && ss.authData.Login.empty()) {
-            item->statusText = "No account is set";
+            item->setStatusText("No account is set");
             model_->notifyRowChanged(i);
             continue;
         }
         if (onlyAccs_ && !ue->NeedAuthorization) {
-            item->statusText = "skipped";
+            item->setStatusText("skipped");
             model_->notifyRowChanged(i);
             continue;
         }
@@ -163,9 +162,7 @@ bool ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 {
     int serverId = reinterpret_cast<int>(it.id) / 10;
     int fileId = reinterpret_cast<int>(it.id) % 10;
-    int columnIndex = -1;
 
-    columnIndex = 3 + fileId;
     ServerData& serverData = *model_->getDataByIndex(serverId);
     serverData.filesChecked++;
     serverData.fileToCheck--;
@@ -208,6 +205,9 @@ bool ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 void ServersChecker::checkShortUrl(UploadTask* task) {
     auto client = networkClientFactory_->create();
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
+    if (!urlTask) {
+        return;
+    }
     UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
     ServerData& data = *model_->getDataByIndex(userData->rowIndex);
 
@@ -227,7 +227,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
         } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
 
         if (!targetUrl.empty() && targetUrl == urlTask->getUrl()) {
-            data.strMark = "Good link";
+            data.setStrMark("Good link");
             //m_ListView.SetItemText(userData->rowIndex, 3, _T("Good link"));
             ok = true;
         }
@@ -245,7 +245,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     int i = userData->rowIndex;
     ServerData& data = *model_->getDataByIndex(i);
     if (task->status() == UploadTask::StatusStopped) {
-        data.statusText.clear();
+        data.setStatusText(std::string());
         return;
     }
     if (ok) {
@@ -261,62 +261,58 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             if (!imgUrl.empty()) {
                 fileDownloader_->addFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
                 nFilesToCheck++;
-                data.directUrl = imgUrl;
-                //m_ListView.SetItemText(i, 3, imgUrl);
+                data.setDirectUrl(imgUrl);
 
             } else {
                 if (!ue->ImageUrlTemplate.empty()) {
                     /*if (!ue->UsingPlugin)
                     m_CheckedServersMap[i].filesChecked++;*/
-                    data.directUrlInfo = ("<empty>");
+                    data.setDirectUrlInfo("<empty>");
                 }
             }
 
             if (!thumbUrl.empty()) {
-
                 nFilesToCheck++;
                 fileDownloader_->addFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
 
-                data.thumbUrl = thumbUrl;
+                data.setThumbUrl(thumbUrl);
             } else {
-
                 if (!ue->ThumbUrlTemplate.empty()) {
                     /*if (!ue->UsingPlugin)
                     m_CheckedServersMap[i].filesChecked++;*/
-                    data.thumbUrlInfo = "<empty>";
+                    data.setThumbUrlInfo("<empty>");
                 }
             }
 
             if (!viewUrl.empty()) {
                 nFilesToCheck++;
                 fileDownloader_->addFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
-                data.viewurl = viewUrl;
+                data.setViewUrl(viewUrl);
             } else {
 
                 if (!ue->DownloadUrlTemplate.empty()) {
                     /*if (!ue->UsingPlugin)
                     m_CheckedServersMap[i].filesChecked++;*/
-                    data.viewurlInfo = "<empty>";
+                    data.setViewUrlInfo("<empty>");
                 }
 
             }
             data.fileToCheck = nFilesToCheck;
             fileDownloader_->start();
             if (nFilesToCheck)
-                data.statusText = "Checking links";
+                data.setStatusText( "Checking links");
             else {
                 data.finished = true;
-                //MarkServer(i);
             }
         } else if (task->type() == UploadTask::TypeUrl) {
             std::string shortURL = result->getDirectUrl();
             if (!shortURL.empty()) {
-                data.directUrl = shortURL;
-                data.statusText = "Checking short link";
+                data.setDirectUrl(shortURL);
+                data.setStatusText( "Checking short link");
                 checkShortUrl(task);
             } else {
                 data.finished = true;
-                data.directUrlInfo = "<empty>";
+                data.setDirectUrlInfo("<empty>");
             }
         }
 
@@ -339,7 +335,7 @@ void ServersChecker::onTaskStatusChanged(UploadTask* task) {
     if (task->status() == UploadTask::StatusRunning) {
         userData->startTime = GetTickCount();
         ServerData* data = model_->getDataByIndex(i);
-        data->statusText = task->type() == UploadTask::TypeUrl ? "Shortening link.." : "Uploading file..";
+        data->setStatusText(task->type() == UploadTask::TypeUrl ? "Shortening link..." : "Uploading file...");
         model_->notifyRowChanged(i);
     } else if (task->status() == UploadTask::StatusFinished) {
 
@@ -360,26 +356,28 @@ void ServersChecker::MarkServer(int id)
         CString timeLabel;
         int endTime = serverData.timeElapsed;
         timeLabel.Format(_T("%02d:%02d"), (int)(endTime / 60000), (int)(endTime / 1000 % 60));
-        serverData.timeStr = W2U(timeLabel);
-        //m_ListView.SetItemText(id, 2, timeLabel);
+        serverData.setTimeStr(W2U(timeLabel));
 
         CString strMark;
         if (mark == 5) {
-            serverData.strMark = "EXCELLENT";
+            serverData.setStrMark("EXCELLENT");
             serverData.color = RGB(0, 255, 50);
 
         } else if (mark >= 4) {
-            serverData.strMark = "OK";
+            serverData.setStrMark("OK");
             serverData.color = RGB(145, 213, 0);
             //m_ListView.SetItemText(id*2,2,CString());
         } else {
-            serverData.strMark = "FAILED";
+            serverData.setStrMark("FAILED");
             serverData.color = RGB(198, 0, 0);
             //m_CheckedServersMap[id].failed = true;
         }
     }
 
-    model_->notifyRowChanged(id);
+    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+        model_->notifyRowChanged(id);
+    });
+
 
 }
 

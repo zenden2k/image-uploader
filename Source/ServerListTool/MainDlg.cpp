@@ -11,13 +11,18 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-
 #include "Core/Upload/UploadManager.h"
-
 #include "ServersChecker.h"
+#include "Core/ServiceLocator.h"
 
 namespace ServersListTool
 {
+
+struct TaskDispatcherMessageStruct {
+    TaskDispatcherTask callback;
+    bool async;
+};
+
 CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, 
                     std::shared_ptr<INetworkClientFactory> factory) :
                     model_(engineList), m_ListView(&model_), networkClientFactory_(factory)
@@ -31,6 +36,7 @@ CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uplo
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    ServiceLocator::instance()->setTaskDispatcher(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
@@ -74,22 +80,19 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     serversChecker_->setOnFinishedCallback(std::bind(&CMainDlg::processFinished, this));
     m_ImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_ListView.SetImageList(m_ImageList, LVSIL_NORMAL);
-    /*for (int i = 0; i < engineList_->count(); i++) {
-        m_skipMap[i] = false;
-        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i + 1), i);
-        CUploadEngineData* ued = engineList_->byIndex(i);
-        CString name = Utf8ToWstring(ued->Name).c_str();
-        if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
-            name += _T("  [URL Shortener]");
-        }
-        m_ListView.SetItemText(i, 1, name);
-    }
-    */
-
     return TRUE;
 }
 
-LRESULT  CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CMainDlg::OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    TaskDispatcherMessageStruct* msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
+    msg->callback();
+    if (msg->async) {
+        delete msg;
+    }
+    return 0;
+}
+
+LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     HWND hwnd = reinterpret_cast<HWND>(wParam);
     POINT ClientPoint, ScreenPoint;
     if (hwnd != GetDlgItem(IDC_TOOLSERVERLIST)) return 0;
@@ -97,6 +100,14 @@ LRESULT  CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
     if (lParam == -1) {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
+        int nCurItem = m_ListView.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        if (nCurItem >= 0) {
+            CRect rc;
+            if (m_ListView.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
+                ClientPoint = rc.CenterPoint();
+            }
+        }
+        
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     } else {
@@ -114,17 +125,16 @@ LRESULT  CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BO
         ServerData* sd = model_.getDataByIndex(hti.iItem);
 
         if (sd) {
-
             CMenu menu;
             menu.CreatePopupMenu();
             menu.AppendMenu(MF_STRING, ID_COPYDIRECTURL, _T("Copy direct url"));
-            menu.EnableMenuItem(ID_COPYDIRECTURL, sd->directUrl.empty() ? MF_DISABLED : MF_ENABLED);
+            menu.EnableMenuItem(ID_COPYDIRECTURL, sd->directUrl().empty() ? MF_DISABLED : MF_ENABLED);
 
             menu.AppendMenu(MF_STRING, ID_COPYTHUMBURL, _T("Copy thumb url"));
-            menu.EnableMenuItem(ID_COPYTHUMBURL, sd->thumbUrl.empty() ? MF_DISABLED : MF_ENABLED);
+            menu.EnableMenuItem(ID_COPYTHUMBURL, sd->thumbUrl().empty() ? MF_DISABLED : MF_ENABLED);
 
             menu.AppendMenu(MF_STRING, ID_COPYVIEWURL, _T("Copy view url"));
-            menu.EnableMenuItem(ID_COPYVIEWURL, sd->viewurl.empty() ? MF_DISABLED : MF_ENABLED);
+            menu.EnableMenuItem(ID_COPYVIEWURL, sd->viewurl().empty() ? MF_DISABLED : MF_ENABLED);
 
             contextMenuItemId = hti.iItem;
             menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -289,8 +299,11 @@ LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
 
 LRESULT CMainDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
-    if (sd && !sd->directUrl.empty()) {
-        WinUtils::CopyTextToClipboard(U2W(sd->directUrl));
+    if (sd) {
+        std::string directUrl = sd->directUrl();
+        if (!directUrl.empty()) {
+            WinUtils::CopyTextToClipboard(U2W(directUrl));
+        }
     }
 
     return 0;
@@ -298,8 +311,11 @@ LRESULT CMainDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
 
 LRESULT CMainDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
-    if (sd && !sd->thumbUrl.empty()) {
-        WinUtils::CopyTextToClipboard(U2W(sd->thumbUrl));
+    if (sd) {
+        std::string thumbUrl = sd->thumbUrl();
+        if (!thumbUrl.empty()) {
+            WinUtils::CopyTextToClipboard(U2W(thumbUrl));
+        }
     }
 
     return 0;
@@ -307,8 +323,11 @@ LRESULT CMainDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
 
 LRESULT CMainDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
-    if (sd && !sd->viewurl.empty()) {
-        WinUtils::CopyTextToClipboard(U2W(sd->viewurl));
+    if (sd) {
+        std::string viewUrl = sd->viewurl();
+        if (!viewUrl.empty()) {
+            WinUtils::CopyTextToClipboard(U2W(viewUrl));
+        }
     }
 
     return 0;
@@ -319,6 +338,21 @@ LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     serversChecker_->stop();
 
     return 0;
+}
+
+void CMainDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
+    if (async) {
+        TaskDispatcherMessageStruct* msg = new TaskDispatcherMessageStruct();
+        msg->callback = std::move(task);
+        msg->async = true;
+        PostMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(msg), 0);
+    } else {
+        TaskDispatcherMessageStruct msg;
+        msg.callback = std::move(task);
+        msg.async = false;
+        SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
+    }
+
 }
 
 }

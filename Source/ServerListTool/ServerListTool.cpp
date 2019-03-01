@@ -2,19 +2,21 @@
 //
 
 #include "MainDlg.h"
+
+#include <boost/locale/generator.hpp>
+#include <boost/filesystem/path.hpp>
+
 #include "atlheaders.h"
 #include "3rdpart/GdiPlusH.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
 #include "Func/WinUtils.h"
-#include <Func/DefaultLogger.h>
-#include <Func/DefaultUploadErrorHandler.h>
-#include <Gui/Dialogs/LogWindow.h>
-#include <Core/ServiceLocator.h>
-#include <Func/WtlScriptDialogProvider.h>
-#include <boost/locale/generator.hpp>
-#include <boost/filesystem/path.hpp>
+#include "Func/DefaultLogger.h"
+#include "Func/DefaultUploadErrorHandler.h"
+#include "Gui/Dialogs/LogWindow.h"
+#include "Core/ServiceLocator.h"
+#include "Func/WtlScriptDialogProvider.h"
 #include "Core/AppParams.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Settings.h"
@@ -43,7 +45,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     std::locale::global(boost::locale::generator().generate(""));
     // Make boost.filesystem use it
     boost::filesystem::path::imbue(std::locale());
-    //BOOL res = SetProcessDefaultLayout(LAYOUT_RTL);
 
 #if defined(_WIN32) && !defined(NDEBUG)
     // These global strings in GLOG are initially reserved with a small

@@ -41,7 +41,6 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
         lstrcpy(pItem->pszText, U2W(str));
     }
 
-
     return 0;
 }
 

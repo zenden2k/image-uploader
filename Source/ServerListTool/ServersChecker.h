@@ -5,11 +5,10 @@
 #include <vector>
 #include "Core/Upload/UploadSession.h"
 #include "Core/FileDownloader.h"
-#include "Core/Network/NetworkClientFactory.h"
+#include "Core/Network/INetworkClient.h"
 #include "Helpers.h"
 
 class CFileDownloader;
-
 
 namespace ServersListTool {
 
@@ -23,7 +22,6 @@ struct UploadTaskUserData {
         startTime = 0;
     }
 };
-
 
 class ServersChecker {
 public:

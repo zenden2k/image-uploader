@@ -31,6 +31,7 @@
 #include "ServersChecker.h"
 #include "Helpers.h"
 #include "ServerListView.h"
+#include "Core/TaskDispatcher.h"
 
 class UploadManager;
 class UploadEngineManager;
@@ -41,14 +42,17 @@ namespace ServersListTool {
 class ServersChecker;
 
 class CMainDlg :
-    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg> {
+    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>, public ITaskDispatcher {
 public:
     enum { IDD = IDD_MAINDLG };
-    enum { ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL };
+    enum {
+        ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL, WM_TASKDISPATCHERMSG = WM_USER + 100
+    };
     CMainDlg(UploadEngineManager *uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+        MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
         COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_ID_HANDLER(IDC_BUTTONSKIP, OnSkip)
@@ -91,6 +95,7 @@ public:
     //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -103,6 +108,8 @@ public:
     LRESULT OnCopyThumbUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyViewUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+    void runInGuiThread(TaskDispatcherTask&& task, bool async = false) override;
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     int contextMenuItemId;
