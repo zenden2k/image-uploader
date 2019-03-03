@@ -3,6 +3,8 @@ nmake /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=
  nmake /f Makefile.vc mode=static VC=12 WITH_SSL=static WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no RTLIBCFG=static
  nmake /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no RTLIBCFG=static
 
+nmake /f Makefile.vc mode=static VC=14 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=shared
+
 nmake /f Makefile.vc mode=static VC=9 WITH_SSL=static WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
 #nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
 

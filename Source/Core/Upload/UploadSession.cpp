@@ -9,6 +9,7 @@ UploadSession::UploadSession()
     stopSignal_ = true;
     finishedCount_ = 0;
     isStopped_ = false;
+	userData_ = nullptr;
 }
 
 void UploadSession::addTask(std::shared_ptr<UploadTask> task)
@@ -259,4 +260,11 @@ void UploadSession::notifyTaskAdded(UploadTask* task)
     {
         taskAddedCallbacks_[i](this, task);
     }
+}
+
+void UploadSession::setUserData(void* data) {
+	userData_ = data;
+}
+void* UploadSession::userData() const {
+	return userData_;
 }

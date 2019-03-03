@@ -1,6 +1,10 @@
-#include <QtGui>
 #include "uploadtreemodel.h"
+
+#include <QtGui>
 #include <QStringList>
+
+#include "Core/CommonDefs.h"
+
 Q_DECLARE_METATYPE( UploadSession* )
 Q_DECLARE_METATYPE( UploadTask* )
 
@@ -51,8 +55,8 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
     {
         if ( obj->task ) {
             result = U2Q(obj->task->title());
-        } else {
-            result = "session";
+        } else if ( obj->session) {
+            result = "session " + QString::number(obj->index + 1);
         }
 
     }
@@ -64,23 +68,26 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
     }
     else if (index.column() == 2)
     {
-        /*		ZInfoProgress *progress = obj->uploadProgress();
-        if(progress->Uploaded && progress->Total)
-        {
+		auto task = obj->task;
+		if (task) {
+			auto progress = task->progress();
+			if (progress->uploaded && progress->totalUpload)
+			{
 
-            QString speedText = QString("%1 of %2").arg(progress->Uploaded).arg(progress->Total);
-            if(progress->Total)
-            {
-                QString perc;
-                perc = QString::number((long)(100*(double)progress->Uploaded / progress->Total)) + "%";
-                speedText += "(" + perc + ")";
-            }
-            if( progress->speed)
-            {
-                speedText += " ["+ QString::number((int)progress->speed) + " bytes/sec]";
-            }
-            result =speedText;
-        }*/
+				QString speedText = QString("%1 of %2").arg(progress->uploaded).arg(progress->totalUpload);
+				if (progress->totalUpload)
+				{
+					QString perc;
+					perc = QString::number((long)(100 * (double)progress->uploaded / progress->totalUpload)) + "%";
+					speedText += "(" + perc + ")";
+				}
+				if (!progress->speed.empty())
+				{
+					speedText += " [" + QString::fromUtf8(progress->speed.c_str()) +"]";
+				}
+				result = speedText;
+			}
+		}
     }
     else if (index.column() == 3)
     {
@@ -93,8 +100,9 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags UploadTreeModel::flags(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return 0;
+	if (!index.isValid()) {
+		return 0;
+	}
 
     return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
@@ -103,10 +111,9 @@ QVariant UploadTreeModel::headerData(int section, Qt::Orientation orientation,
                                      int role) const
 {
     QStringList headerLabels ;
-    headerLabels <<tr("Fil1e")<<tr("Status")<<tr("Progress")<<tr("Server");
+    headerLabels << tr("File") << tr("Status") << tr("Progress") << tr("Server");
 
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    {
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
         return headerLabels[section];
     }
 
@@ -115,50 +122,39 @@ QVariant UploadTreeModel::headerData(int section, Qt::Orientation orientation,
 
 QModelIndex UploadTreeModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if (!hasIndex(row, column, parent))
-        return QModelIndex();
+	if (!hasIndex(row, column, parent)) {
+		return QModelIndex();
+	}
 
-    InternalItem * internalItem = 0;
+    InternalItem * internalItem = nullptr;
 
     if (!parent.isValid()) {
-        UploadSession* session = m_uploadManager->session(row).get();
-        auto it = sessionsMap_.find(session);
-        if ( it == sessionsMap_.end() ) {
-            return QModelIndex();
-        }
-        internalItem = it->second;
+        auto session = m_uploadManager->session(row);
+		internalItem = reinterpret_cast<InternalItem*>(session->userData());
     }
-    else
-    {
+    else {
         InternalItem * internalParentItem = reinterpret_cast<InternalItem*> (parent.internalPointer());
         if ( internalParentItem->task ) {
-            UploadTask* task = internalParentItem->task->child(row).get();
-            auto it = m_objMap.find(task);
-            if ( it == m_objMap.end() ) {
-                return QModelIndex();
-            }
-            internalItem = it->second;
-
-        } else {
-            auto& it = sessionsMap_.find(internalParentItem->session.get());
-            if ( it == sessionsMap_.end() ) {
-                return QModelIndex();
-            }
-            internalItem = it->second;
+            auto task = internalParentItem->task->child(row);
+			if (task) {
+				internalItem = reinterpret_cast<InternalItem*>(task->userData());
+			}
+		}
+		else if (internalParentItem->session) {
+			auto task = internalParentItem->session->getTask(row);
+			if (task) {
+				internalItem = reinterpret_cast<InternalItem*>(task->userData());
+			}
         }
 
     }
 
-    /*TreeItem *parentItem = getItem(parent);
-
-         TreeItem *childItem = parentItem->child(row);
-         if (childItem)
-              return createIndex(row, column, childItem);
-         else
-              return QModelIndex();*/
-
-
-    return createIndex(row, column, internalItem);
+	if (internalItem) {
+		return createIndex(row, column, internalItem);
+	}
+	else {
+		return QModelIndex();
+	}
 }
 
 QModelIndex UploadTreeModel::parent(const QModelIndex &index) const
@@ -166,25 +162,27 @@ QModelIndex UploadTreeModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    if ( index.column() == 0 ) {
-        InternalItem * internalParentItem = reinterpret_cast<InternalItem*>(index.internalPointer());
+    /*if ( index.column() == 0 )*/ {
+        InternalItem * internalItem = reinterpret_cast<InternalItem*>(index.internalPointer());
 
-        if ( internalParentItem->task ) {
-            UploadTask* parent = internalParentItem->task->parentTask();
+        if (internalItem->task ) {
+            UploadTask* parent = internalItem->task->parentTask();
             if(!parent) {
-                UploadSession* session = internalParentItem->task->session();
-                auto it = sessionsMap_.find(session);
+                UploadSession* session = internalItem->task->session();
+				InternalItem* item = reinterpret_cast<InternalItem*>(session->userData());
+                /*auto it = sessionsMap_.find(session);
                 if ( it == sessionsMap_.end() ) {
                     return QModelIndex();
-                }
-                return createIndex( it->second->index, 0, it->second);
+                }*/
+                return createIndex(item->index, 0, session->userData());
             }
-            UploadTask* parentTask = internalParentItem->task->parentTask();
-            auto it = m_objMap.find(parentTask);
+            UploadTask* parentTask = internalItem->task->parentTask();
+			InternalItem* item = reinterpret_cast<InternalItem*>(parentTask->userData());
+            /*auto it = m_objMap.find(parentTask);
             if ( it == m_objMap.end() ) {
                 return QModelIndex();
-            }
-            return createIndex( it->second->index, 0, it->second);
+            }*/
+            return createIndex(item->index, 0, parentTask->userData());
         } else {
             //UploadSession* has no parent
             return QModelIndex();
@@ -221,8 +219,8 @@ void UploadTreeModel::setupModelData(UploadManager *uploadManager)
     m_uploadManager = uploadManager;
     m_uploadManager->OnTaskAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
     //m_uploadManager->OnChildAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
-    m_uploadManager->OnSessionAdded.bind(this,&UploadTreeModel::data_OnSessionAdded);
-    // m_uploadManager->On.bind(this,  &UploadTreeModel::data_OnUploadProgress);
+    m_uploadManager->OnSessionAdded.bind(this,&UploadTreeModel::OnSessionAdded);
+    //m_uploadManager->OnU.bind(this,  &UploadTreeModel::data_OnUploadProgress);
     //  m_uploadManager->OnStatusChanged.bind(this, &UploadTreeModel::data_OnStatusChanged);
 
     /*connect(uploadManager, SIGNAL(OnChildAdded(UploadTask*,UploadTask*)), this, SLOT(data_OnChildAdded(UploadTask*,UploadTask*))/, Qt::BlockingQueuedConnection*);
@@ -234,56 +232,43 @@ void UploadTreeModel::setupModelData(UploadManager *uploadManager)
 
 void UploadTreeModel::data_OnChildAdded(UploadTask* child)
 {
-    QMetaObject::invokeMethod( this, "onChildAdded", Qt::QueuedConnection,
+    QMetaObject::invokeMethod( this, "onChildAdded", Qt::BlockingQueuedConnection,
                                Q_ARG( UploadTask*, child ) );
 }
 
 void UploadTreeModel::data_OnUploadProgress(UploadTask* task)
 {
-    QMetaObject::invokeMethod( this, "onUploadProgress", Qt::QueuedConnection,
+    QMetaObject::invokeMethod( this, "onUploadProgress", Qt::BlockingQueuedConnection,
                                Q_ARG( UploadTask*, task ) );
 }
 
 void UploadTreeModel::data_OnSessionAdded(UploadSession *session) {
-    QMetaObject::invokeMethod( this, "OnSessionAdded", Qt::QueuedConnection,
+    QMetaObject::invokeMethod( this, "OnSessionAdded", Qt::BlockingQueuedConnection,
                                Q_ARG( UploadSession*, session ) );
 }
 
 int UploadTreeModel::byUploadTask(UploadTask* obj) const
 {
-    auto it = m_objMap.find(obj);
-    if ( it != m_objMap.end() ) {
-        return it->second->index;
-    }
-    /*InternalItem* it = m_objMap[obj];
-    return it->index;*/
-    /*UploadSession* session = obj->session();
-    int count = session->taskCount();
-    for ( int i = 0; i < count; i++ ) {
-        if ( session->getTask(i) == obj ) {
-            return i;
-        }
-    }*/
+	InternalItem* item = reinterpret_cast<InternalItem*>(obj->userData());
+	if (item) {
+		return item->index;
+	}
+  
     return -1;
 }
 
 int UploadTreeModel::byUploadSession(UploadSession *obj) const
 {
-    auto it = sessionsMap_.find(obj);
-    if ( it != sessionsMap_.end() ) {
-        return it->second->index;
-    }
-    /*for(int i=0; i<m_uploadManager->sessionCount(); i++)
-    {
-        if(m_uploadManager->session(i).get()==obj)
-            return i;
-    }*/
+	InternalItem* item = reinterpret_cast<InternalItem*>(obj->userData());
+	if (item) {
+		return item->index;
+	}
     return -1;
 }
 
 void UploadTreeModel::data_OnStatusChanged(UploadTask* it)
 {
-    QMetaObject::invokeMethod( this, "onStatusChanged", Qt::QueuedConnection,
+    QMetaObject::invokeMethod( this, "onStatusChanged", Qt::BlockingQueuedConnection,
                                Q_ARG( UploadTask*, it ) );
 }
 
@@ -292,48 +277,61 @@ void UploadTreeModel::onChildAdded(UploadTask *child)
     recalcObjMap();
     if(!child->parentTask())
     {
-        /*UploadSession* session = child-
-         insertRow(createIndex(byUploadTask(parent), 0, parent));*/
-        insertRow(QModelIndex());
+		UploadSession* session = child->session();
+		/*auto it = sessionsMap_[session];
+		auto it2 = m_objMap[child];*/
+        insertRow(createIndex(byUploadSession(session), 0, session->userData()), reinterpret_cast<InternalItem*>(child->userData()));
+        //insertRow(QModelIndex());
 
     }
     else
     {
         //insertRow(QModelIndex());
         UploadTask * parent = child->parentTask();
-        InternalItem* it = m_objMap[child];
-        insertRow(createIndex(byUploadTask(child), 0, it));
+		//auto parentData = m_objMap[parent];
+        //InternalItem* it = m_objMap[child];
+		InternalItem* it = reinterpret_cast<InternalItem*>(child->userData());
+        insertRow(createIndex(byUploadTask(parent), 0, parent->userData()), it);
     }
 }
 
 void UploadTreeModel::onUploadProgress(UploadTask *task)
 {
-
+	int row = byUploadTask(task);
+	auto it = reinterpret_cast<InternalItem*>(task->userData());
+	emit dataChanged(createIndex(row,2,it), createIndex(row,2,it));
 }
 
 void UploadTreeModel::onStatusChanged(UploadTask *task)
 {
     int row = byUploadTask(task);
-    auto it = m_objMap[task];
-    emit dataChanged(createIndex(row,0,it), createIndex(row,3,it));
+    /*auto it = m_objMap[task];
+    emit dataChanged(createIndex(row,0,it), createIndex(row,3,it));*/
 }
 
 void UploadTreeModel::OnSessionAdded(UploadSession *session) {
     recalcObjMap();
-    auto it = sessionsMap_[session];
-    insertRow(createIndex(byUploadSession(session), 0, it));
+	auto it = reinterpret_cast<InternalItem*>(session->userData());
+    insertRow(/*createIndex(byUploadSession(session), 0, it)*/QModelIndex(), it);
+	int taskCount = session->taskCount();
+	for (int i = 0; i < taskCount; i++) {
+		auto task = session->getTask(i);
+		task->OnUploadProgress.bind(this, &UploadTreeModel::onUploadProgress);
+	}
 }
 
-bool UploadTreeModel::insertRow( const QModelIndex &parent) {
-    InternalItem* internalItem = reinterpret_cast<InternalItem*>(parent.internalPointer());
+bool UploadTreeModel::insertRow( const QModelIndex &parent, InternalItem* internalItem) {
+    //InternalItem* internalItem = reinterpret_cast<InternalItem*>(parent.internalPointer());
 
     int pos = 0;
     if ( internalItem->task ) {
-        pos = internalItem->task->childCount();
+		pos = internalItem->session->taskCount();
+        //pos = internalItem->task->childCount();
     } else if ( internalItem->session ) {
-        pos = internalItem->session->taskCount();
+		pos = m_uploadManager->sessionCount();
+        //pos = internalItem->session->taskCount();
     } else {
-        pos = m_uploadManager->sessionCount();
+        
     }
 
     beginInsertRows(parent,pos, pos);
@@ -343,24 +341,39 @@ bool UploadTreeModel::insertRow( const QModelIndex &parent) {
 
 void UploadTreeModel::recalcObjMap()
 {
-    sessionsMap_.clear();
-    m_objMap.clear();
+    /*sessionsMap_.clear();
+    m_objMap.clear();*/
     int k = 0;
     int sessionCount = m_uploadManager->sessionCount();
     for( int i = 0; i < sessionCount; i++ ) {
         std::shared_ptr<UploadSession> session = m_uploadManager->session(i);
-        InternalItem * item = new InternalItem();
+
+		InternalItem * item = reinterpret_cast<InternalItem*>(session->userData());
+		if (!item) {
+			item = new InternalItem();
+		}
         item->session = session;
         item->index = i;
-        sessionsMap_[session.get()] = item;
+		session->setUserData(item);
+        //sessionsMap_[session.get()] = item;
 
         int childCount = session->taskCount();
         for ( int j = 0; j < childCount; j++ ) {
-            InternalItem * item = new InternalItem();
+			auto task = session->getTask(j);
+			InternalItem * item = reinterpret_cast<InternalItem*>(task->userData());
+			if (!item) {
+				item = new InternalItem();
+			}
             item->index = j;
-            item->task = session->getTask(j);
-            m_objMap[item->task.get()] = item;
+			item->task = task;
+			item->task->setUserData(item);
+            //m_objMap[item->task.get()] = item;
         }
 
     }
+}
+
+UploadTreeModel::InternalItem* UploadTreeModel::getInternalItem(const QModelIndex &index) {
+	InternalItem * item = reinterpret_cast<InternalItem*>(index.internalPointer());
+	return item;
 }

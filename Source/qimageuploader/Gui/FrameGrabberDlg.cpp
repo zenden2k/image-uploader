@@ -1,6 +1,5 @@
 #include "FrameGrabberDlg.h"
 #include "ui_FrameGrabberDlg.h"
-#include "Core/Video/DirectshowFrameGrabber.h"
 #include "Core/Video/VideoGrabber.h"
 #include <QFileDialog>
 #include "Core/CommonDefs.h"
@@ -19,12 +18,18 @@ FrameGrabberDlg::~FrameGrabberDlg()
 }
 
 void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, AbstractImage* image) {
-    //image.save("D:\\frame2.png");
-    QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
-    item->setText(U2Q(timeStr));
-    QImage img = static_cast<QtImage*>(image)->toQImage();
-    item->setIcon( QIcon( QPixmap::fromImage(img.scaledToWidth(128, Qt::SmoothTransformation)) ));
-    ui->listWidget->addItem(item);
+	QMetaObject::invokeMethod(qApp, [&] {
+		//image.save("D:\\frame2.png");
+		QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
+		item->setText(U2Q(timeStr));
+		QImage img = static_cast<QtImage*>(image)->toQImage();
+		if (!img.isNull()) {
+			QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
+			item->setIcon(ico);
+		}
+		ui->listWidget->addItem(item);
+	}, Qt::BlockingQueuedConnection);
+	//ui->listWidget->settext(Qt::AlignCenter);
    // ui->label->setPixmap(QPixmap::fromImage(image) );
 }
 

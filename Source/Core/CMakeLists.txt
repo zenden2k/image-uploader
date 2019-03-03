@@ -1,8 +1,3 @@
-if (MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-endif()
-
 set(SRC_LIST Network/NetworkClient.cpp
 	Network/NetworkClientFactory.cpp
     Upload/DefaultUploadEngine.cpp
@@ -42,7 +37,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UploadManager.cpp
     Upload/UploadSession.cpp
     Upload/AdvancedUploadEngine.cpp
-    Upload/MegaNzUploadEngine.cpp
     ServiceLocator.cpp
     Settings/BasicSettings.cpp
     Logging/MyLogSink.cpp
@@ -108,6 +102,10 @@ else()
         Utils/Utils_unix.cpp 
         Utils/CryptoUtils_unix.cpp)
 endif()
+
+if(NOT IU_DISABLE_MEGANZ)
+       list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
+endif()       
 
 add_library(iucore STATIC ${SRC_LIST} )
 

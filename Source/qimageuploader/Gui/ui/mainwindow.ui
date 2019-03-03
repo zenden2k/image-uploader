@@ -32,7 +32,11 @@
      <number>4</number>
     </property>
     <item>
-     <widget class="QTreeView" name="treeView"/>
+     <widget class="QTreeView" name="treeView">
+      <property name="expandsOnDoubleClick">
+       <bool>false</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label">
@@ -81,7 +85,7 @@
      <normaloff>:/res/add.png</normaloff>:/res/add.png</iconset>
    </property>
    <property name="text">
-    <string>Share files</string>
+    <string>Upload files</string>
    </property>
   </action>
   <action name="actionAdd_Images">
@@ -112,6 +116,10 @@
    </property>
   </action>
   <action name="actionScreenshot">
+   <property name="icon">
+    <iconset resource="../../qimageuploader.qrc">
+     <normaloff>:/res/screenshot.ico</normaloff>:/res/screenshot.ico</iconset>
+   </property>
    <property name="text">
     <string>Screenshot</string>
    </property>

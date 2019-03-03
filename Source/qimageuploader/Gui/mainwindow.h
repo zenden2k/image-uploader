@@ -8,6 +8,7 @@ class UploadManager;
 class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
+struct ZUploadObject;
 
 namespace Ui {
 class MainWindow;
@@ -28,9 +29,14 @@ private slots:
     void on_actionGrab_frames_triggered();
     void on_actionScreenshot_triggered();
     void on_actionAdd_files_triggered();
-
+	void itemDoubleClicked(const QModelIndex &index);
+	void onCustomContextMenu(const QPoint &point);
+protected:
+	bool addFileToList(QString fileName);
+	void uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj);
+	void showCodeForIndex(const QModelIndex& index);
 private:
-    Ui::MainWindow *ui;
+    std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;
     UploadManager* uploadManager_;
     CUploadEngineList engineList_;

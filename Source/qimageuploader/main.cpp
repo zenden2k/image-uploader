@@ -6,13 +6,34 @@
 #include <boost/locale.hpp>
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
+#include "Core/i18n/Translator.h"
+#include "QtUploadErrorHandler.h"
 
 #ifdef _WIN32
-//CAppModule _Module;
+CAppModule _Module;
 std::string dataFolder = "Data/";
 #else
 std::string dataFolder = "/usr/share/imageuploader/";
 #endif
+
+class Translator : public ITranslator {
+public:
+	virtual std::string getCurrentLanguage() override {
+		return "English";
+	}
+	virtual std::string getCurrentLocale() override {
+		return "en_US";
+	}
+	virtual std::string translate(const char* str) override {
+		return str;
+	}
+#ifdef _WIN32
+	virtual const wchar_t* translateW(const wchar_t* str) override {
+		return str;
+	}
+#endif
+};
+Translator translator; // dummy translator
 
 
 int main(int argc, char *argv[])
@@ -35,7 +56,9 @@ int main(int argc, char *argv[])
 #endif
 
     google::InitGoogleLogging(argv[0]);
-
+	QtUploadErrorHandler errorHandler(nullptr);
+	ServiceLocator::instance()->setTranslator(&translator);
+	ServiceLocator::instance()->setUploadErrorHandler(&errorHandler);
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");

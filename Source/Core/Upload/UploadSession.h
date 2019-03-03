@@ -33,6 +33,9 @@ class UploadSession
         // Should be called only after session has been finished
         void restartFailedTasks();
 
+		void setUserData(void* data);
+		void* userData() const;
+
         bool isFatalErrorSet(const std::string& serverName, const std::string& profileName);
         void setFatalErrorForServer(const std::string& serverName, const std::string& profileName);
         void clearErrorsForServer(const std::string& serverName, const std::string& profileName);
@@ -56,6 +59,7 @@ class UploadSession
         std::mutex historySessionMutex_;
         std::mutex finishMutex_;
         std::atomic<bool> stopSignal_;
+		void* userData_;
 private:
     DISALLOW_COPY_AND_ASSIGN(UploadSession);
 };

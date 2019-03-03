@@ -28,7 +28,9 @@ limitations under the License.
 #include "ServerSync.h"
 #include "Core/Settings.h"
 #include "Core/Upload/UploadErrorHandler.h"
+#ifndef IU_DISABLE_MEGANZ
 #include "MegaNzUploadEngine.h"
+#endif
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler, 
     std::shared_ptr<INetworkClientFactory> factory)
@@ -90,9 +92,13 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
+#ifndef IU_DISABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
             result = new CMegaNzUploadEngine(serverSync, &serverProfile.serverSettings());
-        } else {
+        } 
+		else
+#endif
+		{
             result = new CDefaultUploadEngine(serverSync);
         }
         result->setServerSettings(&serverProfile.serverSettings());

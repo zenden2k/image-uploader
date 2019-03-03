@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)							
+cmake_minimum_required(VERSION 3.1.0)							
 
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
@@ -27,6 +27,16 @@ endif ()
 #use_cxx11()
 set(CMAKE_SKIP_RPATH 1)   
 project(ImageUploader)	
+
+set(IU_DISABLE_MEGANZ OFF CACHE BOOL "Disable support of mega.nz")
+if (MSVC)
+    set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
+endif()
+
+if (MSVC AND IU_STATIC_RUNTIME) 
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+endif()
 
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE,5.01")
 if (WIN32)
@@ -75,6 +85,10 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DIU_CLI)
 
+if(IU_DISABLE_MEGANZ)
+    add_definitions(-DIU_DISABLE_MEGANZ)
+endif()
+
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
     link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/ ${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/stage/lib/)
@@ -83,10 +97,17 @@ else()
 endif()
 
 # libiucore depends on these libraries
-set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo mega uriparser cryptopp cares jsoncpp)
+set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser   jsoncpp)
+if (NOT IU_DISABLE_MEGANZ)
+    list(APPEND COMMON_LIBS_LIST mega cryptopp cares)
+endif()
 
 if(WIN32)
-    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp libuv base64 libwebpdecoder libwebpdemux zlib)
+    if (NOT IU_DISABLE_MEGANZ)
+        list(APPEND COMMON_LIBS_LIST libuv)
+    endif()
+
+    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib)
 else()
     list(APPEND COMMON_LIBS_LIST curl ssl crypto glog pthread uv rt sqlite3 freeimage gflags ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()
@@ -96,5 +117,6 @@ add_subdirectory(CLI)
 if(WIN32)
     add_subdirectory(ServerListTool)
 endif()
+
+add_subdirectory(qimageuploader)	
 add_subdirectory(Tests)	
-	

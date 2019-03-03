@@ -6,5 +6,6 @@
         <file>res/settings.png</file>
         <file>res/grabmovie.ico</file>
         <file>res/icon_main.ico</file>
+        <file>res/screenshot.ico</file>
     </qresource>
 </RCC>

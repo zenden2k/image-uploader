@@ -18,6 +18,8 @@
 
 */
 
+#ifndef IU_DISABLE_MEGANZ
+
 #include "MegaNzUploadEngine.h"
 
 #include <chrono>
@@ -560,3 +562,4 @@ void MyListener::onNodesUpdate(MegaApi* api, MegaNodeList *nodes)
 
     //std::cout << "***** There are " << nodes->size() << " new or updated node/s in your account" << std::endl;
 }
+#endif
