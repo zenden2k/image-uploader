@@ -154,7 +154,6 @@ class NetworkClient: public INetworkClient
 
         void setLogger(Logger* logger) override;
 
-        // provider is deleted in NetworkClient destructor
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
     private:
         //DISALLOW_COPY_AND_ASSIGN(NetworkClient);

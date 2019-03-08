@@ -63,17 +63,15 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_NEWFOLDERBUTTON, "Create folder");
     SetWindowText(TR("Folder list"));
 
-    HBITMAP hBitmap;
-
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
     //int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
 
-    hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
+    HBITMAP hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
     m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_PlaceSelectorImageList.Add(hBitmap, RGB(255, 0, 255));
 
     m_FolderTree.SetImageList(m_PlaceSelectorImageList);
-    m_FolderMap[L""] = 0;
+    m_FolderMap[L""] = nullptr;
    
     m_FolderOperationType = foGetFolders;
     CAdvancedUploadEngine *uploadScript=nullptr;
@@ -273,13 +271,24 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     m_FolderTree.SelectItem(selectedItem);
 
+    int nIndex = m_FolderTree.GetItemData(selectedItem);
+    bool showViewInBrowserItem = false;
+    if (nIndex >= 0 && nIndex < m_FolderList.GetCount()) {
+        CFolderItem& folder = m_FolderList[nIndex];
+        if (!folder.getViewUrl().empty()) {
+            showViewInBrowserItem = true;
+        }
+    }
+
     mi.wID = ID_EDITFOLDER;
     mi.dwTypeData = TR_CONST("Edit");
     sub.InsertMenuItem(1, true, &mi);
 
-    mi.wID = ID_OPENINBROWSER;
-    mi.dwTypeData = TR_CONST("Open in Web Browser");
-    sub.InsertMenuItem(0, true, &mi);
+    if (showViewInBrowserItem) {
+        mi.wID = ID_OPENINBROWSER;
+        mi.dwTypeData = TR_CONST("Open in Web Browser");
+        sub.InsertMenuItem(0, true, &mi);
+    }
 
     mi.wID = ID_CREATENESTEDFOLDER;
     mi.dwTypeData = TR_CONST("Create nested folder");
@@ -331,7 +340,7 @@ LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hW
 
     CFolderItem& folder = m_FolderList[nIndex];
 
-    CString str = folder.viewUrl.c_str();
+    CString str = U2W(folder.viewUrl);
     if (!str.IsEmpty())
     {
         WinUtils::ShellOpenFileOrUrl(str, m_hWnd);

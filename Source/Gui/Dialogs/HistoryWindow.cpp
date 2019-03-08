@@ -29,6 +29,7 @@
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Func/IuCommonFunctions.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
@@ -142,7 +143,7 @@ void CHistoryWindow::LoadMonthList() {
             SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, i);
         }
     }
-    int selectedIndex = files.size() - 1;
+    int selectedIndex = int(files.size()) - 1;
     SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
 }
 
@@ -324,7 +325,7 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     std::string directory = IuCoreUtils::ExtractFilePath(fileName);
     if(IuCoreUtils::FileExists(fileName))
     {
-        ShellExecuteW(NULL, NULL, L"explorer.exe", CString(_T("/select, ")) + Utf8ToWCstring(fileName), NULL, SW_SHOWNORMAL);
+        WinUtils::ShowFileInFolder(U2W(fileName), m_hWnd);
     }
     else if(IuCoreUtils::DirectoryExists(directory))
     {

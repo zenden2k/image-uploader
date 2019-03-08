@@ -189,7 +189,7 @@ namespace Gdiplus
 }
 
 #ifndef GDIPLUS_NO_AUTO_NAMESPACE
-using namespace Gdiplus;
+//using namespace Gdiplus;
 #endif
 
 // STL problem

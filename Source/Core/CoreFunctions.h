@@ -3,9 +3,7 @@
 
 #pragma once
 
-#include "Network/NetworkClient.h"
-
-class INetworkClient;
+#include "Network/INetworkClient.h"
 
 namespace CoreFunctions {
 

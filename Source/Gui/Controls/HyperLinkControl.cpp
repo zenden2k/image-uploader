@@ -147,7 +147,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle,LPCTSTR szTip,int idCommand,HIC
     CWindowDC dc(m_hWnd);
 
     int szTipWidth = szTip ? GetTextWidth(dc, szTip, NormalFont) : 0;
-    int TitleWidth = max(GetTextWidth(dc, szTitle, BoldFont), szTipWidth);
+    int TitleWidth = std::max(GetTextWidth(dc, szTitle, BoldFont), szTipWidth);
 
     if(szTip)
     {

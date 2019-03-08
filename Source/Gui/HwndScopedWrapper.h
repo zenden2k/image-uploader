@@ -27,7 +27,7 @@ public:
         handle_ = nullptr;
     }
 
-    operator HWND() {
+    operator HWND() const {
         return handle_;
     }
 

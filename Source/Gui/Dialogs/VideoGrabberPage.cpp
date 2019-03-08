@@ -44,7 +44,6 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
     grabbedFramesCount = 0;
     originalGrabInfoLabelWidth_ = 0;
     uploadEngineManager_ = uploadEngineManager;
-    engineComboToolTip_ = nullptr;
     ThumbsView.SetDeletePhysicalFiles(true);
     IsStopTimer = false;
     NumOfFrames = 0;
@@ -123,11 +122,10 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     ThumbsView.SubclassWindow(GetDlgItem(IDC_THUMBLIST));
     ThumbsView.Init();
 
-    engineComboToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
+    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
         TR("Video engine which is used to extract frames from a video file."));
 
-    deinterlacingCheckboxTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_DEINTERLACE),
-        TR("Deinterlace video"));
+    GuiTools::AddToolTip(toolTipCtrl_, GetDlgItem(IDC_DEINTERLACE), TR("Deinterlace video"));
     return 1;  // Let the system set the focus
 }
 
@@ -592,10 +590,10 @@ bool CVideoGrabberPage::OnNext()
         SendDlgItemMessage(IDC_GRAB, BM_CLICK);
         return false;
     }
-    LPCTSTR filename;
+    
 
     WizardDlg->CreatePage(CWizardDlg::wpMainPage);
-    CMainDlg* mainDlg = (CMainDlg*)WizardDlg->Pages[2];
+    CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
     BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
 
@@ -603,7 +601,7 @@ bool CVideoGrabberPage::OnNext()
     {
         for (int i = 0; i < n; i++)
         {
-            filename = ThumbsView.GetFileName(i);
+            LPCTSTR filename = ThumbsView.GetFileName(i);
             if (!filename)
                 continue;
             mainDlg->AddToFileList(filename);

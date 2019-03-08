@@ -52,7 +52,7 @@ int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
     if (!nLen)
         goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, min(nLength, nLen + 1));
+    lstrcpyn(szBuffer, wfd.cFileName, std::min(nLength, nLen + 1));
 
     return TRUE;
 

@@ -70,7 +70,7 @@ LRESULT CPercentEdit::OnGetText(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     /*LRESULT result = */DefWindowProc(uMsg, 256, (LPARAM)buf);
     int quality = _wtoi(buf);
     CString res = WinUtils::IntToStr(quality);
-    int copied = min(res.GetLength()+1, nCount);
+    int copied = std::min(res.GetLength()+1, nCount);
     lstrcpyn(destination, res, copied);
     bHandled = true;
     return copied;

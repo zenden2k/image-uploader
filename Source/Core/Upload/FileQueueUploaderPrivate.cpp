@@ -9,6 +9,7 @@
 #include "UploadEngineManager.h"
 #include "Core/Upload/UploadFilter.h"
 #include "Core/CommonDefs.h"
+#include "Core/i18n/Translator.h"
 
 
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex )
@@ -307,7 +308,7 @@ void FileQueueUploaderPrivate::run()
         engine->serverSync()->incrementThreadCount();
         uploader.setUploadEngine(engine);
         uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
-        it->setStatusText(_("Starting upload"));
+        it->setStatusText(tr("Starting upload"));
 
         try {
             res = uploader.Upload(it);

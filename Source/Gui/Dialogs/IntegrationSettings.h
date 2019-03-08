@@ -79,6 +79,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         CIconButton deleteItemButton_;
         UploadEngineManager *uploadEngineManager_;
         CIcon icon_, icon2_, icon3_, icon4_;
+        CToolTipCtrl toolTipCtrl_;
 public:
     LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

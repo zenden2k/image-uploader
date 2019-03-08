@@ -29,7 +29,7 @@
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
 {
-    findfile = NULL;
+    findfile = nullptr;
     memset(&wfd, 0, sizeof(wfd));
 }
 
@@ -53,7 +53,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
     if(!nLen) goto error;
 
-    lstrcpyn(szBuffer, wfd.cFileName, min(nLength, nLen+1));
+    lstrcpyn(szBuffer, wfd.cFileName, std::min(nLength, nLen+1));
 
     return TRUE;
 
@@ -84,8 +84,8 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         ::SetWindowLong(imageEditorPathHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
     }
     langListCombo_ = GetDlgItem(IDC_LANGLIST);
-    
-    GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
+
+    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
     TCHAR buf[MAX_PATH];
     CString buf2;
 
@@ -143,7 +143,7 @@ bool CGeneralSettings::Apply()
 {
     int Index = langListCombo_.GetCurSel();
     if (Index < 0) {
-        return 0;
+        return false;
     }
     
     CString buf;

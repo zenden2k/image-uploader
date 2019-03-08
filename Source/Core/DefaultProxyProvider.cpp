@@ -212,7 +212,7 @@ bool DefaultProxyProvider::obtainProxyConfig() {
 }
 
 CString DefaultProxyProvider::proxyForUrlErrorToString(DWORD errorCode) const {
-    std::map<DWORD, CString> errorMap = {
+    std::map<DWORD, const wchar_t*> errorMap = {
         { ERROR_IO_PENDING, L"ERROR_IO_PENDING"},
         { ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR, L"ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR" },
         { ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT, L"ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT" },

@@ -14,6 +14,7 @@ namespace ImageEditor {
 
 Toolbar::Toolbar(Toolbar::Orientation orientation)
 {
+    using namespace Gdiplus;
     orientation_ = orientation;
     selectedItemIndex_ = -1;
     trackMouse_ = false;
@@ -525,7 +526,7 @@ int Toolbar::AutoSize()
     for (size_t i = 0; i < buttons_.size(); i++) {
         SIZE s = CalcItemSize(i);
         Item& item = buttons_[i];
-        RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
+        Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
         item.rect.left = x;
         item.rect.top = y;
         item.rect.right = s.cx + x;

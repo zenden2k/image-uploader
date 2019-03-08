@@ -44,7 +44,6 @@ class CClearHistoryDlg :
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         END_MSG_MAP()
 
-    public:
         HistoryClearPeriod GetValue() const;
 
     protected:

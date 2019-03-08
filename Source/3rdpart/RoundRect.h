@@ -26,10 +26,11 @@
 #pragma once
 
 #include <gdiplus.h>
-using namespace Gdiplus;
+
 
 class CRoundRect
 {
+
 public:
 	CRoundRect(void) {};
 	~CRoundRect(void) {};
@@ -47,8 +48,9 @@ public:
 	//
 	// Returns:     None
 	//
-	void GetRoundRectPath(GraphicsPath *pPath, Rect r, int dia)
+    void GetRoundRectPath(Gdiplus::GraphicsPath *pPath, Gdiplus::Rect r, int dia)
 	{
+        using namespace Gdiplus;
 		// diameter can't exceed width or height
 		if(dia > r.Width)	dia = r.Width;
 		if(dia > r.Height)	dia = r.Height;
@@ -100,8 +102,9 @@ public:
 	//		
 	// Returns:     None
 	//
-	void DrawRoundRect(Graphics* pGraphics, Rect r,  Color color, int radius, int width)
+    void DrawRoundRect(Gdiplus::Graphics* pGraphics, Gdiplus::Rect r, Gdiplus::Color color, int radius, int width)
 	{
+        using namespace Gdiplus;
 		int dia	= 2*radius;
 
 		// set to pixel mode
@@ -160,8 +163,9 @@ public:
 	//		
 	// Returns:     None
 	//
-	void FillRoundRect(Graphics* pGraphics, Rect r,  Color color, int radius)
+    void FillRoundRect(Gdiplus::Graphics* pGraphics, Gdiplus::Rect r, Gdiplus::Color color, int radius)
 	{
+        using namespace Gdiplus;
 		SolidBrush sbr(color);
 		FillRoundRect(pGraphics, &sbr, r, color, radius);
 	}
@@ -182,8 +186,9 @@ public:
 	//		
 	// Returns:     None
 	//
-	void FillRoundRect(Graphics* pGraphics, Brush* pBrush, Rect r, Color border, int radius)
+    void FillRoundRect(Gdiplus::Graphics* pGraphics, Gdiplus::Brush* pBrush, Gdiplus::Rect r, Gdiplus::Color border, int radius)
 	{
+        using namespace Gdiplus;
 		int dia	= 2*radius;
 
 		// set to pixel mode

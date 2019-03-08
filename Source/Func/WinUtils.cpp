@@ -559,7 +559,7 @@ LPTSTR ExtractFilePath(LPCTSTR FileName, LPTSTR buf, size_t bufferSize)
         if (FileName[i] == _T('\\') || FileName[i] == _T('/'))
             break;
     }
-    lstrcpyn(buf, FileName, min(i + 2, static_cast<int>(bufferSize)-1));
+    lstrcpyn(buf, FileName, std::min(i + 2, static_cast<int>(bufferSize)-1));
     return buf;
 }
 
@@ -1401,13 +1401,34 @@ bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
     if (ShellExecuteEx(&ShInfo) == FALSE) {
         DWORD error = GetLastError();
         if (error != ERROR_CANCELLED) {
-            LOG(ERROR) << "ShellExecute failed. " << std::endl << WinUtils::FormatWindowsErrorMessage(error);
+            LOG(ERROR) << "ShellExecuteEx failed. " << std::endl << WinUtils::FormatWindowsErrorMessage(error);
         }
         return false;
     }
     return true;
 }
 
+bool ShowFileInFolder(CString fileName, HWND wnd) {
+    SHELLEXECUTEINFO ShInfo;
+
+    ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
+    ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+    ShInfo.nShow = SW_SHOWNORMAL;
+    ShInfo.fMask = SEE_MASK_DEFAULT;
+    ShInfo.hwnd = wnd;
+    ShInfo.lpFile = _T("explorer.exe");
+    CString parameters = _T("/select, ") + fileName;
+    ShInfo.lpParameters = parameters;
+
+    if (ShellExecuteEx(&ShInfo) == FALSE) {
+        DWORD error = GetLastError();
+        if (error != ERROR_CANCELLED) {
+            LOG(ERROR) << "ShellExecuteEx failed. " << std::endl << WinUtils::FormatWindowsErrorMessage(error);
+        }
+        return false;
+    }
+    return true;
+}
 };
 
 const std::wstring Utf8ToWstring(const std::string &str)

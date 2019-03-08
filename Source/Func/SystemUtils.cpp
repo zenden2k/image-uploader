@@ -50,8 +50,8 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipb
 }
 
 bool CopyImageToClipboard(LPCTSTR fileName) {
-    std::unique_ptr<Bitmap> src(ImageUtils::LoadImageFromFileExtended(fileName));
-    if (!src || src->GetLastStatus() != Ok) {
+    std::unique_ptr<Gdiplus::Bitmap> src(ImageUtils::LoadImageFromFileExtended(fileName));
+    if (!src || src->GetLastStatus() != Gdiplus::Ok) {
         LOG(ERROR) << "Unable to load image:" << std::endl << fileName;
         return false;
     }

@@ -134,12 +134,12 @@ bool CDefaultServersSettings::Apply()
             CString message;
             message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle());
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
-            return 0;
+            return false;
         } else if ( !controls[i]->isAccountChosen() ) {
             CString message;
             message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
-            return 0;
+            return false;
         }
     }
     Settings.fileServer = fileServerSelector_->serverProfile();

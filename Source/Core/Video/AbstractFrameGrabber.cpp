@@ -5,7 +5,7 @@ AbstractFrameGrabber::~AbstractFrameGrabber()
 
 }
 
-std::string AbstractFrameGrabber::error() {
+std::string AbstractFrameGrabber::error() const {
     return error_;
 }
 
