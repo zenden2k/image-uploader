@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['image_20uploader_20scripting_20api',['Image Uploader Scripting API',['../index.html',1,'']]]
+  ['deprecated_20list',['Deprecated List',['../deprecated.html',1,'']]]
 ];

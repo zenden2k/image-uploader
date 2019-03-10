@@ -1,4 +1,22 @@
 var searchData=
 [
-  ['launchinshell',['launchInShell',['../class_script_a_p_i_1_1_process.html#ad6b6c5640d51b1f5b8f733364be7d91a',1,'ScriptAPI::Process']]]
+  ['getapplanguage',['GetAppLanguage',['../namespace_script_a_p_i.html#a55b79934af13b193239480a453d3a3db',1,'ScriptAPI']]],
+  ['getapplanguagefile',['GetAppLanguageFile',['../namespace_script_a_p_i.html#afd156b2b8f73e3e4cba37977b652ff53',1,'ScriptAPI']]],
+  ['getapplocale',['GetAppLocale',['../namespace_script_a_p_i.html#a8ebd47c3a3803daefc4af2d84a119d24',1,'ScriptAPI']]],
+  ['getappversion',['GetAppVersion',['../namespace_script_a_p_i.html#a00f5a51d0e8305fbf52e19794bb0df0a',1,'ScriptAPI']]],
+  ['getchildren',['getChildren',['../class_script_a_p_i_1_1_html_element.html#a184f268935e45cb5f125008c27690eca',1,'ScriptAPI::HtmlElement']]],
+  ['getcount',['GetCount',['../class_c_folder_list.html#a9cbf98c17d6b7027e60c59fb8ad69a85',1,'CFolderList']]],
+  ['getcurlinfostring',['getCurlInfoString',['../class_network_client.html#ab3a28e83d9697ef78b2b423cf930b584',1,'NetworkClient']]],
+  ['getcurrentthreadid',['GetCurrentThreadId',['../namespace_script_a_p_i.html#a1f5a8fc176bf6817bb15586851cfbe3b',1,'ScriptAPI']]],
+  ['getdocumentcontents',['getDocumentContents',['../class_script_a_p_i_1_1_c_web_browser.html#a1412e421db5a55c76ecd25ca324a1d8d',1,'ScriptAPI::CWebBrowser']]],
+  ['getfilecontents',['GetFileContents',['../namespace_script_a_p_i.html#a49e3ca66761f63a84dd97355d0aebf6e',1,'ScriptAPI']]],
+  ['getfilemimetype',['GetFileMimeType',['../namespace_script_a_p_i.html#a0bb86ba91aa16a47a651898896431a7c',1,'ScriptAPI']]],
+  ['getfilesize',['GetFileSize',['../namespace_script_a_p_i.html#ab3af5fe4eaf5a3e7d9752034efba3395',1,'ScriptAPI']]],
+  ['getfilesizedouble',['GetFileSizeDouble',['../namespace_script_a_p_i.html#a73c02fe505c7dfb288e1342bedbe1130',1,'ScriptAPI']]],
+  ['getfolderaccesstypelist',['GetFolderAccessTypeList',['../implement_8h.html#ae33a0f10bddfe575bd4d42d893b43050',1,'implement.h']]],
+  ['getimageinfo',['GetImageInfo',['../namespace_script_a_p_i.html#a31f1f5396d9bb2c67ec1f8f592496f45',1,'ScriptAPI']]],
+  ['getscriptsdirectory',['GetScriptsDirectory',['../namespace_script_a_p_i.html#a6707cd44d7e58e13ee0fadd9bdd884b2',1,'ScriptAPI']]],
+  ['getserverparamlist',['GetServerParamList',['../implement_8h.html#a8876187be59761cde85c6da06d2dfd97',1,'implement.h']]],
+  ['gettempdirectory',['GetTempDirectory',['../namespace_script_a_p_i.html#a24a278cbbb178f07b20ac449afe3b9ec',1,'ScriptAPI']]],
+  ['getvalue',['getValue',['../class_script_a_p_i_1_1_html_element.html#a389c3f368bb4178148a634d47244a7f0',1,'ScriptAPI::HtmlElement']]]
 ];
