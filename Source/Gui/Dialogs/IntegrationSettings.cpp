@@ -237,7 +237,6 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
         delete lid;
         menuItemsChanged_ = true;
     }
-    // TODO: Add your control notification handler code here
 
     return 0;
 }

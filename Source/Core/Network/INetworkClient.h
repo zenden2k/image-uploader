@@ -35,7 +35,7 @@ class CurlShare;
 class INetworkClient {
     public:
         virtual ~INetworkClient() {}
-        /*! @cond PRIVATE */
+
         enum ActionType {
             atNone = 0, atPost, atUpload, atGet
         };

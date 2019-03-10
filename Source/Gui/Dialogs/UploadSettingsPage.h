@@ -26,9 +26,7 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/MyImage.h"
 #include "settingspage.h"
-#include "Gui/WizardCommon.h"
 #include "Core/Settings.h"
 // CUploadSettingsPage
 

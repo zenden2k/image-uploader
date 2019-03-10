@@ -81,7 +81,9 @@ protected:
     bool checkNull(const char * func);
 };
 
+/* @cond PRIVATE */
 void RegisterHtmlElementClass(Sqrat::SqratVM& vm);
+/* @endcond */
 
 }
 #endif

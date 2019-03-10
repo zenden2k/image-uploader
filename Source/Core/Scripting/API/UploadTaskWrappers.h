@@ -61,6 +61,9 @@ public:
 class UrlShorteningTaskWrapper : public  FileUploadTaskWrapper {
 public:
     std::string getUrl() const;
+    /**
+     * Possible values: DirectUrl, DownloadUrl
+     */
     void setParentUrlType(const std::string& type);
     const std::string parentUrlType();
 };
@@ -73,7 +76,9 @@ public:
     UploadTaskWrapper(std::shared_ptr<UploadTask> task);
 };
 
+/* @cond PRIVATE */
 void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm);
+/* @endcond */
 
 }
 

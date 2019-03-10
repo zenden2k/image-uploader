@@ -55,6 +55,7 @@ class CLangSelect : public CDialogImpl<CLangSelect>
         HANDLE findfile;
         CMyImage LogoImage;
         CComboBox langListCombo_;
+        CFont boldFont_;
         void SelectLang(LPCTSTR Lang);
 };
 

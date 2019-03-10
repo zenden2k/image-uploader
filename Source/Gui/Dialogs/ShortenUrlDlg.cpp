@@ -25,7 +25,6 @@
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Func/WinUtils.h"
-#include "Core/CommonDefs.h"
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Gui/Controls/ServerSelectorControl.h"

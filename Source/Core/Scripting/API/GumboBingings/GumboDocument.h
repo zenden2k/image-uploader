@@ -13,7 +13,9 @@
 namespace ScriptAPI {
 
 /**
-HTML document (gumbo-query).
+(gumbo-query) HTML document.
+* Example:
+* @include gumbo_query.nut
 @since version 1.3.2 build 4451
 */
 class Document {
@@ -26,7 +28,9 @@ protected:
     std::shared_ptr<CDocument> doc_;
 };
 
+/* @cond PRIVATE */
 void RegisterGumboClasses(Sqrat::SqratVM& vm);
+/* @endcond */
 
 }
 #endif

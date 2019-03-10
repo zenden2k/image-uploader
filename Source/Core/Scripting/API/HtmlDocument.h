@@ -30,7 +30,9 @@ protected:
     std::shared_ptr<HtmlDocumentPrivate> d_;
 };
 
+/* @cond PRIVATE */
 void RegisterHtmlDocumentClass(Sqrat::SqratVM& vm);
+/* @endcond */
 
 }
 #endif

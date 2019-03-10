@@ -4,7 +4,9 @@
 #include <string>
 #pragma once
 namespace ScriptAPI {
+    /* @cond PRIVATE */
     std::string ComVariantToString(const CComVariant& variant);
+    /* @endcond */
 }
 
 #endif

@@ -35,7 +35,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 {
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
+    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
     auto ver = AppParams::instance()->GetAppVersion();

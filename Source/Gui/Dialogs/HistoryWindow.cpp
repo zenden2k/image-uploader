@@ -29,7 +29,6 @@
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
 #include "Core/Utils/DesktopUtils.h"
-#include "Func/IuCommonFunctions.h"
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)

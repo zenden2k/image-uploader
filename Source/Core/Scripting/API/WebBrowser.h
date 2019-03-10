@@ -32,7 +32,7 @@ class WebBrowserPrivate;
     Represents a web browser window. It is using Internet Explorer components on Windows, 
     but is not implemented on other systems. 
     Creating an instance: local webBrowser = CWebBrowser();
-    @since version 1.3.1 build 4270.
+    @since 1.3.1.4270.
     */
     class CWebBrowser {
         public:
@@ -82,10 +82,63 @@ class WebBrowserPrivate;
             void addTrustedSite(const std::string& domain);
             int getMajorVersion();
 
+            /**
+             * Arguments passed to callback:
+            <b>data</b> - a table containing:
+            @code
+            {
+                browser = WebBrowser,
+                url = string
+            }
+            @endcode
+             */
             void setOnUrlChangedCallback(Sqrat::Function callBack, Sqrat::Object context);
+
+            /**
+             * Arguments passed to callback:
+                <b>data</b> - a table containing:
+                @code
+                {
+                  browser = WebBrowser,
+                  url = string,
+                  statusCode = int
+                }
+                @endcode
+             */
             void setOnNavigateErrorCallback(Sqrat::Function callBack, Sqrat::Object context);
+
+            /**
+             * Arguments passed to callback:
+                <b>data</b> - a table containing:
+                @code
+                {
+                  browser = WebBrowser,
+                  url = string
+                }
+                @endcode
+             */
             void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
+            /**
+             * Arguments passed to callback:
+                <b>data</b> - a table containing:
+                @code
+                {
+                  browser = WebBrowser,
+                }
+                @endcode
+             */
             void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
+            
+            /**
+             * Arguments passed to callback:
+                <b>data</b> - a table containing:
+                @code
+                {
+                  browser = WebBrowser,
+                  fileName = string
+                }
+                @endcode
+             */
             void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
 
             
@@ -94,7 +147,9 @@ class WebBrowserPrivate;
             WebBrowserPrivate *d_;
     };
 
+    /* @cond PRIVATE */
     void RegisterWebBrowserClass(Sqrat::SqratVM& vm);
+    /* @endcond */
 }
 
 #endif

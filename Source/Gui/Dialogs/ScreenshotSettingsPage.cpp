@@ -23,8 +23,6 @@
 #include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
-
-#define CheckBounds(n,a,b,d) {if((n<a) || (n>b)) n=d;}
 #include "Func/myutils.h"
 
 // CScreenshotSettingsPagePage
@@ -86,10 +84,9 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 
     GuiTools::SetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD, Settings.ScreenshotSettings.UseOldRegionScreenshotMethod);
 
-    int Quality, Delay, Format;
-    Quality = Settings.ScreenshotSettings.Quality;
-    Format = Settings.ScreenshotSettings.Format;
-    Delay = Settings.ScreenshotSettings.Delay;
+    int Quality = Settings.ScreenshotSettings.Quality;
+    int Format = Settings.ScreenshotSettings.Format;
+    int Delay = Settings.ScreenshotSettings.Delay;
 
     if( Format < 0) Format = 0;
     if( Quality < 0) Quality = 85;

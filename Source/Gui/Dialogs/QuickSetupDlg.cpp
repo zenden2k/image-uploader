@@ -56,7 +56,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         SendDlgItemMessage( IDC_EXPLORERINTEGRATION, BM_SETCHECK, BST_CHECKED, 0);
     }
     LogoImage.SubclassWindow(GetDlgItem( IDC_STATICLOGO ) );
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
+    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE | SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
     HFONT font = GetFont();
@@ -70,9 +70,9 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
         NewFont=CreateFontIndirect(&alf);
 
-        HDC dc = ::GetDC(0);
+        HDC dc = ::GetDC(nullptr);
         alf.lfHeight  =  - MulDiv(11, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ReleaseDC(dc);
+        ::ReleaseDC(nullptr, dc);
         NewFont = CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }

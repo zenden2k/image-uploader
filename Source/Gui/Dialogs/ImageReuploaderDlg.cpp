@@ -166,8 +166,8 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CImageReuploaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwndRemove = (HWND) wParam;  // handle of window being removed 
-    HWND hwndNext = (HWND) lParam;
+    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
+    HWND hwndNext = reinterpret_cast<HWND>(lParam);
 
     if ( hwndRemove == PrevClipboardViewer ) {
         PrevClipboardViewer = hwndNext;
