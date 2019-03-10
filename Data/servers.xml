@@ -220,22 +220,10 @@
         </Actions> 
         <Result DownloadUrlTemplate="http://www.embedupload.com/?d=$(DownloadID)" /> 
     </Server> 
-	 <Server Name="jheberg.net" FileHost="1"> 
+	 <Server Name="jheberg.net" FileHost="1" Plugin="jheberg" Authorize="1"> 
         <Actions> 
-            <Action Type="get" Url="http://jheberg.net/api/get/server/" 
-                RegExp="&quot;url&quot;\s*:\s*&quot;([^&quot;]+)" 
-                AssignVars="Server:0" 
-                OnlyOnce="0" 
-            /> 
-            <Action 
-                Type="upload" 
-                Url="$(Server)api/upload/" 
-                PostParams="file=%filename%;" 
-                RegExp="&quot;url&quot;\s*:\s*&quot;([^&quot;]+)" 
-                AssignVars="Url:0" 
-            /> 
         </Actions> 
-        <Result DownloadUrlTemplate="$(Url)" /> 
+        <Result DownloadUrlTemplate="stub" /> 
     </Server> 
 	<!--<Server Name="multiupload.biz" FileHost="1" Debug="0">
 		<Actions>
@@ -393,12 +381,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
+    <!--<Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
 		<Actions>
 		</Actions>
-        <!-- API не загружает в аккаунт -->
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
+	</Server>-->
     <Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
 		<Actions>
 		</Actions>
