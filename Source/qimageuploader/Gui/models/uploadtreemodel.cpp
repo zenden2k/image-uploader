@@ -14,7 +14,7 @@ UploadTreeModel::UploadTreeModel(QObject *parent,UploadManager *uploadManager)
     qRegisterMetaType<UploadSession*>("UploadSession*");
     qRegisterMetaType<UploadTask*>("UploadTask*");
     setupModelData(uploadManager);
-}
+}  
 
 UploadTreeModel::~UploadTreeModel()
 {

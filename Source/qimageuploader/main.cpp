@@ -6,9 +6,11 @@
 #include <boost/locale.hpp>
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
-#include "Core/i18n/Translator.h"
-#include "QtUploadErrorHandler.h"
 
+#include "QtUploadErrorHandler.h"
+#include "QtDefaultLogger.h"
+#include "Gui/LogWindow.h"
+#include "Core/i18n/Translator.h"
 #ifdef _WIN32
 CAppModule _Module;
 std::string dataFolder = "Data/";
@@ -56,9 +58,15 @@ int main(int argc, char *argv[])
 #endif
 
     google::InitGoogleLogging(argv[0]);
+
+	QApplication a(argc, argv);
+	LogWindow* logWindow = new LogWindow();
+	logWindow->show();
+	QtDefaultLogger logger(logWindow);
 	QtUploadErrorHandler errorHandler(nullptr);
 	ServiceLocator::instance()->setTranslator(&translator);
 	ServiceLocator::instance()->setUploadErrorHandler(&errorHandler);
+	ServiceLocator::instance()->setLogger(&logger);
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");
@@ -101,9 +109,12 @@ mkdir(settingsFolder.c_str(), 0700);
     //serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     //serviceLocator->setLogger(&defaultLogger);
 
-    QApplication a(argc, argv);
+	
+
+    
+	
     //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w;
+    MainWindow w(logWindow);
     w.show();
     
     int res =  a.exec();

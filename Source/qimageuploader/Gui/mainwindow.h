@@ -9,6 +9,8 @@ class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
 struct ZUploadObject;
+class ServerSelectorWidget;
+class LogWindow;
 
 namespace Ui {
 class MainWindow;
@@ -19,7 +21,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(LogWindow* logWindow, QWidget *parent = 0);
     ~MainWindow();
 
     bool eventFilter(QObject *, QEvent *);
@@ -31,8 +33,10 @@ private slots:
     void on_actionAdd_files_triggered();
 	void itemDoubleClicked(const QModelIndex &index);
 	void onCustomContextMenu(const QPoint &point);
+	void onShowLog();
 protected:
 	bool addFileToList(QString fileName);
+	bool addMultipleFilesToList(QStringList fileNames);
 	void uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
 private:
@@ -42,6 +46,8 @@ private:
     CUploadEngineList engineList_;
     UploadEngineManager* uploadEngineManager_;
     ScriptsManager* scriptsManager_;
+	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
+	LogWindow* logWindow_;
 };
 
 #endif // MAINWINDOW_H

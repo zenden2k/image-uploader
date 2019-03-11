@@ -9,6 +9,7 @@
 #include <QDesktopServices>
 #include <Gui/FrameGrabberDlg.h>
 #include <Gui/RegionSelect.h>
+#include "Gui/controls/ServerSelectorWidget.h"
 #include "models/uploadtreemodel.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
@@ -18,25 +19,34 @@
 #include "Core/Settings.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "ResultsWindow.h"
+#include "Gui/LogWindow.h"
 #include "Core/OutputCodeGenerator.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+
+MainWindow::MainWindow(LogWindow* logWindow, QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+	ui(new Ui::MainWindow),
+	logWindow_(logWindow)
 {
 	ui->setupUi(this);
 	ServiceLocator::instance()->setEngineList(&engineList_);
+	
 
 	if (!engineList_.loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)){
 		QMessageBox::warning(this, "Failure", "Unable to load servers.xml");
-	}
+	} 
 
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     scriptsManager_ = new ScriptsManager(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&engineList_, uploadErrorHandler, networkClientFactory);
     uploadManager_ = new UploadManager(uploadEngineManager_,&engineList_, scriptsManager_, uploadErrorHandler, networkClientFactory);
-    uploadTreeModel_ = new UploadTreeModel(this, uploadManager_);
+
+	std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+	uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
+
+
+	uploadTreeModel_ = new UploadTreeModel(this, uploadManager_);
 
     ui->treeView->setModel(uploadTreeModel_);
 	ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -45,25 +55,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
 
-    /* ui->listWidget->viewport()->setAcceptDrops(true);
-    ui->listWidget->installEventFilter(this);*/
-    /*connect( ui->listWidget->model(), SIGNAL(layoutChanged()),
-             this,  SLOT(updateView()));*/
+	ServerProfile imageProfile("directupload.net");
+	imageServerWidget = new ServerSelectorWidget(uploadEngineManager_, false, this);
+	imageServerWidget->setTitle(tr("Server for images:"));
+	imageServerWidget->setServerProfile(imageProfile);
+	ui->verticalLayout->insertWidget(1, imageServerWidget);
 
-    /*QToolButton *userInputButton = new QToolButton(ui->mainToolBar);
-    QMenu *userInputMenu = new QMenu(userInputButton);
-    userInputButton->setIcon(QIcon(":/res/images.ico"));
-    userInputButton->setIconSize(QSize(16,16));
-    userInputButton->setText("Add Images");
-    userInputButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    //  userInputButton->setFixedHeight(20);
-    userInputButton->setMenu(userInputMenu);
-    userInputButton->setPopupMode(QToolButton::InstantPopup);
+	fileServerWidget = new ServerSelectorWidget(uploadEngineManager_, false, this);
+	fileServerWidget->setTitle(tr("Server for other file types:"));
+	fileServerWidget->setServersMask(ServerSelectorWidget::smFileServers);
+	fileServerWidget->updateServerList();
+	ui->verticalLayout->insertWidget(2, fileServerWidget);
 
-    // userInputButton->setPopupMode(QToolButton::MenuButtonPopup);
-    userInputMenu->addAction(ui->actionAdd_files);
-    userInputMenu->addAction(ui->actionAdd_Images);
-    ui->mainToolBar->addWidget(userInputButton);*/
+	connect(ui->showLogButton, &QPushButton::clicked, this, &MainWindow::onShowLog);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
@@ -132,26 +136,34 @@ void MainWindow::on_actionAdd_files_triggered()
 {
     QStringList fileNames = QFileDialog::getOpenFileNames(this);
     if (!fileNames.isEmpty()) {
-        auto uploadSession = std::make_shared<UploadSession>();
-		for (const auto& fileName : fileNames) {
-			auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-			ServerProfile serverProfile("directupload.net");
-			task->setServerProfile(serverProfile);
-			uploadSession->addTask(task);
-		}
-
-        uploadManager_->addSession(uploadSession);
+		addMultipleFilesToList(fileNames);
     }
 }
 
 bool MainWindow::addFileToList(QString fileName) {
 	auto uploadSession = std::make_shared<UploadSession>();
 	auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-	ServerProfile serverProfile("directupload.net");
+	ServerProfile serverProfile = imageServerWidget->serverProfile();
 	task->setServerProfile(serverProfile);
 	uploadSession->addTask(task);
 	uploadManager_->addSession(uploadSession);
 	ui->treeView->expandAll(); 
+	return true;
+}
+
+bool  MainWindow::addMultipleFilesToList(QStringList fileNames) {
+	if (fileNames.isEmpty()) {
+		return false;
+	}
+	auto uploadSession = std::make_shared<UploadSession>();
+	for (const auto& fileName : fileNames) {
+		auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
+		ServerProfile serverProfile = imageServerWidget->serverProfile();
+		task->setServerProfile(serverProfile);
+		uploadSession->addTask(task);
+	}
+
+	uploadManager_->addSession(uploadSession);
 	return true;
 }
 
@@ -237,4 +249,9 @@ void MainWindow::onCustomContextMenu(const QPoint &point)
 
 		contextMenu->exec(ui->treeView->viewport()->mapToGlobal(point));
 	}
+}
+
+void MainWindow::onShowLog() {
+	logWindow_->show();
+	logWindow_->activateWindow();
 }

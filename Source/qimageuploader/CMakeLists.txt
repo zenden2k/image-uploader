@@ -13,7 +13,7 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
-
+ 
 set(CMAKE_CXX_STANDARD 11)
 
 find_package(Qt5Core REQUIRED)
@@ -36,6 +36,7 @@ set(SOURCE_FILES
     ../Core/3rdpart/dxerr.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
+    Gui/LogWindow.cpp
     ../Core/ScreenCapture/ScreenCapture.cpp
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
@@ -43,9 +44,12 @@ set(SOURCE_FILES
     ../Core/Video/AbstractImage.cpp 
     ../Core/Video/QtImage.cpp
     QtUploadErrorHandler.cpp
+    QtDefaultLogger.cpp
+    Gui/controls/ServerSelectorWidget.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
+    Gui/ui/LogWindow.ui
     qimageuploader.qrc
 )
 
@@ -53,6 +57,7 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
     SET(OPTIONS WIN32)
+    list(APPEND SOURCE_FILES qimageuploader.rc)
 endif()
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES})

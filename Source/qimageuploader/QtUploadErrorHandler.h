@@ -14,5 +14,6 @@ public:
 protected:
     ILogger* logger_;
     int responseFileIndex_;
+
 };
 #endif

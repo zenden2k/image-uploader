@@ -46,8 +46,8 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 
     QString sender = QString::fromUtf8(tr("Uploading module").c_str());
 	if (!errorMsg.isEmpty())
-		qDebug() << errorMsg;
-        //logger_->write(type, sender, errorMsg, infoText);
+		
+        logger_->write(type, Q2U(sender), Q2U(errorMsg), Q2U(infoText));
 }
 
 void QtUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)
