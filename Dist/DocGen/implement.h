@@ -12,9 +12,9 @@ Required function for server Type="image" or Type="file".
 0 - fail<br/>
 -1 - fail and abort upload  (for example, authorization failed, this value supported since v.1.3.1)
 */
-int UploadFile(string pathToFile, CIUUploadParams params);
+int UploadFile(string pathToFile, UploadParams params);
 
-int ShortenUrl(string url, CIUUploadParams params);
+int ShortenUrl(string url, UploadParams params);
 int GetFolderList(CFolderList folderList);
 int CreateFolder(CFolderItem parent, CFolderItem folder);
 int ModifyFolder(CFolderItem folder);

@@ -36,7 +36,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
 
         CGeneralSettings();
         virtual ~CGeneralSettings();
-        virtual bool Apply() override;
+        bool Apply() override;
 
     protected:
         BEGIN_MSG_MAP(CGeneralSettings)
@@ -57,6 +57,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         CMyImage img;
         WIN32_FIND_DATA wfd;
         CComboBox langListCombo_;
+        CToolTipCtrl toolTipCtrl_;
 };
 
 #endif // GENERALSETTINGS_H

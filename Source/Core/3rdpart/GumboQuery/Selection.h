@@ -1,18 +1,3 @@
-/***************************************************************************
- * 
- * $Id$
- * 
- **************************************************************************/
-
-/**
- * @file $HeadURL$
- * @author $Author$(hoping@baimashi.com)
- * @date $Date$
- * @version $Revision$
- * @brief 
- *  
- **/
-
 #ifndef SELECTION_H_
 #define SELECTION_H_
 
@@ -25,14 +10,20 @@
 
 class CNode;
 
+/**
+ * @brief (gumbo-query) Selection returned by Document's find function()
+ * 
+ */
 class CSelection: public CObject
 {
 
 	public:
         CSelection();
+        /* @cond PRIVATE */
 		CSelection(GumboNode* apNode);
 
 		CSelection(std::vector<GumboNode*> aNodes);
+        /* @endcond */
         std::string attribute(std::string key);
 
         std::string text();
@@ -41,7 +32,9 @@ class CSelection: public CObject
 
 
 		virtual ~CSelection();
+        /* @cond PRIVATE */
         CSelection& each(std::function<void(int, CNode)> callback);
+        /* @endcond */
         CSelection& squirrelEach(Sqrat::Function callback);
 	public:
 

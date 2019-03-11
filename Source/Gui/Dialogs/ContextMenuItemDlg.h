@@ -36,7 +36,6 @@ class UploadEngineManager;
 class CContextMenuItemDlg : public CCustomDialogIndirectImpl<CContextMenuItemDlg>
 {
     public:
-        int ServerId;
         CContextMenuItemDlg(UploadEngineManager * uploadEngineManager);
         ~CContextMenuItemDlg();
         enum { IDD = IDD_CONTEXTMENUITEMDLG };
@@ -58,8 +57,8 @@ class CContextMenuItemDlg : public CCustomDialogIndirectImpl<CContextMenuItemDlg
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnServerSelectControlChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        ServerProfile serverProfile();
-        CString menuItemTitle();
+        ServerProfile serverProfile() const;
+        CString menuItemTitle() const;
 protected:
     std::unique_ptr<CServerSelectorControl> imageServerSelector_;
     ServerProfile serverProfile_;

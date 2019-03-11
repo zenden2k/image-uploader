@@ -32,11 +32,11 @@ class AppParams: public Singleton<AppParams>
             }
         };
 		AppParams();
-        std::string dataDirectory();
+        std::string dataDirectory() const;
         void setDataDirectory(const std::string& directory);
-        std::string settingsDirectory();
+        std::string settingsDirectory() const;
         void setSettingsDirectory(const std::string& directory);
-        std::string languageFile();
+        std::string languageFile() const;
         void setLanguageFile(const std::string& languageFile);
         void setTempDirectory(const std::string& directory);
         std::string tempDirectory() const;

@@ -34,12 +34,12 @@ class CHistoryReader;
 // CHistoryWindow
 
 #define ID_OPENINBROWSER 13000
-#define ID_COPYTOCLIPBOARD ID_OPENINBROWSER + 1
-#define ID_VIEWBBCODE ID_OPENINBROWSER + 2
-#define ID_OPENFOLDER ID_OPENINBROWSER + 3
-#define ID_EDITFILEONSERVER ID_OPENINBROWSER + 4
-#define ID_DELETEFILEONSERVER ID_OPENINBROWSER + 5
-#define WM_MY_OPENHISTORYFILE WM_USER + 101
+#define ID_COPYTOCLIPBOARD (ID_OPENINBROWSER + 1)
+#define ID_VIEWBBCODE (ID_OPENINBROWSER + 2)
+#define ID_OPENFOLDER (ID_OPENINBROWSER + 3)
+#define ID_EDITFILEONSERVER (ID_OPENINBROWSER + 4)
+#define ID_DELETEFILEONSERVER (ID_OPENINBROWSER + 5)
+#define WM_MY_OPENHISTORYFILE (WM_USER + 101)
 
 class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
     public CDialogResize <CHistoryWindow>,
@@ -50,7 +50,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         CHistoryWindow(CWizardDlg* wizardDlg);
         ~CHistoryWindow();
         enum { IDD = IDD_HISTORYWINDOW };
-        virtual BOOL PreTranslateMessage(MSG* pMsg);
+        BOOL PreTranslateMessage(MSG* pMsg) override;
 
         BEGIN_MSG_MAP(CHistoryWindow)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

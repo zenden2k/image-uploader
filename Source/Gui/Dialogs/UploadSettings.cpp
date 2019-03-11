@@ -44,7 +44,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
     m_ProfileChanged  = false;
     m_CatchChanges = false;
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
-    useServerThumbnailsTooltip_ = 0;
+    useServerThumbnailsTooltip_ = nullptr;
     uploadEngineManager_ = uploadEngineManager;
     Settings.addChangeCallback(CSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
 }
@@ -202,7 +202,7 @@ LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         return 0;
     }
 
-    lpmis->itemWidth  = max(0, GetSystemMetrics(SM_CXSMICON) - GetSystemMetrics(SM_CXMENUCHECK) + 4);
+    lpmis->itemWidth  = std::max(0, GetSystemMetrics(SM_CXSMICON) - GetSystemMetrics(SM_CXMENUCHECK) + 4);
     lpmis->itemHeight = GetSystemMetrics(SM_CYSMICON)+2;
     return TRUE;
 }

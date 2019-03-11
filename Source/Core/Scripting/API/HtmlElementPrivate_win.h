@@ -35,10 +35,10 @@
 
 
 namespace ScriptAPI {
-
+    /* @cond PRIVATE */
     // From IHTMLElement to IAccessible.
     CComQIPtr<IAccessible> HTMLElementToAccessible(IHTMLElement* pHtmlElement);
-
+    /* @endcond */
 class HtmlElementPrivate {
     public:
         

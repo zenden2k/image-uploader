@@ -70,8 +70,8 @@ void Line::getAffectedSegments( AffectedSegments* segments ) {
     int x1 = endPoint_.x;
     int y1 = endPoint_.y;
 
-    int xStart = ( min(x0, x1) / AffectedSegments::kSegmentSize +1 ) * AffectedSegments::kSegmentSize;
-    int xEnd   = ( max(x0,x1) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
+    int xStart = ( std::min(x0, x1) / AffectedSegments::kSegmentSize +1 ) * AffectedSegments::kSegmentSize;
+    int xEnd   = ( std::max(x0,x1) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
 
     x0 = startPoint_.x;
     x1 = endPoint_.x;
@@ -89,8 +89,8 @@ void Line::getAffectedSegments( AffectedSegments* segments ) {
         segments->markRect( x - penSize_, y - penSize_, penSize_ * 2, penSize_ * 2  );
     }
 
-    int yStart = ( min( y0, y1 ) / AffectedSegments::kSegmentSize + 1) * AffectedSegments::kSegmentSize;
-    int yEnd   = ( max( y0, y1 ) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
+    int yStart = ( std::min( y0, y1 ) / AffectedSegments::kSegmentSize + 1) * AffectedSegments::kSegmentSize;
+    int yEnd   = ( std::max( y0, y1 ) / AffectedSegments::kSegmentSize ) * AffectedSegments::kSegmentSize;
 
     for( int y = yStart; y <= yEnd; y += AffectedSegments::kSegmentSize ) {
         int x = -1;

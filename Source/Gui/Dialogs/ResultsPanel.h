@@ -128,7 +128,7 @@ class CResultsPanel :
     CString ReplaceVars(const CString& Text);
     std::mutex UrlListCS;
     int m_nImgServer, m_nFileServer;
-    void AddServer(ServerProfile server);
+    void AddServer(const ServerProfile& server);
     RECT rectNeeded;
     bool shortenUrl_;
     bool openedFromHistory_;

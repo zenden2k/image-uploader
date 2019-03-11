@@ -42,23 +42,23 @@ void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds,
     const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
     int width = 1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
-void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel);
-Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, Gdiplus::Font& font);
+void changeAplhaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sourceChannel, int destChannel);
+Gdiplus::Rect MeasureDisplayString(Gdiplus::Graphics& graphics, CString text, Gdiplus::RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, const CRect& intoR2);
-void DrawRect(Bitmap& gr, Color& color, Rect rect);
+void DrawRect(Gdiplus::Bitmap& gr, Gdiplus::Color& color, Gdiplus::Rect rect);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
-Size AdaptProportionalSize(const Size& szMax, const Size& szReal);
-std::unique_ptr<Bitmap> BitmapFromMemory(unsigned char* data, unsigned size);
-bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html = false);
+Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
+std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(unsigned char* data, unsigned size);
+bool CopyBitmapToClipboardInDataUriFormat(Gdiplus::Bitmap* bm, int Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
 bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);
 // Load image from file with webp support
-std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName);
+std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
 bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size);
-short GetImageOrientation(Image* img);
-bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag = false);
+short GetImageOrientation(Gdiplus::Image* img);
+bool RotateAccordingToOrientation(short orient, Gdiplus::Image* img, bool removeTag = false);
 ImageInfo GetImageInfo(const wchar_t* fileName);
 
 }

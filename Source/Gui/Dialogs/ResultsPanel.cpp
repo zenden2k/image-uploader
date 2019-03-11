@@ -31,15 +31,14 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Func/MediaInfoHelper.h"
 #include "Core/AppParams.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
 {
-    webViewWindow_ = NULL;
+    webViewWindow_ = nullptr;
     m_nImgServer = m_nFileServer = -1;
-    TemplateHead = TemplateFoot = NULL; 
+    TemplateHead = TemplateFoot = nullptr; 
     openedFromHistory_ = openedFromHistory;
     rectNeeded.left = -1;
     CString TemplateLoadError;
@@ -53,9 +52,11 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlLi
 CResultsPanel::~CResultsPanel()
 {
     delete[] TemplateHead;
-    if (webViewWindow_ && webViewWindow_->m_hWnd)
+    if (webViewWindow_ )
     {
-        webViewWindow_->DestroyWindow();
+        if (webViewWindow_->m_hWnd) {
+            webViewWindow_->DestroyWindow();
+        }
         delete webViewWindow_;
     }  
 }
@@ -75,7 +76,7 @@ bool CResultsPanel::LoadTemplate()
 
     dwFileSize = GetFileSize (hFile, NULL) ; 
     if(!dwFileSize) return false;
-    DWORD dwMemoryNeeded = min(35536ul, dwFileSize);
+    DWORD dwMemoryNeeded = std::min(35536ul, dwFileSize);
     LPTSTR TemplateText = (LPTSTR)new CHAR[dwMemoryNeeded+2]; 
     ZeroMemory(TemplateText,dwMemoryNeeded);
     ::ReadFile(hFile, (LPVOID)TemplateText , 2, &dwBytesRead, NULL); //Reading BOM
@@ -796,15 +797,14 @@ LRESULT CResultsPanel::OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND h
     return 0;
 }
 
-void CResultsPanel::AddServer(ServerProfile server)
+void CResultsPanel::AddServer(const ServerProfile& server)
 {
-    for(size_t i=0; i<m_Servers.size(); i++)
-        if (m_Servers[i].serverName() == server.serverName() 
-            && 
-            m_Servers[i].profileName() == server.profileName()
-            && m_Servers[i].folderId() == server.folderId()
-            )
+    for (const auto& cur : m_Servers) {
+        if (cur.serverName() == server.serverName() && cur.profileName() == server.profileName()
+                && cur.folderId() == server.folderId()) {
             return;
+        }
+    }
     m_Servers.push_back(server);
     //return 0;
 }

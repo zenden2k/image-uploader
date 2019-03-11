@@ -17,6 +17,7 @@
 #endif
 #include "Core/Video/GdiPlusImage.h"
 
+using namespace Gdiplus;
 bool ImageConverterPrivate::Convert(const std::string& sourceFile)
 {
     sourceFile_ = sourceFile;

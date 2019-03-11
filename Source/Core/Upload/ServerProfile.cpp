@@ -141,6 +141,7 @@ ServerSettingsStruct& ServerProfile::serverSettings() {
     return *res;
 }
 
+// TODO: Remove this method
 CUploadEngineData* ServerProfile::uploadEngineData() const {
     return ServiceLocator::instance()->engineList()->byName(serverName_);
 }

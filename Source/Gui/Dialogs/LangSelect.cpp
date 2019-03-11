@@ -52,7 +52,7 @@ int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
     if (!nLen)
         goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, min(nLength, nLen + 1));
+    lstrcpyn(szBuffer, wfd.cFileName, std::min(nLength, nLen + 1));
 
     return TRUE;
 
@@ -71,7 +71,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
+    boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
     // English language is always in language list
     langListCombo_.AddString(_T("English"));

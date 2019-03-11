@@ -356,10 +356,10 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 m_curvePoints.push_back(newPoint);
 
                 RECT RectToRepaint;
-                RectToRepaint.left = min(p.x, newPoint.x) - m_brushSize;
-                RectToRepaint.top = min(p.y, newPoint.y) - m_brushSize;
-                RectToRepaint.right = max(p.x, newPoint.x) + m_brushSize;
-                RectToRepaint.bottom = max(p.y, newPoint.y) + m_brushSize;
+                RectToRepaint.left = std::min(p.x, newPoint.x) - m_brushSize;
+                RectToRepaint.top = std::min(p.y, newPoint.y) - m_brushSize;
+                RectToRepaint.right = std::max(p.x, newPoint.x) + m_brushSize;
+                RectToRepaint.bottom = std::max(p.y, newPoint.y) + m_brushSize;
                 InvalidateRect(&RectToRepaint, false);
 
             }
@@ -390,10 +390,10 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 LineTo(memDC2, cx,cy);
 
                 RECT RectToRepaint;
-                RectToRepaint.left = min(cxOld, cx) - m_brushSize;
-                RectToRepaint.top = min(cyOld, cy) - m_brushSize;
-                RectToRepaint.right = max(cxOld, cx) + m_brushSize;
-                RectToRepaint.bottom = max(cyOld, cy) + m_brushSize;
+                RectToRepaint.left = std::min(cxOld, cx) - m_brushSize;
+                RectToRepaint.top = std::min(cyOld, cy) - m_brushSize;
+                RectToRepaint.right = std::max(cxOld, cx) + m_brushSize;
+                RectToRepaint.bottom = std::max(cyOld, cy) + m_brushSize;
                 CRgn rgn;
                 rgn.CreateRectRgnIndirect(&RectToRepaint);
                 m_bPictureChanged = true;
@@ -483,10 +483,10 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         RECT RectToRepaint;
         //if(m_SelectionMode != smWindowHandles)
         {
-            RectToRepaint.left = min(Start.x, End.x) - m_brushSize;
-            RectToRepaint.top = min(Start.y, End.y) - m_brushSize;
-            RectToRepaint.right = max(Start.x, End.x) + m_brushSize;
-            RectToRepaint.bottom = max(Start.y, End.y) + m_brushSize;
+            RectToRepaint.left = std::min(Start.x, End.x) - m_brushSize;
+            RectToRepaint.top = std::min(Start.y, End.y) - m_brushSize;
+            RectToRepaint.right = std::max(Start.x, End.x) + m_brushSize;
+            RectToRepaint.bottom = std::max(Start.y, End.y) + m_brushSize;
 
             InvalidateRect(&RectToRepaint);
         }

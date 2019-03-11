@@ -104,9 +104,10 @@ public:
         itemCount = -1;
     }
 
+    /*! @cond PRIVATE */
     static const std::string NewFolderMark;
 
-    /*! @cond PRIVATE */
+
     std::string title;
     std::string summary;
     std::string id;
@@ -134,7 +135,7 @@ public:
 };
 
 /**
-ServerSettingsStruct
+Global object <b>ServerParams</b> is an instance of ServerSettingsStruct.
 */
 class ServerSettingsStruct
 {
@@ -147,11 +148,19 @@ public:
     CFolderItem newFolder;
     CFolderItem defaultFolder;
 
-    bool isEmpty() {
+    bool isEmpty() const {
         return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && !params.size() && defaultFolder.getId().empty();
     }
     /*! @endcond */
 
+    /**
+     * Params:
+     * 
+     * Login
+     * Password
+     * 
+     * Custom parameters which should be visible in server settings dialog, should have the same name as in GetServerParamList. 
+     */
     std::string getParam(const std::string& name)
     {
         std::lock_guard<std::mutex> lock(*paramsMutex_);
@@ -212,7 +221,7 @@ class CUploadEngineData
         CUploadEngineData();
 };
 /** 
-CIUUploadParams class
+UploadParams class
 */
 class UploadParams
 {
@@ -242,6 +251,11 @@ public:
     }
     /*! @endcond */
 
+    /**
+     *  Possible parameters:
+     *    THUMBWIDTH
+     *    THUMBHEIGHT 
+     */
     const std::string getParam(const std::string& name)
     {
         temp_.clear();

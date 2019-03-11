@@ -6,7 +6,6 @@
 
 #include "atlheaders.h"
 #include "resource.h"       
-#include "Core/FileDownloader.h"
 #include "WizardDlg.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Gui/Controls/PictureExWnd.h"

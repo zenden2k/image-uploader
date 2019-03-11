@@ -106,6 +106,7 @@ namespace WinUtils {
     std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
     bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = CString());
+    bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
 //#endif
 };
 

@@ -196,7 +196,7 @@ bool CUploadSettingsPage::Apply()
 LRESULT CUploadSettingsPage::OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     IMyFileDialog::FileFilterArray filters = {
-        { CString(_("Squirrel 3 script (.nut)")), _T("*.nut;"), },
+        { CString(_T("Squirrel 3 script (.nut)")), _T("*.nut;"), },
         { TR("All files"), _T("*.*") }
     };
 

@@ -34,6 +34,11 @@ public:
 #endif
 };
 
+
+ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
+}
+
+
 ILogger* ServiceLocator::logger() {
     return  d_ptr->logger_;
 }
@@ -48,9 +53,6 @@ ITranslator* ServiceLocator::translator() {
 
 void ServiceLocator::setTranslator(ITranslator* transl) {
     d_ptr->translator_ = transl;
-}
-
-ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
 }
 
 #ifndef IU_SHELLEXT

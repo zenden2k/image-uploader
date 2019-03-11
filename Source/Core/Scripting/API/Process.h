@@ -73,8 +73,9 @@ protected:
     void init();
 };
 
+/* @cond PRIVATE */
 void RegisterProcessClass(Sqrat::SqratVM& vm);
-
+/* @endcond */
 }
 
 #endif

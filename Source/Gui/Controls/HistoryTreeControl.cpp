@@ -301,7 +301,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     if(draw)
         DrawText(dc.m_hDC,  lowTextW, lowTextW.GetLength(), &drawRect, DT_LEFT|DT_VCENTER);
 
-    curY += max(calcRect.Height(), /* server icon height */16);
+    curY += std::max(calcRect.Height(), /* server icon height */16);
     dc.Detach();
     curY += 3;
     if(outHeight)

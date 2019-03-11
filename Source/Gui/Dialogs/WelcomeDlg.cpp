@@ -95,9 +95,9 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         NewFont=CreateFontIndirect(&alf);
 
         SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-        HDC dc = ::GetDC(0);
+        HDC dc = ::GetDC(nullptr);
         alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ReleaseDC(dc);
+        ::ReleaseDC(nullptr, dc);
         NewFont = CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }

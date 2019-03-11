@@ -1,11 +1,10 @@
 test <- "example"; // global variable
 
-/**
-* Function which acually doing upload of a file
-* @var string pathToFile 
-* @var CIUUploadParams options
-* @return int - success(1), failure(0)
-**/
+// Function which is actually doing upload of a file
+// @param string pathToFile 
+// @param UploadParams options
+// @return int - success(1), failure(0)
+
 function  UploadFile(pathToFile, options)
 {
     nm.setUrl("http://example.com/upload.php");
@@ -18,18 +17,18 @@ function  UploadFile(pathToFile, options)
     
     options.setDirectUrl(directUrl);
 
-    return 1; //успех
+    return 1; //SUCCESS
 }
 
-/** 
-* Вспомогательная функция, упрощающая работу с регулярными выражениями
-* @var string data - строка, в которой мы ищем
-* @var string regStr - регулярное выражение, в формате, поддерживаемом стандартной библиотекой языка squirrel.
-*      http://www.squirrel-lang.org/doc/sqstdlib2.html#d0e2580
-*      Этот формат не поддерживает некоторые возможности формата PCRE, используемого в servers.xml.
-* @var int start - с какой позиции в строке начинать поиск)
-* @return string - возвращает текст, захваченный первой подмаской (subpattern).
-**/
+ 
+// Helper function that simplifies working with regular expressions
+// @param string data - the string we are looking in
+// @param string regStr - regular expression, in the format supported by the standard squirrel language library.
+//      http://www.squirrel-lang.org/doc/sqstdlib2.html#d0e2580
+//      This format does not support some of the features of the PCRE format used in servers.xml.
+// @param int start - starting position
+// @return string - returns text captured by the first subpattern.
+//
 function regex_simple(data,regStr,start)
 {
     local ex = regexp(regStr);
@@ -49,8 +48,8 @@ function regex_simple(data,regStr,start)
 **/
 function GetFolderList(list)
 {
-    // Ваш код
-    return 1; //успех
+    // TODO: Your code
+    return 1; //SUCCESS
 }
  
 /** 
@@ -61,24 +60,24 @@ function GetFolderList(list)
 **/
 function CreateFolder(parentAlbum,album)
 {
-    // Ваш код
-    return 1; //успех
+    // TODO: Your code
+    return 1; //SUCCESS
 }
  
-/** Modify a folder or an album (update name, description)
-* @var CFolderItem album
-* @return int - success(1), failure(0) 
-**/
+// Modify a folder or an album (update name, description)
+// @var CFolderItem album
+// @return int - success(1), failure(0) 
+//
 function ModifyFolder(album)
 {
-    // Ваш код
-    return 1; //успех
+    // TODO: Your code
+    return 1; //SUCCESS
 }
  
-// Функция, возвращающая список видов ограничений доступа к альбому:
-// приватный, общедоступный, только для друзей и т.п.
+// A function that returns a list of types of access restrictions to an album:
+// private, public, only for friends, etc.
 // @return array 
 function GetFolderAccessTypeList()
 {
-    return ["ТипДоступа1", "ТипДоступа2"];
+    return ["Private", "Public"];
 }

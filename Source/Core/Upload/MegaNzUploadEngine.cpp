@@ -31,6 +31,7 @@
 #include "Core/Settings.h"
 #include "FileUploadTask.h"
 #include "Core/CommonDefs.h"
+#include "Core/i18n/Translator.h"
 #ifdef _WIN32
 #include "Func/IuCommonFunctions.h"
 #include "3rdpart/GdiplusH.h"
@@ -39,7 +40,6 @@
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT "Zenden2k Image Uploader"
-
 
 using namespace mega;
 
@@ -94,6 +94,7 @@ int MyGfxProcessor::getHeight() {
 }
 
 int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) {
+    using namespace Gdiplus;
     if (!bitmap_) {
         return 0;
     }
@@ -323,7 +324,7 @@ int CMegaNzUploadEngine::doLogin() {
     loginFinished_ = false;
     loginSuccess_ = false;
     if (currentTask_) {
-        currentTask_->setStatusText(_("Logging in..."));
+        currentTask_->setStatusText(tr("Logging in..."));
     }
     megaApi_->login(m_ServersSettings->authData.Login.c_str(), m_ServersSettings->authData.Password.c_str());
     while (!loginFinished_ && !needStop()) {
@@ -408,7 +409,7 @@ bool CMegaNzUploadEngine::ensureNodesFetched() {
         fetchNodesFinished_ = false;
         fetchNodesSuccess_ = false;
         if (currentTask_) {
-            currentTask_->setStatusText(_("Fetching filesystem..."));
+            currentTask_->setStatusText(tr("Fetching filesystem..."));
         }
         megaApi_->fetchNodes();
         while (!fetchNodesFinished_ && !needStop()) {

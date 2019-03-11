@@ -29,7 +29,6 @@ class CCmdLine;
 
 struct CUrlListItem
 {
-    bool IsImage, IsThumb;
     CString FileName;
     CString ImageUrl;
     CString ImageUrlShortened;
@@ -50,11 +49,13 @@ struct CUrlListItem
         return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
     }
 
-    bool isNull()
+    bool isNull() const
     {
         return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
     }
 
+    CUrlListItem() {
+    }
 };
 
 bool IULaunchCopy();

@@ -14,7 +14,7 @@ public:
     virtual bool seek(int64_t time)=0;
     virtual AbstractVideoFrame* grabCurrentFrame()=0;
     virtual int64_t duration()=0;
-    std::string error();
+    std::string error() const;
     virtual void abort();
 protected:
     std::string error_;

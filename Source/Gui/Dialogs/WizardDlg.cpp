@@ -861,8 +861,7 @@ STDMETHODIMP CWizardDlg::DragLeave( void)
 
 CString MakeTempFileName(const CString& FileName)
 {
-    CString FileNameBuf;
-    FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
+    CString FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
 
    if(WinUtils::FileExists(FileNameBuf))
     {
@@ -1104,6 +1103,9 @@ LRESULT CWizardDlg::OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HW
 }
 
 LRESULT CWizardDlg::OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    // This message is sent from ThumbsView when dragging of an item starts.
+    // We need this to avoid dragging files from wizard to wizard itself.
+    // Disable temporary drag-n-drop to wizard's window
     DragndropEnabled = !!wParam;
     return 0;
 }
@@ -1114,15 +1116,16 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
         return;
     }
    
-    CString buf2;
+    CString fileNameBuffer;
     Bitmap bm(Bmp, nullptr);
     if (bm.GetLastStatus() == Ok) {
-        ImageUtils::MySaveImage(&bm,_T("clipboard"),buf2,1,100);
-        CreatePage(wpMainPage);
-        CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
-        MainDlg->AddToFileList( buf2, L"", true, nullptr, true);
-        MainDlg->ThumbsView.LoadThumbnails();
-        ShowPage(wpMainPage);
+        if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, 1, 100)) {
+            CreatePage(wpMainPage);
+            CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+            MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
+            MainDlg->ThumbsView.LoadThumbnails();
+            ShowPage(wpMainPage);
+        }
     }
 }
 
@@ -1402,11 +1405,14 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 {
     bool LaunchCopy = false;
 
-    if (CurPage == 4) LaunchCopy = true;
-    if (CurPage == 1) LaunchCopy = true;
+    if (CurPage == wpUploadPage || CurPage == wpVideoGrabberPage) {
+        LaunchCopy = true;
+    }
     if (CurPage == 3) ShowPage(wpMainPage);
 
-    if (!IsWindowEnabled())LaunchCopy = true;
+    if (!IsWindowEnabled()) {
+        LaunchCopy = true;
+    }
 
     CString funcName = WinUtils::StringSection(funcBody, _T(','), 0);
     CString funcParam1 = WinUtils::StringSection(funcBody, _T(','), 1);

@@ -387,7 +387,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     if( hash != IuCoreUtils::Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)filename))).c_str() || ui.getHash().IsEmpty())
     {
         updateStatus(nCurrentIndex, CString(TR("MD5 check of the update package failed ")) + IuCoreUtils::ExtractFileName(IuCoreUtils::WstringToUtf8((LPCTSTR)filename)).c_str());
-        return 0;
+        return false;
     }
 
     CUnzipper unzipper(filename);
@@ -395,7 +395,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     if(!unzipper.UnzipTo(unzipFolder))
     {
         updateStatus(nCurrentIndex, TR("Unable to unpack archive ") + filename);
-        return 0;
+        return false;
     }
 
     CUpdatePackage updatePackage;

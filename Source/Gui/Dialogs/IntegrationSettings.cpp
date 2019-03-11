@@ -71,22 +71,22 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     icon_ = (HICON)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON, 16, 16, 0);
     SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon_);
     addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
-    GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
+    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
 
     icon2_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2_);
     deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
-    GuiTools::CreateToolTipForWindow(deleteItemButton_.m_hWnd, TR("Remove Item"));
+    GuiTools::AddToolTip(toolTipCtrl_, deleteItemButton_.m_hWnd, TR("Remove Item"));
 
     icon3_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3_);
     upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
-    GuiTools::CreateToolTipForWindow(upButton_.m_hWnd, TR("Move Up"));
+    GuiTools::AddToolTip(toolTipCtrl_, upButton_.m_hWnd, TR("Move Up"));
 
     icon4_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4_);
     downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
-    GuiTools::CreateToolTipForWindow(downButton_.m_hWnd, TR("Move Down"));
+    GuiTools::AddToolTip(toolTipCtrl_, downButton_.m_hWnd, TR("Move Down"));
 
     CRegistry Reg;
     Reg.SetRootKey( HKEY_CURRENT_USER );
@@ -237,7 +237,6 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
         delete lid;
         menuItemsChanged_ = true;
     }
-    // TODO: Add your control notification handler code here
 
     return 0;
 }

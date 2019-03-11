@@ -29,7 +29,6 @@ CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManag
 {
     titleEdited_ = false;
     uploadEngineManager_ = uploadEngineManager;
-    ServerId = -1;
 }
 
 CContextMenuItemDlg::~CContextMenuItemDlg()
@@ -103,12 +102,12 @@ LRESULT CContextMenuItemDlg::OnMenuItemTitleEditChange(WORD wNotifyCode, WORD wI
     return 0;
 }
 
-ServerProfile CContextMenuItemDlg::serverProfile()
+ServerProfile CContextMenuItemDlg::serverProfile() const
 {
     return serverProfile_;
 }
 
-CString CContextMenuItemDlg::menuItemTitle()
+CString CContextMenuItemDlg::menuItemTitle() const
 {
     return title_;
 }

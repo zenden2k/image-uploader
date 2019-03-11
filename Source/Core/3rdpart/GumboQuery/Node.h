@@ -21,11 +21,18 @@
 
 class CSelection;
 
+/**
+* @brief (gumbo-query) Node
+*
+*/
+
 class CNode
 {
 	public:
         CNode();
+        /* @cond PRIVATE */
 		CNode(GumboNode* apNode);
+        /* @endcond */
 
 		virtual ~CNode();
 

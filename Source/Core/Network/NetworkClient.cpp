@@ -29,12 +29,8 @@
 #include <memory.h>
 #include <cstdio>
 #include <algorithm>
-#include <iostream>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
-#if defined(_WIN32) 
-#include "Func/WinUtils.h"
-#endif
 
 #ifdef USE_OPENSSL
 #include <openssl/ssl.h>
@@ -243,7 +239,7 @@ NetworkClient::NetworkClient(void)
     logger_ = nullptr;
     proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
-    setUserAgent("Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36");
+    m_userAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36";
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);    
@@ -677,7 +673,6 @@ std::string nm_trimStr(const std::string& str)
     return res;
 }
 
-#include <iostream>
 void NetworkClient::private_parse_headers()
 {
     std::vector<std::string> headers;
@@ -708,7 +703,7 @@ const std::string NetworkClient::responseHeaderByName(const std::string& name)
         if(it->name == name)
             return it->value;
     }
-    return "";
+    return std::string();
 
 }
 
@@ -719,8 +714,11 @@ int NetworkClient::responseHeaderCount()
 
 std::string NetworkClient::responseHeaderByIndex(const int index, std::string& name)
 {
-    name = m_ResponseHeaders[index].name;
-    return m_ResponseHeaders[index].value;
+    if (index >= 0 && static_cast<size_t>(index) < m_ResponseHeaders.size()) {
+        name = m_ResponseHeaders[index].name;
+        return m_ResponseHeaders[index].value;
+    }
+    return std::string();
 }
 
 void NetworkClient::private_cleanup_before()
@@ -945,9 +943,9 @@ void NetworkClient::setCurlOptionInt(int option, long value) {
 
 const std::string NetworkClient::getCurlInfoString(int option)
 {
-    char* buf = 0;
+    char* buf = nullptr;
     curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &buf);
-    std::string res = buf ? buf : "";
+    std::string res = buf ? buf : std::string();
     return res;
 }
 
@@ -967,10 +965,10 @@ double NetworkClient::getCurlInfoDouble(int option)
 
 void NetworkClient::setTimeout(uint32_t timeout)
 {
-    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, timeout);
+    curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, static_cast<long>(timeout));
 }
 
 void NetworkClient::setConnectionTimeout(uint32_t connection_timeout)
 {
-    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, connection_timeout);
+    curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, static_cast<long>(connection_timeout));
 }

@@ -32,7 +32,7 @@ AppParams::AppParams() {
 #endif
 }
 
-std::string AppParams::dataDirectory()
+std::string AppParams::dataDirectory() const
 {
     return dataDirectory_;
 }
@@ -42,7 +42,7 @@ void AppParams::setDataDirectory(const std::string& directory)
     dataDirectory_ = directory;
 }
 
-std::string AppParams::settingsDirectory()
+std::string AppParams::settingsDirectory() const
 {    
     return settingsDirectory_;
 }
@@ -52,7 +52,7 @@ void AppParams::setSettingsDirectory(const std::string& directory)
     settingsDirectory_ = directory;
 }
 
-std::string AppParams::languageFile()
+std::string AppParams::languageFile() const
 {
     return languageFile_;
 }

@@ -70,13 +70,12 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     //Fill profile combobox
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
     std::map<CString, ImageConvertingParams>::const_iterator it;
-    bool found = false;
     int selectedIndex = -1;
     int i = 0;
     for (it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
         GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
         if (it->first == U2W(serverProfile_.getImageUploadParams().ImageProfileName)) {
-            found = true;
+
             selectedIndex = i;
         }
         i++;
