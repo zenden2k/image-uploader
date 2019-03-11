@@ -27,7 +27,7 @@
       <widget class="QLineEdit" name="lineEdit"/>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="browseButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -49,7 +49,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="grabButton">
        <property name="text">
         <string>Grab</string>
        </property>
@@ -57,27 +57,68 @@
      </item>
     </layout>
    </item>
-   <item alignment="Qt::AlignLeft">
-    <widget class="QComboBox" name="comboBox">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <property name="text">
-       <string>Auto</string>
-      </property>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Number of frames:</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>Directshow</string>
-      </property>
+      <widget class="QSpinBox" name="numOfFramesSpinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>Avcodec</string>
-      </property>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
-    </widget>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Engine:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox">
+       <item>
+        <property name="text">
+         <string>Auto</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Directshow</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Avcodec</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="MyListWidget" name="listWidget">
      <property name="showDropIndicator" stdset="0">
       <bool>false</bool>
      </property>
@@ -120,17 +161,48 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QPushButton" name="stopButton">
+       <property name="text">
+        <string>Stop</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MyListWidget</class>
+   <extends>QListWidget</extends>
+   <header>controls/mylistwidget.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>

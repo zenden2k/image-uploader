@@ -22,6 +22,7 @@ protected:
 private slots:
 	void generateCode();
 	void currentTabChanged(int index);
+	void onCopyToClipboard();
 private:
     std::unique_ptr<Ui::ResultsWindow> ui;
 	std::vector<ZUploadObject> uploadObjects_;

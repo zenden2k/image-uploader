@@ -39,6 +39,7 @@ set(SOURCE_FILES
     ../Core/ScreenCapture/ScreenCapture.cpp
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
+    Gui/controls/MyListWidget.cpp
     ../Core/Video/AbstractImage.cpp 
     ../Core/Video/QtImage.cpp
     QtUploadErrorHandler.cpp

@@ -25,6 +25,13 @@ bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* dat
 			return true;
 		}
 	}
+	else if (dt == dfBitmapRgb) {
+		//img_ = QImage((const unsigned char*)data, width, height, QImage::Format_RGB888);
+		img_.loadFromData(data, dataSize);
+		if (!img_.isNull()) {
+			return true;
+		}
+	}
 	return false;
     
 }

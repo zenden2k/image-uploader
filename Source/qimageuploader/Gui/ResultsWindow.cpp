@@ -1,5 +1,7 @@
 #include "ResultsWindow.h"
 
+#include <QClipboard>
+
 #include "ui_ResultsWindow.h"
 
 ResultsWindow::ResultsWindow(std::vector<ZUploadObject> objects, QWidget *parent) :
@@ -16,6 +18,7 @@ ResultsWindow::ResultsWindow(std::vector<ZUploadObject> objects, QWidget *parent
 		<< "Images" << "Links");
 	connect(ui->tabBar, &QTabBar::currentChanged, this, &ResultsWindow::currentTabChanged);
 	connect(ui->codeTypeCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(generateCode()));
+	connect(ui->copyToClipboardButton, &QPushButton::clicked, this, &ResultsWindow::onCopyToClipboard);
 	generateCode();
 }
 
@@ -63,4 +66,9 @@ void ResultsWindow::generateCode() {
 void ResultsWindow::currentTabChanged(int index) {
 	ui->codeTypeCombo->setEnabled(index != 3); // Disable combo on "Just links" tab
 	generateCode();
+}
+
+void ResultsWindow::onCopyToClipboard() {
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(ui->plainTextEdit->toPlainText());
 }

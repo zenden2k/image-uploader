@@ -20,8 +20,6 @@
 #include "ResultsWindow.h"
 #include "Core/OutputCodeGenerator.h"
 
-//#include <QtWebKitWidgets/QWebView>
-
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
@@ -88,8 +86,11 @@ void  MainWindow::updateView() {
 
 void MainWindow::on_actionGrab_frames_triggered()
 {
-    FrameGrabberDlg dlg;
-    dlg.exec();
+	QString fileName = QFileDialog::getOpenFileName(this);
+	if (fileName.length()) {
+		FrameGrabberDlg dlg(fileName);
+		dlg.exec();
+	}
 }
 
 void MainWindow::on_actionScreenshot_triggered()
@@ -212,10 +213,13 @@ void MainWindow::onCustomContextMenu(const QPoint &point)
 		QMenu* contextMenu = new QMenu(ui->treeView);
 		//ui->treeView->setContextMenuPolicy(Qt::ActionsContextMenu);
 		QAction* viewCodeAction = new QAction("View HTML/BBCode", contextMenu);
+		
 		contextMenu->addAction(viewCodeAction);
 		connect(viewCodeAction, &QAction::triggered, [index, this](bool checked) {
 			showCodeForIndex(index);
 		});
+		contextMenu->setDefaultAction(viewCodeAction);
+
 		if (internalItem->task) { 
 			auto uploadResult = internalItem->task->uploadResult();
 			QString url = QString::fromUtf8(uploadResult->getDirectUrl().c_str());

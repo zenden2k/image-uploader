@@ -221,8 +221,7 @@ void UploadTreeModel::setupModelData(UploadManager *uploadManager)
     //m_uploadManager->OnChildAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
     m_uploadManager->OnSessionAdded.bind(this,&UploadTreeModel::OnSessionAdded);
     //m_uploadManager->OnU.bind(this,  &UploadTreeModel::data_OnUploadProgress);
-    //  m_uploadManager->OnStatusChanged.bind(this, &UploadTreeModel::data_OnStatusChanged);
-
+     
     /*connect(uploadManager, SIGNAL(OnChildAdded(UploadTask*,UploadTask*)), this, SLOT(data_OnChildAdded(UploadTask*,UploadTask*))/, Qt::BlockingQueuedConnection*);
     connect(uploadManager, SIGNAL(OnUploadProgress(UploadTask*,InfoProgress)), this, SLOT(data_OnUploadProgress(UploadTask*,InfoProgress)));
     connect(uploadManager, SIGNAL(OnStatusChanged(UploadTask*,QString)), this, SLOT(data_OnStatusChanged(UploadTask*,QString)));
@@ -305,8 +304,8 @@ void UploadTreeModel::onUploadProgress(UploadTask *task)
 void UploadTreeModel::onStatusChanged(UploadTask *task)
 {
     int row = byUploadTask(task);
-    /*auto it = m_objMap[task];
-    emit dataChanged(createIndex(row,0,it), createIndex(row,3,it));*/
+	auto it = reinterpret_cast<InternalItem*>(task->userData());
+    emit dataChanged(createIndex(row,1,it), createIndex(row,1,it));
 }
 
 void UploadTreeModel::OnSessionAdded(UploadSession *session) {
@@ -316,7 +315,9 @@ void UploadTreeModel::OnSessionAdded(UploadSession *session) {
 	int taskCount = session->taskCount();
 	for (int i = 0; i < taskCount; i++) {
 		auto task = session->getTask(i);
-		task->OnUploadProgress.bind(this, &UploadTreeModel::onUploadProgress);
+		task->OnUploadProgress.bind(this, &UploadTreeModel::data_OnUploadProgress);
+		task->OnStatusChanged.bind(this, &UploadTreeModel::data_OnStatusChanged);
+
 	}
 }
 
