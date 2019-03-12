@@ -135,7 +135,7 @@ function _DoLogin()
 	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
 	ShellOpenUrl(url);
 	
-	local confirmCode = InputDialog(tr("googledrive.confirmation.text", "You need to need to sign in to your Google account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:"),"");
+	local confirmCode = InputDialog(tr("googledrive.confirmation.text", "You need to need to sign in to your Google account\r\n in web browser which just have opened and then\r\n copy confirmation code into the text field below.\r\nPlease enter confirmation code:"),"");
 	
 	if ( confirmCode == "" ) {
 		print("Cannot authenticate without confirm code");

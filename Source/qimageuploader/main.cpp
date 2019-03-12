@@ -9,7 +9,11 @@
 
 #include "QtUploadErrorHandler.h"
 #include "QtDefaultLogger.h"
+#include "QtScriptDialogProvider.h"
 #include "Gui/LogWindow.h"
+
+#include <Core/Settings.h>
+#include <QMessageBox>
 #include "Core/i18n/Translator.h"
 #ifdef _WIN32
 CAppModule _Module;
@@ -63,10 +67,12 @@ int main(int argc, char *argv[])
 	LogWindow* logWindow = new LogWindow();
 	logWindow->show();
 	QtDefaultLogger logger(logWindow);
-	QtUploadErrorHandler errorHandler(nullptr);
+	QtUploadErrorHandler errorHandler(&logger);
+	QtScriptDialogProvider dlgProvider;
 	ServiceLocator::instance()->setTranslator(&translator);
 	ServiceLocator::instance()->setUploadErrorHandler(&errorHandler);
 	ServiceLocator::instance()->setLogger(&logger);
+	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
     std::string settingsFolder;
     setlocale(LC_ALL, "");
@@ -103,23 +109,25 @@ mkdir(settingsFolder.c_str(), 0700);
     return  params->setTempDirectory("/var/tmp/");
 #endif
 
-    ServiceLocator* serviceLocator = ServiceLocator::instance();
-
+	Settings.LoadSettings(AppParams::instance()->settingsDirectory());
+	CUploadEngineList engineList;
+	if (!engineList.loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
+		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
+	}
     //google::AddLogSink(&logSink);
     //serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     //serviceLocator->setLogger(&defaultLogger);
 
-	
-
-    
+	Settings.setEngineList(&engineList);
 	
     //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w(logWindow);
+    MainWindow w(&engineList, logWindow);
     w.show();
     
     int res =  a.exec();
 
     //google::RemoveLogSink(&logSink);
+	Settings.SaveSettings();
     google::ShutdownGoogleLogging();
     return res;
 }

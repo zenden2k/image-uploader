@@ -7,5 +7,6 @@
         <file>res/grabmovie.ico</file>
         <file>res/icon_main.ico</file>
         <file>res/screenshot.ico</file>
+        <file>res/icon-user.ico</file>
     </qresource>
 </RCC>

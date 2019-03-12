@@ -37,6 +37,7 @@ set(SOURCE_FILES
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
+    Gui/LoginDialog.cpp
     ../Core/ScreenCapture/ScreenCapture.cpp
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
@@ -45,11 +46,13 @@ set(SOURCE_FILES
     ../Core/Video/QtImage.cpp
     QtUploadErrorHandler.cpp
     QtDefaultLogger.cpp
+    QtScriptDialogProvider.cpp
     Gui/controls/ServerSelectorWidget.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui
+    Gui/ui/LoginDialog.ui
     qimageuploader.qrc
 )
 

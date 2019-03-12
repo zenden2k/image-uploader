@@ -23,28 +23,23 @@
 #include "Core/OutputCodeGenerator.h"
 
 
-MainWindow::MainWindow(LogWindow* logWindow, QWidget *parent) :
+MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
 	logWindow_(logWindow)
 {
 	ui->setupUi(this);
-	ServiceLocator::instance()->setEngineList(&engineList_);
-	
-
-	if (!engineList_.loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)){
-		QMessageBox::warning(this, "Failure", "Unable to load servers.xml");
-	} 
+	ServiceLocator::instance()->setEngineList(engineList);
+	engineList_ = engineList;
 
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     scriptsManager_ = new ScriptsManager(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = new UploadEngineManager(&engineList_, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = new UploadManager(uploadEngineManager_,&engineList_, scriptsManager_, uploadErrorHandler, networkClientFactory);
+    uploadEngineManager_ = new UploadEngineManager(engineList, uploadErrorHandler, networkClientFactory);
+    uploadManager_ = new UploadManager(uploadEngineManager_, engineList, scriptsManager_, uploadErrorHandler, networkClientFactory);
 
 	std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
 	uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
-
 
 	uploadTreeModel_ = new UploadTreeModel(this, uploadManager_);
 

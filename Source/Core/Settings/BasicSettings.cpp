@@ -120,7 +120,7 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
             }
             serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
-#if !defined  (IU_CLI) && !defined(IU_SHELLEXT)
+#if !defined(IU_SHELLEXT)
             CEncodedPassword login(sss.authData.Login);
             serverNode.SetAttribute("Login", login.toEncodedData());
 

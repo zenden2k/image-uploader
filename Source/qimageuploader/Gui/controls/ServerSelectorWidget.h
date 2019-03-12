@@ -7,6 +7,11 @@
 #include <QLabel>
 #include <QGroupBox>
 #include "Core/Upload/ServerProfile.h"
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QToolButton>
+#include <QMenu>
+
 
 class UploadEngineManager;
 
@@ -27,15 +32,22 @@ class ServerSelectorWidget : public QGroupBox
 
 public slots:
 	void comboBoxIndexChanged(int index);
+	void accountButtonClicked(bool checked);
+	void noAccountSelected();
+	void addAccountClicked();
 protected:
-	QLabel* titleLabel, *accountLabel;
+	QLabel* titleLabel, *accountLabel, *accountIcon;
+	QToolButton* accountButton;
 	QComboBox* serverListComboBox;
+	QHBoxLayout* accountLayout;
 	UploadEngineManager* uploadEngineManager;
 	ServerProfile serverProfile_;
+	std::unique_ptr<QMenu> accountButtonMenu_;
 	bool showDefaultServerItem;
 	int serversMask;
 	bool showFileSizeLimits;
 	void serverChanged();
+	void updateAccountButtonMenu();
 
 	
 
