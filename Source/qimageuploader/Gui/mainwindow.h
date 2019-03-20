@@ -42,9 +42,9 @@ protected:
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;
-    UploadManager* uploadManager_;
-    UploadEngineManager* uploadEngineManager_;
-    ScriptsManager* scriptsManager_;
+    std::unique_ptr<UploadManager> uploadManager_;
+    std::unique_ptr<UploadEngineManager> uploadEngineManager_;
+    std::unique_ptr<ScriptsManager> scriptsManager_;
 	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;

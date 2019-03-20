@@ -18,6 +18,7 @@ public:
     ~FrameGrabberDlg();
     
     void frameGrabbed(const std::string&, int64_t, AbstractImage*);
+    void getGrabbedFrames(QStringList& fileNames) const;
 private slots:
     void on_grabButton_clicked();
 

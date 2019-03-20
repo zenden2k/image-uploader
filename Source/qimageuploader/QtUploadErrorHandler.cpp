@@ -10,19 +10,18 @@ QtUploadErrorHandler::QtUploadErrorHandler(ILogger* logger) {
     responseFileIndex_ = 0;
 }
 
-void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
-{
+void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
     LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
     QString errorMsg;
 
-	QString infoText;
+    QString infoText;
     if (!errorInfo.FileName.empty())
         infoText += tr("File: ").c_str() + U2Q(errorInfo.FileName) + "\n";
 
     if (!errorInfo.ServerName.empty()) {
-		QString serverName = U2Q(errorInfo.ServerName);
+        QString serverName = U2Q(errorInfo.ServerName);
         if (!errorInfo.sender.empty())
-            serverName += "(" + U2Q(errorInfo.sender) +")";
+            serverName += "(" + U2Q(errorInfo.sender) + ")";
         infoText += tr("Server: ").c_str() + serverName + "\n";
     }
 
@@ -36,7 +35,8 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
         infoText.Delete(infoText.GetLength() - 1);*/
     if (!errorInfo.error.empty()) {
         errorMsg += U2Q(errorInfo.error);
-    } else {
+    }
+    else {
         /*if (errorInfo.errorType == etRepeating) {
             errorMsg.Format(TR("Upload failed. Another retry (%d)..."), errorInfo.RetryIndex);
         } else if (errorInfo.errorType == etRetriesLimitReached) {
@@ -45,12 +45,11 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
     }
 
     QString sender = QString::fromUtf8(tr("Uploading module").c_str());
-	if (!errorMsg.isEmpty())
-		
+    if (!errorMsg.isEmpty()) {
         logger_->write(type, Q2U(sender), Q2U(errorMsg), Q2U(infoText));
+    }
 }
 
-void QtUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)
-{
+void QtUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody) {
 
 }

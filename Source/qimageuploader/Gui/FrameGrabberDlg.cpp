@@ -1,10 +1,12 @@
 #include "FrameGrabberDlg.h"
 
 #include <QFileDialog>
+#include <QTemporaryFile>
 #include "ui_FrameGrabberDlg.h"
 #include "Core/Video/VideoGrabber.h"
 #include "Core/CommonDefs.h"
 #include "Core/Video/QtImage.h"
+#include "Core/AppParams.h"
 
 FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     QDialog(parent),
@@ -27,15 +29,27 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, Abs
 		return;
 	}	
 	QMetaObject::invokeMethod(qApp, [&] {
-		//image.save("D:\\frame2.png");
-		QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
-		item->setText(U2Q(timeStr));
 		QImage img = static_cast<QtImage*>(image)->toQImage();
 		if (!img.isNull()) {
-			QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
-			item->setIcon(ico);
+            QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
+            item->setText(U2Q(timeStr));
+            QTemporaryFile f(U2Q(AppParams::instance()->tempDirectory()) + "/grab_XXXXXX.png");
+            f.setAutoRemove(false);
+            QString uniqueFileName;
+            if (f.open()) {
+                uniqueFileName = f.fileName();
+                f.close();
+            }
+            if (!uniqueFileName.isEmpty()) {
+                if (img.save(uniqueFileName)) {
+                    item->setData(Qt::UserRole, uniqueFileName);
+                    QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
+                    item->setIcon(ico);
+                    ui->listWidget->addItem(item);
+                }
+            }
 		}
-		ui->listWidget->addItem(item);
+		
 	}, Qt::BlockingQueuedConnection);
 	//ui->listWidget->settext(Qt::AlignCenter);
    // ui->label->setPixmap(QPixmap::fromImage(image) );
@@ -87,4 +101,12 @@ void FrameGrabberDlg::onStopButtonClicked() {
 	if (grabber_) {
 		grabber_->abort();
 	}
+}
+
+void FrameGrabberDlg::getGrabbedFrames(QStringList& fileNames) const {
+    int itemCount = ui->listWidget->count();
+    for ( int i = 0; i< itemCount; i++) {
+        auto item = ui->listWidget->item(i);
+        fileNames.push_back(item->data(Qt::UserRole).toString());
+    }
 }

@@ -22,7 +22,7 @@ class ServerSelectorWidget : public QGroupBox
 
     public:
     ServerSelectorWidget(UploadEngineManager* uploadEngineManager, bool defaultServer = false, QWidget* parent = 0);
-	void setServerProfile(ServerProfile serverProfile);
+	void setServerProfile(const ServerProfile& serverProfile);
 	void setShowDefaultServerItem(bool show);
 	void setServersMask(int mask);
 	void setShowFilesizeLimits(bool show);

@@ -1,5 +1,7 @@
 #include "Gui/mainwindow.h"
 #include <QApplication>
+#include <QDir>
+#include <QTemporaryDir>
 //#include <3rdparty/qtdotnetstyle.h>
 #include "Core/Logging.h"
 #include <boost/filesystem/path.hpp>
@@ -15,6 +17,8 @@
 #include <Core/Settings.h>
 #include <QMessageBox>
 #include "Core/i18n/Translator.h"
+
+
 #ifdef _WIN32
 CAppModule _Module;
 std::string dataFolder = "Data/";
@@ -40,7 +44,6 @@ public:
 #endif
 };
 Translator translator; // dummy translator
-
 
 int main(int argc, char *argv[])
 {
@@ -97,17 +100,12 @@ mkdir(settingsFolder.c_str(), 0700);
     params->setDataDirectory(dataFolder);
     params->setSettingsDirectory(settingsFolder);
 
-#ifdef _WIN32
-    TCHAR ShortPath[1024];
-    GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);
-    TCHAR TempPath[1024];
-    if (!GetLongPathName(ShortPath,TempPath, ARRAY_SIZE(TempPath)) ) {
-        lstrcpy(TempPath, ShortPath);
+    QTemporaryDir dir;
+    if (dir.isValid()) {
+        params->setTempDirectory(Q2U(dir.path()));
+    } else {
+        LOG(ERROR) << "Unable to create temp directory!";
     }
-    params->setTempDirectory(IuCoreUtils::WstringToUtf8(TempPath));
-#else
-    return  params->setTempDirectory("/var/tmp/");
-#endif
 
 	Settings.LoadSettings(AppParams::instance()->settingsDirectory());
 	CUploadEngineList engineList;

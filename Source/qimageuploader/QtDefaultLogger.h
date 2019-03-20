@@ -8,11 +8,11 @@ class LogWindow;
 
 class QtDefaultLogger : public ILogger {
 public:
-	QtDefaultLogger(LogWindow* logWindow);
+    QtDefaultLogger(LogWindow* logWindow);
     void write(LogMsgType MsgType, const std::string&  Sender, const std::string&  Msg, const std::string&  Info) override;
     void write(LogMsgType MsgType, const wchar_t*  Sender, const wchar_t*   Msg, const wchar_t*  Info) override;
 protected:
-	LogWindow* logWindow_;
+    LogWindow* logWindow_;
 };
 
 #endif
