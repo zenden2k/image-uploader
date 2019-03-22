@@ -163,13 +163,14 @@ void VideoGrabber::setFrameCount(int frameCount) {
 
 std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
     std::unique_ptr<AbstractFrameGrabber> grabber;
+#ifdef _WIN32
     if ( videoEngine_ == veAvcodec ) {
         grabber.reset(new AvcodecFrameGrabber());
-    }
-#ifdef _WIN32
-    else {
+    } else {
         grabber.reset(new DirectshowFrameGrabber());
     }
+#else
+    grabber.reset(new AvcodecFrameGrabber());
 #endif
     return grabber;
 }

@@ -23,17 +23,17 @@
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
 
-namespace AvCodec
-{
+/*namespace AvCodec
+{*/
     extern "C"
     {
     #include <libavcodec/avcodec.h>
     #include <libavformat/avformat.h>
     #include <libswscale/swscale.h>
     }
-}
+/*}
  
-using namespace AvCodec;
+using namespace AvCodec;*/
 
 class AvcodecVideoFrame: public AbstractVideoFrame {
 
@@ -147,14 +147,15 @@ public:
 
         // Register all formats and codecs
         if (! initialized_) {
-            //av_register_all();
+            av_register_all();
             initialized_ = true;
         }
         pFormatCtx = 0;
             //pFormatCtx = avformat_alloc_context();
         // Open video file
-        if(avformat_open_input(&pFormatCtx, fileName.c_str(), NULL, 0)!=0) {
-            LOG(ERROR) << "Cannot open input file (avformat_open_input failed)";
+        int result = avformat_open_input(&pFormatCtx, fileName.c_str(), NULL, 0);
+        if(result != 0) {
+            LOG(ERROR) << "Cannot open input file (avformat_open_input failed), error code=" << result;
             return false; // Couldn't open file
         }
 

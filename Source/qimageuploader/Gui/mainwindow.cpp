@@ -12,6 +12,7 @@
 #include <Gui/RegionSelect.h>
 #include "Gui/controls/ServerSelectorWidget.h"
 #include "models/uploadtreemodel.h"
+#include "Core/CommonDefs.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/ServiceLocator.h"
@@ -100,18 +101,18 @@ void MainWindow::on_actionScreenshot_triggered() {
     eng.captureScreen();
 
     std::unique_ptr<CScreenshotRegion> r;
-    selector.reset(new RegionSelect(0, eng.capturedBitmap()));
-    int resilt = selector->exec();
+    selector.reset(new RegionSelect(nullptr, eng.capturedBitmap()));
 
-    if (resilt == QDialog::Accepted) {
+    if (selector->exec() == QDialog::Accepted) {
         r.reset(selector->selectedRegion());
-    }
-    else {
+    } else {
         show();
         return;
     }
 
-    if (!r) r.reset(new CActiveWindowRegion());
+    if (!r) {
+        r.reset(new CActiveWindowRegion());
+    }
 
     eng.setSource(*eng.capturedBitmap());
     if (!eng.captureRegion(r.get())) {

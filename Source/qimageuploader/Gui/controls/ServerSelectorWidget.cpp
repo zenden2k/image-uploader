@@ -33,7 +33,7 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
     /*accountIcon = new QLabel(this);
     accountIcon->setPixmap(QIcon(":/res/icon-user.ico").pixmap(16,16));*/
     grid->addWidget(serverListComboBox, 0, 0);
-    accountLayout = new QHBoxLayout(this);
+    accountLayout = new QHBoxLayout();
     //accountLayout->addWidget(accountIcon);
     accountLayout->addWidget(accountButton);
     QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);

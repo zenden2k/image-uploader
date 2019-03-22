@@ -1,90 +1,120 @@
 #include "ScreenCapture.h"
-#include <math.h>
-#include <QPoint>
 
+#include <math.h>
 #include <deque>
+
+#include <QPoint>
 #include <QPainter>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QDebug>
-
 #include <QEventLoop>
-#include <QTimer>
+#include <QTimer> 
 
 #ifdef _WIN32
 
 #include <windows.h>
-typedef HRESULT (WINAPI *DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
-typedef HRESULT (WINAPI *DwmIsCompositionEnabled_Func)(BOOL*);
+#include <dwmapi.h>
 
 QRegion QRegionFromHRGN(HRGN winRegion)
 {
     QRegion result;
-    LPRGNDATA data;
-    DWORD size = GetRegionData(winRegion, 0, 0);
-    if(!size) return result;
-    data = (LPRGNDATA)new char [size];
-    data->rdh.dwSize = sizeof(RGNDATAHEADER);
-    GetRegionData(winRegion, size, data);
-    RECT *rects = (RECT*) data->Buffer;
-    for(size_t i = 0; i < data->rdh.nCount; i++)
-    {
-        RECT rc = rects[i];
-        QRect rct = QRect(rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top);
-        result|= rct;
+
+    DWORD size = GetRegionData(winRegion, 0, nullptr);
+    if (!size) {
+        return result;
     }
-    delete[] data;
+    BYTE* buffer = new BYTE[size];
+    LPRGNDATA data = reinterpret_cast<LPRGNDATA>(buffer);
+    data->rdh.dwSize = sizeof(RGNDATAHEADER);
+    if (GetRegionData(winRegion, size, data) != 0) {
+        RECT *rects = reinterpret_cast<RECT*>(data->Buffer);
+        for (size_t i = 0; i < data->rdh.nCount; i++) {
+            const RECT& rc = rects[i];
+            QRect rct = QRect(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
+            result |= rct;
+        }
+    }
+    delete[] buffer;
     return result;
 }
 
-BOOL MyGetWindowRect(HWND hWnd, RECT *res)
+std::vector<RECT> monitorsRects;
+BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 {
-/*    if(!IsVista())
-    {
-        return GetWindowRect(hWnd, res);
-    }*/
-    /*static HMODULE DllModule =  LoadLibrary(L"dwmapi.dll");
-    if(DllModule)
-    {
-        DwmIsCompositionEnabled_Func IsCompEnabledFunc = (DwmIsCompositionEnabled_Func) GetProcAddress(DllModule, "DwmIsCompositionEnabled");
-        if(IsCompEnabledFunc)
-        {
-            BOOL isEnabled = false;
-            if(S_OK == IsCompEnabledFunc( &isEnabled))
-                if(isEnabled)
-                {
-                    DwmGetWindowAttribute_Func Func = (DwmGetWindowAttribute_Func) GetProcAddress(DllModule, "DwmGetWindowAttribute");
-                    if(Func)
-                    {
-                        if(S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
-                            return TRUE;
-                    }
+    if (lprcMonitor) {
+        monitorsRects.push_back(*lprcMonitor);
+    }
+    return TRUE;
+}
+
+RECT ScreenFromRectangle(const RECT& rc) {
+    monitorsRects.clear();
+    EnumDisplayMonitors(nullptr, nullptr, MonitorEnumProc, 0);
+    int max = 0;
+    size_t iMax = 0;
+    for (size_t i = 0; i < monitorsRects.size(); i++){
+        RECT Bounds = monitorsRects[i];
+        IntersectRect(&Bounds, &Bounds, &rc);
+        int wh = (Bounds.right - Bounds.left) * (Bounds.bottom - Bounds.top);
+        if (wh  > max){
+            max = wh;
+            iMax = i;
+        }
+        // result.UnionRect(result,Bounds);
+    }
+    return monitorsRects[iMax];
+}
+
+bool IsWindowMaximized(HWND handle)
+{
+    WINDOWPLACEMENT wp;
+    GetWindowPlacement(handle, &wp);
+    return wp.showCmd == static_cast<UINT>(SW_MAXIMIZE);
+}
+
+RECT MaximizedWindowFix(HWND handle, RECT windowRect)
+{
+    RECT res = windowRect;
+    if (IsWindowMaximized(handle)) {
+        RECT screenRect = ScreenFromRectangle(windowRect);
+        if (windowRect.left < screenRect.left) {
+            windowRect.right -= (screenRect.left - windowRect.left) /** 2*/;
+            windowRect.left = screenRect.left;
+        }
+        if (windowRect.top < screenRect.top) {
+            windowRect.bottom -= (screenRect.top - windowRect.top) /** 2*/;
+            windowRect.top = screenRect.top;
+        }
+        IntersectRect(&res, &windowRect, &screenRect);
+    }
+    return res;
+}
+
+BOOL MyGetWindowRect(HWND hWnd, RECT *res, bool MaximizedFix = true) {
+    BOOL isEnabled = FALSE;
+    if (DwmIsCompositionEnabled(&isEnabled) == S_OK) {
+        if (isEnabled) {
+            if ( DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)) == S_OK) {
+                if (MaximizedFix) {
+                    *res = MaximizedWindowFix(hWnd, *res);
+                }
+                return TRUE;
             }
-        }    
-    }*/
+        }
+    }
+
     return GetWindowRect(hWnd, res);
 }
-HWND GetTopParent(HWND wnd)
-{
-    //HWND res;
-    if(GetWindowLong(wnd,GWL_STYLE) & WS_CHILD)
-    {
 
+HWND GetTopParent(HWND wnd) {
+    if(GetWindowLong(wnd, GWL_STYLE) & WS_CHILD){
         wnd = ::GetParent(wnd);
     }
     return wnd;
 }
 
 /*
-std::vector<RECT> monitorsRects;
-BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-{
-    if(lprcMonitor)
-    {
-        monitorsRects.push_back(*lprcMonitor);
-    }
-    return TRUE;
-}
 
 bool GetScreenBounds(RECT &rect)
 {
@@ -155,18 +185,18 @@ namespace ZDesktopTools
 
 
 #endif
-    int GetActiveWindow()
+    WId GetActiveWindow()
     {
 #ifdef _WIN32
-        return (int) GetForegroundWindow();
+        return reinterpret_cast<WId>(::GetForegroundWindow());
 #endif
     }
 
-    QRegion GetWindowVisibleRegion(int wnd)
+    QRegion GetWindowVisibleRegion(WId wnd)
     {
         #ifdef _WIN32
-            HRGN rgn = /*Win_GetWindowVisibleRegion*/Win_GetWindowRegion((HWND)wnd);
-            QRegion result =  QRegionFromHRGN(rgn);
+            HRGN rgn = /*Win_GetWindowVisibleRegion*/Win_GetWindowRegion(reinterpret_cast<HWND>(wnd));
+            QRegion result = QRegionFromHRGN(rgn);
             DeleteObject(rgn);
             return result;
         #endif
@@ -295,21 +325,18 @@ CRectRegion::~CRectRegion()
 {
 }
 
-CRectRegion::CRectRegion(int x, int y, int width, int height)
+CRectRegion::CRectRegion(int x, int y, int width, int height):
+    m_ScreenRegion(x, y, width, height)
 {
-    /*if(!m_ScreenRegion.isEmpty())
-        m_ScreenRegion=QRegion();*/
-    m_ScreenRegion = QRegion(x, y, width, height);
 }
 
-CRectRegion::CRectRegion(QRegion region)
+CRectRegion::CRectRegion(QRegion region): m_ScreenRegion(region)
 {
     /*if(!m_ScreenRegion.IsNull())
         m_ScreenRegion.DeleteObject();*/
-    m_ScreenRegion = region;
 }
 
-bool CRectRegion::IsEmpty()
+bool CRectRegion::IsEmpty() const
 {
     return m_ScreenRegion.boundingRect().isEmpty();
 }
@@ -329,8 +356,7 @@ bool CRectRegion::GetImage(QPixmap * src, QPixmap ** res)
         return true;
     }
 
-    QPixmap *result;
-    result = new QPixmap(m_ScreenRegion.boundingRect().size());
+    QPixmap *result = new QPixmap(m_ScreenRegion.boundingRect().size());
     result->fill(QColor(0,0,0,0));
     QPainter p(result);
 
@@ -385,8 +411,10 @@ CWindowHandlesRegion::CWindowHandlesRegion()
     m_WindowHidingDelay = 0;
 }
 
-CWindowHandlesRegion::CWindowHandlesRegion(int wnd)
+CWindowHandlesRegion::CWindowHandlesRegion(WId wnd)
 {
+    topWindow = 0;
+    m_WindowHidingDelay = 0;
     CWindowHandlesRegionItem newItem;
     newItem.Include= true;
     newItem.wnd = wnd;
@@ -461,7 +489,7 @@ bool CWindowHandlesRegion::PrepareShooting(bool fromScreen)
     return true;
 }
 
-void CWindowHandlesRegion::AddWindow(int wnd, bool Include)
+void CWindowHandlesRegion::AddWindow(WId wnd, bool Include)
 {
     CWindowHandlesRegionItem newItem;
     newItem.wnd = wnd;
@@ -470,7 +498,7 @@ void CWindowHandlesRegion::AddWindow(int wnd, bool Include)
     m_Windows.push_back(newItem);
 }
 
-void CWindowHandlesRegion::RemoveWindow(int wnd)
+void CWindowHandlesRegion::RemoveWindow(WId wnd)
 {
     for(size_t i=0; i< m_Windows.size(); i++)
     {
@@ -481,7 +509,7 @@ void CWindowHandlesRegion::RemoveWindow(int wnd)
     }
 }
 
-bool CWindowHandlesRegion::IsEmpty()
+bool CWindowHandlesRegion::IsEmpty() const
 {
     return m_Windows.empty();
 }
@@ -489,8 +517,6 @@ void CWindowHandlesRegion::Clear()
 {
     m_Windows.clear();
 }
-
-
 
 void TimerWait(int Delay)
 {
@@ -510,7 +536,7 @@ void TimerWait(int Delay)
 }
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
-    m_capturedBitmap = 0;
+    m_capturedBitmap = nullptr;
     m_captureDelay = 0;
 //    m_source = 0;
 }
@@ -529,7 +555,7 @@ bool CScreenCaptureEngine::captureScreen()
     //int screenHeight = GetScreenWidth();//GetSystemMetrics(SM_CYSCREEN);
     */
     QRect screenBounds = QApplication::desktop()->rect();
-CRectRegion capturingRegion(screenBounds.left(), screenBounds.top(), screenBounds.width(), screenBounds.height());
+    CRectRegion capturingRegion(screenBounds.left(), screenBounds.top(), screenBounds.width(), screenBounds.height());
     return captureRegion(&capturingRegion);
 }
 
@@ -538,7 +564,7 @@ void CScreenCaptureEngine::setDelay(int msec)
     m_captureDelay = msec;
 }
 
-QPixmap* CScreenCaptureEngine::capturedBitmap()
+QPixmap* CScreenCaptureEngine::capturedBitmap() const
 {
     return m_capturedBitmap;
 }
@@ -555,7 +581,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
     region->PrepareShooting(true);
 
     QRect grabRect = region->getBoundingRect();
-    qDebug()<<grabRect;
+    //qDebug()<<grabRect;
     bool result = false;
     if(m_source.isNull())
     {
@@ -571,6 +597,8 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
         QPixmap screenCapture = m_source.copy(grabRect.x(), grabRect.y(), grabRect.width(), grabRect.height());
          result =  region->GetImage(&screenCapture, &m_capturedBitmap);
      }
+
+    region->AfterShooting();
     return result;
     /*delete m_capturedBitmap;
     m_capturedBitmap = NULL;
@@ -618,7 +646,7 @@ void CFreeFormRegion::Clear()
     m_curvePoints.clear();
 }
 
-bool CFreeFormRegion::IsEmpty()
+bool CFreeFormRegion::IsEmpty() const
 {
     if(m_curvePoints.empty()) return true;
     /*GraphicsPath grPath;

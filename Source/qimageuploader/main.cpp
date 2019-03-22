@@ -6,6 +6,7 @@
 #include "Core/Logging.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
+#include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
 
@@ -92,7 +93,8 @@ dataFolder = "/usr/share/imgupload/";
 
 #ifndef __APPLE__
 settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
-mkdir(settingsFolder.c_str(), 0700);
+QDir settingsDir = QDir::root();
+settingsDir.mkpath(U2Q(settingsFolder));
 #endif
 
 #endif

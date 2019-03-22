@@ -8,14 +8,23 @@
 #include "Core/Video/QtImage.h"
 #include "Core/AppParams.h"
 
+Q_DECLARE_METATYPE(AbstractImage*)
+
+
 FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FrameGrabberDlg)
 {
+    qRegisterMetaType<AbstractImage*>("AbstractImage*");
     ui->setupUi(this);
 	ui->numOfFramesSpinBox->setValue(10);
 	ui->stopButton->setVisible(false);
 	ui->lineEdit->setText(fileName);
+    ui->comboBox->addItem("Auto", QVariant(int(VideoGrabber::veAuto)));
+    ui->comboBox->addItem("Avcodec", QVariant(int(VideoGrabber::veAvcodec)));
+#ifdef _WIN32
+    ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
+#endif
 	connect(ui->stopButton, &QPushButton::clicked, this, &FrameGrabberDlg::onStopButtonClicked);
 }
 
@@ -27,32 +36,42 @@ FrameGrabberDlg::~FrameGrabberDlg()
 void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, AbstractImage* image) {
 	if (!image) {
 		return;
-	}	
-	QMetaObject::invokeMethod(qApp, [&] {
-		QImage img = static_cast<QtImage*>(image)->toQImage();
-		if (!img.isNull()) {
-            QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
-            item->setText(U2Q(timeStr));
-            QTemporaryFile f(U2Q(AppParams::instance()->tempDirectory()) + "/grab_XXXXXX.png");
-            f.setAutoRemove(false);
-            QString uniqueFileName;
-            if (f.open()) {
-                uniqueFileName = f.fileName();
-                f.close();
+	}
+    QString timeString = U2Q(timeStr);
+    QImage img = static_cast<QtImage*>(image)->toQImage();
+
+    if (!img.isNull()) {
+       
+        QTemporaryFile f(U2Q(AppParams::instance()->tempDirectory()) + "/grab_XXXXXX.png");
+        f.setAutoRemove(false);
+        QString uniqueFileName;
+        if (f.open()) {
+            uniqueFileName = f.fileName();
+            f.close();
+        }
+        if (!uniqueFileName.isEmpty()) {
+            if (img.save(uniqueFileName)) {
+                
+                QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
+                
+                QMetaObject::invokeMethod(this, "frameGrabbedSlot", Qt::BlockingQueuedConnection,
+                    Q_ARG(QString, timeString), Q_ARG(QString, uniqueFileName), Q_ARG(QIcon, ico));
             }
-            if (!uniqueFileName.isEmpty()) {
-                if (img.save(uniqueFileName)) {
-                    item->setData(Qt::UserRole, uniqueFileName);
-                    QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
-                    item->setIcon(ico);
-                    ui->listWidget->addItem(item);
-                }
-            }
-		}
+        }
+    }
+
+    
 		
-	}, Qt::BlockingQueuedConnection);
 	//ui->listWidget->settext(Qt::AlignCenter);
    // ui->label->setPixmap(QPixmap::fromImage(image) );
+}
+
+void FrameGrabberDlg::frameGrabbedSlot(QString timeStr, QString fileName, QIcon ico) {
+    QListWidgetItem * item = new QListWidgetItem(ui->listWidget);
+    item->setText(timeStr);
+    item->setData(Qt::UserRole, fileName);
+    item->setIcon(ico);
+    ui->listWidget->addItem(item);
 }
 
 void FrameGrabberDlg::on_grabButton_clicked()
@@ -63,7 +82,7 @@ void FrameGrabberDlg::on_grabButton_clicked()
 	ui->browseButton->setEnabled(false);
 
 	grabber_.reset(new VideoGrabber());
-	grabber_->setVideoEngine((VideoGrabber::VideoEngine) ui->comboBox->currentIndex());
+	grabber_->setVideoEngine((VideoGrabber::VideoEngine) ui->comboBox->currentData().toInt());
 	grabber_->onFrameGrabbed.bind(this, &FrameGrabberDlg::frameGrabbed);
 	grabber_->onFinished.bind(this, &FrameGrabberDlg::onGrabFinished);
    // connect( grabber, SIGNAL(frameGrabbed(QString,QImage)), this, SLOT(frameGrabbed(QString,QImage))/*, Qt::BlockingQueuedConnection*/);
@@ -89,12 +108,14 @@ void FrameGrabberDlg::on_browseButton_clicked()
 }
 
 void FrameGrabberDlg::onGrabFinished() {
-	QMetaObject::invokeMethod(this, [&] {
-		ui->grabButton->setEnabled(true);
-		ui->buttonBox->setEnabled(true);
-		ui->stopButton->setVisible(false);
-		ui->browseButton->setEnabled(true);
-	});
+	QMetaObject::invokeMethod(this, "grabFinishedSlot", Qt::BlockingQueuedConnection);
+}
+
+void FrameGrabberDlg::grabFinishedSlot() {
+    ui->grabButton->setEnabled(true);
+    ui->buttonBox->setEnabled(true);
+    ui->stopButton->setVisible(false);
+    ui->browseButton->setEnabled(true);
 }
 
 void FrameGrabberDlg::onStopButtonClicked() {

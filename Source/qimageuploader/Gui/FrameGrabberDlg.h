@@ -2,6 +2,7 @@
 #define FRAMEGRABBERDLG_H
 
 #include <QDialog>
+#include <QIcon>
 #include "Core/Video/AbstractImage.h"
 class VideoGrabber;
 
@@ -24,6 +25,8 @@ private slots:
 
     void on_browseButton_clicked();
 	void onStopButtonClicked();
+    void frameGrabbedSlot(QString timeStr, QString fileName, QIcon image);
+    void grabFinishedSlot();
 protected:
 	void onGrabFinished();
 private:

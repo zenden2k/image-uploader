@@ -12,7 +12,9 @@ void QtDefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const
     logWindow_->writeLog(MsgType, U2Q(Sender), U2Q(Msg), U2Q(Info));
 }
 
+#ifdef _WIN32
 void QtDefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info) {
     logWindow_->writeLog(MsgType, QString::fromWCharArray(Sender), QString::fromWCharArray(Msg),
                          QString::fromWCharArray(Info));
 }
+#endif

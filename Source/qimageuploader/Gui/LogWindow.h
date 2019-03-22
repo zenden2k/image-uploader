@@ -1,6 +1,7 @@
 #ifndef QIMAGEUPLOADER_GUI_LOGWINDOW_H
 #define QIMAGEUPLOADER_GUI_LOGWINDOW_H
 
+#include <memory>
 #include <QDialog>
 #include "Core/Logging/Logger.h"
 
@@ -18,6 +19,7 @@ public:
 	void writeLog(LogMsgType MsgType, QString Sender, QString  Msg, QString Info);
 protected:
 	std::unique_ptr<Ui::LogWindow> ui;
+    Q_INVOKABLE void writeLogInMainThread(QString msg);
 
 };
 

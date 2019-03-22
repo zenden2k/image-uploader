@@ -111,3 +111,5 @@ libuv1
 libsqlite3-0
 libfreeimage3
 
+== Building qimageuploader on Ubuntu
+sudo apt install qt5-default libavcodec-dev libavformat-dev libavutil-dev libswscale-dev

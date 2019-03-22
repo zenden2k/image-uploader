@@ -97,23 +97,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="comboBox">
-       <item>
-        <property name="text">
-         <string>Auto</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Directshow</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Avcodec</string>
-        </property>
-       </item>
-      </widget>
+      <widget class="QComboBox" name="comboBox"/>
      </item>
     </layout>
    </item>
@@ -200,7 +184,7 @@
   <customwidget>
    <class>MyListWidget</class>
    <extends>QListWidget</extends>
-   <header>controls/mylistwidget.h</header>
+   <header>Gui/controls/MyListWidget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -14,7 +14,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
  
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -29,11 +29,8 @@ set(SOURCE_FILES
     Gui/mainwindow.cpp
     ../Core/Video/AbstractFrameGrabber.cpp
     ../Core/Video/AbstractVideoFrame.cpp
-    ../Core/Video/DirectshowFrameGrabber.cpp
     ../Core/Video/VideoGrabber.cpp
     ../Core/Video/AvcodecFrameGrabber.cpp
-    ../Core/Video/DirectShowUtil.cpp
-    ../Core/3rdpart/dxerr.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -60,7 +57,11 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
     SET(OPTIONS WIN32)
-    list(APPEND SOURCE_FILES qimageuploader.rc)
+    list(APPEND SOURCE_FILES 
+        qimageuploader.rc 
+        ../Core/Video/DirectshowFrameGrabber.cpp
+        ../Core/Video/DirectShowUtil.cpp
+        ../Core/3rdpart/dxerr.cpp)
 endif()
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES})
@@ -71,7 +72,7 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 target_link_libraries(${PROJECT_NAME} avcodec avformat avutil swscale)
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} strmbasd gdi32 winmm)
+    target_link_libraries(${PROJECT_NAME} strmbasd gdi32 winmm dwmapi)
 endif()
 
 target_link_libraries(qimageuploader iucore ${COMMON_LIBS_LIST})
