@@ -8,10 +8,17 @@ function  ShortenUrl(url, options)
 	};
 	nm.doPost(ToJSON(postData));
 
+    if (nm.responseCode() == 200) {
+        local jsonData = ParseJSON(nm.responseBody());
+        if ( "id" in jsonData) {
+            local id = jsonData.id;
 
-	local id = ParseJSON(nm.responseBody()).id;
-
-	options.setDirectUrl(id);
-	options.setViewUrl(id);
-	return 1;
+            options.setDirectUrl(id);
+            options.setViewUrl(id);
+            return 1;
+        }
+    } else {
+        WriteLog("error", "goo.gl: invalid response code " + nm.responseCode());
+    }
+    return 0;
 }

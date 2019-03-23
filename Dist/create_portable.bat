@@ -37,6 +37,7 @@ for %%x in (
     %temp_dir%\Data
     %temp_dir%\Modules
     %temp_dir%\Modules\MediaInfoLang
+    %temp_dir%\Docs
     %temp_dir%\Data\Thumbnails\
     %temp_dir%\Data\Favicons
     %temp_dir%\Data\Scripts
