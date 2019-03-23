@@ -56,7 +56,8 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
         if ( obj->task ) {
             result = U2Q(obj->task->title());
         } else if ( obj->session) {
-            result = "session " + QString::number(obj->index + 1);
+
+            result = QString(tr("Session %1 (%2 files)").arg(obj->index + 1).arg(obj->session->taskCount()));
         }
 
     }

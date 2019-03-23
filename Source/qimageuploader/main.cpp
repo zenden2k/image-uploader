@@ -2,6 +2,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QTemporaryDir>
+#include <QDebug>
 //#include <3rdparty/qtdotnetstyle.h>
 #include "Core/Logging.h"
 #include <boost/filesystem/path.hpp>
@@ -22,9 +23,9 @@
 
 #ifdef _WIN32
 CAppModule _Module;
-std::string dataFolder = "Data/";
+QString dataFolder = "Data/";
 #else
-std::string dataFolder = "/usr/share/imageuploader/";
+QString dataFolder = "/usr/share/imageuploader/";
 #endif
 
 class Translator : public ITranslator {
@@ -69,6 +70,7 @@ int main(int argc, char *argv[])
 
 	QApplication a(argc, argv);
 	LogWindow* logWindow = new LogWindow();
+  
 	logWindow->show();
 	QtDefaultLogger logger(logWindow);
 	QtUploadErrorHandler errorHandler(&logger);
@@ -77,30 +79,31 @@ int main(int argc, char *argv[])
 	ServiceLocator::instance()->setUploadErrorHandler(&errorHandler);
 	ServiceLocator::instance()->setLogger(&logger);
 	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
-    std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);
-    std::string settingsFolder;
+    QString appDirectory = QCoreApplication::applicationDirPath();
+    QString settingsFolder;
     setlocale(LC_ALL, "");
 
-   if(IuCoreUtils::FileExists(appDirectory + "/Data/servers.xml"))
-    {
+    if(QFileInfo::exists(appDirectory + "/Data/servers.xml")){
         dataFolder = appDirectory+"/Data/";
         settingsFolder = dataFolder;
     }
 #ifndef _WIN32
    else {
-dataFolder = "/usr/share/imgupload/";
+dataFolder = "/usr/share/qimageuploader/";
    }
 
 #ifndef __APPLE__
-settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
+settingsFolder = getenv("HOME")+QString("/.config/qimageuploader/");
 QDir settingsDir = QDir::root();
-settingsDir.mkpath(U2Q(settingsFolder));
+settingsDir.mkpath(settingsFolder);
 #endif
 
 #endif
+    qDebug() << "Data directory:" << dataFolder;
+    qDebug() << "Settings directory:" << settingsFolder;
     AppParams* params = AppParams::instance();
-    params->setDataDirectory(dataFolder);
-    params->setSettingsDirectory(settingsFolder);
+    params->setDataDirectory(Q2U(dataFolder));
+    params->setSettingsDirectory(Q2U(settingsFolder));
 
     QTemporaryDir dir;
     if (dir.isValid()) {

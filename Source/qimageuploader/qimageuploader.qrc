@@ -8,5 +8,6 @@
         <file>res/icon_main.ico</file>
         <file>res/screenshot.ico</file>
         <file>res/icon-user.ico</file>
+        <file>res/server.png</file>
     </qresource>
 </RCC>

@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QTemporaryFile>
+#include <QClipboard>
 #include <Gui/FrameGrabberDlg.h>
 #include <Gui/RegionSelect.h>
 #include "Gui/controls/ServerSelectorWidget.h"
@@ -47,6 +48,9 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
 
     ui->treeView->setModel(uploadTreeModel_);
     ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->treeView->setColumnWidth(0, 150); // Filename column
+    ui->treeView->setColumnWidth(1, 150); // Status column
+    ui->treeView->setColumnWidth(2, 150); // Progress column
 
     connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::itemDoubleClicked);
 
@@ -84,7 +88,7 @@ void MainWindow::updateView() {
 void MainWindow::on_actionGrab_frames_triggered() {
     QString fileName = QFileDialog::getOpenFileName(this);
     if (fileName.length()) {
-        FrameGrabberDlg dlg(fileName);
+        FrameGrabberDlg dlg(fileName, this);
         if (dlg.exec() == QDialog::Accepted) {
             QStringList frames;
             dlg.getGrabbedFrames(frames);
@@ -151,7 +155,13 @@ bool MainWindow::addFileToList(QString fileName) {
     task->setServerProfile(serverProfile);
     uploadSession->addTask(task);
     uploadManager_->addSession(uploadSession);
-    ui->treeView->expandAll();
+
+    // Select and expand newly created tree item
+    ui->treeView->clearSelection();
+    QModelIndex index = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, 0);
+    QModelIndex indexLast = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, uploadTreeModel_->columnCount() - 1);
+    ui->treeView->selectionModel()->select(QItemSelection(index, indexLast), QItemSelectionModel::Select);
+    ui->treeView->expand(index);
     return true;
 }
 
@@ -168,6 +178,15 @@ bool MainWindow::addMultipleFilesToList(QStringList fileNames) {
     }
 
     uploadManager_->addSession(uploadSession);
+
+    // Select and expand newly created tree item
+    ui->treeView->clearSelection();
+    QModelIndex index = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, 0);
+    QModelIndex indexLast = uploadTreeModel_->index(uploadTreeModel_->rowCount() - 1, uploadTreeModel_->columnCount() - 1);
+    ui->treeView->selectionModel()->select(QItemSelection(index, indexLast), QItemSelectionModel::Select);
+    ui->treeView->expand(index);
+        
+        
     return true;
 }
 
@@ -205,14 +224,14 @@ void MainWindow::showCodeForIndex(const QModelIndex& index) {
         int count = item->session->taskCount();
         for (int i = 0; i < count; i++) {
             auto task = item->session->getTask(i);
-            if (task) {
+            if (task && task->uploadSuccess(false)) {
                 ZUploadObject obj;
                 uploadTaskToUploadObject(task.get(), obj);
                 uploadObjects.push_back(obj);
             }
         }
     }
-    else if (item->task) {
+    else if (item->task && item->task->uploadSuccess(false)) {
         ZUploadObject obj;
         uploadTaskToUploadObject(item->task.get(), obj);
         uploadObjects.push_back(obj);
@@ -227,7 +246,7 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
         UploadTreeModel::InternalItem* internalItem = uploadTreeModel_->getInternalItem(index);
         QMenu* contextMenu = new QMenu(ui->treeView);
         //ui->treeView->setContextMenuPolicy(Qt::ActionsContextMenu);
-        QAction* viewCodeAction = new QAction("View HTML/BBCode", contextMenu);
+        QAction* viewCodeAction = new QAction(tr("View HTML/BBCode"), contextMenu);
 
         contextMenu->addAction(viewCodeAction);
         connect(viewCodeAction, &QAction::triggered, [index, this](bool checked)
@@ -243,13 +262,33 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
                 url = QString::fromUtf8(uploadResult->getDownloadUrl().c_str());
             }
             if (!url.isEmpty()) {
-                QAction* viewInBrowser = new QAction("Open in browser", contextMenu);
+                QAction* viewInBrowser = new QAction(tr("Open in browser"), contextMenu);
                 connect(viewInBrowser, &QAction::triggered, [url](bool checked)
                 {
                     QDesktopServices::openUrl(url);
                 });
                 contextMenu->addAction(viewInBrowser);
             }
+            auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(internalItem->task);
+           
+            if (fileTask) {
+                QString fileName = U2Q(fileTask->getFileName());
+                QAction* openInProgram = new QAction(tr("Open file in default program"), contextMenu);
+                connect(openInProgram, &QAction::triggered, [fileName](bool checked)
+                {
+                    QDesktopServices::openUrl("file:///" + fileName);
+                });
+                contextMenu->addAction(openInProgram);
+
+                QAction* copyPathAction = new QAction(tr("Copy file path to clipboard"), contextMenu);
+                connect(copyPathAction, &QAction::triggered, [fileName](bool checked)
+                {
+                    QClipboard* clipboard = QApplication::clipboard();
+                    clipboard->setText(fileName);
+                });
+                contextMenu->addAction(copyPathAction);
+            }
+
         }
 
         contextMenu->exec(ui->treeView->viewport()->mapToGlobal(point));

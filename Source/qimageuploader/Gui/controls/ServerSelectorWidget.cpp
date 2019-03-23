@@ -2,6 +2,7 @@
 #include <QGridLayout>
 #include <QDir>
 #include <QMenu>
+#include <QDebug>
 
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Upload/ServerProfile.h"
@@ -113,11 +114,15 @@ void ServerSelectorWidget::updateServerList() {
                 continue;
             }
 
-            QString iconPath = QDir(dataDir).filePath("Favicons/" + U2Q(ue->Name) + ".ico");
+            QString iconPath = QDir(dataDir).filePath("Favicons/" + U2Q(ue->Name).toLower() + ".ico");
+
             QIcon ico;
             if (QFile::exists(iconPath)) {
                 ico = QIcon(iconPath);
 
+            }
+            if (ico.isNull()) {
+                ico = QIcon(":/res/server.png");
             }
             /*HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;

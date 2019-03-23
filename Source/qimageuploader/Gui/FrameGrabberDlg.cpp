@@ -7,6 +7,7 @@
 #include "Core/CommonDefs.h"
 #include "Core/Video/QtImage.h"
 #include "Core/AppParams.h"
+#include <QDesktopServices>
 
 Q_DECLARE_METATYPE(AbstractImage*)
 
@@ -16,7 +17,9 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui(new Ui::FrameGrabberDlg)
 {
     qRegisterMetaType<AbstractImage*>("AbstractImage*");
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
 	ui->numOfFramesSpinBox->setValue(10);
 	ui->stopButton->setVisible(false);
 	ui->lineEdit->setText(fileName);
@@ -26,6 +29,8 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
 #endif
 	connect(ui->stopButton, &QPushButton::clicked, this, &FrameGrabberDlg::onStopButtonClicked);
+    connect(ui->listWidget, &QListWidget::doubleClicked, this, &FrameGrabberDlg::itemDoubleClicked);
+
 }
 
 FrameGrabberDlg::~FrameGrabberDlg()
@@ -82,14 +87,10 @@ void FrameGrabberDlg::on_grabButton_clicked()
 	ui->browseButton->setEnabled(false);
 
 	grabber_.reset(new VideoGrabber());
-	grabber_->setVideoEngine((VideoGrabber::VideoEngine) ui->comboBox->currentData().toInt());
+	grabber_->setVideoEngine(static_cast<VideoGrabber::VideoEngine>(ui->comboBox->currentData().toInt()));
 	grabber_->onFrameGrabbed.bind(this, &FrameGrabberDlg::frameGrabbed);
 	grabber_->onFinished.bind(this, &FrameGrabberDlg::onGrabFinished);
-   // connect( grabber, SIGNAL(frameGrabbed(QString,QImage)), this, SLOT(frameGrabbed(QString,QImage))/*, Qt::BlockingQueuedConnection*/);
-    /*connect(grabber, &VideoGrabber::finished,  [&]() {
-        qDebug() << "finished";
-        ui->label->setText("grabbing finished");
-    });*/
+
 	int frameCount = ui->numOfFramesSpinBox->value();
 	if (frameCount < 1) {
 		frameCount = 10;
@@ -116,6 +117,7 @@ void FrameGrabberDlg::grabFinishedSlot() {
     ui->buttonBox->setEnabled(true);
     ui->stopButton->setVisible(false);
     ui->browseButton->setEnabled(true);
+    ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 }
 
 void FrameGrabberDlg::onStopButtonClicked() {
@@ -129,5 +131,14 @@ void FrameGrabberDlg::getGrabbedFrames(QStringList& fileNames) const {
     for ( int i = 0; i< itemCount; i++) {
         auto item = ui->listWidget->item(i);
         fileNames.push_back(item->data(Qt::UserRole).toString());
+    }
+}
+
+
+void FrameGrabberDlg::itemDoubleClicked(const QModelIndex& index) {
+    QListWidgetItem* item = ui->listWidget->item(index.row());
+    if (item) {
+        QString fileName = item->data(Qt::UserRole).toString();
+        QDesktopServices::openUrl("file:///" + fileName);
     }
 }

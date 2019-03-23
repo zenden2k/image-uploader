@@ -27,6 +27,7 @@ private slots:
 	void onStopButtonClicked();
     void frameGrabbedSlot(QString timeStr, QString fileName, QIcon image);
     void grabFinishedSlot();
+    void itemDoubleClicked(const QModelIndex& index);
 protected:
 	void onGrabFinished();
 private:

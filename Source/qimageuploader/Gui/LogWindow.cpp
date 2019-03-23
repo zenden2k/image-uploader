@@ -8,6 +8,8 @@ LogWindow::LogWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
     ui->plainTextEdit->setReadOnly(true);
+    setWindowFlags(windowFlags() | Qt::Tool | Qt::WindowCloseButtonHint);
+    setAttribute(Qt::WA_QuitOnClose, false);
 }
 
 
@@ -17,7 +19,9 @@ LogWindow::~LogWindow()
 
 void LogWindow::writeLog(LogMsgType MsgType, QString Sender, QString Msg, QString Info)
 {
-	QString msg = "Sender:" + Sender + "\r\n" + Info + "\r\n" + Msg + "\r\n------------------------------------\r\n";
+    QString line;
+    line.fill('-', 70);
+	QString msg = "Sender:" + Sender + "\r\n" + Info + "\r\n" + Msg + "\r\n" + line + "\r\n";
     QMetaObject::invokeMethod(this, "writeLogInMainThread", Q_ARG(QString, msg));	
 }
 

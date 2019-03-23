@@ -8,6 +8,7 @@ ResultsWindow::ResultsWindow(std::vector<ZUploadObject> objects, QWidget* parent
     QDialog(parent),
     ui(new Ui::ResultsWindow),
     uploadObjects_(objects) {
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     ui->tabBar->addTab("For forums (BBCode)");
     ui->tabBar->addTab("For websites (HTML)");
