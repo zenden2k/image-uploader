@@ -47,7 +47,7 @@ function reg_replace(str, pattern, replace_with)
 
 function  UploadFile(FileName, options)
 {			
-	nm.setUrl("http://funkyimg.com/upload/?fileapi" + random());
+	nm.setUrl("https://funkyimg.com/upload/?fileapi" + random());
 	nm.addQueryParam("_images", ExtractFileName(FileName));
 	nm.addQueryParamFile("images",FileName, ExtractFileName(FileName),"");
 	nm.addQueryParam("wmText", "");
@@ -63,7 +63,7 @@ function  UploadFile(FileName, options)
 	if ( jid != "" ) {
 		local i = 0;
 		while ( true ) {
-			local checkUrl = "http://funkyimg.com/upload/check/" + jid + "?_=" + random();
+			local checkUrl = "https://funkyimg.com/upload/check/" + jid + "?_=" + random();
 		
 			nm.doGet(checkUrl);
 			data = nm.responseBody();
@@ -71,9 +71,9 @@ function  UploadFile(FileName, options)
 
 			if ( success == "true" || success == "True") {
 				local thumbUrl = regex_simple(data, "\\[IMG\\](.+)\\[/IMG\\]", 0);
-				local directUrl = regex_simple(data, "http:\\/\\/funkyimg\\.com\\/i\\/([a-zA-Z0-9\\.]+)", 0);
+				local directUrl = regex_simple(data, "https:\\/\\/funkyimg\\.com\\/i\\/([a-zA-Z0-9\\.]+)", 0);
 				if ( directUrl != "") {
-					options.setDirectUrl("http://funkyimg.com/i/" + directUrl);
+					options.setDirectUrl("https://funkyimg.com/i/" + directUrl);
 				}
 				options.setThumbUrl(thumbUrl);
 				return 1;
