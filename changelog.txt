@@ -2,6 +2,10 @@
 #
 # http://zenden2k.atwebpages.com/imageuploader
 
+1.3.2.4717 (30.03.2019)
+[f] Fixed crash in About dialog
+[f] Fixed funkyimg.com, jheberg.net
+
 1.3.2.4713 (RC)
 [+] Added ge.tt, lostpic.net, imgbb.com file hostings
 [+] Fixed crash in VideoGrabber
