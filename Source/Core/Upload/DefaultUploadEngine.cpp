@@ -27,7 +27,7 @@
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
 
-CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync) : CAbstractUploadEngine(serverSync)
+CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, errorCallback)
 {
     m_CurrentActionIndex = -1;
     fatalError_ = false;

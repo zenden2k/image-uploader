@@ -92,7 +92,7 @@ void SearchYandexImages::run() {
 
     if (uploadOk_) {
         NetworkClient nc;
-        std::string urlToOpen = "https://www.yandex.com/images/search?rpt=imageview&img_url=" + nc.urlEncode(uploadedImageUrl_);
+        std::string urlToOpen = "https://yandex.com/images/search?rpt=imageview&img_url=" + nc.urlEncode(uploadedImageUrl_);
         if (!DesktopUtils::ShellOpenUrl(urlToOpen)) {
             finish(false, "Unable to launch default web browser.");
             return;

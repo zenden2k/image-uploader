@@ -154,6 +154,8 @@
 #define IDI_ICON_MAIN_OLD               305
 #define IDI_ICONTRAYACTIVE              307
 #define IDI_ICON_HELP_DROPDOWN          308
+#define IDI_ICON10                      309
+#define IDI_ICONINFOBIG                 309
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -726,7 +728,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        309
+#define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1321
 #define _APS_NEXT_SYMED_VALUE           128

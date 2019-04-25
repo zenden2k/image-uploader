@@ -48,7 +48,7 @@ enum ErrorType {
 struct ErrorInfo
 {
     enum MessageType {
-        mtError, mtWarning
+        mtError, mtWarning, mtInformation
     };
     std::string error;
     std::string Url;
@@ -59,6 +59,8 @@ struct ErrorInfo
     ErrorType errorType;
     int RetryIndex;
     std::string sender;
+    std::string Script;
+    std::thread::id ThreadId;
 
     ErrorInfo()
     {
@@ -75,6 +77,7 @@ struct ErrorInfo
         ServerName.clear();
         FileName.clear();
         sender.clear();
+        Script.clear();
         ActionIndex = -1;
         // messageType = mtNone;
         errorType = etNone;

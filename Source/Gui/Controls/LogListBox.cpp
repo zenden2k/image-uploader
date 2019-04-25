@@ -49,6 +49,7 @@ CLogListBox::CLogListBox()
 {
     ErrorIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ERRORICON));
     WarningIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWARNING));
+    InfoIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONINFOBIG));
 }
 
 CLogListBox::~CLogListBox()
@@ -115,10 +116,23 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
         RECT TextRect = {r.left + 56, LLB_VertMargin + r.top + item->TitleHeight + LLB_VertDivider + ((item->Info.GetLength()) ? (item->InfoHeight + LLB_VertDivider) : 0), r.right - 10, r.bottom - LLB_VertMargin};
         dc.DrawText(item->strText, wcslen(item->strText), &TextRect, DT_NOPREFIX);
 
-        if (item->Type == logError)
-            dc.DrawIcon(12, r.top + 8, ErrorIcon);
-        else if (item->Type == logWarning)
-            dc.DrawIcon(12, r.top + 8, WarningIcon);
+        POINT iconPos{ 12, r.top + 8 };
+
+        CIcon* ico = nullptr;
+        switch (item->Type) {
+            case logError:
+                ico = &ErrorIcon;
+                break;
+            case logWarning:
+                ico = &WarningIcon;
+                break;
+            case logInformation:
+                ico = &InfoIcon;
+                break;
+        } 
+        if (ico) {
+            dc.DrawIcon(iconPos.x, iconPos.y, *ico);
+        }
     }
 
     bHandled = true;

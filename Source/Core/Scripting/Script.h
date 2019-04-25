@@ -16,10 +16,10 @@ class Script {
         Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool load = true);
         virtual ~Script();
         Sqrat::SqratVM& getVM();
-        bool isLoaded();
+        bool isLoaded() const;
         void InitScriptEngine();
         static void DestroyScriptEngine();
-        time_t getCreationTime();
+        time_t getCreationTime() const;
         /**
         Using multiple Squirrel VMs in the SAME thread is not supported. 
         This function should be called each time current threads's script is changed.
@@ -41,6 +41,7 @@ class Script {
         ThreadSync* sync_;
         std::unique_ptr<INetworkClient> networkClient_;
         std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+        static void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column);
     private:
         DISALLOW_COPY_AND_ASSIGN(Script);
 };

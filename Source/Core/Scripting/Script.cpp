@@ -27,8 +27,8 @@ limitations under the License.
 
 Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
-    m_CreationTime = time(0);
-    m_SquirrelScript = 0;
+    m_CreationTime = time(nullptr);
+    m_SquirrelScript = nullptr;
     m_bIsPluginLoaded = false;
     sync_ = serverSync;
     owningThread_ = std::this_thread::get_id();
@@ -45,7 +45,7 @@ Script::~Script()
     delete m_SquirrelScript;
 }
 
-void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
+void Script::CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
     sq_getprintfunc(vm)(vm, ("Script compilation failed\r\nFile:  " + std::string(source) + "\r\nLine: " + IuCoreUtils::int64_tToString(line)
         + "   Column: " + IuCoreUtils::int64_tToString(column) + "\r\n\r\n" + desc).c_str() );
 }
@@ -83,12 +83,12 @@ bool Script::postLoad()
     return true;
 }
 
-bool Script::isLoaded()
+bool Script::isLoaded() const
 {
     return m_bIsPluginLoaded;
 }
 
-time_t Script::getCreationTime()
+time_t Script::getCreationTime() const
 {
     return m_CreationTime;
 }
@@ -137,7 +137,9 @@ bool Script::load(const std::string& fileName)
     }
     catch (std::exception& e)
     {
-        LOG(ERROR)<< "CScriptUploadEngine::Load failed\r\n" + std::string("Error: ") + e.what();
+        LOG(ERROR)<< "CScriptUploadEngine::Load failed" << std::endl 
+            << "File: " << IuCoreUtils::ExtractFileName(fileName) << std::endl
+            << std::string("Error: ") <<  e.what();
         FlushSquirrelOutput();
         return false;
     }

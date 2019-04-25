@@ -92,18 +92,18 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
+        CAbstractUploadEngine::ErrorMessageCallback errorCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
 #ifndef IU_DISABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
-            result = new CMegaNzUploadEngine(serverSync, &serverProfile.serverSettings());
+            result = new CMegaNzUploadEngine(serverSync, &serverProfile.serverSettings(), errorCallback);
         } 
 		else
 #endif
 		{
-            result = new CDefaultUploadEngine(serverSync);
+            result = new CDefaultUploadEngine(serverSync, errorCallback);
         }
         result->setServerSettings(&serverProfile.serverSettings());
         result->setUploadData(ue);
-        result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
         
         m_plugins[threadId][serverName] = result;
     }
@@ -153,8 +153,9 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     }
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params, networkClientFactory_);
-    newPlugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params, networkClientFactory_, 
+        CAbstractUploadEngine::ErrorMessageCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage));
+
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][serverName] = newPlugin;
         return newPlugin;

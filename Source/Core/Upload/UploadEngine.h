@@ -344,7 +344,9 @@ class CUploader;
 class CAbstractUploadEngine
 {
     public:
-        CAbstractUploadEngine(ServerSync* serverSync);
+        typedef fastdelegate::FastDelegate1<const ErrorInfo&> ErrorMessageCallback;
+
+        CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
         virtual ~CAbstractUploadEngine();
         virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
@@ -363,7 +365,7 @@ class CAbstractUploadEngine
         fastdelegate::FastDelegate1<InfoProgress> onProgress;
         fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
         fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
-        typedef fastdelegate::FastDelegate1<const ErrorInfo&> ErrorMessageCallback;
+        
         ErrorMessageCallback onErrorMessage;
         DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
     protected:

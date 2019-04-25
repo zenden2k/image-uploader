@@ -64,7 +64,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
     CString passwordLabelText = uploadEngineData->PasswordLabel.empty() ? CString(TR("Password:")) : CString(U2W(uploadEngineData->PasswordLabel)) + _T(":");
     SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
-    TRC(IDC_DOAUTH, "Authorize");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
 
@@ -97,8 +96,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetDlgItemText(IDC_LOGINEDIT, accountName_);
     SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
     SetDlgItemText(IDC_LOGINFRAME, Utf8ToWCstring(m_UploadEngine->Name));
-    SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, /*((li.DoAuth||createNew_)?BST_CHECKED:BST_UNCHECKED)*/true);
-    ::EnableWindow(GetDlgItem(IDC_DOAUTH),false);
     ::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT),m_UploadEngine->NeedPassword);
     ::EnableWindow(GetDlgItem(IDC_PASSWORDLABEL),m_UploadEngine->NeedPassword);
 
@@ -110,8 +107,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);
 
-    
-    OnClickedUseIeCookies(0, 0, 0, bHandled);
     ::SetFocus(GetDlgItem(IDC_LOGINEDIT));
     return 0; 
 }
@@ -125,13 +120,6 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     EndDialog(wID);
-    return 0;
-}
-
-LRESULT CLoginDlg::OnClickedUseIeCookies(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    ::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH));
-    ::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), IS_CHECKED(IDC_DOAUTH)&&m_UploadEngine->NeedPassword);
     return 0;
 }
 
@@ -190,7 +178,7 @@ DWORD CLoginDlg::Run()
         accountName_ = login;
         serverProfile_.setProfileName(WCstringToUtf8(login));
         li.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
-        li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
+        li.DoAuth = true;
         ServerSettingsStruct& ss = serverProfile_.serverSettings();
         ss.authData = li;
         CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
@@ -249,7 +237,7 @@ void CLoginDlg::Accept()
     serverProfile_.setProfileName(WCstringToUtf8(Buffer));
     GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
     li.Password = WCstringToUtf8(Buffer);
-    li.DoAuth = SendDlgItemMessage(IDC_DOAUTH, BM_GETCHECK) != FALSE;
+    li.DoAuth = true;
     uploadEngineManager_->resetAuthorization(serverProfile_);
     serverProfile_.serverSettings().authData = li;
     EndDialog(IDOK);

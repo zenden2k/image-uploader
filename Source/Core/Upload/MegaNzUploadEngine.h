@@ -48,7 +48,7 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine
 {
     public:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
-        CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings);
+        CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
         ~CMegaNzUploadEngine();
         //bool load(std::string fileName, ServerSettingsStruct& params);
         int getFolderList(CFolderList &FolderList) override;

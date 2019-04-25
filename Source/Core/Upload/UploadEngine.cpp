@@ -191,7 +191,7 @@ void CAbstractUploadEngine::setUploadData(CUploadEngineData* data)
     m_UploadData = data;
 }
 
-CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
+CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback)
 {
     m_bShouldStop = 0;
     m_NetworkClient = nullptr;
@@ -199,6 +199,7 @@ CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync)
     currUploader_ = nullptr;
     serverSync_ = serverSync;
     m_ServersSettings = nullptr;
+    onErrorMessage = errorCallback;
 }
 
 

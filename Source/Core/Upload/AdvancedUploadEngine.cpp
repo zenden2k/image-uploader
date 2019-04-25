@@ -22,8 +22,8 @@
 
 #include "Core/Upload/ServerSync.h"
 
-CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings) : 
-                            CAbstractUploadEngine(serverSync), 
+CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
+                        CAbstractUploadEngine(serverSync, errorCallback),
                             m_CurrentActionIndex(0), 
                             m_nThumbWidth(0)
 {

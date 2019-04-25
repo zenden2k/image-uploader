@@ -60,7 +60,7 @@ class CLogListBox :
         int AddString(LogMsgType Type, const CString& szTitle,const CString& szText, const CString& szInfo=CString());
         LogListBoxItem* getItemFromIndex(int index);
         LRESULT OnKillFocus(HWND hwndNewFocus);
-        CIcon ErrorIcon, WarningIcon;
+        CIcon ErrorIcon, WarningIcon, InfoIcon;
         CFont UnderlineFont, NormalFont, BoldFont;
         BOOL SubclassWindow(HWND hWnd);
         void Init();

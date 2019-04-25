@@ -39,9 +39,10 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
                             public NetworkClient::Logger
 {
     public:
-        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
-        CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings, std::shared_ptr<INetworkClientFactory> factory);
+        CScriptUploadEngine(std::string pluginName, ServerSync* serverSync, ServerSettingsStruct* settings, 
+            std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
         ~CScriptUploadEngine();
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         virtual int getFolderList(CFolderList &FolderList) override;

@@ -30,8 +30,9 @@
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 
-CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings, std::shared_ptr<INetworkClientFactory> factory) :
-    CAdvancedUploadEngine(serverSync, settings), 
+CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
+    std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
+    CAdvancedUploadEngine(serverSync, settings, errorCallback),
     Script(fileName, serverSync, factory, false)
 {
     setServerSettings(settings);
@@ -46,13 +47,7 @@ CScriptUploadEngine::~CScriptUploadEngine()
 
 void CScriptUploadEngine::PrintCallback(const std::string& output)
 {
-    std::string taskName;
-    if (currentTask_)
-    {
-        taskName = "Task=" + currentTask_->toString() + ", ";
-    }
-    std::thread::id threadId = std::this_thread::get_id();
-    Log(ErrorInfo::mtWarning, name_ + ".nut [" + taskName + "ThreadId=" + IuCoreUtils::ThreadIdToString(threadId) + "]\r\n" + output);
+    Log(ErrorInfo::mtInformation, output);
 }
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
@@ -170,7 +165,7 @@ bool CScriptUploadEngine::preLoad()
 bool CScriptUploadEngine::postLoad()
 {
     ScriptAPI::RegisterShortTranslateFunctions(vm_);
-    return 0;
+    return true;
 }
 
 void CScriptUploadEngine::logNetworkError(bool error, const std::string& msg) {
@@ -432,6 +427,8 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     if (currentTask_) {
         ei.FileName = currentTask_->toString();
     }
+    ei.ThreadId = std::this_thread::get_id();
+    ei.Script = IuCoreUtils::ExtractFileName(fileName_);
     
     ErrorMessage(ei);
 }

@@ -4,7 +4,7 @@
 #pragma once
 #include <string>
 
-enum LogMsgType { logError = 1, logWarning };
+enum LogMsgType { logError = 1, logWarning, logInformation };
 
 class ILogger {
 public :

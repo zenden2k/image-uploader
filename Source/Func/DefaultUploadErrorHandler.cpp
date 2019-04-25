@@ -13,25 +13,45 @@ DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
 
 void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 {
-    LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
-    CString errorMsg;
+    LogMsgType type;
 
-    CString infoText;
+    switch (errorInfo.messageType) {
+        case ErrorInfo::mtWarning:
+            type = logWarning;
+            break;
+        case ErrorInfo::mtError:
+            type = logError;
+            break;
+        case ErrorInfo::mtInformation:
+            type = logInformation;
+            break;
+    }
+
+    CString errorMsg, infoText;
     if (!errorInfo.FileName.empty())
         infoText += TR("File: ") + Utf8ToWCstring(errorInfo.FileName) + _T("\n");
 
     if (!errorInfo.ServerName.empty()) {
         CString serverName = Utf8ToWCstring(errorInfo.ServerName);
         if (!errorInfo.sender.empty())
-            serverName += _T("(") + Utf8ToWCstring(errorInfo.sender) + _T(")");
+            serverName += _T(" (") + Utf8ToWCstring(errorInfo.sender) + _T(")");
         infoText += TR("Server: ") + serverName + _T("\n");
+    }
+
+    if (!errorInfo.Script.empty()) {
+        CString script = Utf8ToWCstring(errorInfo.Script);
+        infoText += TR("Script: ") + script;
+        if (errorInfo.ThreadId != std::thread::id()) {
+            infoText += CString(TR(" [TID=")) + IuCoreUtils::ThreadIdToString(errorInfo.ThreadId).c_str() + _T("]");
+        }
+        infoText += _T("\n");
     }
 
     if (!errorInfo.Url.empty())
         infoText += _T("URL: ") + Utf8ToWCstring(errorInfo.Url) + _T("\n");
 
     if (errorInfo.ActionIndex != -1)
-        infoText += _T("Действие:") + CString(_T(" #")) + WinUtils::IntToStr(errorInfo.ActionIndex);
+        infoText += TR("Action:") + CString(_T(" #")) + WinUtils::IntToStr(errorInfo.ActionIndex);
 
     if (infoText.Right(1) == _T("\n"))
         infoText.Delete(infoText.GetLength() - 1);

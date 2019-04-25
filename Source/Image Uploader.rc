@@ -240,9 +240,8 @@ CAPTION "Параметры авторизации"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     GROUPBOX        "",IDC_LOGINFRAME,11,3,238,114
-    CONTROL         "Выполнять авторизацию на сервере",IDC_DOAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,16,218,10
     LTEXT           "Логин:",IDC_LOGINLABEL,24,35,65,8
-    EDITTEXT        IDC_LOGINEDIT,93,32,147,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LOGINEDIT,93,32,146,14,ES_AUTOHSCROLL
     LTEXT           "Пароль:",IDC_PASSWORDLABEL,23,57,67,8
     EDITTEXT        IDC_PASSWORDEDIT,93,54,146,14,ES_PASSWORD | ES_AUTOHSCROLL
     PUSHBUTTON      "#Authorize right now",IDC_AUTHORIZEBUTTON,27,74,209,17
@@ -1457,6 +1456,7 @@ IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underlin
 IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
 IDI_ICONTRAYACTIVE      ICON                    "res\\icon_main_active.ico"
 IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico"
+IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

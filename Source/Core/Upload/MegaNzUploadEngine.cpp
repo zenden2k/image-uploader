@@ -178,8 +178,8 @@ public:
 private:
     CMegaNzUploadEngine* engine_;
 };
-CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings) : 
-                                                                                CAdvancedUploadEngine(serverSync,settings)
+CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
+    CAdvancedUploadEngine(serverSync, settings, errorCallback)
 {
     setServerSettings(settings);
     folderList_ = nullptr;

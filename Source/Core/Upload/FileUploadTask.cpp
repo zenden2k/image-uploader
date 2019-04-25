@@ -92,7 +92,7 @@ void FileUploadTask::finishTask(Status status)
 
 std::string FileUploadTask::toString()
 {
-    return "FileUploadTask(" + fileName_ + ")";
+    return "FileUploadTask (" + fileName_ + ")";
 }
 
 std::string FileUploadTask::title() const
