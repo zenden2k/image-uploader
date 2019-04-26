@@ -120,13 +120,13 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
         CIcon* ico = nullptr;
         switch (item->Type) {
-            case logError:
+            case ILogger::logError:
                 ico = &ErrorIcon;
                 break;
-            case logWarning:
+            case ILogger::logWarning:
                 ico = &WarningIcon;
                 break;
-            case logInformation:
+            case ILogger::logInformation:
                 ico = &InfoIcon;
                 break;
         } 
@@ -201,7 +201,7 @@ LRESULT CLogListBox::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     return 0;
 }
 
-int CLogListBox::AddString(LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo)
+int CLogListBox::AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo)
 {
     LogListBoxItem* item = new LogListBoxItem;
     item->Type = Type;

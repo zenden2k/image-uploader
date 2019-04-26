@@ -22,7 +22,7 @@ struct LogListBoxItem
     CString Info;
     int InfoHeight;
 
-    LogMsgType Type;
+    ILogger::LogMsgType Type;
     RECT InfoDim;
 
     CString Time;
@@ -57,7 +57,7 @@ class CLogListBox :
         LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
         LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        int AddString(LogMsgType Type, const CString& szTitle,const CString& szText, const CString& szInfo=CString());
+        int AddString(ILogger::LogMsgType Type, const CString& szTitle, const CString& szText, const CString& szInfo = CString());
         LogListBoxItem* getItemFromIndex(int index);
         LRESULT OnKillFocus(HWND hwndNewFocus);
         CIcon ErrorIcon, WarningIcon, InfoIcon;

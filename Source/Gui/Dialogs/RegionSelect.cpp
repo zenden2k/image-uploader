@@ -21,8 +21,8 @@
 #include "atlheaders.h"
 #include "RegionSelect.h"
 #include "Core/i18n/Translator.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 struct WindowsListItem
 {
@@ -508,6 +508,7 @@ LRESULT CRegionSelect::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
 bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_bPictureChanged = false;
     m_bDocumentChanged = false;
     m_btoolWindowTimerRunning = false;

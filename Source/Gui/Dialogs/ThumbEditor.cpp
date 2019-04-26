@@ -20,7 +20,7 @@
 
 #include "ThumbEditor.h"
 
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Images/Thumbnail.h"
 #include "Gui/GuiTools.h"
 

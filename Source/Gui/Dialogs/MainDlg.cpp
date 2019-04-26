@@ -24,7 +24,7 @@
 #include <shlobj.h>
 
 #include "atlheaders.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"
@@ -127,6 +127,7 @@ LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     MENUITEMINFO mi;
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
@@ -353,6 +354,7 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showAddToWizardButton(false);
     
     /*ImageEditorWindow::DialogResult dr = */
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, Settings.ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
     
     ThumbsView.OutDateThumb(nCurItem);
@@ -473,7 +475,9 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     
     LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
     if(!FileName) return FALSE;
-    // Edit this bullshit
+    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    // TODO: Edit this bullshit
     CString EditorCmd = Settings.ImageEditorPath;
     CString EditorCmdLine ;
     EditorCmd.Replace(_T("%1"), FileName);

@@ -141,10 +141,10 @@ void AffectedSegments::markRect(int x, int y, int width, int height) {
     }
 
     if ( maxWidth_ != -1 ) {
-        width  = std::min( width, maxWidth_ - x);
+        width  = std::min<>( width, maxWidth_ - x);
     }
     if ( maxHeight_ != -1 ) {
-        height = std::min ( height , maxHeight_ - y);
+        height = std::min<> ( height , maxHeight_ - y);
     }
 
     if (  width < 1 || height <1  ) {

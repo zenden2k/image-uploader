@@ -24,11 +24,6 @@
 #include <Shobjidl.h>
 #include <math.h>
 #include "resource.h"
-#ifndef IU_CLI
-#include "Core/Settings.h"
-#else
-//#define TR(a) _T(a)
-#endif
 #include "Func/Library.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"

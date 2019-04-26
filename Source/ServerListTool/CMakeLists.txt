@@ -31,6 +31,7 @@ add_executable(ServersChecker WIN32
     ../3rdpart/QColorQuantizer.cpp
     ../Core/Video/VideoUtils.cpp
     ../Core/FileDownloader.cpp
+    ../Core/Settings/CliSettings.cpp
 )
 
 set_target_properties(ServersChecker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/ServersChecker/)

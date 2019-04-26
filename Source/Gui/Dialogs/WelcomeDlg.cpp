@@ -22,6 +22,7 @@
 #include "HistoryWindow.h"
 #include "settingsdlg.h"
 #include "Gui/GuiTools.h"
+#include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
 #include "WizardDlg.h"
 

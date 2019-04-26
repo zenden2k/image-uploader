@@ -21,9 +21,9 @@
 
 #include "atlheaders.h"
 #include "Func/Common.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
@@ -52,6 +52,7 @@ void CResultsWindow::setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd
 
 LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(m_childWindow)
     {
         ::ShowWindow(GetDlgItem(IDOK),SW_HIDE);

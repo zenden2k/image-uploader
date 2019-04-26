@@ -24,7 +24,7 @@
 #include "FloatingWindow.h"
 
 #include "ResultsWindow.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "LogWindow.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/CoreTypes.h"
@@ -130,7 +130,7 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
 {
     if (!EnableClicks )
         return 0;
-
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (LOWORD(lParam) == WM_LBUTTONDOWN)
     {
         m_bStopCapturingWindows = true;
@@ -223,8 +223,10 @@ LRESULT CFloatingWindow::OnReloadSettings(UINT uMsg, WPARAM wParam, LPARAM lPara
     if (!lParam)
         UnRegisterHotkeys();
 
-    if (!wParam)
+    if (!wParam) {
+        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
         Settings.LoadSettings();
+    }
 
     if (!lParam)
         RegisterHotkeys();
@@ -359,7 +361,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     if ( !url.IsEmpty() && !WebUtils::DoesTextLookLikeUrl(url) ) {
         return false;
     }
-
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     lastUrlShorteningTask_.reset(new UrlShorteningTask(W2U(url)));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
     lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
@@ -433,6 +435,7 @@ LRESULT CFloatingWindow::OnOpenScreenshotsFolder(WORD wNotifyCode, WORD wID, HWN
 
 LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!IsWindowEnabled())
         return 0;
 
@@ -579,6 +582,7 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     if (id == 1)
     {
         KillTimer(1);
+        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
         SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId, 0));
     } else if (id == 2) {
         EnableClicks = true;
@@ -629,6 +633,7 @@ BOOL CFloatingWindow::IsRunningFloatingWnd() {
 
 void CFloatingWindow::RegisterHotkeys()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_hotkeys = Settings.Hotkeys;
 
     for (size_t i = 0; i < m_hotkeys.size(); i++)
@@ -640,7 +645,7 @@ void CFloatingWindow::RegisterHotkeys()
                 CString msg;
                 msg.Format(TR("Cannot register global hotkey:\r\n%s.\r\n Maybe it is being used by another process."),
                            static_cast<LPCTSTR>(m_hotkeys[i].globalKey.toString()));
-                ServiceLocator::instance()->logger()->write(logWarning, _T("Hotkeys"), msg);
+                ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Hotkeys"), msg);
             }
         }
     }
@@ -701,23 +706,27 @@ LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 LRESULT CFloatingWindow::OnMonitorAllMonitors(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.MonitorMode = kAllMonitors;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMonitorCurrentMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.MonitorMode = kCurrentMonitor;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int monitorIndex = wID - IDM_MONITOR_SELECTEDMONITOR_FIRST;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.MonitorMode = kSelectedMonitor + monitorIndex;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.TrayIconSettings.TrayScreenshotAction = wID - IDM_SCREENTSHOTACTION_UPLOAD;
     Settings.SaveSettings();
     return 0;
@@ -725,6 +734,7 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
 
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
@@ -824,7 +834,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             setStatusText(text, kStatusHideTimeout);
         } else {
             CString statusText = TR("Unable to shorten the link...");
-            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {LogWindow.Show(); });
+            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {ServiceLocator::instance()->logWindow()->Show(); });
             setStatusText(statusText, kStatusHideTimeout);
         }
     } else {
@@ -832,6 +842,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             CString url;
             UploadResult* uploadResult = task->uploadResult();
             bool usedDirectLink = true;
+            WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
             if ((Settings.UseDirectLinks || uploadResult->downloadUrl.empty()) && !uploadResult->directUrl.empty()) {
 
                 url = Utf8ToWstring(!uploadResult->directUrlShortened.empty() ? uploadResult->directUrlShortened : uploadResult->directUrl).c_str();
@@ -844,13 +855,12 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 
         } else {
             CString statusText = TR("Could not upload screenshot :(");
-            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {LogWindow.Show(); });
+            ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {ServiceLocator::instance()->logWindow()->Show(); });
             setStatusText(statusText, kStatusHideTimeout);
         }
         
     }
     stopIconAnimation();
-    return;
 }
 
 LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
@@ -877,6 +887,7 @@ void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
 }
 
 CString CFloatingWindow::HotkeyToString(CString funcName, CString menuItemText) {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     int cur = Settings.Hotkeys.getFuncIndex(funcName);
     if (cur<0) {
         return menuItemText;

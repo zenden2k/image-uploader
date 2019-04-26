@@ -20,7 +20,6 @@
 #include "ShortenUrlDlg.h"
 
 #include "Func/Common.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/UrlShorteningTask.h"
@@ -28,6 +27,7 @@
 #include "Func/WebUtils.h"
 #include "Core/Upload/UploadManager.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CShortenUrlDlg
 CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager, const CString &initialBuffer)
@@ -46,6 +46,7 @@ CShortenUrlDlg::~CShortenUrlDlg()
 
 LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
     //PrevClipboardViewer = SetClipboardViewer();
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -214,6 +215,7 @@ void CShortenUrlDlg::ProcessFinished() {
 }
 
 void CShortenUrlDlg::OnClose() {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
 }
 

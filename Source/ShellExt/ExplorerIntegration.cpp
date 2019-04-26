@@ -48,6 +48,7 @@ CExplorerIntegrationModule _AtlModule;
 #pragma managed(push, off)
 #endif
 
+CLang Lang;
 // DLL Entry Point
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
     {

@@ -25,7 +25,6 @@
 #include "ServerParamsDlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyEngineList.h"
-#include "Core/Settings.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Func/WinUtils.h"
@@ -36,9 +35,12 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "LoginDlg.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
-CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) :convert_profiles_(Settings.ConvertProfiles)
+CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) 
+    :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     nImageIndex = nFileIndex = -1;
     m_EngineList = EngineList;
     m_ProfileChanged  = false;
@@ -46,7 +48,7 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     useServerThumbnailsTooltip_ = nullptr;
     uploadEngineManager_ = uploadEngineManager;
-    Settings.addChangeCallback(CSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
+    Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
 }
 
 CUploadSettings::~CUploadSettings()
@@ -294,6 +296,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 
 bool CUploadSettings::OnNext()
 {    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(!sessionImageServer_.serverName().empty())
     {
         CUploadEngineData *ue = sessionImageServer_.uploadEngineData();
@@ -616,6 +619,7 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
 
     bool ImageServer = (idCtrl == IDC_IMAGETOOLBAR);
@@ -1065,6 +1069,7 @@ LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID,
 
 LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CServerSelectorControl serverSelectorControl(uploadEngineManager_, false, false);
     serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
     serverSelectorControl.setShowImageProcessingParams(false);
@@ -1139,6 +1144,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
  void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex)
  {
      CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
      sp.setServerName(myEngineList->byIndex(serverIndex)->Name);
      std::map <std::string, ServerSettingsStruct>& serverSettings = Settings.ServersSettings[sp.serverName()];
      std::map <std::string, ServerSettingsStruct>::iterator firstAccount = serverSettings.begin();
@@ -1160,6 +1166,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
 
 void CUploadSettings::updateUrlShorteningCheckboxLabel()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString text;
     CString serverName = Utf8ToWCstring(Settings.urlShorteningServer.serverName());
     text.Format(TR("Shorten URL using %s"), static_cast<LPCTSTR>(serverName));
@@ -1168,6 +1175,7 @@ void CUploadSettings::updateUrlShorteningCheckboxLabel()
 
 void CUploadSettings::shorteningUrlServerChanged(CServerSelectorControl* serverSelectorControl)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.urlShorteningServer = serverSelectorControl->serverProfile();
     updateUrlShorteningCheckboxLabel();
 }

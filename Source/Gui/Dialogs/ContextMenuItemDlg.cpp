@@ -20,10 +20,10 @@
 
 #include "ContextMenuItemDlg.h"
 
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/WinUtils.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {
@@ -38,6 +38,7 @@ CContextMenuItemDlg::~CContextMenuItemDlg()
 
 LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);

@@ -26,7 +26,7 @@
 #include "Core/SearchByImage.h"
 #include "Func/WinUtils.h"
 #include "Core/Network/NetworkClientFactory.h"
-
+#include "Core/Settings/CommonGuiSettings.h"
 // CSearchByImageDlg
 
 CSearchByImageDlg::CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName) {
@@ -53,8 +53,9 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
             wndAnimation_.Draw();
         //wndAnimation_.ShowWindow(SW_HIDE);
     }
+    CommonGuiSettings& Settings = *ServiceLocator::instance()->settings<CommonGuiSettings>();
 
-    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), searchEngine_, W2U(fileName_));
+    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), searchEngine_, Settings.temporaryServer, W2U(fileName_));
     seeker_->setOnFinished(SearchByImage::FinishedDelegate(this, &CSearchByImageDlg::onSeekerFinished));
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     seeker_->start();

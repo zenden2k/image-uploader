@@ -21,7 +21,6 @@
 #include "atlheaders.h"
 #include "ServerParamsDlg.h"
 #include "Core/i18n/Translator.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerFolderSelect.h"
 #include "Gui/Dialogs/InputDialog.h"

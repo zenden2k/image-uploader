@@ -28,7 +28,7 @@
 #include <megaapi.h>
 #include "Core/Upload/ServerSync.h"
 #include "Uploader.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "FileUploadTask.h"
 #include "Core/CommonDefs.h"
 #include "Core/i18n/Translator.h"
@@ -193,6 +193,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     listener_.reset(new MyListener(this));
     megaApi_->addListener(listener_.get());
     proxy_.reset(new MegaProxy());
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {
         if (Settings.ConnectionSettings.ProxyType != 0) {

@@ -1,8 +1,8 @@
 #ifndef IU_CORE_SCREENCAPTURE_UTILS
 #define IU_CORE_SCREENCAPTURE_UTILS
 
-#include <windows.h>
 #include <vector>
+#include "atlheaders.h"
 
 class MonitorEnumerator {
 

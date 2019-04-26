@@ -40,7 +40,7 @@ CEncodedPassword::operator const wchar_t*() {
     return data_;
 }*/
 
-#ifdef IU_WTL
+#ifdef _WIN32
 CEncodedPassword& CEncodedPassword::operator=(const CString& text) {
     data_ = IuCoreUtils::WstringToUtf8((LPCTSTR)text);
     return *this;

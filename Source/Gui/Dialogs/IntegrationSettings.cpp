@@ -21,7 +21,7 @@
 #include "IntegrationSettings.h"
 
 #include "Func/common.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "ContextMenuItemDlg.h"
@@ -44,6 +44,7 @@ CIntegrationSettings::~CIntegrationSettings()
 
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     serverProfiles_ = Settings.ServerProfiles;
     menuItemsChanged_ = false;
     // Translating controls
@@ -124,6 +125,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
 bool CIntegrationSettings::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
     Settings.ExplorerContextMenu = SendDlgItemMessage(IDC_SHELLINTEGRATION, BM_GETCHECK)==BST_CHECKED;
     Settings.ExplorerContextMenu_changed ^= (Settings.ExplorerContextMenu);
@@ -205,6 +207,7 @@ LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode
 
 void CIntegrationSettings::ShellIntegrationChanged()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
     bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
     GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);

@@ -22,7 +22,7 @@ limitations under the License.
 
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include <Ws2tcpip.h>
 #include <winsock2.h> 
 #include <iphlpapi.h>
@@ -115,7 +115,7 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     }
 
     bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
-    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
     if ( slm.addDirectoryAsServer(W2U(connectionName), W2U(directory), W2U(downloadUrl), addFileProtocol) ) {
             createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();

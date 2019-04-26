@@ -141,7 +141,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     task->setCurrentUploadEngine(m_CurrentEngine);
 
     UploadParams uparams;
-#ifdef IU_WTL
+#ifdef _WIN32
     ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
     ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
     if (tcParams.Size) {
@@ -203,11 +203,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     result->deleteUrl = uparams.DeleteUrl;
     result->editUrl = uparams.EditUrl;
 
-    if (result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty())
-    {
-        return false;
-    }
-    return true;
+    return !(result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty());
 }
 
 bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)

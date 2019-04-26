@@ -152,6 +152,7 @@ protected:
     bool SaveServerProfiles(SimpleXmlNode root);
     bool PostLoadSettings(SimpleXml &xml) override;
     bool PostSaveSettings(SimpleXml &xml) override;
+    void RegisterShellExtension(bool Register);
 
     void BindToManager();
 private:

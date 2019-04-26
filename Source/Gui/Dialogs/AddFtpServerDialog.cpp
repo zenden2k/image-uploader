@@ -4,7 +4,7 @@
 #include "AddFtpServerDialog.h"
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Func/IuCommonFunctions.h"
 
 // CAddFtpServerDialog
@@ -98,7 +98,8 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
 
-    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     ServerListManager slm(Settings.SettingsFolder + "\\Servers\\", uploadEngineList_, Settings.ServersSettings);
     if ( slm.addFtpServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)serverName), IuCoreUtils::WstringToUtf8((LPCTSTR)login), 
         IuCoreUtils::WstringToUtf8((LPCTSTR)password), IuCoreUtils::WstringToUtf8((LPCTSTR)remoteDirectory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl)) ) {

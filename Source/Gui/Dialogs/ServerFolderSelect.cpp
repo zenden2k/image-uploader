@@ -22,7 +22,6 @@
 
 #include "Core/Upload/UploadEngineManager.h"
 #include "NewFolderDlg.h"
-#include "Core/Settings.h"
 #include "Core/Upload/AdvancedUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Network/NetworkClientFactory.h"

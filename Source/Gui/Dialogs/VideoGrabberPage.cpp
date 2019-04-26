@@ -27,7 +27,7 @@
 #include "Func/MediaInfoHelper.h"
 #include "Func/WinUtils.h"
 #include "mediainfodlg.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/Logging.h"
@@ -68,6 +68,7 @@ bool CVideoGrabberPage::SetFileName(LPCTSTR FileName)
 
 LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     PageWnd = m_hWnd;
     DoDataExchange(FALSE);
     // Установка интервалов UpDown контролов
@@ -94,17 +95,17 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     openInFolderLink_.SetLabel(TR("Open containing folder"));
     openInFolderLink_.SubclassWindow(GetDlgItem(IDC_OPENFOLDER));
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
-    openInFolderLink_.m_clrLink = CSettings::DefaultLinkColor;
+    openInFolderLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
 
-    videoEngineCombo_.AddString(CSettings::VideoEngineAuto);
-    videoEngineCombo_.AddString(CSettings::VideoEngineDirectshow);
-    videoEngineCombo_.AddString(CSettings::VideoEngineFFmpeg);
+    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineAuto);
+    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow);
+    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineFFmpeg);
 
     int itemIndex = videoEngineCombo_.FindString(0, Settings.VideoSettings.Engine);
     if ( itemIndex == CB_ERR){
         itemIndex = 0;
     }
-    if ( !CSettings::IsFFmpegAvailable() ){
+    if (!WtlGuiSettings::IsFFmpegAvailable()) {
         videoEngineCombo_.EnableWindow(FALSE);
     }
     videoEngineCombo_.SetCurSel(itemIndex);
@@ -156,6 +157,7 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
     if ( fileName.IsEmpty() ) {
         return 0;
@@ -242,6 +244,7 @@ DWORD CVideoGrabberPage::Run()
 bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 {
     using namespace Gdiplus;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString fileNameBuffer;
 
     SetGrabbingStatusText(CString(TR("Extracting frame ")) + title);
@@ -277,7 +280,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                     CString logMessage;
                     CString lastError = WinUtils::GetLastErrorAsString();
                     logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
-                    ServiceLocator::instance()->logger()->write(logError, _T("Video Grabber"), logMessage);
+                    ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage);
                     snapshotsFolder = AppParams::instance()->tempDirectoryW();
                 }
             }
@@ -394,6 +397,7 @@ void CVideoGrabberPage::SavingMethodChanged(void)
 int CVideoGrabberPage::GenPicture(CString& outFileName)
 {
     using namespace Gdiplus;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     RectF TextRect;
     int infoHeight = 0;
     CString Report, fullInfo;
@@ -485,6 +489,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     IMyFileDialog::FileFilterArray filters = {
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
         { TR("All files"), _T("*.*") }
@@ -503,16 +508,17 @@ LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*
 
 int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString videoEngine = Settings.VideoSettings.Engine;
 
-    if ( videoEngine == CSettings::VideoEngineAuto) {
+    if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
         if ( !Settings.IsFFmpegAvailable() ) {
-            videoEngine = CSettings::VideoEngineDirectshow;
+            videoEngine = WtlGuiSettings::VideoEngineDirectshow;
         } else {
-            videoEngine = CSettings::VideoEngineFFmpeg;
+            videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
             std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
-                videoEngine = CSettings::VideoEngineDirectshow;
+                videoEngine = WtlGuiSettings::VideoEngineDirectshow;
             }
         }
     }
@@ -524,9 +530,9 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     videoGrabber_->onFrameGrabbed.bind(this, &CVideoGrabberPage::OnFrameGrabbed);
     videoGrabber_->onFinished.bind(this, &CVideoGrabberPage::OnFrameGrabbingFinished);
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
-    if ( videoEngine == CSettings::VideoEngineFFmpeg ) {
+    if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
         engine = VideoGrabber::veAvcodec;
-    } else if ( videoEngine ==CSettings::VideoEngineDirectshow ) {
+    } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow) {
         engine = VideoGrabber::veDirectShow;
     }
 
@@ -616,7 +622,7 @@ bool CVideoGrabberPage::OnNext()
     }
 
     ThumbsView.MyDeleteAllItems();
-
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.VideoSettings.NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
 
     return true;

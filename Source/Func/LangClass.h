@@ -63,9 +63,5 @@ class CLang : public ITranslator
         CString language_;
         bool isRTL_;
 };
-#if defined(IU_WTL_APP) || defined(IU_SERVERLISTTOOL) || defined(IU_SHELLEXT)
-extern CLang Lang;
-
-#endif
 
 #endif  // LANGCLASS_H

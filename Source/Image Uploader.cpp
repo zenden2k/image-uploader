@@ -16,13 +16,11 @@
      limitations under the License.
 */
 
-  
 #include "atlheaders.h" 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/wizarddlg.h"
 #include "Gui/Dialogs/floatingwindow.h"
 #include "Func/CmdLine.h"
-#include "Core/Settings.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
@@ -43,6 +41,9 @@
 #include "Func/GdiPlusInitializer.h"
 #include "Gui/Dialogs/LangSelect.h"
 CAppModule _Module;
+CLogWindow LogWindow;
+WtlGuiSettings Settings;
+CLang Lang;
 
 int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 {
@@ -64,6 +65,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
     
     DWORD DlgCreationResult = 0;
     bool ShowMainWindow     = true;
+    
     Settings.LoadSettings();
 
     if ( CmdLine.IsOption( _T("uninstall") ) ) {
@@ -191,16 +193,19 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
-    //google::SetLogDestination(google::GLOG_INFO,"d:/" );
-    DefaultLogger defaultLogger;
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    ServiceLocator::instance()->setSettings(&Settings);
+    LogWindow.Create(nullptr);
+    serviceLocator->setLogWindow(&LogWindow);
+    DefaultLogger defaultLogger(&LogWindow);
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
    
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
-    LogWindow.Create(0);
+    
     MyLogSink logSink(&defaultLogger);
     google::AddLogSink(&logSink);
 
-    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     serviceLocator->setLogger(&defaultLogger);
 

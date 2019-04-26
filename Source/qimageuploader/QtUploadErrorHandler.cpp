@@ -11,7 +11,7 @@ QtUploadErrorHandler::QtUploadErrorHandler(ILogger* logger) {
 }
 
 void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
-    LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? logWarning : logError;
+    ILogger::LogMsgType type = errorInfo.messageType == (ErrorInfo::mtWarning) ? ILogger::logWarning : ILogger::logError;
     QString errorMsg;
 
     QString infoText;

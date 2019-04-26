@@ -2,9 +2,9 @@
 #define IU_CORE_SETTINGS_QTGUISETTINGS_H
 
 #pragma once
-#include "CommonGuiSettings.h"
+#include "BasicSettings.h"
 
-class QtGuiSettings : public CommonGuiSettings {
+class QtGuiSettings : public BasicSettings {
 public:
     QtGuiSettings();
 };

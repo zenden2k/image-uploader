@@ -20,8 +20,11 @@
 
 #include "HyperLinkControl.h"
 
+#include <algorithm>
+
 #include "Gui/GuiTools.h"
 #include "HyperLinkControlAccessible.h"
+
 
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()

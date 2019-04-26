@@ -1,7 +1,5 @@
 #include "QtGuiSettings.h"
 
-QtGuiSettings Settings;
-
-QtGuiSettings::QtGuiSettings() : CommonGuiSettings() {
+QtGuiSettings::QtGuiSettings() : BasicSettings() {
     BindToManager();
 }

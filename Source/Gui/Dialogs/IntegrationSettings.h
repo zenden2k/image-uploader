@@ -26,8 +26,9 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/settingspage.h"
-#include "Core/Settings.h"
+#include "Core/Upload/ServerProfile.h"
 #include "Gui/Controls/IconButton.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 class UploadEngineManager;
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 

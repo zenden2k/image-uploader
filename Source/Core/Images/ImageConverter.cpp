@@ -20,7 +20,7 @@
 
 #include "ImageConverter.h"
 
-#ifdef IU_WTL
+#ifdef _WIN32
     #include "ImageConverterPrivate_gdiplus.h"
 #endif
 

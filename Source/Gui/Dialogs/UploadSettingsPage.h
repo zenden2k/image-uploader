@@ -27,7 +27,6 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "settingspage.h"
-#include "Core/Settings.h"
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 
@@ -53,8 +52,6 @@ virtual ~CUploadSettingsPage();
         
     BEGIN_DDX_MAP(CScreenshotDlg)
         DDX_CONTROL_HANDLE(IDC_SERVERTYPECOMBO, serverTypeCombo_)
-        DDX_INT(IDC_FILERETRYLIMIT, Settings.FileRetryLimit)
-        DDX_INT(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit)
     END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

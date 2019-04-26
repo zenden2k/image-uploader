@@ -26,8 +26,9 @@ limitations under the License.
 #include "DefaultUploadEngine.h"
 #include "Core/Logging.h"
 #include "ServerSync.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/UploadErrorHandler.h"
+#include "Core/ServiceLocator.h"
 #ifndef IU_DISABLE_MEGANZ
 #include "MegaNzUploadEngine.h"
 #endif
@@ -134,6 +135,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
         }
     }
 
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     if (plugin && (time(0)- plugin->getCreationTime() <(Settings.DeveloperMode ? 3000 : 1000 * 60 * 5)))
         UseExisting = true;
 

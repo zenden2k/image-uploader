@@ -1,7 +1,10 @@
 #include "PercentEdit.h"
 
+#include <algorithm>
+
 #include "Gui/GuiTools.h"
 #include "Core/Scripting/API/HtmlElementPrivate_win.h"
+
 
 CPercentEdit::CPercentEdit()
 {

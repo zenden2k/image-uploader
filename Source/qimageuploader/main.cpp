@@ -16,10 +16,9 @@
 #include "QtScriptDialogProvider.h"
 #include "Gui/LogWindow.h"
 
-#include <Core/Settings.h>
+#include <Core/Settings/QtGuiSettings.h>
 #include <QMessageBox>
 #include "Core/i18n/Translator.h"
-
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -27,6 +26,7 @@ QString dataFolder = "Data/";
 #else
 QString dataFolder = "/usr/share/imageuploader/";
 #endif
+QtGuiSettings Settings;
 
 class Translator : public ITranslator {
 public:
@@ -49,6 +49,7 @@ Translator translator; // dummy translator
 
 int main(int argc, char *argv[])
 {
+    ServiceLocator::instance()->setSettings(&Settings);
 #if defined(_WIN32) && !defined(NDEBUG)
     // These global strings in GLOG are initially reserved with a small
     // amount of storage space (16 bytes). Resizing the string larger than its

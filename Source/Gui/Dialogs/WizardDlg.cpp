@@ -33,7 +33,6 @@
 #include "LogWindow.h"
 #include "Func/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
-#include "Core/Settings.h"
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
@@ -75,7 +74,10 @@ struct TaskDispatcherMessageStruct {
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
+CWizardDlg::CWizardDlg() : 
+    m_lRef(0), 
+    FolderAdd(this), 
+    Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>())
 { 
     screenshotIndex = 1;
     CurPage = -1;
@@ -101,7 +103,16 @@ CWizardDlg::CWizardDlg(): m_lRef(0), FolderAdd(this)
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, networkClientFactory);
+    imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
+    sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(&m_EngineList, uploadEngineManager_);
+    urlShorteningFilter_ = std::make_unique<UrlShorteningFilter>();
+    userFilter_ = std::make_unique<UserFilter>(scriptsManager_);
     serviceLocator->setUploadManager(uploadManager_);
+    uploadManager_->addUploadFilter(imageConverterFilter_.get());
+    uploadManager_->addUploadFilter(userFilter_.get());
+    uploadManager_->addUploadFilter(sizeExceedFilter_.get());
+    uploadManager_->addUploadFilter(urlShorteningFilter_.get());
+
     floatWnd.setUploadManager(uploadManager_);
     floatWnd.setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
@@ -209,7 +220,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
     helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
 
-    LogWindow.TranslateUI();
+    ServiceLocator::instance()->logWindow()->TranslateUI();
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
     CString ErrorStr;
@@ -263,7 +274,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionFileServer_ = Settings.fileServer;
 
 	if (!*MediaInfoDllPath) {
-		ServiceLocator::instance()->logger()->write(logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
 	} 
 	if(!CmdLine.IsOption(_T("tray")))
         TRC(IDCANCEL, "Exit");
@@ -416,6 +427,10 @@ bool CWizardDlg::ParseCmdLine()
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
     return false;
+}
+
+UrlShorteningFilter* CWizardDlg::urlShorteningFilter() const {
+    return urlShorteningFilter_.get();
 }
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -792,6 +807,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_EngineList.setNumOfRetries(Settings.FileRetryLimit, Settings.ActionRetryLimit);
     bool Result = m_EngineList.loadFromFile(filename);
     Error = m_EngineList.ErrorStr();
@@ -1093,7 +1109,7 @@ LRESULT CWizardDlg::OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 LRESULT CWizardDlg::OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    LogWindow.Show();
+    ServiceLocator::instance()->logWindow()->Show();
     return 0;
 }
 

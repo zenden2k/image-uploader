@@ -25,6 +25,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CUploadSettingsPage
 CUploadSettingsPage::CUploadSettingsPage()
@@ -59,6 +60,7 @@ void CUploadSettingsPage::TranslateUI()
     
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TabBackgroundFix(m_hWnd);
     TranslateUI();
 
@@ -93,6 +95,10 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_SETCURSEL, Settings.ConnectionSettings.ProxyType);
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
+
+    SetDlgItemInt(IDC_FILERETRYLIMIT, Settings.FileRetryLimit);
+    SetDlgItemInt(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit);
+
     // Уведомление элементов
     OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
@@ -144,10 +150,13 @@ LRESULT CUploadSettingsPage::OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WO
 
 bool CUploadSettingsPage::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CheckBounds(IDC_FILERETRYLIMIT, 1, 10, IDC_RETRIES1LABEL);
     CheckBounds(IDC_ACTIONRETRYLIMIT, 1, 10, IDC_RETRIES2LABEL);
-
+    
     DoDataExchange(TRUE);
+    Settings.FileRetryLimit = GetDlgItemInt(IDC_FILERETRYLIMIT);
+    Settings.ActionRetryLimit = GetDlgItemInt(IDC_ACTIONRETRYLIMIT);
     if (SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
     } else if (SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_GETCHECK) != 0) {

@@ -13,18 +13,20 @@ DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
 
 void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 {
-    LogMsgType type;
+    ILogger::LogMsgType type;
 
     switch (errorInfo.messageType) {
         case ErrorInfo::mtWarning:
-            type = logWarning;
+            type = ILogger::logWarning;
             break;
         case ErrorInfo::mtError:
-            type = logError;
+            type = ILogger::logError;
             break;
         case ErrorInfo::mtInformation:
-            type = logInformation;
+            type = ILogger::logInformation;
             break;
+        default:
+            type = ILogger::logError;
     }
 
     CString errorMsg, infoText;

@@ -54,7 +54,7 @@ COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
 #endif
 /* CString support for  SettingsManager */
 
-CSettings Settings;
+
 
 WtlGuiSettings::~WtlGuiSettings() {
 }
@@ -111,8 +111,8 @@ CString WtlGuiSettings::getShellExtensionFileName() const {
     return file;
 }
 
-void RegisterShellExtension(bool Register) {
-    CString moduleName = Settings.getShellExtensionFileName();
+void WtlGuiSettings::RegisterShellExtension(bool Register) {
+    CString moduleName = getShellExtensionFileName();
     if (!WinUtils::FileExists(moduleName)) {
         return;
     }
@@ -426,7 +426,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 
     // Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
     if (settingsNode["ImageEditor"].IsNull()) {
-        if (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD) {
+        if (TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD) {
             TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
         }
 
@@ -588,7 +588,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
         NULL);
 
     if (res != ERROR_SUCCESS) {
-        ServiceLocator::instance()->logger()->write(logWarning, TR("Settings"), CString(TR(
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"), CString(TR(
             "Не могу создать запись в реестре для расширения ")) +
             Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
         return 0;
@@ -691,10 +691,10 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     } else if (ShowTrayIcon) {
         HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
         if (TrayWnd)
-            SendMessage(TrayWnd, WM_RELOADSETTINGS, (floatWnd.m_hWnd) ? 1 : 0, (Settings.Hotkeys_changed) ? 0 : 1);
+            SendMessage(TrayWnd, WM_RELOADSETTINGS, (floatWnd.m_hWnd) ? 1 : 0, (Hotkeys_changed) ? 0 : 1);
     }
 
-    Settings.Hotkeys_changed = false;
+    Hotkeys_changed = false;
 #endif
     return true;
 }
@@ -1132,6 +1132,7 @@ void ImageUploadParams::bind(SettingsNode& n){
 
 ThumbCreatingParams ImageUploadParams::getThumb()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (UseDefaultThumbSettings && &Settings.imageServer.imageUploadParams != this) {
         return Settings.imageServer.imageUploadParams.Thumb;
     }

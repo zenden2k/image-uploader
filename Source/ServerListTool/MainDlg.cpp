@@ -14,6 +14,7 @@
 #include "Core/Upload/UploadManager.h"
 #include "ServersChecker.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/BasicSettings.h"
 
 namespace ServersListTool
 {
@@ -36,6 +37,7 @@ CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uplo
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
     ServiceLocator::instance()->setTaskDispatcher(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -281,7 +283,8 @@ void CMainDlg::processFinished() {
 
 LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    LogWindow.ShowWindow(LogWindow.IsWindowVisible() ? SW_HIDE : SW_SHOW);
+    CLogWindow* logWindow = ServiceLocator::instance()->logWindow();
+    logWindow->Show();
     return 0;
 }
 

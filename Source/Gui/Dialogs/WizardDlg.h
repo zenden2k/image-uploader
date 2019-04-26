@@ -32,7 +32,6 @@
 #include "resource.h"       // main symbols
 #include "screenshotdlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
-#include "Core/Settings.h"
 #include "Core/ProgramWindow.h"
 #include "Core/TaskDispatcher.h"
 #include "FolderAddDlg.h"
@@ -40,6 +39,10 @@
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Core/Upload/Filters/UserFilter.h"
+#include "Core/Upload/Filters/ImageConverterFilter.h"
+#include "Core/Upload/Filters/SizeExceedFilter.h"
+#include "Core/Upload/Filters/UrlShorteningFilter.h"
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
 #define WM_MY_ADDIMAGE WM_USER + 222
@@ -77,6 +80,7 @@ class UploadManager;
 class UploadEngineManager;
 class ScriptsManager;
 class Win7JumpList;
+class WtlGuiSettings;
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
@@ -197,6 +201,7 @@ public:
     //CSavingOptions SavingOptions;
     bool LoadUploadEngines(const CString &filename, CString &Error);
     bool ParseCmdLine();
+    UrlShorteningFilter* urlShorteningFilter() const;
     CIcon hIcon;
     CIcon hIconSmall;
     CHotkeyList m_hotkeys;
@@ -214,6 +219,11 @@ public:
     CString LastVideoFile;
     bool m_bShowAfter;
     bool isFirstRun_;
+    WtlGuiSettings& Settings;
+    std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
+    std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
+    std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    std::unique_ptr<UserFilter> userFilter_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);

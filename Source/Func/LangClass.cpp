@@ -27,8 +27,6 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 
-CLang Lang;
-
 namespace {
 // TODO: rewrite this shit
 // check it's compatibility with 64 bit platforms

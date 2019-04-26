@@ -19,11 +19,11 @@
 #include "Func/WtlScriptDialogProvider.h"
 #include "Core/AppParams.h"
 #include "Core/Scripting/ScriptsManager.h"
-#include "Core/Settings.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Func/langclass.h"
+#include "Core/Settings/CliSettings.h"
 
 CAppModule _Module;
 
@@ -38,7 +38,9 @@ CAppModule _Module;
 #endif
 
 using namespace ServersListTool;
-
+CliSettings Settings;
+CLogWindow LogWindow;
+CLang Lang;
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
 {
     // Create and install global locale
@@ -61,13 +63,15 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
 #endif
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
-    //google::SetLogDestination(google::GLOG_INFO,"d:/" );
-    DefaultLogger defaultLogger;
+
+    DefaultLogger defaultLogger(&LogWindow);
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
     google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
     LogWindow.Create(0);
     ServiceLocator* serviceLocator = ServiceLocator::instance();
+    serviceLocator->setLogWindow(&LogWindow);
+    serviceLocator->setSettings(&Settings);
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     serviceLocator->setLogger(&defaultLogger);
     MyLogSink logSink(&defaultLogger);
@@ -88,6 +92,9 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
    
     Settings.setEngineList(&engineList);
 
+    auto appParams = AppParams::instance();
+    appParams->setIsGui(true);
+    appParams->setDataDirectory(W2U(WinUtils::GetAppFolder() + "Data/"));
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     ScriptsManager scriptsManager(networkClientFactory);
     UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler, networkClientFactory);
@@ -96,9 +103,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     uploadManager.setEnableHistory(false);
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
-
-    AppParams::instance()->setTempDirectory(W2U(tempFolder));
-
+    appParams->setTempDirectory(W2U(tempFolder));
     HRESULT hRes = ::CoInitialize(NULL);
     // If you are running on NT 4.0 or higher you can use the following call instead to
     // make the EXE free threaded. This means that calls come in on a random RPC thread.

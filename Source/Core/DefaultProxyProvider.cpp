@@ -1,10 +1,11 @@
 #include "DefaultProxyProvider.h"
 
 #include <algorithm>
+#include <map>
 
+#include <curl/curl.h>
 #include <Winhttp.h>
 #include "atlheaders.h"
-#include "Core/Settings.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Func/WinUtils.h"

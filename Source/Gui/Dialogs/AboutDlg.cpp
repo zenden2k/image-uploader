@@ -21,7 +21,6 @@
 #include "AboutDlg.h"
 
 #include <curl/curl.h>
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include <libavutil/ffversion.h>
@@ -30,9 +29,11 @@
 #include <webp/decode.h>
 #include "Core/AppParams.h"
 #include "Func/MediaInfoHelper.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
@@ -128,7 +129,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"entities.c") + L"\t\thttps://bitbucket.org/cggaertner/cstuff/\u200E\r\n";
     memoText += CString(L"base64") + L"\t\thttps://github.com/aklomp/base64/\u200E\r\n";
     memoText += CString(L"Mega SDK") + L"\thttps://github.com/meganz/sdk\r\n";
-    memoText += CString(L"Crypto++") + L"\t\thttps://www.cryptopp.com/\u200E\r\n";
+    memoText += CString(L"Crypto++") + L"\thttps://www.cryptopp.com/\u200E\r\n";
     memoText += CString(L"c-ares") + L"\t\thttps://c-ares.haxx.se/\u200E\r\n";
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
             

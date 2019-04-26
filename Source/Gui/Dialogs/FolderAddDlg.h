@@ -2,6 +2,7 @@
 #define IU_GUI_DAILOGS_FOLDERADDDLG_H
 
 #pragma once
+#include "atlheaders.h"
 #include "3rdpart/thread.h"
 #include "StatusDlg.h"
 

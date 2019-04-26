@@ -22,7 +22,6 @@
 
 #include "traysettings.h"
 #include "hotkeyeditor.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Scripting/API/WebBrowserPrivate_win.h"
 
@@ -38,6 +37,7 @@ CHotkeySettingsPage::~CHotkeySettingsPage()
 
 LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TabBackgroundFix(m_hWnd);
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
     TRC(IDC_EDITHOTKEY, "Edit hotkey...");
@@ -77,6 +77,7 @@ LRESULT CHotkeySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 }
 bool CHotkeySettingsPage::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(!(Settings.Hotkeys == hotkeyList))
         Settings.Hotkeys_changed = true;
     Settings.Hotkeys = hotkeyList;

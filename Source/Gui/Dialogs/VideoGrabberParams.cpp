@@ -20,9 +20,9 @@
 
 #include "VideoGrabberParams.h"
 
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 //#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
 
@@ -38,6 +38,7 @@ CVideoGrabberParams::~CVideoGrabberParams()
 
 LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TabBackgroundFix(m_hWnd);
 
     SetDlgItemInt(IDC_COLUMNSEDIT, Settings.VideoSettings.Columns);
@@ -94,7 +95,7 @@ bool CVideoGrabberParams::Apply()
     CheckBounds(IDC_TILEWIDTH, 10, 1024, IDC_PREVIEWWIDTHLABEL);
     CheckBounds(IDC_GAPWIDTH, 0, 200, IDC_INTERVALHORLABEL);
     CheckBounds(IDC_GAPHEIGHT, 0, 200, IDC_INTERVALVERTLABEL);
-
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.VideoSettings.Columns = columns;
     Settings.VideoSettings.TileWidth = GetDlgItemInt(IDC_TILEWIDTH);
     Settings.VideoSettings.GapWidth = GetDlgItemInt(IDC_GAPWIDTH);

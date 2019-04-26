@@ -18,6 +18,7 @@
 //
 #pragma once
 #include <map>
+#include <Windows.h>
 #include <Uxtheme.h>
 #include "3rdpart/GdiplusH.h"
 

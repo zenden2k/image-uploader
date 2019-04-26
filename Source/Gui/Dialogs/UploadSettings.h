@@ -29,7 +29,6 @@
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/IconButton.h"
 #include <atlcrack.h>
-#include "Core/Settings.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000

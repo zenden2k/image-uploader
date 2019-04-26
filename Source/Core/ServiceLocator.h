@@ -4,9 +4,12 @@
 #include "Utils/Singleton.h"
 
 #include <memory>
+#include <cassert>
+
 #include "ProgramWindow.h"
 #include "Core/Logging/Logger.h"
 
+class BasicSettings;
 class UploadManager;
 class IDialogProvider;
 class IUploadErrorHandler;
@@ -17,6 +20,7 @@ class ServiceLocatorPrivate;
 class ITranslator;
 class ITaskDispatcher;
 class CMyEngineList;
+class CLogWindow;
 
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
@@ -42,6 +46,16 @@ public:
     CHistoryManager* historyManager();
     IProgramWindow* programWindow();
     void setProgramWindow(IProgramWindow* window);
+    CLogWindow* logWindow() const;
+    void setLogWindow(CLogWindow* logWindow);
+    BasicSettings* basicSettings() const;
+    void setSettings(BasicSettings* settingsInstance);
+
+    template<class T> T* settings() const {
+        T* res = dynamic_cast<T*>(basicSettings());
+        //assert(res);
+        return res;
+    }
 #endif
 
 protected:

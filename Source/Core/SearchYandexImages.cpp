@@ -10,11 +10,13 @@
 */
 #include "Core/Utils/DesktopUtils.h"
 #include "Upload/FileUploadTask.h"
-#include "Core/Settings.h"
 #include "ServiceLocator.h"
 
 
-SearchYandexImages::SearchYandexImages(const std::string& fileName) :SearchByImage(fileName) {
+SearchYandexImages::SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer) 
+    :SearchByImage(fileName),
+    temporaryServer_(temporaryServer) 
+{
     uploadFinished_ = false;
     uploadOk_ = false;
 }
@@ -72,7 +74,7 @@ void SearchYandexImages::run() {
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
     //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
-    task->setServerProfile(Settings.temporaryServer);
+    task->setServerProfile(temporaryServer_);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &SearchYandexImages::onFileFinished));
 
     currentUploadTask_.reset(task);

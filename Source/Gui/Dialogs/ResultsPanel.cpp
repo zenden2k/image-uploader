@@ -24,7 +24,6 @@
 #include "UploadSettings.h"
 #include "mediainfodlg.h"
 #include "LogWindow.h"
-#include "Core/Settings.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -32,6 +31,7 @@
 #include "Core/ServiceLocator.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/AppParams.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
@@ -45,7 +45,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlLi
     shortenUrl_ = false;
     if(!LoadTemplates(TemplateLoadError))
     {
-        ServiceLocator::instance()->logger()->write(logWarning, _T("Results Module"), TemplateLoadError);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), TemplateLoadError);
     }
 }
 
@@ -97,6 +97,7 @@ bool CResultsPanel::LoadTemplate()
 
 LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_IMAGEUPLOADERLABEL, "Images per string:");
     TRC(IDC_CODETYPELABEL, "Code type:");
     if(rectNeeded.left != -1)
@@ -190,6 +191,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 void CResultsPanel::SetPage(TabPage Index)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     ::EnableWindow(GetDlgItem(IDC_CODETYPELABEL), Index != kPlainText);
     ::EnableWindow(GetDlgItem(IDC_CODETYPE), Index != kPlainText);
     ::EnableWindow(GetDlgItem(IDC_IMAGEUPLOADERLABEL), Index != kPlainText);
@@ -212,6 +214,7 @@ void CResultsPanel::SetPage(TabPage Index)
 
 void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("[url=");
     if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
@@ -225,6 +228,7 @@ void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 
 void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("<a href=\"");
     if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
@@ -237,6 +241,7 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 
 void CResultsPanel::Markdown_Link(CString &Buffer, CUrlListItem &item)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("[");
     Buffer += WinUtils::myExtractFileName(item.FileName);
     Buffer += _T("](");
@@ -255,6 +260,7 @@ bool CResultsPanel::copyResultsToClipboard() {
 
 const CString CResultsPanel::GenerateOutput()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString Buffer;
     if (!Toolbar.m_hWnd) return _T("");
     int Index = GetCodeType();
@@ -551,7 +557,7 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 {
     UpdateOutput();
     BOOL temp;
-
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(Settings.AutoCopyToClipboard)
         OnBnClickedCopyall(0,0,0,temp);
      return 0;
@@ -607,6 +613,7 @@ void  CResultsPanel::EnableMediaInfo(bool Enable)
 
 bool CResultsPanel::LoadTemplates(CString &Error)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
     LoadTemplateFromFile(XmlFileName, Error);
     CString userTemplateError;
@@ -692,6 +699,7 @@ CString CResultsPanel::ReplaceVars(const CString& Text)
 
 LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
     CMenu sub;    
     MENUITEMINFO mi;
@@ -755,7 +763,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         sub.InsertMenuItem(curPosition, true, &mi);
         count++;
     }
-    
+
     sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (Settings.UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (Settings.UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );        
     sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );    
@@ -774,6 +782,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseTxtTemplate = !Settings.UseTxtTemplate;
     UpdateOutput();
     return 0;
@@ -781,6 +790,7 @@ LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWn
 
 LRESULT CResultsPanel::OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseDirectLinks = !Settings.UseDirectLinks;
     UpdateOutput();
     return 0;
@@ -892,7 +902,7 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
 
 
 LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString url ;
     if ( m_Page == 2 && this->UrlList.size() ) {
         //use

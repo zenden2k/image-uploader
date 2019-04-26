@@ -1,9 +1,10 @@
 #include "ImageEditorConfigurationProvider.h"
 
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     penSize_ = Settings.ImageEditorSettings.PenSize;
     foregroundColor_ = Settings.ImageEditorSettings.ForegroundColor;
     backgroundColor_ = Settings.ImageEditorSettings.BackgroundColor;
@@ -15,6 +16,8 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    penSize_ = Settings.ImageEditorSettings.PenSize;
     Settings.ImageEditorSettings.PenSize = penSize_;
     Settings.ImageEditorSettings.ForegroundColor = foregroundColor_;
     Settings.ImageEditorSettings.BackgroundColor = backgroundColor_;

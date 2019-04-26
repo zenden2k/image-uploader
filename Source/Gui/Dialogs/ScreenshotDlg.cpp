@@ -20,10 +20,10 @@
 
 #include "ScreenshotDlg.h"
 
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
 #include "Core/ScreenCapture/Utils.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
@@ -47,6 +47,7 @@ BOOL SetClientRect(HWND hWnd, int x, int y)
 #define LOADICO16(x) (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(x), IMAGE_ICON    , 16,16,0)
 LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CommandBox.SubclassWindow(GetDlgItem(IDC_COMMANDBOX));
     RECT ClientRect;
     GetClientRect(&ClientRect);
@@ -177,6 +178,7 @@ CaptureMode CScreenshotDlg::captureMode() const
 
 LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 

@@ -19,3 +19,20 @@ limitations under the License.
 */
 
 #include "CliSettings.h"
+
+#ifdef _WIN32
+
+void ImageUploadParams::bind(SettingsNode& n){
+}
+
+ThumbCreatingParams ImageUploadParams::getThumb()
+{
+    return Thumb;
+}
+
+ThumbCreatingParams& ImageUploadParams::getThumbRef()
+{
+    return Thumb;
+}
+
+#endif

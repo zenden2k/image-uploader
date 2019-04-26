@@ -764,7 +764,7 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
             *mimeType = szMimeTypes[Format];
         }
     } else {
-        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not find suitable converter"));
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Could not find suitable converter"));
         return false;
     }
     
@@ -775,7 +775,7 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
         if (result == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError) + L"";
         }
-        ServiceLocator::instance()->logger()->write(logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + error);
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + error);
         return false;
     }
 
@@ -1030,7 +1030,7 @@ std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName) {
         if (status == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
         }
-        ServiceLocator::instance()->logger()->write(logWarning, _T("Image Loader"), _T("Cannot load image.") + CString(L"\r\n") + error, CString(_T("File:")) + _T(" ") + fileName);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Image Loader"), _T("Cannot load image.") + CString(L"\r\n") + error, CString(_T("File:")) + _T(" ") + fileName);
         return nullptr;
     }
 

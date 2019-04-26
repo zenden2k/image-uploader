@@ -4,10 +4,9 @@
 #pragma once
 #include <string>
 
-enum LogMsgType { logError = 1, logWarning, logInformation };
-
 class ILogger {
-public :
+public:
+    enum LogMsgType { logError = 1, logWarning, logInformation };
     virtual ~ILogger(){};
     virtual void write(LogMsgType MsgType, const std::string&  Sender, const std::string&  Msg, const std::string&  Info = "") = 0;
 #ifdef _WIN32

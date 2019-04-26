@@ -739,7 +739,6 @@
     <ClInclude Include="Source\Core\ServiceLocator.h" />
     <ClInclude Include="Source\Core\Settings.h" />
     <ClInclude Include="Source\Core\Settings\BasicSettings.h" />
-    <ClInclude Include="Source\Core\Settings\CliSettings.h" />
     <ClInclude Include="Source\Core\Settings\CommonGuiSettings.h" />
     <ClInclude Include="Source\Core\Settings\EncodedPassword.h" />
     <ClInclude Include="Source\Core\Settings\QtGuiSettings.h" />
@@ -1118,7 +1117,6 @@
     <ClCompile Include="Source\Core\SearchYandexImages.cpp" />
     <ClCompile Include="Source\Core\ServiceLocator.cpp" />
     <ClCompile Include="Source\Core\Settings\BasicSettings.cpp" />
-    <ClCompile Include="Source\Core\Settings\CliSettings.cpp" />
     <ClCompile Include="Source\Core\Settings\CommonGuiSettings.cpp" />
     <ClCompile Include="Source\Core\Settings\EncodedPassword.cpp" />
     <ClCompile Include="Source\Core\Settings\WtlGuiSettings.cpp" />

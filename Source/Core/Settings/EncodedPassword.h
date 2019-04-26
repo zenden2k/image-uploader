@@ -4,7 +4,7 @@
 #pragma once
 
 #include <string>
-#ifdef IU_WTL
+#ifdef _WIN32
 #include "atlheaders.h"
 #endif
 
@@ -21,12 +21,12 @@ public:
     {
         DecodeString(data, data_);
     }
-#ifdef IU_WTL
+#ifdef _WIN32
     void fromPlainText(CString& data)
     {
         data_ = IuCoreUtils::WstringToUtf8((LPCTSTR)data);
     }
-    operator CString()
+    operator CString() const
     {
         return IuCoreUtils::Utf8ToWstring(data_).c_str();
     }

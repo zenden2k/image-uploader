@@ -83,7 +83,7 @@ endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
-add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DIU_CLI)
+add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64)
 
 if(IU_DISABLE_MEGANZ)
     add_definitions(-DIU_DISABLE_MEGANZ)
@@ -115,6 +115,7 @@ endif()
 add_subdirectory(Core)	
 add_subdirectory(CLI)	
 if(WIN32)
+    add_subdirectory(Gui)
     add_subdirectory(ServerListTool)
 endif()
 

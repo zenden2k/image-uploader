@@ -1,7 +1,8 @@
 #include "CoreFunctions.h"
 
-#include "Core/Settings.h"
 #include "Core/Network/NetworkClient.h"
+#include "Settings/BasicSettings.h"
+#include "ServiceLocator.h"
 #ifdef _WIN32
 #include "DefaultProxyProvider.h"
 #endif
@@ -10,6 +11,7 @@ namespace CoreFunctions {
 
 void ConfigureProxy(INetworkClient* nm)
 {
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 #ifdef _WIN32
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {
         nm->setProxyProvider(std::make_shared<DefaultProxyProvider>());

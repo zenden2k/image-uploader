@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "atlheaders.h"
 #include <OleAcc.h>
 
 class CHyperLinkControl;

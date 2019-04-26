@@ -1,7 +1,7 @@
 #include "ServersChecker.h"
 
 #include "Core/Upload/UploadSession.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Core/AppParams.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
@@ -33,6 +33,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
 }
 
 bool ServersChecker::start(const std::string& testFileName, const std::string& testUrl) {
+    BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
     uploadSession_ = std::make_shared<UploadSession>();

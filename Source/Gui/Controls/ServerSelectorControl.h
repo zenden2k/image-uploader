@@ -28,11 +28,12 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/settingspage.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Core/3rdpart/FastDelegate.h"
 // CServerSelectorControl
 class IconBitmapUtils;
+class UploadEngineManager;
 
 #define WM_SERVERSELECTCONTROL_CHANGE (WM_USER+156)
 #define WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED (WM_USER+157)

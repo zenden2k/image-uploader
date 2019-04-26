@@ -29,6 +29,7 @@
 #include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
 #include "Core/Logging/Logger.h"
+#include <mutex>
 
 // CLogWindow
 
@@ -40,7 +41,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
     public:
         struct CLogWndMsg
         {
-            LogMsgType MsgType;
+            ILogger::LogMsgType MsgType;
             CString Sender;
             CString Msg;
             CString Info;
@@ -87,11 +88,12 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void TranslateUI();
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        static void WriteLog(LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());
+        void WriteLog(ILogger::LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());
 protected:
-    void WriteLogImpl(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString());
+    void WriteLogImpl(ILogger::LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString());
+    DWORD mainThreadId;
+    std::vector<CLogWndMsg> queuedItems_;
+    std::mutex queueMutex_;
 };
-
-extern CLogWindow LogWindow;
 
 #endif // LOGWINDOW_H

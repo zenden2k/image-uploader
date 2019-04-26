@@ -24,7 +24,7 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
     ServerSync sync;
-    CDefaultUploadEngine engine(&sync);
+    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance
@@ -102,7 +102,7 @@ TEST_F(DefaultUploadEngineTest, login)
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
     ServerSync sync;
-    CDefaultUploadEngine engine(&sync);
+    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance
@@ -161,7 +161,7 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     // NiceMock is used to ignore uninterested calls
     NiceMock<MockINetworkClient> networkClient;
     ServerSync sync;
-    CDefaultUploadEngine engine(&sync);
+    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
     engine.setNetworkClient(&networkClient);
 
     // Prepare CUploadEngineData instance

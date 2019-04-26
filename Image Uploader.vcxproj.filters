@@ -702,9 +702,6 @@
     <ClInclude Include="Source\Core\Settings\BasicSettings.h">
       <Filter>Source Files\Core\Settings</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Core\Settings\CliSettings.h">
-      <Filter>Source Files\Core\Settings</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Core\Settings\CommonGuiSettings.h">
       <Filter>Source Files\Core\Settings</Filter>
     </ClInclude>
@@ -1789,9 +1786,6 @@
       <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Settings\BasicSettings.cpp">
-      <Filter>Source Files\Core\Settings</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Core\Settings\CliSettings.cpp">
       <Filter>Source Files\Core\Settings</Filter>
     </ClCompile>
     <ClCompile Include="Source\Core\Settings\CommonGuiSettings.cpp">

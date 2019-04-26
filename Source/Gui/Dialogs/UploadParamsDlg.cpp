@@ -21,7 +21,7 @@
 #include "UploadParamsDlg.h"
 
 #include "wizarddlg.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -42,6 +42,7 @@ CUploadParamsDlg::~CUploadParamsDlg()
 
 LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
 
     ThumbBackground_.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));

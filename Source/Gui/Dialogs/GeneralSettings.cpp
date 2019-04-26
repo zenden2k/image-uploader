@@ -20,11 +20,12 @@
 
 #include "GeneralSettings.h"
 
-#include "Core/Settings.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/i18n/Translator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CGeneralSettings
 CGeneralSettings::CGeneralSettings()
@@ -64,6 +65,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     // Translating controls
     TRC(IDC_CHANGESWILLBE, "Please note that program needs to be restarted for new language settings to take affect.");
     TRC(IDC_LANGUAGELABEL, "Interface language:");
@@ -145,7 +147,8 @@ bool CGeneralSettings::Apply()
     if (Index < 0) {
         return false;
     }
-    
+
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString buf;
     langListCombo_.GetLBText(Index, buf);
     Settings.Language = buf;
@@ -164,6 +167,6 @@ bool CGeneralSettings::Apply()
 
 LRESULT CGeneralSettings::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    LogWindow.Show();
+    ServiceLocator::instance()->logWindow()->Show();
     return 0;
 }

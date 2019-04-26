@@ -29,7 +29,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 HINSTANCE hDllInstance;
-
+extern CLang Lang;
 CString GetStartMenuPath() 
 {
 	CString result;

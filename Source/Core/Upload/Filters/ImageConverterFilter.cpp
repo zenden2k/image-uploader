@@ -1,12 +1,12 @@
 #include "ImageConverterFilter.h"
 
 #include "Func/IuCommonFunctions.h"
-#include "Core/Settings.h"
 #include "Core/Logging.h"
 #include "Core/Images/ImageConverter.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/CommonDefs.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {
@@ -39,6 +39,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     }
     task->setStatusText(_("Preparing image..."));
     imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(imageUploadParams.ImageProfileName)]);
     imageConverter.setThumbCreatingParams(imageUploadParams.getThumb());
     bool GenThumbs = imageUploadParams.CreateThumbs &&

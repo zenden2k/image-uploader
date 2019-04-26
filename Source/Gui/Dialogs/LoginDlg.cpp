@@ -21,12 +21,13 @@
 #include "LoginDlg.h"
 
 #include "wizarddlg.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
+
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -83,7 +84,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     if (!m_UploadEngine->RegistrationUrl.empty()) {
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-        signupLink_.m_clrLink = CSettings::DefaultLinkColor;
+        signupLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
         CString linkText;
         linkText.Format(TR("Don't have an account? Sign up on %s right now"), static_cast<LPCTSTR>(U2W(m_UploadEngine->Name)));
         signupLink_.SetLabel(linkText);
@@ -102,7 +103,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     deleteAccountLabel_.SubclassWindow(GetDlgItem(IDC_DELETEACCOUNTLABEL));
     deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 //    deleteAccountLabel_.SetLabel(deleteAccountLabelText);
-    deleteAccountLabel_.m_clrLink = CSettings::DefaultLinkColor;
+    deleteAccountLabel_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
     deleteAccountLabel_.SetToolTipText(TR("Remove this account from the list (not from the remote server)"));
 
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);
@@ -128,6 +129,7 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
     if (LocalizedMessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APPNAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
         return 0;
     }
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
     ss.erase(WCstringToUtf8(accountName_));
 
@@ -157,6 +159,7 @@ CString CLoginDlg::accountName()
 
 DWORD CLoginDlg::Run()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
@@ -213,6 +216,7 @@ void CLoginDlg::OnProcessFinished()
 
 void CLoginDlg::Accept()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     LoginInfo li;
     TCHAR Buffer[256];
 

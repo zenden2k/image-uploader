@@ -1,8 +1,10 @@
 #ifndef IU_CORE_SETTINGS_STRINGCONVERT_H
 #define IU_CORE_SETTINGS_STRINGCONVERT_H
 
-#ifdef _WIN32
 #include "EncodedPassword.h"
+
+#ifdef _WIN32
+
 #include "atlheaders.h"
 inline std::string myToString(const CString& value)
 {
@@ -13,10 +15,6 @@ inline void myFromString(const std::string& text, CString& value)
 {
     value = IuCoreUtils::Utf8ToWstring(text).c_str();
 }
-#ifndef IU_CLI
-
-
-#endif
 #endif
 
 template<class T> std::string myToString(const EnumWrapper<T>& value)
@@ -29,7 +27,7 @@ template<class T> void myFromString(const std::string& text, EnumWrapper<T>& val
     value = static_cast<T>(atoi(text.c_str()));
 }
 
-#if !defined(IU_CLI) && !defined(IU_SHELLEXT)
+#if !defined(IU_SHELLEXT)
 
 
 inline std::string myToString(const CEncodedPassword& value) {

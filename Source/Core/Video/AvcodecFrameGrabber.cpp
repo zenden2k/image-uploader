@@ -148,6 +148,7 @@ public:
         // Register all formats and codecs
         if (! initialized_) {
             av_register_all();
+
             initialized_ = true;
         }
         pFormatCtx = 0;

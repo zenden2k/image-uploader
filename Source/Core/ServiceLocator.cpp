@@ -31,6 +31,8 @@ public:
     ITaskDispatcher* dispatcher_;
     UploadManager* uploadManager_;
     CMyEngineList* myEngineList_;
+    CLogWindow* logWindow_;
+    BasicSettings* settings_;
 #endif
 };
 
@@ -121,5 +123,21 @@ void ServiceLocator::setMyEngineList(CMyEngineList* list) {
 
 CMyEngineList* ServiceLocator::myEngineList() const {
     return d_ptr->myEngineList_;
+}
+
+CLogWindow* ServiceLocator::logWindow() const {
+    return d_ptr->logWindow_;
+}
+
+void ServiceLocator::setLogWindow(CLogWindow* logWindow) {
+    d_ptr->logWindow_ = logWindow;
+}
+
+BasicSettings* ServiceLocator::basicSettings() const {
+    return d_ptr->settings_;
+}
+
+void ServiceLocator::setSettings(BasicSettings* settingsInstance) {
+    d_ptr->settings_ = settingsInstance;
 }
 #endif

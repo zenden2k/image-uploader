@@ -19,23 +19,17 @@
 */
 #include "LogWindow.h"
 
-#include "Core/Settings.h"
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/BasicSettings.h"
 
 // CLogWindow
-CLogWindow::CLogWindow()
+CLogWindow::CLogWindow(): mainThreadId(GetCurrentThreadId())
 {
 }
 
 CLogWindow::~CLogWindow()
 {
-    if (m_hWnd)
-    {
-        Detach();
-        // DestroyWindow();
-        m_hWnd = NULL;
-    }
 }
 
 LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -58,10 +52,11 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     return 0;
 }
 
-void CLogWindow::WriteLogImpl(LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info)
+void CLogWindow::WriteLogImpl(ILogger::LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info)
 {
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     MsgList.AddString(MsgType, Sender, Msg, Info);
-    if (MsgType == logError && Settings.AutoShowLog) {
+    if (MsgType == ILogger::logError && Settings.AutoShowLog) {
         Show();
     }
 }
@@ -70,11 +65,11 @@ void CLogWindow::Show()
 {
     if (!IsWindowVisible()) {
         ShowWindow(SW_SHOW);
-        SetForegroundWindow(m_hWnd);
-        ::SetActiveWindow(m_hWnd);
-        BringWindowToTop();
     }
-    SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
+    SetForegroundWindow(m_hWnd);
+    ::SetActiveWindow(m_hWnd);
+    BringWindowToTop();
+    //SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
 }
 
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -159,9 +154,12 @@ void CLogWindow::TranslateUI()
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    CLogWndMsg* msg = reinterpret_cast<CLogWndMsg*>(wParam);
-    WriteLogImpl(msg->MsgType, msg->Sender, msg->Msg, msg->Info);
-    delete msg;
+    std::lock_guard<std::mutex> lk(queueMutex_);
+    for (const auto& item : queuedItems_) {
+        WriteLogImpl(item.MsgType, item.Sender, item.Msg, item.Info);
+    }
+    queuedItems_.clear();
+    
     return 0;
 }
 
@@ -171,20 +169,29 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
     return 0;
 }
 
-void CLogWindow::WriteLog(LogMsgType MsgType, const CString&  Sender, const CString&  Msg, const CString&  Info)
+void CLogWindow::WriteLog(ILogger::LogMsgType MsgType, const CString&  Sender, const CString&  Msg, const CString&  Info)
 {
-    if (!LogWindow.m_hWnd)
+    if (!m_hWnd) {
         return;
-    CLogWindow::CLogWndMsg* msg = new CLogWndMsg; // will be freed by consumer
-    msg->Msg = Msg;
-    msg->Info = Info;
-    msg->Sender = Sender;
-    msg->MsgType = MsgType;
-    LogWindow.PostMessage(MYWM_WRITELOG, reinterpret_cast<WPARAM>(msg));
+    }
+
+    if (GetCurrentThreadId() == mainThreadId) {
+        // Call directly
+        WriteLogImpl(MsgType, Sender, Msg, Info); 
+    } else {
+        
+        CLogWndMsg msg;
+        msg.Msg = Msg;
+        msg.Info = Info;
+        msg.Sender = Sender;
+        msg.MsgType = MsgType;
+        {
+            std::lock_guard<std::mutex> lk(queueMutex_);
+            queuedItems_.push_back(msg);
+        }
+        PostMessage(MYWM_WRITELOG);
+    }
 }
-
-CLogWindow LogWindow;
-
 
 LRESULT CLogWindow::OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {

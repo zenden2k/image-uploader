@@ -21,11 +21,11 @@
 #include "DefaultServersSettings.h"
 
 #include "Func/common.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "WizardDlg.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CDefaultServersSettings
 CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngineManager)
@@ -49,6 +49,7 @@ LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, L
 
 LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Remember image server's settings in wizard");
     TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
     RECT serverSelectorRect;
@@ -127,6 +128,8 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
  
 bool CDefaultServersSettings::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     CServerSelectorControl* controls[] = { fileServerSelector_.get(), imageServerSelector_.get(), trayServerSelector_.get(),
         contextMenuServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {

@@ -45,6 +45,7 @@ set(SOURCE_FILES
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
     Gui/controls/ServerSelectorWidget.cpp
+    ../Core/Settings/QtGuiSettings.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui

@@ -25,11 +25,9 @@ struct ImageUploadParams {
         Thumb.Quality = 85;
         Thumb.Text = "%width%x%height% (%size%)";
     }
-#ifndef IU_SERVERLISTTOOL
-
+#ifdef _WIN32
     void bind(SettingsNode& n);
 #endif
-
     bool UseServerThumbs;
     bool CreateThumbs;
     bool ProcessImages;
@@ -73,16 +71,14 @@ public:
     bool UseDefaultSettings;
     void clearFolderInfo();
     ServerProfile deepCopy();
-#ifndef IU_SERVERLISTTOOL
     void bind(SettingsNode& n);
-#endif
-#ifdef IU_WTL
+
     ImageUploadParams getImageUploadParams();
     ImageUploadParams& getImageUploadParamsRef();
 
     void setImageUploadParams(ImageUploadParams iup);
     friend struct ImageUploadParams;
-#endif
+
 protected:
     std::string serverName_;
     std::string profileName_;

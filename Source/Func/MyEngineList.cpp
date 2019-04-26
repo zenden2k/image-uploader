@@ -20,9 +20,10 @@
 
 #include "Func/MyEngineList.h"
 
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
+#include "Core/ServiceLocator.h"
 
 
 char CMyEngineList::DefaultServer[] = "default";
@@ -68,6 +69,7 @@ bool CMyEngineList::loadFromFile(const CString& filename)
         m_ErrorStr = "File not found.";
         return false;
     }
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     return CUploadEngineList::loadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
 }
 

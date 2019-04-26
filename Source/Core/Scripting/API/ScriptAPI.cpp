@@ -286,7 +286,7 @@ void SetCurrentThreadVM(HSQUIRRELVM vm) {
 
 void StopAssociatedBrowsers(HSQUIRRELVM vm)
 {
-#ifdef IU_WTL
+#ifdef _WIN32
     std::lock_guard<std::mutex> guard(vmBrowsersMutex);
     for ( auto& it : vmBrowsers[vm])
     {

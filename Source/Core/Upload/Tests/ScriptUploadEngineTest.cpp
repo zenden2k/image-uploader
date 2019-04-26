@@ -36,7 +36,8 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
+        std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
 
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
@@ -97,7 +98,8 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
+        std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
 
     engine.setServerSettings(&serverSettings);
 
@@ -159,7 +161,8 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
 
     ServerSettingsStruct serverSettings;
-    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, std::make_shared<NetworkClientFactory>());
+    CScriptUploadEngine engine(scriptFileName, &sync, 
+        &serverSettings, std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
 
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;

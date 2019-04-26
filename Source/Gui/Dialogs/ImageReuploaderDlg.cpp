@@ -27,7 +27,6 @@
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/FileQueueUploader.h"
@@ -41,6 +40,7 @@
 #include "Core/3rdpart/UriParser.h"
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
@@ -67,6 +67,7 @@ CImageReuploaderDlg::~CImageReuploaderDlg()
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
     PrevClipboardViewer = SetClipboardViewer();
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -157,6 +158,7 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     }
 
     if ( closeWindow ) {
+        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
         Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
         OnClose();
         EndDialog(wID);
@@ -210,10 +212,10 @@ bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
     }
 
     if ( !success ) {
-        LogMsgType logMessageType = logError;
+        ILogger::LogMsgType logMessageType = ILogger::logError;
         CString cacheLogMessage;
         if ( tryGetFileFromCache(it, cacheLogMessage ) ) {
-            logMessageType = logWarning;
+            logMessageType = ILogger::logWarning;
         }
         
         ServiceLocator::instance()->logger()->write(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
@@ -249,10 +251,11 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
             if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\"))
                 + serverProfile_.getImageUploadParams().getThumb().TemplateName +
                 ".xml")) {
-                ServiceLocator::instance()->logger()->write(logError, LogTitle, TR("Couldn't load thumbnail preset!"));
+                ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, TR("Couldn't load thumbnail preset!"));
             } else {
                 message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
                 imageConverter.setEnableProcessing(false);
+                WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
                 imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(serverProfile_.getImageUploadParams().ImageProfileName)]);
                 imageConverter.setThumbCreatingParams(serverProfile_.getImageUploadParams().getThumb());
                 /*bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
@@ -279,7 +282,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
 bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName ) {
     std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
     if (mimeType.find("image/") == std::string::npos) {
-        ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("File '") + U2W(it.url) +
+        ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, _T("File '") + U2W(it.url) +
             _T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + U2W(mimeType) + "'.");
         return false;
     } 
@@ -305,6 +308,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->setServerProfile(serverProfile_);
     fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
     fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));
     uploadSessionMutex_.lock();
@@ -477,7 +481,7 @@ bool CImageReuploaderDlg::BeginDownloading()
 
             if ( scheme.empty() )  {
                 if ( sourceUrl.IsEmpty() ) {
-                    ServiceLocator::instance()->logger()->write(logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\nYou must provide base URL."));
+                    ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, _T("Cannot download file by relative url: \"") + urlWide + _T("\".\r\nYou must provide base URL."));
                     continue;
                 }
                 TCHAR absoluteUrlBuffer[MAX_PATH+1];
@@ -673,11 +677,12 @@ bool CImageReuploaderDlg::pasteHtml() {
 }
 
 bool CImageReuploaderDlg::OnClose() {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV = GuiTools::GetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX);
     return true;
 }
 
 LRESULT CImageReuploaderDlg::OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    LogWindow.Show();
+    ServiceLocator::instance()->logWindow()->Show();
     return 0;
 }

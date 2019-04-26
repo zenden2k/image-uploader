@@ -21,7 +21,7 @@
 #include "HistoryWindow.h"
 
 #include "Core/i18n/Translator.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Core/HistoryManager.h"
 #include "Core/ServiceLocator.h"
 #include "ResultsWindow.h"
@@ -50,6 +50,7 @@ CHistoryWindow::~CHistoryWindow()
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow();
     DlgResize_Init();
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
@@ -89,6 +90,7 @@ BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     delayed_closing_ = true;
     if(!m_treeView.isRunning())
     {
@@ -115,6 +117,7 @@ void CHistoryWindow::Show()
 void CHistoryWindow::LoadMonthList() {
     SendDlgItemMessage(IDC_MONTHCOMBO, CB_RESETCONTENT, 0, 0);
     std::vector<CString> files;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
     WinUtils::GetFolderFileList(files, historyFolder, _T("history*.xml"));
     pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
@@ -424,6 +427,7 @@ void CHistoryWindow::threadsStarted()
 
 LRESULT CHistoryWindow::OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
     m_treeView.setDownloadingEnabled(Settings.HistorySettings.EnableDownloading);
     return 0;

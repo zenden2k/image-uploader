@@ -6,6 +6,7 @@
 #include <mutex>
 
 #include "SearchByImage.h"
+#include "Core/Upload/ServerProfile.h"
 
 class UploadTask;
 class NetworkClient;
@@ -13,7 +14,7 @@ class NetworkClient;
 class SearchYandexImages: public SearchByImage  {
 
     public:
-        explicit SearchYandexImages(const std::string& fileName);
+        explicit SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer);
         void stop() override;
 protected:
     void run() override;
@@ -25,6 +26,7 @@ protected:
     std::string uploadedImageUrl_;
     bool uploadFinished_;
     std::shared_ptr<UploadTask> currentUploadTask_;
+    ServerProfile temporaryServer_;
 };
 
 #endif

@@ -31,6 +31,7 @@
 #include "Gui/Dialogs/AddFtpServerDialog.h"
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
 const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
@@ -67,13 +68,13 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 
     accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
     accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
-    accountLink_.m_clrLink = CSettings::DefaultLinkColor;
+    accountLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
     accountLink_.SetToolTipText(TR("User name"));
 
 
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
     imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    imageProcessingParamsLink_.m_clrLink = CSettings::DefaultLinkColor;
+    imageProcessingParamsLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
     CString linkLabel = showImageProcessingParams_ ? TR("Image processing settings...") : TR("Settings...");
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
@@ -233,10 +234,9 @@ void CServerSelectorControl::serverChanged() {
             if ( !uploadEngineData ) {
                 return ;
             }
-   
+            WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+
             if ( Settings.ServersSettings[serverName].size() ) {
-
-
                 std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverName];
                 std::map <std::string, ServerSettingsStruct>::iterator it = ss.begin();
                 if ( it->first == "" ) {
@@ -452,6 +452,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
 

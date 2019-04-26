@@ -23,10 +23,10 @@
 #include "Core/CommonDefs.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Core/Settings.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 #include "Core/ServiceLocator.h"
 #include "Func/MyEngineList.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 CQuickSetupDlg::CQuickSetupDlg() {
 }
@@ -36,6 +36,7 @@ CQuickSetupDlg::~CQuickSetupDlg() {
 
 
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     translateUI();
     SetWindowText( APPNAME );
     CString titleText;
@@ -140,6 +141,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
     ::EnableWindow(GetDlgItem(IDOK), FALSE);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));

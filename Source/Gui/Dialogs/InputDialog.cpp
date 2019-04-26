@@ -21,7 +21,6 @@
 #include "InputDialog.h"
 
 #include "3rdpart/GdiplusH.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 
 // CInputDialog

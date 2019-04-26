@@ -23,11 +23,12 @@
 #include "Func/MediaInfoHelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     infoType_ = static_cast<InfoType>(Settings.MediaInfoSettings.InfoType);
     generateTextInEnglish_ = !Settings.MediaInfoSettings.EnableLocalization;
 }
@@ -149,6 +150,7 @@ LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     //::EnableWindow(GetDlgItem(IDC_GENERATETEXTINENGLISHCHECKBOX), fullInfo);
     SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
     Settings.MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
@@ -159,6 +161,7 @@ LRESULT CMediaInfoDlg::OnShowInEnglishCheckboxClicked(WORD, WORD, HWND, BOOL&) {
     generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
     
     FixEditRTL();
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;
     GenerateInfo();
     return 0;

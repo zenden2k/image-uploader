@@ -32,7 +32,7 @@
 #include "SettingsDlg.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UrlShorteningTask.h"
-
+#include "Core/Settings/WtlGuiSettings.h"
 // FloatingWindow
 
 // TODO: rewrite using an enum

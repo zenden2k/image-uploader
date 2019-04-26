@@ -9,7 +9,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/CommonDefs.h"
 #include "Core/AppParams.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Gui/LoginDialog.h"
 
 ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineManager, bool defaultServer,
@@ -197,6 +197,7 @@ void ServerSelectorWidget::updateAccountButtonMenu() {
         accountButtonMenu_.reset(new QMenu(accountButton));
     }
     accountButtonMenu_->clear();
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     auto& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
     for (const auto& user : serverUsers) {
         std::string accountName = user.first;

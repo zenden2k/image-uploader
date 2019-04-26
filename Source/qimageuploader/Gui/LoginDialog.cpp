@@ -4,8 +4,8 @@
 #include <QMessageBox>
 #include "Core/Upload/UploadEngine.h"
 #include "Core/CommonDefs.h"
-
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
+#include "Core/ServiceLocator.h"
 
 LoginDialog::LoginDialog(ServerProfile& serverProfile, bool createNew, QWidget *parent) :
     QDialog(parent),
@@ -53,6 +53,7 @@ void LoginDialog::onAccept() {
 		return;
 	}
 	std::string serverNameA = serverProfile_.serverName();
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 	// /* !ignoreExistingAccount_ &&  */
 	if (createNew_ && Settings.ServersSettings[serverNameA].find(li.Login) != Settings.ServersSettings[serverNameA].end()) {
 		QMessageBox::critical(this, tr("Error"), tr("Account with such name already exists."));

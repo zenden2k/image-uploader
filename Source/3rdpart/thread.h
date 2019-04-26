@@ -20,6 +20,8 @@
 // Beware of bugs.
 //
 
+#include <Windows.h>
+#include <crtdbg.h>
 #if defined(_MT) || defined(_DLL)
 // Due to the nature of the multithreaded C runtime lib we
 // need to use _beginthreadex() and _endthreadex() instead

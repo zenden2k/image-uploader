@@ -18,7 +18,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/tinyxml.cpp
     3rdpart/tinyxmlerror.cpp
     3rdpart/tinyxmlparser.cpp
-    Settings/CliSettings.cpp
     OutputCodeGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
@@ -58,7 +57,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/GumboQuery/QueryUtil.cpp
     3rdpart/GumboQuery/Selection.cpp
     3rdpart/GumboQuery/Selector.cpp
-    Settings.cpp
     Scripting/API/Process.cpp
     Upload/Filters/UrlShorteningFilter.cpp
     Upload/Filters/UserFilter.cpp
@@ -92,7 +90,6 @@ if(WIN32)
         ../Gui/Dialogs/WebViewWindow.cpp
         ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
-        3rdpart/CodePages.cpp
         ../Gui/GuiTools.cpp
         Images/Utils.cpp
         ../3rdpart/QColorQuantizer.cpp

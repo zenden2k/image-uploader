@@ -10,7 +10,7 @@
 class MyLogSink: public google::LogSink {
 public:
     MyLogSink(ILogger* logger);
-    virtual void send(google::LogSeverity severity, const char* full_filename,
+    void send(google::LogSeverity severity, const char* full_filename,
         const char* base_filename, int line,
         const struct ::tm* tm_time,
         const char* message, size_t message_len) override;

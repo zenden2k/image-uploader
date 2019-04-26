@@ -30,9 +30,7 @@
     #include <windows.h>
     #ifndef IU_CLI
         #include "Func/IuCommonFunctions.h"
-#ifdef IU_WTL
         #include "Core/i18n/Translator.h"
-#endif
         #include "Func/WinUtils.h"
     #endif
 #include "Core/Images/Utils.h"
@@ -53,6 +51,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Upload/UploadErrorHandler.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Core/i18n/Translator.h"
 
 using namespace Sqrat;
 
@@ -172,11 +171,11 @@ const std::string Translate(const std::string& key, const std::string& originalT
         }
     }
 
-#ifdef IU_WTL_APP
-    return ServiceLocator::instance()->translator()->translate(originalText.c_str());
-#else
+    auto translator = ServiceLocator::instance()->translator();
+    if (translator) {
+        return translator->translate(originalText.c_str());
+    } 
     return originalText;
-#endif
 }
 
 const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
@@ -215,9 +214,11 @@ const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 }
 
 void WriteLog(const std::string& type, const std::string& message) {
-    LogMsgType msgType = logWarning;
+    ILogger::LogMsgType msgType = ILogger::logWarning;
     if ( type == "error" ) {
-        msgType = logError;
+        msgType = ILogger::logError;
+    } else if (type == "info") {
+        msgType = ILogger::logInformation;
     }
     ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message);
 }

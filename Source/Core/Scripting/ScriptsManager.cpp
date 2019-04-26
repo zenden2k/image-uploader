@@ -21,7 +21,8 @@ limitations under the License.
 #include "ScriptsManager.h"
 
 #include "UploadFilterScript.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
+#include "Core/ServiceLocator.h"
 
 ScriptsManager::ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory) :
     networkClientFactory_(networkClientFactory)
@@ -50,6 +51,7 @@ Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
             plugin = it2->second;
         }
     }
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     if (plugin && (time(0) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
         UseExisting = true;
 

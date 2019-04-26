@@ -22,7 +22,7 @@
 
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CLangSelect
 CLangSelect::CLangSelect()
@@ -96,6 +96,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         return 0;
     }
 
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     // FIXME: detect system language and select corresponding language file
     if ( !Settings.Language.IsEmpty() ) {
             SelectLang(Settings.Language);

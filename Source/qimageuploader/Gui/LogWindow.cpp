@@ -17,7 +17,7 @@ LogWindow::~LogWindow()
 {
 }
 
-void LogWindow::writeLog(LogMsgType MsgType, QString Sender, QString Msg, QString Info)
+void LogWindow::writeLog(ILogger::LogMsgType MsgType, QString Sender, QString Msg, QString Info)
 {
     QString line;
     line.fill('-', 70);

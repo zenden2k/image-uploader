@@ -19,7 +19,7 @@
 */
 
 #include "TraySettings.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
  
 CTrayActions::CTrayActions()
@@ -52,6 +52,7 @@ CTraySettingsPage::~CTraySettingsPage()
 
 LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_SHOWTRAYICON, "Show tray icon");
     TRC(IDC_MOUSEREACTIONGROUP, "Mouse clicks handlers");
     TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL, "Left button double-click");
@@ -87,6 +88,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
 bool CTraySettingsPage::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ShowTrayIcon_changed = Settings.ShowTrayIcon;
     Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
     Settings.ShowTrayIcon_changed ^= Settings.ShowTrayIcon;

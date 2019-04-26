@@ -23,7 +23,7 @@
 #include "Func/common.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/CmdLine.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Func/WinUtils.h"
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -165,6 +165,7 @@ void CUpdateDlg::CheckUpdates()
         return;
     }
 
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.LastUpdateTime = static_cast<int>(time(0));
     if (m_UpdateManager.AreManualUpdates()) {
         CString text2 = m_UpdateManager.generateReport(true);
@@ -258,6 +259,7 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
         m_Checked = false;
     }
     m_Modal = true;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.LastUpdateTime = static_cast<int>(time(0));
     if (!m_hWnd)
         Create(parent);

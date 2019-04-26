@@ -21,7 +21,7 @@
 
 #include "Core/CommonDefs.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -59,6 +59,7 @@ CImageDownloaderDlg::~CImageDownloaderDlg()
 LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     if (isVistaOrLater_)
     {
@@ -140,6 +141,7 @@ LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
         m_FileDownloader.stop();
     else
     {
+        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
         Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
         EmulateEndDialog(wID);
     }
@@ -209,7 +211,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
                 CString url = U2W(it.url);
                 errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."), static_cast<LPCTSTR>(url),
                     static_cast<LPCTSTR>(U2W(mimeType)));
-                ServiceLocator::instance()->logger()->write(logError, _T("Image Downloader"), errorStr);
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr);
             }
         }
         if (add) {

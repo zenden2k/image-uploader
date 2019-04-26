@@ -20,7 +20,7 @@
 
 #include "ScreenshotSettingsPage.h"
 
-#include "Core/Settings.h"
+#include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Func/myutils.h"
@@ -37,6 +37,7 @@ CScreenshotSettingsPagePage::~CScreenshotSettingsPagePage()
 
 LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_GROUPPARAMS, "Additional settings");
     TRC(IDC_QUALITYLABEL, "Quality:");
     TRC(IDC_DELAYLABEL, "Timeout:");
@@ -115,6 +116,7 @@ bool CScreenshotSettingsPagePage::Apply()
         ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
         return false;
     }
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.FilenameTemplate = fileName;
     
     Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);

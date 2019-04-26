@@ -30,7 +30,6 @@
 #include "Gui/Dialogs/maindlg.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Core/Settings.h"
 #include "Gui/Controls/ResultsListView.h"
 #include "Func/MyEngineList.h"
 

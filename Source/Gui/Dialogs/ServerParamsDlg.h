@@ -26,7 +26,6 @@
 #include "Func/common.h"
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Core/Settings.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Controls/DialogIndirect.h"
 

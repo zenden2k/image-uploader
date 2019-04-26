@@ -1,10 +1,12 @@
 #include "LocalFileCache.h"
 
-#include "Core/Settings.h"
-#include "HistoryManager.h"
 #include <mutex>
+
 #include <boost/filesystem.hpp>
+#include "Core/Settings/BasicSettings.h"
+#include "HistoryManager.h"
 #include "Core/3rdpart/pcreplusplus.h"
+#include "ServiceLocator.h"
 
 LocalFileCache::LocalFileCache() {
     historyParsed = false;
@@ -22,6 +24,7 @@ bool LocalFileCache::ensureHistoryParsed() {
 bool LocalFileCache::parseHistory() {
     std::lock_guard<std::recursive_mutex> guard(mutex_);
     std::vector<std::string> files;
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     std::string historyFolder = Settings.SettingsFolder + "/History/";
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 

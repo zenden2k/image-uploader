@@ -110,6 +110,7 @@ LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
             // If some tab cannot apply changes - do not close dialog
         }
     }
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.SaveSettings();
     EndDialog(wID);
     return 0;
@@ -186,6 +187,7 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     }
     GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
     SetTimer(kStatusLabelTimer, 3000);
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.SaveSettings();
     return 0;
 }

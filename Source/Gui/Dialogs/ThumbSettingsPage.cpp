@@ -23,7 +23,6 @@
 #include "3rdpart/GdiplusH.h"
 #include <GdiPlusPixelFormats.h>
 #include "Core/i18n/Translator.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Thumbnail.h"
 #include "ThumbEditor.h"
@@ -33,11 +32,13 @@
 #include "Core/Images/Utils.h"
 #include "Core/Video/GdiPlusImage.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 #pragma comment( lib, "uxtheme.lib" )
 
 CThumbSettingsPage::CThumbSettingsPage()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_ = Settings.imageServer.getImageUploadParams().getThumb();
     m_CatchFormChanges = false;
 }
@@ -105,6 +106,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 bool CThumbSettingsPage::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
@@ -219,7 +221,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         autoPtrThumb.reset(thumb);
         if(!thumb->LoadFromFile(fileName))
         {
-            ServiceLocator::instance()->logger()->write(logError, _T("CThumbSettingsPage"), TR("Couldn't load thumbnail preset!"));
+            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("CThumbSettingsPage"), TR("Couldn't load thumbnail preset!"));
             return;
         }
     }

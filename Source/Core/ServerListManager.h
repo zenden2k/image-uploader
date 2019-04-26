@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 #include "Core/Utils/CoreTypes.h"
-#include "Core/Settings.h"
+#include "Core/Upload/UploadEngine.h"
 
 class CUploadEngineList;
 

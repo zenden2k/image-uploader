@@ -39,6 +39,7 @@ if(WIN32)
         ../Core/Video/GdiPlusImage.cpp
         ../Core/Video/Tests/VideoGrabberTest.cpp
         ../Core/3rdpart/dxerr.cpp
+        ../Core/Settings/CliSettings.cpp
     )
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)

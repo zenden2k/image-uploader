@@ -10,6 +10,7 @@ add_executable(CLI
     main.cpp 
     ConsoleScriptDialogProvider.cpp 
     ConsoleScriptDialogProvider.h
+    ../Core/Settings/CliSettings.cpp
 )
 
 set_target_properties( CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)

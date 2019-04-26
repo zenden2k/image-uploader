@@ -1,7 +1,11 @@
 ﻿#include "ServerProfile.h"
+
 #include "Core/SettingsManager.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "Core/ServiceLocator.h"
+#ifdef _WIN32
+#include "Core/Settings/CommonGuiSettings.h"
+#endif
 
 ServerProfile::ServerProfile() {
     UseDefaultSettings = true;
@@ -86,37 +90,32 @@ void ServerProfile::clearFolderInfo()
 ServerProfile ServerProfile::deepCopy()
 {
     ServerProfile res = *this;
-#ifdef IU_WTL
     res.imageUploadParams = getImageUploadParams();
-#endif
     res.UseDefaultSettings = false;
     UseDefaultSettings = false;
     return res;
 }
 
-#ifndef IU_SERVERLISTTOOL
 void ServerProfile::bind(SettingsNode& serverNode)
 {
     serverNode["@Name"].bind(serverName_);
     serverNode["@FolderId"].bind(folderId_);
-    //MessageBoxA(0,folderTitle_.c_str(),0,0);
     serverNode["@FolderTitle"].bind(folderTitle_);
     serverNode["@FolderUrl"].bind(folderUrl_);
     serverNode["@ProfileName"].bind(profileName_);
     serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
-#ifdef IU_WTL
+#ifdef _WIN32
     imageUploadParams.bind(serverNode);
 #endif
 }
-#endif
 
-#ifdef IU_WTL
 ImageUploadParams ServerProfile::getImageUploadParams()
 {
-#ifndef IU_SERVERLISTTOOL
-    if (UseDefaultSettings && &Settings.imageServer != this) {
-        return Settings.imageServer.imageUploadParams;
+#ifdef _WIN32
+    CommonGuiSettings* Settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
+    if (UseDefaultSettings && Settings &&  &Settings->imageServer != this) {
+        return Settings->imageServer.imageUploadParams;
     }
 #endif
     return imageUploadParams;
@@ -131,9 +130,9 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 {
     imageUploadParams = iup;
 }
-#endif
 
 ServerSettingsStruct& ServerProfile::serverSettings() {
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* res = Settings.getServerSettings(*this);
     res->setParam("FolderID", folderId_);
     res->setParam("FolderUrl", folderUrl_);

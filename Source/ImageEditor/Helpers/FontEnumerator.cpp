@@ -1,5 +1,7 @@
 #include "FontEnumerator.h"
+
 #include <algorithm>
+#include <tchar.h>
 
 namespace
 {

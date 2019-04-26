@@ -1,8 +1,5 @@
 #include "IuCommonFunctions.h"
 
-#ifndef IU_SHELLEXT
-#include "Core/Settings.h"
-#endif
 #include "WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
@@ -17,13 +14,14 @@ namespace IuCommonFunctions {
 #ifndef IU_SHELLEXT
 CString GetDataFolder()
 {
-    CString result;
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)&& !defined(IU_TESTS)
+    CString result = U2W(AppParams::instance()->dataDirectory());
+/*#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)&& !defined(IU_TESTS)
     result= Settings.DataFolder;
 #else 
     result= WinUtils::GetAppFolder()+"\\Data\\";
 #endif
-    if ( result.Right(1) != "\\") {
+    */
+    if (result.Right(1) != "\\" && result.Right(1) != "/") {
         result += "\\";
     }
     return result;

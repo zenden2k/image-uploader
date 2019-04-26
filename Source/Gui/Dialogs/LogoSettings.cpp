@@ -20,11 +20,11 @@
 
 #include "LogoSettings.h"
 
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "InputDialog.h"
 #include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CLogoSettings
 CLogoSettings::CLogoSettings()
@@ -68,6 +68,7 @@ CLogoSettings::~CLogoSettings()
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     ñonvert_profiles_ = Settings.ConvertProfiles;
     TabBackgroundFix(m_hWnd);
     // Translating controls
@@ -192,6 +193,7 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 bool CLogoSettings::Apply()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
    CString saveToProfile = CurrentProfileName;
    if(CurrentProfileOriginalName == _T("Default"))
     saveToProfile = CurrentProfileOriginalName;

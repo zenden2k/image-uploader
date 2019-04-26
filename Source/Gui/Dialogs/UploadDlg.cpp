@@ -24,7 +24,6 @@
 #include <boost/format.hpp>
 
 #include "Gui/Dialogs/LogWindow.h"
-#include "Core/Settings.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include "Core/3rdpart/FastDelegate.h"
@@ -38,6 +37,7 @@
 #include "Core/AppParams.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 
 // CUploadDlg
@@ -60,6 +60,7 @@ CUploadDlg::~CUploadDlg()
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     uploadProgressBar_ = GetDlgItem(IDC_UPLOADPROGRESS);
     imageViewWindow_.Create(m_hWnd);
     // Initializing Windows 7 taskbar related stuff
@@ -112,6 +113,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 bool CUploadDlg::startUpload() {
     if(!MainDlg) return 0;
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     
     #if  WINVER  >= 0x0601
         if(ptl)
@@ -253,6 +255,7 @@ int CUploadDlg::ThreadTerminated(void)
 
 bool CUploadDlg::OnShow()
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     EnableNext(false);
     ShowNext();
     ShowPrev();
@@ -326,7 +329,7 @@ bool CUploadDlg::OnHide()
         delete it;
     }
     files_.clear();
-    
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
     Settings.CodeType = resultsWindow_->GetCodeType();
     Settings.CodeLang = resultsWindow_->GetPage();
@@ -402,7 +405,7 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     if ( !alreadyShortened_ && shortenUrl ) {
         GenerateOutput();
         
-        uploadManager_->shortenLinksInSession(uploadSession_);
+        uploadManager_->shortenLinksInSession(uploadSession_, WizardDlg->urlShorteningFilter());
     } else {
         GenerateOutput();
     }
@@ -466,7 +469,7 @@ void CUploadDlg::updateTotalProgress() {
 }
 
 LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    LogWindow.Show();
+    ServiceLocator::instance()->logWindow()->Show();
     return 0;
 }
 
@@ -553,6 +556,7 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
 
 // This function is being executed in UI thread
 void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     int totalFileCount = session->taskCount();

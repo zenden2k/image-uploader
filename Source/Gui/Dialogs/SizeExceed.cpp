@@ -22,12 +22,12 @@
 
 #include "Func/common.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Core/Settings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/MyEngineList.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CSizeExceed
 CSizeExceed::CSizeExceed(FileUploadTask * fileTask, CUploadEngineList * EngineList, UploadEngineManager* uploadEngineManager):
@@ -54,6 +54,7 @@ void CSizeExceed::Translate()
 
 LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     RECT rc = {12, 30, 162, 144};
     img.Create(m_hWnd, rc);
     bool isImage = fileTask_->isImage() && IuCommonFunctions::IsImage(m_szFileName);

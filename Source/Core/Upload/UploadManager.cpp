@@ -1,40 +1,30 @@
 #include "UploadManager.h"
-//#include "Func/Common.h"
+
 #include "Core/HistoryManager.h"
 #include "Core/ServiceLocator.h"
 #include "Core/LocalFileCache.h"
 #include "Core/Upload/FileUploadTask.h"
-#include "Core/Upload/Filters/UserFilter.h"
+#include "Core/Upload/Filters/UrlShorteningFilter.h"
 #include "Core/Scripting/ScriptsManager.h"
-#include "Core/Settings.h"
+#include "Core/Settings/BasicSettings.h"
 #include "UploadEngineManager.h"
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) :
-CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory),
-                userFilter(scriptsManager)
-#ifdef IU_WTL_APP
-                ,sizeExceedFilter_(engineList, uploadEngineManager)
-#endif
+    CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory)
 {
     uploadEngineManager_ = uploadEngineManager;
-#ifdef IU_WTL_APP
-    addUploadFilter(&imageConverterFilter);
-#endif
-    addUploadFilter(&userFilter);
-#ifdef IU_WTL_APP
-    addUploadFilter(&sizeExceedFilter_);
-#endif
-    addUploadFilter(&urlShorteningFilter);
     enableHistory_ = true;
+    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
     setMaxThreadCount(Settings.MaxThreads);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
 }
 
 UploadManager::~UploadManager() {
-    Settings.removeChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    Settings->removeChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
 }
 
-bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session)
+bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter)
 {
     int taskCount = session->taskCount();
 
@@ -47,7 +37,7 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
             continue;
         }
         task->serverProfile().setShortenLinks(true);
-        res = urlShorteningFilter.PostUpload(task.get()) || res;
+        res = filter->PostUpload(task.get()) || res;
     }
     return res;
 }
@@ -137,5 +127,6 @@ void UploadManager::taskAdded(UploadTask* task)
 
 void UploadManager::settingsChanged(BasicSettings* settings)
 {
-    setMaxThreadCount(Settings.MaxThreads);
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    setMaxThreadCount(Settings->MaxThreads);
 }

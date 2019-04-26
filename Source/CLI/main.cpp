@@ -41,13 +41,14 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
-#include "Core/Settings.h"
+#include "Core/Settings/CliSettings.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
 #include "Core/Logging/ConsoleLogger.h"
 #include "Core/i18n/Translator.h"
 #include "ConsoleScriptDialogProvider.h"
 #include "Core/Utils/ConsoleUtils.h"
+#include "Core/Scripting/ScriptsManager.h"
 #ifdef _WIN32
     #include <windows.h>
     #include "Func/UpdatePackage.h"
@@ -64,6 +65,7 @@
 #endif
 #include "versioninfo.h"
 
+
 #define IU_CLI_VER "0.2.7"
 
 #ifdef _WIN32
@@ -73,7 +75,7 @@ std::string dataFolder = "Data/";
 #else
 std::string dataFolder = "/usr/share/imageuploader/";
 #endif
-
+CliSettings Settings;
 std::vector<std::string> filesToUpload;
 std::string serverName;
 std::string login;
@@ -658,7 +660,7 @@ int main(int argc, char *argv[]){
     ConsoleLogger defaultLogger;
     
     ServiceLocator* serviceLocator = ServiceLocator::instance();
-  
+    serviceLocator->setSettings(&Settings);
     serviceLocator->setLogger(&defaultLogger);
     MyLogSink logSink(&defaultLogger);
     google::AddLogSink(&logSink);
