@@ -19,6 +19,7 @@
 */
 #include "WizardDlg.h"
 
+#include <boost/filesystem.hpp>
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
 #include "Core/HistoryManager.h"
@@ -74,10 +75,11 @@ struct TaskDispatcherMessageStruct {
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg() : 
+CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger) :
     m_lRef(0), 
     FolderAdd(this), 
-    Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>())
+    Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>()),
+    defaultLogger_(defaultLogger)
 { 
     screenshotIndex = 1;
     CurPage = -1;
@@ -177,6 +179,11 @@ CWizardDlg::~CWizardDlg()
         hLocalHotkeys = nullptr; 
     }
 
+    for (auto logWnd : logWindowsByFileName_) {
+        logWnd.second->DestroyWindow();
+        delete logWnd.second;
+    }
+
 }
 
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
@@ -238,6 +245,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     uploadEngineManager_->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
     std::vector<CString> list;
     CString serversFolder = IuCommonFunctions::GetDataFolder() + _T("Servers\\");
+    boost::filesystem::path serversFolderPath(serversFolder);
+
     WinUtils::GetFolderFileList(list, serversFolder, _T("*.xml"));
 
     for(size_t i=0; i<list.size(); i++)
@@ -247,8 +256,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     list.clear();
 
     CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
+    boost::filesystem::path userServersFolderPath(userServersFolder);
+    
 
-    if ( userServersFolder != serversFolder) {
+    if (boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
         
         WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
 
@@ -2191,4 +2202,25 @@ void CWizardDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
         msg.async = false;
         SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
     }
+}
+
+void CWizardDlg::showLogWindowForFileName(CString fileName) {
+    if (fileName.IsEmpty()) {
+        return;
+    }
+
+    auto it = logWindowsByFileName_.find(fileName);
+    if (it != logWindowsByFileName_.end()) {
+        it->second->Show();
+        return;
+    }
+
+    CLogWindow* wnd = new CLogWindow;
+    wnd->Create(nullptr);
+    wnd->setFileNameFilter(fileName);
+    wnd->setLogger(defaultLogger_);
+    wnd->TranslateUI();
+    logWindowsByFileName_[fileName] = wnd;
+    wnd->reloadList();
+    wnd->Show();
 }

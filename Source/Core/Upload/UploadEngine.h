@@ -81,14 +81,14 @@ struct UploadAction
 
     std::vector<ActionRegExp> Regexes;
     int RetryLimit;
-    int NumOfTries;
+    //int NumOfTries;
 
     UploadAction() {
         Index = 0; 
         IgnoreErrors = false;
         OnlyOnce = false;
         RetryLimit = 1;
-        NumOfTries = 0;
+        //NumOfTries = 0;
     }
 };
 
@@ -214,7 +214,7 @@ class CUploadEngineData
         std::string UserAgent;
         std::string Engine;
         int RetryLimit;
-        int NumOfTries;
+        //int NumOfTries;
         int MaxThreads;
         int TypeMask;
         bool hasType(ServerType type) const;

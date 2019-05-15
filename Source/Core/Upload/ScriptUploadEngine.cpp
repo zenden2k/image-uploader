@@ -63,6 +63,12 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             FileName = fileTask->getFileName();
         }
     }
+
+    UploadTask* topLevelTask = task->parentTask() ? task->parentTask() : task.get();
+    auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
+    if (topLevelFileTask) {
+        setCurrentTopLevelFileName(topLevelFileTask->getFileName());
+    }
     CFolderItem parent;
 
     {
@@ -426,6 +432,11 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     }
     if (currentTask_) {
         ei.FileName = currentTask_->toString();
+        UploadTask* task = currentTask_->parentTask() ? currentTask_->parentTask() : currentTask_.get();
+        auto fileTask = dynamic_cast<FileUploadTask*>(task);
+        if (fileTask) {
+            ei.TopLevelFileName = fileTask->getFileName();
+        }
     }
     ei.ThreadId = std::this_thread::get_id();
     ei.Script = IuCoreUtils::ExtractFileName(fileName_);

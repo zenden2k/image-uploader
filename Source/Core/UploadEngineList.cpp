@@ -58,7 +58,6 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     {
         SimpleXmlNode &cur = childs[i];
         CUploadEngineData UE;
-        UE.NumOfTries = 0;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
         UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::stringToInt64(needPassword)!=0);
@@ -174,7 +173,6 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             {
                 SimpleXmlNode &actionNode = actions[j];
                 UploadAction UA;
-                UA.NumOfTries = 0;
                 UA.Index = j;
 
                 std::string RetryLimit = actionNode.Attribute("RetryLimit");

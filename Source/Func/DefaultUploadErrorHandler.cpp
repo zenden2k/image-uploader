@@ -68,8 +68,9 @@ void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
     }
 
     CString sender = TR("Uploading module");
+    CString topLevelFileName = U2W(errorInfo.TopLevelFileName);
     if (!errorMsg.IsEmpty())
-        logger_->write(type, sender, errorMsg, infoText);
+        logger_->write(type, sender, errorMsg, infoText, topLevelFileName);
 }
 
 void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)

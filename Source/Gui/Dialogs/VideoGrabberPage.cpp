@@ -280,7 +280,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
                     CString logMessage;
                     CString lastError = WinUtils::GetLastErrorAsString();
                     logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);
-                    ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage);
+                    ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Video Grabber"), logMessage, L"", videoFile);
                     snapshotsFolder = AppParams::instance()->tempDirectoryW();
                 }
             }

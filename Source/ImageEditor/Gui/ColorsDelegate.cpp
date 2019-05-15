@@ -1,6 +1,6 @@
 #include "ColorsDelegate.h"
+
 #include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
 
 namespace ImageEditor {
@@ -75,13 +75,10 @@ int ColorsDelegate::itemIndex() {
 
 void ColorsDelegate::OnClick(int x, int y, float dpiScaleX, float dpiScaleY){
     if ( foregroundRect_.Contains(x,y) ) {
-        //MessageBox(0,0,0,0);
         foregroundColorButton_.Click();
     } else if ( backgroundRect_.Contains(x,y)) {
         backgroundColorButton_.Click();
     }
-
-    //MessageBox(0,0,0,0);
 }
 
 void ColorsDelegate::OnForegroundButtonSelChanged(COLORREF color, BOOL valid ) {

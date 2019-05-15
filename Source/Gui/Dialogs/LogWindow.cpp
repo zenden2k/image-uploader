@@ -32,6 +32,17 @@ CLogWindow::~CLogWindow()
 {
 }
 
+void CLogWindow::setLogger(DefaultLogger* logger) {
+    if (logger_ != logger) {
+        logger_ = logger;
+        logger->addListener(this);
+    }
+}
+
+void CLogWindow::setFileNameFilter(CString fileName) {
+    fileNameFilter_ = fileName;
+}
+
 LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow();
@@ -52,11 +63,11 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     return 0;
 }
 
-void CLogWindow::WriteLogImpl(ILogger::LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info)
+void CLogWindow::WriteLogImpl(const DefaultLogger::LogEntry& entry)
 {
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    MsgList.AddString(MsgType, Sender, Msg, Info);
-    if (MsgType == ILogger::logError && Settings.AutoShowLog) {
+    MsgList.AddString(entry.MsgType, entry.Sender, entry.Msg, entry.Info, entry.Time);
+    if (entry.MsgType == ILogger::logError && Settings.AutoShowLog) {
         Show();
     }
 }
@@ -149,14 +160,18 @@ void CLogWindow::TranslateUI()
     }
     TRC(IDCANCEL, "Hide");
     TRC(IDC_CLEARLOGBUTTON, "Clear");
-    SetWindowText(TR("Error log"));
+    CString windowTitle = TR("Error log");
+    if (!fileNameFilter_.IsEmpty()) {
+        windowTitle += _T(": ") + WinUtils::myExtractFileName(fileNameFilter_);
+    }
+    SetWindowText(windowTitle);
 }
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     std::lock_guard<std::mutex> lk(queueMutex_);
     for (const auto& item : queuedItems_) {
-        WriteLogImpl(item.MsgType, item.Sender, item.Msg, item.Info);
+        WriteLogImpl(item);
     }
     queuedItems_.clear();
     
@@ -169,25 +184,25 @@ LRESULT CLogWindow::OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
     return 0;
 }
 
-void CLogWindow::WriteLog(ILogger::LogMsgType MsgType, const CString&  Sender, const CString&  Msg, const CString&  Info)
+void CLogWindow::WriteLog(const DefaultLogger::LogEntry& entry)
 {
     if (!m_hWnd) {
         return;
     }
 
+    if (!fileNameFilter_.IsEmpty()) {
+        if (entry.FileName != fileNameFilter_) {
+            return;
+        }
+    }
+
     if (GetCurrentThreadId() == mainThreadId) {
         // Call directly
-        WriteLogImpl(MsgType, Sender, Msg, Info); 
+        WriteLogImpl(entry);
     } else {
-        
-        CLogWndMsg msg;
-        msg.Msg = Msg;
-        msg.Info = Info;
-        msg.Sender = Sender;
-        msg.MsgType = MsgType;
         {
             std::lock_guard<std::mutex> lk(queueMutex_);
-            queuedItems_.push_back(msg);
+            queuedItems_.push_back(entry);
         }
         PostMessage(MYWM_WRITELOG);
     }
@@ -196,5 +211,20 @@ void CLogWindow::WriteLog(ILogger::LogMsgType MsgType, const CString&  Sender, c
 LRESULT CLogWindow::OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     MsgList.Clear();
+    if (fileNameFilter_.IsEmpty()) {
+        logger_->clear();
+    }
     return 0;
+}
+
+void CLogWindow::onItemAdded(int index, const DefaultLogger::LogEntry& entry) {
+    WriteLog(entry);
+}
+
+void CLogWindow::reloadList() {
+    MsgList.Clear();
+    std::lock_guard<std::mutex> lk(logger_->getEntryMutex());
+    for (const auto& entry : *logger_) {
+        WriteLog(entry);
+    }
 }

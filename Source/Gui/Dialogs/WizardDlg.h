@@ -57,6 +57,7 @@ class CFolderAdd;
 class CWizardPage;
 class CWizardDlg;
 class CUpdateDlg;
+class DefaultLogger;
 
 class CMyFolderDialog : public CFolderDialogImpl<CMyFolderDialog> {
 public:
@@ -96,7 +97,7 @@ public:
     };
 
     void runInGuiThread(TaskDispatcherTask&& task, bool async) override;
-    CWizardDlg();
+    CWizardDlg(DefaultLogger* defaultLogger);
     virtual ~CWizardDlg();
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
@@ -155,6 +156,7 @@ public:
     LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     void CloseDialog(int nVal);
     bool DragndropEnabled;
     enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
@@ -224,6 +226,8 @@ public:
     std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
     std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
     std::unique_ptr<UserFilter> userFilter_;
+    std::map<CString, CLogWindow*> logWindowsByFileName_;
+    DefaultLogger* defaultLogger_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);
@@ -295,8 +299,7 @@ public:
     void CreateUpdateDlg();
     INT m_bScreenshotFromTray;
     bool IsClipboardDataAvailable();
-
-    LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    void showLogWindowForFileName(CString fileName); 
 };
 
 

@@ -98,7 +98,7 @@ protected:
 
 int _tmain(int argc, _TCHAR* argvW[]) {
     char **argv = convertArgv(argc, argvW);
-    ArgDeleter deleter(argc, argv);
+    //ArgDeleter deleter(argc, argv);
     //FLAGS_logtostderr = true;
 #else
 int main(int argc, char *argv[]){

@@ -29,8 +29,8 @@ bool SearchByImage::isRunning() const {
     return isRunning_;
 }
 
-void SearchByImage::setOnFinished(FinishedDelegate&& fd) {
-    onFinished_ = std::move(fd);
+void SearchByImage::setOnFinished(const FinishedDelegate& fd) {
+    onFinished_ = fd;
 }
 
 int SearchByImage::progressCallback(INetworkClient *clientp, double dltotal, double dlnow, double ultotal, double ulnow) {

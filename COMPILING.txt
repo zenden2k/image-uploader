@@ -2,7 +2,7 @@
 
 Before building you should copy file "Source\versioninfo.h.dist" to "Source\versioninfo.h". This file will be regenerated 
 by "versioninc.py" utility and will contain information about build number, version, date, git commit hash.
-Also python 2.7 interpreter should be installed for performing pre-build and post-build events. Ensure that your %PATH% environment 
+Python 2.7 interpreter should be installed for performing pre-build and post-build events. Ensure that your %PATH% environment 
 variable includes the directory of your Python distribution.
 
 You need Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 

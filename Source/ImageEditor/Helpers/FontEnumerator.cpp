@@ -38,8 +38,7 @@ void FontEnumerator::run()
     logFont.lfCharSet = DEFAULT_CHARSET;
     EnumFontFamiliesEx(dc_, &logFont, EnumFontFamExProc, reinterpret_cast<LPARAM>(this), 0);
     std::sort(fonts_.begin(), fonts_.end(), sortCompareLogFont);
-    std::vector<LOGFONT>::iterator it;
-    it = std::unique(fonts_.begin(), fonts_.end(), compareLogFont);
+    std::vector<LOGFONT>::iterator it = std::unique(fonts_.begin(), fonts_.end(), compareLogFont);
     fonts_.resize(std::distance(fonts_.begin(), it));
     onEnumerationFinished_();
 }

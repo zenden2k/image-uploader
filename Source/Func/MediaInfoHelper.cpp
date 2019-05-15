@@ -55,13 +55,13 @@ std::string timestampToStr(int64_t duration, int64_t units) {
     int hours, mins, secs, us;
     secs = static_cast<int>(duration / units);
     us = static_cast<int>(duration % units);
-mins = secs / 60;
-secs %= 60;
-hours = mins / 60;
-mins %= 60;
-char buffer[100];
-sprintf(buffer, "%02d:%02d:%02d", hours, mins, secs/*, (int)((100 * us) / units)*/);
-return buffer;
+    mins = secs / 60;
+    secs %= 60;
+    hours = mins / 60;
+    mins %= 60;
+    char buffer[100];
+    sprintf(buffer, "%02d:%02d:%02d", hours, mins, secs/*, (int)((100 * us) / units)*/);
+    return buffer;
 }
 
 bool FindMediaInfoDllPath() {

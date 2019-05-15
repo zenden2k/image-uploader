@@ -52,6 +52,8 @@ std::unordered_map<HSQUIRRELVM, PrintCallback> printCallbacks;
 std::mutex printCallbacksMutex;
 std::unordered_map<HSQUIRRELVM, std::string> scriptNames;
 std::mutex scriptNamesMutex;
+std::unordered_map<HSQUIRRELVM, std::string> currentTopLevelFileName;
+std::mutex currentTopLevelFileNameMutex;
 
 #ifndef _MSC_VER
 int _vscprintf(const char * format, va_list pargs) {
@@ -326,6 +328,20 @@ void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName)
     scriptNames[vm.GetVM()] = fileName;
 }
 
+void SetCurrentTopLevelFileName(Sqrat::SqratVM& vm, const std::string& fileName)
+{
+    std::lock_guard<std::mutex> lock(currentTopLevelFileNameMutex);
+    currentTopLevelFileName[vm.GetVM()] = fileName;
+}
+
+std::string GetCurrentTopLevelFileName() {
+    std::lock_guard<std::mutex> lock(currentTopLevelFileNameMutex);
+    auto it = currentTopLevelFileName.find(GetCurrentThreadVM());
+    if (it != currentTopLevelFileName.end()) {
+        return it->second;
+    }
+    return std::string();
+}
 void ClearVmData(Sqrat::SqratVM& vm)
 {
     std::lock_guard<std::mutex> lock(scriptNamesMutex);
@@ -333,6 +349,11 @@ void ClearVmData(Sqrat::SqratVM& vm)
     if (it != scriptNames.end())
     {
         scriptNames.erase(it);
+    }
+
+    auto it2 = currentTopLevelFileName.find(vm.GetVM());
+    if (it2 != currentTopLevelFileName.end()) {
+        currentTopLevelFileName.erase(it2);
     }
 }
 

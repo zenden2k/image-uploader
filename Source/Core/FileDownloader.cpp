@@ -150,8 +150,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
     {
         item = *fileList_.begin();
 
-        std::string url;
-        url = item.url;
+        std::string url = item.url;
         fileList_.erase(fileList_.begin());
 
         uriparser::Uri uri(url);

@@ -21,6 +21,8 @@
 #include "CryptoUtils.h"
 
 #include "Core/3rdpart/base64.h"
+#include <libbase64.h>
+#include <Core/Upload/CommonTypes.h>
 
 namespace IuCoreUtils {
 namespace CryptoUtils {
@@ -38,7 +40,47 @@ std::string Base64Encode(const std::string& data)
 
 std::string Base64Decode(const std::string& data)
 {
-    return base64_decode(data.data());
+    return base64_decode(data);
+}
+
+bool Base64EncodeFile(const std::string& fileName, std::string& result) {
+    FILE* f = fopen_utf8(fileName.c_str(), "rb");
+    if (!f) {
+        return false;
+    }
+    if (fseek(f, 0, SEEK_END) != 0) {
+        return false;
+    }
+    long fsize = ftell(f);
+    rewind(f);
+    result.clear();
+
+    if (!fsize) {
+        return true;
+    }
+    size_t outlen = 0, bytes_read;
+    size_t buffer_size = /*((4 * fsize / 3) + 3) & ~3*/ 4 * fsize / 3 + 5;
+    const int read_buffer_size = 1024 * 1024;
+    char* read_buffer = new char[read_buffer_size];
+    result.resize(buffer_size, '\0');
+
+    base64_state state;
+    base64_stream_encode_init(&state, 0);
+    char* encoded_cur = &result[0];
+    size_t total_len = 0;
+    while ((bytes_read = fread(read_buffer, 1, read_buffer_size, f)) > 0) {
+        outlen = 0;
+        base64_stream_encode(&state, read_buffer, bytes_read, encoded_cur, &outlen);
+        encoded_cur += outlen;
+        total_len += outlen;
+    }
+
+    base64_stream_encode_final(&state, encoded_cur, &outlen);
+    total_len += outlen;
+    result.resize(total_len);
+    //encoded_cur += outlen;
+    delete[] read_buffer;
+    return true;
 }
 
 }

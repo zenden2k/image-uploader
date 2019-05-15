@@ -23,6 +23,7 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Upload/FileUploadTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
@@ -142,14 +143,14 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
 bool CDefaultUploadEngine::executeActions() {
     m_NetworkClient->setTreatErrorsAsWarnings(true);
     for (size_t i = 0; i < m_UploadData->Actions.size(); i++) {
-        m_UploadData->Actions[i].NumOfTries = 0;
+        int NumOfTries = 0;
         bool ActionRes = false;
         do {
             if ( needStop() ) {
                 return false;
             }
             ActionRes = DoAction( m_UploadData->Actions[i] );
-            m_UploadData->Actions[i].NumOfTries ++;
+            NumOfTries ++;
             if (needStop())
                 return false;
 
@@ -162,19 +163,19 @@ bool CDefaultUploadEngine::executeActions() {
                     ErrorStr += m_ErrorReason;
                 }
 
-                if (m_UploadData->Actions[i].NumOfTries == m_UploadData->Actions[i].RetryLimit) {
+                if (NumOfTries == m_UploadData->Actions[i].RetryLimit) {
                     errorType = etActionRetriesLimitReached;
                 }
                 else {
                     errorType = etActionRepeating;
-                    ErrorStr += "retrying... ";
-                    ErrorStr += "(" + IuCoreUtils::toString(m_UploadData->Actions[i].NumOfTries + 1)
+                    ErrorStr += "retrying last action... ";
+                    ErrorStr += "(" + IuCoreUtils::toString(NumOfTries + 1)
                         + " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
                 }
                 UploadError( false, ErrorStr, 0, false );
             }
         }
-        while (m_UploadData->Actions[i].NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
+        while (NumOfTries < m_UploadData->Actions[i].RetryLimit && !ActionRes);
         if ( !ActionRes ) {
             if (m_UploadData->Actions[i].Type == "login")
             {
@@ -631,12 +632,17 @@ void CDefaultUploadEngine::UploadError(bool error, const std::string& errorStr, 
     m_LastError.ServerName = m_UploadData->Name;
     if (currentTask_) {
         m_LastError.FileName = currentTask_->toString();
+        UploadTask* task = currentTask_->parentTask() ? currentTask_->parentTask() : currentTask_.get();
+        auto fileTask = dynamic_cast<FileUploadTask*>(task);
+        if (fileTask) {
+            m_LastError.TopLevelFileName = fileTask->getFileName();
+        }
     }
     if (m_CurrentAction)
     {
         m_LastError.ActionIndex = m_CurrentAction->Index + 1;
         m_LastError.Url = m_CurrentAction->Url;
-        m_LastError.RetryIndex = m_CurrentAction->NumOfTries + 1;
+        //m_LastError.RetryIndex = m_CurrentAction->NumOfTries + 1;
     }
 
     if (!m_LastError.error.empty())

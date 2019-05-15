@@ -189,10 +189,11 @@ void UploadSession::restartFailedTasks() {
     }
     finishedSignalSent_ = false;
     for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
-        auto status = it->get()->status();
+        auto task = it->get();
+        auto status = task->status();
 
         if (status == UploadTask::StatusFailure || status == UploadTask::StatusStopped) {
-            it->get()->setStatus(UploadTask::StatusInQueue);
+            task->reset();
         }
     }
 }
@@ -210,8 +211,17 @@ bool UploadSession::isFatalErrorSet(const std::string& serverName, const std::st
 
 void UploadSession::setFatalErrorForServer(const std::string& serverName, const std::string& profileName)
 {
-    std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);
-    serverFatalErrors_[std::make_pair(serverName, profileName)] = true;
+    {
+        std::lock_guard<std::mutex> lock(serverFatalErrorsMutex_);
+        serverFatalErrors_[std::make_pair(serverName, profileName)] = true;
+    }
+
+    for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
+        auto task = it->get();
+        if (task->status() == UploadTask::StatusInQueue && (task->serverName() == serverName && task->serverProfile().profileName() == profileName)) {
+            task->setStatus(UploadTask::StatusStopped); 
+        }
+    }
 }
 
 void UploadSession::clearErrorsForServer(const std::string& serverName, const std::string& profileName)

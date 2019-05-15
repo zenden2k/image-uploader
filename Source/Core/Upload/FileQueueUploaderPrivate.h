@@ -73,7 +73,7 @@ protected:
     void onTaskAdded(UploadSession*, UploadTask*);
     std::recursive_mutex mutex_;
     std::recursive_mutex callMutex_;
-    
+    std::deque<std::shared_ptr<UploadTask>> queue_;
 
     int pendingTasksCount();
     void taskAdded(UploadTask* task);

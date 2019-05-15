@@ -25,6 +25,8 @@ class Script {
         This function should be called each time current threads's script is changed.
         */
         void switchToThisVM();
+
+        void setCurrentTopLevelFileName(const std::string& fileName);
     protected:
         virtual void PrintCallback(const std::string& output);
         void checkCallingThread();
@@ -39,6 +41,7 @@ class Script {
         bool m_bIsPluginLoaded;
         std::thread::id owningThread_;
         ThreadSync* sync_;
+        std::string topLevelFileName_;
         std::unique_ptr<INetworkClient> networkClient_;
         std::shared_ptr<INetworkClientFactory> networkClientFactory_;
         static void CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column);

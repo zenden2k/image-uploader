@@ -105,6 +105,7 @@ protected:
     int dpiX;
     int dpiY;
     CComPtr<IAccessible> acc_;
+    static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
 };
 
 

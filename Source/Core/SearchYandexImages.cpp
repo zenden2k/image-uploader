@@ -1,6 +1,6 @@
 #include "SearchYandexImages.h"
 
-#include <assert.h>  
+#include <cassert>  
 
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadManager.h"

@@ -32,7 +32,6 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
 
-
 class CFileDownloader
 {
     public:

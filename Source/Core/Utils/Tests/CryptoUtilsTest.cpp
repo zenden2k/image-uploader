@@ -6,11 +6,14 @@
 class CryptoUtilsTest : public ::testing::Test {
 public:
 
-    CryptoUtilsTest() : constSizeFileName(TestHelpers::resolvePath("file_with_const_size.png")) {
+    CryptoUtilsTest() : constSizeFileName(TestHelpers::resolvePath("file_with_const_size.png")),
+        zeroSizeFileName(TestHelpers::resolvePath("file_with_zero_size.dat"))
+    {
 
     }
 protected:
     const std::string constSizeFileName;
+    const std::string zeroSizeFileName;
 };
 
 using namespace IuCoreUtils::CryptoUtils;
@@ -58,4 +61,33 @@ TEST_F(CryptoUtilsTest, Base64Decode)
 {
     EXPECT_EQ("Base64 is a generic term for a number of similar encoding schemes that encode", Base64Decode("QmFzZTY0IGlzIGEgZ2VuZXJpYyB0ZXJtIGZvciBhIG51bWJlciBvZiBzaW1pbGFyIGVuY29kaW5nIHNjaGVtZXMgdGhhdCBlbmNvZGU="));
     EXPECT_EQ("", Base64Decode(""));
+}
+
+TEST_F(CryptoUtilsTest, Base64EncodeFile)
+{
+    {
+        std::string output;
+        bool res = Base64EncodeFile(constSizeFileName, output);
+        EXPECT_TRUE(res);
+        EXPECT_EQ("e0f0a6e5fcd8712fe470af8bc875d525", CalcMD5HashFromString(output));
+    }
+    {
+        std::string output;
+        bool res = Base64EncodeFile(zeroSizeFileName, output);
+        EXPECT_TRUE(res);
+        EXPECT_EQ("", output);
+    }
+    {
+        std::string output;
+        bool res = Base64EncodeFile(TestHelpers::resolvePath("utf8_text_file.txt"), output);
+        EXPECT_TRUE(res);
+        EXPECT_EQ("VGVzdCBmaWxlIHdpdGhvdXQgYm9tLiDQotC10YHRgtC+0LLRi9C5INGE0LDQudC7INCx0LXQtyBCT00u", output);
+    }
+    {
+        std::string output;
+        bool res = Base64EncodeFile("notexistingfile437859347650342643438095734", output);
+        EXPECT_FALSE(res);
+        EXPECT_TRUE(output.empty());
+    }
+    
 }

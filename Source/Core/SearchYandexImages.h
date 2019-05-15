@@ -12,10 +12,9 @@ class UploadTask;
 class NetworkClient;
 
 class SearchYandexImages: public SearchByImage  {
-
-    public:
-        explicit SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer);
-        void stop() override;
+public:
+    explicit SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer);
+    void stop() override;
 protected:
     void run() override;
     void onFileFinished(UploadTask*  task, bool ok);

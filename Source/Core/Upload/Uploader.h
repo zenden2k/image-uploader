@@ -37,7 +37,7 @@ class CUploader
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
         CAbstractUploadEngine * getUploadEngine();
         
-        bool UploadFile(const std::string & FileName, const std::string displayFileName);
+        bool UploadFile(const std::string & FileName, const std::string& displayFileName);
         bool Upload(std::shared_ptr<UploadTask> task);
         void stop();
         bool needStop();
@@ -65,7 +65,7 @@ class CUploader
         std::string m_ErrorReason;
         bool isFatalError_;
         
-        void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1);
+        void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, const std::string& topLevelFileName = std::string() );
         void ErrorMessage(const ErrorInfo&);
         std::unique_ptr<INetworkClient> m_NetworkClient;
         CAbstractUploadEngine *m_CurrentEngine;

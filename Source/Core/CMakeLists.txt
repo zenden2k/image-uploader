@@ -104,6 +104,8 @@ if(NOT IU_DISABLE_MEGANZ)
        list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
 endif()       
 
+source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST})
+
 add_library(iucore STATIC ${SRC_LIST} )
 
 if(MSVC)

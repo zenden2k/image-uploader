@@ -45,7 +45,7 @@ CLogWindow LogWindow;
 WtlGuiSettings Settings;
 CLang Lang;
 
-int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
+int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
 {
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
@@ -61,7 +61,7 @@ int Run(LPTSTR lpstrCmdLine = NULL, int nCmdShow = SW_SHOWDEFAULT)
 
     CMessageLoop theLoop;
     _Module.AddMessageLoop( &theLoop );
-    CWizardDlg  dlgMain;
+    CWizardDlg  dlgMain(defaultLogger);
     
     DWORD DlgCreationResult = 0;
     bool ShowMainWindow     = true;
@@ -197,7 +197,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     ServiceLocator::instance()->setSettings(&Settings);
     LogWindow.Create(nullptr);
     serviceLocator->setLogWindow(&LogWindow);
-    DefaultLogger defaultLogger(&LogWindow);
+    DefaultLogger defaultLogger;
+    LogWindow.setLogger(&defaultLogger);
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
    
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
@@ -265,7 +266,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     hRes = _Module.Init( NULL, hInstance );
     ATLASSERT( SUCCEEDED( hRes ) );
 
-    int nRet = Run( lpstrCmdLine, nCmdShow );
+    int nRet = Run( lpstrCmdLine, nCmdShow, &defaultLogger);
     _Module.Term();
     //iuPluginManager.UnloadPlugins();
     CScriptUploadEngine::DestroyScriptEngine();

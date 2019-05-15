@@ -19,10 +19,12 @@
 */
 
 #include "Uploader.h"
+
 #include <cstdlib>
 #include <ctime>
-#include "Core/Upload/FileUploadTask.h"
 #include <cmath>
+
+#include "Core/Upload/FileUploadTask.h"
 
 CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory)
 {
@@ -96,7 +98,7 @@ int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dl
     return 0;
 }
 
-bool CUploader::UploadFile(const std::string& FileName, const std::string displayFileName) {
+bool CUploader::UploadFile(const std::string& FileName, const std::string& displayFileName) {
     return Upload(std::make_shared<FileUploadTask>(FileName, displayFileName));
 }
 
@@ -109,7 +111,6 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     std::string FileName;
     currentTask_ = task;
 
-
     if (task->type() == UploadTask::TypeFile) {
         FileName = static_cast<FileUploadTask*>(task.get())->getFileName();
         if ( FileName.empty() ) {
@@ -121,6 +122,12 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             Error(true, "File \""+FileName+"\" doesn't exist!");
             return false;
         }
+    }
+    UploadTask* topLevelTask = task->parentTask() ? task->parentTask() : task.get();
+    auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
+    std::string topLevelFileName;
+    if (topLevelFileTask) {
+        topLevelFileName = topLevelFileTask->getFileName();
     }
     m_PrInfo.IsUploading = false;
     m_PrInfo.Total = 0;
@@ -183,14 +190,14 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         }
         if (!EngineRes && i != m_CurrentEngine->RetryLimit())
         {
-            Error(false, "", etRepeating, i);
+            Error(false, "", etRepeating, i, topLevelFileName);
         }
     }
     while (!EngineRes && i < m_CurrentEngine->RetryLimit());
 
     if (!EngineRes)
     {
-        Error(true, "", etRetriesLimitReached);
+        Error(true, "", etRetriesLimitReached, -1, topLevelFileName);
         Cleanup();
         return false;
     }
@@ -272,7 +279,7 @@ void CUploader::ErrorMessage(const ErrorInfo& error)
         onErrorMessage(this, error);
 }
 
-void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex)
+void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, const std::string& topLevelFileName)
 {
     ErrorInfo err;
     err.ActionIndex  = -1;
@@ -282,5 +289,6 @@ void CUploader::Error(bool error, std::string message, ErrorType type, int retry
     err.errorType = type;
     err.sender = "CUploader";
     err.RetryIndex = retryIndex;
+    err.TopLevelFileName = topLevelFileName;
     ErrorMessage(err);
 }

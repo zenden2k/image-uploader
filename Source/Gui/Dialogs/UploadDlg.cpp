@@ -145,7 +145,7 @@ bool CUploadDlg::startUpload() {
         fps->tableRow = i;
         files_.push_back(fps);
         uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
-        uploadListView_.AddItem(i, 1, TR("Queued"));
+        uploadListView_.AddItem(i, 1, TR("In queue"));
         uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
         bool isImage = IuCommonFunctions::IsImage(FileName);
         auto task = std::make_shared<FileUploadTask>(fileNameA, displayName);
@@ -230,6 +230,7 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         menu.AppendMenu(MF_STRING, ID_VIEWIMAGE, TR("View"));
     }
     menu.AppendMenu(MF_STRING, ID_RETRYUPLOAD, TR("Retry"));
+    menu.AppendMenu(MF_STRING, ID_SHOWLOGFORTHISFILE, TR("Show log for this file"));
     menu.SetMenuDefaultItem(ID_VIEWIMAGE, FALSE);
     menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
     menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -708,5 +709,14 @@ LRESULT CUploadDlg::OnUploadProcessButtonClick(WORD wNotifyCode, WORD wID, HWND 
 
 LRESULT CUploadDlg::OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     showUploadResultsTab();
+    return 0;
+}
+
+LRESULT CUploadDlg::OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        auto item = files_[nCurItem];
+        WizardDlg->showLogWindowForFileName(item->fileName);
+    }
     return 0;
 }

@@ -220,7 +220,7 @@ void WriteLog(const std::string& type, const std::string& message) {
     } else if (type == "info") {
         msgType = ILogger::logInformation;
     }
-    ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message);
+    ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message, "Script: " + IuCoreUtils::ExtractFileName(GetCurrentScriptFileName()), GetCurrentTopLevelFileName());
 }
 
 const std::string md5(const std::string& data)

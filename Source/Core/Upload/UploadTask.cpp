@@ -30,6 +30,7 @@ void UploadTask::init()
     tempFileDeleter_ = nullptr;
     uploadSuccess_ = false;
     index_ = 0;
+    finishSignalSent_ = false;
 }
 
 void UploadTask::childTaskFinished(UploadTask* child)
@@ -42,6 +43,10 @@ void UploadTask::childTaskFinished(UploadTask* child)
 
 void UploadTask::taskFinished()
 {
+    std::lock_guard<std::mutex> lk(finishMutex_);
+    if (finishSignalSent_) {
+        return;
+    }
     tasksMutex_.lock();
    // std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     Status newStatus = status_;
@@ -53,10 +58,9 @@ void UploadTask::taskFinished()
         } 
     }
     tasksMutex_.unlock();
-    if (newStatus != status_)
-    {
-        setStatus(newStatus);
-    }
+
+    setStatus(newStatus);
+    
     for (size_t i = 0; i < taskFinishedCallbacks_.size(); i++)
     {
         taskFinishedCallbacks_[i](this, uploadSuccess()); // invoke callback
@@ -65,6 +69,7 @@ void UploadTask::taskFinished()
     {
         session_->taskFinished(this);
     }
+    finishSignalSent_ = true;
 }
 
 void UploadTask::statusChanged()
@@ -85,7 +90,6 @@ bool UploadTask::stopSignal() const
     return stopSignal_;
 }
 
-
 UploadTask::~UploadTask() {
     delete tempFileDeleter_;
 }
@@ -103,6 +107,9 @@ std::shared_ptr<UploadTask> UploadTask::child(int index)
 
 bool UploadTask::isRunning()
 {
+    if (status_ == StatusRunning) {
+        return true;
+    }
     std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
     for ( auto& it : childTasks_ )
     {
@@ -111,10 +118,10 @@ bool UploadTask::isRunning()
             return true;
         }
     }
-    return status_ == StatusRunning;
+    return false;
 }
 
-bool UploadTask::isRunningItself()
+bool UploadTask::isRunningItself() const
 {
     return status_ == StatusRunning;
 }
@@ -124,7 +131,7 @@ void UploadTask::setSession(UploadSession* session)
     session_ = session;
 }
 
-UploadSession* UploadTask::session()
+UploadSession* UploadTask::session() const
 {
     return session_;
 }
@@ -144,7 +151,7 @@ bool UploadTask::isFinished()
 
 bool UploadTask::isFinishedItself()
 {
-    return status_ == StatusFinished || status_ == StatusFailure || status_ ==  StatusStopped;
+    return status_ == StatusFinished || status_ == StatusFailure || status_ == StatusStopped || status_ == StatusWaitingChildren;
 }
 
 void UploadTask::finishTask(Status status)
@@ -158,6 +165,8 @@ void UploadTask::finishTask(Status status)
     if (isFinished())
     {
         taskFinished();
+    } else {
+        setStatus(StatusWaitingChildren);
     }
 }
 
@@ -203,6 +212,8 @@ UploadProgress* UploadTask::progress()
 
 void UploadTask::addTaskFinishedCallback(const TaskFinishedCallback& callback)
 {
+    auto it = std::find(taskFinishedCallbacks_.begin(), taskFinishedCallbacks_.end(), callback);
+    assert(it == taskFinishedCallbacks_.end());
     taskFinishedCallbacks_.push_back(callback);
 }
 
@@ -304,7 +315,7 @@ void UploadTask::stop()
     }
 }
 
-bool UploadTask::isStopped()
+bool UploadTask::isStopped() const
 {
     return status_ == StatusStopped;
 }
@@ -320,6 +331,9 @@ void UploadTask::clearStopFlag() {
 
 void UploadTask::setStatus(Status status)
 {
+    if (status_ == status) {
+        return;
+    }
     status_ = status;
 
     switch (status) {
@@ -340,6 +354,9 @@ void UploadTask::setStatus(Status status)
             break;
         case StatusPostponed:
             progress_.statusText = tr("Postponed");
+            break;
+        case StatusWaitingChildren:
+            progress_.statusText = tr("Waiting for child tasks");
             break;
                 
         default:
@@ -505,4 +522,10 @@ bool UploadTask::schedulePostponedChilds() {
         }
     }
     return res;
+}
+
+void UploadTask::reset() {
+    finishSignalSent_ = false;
+    shorteningStarted_ = false;
+    setStatus(StatusInQueue);
 }

@@ -21,6 +21,8 @@ void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback);
 void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName);
 void ClearVmData(Sqrat::SqratVM& vm);
 const std::string GetScriptName(HSQUIRRELVM);
+void SetCurrentTopLevelFileName(Sqrat::SqratVM& vm, const std::string& fileName);
+std::string GetCurrentTopLevelFileName();
 void FlushSquirrelOutput(HSQUIRRELVM vm);
 template<typename T>
     T GetValue(const Sqrat::SharedPtr<T> p)

@@ -14,7 +14,7 @@ class SearchGoogleImages: public SearchByImage  {
         explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:
     void run() override;
-    static std::string base64EncodeCompat(const std::string& file);
+    static bool base64EncodeCompat(const std::string& file, std::string& output);
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 

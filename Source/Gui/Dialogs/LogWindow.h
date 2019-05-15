@@ -29,6 +29,7 @@
 #include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
 #include "Core/Logging/Logger.h"
+#include "Func/DefaultLogger.h"
 #include <mutex>
 
 // CLogWindow
@@ -36,7 +37,8 @@
 class CLogWindow : public CDialogImpl <CLogWindow>,
     public CDialogResize <CLogWindow>,
     public CWinDataExchange <CLogWindow>,
-    public CMessageFilter
+    public CMessageFilter,
+    public DefaultLogger::Listener
 {
     public:
         struct CLogWndMsg
@@ -50,6 +52,8 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
     public:
         CLogWindow();
         ~CLogWindow();
+        void setLogger(DefaultLogger* logger);
+        void setFileNameFilter(CString fileName);
         enum { IDD = IDD_LOGWINDOW };
         enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, IDC_SELECTALLITEMS, MYWM_WRITELOG = WM_USER + 100 };
         virtual BOOL PreTranslateMessage(MSG* pMsg) override;
@@ -88,12 +92,17 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void TranslateUI();
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        void WriteLog(ILogger::LogMsgType MsgType, const CString& Sender, const CString&  Msg, const CString&  Info = CString());
+        void WriteLog(const DefaultLogger::LogEntry& entry);
+
+        void onItemAdded(int index, const DefaultLogger::LogEntry&) override;
+        void reloadList();
 protected:
-    void WriteLogImpl(ILogger::LogMsgType MsgType, const CString& Sender, const CString& Msg, const CString& Info = CString());
+    void WriteLogImpl(const DefaultLogger::LogEntry& entry);
     DWORD mainThreadId;
-    std::vector<CLogWndMsg> queuedItems_;
+    std::vector<DefaultLogger::LogEntry> queuedItems_;
     std::mutex queueMutex_;
+    DefaultLogger* logger_;
+    CString fileNameFilter_;
 };
 
 #endif // LOGWINDOW_H

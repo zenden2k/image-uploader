@@ -295,8 +295,7 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
     }
     cur = LoadCursor(0, lpCursorName);
     cursorCache_[cursorType] = cur;
-    return cur
-        ;
+    return cur;
 }
 HICON CImageEditorView::createBrushCursor(int size)
 {

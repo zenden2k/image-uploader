@@ -10,30 +10,9 @@ function regex_simple(data,regStr,start)
 }
 
 function  UploadFile(FileName, options)
-{	
-    local xml = SimpleXml();
-    xml.LoadFromFile("d:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Data\\servers.xml");
-    local childs = xml.GetRoot("Servers", false).GetChildren("Server");
-    foreach (i,el in childs) {
-         print(el.Attribute("Name") + "\r\n");
-    }
-    return -1;
-    local txt = "<h1><a id=\"logo\">some link</a></h1>";
-    local doc = Document(txt);
-    print(doc.find("h1 a").text()+"\r\n");
-    print(doc.find("h1 a").length()+"\r\n");
-    print(doc.find("#logo").attr("class")+"\r\n");
-    return -1;
-    nm.doGet("http://zenden.ws");
-    txt = nm.responseBody();
-    doc = Document(txt);
-    doc.find("a").each( function(index,elem) {
-        print(elem.text()+"-\r\n"); 
-    });
-
-    return -1;
-    
-    
+{
+    print("hello");
+/*
 	nm.setUrl("http://localhost/ImageUploader/Web/upload.php");
 	nm.addQueryParamFile("file",FileName, ExtractFileName(FileName),"");
 	local data = "";
@@ -50,7 +29,8 @@ function  UploadFile(FileName, options)
 		return 1;
 	} else {
 		return 0;
-	}
+	}*/
+    
 }
 
 function CreateFolder(parentAlbum,album)

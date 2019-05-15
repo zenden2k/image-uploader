@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "Core/UploadEngineList.h"
-#include <Tests/TestHelpers.h>
+#include "Tests/TestHelpers.h"
 #include "Core/Video/AvcodecFrameGrabber.h"
 #include "Core/Video/DirectshowFrameGrabber.h"
 

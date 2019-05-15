@@ -201,20 +201,17 @@ LRESULT CLogListBox::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     return 0;
 }
 
-int CLogListBox::AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo)
+int CLogListBox::AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo, const CString& Time)
 {
     LogListBoxItem* item = new LogListBoxItem;
     item->Type = Type;
 
-    SYSTEMTIME st;
-    ::GetLocalTime(&st);
-    CString Data;
-    Data.Format(_T("%02d:%02d:%02d"), static_cast<int>(st.wHour), static_cast<int>(st.wMinute), static_cast<int>(st.wSecond));
+    
 
     item->strText = trim(strText);
     item->strTitle = trim(strTitle);
     item->Info = trim(szInfo);
-    item->Time = Data;
+    item->Time = Time;
 
     SetRedraw(FALSE);
     int nPos = CListBox::AddString((LPCTSTR)item);

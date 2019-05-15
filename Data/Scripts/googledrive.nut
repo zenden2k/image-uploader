@@ -168,7 +168,7 @@ function _DoLogin()
 		ServerParams.setParam("tokenTime", ""+timestamp);
 		return 1;
 	}	else {
-		WriteLog("error", "Autentication failed");
+		WriteLog("error", "Authentication failed");
 	}
 	return 0;		
 } 

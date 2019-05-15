@@ -43,7 +43,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         ~CUploadDlg();
         enum { IDD = IDD_UPLOADDLG };
         enum {
-            IDC_UPLOADPROCESSTAB = 14000, IDC_UPLOADRESULTSTAB, ID_RETRYUPLOAD, ID_VIEWIMAGE,
+            IDC_UPLOADPROCESSTAB = 14000, IDC_UPLOADRESULTSTAB, ID_RETRYUPLOAD, ID_VIEWIMAGE, ID_SHOWLOGFORTHISFILE,
             kEnableNextButtonTimer = 5,
             kProgressTimer = 6,
         };
@@ -56,6 +56,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
             COMMAND_ID_HANDLER(ID_RETRYUPLOAD, OnRetryUpload)
             COMMAND_ID_HANDLER(ID_VIEWIMAGE, OnViewImage)
+            COMMAND_ID_HANDLER(ID_SHOWLOGFORTHISFILE, OnShowLogForThisFile)
             NOTIFY_HANDLER(IDC_UPLOADTABLE, NM_DBLCLK, OnUploadTableDoubleClick)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         END_MSG_MAP()
@@ -94,6 +95,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         LRESULT OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnViewImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);

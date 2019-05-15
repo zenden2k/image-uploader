@@ -9,6 +9,7 @@
 #include "atlheaders.h"
 #include "resource.h"
 #include <atlcrack.h>
+#include "Func/DefaultLogger.h"
 #include "Core/Logging/Logger.h"
 
 struct LogListBoxItem
@@ -57,7 +58,7 @@ class CLogListBox :
         LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
         LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        int AddString(ILogger::LogMsgType Type, const CString& szTitle, const CString& szText, const CString& szInfo = CString());
+        int AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo, const CString& Time);
         LogListBoxItem* getItemFromIndex(int index);
         LRESULT OnKillFocus(HWND hwndNewFocus);
         CIcon ErrorIcon, WarningIcon, InfoIcon;

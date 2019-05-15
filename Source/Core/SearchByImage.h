@@ -24,7 +24,7 @@ class SearchByImage  {
         static std::string searchEngineTypeToString(SearchEngine se);
         static SearchEngine searchEngineTypeFromString(const std::string& name); 
         typedef fastdelegate::FastDelegate2<bool, const std::string&> FinishedDelegate;
-        void setOnFinished(FinishedDelegate&& fd);
+        void setOnFinished(const FinishedDelegate& fd);
 protected:
     std::string fileName_;
     std::atomic<bool> isRunning_;

@@ -13,7 +13,6 @@
 #include "Core/TempFileDeleter.h"
 #include "CommonTypes.h"
 
-
 class CAbstractUploadEngine;
 class UploadTask;
 class UploadSession;
@@ -60,7 +59,7 @@ class UploadTask {
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl));
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
-        enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed };
+        enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed, StatusWaitingChildren };
         typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
 
         virtual Type type() const = 0;
@@ -69,9 +68,9 @@ class UploadTask {
         UploadTask* parentTask() const;
         std::shared_ptr<UploadTask> child(int index);
         bool isRunning();
-        bool isRunningItself();
+        bool isRunningItself() const;
         void setSession(UploadSession* session);
-        UploadSession* session();
+        UploadSession* session() const;
         bool isFinished();
         bool isFinishedItself();
         virtual void finishTask(Status status = StatusFinished);
@@ -103,7 +102,7 @@ class UploadTask {
         void setShorteningStarted(bool started);
         void stop();
         virtual std::string title() const = 0;
-        bool isStopped();
+        bool isStopped() const;
         void clearStopFlag();
         void setStatus(Status status);
         void setStatusText(const std::string& text);
@@ -115,6 +114,7 @@ class UploadTask {
         void deletePostponedChilds();
         bool schedulePostponedChilds();
         void uploadProgress(InfoProgress progress);
+        void reset();
         friend class CUploader;
 
     protected:
@@ -138,6 +138,8 @@ class UploadTask {
         bool stopSignal() const;
         UploadSession* session_;
         std::recursive_mutex tasksMutex_;
+        std::mutex finishMutex_;
+        bool finishSignalSent_;
         Role role_;
         std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
         bool shorteningStarted_;

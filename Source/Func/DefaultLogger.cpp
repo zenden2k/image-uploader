@@ -2,13 +2,91 @@
 
 #include "Gui/Dialogs/LogWindow.h"
 
-DefaultLogger::DefaultLogger(CLogWindow* logWindow): logWindow_(logWindow) {
+DefaultLogger::DefaultLogger() {
 }
 
-void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info) {
-    logWindow_->WriteLog(MsgType, U2W(Sender), U2W(Msg), U2W(Info));
+void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string&  FileName) {
+    LogEntry entry;
+    entry.MsgType = MsgType;
+    entry.Msg = U2W(Msg);
+    entry.Info = U2W(Info);
+    entry.Sender = U2W(Sender);
+    entry.FileName = U2W(FileName);
+
+    int itemIndex;
+    {
+        std::lock_guard<std::mutex> lk(entriesMutex_);
+        entries_.push_back(entry);
+        itemIndex = entries_.size() - 1;
+    }
+   
+    for (auto listener : listeners_) {
+        listener->onItemAdded(itemIndex, entry);
+    }
 }
 
-void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info) {
-    logWindow_->WriteLog(MsgType, Sender, Msg, Info);
+void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar_t* Msg, const wchar_t* Info, const wchar_t*  FileName) {
+    LogEntry entry;
+    entry.MsgType = MsgType;
+    entry.Msg = Msg;
+    entry.Info = Info;
+    entry.Sender = Sender;
+    entry.FileName = FileName;
+    SYSTEMTIME st;
+    ::GetLocalTime(&st);
+    CString Data;
+    Data.Format(_T("%02d:%02d:%02d"), static_cast<int>(st.wHour), static_cast<int>(st.wMinute), static_cast<int>(st.wSecond));
+
+    entry.Time = Data;
+
+    int itemIndex;
+    {
+        std::lock_guard<std::mutex> lk(entriesMutex_);
+        entries_.push_back(entry);
+        itemIndex = entries_.size() - 1;
+    }
+
+
+    for (auto listener : listeners_) {
+        listener->onItemAdded(itemIndex, entry);
+    }
+}
+
+void DefaultLogger::addListener(Listener* listener) {
+    listeners_.push_back(listener);
+}
+
+void  DefaultLogger::removeListener(Listener* listener) {
+    for (int i = listeners_.size() - 1; i >= 0; i--) {
+        if (listeners_[i] == listener) {
+            listeners_[i] = listeners_[listeners_.size() - 1];
+            listeners_.pop_back();
+            break;
+        }
+    }
+}
+size_t DefaultLogger::entryCount() const {
+    return entries_.size();
+}
+
+void DefaultLogger::getEntry(int itemIndex, LogEntry* out) {
+    std::lock_guard<std::mutex> lk(entriesMutex_);
+    *out = entries_[itemIndex];
+}
+
+std::mutex& DefaultLogger::getEntryMutex() {
+    return entriesMutex_;
+}
+
+std::vector<DefaultLogger::LogEntry>::const_iterator DefaultLogger::begin() const {
+    return entries_.begin();
+}
+
+std::vector<DefaultLogger::LogEntry>::const_iterator DefaultLogger::end() const {
+    return entries_.end();
+}
+
+void DefaultLogger::clear() {
+    std::lock_guard<std::mutex> lk(entriesMutex_);
+    entries_.clear();
 }

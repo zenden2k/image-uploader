@@ -36,7 +36,6 @@ CUploadEngineData::CUploadEngineData()
     NeedPassword = true; 
     MaxFileSize = 0;
     RetryLimit = 0;
-    NumOfTries = 0;
     MaxThreads = 0;
     TypeMask = 0;
 }

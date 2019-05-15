@@ -1,13 +1,11 @@
-
-if (MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-endif()
-
 add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL -DGDIPVER=0x0100 -D_WTL_NO_CSTRING -D_ATL_NO_OLD_NAMES)
 
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)   
+
+if (MSVC)
+    add_definitions("/MP")
+endif()
 
 set(SRC_LIST 
     "../Image Uploader.cpp"
@@ -170,6 +168,8 @@ set(SRC_LIST
     ../ImageEditor/Helpers/FontEnumerator.cpp
     "../Image Uploader.rc"
 )
+
+source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST})
 
 add_executable(GUI WIN32  
     ${SRC_LIST}

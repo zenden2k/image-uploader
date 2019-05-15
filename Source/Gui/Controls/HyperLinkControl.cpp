@@ -116,8 +116,7 @@ int CHyperLinkControl::ItemFromPoint(POINT pt) const {
     return -1;
 }
 
-
-int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
+int CHyperLinkControl::GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
 {
     SIZE sz;
     HGDIOBJ  OldFont = SelectObject(dc, Font);

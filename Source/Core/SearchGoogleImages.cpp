@@ -16,7 +16,13 @@ void SearchGoogleImages::run() {
     try {
         nc->setUrl("https://images.google.com/searchbyimage/upload");
         nc->addQueryParam("filename", IuCoreUtils::ExtractFileName(fileName_));
-        nc->addQueryParam("image_content", base64EncodeCompat(fileName_));
+        std::string encoded_file;
+        if (!base64EncodeCompat(fileName_, encoded_file)) {
+            finish(false, "Unable to encode file.");
+            return;
+        }
+
+        nc->addQueryParam("image_content", encoded_file);
         nc->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
         nc->doUploadMultipartData();
 
@@ -49,14 +55,17 @@ void SearchGoogleImages::run() {
 }
 
 
-std::string SearchGoogleImages::base64EncodeCompat(const std::string& file) {
-    std::string res = IuCoreUtils::CryptoUtils::Base64Encode(IuCoreUtils::GetFileContents(file));
-    for (unsigned int i = 0; i < res.length(); i++) {
-        if (res[i] == '+') {
-            res[i] = '-';
-        } else if (res[i] == '/') {
-            res[i] = '_';
+bool SearchGoogleImages::base64EncodeCompat(const std::string& file, std::string& output) {
+    if (!IuCoreUtils::CryptoUtils::Base64EncodeFile(file, output)) {
+        return false;
+    }
+
+    for (unsigned int i = 0; i < output.length(); i++) {
+        if (output[i] == '+') {
+            output[i] = '-';
+        } else if (output[i] == '/') {
+            output[i] = '_';
         }
     }
-    return res;
+    return true;
 }

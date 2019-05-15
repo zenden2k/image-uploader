@@ -161,3 +161,8 @@ void Script::checkCallingThread()
         throw std::runtime_error("Script methods should be called only in the owning thread.");
     }
 }
+
+void Script::setCurrentTopLevelFileName(const std::string& fileName) {
+    topLevelFileName_ = fileName;
+    ScriptAPI::SetCurrentTopLevelFileName(vm_, fileName);
+}

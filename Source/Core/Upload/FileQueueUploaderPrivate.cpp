@@ -11,7 +11,6 @@
 #include "Core/CommonDefs.h"
 #include "Core/i18n/Translator.h"
 
-
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex )
 {
     fileCount = 0;
@@ -129,12 +128,12 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, INe
 }
 
 std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
-    if (stopSignal_)
+    if (stopSignal_) {
         return std::shared_ptr<UploadTask>();
+    }
 
     std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
 
-    //LOG(INFO) << "startFromSession_=" << startFromSession_;
     if (!sessions_.empty() && !stopSignal_)
     {
         for (size_t i = startFromSession_; i < sessions_.size(); i++)
@@ -250,7 +249,6 @@ void FileQueueUploaderPrivate::run()
     {
         auto it = getNextJob();
 
-        //LOG(ERROR) << "getNextJob() returned " << (fut ? fut->getFileName() : "NULL");
         if (!it)
             break;
         CUploader uploader(networkClientFactory_);
@@ -259,8 +257,10 @@ void FileQueueUploaderPrivate::run()
         // TODO
         uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
         uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
-        FileUploadTask* fut = dynamic_cast<FileUploadTask*>(it.get());
-       
+        auto fut = dynamic_cast<FileUploadTask*>(it.get());
+
+        UploadTask* topLevelTask = it->parentTask() ? it->parentTask() : it.get();
+        auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
         it->setStatus(UploadTask::StatusRunning);
         mutex_.lock();
         serverThreads_[it->serverName()].waitingFileCount--;
@@ -302,6 +302,15 @@ void FileQueueUploaderPrivate::run()
         if (!engine)
         {
             session->setFatalErrorForServer(serverName, profileName);
+            ErrorInfo ei;
+            ei.ServerName = serverName;
+            ei.messageType = ErrorInfo::mtError;
+            ei.sender = "Uploader";
+            if (topLevelFileTask) {
+                ei.TopLevelFileName = topLevelFileTask->getFileName();
+            }
+            ei.error = "Fatal error occured while uploading. Aborting upload to this server.";
+            uploadErrorHandler_->ErrorMessage(ei);
             it->finishTask(UploadTask::StatusFailure);
             continue;
         }
@@ -314,6 +323,16 @@ void FileQueueUploaderPrivate::run()
             res = uploader.Upload(it);
             it->setUploadSuccess(res);
             if (!res && uploader.isFatalError()) {
+                ErrorInfo ei;
+                ei.ServerName = serverName;
+                ei.messageType = ErrorInfo::mtError;
+                ei.sender = "Uploader";
+                if (topLevelFileTask) {
+                    ei.TopLevelFileName = topLevelFileTask->getFileName();
+                }
+                ei.error = "Fatal error occured while uploading. Aborting upload to this server.";
+                uploadErrorHandler_->ErrorMessage(ei);
+
                 session->setFatalErrorForServer(serverName, profileName);
                 //serverThreads_[serverName].fatalError = true;
             }

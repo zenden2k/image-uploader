@@ -54,6 +54,7 @@ struct ErrorInfo
     std::string Url;
     std::string ServerName;
     std::string FileName;
+    std::string TopLevelFileName; 
     int ActionIndex;
     MessageType messageType;
     ErrorType errorType;
