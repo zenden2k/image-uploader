@@ -59,6 +59,7 @@ class CResultsPanel :
 
         BEGIN_MSG_MAP(CResultsPanel)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_TIMER, OnTimer)
             COMMAND_HANDLER(IDC_THUMBSPERLINE,EN_CHANGE,OnEditChanged)
             COMMAND_HANDLER(IDC_CODETYPE, CBN_SELCHANGE, OnCbnSelchangeCodetype)
             COMMAND_HANDLER(IDC_COPYALL, BN_CLICKED, OnBnClickedCopyall)
@@ -77,7 +78,7 @@ class CResultsPanel :
     fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
     enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
     enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
-
+    enum { kOutputTimer = 1};
 
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -91,6 +92,7 @@ class CResultsPanel :
      
     
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
     CToolBarCtrl Toolbar;
     CComboBox codeTypeComboBox;
@@ -114,7 +116,7 @@ class CResultsPanel :
     void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void GenerateMarkdownCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
-    void UpdateOutput();
+    void UpdateOutput(bool immediately = false);
     void SetCodeType(int Index);
     void Clear();
     void EnableMediaInfo(bool Enable);
@@ -128,6 +130,8 @@ class CResultsPanel :
     CString ReplaceVars(const CString& Text);
     std::mutex UrlListCS;
     int m_nImgServer, m_nFileServer;
+    CString code_;
+    bool outputChanged_;
     void AddServer(const ServerProfile& server);
     RECT rectNeeded;
     bool shortenUrl_;

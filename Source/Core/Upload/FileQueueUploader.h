@@ -38,13 +38,15 @@ class FileQueueUploaderPrivate;
 class CFileQueueUploader
 {
     public:
-        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory);
+        CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads = 3);
+        void addSingleTask(std::shared_ptr<UploadTask> uploadTask);
         void addSession(std::shared_ptr<UploadSession> uploadSession);
-        void addTask(std::shared_ptr<UploadTask> task);
+        void addTaskToQueue(std::shared_ptr<UploadTask> task);
+        void insertTaskAfter(UploadTask* after, std::shared_ptr<UploadTask> task);
+        bool removeTaskFromQueue(UploadTask* task);
         void removeSession(std::shared_ptr<UploadSession> uploadSession);
         void retrySession(std::shared_ptr<UploadSession> uploadSession);
         virtual ~CFileQueueUploader();
-        bool start();
         void stop();
         bool IsRunning() const;
         void setMaxThreadCount(int threadCount);
@@ -65,6 +67,7 @@ class CFileQueueUploader
     protected:
         virtual void sessionAdded(UploadSession* session);
         virtual void taskAdded(UploadTask* task);
+        bool start();
 };
 
 #endif

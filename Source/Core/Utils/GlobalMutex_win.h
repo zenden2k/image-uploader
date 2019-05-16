@@ -18,6 +18,8 @@
 
 */
 
+#include <thread>
+#include "Core/Utils/CoreUtils.h"
 #include <windows.h>
 
 namespace IuCoreUtils {
@@ -29,7 +31,8 @@ public:
 
 ZGlobalMutex::ZGlobalMutex(const std::string& name) : d_ptr(new ZGlobalMutexPrivate)
 {
-    d_ptr->mutex_ = ::CreateMutexA(NULL, TRUE, name.c_str());
+    d_ptr->mutex_ = ::CreateMutexA(NULL, FALSE, name.c_str());
+    
     if (!d_ptr->mutex_  && GetLastError() == ERROR_ALREADY_EXISTS)
     {
         d_ptr->mutex_ = OpenMutexA(0, 0, name.c_str());

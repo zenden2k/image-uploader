@@ -74,7 +74,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
                 thumbServerProfile.getImageUploadParamsRef().CreateThumbs = false;
                 thumbServerProfile.getImageUploadParamsRef().ProcessImages = false;
                 thumbTask->setServerProfile(thumbServerProfile);
-                thumbTask->setStatus(UploadTask::StatusPostponed);
+                //thumbTask->setStatus(UploadTask::StatusPostponed);
                 thumbTask->setRole(UploadTask::ThumbRole);
                 fileTask->addChildTask(thumbTask);
             }

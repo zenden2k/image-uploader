@@ -64,7 +64,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
 
-    DefaultLogger defaultLogger(&LogWindow);
+    DefaultLogger defaultLogger;
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
     google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
@@ -100,7 +100,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler, networkClientFactory);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
     UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, networkClientFactory);
-    uploadManager.setEnableHistory(false);
+
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
     appParams->setTempDirectory(W2U(tempFolder));

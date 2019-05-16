@@ -25,9 +25,9 @@
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */
 
-CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory)
+CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads)
 {
-    _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory);
+    _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, maxThreads);
 }
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)
@@ -57,7 +57,7 @@ CFileQueueUploader::~CFileQueueUploader() {
 }
 
 void CFileQueueUploader::setMaxThreadCount(int threadCount) {
-    _impl->threadCount_ = threadCount;
+    _impl->setMaxThreadCount(threadCount);
 }
 
 bool CFileQueueUploader::isSlotAvailableForServer(const std::string& serverName, int maxThreads) {
@@ -97,12 +97,24 @@ void CFileQueueUploader::taskAdded(UploadTask* task)
 {
     if (OnTaskAdded)
     {
-        taskAdded(task);
+        OnTaskAdded(task);
     }
 }
 
-void CFileQueueUploader::addTask(std::shared_ptr<UploadTask> task) {
-    _impl->AddTask(task);
+void CFileQueueUploader::addSingleTask(std::shared_ptr<UploadTask> uploadTask) {
+    _impl->AddSingleTask(uploadTask);
+}
+
+void CFileQueueUploader::addTaskToQueue(std::shared_ptr<UploadTask> task) {
+    _impl->AddTaskToQueue(task);
+}
+
+void CFileQueueUploader::insertTaskAfter(UploadTask* after, std::shared_ptr<UploadTask> task) {
+    _impl->insertTaskAfter(after, task);
+}
+
+bool CFileQueueUploader::removeTaskFromQueue(UploadTask* task) {
+    return _impl->removeTaskFromQueue(task);
 }
 
 void CFileQueueUploader::removeSession(std::shared_ptr<UploadSession> uploadSession)

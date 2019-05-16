@@ -43,6 +43,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlLi
     rectNeeded.left = -1;
     CString TemplateLoadError;
     shortenUrl_ = false;
+    outputChanged_ = false;
     if(!LoadTemplates(TemplateLoadError))
     {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), TemplateLoadError);
@@ -186,7 +187,20 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     
     codeTypeComboBox.SetCurSel(0);
     LoadTemplate();
+
+    SetTimer(kOutputTimer, 1000);
     return 1;  // Let the system set the focus
+}
+
+LRESULT CResultsPanel::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (wParam == kOutputTimer) {
+        if (outputChanged_) {
+            SetDlgItemText(IDC_CODEEDIT, code_);
+            outputChanged_ = false;
+        }
+    }
+    
+    return 0;
 }
 
 void CResultsPanel::SetPage(TabPage Index)
@@ -205,7 +219,7 @@ void CResultsPanel::SetPage(TabPage Index)
     m_Page = Index;
 
 
-    UpdateOutput();
+    UpdateOutput(true);
     BOOL temp;
 
     if (!openedFromHistory_ && !UrlList.empty() && Settings.AutoCopyToClipboard)
@@ -546,16 +560,19 @@ void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int
 }
 
 
-void CResultsPanel::UpdateOutput()
+void CResultsPanel::UpdateOutput(bool immediately)
 {
-    CString code = GenerateOutput();
-    SetDlgItemText(IDC_CODEEDIT,code);
+    code_ = GenerateOutput();
+    outputChanged_ = true;
+    if (immediately) {
+        SetDlgItemText(IDC_CODEEDIT, code_);
+    }
 }
 
 
 LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    UpdateOutput();
+    UpdateOutput(true);
     BOOL temp;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(Settings.AutoCopyToClipboard)
@@ -784,7 +801,7 @@ LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWn
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseTxtTemplate = !Settings.UseTxtTemplate;
-    UpdateOutput();
+    UpdateOutput(true);
     return 0;
 }
 
@@ -792,7 +809,7 @@ LRESULT CResultsPanel::OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND 
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseDirectLinks = !Settings.UseDirectLinks;
-    UpdateOutput();
+    UpdateOutput(true);
     return 0;
 }
 

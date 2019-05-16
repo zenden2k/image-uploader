@@ -189,7 +189,6 @@ bool CShortenUrlDlg::StartProcess() {
     session->addTask(task);
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
     uploadManager_->addSession(session);
-    uploadManager_->start();
 
     return true;
 }

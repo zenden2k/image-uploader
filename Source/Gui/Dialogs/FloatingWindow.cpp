@@ -365,8 +365,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     lastUrlShorteningTask_.reset(new UrlShorteningTask(W2U(url)));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
     lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
-    uploadManager_->addTask(lastUrlShorteningTask_);
-    uploadManager_->start();
+    uploadManager_->addSingleTask(lastUrlShorteningTask_);
 
     CString msg;
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
@@ -742,8 +741,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
-    uploadManager_->addTask(task);
-    uploadManager_->start();
+    uploadManager_->addSingleTask(task);
 
     CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);

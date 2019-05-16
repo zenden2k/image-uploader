@@ -123,9 +123,9 @@ int CResultsWindow::GetCodeType()
     return ResultsPanel->GetCodeType();
 }
 
-void CResultsWindow::UpdateOutput()
+void CResultsWindow::UpdateOutput(bool immediately)
 {
-    ResultsPanel->UpdateOutput();
+    ResultsPanel->UpdateOutput(immediately);
 }
 
 void CResultsWindow::SetCodeType(int Index)

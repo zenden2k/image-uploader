@@ -60,21 +60,29 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 }
 
 FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
-    ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) {
-    threadCount_ = 3;
+    ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads) {
+    threadCount_ = maxThreads;
     stopSignal_ = false;
     isRunning_ = false;
-    runningThreads_ = 0;
     queueUploader_ = queueUploader;
     startFromSession_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     scriptsManager_ = scriptsManager;
     uploadErrorHandler_ = uploadErrorHandler;
-    autoStart_ = true;
+    //autoStart_ = true;
     networkClientFactory_ = networkClientFactory;
+    runningThreadsCount_ = 0;
+    start();
 }
 
 FileQueueUploaderPrivate::~FileQueueUploaderPrivate() {
+    stopSignal_ = true;
+    threadCount_ = 0;
+    queueCondition_.notify_all();
+    for (auto& thread : threads_) {
+        thread.join();
+    }
+
 }
 
 bool FileQueueUploaderPrivate::onNeedStopHandler() {
@@ -97,7 +105,7 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
     startFromSession_ = 0;
     sessionsMutex_.unlock();
     taskAdded(task);
-    start();
+    //start();
 }
 
 int FileQueueUploaderPrivate::pendingTasksCount()
@@ -128,13 +136,24 @@ void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, INe
 }
 
 std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
-    if (stopSignal_) {
+    std::unique_lock<std::mutex> lck(queueMutex_);
+    queueCondition_.wait(lck, [&] {return stopSignal_ || !queue_.empty(); });
+
+    if (stopSignal_ && runningThreadsCount_ > threadCount_) {
         return std::shared_ptr<UploadTask>();
     }
 
-    std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
+    for (auto it = queue_.begin(); it != queue_.end(); ++it) {
+        if (canAcceptUploadTask(it->get())) {
+            std::shared_ptr<UploadTask> res = *it;
+            queue_.erase(it);
+            //res->setStatus(UploadTask::StatusPostponed);
+            return res;
+        }
+    }
+    //std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
 
-    if (!sessions_.empty() && !stopSignal_)
+    /*if (!sessions_.empty() && !stopSignal_)
     {
         for (size_t i = startFromSession_; i < sessions_.size(); i++)
         {
@@ -150,40 +169,89 @@ std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
             }
             
         }
-    }
+    }*/
     return std::shared_ptr<UploadTask>();
 }
 
-void FileQueueUploaderPrivate::AddTask(std::shared_ptr<UploadTask>  task) {
-    std::shared_ptr<UploadSession> session(new UploadSession());
-    session->addTask(task);
-    AddSession(session);
+void FileQueueUploaderPrivate::AddTaskToQueue(std::shared_ptr<UploadTask>  task) {
+    {
+        std::unique_lock<std::mutex> lock(queueMutex_);
+        task->setUploadManager(queueUploader_);
+        queue_.push_back(task);
+    }
+    taskAdded(task.get());
+    queueCondition_.notify_all();
+}
+
+void FileQueueUploaderPrivate::insertTaskAfter(UploadTask* after, std::shared_ptr<UploadTask> task) {
+    {
+        std::unique_lock<std::mutex> lock(queueMutex_);
+        auto it = std::find_if(queue_.begin(), queue_.end(), [](std::shared_ptr<UploadTask> t) { return t->parentTask() == nullptr; });
+        if (it == queue_.end()) {
+            queue_.push_back(task);
+        } else {
+            queue_.insert(it, task);
+        }  
+        //queue_.push_front(task);
+    }
+    taskAdded(task.get());
+    queueCondition_.notify_one();
+}
+
+bool FileQueueUploaderPrivate::removeTaskFromQueue(UploadTask* task) {
+    std::unique_lock<std::mutex> lock(queueMutex_);
+
+    auto it = std::find_if(queue_.begin(), queue_.end(), [task](const std::shared_ptr<UploadTask>& t)
+    {
+        return t.get() == task;
+    });
+    if (it != queue_.end()) {
+        queue_.erase(it);
+        return true;
+    }
+    
+    return false;
+}
+
+void FileQueueUploaderPrivate::AddSingleTask(std::shared_ptr<UploadTask> task) {
+    std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+    uploadSession->addTask(task);
+    AddSession(uploadSession);
 }
 
 void FileQueueUploaderPrivate::AddSession(std::shared_ptr<UploadSession> uploadSession)
 {
+    addSessionToQueue(uploadSession);
+
     sessionsMutex_.lock();
-    uploadSession->addTaskAddedCallback(UploadSession::TaskAddedCallback(this, &FileQueueUploaderPrivate::onTaskAdded));
-    int count = uploadSession->taskCount();
-    for (int i = 0; i < count; i++ )
-    {
-        taskAdded(uploadSession->getTask(i).get());
-    }
     sessions_.push_back(uploadSession);
     sessionsMutex_.unlock();
     queueUploader_->sessionAdded(uploadSession.get());
-    if (autoStart_)
+}
+
+void FileQueueUploaderPrivate::addSessionToQueue(std::shared_ptr<UploadSession> uploadSession) {
+    //uploadSession->addTaskAddedCallback(UploadSession::TaskAddedCallback(this, &FileQueueUploaderPrivate::onTaskAdded));
+    int count = uploadSession->taskCount();
     {
-        start();
+        std::unique_lock<std::mutex> lock(queueMutex_);
+
+        for (int i = 0; i < count; i++) {
+            auto task = uploadSession->getTask(i);
+            task->setUploadManager(queueUploader_);
+            if (task->status() == UploadTask::StatusInQueue) {
+                queue_.push_back(task);
+                taskAdded(task.get());
+            }
+        }
     }
+    queueCondition_.notify_all();
 }
 
 void FileQueueUploaderPrivate::removeSession(std::shared_ptr<UploadSession> uploadSession)
 {
     std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
     auto it = std::find(sessions_.begin(), sessions_.end(), uploadSession);
-    if (it != sessions_.end() )
-    {
+    if (it != sessions_.end() ) {
         sessions_.erase(it);
     }
     startFromSession_ = 0;
@@ -197,8 +265,7 @@ void FileQueueUploaderPrivate::addUploadFilter(UploadFilter* filter)
 void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 {
     auto it = std::find(filters_.begin(), filters_.end(), filter);
-    if (it != filters_.end())
-    {
+    if (it != filters_.end()) {
         filters_.erase(it);
     }
 }
@@ -206,11 +273,9 @@ void FileQueueUploaderPrivate::removeUploadFilter(UploadFilter* filter)
 void FileQueueUploaderPrivate::retrySession(std::shared_ptr<UploadSession> uploadSession) {
     startFromSession_ = 0;
     uploadSession->clearStopFlag();
-    uploadSession->restartFailedTasks();
-    
-    if (autoStart_) {
-        start();
-    }
+    uploadSession->restartFailedTasks(queueUploader_);
+
+    addSessionToQueue(uploadSession);
 }
 
 int FileQueueUploaderPrivate::sessionCount()
@@ -226,31 +291,49 @@ std::shared_ptr<UploadSession> FileQueueUploaderPrivate::session(int index)
 }
 
 void FileQueueUploaderPrivate::start() {
-    std::lock_guard<std::recursive_mutex> lock(mutex_);
+    //std::lock_guard<std::recursive_mutex> lock(mutex_);
     stopSignal_ = false;
    
-    int numThreads = std::min<int>(size_t(threadCount_ - runningThreads_), pendingTasksCount());
+    startThreads(threadCount_);
+}
 
-    if (numThreads) {
-        isRunning_ = true;
-    }
-    for (int i = 0; i < numThreads; i++)
-    {
-        runningThreads_++;
-        std::thread t1(&FileQueueUploaderPrivate::run, this);
-        t1.detach();
+void FileQueueUploaderPrivate::startThreads(int count) {
+    for (int i = 0; i < count; i++) {
+        ++runningThreadsCount_;
+        threads_.emplace_back(&FileQueueUploaderPrivate::run, this);
+        //t1.detach();
     }
 }
 
+void FileQueueUploaderPrivate::setMaxThreadCount(int threadCount) {
+    if (threadCount_ == threadCount) {
+        return;
+    }
+    int oldThreadCount = threadCount_;
 
+    threadCount_ = threadCount;
+
+    if (threadCount > oldThreadCount) {
+        startThreads(threadCount - oldThreadCount);
+    } else {
+        stopSignal_ = true;
+        queueCondition_.notify_all();
+    }
+}
 void FileQueueUploaderPrivate::run()
 {
     for (;;)
     {
         auto it = getNextJob();
 
-        if (!it)
+        if (!it) {
+            --runningThreadsCount_;
+            if (runningThreadsCount_ == threadCount_) {
+                stopSignal_ = false;
+            }
             break;
+        }
+
         CUploader uploader(networkClientFactory_);
         uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
 
@@ -261,6 +344,7 @@ void FileQueueUploaderPrivate::run()
 
         UploadTask* topLevelTask = it->parentTask() ? it->parentTask() : it.get();
         auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
+        it->setUploadManager(queueUploader_);
         it->setStatus(UploadTask::StatusRunning);
         mutex_.lock();
         serverThreads_[it->serverName()].waitingFileCount--;
@@ -280,10 +364,10 @@ void FileQueueUploaderPrivate::run()
             continue;
         }
 
-        if (it->schedulePostponedChilds()) {
+        /*if (it->schedulePostponedChilds()) {
             startFromSession_ = 0;
-            start();
-        }
+            //start();
+        }*/
 
         std::string serverName = it->serverName();
 
@@ -321,6 +405,7 @@ void FileQueueUploaderPrivate::run()
 
         try {
             res = uploader.Upload(it);
+
             it->setUploadSuccess(res);
             if (!res && uploader.isFatalError()) {
                 ErrorInfo ei;
@@ -336,6 +421,7 @@ void FileQueueUploaderPrivate::run()
                 session->setFatalErrorForServer(serverName, profileName);
                 //serverThreads_[serverName].fatalError = true;
             }
+
             serverThreadsMutex_.lock();
 
             serverThreads_[serverName].runningThreads--;
@@ -353,8 +439,12 @@ void FileQueueUploaderPrivate::run()
                 }
             } else {
             }
-           
-            it->finishTask(res ? UploadTask::StatusFinished : UploadTask::StatusFailure);
+            UploadTask::Status st = res ? UploadTask::StatusFinished : UploadTask::StatusFailure;
+            if (it->stopSignal()) {
+                st = UploadTask::StatusStopped;
+            }
+            it->finishTask(st);
+
         } catch (NetworkClient::AbortedException &) {
             it->finishTask(UploadTask::StatusStopped);
         }
@@ -365,19 +455,20 @@ void FileQueueUploaderPrivate::run()
 
     }
     mutex_.lock();
-    runningThreads_--;
+    //runningThreads_--;
 
     mutex_.unlock();
     uploadEngineManager_->clearThreadData();
     scriptsManager_->clearThreadData();
     
-    if (!runningThreads_)
+    /*if (!runningThreads_)
     {
         isRunning_ = false;
         if (queueUploader_->OnQueueFinished) {
             queueUploader_->OnQueueFinished(queueUploader_);
         }
         //LOG(ERROR) << "All threads terminated";
-    }
+    }*/
 
 }
+

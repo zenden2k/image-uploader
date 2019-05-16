@@ -16,10 +16,8 @@ public:
         std::shared_ptr<INetworkClientFactory> networkClientFactory);
     ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter);
-    void setEnableHistory(bool enable);
 protected:
     UploadEngineManager* uploadEngineManager_;
-    bool enableHistory_;
 
     void sessionAdded(UploadSession* session) override;
     void onSessionFinished(UploadSession* session);

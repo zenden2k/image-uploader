@@ -10,12 +10,10 @@
 #include "UploadEngineManager.h"
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) :
-    CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory)
+CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, ServiceLocator::instance()->basicSettings()->MaxThreads)
 {
     uploadEngineManager_ = uploadEngineManager;
-    enableHistory_ = true;
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    setMaxThreadCount(Settings.MaxThreads);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
 }
 
@@ -36,16 +34,12 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
         {
             continue;
         }
+        task->restartTask(false);
         task->serverProfile().setShortenLinks(true);
         res = filter->PostUpload(task.get()) || res;
     }
     return res;
 }
-
-void UploadManager::setEnableHistory(bool enable) {
-    enableHistory_ = enable;
-}
-
 
 void UploadManager::sessionAdded(UploadSession* session)
 {
@@ -62,7 +56,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 {
     UploadSession* uploadSession = task->session();
     std::shared_ptr<CHistorySession> session;
-    if (enableHistory_) {
+    if (uploadSession->isHistoryEnabled()) {
         CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
         std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
         session = uploadSession->historySession_;
@@ -88,7 +82,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         return ;
     }
     
-    if (enableHistory_) {
+    if (uploadSession->isHistoryEnabled()) {
         HistoryItem hi;
         hi.localFilePath = fileTask->originalFileName();
         hi.serverName = fileTask->serverProfile().serverName();

@@ -16,6 +16,7 @@
 class CAbstractUploadEngine;
 class UploadTask;
 class UploadSession;
+class CFileQueueUploader;
 struct UploadProgressTimeInfo
 {
     int64_t ms; //time
@@ -55,6 +56,7 @@ class UploadTask {
         UploadTask();
         UploadTask(UploadTask* parentTask);
         virtual ~UploadTask();
+        void setUploadManager(CFileQueueUploader* uploadManager);
 
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl));
@@ -74,7 +76,7 @@ class UploadTask {
         bool isFinished();
         bool isFinishedItself();
         virtual void finishTask(Status status = StatusFinished);
-        int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
+        //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         int pendingTasksCount(UploadTaskAcceptor* acceptor);
         void addChildTask(std::shared_ptr<UploadTask> child);
         int childCount();
@@ -103,18 +105,19 @@ class UploadTask {
         void stop();
         virtual std::string title() const = 0;
         bool isStopped() const;
+        bool stopSignal() const;
         void clearStopFlag();
         void setStatus(Status status);
         void setStatusText(const std::string& text);
         Status status() const;
         virtual std::string toString() = 0;
-        static std::string UploaderStatusToString(StatusType status, int actionIndex, std::string param);
+        //static std::string UploaderStatusToString(StatusType status, int actionIndex, std::string param);
         TempFileDeleter* tempFileDeleter(bool create = true);
         void addTempFile(const std::string& fileName);
         void deletePostponedChilds();
         bool schedulePostponedChilds();
         void uploadProgress(InfoProgress progress);
-        void reset();
+        void restartTask(bool fullReset = true);
         friend class CUploader;
 
     protected:
@@ -135,7 +138,6 @@ class UploadTask {
         void taskFinished();
         void statusChanged();
         void setCurrentUploadEngine(CAbstractUploadEngine* currentUploadEngine);
-        bool stopSignal() const;
         UploadSession* session_;
         std::recursive_mutex tasksMutex_;
         std::mutex finishMutex_;
@@ -148,6 +150,7 @@ class UploadTask {
         Status status_;
         TempFileDeleter* tempFileDeleter_;
         int index_;
+        CFileQueueUploader* uploadManager_;
 };    
 
 #endif

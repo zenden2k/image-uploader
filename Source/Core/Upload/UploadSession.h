@@ -9,7 +9,8 @@ class CHistorySession;
 class UploadSession
 {
     public:
-        UploadSession();
+        explicit UploadSession(bool enableHistory = true);
+        ~UploadSession();
         typedef fastdelegate::FastDelegate2<UploadSession*, UploadTask*> TaskAddedCallback;
         typedef fastdelegate::FastDelegate1<UploadSession*> SessionFinishedCallback;
         /**
@@ -17,13 +18,13 @@ class UploadSession
         */
         void addTask(std::shared_ptr<UploadTask> task);
         void removeTask(std::shared_ptr<UploadTask> task);
-        int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
+        //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         bool isRunning();
         bool isFinished();
         int pendingTasksCount(UploadTaskAcceptor* acceptor);
         int taskCount();
         int finishedTaskCount(UploadTask::Status status);
-        bool isStopped();
+        bool isStopped() const;
         std::shared_ptr<UploadTask> getTask(int index);
         void addSessionFinishedCallback(const SessionFinishedCallback& callback);
         void addTaskAddedCallback(const TaskAddedCallback& callback);
@@ -31,10 +32,12 @@ class UploadSession
         void clearStopFlag();
 
         // Should be called only after session has been finished
-        void restartFailedTasks();
+        void restartFailedTasks(CFileQueueUploader* uploadManager);
 
 		void setUserData(void* data);
 		void* userData() const;
+
+        bool isHistoryEnabled() const;
 
         bool isFatalErrorSet(const std::string& serverName, const std::string& profileName);
         void setFatalErrorForServer(const std::string& serverName, const std::string& profileName);
@@ -60,6 +63,7 @@ class UploadSession
         std::mutex finishMutex_;
         std::atomic<bool> stopSignal_;
 		void* userData_;
+        bool enableHistory_;
 private:
     DISALLOW_COPY_AND_ASSIGN(UploadSession);
 };

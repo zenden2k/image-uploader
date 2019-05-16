@@ -186,7 +186,7 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         return 0;
     }
 
-    if (!uploadSession_ || uploadSession_->isRunning()) {
+    if (!uploadSession_) {
         return 0;
     }
     int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
@@ -214,15 +214,19 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     bool isImage = false;
     if (nCurItem >= 0) {
         isImage = IuCommonFunctions::IsImage(files_[nCurItem]->fileName);
-        auto task = uploadSession_->getTask(nCurItem);
-        if (task) {
-            auto status = task->status();
-            if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
-                menuItemEnabled = true;
-            }
+        if (!uploadSession_->isRunning()) {
 
+            isImage = IuCommonFunctions::IsImage(files_[nCurItem]->fileName);
+            auto task = uploadSession_->getTask(nCurItem);
+            if (task) {
+                auto status = task->status();
+                if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
+                    menuItemEnabled = true;
+                }
+            }
         }
     }
+    
 
     CMenu menu;
     menu.CreatePopupMenu();
@@ -575,6 +579,7 @@ void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
     }
 
     SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
+    resultsWindow_->UpdateOutput(true);
     ThreadTerminated();
     if (successFileCount == totalFileCount) {
         if (Settings.AutoCopyToClipboard) {
@@ -655,9 +660,19 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
              uploadListView_.SetItemText(fps->tableRow, 2, TR("Finished"));
          });
          
-     }
-        
-    GenerateOutput();    
+    } else if (fileTask->role() == UploadTask::UrlShorteningRole) {
+        UploadTask* parentTask = task->parentTask();
+        FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(parentTask->userData());
+        if (!fps) {
+            return;
+        }
+        auto& row = urlList_[fps->tableRow];
+        row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
+        row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
+    }
+    taskDispatcher->runInGuiThread([&] {
+        GenerateOutput();
+    });
 }
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)

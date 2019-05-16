@@ -73,13 +73,13 @@ void SearchYandexImages::run() {
     assert(uploadManager != nullptr);
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
-    //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+    std::shared_ptr<UploadSession> uploadSession(new UploadSession(false));
     task->setServerProfile(temporaryServer_);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &SearchYandexImages::onFileFinished));
 
     currentUploadTask_.reset(task);
-    uploadManager->addTask(currentUploadTask_);
-    uploadManager->start();
+    uploadSession->addTask(currentUploadTask_);
+    uploadManager->addSession(uploadSession);
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(uploadFinishSignalMutex_);
@@ -131,5 +131,4 @@ void SearchYandexImages::onFileFinished(UploadTask* task, bool ok) {
     }
 
     uploadFinishSignal_.notify_one();
-
 }

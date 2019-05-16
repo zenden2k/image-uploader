@@ -313,7 +313,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));
     uploadSessionMutex_.lock();
     uploadSession_->addTask(fileUploadTask);
-    uploadManager_->start();
+    uploadManager_->addTaskToQueue(fileUploadTask);
     uploadSessionMutex_.unlock();
     return true;
 }

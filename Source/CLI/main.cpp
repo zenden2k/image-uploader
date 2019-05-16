@@ -493,7 +493,6 @@ int func() {
     std::unique_ptr<UploadManager> uploadManager;
     uploadManager.reset(new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler, networkClientFactory));
     uploadManager->setMaxThreadCount(1);
-    uploadManager->setEnableHistory(false);
 
     if (useSystemProxy) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
@@ -542,7 +541,7 @@ int func() {
     s.setParam("FolderID", folderId);
     serverProfile.setFolderId(folderId);
 
-    session.reset(new UploadSession);
+    session.reset(new UploadSession(false));
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
         {
@@ -566,9 +565,9 @@ int func() {
     //ConsoleUtils::instance()->InitScreen();
     //ConsoleUtils::instance()->Clear();
     //PrintWelcomeMessage();
-    uploadManager->addSession(session);
     uploadManager->OnQueueFinished.bind(OnQueueFinished);
-    uploadManager->start();
+    uploadManager->addSession(session);
+   
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(finishSignalMutex);

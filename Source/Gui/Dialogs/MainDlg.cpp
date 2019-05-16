@@ -599,9 +599,13 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         if (!SUCCEEDED(hr)) {
             LOG(ERROR) << "Unable to open folder in shell, error code=" << hr;
         }
-        for (auto& pidl : list) {
+
+        // SHBindToParent does not allocate a new PIDL; 
+        // it simply receives a pointer through this parameter.
+        // Therefore, we are not responsible for freeing this resource.
+        /*for (auto& pidl : list) {
             SHFree(const_cast<LPITEMIDLIST>(pidl));
-        }
+        }*/
     }
     
     return 0;

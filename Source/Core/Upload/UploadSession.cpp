@@ -2,14 +2,20 @@
 
 #include <algorithm>
 #include "UploadTask.h"
+#include "Core/Upload/UploadManager.h"
 
-UploadSession::UploadSession()
+UploadSession::UploadSession(bool enableHistory) :
+    enableHistory_(enableHistory)
 {
     finishedSignalSent_ = false;
     stopSignal_ = true;
     finishedCount_ = 0;
     isStopped_ = false;
 	userData_ = nullptr;
+}
+
+UploadSession::~UploadSession() {
+    
 }
 
 void UploadSession::addTask(std::shared_ptr<UploadTask> task)
@@ -29,43 +35,12 @@ void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
         tasks_.erase(it);
 }
 
-int  UploadSession::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
-{
-    int count = 0;
-    //LOG(ERROR) << "UploadSession::getNextTask()";
-//    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
-    {
-        UploadTask* uploadTask = it->get();
-        if (uploadTask->status() == UploadTask::StatusInQueue) {
-            count++;
-            if (acceptor->canAcceptUploadTask(uploadTask))
-            {
-                outTask = *it;
-                it->get()->setStatus(UploadTask::StatusPostponed); // FIXME: add new property instead of settings status = StatusPostponed
-                return count;
-            }
-            
-        }
-        std::shared_ptr<UploadTask> task;
-        int childCount = it->get()->getNextTask(acceptor, task);
-        count += childCount;
-        if (task)
-        {
-            task->setStatus(UploadTask::StatusPostponed);
-            outTask = task;
-            return count;
-        }
-    }
-    return count;
-}
-
 bool UploadSession::isRunning()
 {
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
     {
-        if (it->get()->isRunning())
+        if (!it->get()->isFinished())
         {
             return true;
         }
@@ -149,7 +124,7 @@ int UploadSession::finishedTaskCount(UploadTask::Status status)
     return res;
 }
 
-bool UploadSession::isStopped()
+bool UploadSession::isStopped() const
 {
     return isStopped_;
 }
@@ -183,17 +158,18 @@ void UploadSession::clearStopFlag() {
     }
 }
 
-void UploadSession::restartFailedTasks() {
+void UploadSession::restartFailedTasks(CFileQueueUploader* uploadManager) {
     if (isRunning()) {
         return;
     }
     finishedSignalSent_ = false;
     for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
-        auto task = it->get();
+        auto task = *it;
         auto status = task->status();
 
         if (status == UploadTask::StatusFailure || status == UploadTask::StatusStopped) {
-            task->reset();
+            task->restartTask();
+            uploadManager->addTaskToQueue(task);
         }
     }
 }
@@ -277,4 +253,8 @@ void UploadSession::setUserData(void* data) {
 }
 void* UploadSession::userData() const {
 	return userData_;
+}
+
+bool UploadSession::isHistoryEnabled() const {
+    return enableHistory_;
 }

@@ -41,7 +41,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         CResultsWindow(CWizardDlg *wizardDlg, std::vector<CUrlListItem>  & urlList, bool ChildWindow);
         ~CResultsWindow();
         int GetCodeType();
-        void UpdateOutput();
+        void UpdateOutput(bool immediately = false);
         void SetCodeType(int Index);
         void Clear();
         void SetPage(CResultsPanel::TabPage Index);

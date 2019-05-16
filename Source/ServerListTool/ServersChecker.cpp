@@ -36,7 +36,7 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
     BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
-    uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_ = std::make_shared<UploadSession>(false);
     uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &ServersChecker::onSessionFinished));
     int taskCount = 0;
     for (size_t i = 0; i < model_->getCount(); i++) {
@@ -112,7 +112,6 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
     }
     if (taskCount) {
         uploadManager_->addSession(uploadSession_);
-        uploadManager_->start();
     } else {
         processFinished();
     }

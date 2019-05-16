@@ -89,8 +89,9 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     uploadScript->setNetworkClient(m_NetworkClient.get());
     uploadScript->getAccessTypeList(m_accessTypeList);
     CreateLoadingThread();
-    
-    return 1;  // Let the system set the focus
+
+    m_FolderTree.SetFocus();
+    return 0;  
 }
 
 LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
