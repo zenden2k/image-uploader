@@ -114,7 +114,7 @@ DWORD CFolderAdd::Run()
             m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
         } else {
             m_pWizardDlg->ShowPage(CWizardDlg::wpMainPage);
-            m_pWizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage)->ThumbsView.LoadThumbnails();
+            //m_pWizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage)->ThumbsView.LoadThumbnails();
         }
     }
     

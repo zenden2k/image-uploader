@@ -79,7 +79,7 @@ void CLogWindow::Show()
     }
     SetForegroundWindow(m_hWnd);
     ::SetActiveWindow(m_hWnd);
-    BringWindowToTop();
+    //BringWindowToTop();
     //SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
 }
 

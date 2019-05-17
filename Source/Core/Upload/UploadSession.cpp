@@ -38,18 +38,21 @@ void UploadSession::removeTask(std::shared_ptr<UploadTask> task)
 bool UploadSession::isRunning()
 {
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
+    /*for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
     {
         if (!it->get()->isFinished())
         {
             return true;
         }
     }
-    return false;
+    return false;*/
+    return !isFinished();
 }
 
 bool UploadSession::isFinished()
 {
+    return finishedCount_ == tasks_.size();
+
     try {
 //        std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
         //return tasks_.size() == finishedCount_;
@@ -78,7 +81,7 @@ bool UploadSession::isFinished()
     //return isFinished_;
 }
 
-int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
+/*int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
 {
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
     int res = 0;
@@ -91,7 +94,7 @@ int UploadSession::pendingTasksCount(UploadTaskAcceptor* acceptor)
         res += it->get()->pendingTasksCount(acceptor);
     }
     return res;
-}
+}*/
 
 int UploadSession::taskCount()
 {
@@ -163,15 +166,19 @@ void UploadSession::restartFailedTasks(CFileQueueUploader* uploadManager) {
         return;
     }
     finishedSignalSent_ = false;
+    int finishedCount = 0;
     for (auto it = tasks_.begin(); it != tasks_.end(); ++it) {
         auto task = *it;
         auto status = task->status();
 
         if (status == UploadTask::StatusFailure || status == UploadTask::StatusStopped) {
             task->restartTask();
-            uploadManager->addTaskToQueue(task);
+            //uploadManager->addTaskToQueue(task);
+        } else {
+            finishedCount++;
         }
     }
+    finishedCount_ = finishedCount; 
 }
 
 bool UploadSession::isFatalErrorSet(const std::string& serverName, const std::string& profileName)
@@ -218,9 +225,12 @@ std::shared_ptr<UploadTask> UploadSession::getTask(int index)
 
 void UploadSession::taskFinished(UploadTask* task)
 {
+    if (task->parentTask() != nullptr) {
+        return; 
+    }
     ++finishedCount_;
     std::lock_guard<std::mutex> lock(finishMutex_);
-    if (!finishedSignalSent_ && isFinished()) {
+    if (!finishedSignalSent_ && finishedCount_ == tasks_.size()) {
         // TODO: use std::call_once
         for (const auto& it : sessionFinishedCallbacks_) {
             it(this);
@@ -257,4 +267,26 @@ void* UploadSession::userData() const {
 
 bool UploadSession::isHistoryEnabled() const {
     return enableHistory_;
+}
+
+void UploadSession::recalcFinishedCount() {
+    int res = 0;
+    try {
+        //        std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
+        if (tasks_.empty()) {
+            finishedCount_  = 0;
+            return;
+        }
+        for (size_t i = 0; i < tasks_.size(); i++) {
+            auto it = tasks_[i];
+            //tasksMutex_.unlock(); // FIXME!!! How to avoid deadlocks???
+            if (it->isFinished()) {
+                res++;
+            }
+            //tasksMutex_.lock();
+        }
+    } catch (std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
+    finishedCount_ = res;
 }

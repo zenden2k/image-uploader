@@ -104,7 +104,7 @@ CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger) :
     scriptsManager_ = new ScriptsManager(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, networkClientFactory);
+    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, networkClientFactory, Settings.MaxThreads);
     imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
     sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(&m_EngineList, uploadEngineManager_);
     urlShorteningFilter_ = std::make_unique<UrlShorteningFilter>();
@@ -150,7 +150,7 @@ bool CWizardDlg::pasteFromClipboard() {
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             if (MainDlg) {
                 MainDlg->AddToFileList(outFileName, L"", true, nullptr, true);
-                MainDlg->ThumbsView.LoadThumbnails();
+//                MainDlg->ThumbsView.LoadThumbnails();
                 return true;
             }
         } 
@@ -281,6 +281,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     }
 
     ServiceLocator::instance()->historyManager()->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
+    ServiceLocator::instance()->historyManager()->convertHistory();
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
 
@@ -294,6 +295,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     //TRC(IDC_UPDATESLABEL, "Check for Updates");
     TRC(IDC_PREV, "< Back");
 
+    SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;
  
@@ -808,7 +810,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         ShowPage(wpMainPage);
         MainDlg = getPage<CMainDlg>(wpMainPage);
         if (MainDlg) {
-            MainDlg->ThumbsView.LoadThumbnails();
+//            MainDlg->ThumbsView.LoadThumbnails();
         }
     }
     
@@ -1150,7 +1152,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
             CreatePage(wpMainPage);
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
-            MainDlg->ThumbsView.LoadThumbnails();
+//            MainDlg->ThumbsView.LoadThumbnails();
             ShowPage(wpMainPage);
         }
     }
@@ -1176,9 +1178,15 @@ bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileNam
     }
     MainDlg->AddToFileList(FileName, VirtualFileName);
     if(Show){
-        MainDlg->ThumbsView.LoadThumbnails();
+//        MainDlg->ThumbsView.LoadThumbnails();
         ShowPage(wpMainPage);
     }
+    return true;
+}
+
+bool CWizardDlg::AddImageAsync(const CString &FileName, const CString &VirtualFileName, bool show) {
+    std::lock_guard<std::mutex> lk(newImagesMutex_);
+    newImages_.push_back({ FileName, VirtualFileName, show });
     return true;
 }
 
@@ -1420,7 +1428,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
         mainDlg->UpdateStatusLabel();
 
         if (CurPage == wpMainPage) {
-            mainDlg->ThumbsView.LoadThumbnails();
+//            mainDlg->ThumbsView.LoadThumbnails();
         }
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
@@ -1587,7 +1595,7 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
         if (mainDlg) {
             mainDlg->AddToFileList(FileName);
             if (CurPage == wpMainPage) {
-                mainDlg->ThumbsView.LoadThumbnails();
+//                mainDlg->ThumbsView.LoadThumbnails();
             }
             ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
         }
@@ -1844,9 +1852,9 @@ bool CWizardDlg::funcAddFiles()
         }
         mainDlg->UpdateStatusLabel();
 
-        if (CurPage == wpMainPage) {
-            mainDlg->ThumbsView.LoadThumbnails();
-        }
+//       if (CurPage == wpMainPage) {
+//            mainDlg->ThumbsView.LoadThumbnails();
+//        }
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     }
@@ -2061,7 +2069,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
                 mainDlg->AddToFileList(buf);
                 mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
-                mainDlg->ThumbsView.LoadThumbnails();
+//                mainDlg->ThumbsView.LoadThumbnails();
                 mainDlg->ThumbsView.SetFocus();
                 ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
             }
@@ -2223,4 +2231,15 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
     logWindowsByFileName_[fileName] = wnd;
     wnd->reloadList();
     wnd->Show();
+}
+
+LRESULT CWizardDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (wParam == kNewFilesTimer) {
+        std::lock_guard<std::mutex> lk(newImagesMutex_);
+        for (const auto& item : newImages_) {
+            AddImage(item.RealFileName, item.VirtualFileName, item.show);
+        }
+        newImages_.clear();
+    }
+    return 0;
 }

@@ -102,6 +102,7 @@ public:
     CStringList m_Paths;
     enum { IDD = IDD_WIZARDDLG };
     enum { IDM_OPENSCREENSHOTS_FOLDER = 9889};
+    enum { kNewFilesTimer = 1};
     static const WPARAM kWmMyExitParam = 5;
     virtual BOOL PreTranslateMessage(MSG* pMsg) override;
     virtual BOOL OnIdle() override;
@@ -119,6 +120,7 @@ public:
         MESSAGE_HANDLER(WM_MY_SHOWPAGE, OnWmShowPage)
         MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
         MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
+        MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(MYWM_ENABLEDROPTARGET, OnEnableDropTarget)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
@@ -157,6 +159,7 @@ public:
     LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool DragndropEnabled;
     enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
@@ -192,6 +195,7 @@ protected:
 public:
     bool ShowPage(WizardPageId idPage, int prev = -1, int next = -1);
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
+    bool AddImageAsync(const CString &FileName, const CString &VirtualFileName, bool show);
     LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     HBITMAP GenHeadBitmap(WizardPageId PageID);
@@ -227,6 +231,8 @@ public:
     std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
     std::unique_ptr<UserFilter> userFilter_;
     std::map<CString, CLogWindow*> logWindowsByFileName_;
+    std::vector<AddImageStruct> newImages_;
+    std::mutex newImagesMutex_;
     DefaultLogger* defaultLogger_;
     bool CommonScreenshot(CaptureMode mode);
     // functions

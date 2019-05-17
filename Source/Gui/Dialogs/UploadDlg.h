@@ -75,12 +75,12 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         bool OnNext() override;
         bool OnHide() override;
         bool CancelByUser;
-        void GenerateOutput();
+        void GenerateOutput(bool immediately = false);
         void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
         int progressCurrent, progressTotal;
         CMyEngineList *engineList_;
         
-        void OnUploaderStatusChanged(UploadTask* task);
+        void OnTaskStatusChanged(UploadTask* task);
         // Is called when upload engine is uploading to remote folder(album)
         // Then this album will appear in dropdown list "Options"
         void OnFolderUsed(UploadTask* task);

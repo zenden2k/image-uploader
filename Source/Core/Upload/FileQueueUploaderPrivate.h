@@ -87,7 +87,7 @@ protected:
     std::mutex queueMutex_;
     std::condition_variable queueCondition_;
 
-    int pendingTasksCount();
+   // int pendingTasksCount();
     void taskAdded(UploadTask* task);
     
     int startFromSession_;

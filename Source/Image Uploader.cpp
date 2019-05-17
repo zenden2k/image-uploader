@@ -34,12 +34,13 @@
 #include "Func/WtlScriptDialogProvider.h"
 #include "Core/AppParams.h"
 #include "Func/LangClass.h"
+#include "Func/GdiPlusInitializer.h"
+#include "Gui/Dialogs/LangSelect.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
 #endif
-#include "Func/GdiPlusInitializer.h"
-#include "Gui/Dialogs/LangSelect.h"
+
 CAppModule _Module;
 CLogWindow LogWindow;
 WtlGuiSettings Settings;

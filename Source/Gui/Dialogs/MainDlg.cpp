@@ -358,7 +358,6 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, Settings.ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
     
     ThumbsView.OutDateThumb(nCurItem);
-    ThumbsView.UpdateOutdated();
     
     return 0;
 }
@@ -377,7 +376,7 @@ bool CMainDlg::OnShow()
     EnableExit();
     EnableNext(FileList.GetCount()>0);
     ThumbsView.SetFocus();
-    ThumbsView.LoadThumbnails();
+//    ThumbsView.LoadThumbnails();
     return true;
 }
 
@@ -403,7 +402,7 @@ LRESULT CMainDlg::OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
 
 bool CMainDlg::OnHide()
 {
-    ThumbsView.StopBackgroundThread();
+    //ThumbsView.StopBackgroundThread();
     if(IsRunning())
     {
         WaitThreadStop.SetEvent(); // Sending stop message destinated for child thread
@@ -549,7 +548,6 @@ DWORD CMainDlg::Run()
     Events[0] = m_EditorProcess;
     Events[1] = WaitThreadStop.m_hEvent;
     WaitForMultipleObjects(2, Events, FALSE, INFINITE);
-    ThumbsView.UpdateOutdated();
     WaitThreadStop.ResetEvent();
     return 0;
 }

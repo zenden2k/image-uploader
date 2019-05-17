@@ -9,8 +9,9 @@
 #include "Core/Settings/BasicSettings.h"
 #include "UploadEngineManager.h"
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory) :
-CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, ServiceLocator::instance()->basicSettings()->MaxThreads)
+UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, 
+    IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int threadCount) :
+CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, threadCount)
 {
     uploadEngineManager_ = uploadEngineManager;
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
@@ -38,6 +39,7 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
         task->serverProfile().setShortenLinks(true);
         res = filter->PostUpload(task.get()) || res;
     }
+    session->recalcFinishedCount();
     return res;
 }
 
@@ -83,7 +85,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
     }
     
     if (uploadSession->isHistoryEnabled()) {
-        HistoryItem hi;
+        HistoryItem hi(session.get());
         hi.localFilePath = fileTask->originalFileName();
         hi.serverName = fileTask->serverProfile().serverName();
         UploadResult* uploadResult = fileTask->uploadResult();
@@ -100,7 +102,10 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         if (!hi.directUrl.empty()) {
             LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
         }
-        session->addItem(hi);
+
+        CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
+        mgr->saveHistoryItem(&hi);
+        //session->addItem(hi);
     }
 }
 

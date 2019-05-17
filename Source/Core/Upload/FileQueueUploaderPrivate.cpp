@@ -108,7 +108,7 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
     //start();
 }
 
-int FileQueueUploaderPrivate::pendingTasksCount()
+/*int FileQueueUploaderPrivate::pendingTasksCount()
 {
     std::lock_guard<std::recursive_mutex> lock2(sessionsMutex_);
     TaskAcceptorBase acceptor(false); // do not use mutex
@@ -120,7 +120,7 @@ int FileQueueUploaderPrivate::pendingTasksCount()
         sessions_[i]->pendingTasksCount(&acceptor);
     }
     return acceptor.fileCount;
-}
+}*/
 
 void FileQueueUploaderPrivate::taskAdded(UploadTask* task)
 {

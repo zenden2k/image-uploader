@@ -97,6 +97,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
         CString m_delayedFileName;
+        CComboBox monthCombobox_;
         void threadsStarted();
         void threadsFinished();
         void onItemDblClick(TreeItem* item);
@@ -104,7 +105,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         bool delayed_closing_;
         CString historyFolder;
         CWizardDlg* wizardDlg_;
-        void LoadHistoryFile(CString fileName);
+        void LoadHistoryFile(bool allTime = false);
         void SelectedMonthChanged();
         void OpenInBrowser(TreeItem* item);
         CPictureExWnd m_wndAnimation;

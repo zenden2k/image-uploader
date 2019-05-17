@@ -21,6 +21,7 @@
 #include "AboutDlg.h"
 
 #include <curl/curl.h>
+#include <sqlite3.h>
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include <libavutil/ffversion.h>
@@ -137,29 +138,35 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
-    memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n");
-    memoText += TR("Libcurl version:")+ CString("\r\n");
-    memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n\r\n");
-    CString versionLabel;
-    versionLabel.Format(_T("%s version:"), _T("Boost"));
-    memoText += versionLabel + CString("\r\n");
+    memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n\r\n");
+    memoText += TR("Libraries:")+ CString("\r\n");
+    memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
     CString boostVersion = CString(BOOST_LIB_VERSION);
     boostVersion.Replace(L'_', L'.');
-    memoText += boostVersion  + L"\r\n\r\n";
+    CString versionLabel;
+    versionLabel.Format(_T("%s version:"), _T("Boost"));
+    memoText += versionLabel + boostVersion + CString("\r\n");
+    
     int webpVersion = WebPGetDecoderVersion();
     CString webpVersionStr;
     webpVersionStr.Format(_T("%u.%u.%u"), (webpVersion >> 16) & 0xff, (webpVersion >> 8) & 0xff, webpVersion & 0xff);
 
-    memoText += CString(L"Webp: v") + webpVersionStr + L"\r\n\r\n";
+    memoText += CString(L"Webp: v") + webpVersionStr + L"\r\n";
+    memoText += CString(L"sqlite: v") + sqlite3_libversion() + L"\r\n";
+
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
         memoText += TR("FFmpeg version:")+ CString("\r\n");
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
 
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        memoText += CString(L"MediaInfo.DLL path:\r\n") + MediaInfoHelper::GetLibraryPath() + _T("\r\n")+
-            MediaInfoHelper::GetLibraryVersion() + L"\r\n\r\n";
+        memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n") + 
+            CString(L"MediaInfo.DLL path:\r\n") + MediaInfoHelper::GetLibraryPath() + 
+             + _T("\r\n");
     }
+
+    
+
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;

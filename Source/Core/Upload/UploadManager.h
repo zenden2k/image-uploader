@@ -13,7 +13,7 @@ class UploadManager : public CFileQueueUploader
 {
 public:
     UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, 
-        std::shared_ptr<INetworkClientFactory> networkClientFactory);
+        std::shared_ptr<INetworkClientFactory> networkClientFactory, int threadCount);
     ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter);
 protected:

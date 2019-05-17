@@ -21,7 +21,7 @@ class UploadSession
         //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         bool isRunning();
         bool isFinished();
-        int pendingTasksCount(UploadTaskAcceptor* acceptor);
+        //int pendingTasksCount(UploadTaskAcceptor* acceptor);
         int taskCount();
         int finishedTaskCount(UploadTask::Status status);
         bool isStopped() const;
@@ -52,6 +52,7 @@ class UploadSession
         void taskFinished(UploadTask* task);
         void childTaskAdded(UploadTask* task);
         bool stopSignal();
+        void recalcFinishedCount();
         //std::recursive_mutex tasksMutex_;
         std::vector<TaskAddedCallback> taskAddedCallbacks_;
         std::vector<SessionFinishedCallback> sessionFinishedCallbacks_;

@@ -25,7 +25,10 @@
 
 #include <string>
 #include <vector>
+#include <sqlite3.h>
 #include "Core/Utils/CoreTypes.h"
+
+class CHistorySession;
 
 struct HistoryItem
 {
@@ -43,33 +46,48 @@ struct HistoryItem
     time_t timeStamp;
     int64_t uploadFileSize;
     int sortIndex;
-    HistoryItem() {
-        timeStamp = 0;
+    int id;
+    CHistorySession* session;
+
+    explicit HistoryItem(CHistorySession* historySession) : session(historySession){
+        time(&timeStamp);
         uploadFileSize = 0;
         sortIndex = 0;
+        id = 0;
     }
 };
 
 class SimpleXmlNode;
 class CHistoryReader_impl;
+class CHistoryReader;
 
 class CHistorySession
 {
     public:
-        CHistorySession(const std::string& filename, const std::string& sessionId);
-        bool addItem(const HistoryItem& ht);
-
+        CHistorySession(sqlite3* db, const std::string& filename, const std::string& sessionId);
         int entriesCount() const;
         HistoryItem entry(const int index) const;
         std::string serverName() const;
+        void setServerName(const std::string& name);
         time_t timeStamp() const;
+        void setTimeStamp(time_t timeStamp);
         void loadFromXml(SimpleXmlNode& sessionNode);
+        std::string sessionId() const;
+        std::vector<HistoryItem>::iterator begin();
+        std::vector<HistoryItem>::iterator end();
     private:
         std::string m_historyXmlFileName;
         std::string m_sessId;
         time_t m_timeStamp;
         std::string m_serverName;
         std::vector<HistoryItem> m_entries;
+        
+        sqlite3* db_;
+        bool dbEntryCreated_;
+        void sortByOrderIndex();
+        friend class CHistoryReader;
+        friend class CHistoryManager;
+       
 };
 
 enum class HistoryClearPeriod { ClearAll, CurrentMonth };
@@ -84,26 +102,44 @@ class CHistoryManager
         std::shared_ptr<CHistorySession> newSession();
         //std::string makeFileName() const;
         bool clearHistory(HistoryClearPeriod period);
+        bool saveHistoryItem(HistoryItem* item);
+        bool saveSession(CHistorySession* session);
+        /**
+         * Load history files (*xml) into sqlite database
+         */
+        bool convertHistory();
+        static const char globalMutexName[];
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryManager);
         std::string m_historyFilePath;
         std::string m_historyFileNamePrefix;
+        sqlite3* db_;
+        bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
+        friend class CHistoryReader;
 };
 
 class CHistoryReader
 {
     public:
-        CHistoryReader();
+        CHistoryReader(CHistoryManager* mgr);
         virtual ~CHistoryReader();
         // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename);
+        bool loadFromDB(unsigned short year, unsigned short month);
         int getSessionCount() const;
 
         // The pointer returned by this function is only valid
         //  during lifetime of CHistoryReader object
         CHistorySession* getSession(size_t index);
+
+        std::vector<CHistorySession*>::iterator begin();
+        std::vector<CHistorySession*>::iterator end();
+
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
         CHistoryReader_impl* d_ptr;
+
+        static int selectCallback(void* userData, int argc, char **argv, char **azColName);
+        static int selectCallback2(void* userData, int argc, char **argv, char **azColName);
 };
 #endif

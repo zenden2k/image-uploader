@@ -39,7 +39,6 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 {
     maxwidth = 0;
     maxheight = 0;
-    m_NeedUpdate  = FALSE;
     callbackLastCallTime_ = 0;
     ExtendedView = false;
 }
@@ -47,10 +46,12 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 CThumbsView::~CThumbsView()
 {
     ImageList.Destroy();
+    StopBackgroundThread(true);
 }
 
 void CThumbsView::Init(bool Extended)
 {
+    Start(THREAD_PRIORITY_BELOW_NORMAL);
     ExtendedView = Extended;
     ImageView.Create(m_hWnd);
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -59,7 +60,7 @@ void CThumbsView::Init(bool Extended)
     DWORD style = GetExtendedListViewStyle();
     style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;
     SetExtendedListViewStyle(style);
-    SendMessage(LVM_SETICONSPACING, 0, MAKELONG(THUMBNAIL_WIDTH+5, THUMBNAIL_HEIGHT+25+(ExtendedView?20:0)));
+    SetIconSpacing(THUMBNAIL_WIDTH + 5, THUMBNAIL_HEIGHT + 25 + (ExtendedView ? 20 : 0));
 }
 
 int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, Gdiplus::Image* Img)
@@ -75,7 +76,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
 
     // Если ImageList пустой, создаем дефолтную картинку
     if(ImageList.GetImageCount() < 1)
-        LoadThumbnail(-1, 0);
+        LoadThumbnail(-1, nullptr, nullptr);
 
     AddItem(n, 0, Title, 0);
 
@@ -83,13 +84,15 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
 
     TVI->ThumbOutDate = FALSE;
     TVI->FileName = FileName;
+    //TVI->Image = nullptr;
     SetItemData(n, reinterpret_cast<DWORD_PTR>(TVI));
 
     // Если уже есть загруженная картинка, генерируем эскиз немедленно
     // Это нужно для Video Grabber-a
-    bool IsRun = IsRunning()!=0;
 
-    if(Img && !IsRun) LoadThumbnail(n, Img);
+    if (Img) {
+        LoadThumbnail(n, TVI, Img);
+    }
 
     // Упорядочиваем картинки
     Arrange(LVA_ALIGNTOP);
@@ -120,7 +123,7 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
     // Получаем координаты курсора
-    POINT p = {LOWORD(lParam),HIWORD(lParam)};
+    POINT p = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
     int ItemIndex = HitTest(p, 0); //Getting the index of item was clicked (by middle button)
     if(ItemIndex < 0) return 0;
@@ -128,11 +131,7 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
     if(GetItemState(ItemIndex, LVIS_SELECTED) != LVIS_SELECTED)
     {
         // Удаляем только элемент под указателем
-        bool NeedRestart = StopBackgroundThread(true);
         MyDeleteItem(ItemIndex);
-        UpdateImageIndexes(ItemIndex);
-        if(NeedRestart)
-            LoadThumbnails();
         NotifyItemCountChanged();
     }
     else if(GetNextItem(-1,LVNI_SELECTED)>=0)
@@ -147,19 +146,10 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
 int CThumbsView::DeleteSelected(void)
 {
-    bool IsRun = IsRunning()!=0;
-    if(IsRun)
-    {
-        SignalStop();
-        MsgWaitForSingleObject(m_hThread, INFINITE);
-        ATLTRACE(_T("MsgWait stopped!!!\r\n"));
-    }
-
     if(GetItemCount() < 1) return 0;
 
     SetRedraw(false);
     int nItem=0;
-    int FirstItem = GetNextItem(nItem-1,LVNI_SELECTED    );
     do
     {
         nItem = GetNextItem(nItem-1,LVNI_SELECTED    );
@@ -169,12 +159,8 @@ int CThumbsView::DeleteSelected(void)
     }
     while(nItem!=-1);
 
-
-    UpdateImageIndexes(FirstItem);
     SetRedraw(true);
     Arrange(LVA_ALIGNTOP);
-    if(IsRun )
-        LoadThumbnails();
     NotifyItemCountChanged();
     return 0;
 }
@@ -192,26 +178,16 @@ void CThumbsView::UpdateImageIndexes(int StartIndex)
 
 void CThumbsView::MyDeleteAllItems()
 {
-    bool IsRun = IsRunning()!=0;
-    if(IsRun)
-    {
-        SignalStop();
-        MsgWaitForSingleObject(m_hThread, INFINITE);
-        ATLTRACE(_T("MsgWait stopped!!!\r\n"));
-    }
     int n = GetItemCount();
-    for(int i=0; i<n; i++)
+    for (int i = 0; i < n; i++) {
         SimpleDelete(i, false);
+    }
     DeleteAllItems();
-    ImageList.RemoveAll();
-
+    clearImageList();
 }
 
 bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 {
-    if(DeleteThumb) 
-        ImageList.Remove(ItemIndex + 1);
-
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
 
     if (deletePhysicalFiles_ && deleteFile && !TVI->FileName.IsEmpty()) {
@@ -227,11 +203,11 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 LPCTSTR CThumbsView::GetFileName(int ItemIndex)
 {
     ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
-    if(!TVI){return _T("");} 
+    if(!TVI) {
+        return _T("");
+    } 
     return TVI->FileName;
 }
-
-
 
 LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 {
@@ -257,7 +233,7 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
     return 0;
 }
 
-bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
+bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image *Img)
 {
     using namespace Gdiplus;
     if(ItemID>GetItemCount()-1) 
@@ -269,7 +245,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
     CString filename;
     if(ItemID>=0) 
     {
-        filename  = GetFileName(ItemID);
+        filename = /*GetFileName(ItemID);*/tvi->FileName; 
     }
     int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
     width = THUMBNAIL_WIDTH/*rc.right-2*/;
@@ -326,7 +302,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
         format.SetAlignment(StringAlignmentCenter);
         format.SetLineAlignment(StringAlignmentCenter);
         Font font(L"Arial", 12, FontStyleBold);
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + GetFileName(ItemID));
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + filename);
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     }
 
@@ -380,7 +356,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
                     DeleteObject(memBm);
                     ReleaseDC(dc);
                 }
-                DeleteObject(ggg);
+                DestroyIcon(ggg);
             }
         }
 
@@ -409,7 +385,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
             format.SetAlignment(StringAlignmentCenter);
             format.SetLineAlignment(StringAlignmentCenter);
             Font font(L"Tahoma", 8, FontStyleRegular );
-            LPCTSTR Filename = GetFileName(ItemID);
+            CString Filename = /*GetFileName(ItemID);*/filename;
             CString Buffer;
             //int f = MyGetFileSize(GetFileName(ItemID));
             WCHAR buf2[25];
@@ -430,24 +406,32 @@ bool CThumbsView::LoadThumbnail(int ItemID, Gdiplus::Image *Img)
         }
     }
 
-    HBITMAP bmp=NULL;
+    HBITMAP bmp = nullptr;
     ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
 
-    if(ImageList.GetImageCount()>ItemID+1)
-    {
-        ImageList.Replace(ItemID+1, bmp,0);
-        RedrawItems(ItemID,ItemID);
-    }
-    else 
-    {
+    if (tvi) {
+        tvi->ThumbLoaded = true;
+        tvi->ThumbnailRequested = false;
+        
+        int oldImageIndex = GetImageIndex(ItemID);
+        if (oldImageIndex != 0) {
+            ImageList.Replace(oldImageIndex, bmp, nullptr);
+            RedrawItems(ItemID, ItemID);
+           // SetItem(ItemID, 0, LVIF_IMAGE, 0, oldImageIndex, 0, 0, 0);
+        } else {
+            int imageIndex = ImageList.Add(bmp, (COLORREF)0);
+            SetItem(ItemID, 0, LVIF_IMAGE, 0, imageIndex, 0, 0, 0);
+        }
+
+    } else {
+        defaultImage_ = bmp;
         ImageList.Add(bmp, (COLORREF)0);
-        SetItem(ItemID, 0, LVIF_IMAGE    , 0,ItemID+1, 0, 0, 0);
     }
-    DeleteObject(bmp);
+
     return true;
 }
 
-int CThumbsView::GetImageIndex(int ItemIndex)
+int CThumbsView::GetImageIndex(int ItemIndex) const
 {
     LV_ITEM item;
 
@@ -467,51 +451,26 @@ LRESULT CThumbsView::OnLButtonDblClk(UINT Flags, CPoint Pt)
 // The Thread which loads Thumbnails in ImageList
 DWORD CThumbsView::Run()
 {
-    int i, item; 
-    item = -1;
-
-    for(i=0; i<GetItemCount(); i++) // FIX THIS 
-    {
-        ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
-        if(ShouldStop()) goto finish;
-        if(GetImageIndex(i) < 1 || (m_NeedUpdate && TVI &&  TVI->ThumbOutDate))
+    while (true) {
+        int itemIndex;
         {
-            item = i; 
-            break;
+            std::unique_lock<std::mutex> lck(thumbQueueMutex_);
+            thumbQueueCondition_.wait(lck, [&] {return ShouldStop() || !thumbQueue_.empty(); });
+
+            if (ShouldStop()) {
+                break; // Exiting thread
+            }
+
+            itemIndex = thumbQueue_.front();
+            thumbQueue_.pop_front();
         }
+        ThumbsViewItem* item = reinterpret_cast<ThumbsViewItem*>(GetItemData(itemIndex));
+        if (!item) {
+            continue;
+        }
+        LoadThumbnail(itemIndex, item, nullptr);
     }
-    if(item==-1) goto finish;
-
-    for(i=item; i<GetItemCount(); i++) // FIX THIS 
-    {
-        ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
-        LockImagelist();
-        if(!TVI) break;
-        if(ShouldStop()) break;
-        TVI->ThumbOutDate = FALSE;
-        LockImagelist(false);
-        LoadThumbnail(i);
-    }
-finish:
-    LockImagelist(false);
-
-    m_NeedUpdate = false;
-    UpdateImageIndexes();
-    ATLTRACE(_T("Thumbs loading thread stopped\r\n"));
     return 0;
-}
-
-void CThumbsView::LoadThumbnails()
-{
-    if(!IsRunning())  
-    {
-        Start(THREAD_PRIORITY_BELOW_NORMAL);
-    }
-}
-
-void CThumbsView::StopLoadingThumbnails()
-{
-    if(IsRunning())  SignalStop();
 }
 
 void CThumbsView::ViewSelectedImage()
@@ -567,40 +526,35 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         delete tvi;
     }
-    StopBackgroundThread(true);
     return 0;
 }
 
 void CThumbsView::OutDateThumb(int nIndex)
 {
-    ThumbsViewItem *TVI = (ThumbsViewItem *)GetItemData(nIndex);
-    if (!TVI) return;
+    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(nIndex));
+    if (!TVI) {
+        return;
+    }
     TVI->ThumbOutDate = TRUE;
-}
-
-void CThumbsView::UpdateOutdated()
-{
-    m_NeedUpdate = true;
-    if (!IsRunning()) LoadThumbnails();
-}
-
-void CThumbsView::LockImagelist(bool bLock)
-{
-    /*if(bLock)
-    ImageListCS.Lock();
-    else ImageListCS.Unlock();*/
+    TVI->ThumbLoaded = false;
+    getThumbnail(nIndex);
 }
 
 bool CThumbsView::StopBackgroundThread(bool wait)
 {
-    bool IsRun = IsRunning();
-    if (IsRun) {
+    bool isRunning = IsRunning();
+    if (isRunning) {
+        {
+            std::lock_guard<std::mutex> lk(thumbQueueMutex_);
+            thumbQueue_.clear();
+        }
         SignalStop();
+        thumbQueueCondition_.notify_one();
         if (wait) {
             MsgWaitForSingleObject(m_hThread, INFINITE);
         }
     }
-    return IsRun;
+    return isRunning;
 }
 
 void CThumbsView::SelectLastItem()
@@ -686,10 +640,9 @@ void CThumbsView::NotifyItemCountChanged(bool selected) {
     }
 }
 
-bool CThumbsView::CopySelectedItemsToClipboard() {
+bool CThumbsView::CopySelectedItemsToClipboard() const {
     return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(IDM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
 }
-
 
 LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
     NMLISTVIEW* lpStateChange = reinterpret_cast<NMLISTVIEW*>(hdr);
@@ -701,4 +654,91 @@ LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
 
 void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {  
     callback_ = std::move(callback);
+}
+
+LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pnmh);
+    if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {
+
+        return CDRF_NOTIFYITEMDRAW;
+    } else if (CDDS_ITEMPREPAINT == pLVCD->nmcd.dwDrawStage) {
+        // This is the pre-paint stage for an item.  We need to make another
+        // request to be notified during the post-paint stage.
+        // If this item is selected, re-draw the icon in its normal
+        // color (not blended with the highlight color).
+
+        LVITEM rItem;
+        int    nItem = static_cast<int>(pLVCD->nmcd.dwItemSpec);
+
+        // Get the image index and state of this item.  Note that we need to
+        // check the selected state manually.  The docs _say_ that the
+        // item's state is in pLVCD->nmcd.uItemState, but during my testing
+        // it was always equal to 0x0201, which doesn't make sense, since
+        // the max CDIS_* constant in commctrl.h is 0x0100.
+
+        ZeroMemory(&rItem, sizeof(LVITEM));
+        rItem.mask = LVIF_IMAGE /*| LVIF_STATE*/;
+        rItem.iItem = nItem;
+        //rItem.stateMask = 0;
+        GetItem(&rItem);
+
+        // If this item is selected, redraw the icon with its normal colors.
+        if (/*rItem.state & LVIS_SELECTED*/ true) {
+            /*CDC*  pDC = CDC::FromHandle(pLVCD->nmcd.hdc);*/
+            CRect rcIcon;
+
+            // Get the rect that holds the item's icon.
+            GetItemRect(nItem, &rcIcon, LVIR_ICON);
+
+            CRect clientRect;
+            GetClientRect(clientRect);
+
+            rcIcon.IntersectRect(rcIcon, clientRect);
+
+            if (!rcIcon.IsRectEmpty()/*true*/) {
+                /*HBITMAP bm = */getThumbnail(nItem);
+                /*if (bm) {
+                CDC compDc;
+                compDc.CreateCompatibleDC(pLVCD->nmcd.hdc);
+
+                HBITMAP oldBm = compDc.SelectBitmap(bm);
+                CRect thumbnailRect(rcIcon.left, rcIcon.top, rcIcon.left + std::min<>(THUMBNAIL_WIDTH, rcIcon.Width()), rcIcon.top + std::min<>(THUMBNAIL_HEIGHT + (ExtendedView ? 20 : 0), rcIcon.Height()));
+                //thumbnailRect.OffsetRect();
+                thumbnailRect = ImageUtils::CenterRect(thumbnailRect, rcIcon);
+
+                BitBlt(pLVCD->nmcd.hdc, thumbnailRect.left, thumbnailRect.top, thumbnailRect.Width(), thumbnailRect.Height(), compDc, 0, 0, SRCCOPY);
+                compDc.SelectBitmap(oldBm);
+                }*/
+
+                return CDRF_DODEFAULT;/*CDRF_SKIPDEFAULT*/
+            }
+        }
+        return/* CDRF_NOTIFYPOSTPAINT*/CDRF_DODEFAULT;
+    } else if (CDDS_ITEMPOSTPAINT == pLVCD->nmcd.dwDrawStage) {
+        return CDRF_DODEFAULT;
+    }
+
+    return CDRF_DODEFAULT;
+}
+
+void CThumbsView::getThumbnail(int itemIndex) {
+    ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(itemIndex));
+    if (!tvi || tvi->ThumbLoaded || tvi->ThumbnailRequested) {
+        return;
+    }
+
+    tvi->ThumbnailRequested = true;
+    {
+        std::lock_guard<std::mutex> lk(thumbQueueMutex_);
+        //tvi->Index = itemIndex;
+        thumbQueue_.push_front(itemIndex);
+    }
+    //LOG(ERROR) << "thumbnail requested:" << std::endl << tvi->FileName;
+    thumbQueueCondition_.notify_one();
+}
+
+void CThumbsView::clearImageList() {
+    // Cleraaing image list
+    // Default thumbnail (index=0) will be regenerated in AddImage()
+    ImageList.RemoveAll();
 }

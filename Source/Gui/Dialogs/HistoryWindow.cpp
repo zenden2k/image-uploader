@@ -53,6 +53,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow();
     DlgResize_Init();
+    monthCombobox_ = GetDlgItem(IDC_MONTHCOMBO);
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
     m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
     m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
@@ -62,7 +63,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDC_FILESCOUNTDESCR, "Files total:");
     TRC(IDC_UPLOADTRAFFICDESCR, "Total size:");
     SetWindowText(TR("Upload History"));
-    TRC(IDC_TIMEPERIODLABEL, "Time Period:");
+    TRC(IDC_TIMEPERIODLABEL, "Choose period:");
     TRC(IDC_DOWNLOADTHUMBS, "Retrieve thumbnails from the Internet");
     TRC(IDC_CLEARHISTORYBTN, "Clear History...");
 
@@ -79,6 +80,7 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     
     SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
     SelectedMonthChanged();
+
     m_treeView.SetFocus();
     return 0; 
 }
@@ -115,8 +117,12 @@ void CHistoryWindow::Show()
 }
 
 void CHistoryWindow::LoadMonthList() {
-    SendDlgItemMessage(IDC_MONTHCOMBO, CB_RESETCONTENT, 0, 0);
-    std::vector<CString> files;
+    monthCombobox_.ResetContent();
+    monthCombobox_.AddString(TR("Current month"));
+    monthCombobox_.AddString(TR("All the time"));
+    monthCombobox_.SetCurSel(0);
+    //SendDlgItemMessage(IDC_MONTHCOMBO, CB_RESETCONTENT, 0, 0);
+    /*std::vector<CString> files;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
     WinUtils::GetFolderFileList(files, historyFolder, _T("history*.xml"));
@@ -146,7 +152,7 @@ void CHistoryWindow::LoadMonthList() {
         }
     }
     int selectedIndex = int(files.size()) - 1;
-    SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);
+    SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);*/
 }
 
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -360,16 +366,17 @@ LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     return 0;
 }
         
-void CHistoryWindow::LoadHistoryFile(CString fileName)
+void CHistoryWindow::LoadHistoryFile(bool allTime)
 {
-    m_delayedFileName = fileName;
+    //m_delayedFileName = fileName;
     if(!m_treeView.isRunning())
     {   
         m_treeView.ResetContent();
 
         delete m_historyReader;
-        m_historyReader = new CHistoryReader();
-        m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
+        m_historyReader = new CHistoryReader(ServiceLocator::instance()->historyManager());
+        m_historyReader->loadFromDB(allTime ? 0 : 2019, allTime ? 0 : 5);
+        //m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
         FillList(m_historyReader);
         m_delayedFileName.Empty();
     }
@@ -384,13 +391,13 @@ void CHistoryWindow::LoadHistoryFile(CString fileName)
 }
 
 void CHistoryWindow::SelectedMonthChanged() {
-    int nIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETCURSEL);
+    int nIndex = monthCombobox_.GetCurSel();
     if (nIndex == -1) {
         m_treeView.ResetContent();
         return;
     }
-    int historyFileIndex = static_cast<int>(SendDlgItemMessage(IDC_MONTHCOMBO, CB_GETITEMDATA, nIndex));
-    LoadHistoryFile(m_HistoryFiles[historyFileIndex]);
+    
+    LoadHistoryFile(nIndex == 1);
     m_treeView.SetFocus();
 }
 

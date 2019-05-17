@@ -99,7 +99,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     ScriptsManager scriptsManager(networkClientFactory);
     UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler, networkClientFactory);
     uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, networkClientFactory);
+    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, networkClientFactory, 5);
 
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);

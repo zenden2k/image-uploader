@@ -407,7 +407,13 @@ void OnUploadSessionFinished(UploadSession* session) {
         std::cout<<generator.generate(uploadedList);
         std::cerr<<std::endl;
     }
-    
+    {
+        // LOG(ERROR) << "Sending finish signal" << std::endl;
+        std::lock_guard<std::mutex> lk(finishSignalMutex);
+        finished = true;
+    }
+
+    finishSignal.notify_one();
 }
 
 void UploadTaskProgress(UploadTask* task) {
@@ -491,8 +497,8 @@ int func() {
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     std::unique_ptr<UploadManager> uploadManager;
-    uploadManager.reset(new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler, networkClientFactory));
-    uploadManager->setMaxThreadCount(1);
+    uploadManager.reset(new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler, networkClientFactory, 1));
+
 
     if (useSystemProxy) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;

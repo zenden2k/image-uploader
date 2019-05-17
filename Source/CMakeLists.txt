@@ -96,7 +96,7 @@ else()
 endif()
 
 # libiucore depends on these libraries
-set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser   jsoncpp)
+set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser jsoncpp sqlite3)
 if (NOT IU_DISABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST mega cryptopp cares)
     if (IU_USE_OPENSSL)

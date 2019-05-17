@@ -26,6 +26,9 @@
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ImageView.h"
 #include "Gui/CommonDefines.h"
+#include <deque>
+#include <queue>
+#include <condition_variable>
 
 // CThumbsView
 
@@ -33,6 +36,16 @@ struct ThumbsViewItem
 {
     CString FileName;
     BOOL ThumbOutDate;
+    bool ThumbnailRequested; 
+    //CBitmap Image;
+    bool ThumbLoaded;
+    int Index;
+    ThumbsViewItem() {
+        ThumbOutDate = true;
+        ThumbnailRequested = false;
+        Index = -1;
+        ThumbLoaded = false;
+    }
 };
 
 
@@ -56,6 +69,7 @@ public:
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
+        REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -65,9 +79,9 @@ public:
     LRESULT OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+    LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     typedef std::function<void(CThumbsView*, bool)> ItemCountChangedCallback;
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
-    bool m_NeedUpdate;
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     int maxwidth,maxheight;
@@ -80,30 +94,32 @@ public:
     bool SimpleDelete(int ItemIndex, bool DeleteThumb = true, bool deleteFile = false);
     LPCTSTR GetFileName(int ItemIndex);
     LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
-    bool LoadThumbnail(int ItemID, Gdiplus::Image *Img=NULL);
-    int GetImageIndex(int ItemIndex);
+    bool LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image *Img = NULL);
+    int GetImageIndex(int ItemIndex) const;
     CImageView ImageView;
     LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);
     DWORD Run();
-    void LoadThumbnails();
-    void StopLoadingThumbnails();
     void ViewSelectedImage();
     bool ExtendedView;
     void OutDateThumb(int nIndex);
-    void UpdateOutdated();
-    void LockImagelist(bool bLock = true);
     bool StopBackgroundThread(bool wait = false);
     void SelectLastItem();
-    bool CopySelectedItemsToClipboard();
+    bool CopySelectedItemsToClipboard() const;
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void SetDeletePhysicalFiles(bool doDelete);
     CImageViewItem getNextImgViewItem(CImageViewItem currentItem) override;
     CImageViewItem getPrevImgViewItem(CImageViewItem currentItem) override;
+    void getThumbnail(int itemIndex);
+    void clearImageList();
 protected:
     ItemCountChangedCallback callback_;
     DWORD callbackLastCallTime_;
     bool deletePhysicalFiles_;
+    CBitmap defaultImage_;
     void NotifyItemCountChanged(bool selected = true);
+    std::deque<int> thumbQueue_;
+    std::mutex thumbQueueMutex_;
+    std::condition_variable thumbQueueCondition_;
 };
 
 

@@ -39,7 +39,6 @@
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
 {
@@ -63,7 +62,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     uploadProgressBar_ = GetDlgItem(IDC_UPLOADPROGRESS);
     imageViewWindow_.Create(m_hWnd);
-    // Initializing Windows 7 taskbar related stuff
+
     RECT rc;
     ::GetWindowRect(GetDlgItem(IDC_RESULTSPLACEHOLDER), &rc);
     ::MapWindowPoints(0,m_hWnd, reinterpret_cast<POINT*>(&rc), 2);
@@ -84,6 +83,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     resultsWindow_->Create(m_hWnd);
     resultsWindow_->SetWindowPos(0,&rc,0);
     #if  WINVER    >= 0x0601
+        // Initializing Windows 7 taskbar related stuff
         const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
         CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
     #endif
@@ -153,7 +153,7 @@ bool CUploadDlg::startUpload() {
         task->setUserData(fps);
         task->setIndex(i);
         task->setIsImage(isImage);
-        task->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+        task->OnStatusChanged.bind(this, &CUploadDlg::OnTaskStatusChanged);
         task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
         task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
@@ -313,7 +313,9 @@ bool CUploadDlg::OnShow()
 
 bool CUploadDlg::OnNext() {
     if (uploadSession_->isRunning()) {
+        uploadListView_.SetRedraw(FALSE); 
         uploadSession_->stop();
+        uploadListView_.SetRedraw(TRUE);
         CancelByUser = true;
     }
     else {
@@ -341,9 +343,9 @@ bool CUploadDlg::OnHide()
     return true; 
 }
 
-void CUploadDlg::GenerateOutput()
+void CUploadDlg::GenerateOutput(bool immediately)
 {
-    resultsWindow_->UpdateOutput();
+    resultsWindow_->UpdateOutput(immediately);
 }
 
 void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
@@ -370,7 +372,7 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
     toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
 }
 
-void CUploadDlg::OnUploaderStatusChanged(UploadTask* task)
+void CUploadDlg::OnTaskStatusChanged(UploadTask* task)
 {
     UploadProgress* progress = task->progress();
     FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
@@ -412,7 +414,7 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
         
         uploadManager_->shortenLinksInSession(uploadSession_, WizardDlg->urlShorteningFilter());
     } else {
-        GenerateOutput();
+        GenerateOutput(true);
     }
 }
 
@@ -696,7 +698,7 @@ void CUploadDlg::onChildTaskAdded(UploadTask* child)
     }
     child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
     child->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
-    child->OnStatusChanged.bind(this, &CUploadDlg::OnUploaderStatusChanged);
+    child->OnStatusChanged.bind(this, &CUploadDlg::OnTaskStatusChanged);
 }
 
 void CUploadDlg::backgroundThreadStarted()
