@@ -33,7 +33,6 @@
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
 {
-    m_historyReader = 0;
     delayed_closing_ = false;
     wizardDlg_ = wizardDlg;
 }
@@ -45,7 +44,6 @@ CHistoryWindow::~CHistoryWindow()
         Detach();
         m_hWnd = NULL;
     }
-    delete m_historyReader;
 }
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -53,17 +51,28 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow();
     DlgResize_Init();
-    monthCombobox_ = GetDlgItem(IDC_MONTHCOMBO);
+    dateFromPicker_ = GetDlgItem(IDC_DATEFROMPICKER);
+    dateToPicker_ = GetDlgItem(IDC_DATETOPICKER);
+
+    dateFilterCheckbox_ = GetDlgItem(IDC_DATEFROMCHECKBOX);
+    dateFilterCheckbox_.SetCheck(BST_CHECKED);
+
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
     m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
     m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
     m_treeView.onItemDblClick.bind(this, &CHistoryWindow::onItemDblClick);
+    TRC(IDOK, "Apply");
+    TRC(IDC_CLEARFILTERS, "Clear filters");
+    TRC(IDC_FILTERSGROUPBOX, "Filters");
+    TRC(IDC_DATEFROMCHECKBOX, "Date from:");
+    TRC(IDC_DATETOLABEL, "to:");
+    TRC(IDC_FILENAMELABEL, "Filename:");
+    TRC(IDC_URLLABEL, "URL:");
     TRC(IDCANCEL, "Close");
     TRC(IDC_SESSIONSCOUNTDESCR, "Session total:");
     TRC(IDC_FILESCOUNTDESCR, "Files total:");
     TRC(IDC_UPLOADTRAFFICDESCR, "Total size:");
     SetWindowText(TR("Upload History"));
-    TRC(IDC_TIMEPERIODLABEL, "Choose period:");
     TRC(IDC_DOWNLOADTHUMBS, "Retrieve thumbnails from the Internet");
     TRC(IDC_CLEARHISTORYBTN, "Clear History...");
 
@@ -75,12 +84,12 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             m_wndAnimation.Draw();
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
-    
-    LoadMonthList();
-    
-    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
-    SelectedMonthChanged();
 
+    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
+    //SelectedMonthChanged();
+    initSearchForm();
+    dateFromCheckboxChanged();
+    applyFilters();
     m_treeView.SetFocus();
     return 0; 
 }
@@ -114,45 +123,6 @@ void CHistoryWindow::Show()
     if(!IsWindowVisible())
             ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);
-}
-
-void CHistoryWindow::LoadMonthList() {
-    monthCombobox_.ResetContent();
-    monthCombobox_.AddString(TR("Current month"));
-    monthCombobox_.AddString(TR("All the time"));
-    monthCombobox_.SetCurSel(0);
-    //SendDlgItemMessage(IDC_MONTHCOMBO, CB_RESETCONTENT, 0, 0);
-    /*std::vector<CString> files;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    historyFolder = U2W(Settings.SettingsFolder) + CString(_T("\\History\\"));
-    WinUtils::GetFolderFileList(files, historyFolder, _T("history*.xml"));
-    pcrepp::Pcre regExp("history_(\\d+)_(\\d+)", "imcu");
-
-    for (size_t i = 0; i<files.size(); i++) {
-        m_HistoryFiles.push_back(files[i]);
-
-        CString monthLabel = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(files[i])));
-
-        size_t pos = 0;
-
-        if (regExp.search(WCstringToUtf8(monthLabel), pos)) {
-            std::string yearStr = regExp[1];
-            std::string monthStr = regExp[2];
-            int year = atoi(yearStr.c_str());
-            int month = atoi(monthStr.c_str());
-            monthLabel.Format(_T("%d/%02d"), year, month);
-        } else {
-            monthLabel.Replace(_T("history_"), _T(""));
-            monthLabel.Replace(_T("_"), _T("/"));
-        }
-
-        int newItemIndex = SendDlgItemMessage(IDC_MONTHCOMBO, CB_ADDSTRING, 0, (LPARAM)(LPCTSTR)monthLabel);
-        if (newItemIndex >= 0) {
-            SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETITEMDATA, newItemIndex, i);
-        }
-    }
-    int selectedIndex = int(files.size()) - 1;
-    SendDlgItemMessage(IDC_MONTHCOMBO, CB_SETCURSEL, selectedIndex, 0);*/
 }
 
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -359,26 +329,41 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
     DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
     return 0;
 }
-
-LRESULT CHistoryWindow::OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    SelectedMonthChanged();
-    return 0;
-}
         
-void CHistoryWindow::LoadHistoryFile(bool allTime)
+void CHistoryWindow::LoadHistoryFile()
 {
     //m_delayedFileName = fileName;
     if(!m_treeView.isRunning())
     {   
         m_treeView.ResetContent();
 
-        delete m_historyReader;
-        m_historyReader = new CHistoryReader(ServiceLocator::instance()->historyManager());
-        m_historyReader->loadFromDB(allTime ? 0 : 2019, allTime ? 0 : 5);
-        //m_historyReader->loadFromFile(WCstringToUtf8(historyFolder + fileName));
-        FillList(m_historyReader);
-        m_delayedFileName.Empty();
+        m_historyReader.reset(new CHistoryReader(ServiceLocator::instance()->historyManager()));
+
+        SYSTEMTIME dateFrom, dateTo;
+        time_t timeFrom = 0, timeTo = 0;
+        if (dateFilterCheckbox_.GetCheck() == BST_CHECKED) {
+            if (dateFromPicker_.GetSystemTime(&dateFrom) == GDT_VALID) {
+                dateFrom.wHour = 0;
+                dateFrom.wMinute = 0;
+                dateFrom.wSecond = 0;
+                dateFrom.wMilliseconds = 0;
+                timeFrom = WinUtils::SystemTimeToTime(dateFrom);
+            }
+            if (dateToPicker_.GetSystemTime(&dateTo) == GDT_VALID) {
+                dateTo.wHour = 23;
+                dateTo.wMinute = 59;
+                dateTo.wSecond = 59;
+                dateTo.wMilliseconds = 999;
+                timeTo = WinUtils::SystemTimeToTime(dateTo);
+            }
+        }
+        CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILENAMEEDIT);
+        CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_URLEDIT);
+
+        if (m_historyReader->loadFromDB(timeFrom, timeTo, W2U(fileName), W2U(url))) {
+            FillList(m_historyReader.get());
+            m_delayedFileName.Empty();
+        }
     }
     else
     {
@@ -388,17 +373,6 @@ void CHistoryWindow::LoadHistoryFile(bool allTime)
         m_treeView.EnableWindow(false);
         m_treeView.abortLoadingThreads();
     }
-}
-
-void CHistoryWindow::SelectedMonthChanged() {
-    int nIndex = monthCombobox_.GetCurSel();
-    if (nIndex == -1) {
-        m_treeView.ResetContent();
-        return;
-    }
-    
-    LoadHistoryFile(nIndex == 1);
-    m_treeView.SetFocus();
 }
 
 void CHistoryWindow::OpenInBrowser(TreeItem* item) {
@@ -412,7 +386,7 @@ void CHistoryWindow::threadsFinished()
     m_wndAnimation.ShowWindow(SW_HIDE);
     
     if(!m_delayedFileName.IsEmpty()) {
-        SendMessage(WM_MY_OPENHISTORYFILE, reinterpret_cast<WPARAM>(static_cast<LPCTSTR>(m_delayedFileName)));
+        SendMessage(WM_MY_OPENHISTORYFILE);
         //LoadHistoryFile(m_delayedFileName);
         
     }
@@ -441,10 +415,8 @@ LRESULT CHistoryWindow::OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD w
 }
         
 LRESULT CHistoryWindow::OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    LPCTSTR fileName = reinterpret_cast<TCHAR*>(wParam);
-    //m_treeView.setDownloadingEnabled(false);
-    LoadHistoryFile(fileName);
+{    
+    LoadHistoryFile();
     return 0;
 }
 
@@ -456,8 +428,7 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
             SetDlgItemInt(IDC_FILESCOUNTLABEL, 0, false);
             SetDlgItemInt(IDC_SESSIONSCOUNTLABEL, 0, false);
             SetDlgItemText(IDC_UPLOADTRAFFICLABEL, L"0");
-            LoadMonthList();
-            SelectedMonthChanged();
+            applyFilters();
             LocalizedMessageBox(TR("History has been cleared successfully."), APPNAME, MB_ICONINFORMATION);
         }
     }
@@ -469,4 +440,46 @@ void CHistoryWindow::onItemDblClick(TreeItem* item) {
     if (!isSessionItem) {
         OpenInBrowser(item);
     }
+}
+
+void CHistoryWindow::applyFilters() {
+    LoadHistoryFile();
+}
+
+LRESULT CHistoryWindow::OnOk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    applyFilters();
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnDateFromCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    dateFromCheckboxChanged();
+    return 0;
+}
+
+void CHistoryWindow::dateFromCheckboxChanged() {
+    BOOL isChecked = dateFilterCheckbox_.GetCheck() == BST_CHECKED;
+    dateFromPicker_.EnableWindow(isChecked);
+    dateToPicker_.EnableWindow(isChecked);
+}
+
+LRESULT CHistoryWindow::OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    dateFilterCheckbox_.SetCheck(BST_UNCHECKED);
+    
+    initSearchForm();
+    LoadHistoryFile();
+    return 0;
+}
+
+void CHistoryWindow::initSearchForm() {
+    SYSTEMTIME st, st2;
+
+    GetLocalTime(&st);
+    st2 = WinUtils::SystemTimeAdd(st, -30 * 3600 * 24);
+    dateFromPicker_.SetSystemTime(GDT_VALID, &st2);
+    dateToPicker_.SetSystemTime(GDT_VALID, &st);
+
+    SetDlgItemText(IDC_FILENAMEEDIT, _T(""));
+    SetDlgItemText(IDC_URLEDIT, _T(""));
+
+    dateFromCheckboxChanged();
 }

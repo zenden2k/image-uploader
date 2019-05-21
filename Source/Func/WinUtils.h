@@ -107,6 +107,9 @@ namespace WinUtils {
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
     bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = CString());
     bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
+    SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds);
+    time_t SystemTimeToTime(const SYSTEMTIME &s);
+    void DatePlusDays(struct tm* date, int days);
 //#endif
 };
 

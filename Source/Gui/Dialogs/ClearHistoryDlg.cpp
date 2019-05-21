@@ -22,7 +22,7 @@
 
 #include "Gui/GuiTools.h"
 
-CClearHistoryDlg::CClearHistoryDlg() : value_(HistoryClearPeriod::CurrentMonth)
+CClearHistoryDlg::CClearHistoryDlg() : value_(HistoryClearPeriod::OlderThan30Days)
 {
 }
 
@@ -36,7 +36,7 @@ LRESULT CClearHistoryDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
     TRC(IDC_ALLTIMERADIO, "All the time");
-    TRC(IDC_CURRENTMONTHRADIO, "Current month");
+    TRC(IDC_CURRENTMONTHRADIO, "Older than 30 days");
     TRC(IDC_DESCRIPTIONLABEL, "Please choose period:");
     GuiTools::SetCheck(m_hWnd, IDC_ALLTIMERADIO, true);
     CenterWindow(GetParent());
@@ -46,7 +46,7 @@ LRESULT CClearHistoryDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CClearHistoryDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     bool allTime = GuiTools::GetCheck(m_hWnd, IDC_ALLTIMERADIO);
-    value_ = allTime ? HistoryClearPeriod::ClearAll : HistoryClearPeriod::CurrentMonth;
+    value_ = allTime ? HistoryClearPeriod::ClearAll : HistoryClearPeriod::OlderThan30Days;
     EndDialog(wID);
     return 0;
 }

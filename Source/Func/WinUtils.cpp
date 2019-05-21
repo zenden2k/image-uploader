@@ -1429,7 +1429,51 @@ bool ShowFileInFolder(CString fileName, HWND wnd) {
     }
     return true;
 }
-};
+
+SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {
+
+    FILETIME f;
+    SystemTimeToFileTime(&s, &f);
+
+    ULARGE_INTEGER u;
+    memcpy(&u, &f, sizeof(u));
+
+    const double c_dSecondsPer100nsInterval = 100. * 1.E-9;
+    u.QuadPart += seconds / c_dSecondsPer100nsInterval;
+
+    memcpy(&f, &u, sizeof(f));
+    SYSTEMTIME res;
+    FileTimeToSystemTime(&f, &res);
+    return res;
+}
+
+time_t SystemTimeToTime(const SYSTEMTIME &st) {
+    std::tm tm;
+
+    tm.tm_sec = st.wSecond;
+    tm.tm_min = st.wMinute;
+    tm.tm_hour = st.wHour;
+    tm.tm_mday = st.wDay;
+    tm.tm_mon = st.wMonth - 1;
+    tm.tm_year = st.wYear - 1900;
+    tm.tm_isdst = -1;
+
+    return std::mktime(&tm);
+}
+
+void DatePlusDays(struct tm* date, int days){
+    const time_t ONE_DAY = 24 * 60 * 60;
+
+    // Seconds since start of epoch
+    time_t date_seconds = mktime(date) + (days * ONE_DAY);
+
+    // Update caller's date
+    // Use localtime because mktime converts to UTC so may change date
+    *date = *localtime(&date_seconds);
+}
+
+}
+
 
 const std::wstring Utf8ToWstring(const std::string &str)
 {

@@ -266,6 +266,7 @@
 #define IDC_CONNECTIONNAMEEDIT          1040
 #define IDC_MEMO                        1040
 #define IDC_MENUITEMTITLEEDIT           1040
+#define IDC_FILENAMEEDIT                1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -313,6 +314,7 @@
 #define IDC_FOLDERDESCREDIT             1045
 #define IDC_CONNECTIONNAMEEDIT6         1045
 #define IDC_DOWNLOADURLEDIT             1045
+#define IDC_URLEDIT                     1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_RADIO4                      1046
 #define IDC_BUTTON3                     1047
@@ -320,6 +322,7 @@
 #define IDC_SELECTCOLOR                 1047
 #define IDC_SERVERMENU                  1047
 #define IDC_NEWTHUMBNAIL                1047
+#define IDC_CLEARFILTERS                1047
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049
@@ -579,6 +582,7 @@
 #define IDC_EXECUTESCRIPTCHECKBOX       1272
 #define IDC_ENABLEFULLSCREENEDITORCHECK 1272
 #define IDC_ALLOWFULLSCREENEDITORCHECK  1272
+#define IDC_DATEFROMCHECKBOX            1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
@@ -663,9 +667,14 @@
 #define IDC_THUMBRESIZELABEL            1320
 #define IDC_COMMITHASH                  1320
 #define IDC_WIDTHEDITUNITS              1321
+#define IDC_DATEFROMPICKER              1321
 #define IDC_THUMBRESIZECOMBO            1322
+#define IDC_DATETOPICKER                1322
 #define IDOK2                           1323
+#define IDC_FILTERSGROUPBOX             1323
 #define IDC_BROWSESERVERFOLDERS         1324
+#define IDC_DATEFROMLABEL               1324
+#define IDC_DATETOLABEL                 1325
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -730,7 +739,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1321
+#define _APS_NEXT_CONTROL_VALUE         1326
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

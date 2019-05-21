@@ -44,7 +44,7 @@ void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
         CString script = Utf8ToWCstring(errorInfo.Script);
         infoText += TR("Script: ") + script;
         if (errorInfo.ThreadId != std::thread::id()) {
-            infoText += CString(TR(" [TID=")) + IuCoreUtils::ThreadIdToString(errorInfo.ThreadId).c_str() + _T("]");
+            infoText += CString(_T(" [TID=")) + IuCoreUtils::ThreadIdToString(errorInfo.ThreadId).c_str() + _T("]");
         }
         infoText += _T("\n");
     }

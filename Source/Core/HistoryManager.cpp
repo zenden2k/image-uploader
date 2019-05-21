@@ -20,7 +20,7 @@
 
 #include "HistoryManager.h"
 
-#include <time.h>
+#include <ctime>
 #include <algorithm>
 #include <boost/format.hpp>
 
@@ -30,6 +30,8 @@
 #include "Core/Utils/CryptoUtils.h"
 #include "Utils/GlobalMutex.h"
 #include "Core/3rdpart/pcreplusplus.h"
+#include "Utils/StringUtils.h"
+#include <Gui/Components/NewStyleFolderDialog.h>
 
 class CHistoryReader_impl
 {
@@ -37,7 +39,6 @@ class CHistoryReader_impl
         SimpleXml m_xml;
         std::vector<CHistorySession*> m_sessions;
         std::map<std::string, int> keyToIndex_;
-        //sqlite3* db_;
         CHistoryManager* mgr_;
 };
 
@@ -95,7 +96,7 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
         }
-        if (sqlite3_bind_int(stmt, 2, session->timeStamp()) != SQLITE_OK) {
+        if (sqlite3_bind_int64(stmt, 2, session->timeStamp()) != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
         }
@@ -113,19 +114,19 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
 
 bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
     saveSession(ht->session);
-    IuCoreUtils::ZGlobalMutex mutex(CHistoryManager::globalMutexName);
+    IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
 
     const char* sql = "INSERT INTO uploads(session_id,created_at,local_file_path,server_name,direct_url,thumb_url,"
         "view_url,direct_url_shortened,view_url_shortened, edit_url, delete_url, display_name, size, sort_index) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?); ";
     sqlite3_stmt *stmt;
 
-    if (sqlite3_prepare(db_, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v3(db_, sql, -1, 0, &stmt, nullptr) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: Could not prepare statement." << sqlite3_errmsg(db_);
         ;
         return false;
     } else {
         bindString(stmt, 1, ht->session->sessionId());
-        if (sqlite3_bind_int(stmt, 2 /*Index of wildcard*/, ht->timeStamp) != SQLITE_OK) {
+        if (sqlite3_bind_int64(stmt, 2 /*Index of wildcard*/, ht->timeStamp) != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
         }
@@ -194,19 +195,20 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
 
     for(size_t i=0; i<allEntries.size(); i++)
     {
+        SimpleXmlNode& item = allEntries[i]; 
         HistoryItem ht(this);
-        ht.localFilePath = allEntries[i].Attribute("LocalFilePath");
-        ht.serverName = allEntries[i].Attribute("ServerName");
-        ht.timeStamp = allEntries[i].AttributeInt("TimeStamp" );
-        ht.directUrl = allEntries[i].Attribute("DirectUrl" );
-        ht.thumbUrl = allEntries[i].Attribute("ThumbUrl");
-        ht.viewUrl = allEntries[i].Attribute("ViewUrl");
-        ht.editUrl = allEntries[i].Attribute("EditUrl");
-        ht.deleteUrl = allEntries[i].Attribute("DeleteUrl");
-        ht.displayName = allEntries[i].Attribute("DisplayName");
-        ht.uploadFileSize = allEntries[i].AttributeInt64("UploadFileSize");
-        std::string sortIndex = allEntries[i].Attribute("Index");
-        ht.sortIndex = sortIndex.empty() ? i : IuCoreUtils::stringToInt64(sortIndex);
+        ht.localFilePath = item.Attribute("LocalFilePath");
+        ht.serverName = item.Attribute("ServerName");
+        ht.timeStamp = item.AttributeInt("TimeStamp");
+        ht.directUrl = item.Attribute("DirectUrl");
+        ht.thumbUrl = item.Attribute("ThumbUrl");
+        ht.viewUrl = item.Attribute("ViewUrl");
+        ht.editUrl = item.Attribute("EditUrl");
+        ht.deleteUrl = item.Attribute("DeleteUrl");
+        ht.displayName = item.Attribute("DisplayName");
+        ht.uploadFileSize = item.AttributeInt64("UploadFileSize");
+        std::string sortIndex = item.Attribute("Index");
+        ht.sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::stringToInt64(sortIndex));
         // Fix invalid file size
         if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
              ht.uploadFileSize  = 0;
@@ -288,35 +290,24 @@ std::vector<HistoryItem>::iterator CHistorySession::end() {
 
 bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
-    std::string historyFolder = m_historyFilePath;
-    boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 
-    pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
-    time_t t = time(nullptr);
-    tm * timeinfo = localtime(&t);
-    int currentMonth = timeinfo->tm_mon + 1;
-    int currentYear = 1900 + timeinfo->tm_year;
-
-    for (boost::filesystem::directory_iterator i(historyFolder); i != end_itr; ++i) {
-        // Skip if not a file
-        if (!boost::filesystem::is_regular_file(i->status())) {
-            continue;
-        }
-
-        // Skip if no match
-        if (!regexp.search(i->path().filename().string())) {
-            continue;
-        }
-        int year = atoi(regexp[1].c_str());
-        int month = atoi(regexp[2].c_str());
-        if (period == HistoryClearPeriod::ClearAll || (period == HistoryClearPeriod::CurrentMonth && month == currentMonth && year == currentYear)) {
-            std::string fileName = i->path().string();
-            bool res = IuCoreUtils::RemoveFile(fileName);
-            if (!res) {
-                LOG(ERROR) << "Unable to delete file " << fileName;
-            }
-        }
+    std::string condition;
+    if (period == HistoryClearPeriod::OlderThan30Days) {
+        time_t now;
+        time(&now);
+        tm* timeinfo = localtime(&now);
+        WinUtils::DatePlusDays(timeinfo, -30);
+        time_t startTime = mktime(timeinfo);
+        condition = str(boost::format(" AND created_at < %d") % startTime);
     }
+
+    std::string sql = str(boost::format("DELETE from uploads WHERE TRUE %1% ; DELETE from upload_sessions WHERE TRUE  %1%") % condition);
+    char *err = nullptr;
+    if (sqlite3_exec(db_, sql.c_str(), nullptr, nullptr, &err) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error occured while clearing history: " << std::endl << err;
+        sqlite3_free(err);
+    }
+
     return true;
 }
 
@@ -405,33 +396,16 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
     return true;
 }
 
-bool CHistoryReader::loadFromDB(unsigned short year, unsigned short month) {
+bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) {
     sqlite3* db = d_ptr->mgr_->db_;
 
-    std::string condition;
+    std::string condition, condition2;
 
-    if (year) {
-        tm startTime;
-        memset(&startTime, 0, sizeof(startTime));
-        startTime.tm_year = year - 1900;
-        startTime.tm_mon = month - 1;
-        startTime.tm_mday = 1;
-
-        tm endTime;
-
-        memset(&endTime, 0, sizeof(endTime));
-        endTime.tm_year = year - 1900;
-        endTime.tm_mon = month;
-        endTime.tm_mday = 1;
-
-        if (month == 12) {
-            endTime.tm_mon = 0;
-            endTime.tm_year++;
-        }
-        condition = boost::str(boost::format(" where created_at between %d and %d") % mktime(&startTime) % mktime(&endTime));
+    if (from && to) {
+        condition += boost::str(boost::format(" and  created_at between %d and %d") % from % to);
     }
    
-    std::string sql = "SELECT * from upload_sessions " + condition;
+    std::string sql = "SELECT * from upload_sessions WHERE true " + condition;
 
     char *err = nullptr;
 
@@ -440,17 +414,44 @@ bool CHistoryReader::loadFromDB(unsigned short year, unsigned short month) {
         sqlite3_free(err);
     }
 
-    std::string query2 = "SELECT * from uploads " + condition;
+    if (!filename.empty()) {
+        std::string preparedFilename = IuStringUtils::Replace(filename, "'", "''");
+        preparedFilename = IuStringUtils::Replace(preparedFilename, "_", "\\_");
+        condition2 = boost::str(boost::format(" AND(local_file_path LIKE '%%%s%%' ESCAPE '\\')")%preparedFilename);
+    }
 
+    if (!url.empty()) {
+        std::string preparedURL = IuStringUtils::Replace(url, "'", "''");
+        preparedURL = IuStringUtils::Replace(preparedURL, "_", "\\_");
+        std::string subExpr = "FALSE ";
+        std::string fields[]{
+            "direct_url", "view_url", "thumb_url", "direct_url_shortened", "view_url_shortened"
+        };
+        for (const auto& field : fields) {
+            subExpr += boost::str(boost::format(" OR %1% LIKE '%%%2%%%' ESCAPE '\\'") % field %  preparedURL);
+        }
+        condition2 += boost::str(boost::format(" AND(%s)") % subExpr);
+    }
+    std::string query2 = "SELECT * from uploads WHERE true " + condition + condition2;
+
+    //LOG(ERROR) << query2;
     if (sqlite3_exec(db, query2.c_str(), selectCallback2, this, &err) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: " << err;
         sqlite3_free(err);
         return false;
     }
 
-    for (auto it : d_ptr->m_sessions) {
-        it->sortByOrderIndex();
+    for (auto it = d_ptr->m_sessions.begin(); it != d_ptr->m_sessions.end(); ) {
+        if (!(*it)->entriesCount()) {
+            it = d_ptr->m_sessions.erase(it);
+        } else {
+            (*it)->sortByOrderIndex();
+            ++it;
+        }
     }
+    /*for (auto it : d_ptr->m_sessions) {
+        it->sortByOrderIndex();
+    }*/
     
 
     return true;
@@ -487,7 +488,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
     }
     CHistorySession* session = pthis->d_ptr->m_sessions[it->second]; 
     HistoryItem item(session);
-    item.id = IuCoreUtils::stringToInt64(values["id"]);
+    item.id = static_cast<int>(IuCoreUtils::stringToInt64(values["id"]));
 
     item.directUrl = values["direct_url"];
     item.viewUrl = values["view_url"];
@@ -499,7 +500,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
     item.displayName = values["display_name"];
     item.localFilePath = values["local_file_path"];
     item.timeStamp = IuCoreUtils::stringToInt64(values["created_at"]);
-    item.sortIndex = IuCoreUtils::stringToInt64(values["sort_index"]);
+    item.sortIndex = static_cast<int>(IuCoreUtils::stringToInt64(values["sort_index"]));
     item.uploadFileSize = IuCoreUtils::stringToInt64(values["size"]);
     item.serverName = values["server_name"];
 

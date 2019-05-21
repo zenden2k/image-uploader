@@ -57,15 +57,18 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             MESSAGE_HANDLER(WM_MY_OPENHISTORYFILE, OnWmOpenHistoryFile)
+            COMMAND_ID_HANDLER(IDOK, OnOk)
             COMMAND_ID_HANDLER(ID_OPENINBROWSER, OnOpenInBrowser)
             COMMAND_ID_HANDLER(ID_COPYTOCLIPBOARD, OnCopyToClipboard)
             COMMAND_ID_HANDLER(ID_VIEWBBCODE, OnViewBBCode)
             COMMAND_ID_HANDLER(ID_OPENFOLDER, OnOpenFolder)
             COMMAND_ID_HANDLER(ID_EDITFILEONSERVER, OnEditFileOnServer)
             COMMAND_ID_HANDLER(ID_DELETEFILEONSERVER, OnDeleteFileOnServer)
-            COMMAND_HANDLER(IDC_MONTHCOMBO, CBN_SELCHANGE, OnMonthChanged)
             COMMAND_HANDLER(IDC_DOWNLOADTHUMBS, BN_CLICKED, OnDownloadThumbsCheckboxChecked)
             COMMAND_HANDLER(IDC_CLEARHISTORYBTN, BN_CLICKED, OnBnClickedClearHistoryBtn)
+            COMMAND_HANDLER(IDC_DATEFROMCHECKBOX, BN_CLICKED, OnDateFromCheckboxClicked)
+            COMMAND_HANDLER(IDC_CLEARFILTERS, BN_CLICKED, OnClearFilters)
+            
             CHAIN_MSG_MAP(CDialogResize<CHistoryWindow>)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
@@ -89,15 +92,16 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnOk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDateFromCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void Show();
-        void LoadMonthList();
         void FillList(CHistoryReader* mgr);
         CHistoryTreeControl m_treeView;
-        CHistoryReader* m_historyReader;
+        std::unique_ptr<CHistoryReader> m_historyReader;
         LRESULT OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
         CString m_delayedFileName;
-        CComboBox monthCombobox_;
         void threadsStarted();
         void threadsFinished();
         void onItemDblClick(TreeItem* item);
@@ -105,10 +109,14 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         bool delayed_closing_;
         CString historyFolder;
         CWizardDlg* wizardDlg_;
-        void LoadHistoryFile(bool allTime = false);
-        void SelectedMonthChanged();
+        void LoadHistoryFile();
         void OpenInBrowser(TreeItem* item);
+        void applyFilters();
+        void dateFromCheckboxChanged();
+        void initSearchForm();
         CPictureExWnd m_wndAnimation;
+        CDateTimePickerCtrl dateFromPicker_, dateToPicker_;
+        CButton dateFilterCheckbox_;
         // Context menu callbacks
         LRESULT OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -116,7 +124,6 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnMonthChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 

@@ -140,7 +140,6 @@ set(SRC_LIST
     ../Func/SystemUtils.cpp
     ../Func/UpdatePackage.cpp
     ../Func/WebUtils.cpp
-    ../Func/WinUtils.cpp
     ../ImageEditor/Canvas.cpp
     ../ImageEditor/Document.cpp
     ../ImageEditor/DrawingElement.cpp
