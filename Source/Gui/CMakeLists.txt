@@ -189,7 +189,7 @@ target_link_libraries(GUI iucore
     debug strmbasd optimized strmbase
 )
 
-set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:uxtheme.dll /DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
+set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 
 add_custom_command(TARGET GUI
     PRE_BUILD

@@ -65,25 +65,28 @@ class CHistorySession
 {
     public:
         CHistorySession(sqlite3* db, const std::string& filename, const std::string& sessionId);
+        ~CHistorySession();
         int entriesCount() const;
-        HistoryItem entry(const int index) const;
+        HistoryItem& entry(const int index) const;
         std::string serverName() const;
         void setServerName(const std::string& name);
         time_t timeStamp() const;
         void setTimeStamp(time_t timeStamp);
         void loadFromXml(SimpleXmlNode& sessionNode);
         std::string sessionId() const;
-        std::vector<HistoryItem>::iterator begin();
-        std::vector<HistoryItem>::iterator end();
+        std::vector<HistoryItem*>::iterator begin();
+        std::vector<HistoryItem*>::iterator end();
+        void setDeleteItems(bool doDelete);
     private:
         std::string m_historyXmlFileName;
         std::string m_sessId;
         time_t m_timeStamp;
         std::string m_serverName;
-        std::vector<HistoryItem> m_entries;
+        std::vector<HistoryItem*> m_entries;
         
         sqlite3* db_;
         bool dbEntryCreated_;
+        bool deleteItems_;
         void sortByOrderIndex();
         friend class CHistoryReader;
         friend class CHistoryManager;
@@ -96,6 +99,7 @@ class CHistoryManager
 {
     public:
         CHistoryManager();
+        bool openDatabase();
         virtual ~CHistoryManager();
         void setHistoryDirectory(const std::string& directory);
         void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);

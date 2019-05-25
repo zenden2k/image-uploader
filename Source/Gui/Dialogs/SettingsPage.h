@@ -6,6 +6,8 @@
 #include "atlheaders.h"
 #include <windows.h>
 
+#include "Func/Library.h"
+
 class CWizardDlg;
 class CSettingsDlg;
 
@@ -54,10 +56,9 @@ class CSettingsPage
         void ShowPrev(bool Show = true);
 
         void FixBackground();
+        static void TabBackgroundFix(HWND hwnd);
         
         virtual bool Apply();
-
 };
-void TabBackgroundFix(HWND hwnd);
 
 #endif // SETTINGSPAGE_H

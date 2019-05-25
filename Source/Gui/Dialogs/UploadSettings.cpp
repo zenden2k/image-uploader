@@ -127,10 +127,10 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     m_ProfileEditToolbar.SetButtonStructSize();
     m_ProfileEditToolbar.SetButtonSize(17, 17);
 
-    CImageList list;
-    list.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
-    list.AddIcon(iconEdit_);
-    m_ProfileEditToolbar.SetImageList(list);
+
+    m_profileEditToolbarImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    m_profileEditToolbarImageList.AddIcon(iconEdit_);
+    m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
     m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 
     RECT Toolbar1Rect;

@@ -175,7 +175,8 @@ class CUploadSettings :
     void UpdateAllPlaceSelectors();
     void UpdatePlaceSelector(bool ImageServer);
     void UpdateToolbarIcons();
-    CImageList m_PlaceSelectorImageList;
+    CImageListManaged m_PlaceSelectorImageList, m_profileEditToolbarImageList;
+
     int nImageIndex;
     int nFileIndex;
     void OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar);

@@ -107,7 +107,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     }
 
     if (GetStyle() & WS_CHILD) {
-        TabBackgroundFix(m_hWnd);
+        EnableThemeDialogTexture(m_hWnd, ETDT_ENABLETAB);
     }
     CBitmap hBitmap;
 
@@ -844,24 +844,10 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
     RECT rc;
     GetClientRect(&rc);
 
-    HMODULE hinstDll;
 
     // Check if the application is themed
 
-    bool m_bThemeActive = false;
-    hinstDll = ::LoadLibrary(_T("UxTheme.dll"));
-    if (hinstDll)
-    {
-        typedef BOOL (*ISAPPTHEMEDPROC)();
-        ISAPPTHEMEDPROC pIsAppThemed;
-        pIsAppThemed = reinterpret_cast<ISAPPTHEMEDPROC>(::GetProcAddress(hinstDll, "IsAppThemed"));
-
-        if(pIsAppThemed)
-            m_bThemeActive = pIsAppThemed() != FALSE;
-
-        ::FreeLibrary(hinstDll);
-    }
-    if (m_bThemeActive) {
+    if (IsAppThemed()) {
         //rc.top-=10;
 
         //m_wndTab.GetWindowRect(&rc);

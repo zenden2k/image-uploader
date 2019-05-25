@@ -84,7 +84,9 @@ CFloatingWindow::CFloatingWindow()
 
 CFloatingWindow::~CFloatingWindow()
 {
-    CloseHandle(hMutex);
+    if (hMutex) {
+        CloseHandle(hMutex);
+    }
     m_hWnd = 0;
 }
 
@@ -209,7 +211,9 @@ LRESULT CFloatingWindow::OnCloseTray(UINT uMsg, WPARAM wParam, LPARAM lParam)
     ShowWindow(SW_HIDE);
     wizardDlg_->ShowWindow(SW_SHOW);
     wizardDlg_->SetDlgItemText(IDCANCEL, TR("Exit"));
-    CloseHandle(hMutex);
+    if (hMutex) {
+        CloseHandle(hMutex);
+    }
     RemoveIcon();
     UnRegisterHotkeys();
     DestroyWindow();

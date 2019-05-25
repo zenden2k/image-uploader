@@ -105,22 +105,8 @@ void FileQueueUploaderPrivate::onTaskAdded(UploadSession*, UploadTask* task)
     startFromSession_ = 0;
     sessionsMutex_.unlock();
     taskAdded(task);
-    //start();
 }
 
-/*int FileQueueUploaderPrivate::pendingTasksCount()
-{
-    std::lock_guard<std::recursive_mutex> lock2(sessionsMutex_);
-    TaskAcceptorBase acceptor(false); // do not use mutex
-    serverThreadsMutex_.lock();
-    acceptor.serverThreads_ = this->serverThreads_;
-    serverThreadsMutex_.unlock();
-    for (size_t i = startFromSession_; i < sessions_.size(); i++)
-    {
-        sessions_[i]->pendingTasksCount(&acceptor);
-    }
-    return acceptor.fileCount;
-}*/
 
 void FileQueueUploaderPrivate::taskAdded(UploadTask* task)
 {
@@ -151,25 +137,7 @@ std::shared_ptr<UploadTask> FileQueueUploaderPrivate::getNextJob() {
             return res;
         }
     }
-    //std::lock_guard<std::recursive_mutex> lock(sessionsMutex_);
 
-    /*if (!sessions_.empty() && !stopSignal_)
-    {
-        for (size_t i = startFromSession_; i < sessions_.size(); i++)
-        {
-            std::shared_ptr<UploadTask> task;
-            if (!sessions_[i]->getNextTask(this, task))
-            {
-                startFromSession_ = i + 1;
-            }
-            if (task) {
-                task->setStatus(UploadTask::StatusPostponed);
-
-                return task;
-            }
-            
-        }
-    }*/
     return std::shared_ptr<UploadTask>();
 }
 

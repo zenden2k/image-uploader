@@ -41,7 +41,7 @@ CMediaInfoDlg::~CMediaInfoDlg()
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
+    boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEINFOLABEL));
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     LOGFONT logFont;
     WinUtils::StringToFont(_T("Courier New,8,,204"), &logFont);

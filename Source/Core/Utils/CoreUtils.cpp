@@ -370,10 +370,12 @@ const std::string GetFileContents(const std::string& filename) {
 
 std::string timeStampToString(time_t t)
 {
+    char buf[50]{0};
     // TODO: add system locale support
     tm * timeinfo = localtime ( &t );
-    char buf[50];
-    sprintf(buf, "%02d.%02d.%04d %02d:%02d:%02d", (int)timeinfo->tm_mday,(int) timeinfo->tm_mon+1, (int)1900+timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec); 
+    if (timeinfo) {
+        sprintf(buf, "%02d.%02d.%04d %02d:%02d:%02d", (int)timeinfo->tm_mday, (int)timeinfo->tm_mon + 1, (int)1900 + timeinfo->tm_year, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    }
     return buf;
 }
 
@@ -471,6 +473,17 @@ std::string ThreadIdToString(const std::thread::id& id)
     std::stringstream threadIdSS;
     threadIdSS << id;
     return threadIdSS.str();
+}
+
+void DatePlusDays(struct tm* date, int days){
+    const time_t ONE_DAY = 24 * 60 * 60;
+
+    // Seconds since start of epoch
+    time_t date_seconds = mktime(date) + (days * ONE_DAY);
+
+    // Update caller's date
+    // Use localtime because mktime converts to UTC so may change date
+    *date = *localtime(&date_seconds);
 }
 
 } // end of namespace IuCoreUtils

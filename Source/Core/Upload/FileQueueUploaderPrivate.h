@@ -47,7 +47,7 @@ public:
         IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads
         );
     virtual ~FileQueueUploaderPrivate();
-    void start();
+    
     virtual void run();
     std::shared_ptr<UploadTask> getNextJob();
     void AddSingleTask(std::shared_ptr<UploadTask> task);
@@ -74,6 +74,7 @@ public:
     //int runningThreads_;
     friend class CFileQueueUploader;
 protected:
+    void start();
     bool onNeedStopHandler();
     void OnConfigureNetworkClient(CUploader*, INetworkClient* nm);
     void onErrorMessage(CUploader*, ErrorInfo);
@@ -86,8 +87,6 @@ protected:
     std::deque<std::shared_ptr<UploadTask>> queue_;
     std::mutex queueMutex_;
     std::condition_variable queueCondition_;
-
-   // int pendingTasksCount();
     void taskAdded(UploadTask* task);
     
     int startFromSession_;

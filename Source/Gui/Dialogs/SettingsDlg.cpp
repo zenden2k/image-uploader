@@ -43,9 +43,9 @@ CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
 
 CSettingsDlg::~CSettingsDlg()
 {
-    for (int i = 0; i < SettingsPageCount; i++) {
+    /*for (int i = 0; i < SettingsPageCount; i++) {
         delete Pages[i];
-    }
+    }*/
 }
 
 LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -124,6 +124,12 @@ LRESULT CSettingsDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 
 LRESULT CSettingsDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    for (int i = 0; i < SettingsPageCount; i++) {
+        if (Pages[i]) {
+            ::DestroyWindow(Pages[i]->PageWnd);
+            delete Pages[i];
+        }
+    }
     return 0;
 }
 

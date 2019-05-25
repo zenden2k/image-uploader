@@ -1040,6 +1040,7 @@ void WtlGuiSettings::Uninstall() {
 
     CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
     DeleteFile(ShortcutName);
+
 }
 
 void WtlGuiSettings::EnableAutostartup(bool enable) {

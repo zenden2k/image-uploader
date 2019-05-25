@@ -131,10 +131,10 @@ void CHistoryTreeControl::Clear()
     SetRedraw(true);*/
 }
 
-void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem it, bool autoExpand)
+void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand)
 {
     HistoryTreeItem * it2 = new HistoryTreeItem();
-    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::timeStampToString(it.timeStamp)+ " "+ it.localFilePath), res, it2, autoExpand);
+    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::timeStampToString(it->timeStamp)+ " "+ it->localFilePath), res, it2, autoExpand);
     item->setCallback(this);
     it2->hi = it;
     it2->thumbnail = 0;
@@ -150,9 +150,10 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
 {
     return CDRF_DODEFAULT;
 }
-HistoryItem* CHistoryTreeControl::getItemData(TreeItem* res)
+HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
-    return reinterpret_cast<HistoryItem*> (res->userData());
+    HistoryTreeItem* item = reinterpret_cast<HistoryTreeItem*> (res->userData());
+    return item ? item->hi : nullptr;
 }
 
 HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
@@ -398,10 +399,10 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         if(draw)
             dc.FrameRect(&thumbRect, br);
         HistoryItem * it2 = getItemData(item);
-        std::string fileName = IuCoreUtils::ExtractFileName(it2->localFilePath);
+        std::string fileName = it2 ? IuCoreUtils::ExtractFileName(it2->localFilePath) : "";
 
-        CString iconSourceFileName = Utf8ToWCstring(it2->localFilePath);
-        if(iconSourceFileName.IsEmpty())
+        CString iconSourceFileName = it2 ? Utf8ToWCstring(it2->localFilePath) : "";
+        if (iconSourceFileName.IsEmpty() && it2)
             iconSourceFileName = Utf8ToWCstring(it2->directUrl);
         HICON ico = getIconForExtension(iconSourceFileName);
         CString text = Utf8ToWstring(fileName).c_str();
@@ -431,7 +432,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         urlRect.left = calcRect.left;
         urlRect.top += filenameHeight +3;
 
-        CString url =  Utf8ToWCstring(it2->directUrl.length()?it2->directUrl:it2->viewUrl);
+        CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
         dc.SetTextColor(0xa6a6a6);
         if(draw)
         DrawText(dc.m_hDC, url, url.GetLength(), &urlRect, DT_LEFT);
@@ -529,7 +530,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
         filename = Utf8ToWCstring(item->thumbnailSource); 
         
     else  
-        filename = Utf8ToWCstring(item->hi.localFilePath);
+        filename = Utf8ToWCstring(item->hi->localFilePath);
     bool error = false;
     if(IuCommonFunctions::IsImage(filename))
     {
@@ -672,7 +673,7 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
     item->ThumbnailRequested = true;
 
     
-    std::string stdLocalFileName = item->hi.localFilePath;
+    std::string stdLocalFileName = item->hi->localFilePath;
     CString localFileName = Utf8ToWCstring(stdLocalFileName);
     if(!IuCommonFunctions::IsImage(localFileName))
     {
@@ -698,7 +699,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
     if(m_bStopped) return;
     if(it->thumbnailSource.empty())
     {
-        std::string thumbUrl = it->hi.thumbUrl;
+        std::string thumbUrl = it->hi->thumbUrl;
         if(thumbUrl.empty()) return ;
         std::string cacheFile = ServiceLocator::instance()->localFileCache()->get(thumbUrl);
         if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))

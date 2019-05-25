@@ -952,7 +952,9 @@ void CPictureExWnd::Stop()
         // we'll wait for 5 seconds then continue execution
         // I hate hangups :P
         WaitForSingleObject(m_hThread,5000);
-        CloseHandle(m_hThread);
+        if (m_hThread) {
+            CloseHandle(m_hThread);
+        }
         m_hThread = NULL;
     }
 

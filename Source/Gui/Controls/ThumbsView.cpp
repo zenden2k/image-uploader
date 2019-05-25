@@ -46,6 +46,7 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 CThumbsView::~CThumbsView()
 {
     ImageList.Destroy();
+    //ImageView.DestroyWindow();
     StopBackgroundThread(true);
 }
 

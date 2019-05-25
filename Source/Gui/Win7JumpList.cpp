@@ -184,7 +184,7 @@ HRESULT Win7JumpList::AddTasksToList(ICustomDestinationList *pcdl)
 	IObjectCollection *poc;
 	HRESULT hr = CoCreateInstance(CLSID_EnumerableObjectCollection, NULL, CLSCTX_INPROC, IID_PPV_ARGS(&poc));
 	if (SUCCEEDED(hr)) {
-		IShellLink * psl;
+		IShellLink * psl = nullptr;
 		hr = CreateShellLink(L"/func=addimages", TR("Upload Images"), IDI_ICONADD, &psl);
 		if (SUCCEEDED(hr)) {
 			hr = poc->AddObject(psl);

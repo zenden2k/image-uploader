@@ -20,6 +20,7 @@
 #include "WizardDlg.h"
 
 #include <boost/filesystem.hpp>
+
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
 #include "Core/HistoryManager.h"
@@ -38,7 +39,6 @@
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include "Gui/Dialogs/ShortenUrlDlg.h"
-
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -258,9 +258,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
     boost::filesystem::path userServersFolderPath(userServersFolder);
     
-
     if (boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
-        
         WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
 
         for(size_t i=0; i<list.size(); i++)
@@ -279,9 +277,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
     }
+    auto historyManager = ServiceLocator::instance()->historyManager();
+    historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
+    historyManager->openDatabase();
+    historyManager->convertHistory();
 
-    ServiceLocator::instance()->historyManager()->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
-    ServiceLocator::instance()->historyManager()->convertHistory();
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
 

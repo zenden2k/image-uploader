@@ -617,10 +617,9 @@ void CServerSelectorControl::createSettingsButton() {
     settingsButtonToolbar_.SetButtonStructSize();
     settingsButtonToolbar_.SetButtonSize(17,17);
 
-    CImageList list;
-    list.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
-    list.AddIcon(ico);
-    settingsButtonToolbar_.SetImageList(list);
+    settingsButtonImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    settingsButtonImageList_.AddIcon(ico);
+    settingsButtonToolbar_.SetImageList(settingsButtonImageList_);
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);
 }
 

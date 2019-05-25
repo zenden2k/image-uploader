@@ -122,7 +122,7 @@ class TreeItem
         {
             m_userData = data;
         }
-        void* userData()
+        void* userData() const
         {
             return m_userData;
         }
@@ -263,7 +263,6 @@ public:
 
    bool ExpandItem(int index)
    {
-       //Beep(1000,200);
        TreeItem * item = GetItem(index);
        if(!item) return false;
        if(!item->HasItems() || item->IsExpanded()) return false;
@@ -692,7 +691,8 @@ public:
    void MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
    { 
        SIZE sz = {0,0};
-       TreeItemSize(reinterpret_cast<TreeItem*>(lpMIS->itemData), &sz);
+       TreeItem* item = reinterpret_cast<TreeItem*>(lpMIS->itemData);
+       TreeItemSize(item, &sz);
         lpMIS->itemHeight = sz.cy;
    }
 

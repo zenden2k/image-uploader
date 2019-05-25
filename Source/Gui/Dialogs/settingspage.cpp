@@ -80,18 +80,10 @@ bool CSettingsPage::OnHide()
     return false;
 }    
 
-HMODULE DllModule = LoadLibrary(_T("uxtheme.dll"));
-
-typedef HRESULT (STDAPICALLTYPE *ETDT_Func)(HWND,DWORD);
-
 // Функция установки фона вкладки в стиле XP+
-void TabBackgroundFix(HWND hwnd)
+void CSettingsPage::TabBackgroundFix(HWND hwnd)
 {
-    if(!DllModule) return;
-    ETDT_Func Func = reinterpret_cast<ETDT_Func>(GetProcAddress(DllModule, "EnableThemeDialogTexture"));
-
-    if(!Func) return; 
-    Func(hwnd, ETDT_ENABLETAB);
+    EnableThemeDialogTexture(hwnd, ETDT_ENABLETAB);
 }
 
 bool CSettingsPage::Apply()

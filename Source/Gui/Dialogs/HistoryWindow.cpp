@@ -35,6 +35,7 @@ CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
 {
     delayed_closing_ = false;
     wizardDlg_ = wizardDlg;
+    delayedLoad_ = false;
 }
 
 CHistoryWindow::~CHistoryWindow()
@@ -111,7 +112,8 @@ LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
     else
     {
         ::EnableWindow(GetDlgItem(IDCANCEL), false);
-        ::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), true);
+        ::EnableWindow(GetDlgItem(IDOK), false);
+        ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), false);
         m_treeView.EnableWindow(true);
         m_treeView.abortLoadingThreads();
     }
@@ -159,7 +161,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
    
     isSessionItem = item->level()==0;
     
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     CMenu menu;
     menu.CreatePopupMenu();
     if(!isSessionItem)
@@ -214,8 +216,9 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
             if ( ses->entry(j).uploadFileSize < 1000000000 ) {
                 totalFileSize += ses->entry(j).uploadFileSize;
             }
-            m_treeView.addSubEntry(res, ses->entry(j),nCount<4);
+            m_treeView.addSubEntry(res, &ses->entry(j),nCount<4);
         }
+        ses->setDeleteItems(false); // treeView will manage histroy items
         //m_treeView.ExpandItem(res);
     }
     if(res)
@@ -249,7 +252,7 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
     WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
     return 0;
@@ -284,7 +287,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     }
     else
     {
-        HistoryItem* hit = reinterpret_cast<HistoryItem*>(item->userData());
+        HistoryItem* hit = CHistoryTreeControl::getItemData(item);
         CUrlListItem it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
@@ -297,7 +300,7 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     std::string fileName  = historyItem->localFilePath;
     if(fileName.empty()) return 0;
     std::string directory = IuCoreUtils::ExtractFilePath(fileName);
@@ -316,7 +319,7 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     WinUtils::ShellOpenFileOrUrl(U2W(historyItem->editUrl), m_hWnd);
     return 0;
 }
@@ -325,12 +328,12 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
     return 0;
 }
         
-void CHistoryWindow::LoadHistoryFile()
+void CHistoryWindow::LoadHistory()
 {
     //m_delayedFileName = fileName;
     if(!m_treeView.isRunning())
@@ -359,24 +362,26 @@ void CHistoryWindow::LoadHistoryFile()
         }
         CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILENAMEEDIT);
         CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_URLEDIT);
-
         if (m_historyReader->loadFromDB(timeFrom, timeTo, W2U(fileName), W2U(url))) {
             FillList(m_historyReader.get());
-            m_delayedFileName.Empty();
         }
+
+        delayedLoad_ = false;
     }
     else
     {
-        ::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), false);
+        delayedLoad_ = true;
+        ::EnableWindow(GetDlgItem(IDOK), false);
         ::EnableWindow(GetDlgItem(IDCANCEL), false);
         ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), false);
+        ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), false);
         m_treeView.EnableWindow(false);
         m_treeView.abortLoadingThreads();
     }
 }
 
-void CHistoryWindow::OpenInBrowser(TreeItem* item) {
-    HistoryItem* historyItem = reinterpret_cast<HistoryItem*>(item->userData());
+void CHistoryWindow::OpenInBrowser(const TreeItem* item) {
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
     WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
 }
@@ -385,19 +390,18 @@ void CHistoryWindow::threadsFinished()
 {
     m_wndAnimation.ShowWindow(SW_HIDE);
     
-    if(!m_delayedFileName.IsEmpty()) {
-        SendMessage(WM_MY_OPENHISTORYFILE);
-        //LoadHistoryFile(m_delayedFileName);
-        
+    if (delayedLoad_) {
+        SendMessage(WM_MY_OPENHISTORYFILE);        
     }
     else if(delayed_closing_)
     {
         EndDialog(0);
         return;
     }
-    ::EnableWindow(GetDlgItem(IDC_MONTHCOMBO), true);
     m_treeView.EnableWindow(true);
     ::EnableWindow(GetDlgItem(IDCANCEL), true);
+    ::EnableWindow(GetDlgItem(IDOK), true);
+    ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), true);
     ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
 }
 
@@ -416,7 +420,7 @@ LRESULT CHistoryWindow::OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD w
         
 LRESULT CHistoryWindow::OnWmOpenHistoryFile(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {    
-    LoadHistoryFile();
+    LoadHistory();
     return 0;
 }
 
@@ -443,7 +447,7 @@ void CHistoryWindow::onItemDblClick(TreeItem* item) {
 }
 
 void CHistoryWindow::applyFilters() {
-    LoadHistoryFile();
+    LoadHistory();
 }
 
 LRESULT CHistoryWindow::OnOk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -466,7 +470,7 @@ LRESULT CHistoryWindow::OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     dateFilterCheckbox_.SetCheck(BST_UNCHECKED);
     
     initSearchForm();
-    LoadHistoryFile();
+    LoadHistory();
     return 0;
 }
 

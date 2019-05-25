@@ -381,9 +381,13 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 TextRect.left +=ScaleX(20);
                 TextRect.right +=ScaleX(20);
             }
-            if(static_cast<size_t>(Selected) == i && m_bHyperLinks)
-                dc.SelectFont(BoldUnderLineFont); else
-                dc.SelectFont(BoldFont);
+            HFONT oldFont;
+            if (static_cast<size_t>(Selected) == i && m_bHyperLinks) {
+                oldFont = dc.SelectFont(BoldUnderLineFont);
+            }
+            else {
+                oldFont = dc.SelectFont(BoldFont);
+            }
 
             int textY = item.ItemRect.top;
             if(*item.szTip == _T(' '))
@@ -393,11 +397,15 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 textY += (33-TextDims.cy)/2;
 
             }
-        
+
             ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
-            if(static_cast<size_t>(Selected)==i && m_bHyperLinks)
-                dc.SelectFont(UnderlineFont); else 
-                dc.SelectFont(GetFont());
+            dc.SelectFont(oldFont);
+
+            if (static_cast<size_t>(Selected) == i && m_bHyperLinks) {
+                oldFont = dc.SelectFont(UnderlineFont);
+            } else {
+                oldFont = dc.SelectFont(GetFont());
+            }
             dc.SetTextColor(RGB(100,100,100));
 
             ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top+18, ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
@@ -408,18 +416,22 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 dc.DrawIcon(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon);
             }
             else dc.DrawIcon(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon);
+            dc.SelectFont(oldFont);
         } // End of drawing "big" item
 
         else 
         {
-            if(static_cast<size_t>(Selected)==i) // If item we draw is selected
-                dc.SelectFont(UnderlineFont); 
-            else
-                dc.SelectFont(GetFont());
+            HFONT oldFont;
+            if (static_cast<size_t>(Selected) == i) { // If item we draw is selected
+                oldFont = dc.SelectFont(UnderlineFont);
+            } else {
+                oldFont = dc.SelectFont(GetFont());
+            }
 
             dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon,16,16);
                 
             dc.ExtTextOut(item.ItemRect.left+23, item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
+            dc.SelectFont(oldFont);
         }
     }
 

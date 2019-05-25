@@ -101,16 +101,17 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         std::unique_ptr<CHistoryReader> m_historyReader;
         LRESULT OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
-        CString m_delayedFileName;
+        
         void threadsStarted();
         void threadsFinished();
         void onItemDblClick(TreeItem* item);
+        bool delayedLoad_;
         std::vector<CString> m_HistoryFiles;
         bool delayed_closing_;
         CString historyFolder;
         CWizardDlg* wizardDlg_;
-        void LoadHistoryFile();
-        void OpenInBrowser(TreeItem* item);
+        void LoadHistory();
+        void OpenInBrowser(const TreeItem* item);
         void applyFilters();
         void dateFromCheckboxChanged();
         void initSearchForm();

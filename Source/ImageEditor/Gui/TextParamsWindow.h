@@ -94,7 +94,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         CustomEdit fontSizeComboboxCustomEdit_;
         CString fontName_;
         LOGFONT font_;
-        CImageList toolbarImageList_;
+        CImageListManaged toolbarImageList_;
         void NotifyParent(DWORD changeMask);
         std::vector<LOGFONT> fonts_;
         CIcon iconBold_, iconItalic_, iconUnderline_;

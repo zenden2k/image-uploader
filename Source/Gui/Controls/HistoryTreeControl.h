@@ -18,12 +18,16 @@
 
 struct HistoryTreeItem
 {
-    HistoryItem hi;
+    HistoryItem* hi;
     HBITMAP thumbnail;
     bool ThumbnailRequested;
     std::string thumbnailSource;
     HistoryTreeItem() :hi(nullptr){
         
+    }
+
+    ~HistoryTreeItem() {
+        delete hi;
     }
 };
 
@@ -66,7 +70,7 @@ class CHistoryTreeControl :
         bool m_bIsRunning;
         int m_thumbWidth;
         bool downloading_enabled_;
-        void addSubEntry(TreeItem* res, HistoryItem it, bool autoExpand);
+        void addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand);
         TreeItem*  addEntry(CHistorySession* session, const CString& text);
         void Init();
         void Clear();
@@ -81,10 +85,10 @@ class CHistoryTreeControl :
         void abortLoadingThreads();
         LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void ResetContent();
-
+        static HistoryItem* getItemData(const TreeItem* res);
 
     private:
-        HistoryItem* getItemData(TreeItem* res);
+
         std::map<CString, HICON> m_fileIconCache;
         std::map<CString, HICON> m_serverIconCache;
         HICON getIconForExtension(const CString& serverName);

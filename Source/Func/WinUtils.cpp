@@ -1043,39 +1043,51 @@ CString GetLastErrorAsString()
 }
 
 
-BOOL MakeDirectoryWritable(LPCTSTR lpPath) {
+bool MakeDirectoryWritable(LPCTSTR lpPath) {
     HANDLE hDir = CreateFile(lpPath,READ_CONTROL|WRITE_DAC,0,NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);
-    if(hDir == INVALID_HANDLE_VALUE)
-        return FALSE; 
+    if (hDir == INVALID_HANDLE_VALUE) {
+        return FALSE;
+    }
 
-    ACL* pOldDACL;
+    ACL* pOldDACL = nullptr;
     SECURITY_DESCRIPTOR* pSD = NULL;
-    GetSecurityInfo(hDir, SE_FILE_OBJECT , DACL_SECURITY_INFORMATION,NULL, NULL, &pOldDACL, NULL, (void**)&pSD);
+    if (GetSecurityInfo(hDir, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, &pOldDACL, NULL, (void**)&pSD) == ERROR_SUCCESS) {
+        PSID pSid = NULL;
+        SID_IDENTIFIER_AUTHORITY authNt = SECURITY_NT_AUTHORITY;
 
-    PSID pSid = NULL;
-    SID_IDENTIFIER_AUTHORITY authNt = SECURITY_NT_AUTHORITY;
-    AllocateAndInitializeSid(&authNt,2,SECURITY_BUILTIN_DOMAIN_RID,DOMAIN_ALIAS_RID_USERS,0,0,0,0,0,0,&pSid);
+        if (AllocateAndInitializeSid(&authNt, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_USERS, 0, 0, 0, 0, 0, 0, &pSid)) {
+            EXPLICIT_ACCESS ea = { 0 };
+            ea.grfAccessMode = GRANT_ACCESS;
+            ea.grfAccessPermissions = GENERIC_ALL;
+            ea.grfInheritance = CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
+            ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
+            ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
+            ea.Trustee.ptstrName = (LPTSTR)pSid;
 
-    EXPLICIT_ACCESS ea={0};
-    ea.grfAccessMode = GRANT_ACCESS;
-    ea.grfAccessPermissions = GENERIC_ALL;
-    ea.grfInheritance = CONTAINER_INHERIT_ACE|OBJECT_INHERIT_ACE;
-    ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
-    ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-    ea.Trustee.ptstrName = (LPTSTR)pSid;
+            ACL* pNewDACL = 0;
+            /*DWORD err = */SetEntriesInAcl(1, &ea, pOldDACL, &pNewDACL);
 
-    ACL* pNewDACL = 0;
-    /*DWORD err = */SetEntriesInAcl(1,&ea,pOldDACL,&pNewDACL);
+            if (pNewDACL) {
+                SetSecurityInfo(hDir, SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, NULL, NULL, pNewDACL, NULL);
+            }
 
-    if(pNewDACL)
-        SetSecurityInfo(hDir,SE_FILE_OBJECT,DACL_SECURITY_INFORMATION,NULL, NULL, pNewDACL, NULL);
+            FreeSid(pSid);
+            if (pNewDACL) {
+                LocalFree(pNewDACL);
+            }
+        }
+        // We do not need to free pOldDACL because this memory block is freed together with SECURITY_DESCRIPTOR 
+        // Otherwise invalid deallocation will occur.
+        /*if (pOldDACL) { 
+            LocalFree(pOldDACL);
+        }*/
+        if (pSD) {
+            LocalFree(pSD);
+        }
+    }
 
-    FreeSid(pSid);
-    LocalFree(pNewDACL);
-    LocalFree(pSD);
-    LocalFree(pOldDACL);
     CloseHandle(hDir);
-    return TRUE;
+    return true;
 }
 
 
@@ -1459,17 +1471,6 @@ time_t SystemTimeToTime(const SYSTEMTIME &st) {
     tm.tm_isdst = -1;
 
     return std::mktime(&tm);
-}
-
-void DatePlusDays(struct tm* date, int days){
-    const time_t ONE_DAY = 24 * 60 * 60;
-
-    // Seconds since start of epoch
-    time_t date_seconds = mktime(date) + (days * ONE_DAY);
-
-    // Update caller's date
-    // Use localtime because mktime converts to UTC so may change date
-    *date = *localtime(&date_seconds);
 }
 
 }

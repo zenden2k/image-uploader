@@ -43,7 +43,7 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         roundedRect.DeflateRect(3,3);
         CPen pen;
         pen.CreatePen(PS_SOLID, 1, 0xC5C5C5);
-        dc.SelectPen(pen);
+        HPEN oldPen = dc.SelectPen(pen);
         dc.RoundRect(roundedRect, CPoint(2,2));
         CRect rc(lpdis->rcItem);
         rc.DeflateRect(4,4);
@@ -52,6 +52,7 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
                                 {rc.right, rc.bottom, 0xEF00, 0xD000, 0x7700, 0x0000}};
         GRADIENT_RECT gradientrc = {0, 1};
         dc.GradientFill(vertex, 2, &gradientrc, 1, GRADIENT_FILL_RECT_V);
+        dc.SelectPen(oldPen);
     }
     else
     {

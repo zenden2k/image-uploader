@@ -86,7 +86,7 @@ namespace WinUtils {
     CString GetAppFolder();
     float GetMonitorScaleFactor();
     CString GetLastErrorAsString();
-    BOOL MakeDirectoryWritable(LPCTSTR lpPath);
+    bool MakeDirectoryWritable(LPCTSTR lpPath);
     int GetInternetExplorerMajorVersion();
     void RemoveBrowserKey();
     void UseLatestInternetExplorerVersion(bool IgnoreIDocDirective = false);

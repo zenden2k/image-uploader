@@ -23,15 +23,14 @@
 #include <ctime>
 #include <algorithm>
 #include <boost/format.hpp>
-
 #include <boost/filesystem.hpp>
+
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Utils/GlobalMutex.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Utils/StringUtils.h"
-#include <Gui/Components/NewStyleFolderDialog.h>
 
 class CHistoryReader_impl
 {
@@ -54,29 +53,35 @@ CHistoryManager::~CHistoryManager()
     if (db_) {
         sqlite3_close(db_);
     }
+    sqlite3_shutdown();
 }
 
 void CHistoryManager::setHistoryDirectory(const std::string& directory) {
-
-    m_historyFilePath = directory;
+    m_historyFilePath = directory; 
+}
+bool CHistoryManager::openDatabase() {
     IuCoreUtils::createDirectory(m_historyFilePath);
-    if (sqlite3_open((directory + "history.db").c_str(), &db_) != SQLITE_OK) {
+    if (!db_ && sqlite3_open((m_historyFilePath + "history.db").c_str(), &db_) != SQLITE_OK) {
         LOG(ERROR) << "unable to open database: ";
-    } else {
-        const char* sql = "CREATE TABLE IF NOT EXISTS upload_sessions(id,created_at)";
-        char *err = nullptr;
-        if (sqlite3_exec(db_, sql, nullptr, nullptr, &err) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: " << err;
-            sqlite3_free(err);
-        }
-        const char* sql2 = "CREATE TABLE IF NOT EXISTS uploads(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,session_id,created_at INTEGER,local_file_path,server_name,direct_url,thumb_url,"
-                            "view_url,direct_url_shortened,view_url_shortened, edit_url, delete_url, display_name, size INTEGER, sort_index INTEGER)";
+        return false;
+    }
+    const char* sql = "CREATE TABLE IF NOT EXISTS upload_sessions(id,created_at)";
+    char* err = nullptr;
+    if (sqlite3_exec(db_, sql, nullptr, nullptr, &err) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: " << err;
+        sqlite3_free(err);
+        return false;
+    }
+    const char* sql2 =
+        "CREATE TABLE IF NOT EXISTS uploads(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,session_id,created_at INTEGER,local_file_path,server_name,direct_url,thumb_url,"
+        "view_url,direct_url_shortened,view_url_shortened, edit_url, delete_url, display_name, size INTEGER, sort_index INTEGER)";
 
-        if (sqlite3_exec(db_, sql2, nullptr, nullptr, &err) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: " << err;
-            sqlite3_free(err);
-        }
-    }   
+    if (sqlite3_exec(db_, sql2, nullptr, nullptr, &err) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: " << err;
+        sqlite3_free(err);
+        return false;
+    }
+    return true;
 }
 
 bool CHistoryManager::saveSession(CHistorySession* session) {
@@ -90,25 +95,27 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     if (sqlite3_prepare(db_, sql, -1, &stmt, nullptr) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: Could not prepare statement.";
         return false;
-    } else {
-        std::string id = session->sessionId();
-        if (sqlite3_bind_text(stmt, 1 /*Index of wildcard*/, id.c_str(), -1, nullptr) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: Could not bind value.";
-            return false;
-        }
-        if (sqlite3_bind_int64(stmt, 2, session->timeStamp()) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: Could not bind value.";
-            return false;
-        }
-        /*if (sqlite3_bind_text(stmt, 3 , serverName.c_str(), -1, nullptr) != SQLITE_OK) {
-        LOG(ERROR) << "SQL error: Could not bind value.";
-        }*/
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            LOG(ERROR) << "SQL error: Could not execute statement";
-        }
-        sqlite3_reset(stmt);
-        session->dbEntryCreated_ = true;
     }
+    std::string id = session->sessionId();
+    if (sqlite3_bind_text(stmt, 1 /*Index of wildcard*/, id.c_str(), -1, nullptr) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: Could not bind value.";
+        return false;
+    }
+    if (sqlite3_bind_int64(stmt, 2, session->timeStamp()) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: Could not bind value.";
+        return false;
+    }
+    /*if (sqlite3_bind_text(stmt, 3 , serverName.c_str(), -1, nullptr) != SQLITE_OK) {
+    LOG(ERROR) << "SQL error: Could not bind value.";
+    }*/
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        LOG(ERROR) << "SQL error: Could not execute statement";
+    }
+    /*sqlite3_reset(stmt);
+    sqlite3_clear_bindings(stmt);*/
+    sqlite3_finalize(stmt);
+    session->dbEntryCreated_ = true;
+
     return true;
 }
 
@@ -153,7 +160,9 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
             LOG(ERROR) << "SQL error: Could not execute statement";
             return false;
         }
-        sqlite3_reset(stmt);
+        /*sqlite3_reset(stmt);
+        sqlite3_clear_bindings(stmt);*/
+        sqlite3_finalize(stmt);
     }
     return true;
 }
@@ -179,6 +188,7 @@ std::shared_ptr<CHistorySession> CHistoryManager::newSession()
 
 CHistorySession::CHistorySession(sqlite3* db, const std::string& filename, const std::string&  sessionId) : db_(db)
 {
+    deleteItems_ = true;
     m_historyXmlFileName = filename;
     m_sessId = sessionId;
     time(&m_timeStamp);
@@ -195,23 +205,23 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
 
     for(size_t i=0; i<allEntries.size(); i++)
     {
-        SimpleXmlNode& item = allEntries[i]; 
-        HistoryItem ht(this);
-        ht.localFilePath = item.Attribute("LocalFilePath");
-        ht.serverName = item.Attribute("ServerName");
-        ht.timeStamp = item.AttributeInt("TimeStamp");
-        ht.directUrl = item.Attribute("DirectUrl");
-        ht.thumbUrl = item.Attribute("ThumbUrl");
-        ht.viewUrl = item.Attribute("ViewUrl");
-        ht.editUrl = item.Attribute("EditUrl");
-        ht.deleteUrl = item.Attribute("DeleteUrl");
-        ht.displayName = item.Attribute("DisplayName");
-        ht.uploadFileSize = item.AttributeInt64("UploadFileSize");
+        SimpleXmlNode& item = allEntries[i];
+        HistoryItem *ht = new HistoryItem(this);
+        ht->localFilePath = item.Attribute("LocalFilePath");
+        ht->serverName = item.Attribute("ServerName");
+        ht->timeStamp = item.AttributeInt("TimeStamp");
+        ht->directUrl = item.Attribute("DirectUrl");
+        ht->thumbUrl = item.Attribute("ThumbUrl");
+        ht->viewUrl = item.Attribute("ViewUrl");
+        ht->editUrl = item.Attribute("EditUrl");
+        ht->deleteUrl = item.Attribute("DeleteUrl");
+        ht->displayName = item.Attribute("DisplayName");
+        ht->uploadFileSize = item.AttributeInt64("UploadFileSize");
         std::string sortIndex = item.Attribute("Index");
-        ht.sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::stringToInt64(sortIndex));
+        ht->sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::stringToInt64(sortIndex));
         // Fix invalid file size
-        if ( ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0 ){
-             ht.uploadFileSize  = 0;
+        if (ht->uploadFileSize > 1000000000000 || ht->uploadFileSize < 0) {
+            ht->uploadFileSize = 0;
         }
         m_entries.push_back(ht);
     }
@@ -222,16 +232,31 @@ int CHistorySession::entriesCount() const
     return m_entries.size();
 }
 
-HistoryItem CHistorySession::entry(const int index) const
+HistoryItem& CHistorySession::entry(const int index) const
 {
-    return m_entries[index];
+    return *m_entries[index];
+}
+
+void  CHistorySession::setDeleteItems(bool doDelete) {
+    deleteItems_ = doDelete;
+}
+
+CHistorySession::~CHistorySession() {
+    if (deleteItems_) {
+        for (auto it : m_entries) {
+            delete it;
+        }
+    }
 }
 
 bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index,const std::string& val) {
     if (!val.empty()) {
         char* str = new char[val.size()+1];
         strcpy_s(str, val.size() + 1, val.c_str());
-        if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s) { delete[] reinterpret_cast<char*>(s); }) != SQLITE_OK) {
+        if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s)
+        {
+            delete[] reinterpret_cast<char*>(s);
+        }) != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
         }
@@ -245,8 +270,8 @@ bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index,const std::string
 }
 
 void CHistorySession::sortByOrderIndex() {
-    std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem& lhs, const HistoryItem& rhs) {
-        return lhs.sortIndex < rhs.sortIndex;
+    std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem* lhs, const HistoryItem* rhs) {
+        return lhs->sortIndex < rhs->sortIndex;
     });
 }
 
@@ -272,11 +297,11 @@ std::string  CHistorySession::sessionId() const {
     return m_sessId;
 }
 
-std::vector<HistoryItem>::iterator CHistorySession::begin() {
+std::vector<HistoryItem*>::iterator CHistorySession::begin() {
     return m_entries.begin();
 }
 
-std::vector<HistoryItem>::iterator CHistorySession::end() {
+std::vector<HistoryItem*>::iterator CHistorySession::end() {
     return m_entries.end();
 }
 
@@ -296,7 +321,7 @@ bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
         time_t now;
         time(&now);
         tm* timeinfo = localtime(&now);
-        WinUtils::DatePlusDays(timeinfo, -30);
+        IuCoreUtils::DatePlusDays(timeinfo, -30);
         time_t startTime = mktime(timeinfo);
         condition = str(boost::format(" AND created_at < %d") % startTime);
     }
@@ -342,7 +367,7 @@ bool CHistoryManager::convertHistory() {
 
         for (auto& session : reader) {
             for (auto& item : *session) {
-                saveHistoryItem(&item);
+                saveHistoryItem(item);
             }
         }
         std::string newName = historyFolder + i->path().filename().string() + ".bak";
@@ -408,7 +433,6 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
     std::string sql = "SELECT * from upload_sessions WHERE true " + condition;
 
     char *err = nullptr;
-
     if (sqlite3_exec(db, sql.c_str(), selectCallback, this, &err) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: " << err;
         sqlite3_free(err);
@@ -434,7 +458,6 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
     }
     std::string query2 = "SELECT * from uploads WHERE true " + condition + condition2;
 
-    //LOG(ERROR) << query2;
     if (sqlite3_exec(db, query2.c_str(), selectCallback2, this, &err) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: " << err;
         sqlite3_free(err);
@@ -459,15 +482,27 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
 
 int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char **azColName){
     auto pthis = reinterpret_cast<CHistoryReader*>(userData);
-    std::map<std::string, std::string> values;
 
+    std::string sessionId;
     for (int i = 0; i < argc; i++) {
-        values[azColName[i]] = argv[i] ? argv[i] : std::string();
+        if (!strcmp(azColName[i], "id")) {
+            sessionId = argv[i] ? argv[i] : "";
+            break;
+        }
     }
-    std::string sessionId = values["id"];
+    
     CHistorySession* session = new CHistorySession(pthis->d_ptr->mgr_->db_, "", sessionId);
-    session->setTimeStamp(IuCoreUtils::stringToInt64(values["created_at"]));
-    session->setServerName(values["server_name"]);
+    for (int i = 0; i < argc; i++) {
+        const char* val = argv[i] ? argv[i] : "";
+        if (!strcmp(azColName[i], "created_at")) {
+            session->setTimeStamp(IuCoreUtils::stringToInt64(val));
+            break;
+        } else if (!strcmp(azColName[i], "server_name")) {
+            session->setServerName(val);
+            break;
+        }
+    }
+
     pthis->d_ptr->m_sessions.push_back(session);
     int index = pthis->d_ptr->m_sessions.size() - 1;
     pthis->d_ptr->keyToIndex_[sessionId] = index;
@@ -475,36 +510,62 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
 }
 
 int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char **azColName){
+   
     auto pthis = reinterpret_cast<CHistoryReader*>(userData);
-    std::map<std::string, std::string> values;
 
+    std::string sessionId;
     for (int i = 0; i < argc; i++) {
-        values[azColName[i]] = argv[i] ? argv[i] : std::string();
+        if (!strcmp(azColName[i], "session_id")) {
+            sessionId = argv[i] ? argv[i] : std::string();
+            break;
+        }
     }
-    std::string sessionId = values["session_id"];
+
     auto it = pthis->d_ptr->keyToIndex_.find(sessionId);
     if (it == pthis->d_ptr->keyToIndex_.end()) {
         return 0; // No session with such id
     }
-    CHistorySession* session = pthis->d_ptr->m_sessions[it->second]; 
-    HistoryItem item(session);
-    item.id = static_cast<int>(IuCoreUtils::stringToInt64(values["id"]));
+    CHistorySession* session = pthis->d_ptr->m_sessions[it->second];
+    HistoryItem* item = new HistoryItem(session);
 
-    item.directUrl = values["direct_url"];
-    item.viewUrl = values["view_url"];
-    item.thumbUrl = values["thumb_url"];
-    item.directUrlShortened = values["direct_url_shortened"];
-    item.viewUrlShortened = values["view_url_shortened"];
-    item.deleteUrl = values["delete_url"];
-    item.editUrl = values["edit_url"];
-    item.displayName = values["display_name"];
-    item.localFilePath = values["local_file_path"];
-    item.timeStamp = IuCoreUtils::stringToInt64(values["created_at"]);
-    item.sortIndex = static_cast<int>(IuCoreUtils::stringToInt64(values["sort_index"]));
-    item.uploadFileSize = IuCoreUtils::stringToInt64(values["size"]);
-    item.serverName = values["server_name"];
+    for (int i = 0; i < argc; i++) {
+        const char *val = argv[i] ? argv[i] : "";
+        if (!strcmp(azColName[i], "id")) {
+            item->id = static_cast<int>(IuCoreUtils::stringToInt64(val));
+        } else if (!strcmp(azColName[i], "direct_url")) {
+            item->directUrl = val;
+        } else if (!strcmp(azColName[i], "view_url")) {
+            item->viewUrl = val;
+        } else if (!strcmp(azColName[i], "thumb_url")) {
+            item->thumbUrl = val;
+        } else if (!strcmp(azColName[i], "direct_url_shortened")) {
+            item->directUrlShortened = val;
+        } else if (!strcmp(azColName[i], "view_url_shortened")) {
+            item->viewUrlShortened = val;
+        } else if (!strcmp(azColName[i], "delete_url")) {
+            item->deleteUrl = val;
+        } else if (!strcmp(azColName[i], "edit_url")) {
+            item->editUrl = val;
+        } else if (!strcmp(azColName[i], "display_name")) {
+            item->displayName = val;
+        } else if (!strcmp(azColName[i], "edit_url")) {
+            item->editUrl = val;
+        } else if (!strcmp(azColName[i], "display_name")) {
+            item->displayName = val;
+        } else if (!strcmp(azColName[i], "local_file_path")) {
+            item->localFilePath = val;
+        } else if (!strcmp(azColName[i], "created_at")) {
+            item->timeStamp = IuCoreUtils::stringToInt64(val);
+        } else if (!strcmp(azColName[i], "sort_index")) {
+            item->sortIndex = static_cast<int>(IuCoreUtils::stringToInt64(val));
+        } else if (!strcmp(azColName[i], "size")) {
+            item->uploadFileSize = IuCoreUtils::stringToInt64(val);
+        } else if (!strcmp(azColName[i], "server_name")) {
+            item->serverName = val;
+        }
+    }
 
-    session->m_entries.push_back(std::move(item));
+    session->m_entries.push_back(item);
 
     return 0;
 }

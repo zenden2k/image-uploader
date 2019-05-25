@@ -85,7 +85,7 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
         void GenerateInfo();
         void FixEditRTL();
         CString m_FileName;
-        CFont editFont_;
+        CFont editFont_, boldFont_;
         InfoType infoType_;
         bool generateTextInEnglish_;
         CString summary_, fullInfo_;

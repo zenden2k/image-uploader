@@ -103,7 +103,7 @@ private:
     CComboBoxEx serverComboBox_;
     CHyperLink imageProcessingParamsLink_;
     CHyperLink accountLink_;
-    CImageList comboBoxImageList_;
+    CImageListManaged comboBoxImageList_,settingsButtonImageList_;
     CToolBarCtrl settingsButtonToolbar_;
     ServerProfile serverProfile_;
     bool showDefaultServerItem_;

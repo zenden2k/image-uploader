@@ -114,12 +114,12 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
     CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
-    CImageList list;
-    list.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
-    list.AddIcon(ico);
-    list.AddIcon(saveIcon);
-    list.AddIcon(deleteIcon);
-    m_ProfileEditToolbar.SetImageList(list);
+
+    profileEditToolbarImagelist_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    profileEditToolbarImagelist_.AddIcon(ico);
+    profileEditToolbarImagelist_.AddIcon(saveIcon);
+    profileEditToolbarImagelist_.AddIcon(deleteIcon);
+    m_ProfileEditToolbar.SetImageList(profileEditToolbarImagelist_);
     m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Create Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
