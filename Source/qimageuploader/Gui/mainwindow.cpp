@@ -40,7 +40,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
-                                       networkClientFactory);
+                                       networkClientFactory, 3);
 
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
@@ -80,6 +80,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 }
 
 MainWindow::~MainWindow() {
+    uploadManager_.reset(); // Must be destroyed first
 }
 
 void MainWindow::updateView() {
