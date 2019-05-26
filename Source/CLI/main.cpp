@@ -662,6 +662,15 @@ int main(int argc, char *argv[]){
 #endif
     google::InitGoogleLogging(argv[0]);
 
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
+
     ConsoleLogger defaultLogger;
     
     ServiceLocator* serviceLocator = ServiceLocator::instance();

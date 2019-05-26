@@ -12,17 +12,19 @@ class AppParams: public Singleton<AppParams>
 {
     public:
         struct AppVersionInfo {
-            unsigned int Major;
-            unsigned int Minor;
-            unsigned int Release;
-            unsigned int Build;
+            // Just first 5 fields must be filled
             std::string FullVersion;
             std::string BuildDate;
             std::string BranchName;
             std::string CommitHash;
             std::string CommitHashShort;
 
+            unsigned int Major;
+            unsigned int Minor;
+            unsigned int Release;
+            unsigned int Build;
             bool CurlWithOpenSSL;
+
             AppVersionInfo() {
                 Major = 0;
                 Minor = 0;
@@ -44,6 +46,7 @@ class AppParams: public Singleton<AppParams>
         CString tempDirectoryW() const;
 #endif
         AppVersionInfo const* GetAppVersion() const;
+        void setVersionInfo(const AppVersionInfo& info);
         void setIsGui(bool isGui);
         bool isGui() const;
     protected:

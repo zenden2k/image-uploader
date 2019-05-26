@@ -42,7 +42,7 @@ std::string Base64Decode(const std::string& data)
 {
     return base64_decode(data);
 }
-
+#ifndef IU_SHELLEXT
 bool Base64EncodeFile(const std::string& fileName, std::string& result) {
     FILE* f = fopen_utf8(fileName.c_str(), "rb");
     if (!f) {
@@ -82,6 +82,6 @@ bool Base64EncodeFile(const std::string& fileName, std::string& result) {
     delete[] read_buffer;
     return true;
 }
-
+#endif
 }
 }

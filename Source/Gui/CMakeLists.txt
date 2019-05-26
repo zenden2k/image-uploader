@@ -3,10 +3,6 @@ add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL -DGDIPVER=0x0100 -D_WTL_NO_CSTRIN
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)   
 
-if (MSVC)
-    add_definitions("/MP")
-endif()
-
 set(SRC_LIST 
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
@@ -166,6 +162,7 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     "../Image Uploader.rc"
+    "../res/image uploader.exe.manifest"
 )
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST})
@@ -189,7 +186,7 @@ target_link_libraries(GUI iucore
     debug strmbasd optimized strmbase
 )
 
-set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
+set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:uxtheme.dll /DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 
 add_custom_command(TARGET GUI
     PRE_BUILD

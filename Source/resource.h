@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by Image Uploader.rc
 //
-#define IDR_RT_MANIFEST1                1
 #define IDC_STOP                        2
 #define IDC_FILEINFOLABEL               2
 #define IDD_ABOUTBOX                    100

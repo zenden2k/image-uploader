@@ -8,7 +8,7 @@
 #if _MSC_VER >= 1000
 #pragma once
 #endif // _MSC_VER >= 1000
-
+#include "atlheaders.h"
 #include "Browser.h"
 #include "Core/3rdpart/FastDelegate.h"
 

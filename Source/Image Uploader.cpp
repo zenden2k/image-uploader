@@ -36,6 +36,7 @@
 #include "Func/LangClass.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Gui/Dialogs/LangSelect.h"
+#include "versioninfo.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -194,6 +195,16 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
+
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
+
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     ServiceLocator::instance()->setSettings(&Settings);
     LogWindow.Create(nullptr);

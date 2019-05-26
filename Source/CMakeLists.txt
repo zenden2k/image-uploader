@@ -33,6 +33,7 @@ set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
 
 if (MSVC)
     set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
+    add_definitions("/MP")
 endif()
 
 if (MSVC AND IU_STATIC_RUNTIME) 
