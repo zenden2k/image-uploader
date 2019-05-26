@@ -234,6 +234,7 @@ public:
     std::vector<AddImageStruct> newImages_;
     std::mutex newImagesMutex_;
     DefaultLogger* defaultLogger_;
+    std::unique_ptr<CStatusDlg> statusDlg_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);

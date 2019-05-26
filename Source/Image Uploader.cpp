@@ -168,7 +168,7 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
     
     // deletes empty temp directory
     RemoveDirectory( commonTempFolder );
-    LogWindow.DestroyWindow();
+    
     return nRet;
 }
 
@@ -274,6 +274,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     OleUninitialize();
     google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();
-    
+    LogWindow.DestroyWindow();
     return nRet;
 }

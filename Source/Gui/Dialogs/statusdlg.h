@@ -32,9 +32,10 @@ class CStatusDlg :
     public CCustomDialogIndirectImpl<CStatusDlg>
 {
     public:
-        CStatusDlg();
+        CStatusDlg(bool canBeStopped = true);
         ~CStatusDlg();
         enum { IDD = IDD_STATUSDLG };
+        enum { kUpdateTimer = 1};
         CString m_Title, m_Text;
         bool m_bNeedStop;
         CAutoCriticalSection CriticalSection, Section2;
@@ -56,6 +57,7 @@ class CStatusDlg :
         void Hide();
 protected:
     CFont titleFont_;
+    bool canBeStopped_;
 };
 
 #endif // STATUSDLG_H

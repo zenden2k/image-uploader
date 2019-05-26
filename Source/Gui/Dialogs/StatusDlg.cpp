@@ -24,7 +24,7 @@
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 // CStatusDlg
-CStatusDlg::CStatusDlg() : m_bNeedStop(false)
+CStatusDlg::CStatusDlg(bool canBeStopped) : m_bNeedStop(false), canBeStopped_(canBeStopped)
 {
         
 }
@@ -37,8 +37,11 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
     CenterWindow(GetParent());
     m_bNeedStop = false;
-    SetTimer(1, 500);
+    SetDlgItemText(IDC_TITLE, m_Title);
+    SetDlgItemText(IDC_TEXT, m_Text);
+    SetTimer(kUpdateTimer, 500);
     TRC(IDCANCEL, "Stop");
+    ::ShowWindow(GetDlgItem(IDCANCEL), canBeStopped_ ? SW_SHOW : SW_HIDE);
     titleFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
     return 1;  // Let the system set the focus
 }
@@ -48,7 +51,7 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     Section2.Lock();
     m_bNeedStop = true;
     Section2.Unlock();
-    KillTimer(1);
+    KillTimer(kUpdateTimer);
     
     return 0;
 }
@@ -87,7 +90,7 @@ bool CStatusDlg::NeedStop()
 
 void CStatusDlg::Hide()
 {
-    KillTimer(1);
+    KillTimer(kUpdateTimer);
     ShowWindow(SW_HIDE);
     m_bNeedStop = false;
 }

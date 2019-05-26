@@ -280,7 +280,21 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     auto historyManager = ServiceLocator::instance()->historyManager();
     historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     historyManager->openDatabase();
-    historyManager->convertHistory();
+
+    statusDlg_.reset(new CStatusDlg(false));
+    RECT rc{ 0 };
+    statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
+    statusDlg_->Create(m_hWnd);
+    statusDlg_->ShowWindow(SW_SHOW);
+    EnableWindow(FALSE);
+    std::thread t([&]() {
+        historyManager->convertHistory();
+        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] {});
+        EnableWindow(TRUE);
+        statusDlg_->Hide();
+    });
+    t.detach();
+
 
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
