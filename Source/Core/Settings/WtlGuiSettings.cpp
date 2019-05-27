@@ -396,6 +396,8 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
     Hotkeys_changed = false;
+
+    HistoryConverted = false;
 #endif
 
     BindToManager();
@@ -727,6 +729,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(WatchClipboard);
     general.n_bind(RememberFileServer);
     general.n_bind(RememberImageServer);
+    general.n_bind(HistoryConverted);
 #ifndef IU_SERVERLISTTOOL
     general.n_bind(Hotkeys);
 #endif

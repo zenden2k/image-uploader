@@ -281,20 +281,23 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     historyManager->openDatabase();
 
-    statusDlg_.reset(new CStatusDlg(false));
-    RECT rc{ 0 };
-    statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
-    statusDlg_->Create(m_hWnd);
-    statusDlg_->ShowWindow(SW_SHOW);
-    EnableWindow(FALSE);
-    std::thread t([&]() {
-        historyManager->convertHistory();
-        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] {});
-        EnableWindow(TRUE);
-        statusDlg_->Hide();
-    });
-    t.detach();
-
+    if (!Settings.HistoryConverted) {
+        statusDlg_.reset(new CStatusDlg(false));
+        statusDlg_->SetAppWindow(true);
+        statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
+        
+        std::thread t([&]() {
+            historyManager->convertHistory();
+            Settings.HistoryConverted = true;
+            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]
+            {
+                EnableWindow(TRUE);
+                statusDlg_->ProcessFinished();
+            });
+        });
+        t.detach();
+        statusDlg_->DoModal();
+    }
 
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
@@ -1781,7 +1784,7 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
     }
     //LOG(INFO) << "m_hotkeys="<<m_hotkeys.GetCount();
     m_hotkeys.clear();
-    hLocalHotkeys = 0;
+    hLocalHotkeys = nullptr;
     return true;
 }
 

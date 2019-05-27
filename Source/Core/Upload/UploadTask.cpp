@@ -191,9 +191,10 @@ void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
     if (session_) {
         session_->childTaskAdded(child.get());
     }
-    if (OnChildTaskAdded) {
-        OnChildTaskAdded(child.get());
+    for (const auto& cb : childTaskAddedCallbacks_) {
+        cb(child.get());
     }
+
     if (uploadManager_) {
         uploadManager_->insertTaskAfter(this, child);
     }
@@ -228,6 +229,13 @@ void UploadTask::addTaskFinishedCallback(const TaskFinishedCallback& callback)
     auto it = std::find(taskFinishedCallbacks_.begin(), taskFinishedCallbacks_.end(), callback);
     if (it == taskFinishedCallbacks_.end()) {
         taskFinishedCallbacks_.push_back(callback);
+    }
+}
+
+void UploadTask::addChildTaskAddedCallback(const ChildTaskAddedCallback& callback) {
+    auto it = std::find(childTaskAddedCallbacks_.begin(), childTaskAddedCallbacks_.end(), callback);
+    if (it == childTaskAddedCallbacks_.end()) {
+        childTaskAddedCallbacks_.push_back(callback);
     }
 }
 

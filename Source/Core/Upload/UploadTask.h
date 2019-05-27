@@ -63,6 +63,7 @@ class UploadTask {
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
         enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed, StatusWaitingChildren };
         typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
+        typedef fastdelegate::FastDelegate1<UploadTask* > ChildTaskAddedCallback;
 
         virtual Type type() const = 0;
         virtual std::string getMimeType() const = 0;
@@ -85,9 +86,10 @@ class UploadTask {
         UploadResult* uploadResult();
         UploadProgress* progress();
         void addTaskFinishedCallback(const TaskFinishedCallback& callback);
+        void addChildTaskAddedCallback(const ChildTaskAddedCallback& callback);
         fastdelegate::FastDelegate1<UploadTask*> OnUploadProgress;
         fastdelegate::FastDelegate1<UploadTask*> OnStatusChanged;
-        fastdelegate::FastDelegate1<UploadTask*> OnChildTaskAdded;
+        //fastdelegate::FastDelegate1<UploadTask*> OnChildTaskAdded;
         fastdelegate::FastDelegate1<UploadTask*> OnFolderUsed;
         std::string serverName() const;
         ServerProfile& serverProfile();
@@ -144,6 +146,7 @@ class UploadTask {
         bool finishSignalSent_;
         Role role_;
         std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
+        std::vector<ChildTaskAddedCallback> childTaskAddedCallbacks_;
         bool shorteningStarted_;
         volatile bool stopSignal_;
         bool uploadSuccess_;

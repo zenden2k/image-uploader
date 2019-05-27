@@ -36,8 +36,8 @@
 #include "Func/IuCommonFunctions.h"
 #include "Core/AppParams.h"
 #include "Core/ServiceLocator.h"
-#include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/UploadListModel.h"
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -68,23 +68,14 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::MapWindowPoints(0,m_hWnd, reinterpret_cast<POINT*>(&rc), 2);
 
     uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
-    uploadListView_.AddColumn(TR("File"), 1);
-    uploadListView_.AddColumn(TR("Status"), 1);
-    uploadListView_.AddColumn(TR("Thumbnail"), 2);
-    CWindowDC hdc(m_hWnd);
-    float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    uploadListView_.SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));
-    uploadListView_.SetColumnWidth(1, static_cast<int>(170 * dpiScaleX));
-    uploadListView_.SetColumnWidth(2, static_cast<int>(170 * dpiScaleX));
 
     createToolbar();
 
     resultsWindow_->Create(m_hWnd);
-    resultsWindow_->SetWindowPos(0,&rc,0);
+    resultsWindow_->SetWindowPos(nullptr, &rc, SWP_NOZORDER);
     #if  WINVER    >= 0x0601
         // Initializing Windows 7 taskbar related stuff
-        const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
+        //const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
         CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
     #endif
 
@@ -112,7 +103,9 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 bool CUploadDlg::startUpload() {
-    if(!MainDlg) return 0;
+    if (!MainDlg) {
+        return false;
+    }
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     
     #if  WINVER  >= 0x0601
@@ -134,36 +127,34 @@ bool CUploadDlg::startUpload() {
     urlList_.clear();
     urlList_.resize(n);
     
-    uploadSession_.reset(new UploadSession());
+    uploadSession_ = std::make_shared<UploadSession>();
     for (int i = 0; i < n; i++) {
         CString FileName = MainDlg->FileList[i].FileName;
-        std::string fileNameA = WCstringToUtf8(FileName);
+        std::string fileNameUtf8 = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
-        FileProcessingStruct* fps = new FileProcessingStruct();
-        fps->fileName = FileName;
-        fps->tableRow = i;
-        files_.push_back(fps);
-        uploadListView_.AddItem(i, 0, MainDlg->FileList[i].VirtualFileName);
-        uploadListView_.AddItem(i, 1, TR("In queue"));
-        uploadListView_.SetItemData(i, reinterpret_cast<DWORD_PTR>(fps));
         bool isImage = IuCommonFunctions::IsImage(FileName);
-        auto task = std::make_shared<FileUploadTask>(fileNameA, displayName);
-        task->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
-        task->setUserData(fps);
+        auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
+    
         task->setIndex(i);
         task->setIsImage(isImage);
-        task->OnStatusChanged.bind(this, &CUploadDlg::OnTaskStatusChanged);
-        task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
-        task->OnChildTaskAdded.bind(this, &CUploadDlg::onChildTaskAdded);
         task->setUrlShorteningServer(Settings.urlShorteningServer);
+
+        task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
+        task->addChildTaskAddedCallback(UploadTask::ChildTaskAddedCallback(this, &CUploadDlg::onChildTaskAdded));
+
         task->OnFolderUsed.bind(this, &CUploadDlg::OnFolderUsed);
         uploadSession_->addTask(task);
     }
     uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CUploadDlg::onSessionFinished));
+
+    uploadListModel_ = std::make_unique<UploadListModel>(uploadSession_);
+    uploadListView_.SetModel(uploadListModel_.get());
+
+
     uploadManager_->addSession(uploadSession_);
-    return 0;
+    return true;
 }
 
 LRESULT CUploadDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -209,24 +200,25 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         ::ScreenToClient(hwnd, &ClientPoint);
     }
 
-    
     bool menuItemEnabled = false;
     bool isImage = false;
     if (nCurItem >= 0) {
-        isImage = IuCommonFunctions::IsImage(files_[nCurItem]->fileName);
-        if (!uploadSession_->isRunning()) {
+        UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
+        if (item) {
+            isImage = IuCommonFunctions::IsImage(item->fileName());
+            if (!uploadSession_->isRunning()) {
 
-            isImage = IuCommonFunctions::IsImage(files_[nCurItem]->fileName);
-            auto task = uploadSession_->getTask(nCurItem);
-            if (task) {
-                auto status = task->status();
-                if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
-                    menuItemEnabled = true;
+                isImage = IuCommonFunctions::IsImage(item->fileName());
+                auto task = uploadSession_->getTask(nCurItem);
+                if (task) {
+                    auto status = task->status();
+                    if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
+                        menuItemEnabled = true;
+                    }
                 }
             }
         }
     }
-    
 
     CMenu menu;
     menu.CreatePopupMenu();
@@ -332,10 +324,9 @@ bool CUploadDlg::OnHide()
     resultsWindow_->Clear();
     uploadManager_->removeSession(uploadSession_);
     uploadSession_.reset();
-    for (auto it : files_) {
-        delete it;
-    }
-    files_.clear();
+    uploadListView_.SetModel(nullptr);
+    uploadListModel_.reset();
+
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
     Settings.CodeType = resultsWindow_->GetCodeType();
@@ -370,38 +361,6 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
         SetDlgItemText(IDC_COMMONPERCENTS, buffer);
     }
     toolbar_.SetButtonInfo(IDC_UPLOADRESULTSTAB, TBIF_TEXT, 0, 0, res,0, 0, 0, 0);
-}
-
-void CUploadDlg::OnTaskStatusChanged(UploadTask* task)
-{
-    UploadProgress* progress = task->progress();
-    FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
-    if (!fps)
-    {
-        return;
-    }
-    
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (fileTask) {
-        CString statusText = IuCoreUtils::Utf8ToWstring(progress->statusText).c_str();
-
-        bool isThumb = task->role() == UploadTask::ThumbRole;
-        int columnIndex = isThumb ? 2 : 1;
-        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
-            uploadListView_.SetItemText(fps->tableRow, columnIndex, statusText);
-        });
-    }
-
-    UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
-    if (urlTask ) {
-        UploadTask* parentTask = urlTask->parentTask();
-        
-        if (urlTask->isFinished() && parentTask && parentTask->isFinished()) {
-            CString statusText = U2W(parentTask->progress()->statusText);
-            uploadListView_.SetItemText(fps->tableRow, 1, statusText);
-        }
-        
-    }
 }
 
 void CUploadDlg::OnFolderUsed(UploadTask* task) {
@@ -489,11 +448,11 @@ LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHa
 
 void CUploadDlg::viewImage(int itemIndex) {
     if (itemIndex >= 0) {
-        auto item = files_[itemIndex];
-        if (IuCommonFunctions::IsImage(item->fileName)) {
+        UploadListItem* item = uploadListModel_->getDataByIndex(itemIndex);
+        if (item && IuCommonFunctions::IsImage(item->fileName())) {
             CImageViewItem imgViewItem;
             imgViewItem.index = 0;
-            imgViewItem.fileName = item->fileName;
+            imgViewItem.fileName = item->fileName();
             HWND wizardDlg = WizardDlg->m_hWnd;
             imageViewWindow_.ViewImage(imgViewItem, wizardDlg);
         }
@@ -591,35 +550,6 @@ void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
     }
 }
 
-// This callback is being executed in worker thread
-void CUploadDlg::onTaskUploadProgress(UploadTask* task)
-{
-    FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
-    if (!fps)
-    {
-        return;
-    }
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (fileTask) {
-        
-        bool isThumb = task->role() == UploadTask::ThumbRole;
-        int percent = 0;
-        UploadProgress* progress = task->progress();
-        if (progress->totalUpload) {
-            percent = static_cast<int>(100 * ((float)progress->uploaded) / progress->totalUpload);
-        }
-        CString uploadSpeed = Utf8ToWCstring(progress->speed);
-        CString progressText;
-        progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->uploaded)),
-            (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
-       
-        int columnIndex = isThumb ? 2 : 1;
-        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {  
-            uploadListView_.SetItemText(fps->tableRow, columnIndex, progressText);
-        });
-       
-    }
-}
 
 // This callback is being executed in worker thread
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
@@ -631,7 +561,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
     }
     auto taskDispatcher = ServiceLocator::instance()->taskDispatcher();
     if (fileTask->role() == UploadTask::DefaultRole) {
-        FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->userData());
+        UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
             return;
@@ -651,20 +581,9 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         });
         
         //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
-    }
-    else if (fileTask->role() == UploadTask::ThumbRole) {
-         FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(task->parentTask()->userData());
-         if (!fps)
-         {
-             return;
-         }
-         taskDispatcher->runInGuiThread([&]{
-             uploadListView_.SetItemText(fps->tableRow, 2, TR("Finished"));
-         });
-         
     } else if (fileTask->role() == UploadTask::UrlShorteningRole) {
         UploadTask* parentTask = task->parentTask();
-        FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(parentTask->userData());
+        UploadListItem* fps = reinterpret_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
             return;
         }
@@ -686,19 +605,7 @@ void CUploadDlg::onChildTaskAdded(UploadTask* child)
             backgroundThreadStarted();
         });
     }
-    if (child->role() == UploadTask::UrlShorteningRole)
-    {
-        FileProcessingStruct* fps = reinterpret_cast<FileProcessingStruct*>(child->parentTask()->userData());
-        if (fps)
-        {
-            dispatcher->runInGuiThread([&] {
-                uploadListView_.SetItemText(fps->tableRow, 1, _T("Сокращение ссылки..."));
-            });
-        }
-    }
     child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
-    child->OnUploadProgress.bind(this, &CUploadDlg::onTaskUploadProgress);
-    child->OnStatusChanged.bind(this, &CUploadDlg::OnTaskStatusChanged);
 }
 
 void CUploadDlg::backgroundThreadStarted()
@@ -732,8 +639,8 @@ LRESULT CUploadDlg::OnUploadResultsButtonClick(WORD wNotifyCode, WORD wID, HWND 
 LRESULT CUploadDlg::OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
     if (nCurItem >= 0) {
-        auto item = files_[nCurItem];
-        WizardDlg->showLogWindowForFileName(item->fileName);
+        UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
+        WizardDlg->showLogWindowForFileName(item->fileName());
     }
     return 0;
 }

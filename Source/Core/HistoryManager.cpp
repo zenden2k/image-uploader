@@ -129,41 +129,40 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
 
     if (sqlite3_prepare_v3(db_, sql, -1, 0, &stmt, nullptr) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: Could not prepare statement." << sqlite3_errmsg(db_);
-        ;
         return false;
-    } else {
-        bindString(stmt, 1, ht->session->sessionId());
-        if (sqlite3_bind_int64(stmt, 2 /*Index of wildcard*/, ht->timeStamp) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: Could not bind value.";
-            return false;
-        }
-        bindString(stmt, 3, ht->localFilePath);
-        bindString(stmt, 4, ht->serverName);
-        bindString(stmt, 5, ht->directUrl);
-        bindString(stmt, 6, ht->thumbUrl);
-        bindString(stmt, 7, ht->viewUrl);
-        bindString(stmt, 8, ht->directUrlShortened);
-        bindString(stmt, 9, ht->viewUrlShortened);
-        bindString(stmt, 10, ht->editUrl);
-        bindString(stmt, 11, ht->deleteUrl);
-        bindString(stmt, 12, ht->displayName);
-
-        if (sqlite3_bind_int64(stmt, 13 /*Index of wildcard*/, ht->uploadFileSize) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: Could not bind value.";
-            return false;
-        }
-        if (sqlite3_bind_int(stmt, 14 /*Index of wildcard*/, ht->sortIndex) != SQLITE_OK) {
-            LOG(ERROR) << "SQL error: Could not bind value.";
-            return false;
-        }
-        if (sqlite3_step(stmt) != SQLITE_DONE) {
-            LOG(ERROR) << "SQL error: Could not execute statement";
-            return false;
-        }
-        /*sqlite3_reset(stmt);
-        sqlite3_clear_bindings(stmt);*/
-        sqlite3_finalize(stmt);
     }
+    bindString(stmt, 1, ht->session->sessionId());
+    if (sqlite3_bind_int64(stmt, 2 /*Index of wildcard*/, ht->timeStamp) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: Could not bind value.";
+        return false;
+    }
+    bindString(stmt, 3, ht->localFilePath);
+    bindString(stmt, 4, ht->serverName);
+    bindString(stmt, 5, ht->directUrl);
+    bindString(stmt, 6, ht->thumbUrl);
+    bindString(stmt, 7, ht->viewUrl);
+    bindString(stmt, 8, ht->directUrlShortened);
+    bindString(stmt, 9, ht->viewUrlShortened);
+    bindString(stmt, 10, ht->editUrl);
+    bindString(stmt, 11, ht->deleteUrl);
+    bindString(stmt, 12, ht->displayName);
+
+    if (sqlite3_bind_int64(stmt, 13 /*Index of wildcard*/, ht->uploadFileSize) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: Could not bind value.";
+        return false;
+    }
+    if (sqlite3_bind_int(stmt, 14 /*Index of wildcard*/, ht->sortIndex) != SQLITE_OK) {
+        LOG(ERROR) << "SQL error: Could not bind value.";
+        return false;
+    }
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        LOG(ERROR) << "SQL error: Could not execute statement";
+        return false;
+    }
+    /*sqlite3_reset(stmt);
+    sqlite3_clear_bindings(stmt);*/
+    sqlite3_finalize(stmt);
+    
     return true;
 }
 
@@ -472,11 +471,6 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
             ++it;
         }
     }
-    /*for (auto it : d_ptr->m_sessions) {
-        it->sortByOrderIndex();
-    }*/
-    
-
     return true;
 }
 

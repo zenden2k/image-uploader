@@ -126,6 +126,8 @@ public:
     bool SendToContextMenu;
     bool SendToContextMenu_changed;
 
+    bool HistoryConverted;
+
     CString getServerName();
     CString getQuickServerName();
     CString getFileServerName();

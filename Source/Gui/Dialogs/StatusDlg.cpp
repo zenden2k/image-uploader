@@ -24,7 +24,10 @@
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 // CStatusDlg
-CStatusDlg::CStatusDlg(bool canBeStopped) : m_bNeedStop(false), canBeStopped_(canBeStopped)
+CStatusDlg::CStatusDlg(bool canBeStopped) : 
+    m_bNeedStop(false), 
+    canBeStopped_(canBeStopped), 
+    processFinished_(false)
 {
         
 }
@@ -70,6 +73,10 @@ LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         ShowWindow(SW_SHOW);
     SetDlgItemText(IDC_TITLE, m_Title);
     SetDlgItemText(IDC_TEXT, m_Text);
+
+    if (processFinished_) {
+        EndDialog(IDOK);
+    }
     return 0;
 }
 
@@ -93,4 +100,8 @@ void CStatusDlg::Hide()
     KillTimer(kUpdateTimer);
     ShowWindow(SW_HIDE);
     m_bNeedStop = false;
+}
+
+void CStatusDlg::ProcessFinished() {
+    processFinished_ = true;
 }

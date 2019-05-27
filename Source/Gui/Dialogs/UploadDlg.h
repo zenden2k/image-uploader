@@ -59,6 +59,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             COMMAND_ID_HANDLER(ID_SHOWLOGFORTHISFILE, OnShowLogForThisFile)
             NOTIFY_HANDLER(IDC_UPLOADTABLE, NM_DBLCLK, OnUploadTableDoubleClick)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+            REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
 
          // Handler prototypes:
@@ -79,8 +80,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void TotalUploadProgress(int CurPos, int Total,int FileProgress=0);
         int progressCurrent, progressTotal;
         CMyEngineList *engineList_;
-        
-        void OnTaskStatusChanged(UploadTask* task);
         // Is called when upload engine is uploading to remote folder(album)
         // Then this album will appear in dropdown list "Options"
         void OnFolderUsed(UploadTask* task);
@@ -100,7 +99,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
         void onSessionFinished_UiThread(UploadSession* session);
-        void onTaskUploadProgress(UploadTask* task);
         void onTaskFinished(UploadTask* task, bool ok);
         void onChildTaskAdded(UploadTask* child);
         void backgroundThreadStarted();
@@ -111,11 +109,12 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;
         std::shared_ptr<UploadSession> uploadSession_;
-        struct FileProcessingStruct {
+        std::unique_ptr<UploadListModel> uploadListModel_;
+       /* struct FileProcessingStruct {
             CString fileName;
             int tableRow;
-        };
-        std::vector<FileProcessingStruct*> files_;
+        };*/
+        //std::vector<FileProcessingStruct*> files_;
         //std::mutex uploadListViewMutex_;
         bool alreadyShortened_;
         ServerProfile sessionImageServer_, sessionFileServer_;

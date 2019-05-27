@@ -54,10 +54,13 @@ class CStatusDlg :
         void SetInfo(const CString& Title, const CString& Text);
         void SetWindowTitle(const CString& WindowTitle);
         bool NeedStop();
+        void ProcessFinished();
         void Hide();
 protected:
     CFont titleFont_;
     bool canBeStopped_;
+    bool processFinished_;
+    bool visible_;
 };
 
 #endif // STATUSDLG_H

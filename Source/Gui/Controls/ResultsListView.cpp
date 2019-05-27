@@ -1,6 +1,9 @@
 #include "ResultsListView.h"
 
-CResultsListView::CResultsListView() : bmpOld_(nullptr) {
+#include "Gui/UploadListModel.h"
+#include "Core/i18n/Translator.h"
+
+CResultsListView::CResultsListView() : bmpOld_(nullptr), model_(nullptr) {
 }
 
 bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
@@ -12,6 +15,16 @@ bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
 }
 
 void CResultsListView::Init() {
+
+    AddColumn(TR("File"), 1);
+    AddColumn(TR("Status"), 1);
+    AddColumn(TR("Thumbnail"), 2);
+
+    CWindowDC hdc(m_hWnd);
+    float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+    SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));
+    SetColumnWidth(1, static_cast<int>(170 * dpiScaleX));
+    SetColumnWidth(2, static_cast<int>(170 * dpiScaleX));
     CreateDoubleBuffer();
 }
 
@@ -46,9 +59,6 @@ LRESULT CResultsListView::OnEraseBackground(UINT uMsg, WPARAM wParam, LPARAM lPa
 }
 
 LRESULT CResultsListView::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    int width = LOWORD(lParam);
-    int height = HIWORD(lParam);
-
     CreateDoubleBuffer();
     return 0;
 }
@@ -69,4 +79,59 @@ void CResultsListView::CreateDoubleBuffer() {
     bmpOld_ = dcMem_.SelectBitmap(bmMem_);
 
     dcMem_.FillSolidRect(rcClient, ::GetSysColor(COLOR_WINDOW));
+}
+
+void CResultsListView::SetModel(UploadListModel* model) {
+    if (model_ == model) {
+        return;
+    }
+    model_ = model;
+    using namespace std::placeholders;
+    SetItemCount(model_ ? model_->getCount() : 0);
+    if (model_) {
+        model_->setOnRowChangedCallback(std::bind(&CResultsListView::onRowChanged, this, _1));
+    }
+}
+
+LRESULT CResultsListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
+    LV_ITEM* pItem = &(pDispInfo)->item;
+    DWORD n = pItem->iItem;
+
+    if (pItem->mask & LVIF_TEXT) {
+        CString str = model_->getItemText(n, pItem->iSubItem);
+        lstrcpy(pItem->pszText, str);
+    }
+
+    return 0;
+}
+
+// Disabled in MSG MAP
+LRESULT CResultsListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
+{
+    LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
+
+    switch (lplvcd->nmcd.dwDrawStage) {
+        case CDDS_PREPAINT:
+            return CDRF_NOTIFYITEMDRAW;
+
+        case CDDS_ITEMPREPAINT:
+        {
+            auto color = model_->getItemTextColor(lplvcd->nmcd.dwItemSpec);
+
+            if (color) {
+                lplvcd->clrTextBk = color;
+                return CDRF_NEWFONT;
+            }
+        }
+        break;
+        case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
+            lplvcd->clrText = RGB(255, 0, 0);
+            return CDRF_NEWFONT;
+    }
+    return CDRF_DODEFAULT;
+}
+
+void CResultsListView::onRowChanged(size_t index) {
+    RedrawItems(index, index);
 }

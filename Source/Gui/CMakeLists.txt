@@ -161,6 +161,7 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/TextTool.cpp
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
+    UploadListModel.cpp
     "../Image Uploader.rc"
     "../res/image uploader.exe.manifest"
 )

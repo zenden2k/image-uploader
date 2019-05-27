@@ -83,6 +83,7 @@ class ATL_NO_VTABLE CCustomDialogIndirectImpl : public CDialogIndirectImpl< T > 
 
 public:
     HGLOBAL m_hDlgTemplate = nullptr;
+    bool m_bAppWindow = false;
     DLGTEMPLATE* CCustomDialogIndirectImpl::GetTemplate()
     {
         HINSTANCE hInst = _Module.GetResourceInstance();
@@ -97,7 +98,15 @@ public:
         if (ServiceLocator::instance()->translator()->isRTL()) {
             pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
         }
+
+        if (m_bAppWindow) {
+            pMyDlgTemplate->exStyle |= WS_EX_APPWINDOW;
+        }
         return (DLGTEMPLATE*)pMyDlgTemplate;
+    }
+
+    void SetAppWindow(bool appWindow) {
+        m_bAppWindow = appWindow;
     }
 
     ~CCustomDialogIndirectImpl()
