@@ -25,7 +25,15 @@ if(WIN32)
         ../Func/CmdLine.cpp
         ../Func/Tests/WinUtilsTest.cpp 
         ../Core/Images/Tests/UtilsTest.cpp
+        ../Core/Images/Tests/ImageConverterTest.cpp
+        ../Core/Images/ImageConverterPrivate_gdiplus.cpp
+        ../Core/Images/ImageConverterPrivateBase.cpp
+        ../Core/Images/ImageConverter.cpp
+        ../Core/Images/Thumbnail.cpp
+        ../Core/3rdpart/parser.cpp
+        ../Core/Video/VideoUtils.cpp
         ../Func/GdiPlusInitializer.cpp
+        ../Func/MyUtils.cpp
         ../3rdpart/QColorQuantizer.cpp
         ../3rdpart/QColorQuantizer.cpp
 		../Core/FileDownloader.cpp

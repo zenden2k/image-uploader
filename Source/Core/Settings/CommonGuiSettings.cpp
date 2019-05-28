@@ -35,6 +35,8 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
     MaxThreads = 3;
     DeveloperMode = false;
     temporaryServer.UseDefaultSettings = false;
+    HistorySettings.EnableDownloading = true;
+    HistorySettings.HistoryConverted = false;
 }
 
 CommonGuiSettings::~CommonGuiSettings() {

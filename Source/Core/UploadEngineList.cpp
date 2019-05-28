@@ -50,8 +50,12 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     std::string ver = versionInfo->FullVersion;
     std::vector<std::string> tokens;
     IuStringUtils::Split(ver,".", tokens, 3);
-    int majorVersion = std::stoi(tokens[0]);
-    int minorVersion = std::stoi(tokens[1]+tokens[2]);
+    int majorVersion = 0; 
+    int minorVersion = 0;
+    if (tokens.size() >= 3) {
+        majorVersion = std::stoi(tokens[0]);
+        minorVersion = std::stoi(tokens[1] + tokens[2]);
+    }
     int build = versionInfo->Build;
 
     for(size_t i=0; i<childs.size(); i++)

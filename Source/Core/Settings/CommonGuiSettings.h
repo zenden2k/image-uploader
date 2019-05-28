@@ -65,6 +65,7 @@ struct MediaInfoSettingsStruct {
 
 struct HistorySettingsStruct {
     bool EnableDownloading;
+    bool HistoryConverted;
 };
  
 class CommonGuiSettings : public BasicSettings {

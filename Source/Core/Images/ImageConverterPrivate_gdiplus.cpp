@@ -111,7 +111,7 @@ bool ImageConverterPrivate::Convert(const std::string& sourceFile)
                 newheight = imgheight;
             }
         }
-        BackBuffer.reset(new Bitmap(static_cast<int>(newwidth), static_cast<int>(newheight)));
+        BackBuffer.reset(new Bitmap(static_cast<int>(round(newwidth)), static_cast<int>(round(newheight))));
 
         Graphics gr(BackBuffer.get());
         if (fileformat != 2) /* not GIF */
@@ -354,14 +354,14 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
         thumbwidth -= EvaluateExpression(thumbnailTemplate_->getWidthAddition());
         if (thumbwidth < 10)
             thumbwidth = 10;
-        thumbheight = int((float)thumbwidth / (float)newwidth * newheight);
+        thumbheight = int(round((float)thumbwidth / (float)newwidth * newheight));
     }
     else
     {
         thumbheight -= EvaluateExpression(thumbnailTemplate_->getHeightAddition());
         if (thumbheight < 10)
             thumbheight = 10;
-        thumbwidth = int((float)thumbheight / (float)newheight * newwidth);
+        thumbwidth = int(round((float)thumbheight / (float)newheight * newwidth));
     }
 
     int RealThumbWidth = thumbwidth + EvaluateExpression(thumbnailTemplate_->getWidthAddition());
