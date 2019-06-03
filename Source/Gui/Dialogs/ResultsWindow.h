@@ -40,6 +40,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
     public:
         CResultsWindow(CWizardDlg *wizardDlg, std::vector<CUrlListItem>  & urlList, bool ChildWindow);
         ~CResultsWindow();
+
         int GetCodeType();
         void UpdateOutput(bool immediately = false);
         void SetCodeType(int Index);
@@ -53,9 +54,9 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void Unlock();
         void EnableMediaInfo(bool Enable);
         DLGTEMPLATE* GetTemplate();
+        std::mutex& outputMutex();
         void setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd); 
         void setShortenUrls(bool shorten);
-        void setUrlList(CAtlArray<CUrlListItem>  * urlList);
         bool copyResultsToClipboard();
         enum { IDD = IDD_RESULTSWINDOW };
 

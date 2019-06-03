@@ -674,6 +674,7 @@
 #define IDC_BROWSESERVERFOLDERS         1324
 #define IDC_DATEFROMLABEL               1324
 #define IDC_DATETOLABEL                 1325
+#define IDC_PROGRESSGROUPBOX            1326
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -738,7 +739,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        310
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1326
+#define _APS_NEXT_CONTROL_VALUE         1327
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

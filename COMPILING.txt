@@ -5,7 +5,7 @@ by "versioninc.py" utility and will contain information about build number, vers
 Python 2.7 interpreter should be installed for performing pre-build and post-build events. Ensure that your %PATH% environment 
 variable includes the directory of your Python distribution.
 
-You need Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 
+You need CMake and Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 
 Installing Update 4 for Visual Studio 2013  is strongly recommended (older versions corrupt .rc files after editing)
 If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily 
 (if you fix these errors, please provide a patch or pull request). But also you need to recompile 3rd-party 
@@ -21,6 +21,16 @@ https://drive.google.com/drive/folders/1dHjuif2sagpyNPoPs_EL63On1_A0m98N?usp=sha
 Precompiled libraries for MS Visual Studio 2013 (not compatible with newer MSVS versions): 
 
 https://drive.google.com/file/d/1jJM9NLEPfdPLCjh_dOTx1O9S7bonjsr2/view?usp=drivesdk
+
+To generate Visual Studio solution from CMakeLists.txt you need to create a directory for 
+temporary files and call cmake:
+
+mkdir Build
+cd Build
+cmake <path_to_imageuploader_source>\Source
+
+The last command will generate project files for your default compiler (should be Visual Studio). 
+You can use CMake GUI to achieve the same result.
 
 Image Uploader is using the following libraries:
 

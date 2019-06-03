@@ -235,6 +235,7 @@ public:
     std::mutex newImagesMutex_;
     DefaultLogger* defaultLogger_;
     std::unique_ptr<CStatusDlg> statusDlg_;
+    DWORD mainThreadId_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);

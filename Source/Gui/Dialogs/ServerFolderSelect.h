@@ -61,6 +61,7 @@ class CServerFolderSelect :
         COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
         COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
+        NOTIFY_HANDLER(IDC_FOLDERTREE, NM_DBLCLK, OnFolderlistLbnDblclk)
         CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
     END_MSG_MAP()
 
@@ -82,7 +83,11 @@ class CServerFolderSelect :
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    
+    LRESULT OnFolderlistLbnDblclk(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
     DWORD Run();
     void OnLoadFinished();
     CImageList m_PlaceSelectorImageList;
@@ -113,10 +118,7 @@ protected:
     //CString m_sNewFolderName, m_sNewFolderDescription;
 public:
     
-    LRESULT OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnFolderlistLbnDblclk(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+   
     void CreateLoadingThread();
     void BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId);
 };

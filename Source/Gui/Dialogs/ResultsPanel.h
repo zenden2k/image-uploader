@@ -36,7 +36,6 @@
 
 #define IDC_COPYFOLDERURL 10040
 
-
 #define IDC_RESULTSTOOLBAR 5000
 
 class CResultsPanel;
@@ -72,7 +71,7 @@ class CResultsPanel :
             COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
             COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
             NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
-        NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
+            NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
         END_MSG_MAP()
 
     fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
@@ -89,30 +88,29 @@ class CResultsPanel :
     LRESULT OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCopyFolderUrlClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-     
-    
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-
-    CToolBarCtrl Toolbar;
-    CComboBox codeTypeComboBox;
-    void SetPage(TabPage Index);
-    void setEngineList(CMyEngineList* EngineList);
-    std::vector<CUrlListItem>  &UrlList;
-    const CString GenerateOutput();
-    CWebViewWindow* webViewWindow_;
-    
-    bool LoadTemplate();
-    LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
-  
-    TabPage m_Page;
     LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    
-    int GetCodeType();
+    LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
+
+    void SetPage(TabPage Index);
+    void setEngineList(CMyEngineList* EngineList);
+
+    CString GenerateOutput();
+    CWebViewWindow* webViewWindow_;
+    bool LoadTemplate();
+    LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
+
+
+    /**
+     * Returns selected item's index of code type combobox.
+     * First four indices correspond to CodeType enum
+     */
+    int GetCodeType() const;
     void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void GenerateMarkdownCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
@@ -120,29 +118,40 @@ class CResultsPanel :
     void SetCodeType(int Index);
     void Clear();
     void EnableMediaInfo(bool Enable);
-    CWizardDlg *WizardDlg;
-    CMyEngineList *m_EngineList;
-    CAtlArray<IU_Result_Template> Templates;
+   
     bool LoadTemplates(CString &Error);
     bool LoadTemplateFromFile(const CString& fileName, CString &Error);
+    void InitUpload();
+    void AddServer(const ServerProfile& server);
+    bool copyResultsToClipboard();
+    std::mutex& outputMutex();
+    void setRectNeeded(const RECT& rc);
+    void setShortenUrls(bool shorten);
+protected:
+    CToolBarCtrl Toolbar;
+    CComboBox codeTypeComboBox;
+    TabPage m_Page;
     std::map<CString, CString> m_Vars;
     std::vector<ServerProfile> m_Servers;
-    CString ReplaceVars(const CString& Text);
+    std::vector<CUrlListItem>  &UrlList;
     std::mutex UrlListCS;
     int m_nImgServer, m_nFileServer;
     CString code_;
+    CWizardDlg *WizardDlg;
+    CMyEngineList *m_EngineList;
+    CAtlArray<IU_Result_Template> Templates;
+    CString ReplaceVars(const CString& Text);
     bool outputChanged_;
-    void AddServer(const ServerProfile& server);
+   
     RECT rectNeeded;
     bool shortenUrl_;
     bool openedFromHistory_;
-    void InitUpload();
-    void setUrlList(CAtlArray<CUrlListItem>  * urlList);
-    LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
+    
     void BBCode_Link(CString &Buffer, CUrlListItem &item);
     void Markdown_Link(CString &Buffer, CUrlListItem &item);
     void HTML_Link(CString &Buffer, CUrlListItem &item);
-    bool copyResultsToClipboard();
+   
+    void onCodeTypeChanged();
 };
 
 

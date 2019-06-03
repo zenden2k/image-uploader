@@ -66,17 +66,21 @@ bool CResultsPanel::LoadTemplate()
 {
     if(TemplateHead && TemplateFoot) return true;
 
-    DWORD dwBytesRead, dwFileSize;
+    DWORD dwBytesRead;
     CString FileName = IuCommonFunctions::GetDataFolder() + _T("template.txt");
 
     delete[] TemplateHead;
     TemplateHead = NULL;
     TemplateFoot = NULL;
-    HANDLE hFile = CreateFile(FileName, GENERIC_READ, 0, 0,OPEN_EXISTING, 0, 0);
-    if(!hFile) return false;
+    HANDLE hFile = CreateFile(FileName, GENERIC_READ, 0, 0, OPEN_EXISTING, 0, 0);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        return false;
+    }
 
-    dwFileSize = GetFileSize (hFile, NULL) ; 
-    if(!dwFileSize) return false;
+    DWORD dwFileSize = GetFileSize(hFile, nullptr);
+    if (!dwFileSize) {
+        return false;
+    }
     DWORD dwMemoryNeeded = std::min(35536ul, dwFileSize);
     LPTSTR TemplateText = (LPTSTR)new CHAR[dwMemoryNeeded+2]; 
     ZeroMemory(TemplateText,dwMemoryNeeded);
@@ -103,7 +107,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TRC(IDC_CODETYPELABEL, "Code type:");
     if(rectNeeded.left != -1)
     {
-    SetWindowPos(  0, rectNeeded.left, rectNeeded.top, rectNeeded.right,  rectNeeded.bottom, 0);
+        SetWindowPos(  nullptr, rectNeeded.left, rectNeeded.top, rectNeeded.right,  rectNeeded.bottom, SWP_NOZORDER);
     }
 
     if (GetStyle() & WS_CHILD) {
@@ -171,7 +175,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
     Toolbar.ShowWindow(SW_SHOW);
 
-    codeTypeComboBox.m_hWnd = GetDlgItem(IDC_CODETYPE);
+    codeTypeComboBox = GetDlgItem(IDC_CODETYPE);
 
     SetDlgItemInt(IDC_THUMBSPERLINE, Settings.ThumbsPerLine);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
@@ -195,6 +199,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CResultsPanel::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if (wParam == kOutputTimer) {
         if (outputChanged_) {
+            code_ = GenerateOutput();
             SetDlgItemText(IDC_CODEEDIT, code_);
             outputChanged_ = false;
         }
@@ -272,7 +277,7 @@ bool CResultsPanel::copyResultsToClipboard() {
     return true;
 }
 
-const CString CResultsPanel::GenerateOutput()
+CString CResultsPanel::GenerateOutput()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString Buffer;
@@ -559,26 +564,30 @@ void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int
     }
 }
 
-
 void CResultsPanel::UpdateOutput(bool immediately)
 {
-    code_ = GenerateOutput();
-    outputChanged_ = true;
     if (immediately) {
+        code_ = GenerateOutput();
         SetDlgItemText(IDC_CODEEDIT, code_);
+    } else {
+        outputChanged_ = true;
     }
 }
 
 
-LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    onCodeTypeChanged();
+    return 0;
+}
+
+void CResultsPanel::onCodeTypeChanged() {
     UpdateOutput(true);
     BOOL temp;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if(Settings.AutoCopyToClipboard)
-        OnBnClickedCopyall(0,0,0,temp);
-     return 0;
- }
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    if (Settings->AutoCopyToClipboard) {
+        OnBnClickedCopyall(0, 0, 0, temp);
+    }
+}
 
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -590,32 +599,31 @@ LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
 
-LRESULT  CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+// "Thumb per line" edit text changed event
+LRESULT CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    BOOL temp;
-    OnCbnSelchangeCodetype(0, 0, 0, temp);
+    onCodeTypeChanged();
     return 0;
  }
 
 LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if(!*WizardDlg->LastVideoFile) return 0;
-    CMediaInfoDlg dlg ;
+    if (WizardDlg->LastVideoFile.IsEmpty()) {
+        return 0;
+    }
+    CMediaInfoDlg dlg;
     dlg.ShowInfo(WizardDlg->LastVideoFile);
     return 0;
     
 }
     
-int CResultsPanel::GetCodeType()
-{
-    return  SendDlgItemMessage(IDC_CODETYPE,CB_GETCURSEL);
+int CResultsPanel::GetCodeType() const {
+    return codeTypeComboBox.GetCurSel();
 }
 
-void CResultsPanel::SetCodeType(int Index)
-{
-    SendDlgItemMessage(IDC_CODETYPE, CB_SETCURSEL, Index);
-    BOOL temp;
-    OnCbnSelchangeCodetype(0, 0, 0, temp); //FIXME
+void CResultsPanel::SetCodeType(int Index) {
+    codeTypeComboBox.SetCurSel(Index);
+    onCodeTypeChanged();
 }
 
 void CResultsPanel::Clear()
@@ -890,11 +898,6 @@ void CResultsPanel::InitUpload()
     shortenUrl_ = false;
 }
 
-void CResultsPanel::setUrlList(CAtlArray<CUrlListItem>  * urlList)
-{
-    //UrlList = urlList;
-}
-
 LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     shortenUrl_ = !shortenUrl_;
     if ( OnShortenUrlChanged ) {
@@ -965,4 +968,16 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
     webViewWindow_->ShowWindow(SW_SHOW);
 //    webViewWindow_->ActivateWindow();
     return 0;
+}
+
+std::mutex& CResultsPanel::outputMutex() {
+    return UrlListCS;
+}
+
+void CResultsPanel::setRectNeeded(const RECT& rc) {
+    rectNeeded = rc;
+}
+
+void CResultsPanel::setShortenUrls(bool shorten) {
+    shortenUrl_ = shorten;
 }

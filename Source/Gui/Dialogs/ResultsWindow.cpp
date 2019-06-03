@@ -87,7 +87,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     resultsTabCtrl_.AdjustRect(FALSE, &wp.rcNormalPosition);
     
     RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
-    ResultsPanel->rectNeeded = rc;
+    ResultsPanel->setRectNeeded(rc);
     ::MapWindowPoints(nullptr, m_hWnd, reinterpret_cast<LPPOINT>(&rc), 2);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     ResultsPanel->setEngineList(myEngineList);
@@ -171,21 +171,20 @@ void CResultsWindow::InitUpload()
 
 void CResultsWindow::Lock()
 {
-    ResultsPanel->UrlListCS.lock();
+    ResultsPanel->outputMutex().lock();
 }
 
 void CResultsWindow::Unlock()
 {
-    ResultsPanel->UrlListCS.unlock();
+    ResultsPanel->outputMutex().unlock();
+}
+
+std::mutex& CResultsWindow::outputMutex() {
+    return ResultsPanel->outputMutex();
 }
 
 bool CResultsWindow::copyResultsToClipboard() {
     return ResultsPanel->copyResultsToClipboard();
-}
-
-void CResultsWindow::setUrlList(CAtlArray<CUrlListItem>  * urlList)
-{
-    ResultsPanel->setUrlList(urlList);
 }
 
 LRESULT CResultsWindow::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
@@ -230,5 +229,5 @@ void CResultsWindow::FinishUpload()
 }
 
 void CResultsWindow::setShortenUrls(bool shorten) {
-    ResultsPanel->shortenUrl_ = shorten;
+    ResultsPanel->setShortenUrls(shorten);
 }

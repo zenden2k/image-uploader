@@ -73,8 +73,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_FolderMap[L""] = nullptr;
    
     m_FolderOperationType = foGetFolders;
-    CAdvancedUploadEngine *uploadScript=nullptr;
-    uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    CAdvancedUploadEngine *uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!uploadScript)
     {
@@ -229,9 +228,12 @@ LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WO
     return 0;
 }
 
-LRESULT CServerFolderSelect::OnFolderlistLbnDblclk(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+LRESULT CServerFolderSelect::OnFolderlistLbnDblclk(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    SendDlgItemMessage(IDOK, BM_CLICK );
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
+    if (item) {
+        SendDlgItemMessage(IDOK, BM_CLICK);
+    }
     return 0;
 }
 

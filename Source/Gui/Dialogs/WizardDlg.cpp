@@ -81,6 +81,7 @@ CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger) :
     Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>()),
     defaultLogger_(defaultLogger)
 { 
+    mainThreadId_ = GetCurrentThreadId();
     screenshotIndex = 1;
     CurPage = -1;
     PrevPage = -1;
@@ -2222,10 +2223,14 @@ void CWizardDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
         msg->async = true;
         PostMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(msg), 0);
     } else {
-        TaskDispatcherMessageStruct msg;
-        msg.callback = std::move(task);
-        msg.async = false;
-        SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
+        if (GetCurrentThreadId() == mainThreadId_) {
+            task();
+        } else {
+            TaskDispatcherMessageStruct msg;
+            msg.callback = std::move(task);
+            msg.async = false;
+            SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
+        }
     }
 }
 

@@ -305,7 +305,7 @@ bool CUploadDlg::OnShow()
 
 bool CUploadDlg::OnNext() {
     if (uploadSession_->isRunning()) {
-        uploadListView_.SetRedraw(FALSE); 
+        uploadListView_.SetRedraw(FALSE);
         uploadSession_->stop();
         uploadListView_.SetRedraw(TRUE);
         CancelByUser = true;
@@ -400,7 +400,7 @@ void CUploadDlg::createToolbar()
     rc.bottom = rc.top + GuiTools::dlgY(16);
     rc.left = GuiTools::dlgX(6);
     rc.right -= GuiTools::dlgX(6);
-    toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | TBSTYLE_LIST | TBSTYLE_CUSTOMERASE | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+    toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_CUSTOMERASE | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
 
     toolbar_.SetButtonStructSize();
     toolbar_.SetButtonSize(30, 18);
@@ -411,6 +411,7 @@ void CUploadDlg::createToolbar()
 
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+    toolbar_.SetWindowPos(GetDlgItem(IDC_PROGRESSGROUPBOX), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
     toolbar_.ShowWindow(SW_SHOW);
 }
 
@@ -541,6 +542,7 @@ void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
 
     SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
     resultsWindow_->UpdateOutput(true);
+    updateTotalProgress();
     ThreadTerminated();
     if (successFileCount == totalFileCount) {
         if (Settings.AutoCopyToClipboard) {
@@ -560,7 +562,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         return;
     }
     auto taskDispatcher = ServiceLocator::instance()->taskDispatcher();
-    if (fileTask->role() == UploadTask::DefaultRole) {
+    if (fileTask->role() == UploadTask::DefaultRole && ok) {
         UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
@@ -574,26 +576,33 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
         item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
         item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
-        urlList_[fps->tableRow] = item;
+        {
+            std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+            urlList_[fps->tableRow] = item;
+        }
         //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
-        taskDispatcher->runInGuiThread([this] { 
+        /*taskDispatcher->runInGuiThread([this] { 
             updateTotalProgress(); 
-        });
+        });*/
         
         //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
-    } else if (fileTask->role() == UploadTask::UrlShorteningRole) {
+    } else if (fileTask->role() == UploadTask::UrlShorteningRole && ok) {
         UploadTask* parentTask = task->parentTask();
         UploadListItem* fps = reinterpret_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
             return;
         }
-        auto& row = urlList_[fps->tableRow];
-        row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
-        row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
+        {
+            std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+            auto& row = urlList_[fps->tableRow];
+            row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
+            row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
+        }
+        
     }
-    taskDispatcher->runInGuiThread([&] {
+    //taskDispatcher->runInGuiThread([&] {
         GenerateOutput();
-    });
+    //});
 }
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
