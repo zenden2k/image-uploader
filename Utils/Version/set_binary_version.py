@@ -9,7 +9,7 @@ if len(sys.argv) < 3:
 filename = sys.argv[1]
 exename = sys.argv[2]
 
-if len(sys.argv) == 4 and sys.argv[3]!= "1":
+if len(sys.argv) == 4 and sys.argv[3]!= "1" and sys.argv[3] != "Release" and sys.argv[3] != "MinSizeRel":
     print "set_binary_version.py: command ommitted for non-release build"
     sys.exit(0)
     

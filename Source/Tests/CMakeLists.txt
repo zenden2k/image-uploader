@@ -57,10 +57,12 @@ add_executable(Tests ${SRC_LIST})
 
 set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 
+set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+
 set(LIBS_LIST  "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm)
+    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 libavformat libavutil libswscale libavcodec winmm)
     target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
     list(APPEND LIBS_LIST icuuc icui18n)

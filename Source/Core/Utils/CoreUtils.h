@@ -82,7 +82,7 @@ namespace IuCoreUtils
 
     // getFileSize retrieves the size of the specified file, in bytes.
     // It supports large files; filename must be utf8 encoded
-    int64_t getFileSize(std::string utf8Filename);
+    int64_t getFileSize(const std::string& utf8Filename);
     const std::wstring Utf8ToWstring(const std::string &str);
     const std::string WstringToUtf8(const std::wstring &str);
 

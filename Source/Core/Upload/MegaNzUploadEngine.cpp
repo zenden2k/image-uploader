@@ -37,6 +37,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
 #endif
+#include "Core/AppParams.h"
 
 #define APP_KEY "0dxDFKqD"
 #define USER_AGENT "Zenden2k Image Uploader"
@@ -48,12 +49,12 @@ using namespace mega;
 class MyGfxProcessor : public mega::MegaGfxProcessor {
 public:
     MyGfxProcessor();
-    virtual bool readBitmap(const std::string& path) override;
-    virtual int getWidth() override;
-    virtual int getHeight() override;
-    virtual int getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) override;
-    virtual bool getBitmapData(char *bitmapData, size_t size) override;
-    virtual void freeBitmap() override;
+    bool readBitmap(const std::string& path) override;
+    int getWidth() override;
+    int getHeight() override;
+    int getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) override;
+    bool getBitmapData(char *bitmapData, size_t size) override;
+    void freeBitmap() override;
 
     virtual ~MyGfxProcessor();
 protected:
@@ -185,7 +186,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     folderList_ = nullptr;
 #ifdef _WIN32
     proc_ = std::make_unique<MyGfxProcessor>();
-    megaApi_ = std::make_unique<MegaApi>(APP_KEY, proc_.get(), static_cast<const char *>(nullptr), USER_AGENT);
+    megaApi_ = std::make_unique<MegaApi>(APP_KEY, proc_.get(), static_cast<const char *>(nullptr)/*AppParams::instance()->tempDirectory().c_str()*/, USER_AGENT);
 #else 
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif

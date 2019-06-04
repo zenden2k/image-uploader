@@ -1,26 +1,15 @@
 ﻿============  Building Image Uploader on Windows ============
 
-Before building you should copy file "Source\versioninfo.h.dist" to "Source\versioninfo.h". This file will be regenerated 
+Before building Image Uploader you should copy file "Source\versioninfo.h.dist" to "Source\versioninfo.h". This file will be regenerated 
 by "versioninc.py" utility and will contain information about build number, version, date, git commit hash.
 Python 2.7 interpreter should be installed for performing pre-build and post-build events. Ensure that your %PATH% environment 
 variable includes the directory of your Python distribution.
 
-You need CMake and Microsoft Visual Studio 2013 (with C++ compiler) or newer to build Image Uploader from source. 
-Installing Update 4 for Visual Studio 2013  is strongly recommended (older versions corrupt .rc files after editing)
-If you are using a newer MSVC version, you may experience some compilation errors, which can be solved easily 
-(if you fix these errors, please provide a patch or pull request). But also you need to recompile 3rd-party 
-libraries (boost, glog, jsoncpp, etc) against your compiler version.
+You need CMake (tested with v3.14.0) and Microsoft Visual Studio 2017 or newer (with C++ compiler) to build Image Uploader from sources. 
+Also you need to compile 3rd-party libraries (such as boost, glog, jsoncpp, etc) against your compiler version.
 
-All libraries (except ffmpeg) have to be built statically with static runtime. To enable Windows XP support the corresponding 
-toolset has to be chosen (for example, "v120_xp" in VS 2013, "v141_xp" in Visual Studio 2017).
- 
-You can download all necessary libraries (including header-only libraries in "Include" subfolder) by following link:
-
-https://drive.google.com/drive/folders/1dHjuif2sagpyNPoPs_EL63On1_A0m98N?usp=sharing
-
-Precompiled libraries for MS Visual Studio 2013 (not compatible with newer MSVS versions): 
-
-https://drive.google.com/file/d/1jJM9NLEPfdPLCjh_dOTx1O9S7bonjsr2/view?usp=drivesdk
+All libraries (except ffmpeg) can be built statically with static runtime (/MT option for VC++ compiler). 
+To enable Windows XP support the corresponding toolset has to be chosen (for example "v141_xp" in Visual Studio 2017).
 
 To generate Visual Studio solution from CMakeLists.txt you need to create a directory for 
 temporary files and call cmake:
@@ -31,6 +20,16 @@ cmake <path_to_imageuploader_source>\Source
 
 The last command will generate project files for your default compiler (should be Visual Studio). 
 You can use CMake GUI to achieve the same result.
+
+If you are using v141_xp toolset, for fixing broken _stat() function on Windows XP you should change 
+the "TargetUniversalCRTVersion" option in file
+"C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.Cpp.Common.props"
+to the latest Windows 10 SDK version installed on your computer. Tested with Windows SDK 10.0.17763.0 .
+ 
+You can download all necessary libraries (including header-only libraries in "Include" subfolder) by following link:
+
+https://drive.google.com/drive/folders/1dHjuif2sagpyNPoPs_EL63On1_A0m98N?usp=sharing
+
 
 Image Uploader is using the following libraries:
 

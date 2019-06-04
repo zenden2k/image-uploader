@@ -838,7 +838,7 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
 
     unsigned long sizeDlg = ::SizeofResource(hInst, res);
     hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
-    DLGTEMPLATEEX *pMyDlgTemplate = reinterpret_cast<DLGTEMPLATEEX *>(::GlobalLock(hMyDlgTemplate_));
+    auto pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if (isChildWindow_)

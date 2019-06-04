@@ -1,19 +1,13 @@
 cd winbuild
-nmake /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
- nmake /f Makefile.vc mode=static VC=12 WITH_SSL=static WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no RTLIBCFG=static
- nmake /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no RTLIBCFG=static
-
 nmake /f Makefile.vc mode=static VC=14 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=shared
-
-nmake /f Makefile.vc mode=static VC=9 WITH_SSL=static WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
-#nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
-
-nmake /f Makefile.vc mode=static VC=9 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no
 
 
 nmake /E CC="cl /D_USING_V120_SDK71_ /D_WIN32_WINNT=0x0501" /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
 
-\lib\config-win32.h
+nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 
+
+
+Add to "lib\config-win32.h"
 
 
 #undef WINVER
@@ -21,6 +15,9 @@ nmake /E CC="cl /D_USING_V120_SDK71_ /D_WIN32_WINNT=0x0501" /f Makefile.vc mode=
 #undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
 
+Comment entire block starting with:
+
+#if defined(_MSC_VER) && (_MSC_VER >= 1700)
 
 Patch http.c !
 

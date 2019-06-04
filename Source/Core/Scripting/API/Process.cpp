@@ -6,9 +6,38 @@
 #include "ScriptAPI.h"
 #include "../Squirrelnc.h"
 
+#ifdef _WIN32
+#include <boost/process/windows.hpp>
+#include <boost/winapi/process.hpp>
+#include <boost/winapi/show_window.hpp>
+#include <boost/winapi/basic_types.hpp>
+#endif
 namespace ScriptAPI {
 
 namespace bp = ::boost::process;
+
+// Thanks to https://stackoverflow.com/questions/43582022/boostprocess-hide-console-on-windows
+
+struct show_window
+    : ::boost::process::detail::handler_base
+{
+private: 
+    ::boost::winapi::WORD_ const m_flag;
+
+public: explicit
+    show_window(bool const show) noexcept
+    : m_flag{ show ? ::boost::winapi::SW_SHOWNORMAL_ : ::boost::winapi::SW_HIDE_ }
+{}
+
+        // this function will be invoked at child process constructor before spawning process
+        template <class WindowsExecutor>
+        void on_setup(WindowsExecutor &e) const
+        {
+            // we have a chance to adjust startup info
+            e.startup_info.dwFlags |= ::boost::winapi::STARTF_USESHOWWINDOW_;
+            e.startup_info.wShowWindow |= m_flag;
+        }
+};
 
 class ProcessPrivate {
 public:
@@ -30,7 +59,7 @@ public:
 
         try
         {
-            #ifdef _WIN32
+            /*#ifdef _WIN32
             bp::win32_context ctx;
             STARTUPINFO si;
             if (hidden_ )
@@ -48,12 +77,19 @@ public:
             #endif
          
             ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
-            ctx.environment = boost::process::self::get_environment();
-            #ifdef _WIN32
+            ctx.environment = boost::process::self::get_environment();*/
+            
+            if (readProcessOutput_) {
+                inputStream_ = std::make_unique<bp::ipstream>();
+                child_.reset(new bp::child(executable_, bp::args(args), show_window{ !hidden_ }, bp::std_out > *inputStream_));
+            } else {
+                child_.reset(new bp::child(executable_, bp::args(args), show_window{ !hidden_ }));
+            }
+            /*#ifdef _WIN32
             child_.reset(new bp::win32_child(bp::win32_launch(executable_, args, ctx)));
             #else
             child_.reset(new bp::child(bp::launch(executable_, args, ctx)));
-            #endif
+            #endif*/
         }
         catch (std::exception & ex){
             LOG(ERROR) << ex.what();
@@ -67,7 +103,7 @@ public:
     {
         try
         {
-            #ifdef _WIN32
+            /*#ifdef _WIN32
                         bp::win32_context ctx;
                         STARTUPINFO si;
                         if (hidden_)
@@ -82,10 +118,25 @@ public:
 
             #else
                         bp::context ctx;
-            #endif
-            ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
+            #endif**/
+            /*ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
             ctx.environment = boost::process::self::get_environment();
-            child_.reset(new bp::child(bp::launch_shell(command, ctx)));
+            child_.reset(new bp::child(bp::launch_shell(command, ctx)));*/
+            std::vector<std::string> args = {/*IuCoreUtils::ExtractFileName*/(executable_) };
+            Sqrat::Array::iterator it;
+            while (arguments_.Next(it))
+            {
+                Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
+                args.push_back(obj.Cast<std::string>());
+            }
+
+            if (readProcessOutput_) {
+                inputStream_ = std::make_unique<bp::ipstream>();
+                bp::system(executable_, bp::args(args), show_window{ !hidden_ }, bp::std_out > *inputStream_);
+            }
+            else {
+                bp::system(executable_, bp::args(args), show_window{ !hidden_ });
+            }
         }
         catch (std::exception & ex){
             LOG(ERROR) << ex.what();
@@ -101,10 +152,10 @@ public:
             LOG(ERROR) << BOOST_CURRENT_FUNCTION << "\r\n" << "Process not started";
             return;
         }
-        bp::pistream &stream = child_->get_stdout();
+        
         std::istreambuf_iterator<char> eos;
 
-        res = std::string(std::istreambuf_iterator<char>(stream), eos);
+        res = std::string(std::istreambuf_iterator<char>(*inputStream_), eos);
         if (!outputEncoding_.empty())
         {
             res = IuCoreUtils::ConvertToUtf8(res, outputEncoding_);
@@ -125,14 +176,17 @@ public:
             LOG(ERROR) << BOOST_CURRENT_FUNCTION << "\r\n" << "Process not started";
             return EXIT_FAILURE;
         }
-        bp::status status = child_->wait();
-        return status.exited() ? status.exit_status() : EXIT_FAILURE;
+        std::error_code code;
+        /*bp::status status = */child_->wait(code);
+        return child_->exit_code();
+       // return status.exited() ? status.exit_status() : EXIT_FAILURE;
     }
     std::string executable_;
     Sqrat::Array arguments_;
     bool readProcessOutput_;
     std::unique_ptr<bp::child> child_;
     std::string outputEncoding_;
+    std::unique_ptr<bp::ipstream> inputStream_;
     bool hidden_;
 };
 
@@ -151,7 +205,7 @@ Process::Process(const std::string& executable, bool findInPath)
 {
     init();
     try {
-        d_->executable_ = findInPath ? bp::find_executable_in_path(executable) : executable;
+        d_->executable_ = findInPath ? bp::search_path(executable).string() : executable;
     } catch ( std::exception& ex )
     {
         LOG(ERROR) << ex.what();
@@ -173,7 +227,7 @@ bool Process::launchInShell(const std::string& command)
     return d_->launchShell(command);
 }
 
-bp::child start_child(bp::context ctx)
+/*bp::child start_child(bp::context ctx)
 {
 #if defined(BOOST_POSIX_API) 
     return bp::launch(std::string("env"), std::vector<std::string>(), ctx); 
@@ -182,7 +236,7 @@ bp::child start_child(bp::context ctx)
 #else 
 #  error "Unsupported platform." 
 #endif 
-}
+}*/
 
 bool Process::start()
 {
@@ -213,7 +267,7 @@ void Process::setCaptureOutput(bool read)
 
 const std::string Process::findExecutableInPath(const std::string& executable)
 {
-    return bp::find_executable_in_path(executable);
+    return bp::search_path(executable).string();
 }
 
 void Process::setOutputEncoding(const std::string& encoding)

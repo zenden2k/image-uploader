@@ -175,7 +175,7 @@ add_executable(GUI WIN32
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
 set(LIBS_LIST base64 libwebpdecoder libwebpdemux 
-    gdiplus Ws2_32 avcodec avformat avutil swscale dwmapi winmm wininet IPHLPAPI
+    gdiplus Ws2_32 libavcodec libavformat libavutil libswscale dwmapi winmm wininet IPHLPAPI
     Secur32 Netapi32 Oleacc Winhttp Userenv Psapi
 )
 
@@ -191,9 +191,9 @@ set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:uxtheme.dll /DELAYLO
 
 add_custom_command(TARGET GUI
     PRE_BUILD
-    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/versioninc.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<CONFIG:Release>
+    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/versioninc.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<CONFIG>
 )
 add_custom_command(TARGET GUI
     POST_BUILD
-    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" "$(TargetDir)$(TargetFileName)" $<CONFIG:Release>
+    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" "$(TargetDir)$(TargetFileName)" $<CONFIG>
 )

@@ -1451,7 +1451,7 @@ SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {
     memcpy(&u, &f, sizeof(u));
 
     const double c_dSecondsPer100nsInterval = 100. * 1.E-9;
-    u.QuadPart += seconds / c_dSecondsPer100nsInterval;
+    u.QuadPart += static_cast<ULONGLONG>(seconds / c_dSecondsPer100nsInterval);
 
     memcpy(&f, &u, sizeof(f));
     SYSTEMTIME res;

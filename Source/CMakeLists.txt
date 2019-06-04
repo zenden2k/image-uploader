@@ -34,11 +34,14 @@ set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
 if (MSVC)
     set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
     add_definitions("/MP")
+    add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
 endif()
 
 if (MSVC AND IU_STATIC_RUNTIME) 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+    set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
 endif()
 
 #SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE,5.01")
@@ -111,10 +114,10 @@ if(WIN32)
     endif()
     
     if (IU_USE_OPENSSL)
-        list(APPEND COMMON_LIBS_LIST ssleay32 libeay32)
+        list(APPEND COMMON_LIBS_LIST libssl libcrypto)
     endif()
 
-    list(APPEND COMMON_LIBS_LIST libcurl libeay32 ssleay32 Oleacc libglog_static minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib)
+    list(APPEND COMMON_LIBS_LIST libcurl Oleacc glog minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib Crypt32 Wldap32)
 else()
     list(APPEND COMMON_LIBS_LIST curl ssl crypto glog pthread uv rt sqlite3 freeimage gflags ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 endif()

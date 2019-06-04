@@ -8,7 +8,7 @@ if len(sys.argv) < 2:
     sys.exit(1)
 filename = sys.argv[1]
 
-if len(sys.argv) == 3 and sys.argv[2]!= "1":
+if len(sys.argv) == 3 and sys.argv[2]!= "1" and sys.argv[2] != "Release" and sys.argv[2] != "MinSizeRel":
     print "versioninc.py: command ommitted for non-release build"
     sys.exit(0)
 

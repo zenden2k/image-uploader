@@ -28,6 +28,7 @@
 
 #ifdef _WIN32
     #include <WinSock.h>
+    #include "Func/WinUtils.h"
 #else
     #include <boost/filesystem.hpp>
     #ifdef __APPLE__
@@ -292,7 +293,10 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
     if (!stream) {
         return false;
     }
-    size_t size = static_cast<size_t>(getFileSize(utf8Filename));
+    fseek(stream, 0L, SEEK_END);
+    size_t size = ftell(stream);
+    rewind(stream);
+
     unsigned char buf[3]={0,0,0};
     size_t bytesRead = fread(buf, 1, 3, stream);    
 
@@ -350,7 +354,11 @@ const std::string GetFileContents(const std::string& filename) {
     std::string data;
     FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
     if (!stream) return std::string();
-    size_t size = static_cast<size_t>(IuCoreUtils::getFileSize(filename));
+    fseek(stream, 0L, SEEK_END);
+    size_t size = ftell(stream);
+    rewind(stream);
+
+    //size_t size = static_cast<size_t>(IuCoreUtils::getFileSize(filename));
 
     try {
         data.resize(size);
@@ -389,7 +397,7 @@ int64_t stringToInt64(const std::string& str)
     return strtoll(str.c_str(), nullptr, 10);
 }
 
-int64_t getFileSize(std::string utf8Filename)
+int64_t getFileSize(const std::string& utf8Filename)
 {
 #ifdef _WIN32
    #ifdef _MSC_VER
@@ -397,9 +405,38 @@ int64_t getFileSize(std::string utf8Filename)
    #else
       _stati64 stats;
    #endif
-      memset(&stats, 0, sizeof(stats));
-      stats.st_size = -1;
-   _wstati64(Utf8ToWstring(utf8Filename).c_str(), &stats);
+    memset(&stats, 0, sizeof(stats));
+    stats.st_size = -1;
+    std::wstring wideFileName = Utf8ToWstring(utf8Filename);
+    if(_wstati64(wideFileName.c_str(), &stats)!=0) {
+        int err = errno;
+        switch (err) {
+            case ENOENT: 
+                LOG(WARNING) << "Call to _wstati64 failed. File not found." << std::endl <<  utf8Filename; 
+            break;
+            case EINVAL: 
+                LOG(WARNING) << "Call to _wstati64 failed. Invalid parameter.";
+            break;
+            default: /* Should never be reached. */
+                LOG(ERROR) << "Call to _wstati64 failed. Unexpected error in _wstati64.";
+        }
+
+        if (err != ENOENT) {
+            WIN32_FILE_ATTRIBUTE_DATA fad;
+            memset(&fad, 0, sizeof(fad));
+
+            if (!GetFileAttributesEx(wideFileName.c_str(), GetFileExInfoStandard, &fad)) {
+                DWORD lastError = GetLastError();
+                LOG(ERROR) << WinUtils::FormatWindowsErrorMessage(lastError);
+                return -1;
+            }
+            LARGE_INTEGER size;
+            size.HighPart = fad.nFileSizeHigh;
+            size.LowPart = fad.nFileSizeLow;
+            return size.QuadPart;
+        }
+        return -1;
+   }
 #else
    struct stat64 stats;
    std::string path = Utf8ToSystemLocale(utf8Filename);

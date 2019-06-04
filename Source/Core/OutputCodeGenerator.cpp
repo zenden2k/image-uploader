@@ -40,8 +40,8 @@ void ZOutputCodeGenerator::setType(CodeType type)
 
 std::string ZOutputCodeGenerator::generate(const std::vector<ZUploadObject>& items)
 {
-   std::string result ="";
-	for(int i=0; i < items.size(); i++)
+    std::string result;
+	for(size_t i=0; i < items.size(); i++)
 	{
 		if(i) result += "\r\n";
 		result += generateCodeForItem(items[i], i);

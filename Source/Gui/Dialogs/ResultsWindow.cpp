@@ -201,7 +201,7 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
     
     size_t sizeDlg = ::SizeofResource(hInst, res);
     hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
-    DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(hMyDlgTemplate_);
+    auto *pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));
     ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
     if(m_childWindow)

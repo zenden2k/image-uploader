@@ -92,7 +92,7 @@ public:
 
         size_t sizeDlg = ::SizeofResource(hInst, res);
         m_hDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
-        DLGTEMPLATEEX *pMyDlgTemplate = (DLGTEMPLATEEX *)::GlobalLock(m_hDlgTemplate);
+        auto pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(m_hDlgTemplate));
         ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 
         if (ServiceLocator::instance()->translator()->isRTL()) {
