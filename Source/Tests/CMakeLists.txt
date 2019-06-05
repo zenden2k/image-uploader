@@ -62,7 +62,7 @@ set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DE
 set(LIBS_LIST  "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 libavformat libavutil libswscale libavcodec winmm)
+    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm)
     target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
     list(APPEND LIBS_LIST icuuc icui18n)

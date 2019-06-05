@@ -2,6 +2,7 @@
 
 #include "Func/WinUtils.h"
 #include "3rdpart/GdiPlusH.h"
+#include "Core/Utils/CoreUtils.h"
 
 namespace ServersListTool {
 namespace Helpers {

@@ -1,6 +1,7 @@
 #include "ServerListView.h"
 
 #include "ServersCheckerModel.h"
+#include "Core/Utils/CoreUtils.h"
 
 namespace ServersListTool {
 

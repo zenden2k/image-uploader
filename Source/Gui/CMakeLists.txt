@@ -336,7 +336,7 @@ add_executable(GUI WIN32
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
 set(LIBS_LIST base64 libwebpdecoder libwebpdemux 
-    gdiplus Ws2_32 libavcodec libavformat libavutil libswscale dwmapi winmm wininet IPHLPAPI
+    gdiplus Ws2_32 avcodec avformat avutil swscale dwmapi winmm wininet IPHLPAPI
     Secur32 Netapi32 Oleacc Winhttp Userenv Psapi
 )
 

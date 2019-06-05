@@ -144,9 +144,9 @@
 	</Server>
 	<Server Name="jpegshare.net">
 		<Actions>
-			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
+			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="Ссылка для просмотра:([\s\S]+)(https://jpegshare\.net/.+\.html)&quot;([\s\S]+)\[img\](.*?)\[" AssignVars="ViewUrl:1;Thumb:3;"/>
 		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
 	<Server Name="load.to" FileHost="1" Debug="0">
 		<Actions>
@@ -176,9 +176,9 @@
 	</Server>
 	<Server Name="ipic.su">
 	<Actions>
-		<Action Type="upload" Url="http://ipic.su/" PostParams="link=/;action=loadimg;client=ipic.su;image=%filename%;name=;desc=;cropselect=800;tnsize=150;quality=85;origin=on" RegExp="\[img\](.*?)\[([\s\S]*?)\[img\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
+		<Action Type="upload" Url="http://ipic.su/api/index.php" PostParams="link=/;action=loadimg;origin=checked;quality=100;client=KISS075;tnsize=$(ThumbWidth);showall=1;image=%filename%" RegExp="(.+?)\r\n(.+?)\r\n(.+)" AssignVars="Line0:0;Line1:1;Line2:2;"/>
 	</Actions>
-	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
+	<Result ImageUrlTemplate="http://ipic.su$(Line2)/fs/$(Line0)" ThumbUrlTemplate="http://ipic.su$(Line2)/tn/$(Line0)"/>
 	</Server>
 	<Server Name="bild.me" Debug="0">
 		<Actions>

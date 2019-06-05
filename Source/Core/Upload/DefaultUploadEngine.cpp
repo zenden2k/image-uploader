@@ -198,13 +198,13 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         AddQueryPostParams(Action);
 
         m_NetworkClient->setUrl(Action.Url);
-
+       
         if ( bUpload ) {
             if (Action.Type == "put") {
                 m_NetworkClient->setMethod( "PUT" );
                 m_NetworkClient->doUpload( m_FileName, "" );
             } else {
-                m_NetworkClient->doUploadMultipartData();
+                bool res = m_NetworkClient->doUploadMultipartData();
             }
         } else {
             m_NetworkClient->doPost();

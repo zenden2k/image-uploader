@@ -2,6 +2,7 @@
 #define IU_SERVERLISTTOOL_HELPERS_H
 
 #pragma once
+#include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 
 namespace ServersListTool {
