@@ -21,9 +21,9 @@
 #define STATUSDLG_H
 
 #pragma once
+#include <mutex>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "3rdpart/thread.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CStatusDlg
@@ -38,7 +38,7 @@ class CStatusDlg :
         enum { kUpdateTimer = 1};
         CString m_Title, m_Text;
         bool m_bNeedStop;
-        CAutoCriticalSection CriticalSection, Section2;
+        
         BEGIN_MSG_MAP(CStatusDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
@@ -61,6 +61,7 @@ protected:
     bool canBeStopped_;
     bool processFinished_;
     bool visible_;
+    std::mutex CriticalSection, Section2;
 };
 
 #endif // STATUSDLG_H

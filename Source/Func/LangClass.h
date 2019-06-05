@@ -23,11 +23,21 @@
 #pragma once
 
 #include "atlheaders.h"
-#include "Core/i18n/Translator.h"
+
 #include <string>
 #include <unordered_map>
+#ifndef IU_SHELLEXT
+    #include "Core/i18n/Translator.h"
+    #define ITRANLATOR_OVERRIDE override
+#else
+    #define ITRANLATOR_OVERRIDE 
+    #define TR(str) Lang.GetString(_T(str))
+#endif
 
-class CLang : public ITranslator
+class CLang
+#ifndef IU_SHELLEXT
+: public ITranslator
+#endif
 {
     public:
         CLang();
@@ -39,14 +49,17 @@ class CLang : public ITranslator
         CString getLanguage() const;
         CString getLocale() const;
         CString getLanguageFileNameForLocale(const CString& locale);
+        CString getCurrentLanguageFile() const;
         /**
             The RTL option is not being changed during program lifetime
         **/
-        bool isRTL() const override;
-        virtual std::string getCurrentLanguage() override;
-        virtual std::string getCurrentLocale() override;
-        std::string translate(const char* str) override;
-        const wchar_t* translateW(const wchar_t* str) override;
+        bool isRTL() const ITRANLATOR_OVERRIDE;
+#ifndef IU_SHELLEXT
+        std::string getCurrentLanguage() ITRANLATOR_OVERRIDE;
+        std::string getCurrentLocale() ITRANLATOR_OVERRIDE;
+        std::string translate(const char* str) ITRANLATOR_OVERRIDE;
+        const wchar_t* translateW(const wchar_t* str) ITRANLATOR_OVERRIDE;
+#endif
         CLang(const CLang&) = delete;
         CLang& operator=(const CLang) = delete;
     private:
@@ -61,6 +74,7 @@ class CLang : public ITranslator
         std::vector<CString> LanguagesList;
         CString locale_;
         CString language_;
+        CString currentLanguageFile_;
         bool isRTL_;
 };
 

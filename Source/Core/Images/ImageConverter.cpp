@@ -19,6 +19,8 @@
 */
 
 #include "ImageConverter.h"
+#include "Core/CommonDefs.h"
+#include "Core/Utils/CoreUtils.h"
 
 #ifdef _WIN32
     #include "ImageConverterPrivate_gdiplus.h"

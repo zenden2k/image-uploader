@@ -69,6 +69,79 @@ set(SRC_LIST Network/NetworkClient.cpp
     Scripting/UploadFilterScript.cpp
     3rdpart/htmlentities.cpp)
 
+set(HEADER_LIST Network/NetworkClient.h
+	Network/NetworkClientFactory.h
+    Upload/DefaultUploadEngine.h
+    Upload/FileUploadTask.h
+    Upload/ScriptUploadEngine.h
+    Upload/UploadEngine.h
+    Upload/Uploader.h
+    Upload/UploadTask.h
+    Upload/UrlShorteningTask.h
+    Utils/CoreUtils.h
+    Utils/CryptoUtils.h
+    Utils/SimpleXml.h
+    Utils/StringUtils.h
+    Utils/ConsoleUtils.h
+    3rdpart/base64.h
+    3rdpart/pcreplusplus.h
+    3rdpart/tinystr.h
+    3rdpart/tinyxml.h
+    3rdpart/FastDelegate.h
+    3rdpart/FastDelegateBind.h
+    3rdpart/utf8.h
+    3rdpart/UriParser.h
+    OutputCodeGenerator.h
+    UploadEngineList.h
+    SettingsManager.h
+    AppParams.h
+    Scripting/API/Functions.h
+    Scripting/API/RegularExpression.h
+    Scripting/API/ScriptAPI.h
+    Logging.h
+    Upload/ConsoleUploadErrorHandler.h
+    Upload/FileQueueUploader.h
+    Upload/FileQueueUploaderPrivate.h
+    Upload/FolderList.h
+    Upload/ServerProfile.h
+    Upload/ServerSync.h
+    Upload/UploadEngineManager.h
+    Upload/UploadManager.h
+    Upload/UploadSession.h
+    Upload/AdvancedUploadEngine.h
+    ServiceLocator.h
+    Settings/BasicSettings.h
+    Logging/MyLogSink.h
+    Logging/ConsoleLogger.h
+    Scripting/ScriptsManager.h
+    Network/CurlShare.h
+    ThreadSync.h
+    Scripting/Script.h
+    Scripting/API/UploadTaskWrappers.h
+    Scripting/API/GumboBingings/GumboDocument.h
+    TempFileDeleter.h
+    Utils/DesktopUtils.h
+    HistoryManager.h
+    CoreFunctions.h
+    3rdpart/GumboQuery/Document.h
+    3rdpart/GumboQuery/Node.h
+    3rdpart/GumboQuery/Object.h
+    3rdpart/GumboQuery/Parser.h
+    3rdpart/GumboQuery/QueryUtil.h
+    3rdpart/GumboQuery/Selection.h
+    3rdpart/GumboQuery/Selector.h
+    Scripting/API/Process.h
+    Upload/Filters/UrlShorteningFilter.h
+    Upload/Filters/UserFilter.h
+    LocalFileCache.h
+    Utils/SystemUtils.h
+    Settings/EncodedPassword.h
+    Scripting/API/WebBrowserPrivateBase.h
+    Utils/GlobalMutex.h
+    Utils/TextUtils.h
+    Scripting/UploadFilterScript.h
+    3rdpart/htmlentities.h)
+    
 if(WIN32)
     list(APPEND SRC_LIST 
         Utils/Utils_win.cpp
@@ -94,6 +167,28 @@ if(WIN32)
         Images/Utils.cpp
         ../3rdpart/QColorQuantizer.cpp
     )
+    list(APPEND HEADER_LIST 
+        DefaultProxyProvider.h 
+        3rdpart/CodePages.h 
+        Scripting/API/HtmlDocument.h
+        Scripting/API/COMUtils.h
+        Scripting/API/HtmlDocumentPrivate_win.h
+        Scripting/API/HtmlElement.h
+        Scripting/API/HtmlElementPrivate_win.h
+        Scripting/API/WebBrowser.h
+        Scripting/API/WebBrowserPrivate_win.h
+        ../Func/UpdatePackage.h
+        ../Func/IuCommonFunctions.h
+        ../3rdpart/Registry.h
+        ../3rdpart/Unzipper.h
+        ../3rdpart/MemberFunctionCallback.h
+        ../Gui/Dialogs/WebViewWindow.h
+        ../Gui/Controls/WTLBrowserView.h
+        ../Func/WinUtils.h
+        ../Gui/GuiTools.h
+        Images/Utils.h
+        ../3rdpart/QColorQuantizer.h
+    )
 else()
     list(APPEND SRC_LIST  
         Utils/Utils_unix.cpp 
@@ -102,11 +197,12 @@ endif()
 
 if(NOT IU_DISABLE_MEGANZ)
        list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
+       list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
 endif()       
 
-source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST})
+source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
-add_library(iucore STATIC ${SRC_LIST} )
+add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
 
 if(MSVC)
     target_compile_options(iucore PRIVATE "/MP")

@@ -21,6 +21,7 @@
 #define IU_FUNC_CMDLINE_H
 
 #pragma once
+#include <vector>
 #include "atlheaders.h"
 
 class CCmdLine

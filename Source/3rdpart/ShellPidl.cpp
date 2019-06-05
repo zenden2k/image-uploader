@@ -1,5 +1,6 @@
 
 #include "ShellPidl.h"
+#include "Core/Logging.h"
 
 namespace {
     CComPtr<IMalloc> malloc_;

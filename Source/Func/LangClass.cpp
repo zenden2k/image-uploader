@@ -18,18 +18,18 @@
 
 */
 
-#include "langclass.h"
+#include "LangClass.h"
 
-#include "Core/CommonDefs.h"
-#include "myutils.h"
-#include "Func/WinUtils.h"
-#include "Core/AppParams.h"
-#include "Core/Utils/CoreUtils.h"
-#include "Core/Utils/StringUtils.h"
+#include <cstdio>
+#include <filesystem>
+#include <sstream>
+
+#ifndef IU_SHELLEXT
+    #include "Core/Utils/CoreUtils.h"
+#endif
 
 namespace {
 // TODO: rewrite this shit
-// check it's compatibility with 64 bit platforms
 BYTE hex_digit(TCHAR f)
 {
     BYTE p;
@@ -67,6 +67,116 @@ int myhash(PBYTE key, int len)
     return hash;
 }
 
+LPTSTR fgetline(LPTSTR buf, int num, FILE *f)
+{
+    LPTSTR Result;
+    LPTSTR cur;
+    Result = _fgetts(buf, num, f);
+    int n = lstrlen(buf) - 1;
+
+    for (cur = buf + n; cur >= buf; cur--)
+    {
+        if (*cur == 13 || *cur == 10 || *cur == _T('\n'))
+            *cur = 0;
+        else break;
+    }
+    return Result;
+}
+
+size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask)
+{
+    WIN32_FIND_DATA wfd;
+    ZeroMemory(&wfd, sizeof(wfd));
+    HANDLE findfile = nullptr;
+    TCHAR szNameBuffer[MAX_PATH];
+
+    for (;; )
+    {
+        if (!findfile)
+        {
+            findfile = FindFirstFile(folder + _T("\\") + mask, &wfd);
+            if (!findfile)
+                break;
+            ;
+        }
+        else
+        {
+            if (!FindNextFile(findfile, &wfd))
+                break;
+        }
+        if (lstrlen(wfd.cFileName) < 1)
+            break;
+        lstrcpyn(szNameBuffer, wfd.cFileName, 254);
+        list.push_back(szNameBuffer);
+    }
+    // return TRUE;
+
+    // error:
+    if (findfile)
+        FindClose(findfile);
+    return list.size();
+    // return FALSE;
+}
+
+bool ReadUtf8TextFile(const CString& fileName, std::string& data)
+{
+    FILE *stream = _wfopen(fileName, L"rb");
+    if (!stream) {
+        return false;
+    }
+    fseek(stream, 0L, SEEK_END);
+    size_t size = ftell(stream);
+    rewind(stream);
+
+    unsigned char buf[3] = { 0,0,0 };
+    size_t bytesRead = fread(buf, 1, 3, stream);
+
+    if (bytesRead == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
+    {
+        size -= 3;
+    }
+    else if (bytesRead >= 2 && buf[0] == 0xFF && buf[1] == 0xFE) {
+        // UTF-16LE encoding
+        // not supported
+        fclose(stream);
+        return false;
+    }
+    else {
+        // no BOM was found; seeking backward
+        fseek(stream, 0L, SEEK_SET);
+    }
+    try {
+        data.resize(size);
+    }
+    catch (std::exception& ex) {
+        //LOG(ERROR) << ex.what();
+        fclose(stream);
+        return false;
+    }
+
+    size_t bytesRead2 = fread(&data[0], 1, size, stream);
+    if (bytesRead2 == size) {
+        fclose(stream);
+        return true;
+    }
+
+    fclose(stream);
+    return false;
+}
+
+std::wstring StringToWideString(const std::string &str, UINT codePage)
+{
+    std::wstring ws;
+    int n = MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size() + 1), /*dst*/NULL, 0);
+    if (n) {
+        ws.reserve(n);
+        ws.resize(n - 1);
+        if (MultiByteToWideChar(codePage, 0, str.c_str(), static_cast<int>(str.size() + 1), /*dst*/&ws[0], n) == 0)
+            ws.clear();
+    }
+    return ws;
+}
+
 }
 
 CLang::CLang()
@@ -94,41 +204,55 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
 
     std::string fileContents;
 
-    if (Lang == CString("English")) { // English is built-in language
-        AppParams::instance()->setLanguageFile(IuCoreUtils::WstringToUtf8((LPCTSTR)(CString(m_Directory) + _T("English.lng"))));
+    if (Lang == CString("English")) { // English is a built-in language
+        currentLanguageFile_ = Filename;
         return true;
     }
 
-    if (!IuCoreUtils::ReadUtf8TextFile(W2U(Filename), fileContents)) {
+    if (!ReadUtf8TextFile(Filename, fileContents)) {
        
         return false;
     }
+    std::wstring fileContentsW = StringToWideString(fileContents, CP_UTF8);
 
-    std::vector<std::string> lines;
+    std::wstringstream ss(fileContentsW);
+    std::wstring line;
+
     CString Buffer;
-    TCHAR Name[128];
-    TCHAR Text[512];
-    IuStringUtils::Split(fileContents, "\r\n", lines, -1);
+    CString Name;
+    CString Text;
 
-    for (const auto& line : lines) {
+    while (std::getline(ss, line)) {
+        
         Buffer.Empty();
-        *Name = *Text = 0;
-        Buffer = U2W(line);
+        Name.Empty();
+        Text.Empty();
+        if (!line.empty() && line[line.length()-1]==L'\r') {
+            line.pop_back(); // remove last character
+        }
+        Buffer = line.c_str();
 
         if (*Buffer == _T('#'))
             continue;
-        WinUtils::ExtractStrFromList(Buffer, 0, Name, sizeof(Name) / sizeof(TCHAR), _T(""), _T('='));
-        WinUtils::ExtractStrFromList(Buffer, 1, Text, sizeof(Text) / sizeof(TCHAR), _T(""), _T('='));
 
-        int len = lstrlen(Name);
-        if (len > 0 && Name[len - 1] == _T(' '))
-            Name[len - 1] = 0;
+        int pos = Buffer.Find('=');
+
+        if (pos!=-1) {
+            Name = Buffer.Left(pos);
+            Text = Buffer.Mid(pos + 1);
+        }
+
+        Name.Trim();
 
         CString RepText = Text;
         RepText.Replace(_T("\\n"), _T("\r\n"));
 
-        int NameLen = lstrlen(Name);
-        int TextLen = lstrlen(RepText);
+        if (!RepText.IsEmpty() && RepText[0] == _T(' ')) {
+            RepText = RepText.Mid(1);
+        }
+
+        int NameLen = Name.GetLength();
+        int TextLen = RepText.GetLength();
 
         if (!NameLen || !TextLen)
             continue;
@@ -137,7 +261,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
         TCHAR* pText = new TCHAR[TextLen + 1];
 
         lstrcpy(pName, Name);
-        lstrcpy(pText, (LPCTSTR)RepText + ((*Text == _T(' ')) ? 1 : 0));
+        lstrcpy(pText, RepText);
 
         if ( Name == CString("language") ) {
             locale_ = pText;
@@ -155,7 +279,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
             continue;
         }
 
-        TranslateListItem tli = {NULL, NULL};
+        TranslateListItem tli = {nullptr, nullptr};
         tli.Name = pName;
         tli.Text = pText;
         int hash = hexstr2int(pName);
@@ -163,7 +287,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     }
 
     m_sLang = Lang;
-    AppParams::instance()->setLanguageFile(W2U(Filename));
+    currentLanguageFile_ = Filename;
     return true;
 }
 
@@ -192,7 +316,7 @@ CString CLang::getLocale() const
 {
     return locale_;
 }
-
+#ifndef IU_SHELLEXT
 std::string CLang::getCurrentLanguage() {
     return W2U(m_sLang);
 }
@@ -209,20 +333,21 @@ std::string CLang::translate(const char* str) {
 const wchar_t* CLang::translateW(const wchar_t* str)  {
     return GetString(str);
 }
+#endif
 
 CString CLang::getLanguageFileNameForLocale(const CString& locale)
 {
     std::vector<CString> list;
-    WinUtils::GetFolderFileList(list, m_Directory, _T("*.lng"));
+    GetFolderFileList(list, m_Directory, _T("*.lng"));
     CString foundName;
 
-    for(size_t i=0; i<list.size(); i++)
+    for(const auto& fileName: list )
     {
-        FILE* f = _tfopen(m_Directory + list[i], _T("rb"));
+        FILE* f = _tfopen(m_Directory + fileName, _T("rb"));
         if (!f) {
             continue;
         }
-        fseek(f, 2, SEEK_SET); // skipping BOM
+        //fseek(f, 2, SEEK_SET); // skipping BOM
         TCHAR buffer[1024];
 
         while (!feof(f))
@@ -241,13 +366,13 @@ CString CLang::getLanguageFileNameForLocale(const CString& locale)
             value.TrimLeft(L" ");
             if ( key == "language" ) {
                 if ( value == locale ) {
-                    foundName =  list[i].Left(list[i].ReverseFind('.'));
+                    foundName = fileName.Left(fileName.ReverseFind('.'));
                     fclose(f);
                     return foundName;
                 }
                 CString lang = value.Left(value.Find('_'));
                 if (  lang == locale ) {
-                    foundName =  list[i].Left(list[i].ReverseFind('.'));
+                    foundName = fileName.Left(fileName.ReverseFind('.'));
                     break;
                 }
             }
@@ -267,4 +392,8 @@ CLang::~CLang()
         delete[] it.second.Name;
         delete[] it.second.Text;
     }
+}
+
+CString CLang::getCurrentLanguageFile() const {
+    return currentLanguageFile_;
 }

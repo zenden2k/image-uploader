@@ -1,8 +1,10 @@
 #ifndef IU_GUI_MYFILEDIALOG_H
 #define IU_GUI_MYFILEDIALOG_H
 
-#include "atlheaders.h"
+#include <vector>
 #include <memory>
+#include "atlheaders.h"
+
 
 class IMyFileDialog {
 public:

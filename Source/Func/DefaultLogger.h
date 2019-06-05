@@ -7,6 +7,7 @@
 #include "Core/Logging/Logger.h"
 #include <deque>
 #include <mutex>
+#include <vector>
 
 class CLogWindow;
 

@@ -542,10 +542,6 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
             item->editUrl = val;
         } else if (!strcmp(azColName[i], "display_name")) {
             item->displayName = val;
-        } else if (!strcmp(azColName[i], "edit_url")) {
-            item->editUrl = val;
-        } else if (!strcmp(azColName[i], "display_name")) {
-            item->displayName = val;
         } else if (!strcmp(azColName[i], "local_file_path")) {
             item->localFilePath = val;
         } else if (!strcmp(azColName[i], "created_at")) {

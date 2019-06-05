@@ -163,7 +163,6 @@ bool createDirectory(const std::string& path_, unsigned int mode)
         path.resize(path.length() - 1);
     }
     std::wstring wstrFolder = Utf8ToWstring(path);
-    //MessageBox(0,wstrFolder.c_str(),0,0);
 
     DWORD dwAttrib = GetFileAttributes(wstrFolder.c_str());
 

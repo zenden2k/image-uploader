@@ -26,9 +26,8 @@
 #include "Generated/ExplorerIntegration.h"
 #include "ishellcontextmenu.h"
 #include "../Func/LangClass.h"
-#include "../Func/MyUtils.h"
 #include "../3rdpart/Registry.h"
-#include "../Func/WinUtils.h"
+#include "Helpers.h"
 
 class CExplorerIntegrationModule : public CAtlDllModuleT< CExplorerIntegrationModule >
 {
@@ -59,7 +58,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             OleInitialize(NULL);
             TCHAR szFileName[1024], szPath[256];
             GetModuleFileName(hInstance, szFileName, 1023);
-            WinUtils::ExtractFilePath(szFileName, szPath, 256);
+            Helpers::ExtractFilePath(szFileName, szPath, 256);
             Lang.SetDirectory(CString(szPath) + _T("Lang\\"));
 
             CRegistry Reg;
@@ -83,7 +82,6 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             
 
             Lang.LoadLanguage(lang);
-            ServiceLocator::instance()->setTranslator(&Lang);
         }
 
         return _AtlModule.DllMain(dwReason, lpReserved); 

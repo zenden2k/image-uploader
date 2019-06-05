@@ -1,6 +1,7 @@
 #ifndef IU_GUI_NEWSTYLEFILESAVEDIALOG_H
 #define IU_GUI_NEWSTYLEFILESAVEDIALOG_H
 
+#include <vector>
 #include "atlheaders.h"
 #include "MyFileDialog.h"
 #include "Func/Library.h"

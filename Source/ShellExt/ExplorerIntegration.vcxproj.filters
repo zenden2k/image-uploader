@@ -20,9 +20,6 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{607f5c2e-afe9-44ac-9f0d-9b06d3da2dd2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Core\Utils">
-      <UniqueIdentifier>{cfbdb1a5-5380-4775-8b38-eb884d093d17}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core\3rdpart">
       <UniqueIdentifier>{6fa91d7e-0169-451a-8078-48f351d38074}</UniqueIdentifier>
     </Filter>
@@ -34,9 +31,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Core\Utils\CoreUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ExplorerIntegration.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -49,28 +43,13 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\Video\VideoUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Generated\ExplorerIntegration_i.c">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\CryptoUtils.cpp">
-      <Filter>Source Files\Core\Utils</Filter>
     </ClCompile>
     <ClCompile Include="..\Core\3rdpart\base64.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="..\Func\WinUtils.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\IuCommonFunctions.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
     <ClCompile Include="..\Func\LangClass.cpp">
-      <Filter>Source Files\Func</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\MyUtils.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdpart\Registry.cpp">
@@ -79,23 +58,8 @@
     <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\AppParams.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\StringUtils.cpp">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Logging.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\CryptoUtils_win.cpp">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\Utils\Utils_win.cpp">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\ServiceLocator.cpp">
-      <Filter>Source Files\Core</Filter>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,14 +94,11 @@
     <ClInclude Include="ExplorerIntegration.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Core\Utils\CryptoUtils.h">
-      <Filter>Source Files\Core\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="..\Core\3rdpart\base64.h">
       <Filter>Source Files\Core\3rdpart</Filter>
     </ClInclude>
-    <ClInclude Include="..\MyUtils.h">
-      <Filter>Source Files\Func</Filter>
+    <ClInclude Include="Helpers.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

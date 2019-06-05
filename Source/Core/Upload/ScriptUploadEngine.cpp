@@ -21,7 +21,6 @@
 #include "ScriptUploadEngine.h"
 
 #include <thread>
-#include <unordered_map>
 
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
@@ -30,7 +29,7 @@
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 
-CScriptUploadEngine::CScriptUploadEngine(std::string fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
+CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
     std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
     CAdvancedUploadEngine(serverSync, settings, errorCallback),
     Script(fileName, serverSync, factory, false)
@@ -129,7 +128,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         }
     }
     catch (NetworkClient::AbortedException & ex) {
-        throw ex;
+        throw;
     }
     catch (ServerSyncException& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));

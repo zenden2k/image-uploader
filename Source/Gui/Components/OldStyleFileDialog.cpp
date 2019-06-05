@@ -1,6 +1,7 @@
 #include "OldStyleFileDialog.h"
 
 #include "Func/WinUtils.h"
+#include "Core/Utils/CoreTypes.h"
 
 COldStyleFileDialog::COldStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog) {
     filterStr_.reset(GenerateDialogFilter(filters));

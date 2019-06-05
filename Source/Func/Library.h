@@ -23,6 +23,7 @@ limitations under the License.
 
 #pragma once 
 
+#include "Core/Utils/CoreTypes.h"
 #include <windows.h>
 
 class Library {

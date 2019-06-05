@@ -18,6 +18,8 @@ public:
         uploadManager_ = nullptr;
         myEngineList_ = nullptr;
         dispatcher_ = nullptr;
+        logWindow_ = nullptr;
+        settings_ = nullptr;
 #endif
     }
     ILogger* logger_;

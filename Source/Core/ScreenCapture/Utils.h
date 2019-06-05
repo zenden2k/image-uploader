@@ -2,6 +2,7 @@
 #define IU_CORE_SCREENCAPTURE_UTILS
 
 #include <vector>
+#include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 
 class MonitorEnumerator {

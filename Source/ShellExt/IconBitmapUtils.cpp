@@ -18,12 +18,12 @@
 //
 #include "stdafx.h"
 #include "IconBitmapUtils.h"
-#include "Func/WinUtils.h"
+#include "Helpers.h"
 
 IconBitmapUtils::IconBitmapUtils()
     : hUxTheme(NULL)
 {
-    if (WinUtils::IsVistaOrLater())
+    if (Helpers::IsVistaOrLater())
     {
         hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
 

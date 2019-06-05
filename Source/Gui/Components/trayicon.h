@@ -2,6 +2,7 @@
 #pragma once
 
 #include <atlmisc.h>
+#include "Core/Utils/CoreTypes.h"
 
 // Wrapper class for the Win32 NOTIFYICONDATA structure
 class CNotifyIconData : public NOTIFYICONDATA

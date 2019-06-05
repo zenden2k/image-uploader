@@ -21,13 +21,12 @@
 
 #include <atlbase.h>
 #include <atlcoll.h>
-#include "../Func/MyUtils.h"
+#include <shlobj.h>
 #include "IShellContextMenu.h"
 #include "../3rdpart/Registry.h"
 #include "../Func/LangClass.h"
-#include <shlobj.h>
-#include "Func/IuCommonFunctions.h"
-#include "Func/WinUtils.h"
+#include "Helpers.h"
+
 HINSTANCE hDllInstance;
 extern CLang Lang;
 CString GetStartMenuPath() 
@@ -57,7 +56,7 @@ CString GetDllFolder()
 {
 	TCHAR szFileName[1024],szPath[256];
 	GetModuleFileName(hDllInstance, szFileName, 1023);
-	WinUtils::ExtractFilePath(szFileName, szPath, 256);
+	Helpers::ExtractFilePath(szFileName, szPath, 256);
 	return szPath;
 }
 
@@ -74,11 +73,11 @@ bool IsMediaInfoInstalled()
    RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
 	RegCloseKey(ExtKey);
 	CString MediaDll = GetDllFolder()+_T("\\Modules\\MediaInfo.dll");
-	if(WinUtils::FileExists( MediaDll)) MediaInfoDllPath  = MediaDll;
+	if(Helpers::FileExists( MediaDll)) MediaInfoDllPath  = MediaDll;
 	else
 	{
 		CString MediaDll2 =CString(ClassName)+_T("\\Tools\\MediaInfo.dll");
-		if(WinUtils::FileExists( MediaDll2)) MediaInfoDllPath = MediaDll2;
+		if(Helpers::FileExists( MediaDll2)) MediaInfoDllPath = MediaDll2;
 	}
 	return !MediaInfoDllPath.IsEmpty();
 }
@@ -89,7 +88,7 @@ bool AreOnlyImages(CAtlArray<CString> & files)
 
 	for(int i=0; i<files.GetCount();i++)
 	{
-		if(!IuCommonFunctions::IsImage(files[i])) return false;
+		if(!Helpers::IsImage(files[i])) return false;
 	}
 	return true;
 }
@@ -101,9 +100,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
-		MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
 	} else {
-        MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid) : HBMMENU_CALLBACK;
+        MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid) : HBMMENU_CALLBACK;
 	}
 	
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
@@ -291,7 +290,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	Reg2.GetChildKeysNames(keyPath,keyNames);
 	int w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);
-	CString dataFolder = IuCommonFunctions::FindDataFolder();
+	CString dataFolder = Helpers::FindDataFolder();
 	for(int i =0; i < keyNames.size() ; i++ ) {
 		if ( Reg2.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
 			
@@ -310,7 +309,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	}
 
 
-	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 &&IsVideoFile( m_FileList[0]))
+	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 && Helpers::IsVideoFile( m_FileList[0]))
 	{
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Import Video File"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
@@ -338,7 +337,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		InternalMenuItem.text = MenuItem.dwTypeData;
 		
 		InternalMenuItem.icon= IDI_ICONMAIN;
-		MenuItem.hbmpItem = WinUtils::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
 		
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
@@ -346,7 +345,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 			
 	}
 
-	if (WinUtils::IsVistaOrLater())
+	if (Helpers::IsVistaOrLater())
 	{
 		MENUINFO MenuInfo;
 

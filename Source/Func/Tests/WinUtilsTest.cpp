@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "Core/Utils/CoreTypes.h"
 #include "Func/WinUtils.h"
 
 using namespace WinUtils;

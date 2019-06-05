@@ -51,9 +51,8 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    Section2.Lock();
+    std::lock_guard<std::mutex> lk(Section2);
     m_bNeedStop = true;
-    Section2.Unlock();
     KillTimer(kUpdateTimer);
     
     return 0;
@@ -61,10 +60,9 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 void CStatusDlg::SetInfo(const CString& Title, const CString& Text)
 {
-    CriticalSection.Lock();
+    std::lock_guard<std::mutex> lk(CriticalSection);
     m_Title=Title;
     m_Text = Text;
-    CriticalSection.Unlock();
 }
 
 LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -82,16 +80,14 @@ LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 void CStatusDlg::SetWindowTitle(const CString& WindowTitle)
 {
-    CriticalSection.Lock();
+    std::lock_guard<std::mutex> lk(CriticalSection);
     SetWindowText(WindowTitle);
-    CriticalSection.Unlock();
 }
 
 bool CStatusDlg::NeedStop()
 {
-    Section2.Lock();
+    std::lock_guard<std::mutex> lk(Section2);
     bool res = m_bNeedStop;
-    Section2.Unlock();
     return res;
 }
 

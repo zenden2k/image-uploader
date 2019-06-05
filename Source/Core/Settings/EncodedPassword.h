@@ -4,6 +4,8 @@
 #pragma once
 
 #include <string>
+#include "Core/Utils/CoreUtils.h"
+
 #ifdef _WIN32
 #include "atlheaders.h"
 #endif

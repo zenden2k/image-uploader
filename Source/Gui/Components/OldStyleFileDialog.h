@@ -3,6 +3,7 @@
 
 #include "atlheaders.h"
 #include "MyFileDialog.h"
+#include "Core/Utils/CoreTypes.h"
 #include <memory>
 
 class COldStyleFileDialog: public IMyFileDialog {

@@ -13,6 +13,13 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
     entry.Sender = U2W(Sender);
     entry.FileName = U2W(FileName);
 
+    SYSTEMTIME st;
+    ::GetLocalTime(&st);
+    CString Data;
+    Data.Format(_T("%02d:%02d:%02d"), static_cast<int>(st.wHour), static_cast<int>(st.wMinute), static_cast<int>(st.wSecond));
+
+    entry.Time = Data;
+
     int itemIndex;
     {
         std::lock_guard<std::mutex> lk(entriesMutex_);

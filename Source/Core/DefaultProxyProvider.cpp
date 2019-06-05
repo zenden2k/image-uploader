@@ -6,6 +6,8 @@
 #include <curl/curl.h>
 #include <Winhttp.h>
 #include "atlheaders.h"
+#include "Core/CommonDefs.h"
+#include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Func/WinUtils.h"

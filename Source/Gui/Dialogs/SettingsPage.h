@@ -5,8 +5,9 @@
 
 #include "atlheaders.h"
 #include <windows.h>
-
+#include <stdexcept>
 #include "Func/Library.h"
+
 
 class CWizardDlg;
 class CSettingsDlg;

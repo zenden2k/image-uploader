@@ -166,10 +166,171 @@ set(SRC_LIST
     "../res/image uploader.exe.manifest"
 )
 
-source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST})
+set(HEADER_LIST 
+    ../3rdpart/ShellPidl.h
+    ../Core/Images/ImageConverterPrivateBase.h
+    ../Core/Images/ImageConverterPrivate_gdiplus.h
+    ../Core/ScreenCapture/Utils.h
+    ../Core/Scripting/Script.h
+    ../Core/Scripting/ScriptsManager.h
+    ../Core/SearchByImage.h
+    ../Core/SearchGoogleImages.h
+    ../Core/SearchYandexImages.h
+    ../Core/Settings/CommonGuiSettings.h
+    ../Core/Settings/WtlGuiSettings.h
+    ../Core/TempFileDeleter.h
+    ../Core/FileDownloader.h
+    ../Core/ScreenCapture.h
+    ../Core/ServerListManager.h
+    ../Core/Images/ImageConverter.h
+    ../Core/Images/Thumbnail.h
+    ../Core/Images/Utils.h
+    ../Core/3rdpart/dxerr.h
+    ../Core/3rdpart/parser.h
+    ../Core/Video/AbstractFrameGrabber.h
+    ../Core/Video/AbstractImage.h
+    ../Core/Video/AbstractVideoFrame.h
+    ../Core/Video/AvcodecFrameGrabber.h
+    ../Core/Video/DirectshowFrameGrabber.h
+    ../Core/Video/DirectShowUtil.h
+    ../Core/Video/GdiPlusImage.h
+    ../Core/Video/VideoGrabber.h
+    ../Core/Video/VideoUtils.h
+    ../Core/Upload/Filters/ImageConverterFilter.h
+    ../Core/Upload/Filters/SizeExceedFilter.h
+    ../Core/Upload/Filters/UrlShorteningFilter.h
+    ../Core/Upload/Filters/UserFilter.h
+    ../Func/CmdLine.h
+    ../Func/DefaultLogger.h
+    ../Func/DefaultUploadErrorHandler.h
+    ../Func/GdiPlusInitializer.h
+    ../Func/MediaInfoHelper.h
+    ../Func/WtlScriptDialogProvider.h
+    Components/MyFileDialog.h
+    Components/NewStyleFileDialog.h
+    Components/NewStyleFileSaveDialog.h
+    Components/OldStyleFileDialog.h
+    Controls/HyperLinkControlAccessible.h
+    Controls/ImageView.h
+    Controls/ResultsListView.h
+    Dialogs/ClearHistoryDlg.h
+    Dialogs/FolderAddDlg.h
+    Dialogs/SearchByImageDlg.h
+    Win7JumpList.h
+    GuiTools.h
+    IconBitmapUtils.h
+    WizardCommon.h
+    Dialogs/AboutDlg.h
+    Dialogs/AddDirectoryServerDialog.h
+    Dialogs/AddFtpServerDialog.h
+    Dialogs/ContextMenuItemDlg.h
+    Dialogs/DefaultServersSettings.h
+    Dialogs/FloatingWindow.h
+    Dialogs/GeneralSettings.h
+    Dialogs/HistoryWindow.h
+    Dialogs/HotkeyEditor.h
+    Dialogs/HotkeySettings.h
+    Dialogs/ImageDownloaderDlg.h
+    Dialogs/ImageReuploaderDlg.h
+    Dialogs/InputDialog.h
+    Dialogs/IntegrationSettings.h
+    Dialogs/LangSelect.h
+    Dialogs/LoginDlg.h
+    Dialogs/LogoSettings.h
+    Dialogs/LogWindow.h
+    Dialogs/MainDlg.h
+    Dialogs/MediaInfoDlg.h
+    Dialogs/NewFolderDlg.h
+    Dialogs/QuickSetupDlg.h
+    Dialogs/RegionSelect.h
+    Dialogs/ResultsPanel.h
+    Dialogs/ResultsWindow.h
+    Dialogs/ScreenshotDlg.h
+    Dialogs/ScreenshotSettingsPage.h
+    Dialogs/ServerFolderSelect.h
+    Dialogs/ServerParamsDlg.h
+    Dialogs/SettingsDlg.h
+    Dialogs/settingspage.h
+    Dialogs/ShortenUrlDlg.h
+    Dialogs/SizeExceed.h
+    Dialogs/StatusDlg.h
+    Dialogs/TextViewDlg.h
+    Dialogs/ThumbEditor.h
+    Dialogs/ThumbSettingsPage.h
+    Dialogs/TraySettings.h
+    Dialogs/UpdateDlg.h
+    Dialogs/UploadDlg.h
+    Dialogs/UploadParamsDlg.h
+    Dialogs/UploadSettings.h
+    Dialogs/UploadSettingsPage.h
+    Dialogs/VideoGrabberPage.h
+    Dialogs/VideoGrabberParams.h
+    Dialogs/WebViewWindow.h
+    Dialogs/WelcomeDlg.h
+    Dialogs/WizardDlg.h
+    Controls/CustomEditControl.h
+    Controls/HistoryTreeControl.h
+    Controls/HyperLinkControl.h
+    Controls/IconButton.h
+    Controls/LogListBox.h
+    Controls/MyImage.h
+    Controls/PercentEdit.h
+    Controls/PictureExWnd.h
+    Controls/ServerSelectorControl.h
+    Controls/TabListBox.h
+    Controls/ThumbsView.h
+    Controls/WTLBrowserView.h
+    ../3rdpart/ColorButton.h
+    ../3rdpart/MemberFunctionCallback.h
+    ../3rdpart/QColorQuantizer.h
+    ../3rdpart/Registry.h
+    ../3rdpart/Unzipper.h
+    ../3rdpart/vkCodes.h
+    ../3rdpart/WinHotkeyCtrl.h
+    ../Func/Common.h
+    ../Func/ImageEditorConfigurationProvider.h
+    ../Func/IuCommonFunctions.h
+    ../Func/LangClass.h
+    ../Func/MyDataObject.h
+    ../Func/MyDropSource.h
+    ../Func/MyEngineList.h
+    ../Func/MyUtils.h
+    ../Func/SystemUtils.h
+    ../Func/UpdatePackage.h
+    ../Func/WebUtils.h
+    ../ImageEditor/Canvas.h
+    ../ImageEditor/Document.h
+    ../ImageEditor/DrawingElement.h
+    ../ImageEditor/DrawingTool.h
+    ../ImageEditor/MovableElement.h
+    ../ImageEditor/MovableElements.h
+    ../ImageEditor/Region.h
+    ../ImageEditor/Gui/ColorsDelegate.h
+    ../ImageEditor/Gui/ImageEditorView.h
+    ../ImageEditor/Gui/ImageEditorWindow.h
+    ../ImageEditor/Gui/InputBoxControl.h
+    ../ImageEditor/Gui/TextParamsWindow.h
+    ../ImageEditor/Gui/Toolbar.h
+    ../ImageEditor/DrawingTools/AbstractDrawingTool.h
+    ../ImageEditor/DrawingTools/BlurTool.h
+    ../ImageEditor/DrawingTools/BrushTool.h
+    ../ImageEditor/DrawingTools/ColorPickerTool.h
+    ../ImageEditor/DrawingTools/CropTool.h
+    ../ImageEditor/DrawingTools/MarkerTool.h
+    ../ImageEditor/DrawingTools/MoveAndResizeTool.h
+    ../ImageEditor/DrawingTools/PenTool.h
+    ../ImageEditor/DrawingTools/SelectionTool.h
+    ../ImageEditor/DrawingTools/TextTool.h
+    ../ImageEditor/DrawingTools/VectorElementTool.h
+    ../ImageEditor/Helpers/FontEnumerator.h
+    UploadListModel.h
+    ../resource.h
+)
+
+source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
 add_executable(GUI WIN32  
-    ${SRC_LIST}
+    ${SRC_LIST} ${HEADER_LIST}
 )
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
@@ -187,6 +348,7 @@ target_link_libraries(GUI iucore
     debug strmbasd optimized strmbase
 )
 
+set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:uxtheme.dll /DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 
 add_custom_command(TARGET GUI
@@ -195,5 +357,5 @@ add_custom_command(TARGET GUI
 )
 add_custom_command(TARGET GUI
     POST_BUILD
-    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" "$(TargetDir)$(TargetFileName)" $<CONFIG>
+    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:GUI> $<CONFIG>
 )

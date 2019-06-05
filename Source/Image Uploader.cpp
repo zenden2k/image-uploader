@@ -121,6 +121,7 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
     } else {
         Lang.LoadLanguage(Settings.Language);
     }
+    AppParams::instance()->setLanguageFile(W2U(Lang.getCurrentLanguageFile()));
 
     if (Lang.isRTL()) {
         SetProcessDefaultLayout(LAYOUT_RTL);

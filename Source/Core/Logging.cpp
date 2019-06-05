@@ -16,7 +16,7 @@
      limitations under the License.
 */
 
-#include "logging.h"
+#include "Logging.h"
 #include "Core/Utils/CoreUtils.h"
 
 std::ostream& operator<<(std::ostream& out, const wchar_t* str) {
