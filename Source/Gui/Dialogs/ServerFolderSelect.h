@@ -106,7 +106,7 @@ protected:
     CFolderItem m_newFolder;
     std::vector<std::string> m_accessTypeList;
     std::map<std::wstring,HTREEITEM> m_FolderMap;
-    std::atomic<bool> stopSignal;
+    std::atomic_bool stopSignal;
     CTreeViewCtrl m_FolderTree;
     ServerProfile& serverProfile_;
     //IU_PLUGIN_FolderItem * m_folderItems;

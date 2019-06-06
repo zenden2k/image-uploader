@@ -66,7 +66,7 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 void CLogWindow::WriteLogImpl(const DefaultLogger::LogEntry& entry)
 {
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    MsgList.AddString(entry.MsgType, entry.Sender, entry.Msg, entry.Info, entry.Time);
+    MsgList.AddString(entry.MsgType, entry.Sender.c_str(), entry.Msg.c_str(), entry.Info.c_str(), entry.Time.c_str());
     if (entry.MsgType == ILogger::logError && Settings.AutoShowLog) {
         Show();
     }
@@ -191,7 +191,7 @@ void CLogWindow::WriteLog(const DefaultLogger::LogEntry& entry)
     }
 
     if (!fileNameFilter_.IsEmpty()) {
-        if (entry.FileName != fileNameFilter_) {
+        if (CString(entry.FileName.c_str()) != fileNameFilter_) {
             return;
         }
     }

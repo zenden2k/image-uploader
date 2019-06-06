@@ -183,6 +183,18 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     CAdvancedUploadEngine(serverSync, settings, errorCallback)
 {
     setServerSettings(settings);
+    loginFinished_ = false;
+    loginSuccess_ = false;
+    fetchNodesFinished_ = false;
+    fetchNodesSuccess_ = false;
+    uploadFinished_ = false;
+    uploadSuccess_ = false;
+    exportFinished_ = false;
+    exportSuccess_ = false;
+    createFolderFinished_ = false;
+    createFolderSuccess_ = false;
+    renameFolderFinished_ = false;
+    renameFolderSuccess_ = false;
     folderList_ = nullptr;
 #ifdef _WIN32
     proc_ = std::make_unique<MyGfxProcessor>();

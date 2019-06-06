@@ -23,6 +23,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include "Core/CommonDefs.h"
+#include "Core/Utils/CoreUtils.h"
 #include "Core/3rdpart/MediaInfoDLL.h"
 #include "Core/i18n/Translator.h"
 #include "WinUtils.h"

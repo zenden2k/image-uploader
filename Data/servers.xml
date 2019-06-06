@@ -303,11 +303,6 @@
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>
-	<Server2 Name="goo.gl" Debug="0" Type="urlshortening" Plugin="googl">
-		<Actions>
-		</Actions>
-		<Result DirectUrlTemplate="stub" />
-	</Server2>
 	<Server2 Name="5cm.ru" Type="image" Plugin="5cm"  >
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server2>

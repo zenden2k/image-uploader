@@ -49,12 +49,29 @@
     #endif
 #endif
 
+#if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
+    #define UTF8_FILENAME(name) name
+#else
+    #define UTF8_FILENAME(name) IuCoreUtils::Utf8ToSystemLocale(name)
+#endif
+
 namespace NetworkClientInternal {
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     return  fread(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
 }
+
+// Wee might need this function for avoiding "cannot rewind" error, 
+// but it is not being called when CURLFORM_STREAM is used.
+// KNOWN bug in curl: https://github.com/curl/curl/issues/768
+/*int simple_seek_callback(void *userp, curl_off_t offset, int origin)
+{
+    if (fseek(reinterpret_cast<FILE*>(userp), offset, origin)==0) {
+        return CURL_SEEKFUNC_OK;
+    } 
+    return CURL_SEEKFUNC_CANTSEEK;
+}*/
 
 #if defined(USE_OPENSSL) 
 char CertFileName[1024] = "";
@@ -239,7 +256,7 @@ NetworkClient::NetworkClient(void)
     logger_ = nullptr;
     proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
-    m_userAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36";
+    m_userAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);    
@@ -350,6 +367,7 @@ bool NetworkClient::doUploadMultipartData()
             if(it->isFile)
             {
                     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, NetworkClientInternal::simple_read_callback);
+                    //curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, NetworkClientInternal::simple_seek_callback);
                                         std::string fileName = it->value;
                     FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
                     if(!curFile) 
@@ -361,16 +379,12 @@ bool NetworkClient::doUploadMultipartData()
                     // FIXME: > 2gb  file size & unicode filenames support on Windows
                     uint64_t  curFileSize = IuCoreUtils::getFileSize(fileName);
 
-                    if (curFileSize > LONG_MAX ) {
-                        std::string ansiFileName =
-#if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
-                            fileName
-#else
-                            IuCoreUtils::Utf8ToSystemLocale(fileName)
-#endif
-                            ;
+                    // Known bug in curl: https://github.com/curl/curl/issues/768
+                    if (/*curFileSize > LONG_MAX*/  true ) { 
+                        std::string ansiFileName = UTF8_FILENAME(fileName);
+                        ;
 #if defined(_WIN32) && !defined(CURL_WIN32_UTF8_FILENAMES)
-                        LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data wih file names non representable in system locale is not supported";
+                        //LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data with file names non representable in system locale is not supported";
 #endif
                         if (it->contentType.empty())
                             curl_formadd(&formpost,
@@ -387,13 +401,13 @@ bool NetworkClient::doUploadMultipartData()
                             CURLFORM_FILE, ansiFileName.c_str(),
                             CURLFORM_CONTENTTYPE, it->contentType.c_str(),
                             CURLFORM_END);
-                    } else {
+                    } /*else {
                         if (it->contentType.empty())
                             curl_formadd(&formpost,
                             &lastptr,
                             CURLFORM_COPYNAME, it->name.c_str(),
                             CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_STREAM, /*it->value.c_str()*/curFile,
+                            CURLFORM_STREAM, curFile,
                             CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
                             CURLFORM_END);
                         else
@@ -401,11 +415,11 @@ bool NetworkClient::doUploadMultipartData()
                             &lastptr,
                             CURLFORM_COPYNAME, it->name.c_str(),
                             CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_STREAM, /*it->value.c_str()*/curFile,
+                            CURLFORM_STREAM, curFile,
                             CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
                             CURLFORM_CONTENTTYPE, it->contentType.c_str(),
                             CURLFORM_END);
-                    }     
+                    } */ 
             }
             else
             {
@@ -575,7 +589,11 @@ void NetworkClient::private_checkResponse()
         if (code) {
             errorDescr += "Response code: " + IuCoreUtils::toString(code) + "\r\n";
         }
-        errorDescr += errorString() +"\r\n" + internalBuffer;
+        std::string errDescr = errorString();
+        if (!errDescr.empty()) {
+            errorDescr += errDescr  + "\r\n";
+        }
+        errorDescr += internalBuffer;
         if (logger_) {
             logger_->logNetworkError(!treatErrorsAsWarnings_, errorDescr);
         } else {

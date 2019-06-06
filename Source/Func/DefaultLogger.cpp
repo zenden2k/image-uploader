@@ -1,5 +1,7 @@
 #include "DefaultLogger.h"
 
+#include <boost/format.hpp>
+#include "atlheaders.h"
 #include "Gui/Dialogs/LogWindow.h"
 
 DefaultLogger::DefaultLogger() {
@@ -8,17 +10,15 @@ DefaultLogger::DefaultLogger() {
 void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const std::string& Msg, const std::string& Info, const std::string&  FileName) {
     LogEntry entry;
     entry.MsgType = MsgType;
-    entry.Msg = U2W(Msg);
-    entry.Info = U2W(Info);
-    entry.Sender = U2W(Sender);
-    entry.FileName = U2W(FileName);
+    entry.Msg = IuCoreUtils::Utf8ToWstring(Msg);
+    entry.Info = IuCoreUtils::Utf8ToWstring(Info);
+    entry.Sender = IuCoreUtils::Utf8ToWstring(Sender);
+    entry.FileName = IuCoreUtils::Utf8ToWstring(FileName);
 
     SYSTEMTIME st;
     ::GetLocalTime(&st);
-    CString Data;
-    Data.Format(_T("%02d:%02d:%02d"), static_cast<int>(st.wHour), static_cast<int>(st.wMinute), static_cast<int>(st.wSecond));
 
-    entry.Time = Data;
+    entry.Time  = str(boost::wformat(L"%02d:%02d:%02d")% static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
 
     int itemIndex;
     {
@@ -41,10 +41,9 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
     entry.FileName = FileName;
     SYSTEMTIME st;
     ::GetLocalTime(&st);
-    CString Data;
-    Data.Format(_T("%02d:%02d:%02d"), static_cast<int>(st.wHour), static_cast<int>(st.wMinute), static_cast<int>(st.wSecond));
 
-    entry.Time = Data;
+    entry.Time = str(boost::wformat(L"%02d:%02d:%02d") % static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
+
 
     int itemIndex;
     {

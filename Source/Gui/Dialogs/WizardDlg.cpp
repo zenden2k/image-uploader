@@ -282,7 +282,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     historyManager->openDatabase();
 
-    if (!Settings.HistorySettings.HistoryConverted) {
+    if (!isFirstRun_ && !Settings.HistorySettings.HistoryConverted) {
         statusDlg_.reset(new CStatusDlg(false));
         statusDlg_->SetAppWindow(true);
         statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));

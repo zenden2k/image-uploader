@@ -6,6 +6,7 @@
 
 #include "IuCommonFunctions.h"
 #include "Core/Images/Utils.h"
+#include "Core/Logging.h"
 
 namespace SystemUtils {
 

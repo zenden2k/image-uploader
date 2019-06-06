@@ -1,10 +1,6 @@
 cd winbuild
-nmake /f Makefile.vc mode=static VC=14 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=shared
-
-
-nmake /E CC="cl /D_USING_V120_SDK71_ /D_WIN32_WINNT=0x0501" /f Makefile.vc mode=static VC=12 ENABLE_WINSSL=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no RTLIBCFG=static
-
 nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 
+nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 
 
 
 Add to "lib\config-win32.h"
@@ -28,64 +24,152 @@ replace with:
   if(*ptr && ISSPACE(*ptr)) 
 
 
-Possible patch for formdata.c (not working)
+IMPORTANT! Patch for support utf-8 encoded filenames:
+
+-- curl_setup.h --
 
 #if defined(_WIN32) && !defined(__MINGW32CE__)
-#include <windows.h>
-#include <share.h>
-#include <errno.h>
-#endif 
+    #define fopen _wfopen_hack
+    #define open _wopen_hack
+
+    FILE *_wfopen_hack(const char *file, const char *mode);
+    int _wopen_hack(const char *file, int oflags, ...);
+#endif
+
+-- curl.h --
+#define CURL_WIN32_UTF8_FILENAMES
+
+
+-- file.c --
 
 #if defined(_WIN32) && !defined(__MINGW32CE__)
+    #include <windows.h>
+    #include <io.h>
+#endif
 
+#if defined(_WIN32) && !defined(__MINGW32CE__)
+    FILE *
+        fopen_utf8(const char *file, const char *mode)
+    {
+        wchar_t* wmode = 0;
+        wchar_t *wfile;
+        FILE* result = 0;
 
-int utf8towchar(const char *filename_utf8, wchar_t **filename_w)
-{
-    int num_chars;
-    num_chars = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename_utf8, -1, NULL, 0);
-    if (num_chars <= 0) {
-        *filename_w = NULL;
-        return 0;
+        int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, file, -1, 0, 0);
+        if (!length) {
+            return 0;
+        }
+        wfile = (wchar_t*)malloc(length * sizeof(wchar_t));
+        if (!wfile) {
+            return 0;
+        }
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, file, -1, wfile, length)) {
+            goto cleanup;
+        }
+
+        length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, mode, -1, 0, 0);
+        if (!length) {
+            goto cleanup;
+        }
+
+        wmode = (wchar_t*)malloc(length * sizeof(wchar_t));
+        if (!wmode) {
+            goto cleanup;
+        }
+
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, mode, -1, wmode, length)) {
+            goto cleanup;
+        }
+
+        result = _wfopen(wfile, wmode);
+    cleanup:
+        free(wfile);
+        free(wmode);
+        return result;
     }
-    *filename_w = (wchar_t *)malloc(num_chars * sizeof(wchar_t));
-    if (!*filename_w) {
-        errno = ENOMEM;
-        return -1;
+
+    int
+        open_utf8(const char *file, int oflags, ...)
+    {
+        wchar_t *wfile;
+        int mode = 0;
+        int result = -1;
+
+        if (oflags & _O_CREAT)
+        {
+            va_list ap;
+            va_start(ap, oflags);
+            mode = (int)va_arg(ap, int);
+            va_end(ap);
+        }
+
+        int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, file, -1, 0, 0);
+        if (!length) {
+            errno = ENOMEM;
+            return -1;
+        }
+        wfile = (wchar_t*)malloc(length * sizeof(wchar_t));
+        if (!wfile) {
+            errno = ENOMEM;
+            return -1;
+        }
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, file, -1, wfile, length)) {
+            goto cleanup;
+        }
+
+        result = _wopen(wfile, oflags, mode);
+    cleanup:
+        free(wfile);
+        return result;
     }
-    MultiByteToWideChar(CP_UTF8, 0, filename_utf8, -1, *filename_w, num_chars);
-    return 0;
-}
 
-FILE* win32_open(const char *filename_utf8, const char * mode)
-{
-    FILE *f;
-    wchar_t *filename_w;
-    wchar_t *mode_w;
-    /* convert UTF-8 to wide chars */
-    if (utf8towchar(filename_utf8, &filename_w))
-        return 0;
+    int stat_utf8(
+        const char *path,
+        struct _stati64 *buffer
+    ) {
+        wchar_t *wfile;
+        int result = -1;
 
-    if (!filename_w)
-        goto fallback;
-
-    if (utf8towchar(mode, &mode_w))
-        return 0;
-
-    if (!mode_w) {
-        free(filename_w);
-        goto fallback;
+        int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, 0, 0);
+        if (!length) {
+            errno = ENOMEM;
+            return -1;
+        }
+        wfile = (wchar_t*)malloc(length * sizeof(wchar_t));
+        if (!wfile) {
+            errno = ENOMEM;
+            return -1;
+        }
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, wfile, length)) {
+            goto cleanup;
+        }
+        result = _wstat64(wfile, buffer);
+cleanup:
+        free(wfile);
+        return result;
     }
+ 
 
-    f = _wfopen(filename_w, mode_w);
-    free(filename_w);
-    free(mode_w);
+    int access_utf8(const char *path, int mode) {
+        wchar_t *wfile;
+        int result = -1;
 
-    if (f)
-        return f;
-
-fallback:
-    /* filename may be in CP_ACP */
-    return fopen(filename_utf8, mode);
-}
-#define fopen win32_open
-#endif  
+        int length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, 0, 0);
+        if (!length) {
+            errno = ENOMEM;
+            return -1;
+        }
+        wfile = (wchar_t*)malloc(length * sizeof(wchar_t));
+        if (!wfile) {
+            errno = ENOMEM;
+            return -1;
+        }
+        if (!MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, path, -1, wfile, length)) {
+            goto cleanup;
+        }
+        result = _waccess(wfile, mode);
+    cleanup:
+        free(wfile);
+        return result;
+    }
+#endif

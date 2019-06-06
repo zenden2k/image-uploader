@@ -34,6 +34,7 @@ CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEng
     runningScript_ = nullptr;
     NetworkClientFactory factory;
     m_NetworkClient = factory.create();
+    stopSignal = false;
 }
 
 CServerFolderSelect::~CServerFolderSelect()

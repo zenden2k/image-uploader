@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "atlheaders.h"
 #include "Core/Logging/Logger.h"
 #include <deque>
 #include <mutex>
@@ -15,11 +14,11 @@ class DefaultLogger : public ILogger {
 public:
     struct LogEntry {
         LogMsgType MsgType;
-        CString Sender;
-        CString Msg;
-        CString Info;
-        CString FileName;
-        CString Time;
+        std::wstring Sender;
+        std::wstring Msg;
+        std::wstring Info;
+        std::wstring FileName;
+        std::wstring Time;
     };
     class Listener {
     public:
@@ -38,7 +37,6 @@ public:
     std::vector<LogEntry>::const_iterator begin() const;
     std::vector<LogEntry>::const_iterator end() const;
 private:
-    CLogWindow* logWindow_;
     std::vector<LogEntry> entries_;
     std::vector<Listener*> listeners_;
     std::mutex entriesMutex_;

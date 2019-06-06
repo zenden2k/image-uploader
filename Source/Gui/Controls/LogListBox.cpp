@@ -35,9 +35,12 @@ CString trim(const CString& Str)
     CString Result = Str;
     if (!Result.IsEmpty())
         for (int i = Result.GetLength() - 1; i >= 0; i--) {
-            if (Result[i] == _T('\n'))
+            if (Result[i] == _T('\n') || Result[i] == _T('\r')) {
                 Result.Delete(i);
-            else break;
+            }
+            else {
+                break;
+            }
         }
     return Result;
 }
@@ -103,7 +106,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
         ExtTextOutW(dc.m_hDC, rct.right - 5 - TimeLabelDimensions.cx, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->Time, item->Time.GetLength(), 0);
         // Writing error title
         SelectObject(dc.m_hDC, UnderlineFont);
-        ExtTextOutW(dc.m_hDC, r.left + 56, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->strTitle, wcslen(item->strTitle), 0);
+        ExtTextOutW(dc.m_hDC, r.left + 56, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->strTitle, item->strTitle.GetLength(), 0);
 
         // Writing some info
         SelectObject(dc.m_hDC, NormalFont);
@@ -114,7 +117,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
         // Writing error text with bold (explication of error)
         SelectObject(dc.m_hDC, BoldFont);
         RECT TextRect = {r.left + 56, LLB_VertMargin + r.top + item->TitleHeight + LLB_VertDivider + ((item->Info.GetLength()) ? (item->InfoHeight + LLB_VertDivider) : 0), r.right - 10, r.bottom - LLB_VertMargin};
-        dc.DrawText(item->strText, wcslen(item->strText), &TextRect, DT_NOPREFIX);
+        dc.DrawText(item->strText, item->strText.GetLength(), &TextRect, DT_NOPREFIX);
 
         POINT iconPos{ 12, r.top + 8 };
 
