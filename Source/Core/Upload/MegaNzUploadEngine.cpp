@@ -326,7 +326,7 @@ int CMegaNzUploadEngine::modifyFolder(CFolderItem& folder) {
 }
 
 int CMegaNzUploadEngine::getAccessTypeList(std::vector<std::string>& list) {
-    list.push_back("Default");
+    list.emplace_back("Default");
     return 1;
 }
 
@@ -414,7 +414,7 @@ bool CMegaNzUploadEngine::supportsSettings()
 
 bool CMegaNzUploadEngine::supportsBeforehandAuthorization()
 {
-    return true;
+    return false;
 }
 
 bool CMegaNzUploadEngine::ensureNodesFetched() {

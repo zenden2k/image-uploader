@@ -38,13 +38,8 @@ CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
     delayedLoad_ = false;
 }
 
-CHistoryWindow::~CHistoryWindow()
+CHistoryWindow::~CHistoryWindow() 
 {
-    if(m_hWnd) 
-    {
-        Detach();
-        m_hWnd = NULL;
-    }
 }
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -167,13 +162,14 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     if(!isSessionItem)
     {
         menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Open in Web Browser"));
+        menu.SetMenuDefaultItem(ID_OPENINBROWSER, FALSE);
         menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL"));
     }
     menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("View BBCode/HTML codes"));
     if(!isSessionItem)
     {
-        std::string fileName  = historyItem->localFilePath;
-        if(!fileName.empty() && IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(fileName)))
+        if(!historyItem->localFilePath.empty() && 
+            IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(historyItem->localFilePath)))
         {
             menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
         }
@@ -186,7 +182,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
             menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server"));
         }
     }
-    menu.SetMenuDefaultItem(0, true);
+    
     menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }

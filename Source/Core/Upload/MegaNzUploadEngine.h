@@ -21,11 +21,9 @@
 #ifndef _IU_MEGANZ_UPLOAD_ENGINE_H
 #define _IU_MEGANZ_UPLOAD_ENGINE_H
 
-
 #include <vector>
 #include <string>
 #include <memory>
-
 #include <atomic>
 
 #include "CommonTypes.h"
@@ -43,9 +41,7 @@ class MegaApi;
 class MegaProxy;
 }
 
-class CMegaNzUploadEngine : public CAdvancedUploadEngine
-                    
-{
+class CMegaNzUploadEngine : public CAdvancedUploadEngine {
     public:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
@@ -66,8 +62,6 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine
         friend class MyListener;
     protected:
         DISALLOW_COPY_AND_ASSIGN(CMegaNzUploadEngine);
-
-        
 
         std::unique_ptr<mega::MegaApi> megaApi_;
 #ifdef _WIN32

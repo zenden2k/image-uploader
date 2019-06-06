@@ -120,7 +120,7 @@ CString CServerSelectorControl::getTitle() const {
     return title_;
 }
 
-void CServerSelectorControl::setServerProfile(ServerProfile serverProfile) {
+void CServerSelectorControl::setServerProfile(const ServerProfile& serverProfile) {
     serverProfile_ = serverProfile;
 
     if ( !m_hWnd ) {
@@ -239,7 +239,7 @@ void CServerSelectorControl::serverChanged() {
             if ( Settings.ServersSettings[serverName].size() ) {
                 std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverName];
                 std::map <std::string, ServerSettingsStruct>::iterator it = ss.begin();
-                if ( it->first == "" ) {
+                if ( it->first.empty() ) {
                     ++it;
                 }
                 if ( it!= ss.end() ) {

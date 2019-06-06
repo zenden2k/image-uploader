@@ -8,6 +8,21 @@ void MyLogSink::send(google::LogSeverity severity, const char* full_filename, co
 {
     std::string sender = base_filename;
     sender += ":" + std::to_string(line);
-    logger_->write(severity == google::GLOG_ERROR ? ILogger::logError : ILogger::logWarning, sender, message);
+    std::string msg(message, message_len);
+
+    ILogger::LogMsgType msgType;
+
+    switch (severity) {
+        case google::GLOG_ERROR:
+            msgType = ILogger::logError;
+            break;
+        case google::GLOG_INFO:
+            msgType = ILogger::logInformation;
+            break;
+        case google::GLOG_WARNING:
+        default:
+            msgType = ILogger::logWarning;
+    }
+    logger_->write(msgType, sender, msg);
 }
 

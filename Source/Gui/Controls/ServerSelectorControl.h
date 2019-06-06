@@ -83,7 +83,7 @@ virtual ~CServerSelectorControl();
     void TranslateUI();
     void setTitle(CString title);
     CString getTitle() const;
-    void setServerProfile(ServerProfile serverProfile);
+    void setServerProfile(const ServerProfile& serverProfile);
     void setShowDefaultServerItem(bool show);
     void setServersMask(int mask);
     void setShowFilesizeLimits(bool show);
