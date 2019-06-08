@@ -259,13 +259,17 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
     boost::filesystem::path userServersFolderPath(userServersFolder);
     
-    if (boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
-        WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
+    try {
+        if (boost::filesystem::exists(userServersFolderPath) && boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
+            WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
 
-        for(size_t i=0; i<list.size(); i++)
-        {
-            LoadUploadEngines(userServersFolder+list[i], ErrorStr);
+            for (size_t i = 0; i < list.size(); i++)
+            {
+                LoadUploadEngines(userServersFolder + list[i], ErrorStr);
+            }
         }
+    } catch ( std::exception& ex) {
+        LOG(ERROR) << ex.what();
     }
     
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
@@ -285,7 +289,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (isFirstRun_) {
         Settings.HistorySettings.HistoryConverted = true;
     }
-
+    
     if (!isFirstRun_ && !Settings.HistorySettings.HistoryConverted) {
         statusDlg_.reset(new CStatusDlg(false));
         statusDlg_->SetAppWindow(true);

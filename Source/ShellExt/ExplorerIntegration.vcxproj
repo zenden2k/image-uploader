@@ -446,7 +446,7 @@
       <ValidateAllParameters>false</ValidateAllParameters>
     </Midl>
     <ClCompile>
-      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) /Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\Contrib\Include\DX;$(SolutionDir)\..\..\Contrib\Include\BaseClasses;$(SolutionDir)\..\..\Contrib\Include\WTL;$(SolutionDir)\..\..\Contrib\Include\;$(SolutionDir)\..\..\Source\;$(SolutionDir)\..\..\Contrib\Include\libs;$(SolutionDir)\..\..\Contrib\Source\boost\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -510,6 +510,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
+      <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
