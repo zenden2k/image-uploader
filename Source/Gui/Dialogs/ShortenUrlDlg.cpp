@@ -37,6 +37,7 @@ CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManag
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
     uploadManager_ = uploadManager;
     uploadEngineManager_ = uploadEngineManager;
+    isRunning_ = false;
 }
 
 
@@ -128,8 +129,8 @@ LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 LRESULT CShortenUrlDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if ( uploadManager_->IsRunning() ) {
-        uploadManager_->stop();
+    if (isRunning_) {
+        uploadSession_->stop();
         return 0;
     }
 
@@ -185,10 +186,11 @@ bool CShortenUrlDlg::StartProcess() {
     
     task->setServerProfile(profile);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CShortenUrlDlg::OnFileFinished));
-    std::shared_ptr<UploadSession> session(new UploadSession());
-    session->addTask(task);
-    session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
-    uploadManager_->addSession(session);
+    uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->addTask(task);
+    uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
+    isRunning_ = true;
+    uploadManager_->addSession(uploadSession_);
 
     return true;
 }
@@ -211,6 +213,7 @@ void CShortenUrlDlg::OnQueueFinished(UploadSession* session) {
 void CShortenUrlDlg::ProcessFinished() {
     GuiTools::EnableDialogItem(m_hWnd, IDOK, true);
     wndAnimation_.ShowWindow(SW_HIDE);
+    isRunning_ = false;
 }
 
 void CShortenUrlDlg::OnClose() {

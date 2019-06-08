@@ -78,6 +78,8 @@ class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
         UploadEngineManager* uploadEngineManager_;
         std::unique_ptr<CServerSelectorControl> urlShortenerServerSelector_;
         std::vector<std::shared_ptr<CUploadEngineData>> uploadEngineDataVector;
+        std::shared_ptr<UploadSession> uploadSession_;
+        bool isRunning_;
 };
 
 

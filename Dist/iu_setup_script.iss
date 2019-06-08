@@ -75,11 +75,11 @@ Name: "{code:GetDataFolder}\Image Uploader\Scripts"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
-Source: "..\Build\release optimized\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\Gui\MinSizeRel\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Lang\English.lng.src"; DestDir: "{app}\Lang"; Flags: ignoreversion
-Source: "..\Build\release optimized\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
@@ -99,11 +99,11 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils";
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
 Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
-Source: "..\Build\release optimized\ExplorerIntegration.dll";DestDir: "{app}";
-Source: "..\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
+Source: "..\Build\Gui\MinSizeRel\ExplorerIntegration.dll";DestDir: "{app}";
+Source: "..\Build\Gui\MinSizeRel\ExplorerIntegration64.dll";DestDir: "{app}";
 
-Source: "..\Build\release optimized\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
-Source: "..\Build\release optimized\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\Gui\MinSizeRel\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\Gui\MinSizeRel\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

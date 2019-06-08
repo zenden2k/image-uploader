@@ -282,6 +282,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     historyManager->openDatabase();
 
+    if (isFirstRun_) {
+        Settings.HistorySettings.HistoryConverted = true;
+    }
+
     if (!isFirstRun_ && !Settings.HistorySettings.HistoryConverted) {
         statusDlg_.reset(new CStatusDlg(false));
         statusDlg_->SetAppWindow(true);

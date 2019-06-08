@@ -28,7 +28,7 @@ class UploadSession
         std::shared_ptr<UploadTask> getTask(int index);
         void addSessionFinishedCallback(const SessionFinishedCallback& callback);
         void addTaskAddedCallback(const TaskAddedCallback& callback);
-        void stop();
+        void stop(bool removeFromQueue = true);
         void clearStopFlag();
 
         // Should be called only after session has been finished
@@ -44,6 +44,8 @@ class UploadSession
         void clearErrorsForServer(const std::string& serverName, const std::string& profileName);
         friend class UploadTask;
         friend class UploadManager;
+        std::vector<std::shared_ptr<UploadTask>>::const_iterator begin();
+        std::vector<std::shared_ptr<UploadTask>>::const_iterator end();
     protected:
         std::vector<std::shared_ptr<UploadTask>> tasks_;
         bool finishedSignalSent_;

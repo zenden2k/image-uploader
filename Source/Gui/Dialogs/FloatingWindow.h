@@ -25,9 +25,10 @@
 // FloatingWindow.h : Declaration of the FloatingWindow
 
 #pragma once
+#include <memory>
 #include "atlheaders.h"
 #include <atlcrack.h>
-#include <memory>
+
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
 #include "Core/Upload/UploadManager.h"
@@ -206,6 +207,7 @@ public:
      void startIconAnimation();
      void stopIconAnimation();
      void showLastUploadedCode();
+     void onUploadSessionFinished(UploadSession* session);
      static BOOL IsRunningFloatingWnd();
 
      bool animationEnabled_;
@@ -223,7 +225,7 @@ public:
      std::string source_file_name_;
      std::string server_name_;
      int iconAnimationCounter_;
-
+     std::shared_ptr<UploadSession> currentUploadSession_;
 
      struct UploadTaskUserData {
         CString linkTypeToShorten; 

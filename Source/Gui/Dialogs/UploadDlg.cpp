@@ -306,7 +306,7 @@ bool CUploadDlg::OnShow()
 bool CUploadDlg::OnNext() {
     if (uploadSession_->isRunning()) {
         uploadListView_.SetRedraw(FALSE);
-        uploadSession_->stop();
+        uploadManager_->stopSession(uploadSession_.get());
         uploadListView_.SetRedraw(TRUE);
         CancelByUser = true;
     }

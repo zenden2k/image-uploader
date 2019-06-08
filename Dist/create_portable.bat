@@ -54,15 +54,15 @@ for %%x in (
 )
 
 rem call signcode.bat
-Copy "..\Build\release optimized\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\Gui\MinSizeRel\Image Uploader.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release optimized\Modules\*" %temp_dir%\Modules\
+Copy "..\Modules\*" %temp_dir%\Modules\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release optimized\Modules\MediaInfoLang\*.csv" %temp_dir%\Modules\MediaInfoLang\
+Copy "..\Modules\MediaInfoLang\*.csv" %temp_dir%\Modules\MediaInfoLang\
 if ERRORLEVEL 1 goto CopyFailed
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
 if ERRORLEVEL 1 goto CopyFailed
@@ -95,13 +95,13 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
-Copy "..\Build\release optimized\ExplorerIntegration.dll" %temp_dir%\
+Copy "..\Build\Gui\MinSizeRel\ExplorerIntegration.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release optimized\ExplorerIntegration64.dll" %temp_dir%\
+Copy "..\Build\Gui\MinSizeRel\ExplorerIntegration64.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release optimized\av*.dll" %temp_dir%\
+Copy "..\Build\Gui\MinSizeRel\av*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release optimized\sw*.dll" %temp_dir%\
+Copy "..\Build\Gui\MinSizeRel\sw*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "Dll\gdiplus.dll" %temp_dir%\
 

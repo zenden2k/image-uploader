@@ -319,10 +319,10 @@ void UploadTask::setShorteningStarted(bool started)
     shorteningStarted_ = started;
 }
 
-void UploadTask::stop()
+void UploadTask::stop(bool removeFromQueue)
 {
     stopSignal_ = true;
-    if (uploadManager_) {
+    if (removeFromQueue && uploadManager_) {
         uploadManager_->removeTaskFromQueue(this);
     }
     if (currentUploadEngine_) {
@@ -444,49 +444,6 @@ void UploadTask::uploadProgress(InfoProgress progress)
     }
 }
 
-/*int UploadTask::getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask)
-{
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    int taskCount = childTasks_.size();
-    if (!taskCount)
-    {
-        return 0;
-    }
-    int count = 0;
-    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it)
-    {
-        if (it->get()->status()== StatusInQueue )
-        {
-            count++;
-            if (acceptor->canAcceptUploadTask(it->get()))
-            {
-                outTask = *it;
-                return count;
-            }
-        }
-    }
-    return count;
-}*/
-
-int UploadTask::pendingTasksCount(UploadTaskAcceptor* acceptor)
-{
-    std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    int taskCount = childTasks_.size();
-    if (!taskCount) {
-        return 0;
-    }
-    int res = 0;
-    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it)
-    {
-        UploadTask* task = it->get();
-        if (!task->isFinished() && !task->isRunning() && acceptor->canAcceptUploadTask(task))
-        {
-            res++;
-        }
-    }
-    return res;
-}
-
 /*std::string UploadTask::UploaderStatusToString(StatusType status, int actionIndex, std::string param)
 {
     std::string result;
@@ -538,18 +495,6 @@ void UploadTask::deletePostponedChilds() {
             }
         }
     }
-}
-
-bool UploadTask::schedulePostponedChilds() {
-    bool res = false;
-    std::lock_guard<std::recursive_mutex> guard(tasksMutex_);
-    for (auto it = childTasks_.begin(); it != childTasks_.end(); ++it) {
-        if (it->get()->status() == StatusPostponed) {
-            it->get()->setStatus(StatusInQueue);
-            res = true;
-        }
-    }
-    return res;
 }
 
 void UploadTask::restartTask(bool fullReset) {

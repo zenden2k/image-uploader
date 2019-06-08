@@ -78,7 +78,6 @@ class UploadTask {
         bool isFinishedItself();
         virtual void finishTask(Status status = StatusFinished);
         //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
-        int pendingTasksCount(UploadTaskAcceptor* acceptor);
         void addChildTask(std::shared_ptr<UploadTask> child);
         int childCount();
         int index() const;
@@ -104,7 +103,7 @@ class UploadTask {
         void setRole(Role role);
         bool shorteningStarted() const;
         void setShorteningStarted(bool started);
-        void stop();
+        void stop(bool removeFromQueue = true);
         virtual std::string title() const = 0;
         bool isStopped() const;
         bool stopSignal() const;
@@ -117,7 +116,6 @@ class UploadTask {
         TempFileDeleter* tempFileDeleter(bool create = true);
         void addTempFile(const std::string& fileName);
         void deletePostponedChilds();
-        bool schedulePostponedChilds();
         void uploadProgress(InfoProgress progress);
         void restartTask(bool fullReset = true);
         friend class CUploader;

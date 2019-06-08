@@ -26,7 +26,7 @@ for line in content:
     if res:
         params[res.group(1)] = res.group(2)
         
-version = params["IU_APP_VER"]
+version = params["IU_APP_VER_CLEAN"]
 tokens = version.split('.')
 ver_major = int(tokens[0])
 ver_minor = int(tokens[1])

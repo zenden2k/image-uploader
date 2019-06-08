@@ -369,7 +369,10 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     lastUrlShorteningTask_.reset(new UrlShorteningTask(W2U(url)));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
     lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
-    uploadManager_->addSingleTask(lastUrlShorteningTask_);
+    currentUploadSession_ = std::make_shared<UploadSession>();
+    currentUploadSession_->addTask(lastUrlShorteningTask_);
+    currentUploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CFloatingWindow::onUploadSessionFinished));
+    uploadManager_->addSession(currentUploadSession_);
 
     CString msg;
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
@@ -745,7 +748,11 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
-    uploadManager_->addSingleTask(task);
+    currentUploadSession_ = std::make_shared<UploadSession>();
+    //currentUploadSession_->
+    currentUploadSession_->addTask(task);
+    currentUploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CFloatingWindow::onUploadSessionFinished));
+    uploadManager_->addSession(currentUploadSession_);
 
     CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
@@ -867,8 +874,10 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
 
 LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (uploadManager_)
-        uploadManager_->stop();
+    if (m_bIsUploading && currentUploadSession_) {
+        currentUploadSession_->stop();
+    }
+       
     return 0;
 }
 
@@ -901,4 +910,8 @@ CString CFloatingWindow::HotkeyToString(CString funcName, CString menuItemText) 
         return menuItemText;
     }
     return menuItemText + _T("\t") + hotkeyStr;
+}
+
+void  CFloatingWindow::onUploadSessionFinished(UploadSession* session) {
+    m_bIsUploading = false;
 }

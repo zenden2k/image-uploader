@@ -22,6 +22,7 @@
 #define IU_CORE_UPLOAD_FILEQUEUEUPLOADER_H
 
 #include <string>
+#include <memory>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
 #include "UploadSession.h"
@@ -47,13 +48,13 @@ class CFileQueueUploader
         void removeSession(std::shared_ptr<UploadSession> uploadSession);
         void retrySession(std::shared_ptr<UploadSession> uploadSession);
         virtual ~CFileQueueUploader();
-        void stop();
         bool IsRunning() const;
         void setMaxThreadCount(int threadCount);
         bool isSlotAvailableForServer(const std::string& serverName, int maxThreads);
         void addUploadFilter(UploadFilter* filter);
         void removeUploadFilter(UploadFilter* filter);
         int sessionCount();
+        void stopSession(UploadSession* uploadSession);
         std::shared_ptr<UploadSession> session(int index);
         fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
         fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
@@ -68,6 +69,7 @@ class CFileQueueUploader
         virtual void sessionAdded(UploadSession* session);
         virtual void taskAdded(UploadTask* task);
         bool start();
+        void stop();
 };
 
 #endif

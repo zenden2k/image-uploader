@@ -26,7 +26,7 @@ struct ServerThreadsInfo {
     {
         runningThreads = 0;
         waitingFileCount = 0;
-        ued = 0;
+        ued = nullptr;
     }
 };
 
@@ -60,6 +60,7 @@ public:
     void removeUploadFilter(UploadFilter* filter);
     void retrySession(std::shared_ptr<UploadSession> uploadSession);
     void setMaxThreadCount(int threadCount);
+    void stopSession(UploadSession* uploadSession);
     int sessionCount();
     std::shared_ptr<UploadSession> session(int index);
     CFileQueueUploader *queueUploader_;
@@ -88,6 +89,7 @@ protected:
     std::mutex queueMutex_;
     std::condition_variable queueCondition_;
     void taskAdded(UploadTask* task);
+    void decrementThreadCount(const std::string& serverName);
     
     int startFromSession_;
     UploadEngineManager* uploadEngineManager_;

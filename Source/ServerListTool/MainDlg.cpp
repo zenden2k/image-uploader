@@ -178,6 +178,7 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     CString report = _T("Source file: ") + GetFileInfo(fileName, &m_sourceFileInfo);
     SetDlgItemText(IDC_TOOLSOURCEFILE, report);
     ::EnableWindow(GetDlgItem(IDOK), false);
+    ::EnableWindow(GetDlgItem(IDCANCEL), false);
     GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, true);
     m_NeedStop = false;
 
@@ -277,6 +278,7 @@ bool CMainDlg::OnNeedStop()
 
 void CMainDlg::processFinished() {
     ::EnableWindow(GetDlgItem(IDOK), true);
+    ::EnableWindow(GetDlgItem(IDCANCEL), true);
     GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);
 }
 

@@ -142,14 +142,12 @@ void UploadSession::addTaskAddedCallback(const TaskAddedCallback& callback)
     taskAddedCallbacks_.push_back(callback);
 }
 
-void UploadSession::stop()
+void UploadSession::stop(bool removeFromQueue)
 {
     stopSignal_ = true;
     //std::lock_guard<std::recursive_mutex> lock(tasksMutex_);
-    for (auto it = tasks_.begin(); it != tasks_.end(); ++it)
-    {
-        it->get()->stop();
-
+    for (const auto& it: tasks_) {
+        it->stop(removeFromQueue);
     }
 }
 
@@ -289,4 +287,12 @@ void UploadSession::recalcFinishedCount() {
         LOG(ERROR) << ex.what();
     }
     finishedCount_ = res;
+}
+
+std::vector<std::shared_ptr<UploadTask>>::const_iterator UploadSession::begin() {
+    return tasks_.begin();
+}
+
+std::vector<std::shared_ptr<UploadTask>>::const_iterator UploadSession::end() {
+    return tasks_.end();
 }
