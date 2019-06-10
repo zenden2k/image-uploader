@@ -54,6 +54,7 @@ namespace IuCoreUtils
     // A version of fopen() function which supports utf8 file names
     FILE * fopen_utf8(const char * filename, const char * mode);
     int fseek_64(FILE *stream, int64_t offset, int origin);
+    int64_t ftell_64(FILE *a);
 
     bool FileExists(const std::string& fileName);
     bool DirectoryExists(const std::string path);

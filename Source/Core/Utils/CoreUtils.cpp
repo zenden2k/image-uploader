@@ -101,6 +101,17 @@ int fseek_64(FILE* stream, int64_t offset, int origin)
 #endif
 }
 
+int64_t ftell_64(FILE *a)
+{
+#ifdef __CYGWIN__
+    return ftell(a);
+#elif defined (_WIN32)
+    return _ftelli64(a);
+#else
+    return ftello(a);
+#endif
+}
+
 bool FileExists(const std::string& fileName)
 {
     #ifdef WIN32
@@ -522,5 +533,7 @@ void DatePlusDays(struct tm* date, int days){
     // Use localtime because mktime converts to UTC so may change date
     *date = *localtime(&date_seconds);
 }
+
+
 
 } // end of namespace IuCoreUtils

@@ -373,7 +373,7 @@ void CServerSelectorControl::updateServerList()
     if ( showDefaultServerItem_ ) {
         serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
     }
-    serverComboBox_.AddItem(L"", -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
+    //serverComboBox_.AddItem(L"", -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
 
     //CIcon hImageIcon = NULL, hFileIcon = NULL;
     int selectedIndex = 0;

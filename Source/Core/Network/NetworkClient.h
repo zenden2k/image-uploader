@@ -283,6 +283,7 @@ class NetworkClient: public INetworkClient
         FILE *m_hOutFile;
         std::string m_OutFileName;
         FILE *m_uploadingFile;
+        int64_t m_uploadingFileReadBytes;
         std::string m_uploadData;
         ActionType m_currentActionType;
         int m_nUploadDataOffset;

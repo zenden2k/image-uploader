@@ -485,17 +485,17 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
                 return sqValueToJson(obj);
                 break;
             case OT_TABLE:
+                res = Json::Value(Json::objectValue);
                 while(obj.Next(it) ) {
                     res[it.getName()] = sqObjToJson(Sqrat::Object(it.getValue(), vm));
                 }
                 return res;
-                break;
-            case OT_ARRAY: 
+            case OT_ARRAY:
+                res = Json::Value(Json::arrayValue);
                 while(obj.Next(it) ) {
                     res[Sqrat::Object(it.getKey(), vm).Cast<int>()] = sqObjToJson(Sqrat::Object(it.getValue(), vm));
                 }
-                return res;
-                break;                
+                return res;            
     }
     return Json::Value(Json::nullValue);
 }
@@ -504,8 +504,7 @@ const std::string ToJSON(const Sqrat::Object&  obj) {
     Json::Value root = sqObjToJson(obj);
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
-    builder["indentation"] = "   ";  // or whatever you like
-
+    builder["indentation"] = "   ";  
     return Json::writeString(builder, root);
 }
 

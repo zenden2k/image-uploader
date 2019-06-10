@@ -66,6 +66,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
             MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
             MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
             CHAIN_MSG_MAP(CDialogResize<CImageReuploaderDlg>)
         END_MSG_MAP()
 
@@ -79,7 +80,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
             DLGRESIZE_CONTROL(IDC_SHOWLOG, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_LINKSLISTRADIO, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_RESULTSLABEL, DLSZ_SIZE_X)
-            DLGRESIZE_CONTROL(IDC_DOWNLOADFILESPROGRESS, DLSZ_SIZE_X|DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
             DLGRESIZE_CONTROL(IDC_SOURCEURLEDIT, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
@@ -102,6 +102,9 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
             unsigned int sourceIndex;
         };
 
+        typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
+        typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
+
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -116,7 +119,8 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         LRESULT OnClickedOutputRadioButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCopyToClipboardButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        
+        LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
         bool ExtractLinks(const std::string& text, std::vector<std::string> &result);
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
@@ -132,6 +136,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         bool OnClose();
         bool tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage);
         bool addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName );
+        void clipboardUpdated();
         //bool OnConfigureNetworkClient(NetworkClient* nm);
         // bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkClient* nm){return true;}
 
@@ -145,7 +150,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         int m_nFilesCount;
         int m_nFilesDownloaded;
         int m_nFilesUploaded;
-        int m_serverId;
         unsigned int htmlClipboardFormatId;
         CString m_InitialBuffer;
         std::mutex mutex_;
@@ -160,6 +164,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         std::vector<std::unique_ptr<DownloadItemData>> downloadItems_; 
         std::vector<std::unique_ptr<UploadItemData>> uploadItems_;
         std::mutex uploadItemsMutex_;
+        RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 
         struct Match {
             int start;

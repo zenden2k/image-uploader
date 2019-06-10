@@ -743,6 +743,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,132,134,182,10
     LTEXT           "URL источника (опционально):",IDC_SOURCEURLLABEL,7,151,120,8
     EDITTEXT        IDC_SOURCEURLEDIT,131,148,229,14,ES_AUTOHSCROLL
+    LTEXT           "Static",IDC_IMAGESERVERPLACEHOLDER,6,165,329,44,NOT WS_VISIBLE
     DEFPUSHBUTTON   "Перезалить изображения",IDOK,5,215,97,15
     LTEXT           "Static",IDC_ANIMATIONSTATIC,331,211,27,21,NOT WS_VISIBLE
     CTEXT           "Static",IDC_RESULTSLABEL,7,233,353,8
@@ -752,9 +753,6 @@ BEGIN
     PUSHBUTTON      "Копировать в буфер",IDC_COPYTOCLIPBOARD,5,369,82,14
     PUSHBUTTON      "Показать лог",IDC_SHOWLOG,132,369,96,14
     PUSHBUTTON      "Close",IDCANCEL,310,369,50,14
-    CONTROL         "Следить за буфером обмена",IDC_WATCHCLIPBOARD,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,409,75,234,10
-    CONTROL         "",IDC_DOWNLOADFILESPROGRESS,"msctls_progress32",NOT WS_VISIBLE,411,171,355,11
-    LTEXT           "Static",IDC_IMAGESERVERPLACEHOLDER,6,165,329,44,NOT WS_VISIBLE
 END
 
 IDD_SHORTENURL DIALOGEX 0, 0, 279, 149
@@ -1424,46 +1422,87 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\new-icon.ico"
+
 IDI_GRAB                ICON                    "res\\grabmovie.ico"
+
 IDI_SCREENSHOT          ICON                    "res\\screen.ico"
+
 IDI_IMAGES              ICON                    "res\\images.ico"
+
 IDI_ICONSETTINGS        ICON                    "res\\icon-settings.ico"
+
 IDI_ICONFOLDER          ICON                    "res\\icon-folder.ico"
+
 IDI_ICONINFO            ICON                    "res\\icon-info.ico"
+
 IDI_ICONREGION          ICON                    "res\\icon-region.ico"
+
 IDI_CLIPBOARD           ICON                    "res\\icon-clipboard.ico"
+
 IDI_ERRORICON           ICON                    "res\\Error.ico"
+
 IDI_ICONWARNING         ICON                    "res\\Warning.ico"
+
 IDI_ADDITIONAL          ICON                    "res\\icon_additional.ico"
+
 IDI_CLOSE               ICON                    "res\\icon-close.ico"
+
 IDI_WINDOW              ICON                    "res\\icon-window.ico"
+
 IDI_ICONWINDOWS         ICON                    "res\\icon-windows.ico"
+
 IDI_FREEFORM            ICON                    "res\\icon-freeform.ico"
+
 IDI_ICONADD             ICON                    "res\\icon-add.ico"
+
 IDI_ICONADDFOLDER       ICON                    "res\\icon-addfolder.ico"
+
 IDI_ICONWEB             ICON                    "res\\icon-web.ico"
+
 IDI_DROPDOWN            ICON                    "res\\icon_dropdown.ico"
+
 IDI_ICONEDIT            ICON                    "res\\icon_edit.ico"
+
 IDI_ICONWHITEPAGE       ICON                    "res\\icon_whitepage.ico"
+
 IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
+
 IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
+
 IDI_ICONDELETE          ICON                    "res\\icon_delete.ico"
+
 IDI_ICONRELOAD          ICON                    "res\\icon-reload.ico"
+
 IDI_ICONLINK            ICON                    "res\\icon-link.ico"
+
 IDI_ICONADDITEM         ICON                    "res\\icon_additem.ico"
+
 IDI_ICONDELETEITEM      ICON                    "res\\icon_deleteitem.ico"
+
 IDI_ICONSETTINGS2       ICON                    "res\\icon-settings2.ico"
+
 IDI_ICONUSER            ICON                    "res\\icon-user.ico"
+
 IDI_ICONFOLDER2         ICON                    "res\\icon_folder2.ico"
+
 IDI_ICONUP              ICON                    "res\\icon_up.ico"
+
 IDI_ICONDOWN            ICON                    "res\\icon_down.ico"
+
 IDI_ICONBOLD            ICON                    "res\\ImageEditor\\icon_bold.ico"
+
 IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.ico"
+
 IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
+
 IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
+
 IDI_ICONTRAYACTIVE      ICON                    "res\\icon_main_active.ico"
+
 IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico"
+
 IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1471,41 +1510,77 @@ IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
 //
 
 IDR_PNG1                PNG                     "res\\icon_main.png"
+
 IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
+
 IDR_bottomLeftShadow    PNG                     "res\\shadows\\bottomLeftShadow.png"
+
 IDR_bottomRightShadow   PNG                     "res\\shadows\\bottomRightShadow.png"
+
 IDR_bottomShadow        PNG                     "res\\shadows\\bottomShadow.png"
+
 IDR_leftShadow          PNG                     "res\\shadows\\leftShadow.png"
+
 IDR_rightShadow         PNG                     "res\\shadows\\rightShadow.png"
+
 IDR_topLeftShadow       PNG                     "res\\shadows\\topLeftShadow.png"
+
 IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.png"
+
 IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
+
 IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
+
 IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
+
 IDB_DROPDOWNICONPNG     PNG                     "res\\icon_dropdown_png.png"
+
 IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
+
 IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
+
 IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
+
 IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
+
 IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
+
 IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
+
 IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
+
 IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
+
 IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
+
 IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
+
 IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
+
 IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
+
 IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
+
 IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
+
 IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+
 IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
+
 IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
+
 IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
+
 IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
+
 IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
+
 IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload.png"
+
 IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
+
 IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1513,8 +1588,11 @@ IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboar
 //
 
 IDB_UPLOADTOOLBARBMP32BIT BITMAP                  "res\\toolbar22.bmp"
+
 IDB_UPLOADTOOLBARBMP16BIT BITMAP                  "res\\toolbar11.bmp"
+
 IDB_SERVERTOOLBARBMP2   BITMAP                  "res\\server_8bit.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1523,12 +1601,25 @@ IDB_SERVERTOOLBARBMP2   BITMAP                  "res\\server_8bit.bmp"
 
 IDR_PROGRESSGIF         GIF                     "res\\progress.gif_"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
 IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_IMAGEREUPLOADER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 

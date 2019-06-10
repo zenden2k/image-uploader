@@ -57,7 +57,6 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
     PrevClipboardViewer = nullptr;
     m_nFilesCount = 0;
     m_nFilesUploaded = 0;
-    m_serverId = -1;
     m_nFilesDownloaded = 0;
 }
 
@@ -69,7 +68,18 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
-    PrevClipboardViewer = SetClipboardViewer();
+    if (WinUtils::IsVistaOrLater()) {
+        HMODULE module = GetModuleHandle(_T("user32.dll"));
+        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
+        if (!fAddClipboardFormatListener(m_hWnd)) {
+            DWORD errCode = GetLastError();
+            LOG(WARNING) << WinUtils::FormatWindowsErrorMessage(errCode);
+        }
+        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
+    } else {
+        PrevClipboardViewer = SetClipboardViewer();
+    }
+
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     sourceTextEditControl.AttachToDlgItem(m_hWnd, IDC_INPUTTEXT);
     sourceTextEditControl.onPaste.bind(this, &CImageReuploaderDlg::OnEditControlPaste);
@@ -81,7 +91,6 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_COPYTOCLIPBOARD, "Copy to clipboard");
     TRC(IDC_SOURCECODERADIO, "Source code");
     TRC(IDC_LINKSLISTRADIO, "List of URLs");
-    TRC(IDC_WATCHCLIPBOARD, "Watch Clipboard for URLs");
     TRC(IDC_IMAGEDOWNLOADERTIP, "Enter the text containing links to images (HTML, BBcode, or just plain text):");
     TRC(IDC_PASTEHTML, "Paste HTML from clipboard");
     TRC(IDC_SOURCEURLLABEL, "Source URL (optional):");
@@ -101,11 +110,9 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
-    imageServerSelector_->SetWindowPos( 0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , 0);
+    imageServerSelector_->SetWindowPos( GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
     imageServerSelector_->setServerProfile(Settings.imageServer);
 
-    ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
-    SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
     GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV);
     GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
@@ -121,20 +128,14 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         sourceTextEditControl.SendMessage(WM_PASTE);
     } 
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
-    m_serverId = myEngineList->getUploadEngineIndex(Utf8ToWCstring(serverProfile_.serverName()));
 
-    if(m_serverId == -1) {
-        m_serverId = m_EngineList->getRandomImageServer();
-        if(m_serverId == -1) {
-            return false;
-        }
-    }
     SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Server")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
 
     SetDlgItemText(IDC_RESULTSLABEL, _T(""));
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     SendDlgItemMessage(IDC_INPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0); 
-    SendDlgItemMessage(IDC_OUTPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0); 
+    SendDlgItemMessage(IDC_OUTPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0);
+    clipboardUpdated();
     return 1; 
 }
 
@@ -159,7 +160,6 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 
     if ( closeWindow ) {
         WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-        Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
         OnClose();
         EndDialog(wID);
     }
@@ -181,16 +181,18 @@ LRESULT CImageReuploaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lP
 
 void CImageReuploaderDlg::OnDrawClipboard()
 {
-    bool isHtmlAvailable = IsClipboardFormatAvailable(htmlClipboardFormatId)!=0;
-
-    GuiTools::EnableDialogItem(m_hWnd, IDC_PASTEHTML, isHtmlAvailable);
+    clipboardUpdated();
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
     if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
 }
 
 LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    ChangeClipboardChain(PrevClipboardViewer);
+    if (WinUtils::IsVistaOrLater()) {
+        fRemoveClipboardFormatListener_(m_hWnd);
+    } else {
+        ChangeClipboardChain(PrevClipboardViewer);
+    }
     return 0;
 }
 
@@ -383,7 +385,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
 
     while (pos <= str.length()) {
         if( reg.search(str, pos)) { 
-            int questionMarkPos =  reg[1].find_last_of('?');
+            size_t questionMarkPos =  reg[1].find_last_of('?');
             std::string url;
             if ( questionMarkPos != std::string::npos ) {
                 url = reg[1].substr(0, questionMarkPos);
@@ -449,7 +451,7 @@ bool CImageReuploaderDlg::BeginDownloading()
         }
     }
 
-    if ( !links.size() ) {
+    if ( links.empty() ) {
         LocalizedMessageBox(TR("Could not find links in the given text!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
         return false;
     } else {
@@ -561,15 +563,15 @@ void CImageReuploaderDlg::generateOutputText() {
 
     if ( showSourceCode ) {
         std::string inputText = WCstringToUtf8( GuiTools::GetWindowText(GetDlgItem(IDC_INPUTTEXT)) );
-        for ( std::map<unsigned int, UploadedItem>::iterator it =  uploadedItems_.begin(); it  != uploadedItems_.end(); ++it ) {
-            UploadedItem& uploadedItem = it->second;
+        for ( const auto& it: uploadedItems_) {
+            const UploadedItem& uploadedItem = it.second;
             inputText = IuStringUtils::Replace(inputText, uploadedItem.originalUrl, uploadedItem.newUrl);
         }
         SetDlgItemText( IDC_OUTPUTTEXT,  Utf8ToWCstring(inputText) );
     } else {
         CString outputText;
-        for ( std::map<unsigned int, UploadedItem>::iterator it =  uploadedItems_.begin(); it  != uploadedItems_.end(); ++it ) {
-            UploadedItem& uploadedItem = it->second;
+        for ( const auto& it: uploadedItems_) {
+            const UploadedItem& uploadedItem = it.second;
             outputText += Utf8ToWCstring(uploadedItem.newUrl) + _T("\r\n");
         }
         SetDlgItemText( IDC_OUTPUTTEXT,  outputText );
@@ -593,8 +595,6 @@ void CImageReuploaderDlg::processFinished() {
     ::EnableWindow(GetDlgItem(IDOK),true);
     ::EnableWindow(GetDlgItem(IDC_FILEINFOEDIT),true);
     TRC(IDCANCEL, "Close");
-    ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_HIDE);
-    ::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),true);
     m_wndAnimation.ShowWindow(SW_HIDE);
     SetDlgItemText(IDCANCEL, TR("Close"));
 }
@@ -685,4 +685,15 @@ bool CImageReuploaderDlg::OnClose() {
 LRESULT CImageReuploaderDlg::OnShowLogClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServiceLocator::instance()->logWindow()->Show();
     return 0;
+}
+
+LRESULT CImageReuploaderDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    clipboardUpdated();
+    return 0;
+}
+
+void CImageReuploaderDlg::clipboardUpdated() {
+    bool isHtmlAvailable = IsClipboardFormatAvailable(htmlClipboardFormatId) != 0;
+
+    GuiTools::EnableDialogItem(m_hWnd, IDC_PASTEHTML, isHtmlAvailable);
 }

@@ -65,7 +65,7 @@ bool CHistoryManager::openDatabase() {
         LOG(ERROR) << "unable to open database: ";
         return false;
     }
-    const char* sql = "CREATE TABLE IF NOT EXISTS upload_sessions(id,created_at)";
+    const char* sql = "CREATE TABLE IF NOT EXISTS upload_sessions(id PRIMARY KEY NOT NULL,created_at INT NOT NULL)";
     char* err = nullptr;
     if (sqlite3_exec(db_, sql, nullptr, nullptr, &err) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: " << err;
@@ -272,6 +272,9 @@ void CHistorySession::sortByOrderIndex() {
     std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem* lhs, const HistoryItem* rhs) {
         return lhs->sortIndex < rhs->sortIndex;
     });
+    if (!m_entries.empty()) {
+        m_serverName = m_entries[0]->serverName;
+    }
 }
 
 std::string CHistorySession::serverName() const

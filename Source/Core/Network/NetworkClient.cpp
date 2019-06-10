@@ -239,6 +239,7 @@ NetworkClient::NetworkClient(void)
     m_hOutFile = 0;
     chunkOffset_ = -1;
     chunkSize_ = -1;
+    m_uploadingFileReadBytes = 0;
     chunk_ = 0;
     curlShare_ = 0;
     m_CurrentFileSize = -1;
@@ -793,12 +794,20 @@ size_t NetworkClient::read_callback(void *ptr, size_t size, size_t nmemb, void *
 size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb, void *)
 {
     size_t retcode;
-    int wantsToRead = size * nmemb;
-    if(m_uploadingFile)
+   
+    if (m_uploadingFile) {
+        long pos = IuCoreUtils::ftell_64(m_uploadingFile);
+        if (pos >= chunkOffset_ + m_currentUploadDataSize) {
+            return 0;
+        }
         retcode = fread(ptr, size, nmemb, m_uploadingFile);
-    else
+       
+        retcode = std::min<>((int64_t)retcode, chunkOffset_ + m_currentUploadDataSize - pos);
+        m_uploadingFileReadBytes += retcode;
+    } else
     {
-        // dont event try to remove "<>" brackets!!
+        int wantsToRead = size * nmemb;
+        // dont even try to remove "<>" brackets!!
         int canRead = std::min<>((int)m_uploadData.size()-m_nUploadDataOffset, (int)wantsToRead);
         memcpy(ptr, m_uploadData.c_str(),canRead);
         m_nUploadDataOffset+=canRead;
@@ -826,7 +835,8 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
             m_currentUploadDataSize = chunkSize_;
             if ( IuCoreUtils::fseek_64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
             }
-        } 
+        }
+        m_uploadingFileReadBytes = 0;
         m_currentActionType = atUpload;
     }
     else
@@ -838,8 +848,9 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         m_currentActionType = atPost;
     }
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
-        if(!private_apply_method())
-    curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
+    if (!private_apply_method()) {
+        curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
+    }
     curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
     
@@ -847,6 +858,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_currentUploadDataSize));
     }
     private_initTransfer();
+
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     
     curl_result = curl_easy_perform(curl_handle);
