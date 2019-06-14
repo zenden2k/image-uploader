@@ -368,7 +368,7 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
     ScreenshotSettings.Delay = 1;
     ScreenshotSettings.brushColor = RGB(255, 0, 0);
     ScreenshotSettings.ShowForeground = false;
-    ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %i");
+    ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
     ScreenshotSettings.CopyToClipboard = false;
     ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
     ScreenshotSettings.AddShadow = false;

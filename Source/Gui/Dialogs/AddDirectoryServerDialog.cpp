@@ -367,6 +367,7 @@ bool CAddDirectoryServerDialog::LoadComputerAddresses()
                         LocalFree(lpMsgBuf);
                         if (pAddresses)
                             FREE(pAddresses);
+                        pAddresses = nullptr;
                 }
             }
         }

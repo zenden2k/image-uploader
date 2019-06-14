@@ -60,7 +60,6 @@ protected:
     CFont titleFont_;
     bool canBeStopped_;
     bool processFinished_;
-    bool visible_;
     std::mutex CriticalSection, Section2;
 };
 

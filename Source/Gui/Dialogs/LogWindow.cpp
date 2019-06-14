@@ -24,7 +24,7 @@
 #include "Core/Settings/BasicSettings.h"
 
 // CLogWindow
-CLogWindow::CLogWindow(): mainThreadId(GetCurrentThreadId())
+CLogWindow::CLogWindow(): mainThreadId(GetCurrentThreadId()), logger_(nullptr)
 {
 }
 

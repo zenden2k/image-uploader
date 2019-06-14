@@ -260,7 +260,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     if (dlg.DoModal() == IDOK) {
         newName = WCstringToUtf8(dlg.getValue());
     } else {
-        return 0;
+        return false;
     }
     std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
     std::string destination = srcFolder + newName + ".xml";
@@ -268,11 +268,13 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         GuiTools::LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
         return false;
     }
-    Thumbnail * thumb = 0;
+    Thumbnail * thumb = nullptr;
+    std::unique_ptr<Thumbnail> thumbPtr;
     if (thumb_cache_.count(fileName)) {
         thumb = thumb_cache_[fileName];
     } else {
-        thumb = new Thumbnail();
+        thumbPtr = std::make_unique<Thumbnail>();
+        thumb = thumbPtr.get();
         thumb->LoadFromFile(fileName);
     }
     std::string sprite = thumb->getSpriteFileName();

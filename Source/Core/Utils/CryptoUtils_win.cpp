@@ -28,7 +28,6 @@
 #include "CoreUtils.h"
 #include "Core/3rdpart/base64.h"
 
-
 namespace IuCoreUtils {
 
 typedef struct _my_blob {
@@ -96,7 +95,7 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
     return oss.str();
 }
 
-std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
+std::string GetHashTextFromFile(const std::string& filename, HashType hashType, const std::string& prefix = "", const std::string& postfix = "")
 {
     HCRYPTPROV hProv = NULL;
     DWORD dwStatus = 0;
@@ -143,6 +142,18 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
         return std::string();
     }
 
+    if (!prefix.empty()) {
+        if (!CryptHashData(hHash, (BYTE*)prefix.data(), prefix.size(), 0))
+        {
+            dwStatus = GetLastError();
+            LOG(ERROR) << "CryptHashData failed: " << dwStatus;
+            CryptReleaseContext(hProv, 0);
+            CryptDestroyHash(hHash);
+            CloseHandle(hFile);
+            return std::string();
+        }
+    }
+ 
     while ((bResult = ReadFile(hFile, rgbFile, BUFSIZE,
         &cbRead, NULL)) != 0)
     {
@@ -161,6 +172,19 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType)
             return std::string();
         }
     }
+
+    if (!postfix.empty()) {
+        if (!CryptHashData(hHash, (BYTE*)postfix.data(), postfix.size(), 0))
+        {
+            dwStatus = GetLastError();
+            LOG(ERROR) << "CryptHashData failed: " << dwStatus;
+            CryptReleaseContext(hProv, 0);
+            CryptDestroyHash(hHash);
+            CloseHandle(hFile);
+            return std::string();
+        }
+    }
+
 
     DWORD cbHashSize = 0, dwCount = sizeof(DWORD);
     if (!CryptGetHashParam(hHash, HP_HASHSIZE, (BYTE *)&cbHashSize, &dwCount, 0)) {
@@ -350,5 +374,10 @@ const std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
 const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
     return GetHashTextFromFile(filename, HashSha1);
 }
+
+std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix) {
+    return GetHashTextFromFile(filename, HashSha1, prefix, postfix);
+}
+
 
 }; // end of namespace IuCoreUtils

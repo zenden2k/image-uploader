@@ -51,6 +51,14 @@ TEST_F(CryptoUtilsTest, CalcSHA1HashFromFile)
     EXPECT_EQ("9eaa90959561639b4f1abc4914ce7b8943e0351c", result);
 }
 
+TEST_F(CryptoUtilsTest, CalcSHA1HashFromFileWithPrefix)
+{
+    std::string fileName = constSizeFileName;
+    int fileSize = IuCoreUtils::getFileSize(fileName);
+    std::string result = CalcSHA1HashFromFileWithPrefix(fileName, "mrCloud", std::to_string(fileSize));
+    EXPECT_EQ("be933e5fa7236218736be5a538e559da15f5ab00", result);
+}
+
 TEST_F(CryptoUtilsTest, Base64Encode)
 {
     EXPECT_EQ("QmFzZTY0IGlzIGEgZ2VuZXJpYyB0ZXJtIGZvciBhIG51bWJlciBvZiBzaW1pbGFyIGVuY29kaW5nIHNjaGVtZXMgdGhhdCBlbmNvZGU=", Base64Encode("Base64 is a generic term for a number of similar encoding schemes that encode"));

@@ -22,7 +22,7 @@ struct HistoryTreeItem
     HBITMAP thumbnail;
     bool ThumbnailRequested;
     std::string thumbnailSource;
-    HistoryTreeItem() :hi(nullptr){
+    HistoryTreeItem() :hi(nullptr), thumbnail(nullptr), ThumbnailRequested(false){
         
     }
 

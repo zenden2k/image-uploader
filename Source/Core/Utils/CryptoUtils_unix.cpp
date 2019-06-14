@@ -149,7 +149,7 @@ const std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
     return CalcSHA1Hash( data.c_str(), data.size() );
 }
 
-const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
+std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix) {
     const int HashSize = 20;
     std::string result;
     SHA_CTX context;
@@ -158,6 +158,9 @@ const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename)
     FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
 
     if (f) {
+        if (!prefix.empty()) {
+            SHA1_Update(&context, (unsigned char*)prefix.data(), prefix.length());
+        }
         unsigned char buf[4096];
         while ( !feof(f) ) {
             size_t bytesRead = fread(buf, 1, sizeof(buf), f);
@@ -165,7 +168,9 @@ const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename)
             SHA1_Update(&context, (unsigned char*)buf, bytesRead);
         }
         unsigned char buff[HashSize] = "";
-
+        if (!postfix.empty()) {
+            SHA1_Update(&context, (unsigned char*)postfix.data(), postfix.length());
+        }
         SHA1_Final(buff, &context);
 
         fclose(f);
@@ -177,6 +182,10 @@ const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename)
         }
     }
     return result;
+}
+
+const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
+    return CalcSHA1HashFromFileWithPrefix(filename, "", "");
 }
 
 }; // end of namespace IuCoreUtils

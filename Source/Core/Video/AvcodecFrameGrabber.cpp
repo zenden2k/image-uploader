@@ -135,6 +135,8 @@ public:
             duration_ = 0;
             allocatedFrameWidth_ = 0;
             allocatedFrameHeight_ = 0;
+            numBytes = 0;
+            allocatedBufferSize_ = 0;
         }
 
           ~AvcodecFrameGrabberPrivate() {
@@ -416,7 +418,7 @@ public:
                     delete[] buffer;
                     buffer = nullptr;
                     buffer = new uint8_t[numBytes];
-                    numBytes = numBytes;
+                    allocatedBufferSize_ = numBytes;
                     memset(buffer, 0, numBytes);
                 }
                 allocatedFrameWidth_ = pCodecCtx->width;

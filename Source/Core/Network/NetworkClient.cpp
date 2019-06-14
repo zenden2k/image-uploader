@@ -511,7 +511,8 @@ bool NetworkClient::doPost(const std::string& data)
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, postData.c_str());
     }
     else {
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, (const char*)data.data());
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, (long)data.length());
     }
 
     m_currentActionType = atPost;    
@@ -796,13 +797,14 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
     size_t retcode;
    
     if (m_uploadingFile) {
-        long pos = IuCoreUtils::ftell_64(m_uploadingFile);
+        int64_t pos = IuCoreUtils::ftell_64(m_uploadingFile);
         if (pos >= chunkOffset_ + m_currentUploadDataSize) {
             return 0;
         }
         retcode = fread(ptr, size, nmemb, m_uploadingFile);
-       
-        retcode = std::min<>((int64_t)retcode, chunkOffset_ + m_currentUploadDataSize - pos);
+        if (chunkOffset_ != -1) {
+            retcode = std::min<>((int64_t)retcode, chunkOffset_ + m_currentUploadDataSize - pos);
+        }
         m_uploadingFileReadBytes += retcode;
     } else
     {

@@ -33,6 +33,7 @@ namespace CryptoUtils {
     const std::string CalcSHA1Hash(const void* data, size_t size);
     const std::string CalcSHA1HashFromString(const std::string& data);
     const std::string CalcSHA1HashFromFile(const std::string& filename);
+    std::string CalcSHA1HashFromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix);
 
     const std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
     const std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
