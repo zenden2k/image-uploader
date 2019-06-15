@@ -55,21 +55,31 @@ function anonymousUpload(FileName, options) {
 	
 	nm.doUploadMultipartData();
 
- 	local data = nm.responseBody();
-
-	local directUrl = regex_simple(data, "link\":\"(.+)\"", 0);
-	local thumbUrl = regex_simple(data, "thumbs\":\"(.+)\"", 0);
-	local viewUrl = regex_simple(data, "view\":\"(.+)\"", 0);
-	directUrl = reg_replace(directUrl, "\\", "");
-	thumbUrl = reg_replace(thumbUrl, "\\", "");
-	viewUrl = reg_replace(viewUrl, "\\", "");
-
-	options.setDirectUrl(directUrl);
-	options.setViewUrl(viewUrl);
-	options.setThumbUrl(thumbUrl);	
-	if ( directUrl != "") {
-		return 1;
-	}
+    if (nm.responseCode() == 200 ) {
+        local t = ParseJSON(nm.responseBody());
+        if ("files" in t && t.files.len()) {
+            local file = t.files[0];
+            local directUrl = file.link;
+            if ("thumbs" in file) {
+                options.setThumbUrl(file.thumbs);
+            }
+            if ("piclink" in file) {
+                options.setViewUrl(file.piclink);
+            }
+            if ("delete" in file) {
+                options.setDeleteUrl(file.rawget("delete"));
+            }
+            
+            options.setDirectUrl(directUrl);
+          
+            if ( directUrl != "") {
+                return 1;
+            }
+        }
+    } else {
+        WriteLog("error", "")
+    }
+	
 	return 0;
 }
 

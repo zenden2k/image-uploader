@@ -10,6 +10,8 @@ add_executable(ServersChecker WIN32
     ServerListTool.cpp 
     MainDlg.cpp 
     MainDlg.h
+    ServersCheckerSettingsDlg.cpp
+    ServersCheckerSettings.cpp
     ServerListTool.rc
     resource.h
     ServersChecker.cpp

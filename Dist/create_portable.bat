@@ -95,9 +95,9 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
-Copy "..\Build\Gui\MinSizeRel\ExplorerIntegration.dll" %temp_dir%\
+Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\Gui\MinSizeRel\ExplorerIntegration64.dll" %temp_dir%\
+Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Build\Gui\MinSizeRel\av*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed

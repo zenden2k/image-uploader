@@ -324,8 +324,11 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
-    DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
+    if (LocalizedMessageBox(TR("Are you sure?"), APPNAME, MB_ICONQUESTION|MB_YESNO) == IDYES) {
+        HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+        DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
+    }
+    
     return 0;
 }
         

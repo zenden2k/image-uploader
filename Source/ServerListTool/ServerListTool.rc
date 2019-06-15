@@ -47,6 +47,25 @@ BEGIN
     LTEXT           "",IDC_IMAGE,6,16,251,8
 END
 
+IDD_SETTINGSDLG DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,198,155,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,252,155,50,14
+    GROUPBOX        "Proxy settings",IDC_CONNECTIONSETTINGS,7,7,250,97
+    CONTROL         "No proxy",IDC_NOPROXY,"Button",BS_AUTORADIOBUTTON,21,20,226,10
+    CONTROL         "Use system proxy",IDC_USESYSTEMPROXY,"Button",BS_AUTORADIOBUTTON,21,32,222,10
+    CONTROL         "Use provided proxy:",IDC_USEPROXYSERVER,"Button",BS_AUTORADIOBUTTON,21,44,217,10
+    LTEXT           "Address:",IDC_ADDRESSLABEL,27,61,38,8
+    EDITTEXT        IDC_ADDRESSEDIT,67,59,81,13,ES_AUTOHSCROLL
+    LTEXT           "Port:",IDC_PORTLABEL,159,61,17,8
+    EDITTEXT        IDC_PORTEDIT,193,59,36,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Proxy type:",IDC_SERVERTYPE,27,80,61,8
+    COMBOBOX        IDC_SERVERTYPECOMBO,93,77,64,73,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -71,6 +90,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 93
     END
+
+    IDD_SETTINGSDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -83,8 +110,22 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICONWARNING         ICON                    "res\\Warning.ico"
+
 IDI_ERRORICON           ICON                    "res\\Error.ico"
+
 IDI_ICONINFOBIG         ICON                    "D:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Source\\res\\icon-infobig.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SETTINGSDLG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -138,6 +179,7 @@ BEGIN
     PUSHBUTTON      "Stop",IDC_STOPBUTTON,409,280,50,14,NOT WS_VISIBLE
     DEFPUSHBUTTON   "Start",IDOK,495,280,50,14
     PUSHBUTTON      "Close",IDCANCEL,558,280,50,14
+    PUSHBUTTON      "Settings...",IDC_SETTINGSBTN,517,7,50,14
 END
 
 
@@ -176,6 +218,18 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\ServerListTool.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAINDLG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

@@ -46,16 +46,8 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     root.GetChilds("Server3", childs);
 
     auto versionInfo = AppParams::instance()->GetAppVersion();
-
-    std::string ver = versionInfo->FullVersion;
-    std::vector<std::string> tokens;
-    IuStringUtils::Split(ver,".", tokens, 3);
-    int majorVersion = 0; 
-    int minorVersion = 0;
-    if (tokens.size() >= 3) {
-        majorVersion = std::stoi(tokens[0]);
-        minorVersion = std::stoi(tokens[1] + tokens[2]);
-    }
+    int majorVersion = versionInfo->Major;
+    int minorVersion = versionInfo->Minor*100 + versionInfo->Release;
     int build = versionInfo->Build;
 
     for(size_t i=0; i<childs.size(); i++)
@@ -84,7 +76,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                 IuStringUtils::Split(serverMinVersion,".", tokens, 4);
                 if ( tokens.size() >= 3 ) {
                     int serverMajorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
-                    int serverMinorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]+tokens[2]);
+                    int serverMinorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]) * 100 + IuCoreUtils::stringToInt64(tokens[2]);
                     int serverBuild = static_cast<int>(tokens.size() > 3 ? IuCoreUtils::stringToInt64(tokens[3]) : 0);
                     if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
                         || ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))

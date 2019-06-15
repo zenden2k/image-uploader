@@ -32,6 +32,7 @@
 #include "Helpers.h"
 #include "ServerListView.h"
 #include "Core/TaskDispatcher.h"
+#include "ServersCheckerSettings.h"
 
 class UploadManager;
 class UploadEngineManager;
@@ -64,9 +65,11 @@ public:
         COMMAND_ID_HANDLER(ID_COPYTHUMBURL, OnCopyThumbUrl)
         COMMAND_ID_HANDLER(ID_COPYVIEWURL, OnCopyViewUrl)
         COMMAND_HANDLER(IDC_STOPBUTTON, BN_CLICKED, OnBnClickedStopbutton)
+        COMMAND_HANDLER(IDC_SETTINGSBTN, BN_CLICKED, OnBnClickedSettingsButton)
         //NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
         REFLECT_NOTIFICATIONS()
+        
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CMainDlg)
@@ -108,6 +111,7 @@ public:
     LRESULT OnCopyThumbUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyViewUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     void runInGuiThread(TaskDispatcherTask&& task, bool async = false) override;
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -129,12 +133,14 @@ public:
 
     std::unique_ptr<ServersChecker> serversChecker_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+    ServersCheckerSettings settings_;
     bool OnNeedStop();
     void processFinished();
     int Run();
     void stop();
     bool m_NeedStop;
     bool isRunning();
+   
 };
 
 }

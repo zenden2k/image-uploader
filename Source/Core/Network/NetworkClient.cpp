@@ -811,11 +811,40 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
         int wantsToRead = size * nmemb;
         // dont even try to remove "<>" brackets!!
         int canRead = std::min<>((int)m_uploadData.size()-m_nUploadDataOffset, (int)wantsToRead);
-        memcpy(ptr, m_uploadData.c_str(),canRead);
-        m_nUploadDataOffset+=canRead;
+        memcpy(ptr, m_uploadData.data(), canRead);
+        m_nUploadDataOffset += canRead;
         retcode = canRead;
     }
     return retcode;
+}
+
+int NetworkClient::private_seek_callback(void *userp, curl_off_t offset, int origin) {
+    NetworkClient* nc = reinterpret_cast<NetworkClient*>(userp);
+
+    if (nc->m_uploadingFile) {
+        int64_t newOffset = offset;
+        int newOrigin = origin;
+        if (origin == SEEK_SET && nc->chunkOffset_ != -1) {
+            newOffset = nc->chunkOffset_ + offset;
+        } else if (origin == SEEK_END) {
+            // not implemented
+            return CURL_SEEKFUNC_CANTSEEK;
+        }
+        return IuCoreUtils::fseek_64(nc->m_uploadingFile, newOffset, newOrigin);
+    } else {
+        if (origin == SEEK_SET) {
+            if (offset < 0 || offset>= nc->m_uploadData.size()) {
+                return CURL_SEEKFUNC_CANTSEEK;
+            }
+            nc->m_nUploadDataOffset = offset;
+        } else if (origin == SEEK_CUR) {
+            nc->m_nUploadDataOffset += offset;
+        } else {
+            // not implemented
+            return CURL_SEEKFUNC_CANTSEEK;
+        }
+        return CURL_SEEKFUNC_OK;
+    }
 }
 
 
@@ -831,8 +860,11 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         }
         m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
         m_currentUploadDataSize = m_CurrentFileSize;
-        if(m_CurrentFileSize < 0) 
+        if(m_CurrentFileSize < 0) {
+            fclose(m_uploadingFile);
             return false;
+        }
+            
         if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
             m_currentUploadDataSize = chunkSize_;
             if ( IuCoreUtils::fseek_64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
@@ -850,6 +882,8 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         m_currentActionType = atPost;
     }
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
     if (!private_apply_method()) {
         curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     }

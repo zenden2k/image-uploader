@@ -99,8 +99,8 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils";
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
 Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
-Source: "..\Build\Gui\MinSizeRel\ExplorerIntegration.dll";DestDir: "{app}";
-Source: "..\Build\Gui\MinSizeRel\ExplorerIntegration64.dll";DestDir: "{app}";
+Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
+Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
 Source: "..\Build\Gui\MinSizeRel\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
 Source: "..\Build\Gui\MinSizeRel\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;

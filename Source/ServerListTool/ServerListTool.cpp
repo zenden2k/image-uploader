@@ -24,6 +24,7 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Func/langclass.h"
 #include "Core/Settings/CliSettings.h"
+#include "versioninfo.h"
 
 CAppModule _Module;
 
@@ -64,11 +65,22 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
 
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
+
     DefaultLogger defaultLogger;
     DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
 
     google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
     LogWindow.Create(0);
+    LogWindow.setLogger(&defaultLogger);
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setLogWindow(&LogWindow);
     serviceLocator->setSettings(&Settings);

@@ -284,6 +284,8 @@ function  UploadFile(FileName, options) {
             nm.setUrl(uServer +  fileHash + "?client_id=cloud-win&token=" + token); 
             nm.addQueryHeader("Content-Type", "");
             nm.addQueryHeader("Accept-Encoding", "");
+            nm.addQueryHeader("Transfer-Encoding", "");
+            nm.addQueryHeader("Content-Length", fileSize.tostring());
             nm.setMethod("PUT");
             nm.doUpload(FileName, "");
                 

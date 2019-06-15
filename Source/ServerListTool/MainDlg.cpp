@@ -15,6 +15,7 @@
 #include "ServersChecker.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
+#include "ServersCheckerSettingsDlg.h"
 
 namespace ServersListTool
 {
@@ -37,7 +38,7 @@ CMainDlg::CMainDlg(UploadEngineManager* uploadEngineManager, UploadManager* uplo
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
+    BasicSettings& basicSettings = *ServiceLocator::instance()->settings<BasicSettings>();
     ServiceLocator::instance()->setTaskDispatcher(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -57,7 +58,9 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     checkImageServersCheckBox_.SetCheck(BST_CHECKED);
     m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
-    CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
+    settings_.loadFromFile(WCstringToUtf8(WinUtils::GetAppFolder() + "servertool.xml"));
+
+    /*CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
     CString testURL = "https://github.com/zenden2k/image-uploader/issues";
     if (xml.LoadFromFile(WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml")))) {
         SimpleXmlNode root = xml.getRoot("ServerListTool");
@@ -69,13 +72,14 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         if (!url.empty()) {
             testURL = Utf8ToWstring(url).c_str();
         }
-    }
-    Settings.MaxThreads = 10;
+    }*/
+    basicSettings.MaxThreads = 10;
 
-    SetDlgItemText(IDC_TOOLFILEEDIT, testFileName);
-    SetDlgItemText(IDC_TESTURLEDIT, testURL);
-    Settings.LoadSettings("", "");
-    Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
+    SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_.testFileName));
+    SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_.testUrl));
+    basicSettings.LoadSettings("", "");
+    //Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
+    settings_.copySettings(&basicSettings);
     //iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
@@ -218,12 +222,10 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
     if (isRunning()) {
         stop();
     } else {
-        SimpleXml savexml;
-        CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-        SimpleXmlNode root = savexml.getRoot("ServerListTool");
-        root.SetAttribute("FileName", W2U(fileName));
-        root.SetAttribute("Time", static_cast<int>(GetTickCount()));
-        savexml.SaveToFile(W2U(WinUtils::GetAppFolder() + "servertool.xml"));
+        settings_.testFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT)));
+        settings_.testUrl = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT)));
+        settings_.saveToFile(W2U(WinUtils::GetAppFolder() + "servertool.xml"));
+        
         EndDialog(wID);
     }
     return 0;
@@ -360,4 +362,12 @@ void CMainDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
 
 }
 
+LRESULT CMainDlg::OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CSettingsDlg dlg(&settings_, ServiceLocator::instance()->settings<BasicSettings>());
+    dlg.DoModal(m_hWnd);
+    return 0;
 }
+
+}
+

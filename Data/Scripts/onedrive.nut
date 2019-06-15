@@ -317,7 +317,7 @@ function  UploadFile(FileName, options) {
         }
     };
     local folderId = options.getFolderID();
-    if (folderId == "/") {
+    if (folderId == "/" || folderId == "") {
         folderId = "root";
     }
     local onlyFileName = ExtractFileName(FileName);

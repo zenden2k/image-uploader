@@ -17,7 +17,7 @@ AppParams::AppParams() {
 void AppParams::setVersionInfo(const AppVersionInfo& info) {
     versionInfo_ = info;
     std::vector<std::string> tokens;
-    IuStringUtils::Split(versionInfo_.FullVersion, ".", tokens, 3);
+    IuStringUtils::Split(versionInfo_.FullVersionClean, ".", tokens, 3);
     if (tokens.size() >= 3) {
         versionInfo_.Major = std::stoi(tokens[0]);
         versionInfo_.Minor = std::stoi(tokens[1]);

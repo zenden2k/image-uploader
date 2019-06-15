@@ -14,6 +14,7 @@ class AppParams: public Singleton<AppParams>
         struct AppVersionInfo {
             // Just first 5 fields must be filled
             std::string FullVersion;
+            std::string FullVersionClean;
             std::string BuildDate;
             std::string BranchName;
             std::string CommitHash;

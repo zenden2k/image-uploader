@@ -664,6 +664,7 @@ int main(int argc, char *argv[]){
 
     AppParams::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
+    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
     appVersion.Build = std::stoi(IU_BUILD_NUMBER);
     appVersion.BuildDate = IU_BUILD_DATE;
     appVersion.CommitHash = IU_COMMIT_HASH;
