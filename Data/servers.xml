@@ -376,6 +376,16 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+    <Server Name="pastenow.ru" Plugin="pastenow">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
+    <Server3 Name="teknik.io" Plugin="teknik"  Authorize="1" Types="image file urlshortening" NeedPassword="0" >
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
     <!--<Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
 		<Actions>
 		</Actions>
