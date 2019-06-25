@@ -192,8 +192,6 @@ protected:
     //CPercentEdit m_ThumbSizeEdit;
     void UpdateProfileList();
     ServerProfile sessionImageServer_, sessionFileServer_;
-    std::string imageServerLogin_;
-    std::string  fileServerLogin_;
     bool menuOpenedIsImageServer_;
     std::vector<CString> menuOpenedUserNames_;
     void selectServer(ServerProfile& sp, int serverIndex);

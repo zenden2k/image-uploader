@@ -16,6 +16,7 @@
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
+#include <boost/format.hpp>
 
 namespace ImageEditor {
     
@@ -86,6 +87,7 @@ void ImageEditorWindow::init()
     menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = Canvas::dtFilledRoundedRectangle;
     menuItems_[ID_FILLEDELLIPSE]     = Canvas::dtFilledEllipse;
     menuItems_[ID_TEXT]     = Canvas::dtText;
+    menuItems_[ID_STEPNUMBER]     = Canvas::dtStepNumber;
 
     SubMenuItem item;
     item.parentCommand = ID_RECTANGLE;
@@ -135,6 +137,7 @@ void ImageEditorWindow::init()
     drawingToolsHotkeys_[kArrowKey] = Canvas::dtArrow;
     drawingToolsHotkeys_[kLineKey] = Canvas::dtLine;
     drawingToolsHotkeys_[kFilledRectangle] = Canvas::dtFilledRectangle;
+    drawingToolsHotkeys_[kStepNumber] = Canvas::dtStepNumber;
     
     dialogResult_ = drCancel;
 }
@@ -189,6 +192,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
 
     currentDrawingTool_ = dt;
     updateRoundingRadiusSlider();
+    updateFontSizeControls();
 
     std::map<Canvas::DrawingToolType, SubMenuItem>::iterator submenuIter = subMenuItems_.find(dt);
     if ( submenuIter != subMenuItems_.end() ) {
@@ -395,6 +399,11 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     canvas_ = new ImageEditor::Canvas(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
     canvas_->setDocument(currentDoc_);
+
+    std::wstring windowTitle;
+    windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
+    SetWindowText(windowTitle.c_str());
+
     textParamsWindow_.Create(m_hWnd);
 
     if (configurationProvider_) {
@@ -417,8 +426,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     rc.top = displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin : 0;
 
     if (displayMode_ == wdmWindowed) {
-        horizontalToolbar_.SetWindowPos(0, rc.left, 0, 0, 0, SWP_NOSIZE);
-        verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE);
+        horizontalToolbar_.SetWindowPos(0, rc.left, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
 
     m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
@@ -841,6 +850,7 @@ void ImageEditorWindow::createToolbars()
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Rectangle")+ CString(_T(" (")) + (char)kRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Filled rectangle")+ CString(_T(" (")) + (char)kFilledRectangle  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Text")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER,TR("Step")+ CString(_T(" (")) + (char)kStepNumber  + CString(_T(")")), Toolbar::itButton, true,1));
 
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Blurring rectangle")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itButton, true,1));
 
@@ -861,6 +871,8 @@ void ImageEditorWindow::createToolbars()
     }
     horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
     horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
+    horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
+    horizontalToolbar_.setStepInitialValue(1);
 }  
 
 
@@ -949,7 +961,6 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
     }
     //SIZE toolbarRect = {  horRc.right + vertRc.right, vertRc.bottom + horRc.bottom}
 
-
     ClientToScreen(&horToolbarPos);
     ClientToScreen(&vertToolbarPos);
 
@@ -957,10 +968,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
     //horizontalToolbar_.SetWindowPos(0, horToolbarPos.x, horToolbarPos.y, 0, 0, SWP_NOSIZE);
     verticalToolbar_.SetWindowPos(0, vertToolbarPos.x, vertToolbarPos.y, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE);
     SetActiveWindow();
-
 }
-
-
 
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
@@ -1009,13 +1017,22 @@ void ImageEditorWindow::OnTextEditFinished(ImageEditor::TextElement * textElemen
 void ImageEditorWindow::OnSelectionChanged()
 {
     updateRoundingRadiusSlider();
+    updateFontSizeControls();
 }
 
 void ImageEditorWindow::updateRoundingRadiusSlider()
 {
+    bool showLineWidth = currentDrawingTool_ != Canvas::dtStepNumber;
+    horizontalToolbar_.showPenSize(showLineWidth);
+
     bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
     horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
     horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
+}
+
+void ImageEditorWindow::updateFontSizeControls() {
+    bool showFontSizeControls = currentDrawingTool_ == Canvas::dtStepNumber;
+    horizontalToolbar_.showStepFontSize(showFontSizeControls);
 }
 
 void ImageEditorWindow::updateSearchButton() {
@@ -1186,6 +1203,15 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
     }
     horizontalToolbar_.EnableWindow(TRUE);
     verticalToolbar_.EnableWindow(TRUE);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnFontSizeChanged(UINT, WPARAM, LPARAM, BOOL&) {
+    int fontSize = horizontalToolbar_.getFontSize();
+    if (!fontSize) {
+        fontSize = Canvas::kDefaultStepFontSize;
+    }
+    canvas_->setStepFontSize(fontSize);
     return 0;
 }
 
@@ -1363,4 +1389,16 @@ LRESULT ImageEditorWindow::OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCt
     canvas_->updateView();
     return 0;
 }
+
+LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    int stepInitialValue = horizontalToolbar_.getStepInitialValue();
+    if (!stepInitialValue) {
+        stepInitialValue = 1;
+    }
+    canvas_->setStepInitialValue(stepInitialValue);
+    return 0;
+}
+
+
+
 }

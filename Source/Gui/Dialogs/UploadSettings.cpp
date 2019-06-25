@@ -88,8 +88,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     PageWnd = m_hWnd;
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     sessionFileServer_ = WizardDlg->getSessionFileServer();
-    imageServerLogin_ = sessionImageServer_.serverSettings().authData.Login;
-    fileServerLogin_ = sessionFileServer_.serverSettings().authData.Login;
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
@@ -366,8 +364,6 @@ bool CUploadSettings::OnShow()
     if (WizardDlg->serversChanged()) {
         sessionImageServer_ = WizardDlg->getSessionImageServer();
         sessionFileServer_ = WizardDlg->getSessionFileServer();
-        imageServerLogin_ = sessionImageServer_.serverSettings().authData.Login;
-        fileServerLogin_ = sessionFileServer_.serverSettings().authData.Login;
         WizardDlg->setServersChanged(false);
         ShowParams();
     }
@@ -393,21 +389,19 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
     CLoginDlg dlg(serverProfile, uploadEngineManager_);
 
-    ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
-    std::string UserName = ss.authData.Login; 
-    bool prevAuthEnabled = ss.authData.DoAuth;
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(ImageServer ? sessionImageServer_: sessionFileServer_);
+ 
+    std::string UserName = serverSettings ? serverSettings->authData.Login : std::string();
+    bool prevAuthEnabled = serverSettings ? serverSettings->authData.DoAuth : false;
     UINT dlgResult = dlg.DoModal(m_hWnd);
         
     if (dlgResult  == IDOK) {
-        ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
-        if ( ImageServer ) {
-            imageServerLogin_ = WCstringToUtf8(dlg.accountName());
-        } else {
-            fileServerLogin_ =  WCstringToUtf8(dlg.accountName());
-        }
+        ServerSettingsStruct* ss = Settings->getServerSettings(ImageServer ? sessionImageServer_ : sessionFileServer_);
+        std::string newUserName = ss ? ss->authData.Login : std::string();
+        bool newAuth = ss ? ss->authData.DoAuth : false;
         serverProfile.setProfileName(WCstringToUtf8(dlg.accountName()));
-        if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
-        {
+        if(UserName != newUserName || newAuth != prevAuthEnabled) {
             serverProfile.setFolderId("");
             serverProfile.setFolderTitle("");
             serverProfile.setFolderUrl("");
@@ -474,15 +468,21 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
         as.m_SelectedFolder.id= serverProfile.folderId();
         
         if(as.DoModal() == IDOK){
-            ServerSettingsStruct& sss = serverProfile.serverSettings();
+            BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+            ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile);
+
             if(!as.m_SelectedFolder.id.empty()){
-                sss.defaultFolder = as.m_SelectedFolder;
+                if (serverSettings) {
+                    serverSettings->defaultFolder = as.m_SelectedFolder;
+                }
                 serverProfile.setFolderId(as.m_SelectedFolder.id);
                 serverProfile.setFolderTitle(as.m_SelectedFolder.title);
                 serverProfile.setFolderUrl(as.m_SelectedFolder.viewUrl);
             }
             else {
-                sss.defaultFolder = CFolderItem();
+                if (serverSettings) {
+                    serverSettings->defaultFolder = CFolderItem();
+                }
                 serverProfile.setFolderId("");
                 serverProfile.setFolderTitle("");
                 serverProfile.setFolderUrl("");
@@ -535,11 +535,8 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile& serverProfile = ImageServer ? sessionImageServer_ : sessionFileServer_;
 
-    CUploadEngineData * uploadEngine = 0;
-    
     if(serverProfile.isNull())
-    {
-        
+    { 
         CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
         CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
         CurrentToolbar.HideButton(IDC_SELECTFOLDER, true);
@@ -547,12 +544,12 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
         return;
     }
 
-    uploadEngine =  serverProfile.uploadEngineData();
+    CUploadEngineData * uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
 	if (!uploadEngine) {
 		LOG(ERROR) << "uploadEngine cannot be NULL";
 		return;
 	}
-    //MessageBox(serverProfile.serverName());
+
     CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()): TR("Choose server");
 
     ZeroMemory(&bi, sizeof(bi));
@@ -561,11 +558,16 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
     CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
-    LoginInfo& li = serverProfile.serverSettings().authData;
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* res = Settings->getServerSettings(serverProfile);
+    ServerSettingsStruct serverSettings;
+    if (res) {
+        serverSettings = *res;
+    }
+    LoginInfo& li = serverSettings.authData;
     CString login = WinUtils::TrimString(Utf8ToWCstring(li.Login),23);
     
     CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
-
     CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!uploadEngine->NeedAuthorization);
     CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!uploadEngine->NeedAuthorization);
     
@@ -957,8 +959,13 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 
     m_pluginLoader->getAccessTypeList(accessTypeList);
     CFolderItem newFolder;
-    if(serverProfile.folderId() == CFolderItem::NewFolderMark)
-        newFolder = serverProfile.serverSettings().newFolder;
+
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile);
+
+    if (serverProfile.folderId() == CFolderItem::NewFolderMark) {
+        newFolder = serverSettings ? serverSettings->newFolder : CFolderItem();
+    }
 
      CNewFolderDlg dlg(newFolder, true, accessTypeList);
      if(dlg.DoModal(m_hWnd) == IDOK)
@@ -968,7 +975,9 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
          serverProfile.setFolderUrl("");
          newFolder.setId(CFolderItem::NewFolderMark);
 
-        serverProfile.serverSettings().newFolder = newFolder;
+         if (serverSettings) {
+             serverSettings->newFolder = newFolder;
+         }
         UpdateAllPlaceSelectors();
      }
      return 0;
@@ -977,13 +986,10 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
 LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
-    //CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
-//    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
 
-    CString str = Utf8ToWCstring(serverProfile.serverSettings().params["FolderUrl"]);
-    if(!str.IsEmpty())
-    {
+    CString str = U2W(serverProfile.folderUrl());
+    if(!str.IsEmpty()) {
         WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
     }
     return 0;
@@ -1159,10 +1165,10 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
      } else {
          sp.setProfileName("");
      }
-     ServerSettingsStruct &ss =  sp.serverSettings();
-     sp.setFolderId(ss.defaultFolder.getId());
-     sp.setFolderTitle(ss.defaultFolder.getTitle());
-     sp.setFolderUrl(ss.defaultFolder.viewUrl);
+     ServerSettingsStruct* ss = Settings.getServerSettings(sp);
+     sp.setFolderId(ss ? ss->defaultFolder.getId() : std::string());
+     sp.setFolderTitle(ss ? ss->defaultFolder.getTitle(): std::string());
+     sp.setFolderUrl(ss ? ss->defaultFolder.viewUrl: std::string());
  }
 
 void CUploadSettings::updateUrlShorteningCheckboxLabel()
@@ -1257,16 +1263,13 @@ LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWN
     bool ImageServer = menuOpenedIsImageServer_;
     ServerProfile & serverProfile = ImageServer? sessionImageServer_ : sessionFileServer_;
     serverProfile.setProfileName(WCstringToUtf8(userName));
-    ServerSettingsStruct& sss = serverProfile.serverSettings();
 
-    if ( ImageServer ) {
-        imageServerLogin_ = WCstringToUtf8(userName);
-    } else {
-        fileServerLogin_ =  WCstringToUtf8(userName);
-    }
-    serverProfile.setFolderId(sss.defaultFolder.getId());
-    serverProfile.setFolderTitle(sss.defaultFolder.getTitle());
-    serverProfile.setFolderUrl(sss.defaultFolder.viewUrl);
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile);
+
+    serverProfile.setFolderId(serverSettings ? serverSettings->defaultFolder.getId(): std::string());
+    serverProfile.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle(): std::string());
+    serverProfile.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl: std::string());
 
     /*if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
     {
@@ -1278,8 +1281,6 @@ LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWN
     }*/
 
     UpdateAllPlaceSelectors();
-
-//    MessageBox();
     return 0;
 }
 
@@ -1294,12 +1295,6 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
     UINT dlgResult = dlg.DoModal(m_hWnd);
     //ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
     if (dlgResult  != IDCANCEL) {
-        if (ImageServer) {
-            imageServerLogin_ = WCstringToUtf8(dlg.accountName());
-        }
-        else {
-            fileServerLogin_ = WCstringToUtf8(dlg.accountName());
-        }
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
         serverProfileCopy.setFolderId("");
         serverProfileCopy.setFolderTitle("");

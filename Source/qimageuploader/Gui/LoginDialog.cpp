@@ -14,7 +14,11 @@ LoginDialog::LoginDialog(ServerProfile& serverProfile, bool createNew, QWidget *
 	createNew_(createNew)
 {
     ui->setupUi(this);
-	LoginInfo li = serverProfile_.serverSettings().authData;
+
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+
+	LoginInfo li = serverSettings ? serverSettings->authData: LoginInfo();
 	auto ued = serverProfile_.uploadEngineData();
 	QString loginLabelText = ued->LoginLabel.empty() ? tr("Login:") : U2Q(ued->LoginLabel) + ":";
 	ui->loginLabel->setText(loginLabelText);
@@ -69,6 +73,10 @@ void LoginDialog::onAccept() {
 	li.Password = Q2U(ui->passwordEdit->text());
 	li.DoAuth = true;
 	//uploadEngineManager_->resetAuthorization(serverProfile_);
-	serverProfile_.serverSettings().authData = li;
+
+    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_);
+    if(serverSettings) {
+        serverSettings->authData = li;
+    }
 	accept();
 }

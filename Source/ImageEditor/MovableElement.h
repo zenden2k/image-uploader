@@ -29,7 +29,7 @@ class MovableElement: public DrawingElement {
             }
         };
         MovableElement(Canvas* canvas_);
-        void render(Painter* gr);
+        void render(Painter* gr) override;
         void renderGrips(Painter* gr);
         virtual void setSelected(bool selected);
         bool isSelected() const;
@@ -44,17 +44,20 @@ class MovableElement: public DrawingElement {
         virtual bool move(int  offsetX, int offsetY);
         virtual bool isItemAtPos(int x, int y);
 
-        virtual void resize(int width, int height);
+        virtual void resize(int width, int height) override;
         virtual void createGrips();
         virtual void beginMove();
         virtual void endMove();
         bool isPenSizeUsed() const;
         bool isColorUsed() const;
         bool isBackgroundColorUsed() const;
+        virtual bool isResizable() const;
+        virtual bool isEmpty() const;
 
     protected:
         bool isSelected_;
         bool drawDashedRectangle_;
+        bool drawDashedRectangleWhenSelected_;
         std::vector<Grip> grips_;
         
         POINT* getMaxPoint(Axis axis);

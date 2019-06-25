@@ -67,8 +67,10 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     CAbstractUploadEngine* result = nullptr;
     std::string serverName = serverProfile.serverName();
     std::thread::id threadId = std::this_thread::get_id();
-    ServerSettingsStruct& params = serverProfile.serverSettings();
-    
+
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile, true);
+    std::string authDataLogin = serverSettings ? serverSettings->authData.Login : std::string();
     if (ue->UsingPlugin) {
         // Try to load Squirrel (.nut) script
         result = getPlugin(serverProfile, ue->PluginName);
@@ -87,7 +89,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
             }
         }
 
-        if (plugin &&  plugin->serverSettings()->authData.Login == params.authData.Login) {
+        if (plugin &&  plugin->serverSettings()->authData.Login == authDataLogin) {
             return plugin;
         }
 
@@ -96,20 +98,20 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         CAbstractUploadEngine::ErrorMessageCallback errorCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
 #ifndef IU_DISABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
-            result = new CMegaNzUploadEngine(serverSync, &serverProfile.serverSettings(), errorCallback);
+            result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
         } 
 		else
 #endif
 		{
             result = new CDefaultUploadEngine(serverSync, errorCallback);
         }
-        result->setServerSettings(&serverProfile.serverSettings());
+        result->setServerSettings(serverSettings);
         result->setUploadData(ue);
         
         m_plugins[threadId][serverName] = result;
     }
     
-    result->setServerSettings(&serverProfile.serverSettings());
+    result->setServerSettings(serverSettings);
     result->setUploadData(ue);
     result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
     return result;
@@ -123,7 +125,10 @@ CScriptUploadEngine* UploadEngineManager::getScriptUploadEngine(ServerProfile& s
 CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile, const std::string& pluginName, bool UseExisting) {
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     std::string serverName = serverProfile.serverName();
-    ServerSettingsStruct& params = serverProfile.serverSettings();
+
+    BasicSettings* basicSettings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* params = basicSettings->getServerSettings(serverProfile, true);
+
     std::thread::id threadId = std::this_thread::get_id();
     CScriptUploadEngine* plugin = nullptr;
 
@@ -141,7 +146,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
 
     if (plugin) {
         ServerSettingsStruct* serverSettings = plugin->serverSettings();
-        if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params.authData.Login) {
+        if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params->authData.Login) {
             plugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
             plugin->switchToThisVM();
             return plugin;
@@ -155,7 +160,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     }
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, &params, networkClientFactory_, 
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_, 
         CAbstractUploadEngine::ErrorMessageCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage));
 
     if (newPlugin->isLoaded()) {

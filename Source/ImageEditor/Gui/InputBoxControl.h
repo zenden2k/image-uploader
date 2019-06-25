@@ -84,6 +84,7 @@ class InputBoxControl :
         virtual void setFont(LOGFONT font,  DWORD changeMask);
         virtual void setRawText(const std::string& text);
         virtual std::string getRawText();
+        bool isEmpty() override;
 protected:
     static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
     static DWORD CALLBACK EditStreamInCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);

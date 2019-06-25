@@ -169,7 +169,7 @@ bool CIntegrationSettings::Apply()
                     itemId.Replace(L":",L"_");
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
-                    //MessageBox(itemId);
+
                     if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));

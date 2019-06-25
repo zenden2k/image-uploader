@@ -172,6 +172,7 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
     endPoint_.y   = endY;
     inputBox_ = inputBox;
     isEditing_ = false;
+    firstEdit_ = true;
     memset(&font_, 0, sizeof(font_));
 }
 
@@ -277,7 +278,8 @@ void TextElement::setTextColor()
         }
         inputBox_->setTextColor(color_);
         if ( !inputBox_->isVisible() ) {
-            endEdit(true); // saving to undo history
+            saveToHistory();
+            //endEdit(true); // saving to undo history
         }
     }
 
@@ -295,6 +297,10 @@ void TextElement::setColor(Gdiplus::Color color)
 {
     MovableElement::setColor(color);
     setTextColor();
+}
+
+bool TextElement::isEmpty() const {
+    return firstEdit_ && inputBox_->isEmpty();
 }
 
 ImageEditor::ElementType TextElement::getType() const
@@ -325,25 +331,30 @@ void TextElement::beginEdit()
     }
 }
 
-void TextElement::endEdit(bool saveToHistory)
+void TextElement::endEdit(bool save)
 {
     if ( isEditing_ ) {
-
+        firstEdit_ = false;
         isEditing_ = false;
-        if ( saveToHistory && originalRawText_ != inputBox_->getRawText() ) {
-            Canvas::UndoHistoryItem uhi;
-            Canvas::UndoHistoryItemElement uhie;
-            uhi.type = Canvas::uitTextChanged;
-            uhie.movableElement = this;
-            uhie.rawText = originalRawText_;
-            uhi.elements.push_back(uhie);
-        
-            canvas_->addUndoHistoryItem(uhi);
-            originalRawText_.clear();
+        if (save) {
+            saveToHistory();
         }
     }
 }
 
+void TextElement::saveToHistory() {
+    if (originalRawText_ != inputBox_->getRawText()) {
+        Canvas::UndoHistoryItem uhi;
+        Canvas::UndoHistoryItemElement uhie;
+        uhi.type = Canvas::uitTextChanged;
+        uhie.movableElement = this;
+        uhie.rawText = originalRawText_;
+        uhi.elements.push_back(uhie);
+
+        canvas_->addUndoHistoryItem(uhi);
+        originalRawText_.clear();
+    }
+}
 void TextElement::setRawText(const std::string& rawText)
 {
     if ( inputBox_ ) {
@@ -643,7 +654,7 @@ void BlurringRectangle::setBlurRadius(float radius)
     blurRadius_ = radius;
 }
 
-float BlurringRectangle::getBlurRadius()
+float BlurringRectangle::getBlurRadius() const
 {
     return blurRadius_;
 }
@@ -831,5 +842,89 @@ ImageEditor::ElementType FilledEllipse::getType() const
 {
     return etFilledEllipse;
 }
+
+StepNumber::StepNumber(Canvas* canvas, int startX, int startY, int endX, int endY, int number, int fontSize): MovableElement(canvas) {
+    using namespace Gdiplus;
+    number_ = number;
+    fontSize_ = fontSize;
+    int radius = recalcRadius();
+    
+    startPoint_.x = startX - radius;
+    startPoint_.y = startY - radius;
+    endPoint_.x = startX + radius;
+    endPoint_.y = startY + radius;
+    drawDashedRectangle_ = true;
+    drawDashedRectangleWhenSelected_ = true;
+    isBackgroundColorUsed_ = true;
+}
+
+void StepNumber::render(Painter* gr) {
+    using namespace Gdiplus;
+    int x = getX();
+    int y = getY();
+    int width = getWidth();
+    int height = getHeight();
+    SolidBrush br(backgroundColor_);
+    Region rgn(max(x, 0), max(0, y), width, height);
+    gr->SetClip(rgn.toNativeRegion().get(), CombineModeIntersect);
+    gr->FillEllipse(&br, x, y, width-1, height-1);
+    SolidBrush textBrush(color_);
+
+    FontFamily ff(L"Arial");
+    Font font(&ff, static_cast<REAL>(fontSize_), FontStyleBold);
+
+    StringFormat format;
+    format.SetLineAlignment(StringAlignmentCenter);
+    format.SetAlignment(StringAlignmentCenter);
+
+    RectF textRect(static_cast<REAL>(x), static_cast<REAL>(y), static_cast<REAL>(width), static_cast<REAL>(height));
+    CString s;
+    s.Format(L"%d", number_);
+    gr->DrawString(s, -1, &font, textRect,  &format, &textBrush );
+    gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
+}
+
+RECT StepNumber::getPaintBoundingRect() {
+    return MovableElement::getPaintBoundingRect();
+}
+
+ElementType StepNumber::getType() const {
+    return etStepNumber;
+}
+
+int StepNumber::recalcRadius() {
+    using namespace Gdiplus;
+    Graphics* gr = canvas_->getGraphicsDevice();
+    FontFamily ff(L"Arial");
+    Font font(&ff, static_cast<REAL>(fontSize_), FontStyleBold);
+    CString s;
+    s.Format(L"%d", number_);
+    RectF boundingBox;
+    gr->MeasureString(s, -1, &font, PointF(static_cast<REAL>(startPoint_.x), static_cast<REAL>(startPoint_.y)), &boundingBox);
+    int radius = static_cast<int>(std::max<>(boundingBox.Width, boundingBox.Height) / 2 + 6);
+    return radius;
+}
+
+void StepNumber::setNumber(int number) {
+    if (number_ != number) {
+        number_ = number;
+        int radius = recalcRadius();
+        resize(radius * 2, radius * 2);
+    }
+}
+
+bool StepNumber::isResizable() const {
+    return false;
+}
+
+void StepNumber::setFontSize(int size) {
+    if (fontSize_ != size) {
+        fontSize_ = size;
+        int radius = recalcRadius();
+        resize(radius * 2, radius * 2);
+    }
+
+}
+
 
 }

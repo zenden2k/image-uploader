@@ -45,11 +45,9 @@ protected:
 class ServerProfile {
 
 public:
-
     ServerProfile();
+    explicit ServerProfile(const std::string& serverName);
 
-    ServerProfile(const std::string& serverName);
-    ServerSettingsStruct& serverSettings();
     CUploadEngineData* uploadEngineData() const;
 
     void setProfileName(const std::string& newProfileName);

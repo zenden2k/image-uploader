@@ -1581,6 +1581,8 @@ IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
 
 IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
 
+IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

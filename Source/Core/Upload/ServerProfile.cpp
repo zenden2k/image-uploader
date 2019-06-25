@@ -131,15 +131,6 @@ void ServerProfile::setImageUploadParams(ImageUploadParams iup)
     imageUploadParams = iup;
 }
 
-ServerSettingsStruct& ServerProfile::serverSettings() {
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* res = Settings.getServerSettings(*this);
-    res->setParam("FolderID", folderId_);
-    res->setParam("FolderUrl", folderUrl_);
-    res->setParam("FolderTitle", folderTitle_);
-    return *res;
-}
-
 // TODO: Remove this method
 CUploadEngineData* ServerProfile::uploadEngineData() const {
     return ServiceLocator::instance()->engineList()->byName(serverName_);

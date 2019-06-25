@@ -42,6 +42,7 @@ MovableElement::MovableElement(Canvas* canvas){
     isPenSizeUsed_ = true;
     isBackgroundColorUsed_ = true;
     isColorUsed_ = true;
+    drawDashedRectangleWhenSelected_ = false;
 }
 
 
@@ -63,7 +64,7 @@ void MovableElement::renderGrips(Painter* gr)
     int y = getY();
     int width = getWidth()-1;
     int height = getHeight()-1;
-    if (  /*isSelected_ || */drawDashedRectangle_ ) {
+    if ( (isSelected_  && drawDashedRectangleWhenSelected_ )|| drawDashedRectangle_ ) {
         gr->DrawRectangle( &pen, x, y, width, height );
         pen.SetColor(Color( 255, 255, 255) );
         pen.SetDashOffset(3);
@@ -72,7 +73,7 @@ void MovableElement::renderGrips(Painter* gr)
         gr->DrawRectangle( &pen, x, y, width, height );
     }
 
-    if ( isSelected_ || getType() == etCrop ) {
+    if ( (isSelected_ || getType() == etCrop) && isResizable() ) {
         int rectSize = kGripSize;
         int halfSize = rectSize /2 ;
         Gdiplus::Pen pen( Color( 255,255, 255) );
@@ -286,6 +287,14 @@ bool MovableElement::isColorUsed() const
 bool MovableElement::isBackgroundColorUsed() const
 {
     return isBackgroundColorUsed_;
+}
+
+bool MovableElement::isResizable() const {
+    return true;
+}
+
+bool MovableElement::isEmpty() const {
+    return false;
 }
 
 POINT* MovableElement::getMaxPoint(Axis axis)

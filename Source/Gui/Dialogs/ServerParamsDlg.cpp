@@ -25,6 +25,8 @@
 #include "Gui/Dialogs/ServerFolderSelect.h"
 #include "Gui/Dialogs/InputDialog.h"
 #include "Func/WinUtils.h"
+#include "Core/Settings/BasicSettings.h"
+
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
             serverProfile_(serverProfile)
@@ -65,13 +67,13 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, m_ue->SupportsFolders);
 
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
-    ServerSettingsStruct &serverSettings = serverProfile_.serverSettings();
-    LoginInfo li = serverSettings.authData;
+    LoginInfo li = serverSettings ? serverSettings->authData : LoginInfo();
     SetDlgItemText(IDC_LOGINEDIT, Utf8ToWCstring(li.Login));
     oldLogin_ = Utf8ToWCstring(li.Login);
     SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
-
 
     SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth ? BST_CHECKED : BST_UNCHECKED));
     doAuthChanged();
@@ -97,7 +99,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         for (it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
            CString name = it->first.c_str();
             CString humanName = it->second.c_str();
-           m_wndParamList.AddItem(PropCreateSimple(humanName, Utf8ToWCstring(serverSettings.params[WCstringToUtf8(name)])));
+           m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
         }
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle()) ;
@@ -109,25 +111,29 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::map<std::string,std::string>::iterator it;
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
     serverProfile_.setProfileName(WCstringToUtf8(login));
-    ServerSettingsStruct &serverSettings = serverProfile_.serverSettings();
-    serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
-    serverSettings.authData.Login    = WCstringToUtf8( login );
-    serverSettings.authData.Password = WCstringToUtf8( GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT) );
 
-    for(it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
-    {
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
-        CString name = it->first.c_str();
-        CString humanName = it->second.c_str();
-    
-        HPROPERTY pr = m_wndParamList.FindProperty(humanName);
-        CComVariant vValue;
-        pr->GetValue(&vValue);
+    if (serverSettings) {
+        serverSettings->authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
+        serverSettings->authData.Login = WCstringToUtf8(login);
+        serverSettings->authData.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
 
-        serverSettings.params[WCstringToUtf8(name)]= WCstringToUtf8(vValue.bstrVal);          
+        for (const auto& it: m_paramNameList){
+            CString name = it.first.c_str();
+            CString humanName = it.second.c_str();
+
+            HPROPERTY pr = m_wndParamList.FindProperty(humanName);
+            CComVariant vValue;
+            pr->GetValue(&vValue);
+
+            serverSettings->params[WCstringToUtf8(name)] = WCstringToUtf8(vValue.bstrVal);
+        }
+    } else {
+        LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
     }
 
     EndDialog(wID);
@@ -158,12 +164,18 @@ void CServerParamsDlg::doAuthChanged() {
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
     serverProfile_.setProfileName(WCstringToUtf8(login));
-    ServerSettingsStruct& serverSettings = serverProfile_.serverSettings();
+
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
     
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT);
-    serverSettings.authData.Login = WCstringToUtf8(login);
-    serverSettings.authData.Password = WCstringToUtf8(password);
-    serverSettings.authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
+    if (serverSettings) {
+        serverSettings->authData.Login = WCstringToUtf8(login);
+        serverSettings->authData.Password = WCstringToUtf8(password);
+        serverSettings->authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
+    } else {
+        LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
+    }
     CServerFolderSelect folderSelectDlg(serverProfile_, uploadEngineManager_);
     folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
 
@@ -189,13 +201,13 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     }
     m_wndParamList.ResetContent();
     m_pluginLoader->getServerParamList(m_paramNameList);
-    
-    std::map<std::string,std::string>::iterator it;
-    for( it = m_paramNameList.begin(); it!= m_paramNameList.end(); ++it)
-    {
-        CString name = it->first.c_str();
-        CString humanName = it->second.c_str();
-        m_wndParamList.AddItem( PropCreateSimple(humanName, Utf8ToWCstring(serverSettings.params[WCstringToUtf8(name)])) );
+
+    if (serverSettings) {
+        for (const auto& it: m_paramNameList) {
+            CString name = it.first.c_str();
+            CString humanName = it.second.c_str();
+            m_wndParamList.AddItem(PropCreateSimple(humanName, Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)])));
+        }
     }
 
     return 0;

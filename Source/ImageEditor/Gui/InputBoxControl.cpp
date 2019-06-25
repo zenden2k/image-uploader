@@ -147,6 +147,11 @@ std::string InputBoxControl::getRawText()
     return rawRtfText.str();
 }
 
+bool InputBoxControl::isEmpty() {
+    int length = GetTextLengthEx(GTL_PRECISE, 1200 /* unicode */);
+    return length == 0;
+}
+
 DWORD CALLBACK InputBoxControl::EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb)
 {
     std::stringstream* rtf = reinterpret_cast<std::stringstream*>(dwCookie);

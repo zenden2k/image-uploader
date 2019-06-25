@@ -28,12 +28,12 @@ public:
         ID_SEARCHBYIMAGEINYANDEX,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
-        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_MOVE
+        ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
     
     };
 
     enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
-        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G'
+        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L', kFilledRectangle = 'G', kStepNumber = 'E'
         // if you add an item here, do not forget to add it to drawingToolsHotkeys_ map
     };
     struct MenuItem {
@@ -87,6 +87,8 @@ public:
         MESSAGE_HANDLER( WM_ACTIVATEAPP, OnActivateApp )
         MESSAGE_HANDLER( WM_GETMINMAXINFO, OnGetMinMaxInfo )
         MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
+        MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
+        MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -155,6 +157,8 @@ public:
         LRESULT OnUnselectAll(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -197,6 +201,7 @@ public:
         void OnSelectionChanged();
         void updateRoundingRadiusSlider();
         void updateSearchButton();
+        void updateFontSizeControls();
         std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
         void EndDialog(DialogResult dr);
         void init();

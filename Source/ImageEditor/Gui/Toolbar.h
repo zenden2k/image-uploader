@@ -6,7 +6,9 @@
 #include <vector>
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
-#define MTBM_DROPDOWNCLICKED  WM_USER + 400
+#define MTBM_DROPDOWNCLICKED  (WM_USER + 400)
+#define MTBM_FONTSIZECHANGE  (WM_USER + 401)
+#define MTBM_STEPINITIALVALUECHANGE (WM_USER + 402)
 namespace ImageEditor {
 
 
@@ -17,6 +19,7 @@ public:
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
+    enum {ID_FONTSIZEEDITCONTROL = 1201, ID_STEPINITIALVALUE};
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -65,6 +68,12 @@ public:
     Item* getItem(int index);
     void repaintItem(int index);
     void clickButton(int index);
+    int getFontSize() const;
+    void setStepFontSize(int fontSize);
+    void showStepFontSize(bool show);
+    void showPenSize(bool show);
+    void setStepInitialValue(int value);
+    int getStepInitialValue() const;
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -82,6 +91,8 @@ public:
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
         MESSAGE_HANDLER(WM_HSCROLL , OnHScroll)
         MESSAGE_HANDLER(WM_TIMER , OnTimer)
+        COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
+        COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         
         REFLECT_NOTIFICATIONS ()
 
@@ -107,7 +118,9 @@ public:
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-
+    LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    
     SIZE CalcItemSize(int index);
     int AutoSize();
     void CreateToolTipForItem(unsigned index);
@@ -115,6 +128,11 @@ public:
     CTrackBarCtrl  roundRadiusSlider_;
     CStatic pixelLabel_;
     CStatic roundRadiusLabel_;
+    CStatic fontSizeLabel_;
+    CEdit fontSizeEdit_;
+    CUpDownCtrl fontSizeUpDownCtrl_;
+    CStatic initialValueLabel_;
+    CEdit initialValueEdit_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;

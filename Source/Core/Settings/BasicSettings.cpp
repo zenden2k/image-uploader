@@ -213,8 +213,18 @@ void BasicSettings::removeChangeCallback(const ChangeCallback& callback) {
     }
 }
 
-ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile)
+ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& profile, bool create)
 {
     std::lock_guard<std::mutex> lock(serverSettingsMutex_);
-    return &ServersSettings[profile.serverName()][profile.profileName()];
+    if (create) {
+        return &ServersSettings[profile.serverName()][profile.profileName()];
+    }
+    auto it = ServersSettings.find(profile.serverName());
+    if (it != ServersSettings.end()) {
+        auto it2 = it->second.find(profile.profileName());
+        if (it2 != it->second.end()) {
+            return &it2->second;
+        }
+    }
+    return nullptr;
 }

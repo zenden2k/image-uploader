@@ -83,7 +83,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
     CString title;
     title.Format(TR("Folder list on server %s for account '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
-                 (LPCTSTR)Utf8ToWCstring(serverProfile_.serverSettings().authData.Login));
+                 (LPCTSTR)Utf8ToWCstring(serverProfile_.profileName()));
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 
     uploadScript->setNetworkClient(m_NetworkClient.get());

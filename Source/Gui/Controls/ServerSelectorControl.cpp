@@ -234,11 +234,11 @@ void CServerSelectorControl::serverChanged() {
             if ( !uploadEngineData ) {
                 return ;
             }
-            WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-
-            if ( Settings.ServersSettings[serverName].size() ) {
-                std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverName];
-                std::map <std::string, ServerSettingsStruct>::iterator it = ss.begin();
+            WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+            auto ssIt = Settings->ServersSettings.find("serverName");
+            if ( ssIt != Settings->ServersSettings.end() ) {
+                std::map <std::string, ServerSettingsStruct>& ss = ssIt->second;
+                auto it = ss.begin();
                 if ( it->first.empty() ) {
                     ++it;
                 }
@@ -293,14 +293,17 @@ void CServerSelectorControl::updateInfoLabel() {
     showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
     
     CString accountInfoText;
-    LoginInfo loginInfo = serverProfile_.serverSettings().authData;
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* res = Settings->getServerSettings(serverProfile_);
+
+    LoginInfo loginInfo = res ? res->authData : LoginInfo();
     
     if ( loginInfo.Login.empty() || (!loginInfo.DoAuth  && uploadEngineData->NeedAuthorization != 2 ) ) {
         accountInfoText += TR("Account...");
         accountLink_.SetToolTipText(TR("Enter account information"));
     } else {
-        accountInfoText += Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
-        currentUserName_  =  Utf8ToWCstring( serverProfile_.serverSettings().authData.Login );
+        accountInfoText += Utf8ToWCstring(loginInfo.Login );
+        currentUserName_  =  Utf8ToWCstring(loginInfo.Login );
     }
     CString folderTitle;
     if ( uploadEngineData->SupportsFolders ) {
@@ -565,9 +568,9 @@ LRESULT CServerSelectorControl::OnAddAccountClick(WORD wNotifyCode, WORD wID, HW
 
 LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    ServerSettingsStruct  ss = serverProfile_.serverSettings();
-    std::string UserName = ss.authData.Login; 
-    //bool prevAuthEnabled = ss.authData.DoAuth;
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+    std::string UserName = serverSettings ? serverSettings->authData.Login: std::string();
     ServerProfile copy = serverProfile_;
     CLoginDlg dlg(copy, uploadEngineManager_);
     
@@ -646,11 +649,13 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     int userNameIndex = wID - IDC_USERNAME_FIRST_ID;
     CString userName = menuOpenedUserNames_[userNameIndex];
     serverProfile_.setProfileName(WCstringToUtf8(userName));
-    ServerSettingsStruct& sss = serverProfile_.serverSettings();
 
-    serverProfile_.setFolderId(sss.defaultFolder.getId());
-    serverProfile_.setFolderTitle(sss.defaultFolder.getTitle());
-    serverProfile_.setFolderUrl(sss.defaultFolder.viewUrl);
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+
+    serverProfile_.setFolderId(serverSettings ? serverSettings->defaultFolder.getId() : std::string());
+    serverProfile_.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle() : std::string());
+    serverProfile_.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl : std::string());
 
     notifyChange();
     updateInfoLabel();

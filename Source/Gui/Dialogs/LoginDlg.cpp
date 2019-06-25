@@ -58,7 +58,10 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 {
     CenterWindow(GetParent());
 
-    LoginInfo li = serverProfile_.serverSettings().authData;
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+
+    LoginInfo li = serverSettings ? serverSettings->authData : LoginInfo();
     auto uploadEngineData = serverProfile_.uploadEngineData();
     SetWindowText(TR("Autorization parameters"));
     CString loginLabelText = uploadEngineData->LoginLabel.empty() ? CString(TR("Login:")) : CString(U2W(uploadEngineData->LoginLabel)) + _T(":");
@@ -182,8 +185,14 @@ DWORD CLoginDlg::Run()
         serverProfile_.setProfileName(WCstringToUtf8(login));
         li.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
         li.DoAuth = true;
-        ServerSettingsStruct& ss = serverProfile_.serverSettings();
-        ss.authData = li;
+
+        ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_);
+
+        if (serverSettings) {
+            serverSettings->authData = li;
+        } else {
+            LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
+        }
         CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
         if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
@@ -243,7 +252,13 @@ void CLoginDlg::Accept()
     li.Password = WCstringToUtf8(Buffer);
     li.DoAuth = true;
     uploadEngineManager_->resetAuthorization(serverProfile_);
-    serverProfile_.serverSettings().authData = li;
+
+    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
+    if (serverSettings) {
+        serverSettings->authData = li;
+    } else {
+        LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
+    }
     EndDialog(IDOK);
 }
 

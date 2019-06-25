@@ -53,7 +53,7 @@ public:
 
     ConnectionSettingsStruct ConnectionSettings;
 
-    ServerSettingsStruct* getServerSettings(const ServerProfile& profile);
+    ServerSettingsStruct* getServerSettings(const ServerProfile& profile, bool create = false);
 protected:
     SettingsManager mgr_;
     std::string fileName_;

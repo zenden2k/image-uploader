@@ -28,14 +28,14 @@ class Canvas {
         
         enum DrawingToolType {
             dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker,
-            dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse, dtMarker
+            dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
         };
 
         enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged
         };
-        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50 };
+        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
         struct UndoHistoryItemElement {
             MovableElement * movableElement;
             int pos;
@@ -97,7 +97,7 @@ class Canvas {
         AbstractDrawingTool* getCurrentDrawingTool();
         void addMovableElement(MovableElement* element);
         void deleteMovableElement(MovableElement* element);
-        void deleteMovableElements(ElementType elementType);
+        //void deleteMovableElements(ElementType elementType);
         void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out);
         //void setOverlay(MovableElement* overlay);
         void setZoomFactor(float zoomFactor);
@@ -116,6 +116,7 @@ class Canvas {
         TextElement* getCurrentlyEditedTextElement();
         void setCurrentlyEditedTextElement(TextElement* textElement);
         int unselectAllElements();
+        bool unselectElement(MovableElement* element);
         HWND getRichEditControl();
         void updateView();
         void updateView( RECT boundingRect );
@@ -131,6 +132,14 @@ class Canvas {
         bool isRoundingRectangleSelected(); 
         bool isDocumentModified();
         void setDocumentModified(bool modified);
+        int getNextNumber();
+
+        void setStepFontSize(int fontSize);
+        int getStepFontSize() const;
+
+        void setStepInitialValue(int value);
+        Gdiplus::Graphics* getGraphicsDevice() const;
+
         fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
         fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
         fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -156,6 +165,7 @@ private:
         void createDoubleBuffer();
         void setCursor(CursorType cursor);
         void renderInBuffer(Gdiplus::Rect  rect, bool forExport =false);
+        void recalcStepNumbers();
 
         std::shared_ptr<Gdiplus::Bitmap> buffer_;
         Document* doc_;
@@ -189,6 +199,9 @@ private:
         bool canvasChanged_;
         bool fullRender_;
         int blurRectanglesCount_;
+        int stepInitialValue_;
+        int nextNumber_; // next number for element StepNumber
+        int stepFontSize_;
         
         Gdiplus::Rect updatedRect_;
         LOGFONT font_;

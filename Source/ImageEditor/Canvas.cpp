@@ -70,6 +70,9 @@ Canvas::Canvas( HWND parent ) {
     doc_ = nullptr;
     canvasWidth_ = 0;
     canvasHeight_ = 0;
+    nextNumber_ = 1;
+    stepFontSize_ = kDefaultStepFontSize;
+    stepInitialValue_ = 1;
     createDoubleBuffer();
 }
 
@@ -544,6 +547,9 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
         } else if ( toolType == dtFilledEllipse ) {
             type = etFilledEllipse;
         }
+        else if (toolType == dtStepNumber) {
+            type = etStepNumber;
+        }
         else if ( toolType == dtMove ) {
             currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
             updateView();
@@ -595,8 +601,7 @@ void Canvas::addMovableElement(MovableElement* element)
         return;
     }
 
-    std::vector<MovableElement*>::iterator it;
-    it = find (elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
+    std::vector<MovableElement*>::iterator it = find (elementsOnCanvas_.begin(), elementsOnCanvas_.end(), element);
     if (it == elementsOnCanvas_.end()) {
 
         elementsOnCanvas_.push_back(element);
@@ -635,6 +640,7 @@ int Canvas::deleteSelectedElements()
     int deletedCount = 0;
     UndoHistoryItem uhi;
     uhi.type = uitElementRemoved;
+    bool isStepNumberRemoved = false;
 
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != etCrop ) {
@@ -643,12 +649,18 @@ int Canvas::deleteSelectedElements()
             uhie.pos = i;
             uhi.elements.push_back(uhie );
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+            if (uhie.movableElement->getType() == etStepNumber) {
+                isStepNumberRemoved = true;
+            }
             i--;
             deletedCount++;
         }
     }
     if ( deletedCount ) {
         undoHistory_.push(uhi);
+        if (isStepNumberRemoved) {
+            recalcStepNumbers();
+        }
         updateView();
         selectionChanged();
     }
@@ -697,6 +709,9 @@ void Canvas::deleteMovableElement(MovableElement* element)
             }
             if ( element->getType() == etCrop && (drawingToolType_ != dtCrop ) ) {
                 showOverlay(false);
+            }
+            if (element->getType() == etStepNumber) {
+                recalcStepNumbers();
             }
             //delete element;
             break;
@@ -981,7 +996,7 @@ CursorType Canvas::getCursor() const
 }
 
 bool Canvas::undo() {
-    if ( !undoHistory_.size() ) {
+    if ( undoHistory_.empty() ) {
         return false;
     }
     bool result = false;
@@ -1002,6 +1017,7 @@ bool Canvas::undo() {
                 blurRectanglesCount_++;
             }
         }
+        recalcStepNumbers();
         result = true;
     } else if ( item.type == uitElementForegroundColorChanged ) {
         int itemCount = item.elements.size();
@@ -1100,9 +1116,62 @@ int Canvas::unselectAllElements()
     return count;
 }
 
+bool Canvas::unselectElement(MovableElement* element) {
+    if (element->isSelected()) {
+        element->setSelected(false);
+        updateView(element->getPaintBoundingRect());
+        return true;
+    }
+    selectionChanged();
+    return false;
+}
+
 HWND Canvas::getRichEditControl()
 {
     return inputBox_?inputBox_->m_hWnd : 0;
+}
+
+int Canvas::getNextNumber() {
+    return nextNumber_++;
+}
+
+void Canvas::recalcStepNumbers() {
+    nextNumber_ = stepInitialValue_;
+    int count = 0;
+    for (const auto& el : elementsOnCanvas_) {
+        if (el->getType() == etStepNumber) {
+            auto stepNumberElement = dynamic_cast<StepNumber*>(el);
+            stepNumberElement->setNumber(nextNumber_++);
+            count++;
+        }
+    }
+    if (count) {
+        updateView();
+    }
+}
+
+void Canvas::setStepInitialValue(int value) {
+    stepInitialValue_ = value;
+    recalcStepNumbers();
+}
+
+Gdiplus::Graphics* Canvas::getGraphicsDevice() const {
+    return bufferedGr_;
+}
+
+void Canvas::setStepFontSize(int fontSize) {
+    stepFontSize_ = fontSize;
+    for ( const auto& el: elementsOnCanvas_) {
+        if (el->getType() == etStepNumber) {
+            dynamic_cast<StepNumber*>(el)->setFontSize(fontSize);
+            
+        }
+    }
+    updateView();
+}
+
+int Canvas::getStepFontSize() const {
+    return stepFontSize_;
 }
 
 }

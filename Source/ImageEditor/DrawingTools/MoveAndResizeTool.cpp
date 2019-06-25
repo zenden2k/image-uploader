@@ -89,19 +89,26 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
     if ( elementType_== etCrop  ) {
         canvas_->deleteElementsByType(elementType_);
     }
+
+    if (currentElement_ && currentElement_->isEmpty()) {
+        canvas_->unselectElement(currentElement_);
+        canvas_->deleteMovableElement(currentElement_);
+    }
     canvas_->unselectAllElements();
 
     if ( allowCreatingElements_ ) {
         POINT pt = { x, y };
+        startPoint_.x = x;
+        startPoint_.y = y;
 
         createElement();
         elementJustCreated_ = true;
         
         if ( currentElement_ ) {
-            startPoint_.x = x;
-            startPoint_.y = y;
-            currentElement_->setStartPoint( pt );
-            currentElement_->setEndPoint( pt );
+            if (currentElement_->isResizable()) {
+                currentElement_->setStartPoint( pt );
+                currentElement_->setEndPoint(pt);
+            }
             prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
             canvas_->addMovableElement( currentElement_ );
             currentElement_->beginMove();
@@ -113,7 +120,8 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             canvas_->updateView(currentElement_->getPaintBoundingRect());
         }
     } else {
-        currentElement_ = 0;
+        
+        currentElement_ = nullptr;
         if ( canvas_->unselectAllElements() ) {
             //canvas_->updateView();
         }
@@ -122,7 +130,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
-    if ( currentElement_ && draggedBoundary_.bt!= btNone ) {
+    if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= btNone ) {
         POINT* elementBasePoint = 0;
         if ( draggedBoundary_.gpt == MovableElement::gptStartPoint ) {
             elementBasePoint = &currentElement_->startPoint_;
@@ -227,7 +235,9 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
     if ( currentElement_ ) {
         POINT pt = { x, y };
-        currentElement_->setEndPoint( pt );
+        if (currentElement_->isResizable()) {
+            currentElement_->setEndPoint(pt);
+        }
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
         RECT updateRect;
         UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
@@ -249,7 +259,9 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
         POINT newStartPoint_ = currentElement_->getStartPoint();
         POINT newEndPoint_ = currentElement_->getEndPoint();
-        if ( !elementJustCreated_ && ( memcmp(&newStartPoint_,&originalStartPoint_, sizeof(newStartPoint_)) || memcmp(&newEndPoint_,&originalEndPoint_, sizeof(newEndPoint_)) ) ) {
+
+        if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
+            &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
             Canvas::UndoHistoryItem uhi;
             uhi.type = Canvas::uitElementPositionChanged;
             Canvas::UndoHistoryItemElement uhie;
@@ -264,13 +276,14 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
         RECT updateRect;
         UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
-        currentElement_= 0;
+        currentElement_ = 0;
         prevPaintBoundingRect_.bottom = -1;
         prevPaintBoundingRect_.left = -1;
         prevPaintBoundingRect_.right = -1;
         prevPaintBoundingRect_.top = -1;
         canvas_->updateView(updateRect);
         //currentElement_->setSelected(true);
+        
     }
 
     startPoint_.x = -1;
@@ -285,7 +298,6 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     }
     if ( isMoving_ ) {
         isMoving_ = false;
-        return;
     }
 }
 
@@ -343,8 +355,11 @@ void MoveAndResizeTool::createElement() {
         case etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        //default:
-            //LOG(ERROR) << "Unsupported element type";
+        case etStepNumber:
+            currentElement_ = new StepNumber(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getNextNumber(), canvas_->getStepFontSize());
+            break;
+        /*default:
+            LOG(ERROR) << "Unsupported element type";*/
     }
     if ( currentElement_ ) {
         currentElement_->setPenSize(penSize_);
