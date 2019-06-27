@@ -880,8 +880,12 @@ void StepNumber::render(Painter* gr) {
     RectF textRect(static_cast<REAL>(x), static_cast<REAL>(y), static_cast<REAL>(width), static_cast<REAL>(height));
     CString s;
     s.Format(L"%d", number_);
+    auto oldTextHint = gr->GetTextRenderingHint();
+    gr->SetTextRenderingHint(TextRenderingHintAntiAlias);
     gr->DrawString(s, -1, &font, textRect,  &format, &textBrush );
+    gr->SetTextRenderingHint(oldTextHint);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
+
 }
 
 RECT StepNumber::getPaintBoundingRect() {
@@ -895,12 +899,15 @@ ElementType StepNumber::getType() const {
 int StepNumber::recalcRadius() {
     using namespace Gdiplus;
     Graphics* gr = canvas_->getGraphicsDevice();
+    auto oldTextHint = gr->GetTextRenderingHint();
+    gr->SetTextRenderingHint(TextRenderingHintAntiAlias);
     FontFamily ff(L"Arial");
     Font font(&ff, static_cast<REAL>(fontSize_), FontStyleBold);
     CString s;
     s.Format(L"%d", number_);
     RectF boundingBox;
     gr->MeasureString(s, -1, &font, PointF(static_cast<REAL>(startPoint_.x), static_cast<REAL>(startPoint_.y)), &boundingBox);
+    gr->SetTextRenderingHint(oldTextHint);
     int radius = static_cast<int>(std::max<>(boundingBox.Width, boundingBox.Height) / 2 + 6);
     return radius;
 }

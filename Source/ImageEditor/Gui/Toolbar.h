@@ -9,8 +9,8 @@
 #define MTBM_DROPDOWNCLICKED  (WM_USER + 400)
 #define MTBM_FONTSIZECHANGE  (WM_USER + 401)
 #define MTBM_STEPINITIALVALUECHANGE (WM_USER + 402)
-namespace ImageEditor {
 
+namespace ImageEditor {
 
 class Toolbar : public CWindowImpl<Toolbar> {
 public:
@@ -19,7 +19,7 @@ public:
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
-    enum {ID_FONTSIZEEDITCONTROL = 1201, ID_STEPINITIALVALUE};
+    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE};
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -58,7 +58,7 @@ public:
         virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
     };
 
-    Toolbar(Orientation orientation); 
+    explicit Toolbar(Orientation orientation); 
     ~Toolbar();
     bool Create(HWND parent, bool child = false);
     int addButton(const Item& item);
@@ -89,15 +89,12 @@ public:
         MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
         MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
-        MESSAGE_HANDLER(WM_HSCROLL , OnHScroll)
-        MESSAGE_HANDLER(WM_TIMER , OnTimer)
+        MESSAGE_HANDLER(WM_HSCROLL, OnHScroll)
+        MESSAGE_HANDLER(WM_TIMER, OnTimer)
+        MESSAGE_HANDLER(WM_CLOSE, OnClose)
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
-        
-        REFLECT_NOTIFICATIONS ()
-
     END_MSG_MAP()
-
 
     // Handler prototypes (uncomment arguments if needed):
     //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -120,10 +117,11 @@ public:
     LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    
+    LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
     SIZE CalcItemSize(int index);
     int AutoSize();
-    void CreateToolTipForItem(unsigned index);
+    void CreateToolTipForItem(size_t index);
     CTrackBarCtrl  penSizeSlider_;
     CTrackBarCtrl  roundRadiusSlider_;
     CStatic pixelLabel_;
@@ -133,6 +131,7 @@ public:
     CUpDownCtrl fontSizeUpDownCtrl_;
     CStatic initialValueLabel_;
     CEdit initialValueEdit_;
+    CButton testButton_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;

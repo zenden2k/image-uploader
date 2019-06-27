@@ -19,7 +19,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     selectedItemIndex_ = -1;
     trackMouse_ = false;
     m_hWnd = 0;
-    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); //(HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16,16,0);
+    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); 
     dpiScaleX_ = 1.0f;
     dpiScaleY_ = 1.0f;
     transparentColor_ = Color(255,50,56);
@@ -72,7 +72,15 @@ bool Toolbar::Create(HWND parent, bool child )
         ::GetWindowRect(parent, parentRect);
         OffsetRect(&rc, parentRect.left, parentRect.top);
     }
-    HWND wnd = TParent::Create(parent, rc, _T("test"), (child ? WS_CHILD : WS_POPUP | WS_CLIPCHILDREN), child ? 0 : (WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST) /*|WS_EX_TOOLWINDOW*/);
+    DWORD style, exStyle;
+    if (child) {
+        style = WS_CHILD;
+        exStyle = 0;
+    } else {
+        style = WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+        exStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
+    }
+    HWND wnd = TParent::Create(parent, rc, _T("ImageEditor Toolbar"), style, exStyle);
     if ( !wnd ) {
         LOG(ERROR) << WinUtils::GetLastErrorAsString();
         return false;
@@ -147,7 +155,6 @@ void Toolbar::clickButton(int index)
     }
 
     InvalidateRect(&item.rect, FALSE);
-    
 }
 
 LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -157,7 +164,6 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         transparentColor_.SetFromCOLORREF(GetSysColor(COLOR_APPWORKSPACE));
     } else {
         SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),225,LWA_COLORKEY/*| LWA_ALPHA*/);
-
     }
     //lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
     //::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
@@ -206,14 +212,14 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         fontSizeLabel_.Create(m_hWnd, fontSizeLabelRect, TR("Font size:"), WS_CHILD);
         fontSizeLabel_.SetFont(systemFont_);
 
-        RECT fontSizeEditRect = { 0, 0, static_cast<LONG>(63 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
+        RECT fontSizeEditRect = { 0, 0, static_cast<LONG>(63 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
         fontSizeEdit_.Create(m_hWnd, fontSizeEditRect, nullptr, WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, (HMENU)ID_FONTSIZEEDITCONTROL);
         fontSizeEdit_.SetFont(systemFont_);
 
         RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, nullptr, WS_CHILD |  UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD |  UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
         fontSizeUpDownCtrl_.SetRange(1, 100);
 
         RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
@@ -221,9 +227,9 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         initialValueLabel_.Create(m_hWnd, initialValueLabelRect, TR("Initial value:"), WS_CHILD);
         initialValueLabel_.SetFont(systemFont_);
 
-        RECT initialValueEditRect{ 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
+        RECT initialValueEditRect{ 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        initialValueEdit_.Create(m_hWnd, initialValueEditRect, nullptr, WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
+        initialValueEdit_.Create(m_hWnd, initialValueEditRect, _T(""), WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
         initialValueEdit_.SetFont(systemFont_);
     }
     return 0;
@@ -440,8 +446,6 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
         selectedItemIndex_ = getItemAtPos(xPos, yPos);
         Item& item = buttons_[selectedItemIndex_];
 
-        
-
         if ( item.itemDelegate ) {
             clickButton(selectedItemIndex_);
             item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
@@ -493,6 +497,7 @@ LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
     bHandled = false;
     if ( ::GetKeyState(VK_MENU) & 0x8000 ) {
+        // User can drag toolbars with ALT pressed
         bHandled = true;
         return HTCAPTION;
     }
@@ -583,7 +588,6 @@ int Toolbar::AutoSize()
         ScreenToClient(&penSizeSliderRect);
         pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, static_cast<int>(buttonsRect_.bottom + 3 * dpiScaleY_), 0, 0, SWP_NOSIZE);
 
-
         roundRadiusSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(150 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 1 * dpiScaleY_), 0, 0, SWP_NOSIZE| SWP_NOZORDER);
         roundRadiusSlider_.SetRange(1,Canvas::kMaxRoundingRadius);
         RECT radiusSliderRect;
@@ -592,28 +596,31 @@ int Toolbar::AutoSize()
         ScreenToClient(&radiusSliderRect);
         roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE| SWP_NOZORDER);
 
-
         //RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
-        fontSizeLabel_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 3 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         GuiTools::AutoSizeStaticControl(fontSizeLabel_);
         RECT fontSizeLabelRect;
-        fontSizeLabel_.GetClientRect(&fontSizeLabelRect);
-        fontSizeLabel_.ClientToScreen(&fontSizeLabelRect);
+        fontSizeLabel_.GetWindowRect(&fontSizeLabelRect);
+        ScreenToClient(&fontSizeLabelRect);
+        fontSizeLabel_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + (subpanelHeight_ - fontSizeLabelRect.bottom + fontSizeLabelRect.top)/2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        fontSizeLabel_.GetWindowRect(&fontSizeLabelRect);
         ScreenToClient(&fontSizeLabelRect);
 
-        fontSizeEdit_.SetWindowPos(0, fontSizeLabelRect.right + static_cast<int>(2 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(1 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        fontSizeEdit_.SetWindowPos(0, fontSizeLabelRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(2 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
 
-        RECT rect;
-        fontSizeUpDownCtrl_.GetWindowRect(&rect);
-        ScreenToClient(&rect);
-        initialValueLabel_.SetWindowPos(nullptr, rect.right + static_cast<int>(5 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        RECT upDownRect, rect;
+        fontSizeUpDownCtrl_.GetWindowRect(&upDownRect);
+        ScreenToClient(&upDownRect);
         GuiTools::AutoSizeStaticControl(initialValueLabel_);
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
-        initialValueEdit_.SetWindowPos(0, rect.right + static_cast<int>(2 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(1 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        initialValueLabel_.GetWindowRect(&rect);
+        ScreenToClient(&rect);
+
+        initialValueEdit_.SetWindowPos(0, rect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(2 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -820,4 +827,7 @@ LRESULT Toolbar::OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
 
+LRESULT Toolbar::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    return 0;
+}
 }

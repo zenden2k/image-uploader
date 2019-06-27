@@ -65,6 +65,7 @@ bool CHistoryManager::openDatabase() {
         LOG(ERROR) << "unable to open database: ";
         return false;
     }
+    sqlite3_busy_timeout(db_, 1000); // Wait 1 second before SQLITE_BUSY is returned
     const char* sql = "CREATE TABLE IF NOT EXISTS upload_sessions(id PRIMARY KEY NOT NULL,created_at INT NOT NULL)";
     char* err = nullptr;
     if (sqlite3_exec(db_, sql, nullptr, nullptr, &err) != SQLITE_OK) {
@@ -108,8 +109,9 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     /*if (sqlite3_bind_text(stmt, 3 , serverName.c_str(), -1, nullptr) != SQLITE_OK) {
     LOG(ERROR) << "SQL error: Could not bind value.";
     }*/
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        LOG(ERROR) << "SQL error: Could not execute statement";
+    int retCode = sqlite3_step(stmt);
+    if (retCode  != SQLITE_DONE) {
+        LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
     }
     /*sqlite3_reset(stmt);
     sqlite3_clear_bindings(stmt);*/

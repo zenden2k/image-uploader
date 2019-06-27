@@ -18,16 +18,17 @@
 
 #include "Canvas.h"
 
+#include <cmath>
+#include <cassert>
+#include <algorithm>
+
 #include "DrawingElement.h"
 #include "Document.h"
 #include "DrawingTool.h"
 #include "InputBox.h"
 #include "MovableElements.h"
-#include <ImageEditor/Gui/InputBoxControl.h>
+#include "ImageEditor/Gui/InputBoxControl.h"
 #include "Core/Logging.h"
-#include <cmath>
-#include <cassert>
-#include <algorithm>
 #include "3rdpart/GdiplusH.h"
 #include "Core/i18n/Translator.h"
 

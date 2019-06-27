@@ -53,7 +53,7 @@ public:
     void setProfileName(const std::string& newProfileName);
     std::string profileName() const;
 
-    void setServerName(const std::string& newProfileName);
+    void setServerName(const std::string& newServerName);
     std::string serverName() const;
 
     std::string folderTitle() const;
