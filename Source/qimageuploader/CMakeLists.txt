@@ -73,7 +73,7 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 target_link_libraries(${PROJECT_NAME} avcodec avformat avutil swscale)
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} strmbasd gdi32 winmm dwmapi)
+    target_link_libraries(${PROJECT_NAME} gdi32 winmm dwmapi debug strmbasd optimized strmbase)
 endif()
 
 target_link_libraries(qimageuploader iucore ${COMMON_LIBS_LIST})

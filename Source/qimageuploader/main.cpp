@@ -19,6 +19,7 @@
 #include <Core/Settings/QtGuiSettings.h>
 #include <QMessageBox>
 #include "Core/i18n/Translator.h"
+#include "versioninfo.h"
 
 #ifdef _WIN32
 CAppModule _Module;
@@ -30,17 +31,17 @@ QtGuiSettings Settings;
 
 class Translator : public ITranslator {
 public:
-	virtual std::string getCurrentLanguage() override {
+	std::string getCurrentLanguage() override {
 		return "English";
 	}
-	virtual std::string getCurrentLocale() override {
+	std::string getCurrentLocale() override {
 		return "en_US";
 	}
-	virtual std::string translate(const char* str) override {
+	std::string translate(const char* str) override {
 		return str;
 	}
 #ifdef _WIN32
-	virtual const wchar_t* translateW(const wchar_t* str) override {
+	const wchar_t* translateW(const wchar_t* str) override {
 		return str;
 	}
 #endif
@@ -68,12 +69,20 @@ int main(int argc, char *argv[])
 #endif
 
     google::InitGoogleLogging(argv[0]);
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
 
 	QApplication a(argc, argv);
-	LogWindow* logWindow = new LogWindow();
-  
-	logWindow->show();
-	QtDefaultLogger logger(logWindow);
+    LogWindow logWindow;
+	logWindow.show();
+	QtDefaultLogger logger(&logWindow);
 	QtUploadErrorHandler errorHandler(&logger);
 	QtScriptDialogProvider dlgProvider;
 	ServiceLocator::instance()->setTranslator(&translator);
@@ -125,7 +134,7 @@ settingsDir.mkpath(settingsFolder);
 	Settings.setEngineList(&engineList);
 	
     //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w(&engineList, logWindow);
+    MainWindow w(&engineList, &logWindow);
     w.show();
     
     int res =  a.exec();
