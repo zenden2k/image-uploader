@@ -165,7 +165,7 @@ ImageEditor::ElementType Line::getType() const
     return etLine;
 }
 
-TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY ) :MovableElement(canvas) {
+TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY, bool filled) :MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x   = endX;
@@ -173,6 +173,7 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
     inputBox_ = inputBox;
     isEditing_ = false;
     firstEdit_ = true;
+    fillBackground_ = filled;
     memset(&font_, 0, sizeof(font_));
 }
 
@@ -188,6 +189,10 @@ void TextElement::render(Painter* gr) {
     }
 
     drawDashedRectangle_ = isSelected() || !inputBox_;
+    if (fillBackground_) {
+        SolidBrush br(backgroundColor_);
+        gr->FillRectangle(&br, getX(), getY(), getWidth(), getHeight());
+    }
     if ( inputBox_  && !inputBox_->isVisible()) {
         inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+4,getY()+3,getWidth()-5,getHeight()-6));
     }
@@ -303,7 +308,7 @@ bool TextElement::isEmpty() const {
     return firstEdit_ && inputBox_->isEmpty();
 }
 
-ImageEditor::ElementType TextElement::getType() const
+ElementType TextElement::getType() const
 {
     return etText;
 }
@@ -361,6 +366,16 @@ void TextElement::setRawText(const std::string& rawText)
         inputBox_->setRawText(rawText);
     }
 }
+
+void TextElement::setFillBackground(bool fill) {
+    fillBackground_ = fill;
+    isBackgroundColorUsed_ = fill;
+}
+
+bool TextElement::getFillBackground() const {
+    return fillBackground_;
+}
+
 
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {
     startPoint_.x = startX;

@@ -24,7 +24,7 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
 {
     currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
     configurationProvider_ = configurationProvider;
-    askBeforeClose_ = false;
+    askBeforeClose_ = true;
     allowAltTab_ = false;
 
     init();
@@ -412,6 +412,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
         canvas_->setFont(configurationProvider_->font());
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
+        canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
@@ -981,7 +982,6 @@ void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 
 void ImageEditorWindow::OnDrawingToolChanged(Canvas::DrawingToolType drawingTool)
 {
-
     updateToolbarDrawingTool(drawingTool);
     SendMessage(WM_SETCURSOR,0,0);
 }
@@ -1022,12 +1022,15 @@ void ImageEditorWindow::OnSelectionChanged()
 
 void ImageEditorWindow::updateRoundingRadiusSlider()
 {
-    bool showLineWidth = currentDrawingTool_ != Canvas::dtStepNumber;
+    bool showLineWidth = ( currentDrawingTool_ != Canvas::dtStepNumber && currentDrawingTool_ != Canvas::dtText);
     horizontalToolbar_.showPenSize(showLineWidth);
 
     bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
     horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
     horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
+
+    bool showFillBackgound = currentDrawingTool_ == Canvas::dtText;
+    horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
@@ -1278,6 +1281,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setFont(canvas_->getFont());
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
         configurationProvider_->setSearchEngine(searchEngine_);
+        configurationProvider_->setFillTextBackground(canvas_->getFillTextBackground());
         configurationProvider_->saveConfiguration();
     }
 }
@@ -1396,6 +1400,12 @@ LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wPar
         stepInitialValue = 1;
     }
     canvas_->setStepInitialValue(stepInitialValue);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->setFillTextBackground(horizontalToolbar_.isFillBackgroundChecked());
     return 0;
 }
 

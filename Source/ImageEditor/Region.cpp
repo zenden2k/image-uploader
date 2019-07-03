@@ -34,7 +34,6 @@ Region::Region(Gdiplus::Region* rgn)
 
 Region::~Region()
 {
-    //delete rgn_;
 }
 
 Region Region::intersected(const Region & r) const

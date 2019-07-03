@@ -1,10 +1,9 @@
 #ifndef IMAGEEDITOR_DOCUMENT_H
 #define IMAGEEDITOR_DOCUMENT_H
 
+#include <vector>
 #include <windows.h>
 #include "3rdpart/GdiplusH.h"
-#include <queue>
-#include <vector>
 #include "BasicTypes.h"
 #include "DrawingElement.h"
 #include "Core/Utils/CoreTypes.h"
@@ -22,22 +21,22 @@ class Document {
             AffectedSegments segments;
         };
         Document(int width, int height);
-        Document(const wchar_t* fileName);
+        explicit Document(const wchar_t* fileName);
         Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels = false);
         virtual ~Document();
         
-        Painter* getGraphicsObject();
+        Painter* getGraphicsObject() const;
         void beginDrawing( bool cloneImage = true );
         void addDrawingElement(DrawingElement *element);
         void endDrawing();
 
         void addAffectedSegments(const AffectedSegments& segments);
-        Gdiplus::Bitmap* getBitmap();
+        Gdiplus::Bitmap* getBitmap() const;
         void render(Painter* gr, Gdiplus::Rect rc);
         bool undo();
-        int getWidth();
-        int getHeight();
-        bool isNull();
+        int getWidth() const;
+        int getHeight() const;
+        bool isNull() const;
         bool hasTransparentPixels() const;
     private:
         std::shared_ptr<Gdiplus::Bitmap> currentImage_;
@@ -50,6 +49,7 @@ class Document {
         void init();
         void saveDocumentState( );
         void checkTransparentPixels();
+        DISALLOW_COPY_AND_ASSIGN(Document);
 };
 
 }

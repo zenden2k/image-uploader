@@ -9,6 +9,7 @@
 #define MTBM_DROPDOWNCLICKED  (WM_USER + 400)
 #define MTBM_FONTSIZECHANGE  (WM_USER + 401)
 #define MTBM_STEPINITIALVALUECHANGE (WM_USER + 402)
+#define MTBM_FILLBACKGROUNDCHANGE (WM_USER + 403)
 
 namespace ImageEditor {
 
@@ -19,7 +20,7 @@ public:
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
-    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE};
+    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX};
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -74,6 +75,8 @@ public:
     void showPenSize(bool show);
     void setStepInitialValue(int value);
     int getStepInitialValue() const;
+    void showFillBackgroundCheckbox(bool show);
+    bool isFillBackgroundChecked() const;
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -94,6 +97,7 @@ public:
         MESSAGE_HANDLER(WM_CLOSE, OnClose)
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
+        COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
     END_MSG_MAP()
 
     // Handler prototypes (uncomment arguments if needed):
@@ -118,6 +122,7 @@ public:
     LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     SIZE CalcItemSize(int index);
     int AutoSize();
@@ -132,6 +137,7 @@ public:
     CStatic initialValueLabel_;
     CEdit initialValueEdit_;
     CButton testButton_;
+    CButton fillBackgroundCheckbox_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;

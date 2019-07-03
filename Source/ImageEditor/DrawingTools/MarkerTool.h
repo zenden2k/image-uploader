@@ -1,25 +1,24 @@
 #ifndef MarkerTool_h__
 #define MarkerTool_h__
 
-
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-#include <stdint.h>
 #include "AbstractDrawingTool.h"
+
 namespace ImageEditor {
 
     class Canvas;
 
 class MarkerTool: public AbstractDrawingTool  {
 public:
-    MarkerTool( Canvas* canvas );
+    explicit MarkerTool( Canvas* canvas );
     ~MarkerTool();
-    void beginDraw( int x, int y );
-    void continueDraw( int x, int y, DWORD flags = 0);
-    void endDraw( int x, int y );
-    void render( Painter* gr );
-    virtual CursorType getCursor(int x, int y);
+    void beginDraw( int x, int y ) override;
+    void continueDraw( int x, int y, DWORD flags = 0) override;
+    void endDraw( int x, int y ) override;
+    void render( Painter* gr ) override;
+    CursorType getCursor(int x, int y) override;
 protected:
     POINT oldPoint_;
     int circleStride_;
@@ -30,7 +29,7 @@ protected:
     void highlightRegion(RECT rc);
     void createCircle();
 
-    virtual void setPenSize(int size);
+    void setPenSize(int size) override;
 
 };
 }

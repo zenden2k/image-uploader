@@ -17,7 +17,7 @@ namespace ImageEditor {
 class InputBoxControlCallback {
 public:
     virtual POINT GetScrollOffset() = 0;
-    ~InputBoxControlCallback() {}
+    virtual ~InputBoxControlCallback() {}
 };
 class InputBoxControl :
     public CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits>, public InputBox
@@ -73,17 +73,16 @@ class InputBoxControl :
         LRESULT OnSetCursor(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
 
     public:
-        int NotifyParent(int nItem);
         BOOL SubclassWindow(HWND hWnd);
-        virtual void show(bool s);
-        virtual void resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips);
-        virtual void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
-        virtual bool isVisible();
-        virtual void invalidate();
-        virtual void setTextColor(Gdiplus::Color color);
-        virtual void setFont(LOGFONT font,  DWORD changeMask);
-        virtual void setRawText(const std::string& text);
-        virtual std::string getRawText();
+        void show(bool s) override;
+        void resize(int x, int y, int w,int h, std::vector<MovableElement::Grip> grips) override;
+        void render(Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) override;
+        bool isVisible() override;
+        void invalidate() override;
+        void setTextColor(Gdiplus::Color color) override;
+        void setFont(LOGFONT font,  DWORD changeMask) override;
+        void setRawText(const std::string& text) override;
+        std::string getRawText() override;
         bool isEmpty() override;
 protected:
     static DWORD CALLBACK EditStreamOutCallback(DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG *pcb);
@@ -91,8 +90,6 @@ protected:
     bool contextMenuOpened_;
     Canvas* canvas_;
     CFont biggerFont_;
-
-
 };
 
 }

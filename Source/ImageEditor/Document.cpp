@@ -23,7 +23,6 @@
 #include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
 #include "Core/Logging.h"
-#include <stdint.h>
 #include "Core/Images/Utils.h"
 
 namespace ImageEditor {
@@ -60,7 +59,7 @@ Document::~Document()
 void Document::init() {
     currentCanvas_ = nullptr;
     drawStarted_ = false;
-    originalImage_ = NULL;
+    originalImage_ = nullptr;
     if ( currentImage_ ) {
         currentCanvas_ = new Gdiplus::Graphics( currentImage_.get() );
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
@@ -82,7 +81,6 @@ void Document::beginDrawing(bool cloneImage) {
         originalImage_ = currentImage_->Clone(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight(), PixelFormat32bppARGB );
     }
     changedSegments_.clear();
-    // saving current image
 }
 
 void Document::addDrawingElement(DrawingElement *element) {
@@ -103,7 +101,6 @@ void Document::endDrawing() {
     saveDocumentState( );
     drawStarted_ = false;
     changedSegments_.clear();
-
 }
 
 void Document::addAffectedSegments(const AffectedSegments& segments)
@@ -111,7 +108,7 @@ void Document::addAffectedSegments(const AffectedSegments& segments)
     changedSegments_ += segments;
 }
 
-Gdiplus::Bitmap* Document::getBitmap()
+Gdiplus::Bitmap* Document::getBitmap() const
 {
     return currentImage_.get();
 }
@@ -205,7 +202,7 @@ void Document::checkTransparentPixels()
     }
 }
 
-void Document::render(Gdiplus::Graphics *gr, Gdiplus::Rect rc) {
+void Document::render(Painter *gr, Gdiplus::Rect rc) {
     if (!gr || !currentImage_ ) return;
     gr->DrawImage( currentImage_.get(),rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
@@ -251,17 +248,17 @@ bool  Document::undo() {
 }
 
 
-int Document::getWidth()
+int Document::getWidth() const
 {
     return currentImage_->GetWidth();
 }
 
-int Document::getHeight()
+int Document::getHeight() const
 {
     return currentImage_->GetHeight();
 }
 
-bool Document::isNull()
+bool Document::isNull() const
 {
     return !currentImage_;
 }
@@ -271,7 +268,7 @@ bool Document::hasTransparentPixels() const
     return hasTransparentPixels_;
 }
 
-Painter* Document::getGraphicsObject() {
+Painter* Document::getGraphicsObject() const {
     return currentCanvas_;
 }
 }

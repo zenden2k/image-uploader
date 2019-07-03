@@ -15,11 +15,11 @@ namespace ImageEditor {
 class BrushTool: public AbstractDrawingTool  {
 public:
     BrushTool( Canvas* canvas );
-    void beginDraw( int x, int y );
-    void continueDraw( int x, int y, DWORD flags = 0);
-    void endDraw( int x, int y );
-    void render( Painter* gr );
-    virtual CursorType getCursor(int x, int y);
+    void beginDraw( int x, int y ) override;
+    void continueDraw( int x, int y, DWORD flags = 0) override;
+    void endDraw( int x, int y ) override;
+    void render( Painter* gr ) override;
+    CursorType getCursor(int x, int y) override;
 protected:
     POINT oldPoint_;
     AffectedSegments segments_;

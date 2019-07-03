@@ -18,15 +18,14 @@
 
 #include "MoveAndResizeTool.h"
 
+#include <cmath>
+#include <cassert>
+
 #include "../Canvas.h"
 #include "../Document.h"
 #include "../MovableElements.h"
-
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
-
-#include <cmath>
-#include <cassert>
 #include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
@@ -318,7 +317,7 @@ void MoveAndResizeTool::createElement() {
             currentElement_ = new Line(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
         case etText:
-            currentElement_ = new TextElement(canvas_, 0, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new TextElement(canvas_, 0, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getFillTextBackground());
             break;
         case etSelection:
             currentElement_ = new Selection(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
@@ -386,7 +385,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
         }
     }
 
-    return MovableElement::Grip();
+    return {};
 }    
 
 MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
@@ -396,7 +395,7 @@ MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* 
             return element->grips_[i];
         }
     }
-    return MovableElement::Grip();
+    return {};
 }
 
 void MoveAndResizeTool::cleanUp()

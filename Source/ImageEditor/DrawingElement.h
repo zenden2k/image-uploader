@@ -5,6 +5,7 @@
 #include <deque>
 #include "3rdpart/GdiplusH.h"
 #include "BasicTypes.h"
+#include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor {
 
@@ -31,8 +32,8 @@ class DrawingElement {
         virtual void getAffectedSegments( AffectedSegments* segments );
         void setPenSize( int penSize );
         void setRoundingRadius(int radius);
-        int getWidth();
-        int getHeight();
+        int getWidth() const;
+        int getHeight() const;
     protected:
         POINT startPoint_;
         POINT endPoint_;
@@ -41,6 +42,7 @@ class DrawingElement {
         int penSize_;
         Canvas* canvas_;
         int roundingRadius_;
+        DISALLOW_COPY_AND_ASSIGN(DrawingElement);
 };
 
 class AffectedSegments {

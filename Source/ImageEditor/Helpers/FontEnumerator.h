@@ -16,7 +16,7 @@ protected:
     OnEnumerationFinishedDelegate onEnumerationFinished_;
     HDC dc_;
     std::vector<LOGFONT>& fonts_;
-    static int CALLBACK FontEnumerator::EnumFontFamExProc(const LOGFONT *lpelfe, const TEXTMETRIC *lpntme, DWORD FontType, LPARAM lParam);
+    static int CALLBACK EnumFontFamExProc(const LOGFONT *lpelfe, const TEXTMETRIC *lpntme, DWORD FontType, LPARAM lParam);
 };
 
 #endif

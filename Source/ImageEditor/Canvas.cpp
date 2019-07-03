@@ -18,7 +18,6 @@
 
 #include "Canvas.h"
 
-#include <cmath>
 #include <cassert>
 #include <algorithm>
 
@@ -74,6 +73,7 @@ Canvas::Canvas( HWND parent ) {
     nextNumber_ = 1;
     stepFontSize_ = kDefaultStepFontSize;
     stepInitialValue_ = 1;
+    fillTextBackground_ = false;
     createDoubleBuffer();
 }
 
@@ -249,12 +249,12 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
 
 }
 
-Gdiplus::Rect Canvas::currentRenderingRect()
+Gdiplus::Rect Canvas::currentRenderingRect() const
 {
     return currentRenderingRect_;
 }
 
-bool Canvas::isRoundingRectangleSelected()
+bool Canvas::isRoundingRectangleSelected() const
 {
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle ) ) {
@@ -264,7 +264,7 @@ bool Canvas::isRoundingRectangleSelected()
     return false;
 }
 
-bool Canvas::isDocumentModified()
+bool Canvas::isDocumentModified() const
 {
     return isDocumentModified_;
 }
@@ -347,11 +347,11 @@ void Canvas::setRoundingRadius(int radius) {
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setRoundingRadius(radius);
     }
-    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
-            RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-            elementsOnCanvas_[i]->setRoundingRadius(radius);
-            RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+    for (const auto& el: elementsOnCanvas_) {
+        if (el->isSelected() && el->isPenSizeUsed() ) {
+            RECT paintRect = el->getPaintBoundingRect();
+            el->setRoundingRadius(radius);
+            RECT newPaintRect = el->getPaintBoundingRect();
             UnionRect(&paintRect, &paintRect, &newPaintRect);
             updateView(paintRect);
         }
@@ -488,7 +488,7 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
     }*/
 }
 
-LOGFONT Canvas::getFont()
+LOGFONT Canvas::getFont() const
 {
     return font_;
 }
@@ -589,7 +589,7 @@ void Canvas::setPreviousDrawingTool()
     }
 }    
 
-AbstractDrawingTool* Canvas::getCurrentDrawingTool()
+AbstractDrawingTool* Canvas::getCurrentDrawingTool() const
 {
     return currentDrawingTool_;
 }
@@ -616,6 +616,7 @@ void Canvas::addMovableElement(MovableElement* element)
         uhie.movableElement = element;
         historyItem.elements.push_back(uhie);
         undoHistory_.push(historyItem);
+        isDocumentModified_ = true;
         elementsToDelete_.push_back(element);
     }
 }
@@ -668,7 +669,7 @@ int Canvas::deleteSelectedElements()
     return deletedCount;
 }
 
-float Canvas::getBlurRadius()
+float Canvas::getBlurRadius() const
 {
     return blurRadius_;
 }
@@ -678,7 +679,7 @@ void Canvas::setBlurRadius(float radius)
     blurRadius_ = radius;
 }
 
-bool Canvas::hasBlurRectangles()
+bool Canvas::hasBlurRectangles() const
 {
     return blurRectanglesCount_!=0;
 }
@@ -760,7 +761,6 @@ void Canvas::updateView( RECT boundingRect ) {
 
 }
 
-
 POINT Canvas::GetScrollOffset() const {
     return scrollOffset_;
 }
@@ -784,8 +784,6 @@ void Canvas::setCursor(CursorType cursorType)
 
 void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
 {
-    //DWORD start = GetTickCount();
-    //LOG(INFO) << " Canvas::renderInBuffer() " << GetTickCount();
     using namespace Gdiplus;
     currentRenderingRect_ = rc;
     if (!fullRender_ && !forExport) {
@@ -867,13 +865,9 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
     canvasChanged_ = false;
     fullRender_ = false;
     updatedRect_ = Rect();
-    //DWORD end = GetTickCount();
-
-    //LOG(WARNING) << "Render time: " << (end - start);
-    //delete bufferedGr_;
 }
 
-void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out)
+void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const
 {
     int count = elementsOnCanvas_.size();
     for ( int i = 0; i < count; i++ ) {
@@ -883,20 +877,14 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
     }
 }
 
-/*void Canvas::setOverlay(MovableElement* overlay)
-{
-    overlay_ = overlay;
-    updateView();
-}*/
-
 void Canvas::setZoomFactor(float zoomFactor)
 {
     zoomFactor_ = zoomFactor;
 }
 
-Gdiplus::Bitmap* Canvas::getBufferBitmap()
+Gdiplus::Bitmap* Canvas::getBufferBitmap() const
 {
-    return &*buffer_;
+    return buffer_.get();
 }
 
 void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
@@ -927,10 +915,10 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     int cropY = crop->getY();
     int cropWidth = crop->getWidth();
     int cropHeight = crop->getHeight();
-    Bitmap* bm = new Bitmap(cropWidth, cropHeight);
-    Graphics gr(bm);
-    gr.DrawImage( &*buffer_, 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
-    return std::shared_ptr<Gdiplus::Bitmap>(bm);
+    auto bm = std::make_shared<Bitmap>(cropWidth, cropHeight);
+    Graphics gr(bm.get());
+    gr.DrawImage( buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
+    return bm;
 }
 
 float Canvas::getZoomFactor() const
@@ -962,7 +950,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
     }
 
 
-    return 0;
+    return nullptr;
 }
 
 int Canvas::deleteElementsByType(ElementType elementType)
@@ -1060,9 +1048,15 @@ bool Canvas::undo() {
         result = true;
     } else if ( item.type == uitTextChanged ) {
         int itemCount = item.elements.size();
-        // Insert elements in their initial positions
         for ( int i = itemCount-1; i>=0; i-- ) {
             static_cast<TextElement*>(item.elements[i].movableElement)->setRawText(item.elements[i].rawText);
+        }
+        result = true;
+    } else if (item.type == uitFillBackgroundChanged) {
+        int itemCount = item.elements.size();
+
+        for (int i = itemCount - 1; i >= 0; i--) {
+            static_cast<TextElement*>(item.elements[i].movableElement)->setFillBackground(item.elements[i].penSize);
         }
         result = true;
     }
@@ -1093,7 +1087,7 @@ InputBox* Canvas::getInputBox( const RECT& rect ) {
     return inputBox_;
 }
 
-TextElement* Canvas::getCurrentlyEditedTextElement()
+TextElement* Canvas::getCurrentlyEditedTextElement() const
 {
     return currentlyEditedTextElement_;
 }
@@ -1127,7 +1121,7 @@ bool Canvas::unselectElement(MovableElement* element) {
     return false;
 }
 
-HWND Canvas::getRichEditControl()
+HWND Canvas::getRichEditControl() const
 {
     return inputBox_?inputBox_->m_hWnd : 0;
 }
@@ -1173,6 +1167,39 @@ void Canvas::setStepFontSize(int fontSize) {
 
 int Canvas::getStepFontSize() const {
     return stepFontSize_;
+}
+
+void Canvas::setFillTextBackground(bool fill) {
+    fillTextBackground_ = fill;
+    int count = 0;
+    UndoHistoryItem uhi;
+    uhi.type = uitFillBackgroundChanged;
+    
+    for ( auto& el: elementsOnCanvas_) {
+        if (el->isSelected() && el->getType() == etText) {
+            auto textEl = dynamic_cast<TextElement*>(el);
+            bool prev = textEl->getFillBackground();
+            if (prev == fill) {
+                continue;
+            }
+            textEl->setFillBackground(fill);
+            
+            UndoHistoryItemElement uhie;
+            uhie.pos = 0;
+            uhie.movableElement = el;
+            uhie.penSize = prev;
+            uhi.elements.push_back(uhie);
+            count++;
+        }
+    }
+    if (count) {
+        undoHistory_.push(uhi);
+        updateView();
+    }
+}
+
+bool Canvas::getFillTextBackground() const {
+    return fillTextBackground_;
 }
 
 }

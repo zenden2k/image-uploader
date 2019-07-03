@@ -15,9 +15,9 @@ namespace ImageEditor {
 class CropTool : public MoveAndResizeTool {
 public:
     CropTool(Canvas* canvas);
-    void beginDraw( int x, int y );
-    void continueDraw( int x, int y, DWORD flags );
-    void endDraw( int x, int y );
+    void beginDraw( int x, int y ) override;
+    void continueDraw( int x, int y, DWORD flags ) override;
+    void endDraw( int x, int y ) override;
 };
 
 }

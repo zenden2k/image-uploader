@@ -89,6 +89,7 @@ public:
         MESSAGE_HANDLER( MTBM_DROPDOWNCLICKED, OnDropDownClicked )
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
+        MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -159,6 +160,7 @@ public:
         LRESULT OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -228,6 +230,7 @@ public:
         allowAltTab_ = false; 
         searchEngine_ = SearchByImage::seGoogle;
         memset(&font_, 0, sizeof(font_));
+        fillTextBackground_ = false;
     }
     virtual ~ConfigurationProvider() {
 
@@ -250,6 +253,12 @@ public:
     SearchByImage::SearchEngine searchEngine() const {
         return searchEngine_;
     }
+    void setFillTextBackground(bool fill) {
+        fillTextBackground_ = fill;
+    }
+    bool fillTextBackground() const {
+        return fillTextBackground_;
+    }
 protected:
     Gdiplus::Color foregroundColor_;
     Gdiplus::Color backgroundColor_;
@@ -258,6 +267,7 @@ protected:
     LOGFONT font_;
     bool allowAltTab_;
     SearchByImage::SearchEngine searchEngine_;
+    bool fillTextBackground_;
 };
 
 }

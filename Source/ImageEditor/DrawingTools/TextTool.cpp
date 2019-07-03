@@ -70,8 +70,8 @@ void TextTool::endDraw( int x, int y ) {
 
     int width = currentElement_->getWidth();
     int height = currentElement_->getHeight();
-    if (  width < 300 ) {
-        width = 300;
+    if (  elementJustCreated_ && width < 150 ) {
+        width = 150;
     }
 
     if ( height < 30 ) {

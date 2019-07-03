@@ -231,6 +231,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
         initialValueEdit_.Create(m_hWnd, initialValueEditRect, _T(""), WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
         initialValueEdit_.SetFont(systemFont_);
+
+        RECT fillBackgroundCheckboxRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+        fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
+        fillBackgroundCheckbox_.SetFont(systemFont_);
     }
     return 0;
 }
@@ -621,6 +626,10 @@ int Toolbar::AutoSize()
         ScreenToClient(&rect);
 
         initialValueEdit_.SetWindowPos(0, rect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(2 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        // Moving fill background checkbox
+        fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -830,4 +839,18 @@ LRESULT Toolbar::OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT Toolbar::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     return 0;
 }
+
+void Toolbar::showFillBackgroundCheckbox(bool show) {
+    fillBackgroundCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
+LRESULT Toolbar::OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_FILLBACKGROUNDCHANGE, 0, 0);
+    return 0;
+}
+
+bool Toolbar::isFillBackgroundChecked() const {
+    return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
+}
+
 }

@@ -4,8 +4,8 @@
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-#include <stdint.h>
 #include "AbstractDrawingTool.h"
+
 namespace ImageEditor {
 
 class Canvas;
@@ -14,13 +14,11 @@ class CropOverlay;
 
 class MoveAndResizeTool: public AbstractDrawingTool {
 public:
-
     MoveAndResizeTool( Canvas* canvas, ElementType type = etNone );
-    void beginDraw( int x, int y );
-    void continueDraw( int x, int y, DWORD flags );
-    void endDraw( int x, int y );
-    void render( Painter* gr );
-
+    void beginDraw( int x, int y ) override;
+    void continueDraw( int x, int y, DWORD flags ) override;
+    void endDraw( int x, int y ) override;
+    void render( Painter* gr ) override;
 protected:
     MovableElement* currentElement_;
     ElementType elementType_;
@@ -29,8 +27,8 @@ protected:
     MovableElement::Grip checkElementsBoundaries(int x, int y, MovableElement** elem = 0);
     MovableElement::Grip checkElementBoundaries(MovableElement*, int x, int y);
     static void cleanUp();
-    virtual CursorType getCursor(int x, int y);
-    virtual void mouseDoubleClick(int x, int y);
+    CursorType getCursor(int x, int y) override;
+    void mouseDoubleClick(int x, int y) override;
 
     static CropOverlay* cropOverlay_;
     bool isMoving_;

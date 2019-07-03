@@ -30,6 +30,7 @@ struct ImageEditorSettingsStruct {
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
     SearchByImage::SearchEngine SearchEngine;
+    bool FillTextBackground;
 };
 
 struct TrayIconSettingsStruct {

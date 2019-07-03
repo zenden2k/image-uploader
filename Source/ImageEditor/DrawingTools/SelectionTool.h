@@ -12,7 +12,7 @@ class Canvas;
 
 class SelectionTool : public MoveAndResizeTool {
 public:
-    SelectionTool( Canvas* canvas );
+    explicit SelectionTool( Canvas* canvas );
 };
 
 }

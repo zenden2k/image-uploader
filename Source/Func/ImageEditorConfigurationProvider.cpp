@@ -12,6 +12,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
     allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
     searchEngine_ = Settings.ImageEditorSettings.SearchEngine;
+    fillTextBackground_ = Settings.ImageEditorSettings.FillTextBackground;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -25,5 +26,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     Settings.ImageEditorSettings.RoundingRadius = roundingRadius_;
     Settings.ImageEditorSettings.AllowAltTab = allowAltTab_;
     Settings.ImageEditorSettings.SearchEngine = searchEngine_;
+    Settings.ImageEditorSettings.FillTextBackground = fillTextBackground_;
 }
 

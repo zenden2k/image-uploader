@@ -1,13 +1,14 @@
 #ifndef IMAGEEDITOR_CANVAS_H
 #define IMAGEEDITOR_CANVAS_H
 
-#include "3rdpart/GdiPlusH.h"
-#include "InputBox.h"
-#include <ImageEditor/Gui/InputBoxControl.h>
-#include "MovableElement.h"
 #include <vector>
-#include "Core/3rdpart/FastDelegate.h"
 #include <stack>
+
+#include "3rdpart/GdiplusH.h"
+#include "InputBox.h"
+#include "ImageEditor/Gui/InputBoxControl.h"
+#include "MovableElement.h"
+#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor {
@@ -22,7 +23,7 @@ class Canvas {
     public:
         class Callback {
         public:
-            virtual void updateView( Canvas* canvas, Gdiplus::Rect rect ) = NULL;
+            virtual void updateView( Canvas* canvas, Gdiplus::Rect rect ) = 0;
             virtual ~Callback(){};
         };
         
@@ -33,7 +34,7 @@ class Canvas {
 
         enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
-            uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged
+            uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
         struct UndoHistoryItemElement {
@@ -42,7 +43,7 @@ class Canvas {
             POINT startPoint;
             POINT endPoint;
             Gdiplus::Color color;
-            int penSize; // pensize or rounding radius
+            int penSize; // pensize or rounding radius or fill background
             std::string rawText;
             UndoHistoryItemElement() {
                 pos = -1;
@@ -91,17 +92,16 @@ class Canvas {
         Gdiplus::Color getBackgroundColor() const;
         void setFont(LOGFONT font, DWORD changeMask = CFM_FACE | CFM_SIZE | CFM_CHARSET 
             | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
-        LOGFONT getFont();
+        LOGFONT getFont() const;
         AbstractDrawingTool* setDrawingToolType(DrawingToolType tool, bool notify = false);
         void setPreviousDrawingTool();
-        AbstractDrawingTool* getCurrentDrawingTool();
+        AbstractDrawingTool* getCurrentDrawingTool() const;
         void addMovableElement(MovableElement* element);
         void deleteMovableElement(MovableElement* element);
         //void deleteMovableElements(ElementType elementType);
-        void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out);
-        //void setOverlay(MovableElement* overlay);
+        void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const;
         void setZoomFactor(float zoomFactor);
-        Gdiplus::Bitmap* getBufferBitmap();
+        Gdiplus::Bitmap* getBufferBitmap() const;
         void addUndoHistoryItem(const UndoHistoryItem& item);
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
     
@@ -113,24 +113,24 @@ class Canvas {
         CursorType getCursor() const;
         bool undo();
         InputBox* getInputBox( const RECT& rect ); 
-        TextElement* getCurrentlyEditedTextElement();
+        TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
         int unselectAllElements();
         bool unselectElement(MovableElement* element);
-        HWND getRichEditControl();
+        HWND getRichEditControl() const;
         void updateView();
         void updateView( RECT boundingRect );
         bool addDrawingElementToDoc(DrawingElement* element);
         void endDocDrawing();
         int deleteSelectedElements();
-        float getBlurRadius();
+        float getBlurRadius() const;
         void setBlurRadius(float radius);
-        bool hasBlurRectangles();
+        bool hasBlurRectangles() const;
         void showOverlay(bool show);
         void selectionChanged();
-        Gdiplus::Rect currentRenderingRect();
-        bool isRoundingRectangleSelected(); 
-        bool isDocumentModified();
+        Gdiplus::Rect currentRenderingRect() const;
+        bool isRoundingRectangleSelected() const; 
+        bool isDocumentModified() const;
         void setDocumentModified(bool modified);
         int getNextNumber();
 
@@ -138,6 +138,9 @@ class Canvas {
         int getStepFontSize() const;
 
         void setStepInitialValue(int value);
+
+        void setFillTextBackground(bool fill);
+        bool getFillTextBackground() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
 
         fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
@@ -158,13 +161,9 @@ class Canvas {
         friend class CropTool;
         POINT GetScrollOffset() const;
 private:
-        void init();
-        
-        //void updateView( const CRgn& region );
-
         void createDoubleBuffer();
         void setCursor(CursorType cursor);
-        void renderInBuffer(Gdiplus::Rect  rect, bool forExport =false);
+        void renderInBuffer(Gdiplus::Rect rc, bool forExport =false);
         void recalcStepNumbers();
 
         std::shared_ptr<Gdiplus::Bitmap> buffer_;
@@ -202,6 +201,7 @@ private:
         int stepInitialValue_;
         int nextNumber_; // next number for element StepNumber
         int stepFontSize_;
+        bool fillTextBackground_;
         
         Gdiplus::Rect updatedRect_;
         LOGFONT font_;

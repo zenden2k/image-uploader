@@ -4,6 +4,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
 #include "MovableElement.h"
+#include "Core/Utils/CoreTypes.h"
 
 namespace ImageEditor {
 class InputBox;
@@ -16,11 +17,12 @@ class Line: public MovableElement {
         void createGrips() override;
         bool isItemAtPos(int x, int y) override;
         ElementType getType() const override;
+        DISALLOW_COPY_AND_ASSIGN(Line);
 };
 
 class TextElement: public MovableElement{
     public:
-        TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY );
+        TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY, bool filled = false);
         ~TextElement();
         void render(Painter* gr) override;
         void getAffectedSegments(AffectedSegments* segments) override;
@@ -36,11 +38,14 @@ class TextElement: public MovableElement{
         void setRawText(const std::string& rawText);
         void setColor(Gdiplus::Color color) override;
         bool isEmpty() const override;
+        void setFillBackground(bool fill);
+        bool getFillBackground() const;
 protected:
     InputBox *inputBox_;
     LOGFONT font_;
     bool isEditing_;
     bool firstEdit_;
+    bool fillBackground_;
     std::string originalRawText_;
     void onTextChanged(TCHAR *text);
     void onEditCanceled();
@@ -49,6 +54,7 @@ protected:
     void setTextColor();
     void onSelectionChanged(int min, int max, LOGFONT font);
     void saveToHistory();
+    DISALLOW_COPY_AND_ASSIGN(TextElement);
 };
 
 class Crop: public MovableElement {
@@ -60,12 +66,14 @@ public:
     void setPos(int  x, int y) override;
     bool move(int  offsetX, int offsetY) override;
     void resize(int width, int height) override;
+    DISALLOW_COPY_AND_ASSIGN(Crop);
 };
 
 class CropOverlay: public MovableElement {
 public:
     CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY);
     void render(Painter* gr) override;
+    DISALLOW_COPY_AND_ASSIGN(CropOverlay);
 };
 
 class BlurringRectangle: public MovableElement {
@@ -78,7 +86,7 @@ public:
     ElementType getType() const override;
 protected:
     float blurRadius_;
-
+    DISALLOW_COPY_AND_ASSIGN(BlurringRectangle);
 };
 
 class Rectangle: public MovableElement {
@@ -93,13 +101,14 @@ public:
 
 protected:
     bool filled_;
-
+    DISALLOW_COPY_AND_ASSIGN(Rectangle);
 };
 
 class FilledRectangle: public Rectangle {
 public:
     FilledRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
     ElementType getType() const override;
+    DISALLOW_COPY_AND_ASSIGN(FilledRectangle);
 };
 
 class RoundedRectangle: public Rectangle {
@@ -107,12 +116,14 @@ public:
     RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled = false );
     void render(Painter* gr) override;
     ElementType getType() const override;
+    DISALLOW_COPY_AND_ASSIGN(RoundedRectangle);
 };
 
 class FilledRoundedRectangle: public RoundedRectangle {
 public:
     FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY );
     ElementType getType() const override;
+    DISALLOW_COPY_AND_ASSIGN(FilledRoundedRectangle);
 };
 
 class Arrow: public Line {
@@ -121,6 +132,7 @@ public:
     void render(Painter* gr) override;
     RECT getPaintBoundingRect() override;
     ElementType getType() const override;
+    DISALLOW_COPY_AND_ASSIGN(Arrow);
 };
 
 class Ellipse: public MovableElement {
@@ -134,12 +146,14 @@ protected:
     bool filled_;
     bool ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
     void createGrips() override;
+    DISALLOW_COPY_AND_ASSIGN(Ellipse);
 };
 
 class FilledEllipse: public Ellipse {
 public:
-    FilledEllipse(Canvas* canvas );
+    explicit FilledEllipse(Canvas* canvas );
     ElementType getType() const override;
+    DISALLOW_COPY_AND_ASSIGN(FilledEllipse);
 };
 
 class Selection: public MovableElement {
@@ -148,6 +162,7 @@ public:
     void render(Painter* gr) override;
     ElementType getType() const override;
     void createGrips() override;
+    DISALLOW_COPY_AND_ASSIGN(Selection);
 };
 
 class StepNumber : public MovableElement {
@@ -164,6 +179,7 @@ protected:
     int number_;
     int fontSize_;
     int recalcRadius();
+    DISALLOW_COPY_AND_ASSIGN(StepNumber);
 };
 
 }

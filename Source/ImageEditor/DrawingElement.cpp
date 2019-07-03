@@ -88,12 +88,12 @@ void DrawingElement::setRoundingRadius(int radius)
     roundingRadius_ = radius;
 }
 
-int DrawingElement::getWidth()
+int DrawingElement::getWidth() const
 {
     return abs(endPoint_.x -startPoint_.x)+1;
 }
 
-int DrawingElement::getHeight()
+int DrawingElement::getHeight() const
 {
     return abs(endPoint_.y -startPoint_.y)+1;
 }

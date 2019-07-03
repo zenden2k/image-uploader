@@ -4,20 +4,19 @@
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-#include <stdint.h>
 #include "AbstractDrawingTool.h"
-namespace ImageEditor {
 
+namespace ImageEditor {
     class Canvas;
 
 class PenTool: public AbstractDrawingTool  {
 public:
-    PenTool( Canvas* canvas );
-    void beginDraw( int x, int y );
-    void continueDraw( int x, int y, DWORD flags = 0);
-    void endDraw( int x, int y );
-    void render( Painter* gr );
-    virtual CursorType getCursor(int x, int y);
+    explicit PenTool( Canvas* canvas );
+    void beginDraw( int x, int y ) override;
+    void continueDraw( int x, int y, DWORD flags = 0) override;
+    void endDraw( int x, int y ) override;
+    void render( Painter* gr ) override;
+    CursorType getCursor(int x, int y) override;
 private:
     POINT oldPoint_;
 };

@@ -66,8 +66,6 @@ void CUploadSettings::TranslateUI()
     TRC(IDC_FORMATLABEL, "Format:");
     TRC(IDC_QUALITYLABEL, "Quality:");
     TRC(IDC_RESIZEBYWIDTH, "Change width:");
-    //TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
-    //TRC(IDC_YOURLOGO, "Add watermark");
     TRC(IDC_XLABEL, "and/or height:");
     TRC(IDC_PROFILELABEL, "Profile:");
     TRC(IDC_IMAGEPARAMETERS, "Image settings");
