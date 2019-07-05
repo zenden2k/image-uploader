@@ -979,6 +979,21 @@ BEGIN
     LTEXT           "Static",IDC_ANIMATIONSTATIC,9,7,27,21
 END
 
+IDD_COLORCODEDIALOG DIALOGEX 0, 0, 231, 78
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "title"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CTEXT           "HEX:",IDC_HEXLABEL,6,8,64,13
+    EDITTEXT        IDC_HEXEDIT,72,7,83,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Copy",IDC_COPYHEXBUTTON,161,6,63,14
+    CTEXT           "RGB:",IDC_RGBLABEL,6,27,64,13
+    EDITTEXT        IDC_RGBEDIT,72,26,83,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "Copy",IDC_COPYRGBBUTTON,161,25,63,14
+    PUSHBUTTON      "OK",IDOK,113,59,50,14,NOT WS_VISIBLE
+    PUSHBUTTON      "Close",IDCANCEL,175,59,50,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1370,6 +1385,14 @@ BEGIN
         TOPMARGIN, 6
         BOTTOMMARGIN, 57
     END
+
+    IDD_COLORCODEDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 73
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1583,6 +1606,8 @@ IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboar
 
 IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
 
+IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1611,6 +1636,8 @@ IDR_PROGRESSGIF         GIF                     "res\\progress.gif_"
 
 IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
 
+IDC_CROSSHAIRCURSOR     CURSOR                  "res\\ImageEditor\\cursor_crosshair.cur"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1618,6 +1645,11 @@ IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.c
 //
 
 IDD_IMAGEREUPLOADER AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_COLORCODEDIALOG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

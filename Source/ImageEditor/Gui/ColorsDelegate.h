@@ -1,3 +1,5 @@
+#ifndef IMAGEEDITOR_GUI_COLORSDELEGATE_H
+#define IMAGEEDITOR_GUI_COLORSDELEGATE_H
 
 #include "atlheaders.h"
 #include "Toolbar.h"
@@ -6,20 +8,22 @@
 #include "3rdpart/ColorButton.h"
 
 namespace ImageEditor {
-    class ColorsDelegate: public Toolbar::ToolbarItemDelegate {
+    class ColorsDelegate: public Toolbar::ToolbarItemDelegate, public CColorButtonListener {
     public:
         enum {kOffset = 7, kSquareSize = 16, kPadding = 3};
 
         ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas);
-        virtual SIZE CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY);
-        virtual void DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY);
+        SIZE CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) override;
+        void DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY) override;
         void setForegroundColor(Gdiplus::Color color );
         void setBackgroundColor(Gdiplus::Color color);
         Gdiplus::Color getForegroundColor() const;
         Gdiplus::Color getBackgroundColor() const;
-        int itemIndex();
-        virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY);
-
+        int itemIndex() const;
+        void OnClick(int x, int y, float dpiScaleX, float dpiScaleY) override;
+        void swapColors();
+        void onBeforeDialogOpen(CColorButton* btn, /*out*/ HWND* parent) override;
+        void onAfterDialogOpen(CColorButton* btn) override;
     protected:
         Gdiplus::Color foregroundColor_;
         Gdiplus::Color backgroundColor_;
@@ -30,9 +34,11 @@ namespace ImageEditor {
         CButton backgroundButton_;
         Gdiplus::Rect backgroundRect_;
         Gdiplus::Rect foregroundRect_;
+        Gdiplus::Rect swapColorsButtonRect_;
         int toolbarItemIndex_;
         Canvas* canvas_;
         CFont font_;
+        std::unique_ptr<Gdiplus::Bitmap> swapColorsIcon_;
 
         void OnForegroundButtonSelChanged(COLORREF color, BOOL valid );
 
@@ -40,3 +46,5 @@ namespace ImageEditor {
 
     };
 }
+
+#endif

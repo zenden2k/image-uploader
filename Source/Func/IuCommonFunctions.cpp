@@ -7,11 +7,7 @@
 #include "Core/AppParams.h"
 
 namespace IuCommonFunctions {
-     //CString IUTempFolder;
 
-     //CString IUCommonTempFolder;
-
-#ifndef IU_SHELLEXT
 CString GetDataFolder()
 {
     CString result = U2W(AppParams::instance()->dataDirectory());
@@ -27,7 +23,6 @@ CString GetDataFolder()
     return result;
 }
 
-#endif
 CString GetVersion()
 {
     auto ver = AppParams::instance()->GetAppVersion();

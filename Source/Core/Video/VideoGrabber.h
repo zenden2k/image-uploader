@@ -24,7 +24,6 @@ public:
     fastdelegate::FastDelegate0<void> onFinished;
 private:
     std::string fileName_;
-    //void _frameGrabbed(const std::string& fileName, AbstractImage image);
     std::unique_ptr<AbstractFrameGrabber> createGrabber();
     VideoEngine videoEngine_;
     int frameCount_;

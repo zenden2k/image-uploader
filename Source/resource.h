@@ -1,4 +1,4 @@
-//{{NO_DEPENDENCIES}}
+﻿//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Image Uploader.rc
 //
@@ -114,6 +114,7 @@
 #define IDD_SEARCHBYIMAGEDLG            272
 #define IDB_PNG3                        273
 #define IDB_DROPDOWNICONPNG             273
+#define IDD_COLORCODEDIALOG             273
 #define IDB_TOO                         274
 #define IDB_TOOLMOVEICONPNG             274
 #define IDB_TOOLCROPPING                275
@@ -157,6 +158,10 @@
 #define IDI_ICONINFOBIG                 309
 #define IDB_PNG10                       311
 #define IDB_ICONTOOLSTEP                311
+#define IDB_PNG11                       312
+#define IDB_SWAPCOLORS                  312
+#define IDC_CURSOR2                     313
+#define IDC_CROSSHAIRCURSOR             313
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -543,7 +548,9 @@
 #define IDC_DESCRIPTIONLABEL            1253
 #define IDC_VALUEEDIT                   1254
 #define IDC_RESIZEPRESETSBUTTON         1255
+#define IDC_RGBLABEL                    1255
 #define IDC_EDITPROFILE                 1256
+#define IDC_RGBEDIT                     1256
 #define IDC_PROFILETOOBLARPLACEBUTTON   1257
 #define IDC_RESIZEPRESETSBUTTON2        1257
 #define IDC_SHORTENINGURLSERVERBUTTON   1257
@@ -559,8 +566,10 @@
 #define IDC_CLEARHISTORYBTN             1263
 #define IDC_AUTHORIZEBUTTON             1263
 #define IDC_DOWNLOADBUTTON              1263
+#define IDC_COPYHEXBUTTON               1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
+#define IDC_COPYRGBBUTTON               1264
 #define IDC_GOOGLECODELINK              1265
 #define IDC_UPBUTTON                    1265
 #define IDC_CURRENTPROFILELABEL         1266
@@ -677,6 +686,8 @@
 #define IDC_DATEFROMLABEL               1324
 #define IDC_DATETOLABEL                 1325
 #define IDC_PROGRESSGROUPBOX            1326
+#define IDC_HEXLABEL                    1327
+#define IDC_HEXEDIT                     1328
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -739,9 +750,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        312
+#define _APS_NEXT_RESOURCE_VALUE        315
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1327
+#define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

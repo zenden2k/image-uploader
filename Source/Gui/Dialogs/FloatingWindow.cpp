@@ -366,7 +366,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
         return false;
     }
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    lastUrlShorteningTask_.reset(new UrlShorteningTask(W2U(url)));
+    lastUrlShorteningTask_ = std::make_shared<UrlShorteningTask>(W2U(url));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
     lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     currentUploadSession_ = std::make_shared<UploadSession>();
@@ -743,13 +743,11 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
-    //std::shared_ptr<UploadSession> uploadSession(new UploadSession());
     task->setServerProfile(Settings.quickScreenshotServer);
     task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
     currentUploadSession_ = std::make_shared<UploadSession>();
-    //currentUploadSession_->
     currentUploadSession_->addTask(task);
     currentUploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CFloatingWindow::onUploadSessionFinished));
     uploadManager_->addSession(currentUploadSession_);
@@ -885,7 +883,7 @@ void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     WinUtils::CopyTextToClipboard(url);
     CString trimmedUrl = TrimString(url, 70);
     ShowBaloonTip(trimmedUrl + CString("\r\n")
-        + TR("(the link has been copied to the clipboard)")+ + CString("\r\n") + TR("Click on this message to view details...") , 
+        + TR("(the link has been copied to the clipboard)")+ CString("\r\n") + TR("Click on this message to view details...") , 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
     CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
     setStatusText(statusText, kStatusHideTimeout);

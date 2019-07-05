@@ -62,6 +62,7 @@ set(SRC_LIST
     Dialogs/AddDirectoryServerDialog.cpp
     Dialogs/AddFtpServerDialog.cpp
     Dialogs/ContextMenuItemDlg.cpp
+    Dialogs/ColorCodeDialog.cpp
     Dialogs/DefaultServersSettings.cpp
     Dialogs/FloatingWindow.cpp
     Dialogs/GeneralSettings.cpp
@@ -216,6 +217,7 @@ set(HEADER_LIST
     Dialogs/ClearHistoryDlg.h
     Dialogs/FolderAddDlg.h
     Dialogs/SearchByImageDlg.h
+    Dialogs/ColorCodeDialog.h
     Win7JumpList.h
     GuiTools.h
     IconBitmapUtils.h

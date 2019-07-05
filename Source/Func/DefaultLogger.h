@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "Core/Logging/Logger.h"
-#include <deque>
 #include <mutex>
 #include <vector>
+
+#include "Core/Logging/Logger.h"
+
 
 class CLogWindow;
 

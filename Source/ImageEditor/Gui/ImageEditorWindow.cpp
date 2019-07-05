@@ -628,7 +628,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
      std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
      //HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
      if ( wParam == VK_ESCAPE ) {
-        EndDialog(drCancel);
+        onClose();
         return 0;
      } else if ( wParam == VK_RETURN && (showUploadButton_ || showAddToWizardButton_) ) {
          if ( !sourceFileName_.IsEmpty() ) {
@@ -808,7 +808,7 @@ void ImageEditorWindow::createToolbars()
         if ( serverName_.IsEmpty() ) {
             fullUploadButtonText = uploadButtonText = TR("Upload to Web");
         } else {
-            fullUploadButtonText.Format(TR("Upload to %s"), serverName_);
+            fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverName_));
             uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
         }
         horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
@@ -1088,18 +1088,25 @@ LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
+    onClose();
+    return 0;
+}
+
+void ImageEditorWindow::onClose() {
     DialogResult dr = drCancel;
-    if ( askBeforeClose_ && canvas_->isDocumentModified() ) {
+    if (askBeforeClose_ && canvas_->isDocumentModified()) {
         int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
-        if ( msgBoxResult == IDYES ) {
+        if (msgBoxResult == IDYES) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
-            OnClickedSave();
-        } else if ( msgBoxResult == IDCANCEL ) {
-            return 0;
+            if(!OnClickedSave()) {
+                return;
+            }
+        }
+        else if (msgBoxResult == IDCANCEL) {
+            return;
         }
     }
     EndDialog(dr);
-    return 0;
 }
 
 LRESULT ImageEditorWindow::OnClickedAddToWizard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -1196,16 +1203,12 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
         LOG(ERROR) << "Unable to create temporary file";
         return 0;
     }
-    horizontalToolbar_.EnableWindow(FALSE);
-    verticalToolbar_.EnableWindow(FALSE);
     CSearchByImageDlg dlg(searchEngine_, fileName);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         if (displayMode_ == wdmFullscreen &&  !shiftPressed) {
             EndDialog(drSearch);
         }
     }
-    horizontalToolbar_.EnableWindow(TRUE);
-    verticalToolbar_.EnableWindow(TRUE);
     return 0;
 }
 
@@ -1250,7 +1253,7 @@ void ImageEditorWindow::updatePixelLabels()
     horizontalToolbar_.roundRadiusLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getRoundingRadius()) + L" px");
 }
 
-void ImageEditorWindow::OnSaveAs()
+bool ImageEditorWindow::OnSaveAs()
 {    
     IMyFileDialog::FileFilterArray filters = {
         { _T("PNG"), CString(_T("*.png")) },
@@ -1264,12 +1267,15 @@ void ImageEditorWindow::OnSaveAs()
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
     dlg->setFileTypeIndex(ext == "jpg" ? 2 : 1);
-
+    enableToolbarsIfNecessary(false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
-        return;
+        enableToolbarsIfNecessary(true);
+        return false;
     }
+    enableToolbarsIfNecessary(true);
     outFileName_ = dlg->getFile();
     saveDocument();
+    return true;
 }
 
 void ImageEditorWindow::saveSettings()
@@ -1304,21 +1310,22 @@ BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
     return FALSE;
 }
 
-void ImageEditorWindow::OnClickedSave() {
+bool ImageEditorWindow::OnClickedSave() {
     if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
     if (!sourceFileName_.IsEmpty()) {
         CString ext = WinUtils::GetFileExt(sourceFileName_);
         if (ext.MakeLower() == "webp") {
-            OnSaveAs();
+            return OnSaveAs();
         } else {
             outFileName_ = sourceFileName_;
             saveDocument();
         }
     } else {
-        OnSaveAs();
+        return OnSaveAs();
     }
+    return true;
 }
 
 LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -1406,6 +1413,18 @@ LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wPar
 
 LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->setFillTextBackground(horizontalToolbar_.isFillBackgroundChecked());
+    return 0;
+}
+
+void ImageEditorWindow::enableToolbarsIfNecessary(bool enable) {
+    if (displayMode_ == wdmFullscreen) {
+        horizontalToolbar_.EnableWindow(enable);
+        verticalToolbar_.EnableWindow(enable);
+    }
+}
+
+LRESULT ImageEditorWindow::OnEnable(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    enableToolbarsIfNecessary(static_cast<BOOL>(wParam));
     return 0;
 }
 

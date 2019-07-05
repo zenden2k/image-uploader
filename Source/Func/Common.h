@@ -53,22 +53,13 @@ struct CUrlListItem
     {
         return ImageUrl.IsEmpty() && DownloadUrl.IsEmpty();
     }
-
-    CUrlListItem() {
-    }
 };
-
-bool IULaunchCopy();
-
 
 extern CCmdLine CmdLine;
 
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
-
-const CString IU_GetVersion();
-bool BytesToString(__int64 nBytes, LPTSTR szBuffer,int nBufSize);
 bool IULaunchCopy(CString additionalParams=_T(""));
 
 inline COLORREF RGB2COLORREF(unsigned int color)

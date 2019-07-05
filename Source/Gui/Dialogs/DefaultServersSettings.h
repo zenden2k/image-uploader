@@ -38,7 +38,7 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
 
         CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
         virtual ~CDefaultServersSettings();
-        virtual bool Apply() override;
+        bool Apply() override;
 
     protected:
         BEGIN_MSG_MAP(CDefaultServersSettings)

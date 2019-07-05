@@ -2,7 +2,7 @@
 #define DSSI_COLORBUTTON_H
 
 #include "atlheaders.h"
-#include <Core/3rdpart/FastDelegate.h>
+#include "Core/3rdpart/FastDelegate.h"
 //-----------------------------------------------------------------------------
 // 
 // @doc
@@ -182,6 +182,8 @@
 #define CPN_SELENDOK         0x8003	/* Colour Picker end OK */
 #define CPN_SELENDCANCEL     0x8004	/* Colour Picker end (cancelled) */
 
+class CColorButton;
+
 struct NMCOLORBUTTON
 {
 	NMHDR		hdr;
@@ -189,6 +191,12 @@ struct NMCOLORBUTTON
 	COLORREF	clr;
 };
 
+class CColorButtonListener {
+public:
+    ~CColorButtonListener() = default;
+    virtual void onBeforeDialogOpen(CColorButton* btn, /*out*/ HWND* parent) = 0;
+    virtual void onAfterDialogOpen(CColorButton* btn) = 0;
+};
 //-----------------------------------------------------------------------------
 //
 // Class definition
@@ -316,6 +324,10 @@ public:
 		}
 	}
 
+    void SetListener(CColorButtonListener* listener) {
+        m_Listener = listener;
+	}
+
 	// @cmember Get the tracking flag
 
 	BOOL GetTrackSelection (void) const
@@ -338,6 +350,10 @@ public:
 		SetCustomText (nCustom);
 	}
 
+    void SetColorCodeText(LPCTSTR str) {
+        m_GetColorCodeText = str;
+	}
+
 	// @cmember Do we have custom text
 
 	BOOL HasCustomText () const
@@ -351,6 +367,12 @@ public:
 	{
 		return m_pszDefaultText && m_pszDefaultText [0] != 0;
 	}
+
+
+    BOOL HasGetColorCodeText() const
+    {
+        return !m_GetColorCodeText.IsEmpty();
+    }
 
 	void Click() {
 		BOOL handled = FALSE;
@@ -509,6 +531,8 @@ protected:
 
 	LPTSTR					m_pszCustomText;
 
+    CString m_GetColorCodeText;
+
 	// @cmember True if popup active override
 
 	BOOL					m_fPopupActive;
@@ -565,6 +589,8 @@ protected:
 
     CRect					m_rectCustomText;
 
+    CRect					m_rectGetColorCodeText;
+
 	// @cmember Rectangle of the default text
 
 	CRect					m_rectDefaultText;
@@ -616,6 +642,8 @@ protected:
 	// @cmember Color used for normal text
 
 	COLORREF				m_clrText;
+
+    CColorButtonListener* m_Listener;
 };
 
 #endif // DSSI_COLORBUTTON_H

@@ -2,6 +2,8 @@
 
 #include "Gui/GuiTools.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Images/Utils.h"
+#include "resource.h"
 
 namespace ImageEditor {
 
@@ -16,15 +18,21 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     foregroundColorButton_.SubclassWindow(foregroundButton_.m_hWnd);
     foregroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnForegroundButtonSelChanged);
     foregroundColorButton_.SetCustomText(TR("More colors..."));
+    foregroundColorButton_.SetColorCodeText(TR("Get color's code..."));
+    foregroundColorButton_.SetListener(this);
     backgroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     backgroundButton_.SetFont(font_);
     backgroundColorButton_.SubclassWindow(backgroundButton_.m_hWnd);
     backgroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnBackgroundButtonSelChanged);
     backgroundColorButton_.SetCustomText(TR("More colors..."));
+    backgroundColorButton_.SetColorCodeText(TR("Get color's code..."));
+    backgroundColorButton_.SetListener(this);
+    swapColorsIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDB_SWAPCOLORS), _T("PNG"));
+    assert(swapColorsIcon_);
 }
 
 SIZE ColorsDelegate::CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {
-    SIZE res = { static_cast<LONG>((kSquareSize + kOffset + kPadding)* dpiScaleX), static_cast<LONG>((kSquareSize + kOffset + 4)* dpiScaleY ) };
+    SIZE res = { static_cast<LONG>((kSquareSize + kOffset +5 + kPadding)* dpiScaleX), static_cast<LONG>((kSquareSize + kOffset + 10)* dpiScaleY ) };
     return res;
 }
 
@@ -35,12 +43,12 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     SolidBrush backgroundBrush(backgroundColor_);
     SolidBrush foregroundBrush(foregroundColor_);
 
-    backgroundRect_ = Rect(static_cast<int>(x+(kPadding+kOffset)*dpiScaleX), static_cast<int>(y+kOffset*dpiScaleY), 
+    backgroundRect_ = Rect(static_cast<int>(x+(kPadding+kOffset)*dpiScaleX), static_cast<int>(y+(4+kOffset)*dpiScaleY), 
                         static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize * dpiScaleY));
     gr->FillRectangle(&backgroundBrush, backgroundRect_);
     gr->DrawRectangle(&borderPen, backgroundRect_);
 
-    foregroundRect_ = Rect(static_cast<int>(kPadding*dpiScaleX + x), y, static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize *  dpiScaleY));
+    foregroundRect_ = Rect(static_cast<int>(kPadding*dpiScaleX + x), y+ dpiScaleY*4, static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize *  dpiScaleY));
     gr->FillRectangle(&foregroundBrush, foregroundRect_);
     gr->DrawRectangle(&borderPen, foregroundRect_);
 
@@ -51,14 +59,19 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     POINT pt2 = {backgroundRect_.X,backgroundRect_.Y + backgroundRect_.Height};
     //toolbar_->ClientToScreen(&pt2);
     backgroundColorButton_.SetWindowPos(0, pt2.x, pt2.y,0,0,/*SWP_NOSIZE*/0);
+
+    swapColorsButtonRect_ = Rect(foregroundRect_.GetRight() + 1, foregroundRect_.Y - 5, static_cast<int>(12 * dpiScaleX), static_cast<int>(12 * dpiScaleY));
+    gr->DrawImage(swapColorsIcon_.get(), swapColorsButtonRect_);
 }
 
 void ColorsDelegate::setForegroundColor(Gdiplus::Color color ) {
     foregroundColor_ = color;
+    foregroundColorButton_.SetColor(color.ToCOLORREF());
 }
 
 void ColorsDelegate::setBackgroundColor(Gdiplus::Color color) {
     backgroundColor_ = color;
+    backgroundColorButton_.SetColor(color.ToCOLORREF());
 }
 
 Gdiplus::Color ColorsDelegate::getForegroundColor() const {
@@ -69,7 +82,7 @@ Gdiplus::Color ColorsDelegate::getBackgroundColor() const {
     return backgroundColor_;
 }
 
-int ColorsDelegate::itemIndex() {
+int ColorsDelegate::itemIndex() const {
     return toolbarItemIndex_;
 }
 
@@ -78,6 +91,8 @@ void ColorsDelegate::OnClick(int x, int y, float dpiScaleX, float dpiScaleY){
         foregroundColorButton_.Click();
     } else if ( backgroundRect_.Contains(x,y)) {
         backgroundColorButton_.Click();
+    } else if (swapColorsButtonRect_.Contains(x,y)) {
+        swapColors();
     }
 }
 
@@ -92,6 +107,23 @@ void ColorsDelegate::OnBackgroundButtonSelChanged(COLORREF color, BOOL valid ) {
     backgroundColor_ = Gdiplus::Color(GetRValue(color), GetGValue(color), GetBValue(color));
     toolbar_->repaintItem(toolbarItemIndex_);
     canvas_->setBackgroundColor(backgroundColor_);
+}
+
+void ColorsDelegate::swapColors() {
+    std::swap(foregroundColor_, backgroundColor_);
+    canvas_->setForegroundColor(foregroundColor_);
+    canvas_->setBackgroundColor(backgroundColor_);
+    foregroundColorButton_.SetColor(foregroundColor_.ToCOLORREF());
+    backgroundColorButton_.SetColor(backgroundColor_.ToCOLORREF());
+    toolbar_->repaintItem(toolbarItemIndex_);
+}
+
+void ColorsDelegate::onBeforeDialogOpen(CColorButton* btn, /*out*/ HWND* parent) {
+    *parent = toolbar_->GetParent();
+}
+
+void ColorsDelegate::onAfterDialogOpen(CColorButton* btn) {
+    
 }
 
 }

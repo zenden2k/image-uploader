@@ -110,12 +110,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         bool isEnableNextButtonTimerRunning_;
         std::shared_ptr<UploadSession> uploadSession_;
         std::unique_ptr<UploadListModel> uploadListModel_;
-       /* struct FileProcessingStruct {
-            CString fileName;
-            int tableRow;
-        };*/
-        //std::vector<FileProcessingStruct*> files_;
-        //std::mutex uploadListViewMutex_;
         bool alreadyShortened_;
         ServerProfile sessionImageServer_, sessionFileServer_;
         bool backgroundThreadStarted_;

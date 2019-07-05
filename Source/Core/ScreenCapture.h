@@ -110,7 +110,7 @@ class CActiveWindowRegion : public CWindowHandlesRegion
 {
     public:
         CActiveWindowRegion();
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+        bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
 };
 
 class CFreeFormRegion : public CRectRegion
@@ -119,8 +119,8 @@ class CFreeFormRegion : public CRectRegion
         CFreeFormRegion();
         void AddPoint(POINT point);
         void Clear();
-        virtual bool IsEmpty() override;
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+        bool IsEmpty() override;
+        bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
         ~CFreeFormRegion();
     protected:
         std::vector<POINT> m_curvePoints;
@@ -148,8 +148,7 @@ class CScreenCaptureEngine
         MonitorMode monitorMode_;
         HMONITOR monitor_;
         /*static*/ void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
-private:
-    DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);
+        DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);
 };
 
 #endif  // IU_CORE_SCREEN_CAPTURE_H

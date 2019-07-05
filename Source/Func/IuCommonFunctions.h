@@ -16,10 +16,5 @@ namespace IuCommonFunctions {
     bool IsImage(LPCTSTR szFileName);
 
     CString FindDataFolder();
-
-
-    //extern CString IUTempFolder;
-    
-    //extern CString IUCommonTempFolder;
 };
 #endif

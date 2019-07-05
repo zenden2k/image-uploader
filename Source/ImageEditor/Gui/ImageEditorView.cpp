@@ -273,12 +273,14 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
         case ctResizeDiagonalAnti:
             lpCursorName = IDC_SIZENESW;
             break;
-        case ctCross:
-            lpCursorName = IDC_CROSS;
-            break;
+        
         case ctMove:
             lpCursorName = IDC_SIZEALL;
             break;
+        case ctCross:
+            cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_CROSSHAIRCURSOR));
+            cursorCache_[cursorType] = cur;
+            return cur;
         case ctColorPicker:
             cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_COLORPICKERCURSOR));
             cursorCache_[cursorType] = cur;

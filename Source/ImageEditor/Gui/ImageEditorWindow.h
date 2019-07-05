@@ -113,6 +113,7 @@ public:
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+        MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         
         REFLECT_NOTIFICATIONS()
         /*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
@@ -161,6 +162,7 @@ public:
         LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -215,11 +217,13 @@ public:
         void onFontChanged(LOGFONT font);
         bool createTooltip();
         void updatePixelLabels();
-        void OnSaveAs();
+        bool OnSaveAs();
         void saveSettings();
         bool CopyBitmapToClipboardAndClose(ClipboardFormat format = ClipboardFormat::None);
         BOOL PreTranslateMessage(MSG* pMsg) override;
-        void OnClickedSave();
+        bool OnClickedSave();
+        void onClose();
+        void enableToolbarsIfNecessary(bool enable);
 };
 
 class ConfigurationProvider {
