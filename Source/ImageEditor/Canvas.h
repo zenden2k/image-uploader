@@ -28,7 +28,7 @@ class Canvas {
         };
         
         enum DrawingToolType {
-            dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtColorPicker,
+            dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtPixelateRectangle, dtColorPicker,
             dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
         };
 
@@ -126,6 +126,7 @@ class Canvas {
         float getBlurRadius() const;
         void setBlurRadius(float radius);
         bool hasBlurRectangles() const;
+        int getPixelateBlockSize() const;
         void showOverlay(bool show);
         void selectionChanged();
         Gdiplus::Rect currentRenderingRect() const;
@@ -170,6 +171,7 @@ private:
         Document* doc_;
         Gdiplus::Graphics* bufferedGr_;
         float blurRadius_;
+        int pixelateBlockSize_;
         int canvasWidth_, canvasHeight_;
         POINT oldPoint_;
         POINT leftMouseDownPoint_;

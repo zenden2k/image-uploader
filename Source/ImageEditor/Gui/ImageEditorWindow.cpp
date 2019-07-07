@@ -5,6 +5,8 @@
 
 #include "ImageEditorWindow.h"
 
+#include <boost/format.hpp>
+
 #include "ImageEditorView.h"
 #include "ImageEditor/Gui/Toolbar.h"
 #include "ColorsDelegate.h"
@@ -16,7 +18,7 @@
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
-#include <boost/format.hpp>
+
 
 namespace ImageEditor {
     
@@ -81,6 +83,7 @@ void ImageEditorWindow::init()
     menuItems_[ID_SELECTION]       = Canvas::dtSelection;
     menuItems_[ID_BLUR]            = Canvas::dtBlur;
     menuItems_[ID_BLURRINGRECTANGLE]   = Canvas::dtBlurrringRectangle;
+    menuItems_[ID_PIXELATERECTANGLE]   = Canvas::dtPixelateRectangle;
     menuItems_[ID_COLORPICKER]     = Canvas::dtColorPicker;
     menuItems_[ID_ROUNDEDRECTANGLE]     = Canvas::dtRoundedRectangle;
     menuItems_[ID_ELLIPSE]     = Canvas::dtEllipse;
@@ -123,8 +126,24 @@ void ImageEditorWindow::init()
     item.command = ID_FILLEDELLIPSE;
     item.hint =  TR("Filled ellipse");
     subMenuItems_[Canvas::dtFilledEllipse] = item;
+
+    SubMenuItem item2;
+    item2.parentCommand = ID_BLURRINGRECTANGLE;
+
+    item2.icon = loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG);
+    item2.command = ID_BLURRINGRECTANGLE;
+    item2.hint = TR("Blurring rectangle");
+    subMenuItems_[Canvas::dtBlurrringRectangle] = item2;
+
+    item2.icon = loadToolbarIcon(IDB_ICONTOOLPIXELATE);
+    item2.command = ID_PIXELATERECTANGLE;
+    item2.hint = TR("Pixelation");
+    subMenuItems_[Canvas::dtPixelateRectangle] = item2;
+
+
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
+    selectedSubMenuItems_[ID_BLURRINGRECTANGLE] = ID_BLURRINGRECTANGLE;
 
     drawingToolsHotkeys_[kMoveKey] = Canvas::dtMove;
     drawingToolsHotkeys_[kBrushKey] = Canvas::dtBrush;
@@ -722,6 +741,19 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    }
+    else if (item->command == ID_BLURRINGRECTANGLE || item->command == ID_PIXELATERECTANGLE) {
+        CMenu blurMenu;
+        RECT rc = item->rect;
+        verticalToolbar_.ClientToScreen(&rc);
+        blurMenu.CreatePopupMenu();
+        blurMenu.AppendMenu(MF_STRING, ID_BLURRINGRECTANGLE, TR("Blurring rectangle"));
+        blurMenu.AppendMenu(MF_STRING, ID_PIXELATERECTANGLE, TR("Pixelation"));
+        TPMPARAMS excludeArea;
+        ZeroMemory(&excludeArea, sizeof(excludeArea));
+        excludeArea.cbSize = sizeof(excludeArea);
+        excludeArea.rcExclude = rc;
+        blurMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     } else if ( item->command == ID_SAVE ) {
         CMenu rectangleMenu;
         RECT rc = item->rect;
@@ -853,7 +885,7 @@ void ImageEditorWindow::createToolbars()
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Text")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER,TR("Step")+ CString(_T(" (")) + (char)kStepNumber  + CString(_T(")")), Toolbar::itButton, true,1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Blurring rectangle")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Blurring rectangle")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
 
     //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));

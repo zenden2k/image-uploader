@@ -96,7 +96,7 @@ int Toolbar::addButton(const Item& item)
     return buttons_.size()-1;
 }
 
-int Toolbar::getItemAtPos(int clientX, int clientY)
+int Toolbar::getItemAtPos(int clientX, int clientY) const
 {
     POINT pt = {clientX, clientY};
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -107,7 +107,7 @@ int Toolbar::getItemAtPos(int clientX, int clientY)
     return -1;
 }
 
-int Toolbar::getItemIndexByCommand(int command)
+int Toolbar::getItemIndexByCommand(int command) const
 {
     for (size_t i = 0; i < buttons_.size(); i++) {
         if (buttons_[i].command == command ) {

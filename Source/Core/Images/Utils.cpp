@@ -435,6 +435,55 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
 
 }
 
+void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize) {
+    using namespace Gdiplus;
+    Rect rc(xPos, yPos, w, h);
+
+    BitmapData dataSource;
+
+    if (bm->LockBits(&rc, ImageLockModeRead | ImageLockModeWrite, PixelFormat32bppARGB, &dataSource) == Ok)
+    {
+        uint8_t * source = reinterpret_cast<uint8_t *>(dataSource.Scan0);
+        assert(static_cast<UINT>(h) == dataSource.Height);
+        UINT stride;
+        if (dataSource.Stride > 0) {
+            stride = dataSource.Stride;
+        }
+        else {
+            stride = -dataSource.Stride;
+        }
+
+        int maxX, maxY;
+        unsigned int red = 0, green = 0, blue = 0, numPixels = 0;
+        for (int y = 0; y < h; y += blockSize) {
+            for (int x = 0; x < w; x += blockSize) {
+                numPixels = red = green = blue = 0;
+                maxX = (min)(x + blockSize, w);
+                maxY = (min)(y + blockSize, h);
+                for (int i = x; i < maxX; i++) {
+                    for (int j = y; j < maxY; j++) {
+                        size_t offset = j * stride + i*4;
+                        red += source[offset+2];
+                        green += source[offset + 1];
+                        blue += source[offset + 0];
+                        numPixels++;
+                    }
+                }
+                uint32_t pixel = (255 << 24) + (red / numPixels << 16) +  (green / numPixels << 8) + blue / numPixels;
+
+                for (int i = x; i < maxX; i++) {
+                    for (int j = y; j < maxY; j++) {
+                        uint32_t* data = (uint32_t*)(source + j * stride + i*4);
+                        *data = pixel;
+                    }
+                }
+            }
+        }
+        bm->UnlockBits(&dataSource);
+    }
+
+}
+
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
     using namespace Gdiplus;
 

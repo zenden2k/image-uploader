@@ -62,6 +62,7 @@ Canvas::Canvas( HWND parent ) {
     canvasChanged_ = true;
     fullRender_ = true;
     blurRadius_ = 5;
+    pixelateBlockSize_ = 12;
     blurRectanglesCount_ = 0;
     currentDrawingTool_ = 0;
     bufferedGr_ = 0;
@@ -537,7 +538,9 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
             type = etRectangle;
         } else if ( toolType == dtBlurrringRectangle ) {
             type = etBlurringRectangle;
-        }else if ( toolType == dtFilledRectangle ) {
+        } else if (toolType == dtPixelateRectangle) {
+            type = etPixelateRectangle;
+        } else if ( toolType == dtFilledRectangle ) {
             type = etFilledRectangle;
         } else if ( toolType == dtRoundedRectangle ) {
             type = etRoundedRectangle;
@@ -606,7 +609,7 @@ void Canvas::addMovableElement(MovableElement* element)
     if (it == elementsOnCanvas_.end()) {
 
         elementsOnCanvas_.push_back(element);
-        if ( element->getType() == etBlurringRectangle ) {
+        if ( element->getType() == etBlurringRectangle || element->getType() == etPixelateRectangle) {
             blurRectanglesCount_ ++;
         }
         UndoHistoryItem historyItem;
@@ -684,6 +687,10 @@ bool Canvas::hasBlurRectangles() const
     return blurRectanglesCount_!=0;
 }
 
+int Canvas::getPixelateBlockSize() const {
+    return pixelateBlockSize_;
+}
+
 void Canvas::showOverlay(bool show)
 {
     if ( !overlay_ ) {
@@ -706,7 +713,7 @@ void Canvas::deleteMovableElement(MovableElement* element)
         if ( elementsOnCanvas_[i] == element ) {
 
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
-            if ( element->getType() == etBlurringRectangle ) {
+            if ( element->getType() == etBlurringRectangle || element->getType() == etPixelateRectangle ) {
                 blurRectanglesCount_--;
             }
             if ( element->getType() == etCrop && (drawingToolType_ != dtCrop ) ) {
@@ -1002,7 +1009,8 @@ bool Canvas::undo() {
         // Insert elements in their initial positions
         for ( int i = itemCount-1; i>=0; i-- ) {
             elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
-            if ( item.elements[i].movableElement->getType() == etBlurringRectangle ) {
+            if ( item.elements[i].movableElement->getType() == etBlurringRectangle
+                || item.elements[i].movableElement->getType() == etPixelateRectangle) {
                 blurRectanglesCount_++;
             }
         }

@@ -27,8 +27,8 @@ namespace ImageEditor {
     #ifdef IMAGEEDITOR_GDIPLUS
         typedef Gdiplus::Graphics Painter;
     #endif
-    enum ElementType { etUnknown, etNone, etCrop , etArrow, etLine, etRectangle,etFilledRectangle, etText, etSelection, etBlurringRectangle,
-        etRoundedRectangle, etEllipse, etFilledRoundedRectangle, etFilledEllipse, etStepNumber
+    enum ElementType { etUnknown, etNone, etCrop , etArrow, etLine, etRectangle,etFilledRectangle, etText, etSelection, etBlurringRectangle, 
+        etPixelateRectangle, etRoundedRectangle, etEllipse, etFilledRoundedRectangle, etFilledEllipse, etStepNumber
     };
 
     // item order is important!!!!

@@ -263,12 +263,12 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,148,76,53,15
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 275, 301
+IDD_ABOUTBOX DIALOGEX 0, 0, 275, 311
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,216,281,52,15
+    DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
     CTEXT           "© 2007-2019.  All rights reserved.",IDC_STATIC,90,72,131,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,17,15,13
@@ -283,7 +283,7 @@ BEGIN
     LTEXT           "#Author:",IDC_AUTHORLABEL,31,93,58,8
     LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
-    EDITTEXT        IDC_MEMO,5,155,263,121,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_MEMO,5,155,263,132,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
     LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
     LTEXT           "#",IDC_COMMITHASH,158,46,75,8
 END
@@ -1092,7 +1092,7 @@ BEGIN
         LEFTMARGIN, 5
         RIGHTMARGIN, 268
         TOPMARGIN, 7
-        BOTTOMMARGIN, 300
+        BOTTOMMARGIN, 301
     END
 
     IDD_MAINDLG, DIALOG
@@ -1608,6 +1608,8 @@ IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_ste
 
 IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
 
+IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1650,6 +1652,11 @@ BEGIN
 END
 
 IDD_COLORCODEDIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

@@ -44,7 +44,7 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
         enum InfoType { itSummary = 0, itFullInformation };
 
         CMediaInfoDlg();
-        ~CMediaInfoDlg();
+        ~CMediaInfoDlg() = default;
         void ShowInfo(LPCTSTR FileName);
 
         enum { IDD = IDD_MEDIAINFODLG };

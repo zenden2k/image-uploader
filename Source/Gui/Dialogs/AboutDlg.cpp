@@ -176,7 +176,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #endif
     buildInfo  +=  CString(_T("\r\n(")) + ver->BuildDate.c_str() + _T(")");
 
-    CString text = /*CString(TR("v")) + */ver->FullVersion.c_str();
+    CString text = ver->FullVersion.c_str();
 
     SetDlgItemText(IDC_CURLINFOLABEL, text);
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);

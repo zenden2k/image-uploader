@@ -78,7 +78,7 @@ public:
 
 class BlurringRectangle: public MovableElement {
 public:
-    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY);
+    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false);
     ~BlurringRectangle();
     void setBlurRadius(float radius);
     float getBlurRadius() const;
@@ -86,7 +86,16 @@ public:
     ElementType getType() const override;
 protected:
     float blurRadius_;
+    bool pixelate_;
     DISALLOW_COPY_AND_ASSIGN(BlurringRectangle);
+};
+
+class PixelateRectangle : public BlurringRectangle {
+public:
+    PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY);
+    ElementType getType() const override;
+protected:
+    DISALLOW_COPY_AND_ASSIGN(PixelateRectangle);
 };
 
 class Rectangle: public MovableElement {
@@ -137,7 +146,7 @@ public:
 
 class Ellipse: public MovableElement {
 public:
-    Ellipse(Canvas* canvas, bool filled = false );
+    explicit Ellipse(Canvas* canvas, bool filled = false );
     void render(Painter* gr) override;
     bool isItemAtPos(int x, int y) override;
     ElementType getType() const override;

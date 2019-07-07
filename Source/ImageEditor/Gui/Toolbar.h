@@ -64,8 +64,8 @@ public:
     bool Create(HWND parent, bool child = false);
     int addButton(const Item& item);
     DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
-    int getItemAtPos(int clientX, int clientY);
-    int getItemIndexByCommand(int command);
+    int getItemAtPos(int clientX, int clientY) const;
+    int getItemIndexByCommand(int command) const;
     Item* getItem(int index);
     void repaintItem(int index);
     void clickButton(int index);
@@ -165,7 +165,7 @@ protected:
     CDC backBufferDc_;
     HBITMAP oldSelectedBm_;
     Gdiplus::TextRenderingHint textRenderingHint_;
-    void createHintForSliders(HWND slider, CString text);
+    void createHintForSliders(HWND slider, CString hint);
 };
 
 }

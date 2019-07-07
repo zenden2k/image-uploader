@@ -162,6 +162,8 @@
 #define IDB_SWAPCOLORS                  312
 #define IDC_CURSOR2                     313
 #define IDC_CROSSHAIRCURSOR             313
+#define IDB_PNG12                       315
+#define IDB_ICONTOOLPIXELATE            315
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -750,7 +752,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        315
+#define _APS_NEXT_RESOURCE_VALUE        316
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           128

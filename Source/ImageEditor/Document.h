@@ -22,7 +22,7 @@ class Document {
         };
         Document(int width, int height);
         explicit Document(const wchar_t* fileName);
-        Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels = false);
+        explicit Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage, bool hasTransparentPixels = false);
         virtual ~Document();
         
         Painter* getGraphicsObject() const;

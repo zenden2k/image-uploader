@@ -22,15 +22,13 @@
 
 #pragma once
 
+#include <mutex>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/loglistbox.h"
-#include <atlddx.h>
-#include <atlframe.h>
 #include "Core/Upload/CommonTypes.h"
 #include "Core/Logging/Logger.h"
 #include "Func/DefaultLogger.h"
-#include <mutex>
 
 // CLogWindow
 

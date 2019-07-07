@@ -348,6 +348,9 @@ void MoveAndResizeTool::createElement() {
         case etFilledEllipse:
             currentElement_ = new FilledEllipse(canvas_);
             break;
+        case etPixelateRectangle:
+            currentElement_ = new PixelateRectangle(canvas_, canvas_->getPixelateBlockSize(), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+            break;
         case etBlurringRectangle:
             currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;

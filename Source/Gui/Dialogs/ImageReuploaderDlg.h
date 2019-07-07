@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "atlheaders.h"
 #include "resource.h"       
 #include "Core/FileDownloader.h"
@@ -37,7 +39,6 @@
 #include "Gui/Controls/CustomEditControl.h"
 #include "Core/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
-#include <mutex>
 #include "Gui/Controls/DialogIndirect.h"
 
 class CFileQueueUploader;

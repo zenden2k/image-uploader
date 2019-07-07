@@ -19,10 +19,8 @@
 #include "MovableElements.h"
 
 #include <algorithm>
-#include "3rdpart/GdiplusH.h"
-#include "Core/Logging.h"
-#include <exception>
 
+#include "3rdpart/GdiplusH.h"
 #include "Region.h"
 #include "Canvas.h"
 #include "Core/Images/Utils.h" 
@@ -190,8 +188,11 @@ void TextElement::render(Painter* gr) {
 
     drawDashedRectangle_ = isSelected() || !inputBox_;
     if (fillBackground_) {
+        auto prevSmoothingMode = gr->GetSmoothingMode();
+        gr->SetSmoothingMode(SmoothingModeNone);
         SolidBrush br(backgroundColor_);
         gr->FillRectangle(&br, getX(), getY(), getWidth(), getHeight());
+        gr->SetSmoothingMode(prevSmoothingMode);
     }
     if ( inputBox_  && !inputBox_->isVisible()) {
         inputBox_->render(gr, canvas_->getBufferBitmap(), Rect(getX()+4,getY()+3,getWidth()-5,getHeight()-6));
@@ -645,18 +646,18 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 {
 }
 
-
-ImageEditor::ElementType FilledRectangle::getType() const
+ElementType FilledRectangle::getType() const
 {
     return etBlurringRectangle;
 }
 
-BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY) : MovableElement(canvas)
+BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate) : MovableElement(canvas)
 {
     blurRadius_ = blurRadius;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
     isColorUsed_ = false;
+    pixelate_ = pixelate;
 } 
 
 BlurringRectangle::~BlurringRectangle()
@@ -701,7 +702,12 @@ void BlurringRectangle::render(Painter* gr)
 
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         #else
-        ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+        if(pixelate_) {
+            ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+        }
+        else {
+            ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+        }
         #endif
     }
 }
@@ -709,6 +715,17 @@ void BlurringRectangle::render(Painter* gr)
 ImageEditor::ElementType BlurringRectangle::getType() const
 {
     return etBlurringRectangle;
+}
+
+
+PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY) 
+            : BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true)
+{
+}
+
+ElementType PixelateRectangle::getType() const
+{
+    return etPixelateRectangle;
 }
 
 

@@ -583,6 +583,7 @@ HWND CreateDummyWindow(const RECT& rc)
 BOOL BringWindowToForeground(HWND hWnd)
 {
     DWORD dwTimeout;
+    //Actuallly changing system parameters doesn't work on modern Windows systems
     ::SystemParametersInfo(SPI_GETFOREGROUNDLOCKTIMEOUT, 0, &dwTimeout, 0);
     ::SystemParametersInfo(SPI_SETFOREGROUNDLOCKTIMEOUT, 0, 0, 0);
     BOOL bNeedTopmost = !(::GetWindowLong(hWnd, GWL_EXSTYLE) & WS_EX_TOPMOST);

@@ -27,7 +27,6 @@
 #pragma once
 #include <memory>
 #include "atlheaders.h"
-#include <atlcrack.h>
 
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"

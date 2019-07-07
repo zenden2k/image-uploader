@@ -20,6 +20,8 @@
 
 #include "MediaInfoDlg.h"
 
+#include <boost/format.hpp>
+
 #include "Func/MediaInfoHelper.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -31,11 +33,6 @@ CMediaInfoDlg::CMediaInfoDlg()
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     infoType_ = static_cast<InfoType>(Settings.MediaInfoSettings.InfoType);
     generateTextInEnglish_ = !Settings.MediaInfoSettings.EnableLocalization;
-}
-
-CMediaInfoDlg::~CMediaInfoDlg()
-{
-    
 }
 
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -100,11 +97,25 @@ DWORD CMediaInfoDlg::Run()
     if(!WinUtils::FileExists(m_FileName))
     { 
         SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));
-        SetDlgItemText(IDC_FILEINFOEDIT, CString(TR("File \"")) + ShortFileName + TR("\" not found!"));
+        std::wstring infoEditText;
+        try {
+            infoEditText = str(boost::wformat(TR("File \"%s\" not found!")) % ShortFileName.GetString());
+        }
+        catch (std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
+        SetDlgItemText(IDC_FILEINFOEDIT, infoEditText.c_str());
         return 0;
     }
 
-    SetDlgItemText(IDC_FILEINFOLABEL,CString(TR("Information about file"))+_T(" \"")+ ShortFileName+_T("\" :"));
+    std::wstring fileInfoLabel;
+    try {
+        fileInfoLabel = str(boost::wformat(TR("Information about file \"%s\" :")) % ShortFileName.GetString());
+    } catch (std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
+    
+    SetDlgItemText(IDC_FILEINFOLABEL, fileInfoLabel.c_str());
     
     MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_, !generateTextInEnglish_);
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);

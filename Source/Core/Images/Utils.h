@@ -28,6 +28,7 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 bool SaveImage(Gdiplus::Image* img, const CString& szFilename, SaveImageFormat Format, int Quality);
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico);
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x, int y, int w, int h, int radius);
+void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize);
 void BlurCleanup();
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName);
 Gdiplus::Color StringToColor(const std::string& str);
