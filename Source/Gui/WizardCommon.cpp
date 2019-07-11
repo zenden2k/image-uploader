@@ -82,6 +82,10 @@ void CWizardPage::ShowPrev(bool Show)
     ::ShowWindow(WizardDlg->GetDlgItem(IDC_PREV), Show ? SW_SHOW : SW_HIDE);
 }
 
+void CWizardPage::SetInitialFocus() {
+
+}
+
 bool CWizardPage:: OnHide()
 {
     return false;

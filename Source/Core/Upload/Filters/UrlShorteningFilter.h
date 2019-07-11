@@ -7,8 +7,7 @@
 class UrlShorteningFilter : public UploadFilter
 {
 public:
-    virtual bool PreUpload(UploadTask* task) override;
-    virtual bool PostUpload(UploadTask* task) override;
-
+    bool PreUpload(UploadTask* task) override;
+    bool PostUpload(UploadTask* task) override;
 };
 #endif

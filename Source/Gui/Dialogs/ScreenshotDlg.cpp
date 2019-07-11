@@ -149,7 +149,7 @@ LRESULT CScreenshotDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 
 LRESULT CScreenshotDlg::OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    CommandBox.NotifyParent((CommandBox.Selected==-1)?0:CommandBox.Selected);
+    CommandBox.NotifyParent((CommandBox.selectedItemIndex_==-1)?0:CommandBox.selectedItemIndex_);
     return 0;
 }
 

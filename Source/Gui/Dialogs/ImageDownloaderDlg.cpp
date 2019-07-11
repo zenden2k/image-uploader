@@ -51,11 +51,6 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
     accel_.CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
 }
 
-CImageDownloaderDlg::~CImageDownloaderDlg()
-{
-    
-}
-
 LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
@@ -273,7 +268,7 @@ bool CImageDownloaderDlg::BeginDownloading()
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
         using namespace std::placeholders;
         m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3)); 
-        m_FileDownloader.onQueueFinished.bind(this, &CImageDownloaderDlg::OnQueueFinished);
+        m_FileDownloader.setOnQueueFinishedCallback(std::bind(&CImageDownloaderDlg::OnQueueFinished, this));
         m_FileDownloader.start();
         return true;
     }

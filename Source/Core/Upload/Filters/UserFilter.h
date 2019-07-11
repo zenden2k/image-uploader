@@ -5,13 +5,12 @@
 #include "Core/Upload/UploadTask.h"
 #include "Core/Scripting/ScriptsManager.h"
 
-
 class UserFilter : public UploadFilter
 {
 public:
     UserFilter(ScriptsManager* scriptsManager);
-    virtual bool PreUpload(UploadTask* task) override;
-    virtual bool PostUpload(UploadTask* task) override;
+    bool PreUpload(UploadTask* task) override;
+    bool PostUpload(UploadTask* task) override;
 protected:
     ScriptsManager* scriptsManager_;
 

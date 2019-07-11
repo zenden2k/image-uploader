@@ -223,11 +223,6 @@ class NetworkClient: public INetworkClient
         void enableResponseCodeChecking(bool enable) override;
         /*! @cond PRIVATE */
         void setErrorLogId(const std::string &str) override;
-        class AbortedException : public std::runtime_error {
-        public:
-            AbortedException(const std::string& msg) : std::runtime_error(msg) {}
-            AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
-        };
 
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;

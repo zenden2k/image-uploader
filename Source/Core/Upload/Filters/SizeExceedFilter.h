@@ -14,8 +14,8 @@ class CUploadEngineList;
 class SizeExceedFilter : public UploadFilter {
 public:
     explicit SizeExceedFilter(CUploadEngineList* engineList, UploadEngineManager* uploadEngineManager);
-    virtual bool PreUpload(UploadTask* task) override;
-    virtual bool PostUpload(UploadTask* task) override;
+    bool PreUpload(UploadTask* task) override;
+    bool PostUpload(UploadTask* task) override;
 protected:
     CUploadEngineList* engineList_;
     UploadEngineManager* uploadEngineManager_;

@@ -116,11 +116,11 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         PrevClipboardViewer = SetClipboardViewer(); // using old fragile cliboard listening method on pre Vista systems
     }
 
-    ListBox.SetFocus();
+    //ListBox.SetFocus();
     ShowWindow(SW_HIDE);
     clipboardUpdated();
 
-    return 0;  // Let the system set the focus
+    return FALSE;  // Let the system set the focus
 }
 
 LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -260,4 +260,8 @@ LRESULT CWelcomeDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
     clipboardUpdated();
     return 0;
+}
+
+void CWelcomeDlg::SetInitialFocus() {
+    ListBox.SetFocus();
 }

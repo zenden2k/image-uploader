@@ -28,8 +28,7 @@
 #include <thread>
 #include <functional>
 
-#include "Core/3rdpart/FastDelegate.h"
-#include "Core/Network/NetworkClient.h"
+#include "Core/Network/INetworkClient.h"
 #include "Core/Utils/CoreTypes.h"
 
 class CFileDownloader
@@ -45,19 +44,22 @@ class CFileDownloader
         };
     protected:
         std::function<bool(bool, int, const DownloadFileListItem&)> onFileFinished_;
+        std::function<void()> onQueueFinished_;
+        std::function<void(INetworkClient*)> onConfigureNetworkClient_;
     public:
         CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading = true);
         virtual ~CFileDownloader();
-        void addFile(const std::string& url,void* userData, const std::string& referer = std::string());
+        void addFile(const std::string& url, void* id, const std::string& referer = std::string());
         bool start();
         bool waitForFinished();
         void setThreadCount(int n);
         void stop();
-        bool isRunning();
+        bool isRunning() const;
 
         void setOnFileFinishedCallback(decltype(onFileFinished_) callback);
-        fastdelegate::FastDelegate0<> onQueueFinished;
-        fastdelegate::FastDelegate1<INetworkClient*> onConfigureNetworkClient;
+        void setOnQueueFinishedCallback(decltype(onQueueFinished_) callback);
+        void setOnConfigureNetworkClientCallback(decltype(onConfigureNetworkClient_) callback);
+
     protected:
         CString errorStr_;
         std::mutex mutex_;

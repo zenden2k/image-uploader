@@ -327,7 +327,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
  
     CreatePage(wpWelcomePage); 
     ShowPage(wpWelcomePage);
-    ::SetFocus(Pages[wpWelcomePage]->PageWnd);
+    Pages[wpWelcomePage]->SetInitialFocus();
 
     if(CmdLine.IsOption(_T("update")))
     {
@@ -343,7 +343,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         }
     }
 
-    return 0;  // Let the system set the focus
+    return 0;  
 }
 
 bool CWizardDlg::ParseCmdLine()

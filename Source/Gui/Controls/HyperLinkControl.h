@@ -24,7 +24,10 @@
 #include <atlcrack.h>
 
 struct HyperLinkControlItem
-{~HyperLinkControlItem(){DeleteObject(hIcon);}
+{
+    ~HyperLinkControlItem() {
+        DeleteObject(hIcon);
+    }
     TCHAR szTitle[256];
     TCHAR szTip[256];
     HICON hIcon;
@@ -54,11 +57,12 @@ public:
         MSG_WM_MOUSELEAVE(OnMouseLeave)
         MSG_WM_KILLFOCUS(OnKillFocus)
         MSG_WM_SETFOCUS(OnSetFocus)
+        MSG_WM_LBUTTONDOWN(OnLButtonDown)
         MSG_WM_LBUTTONUP(OnLButtonUp)
-        MSG_WM_KEYDOWN(OnKeyUp)
+        MSG_WM_KEYDOWN(OnKeyDown)
         MSG_WM_SETCURSOR(OnSetCursor)
-        //MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
-        //MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
+        MESSAGE_HANDLER_EX(WM_GETOBJECT, OnGetObject)
+        MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -71,8 +75,9 @@ public:
     LRESULT OnMouseLeave(void);
     LRESULT OnKillFocus(HWND hwndNewFocus);
     LRESULT OnSetFocus(HWND hwndOldFocus);
+    LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
     LRESULT OnLButtonUp(UINT Flags, CPoint Pt);
-    LRESULT OnKeyUp(TCHAR vk, UINT cRepeat, UINT flags);
+    LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
     LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     BOOL OnSetCursor(CWindow wnd, UINT nHitTest, UINT message);
@@ -86,12 +91,14 @@ public:
     CRect GetItemRect(size_t itemIndex) const;
     int SelectedIndex() const;
     int ItemFromPoint(POINT pt) const;
-    int ScaleX(int x);
-    int ScaleY(int y);
+    int ScaleX(int x) const;
+    int ScaleY(int y) const;
     bool m_bHyperLinks;
     int NotifyParent(int nItem);
     void SelectItem(int Index);
-    int Selected;
+    void HoverItem(int Index);
+    int selectedItemIndex_;
+    int hoverItemIndex_;
     CAtlArray<HyperLinkControlItem> Items;
 protected:
     int BottomY, SubItemRightY;
@@ -104,6 +111,7 @@ protected:
     COLORREF m_BkColor;
     int dpiX;
     int dpiY;
+    int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
     static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
 };

@@ -52,7 +52,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         enum { IDD = IDD_IMAGEREUPLOADER };
         CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager, 
             UploadEngineManager *uploadEngineManager,const CString &initialBuffer);
-        ~CImageReuploaderDlg();
+        ~CImageReuploaderDlg() = default;
 
     protected:    
         BEGIN_MSG_MAP(CImageReuploaderDlg)
@@ -125,7 +125,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         bool ExtractLinks(const std::string& text, std::vector<std::string> &result);
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
-        void OnQueueFinished();
+        void OnDownloaderQueueFinished();
         bool OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void OnFileFinished(UploadTask* task, bool ok);
         void OnQueueFinished(UploadSession* uploadSession) ;

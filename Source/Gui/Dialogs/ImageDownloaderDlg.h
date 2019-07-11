@@ -42,7 +42,7 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
     public:
         enum { IDD = IDD_IMAGEDOWNLOADER };
         CImageDownloaderDlg(CWizardDlg *wizardDlg /* can be nullptr */, const CString &initialBuffer);
-        ~CImageDownloaderDlg();
+        ~CImageDownloaderDlg() = default;
         const std::vector<CString>& getDownloadedFiles() const;
         int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
 

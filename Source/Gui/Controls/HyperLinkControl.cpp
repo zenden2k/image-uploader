@@ -33,7 +33,9 @@ CHyperLinkControl::CHyperLinkControl()
     Track = false;
     BottomY = 1;
     SubItemRightY = -1;
-    Selected = -1;
+    selectedItemIndex_ = -1;
+    mouseDownItemIndex_ = -1;
+    hoverItemIndex_ = -1;
     CursorHand = false;
     m_bHyperLinks = true;
     m_BkColor = RGB(0, 0, 0);
@@ -88,11 +90,11 @@ CRect CHyperLinkControl::GetItemRect(size_t itemIndex) const {
     if (itemIndex < Items.GetCount()) {
         return Items[itemIndex].ItemRect;
     }
-    return CRect();
+    return {};
 }
 
 int CHyperLinkControl::SelectedIndex() const {
-    return Selected;
+    return selectedItemIndex_;
 }
 
 int CHyperLinkControl::ItemFromPoint(POINT pt) const {
@@ -235,22 +237,22 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
                 if(!CursorHand)
                     SetCursor(HandCursor);  // we need this because system doesn't send WM_CURSOR message immediately
             }
-            if(static_cast<size_t>(Selected) == i ) return 0;
+            if(static_cast<size_t>(hoverItemIndex_) == i ) return 0;
             Items[i].Hover = true;
-            SelectItem(i);
+            HoverItem(i);
 
             return 0;
         }
     }
 
-    SelectItem(-1); 
+    HoverItem(-1);
 
     return 0;
 }
 
 LRESULT CHyperLinkControl::OnMouseLeave(void)
 {
-    SelectItem(-1);
+    HoverItem(-1);
     Track = false;
 
     return 0;
@@ -264,71 +266,107 @@ LRESULT CHyperLinkControl::OnKillFocus(HWND hwndNewFocus)
 
 LRESULT CHyperLinkControl::OnSetFocus(HWND hwndOldFocus)
 {
-    if(Selected != -1)  return 0;
+    if (selectedItemIndex_ != -1) {
+        return 0;
+    }
 
-    if(hwndOldFocus == ::GetNextDlgTabItem(::GetParent(GetParent()), m_hWnd,    true) || hwndOldFocus == ::GetNextDlgTabItem(::GetParent(GetParent()), m_hWnd,    false)) 
+    /*if (hwndOldFocus == ::GetNextDlgTabItem(::GetParent(GetParent()), m_hWnd, true)
+        || hwndOldFocus == ::GetNextDlgTabItem(::GetParent(GetParent()), m_hWnd, false)) {
         SelectItem(0);
+    }*/
 
+    return 0;
+}
+
+LRESULT CHyperLinkControl::OnLButtonDown(UINT Flags, CPoint Pt) {
+    RECT ClientRect;
+    GetClientRect(&ClientRect);
+    mouseDownItemIndex_ = -1;
+    for (size_t i = 0; i < Items.GetCount(); i++)
+    {
+        const auto& item = Items[i];
+        if (!item.Visible) {
+            continue;
+        }
+        CRect rc(item.ItemRect);
+
+        if (!m_bHyperLinks && *item.szTip) {
+            rc.right = ClientRect.right - 6;
+            rc.InflateRect(3, 6);
+        }
+
+        if (rc.PtInRect(Pt)) {
+            mouseDownItemIndex_ = i;
+            break;
+        }
+    }
     return 0;
 }
 
 LRESULT CHyperLinkControl::OnLButtonUp(UINT Flags, CPoint Pt)
 {
-    //BOOL OutSide=false;
     RECT ClientRect;
     GetClientRect(&ClientRect);
 
     for(size_t i=0;i< Items.GetCount(); i++)
     {
-        if(!Items[i].Visible) continue;
-        CRect rc(Items[i].ItemRect);
+        const auto& item = Items[i];
+        if(!item.Visible) continue;
+        CRect rc(item.ItemRect);
 
-        if(!m_bHyperLinks && *Items[i].szTip)
-        {
+        if(!m_bHyperLinks && *item.szTip){
             rc.right= ClientRect.right - 6;
             rc.InflateRect(3,6);
         }
 
-        if(rc.PtInRect(Pt))
-        {
-            NotifyParent(i);
+        if(rc.PtInRect(Pt)) {
+            if (mouseDownItemIndex_ != -1 && mouseDownItemIndex_ == i) {
+                NotifyParent(i);
+                mouseDownItemIndex_ = -1;
+            }
+            break;
         }
     }
 
     return 0;
 }
 
-LRESULT CHyperLinkControl::OnKeyUp(TCHAR vk, UINT cRepeat, UINT flags)
+LRESULT CHyperLinkControl::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 {
     if (vk == VK_DOWN || (vk == VK_TAB && !(GetKeyState(VK_SHIFT) & 0x80)))
     {
         bool itemSelected = false;
-        for (size_t j = Selected + 1; j < Items.GetCount(); j++) {
+        for (size_t j = selectedItemIndex_ + 1; j < Items.GetCount(); j++) {
             if (Items[j].Visible) {
                 SelectItem(j);
                 itemSelected = true;
                 break;
             }
         }
-       
-    }
-
-    else if (vk == VK_UP || (vk == VK_TAB && (GetKeyState(VK_SHIFT) & 0x80)))
-    {
+        if (!itemSelected) {
+            // Set focus to next dialog control
+            ::PostMessage(GetParent(), WM_NEXTDLGCTL, 0, FALSE);
+        }
+    } else if (vk == VK_UP || (vk == VK_TAB && (GetKeyState(VK_SHIFT) & 0x80))) {
         bool itemSelected = false;
-        for (int j = Selected - 1; j >=0 ; j--) {
+        for (int j = selectedItemIndex_ - 1; j >=0 ; j--) {
             if (Items[j].Visible) {
                 SelectItem(j);
                 itemSelected = true;
                 break;
             }
         }
+        if (!itemSelected) {
+            // Set focus to previous dialog control
+            ::PostMessage(GetParent(), WM_NEXTDLGCTL, 1, FALSE);
+        }
     }
 
-    if (vk==VK_RETURN || vk==VK_SPACE)
+    if (vk == VK_RETURN || vk == VK_SPACE)
     {
-        if(Selected!=-1) 
-            NotifyParent(Selected);
+        if (selectedItemIndex_ != -1) {
+            NotifyParent(selectedItemIndex_);
+        }
     }
     return 0;
 }
@@ -362,13 +400,14 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         if (!item.Visible) {
             continue;
         }
-
+        bool isHighlighted = static_cast<size_t>(selectedItemIndex_) == i || hoverItemIndex_ == i;
         dc.SetTextColor(RGB(0,0,0));
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
             RECT TextRect = item.ItemRect;
-            if(!m_bHyperLinks && static_cast<size_t>(Selected) == i)
+            
+            if(!m_bHyperLinks && (isHighlighted))
             {    
                 CRect rec = item.ItemRect;
                 rec.right = rc.right-6;
@@ -382,7 +421,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 TextRect.right +=ScaleX(20);
             }
             HFONT oldFont;
-            if (static_cast<size_t>(Selected) == i && m_bHyperLinks) {
+            if (isHighlighted && m_bHyperLinks) {
                 oldFont = dc.SelectFont(BoldUnderLineFont);
             }
             else {
@@ -401,7 +440,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
 
-            if (static_cast<size_t>(Selected) == i && m_bHyperLinks) {
+            if (isHighlighted && m_bHyperLinks) {
                 oldFont = dc.SelectFont(UnderlineFont);
             } else {
                 oldFont = dc.SelectFont(GetFont());
@@ -422,7 +461,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         else 
         {
             HFONT oldFont;
-            if (static_cast<size_t>(Selected) == i) { // If item we draw is selected
+            if (isHighlighted) { // If item we draw is selected
                 oldFont = dc.SelectFont(UnderlineFont);
             } else {
                 oldFont = dc.SelectFont(GetFont());
@@ -447,28 +486,28 @@ LRESULT CHyperLinkControl::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 
 void CHyperLinkControl::SelectItem(int Index)
 {
-    if(Index == Selected) return; 
+    if(Index == selectedItemIndex_) return; 
 
     RECT ClientRect;
     GetClientRect(&ClientRect);
 
-    if(Selected != -1) // Repainting previous selection
+    if(selectedItemIndex_ != -1) // Repainting previous selection
     {
-        CRect temp = Items[Selected].ItemRect;
+        CRect temp = Items[selectedItemIndex_].ItemRect;
         if(!m_bHyperLinks)
         {
             temp.right= ClientRect.right;
             temp.InflateRect(3,6);
         }
-        if(*Items[Selected].szTip)
+        if(*Items[selectedItemIndex_].szTip)
             //temp.left+=40;
             InvalidateRect(&temp,false);
-        else InvalidateRect(&Items[Selected].ItemRect,false);
+        else InvalidateRect(&Items[selectedItemIndex_].ItemRect,false);
     }
 
-    Selected = Index;
+    selectedItemIndex_ = Index;
 
-    if(Selected!=-1)  //Repainting selected hyperlink
+    if(selectedItemIndex_!=-1)  //Repainting selected hyperlink
     {
         CRect temp = Items[Index].ItemRect;
         if(!m_bHyperLinks)
@@ -480,6 +519,47 @@ void CHyperLinkControl::SelectItem(int Index)
             //temp.left+=40;
             InvalidateRect(&temp,false);
         else InvalidateRect(&Items[Index].ItemRect,false);
+        NotifyWinEvent(EVENT_OBJECT_FOCUS, m_hWnd, OBJID_CLIENT, Index + 1);
+    }
+}
+
+void CHyperLinkControl::HoverItem(int Index)
+{
+    if (Index == hoverItemIndex_) {
+        return;
+    }
+
+    RECT ClientRect;
+    GetClientRect(&ClientRect);
+
+    if (hoverItemIndex_ != -1) // Repainting previous selection
+    {
+        const auto& item = Items[hoverItemIndex_];
+        CRect temp = item.ItemRect;
+        if (!m_bHyperLinks)
+        {
+            temp.right = ClientRect.right;
+            temp.InflateRect(3, 6);
+        }
+        if (*Items[hoverItemIndex_].szTip)
+            InvalidateRect(&temp, false);
+        else InvalidateRect(&Items[hoverItemIndex_].ItemRect, false);
+    }
+
+    hoverItemIndex_ = Index;
+
+    if (hoverItemIndex_ != -1)  //Repainting selected hyperlink
+    {
+        const auto& item = Items[Index];
+        CRect temp = item.ItemRect;
+        if (!m_bHyperLinks)
+        {
+            temp.right = ClientRect.right;
+            temp.InflateRect(3, 6);
+        }
+        if (*item.szTip)
+            InvalidateRect(&temp, false);
+        else InvalidateRect(&item.ItemRect, false);
     }
 }
 
@@ -488,10 +568,10 @@ BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* m
     //if(m_bHyperLinks)
     {
         bool SubItem = false;
-        if(Selected != -1)
-            if(*Items[Selected].szTip == 0)
+        if(hoverItemIndex_ != -1)
+            if(*Items[hoverItemIndex_].szTip == 0)
                 SubItem = true;
-        CursorHand = (Selected!=-1)&&(m_bHyperLinks || SubItem);
+        CursorHand = (hoverItemIndex_ !=-1)&&(m_bHyperLinks || SubItem);
         SetCursor(CursorHand? SetCursor(HandCursor) : LoadCursor(NULL,IDC_ARROW));
     }
 
@@ -520,37 +600,20 @@ LRESULT CHyperLinkControl::OnGetObject(UINT, WPARAM wParam, LPARAM lParam) {
 }
 
 LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    LRESULT retFlags = DLGC_WANTARROWS | DLGC_DEFPUSHBUTTON;
+    LRESULT retFlags = DLGC_WANTARROWS | DLGC_DEFPUSHBUTTON | DLGC_WANTTAB;
     if (wParam == VK_RETURN ) {
-        if (Selected != -1) {
+        if (selectedItemIndex_ != -1) {
             //NotifyParent(Selected);
             retFlags |= DLGC_DEFPUSHBUTTON;
         }
-    } else if (wParam == VK_TAB ) {
-        if (!(GetKeyState(VK_SHIFT) & 0x80)) {
-            for (int j = Selected + 1; j < Items.GetCount(); j++) {
-                if (Items[j].Visible) {
-                    //SelectItem(j);
-                    retFlags |= DLGC_WANTTAB;
-                    break;
-                }
-            }
-        } else {
-            for (int j = Selected - 1; j >= 0; j--) {
-                if (Items[j].Visible) {
-                    retFlags |= DLGC_WANTTAB;
-                    break;
-                }
-            }
-        }
-    }
+    } 
     return retFlags;
 }
 
-int CHyperLinkControl::ScaleX(int x) 
+int CHyperLinkControl::ScaleX(int x) const 
 {  
     return MulDiv(x, dpiX, 96); 
 }
-int CHyperLinkControl::ScaleY(int y) { 
+int CHyperLinkControl::ScaleY(int y) const { 
     return MulDiv(y, dpiY, 96);
 }

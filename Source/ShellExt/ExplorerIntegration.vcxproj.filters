@@ -17,12 +17,6 @@
       <UniqueIdentifier>{c0767ff4-cca4-4b46-a5d1-6966813c324d}</UniqueIdentifier>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="Source Files\Core">
-      <UniqueIdentifier>{607f5c2e-afe9-44ac-9f0d-9b06d3da2dd2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Core\3rdpart">
-      <UniqueIdentifier>{6fa91d7e-0169-451a-8078-48f351d38074}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Func">
       <UniqueIdentifier>{62e9a912-77ac-4cd2-8fef-a5f8bdf95cbc}</UniqueIdentifier>
     </Filter>
@@ -46,17 +40,11 @@
     <ClCompile Include="Generated\ExplorerIntegration_i.c">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\base64.cpp">
-      <Filter>Source Files\Core\3rdpart</Filter>
-    </ClCompile>
     <ClCompile Include="..\Func\LangClass.cpp">
       <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdpart\Registry.cpp">
       <Filter>Source Files\3rdpart</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Core\3rdpart\CodePages.cpp">
-      <Filter>Source Files\Core\3rdpart</Filter>
     </ClCompile>
     <ClCompile Include="Helpers.cpp">
       <Filter>Source Files</Filter>
@@ -93,9 +81,6 @@
     </ClInclude>
     <ClInclude Include="ExplorerIntegration.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Core\3rdpart\base64.h">
-      <Filter>Source Files\Core\3rdpart</Filter>
     </ClInclude>
     <ClInclude Include="Helpers.h">
       <Filter>Header Files</Filter>

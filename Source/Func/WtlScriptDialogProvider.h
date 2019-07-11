@@ -5,7 +5,7 @@
 
 class WtlScriptDialogProvider : public IDialogProvider {
 public:
-    virtual std::string askUserCaptcha(NetworkClient *nm, const std::string& url) override;
-    virtual std::string inputDialog(const std::string& text, const std::string& defaultValue) override;
+    std::string askUserCaptcha(NetworkClient *nm, const std::string& url) override;
+    std::string inputDialog(const std::string& text, const std::string& defaultValue) override;
 };
 #endif

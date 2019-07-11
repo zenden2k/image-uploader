@@ -533,8 +533,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Core\3rdpart\base64.cpp" />
-    <ClCompile Include="..\Core\3rdpart\CodePages.cpp" />
     <ClCompile Include="ExplorerIntegration.cpp" />
     <ClCompile Include="Helpers.cpp" />
     <ClCompile Include="IconBitmapUtils.cpp" />
@@ -570,7 +568,6 @@
     <Midl Include="ExplorerIntegration.idl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Core\3rdpart\base64.h" />
     <ClInclude Include="Helpers.h" />
     <ClInclude Include="IconBitmapUtils.h" />
     <ClInclude Include="IShellContextMenu.h" />

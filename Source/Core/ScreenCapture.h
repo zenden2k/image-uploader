@@ -34,10 +34,10 @@ enum MonitorMode { kCurrentMonitor = -2, kAllMonitors = -1, kSelectedMonitor = 0
 class CScreenshotRegion
 {
     public:
-        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) = 0;
-        virtual ~CScreenshotRegion()
-        {
+        CScreenshotRegion() : m_bFromScreen(false) {
         }
+        virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) = 0;
+        virtual ~CScreenshotRegion() = default;
 
         virtual bool PrepareShooting(bool fromScreen)
         {

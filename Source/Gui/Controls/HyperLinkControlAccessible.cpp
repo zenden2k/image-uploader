@@ -206,6 +206,10 @@ STDMETHODIMP CHyperLinkControlAccessible::accSelect(long flagsSelect, VARIANT va
     return S_OK;
 }
 
+/**
+ * 	The IAccessible::accLocation method retrieves the specified object's current screen location. 
+ * 	All visual objects must support this method. Sound objects do not support this method.
+ */
 STDMETHODIMP CHyperLinkControlAccessible::accLocation(long* pxLeft, long* pyTop, long* pcxWidth, long* pcyHeight, VARIANT varChild) {
     *pxLeft = *pyTop = *pcxWidth = *pcyHeight = 0;
     HRESULT hr = ValidateChildId(varChild);

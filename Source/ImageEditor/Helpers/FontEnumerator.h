@@ -1,7 +1,7 @@
 #ifndef IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 #define IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 
-#include <windows.h>
+#include <Windows.h>
 #include <vector>
 #include "Core/3rdpart/FastDelegate.h"
 

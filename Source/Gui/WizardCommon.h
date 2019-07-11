@@ -52,6 +52,7 @@ class CWizardPage
         HWND PageWnd;
         void ShowNext(bool Show = true);
         void ShowPrev(bool Show = true);
+        virtual void SetInitialFocus();
 };
 
 #endif // IU_GUI_WIZARDCOMMON_H

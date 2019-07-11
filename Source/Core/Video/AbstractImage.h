@@ -8,7 +8,7 @@ class AbstractImage
 public:
     enum DataFormat { dfRGB888, dfBitmapRgb} ;
     AbstractImage();
-    virtual ~AbstractImage();
+    virtual ~AbstractImage() = default;
     virtual bool loadFromFile(const std::string& fileName);
     virtual bool saveToFile(const std::string& fileName) const = 0;
     virtual int getWidth() const;

@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <set>
 
-#include <Wininet.h>
+#include <WinInet.h>
 #include "atlheaders.h"
 #include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
@@ -58,10 +58,7 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
     m_nFilesCount = 0;
     m_nFilesUploaded = 0;
     m_nFilesDownloaded = 0;
-}
-
-CImageReuploaderDlg::~CImageReuploaderDlg()
-{
+    fRemoveClipboardFormatListener_ = nullptr;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -127,7 +124,6 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if ( IsClipboardFormatAvailable(htmlClipboardFormatId) || IsClipboardFormatAvailable(CF_TEXT ) ) {
         sourceTextEditControl.SendMessage(WM_PASTE);
     } 
-    CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
 
     SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Server")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
 
@@ -320,7 +316,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     return true;
 }
 
-void CImageReuploaderDlg::OnQueueFinished()
+void CImageReuploaderDlg::OnDownloaderQueueFinished()
 {
     if(!m_InitialBuffer.IsEmpty())
     {
@@ -512,7 +508,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             using namespace std::placeholders;
 
             m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileDownloadFinished, this, _1, _2, _3));
-            m_FileDownloader.onQueueFinished.bind(this, &CImageReuploaderDlg::OnQueueFinished);
+            m_FileDownloader.setOnQueueFinishedCallback(std::bind(&CImageReuploaderDlg::OnDownloaderQueueFinished, this));
             m_FileDownloader.start();
             
             updateStats();

@@ -58,8 +58,6 @@ virtual ~CServerSelectorControl();
         COMMAND_ID_HANDLER(IDC_ADD_ACCOUNT, OnAddAccountClick)
         COMMAND_ID_HANDLER(IDC_LOGINMENUITEM, OnLoginMenuItemClicked)
         COMMAND_ID_HANDLER(IDC_NO_ACCOUNT, OnNoAccountClicked)
-
-        
         COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
     END_MSG_MAP()
         

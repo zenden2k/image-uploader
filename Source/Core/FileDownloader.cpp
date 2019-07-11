@@ -23,9 +23,11 @@
 #include <errno.h>
 #include <algorithm>
 
+#include "Core/Utils/CoreUtils.h"
 #include "Func/WinUtils.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Utils/StringUtils.h"
+#include "Network/NetworkClient.h"
 
 // TODO:
 // 2. remove dependency from non-core headers ( "Common.h")
@@ -81,10 +83,11 @@ void CFileDownloader::memberThreadFunc()
     std::unique_ptr<INetworkClient> nm(networkClientFactory_->create());
 
     // Providing callback function to stop downloading
-    nm->setProgressCallback(NetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
+    nm->setProgressCallback(INetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
     mutex_.lock();
-    if (onConfigureNetworkClient)
-        onConfigureNetworkClient(nm.get());
+    if (onConfigureNetworkClient_) {
+        onConfigureNetworkClient_(nm.get());
+    }
     mutex_.unlock();
 
     for (;; )
@@ -104,7 +107,7 @@ void CFileDownloader::memberThreadFunc()
         }
         try {
             nm->doGet(url);
-        } catch (NetworkClient::AbortedException&) {
+        } catch (INetworkClient::AbortedException&) {
             break;
         }
         
@@ -135,8 +138,9 @@ void CFileDownloader::memberThreadFunc()
     if (!runningThreads_ && isRunning_){
         isRunning_ = false;
         stopSignal_ = false;
-        if (onQueueFinished)
-            onQueueFinished();
+        if (onQueueFinished_) {
+            onQueueFinished_();
+        }
     }
     threadsStatusMutex_.unlock();
 }
@@ -193,13 +197,21 @@ void CFileDownloader::stop()
     stopSignal_ = true;
 }
 
-bool CFileDownloader::isRunning()
+bool CFileDownloader::isRunning() const
 {
     return isRunning_;
 }
 
 void CFileDownloader::setOnFileFinishedCallback(decltype(onFileFinished_) callback) {
     onFileFinished_ = std::move(callback);
+}
+
+void CFileDownloader::setOnQueueFinishedCallback(decltype(onQueueFinished_) callback) {
+    onQueueFinished_ = callback;
+}
+
+void CFileDownloader::setOnConfigureNetworkClientCallback(decltype(onConfigureNetworkClient_) callback) {
+    onConfigureNetworkClient_ = callback;
 }
 
 bool CFileDownloader::waitForFinished()

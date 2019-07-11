@@ -165,7 +165,17 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
              + _T("\r\n");
     }
 
-    
+    SYSTEMTIME systime;
+    memset(&systime, 0, sizeof(systime));
+    int fieldNum = sscanf_s(ver->BuildDate.c_str(), "%hd.%hd.%hd", &systime.wDay, &systime.wMonth, &systime.wYear);
+    CString dateStr;
+    if (fieldNum == 3) {
+        WCHAR pFmt[MAX_PATH] = { 0 };
+        GetDateFormat(LOCALE_USER_DEFAULT, 0, &systime, nullptr, pFmt, MAX_PATH);
+        dateStr = pFmt;
+    } else {
+        dateStr = ver->BuildDate.c_str();
+    }
 
     SetDlgItemText(IDC_MEMO, memoText);
    
@@ -174,7 +184,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL) ");
 #endif
-    buildInfo  +=  CString(_T("\r\n(")) + ver->BuildDate.c_str() + _T(")");
+
+    buildInfo  +=  CString(_T("\r\n(")) + dateStr + _T(")");
 
     CString text = ver->FullVersion.c_str();
 

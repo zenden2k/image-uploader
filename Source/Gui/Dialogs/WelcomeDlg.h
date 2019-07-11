@@ -102,6 +102,7 @@ public:
     HWND PrevClipboardViewer;
     CBrush br; 
     bool OnShow() override;
+    void SetInitialFocus() override;
     bool QuickRegionPrint;
     CMyImage LeftImage;CMyImage LogoImage;
     CFont NewFont;

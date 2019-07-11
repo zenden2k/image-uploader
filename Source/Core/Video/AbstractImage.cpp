@@ -30,10 +30,6 @@ AbstractImage* AbstractImage::createImage()
     #endif
 }
 
-AbstractImage::~AbstractImage() {
-
-}
-
 bool AbstractImage::loadFromFile(const std::string& fileName)
 {
     LOG(ERROR) << "loadFromFile not implemented";

@@ -27,7 +27,6 @@
 #include "Gui/Controls/ImageView.h"
 #include "Gui/CommonDefines.h"
 #include <deque>
-#include <queue>
 #include <condition_variable>
 
 // CThumbsView

@@ -63,15 +63,14 @@ void CHistoryTreeControl::Init()
 void CHistoryTreeControl::CreateDownloader()
 {
     using namespace std::placeholders;
-    //delete m_FileDownloader;
-    //m_FileDownloader = 0;
+
     if(!m_FileDownloader)
     {
         auto factory = std::make_shared<NetworkClientFactory>();
         m_FileDownloader = std::make_unique<CFileDownloader>(factory, AppParams::instance()->tempDirectory());
-        m_FileDownloader->onConfigureNetworkClient.bind(this, &CHistoryTreeControl::OnConfigureNetworkClient);
+        m_FileDownloader->setOnConfigureNetworkClientCallback(std::bind(&CHistoryTreeControl::OnConfigureNetworkClient, this, _1));
         m_FileDownloader->setOnFileFinishedCallback(std::bind(&CHistoryTreeControl::OnFileFinished, this, _1, _2, _3));
-        m_FileDownloader->onQueueFinished.bind(this, &CHistoryTreeControl::QueueFinishedEvent);
+        m_FileDownloader->setOnQueueFinishedCallback(std::bind(&CHistoryTreeControl::QueueFinishedEvent, this));
     }
 }
 

@@ -54,6 +54,12 @@ class INetworkClient {
             virtual ~Logger(){}
         };
 
+        class AbortedException : public std::runtime_error {
+        public:
+            AbortedException(const std::string& msg) : std::runtime_error(msg) {}
+            AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
+        };
+
         virtual void addQueryParam(const std::string& name, const std::string& value){}
         virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = ""){};
         virtual void addQueryHeader(const std::string& name, const std::string& value) {};
