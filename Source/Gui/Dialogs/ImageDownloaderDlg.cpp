@@ -42,6 +42,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
     m_retCode = 0;
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;
+    m_nSuccessfullDownloads = 0;
     isVistaOrLater_ = WinUtils::IsVistaOrLater();
     m_FileDownloader.setThreadCount(1);
     ACCEL accels[] = {
@@ -215,6 +216,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
             } else {
                 m_downloadedFiles.push_back(ais.RealFileName);
             }
+            m_nSuccessfullDownloads++;
             
         }
            
@@ -344,4 +346,8 @@ BOOL CImageDownloaderDlg::EmulateEndDialog(int nRetCode) {
     PostMessage(WM_QUIT);
     
     return TRUE;
+}
+
+int CImageDownloaderDlg::successfullDownloadsCount() const {
+    return m_nSuccessfullDownloads;
 }

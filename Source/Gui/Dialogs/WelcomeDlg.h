@@ -38,7 +38,7 @@ class CWelcomeDlg :
 {
 public:
      CWelcomeDlg();
-    virtual ~CWelcomeDlg();
+    virtual ~CWelcomeDlg() = default;
     enum { IDD = IDD_WELCOMEDLG };
 
     BEGIN_MSG_MAP(CWelcomeDlg)
@@ -55,6 +55,7 @@ public:
         COMMAND_HANDLER(IDC_ADDIMAGES, BN_CLICKED, OnBnClickedAddimages)
         COMMAND_HANDLER(IDC_ADDVIDEO, BN_CLICKED, OnBnClickedAddvideo)
         COMMAND_HANDLER(IDC_REGIONPRINT, BN_CLICKED, OnBnClickedRegionPrint)
+        COMMAND_HANDLER(IDC_LASTREGIONSCREENSHOT, BN_CLICKED, OnBnClickedLastRegionScreenshot)
         COMMAND_HANDLER(IDC_MEDIAFILEINFO, BN_CLICKED, OnBnClickedMediaInfo)
         COMMAND_HANDLER(IDC_DOWNLOADIMAGES, BN_CLICKED, OnBnClickedDownloadImages)
         COMMAND_HANDLER(IDC_ADDFILES, BN_CLICKED, OnBnClickedAddFiles)
@@ -83,6 +84,7 @@ public:
     LRESULT OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnBnClickedLastRegionScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedDownloadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedAddFiles(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -96,6 +98,7 @@ public:
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void OnDrawClipboard();
     void clipboardUpdated();
+    void lastRegionAvailabilityChanged(bool available);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);

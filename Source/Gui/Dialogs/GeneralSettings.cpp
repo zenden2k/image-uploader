@@ -103,11 +103,10 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         langListCombo_.AddString(buf2);
     }
 
-    int Index = SendDlgItemMessage(IDC_LANGLIST,CB_FINDSTRING, 0, (WPARAM)(LPCTSTR)Settings.Language);
+    int Index = langListCombo_.FindString(0, Settings.Language);
     if(Index==-1) Index=0;
-    SendDlgItemMessage(IDC_LANGLIST,CB_SETCURSEL,Index);
+    langListCombo_.SetCurSel(Index);
 
-    
     SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
     SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
     GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);

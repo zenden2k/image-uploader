@@ -32,13 +32,11 @@ class ServerProfile;
 class UploadEngineManager;
 // CLoginDlg
 
-LoginInfo LoadLogin(int ServerId);
-
 class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>, public CThreadImpl<CLoginDlg>
 {
     public:
         CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
-        ~CLoginDlg();
+        ~CLoginDlg() = default;
         enum { IDD = IDD_LOGINDLG };
         enum { ID_DELETEACCOUNT = 30 };
     protected:
@@ -61,7 +59,7 @@ class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>, public CThreadImp
         LRESULT OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CUploadEngineData *m_UploadEngine;
-        CString accountName();
+        CString accountName() const;
         DWORD Run();
         void OnProcessFinished();
         void Accept();
@@ -78,7 +76,6 @@ protected:
     std::unique_ptr<INetworkClient> NetworkClient_;
     CPictureExWnd wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
-    
 };
 
 #endif // LOGINDLG_H

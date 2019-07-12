@@ -97,6 +97,7 @@ public:
     int NotifyParent(int nItem);
     void SelectItem(int Index);
     void HoverItem(int Index);
+    HyperLinkControlItem* getItemByCommand(int command);
     int selectedItemIndex_;
     int hoverItemIndex_;
     CAtlArray<HyperLinkControlItem> Items;

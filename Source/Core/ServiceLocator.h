@@ -29,7 +29,6 @@ public:
     void setLogger(ILogger* logger);
     ITranslator* translator();
     void setTranslator(ITranslator* transl);
-#ifndef IU_SHELLEXT
     IDialogProvider* dialogProvider();
     void setDialogProvider(IDialogProvider* dialogProvider);
     IUploadErrorHandler* uploadErrorHandler();
@@ -56,7 +55,6 @@ public:
         //assert(res);
         return res;
     }
-#endif
 
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type

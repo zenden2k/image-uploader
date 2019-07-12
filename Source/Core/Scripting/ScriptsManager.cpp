@@ -110,7 +110,6 @@ void ScriptsManager::clearThreadData()
     }
 }
 
-
 ServerSync* ScriptsManager::getServerSync(const std::string& fileName)
 {
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);

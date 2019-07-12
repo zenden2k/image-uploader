@@ -1,11 +1,12 @@
 ﻿#ifndef IU_CORE_SCRIPTING_SCRIPT_H
 #define IU_CORE_SCRIPTING_SCRIPT_H
 
-#include "Squirrelnc.h"
-
 #pragma once
+
 #include <string>
 #include <thread>
+
+#include "Squirrelnc.h"
 #include "Core/ThreadSync.h"
 #include "Core/Network/INetworkClient.h"
 
@@ -20,12 +21,16 @@ class Script {
         void InitScriptEngine();
         static void DestroyScriptEngine();
         time_t getCreationTime() const;
+
         /**
         Using multiple Squirrel VMs in the SAME thread is not supported. 
         This function should be called each time current threads's script is changed.
         */
         void switchToThisVM();
 
+        /**
+         * Set currently processed file (used for log filtering)
+         */
         void setCurrentTopLevelFileName(const std::string& fileName);
     protected:
         virtual void PrintCallback(const std::string& output);

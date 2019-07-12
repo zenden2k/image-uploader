@@ -25,11 +25,9 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 
-
 char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
-
 
 CMyEngineList::CMyEngineList() :dllModule_(_T("comctl32.dll"))
 {
@@ -52,7 +50,7 @@ CUploadEngineData* CMyEngineList::byName(const CString& name)
     return CUploadEngineListBase::byName(WCstringToUtf8(name));
 }
 
-int CMyEngineList::getUploadEngineIndex(const CString& Name)
+int CMyEngineList::getUploadEngineIndex(const CString& Name) const
 {
     return CUploadEngineListBase::getUploadEngineIndex(WCstringToUtf8(Name));
 }

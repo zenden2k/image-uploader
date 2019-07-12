@@ -20,7 +20,7 @@
 
 #include "UploadEngine.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
@@ -44,8 +44,6 @@ bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
 }
-
-
 
 CUploadEngineListBase::CUploadEngineListBase()
 {

@@ -24,8 +24,8 @@
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
 #include "Core/HistoryManager.h"
-#include "welcomedlg.h"
-#include "maindlg.h"
+#include "WelcomeDlg.h"
+#include "MainDlg.h"
 #include "VideoGrabberPage.h"
 #include "uploadsettings.h"
 #include "uploaddlg.h"
@@ -151,14 +151,15 @@ bool CWizardDlg::pasteFromClipboard() {
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             if (MainDlg) {
                 MainDlg->AddToFileList(outFileName, L"", true, nullptr, true);
-//                MainDlg->ThumbsView.LoadThumbnails();
                 return true;
             }
         } 
         if (CImageDownloaderDlg::LinksAvailableInText(text)) {
             CImageDownloaderDlg dlg(this, CString(text));
             dlg.EmulateModal(m_hWnd);
-            return true;
+            if (dlg.successfullDownloadsCount()) {
+                return true;
+            }
         }
     }
     return false;
@@ -1511,6 +1512,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcWindowHandleScreenshot();
     else if (funcName == _T("freeformscreenshot"))
         return funcFreeformScreenshot();
+    else if (funcName == _T("lastregionscreenshot"))
+        return funcLastRegionScreenshot();
     else if (funcName == _T("downloadimages"))
         return funcDownloadImages();
     else if (funcName == _T("windowscreenshot"))
@@ -1638,6 +1641,10 @@ bool CWizardDlg::funcWindowScreenshot(bool Delay)
 {
     CommonScreenshot(cmActiveWindow);
     return true;
+}
+
+bool CWizardDlg::funcLastRegionScreenshot() {
+    return CommonScreenshot(cmLastRegion);
 }
 
 bool CWizardDlg::funcAddFolder()
@@ -1902,6 +1909,24 @@ bool CWizardDlg::CanShowWindow()
     return (CurPage == wpMainPage || CurPage == wpWelcomePage) && IsWindowVisible() && IsWindowEnabled();
 }
 
+bool CWizardDlg::hasLastScreenshotRegion() const {
+    return !!lastScreenshotRegion_;
+}
+
+void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region) {
+    lastScreenshotRegion_ = region;
+    bool available = !!lastScreenshotRegion_;
+    for(const auto& cb: lastRegionAvailabilityChangeCallbacks_) {
+        if (cb) {
+            cb(available);
+        }
+    }
+}
+
+void CWizardDlg::addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb) {
+    lastRegionAvailabilityChangeCallbacks_.push_back(cb);
+}
+
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
     if(Available)
@@ -1928,6 +1953,7 @@ void CWizardDlg::CreateUpdateDlg()
 
 bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 {
+    // TODO: this method is too complicated and long. 
     bool needToShow = IsWindowVisible()!=FALSE;
     if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
     {
@@ -1983,12 +2009,22 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
         engine.captureRegion(&winRegion);
         result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+    } else if (mode == cmLastRegion) {
+        if (!lastScreenshotRegion_) {
+            LOG(ERROR) << "Last region is empty!";
+        }
+        else {
+            engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay * 1000);
+            engine.captureRegion(lastScreenshotRegion_.get());
+            result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+        }
     }
     else if(engine.captureScreen())
     {
         if ( mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod ) {
             result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
         } else {
+            // Show old window for selecting screen region
             RegionSelect.Parent = m_hWnd;
             SelectionMode selMode = smRectangles;
             if(mode == cmFreeform)
@@ -2014,19 +2050,20 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                     }
                     
                     engine.setDelay(0);
-                    CScreenshotRegion* rgn = RegionSelect.region();
+                    auto rgn = RegionSelect.region();
                     if(rgn)
                     {
-                        CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn);
+                        CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn.get());
                         if(whr)
                         {
                             whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
-                        engine.captureRegion(rgn);    
+                        engine.captureRegion(rgn.get());    
                         result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
                         DeleteObject(gdiBitmap);
                     }
+                    setLastScreenshotRegion(rgn);
                 }
                 else CanceledByUser = true;
             }
@@ -2050,6 +2087,12 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
+        if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
+            Rect lastCrop = imageEditor.lastAppliedCrop();
+            if (!lastCrop.IsEmptyArea()) {
+                setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height));
+            }
+        }
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else {

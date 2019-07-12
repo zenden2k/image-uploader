@@ -28,7 +28,7 @@
 
 HRGN GetWindowVisibleRegion(HWND wnd);
 
-enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles };
+enum CaptureMode {cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles, cmLastRegion };
 enum MonitorMode { kCurrentMonitor = -2, kAllMonitors = -1, kSelectedMonitor = 0 };
 
 class CScreenshotRegion

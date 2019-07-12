@@ -125,7 +125,6 @@ CRegionSelect::CRegionSelect()
 
 CRegionSelect::~CRegionSelect()
 { 
-    delete m_ResultRegion;
     if(DrawingPen) DeleteObject(DrawingPen);
     if(DrawingBrush) DeleteObject(DrawingBrush);
     if(pen)    DeleteObject(pen);
@@ -612,7 +611,7 @@ void CRegionSelect::Finish()
     m_bResult = true;
     if(m_SelectionMode == smRectangles || (m_SelectionMode == smWindowHandles && wasImageEdited()))
     {
-        m_ResultRegion = new CRectRegion(m_SelectionRegion);
+        m_ResultRegion = std::make_shared<CRectRegion>(m_SelectionRegion);
     }
     else if(m_SelectionMode == smFreeform)
     {
@@ -621,12 +620,12 @@ void CRegionSelect::Finish()
         {
             newRegion->AddPoint(m_curvePoints[i]);
         }
-        m_ResultRegion = newRegion;
+        m_ResultRegion.reset(newRegion);
     }
     else if(m_SelectionMode == smWindowHandles)
     {
         
-            m_ResultRegion = new CWindowHandlesRegion(m_SelectedWindowsRegion);
+            m_ResultRegion = std::make_shared<CWindowHandlesRegion>(m_SelectedWindowsRegion);
     }
 
     
@@ -748,7 +747,7 @@ LRESULT CRegionSelect::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHa
 
 void CRegionSelect::Cleanup()
 {
-    delete m_ResultRegion;
+    m_ResultRegion.reset();
     m_ResultRegion = 0;
     RectCount = 0 ;
     windowsList.clear();
@@ -768,7 +767,7 @@ void CRegionSelect::Cleanup()
         doubleBm.DeleteObject();
 }
 
-CScreenshotRegion* CRegionSelect::region() const
+std::shared_ptr<CScreenshotRegion> CRegionSelect::region() const
 {
     return m_ResultRegion;
 }

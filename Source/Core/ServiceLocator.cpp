@@ -59,7 +59,6 @@ void ServiceLocator::setTranslator(ITranslator* transl) {
     d_ptr->translator_ = transl;
 }
 
-#ifndef IU_SHELLEXT
 void ServiceLocator::setEngineList(CUploadEngineListBase* engineList) {
     d_ptr->engineList_ = engineList;
 }
@@ -142,4 +141,3 @@ BasicSettings* ServiceLocator::basicSettings() const {
 void ServiceLocator::setSettings(BasicSettings* settingsInstance) {
     d_ptr->settings_ = settingsInstance;
 }
-#endif

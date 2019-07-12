@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <memory>
 #include "atlheaders.h"
 #include <atlcrack.h>
 #include "resource.h"       // main symbols
@@ -42,7 +43,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         ~CRegionSelect();
         CRect m_screenBounds;
         bool wasImageEdited();
-        CScreenshotRegion* region() const;
+        std::shared_ptr<CScreenshotRegion> region() const;
         bool Execute(HBITMAP screenshot, int width, int height);
 
         DECLARE_WND_CLASS(_T("CRegionSelect"))
@@ -73,8 +74,6 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
         LRESULT OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -85,7 +84,6 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         LRESULT OnRButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnEraseBg(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnKillFocus(HWND hwndNewFocus);
         void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
         BOOL OnSetCursor(CWindow wnd, UINT nHitTest, UINT message);
 
@@ -130,7 +128,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         CDC memDC2;
         CDC alphaDC; CBitmap alphaBm;
         CRgn m_prevWindowRgn;
-        CScreenshotRegion * m_ResultRegion;
+        std::shared_ptr<CScreenshotRegion> m_ResultRegion;
         bool m_bPictureChanged;
         CToolBarCtrl Toolbar;
         CWindowHandlesRegion m_SelectedWindowsRegion;

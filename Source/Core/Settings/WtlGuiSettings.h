@@ -139,8 +139,8 @@ public:
 
     CString prepareVideoDialogFilters();
 
-    ServerSettingsStruct& WtlGuiSettings::ServerByName(CString name);
-    ServerSettingsStruct& WtlGuiSettings::ServerByUtf8Name(const std::string& name);
+    ServerSettingsStruct& ServerByName(CString name);
+    ServerSettingsStruct& ServerByUtf8Name(const std::string& name);
     void FindDataFolder();
 	void fixInvalidServers();
 protected:

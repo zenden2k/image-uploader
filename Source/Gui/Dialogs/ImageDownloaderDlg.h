@@ -45,7 +45,7 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         ~CImageDownloaderDlg() = default;
         const std::vector<CString>& getDownloadedFiles() const;
         int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
-
+        int successfullDownloadsCount() const;
     protected:    
         BEGIN_MSG_MAP(CImageDownloaderDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -95,6 +95,7 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         std::vector<CString> m_downloadedFiles;
         int m_nFilesCount;
         int m_nFileDownloaded;
+        std::atomic_int m_nSuccessfullDownloads;
         CString m_InitialBuffer;
         bool isVistaOrLater_;
         CAccelerator accel_;

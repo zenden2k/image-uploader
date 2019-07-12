@@ -20,7 +20,7 @@
 #include "WelcomeDlg.h"
 
 #include "HistoryWindow.h"
-#include "settingsdlg.h"
+#include "SettingsDlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
@@ -41,13 +41,11 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     return 1;
 }
     
-CWelcomeDlg::~CWelcomeDlg()
-{
-} 
-
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     DoDataExchange(FALSE);
+    using namespace std::placeholders;
+    WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255));
@@ -73,7 +71,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true, 0, false);
 
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
-    ListBox.AddString(TR("Shot of Selected Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
+    ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
+    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT,LOADICO(IDI_ICONREGION));
     
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
@@ -119,6 +118,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     //ListBox.SetFocus();
     ShowWindow(SW_HIDE);
     clipboardUpdated();
+    lastRegionAvailabilityChanged(WizardDlg->hasLastScreenshotRegion());
 
     return FALSE;  // Let the system set the focus
 }
@@ -168,6 +168,11 @@ LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, 
     WizardDlg->executeFunc(_T("regionscreenshot"));    
     return 0;
 }
+
+LRESULT CWelcomeDlg::OnBnClickedLastRegionScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    WizardDlg->executeFunc(_T("lastregionscreenshot"));
+    return 0;
+}
     
 LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -192,9 +197,18 @@ void CWelcomeDlg::clipboardUpdated()
     if (item.Visible != IsClipboard)
     {
         item.Visible = IsClipboard;
-        ListBox.InvalidateRect(&item.ItemRect, false); // Stupid OOP
+        ListBox.InvalidateRect(&item.ItemRect, false);
     }
     else item.Visible = IsClipboard;
+}
+
+void CWelcomeDlg::lastRegionAvailabilityChanged(bool available) {
+    HyperLinkControlItem* item = ListBox.getItemByCommand(IDC_LASTREGIONSCREENSHOT);
+    if (item->Visible != available)
+    {
+        item->Visible = available;
+        ListBox.InvalidateRect(&item->ItemRect, false); 
+    }
 }
 
 LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

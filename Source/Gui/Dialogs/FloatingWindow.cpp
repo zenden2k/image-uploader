@@ -349,6 +349,12 @@ LRESULT CFloatingWindow::OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HW
     return 0;
 }
 
+LRESULT CFloatingWindow::OnLastRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("lastregionscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     wizardDlg_->executeFunc(_T("freeformscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
@@ -481,6 +487,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, HotkeyToString("screenshotdlg", TR("Screenshot") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, HotkeyToString("regionscreenshot", TR("Capture Selected Area")));
+        if (wizardDlg_->hasLastScreenshotRegion()) {
+            MyInsertMenu(TrayMenu, i++, IDM_LASTREGIONSCREENSHOT, HotkeyToString("lastregionscreenshot", TR("Capture Last Region")));
+        }
         MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, HotkeyToString("fullscreenshot", TR("Capture the Entire Screen")));
         MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
         MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, HotkeyToString("windowhandlescreenshot", TR("Capture Selected Object")));

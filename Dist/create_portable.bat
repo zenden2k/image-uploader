@@ -54,7 +54,7 @@ for %%x in (
 )
 
 rem call signcode.bat
-Copy "..\Build\Gui\MinSizeRel\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\Gui\Release\Image Uploader.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Lang\*.lng" %temp_dir%\Lang\
 if ERRORLEVEL 1 goto CopyFailed
@@ -99,9 +99,9 @@ Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll" %temp_
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\Gui\MinSizeRel\av*.dll" %temp_dir%\
+Copy "..\Build\Gui\Release\av*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\Gui\MinSizeRel\sw*.dll" %temp_dir%\
+Copy "..\Build\Gui\Release\sw*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "Dll\gdiplus.dll" %temp_dir%\
 

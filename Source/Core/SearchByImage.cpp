@@ -11,10 +11,6 @@ SearchByImage::SearchByImage(const std::string& fileName) {
     stopSignal_ = false;
 }
 
-SearchByImage::~SearchByImage() {
-    
-}
-
 void SearchByImage::start() {
     isRunning_ = true;
     std::thread t(&SearchByImage::run, this);

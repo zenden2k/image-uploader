@@ -385,7 +385,7 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-	</Server>
+	</Server3>
     <!--<Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
 		<Actions>
 		</Actions>

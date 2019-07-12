@@ -301,6 +301,10 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
     return resultingBitmap_;
 }
 
+Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
+    return canvas_ ? canvas_->lastAppliedCrop() : Gdiplus::Rect();
+}
+
 void ImageEditorWindow::setServerName(const CString & serverName)
 {
     serverName_ = serverName;
@@ -802,28 +806,6 @@ LRESULT ImageEditorWindow::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     PostMessage(WM_CLOSE);
     return 0;
 }
-
-LRESULT ImageEditorWindow::OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    // TODO: add code to initialize document
-
-    return 0;
-}
-
-LRESULT ImageEditorWindow::OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    /*BOOL bVisible = !::IsWindowVisible(m_hWndToolBar);
-    ::ShowWindow(m_hWndToolBar, bVisible ? SW_SHOWNOACTIVATE : SW_HIDE);
-    UISetCheck(ID_VIEW_TOOLBAR, bVisible);
-    UpdateLayout();*/
-    return 0;
-}
-
-LRESULT ImageEditorWindow::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    return 0;
-}
-
 
 void ImageEditorWindow::createToolbars()
 {

@@ -167,7 +167,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     SYSTEMTIME systime;
     memset(&systime, 0, sizeof(systime));
-    int fieldNum = sscanf_s(ver->BuildDate.c_str(), "%hd.%hd.%hd", &systime.wDay, &systime.wMonth, &systime.wYear);
+    int fieldNum = sscanf_s(ver->BuildDate.c_str(), "%hu.%hu.%hu", &systime.wDay, &systime.wMonth, &systime.wYear);
     CString dateStr;
     if (fieldNum == 3) {
         WCHAR pFmt[MAX_PATH] = { 0 };

@@ -20,14 +20,13 @@
 
 #include "LoginDlg.h"
 
-#include "wizarddlg.h"
+#include "WizardDlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
-
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -47,11 +46,6 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
 
     NetworkClientFactory factory;
     NetworkClient_ = factory.create();
-}
-
-CLoginDlg::~CLoginDlg()
-{
-    
 }
 
 LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -155,7 +149,7 @@ LRESULT CLoginDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     return 0;
 }
 
-CString CLoginDlg::accountName()
+CString CLoginDlg::accountName() const
 {
     return accountName_;
 }
@@ -166,7 +160,7 @@ DWORD CLoginDlg::Run()
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
-        CString login =GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
+        CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
         if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
@@ -186,7 +180,7 @@ DWORD CLoginDlg::Run()
         li.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
         li.DoAuth = true;
 
-        ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_);
+        ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
 
         if (serverSettings) {
             serverSettings->authData = li;
@@ -220,7 +214,10 @@ DWORD CLoginDlg::Run()
 void CLoginDlg::OnProcessFinished()
 {
     uploadEngineManager_->clearThreadData();
-    enableControls(true);
+    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]{
+        enableControls(true);
+    });
+    
 }
 
 void CLoginDlg::Accept()

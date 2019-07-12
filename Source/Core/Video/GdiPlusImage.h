@@ -1,10 +1,10 @@
 #ifndef GDIPLUSIMAGE_H
 #define GDIPLUSIMAGE_H
 
-#include "AbstractImage.h"
-#include <windows.h>
-#include "3rdpart/GdiplusH.h"
 #include <memory>
+
+#include "AbstractImage.h"
+#include "3rdpart/GdiplusH.h"
 
 class GdiPlusImage: public AbstractImage
 {
@@ -12,9 +12,9 @@ public:
     GdiPlusImage();
     explicit GdiPlusImage(Gdiplus::Bitmap *bm, bool takeOwnership  = true);
     virtual ~GdiPlusImage();
-    virtual bool saveToFile(const std::string& fileName) const override;
-    virtual bool isNull() const override;
-    virtual bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data,size_t dataSize, void* parameter) override;
+    bool saveToFile(const std::string& fileName) const override;
+    bool isNull() const override;
+    bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data,size_t dataSize, void* parameter) override;
     bool loadFromRgb(int width, int height, uint8_t* data, size_t dataSize);
     Gdiplus::Bitmap* getBitmap() const;
 

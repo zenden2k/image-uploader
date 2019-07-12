@@ -18,7 +18,6 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    penSize_ = Settings.ImageEditorSettings.PenSize;
     Settings.ImageEditorSettings.PenSize = penSize_;
     Settings.ImageEditorSettings.ForegroundColor = foregroundColor_;
     Settings.ImageEditorSettings.BackgroundColor = backgroundColor_;

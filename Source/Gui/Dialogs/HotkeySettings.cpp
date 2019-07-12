@@ -200,6 +200,8 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
     AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
     AddItem(TR("Quick upload image from clipboard"),_T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
+    AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
+
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)

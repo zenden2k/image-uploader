@@ -285,7 +285,6 @@ void SetCurrentThreadVM(HSQUIRRELVM vm) {
     threadVm = vm;
 }
 
-
 void StopAssociatedBrowsers(HSQUIRRELVM vm)
 {
 #ifdef _WIN32

@@ -58,7 +58,7 @@ public:
         wdmAuto, wdmFullscreen, wdmWindowed
     };
 
-    ImageEditor::CImageEditorView m_view;
+    CImageEditorView m_view;
 
     ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
@@ -68,6 +68,11 @@ public:
     void showAddToWizardButton(bool show);
     void setSuggestedFileName(CString string);
     std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
+    Gdiplus::Rect lastAppliedCrop() const;
+
+    /**
+     * Set server name which is being displayed on upload button
+     */
     void setServerName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
@@ -93,9 +98,6 @@ public:
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
-        COMMAND_ID_HANDLER(ID_FILE_NEW, OnFileNew)
-        COMMAND_ID_HANDLER(ID_VIEW_TOOLBAR, OnViewToolBar)
-        COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
         COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
         COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )    
@@ -139,9 +141,6 @@ public:
         LRESULT OnActivateApp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnDropDownClicked(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        LRESULT OnFileNew(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        LRESULT OnViewToolBar(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnMenuItemClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

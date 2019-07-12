@@ -144,6 +144,8 @@ class Canvas {
         bool getFillTextBackground() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
 
+        Gdiplus::Rect lastAppliedCrop() const;
+
         fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
         fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
         fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
@@ -211,6 +213,7 @@ private:
         
         HWND parentWindow_;
         InputBoxControl* inputBox_;
+        Gdiplus::Rect lastAppliedCrop_;
 };
 
 }

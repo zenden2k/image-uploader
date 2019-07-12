@@ -30,7 +30,7 @@
 #include "HotkeySettings.h"
 #include "Core/ScreenCapture.h"
 #include "resource.h"       // main symbols
-#include "screenshotdlg.h"
+#include "ScreenshotDlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/ProgramWindow.h"
 #include "Core/TaskDispatcher.h"
@@ -176,10 +176,10 @@ public:
     // IProgramWindow methods
     void setServersChanged(bool changed) override;
     bool serversChanged() const;
-    virtual WindowHandle getHandle() override;
-    virtual WindowNativeHandle getNativeHandle() override;
+    WindowHandle getHandle() override;
+    WindowNativeHandle getNativeHandle() override;
 
-    virtual void ShowUpdateMessage(const CString& msg) override;
+    void ShowUpdateMessage(const CString& msg) override;
 
     template<class T> T* getPage(WizardPageId id) {
         if (id < 0 || id >= ARRAY_SIZE(Pages)) {
@@ -233,6 +233,8 @@ public:
     std::map<CString, CLogWindow*> logWindowsByFileName_;
     std::vector<AddImageStruct> newImages_;
     std::mutex newImagesMutex_;
+    std::shared_ptr<CScreenshotRegion> lastScreenshotRegion_;
+    std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
     DefaultLogger* defaultLogger_;
     std::unique_ptr<CStatusDlg> statusDlg_;
     DWORD mainThreadId_;
@@ -245,7 +247,8 @@ public:
     bool funcFullScreenshot();
     bool funcWindowHandleScreenshot();
     bool funcFreeformScreenshot();
-    bool funcWindowScreenshot(bool Delay=false);
+    bool funcWindowScreenshot(bool Delay = false);
+    bool funcLastRegionScreenshot();
     bool funcAddFolder();
     //bool funcPaste();
     bool funcSettings();
@@ -307,7 +310,10 @@ public:
     void CreateUpdateDlg();
     INT m_bScreenshotFromTray;
     bool IsClipboardDataAvailable();
-    void showLogWindowForFileName(CString fileName); 
+    void showLogWindowForFileName(CString fileName);
+    bool hasLastScreenshotRegion() const;
+    void setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region);
+    void addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb);
 };
 
 

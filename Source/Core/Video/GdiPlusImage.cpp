@@ -1,11 +1,13 @@
 #include "GdiPlusImage.h"
 
+#include <map>
+
 #include "Core/logging.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Images/Utils.h"
-#include <map>
+
 
 using namespace Gdiplus;
 

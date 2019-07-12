@@ -6,6 +6,6 @@
 class ImageEditorConfigurationProvider : public ImageEditor::ConfigurationProvider {
 public:
     ImageEditorConfigurationProvider();
-    virtual void saveConfiguration() override;
+    void saveConfiguration() override;
 };
 #endif

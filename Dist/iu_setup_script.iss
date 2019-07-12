@@ -75,7 +75,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Scripts"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
-Source: "..\Build\Gui\MinSizeRel\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 ;Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Lang\English.lng.src"; DestDir: "{app}\Lang"; Flags: ignoreversion
@@ -102,8 +102,8 @@ Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIn
 Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
-Source: "..\Build\Gui\MinSizeRel\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
-Source: "..\Build\Gui\MinSizeRel\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

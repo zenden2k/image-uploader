@@ -906,7 +906,9 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     Rect rc(0,0, getWidth(), getHeigth());
     fullRender_ = true;
     renderInBuffer(rc, true);
-    Crop * crop = 0;
+    Crop * crop = nullptr;
+
+    // Find first Crop element
     for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->getType() == etCrop ) {
             crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
@@ -918,13 +920,17 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
         return buffer_;
     }
 
+    
     int cropX = crop->getX();
     int cropY = crop->getY();
     int cropWidth = crop->getWidth();
     int cropHeight = crop->getHeight();
+
+    
     auto bm = std::make_shared<Bitmap>(cropWidth, cropHeight);
     Graphics gr(bm.get());
     gr.DrawImage( buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
+    lastAppliedCrop_ = Rect(cropX, cropY, cropWidth, cropHeight);
     return bm;
 }
 
@@ -1160,6 +1166,10 @@ void Canvas::setStepInitialValue(int value) {
 
 Gdiplus::Graphics* Canvas::getGraphicsDevice() const {
     return bufferedGr_;
+}
+
+Gdiplus::Rect Canvas::lastAppliedCrop() const {
+    return lastAppliedCrop_;
 }
 
 void Canvas::setStepFontSize(int fontSize) {

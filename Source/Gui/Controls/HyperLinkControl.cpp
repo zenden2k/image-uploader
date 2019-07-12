@@ -563,6 +563,15 @@ void CHyperLinkControl::HoverItem(int Index)
     }
 }
 
+HyperLinkControlItem* CHyperLinkControl::getItemByCommand(int command) {
+    for (size_t i = 0; i < Items.GetCount(); i++) {
+        if (Items[i].idCommand == command) {
+            return &Items[i];  
+        }
+    }
+    return nullptr;
+}
+
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)
 {
     //if(m_bHyperLinks)

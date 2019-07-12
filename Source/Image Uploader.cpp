@@ -148,7 +148,7 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
     } else {
         dlgMain.ShowWindow(nCmdShow);
     }
-    
+     
     int nRet = theLoop.Run();
     if ( dlgMain.m_hWnd ) {
         dlgMain.DestroyWindow();
