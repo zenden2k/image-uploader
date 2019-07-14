@@ -16,7 +16,7 @@ class AffectedSegments;
 class DrawingElement {
     public:
         DrawingElement();
-        virtual ~DrawingElement() {};
+        virtual ~DrawingElement() = default;
         virtual void render(Painter* gr) = 0;
         virtual void resize(int width, int height);
         virtual void setStartPoint(POINT startPoint);

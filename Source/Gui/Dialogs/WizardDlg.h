@@ -234,9 +234,12 @@ public:
     std::vector<AddImageStruct> newImages_;
     std::mutex newImagesMutex_;
     std::shared_ptr<CScreenshotRegion> lastScreenshotRegion_;
+    HMONITOR lastScreenshotMonitor_;
     std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
     DefaultLogger* defaultLogger_;
     std::unique_ptr<CStatusDlg> statusDlg_;
+    std::vector<TaskDispatcherTask> scheduledTasks_;
+    std::mutex scheduledTasksMutex_;
     DWORD mainThreadId_;
     bool CommonScreenshot(CaptureMode mode);
     // functions
@@ -312,7 +315,7 @@ public:
     bool IsClipboardDataAvailable();
     void showLogWindowForFileName(CString fileName);
     bool hasLastScreenshotRegion() const;
-    void setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region);
+    void setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region, HMONITOR monitor);
     void addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb);
 };
 

@@ -20,19 +20,11 @@
 
 #include "../Canvas.h"
 #include "../Document.h"
-#include "../MovableElements.h"
-
-#include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
-
-#include <cmath>
-#include <cassert>
-#include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
 
 VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : MoveAndResizeTool( canvas, type ) {
-    currentElement_       = NULL;
+    currentElement_       = nullptr;
     allowMovingElements_ = false;
 }
 

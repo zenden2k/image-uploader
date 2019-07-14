@@ -25,9 +25,11 @@ namespace std:: = std;
 
 // A macro to disallow the copy constructor and operator= functions
 // This should be used in the private: declarations for a class
-#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-    TypeName(const TypeName&) = delete;               \
-    void operator=(const TypeName&) =delete
+#define DISALLOW_COPY_AND_ASSIGN(TypeName)      \
+    void operator=(const TypeName&) = delete;   \
+    void operator=(TypeName&&) = delete;        \
+    TypeName(const TypeName&) = delete;         \
+    TypeName(TypeName&&) = delete
 
 // Used to explicitly mark the return value of a function as unused. If you are
 // really sure you don't want to do anything with the return value of a function

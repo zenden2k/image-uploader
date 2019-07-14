@@ -1526,6 +1526,8 @@ IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico
 
 IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
 
+IDI_ICONLASTREGION      ICON                    "res\\icon-lastregion.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

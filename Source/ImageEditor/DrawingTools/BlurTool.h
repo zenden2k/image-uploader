@@ -4,7 +4,6 @@
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-#include <stdint.h>
 #include "AbstractDrawingTool.h"
 #include "BrushTool.h"
 namespace ImageEditor {

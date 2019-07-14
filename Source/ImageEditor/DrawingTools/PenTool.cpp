@@ -18,15 +18,12 @@
 
 #include "PenTool.h"
 
+#include <cassert>
+
 #include "../Canvas.h"
 #include "../Document.h"
 #include "../MovableElements.h"
-
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
-
-#include <cmath>
-#include <cassert>
 #include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
@@ -72,7 +69,7 @@ void PenTool::render( Painter* gr ) {
 }
 
 
-ImageEditor::CursorType PenTool::getCursor(int x, int y)
+CursorType PenTool::getCursor(int x, int y)
 {
     return ctCross;
 }

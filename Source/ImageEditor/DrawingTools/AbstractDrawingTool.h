@@ -11,7 +11,7 @@ class Canvas;
 class AbstractDrawingTool {
 public:
     AbstractDrawingTool( Canvas* canvas);
-    virtual ~AbstractDrawingTool(){};
+    virtual ~AbstractDrawingTool() = default;
     virtual void beginDraw( int x, int y );
     virtual void continueDraw( int x, int y, DWORD flags ) = 0;
     virtual void endDraw( int x, int y );

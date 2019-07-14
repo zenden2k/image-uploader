@@ -72,7 +72,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
-    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT,LOADICO(IDI_ICONREGION));
+    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT,LOADICO(IDI_ICONLASTREGION));
     
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 

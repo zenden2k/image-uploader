@@ -1,6 +1,8 @@
 #ifndef IMAGEEDITOR_MAINFRM_H
 #define IMAGEEDITOR_MAINFRM_H
 
+#pragma once
+
 #include "atlheaders.h"
 #include "resource.h"
 #include "ImageEditorView.h"
@@ -10,7 +12,6 @@
 #include "Core/Utils/CoreTypes.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/SearchByImage.h"
-#pragma once
 
 namespace ImageEditor {
 
@@ -235,10 +236,8 @@ public:
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
     }
-    virtual ~ConfigurationProvider() {
-
-    }
-    virtual void saveConfiguration() {};
+    virtual ~ConfigurationProvider() = default;
+    virtual void saveConfiguration() {}
     void setForegroundColor(Gdiplus::Color color) { foregroundColor_ = color; }
     Gdiplus::Color foregroundColor() const { return foregroundColor_; }
     void setBackgroundColor(Gdiplus::Color color) { backgroundColor_ = color; }

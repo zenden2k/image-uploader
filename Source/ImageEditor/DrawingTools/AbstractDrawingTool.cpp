@@ -20,7 +20,6 @@
 
 #include "../Canvas.h"
 #include "../Document.h"
-#include "../MovableElements.h"
 
 namespace ImageEditor {
 

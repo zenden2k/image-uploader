@@ -44,7 +44,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
         //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
         void setCanvas(ImageEditor::Canvas *canvas);
-        void updateView( Canvas* canvas,  Gdiplus::Rect rect  );
+        void updateView(Canvas* canvas,  Gdiplus::Rect rect) override;
     protected:
         
         LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -63,7 +63,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 
         POINT oldPoint;
     private:
-        ImageEditor::Canvas *canvas_;
+        Canvas *canvas_;
         std::map<CursorType, CCursor> cursorCache_;
         std::map<int,CIcon> brushCursorCache_;
         CBrush backgroundBrush_;

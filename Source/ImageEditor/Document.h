@@ -2,7 +2,8 @@
 #define IMAGEEDITOR_DOCUMENT_H
 
 #include <vector>
-#include <windows.h>
+
+#include <Windows.h>
 #include "3rdpart/GdiplusH.h"
 #include "BasicTypes.h"
 #include "DrawingElement.h"

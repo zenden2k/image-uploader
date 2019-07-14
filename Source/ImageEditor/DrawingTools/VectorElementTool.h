@@ -16,6 +16,5 @@ public:
     CursorType getCursor(int x, int y) override;
 };
 
-
 }
 #endif // VectorElementTool_h__

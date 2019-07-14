@@ -20,10 +20,8 @@
 
 #include "../Canvas.h"
 #include "../Document.h"
-#include "../MovableElements.h"
 
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
 
 #include <cmath>
 #include <cassert>

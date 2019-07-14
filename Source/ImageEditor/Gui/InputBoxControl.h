@@ -8,7 +8,6 @@
 
 #include "atlheaders.h"
 #include "../InputBox.h"
-#include <sstream>
 
 // CLogListBox
 
@@ -17,7 +16,7 @@ namespace ImageEditor {
 class InputBoxControlCallback {
 public:
     virtual POINT GetScrollOffset() = 0;
-    virtual ~InputBoxControlCallback() {}
+    virtual ~InputBoxControlCallback() = default;
 };
 class InputBoxControl :
     public CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits>, public InputBox

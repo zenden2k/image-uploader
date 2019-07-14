@@ -1,9 +1,7 @@
 #ifndef SelectionTool_h__
 #define SelectionTool_h__
 
-#include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
-#include "../MovableElement.h"
 #include "MoveAndResizeTool.h"
 namespace ImageEditor {
 

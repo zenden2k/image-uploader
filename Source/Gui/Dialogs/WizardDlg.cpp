@@ -1270,10 +1270,19 @@ LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 }
 
 LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
-    TaskDispatcherMessageStruct* msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
-    msg->callback();
-    if (msg->async) {
-        delete msg;
+    if (wParam) {
+        auto msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
+        msg->callback(); 
+    } else {
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        for(const auto& task: scheduledTasks_) {
+            try {
+                task();
+            } catch (std::exception& ex) {
+                LOG(ERROR) << ex.what();
+            }
+        }
+        scheduledTasks_.clear();
     }
     return 0;
 }
@@ -1913,8 +1922,9 @@ bool CWizardDlg::hasLastScreenshotRegion() const {
     return !!lastScreenshotRegion_;
 }
 
-void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region) {
+void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region, HMONITOR monitor) {
     lastScreenshotRegion_ = region;
+    lastScreenshotMonitor_ = monitor;
     bool available = !!lastScreenshotRegion_;
     for(const auto& cb: lastRegionAvailabilityChangeCallbacks_) {
         if (cb) {
@@ -1978,7 +1988,9 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
     engine.setDelay(WindowHidingDelay);
     MonitorMode monitorMode = static_cast<MonitorMode>(Settings.ScreenshotSettings.MonitorMode);
     HMONITOR monitor = nullptr;
-    if (monitorMode == kCurrentMonitor) {
+    if (mode == cmLastRegion) {
+        monitor = lastScreenshotMonitor_;
+    } else if (monitorMode == kCurrentMonitor) {
         monitor = ::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
     } else if (monitorMode >= 0) {
         MonitorEnumerator enumerator;
@@ -2063,7 +2075,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                         result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
                         DeleteObject(gdiBitmap);
                     }
-                    setLastScreenshotRegion(rgn);
+                    setLastScreenshotRegion(rgn, monitor);
                 }
                 else CanceledByUser = true;
             }
@@ -2090,7 +2102,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             Rect lastCrop = imageEditor.lastAppliedCrop();
             if (!lastCrop.IsEmptyArea()) {
-                setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height));
+                setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
@@ -2269,10 +2281,9 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 void CWizardDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
     if (async) {
-        TaskDispatcherMessageStruct* msg = new TaskDispatcherMessageStruct();
-        msg->callback = std::move(task);
-        msg->async = true;
-        PostMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(msg), 0);
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        scheduledTasks_.push_back(std::move(task));
+        PostMessage(WM_TASKDISPATCHERMSG, 0, 0);
     } else {
         if (GetCurrentThreadId() == mainThreadId_) {
             task();

@@ -3,18 +3,15 @@
 
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
-#include "../MovableElement.h"    
-#include <stdint.h>
 #include "MoveAndResizeTool.h"
+
 namespace ImageEditor {
 
-    class Canvas;
-
-
+class Canvas;
 
 class CropTool : public MoveAndResizeTool {
 public:
-    CropTool(Canvas* canvas);
+    explicit CropTool(Canvas* canvas);
     void beginDraw( int x, int y ) override;
     void continueDraw( int x, int y, DWORD flags ) override;
     void endDraw( int x, int y ) override;

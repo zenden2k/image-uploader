@@ -163,10 +163,12 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
-    "../Image Uploader.rc"
-    "../res/image uploader.exe.manifest"
+    
 )
 
+set(RESOURCE_LIST  "../Image Uploader.rc"
+    "../res/image uploader.exe.manifest")
+    
 set(HEADER_LIST 
     ../3rdpart/ShellPidl.h
     ../Core/Images/ImageConverterPrivateBase.h
@@ -330,9 +332,10 @@ set(HEADER_LIST
 )
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
+source_group("Resource Files" FILES ${RESOURCE_LIST})
 
 add_executable(GUI WIN32  
-    ${SRC_LIST} ${HEADER_LIST}
+    ${SRC_LIST} ${HEADER_LIST} ${RESOURCE_LIST}
 )
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)

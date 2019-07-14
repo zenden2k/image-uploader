@@ -19,6 +19,8 @@
 */
 
 #include "InputBoxControl.h"
+
+#include <sstream>
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
