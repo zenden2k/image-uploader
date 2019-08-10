@@ -44,6 +44,7 @@ class CUpdateDlg :
         class CUpdateDlgCallback
         {
             public:
+                virtual ~CUpdateDlgCallback() = default;
                 virtual bool CanShowWindow() = 0;
                 virtual void UpdateAvailabilityChanged(bool Available) = 0;
                 virtual void ShowUpdateMessage(const CString& msg) = 0;
@@ -77,14 +78,12 @@ class CUpdateDlg :
     
     void setUpdateCallback(CUpdateDlgCallback* callback);
     DWORD Run();
-    bool stop;
-    bool m_Checked;
-    bool m_Modal;
+
     void CheckUpdates();
     void DoUpdates();
     bool ShowModal(HWND parent, bool forceCheck = false);
     void Abort();
-    void updateStatus(int packageIndex, const CString& status);
+    void updateStatus(int packageIndex, const CString& status) override;
 
     CResultsListView m_listView;
     bool m_bUpdateFinished;
@@ -93,6 +92,9 @@ class CUpdateDlg :
     bool m_InteractiveUpdate;
     CEvent m_UpdateEvent;
     CUpdateManager m_UpdateManager;
+    bool stop;
+    bool m_Checked;
+    bool m_Modal;
 };
 
 

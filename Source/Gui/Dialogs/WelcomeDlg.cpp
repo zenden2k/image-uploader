@@ -193,13 +193,14 @@ void CWelcomeDlg::clipboardUpdated()
     // Checking if there is an bitmap in clipboard
     bool IsClipboard = WizardDlg->IsClipboardDataAvailable();
 
-    HyperLinkControlItem& item = ListBox.Items[4];
-    if (item.Visible != IsClipboard)
+    HyperLinkControlItem* item = ListBox.getItemByCommand(IDC_CLIPBOARD);
+
+    if (item->Visible != IsClipboard)
     {
-        item.Visible = IsClipboard;
-        ListBox.InvalidateRect(&item.ItemRect, false);
+        item->Visible = IsClipboard;
+        ListBox.InvalidateRect(&item->ItemRect, false);
     }
-    else item.Visible = IsClipboard;
+    else item->Visible = IsClipboard;
 }
 
 void CWelcomeDlg::lastRegionAvailabilityChanged(bool available) {

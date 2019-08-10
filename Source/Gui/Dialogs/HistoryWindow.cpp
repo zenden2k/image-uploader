@@ -31,7 +31,8 @@
 #include "Core/Utils/DesktopUtils.h"
 
 // CHistoryWindow
-CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg)
+CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg) :
+    m_treeView(ServiceLocator::instance()->networkClientFactory())
 {
     delayed_closing_ = false;
     wizardDlg_ = wizardDlg;

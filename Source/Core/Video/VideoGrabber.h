@@ -18,7 +18,7 @@ public:
     VideoEngine videoEngine() const;
     void grab(const std::string& fileName);
     void abort();
-    bool isRunning();
+    bool isRunning() const;
     void setFrameCount(int frameCount);
     fastdelegate::FastDelegate3<const std::string&, int64_t, AbstractImage*> onFrameGrabbed;
     fastdelegate::FastDelegate0<void> onFinished;

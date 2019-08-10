@@ -497,7 +497,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
         MonitorEnumerator enumerator;
 
-        if (enumerator.DoEnumDisplayMonitors(0, 0) && enumerator.getCount() > 1) {
+        if (enumerator.enumDisplayMonitors(0, 0) && enumerator.getCount() > 1) {
             CMenu MonitorsSubMenu;
             MonitorsSubMenu.CreatePopupMenu();
             MonitorsSubMenu.InsertMenu(0, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == kAllMonitors ? MFS_CHECKED : 0),

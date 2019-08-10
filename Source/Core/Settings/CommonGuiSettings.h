@@ -5,7 +5,6 @@
 
 
 #include <map>
-#include <string>
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ServerProfile.h"

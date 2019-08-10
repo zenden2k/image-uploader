@@ -8,6 +8,7 @@
 
 #include "ProgramWindow.h"
 #include "Core/Logging/Logger.h"
+#include "Network/INetworkClient.h"
 
 class BasicSettings;
 class UploadManager;
@@ -55,6 +56,9 @@ public:
         //assert(res);
         return res;
     }
+
+    void setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory);
+    std::shared_ptr<INetworkClientFactory> networkClientFactory() const;
 
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type

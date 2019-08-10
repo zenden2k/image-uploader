@@ -59,7 +59,7 @@ void TextParamsWindow::setFont(LOGFONT logFont)
     textToolbar_.SetButtonInfo(IDC_UNDERLINE, &bi);
 }
 
-LOGFONT TextParamsWindow::getFont()
+LOGFONT TextParamsWindow::getFont() const
 {    
     LOGFONT logFont;
     memset(&logFont, 0, sizeof(logFont));

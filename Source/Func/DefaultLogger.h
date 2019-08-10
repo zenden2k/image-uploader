@@ -8,7 +8,6 @@
 
 #include "Core/Logging/Logger.h"
 
-
 class CLogWindow;
 
 class DefaultLogger : public ILogger {

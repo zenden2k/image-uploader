@@ -9,7 +9,7 @@ class MonitorEnumerator {
 
 public:
     MonitorEnumerator();
-    BOOL DoEnumDisplayMonitors(HDC hdc, LPCRECT lprcClip);
+    BOOL enumDisplayMonitors(HDC hdc, LPCRECT lprcClip);
     size_t getCount() const;
 
     struct MonitorInfo {

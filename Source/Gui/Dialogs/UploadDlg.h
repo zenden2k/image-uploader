@@ -23,11 +23,11 @@
 
 #pragma once
 
-#include <Shobjidl.h>
+#include <ShObjidl.h>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/Upload/Uploader.h"
-#include "Gui/Dialogs/maindlg.h"
+#include "Gui/Dialogs/MainDlg.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Gui/Controls/ResultsListView.h"

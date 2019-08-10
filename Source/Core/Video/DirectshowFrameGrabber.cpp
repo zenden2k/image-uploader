@@ -42,11 +42,12 @@
 class DirectshowVideoFrame: public AbstractVideoFrame {
 public :
     DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
+ 
         time_ = time;
 
         BITMAPFILEHEADER bfh;
         memset( &bfh, 0, sizeof(bfh) );
-        bfh.bfType = 'MB';
+        bfh.bfType = ('M' << 8) | 'B';
         bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
         bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
 
@@ -76,7 +77,7 @@ public :
     }
 
     bool saveToFile(const std::string& fileName) const override {
-        AbstractImage* image = AbstractImage::createImage();
+        std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
         if ( !image ) {
             return false;
         } 
@@ -253,6 +254,7 @@ public:
      CComQIPtr<IObjectWithSite> pObjectWithSite;
      CSampleGrabberCB CB;
      NoDirectVobSub graphBuilderCallback;
+     VIDEOINFOHEADER vih;
 protected:
      DirectshowVideoFrame * currentFrame_; 
 };
@@ -506,20 +508,29 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         //GrabInfo(  TEXT("Unable to determine what we connected.") );
         return false;
     }
-    VIDEOINFOHEADER* vih = reinterpret_cast<VIDEOINFOHEADER*>(mt.pbFormat);
-    if (!FAILED( hr ))
+    if (!FAILED(hr))
     {
-        d_ptr->CB.Width  = vih->bmiHeader.biWidth;
-        d_ptr->CB.Height = vih->bmiHeader.biHeight;
-        FreeMediaType( mt );
+        if ((mt.formattype == FORMAT_VideoInfo) &&
+            (mt.cbFormat >= sizeof(VIDEOINFOHEADER)) &&
+            (mt.pbFormat != NULL))
+        {
+            VIDEOINFOHEADER* vih = reinterpret_cast<VIDEOINFOHEADER*>(mt.pbFormat);
+
+            d_ptr->vih = *vih;
+            d_ptr->CB.Width = vih->bmiHeader.biWidth;
+            d_ptr->CB.Height = vih->bmiHeader.biHeight;
+            FreeMediaType(mt);
+        } else {
+            LOG(ERROR) << "Invalid mediatype format";
+            return false;
+        }
     }
-    //remove DirectVobSub (actually not removing )
-    //DirectVobSubUtil::RemoveFromGraph( d_ptr->pGraph);
 
     // Render the grabber output pin (to a video renderer)
     //
     CComPtr <IPin> pGrabOutPin = DirectShowUtil::GetOutPin( d_ptr->pGrabberBase, 0 );
     // GrabInfo( _T("Trying to render graph.") );
+    //DirectShowUtil::SaveGraphFile(d_ptr->pGraph, _T("d:\\Test.grf"));
     hr = d_ptr->pGraph->Render( pGrabOutPin );
     if ( FAILED( hr ) )
     {
@@ -527,7 +538,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         return false;
     }
 
-    //DirectShowUtil::SaveGraphFile(d_ptr->pGraph, _T("Test.grf"));
+    
 
     // Don't buffer the samples as they pass through
     hr = d_ptr->pGrabber->SetBufferSamples( FALSE );

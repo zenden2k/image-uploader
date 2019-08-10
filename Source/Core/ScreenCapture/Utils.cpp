@@ -4,7 +4,7 @@ MonitorEnumerator::MonitorEnumerator() {
 
 }
 
-BOOL MonitorEnumerator::DoEnumDisplayMonitors(HDC hdc, LPCRECT lprcClip) {
+BOOL MonitorEnumerator::enumDisplayMonitors(HDC hdc, LPCRECT lprcClip) {
     return EnumDisplayMonitors(hdc, lprcClip, MonitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
 

@@ -140,7 +140,7 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 
         if (!IsStopTimer)
         {
-            TimerCounter = 8;           // ∆дем 8 секунд, прежде чем убиваем поток
+            TimerCounter = 8;           
             SetTimer(1, 1000, NULL);
             IsStopTimer = true;
         }

@@ -5,6 +5,7 @@
 #include <queue>
 #include <map>
 #include <mutex>
+#include <memory>
 #include "atlheaders.h"
 #include <atltheme.h>
 #include <atlmisc.h>
@@ -13,8 +14,9 @@
 #include "Core/HistoryManager.h"
 #include "Core/FileDownloader.h"
 #include "Core/3rdpart/FastDelegate.h"
-#include "resource.h"
 #include "CustomTreeControl.h"
+
+class INetworkClientFactory;
 
 struct HistoryTreeItem
 {
@@ -34,8 +36,9 @@ struct HistoryTreeItem
 class CHistoryTreeControlCallback {
 public:
     virtual void OnItemDblClick(TreeItem* item) = 0;
-    virtual ~CHistoryTreeControlCallback(){}
+    virtual ~CHistoryTreeControlCallback() = default;
 };
+
 class CHistoryTreeControl :
     public CCustomTreeControlImpl<CHistoryTreeControl>,
     public CThemeImpl <CHistoryTreeControl>,
@@ -43,7 +46,7 @@ class CHistoryTreeControl :
     public TreeItemCallback
 {
     public:
-        CHistoryTreeControl();
+        CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory);
         ~CHistoryTreeControl();
         DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListViewCtrl::GetWndClassName())
 
@@ -57,16 +60,15 @@ class CHistoryTreeControl :
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        void DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeItem* item);
+        void DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeItem* item) override;
         DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
-        virtual LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
+        LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
         fastdelegate::FastDelegate0<> onThreadsFinished;
         fastdelegate::FastDelegate0<> onThreadsStarted;
         fastdelegate::FastDelegate1<TreeItem*> onItemDblClick;
         void setDownloadingEnabled(bool enabled);
-        int NotifyParent(int nItem);
         bool m_bIsRunning;
         int m_thumbWidth;
         bool downloading_enabled_;
@@ -88,10 +90,9 @@ class CHistoryTreeControl :
         static HistoryItem* getItemData(const TreeItem* res);
 
     private:
-
         std::map<CString, HICON> m_fileIconCache;
         std::map<CString, HICON> m_serverIconCache;
-        HICON getIconForExtension(const CString& serverName);
+        HICON getIconForExtension(const CString& fileName);
         HICON getIconForServer(const CString& serverName);
         int CalcItemHeight(TreeItem* item);
         LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -102,6 +103,7 @@ class CHistoryTreeControl :
         std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
         std::mutex m_thumbLoadingQueueMutex;
         std::unique_ptr<CFileDownloader> m_FileDownloader;
+        std::shared_ptr<INetworkClientFactory> networkClientFactory_;
         bool OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void DownloadThumb(HistoryTreeItem* it);
         int m_SessionItemHeight;
@@ -109,5 +111,5 @@ class CHistoryTreeControl :
         void QueueFinishedEvent();
         void threadsFinished();
         void OnConfigureNetworkClient(INetworkClient* nm);
-        static void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y);
+        static void DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y);
 };

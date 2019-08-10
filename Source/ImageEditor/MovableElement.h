@@ -43,7 +43,7 @@ class MovableElement: public DrawingElement {
         virtual bool move(int  offsetX, int offsetY);
         virtual bool isItemAtPos(int x, int y);
 
-        virtual void resize(int width, int height) override;
+        void resize(int width, int height) override;
         virtual void createGrips();
         virtual void beginMove();
         virtual void endMove();

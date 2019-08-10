@@ -24,7 +24,6 @@
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/ThumbsView.h"
-#include "Gui/HwndScopedWrapper.h"
 
 class AbstractImage;
 #define WM_MYADDIMAGE (WM_USER + 22)

@@ -20,7 +20,6 @@
 
 #pragma once
 #include "atlheaders.h"
-#include "resource.h"
 #include <atlcrack.h>
 
 struct HyperLinkControlItem
@@ -98,14 +97,13 @@ public:
     void SelectItem(int Index);
     void HoverItem(int Index);
     HyperLinkControlItem* getItemByCommand(int command);
-    int selectedItemIndex_;
-    int hoverItemIndex_;
-    CAtlArray<HyperLinkControlItem> Items;
+    int selectedItemIndex() const;
 protected:
+    CAtlArray<HyperLinkControlItem> Items;
     int BottomY, SubItemRightY;
     CFont BoldFont, UnderlineFont,BoldUnderLineFont;
-
-   
+    int selectedItemIndex_;
+    int hoverItemIndex_;
     bool CursorHand;
     HCURSOR HandCursor;
     CFont NormalFont;

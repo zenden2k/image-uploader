@@ -5,6 +5,7 @@
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
 #include "MoveAndResizeTool.h"
+
 namespace ImageEditor {
 
     class Canvas;

@@ -27,6 +27,7 @@
 #include "Func/WinUtils.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/ServiceLocator.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -37,15 +38,14 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     uploadEngineManager_ = uem;
     
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
-        CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+        auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
         if ( plugin_ ) {
             serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
         }
     }
     createNew_ = createNew;
 
-    NetworkClientFactory factory;
-    NetworkClient_ = factory.create();
+    NetworkClient_ = ServiceLocator::instance()->networkClientFactory()->create();
 }
 
 LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -171,13 +171,13 @@ DWORD CLoginDlg::Run()
 
         ignoreExistingAccount_ = true;
 
-        if ( li.Login != WCstringToUtf8(accountName_) ) {
+        if ( li.Login != W2U(accountName_) ) {
             serverProfile_.clearFolderInfo();
         }
 
         accountName_ = login;
         serverProfile_.setProfileName(WCstringToUtf8(login));
-        li.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
+        li.Password = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
         li.DoAuth = true;
 
         ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
@@ -187,7 +187,7 @@ DWORD CLoginDlg::Run()
         } else {
             LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
         }
-        CAdvancedUploadEngine* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+        auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
         if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
             OnProcessFinished();
@@ -217,36 +217,42 @@ void CLoginDlg::OnProcessFinished()
     ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]{
         enableControls(true);
     });
-    
 }
 
 void CLoginDlg::Accept()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     LoginInfo li;
-    TCHAR Buffer[256];
+    CString loginEditText = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
+    std::string oldAccountName = W2U(accountName_);
 
-    GetDlgItemText(IDC_LOGINEDIT, Buffer, 256);
-    li.Login = WCstringToUtf8(Buffer);
+    li.Login = W2U(loginEditText);
 
     if ( li.Login.empty() ) {
         LocalizedMessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
         return;
     }
-    std::string serverNameA = serverProfile_.serverName();
-    if ( !ignoreExistingAccount_ &&  createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
+    std::string serverName = serverProfile_.serverName();
+    if ( !ignoreExistingAccount_ &&  createNew_ && Settings.ServersSettings[serverName].find(li.Login ) != Settings.ServersSettings[serverName].end() ) {
         LocalizedMessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
         return;
     }
 
-    if ( li.Login != WCstringToUtf8(accountName_) ) {
+    if ( li.Login != oldAccountName) {
         serverProfile_.clearFolderInfo();
+
+        if (!accountName_.IsEmpty()) {
+            // If user has changed account's name, delete account with old name
+            Settings.ServersSettings[serverName].erase(oldAccountName);
+        }
     }
 
-    accountName_ = Buffer;
-    serverProfile_.setProfileName(WCstringToUtf8(Buffer));
-    GetDlgItemText(IDC_PASSWORDEDIT, Buffer, 256);
-    li.Password = WCstringToUtf8(Buffer);
+    accountName_ = loginEditText;
+    serverProfile_.setProfileName(W2U(loginEditText));
+
+    CString passwordEditText = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT);
+
+    li.Password = W2U(passwordEditText);
     li.DoAuth = true;
     uploadEngineManager_->resetAuthorization(serverProfile_);
 

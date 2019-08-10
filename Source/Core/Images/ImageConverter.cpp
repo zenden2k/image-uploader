@@ -61,7 +61,7 @@ ImageConverter::~ImageConverter()
 bool ImageConverter::Convert(const std::string& sourceFile)
 {
     Q_D(ImageConverter);
-    return d->Convert(sourceFile);
+    return d->convert(sourceFile);
 }
 
 void ImageConverter::setDestinationFolder(const std::string& folder)

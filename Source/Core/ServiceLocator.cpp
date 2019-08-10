@@ -35,6 +35,7 @@ public:
     CMyEngineList* myEngineList_;
     CLogWindow* logWindow_;
     BasicSettings* settings_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 #endif
 };
 
@@ -140,4 +141,12 @@ BasicSettings* ServiceLocator::basicSettings() const {
 
 void ServiceLocator::setSettings(BasicSettings* settingsInstance) {
     d_ptr->settings_ = settingsInstance;
+}
+
+void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory) {
+    d_ptr->networkClientFactory_ = factory;
+}
+
+std::shared_ptr<INetworkClientFactory> ServiceLocator::networkClientFactory() const {
+    return d_ptr->networkClientFactory_;
 }

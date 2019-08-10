@@ -20,7 +20,7 @@
 
 #include "UpdateDlg.h"
 
-#include "Func/common.h"
+#include "Func/Common.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/CmdLine.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -29,22 +29,23 @@
 #include "Core/Network/NetworkClientFactory.h"
 
 // CUpdateDlg
+namespace {
+    /* This function doesn't work as intended */
+    bool CanWriteToFolder(const CString& folder)
+    {
+        HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
 
-/* This function doesn't work as intended */
-bool CanWriteToFolder(const CString& folder)
-{
-    HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
-
-    if (hFile == INVALID_HANDLE_VALUE) {
-        return false;
+        if (hFile == INVALID_HANDLE_VALUE) {
+            return false;
+        }
+        ::CloseHandle(hFile);
+        return true;
     }
-    ::CloseHandle(hFile);
-    return true;
 }
 
 CUpdateDlg::CUpdateDlg() :m_UpdateManager(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectoryW())
 {
-    m_UpdateCallback = NULL;
+    m_UpdateCallback = nullptr;
     m_Checked = false;
     m_bUpdateFinished = false;
 

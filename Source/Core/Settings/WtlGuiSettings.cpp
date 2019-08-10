@@ -214,7 +214,7 @@ void WtlGuiSettings::FindDataFolder()
 
 void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = "directupload.net";
-    std::string defaultImageServerProfileName = "";
+    std::string defaultImageServerProfileName;
 
     CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
     if (!defaultImageUED) {

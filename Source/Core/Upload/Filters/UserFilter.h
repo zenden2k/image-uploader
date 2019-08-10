@@ -2,7 +2,6 @@
 #define IU_CORE_USERFILTER_H
 
 #include "Core/Upload/UploadFilter.h"
-#include "Core/Upload/UploadTask.h"
 #include "Core/Scripting/ScriptsManager.h"
 
 class UserFilter : public UploadFilter

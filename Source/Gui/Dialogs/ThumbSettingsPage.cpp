@@ -71,7 +71,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
     //img.Create(m_hWnd, rc);
     img.LoadImage(0);
-    thumbsCombo_.m_hWnd = GetDlgItem(IDC_THUMBSCOMBO);
+    thumbsCombo_ = GetDlgItem(IDC_THUMBSCOMBO);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
@@ -82,12 +82,12 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     std::vector<CString> files;
     CString folder = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\");
     WinUtils::GetFolderFileList(files, folder, _T("*.xml"));
-    for (size_t i = 0; i < files.size(); i++) {
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, U2W(IuCoreUtils::ExtractFileNameNoExt(W2U(files[i]))));
+    for (const auto& fileName: files) {
+        thumbsCombo_.AddString(U2W(IuCoreUtils::ExtractFileNameNoExt(W2U(fileName))));
     }
 
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)U2W(params_.TemplateName));
+    thumbsCombo_.SelectString(-1, U2W(params_.TemplateName));
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
     SetDlgItemInt(IDC_THUMBQUALITYEDIT, params_.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);

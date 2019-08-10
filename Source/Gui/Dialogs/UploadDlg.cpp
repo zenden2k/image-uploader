@@ -82,7 +82,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     TRC(IDC_COMMONPROGRESS, "Progress:");
     bool IsLastVideo = false;
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        CVideoGrabberPage *vg = static_cast<CVideoGrabberPage*>(WizardDlg->Pages[1]);
+        CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
 
         if (vg && !vg->m_szFileName.IsEmpty())
             IsLastVideo = true;
@@ -441,7 +441,7 @@ LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    LPNMITEMACTIVATE lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+    auto lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
     int row = lpnmitem->iItem;
     viewImage(row);
     return 0;

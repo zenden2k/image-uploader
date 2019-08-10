@@ -440,7 +440,7 @@ void CServerSelectorControl::updateServerList()
     serverChanged();
 }
 
-bool CServerSelectorControl::isAccountChosen()
+bool CServerSelectorControl::isAccountChosen() const
 {
     CUploadEngineData* ued = serverProfile_.uploadEngineData();
     return !serverProfile_.profileName().empty() || (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory);
@@ -459,11 +459,11 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
 
-    if (/*uploadEngine->UsingPlugin &&*/ (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
+    if (!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
         bool addedSeparator = false;
 
         int i = 0;
-        if (serverUsers.size() && !serverProfile_.profileName().empty()) {
+        if (!serverUsers.empty() && !serverProfile_.profileName().empty()) {
             mi.wID = IDC_LOGINMENUITEM;
             mi.dwTypeData = const_cast<LPWSTR>(TR("Change account settings"));
             sub.InsertMenuItem(i++, true, &mi);
@@ -478,7 +478,6 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
 
         for (auto it = serverUsers.begin(); it != serverUsers.end(); ++it) {
-            //    CString login = Utf8ToWCstring(it->second.authData.Login);
             CString login = Utf8ToWCstring(it->first);
             if (!login.IsEmpty())/*&& it->second.authData.DoAuth**/ {
                 if (!addedSeparator) {

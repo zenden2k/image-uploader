@@ -25,7 +25,7 @@ limitations under the License.
 
 class NetworkClientFactory: public INetworkClientFactory {
 public:
-    virtual std::unique_ptr<INetworkClient> create() override;
+    std::unique_ptr<INetworkClient> create() override;
 };
 
 #endif

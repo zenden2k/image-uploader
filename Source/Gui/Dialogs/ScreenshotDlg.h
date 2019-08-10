@@ -44,7 +44,7 @@ class CScreenshotDlg :
 {
     public:
         CScreenshotDlg();
-        ~CScreenshotDlg();
+        ~CScreenshotDlg() = default;
         CaptureMode captureMode() const;
         enum { IDD = IDD_SCREENSHOTDLG };
     

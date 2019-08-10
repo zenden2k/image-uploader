@@ -5,7 +5,7 @@
 #include <glog/logging.h>
 #include <wchar.h>
 
-#include <iostream>
+#include <iosfwd>
 #include <string>
 #ifdef _WIN32
 #include <windows.h>

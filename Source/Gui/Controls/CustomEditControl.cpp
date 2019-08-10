@@ -1,8 +1,5 @@
 #include "CustomEditControl.h"
 
-CCustomEditControl::CCustomEditControl() {
-}
-
 bool CCustomEditControl::AttachToDlgItem(HWND parent, UINT dlgID) {
 
     HWND hWnd = ::GetDlgItem(parent,dlgID);

@@ -18,8 +18,8 @@
 
 #include "atlheaders.h" 
 #include "Gui/Dialogs/LogWindow.h"
-#include "Gui/Dialogs/wizarddlg.h"
-#include "Gui/Dialogs/floatingwindow.h"
+#include "Gui/Dialogs/WizardDlg.h"
+#include "Gui/Dialogs/FloatingWindow.h"
 #include "Func/CmdLine.h"
 #include "Func/WinUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -37,6 +37,7 @@
 #include "Func/GdiPlusInitializer.h"
 #include "Gui/Dialogs/LangSelect.h"
 #include "versioninfo.h"
+#include "Core/Network/NetworkClientFactory.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -208,7 +209,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     AppParams::instance()->setVersionInfo(appVersion);
 
     ServiceLocator* serviceLocator = ServiceLocator::instance();
-    ServiceLocator::instance()->setSettings(&Settings);
+    serviceLocator->setSettings(&Settings);
+    serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
     LogWindow.Create(nullptr);
     serviceLocator->setLogWindow(&LogWindow);
     DefaultLogger defaultLogger;

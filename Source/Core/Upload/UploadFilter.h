@@ -8,7 +8,7 @@ class UploadTask;
 class UploadFilter
 {
 public:
-    virtual ~UploadFilter() {}
+    virtual ~UploadFilter() = default;
     virtual bool PreUpload(UploadTask* task) = 0;
     virtual bool PostUpload(UploadTask* task) = 0;    
 };

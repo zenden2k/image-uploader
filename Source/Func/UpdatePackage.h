@@ -81,7 +81,7 @@ class CUpdateInfo
 class CUpdateStatusCallback
 {
     public:
-        virtual ~CUpdateStatusCallback() {};
+        virtual ~CUpdateStatusCallback() = default;
         virtual void updateStatus(int packageIndex, const CString& status)=0;
 };
 

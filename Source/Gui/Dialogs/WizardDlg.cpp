@@ -1994,7 +1994,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         monitor = ::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
     } else if (monitorMode >= 0) {
         MonitorEnumerator enumerator;
-        if (!enumerator.DoEnumDisplayMonitors(nullptr, nullptr)) {
+        if (!enumerator.enumDisplayMonitors(nullptr, nullptr)) {
             return false;
         }
         MonitorEnumerator::MonitorInfo* monitorInfo = enumerator.getByIndex(monitorMode);

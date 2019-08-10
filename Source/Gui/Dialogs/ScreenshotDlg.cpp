@@ -31,11 +31,6 @@ CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
 
-CScreenshotDlg::~CScreenshotDlg()
-{
-    
-}
-
 BOOL SetClientRect(HWND hWnd, int x, int y)
 {
     RECT rect = {0,0,x,y}, rect2;
@@ -97,7 +92,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     MonitorEnumerator enumerator;
     int i = 0;
 
-    if (enumerator.DoEnumDisplayMonitors(0, 0)) {
+    if (enumerator.enumDisplayMonitors(0, 0)) {
         
         for (const MonitorEnumerator::MonitorInfo& monitor : enumerator) {
             CString itemTitle;
@@ -149,7 +144,7 @@ LRESULT CScreenshotDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 
 LRESULT CScreenshotDlg::OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    CommandBox.NotifyParent((CommandBox.selectedItemIndex_==-1)?0:CommandBox.selectedItemIndex_);
+    CommandBox.NotifyParent((CommandBox.selectedItemIndex()==-1)?0:CommandBox.selectedItemIndex());
     return 0;
 }
 

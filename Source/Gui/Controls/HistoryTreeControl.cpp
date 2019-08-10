@@ -29,11 +29,11 @@
 #include "Core/LocalFileCache.h"
 #include "Core/Images/Utils.h"
 #include "Core/AppParams.h"
-#include "Core/Network/NetworkClientFactory.h"
 
 // CHistoryTreeControl
-CHistoryTreeControl::CHistoryTreeControl()
+CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
 {
+    networkClientFactory_ = factory;
     m_thumbWidth = 56;
     m_SessionItemHeight = 0;
     m_SubItemHeight = 0;
@@ -66,8 +66,7 @@ void CHistoryTreeControl::CreateDownloader()
 
     if(!m_FileDownloader)
     {
-        auto factory = std::make_shared<NetworkClientFactory>();
-        m_FileDownloader = std::make_unique<CFileDownloader>(factory, AppParams::instance()->tempDirectory());
+        m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
         m_FileDownloader->setOnConfigureNetworkClientCallback(std::bind(&CHistoryTreeControl::OnConfigureNetworkClient, this, _1));
         m_FileDownloader->setOnFileFinishedCallback(std::bind(&CHistoryTreeControl::OnFileFinished, this, _1, _2, _3));
         m_FileDownloader->setOnQueueFinishedCallback(std::bind(&CHistoryTreeControl::QueueFinishedEvent, this));

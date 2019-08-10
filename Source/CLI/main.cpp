@@ -29,7 +29,6 @@
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClientFactory.h"
-#include "Core/Network/NetworkClient.h"
 #include "Core/UploadEngineList.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/FileUploadTask.h"
@@ -482,7 +481,7 @@ int func() {
     ConsoleUploadErrorHandler uploadErrorHandler;
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-
+    serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
     ConsoleScriptDialogProvider dialogProvider;
 
     serviceLocator->setDialogProvider(&dialogProvider);

@@ -138,7 +138,10 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
     memset( &bi, 0, sizeof(bi) );
     bi.bmiHeader = bih;
 
-    bm_.reset(new Gdiplus::Bitmap(&bi, data));
+   
+    /*size_t newLineSize = 4 * ((width * 3 + 3) / 4);
+    bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
+    bm_ = std::make_shared<Gdiplus::Bitmap>(&bi, data);
 
     if ( bm_->GetLastStatus() == Ok ) {
         width_ = width;

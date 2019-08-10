@@ -1,6 +1,6 @@
 ﻿#include "ImageConverterPrivate_gdiplus.h"
 
-#include <assert.h>
+#include <cassert>
 
 #include "Func/MyUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -9,16 +9,14 @@
 #include "Core/CommonDefs.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
-#include "Utils.h"
-
+#include "Core/Video/GdiPlusImage.h"
 
 #ifndef MYRGB
     #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 #endif
-#include "Core/Video/GdiPlusImage.h"
 
 using namespace Gdiplus;
-bool ImageConverterPrivate::Convert(const std::string& sourceFile)
+bool ImageConverterPrivate::convert(const std::string& sourceFile)
 {
     sourceFile_ = sourceFile;
     int fileformat;

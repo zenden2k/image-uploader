@@ -48,7 +48,7 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     gr->FillRectangle(&backgroundBrush, backgroundRect_);
     gr->DrawRectangle(&borderPen, backgroundRect_);
 
-    foregroundRect_ = Rect(static_cast<int>(kPadding*dpiScaleX + x), y+ dpiScaleY*4, static_cast<int>(kSquareSize * dpiScaleX), static_cast<int>(kSquareSize *  dpiScaleY));
+    foregroundRect_ = Rect(int(kPadding*dpiScaleX + x), int(y+ dpiScaleY*4), int(kSquareSize * dpiScaleX), int(kSquareSize *  dpiScaleY));
     gr->FillRectangle(&foregroundBrush, foregroundRect_);
     gr->DrawRectangle(&borderPen, foregroundRect_);
 

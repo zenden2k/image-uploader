@@ -34,15 +34,14 @@
 
 class VideoGrabberRunnable {
 public:
-    VideoGrabberRunnable(VideoGrabber* videoGrabber)
+    explicit VideoGrabberRunnable(VideoGrabber* videoGrabber)
     {
         videoGrabber_ = videoGrabber;
         canceled_ = false;
         isRunning_ = false;
     }
 
-    virtual ~VideoGrabberRunnable() {
-    }
+    virtual ~VideoGrabberRunnable() = default;
 
     void cancel()
     {
@@ -145,7 +144,7 @@ void VideoGrabber::abort() {
     worker_->cancel();
 }
 
-bool VideoGrabber::isRunning() {
+bool VideoGrabber::isRunning() const {
     return worker_->isRunning();
 }
 

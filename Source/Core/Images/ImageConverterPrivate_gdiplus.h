@@ -9,8 +9,8 @@
 
 class ImageConverterPrivate: public ImageConverterPrivateBase {
 public:
-    bool ImageConverterPrivate::Convert(const std::string& sourceFile);
-    std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, long long fileSize, int fileformat);
+    bool convert(const std::string& sourceFile);
+    std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
 protected:
     bool createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, int fileformat);
     Gdiplus::Brush* CreateBrushFromString(const std::string& br, const RECT& rect);

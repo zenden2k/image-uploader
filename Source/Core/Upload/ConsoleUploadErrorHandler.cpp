@@ -1,5 +1,7 @@
 #include "ConsoleUploadErrorHandler.h"
 
+#include <iostream>
+
 ConsoleUploadErrorHandler::ConsoleUploadErrorHandler() {
 }
 

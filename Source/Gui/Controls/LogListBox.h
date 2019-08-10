@@ -7,7 +7,6 @@
 #pragma once
 
 #include "atlheaders.h"
-#include "resource.h"
 #include <atlcrack.h>
 #include "Func/DefaultLogger.h"
 #include "Core/Logging/Logger.h"

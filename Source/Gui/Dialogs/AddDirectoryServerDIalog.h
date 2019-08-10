@@ -8,7 +8,6 @@
 #include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/DialogIndirect.h"
 
-
 class CUploadEngineList;
 // CAddDirectoryServerDialog
 

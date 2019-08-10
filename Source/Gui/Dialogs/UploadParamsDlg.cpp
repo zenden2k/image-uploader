@@ -129,7 +129,6 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     createThumbnailsCheckboxChanged();
     processImagesChanged();
     defaultSettingsCheckboxChanged();
-    //::SetFocus(GetDlgItem(IDC_LOGINEDIT));
     return 0;  
 }
 

@@ -25,7 +25,6 @@
 #include "Gui/GuiTools.h"
 #include "HyperLinkControlAccessible.h"
 
-
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
 {
@@ -570,6 +569,10 @@ HyperLinkControlItem* CHyperLinkControl::getItemByCommand(int command) {
         }
     }
     return nullptr;
+}
+
+int CHyperLinkControl::selectedItemIndex() const {
+    return selectedItemIndex_;
 }
 
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)

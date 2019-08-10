@@ -1,6 +1,5 @@
 #include "UserFilter.h"
 
-#include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Scripting/UploadFilterScript.h"
 #include "Core/ServiceLocator.h"

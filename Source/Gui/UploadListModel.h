@@ -13,7 +13,6 @@
 class UploadSession;
 class UploadTask;
 
-
 class UploadListItem {
 public:
     COLORREF color;

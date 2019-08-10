@@ -19,10 +19,10 @@
 */
 
 #pragma once
-#include "resource.h"
 #include <vector>
 #include <thread>
 
+#include "resource.h"
 #include "atlheaders.h"
 #include "Gui/Controls/MyImage.h"
 #include "Gui/Controls/DialogIndirect.h"
@@ -57,7 +57,7 @@ class TextParamsWindow : public CCustomDialogIndirectImpl<TextParamsWindow>
         TextParamsWindow();
         ~TextParamsWindow();
         void setFont(LOGFONT logFont);
-        LOGFONT getFont();
+        LOGFONT getFont() const;
         /*HWND Create(HWND parent);*/
     protected:
         BEGIN_MSG_MAP(CTextParamsWindow)
