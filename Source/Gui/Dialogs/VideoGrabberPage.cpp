@@ -99,15 +99,16 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineAuto);
     videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow);
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineFFmpeg);
+    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow2);
+    if (WtlGuiSettings::IsFFmpegAvailable()) {
+        videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineFFmpeg);
+    }
 
-    int itemIndex = videoEngineCombo_.FindString(0, Settings.VideoSettings.Engine);
+    int itemIndex = videoEngineCombo_.FindStringExact(0, Settings.VideoSettings.Engine);
     if ( itemIndex == CB_ERR){
         itemIndex = 0;
     }
-    if (!WtlGuiSettings::IsFFmpegAvailable()) {
-        videoEngineCombo_.EnableWindow(FALSE);
-    }
+    
     videoEngineCombo_.SetCurSel(itemIndex);
     // Заносим в текстовое поле имя файла, полученное от главного окна
     fileEdit_.SetWindowText(m_szFileName);
@@ -513,12 +514,12 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
         if ( !Settings.IsFFmpegAvailable() ) {
-            videoEngine = WtlGuiSettings::VideoEngineDirectshow;
+            videoEngine = WtlGuiSettings::VideoEngineDirectshow2;
         } else {
             videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
             std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
-                videoEngine = WtlGuiSettings::VideoEngineDirectshow;
+                videoEngine = WtlGuiSettings::VideoEngineDirectshow2;
             }
         }
     }
@@ -527,13 +528,16 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 
     videoGrabber_ = std::make_unique<VideoGrabber>();
     videoGrabber_->setFrameCount(NumOfFrames);
-    videoGrabber_->onFrameGrabbed.bind(this, &CVideoGrabberPage::OnFrameGrabbed);
-    videoGrabber_->onFinished.bind(this, &CVideoGrabberPage::OnFrameGrabbingFinished);
+    using namespace std::placeholders;
+    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
+    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this));
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
     if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
         engine = VideoGrabber::veAvcodec;
     } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow) {
         engine = VideoGrabber::veDirectShow;
+    } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow2) {
+        engine = VideoGrabber::veDirectShow2;
     }
 
     videoGrabber_->setVideoEngine(engine);
@@ -557,10 +561,9 @@ bool CVideoGrabberPage::OnShow()
     return true;
 }
 
-
-void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, AbstractImage* img )
+void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, std::shared_ptr<AbstractImage> img )
 {
-    GdiPlusImage *image = dynamic_cast<GdiPlusImage*>(img);
+    auto image = std::dynamic_pointer_cast<GdiPlusImage>(img);
     if ( !image ) {
         LOG(ERROR) << "image is null";
         return;
@@ -569,7 +572,6 @@ void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, Abst
     if ( bm ) {
         SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10 );
         OnAddImage(bm, Utf8ToWCstring(timeStr));
-        delete image;
     }
 
 }

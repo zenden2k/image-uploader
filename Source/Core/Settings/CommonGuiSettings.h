@@ -107,6 +107,7 @@ class CommonGuiSettings : public BasicSettings {
 #endif
     public:
         static const TCHAR VideoEngineDirectshow[];
+        static const TCHAR VideoEngineDirectshow2[];
         static const TCHAR VideoEngineFFmpeg[];
         static const TCHAR VideoEngineAuto[];
         static bool IsFFmpegAvailable();

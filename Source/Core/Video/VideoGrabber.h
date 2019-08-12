@@ -11,7 +11,7 @@ class AbstractImage;
 class VideoGrabber
 {
 public:
-    enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec };
+    enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec, veDirectShow2  };
     explicit VideoGrabber();
     ~VideoGrabber();
     void setVideoEngine(VideoEngine engine);
@@ -20,8 +20,10 @@ public:
     void abort();
     bool isRunning() const;
     void setFrameCount(int frameCount);
-    fastdelegate::FastDelegate3<const std::string&, int64_t, AbstractImage*> onFrameGrabbed;
-    fastdelegate::FastDelegate0<void> onFinished;
+    using FrameGrabbedCallback = std::function<void(const std::string&, int64_t, std::shared_ptr<AbstractImage>)>;
+    using VoidCallback = std::function<void()>;
+    void setOnFrameGrabbed(FrameGrabbedCallback cb);
+    void setOnFinished(VoidCallback cb);
 private:
     std::string fileName_;
     std::unique_ptr<AbstractFrameGrabber> createGrabber();
@@ -29,6 +31,8 @@ private:
     int frameCount_;
     friend class VideoGrabberRunnable;
     std::unique_ptr<VideoGrabberRunnable> worker_;
+    FrameGrabbedCallback onFrameGrabbed_;
+    VoidCallback onFinished_;
     DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 

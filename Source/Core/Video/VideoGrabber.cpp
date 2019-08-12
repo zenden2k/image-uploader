@@ -26,6 +26,7 @@
 #include "AbstractFrameGrabber.h"
 #ifdef _WIN32
 #include "DirectshowFrameGrabber.h"
+#include "DirectshowFrameGrabber2.h"
 #endif
 #include "AbstractVideoFrame.h"
 #include "AvcodecFrameGrabber.h"
@@ -53,8 +54,8 @@ public:
         isRunning_ = true;
         if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
             LOG(ERROR) << "File "<<videoGrabber_->fileName_<< "not found";
-            if ( videoGrabber_->onFinished ) {
-                videoGrabber_->onFinished();
+            if ( videoGrabber_->onFinished_ ) {
+                videoGrabber_->onFinished_();
             }
             isRunning_ = false;
             return;
@@ -65,8 +66,8 @@ public:
         }
         if ( !grabber->open(videoGrabber_->fileName_) ) {
 
-            if ( videoGrabber_->onFinished ) {
-                videoGrabber_->onFinished();
+            if ( videoGrabber_->onFinished_ ) {
+                videoGrabber_->onFinished_();
             }
             isRunning_ = false;
             return;
@@ -96,14 +97,14 @@ public:
             int seconds = int(long(long(SampleTime) % 60));
             std::string s = str(boost::format("%02d:%02d:%02d") % hours % minutes % seconds);
 
-            if ( /*frame && */!videoGrabber_->onFrameGrabbed.empty() ) {
-                videoGrabber_->onFrameGrabbed(s, SampleTime, frame->toImage());
+            if ( /*frame && */videoGrabber_->onFrameGrabbed_ ) {
+                videoGrabber_->onFrameGrabbed_(s, SampleTime, frame->toImage());
             }
             delete frame;
         }
         grabber.reset();
-        if ( videoGrabber_->onFinished ) {
-            videoGrabber_->onFinished();
+        if ( videoGrabber_->onFinished_ ) {
+            videoGrabber_->onFinished_();
         }
         isRunning_ = false;
     }
@@ -125,8 +126,7 @@ VideoGrabber::VideoGrabber()
     frameCount_ = 5;
 }
 
-VideoGrabber::~VideoGrabber()
-{
+VideoGrabber::~VideoGrabber() {
 }
 
 void VideoGrabber::grab(const std::string& fileName) {
@@ -160,13 +160,24 @@ void VideoGrabber::setFrameCount(int frameCount) {
     frameCount_ = frameCount;
 }
 
+void VideoGrabber::setOnFrameGrabbed(FrameGrabbedCallback cb) {
+    onFrameGrabbed_ = std::move(cb);
+}
+
+void VideoGrabber::setOnFinished(VoidCallback cb) {
+    onFinished_ = std::move(cb);
+}
+
 std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
     std::unique_ptr<AbstractFrameGrabber> grabber;
 #ifdef _WIN32
     if ( videoEngine_ == veAvcodec ) {
         grabber.reset(new AvcodecFrameGrabber());
-    } else {
+    } else if (videoEngine_ == veDirectShow) {
         grabber.reset(new DirectshowFrameGrabber());
+    }
+    else {
+        grabber.reset(new DirectshowFrameGrabber2());
     }
 #else
     grabber.reset(new AvcodecFrameGrabber());

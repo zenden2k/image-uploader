@@ -1,6 +1,8 @@
 #ifndef DIRECTSHOWFRAMEGRABBER_H
 #define DIRECTSHOWFRAMEGRABBER_H
 
+#include <memory>
+
 #include "AbstractFrameGrabber.h"
 
 class DirectshowFrameGrabberPrivate;
@@ -17,7 +19,7 @@ public:
     void abort() override;
 protected:
     int64_t duration_;
-    DirectshowFrameGrabberPrivate * const d_ptr;
+    std::unique_ptr<DirectshowFrameGrabberPrivate> d_ptr;
     DISALLOW_COPY_AND_ASSIGN(DirectshowFrameGrabber);
 };
 

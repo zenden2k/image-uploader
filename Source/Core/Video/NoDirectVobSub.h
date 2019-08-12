@@ -1,0 +1,26 @@
+#ifndef IU_CORE_VIDEO_NODIRECTVOBSUB_H
+#define IU_CORE_VIDEO_NODIRECTVOBSUB_H
+
+#include <windows.h>
+#include <streams.h>
+
+// некий COM-object для передачи в callback-функция GraphBulder, что-бы не грузить субтитры 
+class NoDirectVobSub : public IAMGraphBuilderCallback
+{
+    int Refs;
+
+public:
+    NoDirectVobSub();
+    STDMETHODIMP QueryInterface(REFIID riid, __deref_out void** ppv) override;
+    
+    // Fake out any COM ref counting
+    STDMETHODIMP_(ULONG) AddRef() override;
+    STDMETHODIMP_(ULONG) Release() override;
+
+    HRESULT STDMETHODCALLTYPE SelectedFilter( /* [in] */ IMoniker* pMon) override;
+
+    HRESULT STDMETHODCALLTYPE CreatedFilter( /* [in] */ IBaseFilter* pFil) override;
+};
+
+
+#endif

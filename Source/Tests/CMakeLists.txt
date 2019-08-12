@@ -41,6 +41,10 @@ if(WIN32)
         ../Core/Video/AvcodecFrameGrabber.cpp
         ../Core/Video/AbstractFrameGrabber.cpp
         ../Core/Video/DirectshowFrameGrabber.cpp
+        ../Core/Video/DirectshowFrameGrabber2.cpp
+        ../Core/Video/DirectshowVideoFrame.cpp
+        ../Core/Video/NoDirectVobSub.cpp
+        ../Core/Video/GrabFilter.cpp
         ../Core/Video/AbstractVideoFrame.cpp
         ../Core/Video/DirectShowUtil.cpp
         ../Core/Video/AbstractImage.cpp

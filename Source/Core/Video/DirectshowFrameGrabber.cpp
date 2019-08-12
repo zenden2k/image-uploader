@@ -38,72 +38,8 @@
 #include "Core/3rdpart/dxerr.h"
 #include "DirectShowUtil.h"
 #include "Core/i18n/Translator.h"
-
-class DirectshowVideoFrame: public AbstractVideoFrame {
-public :
-    DirectshowVideoFrame(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
- 
-        time_ = time;
-
-        BITMAPFILEHEADER bfh;
-        memset( &bfh, 0, sizeof(bfh) );
-        bfh.bfType = ('M' << 8) | 'B';
-        bfh.bfSize = sizeof(bfh) + dataSize + sizeof(BITMAPINFOHEADER);
-        bfh.bfOffBits = sizeof(BITMAPINFOHEADER) + sizeof(BITMAPFILEHEADER);
-
-        BITMAPINFOHEADER bih;
-        memset( &bih, 0, sizeof(bih) );
-        bih.biSize = sizeof(bih);
-        bih.biWidth = width;
-        bih.biHeight = height;
-        bih.biPlanes = 1;
-        bih.biBitCount = 24;
-
-        BITMAPINFO bi;
-        bi.bmiHeader = bih;
-
-        int dataOffset = sizeof(bfh ) + sizeof(bih);
-        dataSize_ = dataSize +  dataOffset;
-        data_ = new unsigned char[dataSize + dataOffset ];
-        memcpy( data_, &bfh, sizeof(bfh));
-        memcpy( data_ + sizeof(bfh), &bih, sizeof(bih));
-        memcpy(data_ + dataOffset , data, dataSize);
-        
-        width_ = width;
-        height_ = height;
-    }
-    ~DirectshowVideoFrame() {
-        delete[] data_;
-    }
-
-    bool saveToFile(const std::string& fileName) const override {
-        std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
-        if ( !image ) {
-            return false;
-        } 
-        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
-            return false;
-        }
-        return image->saveToFile(fileName);
-    }
-
-    AbstractImage* toImage() const override {
-        AbstractImage* image = AbstractImage::createImage();
-        if ( !image ) {
-            return 0;
-        } 
-        if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_) ) {
-            delete image;
-            image = nullptr;
-        }
-        return image;
-    }
-
- protected:
-    unsigned char *data_;
-    size_t dataSize_;
-    DISALLOW_COPY_AND_ASSIGN(DirectshowVideoFrame);
-};
+#include "NoDirectVobSub.h"
+#include "DirectshowVideoFrame.h"
 
 inline std::string GetMessageForHresult(HRESULT hr) { 
 
@@ -134,57 +70,6 @@ typedef struct tagVIDEOINFOHEADER2
     DWORD dwReserved2;
     BITMAPINFOHEADER bmiHeader;
 } VIDEOINFOHEADER2;
-
-// некий COM-object для передачи в callback-функция GraphBulder, что-бы не грузить субтитры 
-class NoDirectVobSub : public IAMGraphBuilderCallback
-{
-    int Refs;
-
-public:
-    NoDirectVobSub() { Refs = 0; }
-
-    virtual STDMETHODIMP QueryInterface(REFIID riid, __deref_out void** ppv)
-    {
-        if (riid == IID_IUnknown)                        (*ppv) = static_cast<IUnknown*>(this);
-        else if (riid == IID_IAMGraphBuilderCallback)    (*ppv) = static_cast<IAMGraphBuilderCallback*>(this);
-
-        else { (*ppv)=0; return E_NOINTERFACE; }
-
-        AddRef();
-        return S_OK;
-    }
-
-    // Fake out any COM ref counting
-    STDMETHODIMP_(ULONG) AddRef() {
-        return 2;
-    }
-    STDMETHODIMP_(ULONG) Release() {
-        return 1;
-    }
-
-    virtual HRESULT STDMETHODCALLTYPE SelectedFilter( /* [in] */ IMoniker* pMon)
-    {
-        HRESULT ret = S_OK;
-        //CLSID id; pMon->GetClassID( &id ); // получает всегда CLSID_DeviceMoniker - по нему не проверишь
-
-        IBindCtx* bind;    ;
-        if (SUCCEEDED(CreateBindCtx( 0, &bind )))
-        {
-            LPOLESTR name;
-            if (SUCCEEDED(pMon->GetDisplayName( bind, 0, &name )))
-            {
-                // thanks to http://rsdn.ru/forum/media/4970888.1
-                if (wcsstr((wchar_t*)name, L"93A22E7A-5091-45EF-BA61-6DA26156A5D0" )!=0) ret = E_ABORT;    // DirectVobSub
-                if (wcsstr((wchar_t*)name, L"9852A670-F845-491B-9BE6-EBD841B8A613" )!=0) ret = E_ABORT;    // DirectVobSub autoload
-            }
-            bind->Release(); 
-        }
-
-        return ret;
-    }
-
-    virtual HRESULT STDMETHODCALLTYPE CreatedFilter( /* [in] */ IBaseFilter* pFil) { return S_OK; }
-};
 
 class CSampleGrabberCB : public ISampleGrabberCB
 {
@@ -575,7 +460,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     duration_ = duration;
 
     int NumOfFrames = 1;
-    d_ptr->CB.directShowPrivate = d_ptr;
+    d_ptr->CB.directShowPrivate = d_ptr.get();
     d_ptr->pControl = d_ptr->pGraph;
     d_ptr->pEvent = d_ptr->pGraph;
 
@@ -637,7 +522,6 @@ void DirectshowFrameGrabber::abort() {
      if ( d_ptr->pControl ) {
         d_ptr->pControl->Stop();
      }
-     //d_ptr->CB.mutex_.unlock();
-     delete d_ptr;
+
      ::CoUninitialize();
  }

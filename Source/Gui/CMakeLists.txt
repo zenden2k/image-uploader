@@ -30,6 +30,10 @@ set(SRC_LIST
     ../Core/Video/AbstractVideoFrame.cpp
     ../Core/Video/AvcodecFrameGrabber.cpp
     ../Core/Video/DirectshowFrameGrabber.cpp
+    ../Core/Video/DirectshowFrameGrabber2.cpp
+    ../Core/Video/DirectshowVideoFrame.cpp
+    ../Core/Video/NoDirectVobSub.cpp
+    ../Core/Video/GrabFilter.cpp
     ../Core/Video/DirectShowUtil.cpp
     ../Core/Video/GdiPlusImage.cpp
     ../Core/Video/VideoGrabber.cpp
@@ -195,6 +199,10 @@ set(HEADER_LIST
     ../Core/Video/AbstractVideoFrame.h
     ../Core/Video/AvcodecFrameGrabber.h
     ../Core/Video/DirectshowFrameGrabber.h
+    ../Core/Video/DirectshowFrameGrabber2.h
+    ../Core/Video/DirectshowVideoFrame.h
+    ../Core/Video/NoDirectVobSub.h
+    ../Core/Video/GrabFilter.h
     ../Core/Video/DirectShowUtil.h
     ../Core/Video/GdiPlusImage.h
     ../Core/Video/VideoGrabber.h

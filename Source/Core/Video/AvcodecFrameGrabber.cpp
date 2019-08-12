@@ -54,26 +54,23 @@ public :
     }
 
     bool saveToFile(const std::string& fileName) const override {
-        AbstractImage* img = AbstractImage::createImage();
+        std::unique_ptr<AbstractImage> img(AbstractImage::createImage());
         if ( !img ) {
             return false;
         }
         if ( !img->loadFromRawData(AbstractImage::dfRGB888, width_, height_, data_, dataSize_, reinterpret_cast<void*>(frame_->linesize[0]))) {
             return false;
         }
-        bool res = img->saveToFile(fileName);
-        delete img;
-        return res;
+        return img->saveToFile(fileName);
     }
 
-    AbstractImage* toImage() const override  {
-        AbstractImage* img = AbstractImage::createImage();
+    std::unique_ptr<AbstractImage> toImage() const override  {
+        std::unique_ptr<AbstractImage> img(AbstractImage::createImage());
         if ( !img ) {
-            return 0;
+            return nullptr;
         }
         if ( !img->loadFromRawData(AbstractImage::dfRGB888, width_, height_, data_, dataSize_, reinterpret_cast<void*>(frame_->linesize[0]))) {
-            delete img;
-            return 0;
+            return nullptr;
         }
         return img;
     }
