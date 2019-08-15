@@ -18,11 +18,24 @@ bool QtImage::loadFromFile(const std::string &fileName)
 
 bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) {
     if (dt == dfRGB888) {
-        //img_.loadFromData(data, dataSize, );
-        img_ = QImage((const unsigned char*)data, width, height, QImage::Format_RGB888);
+        size_t oldStripeSize = width * 3;
+        size_t newDataSize = oldStripeSize * height;
+        uint8_t* newData;
+        try {
+            newData = new uint8_t[newDataSize];
+        } catch (std::exception& ex) {
+            LOG(ERROR) << ex.what();
+            return false;
+        }
+        memcpy(newData, data, dataSize);
+       
+        img_ = QImage(newData, width, height, oldStripeSize, QImage::Format_RGB888, [](void* d) {
+            delete[] reinterpret_cast<uint8_t*>(d);
+        });
         if (!img_.isNull()) {
             return true;
         }
+        delete[] newData;
     }
     else if (dt == dfBitmapRgb) {
         //img_ = QImage((const unsigned char*)data, width, height, QImage::Format_RGB888);
@@ -34,7 +47,7 @@ bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* dat
     return false;
 }
 
-QImage QtImage::toQImage()
+QImage QtImage::toQImage() const
 {
     return img_;
 }

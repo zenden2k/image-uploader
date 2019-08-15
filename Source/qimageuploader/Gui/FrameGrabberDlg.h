@@ -1,6 +1,8 @@
 #ifndef FRAMEGRABBERDLG_H
 #define FRAMEGRABBERDLG_H
 
+#include <memory>
+
 #include <QDialog>
 #include <QIcon>
 #include "Core/Video/AbstractImage.h"
@@ -18,7 +20,7 @@ public:
     explicit FrameGrabberDlg(QString fileName, QWidget *parent = 0);
     ~FrameGrabberDlg();
     
-    void frameGrabbed(const std::string&, int64_t, AbstractImage*);
+    void frameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
     void getGrabbedFrames(QStringList& fileNames) const;
 private slots:
     void on_grabButton_clicked();

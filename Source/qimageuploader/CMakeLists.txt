@@ -61,6 +61,10 @@ if(WIN32)
     list(APPEND SOURCE_FILES 
         qimageuploader.rc 
         ../Core/Video/DirectshowFrameGrabber.cpp
+        ../Core/Video/DirectshowFrameGrabber2.cpp
+        ../Core/Video/DirectshowVideoFrame.cpp
+        ../Core/Video/NoDirectVobSub.cpp
+        ../Core/Video/GrabFilter.cpp
         ../Core/Video/DirectShowUtil.cpp
         ../Core/3rdpart/dxerr.cpp)
 endif()

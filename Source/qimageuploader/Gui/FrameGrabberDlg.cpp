@@ -39,12 +39,12 @@ FrameGrabberDlg::~FrameGrabberDlg()
     delete ui;
 }
 
-void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, AbstractImage* image) {
+void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std::shared_ptr<AbstractImage> image) {
 	if (!image) {
 		return;
 	}
     QString timeString = U2Q(timeStr);
-    QImage img = static_cast<QtImage*>(image)->toQImage();
+    QImage img = static_cast<QtImage*>(image.get())->toQImage();
 
     if (!img.isNull()) {
        
@@ -89,8 +89,9 @@ void FrameGrabberDlg::on_grabButton_clicked()
 
 	grabber_.reset(new VideoGrabber());
 	grabber_->setVideoEngine(static_cast<VideoGrabber::VideoEngine>(ui->comboBox->currentData().toInt()));
-	grabber_->onFrameGrabbed.bind(this, &FrameGrabberDlg::frameGrabbed);
-	grabber_->onFinished.bind(this, &FrameGrabberDlg::onGrabFinished);
+    using namespace std::placeholders;
+	grabber_->setOnFrameGrabbed(std::bind(&FrameGrabberDlg::frameGrabbed, this, _1, _2, _3));
+	grabber_->setOnFinished(std::bind(&FrameGrabberDlg::onGrabFinished, this));
 
 	int frameCount = ui->numOfFramesSpinBox->value();
 	if (frameCount < 1) {
