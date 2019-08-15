@@ -4,8 +4,8 @@
 /*! @cond PRIVATE */
 
 #include "Functions.h"
-#include <memory>
-#include "Core/3rdpart/fastdelegate.h"
+#include "Core/3rdpart/FastDelegate.h"
+
 namespace ScriptAPI {
 
 class WebBrowserPrivateBase;

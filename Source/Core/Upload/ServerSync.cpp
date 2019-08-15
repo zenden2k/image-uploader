@@ -5,7 +5,6 @@
 #include <map>
 #include <atomic>
 
-
 class ServerSyncPrivate: public ThreadSyncPrivate
 {
 public:

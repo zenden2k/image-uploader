@@ -19,6 +19,8 @@
 */
 #include "ImageDownloaderDlg.h"
 
+#include <boost/format.hpp>
+
 #include "Core/CommonDefs.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -30,6 +32,7 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
+
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer)
@@ -203,11 +206,11 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
             else 
             {
                 add = false;
-                CString errorStr;
-                CString url = U2W(it.url);
-                errorStr.Format(TR("File '%s' is not an image (Mime-Type: %s)."), static_cast<LPCTSTR>(url),
-                    static_cast<LPCTSTR>(U2W(mimeType)));
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr);
+                
+                std::wstring url = IuCoreUtils::Utf8ToWstring(it.url);
+                std::wstring mimeTypeW = IuCoreUtils::Utf8ToWstring(mimeType);
+                std::wstring errorStr = str(boost::wformat(TR("File is not an image.\nUrl: %s\nMime-Type: %s")) % url % mimeTypeW);
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr.c_str());
             }
         }
         if (add) {

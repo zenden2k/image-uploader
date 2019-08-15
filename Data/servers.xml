@@ -48,7 +48,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
 	</Server>
-	<Server Name="funkyimg.com" Authorize="0" Plugin="funkyimg">
+	<Server Name="funkyimg.com" Authorize="1" Plugin="funkyimg">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

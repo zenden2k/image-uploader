@@ -1,3 +1,8 @@
+// Script can be reused by the same thread. It means that 
+// the same auth cookies will be sent to the server.
+loggedIn <- false; // Global flag 
+
+
 function regex_simple(data,regStr,start)
 {
 	local ex = regexp(regStr);
@@ -18,17 +23,6 @@ function TrySleep() {
 	}
 }
 
-function readFile(fileName) {
-	local myfile = file(fileName,"r");
-	local i = 0;
-	local res = "";
-	while ( !myfile.eos()) {
-		res += format("%c", myfile.readn('b'));
-		
-	}
-	return res;
-}
-
 function reg_replace(str, pattern, replace_with)
 {
 	local resultStr = str;	
@@ -43,10 +37,67 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
+function _DoLogin() {
+    local login = ServerParams.getParam("Login");
+	local pass =  ServerParams.getParam("Password");
+    if (login == "") {
+        return 1;
+    }
+    
+    if (loggedIn){
+        return 1;
+    }
+    
+    nm.setUrl("http://forum.funkysouls.com/index.php?s=&act=Login&CODE=01");
+    nm.setReferer("https://funkyimg.com/");
+    nm.addQueryParam("UserName", login);
+    nm.addQueryParam("PassWord", pass);
+    nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION
+    nm.doPost("");
+    if (nm.responseCode() == 302) {
+        local funcName = "jQuery" + random()%100000 + "_" + random()%100000; 
+        nm.doGet("https://forum.funkysouls.com/whoami/?callback="+ funcName + "&_=" + random() % 100000);
+        if (nm.responseCode() == 200) {
+            local reg = CRegExp("jQuery\\d+_\\d+\\((.+?)\\)", "");
+            if ( reg.match(nm.responseBody()) ) {
+                local jsonTxt = reg.getMatch(1);
+                local t = ParseJSON(jsonTxt);
+                if ("name" in t && "ukey" in t) {
+                    nm.setUrl("https://funkyimg.com/user/auth");
+                    nm.setReferer("https://funkyimg.com/");
+                    nm.addQueryParam("name", t.name);
+                    nm.addQueryParam("ukey", t.ukey); 
+                    nm.doPost("");
+                    if(nm.responseCode() == 200) {
+                        local s = ParseJSON(nm.responseBody());
+                        if ( "status" in s && s.status == true) {
+                            loggedIn = true;
+                            WriteLog("error", "Success");
+                            return 1;
+                        }
+                    }
+                }  
+            }
+        }  
+    }
+    return 0;
+    
+}
 
+function DoLogin() {
+    if (!Sync.beginAuth()) {
+        return 0;
+    }
+    local res = _DoLogin();
+    Sync.endAuth();
+    return res;
+}
 
 function  UploadFile(FileName, options)
 {			
+    if (!DoLogin()) {
+        return 0;
+    }
 	nm.setUrl("https://funkyimg.com/upload/?fileapi" + random());
 	nm.addQueryParam("_images", ExtractFileName(FileName));
 	nm.addQueryParamFile("images",FileName, ExtractFileName(FileName),"");
