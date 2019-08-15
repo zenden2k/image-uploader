@@ -1,5 +1,7 @@
 #include "ColorsDelegate.h"
 
+#include <cassert>
+
 #include "Gui/GuiTools.h"
 #include "Core/i18n/Translator.h"
 #include "Core/Images/Utils.h"

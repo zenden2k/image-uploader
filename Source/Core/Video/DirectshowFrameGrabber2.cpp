@@ -245,7 +245,6 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     // right interface before giving that to the graph object
     CComQIPtr<IBaseFilter, &IID_IBaseFilter> pDumpFilter(grabFilter);
     if (SUCCEEDED(hr)) {
-        //hr = d_ptr->pGraph->AddFilter(d_ptr->pGrabberBase, L"Grabber");
         hr = d_ptr->pGraph->AddFilter(pDumpFilter, L"CustomRenderer");
     }
     

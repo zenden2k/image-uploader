@@ -2,7 +2,6 @@
 #define IU_CORE_VIDEO_VIDEOGRABBER_H
 
 #include "Core/Utils/CoreUtils.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 class AbstractFrameGrabber;
 class VideoGrabberRunnable;

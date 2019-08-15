@@ -23,7 +23,7 @@ limitations under the License.
 #include "Func/WinUtils.h"
 
 const TCHAR CommonGuiSettings::VideoEngineDirectshow[] = _T("Directshow");
-const TCHAR CommonGuiSettings::VideoEngineDirectshow2[] = _T("Directshow(2)");
+const TCHAR CommonGuiSettings::VideoEngineDirectshow2[] = _T("Directshow_2");
 const TCHAR CommonGuiSettings::VideoEngineFFmpeg[] = _T("FFmpeg");
 const TCHAR CommonGuiSettings::VideoEngineAuto[] = _T("Auto");
 

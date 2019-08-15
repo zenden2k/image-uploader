@@ -20,13 +20,15 @@
 
 #include "VideoGrabberPage.h"
 
+#include <boost/format.hpp>
+
 #include "Core/CommonDefs.h"
 #include "Core/Video/VideoGrabber.h"
 #include "Core/Video/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/MediaInfoHelper.h"
 #include "Func/WinUtils.h"
-#include "mediainfodlg.h"
+#include "MediaInfoDlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CryptoUtils.h"
@@ -56,13 +58,10 @@ CVideoGrabberPage::~CVideoGrabberPage()
 {
 }
 
-//  Принимаем имя файла из главного окна
-//
 bool CVideoGrabberPage::SetFileName(LPCTSTR FileName)
 {
-    m_szFileName = FileName;
-    // Заносим в текстовое поле имя файла, полученное от главного окна
-    fileEdit_.SetWindowText(m_szFileName);
+    fileName_ = FileName;
+    fileEdit_.SetWindowText(fileName_);
     return false;
 }
 
@@ -71,12 +70,10 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     PageWnd = m_hWnd;
     DoDataExchange(FALSE);
-    // Установка интервалов UpDown контролов
-    SendDlgItemMessage(IDC_UPDOWN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
-    SendDlgItemMessage(IDC_QUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
+
+    frameCountUpDownCtrl_.SetRange(1, 100);
 
     SetDlgItemInt(IDC_NUMOFFRAMESEDIT, Settings.VideoSettings.NumOfFrames);
-    SetDlgItemInt(IDC_QUALITY, Settings.VideoSettings.JPEGQuality);
 
     TRC(IDC_EXTRACTFRAMES, "Extracting frames from video");
     TRC(IDC_SELECTVIDEO, "Browse...");
@@ -89,7 +86,6 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     TRC(IDC_SAVEASONE, "Single file");
     TRC(IDC_SAVEAS, "Save as:");
     TRC(IDC_GRAB, "Grab");
-    TRC(IDC_QUALITYLABEL, "Quality:");
     TRC(IDC_GRABBERPARAMS, "Settings...");
     TRC(IDC_FILEINFOBUTTON, "Information about file");
     openInFolderLink_.SetLabel(TR("Open containing folder"));
@@ -111,7 +107,7 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     
     videoEngineCombo_.SetCurSel(itemIndex);
     // Заносим в текстовое поле имя файла, полученное от главного окна
-    fileEdit_.SetWindowText(m_szFileName);
+    fileEdit_.SetWindowText(fileName_);
 
     bool check = true;
     // Установка режима сохранения
@@ -165,7 +161,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     }
 
     if ( !WinUtils::FileExists(fileName ) ) {
-        LOG(ERROR) << "File not found.\r\n" << fileName;
+        LOG(ERROR) << str(boost::wformat(TR("File doesn't exist:\n%s")) % fileName.GetString());
         return 0;
     }
 
@@ -191,14 +187,6 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     CString buf;
     videoEngineCombo_.GetLBText(videoEngineIndex, buf);
     Settings.VideoSettings.Engine = buf;
-    /*if (  videoEngineIndex == 0) {
-    Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
-    }else if (  videoEngineIndex == 1) {
-        Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
-    }else if (  videoEngineIndex == 2) {
-        Settings.VideoSettings.Engine = CSettings::VideoEngineFFmpeg;
-    }*/
-    //videoEngineIndex ? CSettings::VideoEngineFFmpeg : CSettings::VideoEngineDirectshow;
 
     SetNextCaption(TR("Next >"));
     EnableNext(false);
@@ -223,19 +211,9 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
         ::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), nullptr, 0, 0, originalGrabInfoLabelWidth_, grabInfoLabelRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
         ::InvalidateRect(GetDlgItem(IDC_GRABINFOLABEL), 0, true);
     }
-    Run();
 
-    return 0;
-}
-
-DWORD CVideoGrabberPage::Run()
-{
     snapshotsFolder.Empty();
     openInFolderLink_.SetToolTipText(_T(""));
-    CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
-    if ( fileName.IsEmpty() ) {
-        return 0;
-    }
 
     GrabBitmaps(fileName);
 
@@ -252,7 +230,6 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 
     if (SendDlgItemMessage(IDC_DEINTERLACE, BM_GETCHECK) == BST_CHECKED)
     {
-        // Genial deinterlace realization ;)
         int iwidth = bm->GetWidth();
         int iheight = bm->GetHeight();
         int halfheight = iheight / 2;
@@ -269,10 +246,9 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 
     if ( snapshotsFolder.IsEmpty() ) {
-        CString snapshotsFolderTemplate;
         if ( !Settings.VideoSettings.SnapshotsFolder.IsEmpty() ) {
             CString path = Settings.VideoSettings.SnapshotsFolder + "\\" + Settings.VideoSettings.SnapshotFileTemplate;
-            snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
+            CString snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
             snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
             std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
 
@@ -304,9 +280,10 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
 
-    ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL);
-    ThumbsView.AddImage(fileNameBuffer, title, false, bm);
-    grabbedFramesCount++;
+    if (ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, 1, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL)) {
+        ThumbsView.AddImage(fileNameBuffer, title, false, bm);
+        grabbedFramesCount++;
+    }
     return true;
 }
 
@@ -367,7 +344,7 @@ LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     else
     {
         //Terminate();
-        ThreadTerminated();
+        //ThreadTerminated();
     }
     return 0;
 }
@@ -514,12 +491,12 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
         if ( !Settings.IsFFmpegAvailable() ) {
-            videoEngine = WtlGuiSettings::VideoEngineDirectshow2;
+            videoEngine = WtlGuiSettings::VideoEngineDirectshow;
         } else {
             videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
             std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
-                videoEngine = WtlGuiSettings::VideoEngineDirectshow2;
+                videoEngine = WtlGuiSettings::VideoEngineDirectshow;
             }
         }
     }
@@ -548,7 +525,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
-    fileEdit_.SetWindowText(m_szFileName);
+    fileEdit_.SetWindowText(fileName_);
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
     SetGrabbingStatusText(_T(""));
     EnableNext(true);

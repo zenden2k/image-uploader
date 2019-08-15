@@ -27,6 +27,7 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui->comboBox->addItem("Avcodec", QVariant(int(VideoGrabber::veAvcodec)));
 #ifdef _WIN32
     ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
+    ui->comboBox->addItem("Directshow2", QVariant(int(VideoGrabber::veDirectShow2)));
 #endif
 	connect(ui->stopButton, &QPushButton::clicked, this, &FrameGrabberDlg::onStopButtonClicked);
     connect(ui->listWidget, &QListWidget::doubleClicked, this, &FrameGrabberDlg::itemDoubleClicked);

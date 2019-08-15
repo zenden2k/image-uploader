@@ -10,7 +10,6 @@ public:
     ServiceLocatorPrivate() {
         logger_ = nullptr;
         translator_ = nullptr;
-#ifndef IU_SHELLEXT
         uploadErrorHandler_ = nullptr;
         engineList_ = nullptr;
         programWindow_ = nullptr;
@@ -20,11 +19,9 @@ public:
         dispatcher_ = nullptr;
         logWindow_ = nullptr;
         settings_ = nullptr;
-#endif
     }
     ILogger* logger_;
     ITranslator* translator_;
-#ifndef IU_SHELLEXT
     CUploadEngineListBase* engineList_;
     CHistoryManager historyManager;
     IProgramWindow* programWindow_;
@@ -36,7 +33,6 @@ public:
     CLogWindow* logWindow_;
     BasicSettings* settings_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
-#endif
 };
 
 

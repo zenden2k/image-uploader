@@ -74,7 +74,7 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
             }
         }
         tempSettings.authData.DoAuth = server.AttributeBool("Auth");
-#if !defined(IU_SHELLEXT)
+
         std::string encodedLogin = server.Attribute("Login");
         CEncodedPassword login;
         login.fromEncodedData(encodedLogin);
@@ -84,9 +84,6 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         CEncodedPassword pass;
         pass.fromEncodedData(encodedPass);
         tempSettings.authData.Password = pass;
-#else
-        tempSettings.authData.Login = server.Attribute("Login");
-#endif
 
         tempSettings.defaultFolder.setId(server.Attribute("DefaultFolderId"));
         tempSettings.defaultFolder.viewUrl = server.Attribute("DefaultFolderUrl");
@@ -120,7 +117,6 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
             }
             serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
-#if !defined(IU_SHELLEXT)
             CEncodedPassword login(sss.authData.Login);
             serverNode.SetAttribute("Login", login.toEncodedData());
 
@@ -129,9 +125,7 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
                 CEncodedPassword pass(it->second.authData.Password);
                 serverNode.SetAttribute("Password", pass.toEncodedData());
             }
-#else
-            serverNode.SetAttribute("Login", sss.authData.Login);
-#endif
+
             if (!it->second.defaultFolder.getId().empty()) {
                 serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
                 serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);

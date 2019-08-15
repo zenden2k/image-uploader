@@ -512,8 +512,6 @@ CString GetAppFolder()
     HINSTANCE inst;
 #if defined(IU_WTL)
     inst =  _Module.GetModuleInstance();
-#elif defined(IU_SHELLEXT)
-    inst = hDllInstance;
 #else
     inst = GetModuleHandle(0);
 #endif

@@ -4,7 +4,6 @@
 #include "Utils/Singleton.h"
 
 #include <memory>
-#include <cassert>
 
 #include "ProgramWindow.h"
 #include "Core/Logging/Logger.h"

@@ -35,8 +35,8 @@ class CMyEngineList: public CUploadEngineList
         CUploadEngineData* byName(const CString &name);
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
-        HICON CMyEngineList::getIconForServer(const std::string& name);
-        CString CMyEngineList::getIconNameForServer(const std::string& name);
+        HICON getIconForServer(const std::string& name);
+        CString getIconNameForServer(const std::string& name);
         static char DefaultServer[];
         static char RandomServer[];
     private:
@@ -46,6 +46,5 @@ class CMyEngineList: public CUploadEngineList
 
         LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc_;
         Library dllModule_;
-
 };
 #endif

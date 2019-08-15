@@ -49,9 +49,6 @@ HFONT MakeFontUnderLine(HFONT font);
 HFONT MakeFontBold(HFONT font);
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
 
-#ifndef IU_SHELLEXT
-
-
 #define PROP_OBJECT_PTR            MAKEINTATOM(ga.atom)
 #define PROP_ORIGINAL_PROC        MAKEINTATOM(ga.atom)
 
@@ -74,7 +71,6 @@ public:
  * Local variables
  */
 static CGlobalAtom ga;
-#endif
 
 bool CheckFileName(const CString& fileName);
 

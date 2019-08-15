@@ -497,7 +497,10 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         AutoStartup = Reg2.ReadBool("AutoStartup", false);
     }
 
-    if (VideoSettings.Engine != VideoEngineDirectshow &&  VideoSettings.Engine != VideoEngineFFmpeg && VideoSettings.Engine != VideoEngineAuto) {
+    if (VideoSettings.Engine != VideoEngineDirectshow
+        && VideoSettings.Engine != VideoEngineDirectshow2
+        &&  VideoSettings.Engine != VideoEngineFFmpeg 
+        && VideoSettings.Engine != VideoEngineAuto) {
         VideoSettings.Engine = VideoEngineAuto;
     }
     if (!IsFFmpegAvailable()) {

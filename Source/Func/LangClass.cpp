@@ -148,7 +148,7 @@ bool ReadUtf8TextFile(const CString& fileName, std::string& data)
     try {
         data.resize(size);
     }
-    catch (std::exception& ex) {
+    catch (std::exception& ) {
         //LOG(ERROR) << ex.what();
         fclose(stream);
         return false;

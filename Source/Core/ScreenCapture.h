@@ -22,6 +22,7 @@
 #define IU_CORE_SCREEN_CAPTURE_H
 
 #include <vector>
+
 #include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
@@ -136,7 +137,7 @@ class CScreenCaptureEngine
         bool captureRegion(CScreenshotRegion* region);
         void setDelay(int msec);
         void setMonitorMode(MonitorMode monitorMode, HMONITOR monitor = NULL);
-        std::shared_ptr<Gdiplus::Bitmap> capturedBitmap();
+        std::shared_ptr<Gdiplus::Bitmap> capturedBitmap() const;
         Gdiplus::Bitmap* releaseCapturedBitmap();
 
     private:

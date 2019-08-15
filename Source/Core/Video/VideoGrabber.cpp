@@ -173,11 +173,11 @@ std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
 #ifdef _WIN32
     if ( videoEngine_ == veAvcodec ) {
         grabber.reset(new AvcodecFrameGrabber());
-    } else if (videoEngine_ == veDirectShow) {
-        grabber.reset(new DirectshowFrameGrabber());
+    } else if (videoEngine_ == veDirectShow2) {
+        grabber.reset(new DirectshowFrameGrabber2());
     }
     else {
-        grabber.reset(new DirectshowFrameGrabber2());
+        grabber.reset(new DirectshowFrameGrabber());
     }
 #else
     grabber.reset(new AvcodecFrameGrabber());

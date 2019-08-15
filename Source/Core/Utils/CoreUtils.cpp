@@ -255,13 +255,11 @@ const std::string ExtractFileNameNoExt(const std::string& fileName)
     return result;
 }
 
-#ifndef IU_SHELLEXT
 std::string ExtractFileNameFromUrl(const std::string url)
 {
     uriparser::Uri uri(url);
     return ExtractFileName(uri.path());
 }
-#endif
 
 std::string incrementFileName(const std::string& originalFileName, int counter) {
     std::string ext = ExtractFileExt(originalFileName);

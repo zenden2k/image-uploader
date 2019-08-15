@@ -20,7 +20,7 @@
 
 #include "Core/ScreenCapture.h"
 
-#include <assert.h>
+#include <cassert>
 #include <deque>
 
 #include <Dwmapi.h>
@@ -425,7 +425,7 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
     b1->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b1Data);
     BitmapData b2Data;
     b2->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b2Data);
-    assert(sizeof(unsigned long*) == 4);
+    assert(sizeof(unsigned long) == 4);
     unsigned long* pImage1 = reinterpret_cast<unsigned long*>(b1Data.Scan0);
     unsigned long* pImage2 = reinterpret_cast<unsigned long*>(b2Data.Scan0);
     for (int y = 0; y < height; y++)
@@ -913,8 +913,6 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     return resultBm;
 }
 
-
-
 // TODO : fix vista maximized window capturing
 bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
 {
@@ -1064,7 +1062,7 @@ void CScreenCaptureEngine::setMonitorMode(MonitorMode monitorMode, HMONITOR moni
     monitor_ = monitor;
 }
 
-std::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap()
+std::shared_ptr<Gdiplus::Bitmap> CScreenCaptureEngine::capturedBitmap() const
 {
     return m_capturedBitmap;
 }
@@ -1158,7 +1156,7 @@ bool CFreeFormRegion::IsEmpty()
     average_polyline(m_curvePoints, curveAvgPoints, 29);
     for (size_t i = 0; i < curveAvgPoints.size(); i++)
     {
-        points.push_back(Point(curveAvgPoints[i].x, curveAvgPoints[i].y));
+        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
     }
     if (points.empty()) return true;
     grPath.AddCurve(&points[0], points.size());
@@ -1177,7 +1175,7 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
     average_polyline(m_curvePoints, curveAvgPoints, 29);
     for (size_t i = 0; i < curveAvgPoints.size(); i++)
     {
-        points.push_back(Point(curveAvgPoints[i].x, curveAvgPoints[i].y));
+        points.emplace_back(curveAvgPoints[i].x, curveAvgPoints[i].y);
     }
     grPath.AddCurve(&points[0], points.size());
     Rect grPathRect;

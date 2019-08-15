@@ -93,7 +93,6 @@ namespace WinUtils {
     void TimerWait(int Delay);
     CString ConvertRelativePathToAbsolute(const CString& fileName);
     bool IsProcessRunning(DWORD pid);
-//#ifndef IU_SHELLEXT
     std::wstring strtows(const std::string &str, UINT codePage);
     std::string wstostr(const std::wstring &ws, UINT codePage);
     const std::string AnsiToUtf8(const std::string &str, int codepage);

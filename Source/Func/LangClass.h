@@ -61,7 +61,7 @@ class CLang
         const wchar_t* translateW(const wchar_t* str) ITRANLATOR_OVERRIDE;
 #endif
         CLang(const CLang&) = delete;
-        CLang& operator=(const CLang) = delete;
+        CLang& operator=(const CLang&) = delete;
     private:
         struct TranslateListItem
         {
