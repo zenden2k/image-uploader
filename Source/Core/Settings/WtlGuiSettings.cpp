@@ -213,7 +213,7 @@ void WtlGuiSettings::FindDataFolder()
 #endif
 
 void WtlGuiSettings::fixInvalidServers() {
-    std::string defaultImageServer = "directupload.net";
+    std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
 
     CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
@@ -252,7 +252,7 @@ void WtlGuiSettings::fixInvalidServers() {
 
     ue = fileServer.uploadEngineData();
     if (!ue) {
-        std::string defaultServerName = "zippyshare.net";
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
         CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             fileServer.setServerName(defaultServerName);
@@ -269,7 +269,7 @@ void WtlGuiSettings::fixInvalidServers() {
     }
 
     if (urlShorteningServer.serverName().empty()) {
-        std::string defaultServerName = "is.gd";
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
         CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             urlShorteningServer.setServerName(defaultServerName);

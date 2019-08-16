@@ -291,24 +291,6 @@ HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
     return Info.hIcon;
 }
 
-int ScreenBPP()
-{
-// Возвращает количество битов на точку в данном режиме
-    int iRet = 0;
-    HDC hdc = GetDC(NULL);
-    if (hdc != NULL)
-    {
-        iRet = GetDeviceCaps(hdc, BITSPIXEL);
-        ReleaseDC(NULL, hdc);
-    }
-    return iRet;
-}
-
-BOOL Is32BPP()
-{
-    return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
-}
-
 HRESULT IsElevated( __out_opt BOOL* pbElevated )  // = NULL )
 {
     //ATLASSERT( IsVista() );

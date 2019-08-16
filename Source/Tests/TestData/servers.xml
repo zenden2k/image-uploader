@@ -8,7 +8,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="1">
+	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="1" DefaultForTypes="image">
 		<Actions>
 			<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2">
 				<RegExp Pattern="&lt;viewurl&gt;(.*?)&lt;\/viewurl&gt;" AssignVars="DownloadUrl:0;"/>
@@ -16,7 +16,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrl="$(DownloadUrl)" />
 	</Server>
-	<Server2 Name="8b.kz" Authorize="0" Type="urlshortening" >
+	<Server2 Name="8b.kz" Authorize="0" Type="urlshortening" DefaultForTypes="urlshortening" >
 		<Actions>
 			<Action 
 				Type="post"

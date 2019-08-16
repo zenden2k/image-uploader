@@ -72,7 +72,6 @@ function _DoLogin() {
                         local s = ParseJSON(nm.responseBody());
                         if ( "status" in s && s.status == true) {
                             loggedIn = true;
-                            WriteLog("error", "Success");
                             return 1;
                         }
                     }

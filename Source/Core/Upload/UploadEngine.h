@@ -191,7 +191,7 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 class CUploadEngineData
 {
     public:
-        enum ServerType { TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8};
+        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 
         std::string Name;
@@ -219,6 +219,8 @@ class CUploadEngineData
         int TypeMask;
         bool hasType(ServerType type) const;
         CUploadEngineData();
+
+        static ServerType ServerTypeFromString(const std::string& serverType);
 };
 /** 
 UploadParams class
@@ -323,6 +325,7 @@ class CUploadEngineListBase
 {
 public:
     CUploadEngineListBase();
+    virtual ~CUploadEngineListBase() = default;
     CUploadEngineData* byIndex(size_t index);
     CUploadEngineData* byName(const std::string& name);
     CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
@@ -332,8 +335,10 @@ public:
     int getUploadEngineIndex(const std::string& Name) const;
     std::vector<CUploadEngineData>::const_iterator begin() const;
     std::vector<CUploadEngineData>::const_iterator end() const;
+    std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
 protected:
     std::vector<CUploadEngineData> m_list;
+    std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;
 private:
     DISALLOW_COPY_AND_ASSIGN(CUploadEngineListBase);
 };

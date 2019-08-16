@@ -46,5 +46,6 @@ class CMyEngineList: public CUploadEngineList
 
         LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc_;
         Library dllModule_;
+        DISALLOW_COPY_AND_ASSIGN(CMyEngineList);
 };
 #endif

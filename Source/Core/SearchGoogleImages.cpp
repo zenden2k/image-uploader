@@ -5,7 +5,7 @@
 #include "Core/Utils/DesktopUtils.h"
 
 SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName) :SearchByImage(fileName),
-    networkClientFactory_(networkClientFactory)
+    networkClientFactory_(std::move(networkClientFactory))
 {
 }
 

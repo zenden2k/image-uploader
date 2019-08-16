@@ -53,7 +53,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000">
+	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000" DefaultForTypes="image">
 		<Actions>
 			<Action Type="login" Url="https://www.directupload.net/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
 			<Action Type="upload" Url="https://www.directupload.net/index.php?mode=upload" PostParams="bilddatei=%filename%;image_link=Die Bild-URL bitte hier einfügen;image_comment=;image_tags=;image_mail=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
@@ -128,7 +128,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
-	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1"> 
+	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1" DefaultForTypes="file"> 
 		<Actions>
 			<Action Type="get" Url="http://www.zippyshare.com/" RegExp="uploadId\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)([\s\S]+)server\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)" AssignVars="UploadId:0;ServerId:2"/>
 			<Action Type="upload" Url="http://$(ServerId).zippyshare.com/upload?uploadId=$(UploadId)" PostParams="uploadId=$(UploadId);username=$(_LOGIN);password=$(_PASSWORD);$(_FILENAME)=%filename%;private=ON;" RegExp="\[url=(.+?)\]" AssignVars="DownloadUrl:0;"/>
@@ -291,7 +291,7 @@
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>
-	<Server2 Name="is.gd" Debug="0" Type="urlshortening">
+	<Server2 Name="is.gd" Debug="0" Type="urlshortening" DefaultForTypes="urlshortening">
 		<Actions>
 			<Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>

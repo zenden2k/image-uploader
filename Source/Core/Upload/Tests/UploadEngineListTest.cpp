@@ -81,6 +81,10 @@ TEST_F(UploadEngineListTest, loadFromFile)
         }
        
     }
+
+    // Checking default servers
+    EXPECT_EQ("fastpic.ru", list.getDefaultServerNameForType(CUploadEngineData::TypeImageServer));
+    EXPECT_EQ("8b.kz", list.getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer));
 }
 
 TEST_F(UploadEngineListTest, getByIndex)

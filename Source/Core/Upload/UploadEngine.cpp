@@ -45,6 +45,19 @@ bool CUploadEngineData::hasType(ServerType type) const
     return (TypeMask & type) == type;
 }
 
+CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std::string& serverType) {
+    if (serverType == "image"){
+        return TypeImageServer;
+    } else if (serverType == "file") {
+        return TypeFileServer;
+    } else if (serverType == "text") {
+        return TypeTextServer;
+    } else if (serverType == "urlshortening"){
+        return TypeUrlShorteningServer;
+    }
+    return TypeInvalid;
+}
+
 CUploadEngineListBase::CUploadEngineListBase()
 {
 }
@@ -127,6 +140,15 @@ std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::begin() co
 std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::end() const {
     return m_list.end();
 }
+
+std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const {
+    auto it = m_defaultServersForType.find(serverType);
+    if (it != m_defaultServersForType.end()) {
+        return it->second;
+    }
+    return {};
+}
+
 
 /* CAbstractUploadEngine */
 

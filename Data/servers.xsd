@@ -46,6 +46,22 @@
             <xs:minLength value="1"/>
         </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="DefaultForTypes">
+        <xs:restriction>
+            <xs:simpleType>
+                <xs:list>
+                    <xs:simpleType>
+                        <xs:restriction base="xs:token">
+                            <xs:enumeration value="file"/>
+                            <xs:enumeration value="image"/>
+                            <xs:enumeration value="urlsshortening"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:list>
+            </xs:simpleType>
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="AssignVarsType">
         <xs:restriction base="xs:string">
             <xs:pattern value="[A-z0-9_]+:\d+(;[A-z0-9_]+:\d+)*;?"/>

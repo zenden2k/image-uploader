@@ -23,13 +23,6 @@ CString GetDataFolder()
     return result;
 }
 
-CString GetVersion()
-{
-    auto ver = AppParams::instance()->GetAppVersion();
-
-    return CString(ver->FullVersion.c_str()) + _T(".") + CString(std::to_string(ver->Build).c_str());
-}
-
 BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder)
 {
     TCHAR ShortPath[1024];

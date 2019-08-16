@@ -32,6 +32,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/AppParams.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/GuiTools.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
@@ -118,7 +119,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     HIMAGELIST m_hToolBarImageList;
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
 
-    if (Is32BPP())
+    if (GuiTools::Is32BPP())
     {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
         

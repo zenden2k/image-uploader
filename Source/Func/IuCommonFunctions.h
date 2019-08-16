@@ -6,8 +6,6 @@
 namespace IuCommonFunctions {
     CString GetDataFolder();
 
-    CString GetVersion();
-
     BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);
     void ClearTempFolder(CString folder);
 

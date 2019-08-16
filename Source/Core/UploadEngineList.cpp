@@ -142,24 +142,22 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
             for (auto& it : types)
             {
-                if (it == "image")
-                {
-                    UE.TypeMask |= CUploadEngineData::TypeImageServer;
-                }
-                else if (it == "file")
-                {
-                    UE.TypeMask |= CUploadEngineData::TypeFileServer;
-                }
-                else if (it == "text")
-                {
-                    UE.TypeMask |= CUploadEngineData::TypeTextServer;
-                }
-                else if (it == "urlshortening")
-                {
-                    UE.TypeMask |= CUploadEngineData::TypeUrlShorteningServer;
-                }
+                UE.TypeMask |= CUploadEngineData::ServerTypeFromString(it);
             }
 
+            std::string defaultForTypes = cur.Attribute("DefaultForTypes");
+
+            if (!defaultForTypes.empty())
+            {
+                std::vector<std::string> serverTypes;
+                IuStringUtils::Split(defaultForTypes, " ", serverTypes, 10);
+                for( const auto& typeStr: serverTypes) {
+                    auto serverType = CUploadEngineData::ServerTypeFromString(typeStr);
+                    if (serverType != CUploadEngineData::TypeInvalid) {
+                        m_defaultServersForType[serverType] = UE.Name;
+                    }
+                }
+            }
 //            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
 
             std::vector<SimpleXmlNode> actions;

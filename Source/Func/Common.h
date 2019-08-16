@@ -18,8 +18,8 @@
 
 */
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef IU_FUNC_COMMON_H
+#define IU_FUNC_COMMON_H
 
 #include "atlheaders.h"
 #include <atlcoll.h>
@@ -75,8 +75,6 @@ void IU_RunElevated(CString params);
 HRESULT IsElevated( __out_opt BOOL * pbElevated );
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
-int ScreenBPP();
-BOOL Is32BPP();
 // Function that gets path to SendTo folder
 CString GetSendToPath() ;
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
