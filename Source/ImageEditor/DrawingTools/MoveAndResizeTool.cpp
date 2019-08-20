@@ -365,8 +365,13 @@ void MoveAndResizeTool::createElement() {
     }
     if ( currentElement_ ) {
         currentElement_->setPenSize(penSize_);
-        currentElement_->setColor(foregroundColor_);
-        currentElement_->setBackgroundColor(backgroundColor_);
+        Gdiplus::Color fgColor = foregroundColor_;
+        Gdiplus::Color bgColor = backgroundColor_;
+        if (elementType_ == etStepNumber && !canvas_->isStepColorSet()) {
+            canvas_->setStepColors(fgColor, bgColor);
+        }
+        currentElement_->setColor(fgColor);
+        currentElement_->setBackgroundColor(bgColor);
     }
 }
 

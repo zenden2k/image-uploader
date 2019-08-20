@@ -79,6 +79,7 @@ function _DoLogin() {
             }
         }  
     }
+    WriteLog("error", "funkyimg.com: Authentication failed.");
     return 0;
     
 }

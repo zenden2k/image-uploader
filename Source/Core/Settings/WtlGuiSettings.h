@@ -22,8 +22,7 @@ struct ImageReuploaderSettingsStruct {
 };
 
 struct ImageEditorSettingsStruct {
-    Gdiplus::Color ForegroundColor;
-    Gdiplus::Color BackgroundColor;
+    Gdiplus::Color ForegroundColor, BackgroundColor, StepForegroundColor, StepBackgroundColor;
     int PenSize;
     int RoundingRadius;
     LOGFONT Font;

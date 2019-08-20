@@ -436,6 +436,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setFont(configurationProvider_->font());
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
         canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
+        canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
@@ -829,7 +830,8 @@ void ImageEditorWindow::createToolbars()
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, CString(TR("Copy to clipboard"))+_T(" (Ctrl+C)"), Toolbar::itComboButton));
+    std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
     
     CString itemText;
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
@@ -1302,6 +1304,8 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
         configurationProvider_->setSearchEngine(searchEngine_);
         configurationProvider_->setFillTextBackground(canvas_->getFillTextBackground());
+        configurationProvider_->setStepForegroundColor(canvas_->getStepForegroundColor());
+        configurationProvider_->setStepBackgroundColor(canvas_->getStepBackgroundColor());
         configurationProvider_->saveConfiguration();
     }
 }

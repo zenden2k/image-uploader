@@ -242,6 +242,12 @@ public:
     Gdiplus::Color foregroundColor() const { return foregroundColor_; }
     void setBackgroundColor(Gdiplus::Color color) { backgroundColor_ = color; }
     Gdiplus::Color backgroundColor() const { return backgroundColor_; }
+
+    void setStepForegroundColor(Gdiplus::Color color) { stepForegroundColor_ = color; }
+    Gdiplus::Color stepForegroundColor() const { return stepForegroundColor_; }
+    void setStepBackgroundColor(Gdiplus::Color color) { stepBackgroundColor_ = color; }
+    Gdiplus::Color stepBackgroundColor() const { return stepBackgroundColor_; }
+
     void setPenSize(int size) { penSize_ = size; }
     int penSize() const { return penSize_;}
     void setRoundingRadius(int radius) { roundingRadius_ = radius; }
@@ -262,8 +268,8 @@ public:
         return fillTextBackground_;
     }
 protected:
-    Gdiplus::Color foregroundColor_;
-    Gdiplus::Color backgroundColor_;
+    Gdiplus::Color foregroundColor_, backgroundColor_, 
+        stepForegroundColor_, stepBackgroundColor_;
     int penSize_;
     int roundingRadius_;
     LOGFONT font_;

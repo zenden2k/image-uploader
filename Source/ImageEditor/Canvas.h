@@ -60,8 +60,7 @@ class Canvas {
             
             std::vector<UndoHistoryItemElement> elements;
         };
-        
-
+       
         Canvas( HWND parent );
         ~Canvas();
         void setDocument( Document *doc );
@@ -85,16 +84,23 @@ class Canvas {
         void beginRoundingRadiusChanging();
         void endRoundingRadiusChanging(int radius);
 
-
         void setForegroundColor(Gdiplus::Color color);
         void setBackgroundColor(Gdiplus::Color color);
         Gdiplus::Color getForegroundColor() const;
         Gdiplus::Color getBackgroundColor() const;
+
+        Gdiplus::Color getStepForegroundColor() const;
+        Gdiplus::Color getStepBackgroundColor() const;
+        void setStepColors(Gdiplus::Color fgColor, Gdiplus::Color bgColor);
+        bool isStepColorSet() const;
         void setFont(LOGFONT font, DWORD changeMask = CFM_FACE | CFM_SIZE | CFM_CHARSET 
             | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET);
         LOGFONT getFont() const;
         AbstractDrawingTool* setDrawingToolType(DrawingToolType tool, bool notify = false);
+
+        // This method is used by ColorPickerTool
         void setPreviousDrawingTool();
+
         AbstractDrawingTool* getCurrentDrawingTool() const;
         void addMovableElement(MovableElement* element);
         void deleteMovableElement(MovableElement* element);
@@ -190,8 +196,9 @@ private:
         bool showOverlay_;
         float zoomFactor_;
         TextElement* currentlyEditedTextElement_;
-        Gdiplus::Color foregroundColor_;
-        Gdiplus::Color backgroundColor_;
+        Gdiplus::Color foregroundColor_, backgroundColor_,
+            stepForegroundColor_, stepBackgroundColor_;
+        bool stepColorsSet_;
         Gdiplus::Rect currentRenderingRect_;
         std::stack<UndoHistoryItem> undoHistory_;
         std::vector<MovableElement*> elementsToDelete_;

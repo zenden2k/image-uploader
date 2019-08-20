@@ -8,6 +8,8 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     penSize_ = Settings.ImageEditorSettings.PenSize;
     foregroundColor_ = Settings.ImageEditorSettings.ForegroundColor;
     backgroundColor_ = Settings.ImageEditorSettings.BackgroundColor;
+    stepForegroundColor_ = Settings.ImageEditorSettings.StepForegroundColor;
+    stepBackgroundColor_ = Settings.ImageEditorSettings.StepBackgroundColor;
     font_ =  Settings.ImageEditorSettings.Font;
     roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
     allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
@@ -26,5 +28,7 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     Settings.ImageEditorSettings.AllowAltTab = allowAltTab_;
     Settings.ImageEditorSettings.SearchEngine = searchEngine_;
     Settings.ImageEditorSettings.FillTextBackground = fillTextBackground_;
+    Settings.ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
+    Settings.ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
 }
 

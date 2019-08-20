@@ -54,6 +54,9 @@ Canvas::Canvas( HWND parent ) {
     currentlyEditedTextElement_ = 0;
     foregroundColor_ = Gdiplus::Color(255,0,0);
     backgroundColor_ = Gdiplus::Color(255,255,255);
+    /*stepForegroundColor_ = Gdiplus::Color(255, 0, 0);
+    stepBackgroundColor_ = Gdiplus::Color(255, 255, 255);*/
+    stepColorsSet_ = false;
     penSize_ = 12;
     originalPenSize_ = 0;
     roundingRadius_ = 12;
@@ -402,7 +405,11 @@ void Canvas::endRoundingRadiusChanging(int radius) {
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
 {
-    foregroundColor_ = color;
+    if (drawingToolType_ == dtStepNumber) {
+        stepForegroundColor_ = color;
+    } else {
+        foregroundColor_ = color;
+    }
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setForegroundColor(color);
     }
@@ -430,7 +437,13 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 
 void Canvas::setBackgroundColor(Gdiplus::Color color)
 {
-    backgroundColor_ = color;
+    if (drawingToolType_ == dtStepNumber) {
+        stepBackgroundColor_ = color;
+    }
+    else {
+        backgroundColor_ = color;
+    }
+
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setBackgroundColor(color);
     }
@@ -462,6 +475,24 @@ Gdiplus::Color Canvas::getForegroundColor() const
 Gdiplus::Color Canvas::getBackgroundColor() const
 {
     return backgroundColor_;
+}
+
+Gdiplus::Color Canvas::getStepForegroundColor() const {
+    return stepForegroundColor_;
+}
+
+Gdiplus::Color Canvas::getStepBackgroundColor() const {
+    return stepBackgroundColor_;
+}
+
+void Canvas::setStepColors(Gdiplus::Color fgColor, Gdiplus::Color bgColor) {
+    stepForegroundColor_ = fgColor;
+    stepBackgroundColor_ = bgColor;
+    stepColorsSet_ = true;
+}
+
+bool Canvas::isStepColorSet() const {
+    return stepColorsSet_;
 }
 
 void Canvas::setFont(LOGFONT font, DWORD changeMask)
@@ -507,7 +538,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     //showOverlay(toolType == dtCrop );
 
     delete currentDrawingTool_;
-    currentDrawingTool_ = 0;
+    currentDrawingTool_ = nullptr;
     if ( toolType == dtPen) {
         currentDrawingTool_ = new PenTool( this );
     } else if ( toolType == dtBrush) {
@@ -529,7 +560,8 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
         showOverlay(true);
     } 
     else {
-        ElementType type;
+        ElementType type; 
+        bool createVectorTool = true;
         if ( toolType == dtLine ) {
             type = etLine;
         } else if ( toolType == dtArrow ) {
@@ -556,31 +588,60 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
         }
         else if ( toolType == dtMove ) {
             currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
-            updateView();
-            return currentDrawingTool_;
+            createVectorTool = false;
+            /*updateView();
+            return currentDrawingTool_;*/
         } else if ( toolType == dtSelection ) {
             currentDrawingTool_ = new SelectionTool( this );
-            updateView();
-            return currentDrawingTool_;
+            createVectorTool = false;
+            /*updateView();
+            return currentDrawingTool_;*/
         }
         else {
             LOG(ERROR) << "createElement for toolType="<<toolType<<" not implemented.";
             return 0;
         }
 
-        currentDrawingTool_ = new VectorElementTool( this, type );
-
+        if (createVectorTool) {
+            currentDrawingTool_ = new VectorElementTool(this, type);
+        }
 
         //currentDrawingTool_ = new VectorElementTool( this, type );
     }
-    
+    Gdiplus::Color fgColor = foregroundColor_;
+    Gdiplus::Color bgColor = backgroundColor_;
+
+    if (toolType == dtStepNumber) {
+        if (stepColorsSet_) {
+            fgColor = stepForegroundColor_;
+            bgColor = stepBackgroundColor_;
+
+            if (onForegroundColorChanged) {
+                onForegroundColorChanged(fgColor);
+            }
+
+            if (onBackgroundColorChanged) {
+                onBackgroundColorChanged(bgColor);
+            }
+        }
+    } else if (previousDrawingTool_ == dtStepNumber) {
+        if (onForegroundColorChanged) {
+            onForegroundColorChanged(fgColor);
+        }
+
+        if (onBackgroundColorChanged) {
+            onBackgroundColorChanged(bgColor);
+        }
+    }
+
     currentDrawingTool_->setPenSize(penSize_);
     currentDrawingTool_->setRoundingRadius(roundingRadius_);
-    currentDrawingTool_->setForegroundColor(foregroundColor_);
-    currentDrawingTool_->setBackgroundColor(backgroundColor_);
+    currentDrawingTool_->setForegroundColor(fgColor);
+    currentDrawingTool_->setBackgroundColor(bgColor);
     if ( notify && onDrawingToolChanged ) {
         onDrawingToolChanged(toolType);
     }
+
     updateView();
     return currentDrawingTool_;
 }

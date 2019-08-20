@@ -387,6 +387,9 @@ WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
 
     ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.ForegroundColor = Gdiplus::Color(255, 0, 0);
+
+    ImageEditorSettings.StepBackgroundColor = Gdiplus::Color(0, 255, 138);
+    ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.PenSize = 12;
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
     ImageEditorSettings.AllowAltTab = false;
@@ -754,6 +757,8 @@ void WtlGuiSettings::BindToManager() {
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
     imageEditor.nm_bind(ImageEditorSettings, BackgroundColor);
+    imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
+    imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, PenSize);
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
     imageEditor.nm_bind(ImageEditorSettings, Font);
