@@ -44,12 +44,30 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     TRC(IDC_RIGHTBUTTONCLICKLABEL, "Right button click:");
     TRC(IDC_ONEINSTANCE, "Do not launch new program's instance from tray");
     TRC(IDC_AUTOSTARTUP, "Launch program on Windows startup");
-    
+
+    int leftDoubleClickIndex = 0, leftClickIndex = 0,
+    middleClickIndex = 0, rightClickIndex = 0;
+    int index = 0;
     for(const auto& hotkey: Settings.Hotkeys) {
-        leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName());
+        leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName()); 
         leftButtonClickCombo_.AddString(hotkey.GetDisplayName());
         middleButtonClickCombo_.AddString(hotkey.GetDisplayName());
         rightButtoClickCombo_.AddString(hotkey.GetDisplayName());
+
+        if (hotkey.func == Settings.TrayIconSettings.LeftDoubleClickCommandStr) {
+            leftDoubleClickIndex = index;
+        }
+        if (hotkey.func == Settings.TrayIconSettings.LeftClickCommandStr) {
+            leftClickIndex = index;
+        }
+        if (hotkey.func == Settings.TrayIconSettings.MiddleClickCommandStr) {
+            middleClickIndex = index;
+        }
+        if (hotkey.func == Settings.TrayIconSettings.RightClickCommandStr) {
+            rightClickIndex = index;
+        }
+        indexToCommand_[index] = hotkey.func;
+        index++;
     }
 
     SendDlgItemMessage(IDC_SHOWTRAYICON, BM_SETCHECK,Settings.ShowTrayIcon);
@@ -58,10 +76,10 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     SendDlgItemMessage(IDC_ONEINSTANCE, BM_SETCHECK,Settings.TrayIconSettings.DontLaunchCopy);
     OnShowTrayIconBnClicked(BN_CLICKED, IDC_SHOWTRAYICON, 0);
 
-    leftButtonDblClickCombo_.SetCurSel(Settings.TrayIconSettings.LeftDoubleClickCommand);
-    leftButtonClickCombo_.SetCurSel(Settings.TrayIconSettings.LeftClickCommand);
-    middleButtonClickCombo_.SetCurSel(Settings.TrayIconSettings.MiddleClickCommand);
-    rightButtoClickCombo_.SetCurSel(Settings.TrayIconSettings.RightClickCommand);
+    leftButtonDblClickCombo_.SetCurSel(leftDoubleClickIndex);
+    leftButtonClickCombo_.SetCurSel(leftClickIndex);
+    middleButtonClickCombo_.SetCurSel(middleClickIndex);
+    rightButtoClickCombo_.SetCurSel(rightClickIndex);
     
     return 1;  // Let the system set the focus
 }
@@ -78,10 +96,10 @@ bool CTraySettingsPage::Apply() {
     Settings.AutoStartup_changed ^= Settings.AutoStartup;
 
     //Settings.ExplorerContextMenu_changed = true;
-    Settings.TrayIconSettings.LeftDoubleClickCommand = leftButtonDblClickCombo_.GetCurSel();
-    Settings.TrayIconSettings.LeftClickCommand = leftButtonClickCombo_.GetCurSel();
-    Settings.TrayIconSettings.MiddleClickCommand = middleButtonClickCombo_.GetCurSel();
-    Settings.TrayIconSettings.RightClickCommand = rightButtoClickCombo_.GetCurSel();
+    Settings.TrayIconSettings.LeftDoubleClickCommandStr = getCommandByIndex(leftButtonDblClickCombo_.GetCurSel());
+    Settings.TrayIconSettings.LeftClickCommandStr = getCommandByIndex(leftButtonClickCombo_.GetCurSel());
+    Settings.TrayIconSettings.MiddleClickCommandStr = getCommandByIndex(middleButtonClickCombo_.GetCurSel());
+    Settings.TrayIconSettings.RightClickCommandStr = getCommandByIndex(rightButtoClickCombo_.GetCurSel());
     
     Settings.TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
     
@@ -95,4 +113,12 @@ LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, H
     }
     GuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
     return 0;
+}
+
+CString CTraySettingsPage::getCommandByIndex(int index) const {
+    auto it = indexToCommand_.find(index);
+    if (it != indexToCommand_.end()) {
+        return it->second;
+    }
+    return {};
 }

@@ -124,6 +124,13 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CFloatingWindow::OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    if (!wizardDlg_->IsWindowEnabled()) {
+        if (!wizardDlg_->IsWindowEnabled()) {
+            wizardDlg_->SetActiveWindow();
+        }
+        wizardDlg_->FlashWindow(true);
+        return 0;
+    }
     wizardDlg_->CloseWizard();
     return 0;
 }
@@ -148,39 +155,39 @@ LRESULT CFloatingWindow::OnTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
     }
     if (LOWORD(lParam) == WM_RBUTTONUP)
     {
-        if (m_bIsUploading && Settings.Hotkeys[Settings.TrayIconSettings.RightClickCommand].commandId != IDM_CONTEXTMENU)
+        if (m_bIsUploading && Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.RightClickCommandStr).commandId != IDM_CONTEXTMENU)
             return 0;
-        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.RightClickCommand].commandId, 0));
+        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.RightClickCommandStr).commandId, 0));
     }
     else if (LOWORD(lParam) == WM_LBUTTONDBLCLK)
     {
         EnableClicks = false;
         KillTimer(1);
         SetTimer(2, GetDoubleClickTime());
-        if (m_bIsUploading && Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId !=
+        if (m_bIsUploading && Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId !=
             IDM_CONTEXTMENU)
             return 0;
         SendMessage(WM_COMMAND,
-                    MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId, 0));
+                    MAKEWPARAM(Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId, 0));
     }
     else if (LOWORD(lParam) == WM_LBUTTONUP)
     {
         m_bStopCapturingWindows = false;
-        if (m_bIsUploading && Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId !=
+        if (m_bIsUploading && Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId !=
             IDM_CONTEXTMENU)
             return 0;
 
-        if (!Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
-            SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId, 0));
+        if (!Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId)
+            SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftClickCommandStr).commandId, 0));
         else
             SetTimer(1, static_cast<UINT>(1.2 * GetDoubleClickTime()));
     }
     else if (LOWORD(lParam) == WM_MBUTTONUP)
     {
-        if (m_bIsUploading && Settings.Hotkeys[Settings.TrayIconSettings.MiddleClickCommand].commandId != IDM_CONTEXTMENU)
+        if (m_bIsUploading && Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.MiddleClickCommandStr).commandId != IDM_CONTEXTMENU)
             return 0;
 
-        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.MiddleClickCommand].commandId, 0));
+        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.MiddleClickCommandStr).commandId, 0));
     }
     else if (LOWORD(lParam) == NIN_BALLOONUSERCLICK)
     {
@@ -572,9 +579,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings",TR("Settings") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
-        if (Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId)
+        if (Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId)
         {
-            SetMenuDefaultItem(TrayMenu, Settings.Hotkeys[Settings.TrayIconSettings.LeftDoubleClickCommand].commandId,
+            SetMenuDefaultItem(TrayMenu, Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId,
                                FALSE);
         }
     }
@@ -598,7 +605,7 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     {
         KillTimer(1);
         WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys[Settings.TrayIconSettings.LeftClickCommand].commandId, 0));
+        SendMessage(WM_COMMAND, MAKEWPARAM(Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftClickCommandStr).commandId, 0));
     } else if (id == 2) {
         EnableClicks = true;
         KillTimer(id);

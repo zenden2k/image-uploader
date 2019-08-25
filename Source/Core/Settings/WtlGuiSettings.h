@@ -35,10 +35,7 @@ struct ImageEditorSettingsStruct {
 };
 
 struct TrayIconSettingsStruct {
-    int LeftDoubleClickCommand;
-    int LeftClickCommand;
-    int RightClickCommand;
-    int MiddleClickCommand;
+    CString LeftDoubleClickCommandStr, LeftClickCommandStr, RightClickCommandStr, MiddleClickCommandStr;
     int TrayScreenshotAction;
     bool DontLaunchCopy;
 };

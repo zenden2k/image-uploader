@@ -222,6 +222,7 @@ public:
     bool funcShortenUrl();
     bool funcOpenScreenshotFolder();
     bool funcFromClipboard(bool fromCmdLine = false);
+    bool funcExit();
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
 

@@ -54,7 +54,15 @@ COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
 #endif
 /* CString support for  SettingsManager */
 
+namespace {
+// Do not edit this
+std::string MouseClickCommandIndexToString[] = { "", "contextmenu", "addimages", "addimages", "addfolder",
+        "importvideo", "screenshotdlg", "regionscreenshot", "fullscreenshot",
+        "windowscreenshot", "windowhandlescreenshot", "freeformscreenshot", "showmainwindow",
+        "open_screenshot_folder", "settings", "paste", "downloadimages", "mediainfo", "mediainfo",
+        "shortenurl", "shortenurlclipboard", "reuploadimages", "uploadfromclipboard", "lastregionscreenshot" };
 
+}
 
 WtlGuiSettings::~WtlGuiSettings() {
 }
@@ -383,11 +391,12 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.UseOldRegionScreenshotMethod = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
-    TrayIconSettings.LeftClickCommand = 0; // without action
-    TrayIconSettings.LeftDoubleClickCommand = 12;
+    TrayIconSettings.LeftClickCommandStr = _T(""); // without action
+    TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 
-    TrayIconSettings.RightClickCommand = 1; // context menu
-    TrayIconSettings.MiddleClickCommand = 7; // region screenshot
+    TrayIconSettings.RightClickCommandStr = _T("contextmenu"); 
+    TrayIconSettings.MiddleClickCommandStr = _T("regionscreenshot"); 
+
     TrayIconSettings.DontLaunchCopy = true;
     TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
 
@@ -441,6 +450,33 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         }
 
     }
+
+    // Migrating from 1.3.2 to 1.3.3 
+    // Keep tray icon mouse commands as strings
+    if (!settingsNode["TrayIcon"].IsNull()) {
+        SimpleXmlNode trayIconNode = settingsNode["TrayIcon"];
+        std::pair<std::string, CString*> mapToValues[] = {
+            {"LeftClickCommand", &TrayIconSettings.LeftClickCommandStr},
+            {"LeftDoubleClickCommand", &TrayIconSettings.LeftDoubleClickCommandStr},
+            {"MiddleClickCommand", &TrayIconSettings.MiddleClickCommandStr},
+            {"RightClickCommand", &TrayIconSettings.RightClickCommandStr},
+        };
+
+        for (const auto& pr : mapToValues) {
+            SimpleXmlNode commandNode = trayIconNode.GetChild(pr.first, false);
+            if (!commandNode.IsNull()) {
+                std::string text = commandNode.Text();
+                if (!text.empty()) {
+                    int CommandIndex = atoi(text.c_str());
+                    if (CommandIndex >= 0 && CommandIndex < ARRAY_SIZE(MouseClickCommandIndexToString)
+                        ) {
+                        *pr.second = MouseClickCommandIndexToString[CommandIndex].c_str();
+                    }
+                }
+            }
+        }
+    }
+
     SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
     if (!searchEngineNode.IsNull()) {
         std::string searchEngineName = searchEngineNode.Text();
@@ -815,10 +851,10 @@ void WtlGuiSettings::BindToManager() {
     mediaInfo.nm_bind(MediaInfoSettings, EnableLocalization);
 
     SettingsNode& tray = mgr_["TrayIcon"];
-    tray.nm_bind(TrayIconSettings, LeftDoubleClickCommand);
-    tray.nm_bind(TrayIconSettings, LeftClickCommand);
-    tray.nm_bind(TrayIconSettings, RightClickCommand);
-    tray.nm_bind(TrayIconSettings, MiddleClickCommand);
+    tray.nm_bind(TrayIconSettings, LeftDoubleClickCommandStr);
+    tray.nm_bind(TrayIconSettings, LeftClickCommandStr);
+    tray.nm_bind(TrayIconSettings, RightClickCommandStr);
+    tray.nm_bind(TrayIconSettings, MiddleClickCommandStr);
     tray.nm_bind(TrayIconSettings, DontLaunchCopy);
     tray.nm_bind(TrayIconSettings, TrayScreenshotAction);
 

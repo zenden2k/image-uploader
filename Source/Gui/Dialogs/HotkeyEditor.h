@@ -53,12 +53,12 @@ struct MYHOTKEY
         return true;
     } 
 
-    bool operator!=( const MYHOTKEY& c)
+    bool operator!=( const MYHOTKEY& c) const
     {
         return (keyCode != c.keyCode || keyModifier != c.keyModifier);
     }
 
-    CString getKeyName(UINT vk, BOOL fExtended)
+    static CString getKeyName(UINT vk, BOOL fExtended)
     {
         LONG lScan = MapVirtualKey(vk, 0) << 16;
 
@@ -73,7 +73,7 @@ struct MYHOTKEY
         return buf;  // str.c_str();
     }
 
-    ACCEL toAccel()
+    ACCEL toAccel() const
     {
         ACCEL result;
         result.fVirt = 0;
@@ -89,7 +89,7 @@ struct MYHOTKEY
         return result;
     }
 
-    CString toString()
+    CString toString() const
     {
         CString res;
         HotkeyToString(keyCode, keyModifier, res );

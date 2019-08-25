@@ -1541,7 +1541,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcMediaInfo();
     else if (funcName == _T("open_screenshot_folder"))
         return funcOpenScreenshotFolder();
-
+    else if (funcName == _T("exit"))
+        return funcExit();
     return false;
 }
 
@@ -2266,6 +2267,11 @@ bool CWizardDlg::funcFromClipboard(bool fromCmdLine) {
         return true;
     }
     return false;
+}
+
+bool CWizardDlg::funcExit() {
+    CloseWizard();
+    return true;
 }
 
 LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)

@@ -78,6 +78,8 @@ public:
     LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
     CComboBox leftButtonDblClickCombo_, leftButtonClickCombo_, middleButtonClickCombo_, rightButtoClickCombo_;
+    std::map<int, CString> indexToCommand_;
+    CString getCommandByIndex(int index) const;
 };
 
 

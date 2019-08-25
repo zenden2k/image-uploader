@@ -188,6 +188,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Capture the Entire Screen"),_T("fullscreenshot"), IDM_FULLSCREENSHOT, false);
     AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT, false);
     AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT, false);
+    AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
     AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT, false);
     AddItem(TR("Show program's window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
@@ -195,13 +196,11 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,true,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut
     AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB); 
     AddItem(TR("View Media File Information"),_T("mediainfo"), IDM_MEDIAINFO);
-    AddItem(TR("Exit"),_T("mediainfo"), IDM_EXIT);
+    AddItem(TR("Quick upload image from clipboard"), _T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
     AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
     AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
     AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
-    AddItem(TR("Quick upload image from clipboard"),_T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
-    AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
-
+    AddItem(TR("Exit"), _T("exit"), IDM_EXIT);
 }
 
 CHotkeyItem& CHotkeyList::getByFunc(const CString &func)
