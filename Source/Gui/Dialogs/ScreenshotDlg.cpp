@@ -25,6 +25,8 @@
 #include "Core/ScreenCapture/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
+using namespace ScreenCapture;
+
 // CScreenshotDlg
 CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
 {

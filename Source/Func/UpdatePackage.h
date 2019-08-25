@@ -31,7 +31,6 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/SimpleXml.h"
 
-
 struct CUpdateItem
 {
         CString name;
@@ -52,7 +51,7 @@ class CUpdateInfo
         bool Parse(SimpleXml& xml);    
         bool CheckUpdates();
         CString getHash() const;
-        bool CanUpdate(const CUpdateInfo& newInfo);
+        bool CanUpdate(const CUpdateInfo& newInfo) const;
         bool    operator<(const CUpdateInfo& p);
 
         bool isCoreUpdate() const;
@@ -121,10 +120,10 @@ class CUpdateManager: public CUpdateStatusCallback
         CString generateReport(bool manualUpdates = false);
         CString generateUpdateMessage();
         void Clear();
-        bool AreUpdatesAvailable();
-        bool AreCoreUpdates();
-        bool AreManualUpdates();
-        bool AreAutoUpdates();
+        bool AreUpdatesAvailable() const;
+        bool AreCoreUpdates() const;
+        bool AreManualUpdates() const;
+        bool AreAutoUpdates() const;
         void setUpdateStatusCallback(CUpdateStatusCallback * callback);
         int successPackageUpdatesCount() const;
         void stop();

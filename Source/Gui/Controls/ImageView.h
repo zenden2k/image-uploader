@@ -37,7 +37,7 @@ public:
     virtual CImageViewItem getNextImgViewItem(CImageViewItem currentItem)=0;
     virtual CImageViewItem getPrevImgViewItem(CImageViewItem currentItem)=0;
 
-    virtual ~CImageViewCallback() { };
+    virtual ~CImageViewCallback() = default;
 };
 class CImageView : 
     public CDialogImpl<CImageView>    

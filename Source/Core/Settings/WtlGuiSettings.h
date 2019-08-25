@@ -17,6 +17,8 @@
 #define TRAY_SCREENSHOT_OPENINEDITOR 4
 #include "Core/Images/Utils.h"
 
+class CFloatingWindow;
+
 struct ImageReuploaderSettingsStruct {
     bool PasteHtmlOnCtrlV;
 };
@@ -96,6 +98,8 @@ class WtlGuiSettings : public CommonGuiSettings {
 public:
     WtlGuiSettings();
     ~WtlGuiSettings();
+
+    void setFloatWnd(CFloatingWindow* floatWnd);
     ImageEditorSettingsStruct ImageEditorSettings;
 
     bool RememberImageServer;
@@ -157,5 +161,6 @@ protected:
     void BindToManager();
 private:
     TCHAR m_Directory[MAX_PATH];
+    CFloatingWindow* floatWnd_;
 };
 #endif

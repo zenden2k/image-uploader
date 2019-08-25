@@ -37,15 +37,15 @@ struct CUrlListItem
     CString DownloadUrl;
     CString DownloadUrlShortened;
 
-    CString getDownloadUrl(bool shortened = false) {
+    CString getDownloadUrl(bool shortened = false) const {
         return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
     }
 
-    CString getImageUrl(bool shortened = false) {
+    CString getImageUrl(bool shortened = false) const {
         return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
     }
 
-    CString getThumbUrl(bool shortened = false) {
+    CString getThumbUrl(bool shortened = false) const {
         return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
     }
 

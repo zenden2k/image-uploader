@@ -59,7 +59,7 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
         } else if (s_Dir.name[0] != '.') {
             if (!m_bImagesOnly || IuCommonFunctions::IsImage(s_Dir.name)) {
                 CWizardDlg::AddImageStruct ais;
-                ais.show = !m_pWizardDlg->QuickUploadMarker;
+                ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 CString name = CString(currentDir) + CString(_T("\\")) + CString(s_Dir.name);
                 ais.RealFileName = name;
                 ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
@@ -87,7 +87,7 @@ DWORD CFolderAdd::Run()
         else
             if (!m_bImagesOnly || IuCommonFunctions::IsImage(CurPath)) {
                 CWizardDlg::AddImageStruct ais;
-                ais.show = !m_pWizardDlg->QuickUploadMarker;
+                ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 CString name = CurPath;
                 ais.RealFileName = CurPath;
                 if (SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE, (WPARAM)&ais, 0))
@@ -109,7 +109,7 @@ DWORD CFolderAdd::Run()
     if (!count)
         GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APPNAME, MB_ICONINFORMATION);
     else {
-        if (m_pWizardDlg->QuickUploadMarker) {
+        if (m_pWizardDlg->getQuickUploadMarker()) {
 
             m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
         } else {

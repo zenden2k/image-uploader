@@ -24,8 +24,6 @@
 #pragma once
 
 #include "atlheaders.h"
-#include "statusdlg.h"
-
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
 #include "Core/ScreenCapture.h"
@@ -39,25 +37,31 @@
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
 #include "Gui/Controls/DialogIndirect.h"
-#include "Core/Upload/Filters/UserFilter.h"
-#include "Core/Upload/Filters/ImageConverterFilter.h"
-#include "Core/Upload/Filters/SizeExceedFilter.h"
-#include "Core/Upload/Filters/UrlShorteningFilter.h"
+
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
-#define WM_MY_ADDIMAGE WM_USER + 222
-#define WM_MY_SHOWPAGE WM_USER + 223
-#define WM_MY_EXIT WM_USER + 224
-#define WM_TASKDISPATCHERMSG WM_USER + 225
+#define WM_MY_ADDIMAGE (WM_USER + 222)
+#define WM_MY_SHOWPAGE (WM_USER + 223)
+#define WM_MY_EXIT (WM_USER + 224)
+#define WM_TASKDISPATCHERMSG (WM_USER + 225)
 
-
-
-// CWizardDlg
+// Forward declarations
 class CFolderAdd;
 class CWizardPage;
 class CWizardDlg;
 class CUpdateDlg;
+class CStatusDlg;
 class DefaultLogger;
+class UserFilter;
+class ImageConverterFilter;
+class SizeExceedFilter;
+class UrlShorteningFilter;
+class UploadManager;
+class UploadEngineManager;
+class ScriptsManager;
+class Win7JumpList;
+class WtlGuiSettings;
+class CFloatingWindow;
 
 class CMyFolderDialog : public CFolderDialogImpl<CMyFolderDialog> {
 public:
@@ -70,18 +74,14 @@ public:
         LPARAM lParam     // second message parameter
         );
     DLGPROC OldProc;
-public:
     CMyFolderDialog(HWND hWnd);
     bool m_bSubdirs;
     HWND SubdirsCheckbox;
-
 };
+
 extern TCHAR MediaInfoDllPath[MAX_PATH];
-class UploadManager;
-class UploadEngineManager;
-class ScriptsManager;
-class Win7JumpList;
-class WtlGuiSettings;
+
+
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
@@ -90,23 +90,25 @@ class CWizardDlg :
         public ITaskDispatcher
 {
 public:
+    enum { IDD = IDD_WIZARDDLG };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889 };
+    enum { kNewFilesTimer = 1 };
+    static const WPARAM kWmMyExitParam = 5;
+
+    enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
+
     struct AddImageStruct
     {
         CString RealFileName, VirtualFileName;
         bool show;
     };
 
-    void runInGuiThread(TaskDispatcherTask&& task, bool async) override;
-    CWizardDlg(DefaultLogger* defaultLogger);
+    CWizardDlg(DefaultLogger* defaultLogger, CFloatingWindow* floatWnd);
     virtual ~CWizardDlg();
-    CStringList m_Paths;
-    enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889};
-    enum { kNewFilesTimer = 1};
-    static const WPARAM kWmMyExitParam = 5;
-    virtual BOOL PreTranslateMessage(MSG* pMsg) override;
-    virtual BOOL OnIdle() override;
-    CString m_bCurrentFunc;
+    
+    BOOL PreTranslateMessage(MSG* pMsg) override;
+    BOOL OnIdle() override;
+
     BEGIN_UPDATE_UI_MAP(CWizardDlg)
     END_UPDATE_UI_MAP()
 
@@ -161,13 +163,7 @@ public:
     LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
-    bool DragndropEnabled;
-    enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
-    int CurPage;
-    int PrevPage,NextPage;
     bool CreatePage(WizardPageId PageID);
-    CWizardPage* Pages[5];
-    int screenshotIndex; 
     void setSessionImageServer(const ServerProfile& server);
     void setSessionFileServer(const ServerProfile& server);
     ServerProfile getSessionImageServer() const;
@@ -181,26 +177,23 @@ public:
 
     void ShowUpdateMessage(const CString& msg) override;
 
+    void runInGuiThread(TaskDispatcherTask&& task, bool async) override;
+
     template<class T> T* getPage(WizardPageId id) {
         if (id < 0 || id >= ARRAY_SIZE(Pages)) {
             return nullptr;
         }
         return dynamic_cast<T*>(Pages[id]);
     }
-protected:
-    ServerProfile sessionImageServer_, sessionFileServer_;
-    bool serversChanged_;
     void settingsChanged(BasicSettings* settings);
     bool pasteFromClipboard();
-public:
     bool ShowPage(WizardPageId idPage, int prev = -1, int next = -1);
     bool AddImage(const CString &FileName, const CString &VirtualFileName, bool Show=true);
     bool AddImageAsync(const CString &FileName, const CString &VirtualFileName, bool show);
     LRESULT OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    HBITMAP GenHeadBitmap(WizardPageId PageID);
+    HBITMAP GenHeadBitmap(WizardPageId PageID) const;
     void PasteBitmap(HBITMAP);
-    int m_StartingThreadId;
     LRESULT OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     void Exit();
     LRESULT OnDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -208,45 +201,12 @@ public:
     bool LoadUploadEngines(const CString &filename, CString &Error);
     bool ParseCmdLine();
     UrlShorteningFilter* urlShorteningFilter() const;
-    CIcon hIcon;
-    CIcon hIconSmall;
-    CHotkeyList m_hotkeys;
-    CFolderAdd FolderAdd;
-    CMyEngineList m_EngineList;
-    UploadManager* uploadManager_;
-    UploadEngineManager* uploadEngineManager_;
-    ScriptsManager* scriptsManager_;
-	std::unique_ptr<Win7JumpList> win7JumpList_;
-    HwndScopedWrapper aboutButtonToolTip_;
-    CIconButton helpButton_;
-    CIcon helpButtonIcon_;
-    long m_lRef;
-    bool QuickUploadMarker;
-    CString LastVideoFile;
-    bool m_bShowAfter;
-    bool isFirstRun_;
-    WtlGuiSettings& Settings;
-    std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
-    std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
-    std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
-    std::unique_ptr<UserFilter> userFilter_;
-    std::map<CString, CLogWindow*> logWindowsByFileName_;
-    std::vector<AddImageStruct> newImages_;
-    std::mutex newImagesMutex_;
-    std::shared_ptr<CScreenshotRegion> lastScreenshotRegion_;
-    HMONITOR lastScreenshotMonitor_;
-    std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
-    DefaultLogger* defaultLogger_;
-    std::unique_ptr<CStatusDlg> statusDlg_;
-    std::vector<TaskDispatcherTask> scheduledTasks_;
-    std::mutex scheduledTasksMutex_;
-    DWORD mainThreadId_;
-    bool CommonScreenshot(CaptureMode mode);
+    bool CommonScreenshot(ScreenCapture::CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);
     bool funcImportVideo();
     bool funcScreenshotDlg();
-    bool funcRegionScreenshot(bool ShowAfter=true);
+    bool funcRegionScreenshot(bool ShowAfter = true);
     bool funcFullScreenshot();
     bool funcWindowHandleScreenshot();
     bool funcFreeformScreenshot();
@@ -265,58 +225,107 @@ public:
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
 
-	bool importVideoFile(const CString& fileName, int prevPage = 0);
+    bool importVideoFile(const CString& fileName, int prevPage = 0);
 
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);
     void setIsFirstRun(bool isFirstRun);
-    public:
-    CUpdateDlg *updateDlg;
+
     bool CanShowWindow() override;
     void UpdateAvailabilityChanged(bool Available) override;
-    //CSpecialHyperLink m_UpdateLink;
-    HACCEL hLocalHotkeys;
+
     //    IUnknown methods
     STDMETHODIMP_(ULONG) AddRef() override;
 
     STDMETHODIMP_(ULONG) Release() override;
     STDMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
     //    IDropTarget methods
-    STDMETHODIMP DragEnter( 
-              /* [unique][in] */ IDataObject *pDataObj,
-              /* [in] */ DWORD grfKeyState,
-              /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect) override;
-    STDMETHODIMP DragOver( 
-              /* [in] */ DWORD grfKeyState,
-              /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect) override;
+    STDMETHODIMP DragEnter(
+        /* [unique][in] */ IDataObject *pDataObj,
+        /* [in] */ DWORD grfKeyState,
+        /* [in] */ POINTL pt,
+        /* [out][in] */ DWORD *pdwEffect) override;
+    STDMETHODIMP DragOver(
+        /* [in] */ DWORD grfKeyState,
+        /* [in] */ POINTL pt,
+        /* [out][in] */ DWORD *pdwEffect) override;
 
     STDMETHODIMP DragLeave(void) override;
-    STDMETHODIMP Drop( 
-              /* [unique][in] */ IDataObject *pDataObj,
-              /* [in] */ DWORD grfKeyState,
-              /* [in] */ POINTL pt,
-              /* [out][in] */ DWORD *pdwEffect) override;
+    STDMETHODIMP Drop(
+        /* [unique][in] */ IDataObject *pDataObj,
+        /* [in] */ DWORD grfKeyState,
+        /* [in] */ POINTL pt,
+        /* [out][in] */ DWORD *pdwEffect) override;
 
     void AddFolder(LPCTSTR szFolder, bool SubDirs = false);
-    
+
     //CRegionSelectCallback
     void OnScreenshotFinished(int Result) override;
     void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm) override;
     void CloseWizard();
     bool RegisterLocalHotkeys();
     bool UnRegisterLocalHotkeys();
-    bool m_bShowWindow;
-    bool m_bHandleCmdLineFunc;
     void CreateUpdateDlg();
-    INT m_bScreenshotFromTray;
     bool IsClipboardDataAvailable();
     void showLogWindowForFileName(CString fileName);
     bool hasLastScreenshotRegion() const;
-    void setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region, HMONITOR monitor);
+    void setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreenshotRegion> region, HMONITOR monitor);
     void addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb);
+    bool getQuickUploadMarker() const;
+    void setQuickUploadMarker(bool val);
+    CString getLastVideoFile() const;
+    void setLastVideoFile(CString fileName);
+    bool isShowWindowSet() const;
+protected:
+    CIcon hIcon;
+    CIcon hIconSmall;
+    CHotkeyList m_hotkeys;
+    CFolderAdd FolderAdd;
+    CMyEngineList m_EngineList;
+    std::unique_ptr<UploadManager> uploadManager_;
+    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
+    std::shared_ptr<ScriptsManager> scriptsManager_;
+	std::unique_ptr<Win7JumpList> win7JumpList_;
+    HwndScopedWrapper aboutButtonToolTip_;
+    CIconButton helpButton_;
+    CIcon helpButtonIcon_;
+    long m_lRef;
+    bool QuickUploadMarker;
+    CString LastVideoFile;
+    bool m_bShowAfter;
+    bool isFirstRun_;
+    WtlGuiSettings& Settings;
+    std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
+    std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
+    std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    std::unique_ptr<UserFilter> userFilter_;
+    std::map<CString, CLogWindow*> logWindowsByFileName_;
+    std::vector<AddImageStruct> newImages_;
+    std::mutex newImagesMutex_;
+    std::shared_ptr<ScreenCapture::CScreenshotRegion> lastScreenshotRegion_;
+    HMONITOR lastScreenshotMonitor_;
+    std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
+    DefaultLogger* defaultLogger_;
+    std::unique_ptr<CStatusDlg> statusDlg_;
+    std::vector<TaskDispatcherTask> scheduledTasks_;
+    std::mutex scheduledTasksMutex_;
+    CFloatingWindow* floatWnd_;
+    DWORD mainThreadId_;
+    std::unique_ptr<CUpdateDlg> updateDlg;
+    HACCEL hLocalHotkeys;
+    INT m_bScreenshotFromTray;
+    bool m_bShowWindow;
+    bool m_bHandleCmdLineFunc;
+    ServerProfile sessionImageServer_, sessionFileServer_;
+    bool serversChanged_;
+    int CurPage;
+    int PrevPage, NextPage;
+    bool DragndropEnabled;
+    CStringList m_Paths;
+    CWizardPage* Pages[5];
+    int screenshotIndex;
+    CString m_bCurrentFunc;
 };
 
 

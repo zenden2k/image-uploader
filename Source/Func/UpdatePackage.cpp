@@ -20,12 +20,13 @@
 
 #include "UpdatePackage.h"
 
-#include <time.h>
-#include "atlheaders.h"
+#include <boost/format.hpp>
+#include <ctime>
+
 #include <json/value.h>
 #include <json/writer.h>
+#include "atlheaders.h"
 #include "3rdpart/unzipper.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "WinUtils.h"
@@ -35,6 +36,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
 #include "Core/i18n/Translator.h"
+
 
 #ifdef IU_CLI
     #undef TR
@@ -133,7 +135,7 @@ bool CUpdateInfo::Parse( SimpleXml &xml)
     return true;
 }
 
-bool CUpdateInfo::CanUpdate(const CUpdateInfo& newInfo)
+bool CUpdateInfo::CanUpdate(const CUpdateInfo& newInfo) const
 {
     if(m_TimeStamp >= newInfo.m_TimeStamp) return false;
     if(newInfo.m_PackageName != m_PackageName) return false;
@@ -350,16 +352,16 @@ bool CUpdateManager::internal_load_update(CString name)
     return true;
 }
 
-bool CUpdateManager::AreCoreUpdates()
+bool CUpdateManager::AreCoreUpdates() const
 {
     return m_nCoreUpdates != 0;
 }
 
-bool CUpdateManager::AreManualUpdates() {
+bool CUpdateManager::AreManualUpdates() const {
     return m_manualUpdatesList.size() != 0;
 }
 
-bool CUpdateManager::AreAutoUpdates() {
+bool CUpdateManager::AreAutoUpdates() const {
     return m_updateList.size() != 0;
 }
 
@@ -379,7 +381,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     if(nm_->responseCode() != 200)
     {
         ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
-        return 0;
+        return false;
     }
 
     CString hash = ui.getHash();
@@ -394,7 +396,8 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     CString unzipFolder = m_TempDirectory + ui.packageName();
     if(!unzipper.UnzipTo(unzipFolder))
     {
-        updateStatus(nCurrentIndex, TR("Unable to unpack archive ") + filename);
+        std::wstring errorMessage = str(boost::wformat(TR("Unable to unpack archive %s")) % filename.GetString());
+        updateStatus(nCurrentIndex, errorMessage.c_str());
         return false;
     }
 
@@ -402,7 +405,8 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     updatePackage.setUpdateStatusCallback(this);
     if(!updatePackage.LoadUpdateFromFile(unzipFolder + _T("\\")+_T("package.xml")))
     {
-        MessageBox(0,TR("Could not read ") + ui.packageName(),0,0);
+        std::wstring errorMessage = str(boost::wformat(TR("Could not read package %s")) % ui.packageName().GetString());
+        updateStatus(nCurrentIndex, errorMessage.c_str());
         return false;
     }
 
@@ -575,7 +579,7 @@ void CUpdatePackage::setStatusText(const CString& text)
 }
 
 CUpdateManager::CUpdateManager(std::shared_ptr<INetworkClientFactory> networkClientFactory, const CString& tempDirectory) :
-    networkClientFactory_(networkClientFactory)
+    networkClientFactory_(std::move(networkClientFactory))
 {
     m_statusCallback = nullptr;
     m_nCoreUpdates = 0;
@@ -634,7 +638,7 @@ void CUpdateManager::updateStatus(int packageIndex, const CString& status)
         m_statusCallback->updateStatus(packageIndex, status);
 }
 
-bool CUpdateManager::AreUpdatesAvailable()
+bool CUpdateManager::AreUpdatesAvailable() const
 {
     return (m_updateList.size() != 0);
 }

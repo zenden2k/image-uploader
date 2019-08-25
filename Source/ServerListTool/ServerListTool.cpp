@@ -108,10 +108,10 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     appParams->setIsGui(true);
     appParams->setDataDirectory(W2U(WinUtils::GetAppFolder() + "Data/"));
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    ScriptsManager scriptsManager(networkClientFactory);
-    UploadEngineManager uploadEngineManager(&engineList, &uploadErrorHandler, networkClientFactory);
-    uploadEngineManager.setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(&uploadEngineManager, &engineList, &scriptsManager, &uploadErrorHandler, networkClientFactory, 5);
+    auto scriptsManager = std::make_shared<ScriptsManager>(networkClientFactory);
+    auto uploadEngineManager = std::make_shared<UploadEngineManager>(&engineList, &uploadErrorHandler, networkClientFactory);
+    uploadEngineManager->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
+    UploadManager uploadManager(uploadEngineManager, &engineList, scriptsManager, &uploadErrorHandler, networkClientFactory, 5);
 
     CString commonTempFolder, tempFolder;
     IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
@@ -138,7 +138,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     int nRet = 0;
     // BLOCK: Run application
     {
-        CMainDlg dlgMain(&uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
+        CMainDlg dlgMain(uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
         nRet = dlgMain.DoModal(0);
     }
 

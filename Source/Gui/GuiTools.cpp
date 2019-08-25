@@ -210,6 +210,9 @@ int dlgY(int HeightInPixels) {
 
 CString GetWindowText(HWND wnd) {
     int len = GetWindowTextLength(wnd);
+    if (!len) {
+        return {};
+    }
     CString buf;
     GetWindowText(wnd, buf.GetBuffer(len + 1), len + 1);
     buf.ReleaseBuffer(-1);

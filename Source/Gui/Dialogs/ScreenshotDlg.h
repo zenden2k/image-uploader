@@ -45,7 +45,7 @@ class CScreenshotDlg :
     public:
         CScreenshotDlg();
         ~CScreenshotDlg() = default;
-        CaptureMode captureMode() const;
+        ScreenCapture::CaptureMode captureMode() const;
         enum { IDD = IDD_SCREENSHOTDLG };
     
     protected:
@@ -83,7 +83,7 @@ class CScreenshotDlg :
 
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;
-        CaptureMode m_CaptureMode;
+        ScreenCapture::CaptureMode m_CaptureMode;
         CComboBox m_monitorCombobox;
 };
 

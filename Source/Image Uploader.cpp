@@ -64,7 +64,10 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
 
     CMessageLoop theLoop;
     _Module.AddMessageLoop( &theLoop );
-    CWizardDlg  dlgMain(defaultLogger);
+
+    CFloatingWindow floatWnd;
+    Settings.setFloatWnd(&floatWnd);
+    CWizardDlg  dlgMain(defaultLogger, &floatWnd);
     
     DWORD DlgCreationResult = 0;
     bool ShowMainWindow     = true;
@@ -144,7 +147,7 @@ int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
         floatWnd.CreateTrayIcon();
     }    
     if (/* ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") )*/  
-            CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.m_bShowWindow ) {
+            CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.isShowWindowSet() ) {
         dlgMain.ShowWindow(SW_HIDE);
     } else {
         dlgMain.ShowWindow(nCmdShow);

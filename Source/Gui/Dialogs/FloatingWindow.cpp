@@ -201,7 +201,7 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
         return 0;
     }
     HWND hParent  = wizardDlg_->m_hWnd; // wizardDlg_->IsWindowEnabled()?  : 0;
-    CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_);
+    CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_.get());
     dlg.DoModal(hParent);
     return 0;
 }
@@ -500,15 +500,15 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         if (enumerator.enumDisplayMonitors(0, 0) && enumerator.getCount() > 1) {
             CMenu MonitorsSubMenu;
             MonitorsSubMenu.CreatePopupMenu();
-            MonitorsSubMenu.InsertMenu(0, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == kAllMonitors ? MFS_CHECKED : 0),
+            MonitorsSubMenu.InsertMenu(0, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == ScreenCapture::kAllMonitors ? MFS_CHECKED : 0),
                 IDM_MONITOR_ALLMONITORS, TR("All monitors"));
-            MonitorsSubMenu.InsertMenu(1, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == kCurrentMonitor ? MFS_CHECKED : 0),
+            MonitorsSubMenu.InsertMenu(1, MFT_STRING | MFT_RADIOCHECK | (Settings.ScreenshotSettings.MonitorMode == ScreenCapture::kCurrentMonitor ? MFS_CHECKED : 0),
                 IDM_MONITOR_CURRENTMONITOR, TR("Current monitor"));
             int j = 0;
             for (const MonitorEnumerator::MonitorInfo& monitor : enumerator) {
                 CString itemTitle;
                 itemTitle.Format(_T("%s %d (%dx%d)"), TR("Monitor"), j + 1, monitor.rect.Width(), monitor.rect.Height());
-                bool isSelected = Settings.ScreenshotSettings.MonitorMode == kSelectedMonitor + j;
+                bool isSelected = Settings.ScreenshotSettings.MonitorMode == ScreenCapture::kSelectedMonitor + j;
                 MonitorsSubMenu.InsertMenu(j + 2, MFT_STRING | MFT_RADIOCHECK | (isSelected ? MFS_CHECKED : 0),
                     IDM_MONITOR_SELECTEDMONITOR_FIRST + j, itemTitle);
                 j++;
@@ -613,7 +613,6 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
     return 0;
 }
 
-CFloatingWindow floatWnd;
 
 void CFloatingWindow::CreateTrayIcon()
 {
@@ -627,8 +626,8 @@ void CFloatingWindow::CreateTrayIcon()
     if (!bFound)
     {
         CRect r(100, 100, 400, 400);
-        floatWnd.Create(0, r, _T("ImageUploader_TrayWnd"), WS_OVERLAPPED | WS_POPUP | WS_CAPTION );
-        floatWnd.ShowWindow(SW_HIDE);
+        Create(0, r, _T("ImageUploader_TrayWnd"), WS_OVERLAPPED | WS_POPUP | WS_CAPTION );
+        ShowWindow(SW_HIDE);
     }
 }
 
@@ -722,20 +721,20 @@ LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CFloatingWindow::OnMonitorAllMonitors(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.MonitorMode = kAllMonitors;
+    Settings.ScreenshotSettings.MonitorMode = ScreenCapture::kAllMonitors;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMonitorCurrentMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.MonitorMode = kCurrentMonitor;
+    Settings.ScreenshotSettings.MonitorMode = ScreenCapture::kCurrentMonitor;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int monitorIndex = wID - IDM_MONITOR_SELECTEDMONITOR_FIRST;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.MonitorMode = kSelectedMonitor + monitorIndex;
+    Settings.ScreenshotSettings.MonitorMode = ScreenCapture::kSelectedMonitor + monitorIndex;
     return 0;
 }
 
@@ -775,7 +774,7 @@ void CFloatingWindow::setUploadManager(UploadManager* manager)
     uploadManager_ = manager;
 }
 
-void CFloatingWindow::setUploadEngineManager(UploadEngineManager* manager)
+void CFloatingWindow::setUploadEngineManager(std::shared_ptr<UploadEngineManager> manager)
 {
     uploadEngineManager_ = manager;
 }

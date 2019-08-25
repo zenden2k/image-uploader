@@ -20,7 +20,7 @@ limitations under the License.
 
 #include "WtlGuiSettings.h"
 
-#include <stdlib.h>
+#include <cassert>
 
 #ifdef _WIN32
 #include <atlheaders.h>
@@ -28,7 +28,7 @@ limitations under the License.
 #endif
 #include "Core/SettingsManager.h"
 
-#include "Func/myutils.h"
+#include "Func/MyUtils.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
@@ -57,6 +57,10 @@ COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
 
 
 WtlGuiSettings::~WtlGuiSettings() {
+}
+
+void WtlGuiSettings::setFloatWnd(CFloatingWindow* floatWnd) {
+    floatWnd_ = floatWnd;
 }
 
 #if !defined  (IU_CLI)
@@ -285,7 +289,9 @@ void WtlGuiSettings::fixInvalidServers() {
 
 }
 
-WtlGuiSettings::WtlGuiSettings() : CommonGuiSettings()
+WtlGuiSettings::WtlGuiSettings() : 
+    CommonGuiSettings(), 
+    floatWnd_(nullptr)
 {
 #if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
     IsPortable = false;
@@ -684,10 +690,11 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 
     if (ShowTrayIcon_changed) {
         ShowTrayIcon_changed = false;
+        assert(floatWnd_);
         if (ShowTrayIcon) {
             if (!CFloatingWindow::IsRunningFloatingWnd()) {
                 CmdLine.AddParam(_T("/tray"));
-                floatWnd.CreateTrayIcon();
+                floatWnd_->CreateTrayIcon();
             }
         } else {
             HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
@@ -698,7 +705,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     } else if (ShowTrayIcon) {
         HWND TrayWnd = FindWindow(0, _T("ImageUploader_TrayWnd"));
         if (TrayWnd)
-            SendMessage(TrayWnd, WM_RELOADSETTINGS, (floatWnd.m_hWnd) ? 1 : 0, (Hotkeys_changed) ? 0 : 1);
+            SendMessage(TrayWnd, WM_RELOADSETTINGS, (floatWnd_->m_hWnd) ? 1 : 0, (Hotkeys_changed) ? 0 : 1);
     }
 
     Hotkeys_changed = false;

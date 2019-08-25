@@ -30,6 +30,8 @@
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
 
+namespace ScreenCapture {
+
 typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
 typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
 RECT MaximizedWindowFix(HWND handle, RECT windowRect);
@@ -267,7 +269,7 @@ void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsig
 HRGN GetWindowRegion(HWND wnd)
 {
     RECT WndRect;
-    ::MyGetWindowRect(wnd, &WndRect );
+    MyGetWindowRect(wnd, &WndRect );
     CRgn WindowRgn;
     WindowRgn.CreateRectRgnIndirect(&WndRect);
     if (::GetWindowRgn(wnd, WindowRgn) != ERROR)
@@ -1224,4 +1226,6 @@ bool CActiveWindowRegion::GetImage(HDC src, Bitmap** res)
     Clear();
     AddWindow(GetForegroundWindow(), true);
     return CWindowHandlesRegion::GetImage(src, res);
+}
+
 }

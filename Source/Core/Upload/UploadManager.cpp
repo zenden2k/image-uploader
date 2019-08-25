@@ -9,7 +9,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "UploadEngineManager.h"
 
-UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, 
+UploadManager::UploadManager(std::shared_ptr<UploadEngineManager> uploadEngineManager, CUploadEngineList* engineList, std::shared_ptr<ScriptsManager> scriptsManager,
     IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int threadCount) :
 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, threadCount)
 {

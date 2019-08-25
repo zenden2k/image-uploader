@@ -63,8 +63,8 @@ public:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CMyImage img;
-        std::string getSelectedThumbnailFileName();
-        std::string getSelectedThumbnailName();
+        std::string getSelectedThumbnailFileName() const;
+        std::string getSelectedThumbnailName() const;
         LRESULT OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void ThumbTextCheckboxChange();

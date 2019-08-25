@@ -490,13 +490,13 @@ int func() {
     Settings.setEngineList(&list);
     ServiceLocator::instance()->setEngineList(&list);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    ScriptsManager scriptsManager(networkClientFactory);
-    std::unique_ptr<UploadEngineManager> uploadEngineManager;
+    auto scriptsManager = std::make_shared<ScriptsManager>(networkClientFactory);
+    std::shared_ptr<UploadEngineManager> uploadEngineManager;
     uploadEngineManager.reset(new UploadEngineManager(&list, &uploadErrorHandler, networkClientFactory));
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
     std::unique_ptr<UploadManager> uploadManager;
-    uploadManager.reset(new UploadManager(uploadEngineManager.get(), &list, &scriptsManager, &uploadErrorHandler, networkClientFactory, 1));
+    uploadManager.reset(new UploadManager(uploadEngineManager, &list, scriptsManager, &uploadErrorHandler, networkClientFactory, 1));
 
 
     if (useSystemProxy) {

@@ -200,7 +200,7 @@ public:
      LRESULT OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      void UploadScreenshot(const CString& realName, const CString &displayName);
      void setUploadManager(UploadManager * manager);
-     void setUploadEngineManager(UploadEngineManager * manager);
+     void setUploadEngineManager(std::shared_ptr<UploadEngineManager> manager);
 
      // Text displayed in tray icon tooltip
      void setStatusText(const CString& text, int timeoutMs = 0);
@@ -219,7 +219,7 @@ public:
      // Text displayed in tray icon tooltip
      CString statusText_;
      UploadManager * uploadManager_;
-     UploadEngineManager* uploadEngineManager_;
+     std::shared_ptr<UploadEngineManager> uploadEngineManager_;
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(const CString& url);
@@ -242,9 +242,6 @@ public:
     protected:
     static CString HotkeyToString(CString funcName, CString menuItemText);
 };
-extern CFloatingWindow floatWnd;
-void CreateFloatWindow();
-
 
 #endif // FLOATINGWINDOW_H
 

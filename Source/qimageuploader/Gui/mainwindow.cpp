@@ -36,10 +36,10 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     engineList_ = engineList;
 
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
+    scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
+    uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
+    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_, engineList, scriptsManager_, uploadErrorHandler,
                                        networkClientFactory, 3);
 
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";

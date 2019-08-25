@@ -21,14 +21,11 @@
 #pragma once
 
 #include <memory>
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "maindlg.h"
-#include "logosettings.h"
-#include "logindlg.h"
 #include "atlctrlx.h"
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/IconButton.h"
-#include <atlcrack.h>
 #include "Gui/Controls/ServerSelectorControl.h"
 #define IDC_SELECTFOLDER 4050
 #define IDC_SERVERBUTTON 4000
@@ -55,10 +52,9 @@
 #define IDC_RESIZEPRESETMENU_FIRST_ID 18000
 #define IDC_RESIZEPRESETMENU_LAST_ID 18100
 
-
-
 class CMyEngineList;
 class IconBitmapUtils;
+class CServerSelectorControl;
 
 class CUploadSettings : 
     public CDialogImpl<CUploadSettings>    , public CWizardPage

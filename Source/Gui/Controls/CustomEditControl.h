@@ -4,6 +4,7 @@
 #include "atlheaders.h"
 #include "Core/3rdpart/FastDelegate.h"
 
+//Custom edit control which handles Ctrl+A hotkey
 class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
     public:
 

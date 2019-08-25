@@ -38,8 +38,8 @@
 
 CThumbSettingsPage::CThumbSettingsPage()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    params_ = Settings.imageServer.getImageUploadParams().getThumb();
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    params_ = Settings->imageServer.getImageUploadParams().getThumb();
     m_CatchFormChanges = false;
 }
 
@@ -177,7 +177,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
     return 0;
 }
 
-std::string CThumbSettingsPage::getSelectedThumbnailFileName()
+std::string CThumbSettingsPage::getSelectedThumbnailFileName() const
 {
     CString buf;
     int index = thumbsCombo_.GetCurSel();
@@ -193,7 +193,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName()
     return WCstringToUtf8(folder + thumbFileName+".xml");
 }
 
-std::string CThumbSettingsPage::getSelectedThumbnailName()
+std::string CThumbSettingsPage::getSelectedThumbnailName() const
 {
     CString buf;
     int index = thumbsCombo_.GetCurSel();

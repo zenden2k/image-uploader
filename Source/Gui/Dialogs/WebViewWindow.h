@@ -2,67 +2,10 @@
 #define IU_GUI_DIALOGS_WEBVIEWWINDOW_H
 
 #include "atlheaders.h"
-#include <atlcrack.h>
 #include "resource.h"       // main symbols
 #include "Gui/Controls/WTLBrowserView.h"
 #include "3rdpart/thread.h"
 #include "3rdpart/MemberFunctionCallback.h"
-/*
-#include "3rdpart/hookThunk.h"
-#include "3rdpart/GenericCallBack.h"
-
-
-
-template <class Base>
-class TimerAdapter : public CallBackAdapter<
-    Base,
-    TimerAdapter<Base>,
-    LRESULT (Base:: *  )( int , WPARAM , LPARAM  ),
-    LRESULT (CALLBACK *)(  int , WPARAM , LPARAM  )
-    >
-{
-public:
-    typedef typename TimerAdapter<Base>::BaseMemCallBackType MemCallBackType;
-
-
-
-    static LRESULT CALLBACK DefaultCallBackProc( int hwnd , WPARAM a, LPARAM b){
-        return (_ThisType(hwnd)->*_MemberType(hwnd))(0, a, b);
-    }
-
-};
-
-#define TimerAdapter(Base)        CallBackAdapter< Base, Base,  \
-            void (Base:: *  )( HWND , UINT , UINT , DWORD ),  \
-            void (CALLBACK *)( HWND , UINT , UINT , DWORD )>
-
-/*
-struct Test : TimerAdapter<Test>{
-    bool mQuit;
-    void TimerProc2(HWND hwnd, UINT uMsg, UINT idEvent, DWORD dwTime ){
-        mQuit = true;
-        KillTimer( idEvent);
-        printf("good! %d\n", idEvent);
-    }
-};*/
-/*
-int main(void){
-    Test a;
-    //printf("timer id is %d", a.SetTimer(100, &Test::TimerProc2));
-    a.mQuit = false;
-
-    SetTimer(NULL, 0, 100, a.MakeCallback(&Test::TimerProc2));
-
-    MSG msg;
-    while(!a.mQuit && GetMessage(&msg, 0, 0, 0) ){
-
-        printf("before dispatch!\n");
-        DispatchMessage(&msg);
-    }
-    return 0;
-}*/
-
-
 
 class CWebViewWindow;
 class FileDialogSubclassWindow : public CWindowImpl<FileDialogSubclassWindow>
@@ -106,19 +49,7 @@ public:
 
 };
 class CWebViewWindow;
-/*
-class CDialogHook : public CCBTHook
-{
-public:
-    CDialogHook(CWebViewWindow* webViewWindow);
 
-    ~CDialogHook();
-
-    virtual LRESULT HookProc(int nCode, WPARAM wParam, LPARAM lParam);
-
-    CWebViewWindow* webViewWindow_;
-
-};*/
 class CWebViewWindow: public CWindowImpl<CWebViewWindow>//, public TimerAdapter<CWebViewWindow>
 {
 public:

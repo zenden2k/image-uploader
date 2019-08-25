@@ -43,7 +43,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         ~CRegionSelect();
         CRect m_screenBounds;
         bool wasImageEdited();
-        std::shared_ptr<CScreenshotRegion> region() const;
+        std::shared_ptr<ScreenCapture::CScreenshotRegion> region() const;
         bool Execute(HBITMAP screenshot, int width, int height);
 
         DECLARE_WND_CLASS(_T("CRegionSelect"))
@@ -128,10 +128,10 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         CDC memDC2;
         CDC alphaDC; CBitmap alphaBm;
         CRgn m_prevWindowRgn;
-        std::shared_ptr<CScreenshotRegion> m_ResultRegion;
+        std::shared_ptr<ScreenCapture::CScreenshotRegion> m_ResultRegion;
         bool m_bPictureChanged;
         CToolBarCtrl Toolbar;
-        CWindowHandlesRegion m_SelectedWindowsRegion;
+        ScreenCapture::CWindowHandlesRegion m_SelectedWindowsRegion;
         int lineType;
 
 };

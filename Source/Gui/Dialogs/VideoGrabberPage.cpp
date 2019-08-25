@@ -165,7 +165,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
         return 0;
     }
 
-    WizardDlg->LastVideoFile = fileName;
+    WizardDlg->setLastVideoFile(fileName);
     grabbedFramesCount = 0;
     Terminated = false;
     IsStopTimer = false;

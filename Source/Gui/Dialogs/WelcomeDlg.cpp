@@ -151,7 +151,8 @@ bool CWelcomeDlg::OnShow()
 {
     ShowPrev(false);
     EnableNext();
-    ShowNext(WizardDlg->Pages[2] && ((CMainDlg*)WizardDlg->Pages[2])->FileList.GetCount() > 0);
+    CMainDlg* mainPage = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+    ShowNext(mainPage && mainPage->FileList.GetCount() > 0);
     EnableExit();
     
     return 0;

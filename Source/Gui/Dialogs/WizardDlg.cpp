@@ -20,6 +20,7 @@
 #include "WizardDlg.h"
 
 #include <boost/filesystem.hpp>
+#include <boost/format.hpp>
 
 #include "Core/Images/ImageConverter.h"
 #include "Core/ServiceLocator.h"
@@ -61,6 +62,11 @@
 #include "Core/ScreenCapture/Utils.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
+#include "Core/Upload/Filters/UserFilter.h"
+#include "Core/Upload/Filters/ImageConverterFilter.h"
+#include "Core/Upload/Filters/SizeExceedFilter.h"
+#include "Core/Upload/Filters/UrlShorteningFilter.h"
+#include "statusdlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -72,28 +78,93 @@ struct TaskDispatcherMessageStruct {
     //Object* sender;
 };
 
+CString MakeTempFileName(const CString& FileName)
+{
+    CString FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
+
+    if (WinUtils::FileExists(FileNameBuf))
+    {
+        CString OnlyName = WinUtils::GetOnlyFileName(FileName);
+        CString Ext = WinUtils::GetFileExt(FileName);
+        FileNameBuf = AppParams::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
+    }
+    return FileNameBuf;
+}
+
+bool SaveFromHGlobal(HGLOBAL Data, const CString& FileName, CString& OutName)
+{
+    if (!Data) return false;
+    CString FileNameBuf = MakeTempFileName(FileName);
+
+    DWORD filesize = GlobalSize(Data);
+    if (!filesize)
+        return false;
+    PVOID LockedData = (PVOID)GlobalLock(Data);
+
+    HANDLE hFile = CreateFile(FileNameBuf, GENERIC_WRITE,
+        0, NULL, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+    {
+        GlobalUnlock(Data);
+        return false;
+    }
+
+    ULONG cbRead;
+
+    WriteFile(hFile, LockedData, filesize, &cbRead, NULL);
+
+    CloseHandle(hFile);
+    GlobalUnlock(Data);
+    OutName = FileNameBuf;
+    return true;
+}
+
+bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName)
+{
+    if (!pStream) return false;
+    CString FileNameBuf = MakeTempFileName(FileName);
+
+    HANDLE hFile = CreateFile(FileNameBuf, GENERIC_WRITE,
+        0, NULL, CREATE_ALWAYS,
+        FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
+        return false;
+
+    UCHAR bBuffer[4096];
+    ULONG cbRead;
+
+    while (SUCCEEDED(pStream->Read(bBuffer, sizeof(bBuffer), &cbRead)) && cbRead > 0)
+    {
+        WriteFile(hFile, bBuffer, cbRead, &cbRead, NULL);
+    }
+
+    CloseHandle(hFile);
+    OutName = FileNameBuf;
+    return true;
+}
+
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger) :
+CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger, CFloatingWindow* floatWnd) :
     m_lRef(0), 
     FolderAdd(this), 
     Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>()),
-    defaultLogger_(defaultLogger)
+    defaultLogger_(defaultLogger),
+    floatWnd_(floatWnd)
 { 
     mainThreadId_ = GetCurrentThreadId();
     screenshotIndex = 1;
     CurPage = -1;
     PrevPage = -1;
     NextPage = -1;
-    m_StartingThreadId = 0;
     ZeroMemory(Pages, sizeof(Pages));
     DragndropEnabled = true;
     hLocalHotkeys = 0;
     QuickUploadMarker = false;
     m_bShowAfter = true;
     m_bHandleCmdLineFunc = false;
-    updateDlg = 0;
     Settings.setEngineList(&m_EngineList);
     m_bScreenshotFromTray = false;
     auto serviceLocator = ServiceLocator::instance();
@@ -102,22 +173,23 @@ CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger) :
     serviceLocator->setTaskDispatcher(this);
     serversChanged_ = false;
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    scriptsManager_ = new ScriptsManager(networkClientFactory);
+    scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory);
     IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = new UploadEngineManager(&m_EngineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, uploadErrorHandler, networkClientFactory, Settings.MaxThreads);
+    uploadEngineManager_ = std::make_shared<UploadEngineManager>(&m_EngineList, uploadErrorHandler, networkClientFactory);
+    uploadManager_.reset(new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, 
+        uploadErrorHandler, networkClientFactory, Settings.MaxThreads));
     imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
-    sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(&m_EngineList, uploadEngineManager_);
+    sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(&m_EngineList, uploadEngineManager_.get());
     urlShorteningFilter_ = std::make_unique<UrlShorteningFilter>();
-    userFilter_ = std::make_unique<UserFilter>(scriptsManager_);
-    serviceLocator->setUploadManager(uploadManager_);
+    userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
+    serviceLocator->setUploadManager(uploadManager_.get());
     uploadManager_->addUploadFilter(imageConverterFilter_.get());
     uploadManager_->addUploadFilter(userFilter_.get());
     uploadManager_->addUploadFilter(sizeExceedFilter_.get());
     uploadManager_->addUploadFilter(urlShorteningFilter_.get());
 
-    floatWnd.setUploadManager(uploadManager_);
-    floatWnd.setUploadEngineManager(uploadEngineManager_);
+    floatWnd_->setUploadManager(uploadManager_.get());
+    floatWnd_->setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
 }
 
@@ -167,15 +239,9 @@ bool CWizardDlg::pasteFromClipboard() {
 
 CWizardDlg::~CWizardDlg()
 {
-    //Detach();
-    delete updateDlg;
-
     for (auto page: Pages) {
         delete page;
     }
-    delete uploadManager_;
-    delete uploadEngineManager_;
-    delete scriptsManager_;
     if (hLocalHotkeys) {
         DestroyAcceleratorTable(hLocalHotkeys);
         hLocalHotkeys = nullptr; 
@@ -475,7 +541,7 @@ UrlShorteningFilter* CWizardDlg::urlShorteningFilter() const {
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(floatWnd.m_hWnd)
+    if(floatWnd_->m_hWnd)
     { 
         ShowWindow(SW_HIDE);
         if (Pages[wpMainPage] && CurPage == wpUploadPage) {
@@ -651,7 +717,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case 1:
             CVideoGrabberPage *tmp1;
-            tmp1 = new CVideoGrabberPage(uploadEngineManager_);
+            tmp1 = new CVideoGrabberPage(uploadEngineManager_.get());
             Pages[PageID]=tmp1;
             Pages[PageID]->WizardDlg=this;
             tmp1->Create(m_hWnd,rc);
@@ -667,7 +733,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case 3:
             CUploadSettings *tmp3;
-            tmp3 = new CUploadSettings(&m_EngineList, uploadEngineManager_);
+            tmp3 = new CUploadSettings(&m_EngineList, uploadEngineManager_.get());
             Pages[PageID]=tmp3;
             Pages[PageID]->WizardDlg=this;
             tmp3->Create(m_hWnd,rc2);
@@ -675,7 +741,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             break;
         case 4:
             CUploadDlg *tmp4;
-            tmp4=new CUploadDlg(this, uploadManager_);
+            tmp4=new CUploadDlg(this, uploadManager_.get());
             Pages[PageID]=tmp4;
             Pages[PageID]->WizardDlg=this;
             tmp4->Create(m_hWnd, rc);
@@ -727,10 +793,9 @@ WindowNativeHandle CWizardDlg::getNativeHandle() {
 }
 
 void CWizardDlg::ShowUpdateMessage(const CString& msg) {
-    if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && floatWnd.m_hWnd) {
-        CString title;
-        title.Format(TR("%s - Updates available"), static_cast<LPCTSTR>(APPNAME));
-        floatWnd.ShowBaloonTip(msg, title, 8000, [&] {
+    if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && floatWnd_->m_hWnd) {
+        std::wstring title = str(boost::wformat(TR("%s - Updates available")) % APPNAME);
+        floatWnd_->ShowBaloonTip(msg, title.c_str(), 8000, [&] {
             CreateUpdateDlg();
             if (!updateDlg->IsWindowVisible()) {
                 updateDlg->ShowModal(m_hWnd);
@@ -740,7 +805,7 @@ void CWizardDlg::ShowUpdateMessage(const CString& msg) {
 }
 
 // Функция генерации заголовка страницы (если он нужен)
-HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID)
+HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
 {
     if (PageID != wpUploadSettingsPage && PageID != wpUploadPage) {
         return nullptr;
@@ -847,8 +912,8 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    m_EngineList.setNumOfRetries(Settings.FileRetryLimit, Settings.ActionRetryLimit);
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    m_EngineList.setNumOfRetries(Settings->FileRetryLimit, Settings->ActionRetryLimit);
     bool Result = m_EngineList.loadFromFile(filename);
     Error = m_EngineList.ErrorStr();
     return Result;
@@ -913,73 +978,6 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
 STDMETHODIMP CWizardDlg::DragLeave( void)
 {
     return S_OK;
-}
-
-CString MakeTempFileName(const CString& FileName)
-{
-    CString FileNameBuf = AppParams::instance()->tempDirectoryW() + FileName;
-
-   if(WinUtils::FileExists(FileNameBuf))
-    {
-        CString OnlyName;
-        OnlyName = WinUtils::GetOnlyFileName(FileName);
-        CString Ext = WinUtils::GetFileExt(FileName);
-        FileNameBuf = AppParams::instance()->tempDirectoryW() + OnlyName + _T("_") + WinUtils::IntToStr(GetTickCount() ^ 33333) + (Ext ? _T(".") : _T("")) + Ext;
-    }
-    return FileNameBuf;
-}
-
-bool SaveFromHGlobal(HGLOBAL Data, const CString& FileName, CString& OutName)
-{
-    if(!Data) return false;
-    CString FileNameBuf = MakeTempFileName(FileName);  
-
-    DWORD filesize = GlobalSize(Data);
-    if(!filesize) 
-        return false;
-    PVOID LockedData =(PVOID) GlobalLock (Data);
-
-    HANDLE hFile = CreateFile(FileNameBuf, GENERIC_WRITE, 
-                          0, NULL, CREATE_ALWAYS, 
-                          FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        GlobalUnlock(Data);
-        return false;
-    }
-                
-    ULONG cbRead;
-
-    WriteFile(hFile, LockedData, filesize, &cbRead, NULL);
-                
-    CloseHandle(hFile);
-    GlobalUnlock(Data);
-    OutName = FileNameBuf; 
-    return true;
-}
-
-bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName)
-{
-    if(!pStream) return false;
-    CString FileNameBuf = MakeTempFileName(FileName);  
-
-    HANDLE hFile = CreateFile(FileNameBuf, GENERIC_WRITE, 
-                          0, NULL, CREATE_ALWAYS, 
-                          FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-        return false;
-                
-    UCHAR bBuffer[4096];
-    ULONG cbRead;
-            
-    while (SUCCEEDED(pStream->Read(bBuffer, sizeof(bBuffer), &cbRead)) && cbRead > 0)
-    {
-        WriteFile(hFile, bBuffer, cbRead, &cbRead, NULL);
-    }
-
-    CloseHandle(hFile);
-    OutName = FileNameBuf;
-    return true;
 }
 
 bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
@@ -1564,13 +1562,13 @@ bool CWizardDlg::funcImportVideo()
 
     auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
-        return 0;
+        return false;
     }
     CString fileName = dlg->getFile();
     Settings.VideoFolder = dlg->getFolderPath();
 
     if (!WinUtils::FileExists(fileName)) {
-        return 0;
+        return false;
     }
 	importVideoFile(fileName);
     ShowWindow(SW_SHOW);
@@ -1591,7 +1589,7 @@ bool CWizardDlg::funcScreenshotDlg()
 bool CWizardDlg::funcRegionScreenshot(bool ShowAfter)
 {
     m_bShowAfter = ShowAfter;
-    CommonScreenshot(cmRectangles);
+    CommonScreenshot(ScreenCapture::cmRectangles);
     return true;
 }
 
@@ -1599,7 +1597,7 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 {
     EnableWindow();
 
-    if(m_bShowAfter || (Result && !floatWnd.m_hWnd))
+    if(m_bShowAfter || (Result && !floatWnd_->m_hWnd))
     {
         m_bShowWindow = true;
         ShowWindow(SW_SHOWNORMAL);
@@ -1642,18 +1640,18 @@ void CWizardDlg::OnScreenshotSaving(LPTSTR FileName, Bitmap* Bm)
 
 bool CWizardDlg::funcFullScreenshot()
 {
-    CommonScreenshot(cmFullScreen);    
+    CommonScreenshot(ScreenCapture::cmFullScreen);
     return true;
 }
 
 bool CWizardDlg::funcWindowScreenshot(bool Delay)
 {
-    CommonScreenshot(cmActiveWindow);
+    CommonScreenshot(ScreenCapture::cmActiveWindow);
     return true;
 }
 
 bool CWizardDlg::funcLastRegionScreenshot() {
-    return CommonScreenshot(cmLastRegion);
+    return CommonScreenshot(ScreenCapture::cmLastRegion);
 }
 
 bool CWizardDlg::funcAddFolder()
@@ -1683,7 +1681,7 @@ bool CWizardDlg::funcAddFolder()
 }
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    if(!floatWnd.m_hWnd)
+    if(!floatWnd_->m_hWnd)
       TRC(IDCANCEL, "Exit");
     else 
         TRC(IDCANCEL, "Hide");
@@ -1696,6 +1694,10 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
+// Prevent app's window from losing focus
+// when filling out the file dialog's edit box 
+// in web-browser control
+// TODO: remove this functionality
 LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CString webViewClass(_T("CWebViewWindow"));
@@ -1708,30 +1710,24 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
     if ( wParam == WA_INACTIVE ) {
         HWND wnd = (HWND)lParam;
         if ( wnd == 0 ) {
-            //LOG(INFO) << "wnd=0.  SetActiveWindow();";
             SetActiveWindow();
             bHandled = true;
             return 0;
         }
         TCHAR Buffer[MAX_PATH] = _T("");
         GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-        //LOG(INFO) << "CWizardDlg::OnActivate0 class="<< Buffer << " wnd="<<wnd << " title = "<< GuiTools::GetWindowText(wnd);
         if ( Buffer[0] == 0 ) {
-            //LOG(INFO) << "Buffer=0.  SetActiveWindow();";
             SetActiveWindow();
             bHandled = true;
             return 0;
         }
         if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
-            //LOG(INFO) << "CWizardDlg::OnActivate1 "<< Buffer;
             HWND parent = ::GetParent(wnd);
             if ( parent ) {
                 GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-                //LOG(INFO) << "CWizardDlg::OnActivate2 "<< Buffer;
                 if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
                      parent = ::GetParent(parent);
                     if ( parent ) {
-                        //LOG(INFO) << "CWizardDlg::OnActivate3 "<< Buffer;
                         GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
                         if ( Buffer == webViewClass && !::IsWindowVisible(parent) ){
                             SetActiveWindow();
@@ -1739,9 +1735,6 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
                             return 0;
                         }
                     } else {
-                        //LOG(INFO) << "CWizardDlg::OnActivate3 parent is null";
-                    
-
                             SetActiveWindow();
                             bHandled = true;
                             return 0;
@@ -1815,7 +1808,7 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
 
 bool CWizardDlg::funcSettings()
 {
-    CSettingsDlg dlg(CSettingsDlg::spGeneral, uploadEngineManager_);
+    CSettingsDlg dlg(CSettingsDlg::spGeneral, uploadEngineManager_.get());
     //dlg.DoModal(m_hWnd);
     if(!IsWindowVisible())
         dlg.DoModal(0);
@@ -1922,7 +1915,7 @@ bool CWizardDlg::hasLastScreenshotRegion() const {
     return !!lastScreenshotRegion_;
 }
 
-void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> region, HMONITOR monitor) {
+void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<ScreenCapture::CScreenshotRegion> region, HMONITOR monitor) {
     lastScreenshotRegion_ = region;
     lastScreenshotMonitor_ = monitor;
     bool available = !!lastScreenshotRegion_;
@@ -1935,6 +1928,26 @@ void CWizardDlg::setLastScreenshotRegion(std::shared_ptr<CScreenshotRegion> regi
 
 void CWizardDlg::addLastRegionAvailabilityChangeCallback(std::function<void(bool)> cb) {
     lastRegionAvailabilityChangeCallbacks_.push_back(cb);
+}
+
+bool CWizardDlg::getQuickUploadMarker() const {
+    return QuickUploadMarker;
+}
+
+void CWizardDlg::setQuickUploadMarker(bool val) {
+    QuickUploadMarker = val;
+}
+
+CString CWizardDlg::getLastVideoFile() const {
+    return LastVideoFile;
+}
+
+void CWizardDlg::setLastVideoFile(CString fileName) {
+    LastVideoFile = fileName;
+}
+
+bool CWizardDlg::isShowWindowSet() const {
+    return m_bShowWindow;
 }
 
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
@@ -1956,16 +1969,17 @@ void CWizardDlg::CreateUpdateDlg()
 {
     if(!updateDlg)
     {
-        updateDlg = new CUpdateDlg();
+        updateDlg.reset(new CUpdateDlg());
         updateDlg->setUpdateCallback(this);
     }
 }
 
-bool CWizardDlg::CommonScreenshot(CaptureMode mode)
+bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 {
+    using namespace ScreenCapture;
     // TODO: this method is too complicated and long. 
     bool needToShow = IsWindowVisible()!=FALSE;
-    if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd.m_hWnd)
+    if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd_->m_hWnd)
     {
         m_bScreenshotFromTray = false;
         //return false;
@@ -2108,8 +2122,8 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else {
-            if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd.m_hWnd) {
-                floatWnd.ShowScreenshotCopiedToClipboardMessage();
+            if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd_->m_hWnd) {
+                floatWnd_->ShowScreenshotCopiedToClipboardMessage();
             }
             CanceledByUser = true;
         }
@@ -2139,7 +2153,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {
-                        floatWnd.ShowScreenshotCopiedToClipboardMessage();
+                        floatWnd_->ShowScreenshotCopiedToClipboardMessage();
                         Result = false;
                     }
                 }
@@ -2158,7 +2172,7 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
             {
                 Result = false;
                 CString displayFileName = WinUtils::myExtractFileName(buf);
-                floatWnd.UploadScreenshot(buf, displayFileName);
+                floatWnd_->UploadScreenshot(buf, displayFileName);
             }
         }
         else
@@ -2184,12 +2198,12 @@ bool CWizardDlg::CommonScreenshot(CaptureMode mode)
 
 bool CWizardDlg::funcWindowHandleScreenshot()
 {
-    return CommonScreenshot(cmWindowHandles);
+    return CommonScreenshot(ScreenCapture::cmWindowHandles);
 }
 
 bool CWizardDlg::funcFreeformScreenshot()
 {
-    return CommonScreenshot(cmFreeform);
+    return CommonScreenshot(ScreenCapture::cmFreeform);
 }
 
 bool CWizardDlg::IsClipboardDataAvailable()
@@ -2215,13 +2229,13 @@ bool CWizardDlg::IsClipboardDataAvailable()
 }
 
 bool CWizardDlg::funcReuploadImages() {
-    CImageReuploaderDlg dlg(this, &m_EngineList, uploadManager_, uploadEngineManager_, CString());
+    CImageReuploaderDlg dlg(this, &m_EngineList, uploadManager_.get(), uploadEngineManager_.get(), CString());
     dlg.DoModal(m_hWnd);
     return false;
 }
 
 bool CWizardDlg::funcShortenUrl() {
-    CShortenUrlDlg dlg(this, uploadManager_, uploadEngineManager_, CString());
+    CShortenUrlDlg dlg(this, uploadManager_.get(), uploadEngineManager_.get(), CString());
     dlg.DoModal();
     return false;
 }

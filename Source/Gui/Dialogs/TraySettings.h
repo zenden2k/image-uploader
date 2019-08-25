@@ -49,7 +49,9 @@ class CTrayActions: public CAtlArray<TrayItem>
 
 
 class CTraySettingsPage : 
-    public CDialogImpl<CTraySettingsPage>, public CSettingsPage    
+    public CDialogImpl<CTraySettingsPage>, 
+    public CSettingsPage, 
+    public CWinDataExchange <CTraySettingsPage>
 {
 public:
     CTraySettingsPage();
@@ -60,6 +62,13 @@ public:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER_EX(IDC_SHOWTRAYICON, BN_CLICKED, OnShowTrayIconBnClicked)
     END_MSG_MAP()
+
+    BEGIN_DDX_MAP(CTraySettingsPage)
+        DDX_CONTROL_HANDLE(IDC_LEFTBUTTONDOUBLECLICKCOMBO, leftButtonDblClickCombo_)
+        DDX_CONTROL_HANDLE(IDC_LEFTBUTTONCLICKCOMBO, leftButtonClickCombo_)
+        DDX_CONTROL_HANDLE(IDC_MIDDLEBUTTONCLICKCOMBO, middleButtonClickCombo_)
+        DDX_CONTROL_HANDLE(IDC_RIGHTBUTTONCLICKCOMBO, rightButtoClickCombo_)
+    END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -67,6 +76,8 @@ public:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     bool Apply() override;
     LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+protected:
+    CComboBox leftButtonDblClickCombo_, leftButtonClickCombo_, middleButtonClickCombo_, rightButtoClickCombo_;
 };
 
 

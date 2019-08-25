@@ -235,7 +235,7 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 int CUploadDlg::ThreadTerminated(void)
 {
-    WizardDlg->QuickUploadMarker = false;
+    WizardDlg->setQuickUploadMarker(false);
 
     #if  WINVER    >= 0x0601
         if(ptl)

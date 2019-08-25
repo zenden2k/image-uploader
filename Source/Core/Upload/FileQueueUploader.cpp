@@ -25,7 +25,7 @@
 #include "FileQueueUploaderPrivate.h"
 /* public CFileQueueUploader class */
 
-CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads)
+CFileQueueUploader::CFileQueueUploader(std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<ScriptsManager> scriptsManager, IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads)
 {
     _impl = new FileQueueUploaderPrivate(this, uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, maxThreads);
 }

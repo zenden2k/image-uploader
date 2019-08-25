@@ -143,7 +143,7 @@ class CHotkeyItem
         CString name;
         bool setForegroundWindow;
 
-        CString GetDisplayName();
+        CString GetDisplayName() const;
 
         CHotkeyItem() {
             localKey.keyCode = 0;

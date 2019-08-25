@@ -85,6 +85,8 @@ HWND WindowUnderCursor(POINT pt, HWND exclude)
 
 CRegionSelect RegionSelect;
 
+using namespace ScreenCapture;
+
 // CRegionSelect
 CRegionSelect::CRegionSelect()
 {

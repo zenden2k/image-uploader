@@ -22,36 +22,19 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
  
-CTrayActions::CTrayActions()
-    {
-        /*AddTrayAction(TR("Do nothing"), 0);
-        AddTrayAction(TR("Tray icon context menu"), IDM_CONTEXTMENU);
-        AddTrayAction(TR("Upload files"), IDM_UPLOADFILES);
-        AddTrayAction(TR("Upload folder"), IDM_ADDFOLDER);
-        AddTrayAction(TR("Import Video File"),IDM_IMPORTVIDEO);
-        AddTrayAction(TR("Screenshot"),IDM_SCREENSHOTDLG);
-        AddTrayAction(TR("Capture selected region"),IDM_REGIONSCREENSHOT);
-        AddTrayAction(TR("Capture entire screen"),IDM_FULLSCREENSHOT);
-        AddTrayAction(TR("Capture current window"),IDM_WINDOWSCREENSHOT);
-        AddTrayAction(TR("Show program's window"), IDM_SHOWAPPWINDOW);
-        AddTrayAction(TR("Settings"), IDM_SETTINGS);
-        
-        AddTrayAction(TR("Exit"), IDM_EXIT);*/
-    
-    }
+CTrayActions::CTrayActions(){
+}
 
 // CTraySettingsPage
-CTraySettingsPage::CTraySettingsPage()
-{
+CTraySettingsPage::CTraySettingsPage() {
 
 }
 
-CTraySettingsPage::~CTraySettingsPage()
-{
+CTraySettingsPage::~CTraySettingsPage() {
 }
 
-LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    DoDataExchange(FALSE);
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_SHOWTRAYICON, "Show tray icon");
     TRC(IDC_MOUSEREACTIONGROUP, "Mouse clicks handlers");
@@ -61,15 +44,12 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     TRC(IDC_RIGHTBUTTONCLICKLABEL, "Right button click:");
     TRC(IDC_ONEINSTANCE, "Do not launch new program's instance from tray");
     TRC(IDC_AUTOSTARTUP, "Launch program on Windows startup");
-    //CTrayActions trayActions;
-    for(size_t i=0; i< Settings.Hotkeys/*trayActions*/.size(); i++)
-    {
-        SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
-        SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
-        SendDlgItemMessage(IDC_MIDDLEBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
     
-        SendDlgItemMessage(IDC_RIGHTBUTTONCLICKCOMBO, CB_ADDSTRING,0, (LPARAM)(LPCTSTR)Settings.Hotkeys[i].GetDisplayName());
-    
+    for(const auto& hotkey: Settings.Hotkeys) {
+        leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName());
+        leftButtonClickCombo_.AddString(hotkey.GetDisplayName());
+        middleButtonClickCombo_.AddString(hotkey.GetDisplayName());
+        rightButtoClickCombo_.AddString(hotkey.GetDisplayName());
     }
 
     SendDlgItemMessage(IDC_SHOWTRAYICON, BM_SETCHECK,Settings.ShowTrayIcon);
@@ -78,16 +58,15 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     SendDlgItemMessage(IDC_ONEINSTANCE, BM_SETCHECK,Settings.TrayIconSettings.DontLaunchCopy);
     OnShowTrayIconBnClicked(BN_CLICKED, IDC_SHOWTRAYICON, 0);
 
-    SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_SETCURSEL,Settings.TrayIconSettings.LeftDoubleClickCommand);
-    SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_SETCURSEL,Settings.TrayIconSettings.LeftClickCommand);
-    SendDlgItemMessage(IDC_MIDDLEBUTTONCLICKCOMBO, CB_SETCURSEL,Settings.TrayIconSettings.MiddleClickCommand);
-    SendDlgItemMessage(IDC_RIGHTBUTTONCLICKCOMBO, CB_SETCURSEL,Settings.TrayIconSettings.RightClickCommand);
+    leftButtonDblClickCombo_.SetCurSel(Settings.TrayIconSettings.LeftDoubleClickCommand);
+    leftButtonClickCombo_.SetCurSel(Settings.TrayIconSettings.LeftClickCommand);
+    middleButtonClickCombo_.SetCurSel(Settings.TrayIconSettings.MiddleClickCommand);
+    rightButtoClickCombo_.SetCurSel(Settings.TrayIconSettings.RightClickCommand);
     
     return 1;  // Let the system set the focus
 }
 
-bool CTraySettingsPage::Apply()
-{
+bool CTraySettingsPage::Apply() {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ShowTrayIcon_changed = Settings.ShowTrayIcon;
     Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
@@ -99,17 +78,17 @@ bool CTraySettingsPage::Apply()
     Settings.AutoStartup_changed ^= Settings.AutoStartup;
 
     //Settings.ExplorerContextMenu_changed = true;
-    Settings.TrayIconSettings.LeftDoubleClickCommand = SendDlgItemMessage(IDC_LEFTBUTTONDOUBLECLICKCOMBO, CB_GETCURSEL);
-    Settings.TrayIconSettings.LeftClickCommand = SendDlgItemMessage(IDC_LEFTBUTTONCLICKCOMBO, CB_GETCURSEL);
-    Settings.TrayIconSettings.MiddleClickCommand = SendDlgItemMessage(IDC_MIDDLEBUTTONCLICKCOMBO, CB_GETCURSEL);
-    Settings.TrayIconSettings.RightClickCommand = SendDlgItemMessage(IDC_RIGHTBUTTONCLICKCOMBO, CB_GETCURSEL);
+    Settings.TrayIconSettings.LeftDoubleClickCommand = leftButtonDblClickCombo_.GetCurSel();
+    Settings.TrayIconSettings.LeftClickCommand = leftButtonClickCombo_.GetCurSel();
+    Settings.TrayIconSettings.MiddleClickCommand = middleButtonClickCombo_.GetCurSel();
+    Settings.TrayIconSettings.RightClickCommand = rightButtoClickCombo_.GetCurSel();
     
     Settings.TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
     
     return true;
 }
-LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
+
+LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     bool bShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK) == BST_CHECKED;
     if (!bShowTrayIcon ) {
         SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);

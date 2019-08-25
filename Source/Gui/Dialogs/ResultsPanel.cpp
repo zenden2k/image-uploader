@@ -609,11 +609,11 @@ LRESULT CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    if (WizardDlg->LastVideoFile.IsEmpty()) {
+    if (WizardDlg->getLastVideoFile().IsEmpty()) {
         return 0;
     }
     CMediaInfoDlg dlg;
-    dlg.ShowInfo(WizardDlg->LastVideoFile);
+    dlg.ShowInfo(WizardDlg->getLastVideoFile());
     return 0;
     
 }

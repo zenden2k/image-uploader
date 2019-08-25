@@ -86,6 +86,6 @@ LRESULT CHotkeyEditor::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     return 0;
 }
 
-CString CHotkeyItem::GetDisplayName() {
+CString CHotkeyItem::GetDisplayName() const {
     return ServiceLocator::instance()->translator()->translateW(name);
 }
