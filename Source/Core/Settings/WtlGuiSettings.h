@@ -5,17 +5,18 @@
 
 #include "atlheaders.h"
 #include "CommonGuiSettings.h"
-#include "Func/Common.h"
 #include "Func/WinUtils.h"
 #include "Gui/Dialogs/HotkeySettings.h"
 #include "Core/SearchByImage.h"
+#include "3rdpart/GdiplusH.h" 
+#include "Core/Images/Utils.h"
 
 #define TRAY_SCREENSHOT_UPLOAD 0
 #define TRAY_SCREENSHOT_CLIPBOARD 1
 #define TRAY_SCREENSHOT_SHOWWIZARD 2
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
 #define TRAY_SCREENSHOT_OPENINEDITOR 4
-#include "Core/Images/Utils.h"
+
 
 class CFloatingWindow;
 
@@ -127,12 +128,12 @@ public:
     bool SendToContextMenu;
     bool SendToContextMenu_changed;
 
-    CString getServerName();
-    CString getQuickServerName();
-    CString getFileServerName();
+    CString getServerName() const;
+    CString getQuickServerName() const;
+    CString getFileServerName() const;
     CString getSettingsFileName() const;
 
-    CString getShellExtensionFileName() const;
+    static CString getShellExtensionFileName();
 
     void ApplyRegSettingsRightNow();
     void Uninstall();

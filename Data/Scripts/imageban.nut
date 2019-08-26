@@ -1,30 +1,4 @@
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-	return resultStr;
-}
-
-
-function reg_replace(str, pattern, replace_with)
-{
-	local resultStr = str;	
-	local res;
-	local start = 0;
-
-	while( (res = resultStr.find(pattern,start)) != null ) {	
-
-		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
-		start = res + replace_with.len();
-	}
-	return resultStr;
-}
-
-
+MyClientId <- "tB3J94mijYhW5Up5fm2c";
 
 function getThumbnailWidth() {
 	local result = "180";
@@ -33,7 +7,6 @@ function getThumbnailWidth() {
 	}
 	catch(ex)
 	{
-		//print("This plugin needs Image Uploader version >= 1.2.7.\n(ifolder.ru)");
 	}
 	return result;
 }
@@ -85,28 +58,56 @@ function anonymousUpload(FileName, options) {
 
 function  UploadFile(FileName, options)
 {	
-	local login = ServerParams.getParam("Login");
-	local password =  ServerParams.getParam("Password");
-	if ( login == "" || password == "" ) {
-		return anonymousUpload(FileName, options);
-	}
+    local login = ServerParams.getParam("Login");
 	
-	nm.setUrl("http://api.imageban.ru/upload_api.php");
-	nm.addQueryParamFile("userfile",FileName, ExtractFileName(FileName),"");
-	nm.addQueryParam("user", login);
-	nm.addQueryParam("passwd",password);
+    if ( login == "" ) {
+        return anonymousUpload(FileName, options);
+    }
+    
+    local secretKey = ServerParams.getParam("SecretKey");
+    local clientId = ServerParams.getParam("ClientId");
+    if (clientId == "") {
+        clientId = MyClientId;
+    }
+    if (secretKey == "" ){
+        WriteLog("error", "imageban.ru: SecretKey parameter cannot be empty. \r\nYou must set SecretKey in server settings.");
+        return 0;
+    }
+	
+	nm.setUrl("https://api.imageban.ru/v1");
+    nm.addQueryHeader("Authorization", "TOKEN " + clientId);
+	nm.addQueryParamFile("image",FileName, ExtractFileName(FileName),"");
+	nm.addQueryParam("secret_key", secretKey);
 	nm.doUploadMultipartData();
-	local data = nm.responseBody();
+    
+    if (nm.responseCode() == 200) {
+        local data = nm.responseBody();
+        local t = ParseJSON(data);
+        if ("success" in t && t.success) {
+            local viewUrl  	= t.data.short_link;
+            local directUrl  	= t.data.link;
+            
+            options.setDirectUrl(directUrl);
+            options.setViewUrl(viewUrl);
+            return 1; // Success
+        } else {
+            if ("error" in t) {
+                WriteLog("error", "imageban.ru: " + t.error.message);
+            } else {
+                 WriteLog("error", "imageban.ru: Unknown error");
+            }
+        } 
+    } else {
+         WriteLog("error", "imageban.ru: Upload failed. Response code: " + nm.responseCode());
+    }        
 	
-	local url2 = regex_simple(data, "<url2>(.+)</url2>", 0);
-	local url3 = regex_simple(data, "<url3>(.+)</url3>", 0);
-	local viewUrl  	= regex_simple(data, "<url1>(.+)</url1>", 0);
-	local thumbUrl  	= regex_simple(url2, "\\[IMG\\](.+)\\[/IMG\\]",0);
-	local directUrl  	= regex_simple(url3, "\\[IMG\\](.+)\\[/IMG\\]",0);
-	
-	options.setDirectUrl(directUrl);
-	options.setViewUrl(viewUrl);
-	options.setThumbUrl(thumbUrl);	
-	
-	return 1;
+	return 0;
+}
+
+function GetServerParamList()
+{
+    return { 
+		ClientId = "ClientId",
+        SecretKey = "SecretKey"
+	};
 }

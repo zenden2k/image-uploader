@@ -28,7 +28,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="ImageBan.ru"  Authorize="1" Debug="0" Plugin="imageban">
+	<Server Name="ImageBan.ru"  Authorize="1" Plugin="imageban" NeedPassword="0">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

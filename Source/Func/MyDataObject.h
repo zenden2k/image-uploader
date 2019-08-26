@@ -20,7 +20,6 @@
 #ifndef MYDATAOBJECT_H
 #define MYDATAOBJECT_H
 
-
 #pragma once
 #include "atlheaders.h"
 

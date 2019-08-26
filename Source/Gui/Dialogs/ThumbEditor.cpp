@@ -118,7 +118,7 @@ void CThumbEditor::LoadParams()
     SendDlgItemMessage(IDC_ADDFILESIZE, BM_SETCHECK, DrawText);
 
     if(thumb_->existsParam("FrameColor"))
-        FrameColor.SetColor(RGB2COLORREF(thumb_->getColor("FrameColor")));
+        FrameColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("FrameColor")));
     else 
     {
         FrameColor.EnableWindow(false);
@@ -126,7 +126,7 @@ void CThumbEditor::LoadParams()
     }
 
     if(thumb_->existsParam("GradientColor1"))
-        Color1.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor1")));
+        Color1.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("GradientColor1")));
     else
     {
         Color1.EnableWindow(false);
@@ -135,7 +135,7 @@ void CThumbEditor::LoadParams()
 
     if(thumb_->existsParam("TextColor"))
     {
-        ThumbTextColor.SetColor(RGB2COLORREF(thumb_->getColor("TextColor")));
+        ThumbTextColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("TextColor")));
     }
     else
     {
@@ -145,7 +145,7 @@ void CThumbEditor::LoadParams()
 
     if(thumb_->existsParam("StrokeColor"))
     {
-        StrokeColor.SetColor(RGB2COLORREF(thumb_->getColor("StrokeColor")));
+        StrokeColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("StrokeColor")));
     }
     else
     {
@@ -155,7 +155,7 @@ void CThumbEditor::LoadParams()
 
 
     if(thumb_->existsParam("GradientColor2"))
-    Color2.SetColor(RGB2COLORREF(thumb_->getColor("GradientColor2")));
+    Color2.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("GradientColor2")));
     else
     {
         Color2.EnableWindow(false);
@@ -167,17 +167,17 @@ void CThumbEditor::LoadParams()
 void CThumbEditor::SaveParams()
 {
     if(FrameColor.IsWindowEnabled())
-        thumb_->setColor("FrameColor", COLORREF2RGB(FrameColor.GetColor()));
+        thumb_->setColor("FrameColor", WinUtils::COLORREF2RGB(FrameColor.GetColor()));
     if(Color1.IsWindowEnabled())
-        thumb_->setColor("GradientColor1", COLORREF2RGB(Color1.GetColor()));
+        thumb_->setColor("GradientColor1", WinUtils::COLORREF2RGB(Color1.GetColor()));
     if(ThumbTextColor.IsWindowEnabled())
-        thumb_->setColor("TextColor", COLORREF2RGB(ThumbTextColor.GetColor()));
+        thumb_->setColor("TextColor", WinUtils::COLORREF2RGB(ThumbTextColor.GetColor()));
 
     if(StrokeColor.IsWindowEnabled())
-        thumb_->setColor("StrokeColor", COLORREF2RGB(StrokeColor.GetColor()));
+        thumb_->setColor("StrokeColor", WinUtils::COLORREF2RGB(StrokeColor.GetColor()));
     
     if(Color2.IsWindowEnabled())
-    thumb_->setColor("GradientColor2", COLORREF2RGB(Color2.GetColor()));
+    thumb_->setColor("GradientColor2", WinUtils::COLORREF2RGB(Color2.GetColor()));
     
     if(thumb_->existsParam("DrawFrame"))
     {

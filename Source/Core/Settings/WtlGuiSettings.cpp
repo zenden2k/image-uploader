@@ -38,6 +38,9 @@ limitations under the License.
 #include "Core/Utils/StringUtils.h"
 #include "Gui/Dialogs/FloatingWindow.h"
 #include "Core/i18n/Translator.h"
+#include "Core/ServiceLocator.h"
+#include "Core/SearchByImage.h"
+#include "Func/Common.h"
 
 #ifndef CheckBounds
 #define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
@@ -45,33 +48,16 @@ limitations under the License.
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL) && !defined(IU_IMAGEEDITOR)
-#include "Core/ServiceLocator.h"
-#include "Core/SearchByImage.h"
-
-
 COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
-#endif
-/* CString support for  SettingsManager */
 
 namespace {
-// Do not edit this
+// Do not edit this array
 std::string MouseClickCommandIndexToString[] = { "", "contextmenu", "addimages", "addimages", "addfolder",
         "importvideo", "screenshotdlg", "regionscreenshot", "fullscreenshot",
         "windowscreenshot", "windowhandlescreenshot", "freeformscreenshot", "showmainwindow",
         "open_screenshot_folder", "settings", "paste", "downloadimages", "mediainfo", "mediainfo",
         "shortenurl", "shortenurlclipboard", "reuploadimages", "uploadfromclipboard", "lastregionscreenshot" };
 
-}
-
-WtlGuiSettings::~WtlGuiSettings() {
-}
-
-void WtlGuiSettings::setFloatWnd(CFloatingWindow* floatWnd) {
-    floatWnd_ = floatWnd;
-}
-
-#if !defined  (IU_CLI)
 void RunIuElevated(const CString& params) {
     SHELLEXECUTEINFO TempInfo = { 0 };
 
@@ -115,449 +101,6 @@ void ApplyRegistrySettings() {
 
     ::ShellExecuteEx(&TempInfo);
 }
-#endif
-
-#if !defined(IU_CLI) &&!defined(IU_SERVERLISTTOOL)
-CString WtlGuiSettings::getShellExtensionFileName() const {
-    CString file = WinUtils::GetAppFolder() + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
-    return file;
-}
-
-void WtlGuiSettings::RegisterShellExtension(bool Register) {
-    CString moduleName = getShellExtensionFileName();
-    if (!WinUtils::FileExists(moduleName)) {
-        return;
-    }
-
-    CRegistry Reg;
-    Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-
-    bool canCreateRegistryKey = Register;
-
-    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
-        Reg.WriteBool("ExplorerContextMenu", Register);
-    }
-
-    SHELLEXECUTEINFO TempInfo = { 0 };
-    CString s = WinUtils::GetAppFolder();
-    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
-    TempInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-    TempInfo.hwnd = NULL;
-    BOOL b = FALSE;
-    IsElevated(&b);
-    if (WinUtils::IsVistaOrLater() && !b) {
-        TempInfo.lpVerb = _T("runas");
-    } else {
-        TempInfo.lpVerb = _T("open");
-    }
-    TempInfo.lpFile = _T("regsvr32");
-    CString parameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
-    TempInfo.lpParameters = parameters;
-    TempInfo.lpDirectory = s;
-    TempInfo.nShow = SW_NORMAL;
-    //MessageBox(0,TempInfo.lpParameters,0,0);
-    ::ShellExecuteEx(&TempInfo);
-    WaitForSingleObject(TempInfo.hProcess, INFINITE);
-    CloseHandle(TempInfo.hProcess);
-}
-
-/*
-Determine where data folder is situated
-and store it's path into DataFolder member
-*/
-void WtlGuiSettings::FindDataFolder()
-{
-    AppParams* params = AppParams::instance();
-    if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
-        DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
-        SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
-
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
-        params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
-        IsPortable = true;
-        return;
-    }
-
-    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Image Uploader\\")));
-
-    params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
-#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-    {
-        CRegistry Reg;
-
-        Reg.SetRootKey(HKEY_CURRENT_USER);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
-            CString dir = Reg.ReadString("DataPath");
-
-            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
-                DataFolder = dir;
-                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
-                return;
-            }
-        }
-    }
-    {
-        CRegistry Reg;
-        Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
-            CString dir = Reg.ReadString("DataPath");
-
-            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
-                DataFolder = dir;
-                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
-                return;
-            }
-        }
-    }
-
-    if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
-        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
-    } else
-#endif
-
-    {
-        DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
-    }
-}
-
-#endif
-
-void WtlGuiSettings::fixInvalidServers() {
-    std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
-    std::string defaultImageServerProfileName;
-
-    CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
-    if (!defaultImageUED) {
-        defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
-        if (!defaultImageUED) {
-            LOG(ERROR) << "Unable to find any image servers in the servers list";
-        } else {
-            defaultImageServer = defaultImageUED->Name;
-        }
-    }
-
-    CUploadEngineData* ue = imageServer.uploadEngineData();
-    if (!ue) {
-        imageServer.setServerName(defaultImageServer);
-        imageServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = contextMenuServer.uploadEngineData();
-    if (!ue) {
-        contextMenuServer.setServerName(defaultImageServer);
-        contextMenuServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = quickScreenshotServer.uploadEngineData();
-    if (!ue) {
-        quickScreenshotServer.setServerName(defaultImageServer);
-        quickScreenshotServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = temporaryServer.uploadEngineData();
-    if (!ue) {
-        temporaryServer.setServerName(defaultImageServer);
-        temporaryServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = fileServer.uploadEngineData();
-    if (!ue) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
-        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
-        if (uploadEngineData) {
-            fileServer.setServerName(defaultServerName);
-            fileServer.setProfileName("");
-        } else {
-            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
-            if (uploadEngineData) {
-                fileServer.setServerName(uploadEngineData->Name);
-                fileServer.setProfileName("");
-            } else {
-                LOG(ERROR) << "Unable to find any file servers in the server list";
-            }
-        }
-    }
-
-    if (urlShorteningServer.serverName().empty()) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
-        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
-        if (uploadEngineData) {
-            urlShorteningServer.setServerName(defaultServerName);
-        } else {
-            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
-            if (uploadEngineData) {
-                urlShorteningServer.setServerName(uploadEngineData->Name);
-            } else {
-                LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
-            }
-        }
-    }
-
-}
-
-WtlGuiSettings::WtlGuiSettings() : 
-    CommonGuiSettings(), 
-    floatWnd_(nullptr)
-{
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    IsPortable = false;
-    FindDataFolder();
-    if (!WinUtils::IsDirectory(DataFolder)) {
-        CreateDirectory(DataFolder, 0);
-    }
-    if (!WinUtils::IsDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str())) {
-        CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
-    }
-    BOOL isElevated = false;
-    IsElevated(&isElevated);
-    if (isElevated || CmdLine.IsOption(L"afterupdate")) {
-        WinUtils::MakeDirectoryWritable(DataFolder);
-    }
-#endif
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;
-    CString copyTo = DataFolder + SETTINGS_FILE_NAME;
-    if (WinUtils::FileExists(copyFrom) && !WinUtils::FileExists(copyTo)) {
-        MoveFile(copyFrom, copyTo);
-    }
-
-    ExplorerCascadedMenu = true;
-#endif
-
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    if (!IsFFmpegAvailable()) {
-        VideoSettings.Engine = VideoEngineDirectshow;
-    }
-
-    WatchClipboard = true;
-
-    *m_Directory = 0;
-    UseTxtTemplate = false;
-    UseDirectLinks = true;
-    DropVideoFilesToTheList = false;
-    CodeLang = 0;
-    ConfirmOnExit = 1;
-   
-    ExplorerContextMenu = false;
-    ExplorerVideoContextMenu = true;
-    ExplorerContextMenu_changed = false;
-    ThumbsPerLine = 4;
-    SendToContextMenu_changed = false;
-    SendToContextMenu = 0;
-    QuickUpload = 1;
-    ParseSubDirs = 1;
-    RememberImageServer = true;
-    RememberFileServer = true;
-
-    AutomaticallyCheckUpdates = true;
-
-    ImageEditorPath = _T("mspaint.exe \"%1\"");
-    AutoCopyToClipboard = false;
-    AutoShowLog = true;
-
-    //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
-    WinUtils::StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
-
-    VideoSettings.Columns = 3;
-    VideoSettings.TileWidth = 200;
-    VideoSettings.GapWidth = 5;
-    VideoSettings.GapHeight = 7;
-    VideoSettings.NumOfFrames = 8;
-    VideoSettings.JPEGQuality = 100;
-    VideoSettings.UseAviInfo = TRUE;
-    VideoSettings.ShowMediaInfo = TRUE;
-    VideoSettings.TextColor = RGB(0, 0, 0);
-    VideoSettings.SnapshotsFolder.Empty();
-    VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
-
-    VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
-
-    MediaInfoSettings.InfoType = 0; // generate short summary
-
-    ScreenshotSettings.Format = 1;
-    ScreenshotSettings.Quality = 85;
-    ScreenshotSettings.WindowHidingDelay = 450;
-    ScreenshotSettings.Delay = 1;
-    ScreenshotSettings.brushColor = RGB(255, 0, 0);
-    ScreenshotSettings.ShowForeground = false;
-    ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
-    ScreenshotSettings.CopyToClipboard = false;
-    ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
-    ScreenshotSettings.AddShadow = false;
-    ScreenshotSettings.RemoveBackground = false;
-    ScreenshotSettings.OpenInEditor = true;
-    ScreenshotSettings.UseOldRegionScreenshotMethod = false;
-    ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
-
-    TrayIconSettings.LeftClickCommandStr = _T(""); // without action
-    TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
-
-    TrayIconSettings.RightClickCommandStr = _T("contextmenu"); 
-    TrayIconSettings.MiddleClickCommandStr = _T("regionscreenshot"); 
-
-    TrayIconSettings.DontLaunchCopy = true;
-    TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
-
-    ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);
-    ImageEditorSettings.ForegroundColor = Gdiplus::Color(255, 0, 0);
-
-    ImageEditorSettings.StepBackgroundColor = Gdiplus::Color(0, 255, 138);
-    ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
-    ImageEditorSettings.PenSize = 12;
-    ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
-    ImageEditorSettings.AllowAltTab = false;
-    ImageEditorSettings.AllowEditingInFullscreen = false;
-    ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
-    WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
-
-    ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
-    Hotkeys_changed = false;
-
-#endif
-
-    BindToManager();
-}
-
-bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
-    CommonGuiSettings::PostLoadSettings(xml);
-    SimpleXmlNode settingsNode = xml.getRoot("ImageUploader").GetChild("Settings");
-
-#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
-    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
-    if (Language == _T("T\u00FCrk\u00E7e")) {  //fixes
-        Language = _T("Turkish");
-    } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430")) {
-        Language = _T("Ukrainian");
-    } else if (Language == _T("Русский")) {
-        Language = _T("Russian");
-    }
-
-    if (!settingsNode["Image"]["Format"].IsNull()) {
-        // for compatibility with old version configuration file
-        LoadConvertProfile("Old profile", settingsNode);
-    }
-
-    /*if (CmdLine.IsOption(_T("afterinstall"))) {
-        SaveSettings();
-    }*/
-
-    // Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
-    if (settingsNode["ImageEditor"].IsNull()) {
-        if (TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD) {
-            TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
-        }
-
-    }
-
-    // Migrating from 1.3.2 to 1.3.3 
-    // Keep tray icon mouse commands as strings
-    if (!settingsNode["TrayIcon"].IsNull()) {
-        SimpleXmlNode trayIconNode = settingsNode["TrayIcon"];
-        std::pair<std::string, CString*> mapToValues[] = {
-            {"LeftClickCommand", &TrayIconSettings.LeftClickCommandStr},
-            {"LeftDoubleClickCommand", &TrayIconSettings.LeftDoubleClickCommandStr},
-            {"MiddleClickCommand", &TrayIconSettings.MiddleClickCommandStr},
-            {"RightClickCommand", &TrayIconSettings.RightClickCommandStr},
-        };
-
-        for (const auto& pr : mapToValues) {
-            SimpleXmlNode commandNode = trayIconNode.GetChild(pr.first, false);
-            if (!commandNode.IsNull()) {
-                std::string text = commandNode.Text();
-                if (!text.empty()) {
-                    int CommandIndex = atoi(text.c_str());
-                    if (CommandIndex >= 0 && CommandIndex < ARRAY_SIZE(MouseClickCommandIndexToString)
-                        ) {
-                        *pr.second = MouseClickCommandIndexToString[CommandIndex].c_str();
-                    }
-                }
-            }
-        }
-    }
-
-    SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
-    if (!searchEngineNode.IsNull()) {
-        std::string searchEngineName = searchEngineNode.Text();
-        if (!searchEngineName.empty()) {
-            ImageEditorSettings.SearchEngine = SearchByImage::searchEngineTypeFromString(searchEngineName);
-        }
-    }
-
-    LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
-    LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
-#endif
-
-#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
-    // Fixing profies
-    if (!imageServer.profileName().empty() && ServersSettings[imageServer.serverName()].find(imageServer.profileName()) == ServersSettings[imageServer.serverName()].end()) {
-        imageServer.setProfileName("");
-    }
-
-    if (!fileServer.profileName().empty() && ServersSettings[fileServer.serverName()].find(fileServer.profileName()) == ServersSettings[fileServer.serverName()].end()) {
-        fileServer.setProfileName("");
-    }
-    if (!contextMenuServer.profileName().empty() && ServersSettings[contextMenuServer.serverName()].find(contextMenuServer.profileName()) == ServersSettings[contextMenuServer.serverName()].end()) {
-        contextMenuServer.setProfileName("");
-    }
-
-    if (!quickScreenshotServer.profileName().empty() && ServersSettings[quickScreenshotServer.serverName()].find(quickScreenshotServer.profileName()) == ServersSettings[quickScreenshotServer.serverName()].end()) {
-        quickScreenshotServer.setProfileName("");
-    }
-
-    if (!urlShorteningServer.profileName().empty() && ServersSettings[urlShorteningServer.serverName()].find(urlShorteningServer.profileName()) == ServersSettings[urlShorteningServer.serverName()].end()) {
-        urlShorteningServer.setProfileName("");
-    }
-
-    if (!temporaryServer.profileName().empty() && ServersSettings[temporaryServer.serverName()].find(temporaryServer.profileName()) == ServersSettings[temporaryServer.serverName()].end()) {
-        temporaryServer.setProfileName("");
-    }
-
-    if (UploadBufferSize == 65536) {
-        UploadBufferSize = 1024 * 1024;
-    }
-#endif
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-    // Loading some settings from registry
-    if (loadFromRegistry_) {
-        CRegistry Reg;
-        Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
-            ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu", false);
-
-        } else {
-            ExplorerContextMenu = false;
-        }
-    }
-    CRegistry Reg;
-    Reg.SetRootKey(HKEY_CURRENT_USER);
-    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
-        ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
-        ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
-    }
-    CRegistry Reg2;
-    Reg2.SetRootKey(HKEY_CURRENT_USER);
-    if (Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
-        AutoStartup = Reg2.ReadBool("AutoStartup", false);
-    }
-
-    if (VideoSettings.Engine != VideoEngineDirectshow
-        && VideoSettings.Engine != VideoEngineDirectshow2
-        &&  VideoSettings.Engine != VideoEngineFFmpeg 
-        && VideoSettings.Engine != VideoEngineAuto) {
-        VideoSettings.Engine = VideoEngineAuto;
-    }
-    if (!IsFFmpegAvailable()) {
-        VideoSettings.Engine = VideoEngineDirectshow;
-    }
-#endif
-    notifyChange();
-    return true;
-}
-
-
-#if !defined(IU_CLI) && !defined(IU_SHELLEXT)
 
 #define MY_CLSID _T("{535E39BD-5883-454C-AFFC-C54B66B18206}")
 
@@ -670,7 +213,441 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
 
     return 1; // That's means ALL OK! :)
 }
-#endif
+
+}
+
+WtlGuiSettings::~WtlGuiSettings() {
+}
+
+void WtlGuiSettings::setFloatWnd(CFloatingWindow* floatWnd) {
+    floatWnd_ = floatWnd;
+}
+
+
+CString WtlGuiSettings::getShellExtensionFileName() {
+    return WinUtils::GetAppFolder() + (WinUtils::IsWindows64Bit() ? _T("ExplorerIntegration64.dll") : _T("ExplorerIntegration.dll"));
+}
+
+void WtlGuiSettings::RegisterShellExtension(bool Register) {
+    CString moduleName = getShellExtensionFileName();
+    if (!WinUtils::FileExists(moduleName)) {
+        return;
+    }
+
+    CRegistry Reg;
+    Reg.SetRootKey(HKEY_LOCAL_MACHINE);
+
+    bool canCreateRegistryKey = Register;
+
+    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
+        Reg.WriteBool("ExplorerContextMenu", Register);
+    }
+
+    SHELLEXECUTEINFO TempInfo = { 0 };
+    CString s = WinUtils::GetAppFolder();
+    TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
+    TempInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+    TempInfo.hwnd = NULL;
+    BOOL b = FALSE;
+    IsElevated(&b);
+    if (WinUtils::IsVistaOrLater() && !b) {
+        TempInfo.lpVerb = _T("runas");
+    } else {
+        TempInfo.lpVerb = _T("open");
+    }
+    TempInfo.lpFile = _T("regsvr32");
+    CString parameters = CString((Register ? _T("") : _T("/u "))) + _T("/s \"") + moduleName + _T("\"");
+    TempInfo.lpParameters = parameters;
+    TempInfo.lpDirectory = s;
+    TempInfo.nShow = SW_NORMAL;
+    //MessageBox(0,TempInfo.lpParameters,0,0);
+    ::ShellExecuteEx(&TempInfo);
+    WaitForSingleObject(TempInfo.hProcess, INFINITE);
+    CloseHandle(TempInfo.hProcess);
+}
+
+/*
+Determine where data folder is situated
+and store it's path into DataFolder member
+*/
+void WtlGuiSettings::FindDataFolder()
+{
+    AppParams* params = AppParams::instance();
+    if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
+        DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
+        SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
+
+        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+        params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
+        IsPortable = true;
+        return;
+    }
+
+    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Image Uploader\\")));
+
+    params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
+    {
+        CRegistry Reg;
+
+        Reg.SetRootKey(HKEY_CURRENT_USER);
+        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+            CString dir = Reg.ReadString("DataPath");
+
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
+                DataFolder = dir;
+                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+                return;
+            }
+        }
+    }
+    {
+        CRegistry Reg;
+        Reg.SetRootKey(HKEY_LOCAL_MACHINE);
+        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+            CString dir = Reg.ReadString("DataPath");
+
+            if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
+                DataFolder = dir;
+                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+                return;
+            }
+        }
+    }
+
+    if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
+        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
+        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+    } else
+
+    {
+        DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
+        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+    }
+}
+
+
+void WtlGuiSettings::fixInvalidServers() {
+    std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
+    std::string defaultImageServerProfileName;
+
+    CUploadEngineData * defaultImageUED = engineList_->byName(defaultImageServer);
+    if (!defaultImageUED) {
+        defaultImageUED = engineList_->firstEngineOfType(CUploadEngineData::TypeImageServer);
+        if (!defaultImageUED) {
+            LOG(ERROR) << "Unable to find any image servers in the servers list";
+        } else {
+            defaultImageServer = defaultImageUED->Name;
+        }
+    }
+
+    CUploadEngineData* ue = imageServer.uploadEngineData();
+    if (!ue) {
+        imageServer.setServerName(defaultImageServer);
+        imageServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = contextMenuServer.uploadEngineData();
+    if (!ue) {
+        contextMenuServer.setServerName(defaultImageServer);
+        contextMenuServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = quickScreenshotServer.uploadEngineData();
+    if (!ue) {
+        quickScreenshotServer.setServerName(defaultImageServer);
+        quickScreenshotServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = temporaryServer.uploadEngineData();
+    if (!ue) {
+        temporaryServer.setServerName(defaultImageServer);
+        temporaryServer.setProfileName(defaultImageServerProfileName);
+    }
+
+    ue = fileServer.uploadEngineData();
+    if (!ue) {
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
+        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
+        if (uploadEngineData) {
+            fileServer.setServerName(defaultServerName);
+            fileServer.setProfileName("");
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
+            if (uploadEngineData) {
+                fileServer.setServerName(uploadEngineData->Name);
+                fileServer.setProfileName("");
+            } else {
+                LOG(ERROR) << "Unable to find any file servers in the server list";
+            }
+        }
+    }
+
+    if (urlShorteningServer.serverName().empty()) {
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
+        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
+        if (uploadEngineData) {
+            urlShorteningServer.setServerName(defaultServerName);
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+            if (uploadEngineData) {
+                urlShorteningServer.setServerName(uploadEngineData->Name);
+            } else {
+                LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
+            }
+        }
+    }
+
+}
+
+WtlGuiSettings::WtlGuiSettings() : 
+    CommonGuiSettings(), 
+    floatWnd_(nullptr)
+{
+    IsPortable = false;
+    FindDataFolder();
+    if (!WinUtils::IsDirectory(DataFolder)) {
+        CreateDirectory(DataFolder, 0);
+    }
+    if (!WinUtils::IsDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str())) {
+        CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
+    }
+    BOOL isElevated = false;
+    IsElevated(&isElevated);
+    if (isElevated || CmdLine.IsOption(L"afterupdate")) {
+        WinUtils::MakeDirectoryWritable(DataFolder);
+    }
+    CString copyFrom = WinUtils::GetAppFolder() + SETTINGS_FILE_NAME;
+    CString copyTo = DataFolder + SETTINGS_FILE_NAME;
+    if (WinUtils::FileExists(copyFrom) && !WinUtils::FileExists(copyTo)) {
+        MoveFile(copyFrom, copyTo);
+    }
+
+    ExplorerCascadedMenu = true;
+
+    if (!IsFFmpegAvailable()) {
+        VideoSettings.Engine = VideoEngineDirectshow;
+    }
+
+    WatchClipboard = true;
+
+    *m_Directory = 0;
+    UseTxtTemplate = false;
+    UseDirectLinks = true;
+    DropVideoFilesToTheList = false;
+    CodeLang = 0;
+    ConfirmOnExit = 1;
+   
+    ExplorerContextMenu = false;
+    ExplorerVideoContextMenu = true;
+    ExplorerContextMenu_changed = false;
+    ThumbsPerLine = 4;
+    SendToContextMenu_changed = false;
+    SendToContextMenu = 0;
+    QuickUpload = 1;
+    ParseSubDirs = 1;
+    RememberImageServer = true;
+    RememberFileServer = true;
+
+    AutomaticallyCheckUpdates = true;
+
+    ImageEditorPath = _T("mspaint.exe \"%1\"");
+    AutoCopyToClipboard = false;
+    AutoShowLog = true;
+
+    //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
+    WinUtils::StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
+
+    VideoSettings.Columns = 3;
+    VideoSettings.TileWidth = 200;
+    VideoSettings.GapWidth = 5;
+    VideoSettings.GapHeight = 7;
+    VideoSettings.NumOfFrames = 8;
+    VideoSettings.JPEGQuality = 100;
+    VideoSettings.UseAviInfo = TRUE;
+    VideoSettings.ShowMediaInfo = TRUE;
+    VideoSettings.TextColor = RGB(0, 0, 0);
+    VideoSettings.SnapshotsFolder.Empty();
+    VideoSettings.SnapshotFileTemplate = _T("%f%_%cx%_%cy%_%uid%\\grab_%i%.png");
+
+    VideoSettings.Engine = IsFFmpegAvailable() ? VideoEngineAuto : VideoEngineDirectshow;
+
+    MediaInfoSettings.InfoType = 0; // generate short summary
+
+    ScreenshotSettings.Format = 1;
+    ScreenshotSettings.Quality = 85;
+    ScreenshotSettings.WindowHidingDelay = 450;
+    ScreenshotSettings.Delay = 1;
+    ScreenshotSettings.brushColor = RGB(255, 0, 0);
+    ScreenshotSettings.ShowForeground = false;
+    ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
+    ScreenshotSettings.CopyToClipboard = false;
+    ScreenshotSettings.RemoveCorners = !WinUtils::IsWindows8orLater();
+    ScreenshotSettings.AddShadow = false;
+    ScreenshotSettings.RemoveBackground = false;
+    ScreenshotSettings.OpenInEditor = true;
+    ScreenshotSettings.UseOldRegionScreenshotMethod = false;
+    ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
+
+    TrayIconSettings.LeftClickCommandStr = _T(""); // without action
+    TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
+
+    TrayIconSettings.RightClickCommandStr = _T("contextmenu"); 
+    TrayIconSettings.MiddleClickCommandStr = _T("regionscreenshot"); 
+
+    TrayIconSettings.DontLaunchCopy = true;
+    TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
+
+    ImageEditorSettings.BackgroundColor = Gdiplus::Color(255, 255, 255);
+    ImageEditorSettings.ForegroundColor = Gdiplus::Color(255, 0, 0);
+
+    ImageEditorSettings.StepBackgroundColor = Gdiplus::Color(0, 255, 138);
+    ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
+    ImageEditorSettings.PenSize = 12;
+    ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
+    ImageEditorSettings.AllowAltTab = false;
+    ImageEditorSettings.AllowEditingInFullscreen = false;
+    ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
+    WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
+
+    ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
+    Hotkeys_changed = false;
+
+    BindToManager();
+}
+
+bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
+    CommonGuiSettings::PostLoadSettings(xml);
+    SimpleXmlNode settingsNode = xml.getRoot("ImageUploader").GetChild("Settings");
+
+    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
+    if (Language == _T("T\u00FCrk\u00E7e")) {  //fixes
+        Language = _T("Turkish");
+    } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430")) {
+        Language = _T("Ukrainian");
+    } else if (Language == _T("Русский")) {
+        Language = _T("Russian");
+    }
+
+    if (!settingsNode["Image"]["Format"].IsNull()) {
+        // for compatibility with old version configuration file
+        LoadConvertProfile("Old profile", settingsNode);
+    }
+
+    /*if (CmdLine.IsOption(_T("afterinstall"))) {
+        SaveSettings();
+    }*/
+
+    // Migrating from 1.3.0 to 1.3.1 (added ImageEditor has been addded)
+    if (settingsNode["ImageEditor"].IsNull()) {
+        if (TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD) {
+            TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
+        }
+
+    }
+
+    // Migrating from 1.3.2 to 1.3.3 
+    // Keep tray icon mouse commands as strings
+    if (!settingsNode["TrayIcon"].IsNull()) {
+        SimpleXmlNode trayIconNode = settingsNode["TrayIcon"];
+        std::pair<std::string, CString*> mapToValues[] = {
+            {"LeftClickCommand", &TrayIconSettings.LeftClickCommandStr},
+            {"LeftDoubleClickCommand", &TrayIconSettings.LeftDoubleClickCommandStr},
+            {"MiddleClickCommand", &TrayIconSettings.MiddleClickCommandStr},
+            {"RightClickCommand", &TrayIconSettings.RightClickCommandStr},
+        };
+
+        for (const auto& pr : mapToValues) {
+            SimpleXmlNode commandNode = trayIconNode.GetChild(pr.first, false);
+            if (!commandNode.IsNull()) {
+                std::string text = commandNode.Text();
+                if (!text.empty()) {
+                    int CommandIndex = atoi(text.c_str());
+                    if (CommandIndex >= 0 && CommandIndex < ARRAY_SIZE(MouseClickCommandIndexToString)
+                        ) {
+                        *pr.second = MouseClickCommandIndexToString[CommandIndex].c_str();
+                    }
+                }
+            }
+        }
+    }
+
+    SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
+    if (!searchEngineNode.IsNull()) {
+        std::string searchEngineName = searchEngineNode.Text();
+        if (!searchEngineName.empty()) {
+            ImageEditorSettings.SearchEngine = SearchByImage::searchEngineTypeFromString(searchEngineName);
+        }
+    }
+
+    LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
+    LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
+
+    // Fixing profies
+    if (!imageServer.profileName().empty() && ServersSettings[imageServer.serverName()].find(imageServer.profileName()) == ServersSettings[imageServer.serverName()].end()) {
+        imageServer.setProfileName("");
+    }
+
+    if (!fileServer.profileName().empty() && ServersSettings[fileServer.serverName()].find(fileServer.profileName()) == ServersSettings[fileServer.serverName()].end()) {
+        fileServer.setProfileName("");
+    }
+    if (!contextMenuServer.profileName().empty() && ServersSettings[contextMenuServer.serverName()].find(contextMenuServer.profileName()) == ServersSettings[contextMenuServer.serverName()].end()) {
+        contextMenuServer.setProfileName("");
+    }
+
+    if (!quickScreenshotServer.profileName().empty() && ServersSettings[quickScreenshotServer.serverName()].find(quickScreenshotServer.profileName()) == ServersSettings[quickScreenshotServer.serverName()].end()) {
+        quickScreenshotServer.setProfileName("");
+    }
+
+    if (!urlShorteningServer.profileName().empty() && ServersSettings[urlShorteningServer.serverName()].find(urlShorteningServer.profileName()) == ServersSettings[urlShorteningServer.serverName()].end()) {
+        urlShorteningServer.setProfileName("");
+    }
+
+    if (!temporaryServer.profileName().empty() && ServersSettings[temporaryServer.serverName()].find(temporaryServer.profileName()) == ServersSettings[temporaryServer.serverName()].end()) {
+        temporaryServer.setProfileName("");
+    }
+
+    if (UploadBufferSize == 65536) {
+        UploadBufferSize = 1024 * 1024;
+    }
+
+    // Loading some settings from registry
+    if (loadFromRegistry_) {
+        CRegistry Reg;
+        Reg.SetRootKey(HKEY_LOCAL_MACHINE);
+        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+            ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu", false);
+
+        } else {
+            ExplorerContextMenu = false;
+        }
+    }
+    CRegistry Reg;
+    Reg.SetRootKey(HKEY_CURRENT_USER);
+    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+        ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
+        ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
+    }
+    CRegistry Reg2;
+    Reg2.SetRootKey(HKEY_CURRENT_USER);
+    if (Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+        AutoStartup = Reg2.ReadBool("AutoStartup", false);
+    }
+
+    if (VideoSettings.Engine != VideoEngineDirectshow
+        && VideoSettings.Engine != VideoEngineDirectshow2
+        &&  VideoSettings.Engine != VideoEngineFFmpeg 
+        && VideoSettings.Engine != VideoEngineAuto) {
+        VideoSettings.Engine = VideoEngineAuto;
+    }
+    if (!IsFFmpegAvailable()) {
+        VideoSettings.Engine = VideoEngineDirectshow;
+    }
+
+    notifyChange();
+    return true;
+}
+
+
 
 bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
@@ -969,7 +946,6 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
         }
 }
 
-#if !defined(IU_CLI) && !defined( IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 bool WtlGuiSettings::LoadServerProfiles(SimpleXmlNode root)
 {
     std::vector<SimpleXmlNode> servers;
@@ -1005,9 +981,6 @@ bool WtlGuiSettings::SaveServerProfiles(SimpleXmlNode root)
     return true;
 }
 
-#endif
-
-#if !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
 bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root)
 {
     std::vector<SimpleXmlNode> profiles;
@@ -1068,9 +1041,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
     image["Text"]["@StrokeColor"].bind(params.StrokeColor);
     image["Text"]["@Font"].bind(params.Font);
 }
-#endif
 
-#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
 void WtlGuiSettings::Uninstall() {
     BOOL b;
     if (WinUtils::IsVistaOrLater() && IsElevated(&b) != S_OK) {
@@ -1140,13 +1111,13 @@ CString WtlGuiSettings::prepareVideoDialogFilters() {
     return result;
 }
 
-CString WtlGuiSettings::getServerName() {
+CString WtlGuiSettings::getServerName() const {
     return Utf8ToWCstring(imageServer.serverName());
 }
-CString WtlGuiSettings::getQuickServerName() {
+CString WtlGuiSettings::getQuickServerName() const {
     return Utf8ToWCstring(contextMenuServer.serverName());
 }
-CString WtlGuiSettings::getFileServerName() {
+CString WtlGuiSettings::getFileServerName() const {
     return Utf8ToWCstring(fileServer.serverName());
 }
 
@@ -1186,9 +1157,9 @@ void ImageUploadParams::bind(SettingsNode& n){
 
 ThumbCreatingParams ImageUploadParams::getThumb()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (UseDefaultThumbSettings && &Settings.imageServer.imageUploadParams != this) {
-        return Settings.imageServer.imageUploadParams.Thumb;
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    if (UseDefaultThumbSettings && &Settings->imageServer.imageUploadParams != this) {
+        return Settings->imageServer.imageUploadParams.Thumb;
     }
     return Thumb;
 }
@@ -1203,4 +1174,3 @@ void ImageUploadParams::setThumb(ThumbCreatingParams tcp)
     Thumb = tcp;
 }
 
-#endif

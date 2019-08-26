@@ -67,8 +67,8 @@ bool CMyEngineList::loadFromFile(const CString& filename)
         m_ErrorStr = "File not found.";
         return false;
     }
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    return CUploadEngineList::loadFromFile(WCstringToUtf8(filename),Settings.ServersSettings);
+    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    return CUploadEngineList::loadFromFile(WCstringToUtf8(filename), Settings->ServersSettings);
 }
 
 HICON CMyEngineList::getIconForServer(const std::string& name) {

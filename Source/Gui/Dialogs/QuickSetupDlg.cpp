@@ -163,7 +163,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         }
         Settings.quickScreenshotServer = Settings.imageServer;
         Settings.contextMenuServer = Settings.imageServer;
-        Settings.fileServer.setServerName("zippyshare.com");
+        //Settings.fileServer.setServerName("zippyshare.com");
     } else {
 
     }

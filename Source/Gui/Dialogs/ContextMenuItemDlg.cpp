@@ -20,10 +20,13 @@
 
 #include "ContextMenuItemDlg.h"
 
+#include <boost/format.hpp>
+
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+
 
 CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManager)
 {
@@ -73,9 +76,9 @@ LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     }
 
     if ( !imageServerSelector_->isAccountChosen() ) {
-        CString message;
-        message.Format(TR("You have not selected account for server \"%s\""), U2W(imageServerSelector_->serverProfile().serverName()));
-        LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
+        std::wstring serverNameW = IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName());
+        std::wstring message = str(boost::wformat(TR("You have not selected account for server \"%s\"")) % serverNameW);
+        LocalizedMessageBox(message.c_str(), TR("Error"), MB_ICONERROR);
         return 0;
     }
 
@@ -117,24 +120,25 @@ void CContextMenuItemDlg::generateTitle()
 {
     if ( !titleEdited_ ) {    
         ServerProfile sp = imageServerSelector_->serverProfile();
-        CString title;
-        title.Format(TR("Upload to %s"), U2W(sp.serverName()));
-        CString additional;
+        std::wstring serverName = IuCoreUtils::Utf8ToWstring(sp.serverName());
+        std::wstring title = str(boost::wformat(TR("Upload to %s")) % serverName);
+
+        std::wstring additional;
         if ( !sp.profileName().empty()) {
-            additional += Utf8ToWCstring(sp.profileName());
+            additional += IuCoreUtils::Utf8ToWstring(sp.profileName());
         }
         if ( !sp.folderId().empty() && !sp.folderTitle().empty() ) {
-            if ( !additional.IsEmpty() ) {
+            if ( !additional.empty() ) {
                 additional += _T(", ");
             }
-            CString temp;
-            temp.Format(TR("folder \"%s\""), static_cast<LPCTSTR>(Utf8ToWCstring(sp.folderTitle())) );
+            std::wstring folderTitleW = IuCoreUtils::Utf8ToWstring(sp.folderTitle());
+            std::wstring temp = str(boost::wformat(TR("folder \"%s\"")) % folderTitleW);
             additional+= temp;
         }
-        if ( !additional.IsEmpty() ) {
-            title += _T(" (") + additional + _T(")");
+        if ( !additional.empty() ) {
+            title += L" (" + additional + L")";
         }
 
-        SetDlgItemText(IDC_MENUITEMTITLEEDIT, title);
+        SetDlgItemText(IDC_MENUITEMTITLEEDIT, title.c_str());
     }
 }
