@@ -49,7 +49,7 @@ public:
     enum {
         ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL, WM_TASKDISPATCHERMSG = WM_USER + 100
     };
-    CMainDlg(std::shared_ptr<UploadEngineManager> uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
+    CMainDlg(ServersCheckerSettings* settings, std::shared_ptr<UploadEngineManager> uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
@@ -133,7 +133,7 @@ public:
 
     std::unique_ptr<ServersChecker> serversChecker_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
-    ServersCheckerSettings settings_;
+    ServersCheckerSettings* settings_;
     bool OnNeedStop();
     void processFinished();
     int Run();

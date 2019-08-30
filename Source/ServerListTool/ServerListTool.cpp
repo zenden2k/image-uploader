@@ -39,7 +39,7 @@ CAppModule _Module;
 #endif
 
 using namespace ServersListTool;
-CliSettings Settings;
+ServersCheckerSettings Settings;
 CLogWindow LogWindow;
 CLang Lang;
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
@@ -100,7 +100,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
         return false;
     }
 
-    Settings.LoadSettings(W2U(WinUtils::GetAppFolder())+ "Data/", "settings.xml");
+    Settings.LoadSettings(W2U(WinUtils::GetAppFolder()), "ServersChecker.xml");
    
     Settings.setEngineList(&engineList);
 
@@ -138,7 +138,7 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     int nRet = 0;
     // BLOCK: Run application
     {
-        CMainDlg dlgMain(uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
+        CMainDlg dlgMain(&Settings, uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
         nRet = dlgMain.DoModal(0);
     }
 

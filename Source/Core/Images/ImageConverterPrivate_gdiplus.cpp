@@ -473,7 +473,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             tempGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
                             tempGr.DrawImage(image->getBitmap(), dest, (INT)0, (int)0, (int)image->getWidth(),
                                 (int)image->getHeight(), UnitPixel, &attr);
-                            ImageUtils::changeAplhaChannel(*MaskBuffer, tempImage, 3, 3);
+                            ImageUtils::ChangeAlphaChannel(*MaskBuffer, tempImage, 3, 3);
                             gr->DrawImage(&tempImage, 0, 0);
                             tempGr.SetSmoothingMode(SmoothingModeNone);
                         }

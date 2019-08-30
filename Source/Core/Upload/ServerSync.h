@@ -41,7 +41,7 @@ class ServerSync: public ThreadSync
         std::mutex& folderMutex();
         /* @endcond */
     private:
-        Q_DECLARE_PRIVATE_PTR(ServerSync);
+        MY_DECLARE_PRIVATE_PTR(ServerSync);
 };
 
 #endif

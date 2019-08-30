@@ -24,6 +24,7 @@ limitations under the License.
 
 BasicSettings::BasicSettings()
 {
+    rootName_ = "ImageUploader";
     LastUpdateTime = 0;
     UploadBufferSize = 1024 * 1024;
     FileRetryLimit = 3;
@@ -168,8 +169,8 @@ bool BasicSettings::LoadSettings(const std::string& szDir, const std::string& fi
     }
     SimpleXml xml;
     xml.LoadFromFile(fileName_);
-    mgr_.loadFromXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
-    LoadAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
+    mgr_.loadFromXmlNode(xml.getRoot(rootName_).GetChild("Settings"));
+    LoadAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
     PostLoadSettings(xml);
     notifyChange();
     return true;
@@ -178,9 +179,9 @@ bool BasicSettings::LoadSettings(const std::string& szDir, const std::string& fi
 bool BasicSettings::SaveSettings()
 {
     SimpleXml xml;
-    mgr_.saveToXmlNode(xml.getRoot("ImageUploader").GetChild("Settings"));
+    mgr_.saveToXmlNode(xml.getRoot(rootName_).GetChild("Settings"));
     PostSaveSettings(xml);
-    SaveAccounts(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ServersParams"));
+    SaveAccounts(xml.getRoot(rootName_).GetChild("Settings").GetChild("ServersParams"));
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
     bool result = true;
     if (!xml.SaveToFile(fileName_)) {

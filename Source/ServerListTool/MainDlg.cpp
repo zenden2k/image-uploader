@@ -25,9 +25,10 @@ struct TaskDispatcherMessageStruct {
     bool async;
 };
 
-CMainDlg::CMainDlg(std::shared_ptr<UploadEngineManager> uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
+CMainDlg::CMainDlg(ServersCheckerSettings* settings, std::shared_ptr<UploadEngineManager> uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
                     std::shared_ptr<INetworkClientFactory> factory) :
-                    model_(engineList), m_ListView(&model_), networkClientFactory_(factory)
+                    settings_(settings),
+                    model_(engineList), m_ListView(&model_), networkClientFactory_(std::move(factory))
 {
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
@@ -58,8 +59,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     checkImageServersCheckBox_.SetCheck(BST_CHECKED);
     m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
-    settings_.loadFromFile(WCstringToUtf8(WinUtils::GetAppFolder() + "servertool.xml"));
-
     /*CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
     CString testURL = "https://github.com/zenden2k/image-uploader/issues";
     if (xml.LoadFromFile(WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml")))) {
@@ -75,12 +74,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     }*/
     basicSettings.MaxThreads = 10;
 
-    SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_.testFileName));
-    SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_.testUrl));
-    basicSettings.LoadSettings("", "");
-    //Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
-    settings_.copySettings(&basicSettings);
-    //iuPluginManager.setScriptsDirectory(WstrToUtf8((LPCTSTR)(WinUtils::GetAppFolder() + "Data/Scripts/")));
+    SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_->testFileName));
+    SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
     serversChecker_->setOnFinishedCallback(std::bind(&CMainDlg::processFinished, this));
@@ -222,9 +217,9 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
     if (isRunning()) {
         stop();
     } else {
-        settings_.testFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT)));
-        settings_.testUrl = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT)));
-        settings_.saveToFile(W2U(WinUtils::GetAppFolder() + "servertool.xml"));
+        settings_->testFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT)));
+        settings_->testUrl = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT)));
+        settings_->SaveSettings();
         
         EndDialog(wID);
     }
@@ -364,7 +359,7 @@ void CMainDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
 
 LRESULT CMainDlg::OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CSettingsDlg dlg(&settings_, ServiceLocator::instance()->settings<BasicSettings>());
+    CSettingsDlg dlg(settings_, ServiceLocator::instance()->settings<BasicSettings>());
     dlg.DoModal(m_hWnd);
     return 0;
 }

@@ -8,57 +8,44 @@
 namespace ServersListTool {
    
 ServersCheckerSettings::ServersCheckerSettings() {
+    rootName_ = "ServersChecker";
     testFileName = W2U(WinUtils::GetAppFolder()) + "testfile.jpg";
     testUrl = "https://github.com/zenden2k/image-uploader/issues";
-    useProxy = kNoProxy;
-    proxyType = ptHttp;
-    proxyPort = 8080;
+
+    BindToManager();
 }
 
-bool ServersCheckerSettings::loadFromFile(const std::string& fileName) {
-    SimpleXml xml;
-    if (xml.LoadFromFile(fileName)) {
-        SimpleXmlNode root = xml.getRoot("ServerListTool");
-        std::string name = root.Attribute("FileName");
-        if (!name.empty()) {
-            testFileName = name;
-        }
-        std::string url = root.Attribute("URL");
-        if (!url.empty()) {
-            testUrl = url;
-        }
+void ServersCheckerSettings::BindToManager() {
+    BasicSettings::BindToManager();
+    SettingsNode& serversChecker = mgr_["Basic"];
+    serversChecker.n_bind(testFileName);
+    serversChecker.n_bind(testUrl);
 
-        useProxy = static_cast<UseProxyEnum>(root.AttributeInt("UseProxy"));
-        proxyType = static_cast<ProxyType>(root.AttributeInt("ProxyType"));
-        proxyAddress = root.Attribute("ProxyAddress");
-        int port = root.AttributeInt("ProxyPort");
-        if (port) {
-            proxyPort = port;
-        }
+    SettingsNode& proxy = serversChecker["Proxy"];
+    proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
+    proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
+    proxy.nm_bind(ConnectionSettings, ServerAddress);
+    proxy.nm_bind(ConnectionSettings, ProxyPort);
+    proxy.nm_bind(ConnectionSettings, ProxyType);
+    //proxy.nm_bind(ConnectionSettings, ProxyUser);
+    //proxy.nm_bind(ConnectionSettings, ProxyPassword);;
+}
 
-        return true;
+bool ServersCheckerSettings::LoadSettings(const std::string& szDir, const std::string& fileName) {
+    return BasicSettings::LoadSettings(szDir, fileName, false);
+}
+
+bool ServersCheckerSettings::PostLoadSettings(SimpleXml &xml) {
+    SimpleXmlNode root = xml.getRoot("ServerListTool");
+    std::string name = root.Attribute("FileName");
+    if (!name.empty()) {
+        testFileName = name;
     }
-    return false;
-}
-
-bool ServersCheckerSettings::saveToFile(const std::string& fileName) const {
-    SimpleXml savexml;
-    SimpleXmlNode root = savexml.getRoot("ServerListTool");
-    root.SetAttribute("FileName", testFileName);
-    root.SetAttribute("URL", testUrl);
-    root.SetAttribute("Time", static_cast<int>(GetTickCount()));
-    root.SetAttribute("UseProxy", static_cast<int>(useProxy));
-    root.SetAttribute("ProxyType", static_cast<int>(proxyType));
-    root.SetAttribute("ProxyAddress", proxyAddress);
-    root.SetAttribute("ProxyPort", proxyPort);
-    return savexml.SaveToFile(fileName);
-}
-
-void ServersCheckerSettings::copySettings(BasicSettings* dest) {
-    dest->ConnectionSettings.UseProxy = useProxy;
-    dest->ConnectionSettings.ProxyPort = proxyPort;
-    dest->ConnectionSettings.ProxyType = proxyType;
-    dest->ConnectionSettings.ServerAddress = proxyAddress;
+    std::string url = root.Attribute("URL");
+    if (!url.empty()) {
+        testUrl = url;
+    }
+    return true;
 }
 
 }

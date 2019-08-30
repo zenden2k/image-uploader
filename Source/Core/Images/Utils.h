@@ -43,14 +43,14 @@ void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds,
     const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
     int width = 1);
 int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
-void changeAplhaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sourceChannel, int destChannel);
+void ChangeAlphaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sourceChannel, int destChannel);
 Gdiplus::Rect MeasureDisplayString(Gdiplus::Graphics& graphics, CString text, Gdiplus::RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, const CRect& intoR2);
 void DrawRect(Gdiplus::Bitmap& gr, Gdiplus::Color& color, Gdiplus::Rect rect);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
-std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(unsigned char* data, unsigned size);
+std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
 bool CopyBitmapToClipboardInDataUriFormat(Gdiplus::Bitmap* bm, int Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
 bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);

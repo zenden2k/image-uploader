@@ -25,7 +25,8 @@
 
 #include <string>
 #include <vector>
-#include <sqlite3.h>
+#include <memory>
+
 #include "Core/Utils/CoreTypes.h"
 
 class CHistorySession;
@@ -60,14 +61,16 @@ struct HistoryItem
 class SimpleXmlNode;
 class CHistoryReader_impl;
 class CHistoryReader;
+struct sqlite3;
+struct sqlite3_stmt;
 
 class CHistorySession
 {
     public:
-        CHistorySession(sqlite3* db, const std::string& filename, const std::string& sessionId);
+        explicit CHistorySession(const std::string& filename, const std::string& sessionId);
         ~CHistorySession();
         int entriesCount() const;
-        HistoryItem& entry(const int index) const;
+        HistoryItem& entry(int index) const;
         std::string serverName() const;
         void setServerName(const std::string& name);
         time_t timeStamp() const;
@@ -83,8 +86,6 @@ class CHistorySession
         time_t m_timeStamp;
         std::string m_serverName;
         std::vector<HistoryItem*> m_entries;
-        
-        sqlite3* db_;
         bool dbEntryCreated_;
         bool deleteItems_;
         void sortByOrderIndex();
@@ -134,14 +135,14 @@ class CHistoryReader
 
         // The pointer returned by this function is only valid
         //  during lifetime of CHistoryReader object
-        CHistorySession* getSession(size_t index);
+        CHistorySession* getSession(size_t index) const;
 
         std::vector<CHistorySession*>::iterator begin();
         std::vector<CHistorySession*>::iterator end();
 
     private:
         DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
-        CHistoryReader_impl* d_ptr;
+        std::unique_ptr<CHistoryReader_impl> d_ptr;
 
         static int selectCallback(void* userData, int argc, char **argv, char **azColName);
         static int selectCallback2(void* userData, int argc, char **argv, char **azColName);

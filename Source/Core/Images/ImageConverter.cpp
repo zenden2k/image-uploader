@@ -60,60 +60,60 @@ ImageConverter::~ImageConverter()
 
 bool ImageConverter::Convert(const std::string& sourceFile)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     return d->convert(sourceFile);
 }
 
 void ImageConverter::setDestinationFolder(const std::string& folder)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->destinationFolder_ = folder;
 }
 
 void ImageConverter::setGenerateThumb(bool generate)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->generateThumb_ = generate;
 }
 
 void ImageConverter::setThumbnail(Thumbnail* thumb)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->thumbnailTemplate_ = thumb;
 }
 
 std::shared_ptr<AbstractImage> ImageConverter::createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     return d->createThumbnail(image, fileSize, fileformat);
 }
 
 void ImageConverter::setImageConvertingParams(const ImageConvertingParams& params)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->m_imageConvertingParams = params;
 }
 
 void ImageConverter::setThumbCreatingParams(const ThumbCreatingParams& params)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->m_thumbCreatingParams = params;
 }
 
 std::string ImageConverter::getThumbFileName()
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     return d->thumbFileName_;
 }
 
 std::string ImageConverter::getImageFileName()
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     return d->resultFileName_;
 }
 
 void ImageConverter::setEnableProcessing(bool enable)
 {
-    Q_D(ImageConverter);
+    MY_D(ImageConverter);
     d->processingEnabled_ = enable;
 }

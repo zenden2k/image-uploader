@@ -5,7 +5,6 @@
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
-#include "StringConvert.h"
 #include "EncodedPassword.h"
 
 typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> ServerSettingsMap;
@@ -57,6 +56,7 @@ public:
 protected:
     SettingsManager mgr_;
     std::string fileName_;
+    std::string rootName_;
   
     CUploadEngineListBase* engineList_;
     bool loadFromRegistry_;

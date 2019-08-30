@@ -41,6 +41,7 @@ limitations under the License.
 #include "Core/ServiceLocator.h"
 #include "Core/SearchByImage.h"
 #include "Func/Common.h"
+#include "StringConvert.h"
 
 #ifndef CheckBounds
 #define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
@@ -517,7 +518,7 @@ WtlGuiSettings::WtlGuiSettings() :
 
 bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     CommonGuiSettings::PostLoadSettings(xml);
-    SimpleXmlNode settingsNode = xml.getRoot("ImageUploader").GetChild("Settings");
+    SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
     imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
     if (Language == _T("T\u00FCrk\u00E7e")) {  //fixes
@@ -652,15 +653,14 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
     CommonGuiSettings::PostSaveSettings(xml);
-#if !defined(IU_SERVERLISTTOOL) && !defined  (IU_CLI) && !defined(IU_SHELLEXT)
-    SimpleXmlNode searchEngineNode = xml.getRoot("ImageUploader").GetChild("Settings").GetChild("ImageEditor").GetChild("SearchEngine");
+
+    SimpleXmlNode searchEngineNode = xml.getRoot(rootName_).GetChild("Settings").GetChild("ImageEditor").GetChild("SearchEngine");
     searchEngineNode.SetText(SearchByImage::searchEngineTypeToString(ImageEditorSettings.SearchEngine));
 
-    SaveConvertProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Image").GetChild("Profiles"));
-    SaveServerProfiles(xml.getRoot("ImageUploader").GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
-#endif
+    SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
+    SaveServerProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
+
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
-#if !defined(IU_SERVERLISTTOOL) && !defined(IU_CLI)
     CRegistry Reg;
     Reg.SetRootKey(HKEY_CURRENT_USER);
     // if(ExplorerContextMenu)
@@ -722,7 +722,6 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     }
 
     Hotkeys_changed = false;
-#endif
     return true;
 }
 
@@ -731,14 +730,10 @@ void WtlGuiSettings::BindToManager() {
     /* binding settings */
     SettingsNode& general = mgr_["General"];
     general.n_bind(LastUpdateTime);
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
     general.n_bind(Language);
     general.n_bind(ExplorerContextMenu);
     /*general.n_bind(ExplorerVideoContextMenu);
     general.n_bind(ExplorerCascadedMenu);*/
-#endif
-#if !defined(IU_SHELLEXT) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-
 
 
     general.n_bind(ConfirmOnExit);
@@ -754,9 +749,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(WatchClipboard);
     general.n_bind(RememberFileServer);
     general.n_bind(RememberImageServer);
-#ifndef IU_SERVERLISTTOOL
     general.n_bind(Hotkeys);
-#endif
     SettingsNode& screenshot = mgr_["Screenshot"];
     screenshot.nm_bind(ScreenshotSettings, Delay);
     screenshot.nm_bind(ScreenshotSettings, Format);
@@ -843,10 +836,8 @@ void WtlGuiSettings::BindToManager() {
 
     SettingsNode& imageReuploader = mgr_["ImageReuploader"];
     imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
-#endif
 
     SettingsNode& upload = mgr_["Uploading"];
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
     //    upload.n_bind(UrlShorteningServer);
     upload.n_bind(QuickUpload);
     upload.n_bind(CodeLang);
@@ -870,12 +861,11 @@ void WtlGuiSettings::BindToManager() {
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";
-#endif
     upload.n_bind(UploadBufferSize);
     upload.n_bind(FileRetryLimit);
 
     upload.n_bind(ActionRetryLimit);
-#if  !defined  (IU_CLI) && !defined(IU_SHELLEXT) && !defined(IU_SERVERLISTTOOL)
+
     SettingsNode& proxy = upload["Proxy"];
     proxy["@UseProxy"].bind(ConnectionSettings.UseProxy);
     proxy["@NeedsAuth"].bind(ConnectionSettings.NeedsAuth);
@@ -884,7 +874,6 @@ void WtlGuiSettings::BindToManager() {
     proxy.nm_bind(ConnectionSettings, ProxyType);
     proxy.nm_bind(ConnectionSettings, ProxyUser);
     proxy.nm_bind(ConnectionSettings, ProxyPassword);;
-#endif
 }
 
 // The following code should  be deleted in next releases

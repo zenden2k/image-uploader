@@ -26,13 +26,13 @@ LRESULT CSettingsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     serverTypeCombo_.AddString(_T("SOCKS5"));
     serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
 
-    useProxyRadioButton_.SetCheck(settings_->useProxy == ServersCheckerSettings::kUserProxy ? BST_CHECKED : BST_UNCHECKED);
-    useSystemProxyRadioButton_.SetCheck(settings_->useProxy == ServersCheckerSettings::kSystemProxy ? BST_CHECKED : BST_UNCHECKED);
-    noProxyRadioButton_.SetCheck(settings_->useProxy == ServersCheckerSettings::kNoProxy ? BST_CHECKED : BST_UNCHECKED);
+    useProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy ? BST_CHECKED : BST_UNCHECKED);
+    useSystemProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy ? BST_CHECKED : BST_UNCHECKED);
+    noProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kNoProxy ? BST_CHECKED : BST_UNCHECKED);
 
-    SetDlgItemInt(IDC_PORTEDIT, settings_->proxyPort);
-    SetDlgItemText(IDC_ADDRESSEDIT, U2W(settings_->proxyAddress));
-    serverTypeCombo_.SetCurSel(settings_->proxyType);
+    SetDlgItemInt(IDC_PORTEDIT, settings_->ConnectionSettings.ProxyPort);
+    SetDlgItemText(IDC_ADDRESSEDIT, U2W(settings_->ConnectionSettings.ServerAddress));
+    serverTypeCombo_.SetCurSel(settings_->ConnectionSettings.ProxyType);
     proxyTypeChanged();
     return TRUE;
 }
@@ -43,18 +43,18 @@ LRESULT CSettingsDlg::OnCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 }
 
 LRESULT CSettingsDlg::OnOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    settings_->proxyAddress = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_ADDRESSEDIT)));
-    settings_->proxyPort = GetDlgItemInt(IDC_PORTEDIT);
+    settings_->ConnectionSettings.ServerAddress = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_ADDRESSEDIT)));
+    settings_->ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
     if (SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0) {
-        settings_->useProxy = ServersCheckerSettings::kUserProxy;
+        settings_->ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
     }
     else if (SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_GETCHECK) != 0) {
-        settings_->useProxy = ServersCheckerSettings::kSystemProxy;
+        settings_->ConnectionSettings.UseProxy = ConnectionSettingsStruct::kSystemProxy;
     }
     else {
-        settings_->useProxy = ServersCheckerSettings::kNoProxy;
+        settings_->ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
     }
-    settings_->copySettings(basicSettings_);
+    //settings_->copySettings(basicSettings_);
     EndDialog(IDOK);
     return 0;
 }

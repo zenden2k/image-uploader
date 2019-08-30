@@ -38,7 +38,7 @@ ScriptsManager::~ScriptsManager()
     serverSyncs_.clear();
 }
 
-Script* ScriptsManager::getScript(std::string& fileName, ScriptType type)
+Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
     bool UseExisting = false;

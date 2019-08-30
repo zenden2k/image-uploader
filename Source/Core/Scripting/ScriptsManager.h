@@ -13,7 +13,7 @@ public:
     enum ScriptType {TypeUploadFilterScript};
     explicit ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory);
     ~ScriptsManager();
-    Script* getScript(std::string &fileName, ScriptType type);
+    Script* getScript(const std::string &fileName, ScriptType type);
     void unloadScripts();
     void clearThreadData();
     ServerSync* getServerSync(const std::string& fileName);

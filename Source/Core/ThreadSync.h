@@ -27,7 +27,7 @@ class ThreadSync
         /* @endcond */
     protected:
         std::shared_ptr<ThreadSyncPrivate> d_ptr; // ServerSync should not be copied, but we need to use pimpl idiom for Squirrel binding
-        Q_DECLARE_PRIVATE_PTR(ThreadSync);
+        MY_DECLARE_PRIVATE_PTR(ThreadSync);
 };
 
 #endif

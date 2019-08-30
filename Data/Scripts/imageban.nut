@@ -1,32 +1,46 @@
 MyClientId <- "tB3J94mijYhW5Up5fm2c";
 
+function reg_replace(str, pattern, replace_with)
+{
+    local resultStr = str;    
+    local res;
+    local start = 0;
+
+    while( (res = resultStr.find(pattern,start)) != null ) {    
+
+        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+        start = res + replace_with.len();
+    }
+    return resultStr;
+}
+
 function getThumbnailWidth() {
-	local result = "180";
-	try{
-		result = options.getParam("THUMBWIDTH");
-	}
-	catch(ex)
-	{
-	}
-	return result;
+    local result = "180";
+    try{
+        result = options.getParam("THUMBWIDTH");
+    }
+    catch(ex)
+    {
+    }
+    return result;
 }
 
 function anonymousUpload(FileName, options) {
-	nm.setUrl("https://imageban.ru/up");
-	nm.addQueryHeader("User-Agent", "Shockwave Flash");
-	nm.addQueryParam("Filename", ExtractFileName(FileName));
-	nm.addQueryParam("albmenu", "0");
-	nm.addQueryParam("grad", "0");
-	nm.addQueryParam("rsize", "0");
-	nm.addQueryParam("inf", "1");
-	nm.addQueryParam("prew", getThumbnailWidth());
-	nm.addQueryParam("ptext", "");
-	nm.addQueryParam("rand", format("%d",random()%22222));
-	nm.addQueryParam("ttl", "0");
-	nm.addQueryParamFile("Filedata",FileName, ExtractFileName(FileName),"");
-	nm.addQueryParam("Upload", "Submit Query");
-	
-	nm.doUploadMultipartData();
+    nm.setUrl("https://imageban.ru/up");
+    nm.addQueryHeader("User-Agent", "Shockwave Flash");
+    nm.addQueryParam("Filename", ExtractFileName(FileName));
+    nm.addQueryParam("albmenu", "0");
+    nm.addQueryParam("grad", "0");
+    nm.addQueryParam("rsize", "0");
+    nm.addQueryParam("inf", "1");
+    nm.addQueryParam("prew", getThumbnailWidth());
+    nm.addQueryParam("ptext", "");
+    nm.addQueryParam("rand", format("%d",random()%22222));
+    nm.addQueryParam("ttl", "0");
+    nm.addQueryParamFile("Filedata",FileName, ExtractFileName(FileName),"");
+    nm.addQueryParam("Upload", "Submit Query");
+    
+    nm.doUploadMultipartData();
 
     if (nm.responseCode() == 200 ) {
         local t = ParseJSON(nm.responseBody());
@@ -52,14 +66,14 @@ function anonymousUpload(FileName, options) {
     } else {
         WriteLog("error", "")
     }
-	
-	return 0;
+    
+    return 0;
 }
 
 function  UploadFile(FileName, options)
-{	
+{    
     local login = ServerParams.getParam("Login");
-	
+    
     if ( login == "" ) {
         return anonymousUpload(FileName, options);
     }
@@ -73,22 +87,24 @@ function  UploadFile(FileName, options)
         WriteLog("error", "imageban.ru: SecretKey parameter cannot be empty. \r\nYou must set SecretKey in server settings.");
         return 0;
     }
-	
-	nm.setUrl("https://api.imageban.ru/v1");
+    local fName = ExtractFileName(FileName);
+    nm.setUrl("https://api.imageban.ru/v1");
     nm.addQueryHeader("Authorization", "TOKEN " + clientId);
-	nm.addQueryParamFile("image",FileName, ExtractFileName(FileName),"");
-	nm.addQueryParam("secret_key", secretKey);
-	nm.doUploadMultipartData();
+    nm.addQueryParamFile("image",FileName, fName,"");
+    nm.addQueryParam("name", fName);
+    nm.addQueryParam("secret_key", secretKey);
+    nm.doUploadMultipartData();
     
     if (nm.responseCode() == 200) {
         local data = nm.responseBody();
         local t = ParseJSON(data);
         if ("success" in t && t.success) {
-            local viewUrl  	= t.data.short_link;
-            local directUrl  	= t.data.link;
-            
+            local viewUrl      = t.data.short_link;
+            local directUrl      = t.data.link;
+            local thumbUrl = reg_replace(directUrl, "/out/", "/thumbs/");
             options.setDirectUrl(directUrl);
             options.setViewUrl(viewUrl);
+            options.setThumbUrl(thumbUrl);
             return 1; // Success
         } else {
             if ("error" in t) {
@@ -100,14 +116,14 @@ function  UploadFile(FileName, options)
     } else {
          WriteLog("error", "imageban.ru: Upload failed. Response code: " + nm.responseCode());
     }        
-	
-	return 0;
+    
+    return 0;
 }
 
 function GetServerParamList()
 {
     return { 
-		ClientId = "ClientId",
+        ClientId = "ClientId",
         SecretKey = "SecretKey"
-	};
+    };
 }

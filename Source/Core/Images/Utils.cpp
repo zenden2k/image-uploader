@@ -674,7 +674,7 @@ void DrawStrokedText(Graphics& gr, LPCTSTR Text, RectF Bounds, const Font& font,
 }
 
 // hack for stupid GDIplus
-void changeAplhaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel)
+void ChangeAlphaChannel(Bitmap& source, Bitmap& dest, int sourceChannel, int destChannel)
 {
     Rect r(0, 0, source.GetWidth(), source.GetHeight());
     BitmapData bdSrc;

@@ -3,25 +3,23 @@
 
 #include <string>
 #include "atlheaders.h"
+#include "Core/Settings/BasicSettings.h"
 
 class BasicSettings;
 
 namespace ServersListTool {
 
-class ServersCheckerSettings {
+class ServersCheckerSettings: public BasicSettings {
 public:
     std::string testFileName, testUrl;
-    enum UseProxyEnum { kNoProxy = 0, kUserProxy, kSystemProxy } useProxy;
-    enum ProxyType {
-        ptHttp = 0, ptSocks4, ptSocks4a, ptSocks5, ptSocks5Dns
-    } proxyType;
-    std::string proxyAddress;
-    int proxyPort;
 
     ServersCheckerSettings();
-    bool loadFromFile(const std::string& fileName);
-    bool saveToFile(const std::string& fileName = std::string()) const;
-    void copySettings(BasicSettings* dest);
+    
+    bool LoadSettings(const std::string& szDir, const std::string& fileName);
+
+protected:
+    void BindToManager();
+    bool PostLoadSettings(SimpleXml &root) override;
 };
 
 }

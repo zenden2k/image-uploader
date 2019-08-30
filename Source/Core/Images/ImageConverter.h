@@ -78,7 +78,7 @@ class ImageConverter
         std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
     protected:
         ImageConverterPrivate* d_ptr;
-        Q_DECLARE_PRIVATE(ImageConverter);
+        MY_DECLARE_PRIVATE(ImageConverter);
 private:
     DISALLOW_COPY_AND_ASSIGN(ImageConverter);
 };

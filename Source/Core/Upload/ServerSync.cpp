@@ -17,14 +17,14 @@ public:
 };
 ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     d->authPerformed_ = false;
     d->authPerformedSuccess_ = false;
 }
 
 bool ServerSync::beginAuth()
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     try {
         d->loginMutex_.lock();
     } catch (std::exception& ex) {
@@ -41,7 +41,7 @@ bool ServerSync::beginAuth()
 
 bool ServerSync::endAuth()
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     try
     {
         d->loginMutex_.unlock();
@@ -56,27 +56,27 @@ bool ServerSync::endAuth()
 
 void ServerSync::setAuthPerformed(bool success)
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     d->authPerformed_ = true;
     d->authPerformedSuccess_ = success;
 }
 
 bool ServerSync::isAuthPerformed()
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     return d->authPerformed_;
 }
 
 void ServerSync::resetAuthorization()
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     d->authPerformed_ = false;
     d->authPerformedSuccess_ = false;
 }
 
 void ServerSync::resetFailedAuthorization()
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
 //    std::lock_guard<std::mutex> lock(d_ptr->threadCountMutex_);
     if (!d_ptr->threadCount_ && d->authPerformed_ && !d->authPerformedSuccess_ )
     {
@@ -86,14 +86,14 @@ void ServerSync::resetFailedAuthorization()
 
 void ServerSync::setConstVar(const std::string& name, const std::string& value)
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     std::lock_guard<std::mutex> lock(d->constVarsMutex_);
     d->constVars_[name] = value;
 }
 
 std::string ServerSync::getConstVar(const std::string& name)
 {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     std::lock_guard<std::mutex> lock(d->constVarsMutex_);
     auto it = d->constVars_.find(name);
     if (it != d->constVars_.end())
@@ -104,6 +104,6 @@ std::string ServerSync::getConstVar(const std::string& name)
 }
 
 std::mutex& ServerSync::folderMutex() {
-    Q_D(ServerSync);
+    MY_D(ServerSync);
     return d->folderMutex_;
 }

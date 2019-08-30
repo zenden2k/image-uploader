@@ -22,9 +22,10 @@
 
 #include <ctime>
 #include <algorithm>
+
 #include <boost/format.hpp>
 #include <boost/filesystem.hpp>
-
+#include <sqlite3.h>
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
@@ -182,12 +183,12 @@ std::shared_ptr<CHistorySession> CHistoryManager::newSession()
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
     std::string str = IuCoreUtils::toString(rand()%(256 * 256)) + IuCoreUtils::toString(int(t));
     std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + IuCoreUtils::toString(rand()%(256))).substr(0, 16);
-    auto res = std::make_shared<CHistorySession>(db_, fileName, id);
+    auto res = std::make_shared<CHistorySession>(fileName, id);
     res->setTimeStamp(t);
     return res;
 }
 
-CHistorySession::CHistorySession(sqlite3* db, const std::string& filename, const std::string&  sessionId) : db_(db)
+CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId) 
 {
     deleteItems_ = true;
     m_historyXmlFileName = filename;
@@ -233,7 +234,7 @@ int CHistorySession::entriesCount() const
     return m_entries.size();
 }
 
-HistoryItem& CHistorySession::entry(const int index) const
+HistoryItem& CHistorySession::entry(int index) const
 {
     return *m_entries[index];
 }
@@ -386,7 +387,7 @@ bool CHistoryManager::convertHistory() {
 //
 CHistoryReader::CHistoryReader(CHistoryManager* mgr)
 {
-    d_ptr = new CHistoryReader_impl();
+    d_ptr.reset(new CHistoryReader_impl());
     d_ptr->mgr_ = mgr;
 }
 
@@ -395,7 +396,7 @@ int CHistoryReader::getSessionCount() const
     return d_ptr->m_sessions.size();
 }
 
-CHistorySession* CHistoryReader::getSession(size_t index)
+CHistorySession* CHistoryReader::getSession(size_t index) const
 {
     return d_ptr->m_sessions[index];
 }
@@ -418,7 +419,7 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
     for(size_t i = 0; i<allSessions.size(); i++)
     {
         std::string fName = filename;
-        CHistorySession* session = new CHistorySession(nullptr,fName, "0");
+        CHistorySession* session = new CHistorySession(fName, "0");
         session->loadFromXml(allSessions[i]);
         d_ptr->m_sessions.push_back(session);
     }
@@ -490,7 +491,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
         }
     }
     
-    CHistorySession* session = new CHistorySession(pthis->d_ptr->mgr_->db_, "", sessionId);
+    CHistorySession* session = new CHistorySession("", sessionId);
     for (int i = 0; i < argc; i++) {
         const char* val = argv[i] ? argv[i] : "";
         if (!strcmp(azColName[i], "created_at")) {
@@ -577,5 +578,4 @@ CHistoryReader::~CHistoryReader()
     for (auto& it : d_ptr->m_sessions) {
         delete it;
     }
-    delete d_ptr;
 }
