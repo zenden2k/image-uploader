@@ -1,4 +1,5 @@
 ﻿#include "Process.h"
+
 #undef environ
 #include <boost/process.hpp>
 #include "Core/Logging.h"
@@ -7,7 +8,7 @@
 #include "../Squirrelnc.h"
 
 #ifdef _WIN32
-#include <boost/process/windows.hpp>
+//#include <boost/process/windows.hpp>
 #include <boost/winapi/process.hpp>
 #include <boost/winapi/show_window.hpp>
 #include <boost/winapi/basic_types.hpp>
@@ -16,6 +17,7 @@ namespace ScriptAPI {
 
 namespace bp = ::boost::process;
 
+#ifdef _WIN32
 // Thanks to https://stackoverflow.com/questions/43582022/boostprocess-hide-console-on-windows
 
 struct show_window
@@ -27,17 +29,19 @@ private:
 public: explicit
     show_window(bool const show) noexcept
     : m_flag{ show ? ::boost::winapi::SW_SHOWNORMAL_ : ::boost::winapi::SW_HIDE_ }
-{}
+    {}
 
-        // this function will be invoked at child process constructor before spawning process
-        template <class WindowsExecutor>
-        void on_setup(WindowsExecutor &e) const
-        {
-            // we have a chance to adjust startup info
-            e.startup_info.dwFlags |= ::boost::winapi::STARTF_USESHOWWINDOW_;
-            e.startup_info.wShowWindow |= m_flag;
-        }
+    // this function will be invoked at child process constructor before spawning process
+    template <class WindowsExecutor>
+    void on_setup(WindowsExecutor &e) const {
+        // we have a chance to adjust startup info
+        e.startup_info.dwFlags |= ::boost::winapi::STARTF_USESHOWWINDOW_;
+        e.startup_info.wShowWindow |= m_flag;
+    }
 };
+#else
+using show_window = boost::process::detail::handler_base;
+#endif
 
 class ProcessPrivate {
 public:
@@ -47,52 +51,35 @@ public:
         outputEncoding_ = "cp_oem";
 #endif
     }
+
+    ~ProcessPrivate() {
+        if (child_) {
+            child_->detach();
+        }
+    }
     bool start()
     {
-        std::vector<std::string> args = {/*IuCoreUtils::ExtractFileName*/(executable_) };
+        std::vector<std::string> args;
         Sqrat::Array::iterator it;
-        while (arguments_.Next(it))
-        {
-            Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
-            args.push_back(obj.Cast<std::string>());
+        if (!arguments_.IsNull()) {
+            while (arguments_.Next(it))
+            {
+                Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
+                args.push_back(obj.Cast<std::string>());
+            }
         }
 
         try
-        {
-            /*#ifdef _WIN32
-            bp::win32_context ctx;
-            STARTUPINFO si;
-            if (hidden_ )
-            {
-                
-                ::ZeroMemory(&si, sizeof(si));
-                si.cb = sizeof(si);
-                si.wShowWindow = SW_HIDE;
-                si.dwFlags = STARTF_USESHOWWINDOW;
-                ctx.startupinfo = &si;
-            }
-            
-            #else
-            bp::context ctx;
-            #endif
-         
-            ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
-            ctx.environment = boost::process::self::get_environment();*/
-            
+        {   
             if (readProcessOutput_) {
                 inputStream_ = std::make_unique<bp::ipstream>();
                 child_.reset(new bp::child(executable_, bp::args(args), show_window{ !hidden_ }, bp::std_out > *inputStream_));
             } else {
                 child_.reset(new bp::child(executable_, bp::args(args), show_window{ !hidden_ }));
             }
-            /*#ifdef _WIN32
-            child_.reset(new bp::win32_child(bp::win32_launch(executable_, args, ctx)));
-            #else
-            child_.reset(new bp::child(bp::launch(executable_, args, ctx)));
-            #endif*/
         }
         catch (std::exception & ex){
-            LOG(ERROR) << ex.what();
+            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
             return false;
         }
 
@@ -103,31 +90,14 @@ public:
     {
         try
         {
-            /*#ifdef _WIN32
-                        bp::win32_context ctx;
-                        STARTUPINFO si;
-                        if (hidden_)
-                        {
-
-                            ::ZeroMemory(&si, sizeof(si));
-                            si.cb = sizeof(si);
-                            si.wShowWindow = SW_HIDE;
-                            si.dwFlags = STARTF_USESHOWWINDOW;
-                            ctx.startupinfo = &si;
-                        }
-
-            #else
-                        bp::context ctx;
-            #endif**/
-            /*ctx.stdout_behavior = readProcessOutput_ ? bp::capture_stream() : bp::silence_stream();
-            ctx.environment = boost::process::self::get_environment();
-            child_.reset(new bp::child(bp::launch_shell(command, ctx)));*/
-            std::vector<std::string> args = {/*IuCoreUtils::ExtractFileName*/(executable_) };
+            std::vector<std::string> args;
             Sqrat::Array::iterator it;
-            while (arguments_.Next(it))
-            {
-                Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
-                args.push_back(obj.Cast<std::string>());
+            if (!arguments_.IsNull()) {
+                while (arguments_.Next(it))
+                {
+                    Sqrat::Object obj(it.getValue(), GetCurrentThreadVM());
+                    args.push_back(obj.Cast<std::string>());
+                }
             }
 
             if (readProcessOutput_) {
@@ -139,7 +109,7 @@ public:
             }
         }
         catch (std::exception & ex){
-            LOG(ERROR) << ex.what();
+            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
             return false;
         }
         return true;
@@ -177,9 +147,8 @@ public:
             return EXIT_FAILURE;
         }
         std::error_code code;
-        /*bp::status status = */child_->wait(code);
+        child_->wait(code);
         return child_->exit_code();
-       // return status.exited() ? status.exit_status() : EXIT_FAILURE;
     }
     std::string executable_;
     Sqrat::Array arguments_;
@@ -226,17 +195,6 @@ bool Process::launchInShell(const std::string& command)
 {
     return d_->launchShell(command);
 }
-
-/*bp::child start_child(bp::context ctx)
-{
-#if defined(BOOST_POSIX_API) 
-    return bp::launch(std::string("env"), std::vector<std::string>(), ctx); 
-#elif defined(BOOST_WINDOWS_API) 
-    return bp::launch_shell("set", ctx);
-#else 
-#  error "Unsupported platform." 
-#endif 
-}*/
 
 bool Process::start()
 {

@@ -31,7 +31,7 @@ class CMyEngineList: public CUploadEngineList
     public:
         CMyEngineList();
         ~CMyEngineList();
-        CString ErrorStr() const;
+        CString errorStr() const;
         CUploadEngineData* byName(const CString &name);
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);

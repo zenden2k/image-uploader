@@ -108,45 +108,6 @@ LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int n
 #undef PixelFormat8bppIndexed 
 #define PixelFormat8bppIndexed (3 | ( 8 << 8) | PixelFormatIndexed | PixelFormatGDI)
 
-/* MakeFontBold
-    MakeFontUnderLine
-
-    -----------------------
-    These functions create bold/underlined fonts based on given font
-*/
-HFONT MakeFontBold(HFONT font)
-{
-    if(!font) return 0;
-
-    LOGFONT alf;
-
-    bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
-
-    if(!ok) return 0;
-
-    alf.lfWeight = FW_BOLD;
-
-    HFONT NewFont = CreateFontIndirect(&alf);
-    return NewFont;
-}
-
-HFONT MakeFontUnderLine(HFONT font)
-{
-    if(!font) return 0;
-
-    LOGFONT alf;
-
-    bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
-
-    if(!ok) return 0;
-
-    alf.lfUnderline = 1;
-    HFONT NewFont = CreateFontIndirect(&alf);
-
-    return NewFont;
-}
-
-
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
 {
     size_t nLen;
@@ -162,9 +123,4 @@ LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
     else szString = szStart+nLen;
 
     return szString;
-}
-
-bool CheckFileName(const CString& fileName)
-{
-    return (fileName.FindOneOf(_T("\\/:*?\"<>|")) < 0);
 }

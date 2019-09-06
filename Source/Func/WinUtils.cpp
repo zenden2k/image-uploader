@@ -1471,6 +1471,51 @@ time_t SystemTimeToTime(const SYSTEMTIME &st) {
     return std::mktime(&tm);
 }
 
+bool CheckFileName(const CString& fileName)
+{
+    return fileName.FindOneOf(_T("\\/:*?\"<>|")) < 0;
+}
+
+HRESULT IsElevated(/*__out_opt*/ BOOL* pbElevated) {
+    HRESULT hResult = E_FAIL; // assume an error occured
+    HANDLE hToken = NULL;
+
+    if (!::OpenProcessToken(
+        ::GetCurrentProcess(),
+        TOKEN_QUERY,
+        &hToken))
+    {
+        ATLASSERT(FALSE);
+        return hResult;
+    }
+
+    TOKEN_ELEVATION te = { 0 };
+    DWORD dwReturnLength = 0;
+
+    if (!::GetTokenInformation(
+        hToken,
+        (TOKEN_INFORMATION_CLASS)TokenElevation,
+        &te,
+        sizeof(te),
+        &dwReturnLength))
+    {
+        //ATLASSERT( FALSE );
+    }
+    else
+    {
+        ATLASSERT(dwReturnLength == sizeof(te));
+
+        hResult = te.TokenIsElevated ? S_OK : S_FALSE;
+
+        if (pbElevated)
+            *pbElevated = (te.TokenIsElevated != 0);
+    }
+
+    ::CloseHandle(hToken);
+
+    return hResult;
+}
+
 }
 
 

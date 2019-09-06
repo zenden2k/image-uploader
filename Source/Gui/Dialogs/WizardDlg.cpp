@@ -915,7 +915,7 @@ bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
     WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_EngineList.setNumOfRetries(Settings->FileRetryLimit, Settings->ActionRetryLimit);
     bool Result = m_EngineList.loadFromFile(filename);
-    Error = m_EngineList.ErrorStr();
+    Error = m_EngineList.errorStr();
     return Result;
 }
 

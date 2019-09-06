@@ -55,7 +55,7 @@ int CMyEngineList::getUploadEngineIndex(const CString& Name) const
     return CUploadEngineListBase::getUploadEngineIndex(WCstringToUtf8(Name));
 }
 
-CString CMyEngineList::ErrorStr() const
+CString CMyEngineList::errorStr() const
 {
     return m_ErrorStr;
 }

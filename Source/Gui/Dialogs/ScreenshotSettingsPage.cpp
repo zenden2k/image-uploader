@@ -110,7 +110,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
 bool CScreenshotSettingsPagePage::Apply()
 {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
-    if(!CheckFileName(fileName))
+    if(!WinUtils::CheckFileName(fileName))
     {
         GuiTools::LocalizedMessageBox(m_hWnd, TR("File name cannot contains forbidden characters!"));
         ::SetFocus(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));

@@ -6,7 +6,7 @@
 namespace WebUtils {
     bool DoesTextLookLikeUrl(CString& text) {
         if ( text.Left(4) == _T("www.") ) {
-            text = "http://" + text;
+            text = _T("http://") + text;
             return true;
         }
         

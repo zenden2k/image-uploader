@@ -72,11 +72,10 @@ inline unsigned int COLORREF2RGB( COLORREF color)
     return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
 }
 void IU_RunElevated(CString params);
-HRESULT IsElevated( __out_opt BOOL * pbElevated );
+
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
 HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
-// Function that gets path to SendTo folder
-CString GetSendToPath() ;
+
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 

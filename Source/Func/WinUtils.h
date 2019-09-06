@@ -108,7 +108,8 @@ namespace WinUtils {
     bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
     SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds);
     time_t SystemTimeToTime(const SYSTEMTIME &s);
-    void DatePlusDays(struct tm* date, int days);
+    bool CheckFileName(const CString& fileName);
+    HRESULT IsElevated(/*__out_opt */ BOOL * pbElevated);
 //#endif
 };
 

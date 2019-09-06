@@ -94,8 +94,9 @@ LRESULT CUpdateDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 
         BOOL elev = false;
         bool isVista = WinUtils::IsVistaOrLater();
-        if (isVista)
-            IsElevated(&elev);
+        if (isVista) {
+            WinUtils::IsElevated(&elev);
+        }
         bool CanWrite = WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"));
 
         bool NeedElevation = m_UpdateManager.AreCoreUpdates() && isVista && !elev && !CmdLine.IsOption(_T("update"));

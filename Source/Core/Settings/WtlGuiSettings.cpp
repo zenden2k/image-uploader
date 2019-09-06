@@ -250,7 +250,7 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
     TempInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
     TempInfo.hwnd = NULL;
     BOOL b = FALSE;
-    IsElevated(&b);
+    WinUtils::IsElevated(&b);
     if (WinUtils::IsVistaOrLater() && !b) {
         TempInfo.lpVerb = _T("runas");
     } else {
@@ -413,7 +413,7 @@ WtlGuiSettings::WtlGuiSettings() :
         CreateDirectory(IuCoreUtils::Utf8ToWstring(SettingsFolder).c_str(), 0);
     }
     BOOL isElevated = false;
-    IsElevated(&isElevated);
+    WinUtils::IsElevated(&isElevated);
     if (isElevated || CmdLine.IsOption(L"afterupdate")) {
         WinUtils::MakeDirectoryWritable(DataFolder);
     }
@@ -689,7 +689,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     if (SendToContextMenu_changed || ExplorerContextMenu_changed) {
         AutoStartup_changed = false;
         BOOL b;
-        if (WinUtils::IsVistaOrLater() && IsElevated(&b) != S_OK) {
+        if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
             // Start new elevated process 
             ApplyRegistrySettings();
         } else {
@@ -885,7 +885,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
 
     // if(SendToContextMenu_changed)
     {
-        CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
+        CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
 
         if (SendToContextMenu) {
             if (WinUtils::FileExists(ShortcutName))
@@ -1033,7 +1033,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 
 void WtlGuiSettings::Uninstall() {
     BOOL b;
-    if (WinUtils::IsVistaOrLater() && IsElevated(&b) != S_OK) {
+    if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
         RunIuElevated("/uninstall");
         return;
     }
@@ -1051,7 +1051,7 @@ void WtlGuiSettings::Uninstall() {
     Reg.DeleteKey("Software\\Zenden.ws"); // Will not delete if contains subkeys
     WinUtils::RemoveBrowserKey();
 
-    CString ShortcutName = GetSendToPath() + _T("\\Image Uploader.lnk");
+    CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
     DeleteFile(ShortcutName);
 
 }
