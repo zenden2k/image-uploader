@@ -254,7 +254,7 @@ CHistorySession::~CHistorySession() {
 bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index,const std::string& val) {
     if (!val.empty()) {
         char* str = new char[val.size()+1];
-        strcpy_s(str, val.size() + 1, val.c_str());
+        strcpy(str, val.c_str());
         if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s)
         {
             delete[] reinterpret_cast<char*>(s);

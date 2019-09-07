@@ -40,7 +40,22 @@ public: explicit
     }
 };
 #else
-using show_window = boost::process::detail::handler_base;
+struct show_window
+    : ::boost::process::detail::handler_base
+{
+    show_window(bool const show) noexcept 
+    {}
+
+    template<typename Executor> void on_setup(Executor &) const{}
+    template<typename Executor>
+    void on_error(Executor &, const std::error_code &) const{}
+    template<typename Executor> void on_success(Executor &) const{}
+    template<typename Executor>
+    void on_fork_error(Executor &, const std::error_code &) const{}
+    template<typename Executor> void on_exec_setup(Executor &) const{}
+    template<typename Executor>
+    void on_exec_error(Executor &, const std::error_code &) const{}
+};
 #endif
 
 class ProcessPrivate {
