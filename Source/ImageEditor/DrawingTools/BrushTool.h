@@ -4,13 +4,11 @@
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
-
 #include "AbstractDrawingTool.h"
+
 namespace ImageEditor {
 
-    class Canvas;
-
-
+class Canvas;
 
 class BrushTool: public AbstractDrawingTool  {
 public:

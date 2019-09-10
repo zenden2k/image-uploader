@@ -4,17 +4,12 @@
 
 #include "ImageEditorView.h"
 
-#include <algorithm>
-
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
-#include "Core/Images/Utils.h"
 #include "../MovableElements.h"
 #include "resource.h"
-#ifndef TR
-#define TR(a) L##a
-#endif
+
 namespace ImageEditor {
 
 CImageEditorView::CImageEditorView()  {
@@ -123,7 +118,7 @@ LRESULT CImageEditorView::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     cy += ptScroll.y;
     POINT pt = {cx, cy};
     RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-    if ( PtInRect(&canvasRect, pt) ){
+    /*if ( PtInRect(&canvasRect, pt) )*/{
         canvas_->mouseUp( 0, cx, cy );
     }
     ReleaseCapture();
@@ -142,7 +137,7 @@ LRESULT CImageEditorView::OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM l
     cy += ptScroll.y;
     POINT pt = {cx, cy};
     RECT canvasRect = {0,0, canvas_->getWidth(), canvas_->getHeigth()};
-    if ( PtInRect(&canvasRect, pt) ){
+    /*if ( PtInRect(&canvasRect, pt) )*/{
         canvas_->mouseUp( 1, cx, cy );
         ReleaseCapture();
     }

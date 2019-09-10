@@ -29,7 +29,7 @@ class TextElement: public MovableElement{
         void resize(int width, int height) override;
         void setInputBox(InputBox* inputBox);
         void setFont(LOGFONT font,  DWORD changeMask);
-        LOGFONT getFont();
+        LOGFONT getFont() const;
         InputBox* getInputBox() const;
         ElementType getType() const override;
         void setSelected(bool selected) override;
@@ -47,7 +47,7 @@ protected:
     bool firstEdit_;
     bool fillBackground_;
     std::string originalRawText_;
-    void onTextChanged(TCHAR *text);
+    void onTextChanged(LPCTSTR text);
     void onEditCanceled();
     void onEditFinished();
     void onControlResized(int w, int h);

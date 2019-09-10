@@ -19,7 +19,7 @@ class InputBox {
         virtual void setRawText(const std::string& text) = 0;
         virtual std::string getRawText() = 0;
         virtual bool isEmpty() = 0;
-        fastdelegate::FastDelegate1<TCHAR*> onTextChanged;
+        fastdelegate::FastDelegate1<LPCTSTR> onTextChanged;
         fastdelegate::FastDelegate2<int, int> onSizeChanged;
         fastdelegate::FastDelegate0<void> onEditCanceled;
         fastdelegate::FastDelegate0<void> onEditFinished;

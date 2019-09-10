@@ -238,7 +238,7 @@ void TextElement::setFont(LOGFONT font,  DWORD changeMask)
     }
 }
 
-LOGFONT TextElement::getFont()
+LOGFONT TextElement::getFont() const
 {
     return font_;
 }
@@ -248,7 +248,7 @@ InputBox* TextElement::getInputBox() const
     return inputBox_;
 }
 
-void TextElement::onTextChanged(TCHAR *text)
+void TextElement::onTextChanged(LPCTSTR text)
 {
     canvas_->updateView(getPaintBoundingRect());
 }
@@ -377,7 +377,6 @@ bool TextElement::getFillBackground() const {
     return fillBackground_;
 }
 
-
 Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableElement(canvas)  {
     startPoint_.x = startX;
     startPoint_.y = startY;
@@ -391,7 +390,6 @@ Crop::Crop(Canvas* canvas, int startX, int startY, int endX, int endY):MovableEl
 void Crop::render(Painter* gr) {
     MovableElement::render(gr);
 }
-
 
 void Crop::getAffectedSegments( AffectedSegments* segments ) {
     int x = getX();
@@ -487,8 +485,6 @@ void CropOverlay::render(Painter* gr)
     gr->SetClip(&oldRegion);
     gr->SetSmoothingMode(prevSmoothingMode);
     gr->SetPixelOffsetMode(oldPOM);
-
-
 }
 
 
@@ -703,10 +699,10 @@ void BlurringRectangle::render(Painter* gr)
         st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
         #else
         if(pixelate_) {
-            ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+            ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
         }
         else {
-            ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, static_cast<int>(blurRadius_));
+            ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
         }
         #endif
     }

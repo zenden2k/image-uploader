@@ -14,7 +14,7 @@ class CropOverlay;
 
 class MoveAndResizeTool: public AbstractDrawingTool {
 public:
-    MoveAndResizeTool( Canvas* canvas, ElementType type = etNone );
+    explicit MoveAndResizeTool( Canvas* canvas, ElementType type = etNone );
     void beginDraw( int x, int y ) override;
     void continueDraw( int x, int y, DWORD flags ) override;
     void endDraw( int x, int y ) override;
@@ -38,7 +38,6 @@ protected:
     POINT originalEndPoint_;
     RECT prevPaintBoundingRect_;
     bool allowMovingElements_;
-
 };
 
 }
