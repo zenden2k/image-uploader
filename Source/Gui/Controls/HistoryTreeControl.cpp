@@ -29,12 +29,12 @@
 #include "Core/LocalFileCache.h"
 #include "Core/Images/Utils.h"
 #include "Core/AppParams.h"
+#include "Func/MyEngineList.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
 {
     networkClientFactory_ = factory;
-    m_thumbWidth = 56;
     m_SessionItemHeight = 0;
     m_SubItemHeight = 0;
     downloading_enabled_ = true;
@@ -43,12 +43,7 @@ CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> 
 
 CHistoryTreeControl::~CHistoryTreeControl()
 {
-    CWindow::Detach();
-    for (const auto& it : m_serverIconCache) {
-        if (it.second) {
-            DestroyIcon(it.second); 
-        }
-    }
+    //CWindow::Detach();
     for (const auto& it : m_fileIconCache) {
         if (it.second) {
             DestroyIcon(it.second);
@@ -180,6 +175,7 @@ TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString
 void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int *outHeight)
 {
     int curY = 0;
+    // If outHeight parameter is set, do not actually draw, just calculate item's dimensions
     bool draw = !outHeight;
 
     //bool isSelected = (itemState & CDIS_SELECTED) || (itemState&CDIS_FOCUS);
@@ -199,7 +195,6 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     std::string lowText = serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
     CString text = Utf8ToWCstring(label);
 
-    
     CRect rc = invRC;
     CRect calcRect;
 
@@ -391,8 +386,8 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         RECT thumbRect;
         thumbRect.left = rc.left+10;
         thumbRect.top = rc.top+2;
-        thumbRect.bottom = thumbRect.top + m_thumbWidth;
-        thumbRect.right = thumbRect.left + m_thumbWidth;
+        thumbRect.bottom = thumbRect.top + kThumbWidth;
+        thumbRect.right = thumbRect.left + kThumbWidth;
 
         if(draw)
             dc.FrameRect(&thumbRect, br);
@@ -416,7 +411,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
                 DrawBitmap(dc, hti->thumbnail,  thumbRect.left+1,thumbRect.top+1);
             }
             else if(ico!=0)
-                dc.DrawIcon(thumbRect.left+1 + (m_thumbWidth-iconWidth)/2 , thumbRect.top+1+(m_thumbWidth-iconHeight)/2, ico);
+                dc.DrawIcon(thumbRect.left+1 + (kThumbWidth -iconWidth)/2 , thumbRect.top+1+(kThumbWidth -iconHeight)/2, ico);
         }
 
         CRect calcRect = invRC;
@@ -436,21 +431,13 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         DrawText(dc.m_hDC, url, url.GetLength(), &urlRect, DT_LEFT);
         
         dc.Detach();
-        if(outHeight) *outHeight = m_thumbWidth+3;
+        if(outHeight) *outHeight = kThumbWidth + 3;
 }
 
 HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
-    auto it = m_serverIconCache.find(serverName);
-    if (it != m_serverIconCache.end()) {
-        return it->second;
-    } 
-
-    HICON ico = reinterpret_cast<HICON>(LoadImage(0, IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + serverName + _T(".ico"), IMAGE_ICON, 16, 16, LR_LOADFROMFILE));
-    if (ico) {
-        m_serverIconCache[serverName] = ico;
-    }
-    return ico;        
+    auto engineList = ServiceLocator::instance()->myEngineList();
+    return engineList->getIconForServer(W2U(serverName));
 }
 
 LRESULT CHistoryTreeControl::OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

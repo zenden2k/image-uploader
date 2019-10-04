@@ -23,17 +23,17 @@
 #include "Core/Images/Utils.h"
 
 // CImageView
-CImageView::CImageView()
+CImageViewWindow::CImageViewWindow()
 {
     callback_ = nullptr;
     currentParent_ = nullptr;
 }
 
-CImageView::~CImageView()
+CImageViewWindow::~CImageViewWindow()
 { 
 }
 
-LRESULT CImageView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CImageViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     RECT rc = {380, 37, 636, 240};
     Img.Create(m_hWnd, rc);
@@ -42,12 +42,12 @@ LRESULT CImageView::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     return 0;  // Let the system set the focus
 }
 
-LRESULT CImageView::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT CImageViewWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     return ShowWindow(SW_HIDE);
 }
 
-LRESULT CImageView::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+LRESULT CImageViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     switch (wParam) {
         case kDblClickTimer:
         {
@@ -59,12 +59,12 @@ LRESULT CImageView::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     return 0;
 }
 
-LRESULT CImageView::OnKillFocus(HWND hwndNewFocus)
+LRESULT CImageViewWindow::OnKillFocus(HWND hwndNewFocus)
 {
     return ShowWindow(SW_HIDE);
 }
 
-bool CImageView::ViewImage(const CImageViewItem& item, HWND Parent){
+bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
     currentItem_ = item;
     std::unique_ptr<Gdiplus::Bitmap> img(ImageUtils::LoadImageFromFileExtended(item.fileName));
     
@@ -113,14 +113,14 @@ bool CImageView::ViewImage(const CImageViewItem& item, HWND Parent){
     return false;
 }
 
-LRESULT CImageView::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
+LRESULT CImageViewWindow::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
 {
     if (state == WA_INACTIVE) 
         return ShowWindow(SW_HIDE);
     return 0;
 }
 
-void CImageView::MyCenterWindow(HWND hWndCenter, int width, int height) {
+void CImageViewWindow::MyCenterWindow(HWND hWndCenter, int width, int height) {
     ATLASSERT(::IsWindow(m_hWnd));
 
     // determine owner window to center against
@@ -188,7 +188,7 @@ void CImageView::MyCenterWindow(HWND hWndCenter, int width, int height) {
     ::SetWindowPos(m_hWnd, NULL, xLeft, yTop, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-LRESULT CImageView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
+LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 {
     switch (vk) {
         case VK_RIGHT:
@@ -218,6 +218,6 @@ LRESULT CImageView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
     return 0;
 }
 
-void CImageView::setCallback(CImageViewCallback* callback) {
+void CImageViewWindow::setCallback(CImageViewCallback* callback) {
     callback_ = callback;
 }

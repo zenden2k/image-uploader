@@ -82,11 +82,12 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     CString serverName = Utf8ToWCstring(newName);
     serverName.Replace(_T("\\"), _T("_"));
     serverName.Replace(_T("/"), _T("_"));
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+ serverName +_T(".ico");
+    CString dataFolder = IuCommonFunctions::GetDataFolder();
+    CString iconFileName = dataFolder  + _T("Favicons\\")+ serverName +_T(".ico");
 
     if ( !WinUtils::FileExists(iconFileName) ) {
         if (ued && !ued->PluginName.empty()) {
-            iconFileName = IuCommonFunctions::GetDataFolder() + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
+            iconFileName = dataFolder + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
             if (!WinUtils::FileExists(iconFileName)) {
                 serverIcons_[name] = nullptr;
                 return nullptr;

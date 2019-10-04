@@ -24,8 +24,6 @@
 #include "atlheaders.h"
 #include <windows.h>
 
-#define IS_CHECKED(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
-
 namespace GuiTools
 {
     int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);

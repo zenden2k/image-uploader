@@ -50,7 +50,7 @@ class CFileDownloader
         CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading = true);
         virtual ~CFileDownloader();
         void addFile(const std::string& url, void* id, const std::string& referer = std::string());
-        bool start();
+        void start();
         bool waitForFinished();
         void setThreadCount(int n);
         void stop();

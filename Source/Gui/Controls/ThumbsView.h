@@ -17,17 +17,18 @@
     limitations under the License.
 
 */
-#ifndef THUMBSVIEW_H
-#define THUMBSVIEW_H
-
+#ifndef GUI_CONTROLS_THUMBSVIEW_H
+#define GUI_CONTROLS_THUMBSVIEW_H
 
 #pragma once
+
+#include <deque>
+#include <condition_variable>
+
 #include "atlheaders.h"
 #include "3rdpart/thread.h"
 #include "Gui/Controls/ImageView.h"
-#include "Gui/CommonDefines.h"
-#include <deque>
-#include <condition_variable>
+
 
 // CThumbsView
 
@@ -95,7 +96,7 @@ public:
     LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
     bool LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image *Img = NULL);
     int GetImageIndex(int ItemIndex) const;
-    CImageView ImageView;
+    CImageViewWindow ImageView;
     LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);
     DWORD Run();
     void ViewSelectedImage();
@@ -106,8 +107,8 @@ public:
     bool CopySelectedItemsToClipboard() const;
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void SetDeletePhysicalFiles(bool doDelete);
-    CImageViewItem getNextImgViewItem(CImageViewItem currentItem) override;
-    CImageViewItem getPrevImgViewItem(CImageViewItem currentItem) override;
+    CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem) override;
+    CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem) override;
     void getThumbnail(int itemIndex);
     void clearImageList();
 protected:

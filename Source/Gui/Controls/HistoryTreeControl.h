@@ -55,6 +55,8 @@ class CHistoryTreeControl :
             CHAIN_MSG_MAP(CCustomTreeControlImpl<CHistoryTreeControl>)
         END_MSG_MAP()
 
+        const int kThumbWidth = 56;
+
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -70,7 +72,6 @@ class CHistoryTreeControl :
         fastdelegate::FastDelegate1<TreeItem*> onItemDblClick;
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
-        int m_thumbWidth;
         bool downloading_enabled_;
         void addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand);
         TreeItem*  addEntry(CHistorySession* session, const CString& text);
@@ -91,11 +92,12 @@ class CHistoryTreeControl :
 
     private:
         std::map<CString, HICON> m_fileIconCache;
-        std::map<CString, HICON> m_serverIconCache;
         HICON getIconForExtension(const CString& fileName);
         HICON getIconForServer(const CString& serverName);
         int CalcItemHeight(TreeItem* item);
         LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+        // If outHeight parameter is set, do not actually draw, just calculate item's dimensions
         void _DrawItem(TreeItem* res, HDC dc, DWORD itemState, RECT invRC, int* outHeight);
         void DrawSubItem(TreeItem* res, HDC dc, DWORD itemState, RECT invRC,  int* outHeight);
         LRESULT OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

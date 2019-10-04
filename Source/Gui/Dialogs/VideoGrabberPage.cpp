@@ -40,6 +40,8 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/AppParams.h"
 
+#define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
+
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
 {
 	Terminated = true;
@@ -455,6 +457,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
         CWindowDC dc(nullptr);
         Font font(dc, &Settings.VideoSettings.Font);
         // Font font(L"Arial", 12, FontStyleBold);
+
         SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
         RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));
         gr.DrawString(Report, -1, &font, textBounds, &format, &br);

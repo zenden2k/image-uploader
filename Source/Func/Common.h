@@ -24,7 +24,6 @@
 #include "atlheaders.h"
 #include <atlcoll.h>
 
-class UploadEngineManager;
 class CCmdLine;
 
 struct CUrlListItem
@@ -56,8 +55,6 @@ struct CUrlListItem
 };
 
 extern CCmdLine CmdLine;
-
-#define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 bool IULaunchCopy(CString additionalParams=_T(""));

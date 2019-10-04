@@ -24,6 +24,7 @@
 #pragma once
 
 #include "atlheaders.h"
+
 namespace MediaInfoHelper {
 
 bool FindMediaInfoDllPath();

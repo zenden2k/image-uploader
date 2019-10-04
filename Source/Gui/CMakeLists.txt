@@ -117,7 +117,6 @@ set(SRC_LIST
     Controls/IconButton.cpp
     Controls/LogListBox.cpp
     Controls/MyImage.cpp
-    Controls/PercentEdit.cpp
     Controls/PictureExWnd.cpp
     Controls/ServerSelectorControl.cpp
     Controls/TabListBox.cpp
@@ -286,7 +285,6 @@ set(HEADER_LIST
     Controls/IconButton.h
     Controls/LogListBox.h
     Controls/MyImage.h
-    Controls/PercentEdit.h
     Controls/PictureExWnd.h
     Controls/ServerSelectorControl.h
     Controls/TabListBox.h

@@ -20,7 +20,7 @@
 
 #include "Core/FileDownloader.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <algorithm>
 
 #include "Core/Utils/CoreUtils.h"
@@ -29,9 +29,7 @@
 #include "Utils/StringUtils.h"
 #include "Network/NetworkClient.h"
 
-// TODO:
-// 2. remove dependency from non-core headers ( "Common.h")
-// 3. Use pimpl
+// TODO: Use pimpl
 CFileDownloader::CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading)
     : tempDirectory_(tempDirectory), networkClientFactory_(factory), createFileBeforeDownloading_(createFilesBeforeDownloading)
 {
@@ -64,7 +62,7 @@ void CFileDownloader::setThreadCount(int n)
     maxThreads_ = n;
 }
 
-bool CFileDownloader::start() {
+void CFileDownloader::start() {
     stopSignal_ = false;
     std::lock_guard<std::mutex> guard(mutex_);
 
@@ -74,8 +72,6 @@ bool CFileDownloader::start() {
         isRunning_ = true;
         threads_.push_back(std::thread(&CFileDownloader::memberThreadFunc, this));
     }
-
-    return 0;
 }
 
 void CFileDownloader::memberThreadFunc()

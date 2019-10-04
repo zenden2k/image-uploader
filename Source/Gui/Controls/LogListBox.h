@@ -7,8 +7,7 @@
 #pragma once
 
 #include "atlheaders.h"
-#include <atlcrack.h>
-#include "Func/DefaultLogger.h"
+
 #include "Core/Logging/Logger.h"
 
 struct LogListBoxItem

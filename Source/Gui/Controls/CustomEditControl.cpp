@@ -6,6 +6,10 @@ bool CCustomEditControl::AttachToDlgItem(HWND parent, UINT dlgID) {
     return SubclassWindow(hWnd)!= FALSE;
 }
 
+void CCustomEditControl::setOnPasteCallback(PasteCallback callback) {
+    onPasteCallback_ = callback;
+}
+
 LRESULT CCustomEditControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     WPARAM vk = wParam;
     if ( vk == _T('A') && GetKeyState(VK_CONTROL) & 0x80 ) { // Ctrl + A 
@@ -17,8 +21,8 @@ LRESULT CCustomEditControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 LRESULT CCustomEditControl::OnPaste(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     bHandled = false;
-    if ( !onPaste.empty() ) {
-        if ( onPaste(this) ) {
+    if ( onPasteCallback_ ) {
+        if (onPasteCallback_(this) ) {
             bHandled = true;
         }
     }

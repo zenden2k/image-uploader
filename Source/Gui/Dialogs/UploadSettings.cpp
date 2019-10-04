@@ -331,23 +331,27 @@ bool CUploadSettings::OnNext()
             return false;
         }
     }
-    
+
+    ImageUploadParams& imageUploadParams = sessionImageServer_.getImageUploadParamsRef();
    //if(sessionImageServer_.getImageUploadParamsRef().getThumbRef().ResizeMode != ThumbCreatingParams::trByHeight)
    {
-     sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
+        imageUploadParams.getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
    }
    /*else
    {
         sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
    }*/
 
-    sessionImageServer_.getImageUploadParamsRef().ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-    sessionImageServer_.getImageUploadParamsRef().CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
-    sessionImageServer_.getImageUploadParamsRef().UseServerThumbs = IS_CHECKED(IDC_USESERVERTHUMBNAILS);
-    sessionImageServer_.getImageUploadParamsRef().getThumbRef().AddImageSize = IS_CHECKED(IDC_ADDFILESIZE);
-    sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
+#define IS_CHECKED(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
 
-    
+    imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
+    imageUploadParams.CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
+    imageUploadParams.UseServerThumbs = IS_CHECKED(IDC_USESERVERTHUMBNAILS);
+    imageUploadParams.getThumbRef().AddImageSize = IS_CHECKED(IDC_ADDFILESIZE);
+    imageUploadParams.getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
+
+#undef IS_CHECKED 
+
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
     {

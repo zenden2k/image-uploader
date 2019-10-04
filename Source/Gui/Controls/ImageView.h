@@ -32,19 +32,20 @@ struct CImageViewItem {
     CString fileName;
     int index;
 };
+
 class CImageViewCallback {
 public:
-    virtual CImageViewItem getNextImgViewItem(CImageViewItem currentItem)=0;
-    virtual CImageViewItem getPrevImgViewItem(CImageViewItem currentItem)=0;
+    virtual CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem)=0;
+    virtual CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem)=0;
 
     virtual ~CImageViewCallback() = default;
 };
-class CImageView : 
-    public CDialogImpl<CImageView>    
+class CImageViewWindow : 
+    public CDialogImpl<CImageViewWindow>    
 {
     public:
-        CImageView();
-        ~CImageView();
+        CImageViewWindow();
+        ~CImageViewWindow();
         enum { IDD = IDD_IMAGEVIEW, kDblClickTimer = 1 };
 
          BEGIN_MSG_MAP(CImageView)

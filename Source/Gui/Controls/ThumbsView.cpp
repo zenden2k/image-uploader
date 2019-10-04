@@ -20,9 +20,9 @@
 
 #include "ThumbsView.h"
 
-#include "Func/mydropsource.h"
-#include "Func/mydataobject.h"
-#include "Func/common.h"
+#include "Func/MyDropSource.h"
+#include "Func/MyDataObject.h"
+#include "Func/Common.h"
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
@@ -30,6 +30,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Images/Utils.h"
 #include "Func/IuCommonFunctions.h"
+#include "Gui/CommonDefines.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
@@ -584,7 +585,7 @@ void CThumbsView::SetDeletePhysicalFiles(bool doDelete) {
     deletePhysicalFiles_ = doDelete;
 }
 
-CImageViewItem CThumbsView::getNextImgViewItem(CImageViewItem currentItem) {
+CImageViewItem CThumbsView::getNextImgViewItem(const CImageViewItem& currentItem) {
     CImageViewItem result;
     result.index = -1;
 
@@ -609,7 +610,7 @@ CImageViewItem CThumbsView::getNextImgViewItem(CImageViewItem currentItem) {
     return result;
 }
 
-CImageViewItem CThumbsView::getPrevImgViewItem(CImageViewItem currentItem) {
+CImageViewItem CThumbsView::getPrevImgViewItem(const CImageViewItem& currentItem) {
     CImageViewItem result;
     result.index = -1;
 
@@ -739,7 +740,6 @@ void CThumbsView::getThumbnail(int itemIndex) {
 }
 
 void CThumbsView::clearImageList() {
-    // Cleraaing image list
     // Default thumbnail (index=0) will be regenerated in AddImage()
     ImageList.RemoveAll();
 }

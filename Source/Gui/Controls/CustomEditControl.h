@@ -1,8 +1,9 @@
 #ifndef GUI_CONTROLS_CUSTOMEDITCONTROL_H
 #define GUI_CONTROLS_CUSTOMEDITCONTROL_H
 
+#include <functional>
+
 #include "atlheaders.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 //Custom edit control which handles Ctrl+A hotkey
 class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
@@ -18,7 +19,10 @@ class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
     LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnPaste(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     bool AttachToDlgItem(HWND parent, UINT dlgID);
-    fastdelegate::FastDelegate1<CCustomEditControl*,bool> onPaste;
+    using PasteCallback = std::function<bool(CCustomEditControl*)>;
+    void setOnPasteCallback(PasteCallback callback);
+protected:
+    PasteCallback onPasteCallback_;
 }; // end class
 
 #endif

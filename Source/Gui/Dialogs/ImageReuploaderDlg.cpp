@@ -79,7 +79,9 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     sourceTextEditControl.AttachToDlgItem(m_hWnd, IDC_INPUTTEXT);
-    sourceTextEditControl.onPaste.bind(this, &CImageReuploaderDlg::OnEditControlPaste);
+
+    using namespace std::placeholders;
+    sourceTextEditControl.setOnPasteCallback(std::bind(&CImageReuploaderDlg::OnEditControlPaste, this, _1));
     outputEditControl.AttachToDlgItem(m_hWnd, IDC_OUTPUTTEXT);
     ::SetFocus(GetDlgItem(IDOK));
     SetWindowText(TR("Re-upload images"));

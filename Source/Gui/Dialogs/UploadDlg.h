@@ -123,7 +123,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CFont commonProgressLabelFont_, commonPercentLabelFont_;
         CImageList toolbarImageList_;
         CProgressBarCtrl uploadProgressBar_;
-        CImageView imageViewWindow_;
+        CImageViewWindow imageViewWindow_;
 };
 
 

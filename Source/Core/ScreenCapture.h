@@ -138,12 +138,10 @@ private:
     int m_captureDelay;
     std::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
     release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
-    /*static */
     bool capturedBitmapReleased_;
     HBITMAP m_source;
     MonitorMode monitorMode_;
     HMONITOR monitor_;
-    /*static*/
     void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
     DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);
 };

@@ -20,7 +20,8 @@
 
 #include "MediaInfoHelper.h"
 
-#include <boost/lexical_cast.hpp>
+//#include <boost/lexical_cast.hpp>
+#include <strsafe.h>
 
 #include "Core/CommonDefs.h"
 #include "Core/Utils/CoreUtils.h"
@@ -43,7 +44,7 @@ void AddStr(CString &Str, const CString& Str2, const CString& StrPostfix, const 
     if (Str2.GetLength() > 0) Str += StrPrefix + Str2 + StrPostfix;
 }
 
-inline CString& replace(CString &text, CString s, CString d)
+inline CString& StrReplace(CString &text, CString s, CString d)
 {
     text.Replace(s, d);
     return text;
@@ -52,7 +53,7 @@ inline CString& replace(CString &text, CString s, CString d)
 #define VIDEO(a) MI.Get(Stream_Video, 0, _T(a), Info_Text, Info_Name).c_str()
 #define AUDIO(n, a) MI.Get(Stream_Audio, n, _T(a), Info_Text, Info_Name).c_str()
 
-std::string timestampToStr(int64_t duration, int64_t units) {
+std::string TimestampToStr(int64_t duration, int64_t units) {
     int hours, mins, secs, us;
     secs = static_cast<int>(duration / units);
     us = static_cast<int>(duration % units);
@@ -70,12 +71,10 @@ bool FindMediaInfoDllPath() {
 
     CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
     if (WinUtils::FileExists(MediaDll)) {
-        lstrcpy(MediaInfoDllPath, MediaDll);
+        StringCchCopy(MediaInfoDllPath, ARRAY_SIZE(MediaInfoDllPath), MediaDll);
         return true;
     } else {
-        TCHAR Buffer[MAX_PATH];
         HKEY ExtKey;
-        Buffer[0] = 0;
         RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\KLCodecPack"), 0,/* REG_OPTION_NON_VOLATILE, */KEY_QUERY_VALUE, &ExtKey/* NULL*/);
         TCHAR ClassName[MAX_PATH] = _T("\0");
         DWORD BufSize = sizeof(ClassName) / sizeof(TCHAR);
@@ -84,7 +83,7 @@ bool FindMediaInfoDllPath() {
         RegCloseKey(ExtKey);
         CString MediaDll2 = CString(ClassName) + _T("\\Tools\\MediaInfo.dll");
         if (WinUtils::FileExists(MediaDll2)) {
-            lstrcpy(MediaInfoDllPath, MediaDll2);
+            StringCchCopy(MediaInfoDllPath, ARRAY_SIZE(MediaInfoDllPath), MediaDll2);
             return true;
         }
     }
@@ -143,11 +142,10 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
     CString DurationStr = MI.Get(Stream_General, 0, _T("Duration"), Info_Text, Info_Name).c_str();
     if (!DurationStr.IsEmpty()) {
         uint64_t duration = IuCoreUtils::stringToInt64(W2U(DurationStr));
-        Duration = U2W(timestampToStr(duration, 1000));
+        Duration = U2W(TimestampToStr(duration, 1000));
     } else {
         Duration = MI.Get(Stream_General, 0, _T("Duration/String"), Info_Text, Info_Name).c_str();
     }
-
 
     AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Duration: ")));
 
@@ -182,7 +180,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         }*/
 
         AddStr(VideoTotal, VideoFormat);
-        replace(VideoVersion, CString(_T("Version ")), CString(_T("")));
+        StrReplace(VideoVersion, CString(_T("Version ")), CString(_T("")));
 
         if (VideoVersion.GetLength()) {
             AddStr(VideoTotal, CString(_T(" ")), VideoVersion);
@@ -195,9 +193,9 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         AddStr(VideoTotal, VIDEO("Width"));
         AddStr(VideoTotal, CString(_T("x")));
         AddStr(VideoTotal, VIDEO("Height"));
-        replace(VideoTotal, CString(_T("MPEG Video")), CString(_T("MPEG")));
+        StrReplace(VideoTotal, CString(_T("MPEG Video")), CString(_T("MPEG")));
         CString DisplayRatio;
-        replace(VideoTotal, CString(_T("MPEG-4 Visual")), CString(_T("MPEG4")));
+        StrReplace(VideoTotal, CString(_T("MPEG-4 Visual")), CString(_T("MPEG4")));
         DisplayRatio = VIDEO("DisplayAspectRatio/String");
         if (DisplayRatio.GetLength()) {
             AddStr(VideoTotal, CString(_T(" (")));
@@ -263,9 +261,9 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
         AddStr(AudioTotal, AudioBitrateMode, CString(_T("")), CString(_T(", ")));
         AddStr(AudioTotal, AudioLanguage, CString(_T(")")), CString(_T(" (")));
         AudioTotal += _T("\r\n");
-        replace(AudioTotal, CString(_T("MPEG Audio Layer ")), CString(_T("MP")));
-        replace(AudioTotal, CString(_T(" ,")), CString(_T("")));
-        replace(AudioTotal, CString(_T(",,")), CString(_T(",")));
+        StrReplace(AudioTotal, CString(_T("MPEG Audio Layer ")), CString(_T("MP")));
+        StrReplace(AudioTotal, CString(_T(" ,")), CString(_T("")));
+        StrReplace(AudioTotal, CString(_T(",,")), CString(_T(",")));
         Result += AudioTotal;
     } // End of getting information about audio streams
 
@@ -288,7 +286,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
 
     MI.Close();
     Buffer = Result;
-    return TRUE;
+    return true;
 }
 
 CString GetLibraryVersion() {

@@ -20,7 +20,7 @@
 
 #include "Thumbnail.h"
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/SimpleXml.h"
@@ -115,8 +115,7 @@ bool Thumbnail::SaveToFile(const std::string& filename)
         colorNode.SetAttribute("Name", it->first);
         colorNode.SetAttribute("Value", it->second);
     }
-    xml.SaveToFile(fileToSave);
-    return true;
+    return xml.SaveToFile(fileToSave);
 }
 
 std::string Thumbnail::getSpriteFileName() const

@@ -29,7 +29,6 @@ limitations under the License.
 #include "Core/SettingsManager.h"
 
 #include "Func/MyUtils.h"
-#include "Gui/Dialogs/LogWindow.h"
 #include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
 #include "Core/Video/VideoUtils.h"
