@@ -8,9 +8,7 @@ class UploadManager;
 class ServiceLocatorPrivate{
 public:
     ServiceLocatorPrivate() {
-        logger_ = nullptr;
         translator_ = nullptr;
-        uploadErrorHandler_ = nullptr;
         engineList_ = nullptr;
         programWindow_ = nullptr;
         dialogProvider_ = nullptr;
@@ -20,12 +18,12 @@ public:
         logWindow_ = nullptr;
         settings_ = nullptr;
     }
-    ILogger* logger_;
+    std::shared_ptr<ILogger> logger_;
     ITranslator* translator_;
     CUploadEngineListBase* engineList_;
     CHistoryManager historyManager;
     IProgramWindow* programWindow_;
-    IUploadErrorHandler* uploadErrorHandler_;
+    std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     IDialogProvider* dialogProvider_;
     ITaskDispatcher* dispatcher_;
     UploadManager* uploadManager_;
@@ -33,6 +31,7 @@ public:
     CLogWindow* logWindow_;
     BasicSettings* settings_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+    std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
 };
 
 
@@ -40,11 +39,11 @@ ServiceLocator::ServiceLocator() : d_ptr(new ServiceLocatorPrivate()){
 }
 
 
-ILogger* ServiceLocator::logger() {
+std::shared_ptr<ILogger> ServiceLocator::logger() {
     return  d_ptr->logger_;
 }
 
-void ServiceLocator::setLogger(ILogger* logger) {
+void ServiceLocator::setLogger(std::shared_ptr<ILogger> logger) {
     d_ptr->logger_ = logger;
 }
 
@@ -76,11 +75,11 @@ IProgramWindow* ServiceLocator::programWindow() {
     return d_ptr->programWindow_;
 }
 
-IUploadErrorHandler* ServiceLocator::uploadErrorHandler() {
+std::shared_ptr<IUploadErrorHandler> ServiceLocator::uploadErrorHandler() {
     return d_ptr->uploadErrorHandler_;
 }
 
-void ServiceLocator::setUploadErrorHandler(IUploadErrorHandler* errorHandler) {
+void ServiceLocator::setUploadErrorHandler(std::shared_ptr<IUploadErrorHandler> errorHandler) {
     d_ptr->uploadErrorHandler_ = errorHandler;
 }
 
@@ -137,6 +136,14 @@ BasicSettings* ServiceLocator::basicSettings() const {
 
 void ServiceLocator::setSettings(BasicSettings* settingsInstance) {
     d_ptr->settings_ = settingsInstance;
+}
+
+std::shared_ptr<UrlShorteningFilter> ServiceLocator::urlShorteningFilter() const {
+    return d_ptr->urlShorteningFilter_;
+}
+
+void ServiceLocator::setUrlShorteningFilter(std::shared_ptr<UrlShorteningFilter> filter) {
+    d_ptr->urlShorteningFilter_ = filter;
 }
 
 void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory) {

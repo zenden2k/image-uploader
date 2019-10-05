@@ -22,7 +22,7 @@
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
-#include "Func/langclass.h"
+#include "Func/LangClass.h"
 #include "Core/Settings/CliSettings.h"
 #include "versioninfo.h"
 
@@ -39,10 +39,102 @@ CAppModule _Module;
 #endif
 
 using namespace ServersListTool;
-ServersCheckerSettings Settings;
-CLogWindow LogWindow;
-CLang Lang;
-int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*lpstrCmdLine*/, int /*nCmdShow*/)
+
+class ServersCheckerApplication {
+    CLogWindow logWindow_;
+    CLang lang_;
+    ServersCheckerSettings settings_;
+    std::unique_ptr<MyLogSink> myLogSink_;
+    std::shared_ptr<ScriptsManager> scriptsManager_;
+    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
+    std::shared_ptr<UploadManager> uploadManager_;
+    std::shared_ptr<DefaultLogger> logger_;
+    std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+    std::shared_ptr<CMyEngineList> engineList_;
+    std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
+
+    CString commonTempFolder_, tempFolder_;
+public:
+    ServersCheckerApplication() {
+        auto appParams = AppParams::instance();
+        appParams->setIsGui(true);
+        appParams->setDataDirectory(W2U(WinUtils::GetAppFolder() + "Data/"));
+
+        IuCommonFunctions::CreateTempFolder(commonTempFolder_, tempFolder_);
+        appParams->setTempDirectory(W2U(tempFolder_));
+
+        setAppVersion();
+        initBasicServices();
+    }
+
+    ~ServersCheckerApplication() {
+        logWindow_.DestroyWindow();
+        IuCommonFunctions::ClearTempFolder(tempFolder_);
+    }
+
+    void setAppVersion() const {
+        AppParams::AppVersionInfo appVersion;
+        appVersion.FullVersion = IU_APP_VER;
+        appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+        appVersion.Build = std::stoi(IU_BUILD_NUMBER);
+        appVersion.BuildDate = IU_BUILD_DATE;
+        appVersion.CommitHash = IU_COMMIT_HASH;
+        appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+        appVersion.BranchName = IU_BRANCH_NAME;
+        AppParams::instance()->setVersionInfo(appVersion);
+    }
+
+    void initBasicServices() {
+        ServiceLocator* serviceLocator = ServiceLocator::instance();
+        logger_ = std::make_shared<DefaultLogger>();
+        myLogSink_ = std::make_unique<MyLogSink>(logger_.get());
+        google::AddLogSink(myLogSink_.get());
+        serviceLocator->setSettings(&settings_);
+        serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
+        logWindow_.Create(nullptr);
+        logWindow_.setLogger(logger_.get());
+
+        serviceLocator->setLogWindow(&logWindow_);
+        serviceLocator->setLogger(logger_);
+        serviceLocator->setTranslator(&lang_);
+    }
+
+    void initServices() {
+        ServiceLocator* serviceLocator = ServiceLocator::instance();
+        auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
+        serviceLocator->setUploadErrorHandler(uploadErrorHandler);
+        networkClientFactory_ = std::make_shared<NetworkClientFactory>();
+        scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory_);
+        engineList_ = std::make_shared<CMyEngineList>();
+        uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList_, uploadErrorHandler, networkClientFactory_);
+        uploadEngineManager_->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
+        uploadManager_ = std::make_shared<UploadManager>(uploadEngineManager_, engineList_, scriptsManager_, uploadErrorHandler, networkClientFactory_, 5);
+        serviceLocator->setUploadManager(uploadManager_.get());
+        scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
+        serviceLocator->setDialogProvider(scriptDialogProvider_.get());
+        serviceLocator->setMyEngineList(engineList_.get());
+        serviceLocator->setEngineList(engineList_.get());
+    }
+
+    int Run(LPTSTR lpstrCmdLine, int nCmdShow)
+    {
+        initServices();
+        CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
+        if (!engineList_->loadFromFile(serversFileName)) {
+            MessageBox(0, _T("Cannot load server list!"), 0, 0);
+            return false;
+        }
+
+        settings_.LoadSettings(W2U(WinUtils::GetAppFolder()), "ServersChecker.xml");
+
+        settings_.setEngineList(engineList_.get());
+
+        CMainDlg dlgMain(&settings_, uploadEngineManager_, uploadManager_.get(), engineList_.get(), networkClientFactory_);
+        int nret = dlgMain.DoModal(0);
+        return nret;
+    }
+};
+int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {
     // Create and install global locale
     std::locale::global(boost::locale::generator().generate(""));
@@ -65,57 +157,8 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
 
-    AppParams::AppVersionInfo appVersion;
-    appVersion.FullVersion = IU_APP_VER;
-    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
-    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
-    appVersion.BuildDate = IU_BUILD_DATE;
-    appVersion.CommitHash = IU_COMMIT_HASH;
-    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
-    appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
-
-    DefaultLogger defaultLogger;
-    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
-
     google::InitGoogleLogging(W2U(WinUtils::GetAppFileName()).c_str());
-    LogWindow.Create(0);
-    LogWindow.setLogger(&defaultLogger);
-    ServiceLocator* serviceLocator = ServiceLocator::instance();
-    serviceLocator->setLogWindow(&LogWindow);
-    serviceLocator->setSettings(&Settings);
-    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-    serviceLocator->setLogger(&defaultLogger);
-    MyLogSink logSink(&defaultLogger);
-    google::AddLogSink(&logSink);
-    WtlScriptDialogProvider dialogProvider;
-    serviceLocator->setDialogProvider(&dialogProvider);
-    serviceLocator->setTranslator(&Lang);
-    CMyEngineList engineList;
-    serviceLocator->setMyEngineList(&engineList);
-    serviceLocator->setEngineList(&engineList);
-    CString serversFileName = WinUtils::GetAppFolder() + "Data/" + _T("servers.xml");
-    if (!engineList.loadFromFile(serversFileName)) {
-        MessageBox(0, _T("Cannot load server list!"), 0, 0);
-        return false;
-    }
 
-    Settings.LoadSettings(W2U(WinUtils::GetAppFolder()), "ServersChecker.xml");
-   
-    Settings.setEngineList(&engineList);
-
-    auto appParams = AppParams::instance();
-    appParams->setIsGui(true);
-    appParams->setDataDirectory(W2U(WinUtils::GetAppFolder() + "Data/"));
-    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    auto scriptsManager = std::make_shared<ScriptsManager>(networkClientFactory);
-    auto uploadEngineManager = std::make_shared<UploadEngineManager>(&engineList, &uploadErrorHandler, networkClientFactory);
-    uploadEngineManager->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-    UploadManager uploadManager(uploadEngineManager, &engineList, scriptsManager, &uploadErrorHandler, networkClientFactory, 5);
-
-    CString commonTempFolder, tempFolder;
-    IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
-    appParams->setTempDirectory(W2U(tempFolder));
     HRESULT hRes = ::CoInitialize(NULL);
     // If you are running on NT 4.0 or higher you can use the following call instead to
     // make the EXE free threaded. This means that calls come in on a random RPC thread.
@@ -138,14 +181,13 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR /*
     int nRet = 0;
     // BLOCK: Run application
     {
-        CMainDlg dlgMain(&Settings, uploadEngineManager, &uploadManager, &engineList, networkClientFactory);
-        nRet = dlgMain.DoModal(0);
+        ServersCheckerApplication app;
+        nRet = app.Run(lpstrCmdLine, nCmdShow); 
     }
 
     _Module.Term();
     ::CoUninitialize();
-    IuCommonFunctions::ClearTempFolder(tempFolder);
+    
     google::ShutdownGoogleLogging();
-    LogWindow.DestroyWindow();
     return nRet;
 }

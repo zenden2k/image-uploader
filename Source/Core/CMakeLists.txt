@@ -6,6 +6,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UploadEngine.cpp
     Upload/Uploader.cpp
     Upload/UploadTask.cpp
+    Upload/AuthTask.cpp
     Upload/UrlShorteningTask.cpp
     Utils/CoreUtils.cpp
     Utils/CryptoUtils.cpp
@@ -77,6 +78,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/UploadEngine.h
     Upload/Uploader.h
     Upload/UploadTask.h
+    Upload/AuthTask.h
     Upload/UrlShorteningTask.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h

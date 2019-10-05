@@ -34,7 +34,7 @@ CAdvancedUploadEngine::~CAdvancedUploadEngine()
 {
 }
 
-int CAdvancedUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
+int CAdvancedUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
     return 0;
 }

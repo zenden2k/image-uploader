@@ -21,18 +21,19 @@ class ITranslator;
 class ITaskDispatcher;
 class CMyEngineList;
 class CLogWindow;
+class UrlShorteningFilter;
 
 class ServiceLocator : public Singleton<ServiceLocator> {
 public:
     ServiceLocator();
-    ILogger* logger();
-    void setLogger(ILogger* logger);
+    std::shared_ptr<ILogger> logger();
+    void setLogger(std::shared_ptr<ILogger> logger);
     ITranslator* translator();
     void setTranslator(ITranslator* transl);
     IDialogProvider* dialogProvider();
     void setDialogProvider(IDialogProvider* dialogProvider);
-    IUploadErrorHandler* uploadErrorHandler();
-    void setUploadErrorHandler(IUploadErrorHandler* errorHandler);
+    std::shared_ptr<IUploadErrorHandler> uploadErrorHandler();
+    void setUploadErrorHandler(std::shared_ptr<IUploadErrorHandler> errorHandler);
     ITaskDispatcher* taskDispatcher();
     void setTaskDispatcher(ITaskDispatcher* dispatcher);
     UploadManager* uploadManager();
@@ -49,6 +50,8 @@ public:
     void setLogWindow(CLogWindow* logWindow);
     BasicSettings* basicSettings() const;
     void setSettings(BasicSettings* settingsInstance);
+    std::shared_ptr<UrlShorteningFilter> urlShorteningFilter() const;
+    void setUrlShorteningFilter(std::shared_ptr<UrlShorteningFilter> filter);
 
     template<class T> T* settings() const {
         T* res = dynamic_cast<T*>(basicSettings());

@@ -17,6 +17,9 @@
 */
 
 #include "atlheaders.h" 
+#include <boost/filesystem/path.hpp>
+#include <boost/locale.hpp>
+
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Dialogs/FloatingWindow.h"
@@ -26,8 +29,6 @@
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
 #include "Core/Upload/ScriptUploadEngine.h"
-#include <boost/filesystem/path.hpp>
-#include <boost/locale.hpp>
 #include "Core/ServiceLocator.h"
 #include "Func/DefaultUploadErrorHandler.h"
 #include "Func/DefaultLogger.h"
@@ -38,145 +39,282 @@
 #include "Gui/Dialogs/LangSelect.h"
 #include "versioninfo.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Scripting/ScriptsManager.h"
+#include "Core/Upload/Filters/UserFilter.h"
+#include "Core/Upload/Filters/ImageConverterFilter.h"
+#include "Core/Upload/Filters/SizeExceedFilter.h"
+#include "Core/Upload/Filters/UrlShorteningFilter.h"
+#include "Core/Upload/UploadEngineManager.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
 #endif
 
 CAppModule _Module;
-CLogWindow LogWindow;
-WtlGuiSettings Settings;
-CLang Lang;
 
-int Run(LPTSTR lpstrCmdLine, int nCmdShow, DefaultLogger* defaultLogger)
-{
-    CString commonTempFolder, tempFolder;
-    IuCommonFunctions::CreateTempFolder(commonTempFolder, tempFolder);
-    
-    AppParams::instance()->setTempDirectory(W2U(tempFolder));
-    std::vector<CString> fileList;
-    WinUtils::GetFolderFileList( fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old") );
-    for ( const auto& file : fileList ) {
-        DeleteFile(WinUtils::GetAppFolder() + file);
+class Application {
+    CLogWindow logWindow_;
+    WtlGuiSettings settings_;
+    CLang lang_;
+    std::shared_ptr<CFloatingWindow> floatWnd_;
+    std::shared_ptr<ScriptsManager> scriptsManager_;
+    std::shared_ptr<DefaultLogger> logger_;
+    std::unique_ptr<MyLogSink> myLogSink_;
+    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
+    std::shared_ptr<UploadManager> uploadManager_;
+    std::shared_ptr<CMyEngineList> engineList_;
+    std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
+    std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
+    std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    std::unique_ptr<UserFilter> userFilter_;
+    std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
+    CString commonTempFolder_, tempFolder_;
+public:
+    Application() {
+        setAppVersion();
+        initBasicServices();
     }
 
-    GdiPlusInitializer gdiPlusInitializer;
-
-    CMessageLoop theLoop;
-    _Module.AddMessageLoop( &theLoop );
-
-    CFloatingWindow floatWnd;
-    Settings.setFloatWnd(&floatWnd);
-    CWizardDlg  dlgMain(defaultLogger, &floatWnd);
-    
-    DWORD DlgCreationResult = 0;
-    bool ShowMainWindow     = true;
-    
-    Settings.LoadSettings();
-
-    if ( CmdLine.IsOption( _T("uninstall") ) ) {
-        Settings.Uninstall();
-        return 0;
-    }
-
-    bool BecomeTray = false;
-    if ( Settings.ShowTrayIcon && !CmdLine.IsOption( _T("tray") ) ) {
-        if (!CFloatingWindow::IsRunningFloatingWnd()) {
-            BecomeTray = true;
-            CmdLine.AddParam( _T("/tray") );
-        }    
-    }
-
-    bool bCreateFloatingWindow = false;
-
-    if ( CmdLine.IsOption( _T("tray") ) || BecomeTray ) {
-        if (!CFloatingWindow::IsRunningFloatingWnd()) {
-            bCreateFloatingWindow = true;
-            ShowMainWindow        = BecomeTray;    
-        } else {
-            return 0;
+    ~Application() {
+        CScriptUploadEngine::DestroyScriptEngine();
+        logWindow_.DestroyWindow();
+        // Remove temporary files
+        IuCommonFunctions::ClearTempFolder(tempFolder_);
+        std::vector<CString> folders;
+        WinUtils::GetFolderFileList(folders, commonTempFolder_, "iu_temp_*");
+        for (const auto& folder : folders) {
+            // Extract Proccess ID from temp folder name
+            CString pidStr = folder;
+            pidStr.Replace(_T("iu_temp_"), _T(""));
+            unsigned long pid = wcstoul(pidStr, 0, 16) ^ 0xa1234568;
+            if (pid && !WinUtils::IsProcessRunning(pid))
+                IuCommonFunctions::ClearTempFolder(commonTempFolder_ + _T("\\") + folder);
         }
+
+        // deletes empty temp directory
+        RemoveDirectory(commonTempFolder_);
     }
 
-    ServiceLocator::instance()->setProgramWindow(&dlgMain);
-    floatWnd.setWizardDlg(&dlgMain);
+    static void setAppVersion() {
+        AppParams::AppVersionInfo appVersion;
+        appVersion.FullVersion = IU_APP_VER;
+        appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+        appVersion.Build = atoi(IU_BUILD_NUMBER);
+        appVersion.BuildDate = IU_BUILD_DATE;
+        appVersion.CommitHash = IU_COMMIT_HASH;
+        appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+        appVersion.BranchName = IU_BRANCH_NAME;
+        AppParams::instance()->setVersionInfo(appVersion);
+    }
 
-    Lang.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
-    bool isFirstRun = Settings.Language.IsEmpty() || FALSE;
-    for (size_t i = 0; i<CmdLine.GetCount(); i++) {
-        CString CurrentParam = CmdLine[i];
-        if (CurrentParam.Left(10) == _T("/language=")) {
-            CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
-            CString foundName = Lang.getLanguageFileNameForLocale(shortLanguageName);
-            if (!foundName.IsEmpty()) {
-                Settings.Language = foundName;
+    void initBasicServices() {
+        ServiceLocator* serviceLocator = ServiceLocator::instance();
+        logger_ = std::make_shared<DefaultLogger>();
+        myLogSink_ = std::make_unique<MyLogSink>(logger_.get());
+        google::AddLogSink(myLogSink_.get());
+        serviceLocator->setSettings(&settings_);
+        serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
+        logWindow_.Create(nullptr);
+        logWindow_.setLogger(logger_.get());
+
+        serviceLocator->setLogWindow(&logWindow_);
+        serviceLocator->setLogger(logger_);
+    }
+
+    void initServices() {
+        ServiceLocator* serviceLocator = ServiceLocator::instance();
+        auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
+        serviceLocator->setUploadErrorHandler(uploadErrorHandler);
+        scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
+        serviceLocator->setDialogProvider(scriptDialogProvider_.get());
+        serviceLocator->setTranslator(&lang_);
+        scriptsManager_ = std::make_shared<ScriptsManager>(serviceLocator->networkClientFactory());
+        engineList_ = std::make_shared<CMyEngineList>();
+        serviceLocator->setEngineList(engineList_.get());
+        serviceLocator->setMyEngineList(engineList_.get());
+        settings_.setEngineList(engineList_.get());
+        uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList_, uploadErrorHandler, serviceLocator->networkClientFactory());
+        uploadManager_ = std::make_shared<UploadManager>(uploadEngineManager_, engineList_, scriptsManager_,
+            uploadErrorHandler, serviceLocator->networkClientFactory(), settings_.MaxThreads);
+        serviceLocator->setUploadManager(uploadManager_.get());
+
+        imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
+        sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(engineList_.get(), uploadEngineManager_.get());
+        urlShorteningFilter_ = std::make_shared<UrlShorteningFilter>();
+        userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
+        
+        uploadManager_->addUploadFilter(imageConverterFilter_.get());
+        uploadManager_->addUploadFilter(userFilter_.get());
+        uploadManager_->addUploadFilter(sizeExceedFilter_.get());
+        uploadManager_->addUploadFilter(urlShorteningFilter_.get());
+
+        serviceLocator->setUrlShorteningFilter(urlShorteningFilter_);
+    }
+
+    int Run(LPTSTR lpstrCmdLine, int nCmdShow)
+    {
+        for (const auto& CurrentParam : CmdLine) {
+            if (CurrentParam.Left(12) == _T("/waitforpid=")) {
+                CString pidStr = CurrentParam.Right(CurrentParam.GetLength() - 12);
+                DWORD pid = _ttoi(pidStr);
+                HANDLE hProcess = OpenProcess(SYNCHRONIZE, false, pid);
+                WaitForSingleObject(hProcess, 20000);
+                CloseHandle(hProcess);
+
+                // Workaround for version prior to 1.1.7
+                if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {
+                    settings_.FindDataFolder();
+                    if (!WinUtils::IsDirectory(settings_.DataFolder + "Thumbnails\\") || !WinUtils::IsDirectory(WinUtils::GetAppFolder() + "Docs\\")) {
+                        SimpleXml xml;
+                        std::string updateFile = WCstringToUtf8(settings_.DataFolder + "Update\\iu_core.xml");
+                        if (xml.LoadFromFile(updateFile)) {
+                            SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
+                            if (!root.IsNull()) {
+                                int64_t timestamp = root.AttributeInt64("TimeStamp");
+                                if (timestamp >= 0) {
+                                    root.SetAttribute("TimeStamp", timestamp - 1);
+                                    xml.SaveToFile(updateFile);
+                                    CmdLine.AddParam(L"/update");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else if (CurrentParam == "/debuglog") {
+                FLAGS_logtostderr = false;
+                FLAGS_alsologtostderr = true;
+                logWindow_.Show();
             }
         }
-    }
-    if (isFirstRun) {
-        CLangSelect LS;
-        if (LS.DoModal(nullptr) == IDCANCEL) {
-            //*DlgCreationResult = 1;
+
+        // for Windows Vista and later versions
+        if (CmdLine.IsOption(_T("integration"))) {
+            settings_.LoadSettings("", "", false);
+            settings_.ApplyRegSettingsRightNow();
+            CScriptUploadEngine::DestroyScriptEngine();
             return 0;
         }
-        Settings.Language = LS.Language;
-        Lang.LoadLanguage(Settings.Language);
-        Settings.SaveSettings();
-    } else {
-        Lang.LoadLanguage(Settings.Language);
-    }
-    AppParams::instance()->setLanguageFile(W2U(Lang.getCurrentLanguageFile()));
 
-    if (Lang.isRTL()) {
-        SetProcessDefaultLayout(LAYOUT_RTL);
-    }
+        IuCommonFunctions::CreateTempFolder(commonTempFolder_, tempFolder_);
 
-    dlgMain.setIsFirstRun(isFirstRun);
-    if ( dlgMain.Create( 0, reinterpret_cast<LPARAM>(&DlgCreationResult) ) == NULL ) {
-            ATLTRACE( _T("Main dialog creation failed!  :( sorry\n") );
+        AppParams::instance()->setTempDirectory(W2U(tempFolder_));
+        std::vector<CString> fileList;
+        WinUtils::GetFolderFileList(fileList, WinUtils::GetAppFolder() + _T("\\"), _T("*.old"));
+        for (const auto& file : fileList) {
+            DeleteFile(WinUtils::GetAppFolder() + file);
+        }
+
+        settings_.LoadSettings();
+
+        GdiPlusInitializer gdiPlusInitializer;
+        initServices();
+
+        CMessageLoop theLoop;
+        _Module.AddMessageLoop(&theLoop);
+        
+        CWizardDlg  dlgMain(logger_, engineList_, uploadEngineManager_, uploadManager_, scriptsManager_, &settings_);
+        auto serviceLocator = ServiceLocator::instance();
+        serviceLocator->setProgramWindow(&dlgMain);
+        serviceLocator->setTaskDispatcher(&dlgMain);
+
+        floatWnd_ = std::make_shared<CFloatingWindow>(&dlgMain, uploadManager_, uploadEngineManager_);
+        dlgMain.setFloatWnd(floatWnd_);
+        settings_.setFloatWnd(floatWnd_.get());
+
+
+        DWORD DlgCreationResult = 0;
+        bool ShowMainWindow = true;
+
+        if (CmdLine.IsOption(_T("uninstall"))) {
+            settings_.Uninstall();
+            return 0;
+        }
+
+        bool BecomeTray = false;
+        if (settings_.ShowTrayIcon && !CmdLine.IsOption(_T("tray"))) {
+            if (!CFloatingWindow::IsRunningFloatingWnd()) {
+                BecomeTray = true;
+                CmdLine.AddParam(_T("/tray"));
+            }
+        }
+
+        bool bCreateFloatingWindow = false;
+
+        if (CmdLine.IsOption(_T("tray")) || BecomeTray) {
+            if (!CFloatingWindow::IsRunningFloatingWnd()) {
+                bCreateFloatingWindow = true;
+                ShowMainWindow = BecomeTray;
+            }
+            else {
+                return 0;
+            }
+        }
+
+        lang_.SetDirectory(WinUtils::GetAppFolder() + "Lang\\");
+        bool isFirstRun = settings_.Language.IsEmpty() || FALSE;
+        for (size_t i = 0; i < CmdLine.GetCount(); i++) {
+            CString CurrentParam = CmdLine[i];
+            if (CurrentParam.Left(10) == _T("/language=")) {
+                CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
+                CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
+                if (!foundName.IsEmpty()) {
+                    settings_.Language = foundName;
+                }
+            }
+        }
+        if (isFirstRun) {
+            CLangSelect LS;
+            if (LS.DoModal(nullptr) == IDCANCEL) {
+                //*DlgCreationResult = 1;
+                return 0;
+            }
+            settings_.Language = LS.Language;
+            lang_.LoadLanguage(settings_.Language);
+            settings_.SaveSettings();
+        }
+        else {
+            lang_.LoadLanguage(settings_.Language);
+        }
+        AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
+
+        if (lang_.isRTL()) {
+            SetProcessDefaultLayout(LAYOUT_RTL);
+        }
+
+        dlgMain.setIsFirstRun(isFirstRun);
+        if (dlgMain.Create(0, reinterpret_cast<LPARAM>(&DlgCreationResult)) == NULL) {
+            ATLTRACE(_T("Main dialog creation failed!  :( sorry\n"));
             dlgMain.m_hWnd = 0;
             return 0;
-    }
-    if(DlgCreationResult != 0) {
-        dlgMain.DestroyWindow();
-        dlgMain.m_hWnd = 0;
-        return 0;
-    }
-    
-    if(bCreateFloatingWindow) {
-        floatWnd.CreateTrayIcon();
-    }    
-    if (/* ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") )*/  
-            CmdLine.IsOption( _T("mediainfo") ) || !ShowMainWindow || !dlgMain.isShowWindowSet() ) {
-        dlgMain.ShowWindow(SW_HIDE);
-    } else {
-        dlgMain.ShowWindow(nCmdShow);
-    }
-     
-    int nRet = theLoop.Run();
-    if ( dlgMain.m_hWnd ) {
-        dlgMain.DestroyWindow();
-    }
-    _Module.RemoveMessageLoop();
+        }
+        if (DlgCreationResult != 0) {
+            dlgMain.DestroyWindow();
+            dlgMain.m_hWnd = 0;
+            return 0;
+        }
 
-    // Remove temporary files
-    IuCommonFunctions::ClearTempFolder( tempFolder ); 
-    std::vector<CString> folders;
-    WinUtils::GetFolderFileList( folders, commonTempFolder, "iu_temp_*" );
-    for ( const auto& folder : folders) {
-        // Extract Proccess ID from temp folder name
-        CString pidStr = folder;
-        pidStr.Replace( _T("iu_temp_"), _T("") );
-        unsigned long pid =  wcstoul( pidStr, 0, 16 ) ^  0xa1234568;
-        if ( pid && !WinUtils::IsProcessRunning( pid ) )
-            IuCommonFunctions::ClearTempFolder(commonTempFolder + _T("\\") + folder);
+        if (bCreateFloatingWindow) {
+            floatWnd_->CreateTrayIcon();
+        }
+        if (/* ( CmdLine.GetCount() > 1 && CmdLine.IsOption( _T("quickshot") )*/
+            CmdLine.IsOption(_T("mediainfo")) || !ShowMainWindow || !dlgMain.isShowWindowSet()) {
+            dlgMain.ShowWindow(SW_HIDE);
+        }
+        else {
+            dlgMain.ShowWindow(nCmdShow);
+        }
+
+        int nRet = theLoop.Run();
+        if (dlgMain.m_hWnd) {
+            dlgMain.DestroyWindow();
+        }
+        _Module.RemoveMessageLoop();
+
+        return nRet;
     }
-    
-    // deletes empty temp directory
-    RemoveDirectory( commonTempFolder );
-    
-    return nRet;
-}
+};
+
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
 {    
@@ -200,98 +338,26 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 
 #endif
     FLAGS_logtostderr = true;
-
-    AppParams::AppVersionInfo appVersion;
-    appVersion.FullVersion = IU_APP_VER;
-    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
-    appVersion.Build = std::stoi(IU_BUILD_NUMBER);
-    appVersion.BuildDate = IU_BUILD_DATE;
-    appVersion.CommitHash = IU_COMMIT_HASH;
-    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
-    appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
-
-    ServiceLocator* serviceLocator = ServiceLocator::instance();
-    serviceLocator->setSettings(&Settings);
-    serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
-    LogWindow.Create(nullptr);
-    serviceLocator->setLogWindow(&LogWindow);
-    DefaultLogger defaultLogger;
-    LogWindow.setLogger(&defaultLogger);
-    DefaultUploadErrorHandler uploadErrorHandler(&defaultLogger);
-   
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
-    
-    MyLogSink logSink(&defaultLogger);
-    google::AddLogSink(&logSink);
-
-    
-    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-    serviceLocator->setLogger(&defaultLogger);
-
-    WtlScriptDialogProvider dialogProvider;
-    serviceLocator->setDialogProvider(&dialogProvider);
-    serviceLocator->setTranslator(&Lang);
-
     OleInitialize(NULL);
-    HRESULT hRes ;
-    for (const auto& CurrentParam: CmdLine) {
-        if ( CurrentParam.Left(12) == _T("/waitforpid=") )    {
-            CString pidStr = CurrentParam.Right( CurrentParam.GetLength() - 12 );
-            DWORD pid = _ttoi( pidStr );
-            HANDLE hProcess = OpenProcess( SYNCHRONIZE, false, pid ); 
-            WaitForSingleObject( hProcess, 20000 );
-            CloseHandle(hProcess);
-
-            // Workaround for version prior to 1.1.7
-            if (!CmdLine.IsOption(_T("update")) && !CmdLine.IsOption(L"afterupdate")) {
-                Settings.FindDataFolder();
-                if ( !WinUtils::IsDirectory( Settings.DataFolder + "Thumbnails\\") || !WinUtils::IsDirectory( WinUtils::GetAppFolder() + "Docs\\") ) {
-                    SimpleXml xml;
-                    std::string updateFile = WCstringToUtf8(Settings.DataFolder + "Update\\iu_core.xml");
-                    if ( xml.LoadFromFile(updateFile) ) {
-                        SimpleXmlNode root = xml.getRoot("UpdateInfo", false);
-                        if ( !root.IsNull() ) {
-                            int64_t timestamp = root.AttributeInt64("TimeStamp");
-                            if ( timestamp >= 0  ) {
-                                root.SetAttribute("TimeStamp", timestamp-1);
-                                xml.SaveToFile(updateFile);
-                                CmdLine.AddParam(L"/update");
-                            }
-                        }
-                    }
-                }
-            }
-        } else if ( CurrentParam == "/debuglog") {
-            FLAGS_logtostderr = false;
-            FLAGS_alsologtostderr = true;
-            LogWindow.Show();
-        }
-    }
-
-    // for Windows Vista and later versions
-    if ( CmdLine.IsOption( _T("integration") ) )  {
-        Settings.LoadSettings("","",false);        
-        Settings.ApplyRegSettingsRightNow();
-        CScriptUploadEngine::DestroyScriptEngine();
-        return 0;
-    }
 
     // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
     ::DefWindowProc( NULL, 0, 0, 0L );
 
     AtlInitCommonControls( ICC_BAR_CLASSES | ICC_USEREX_CLASSES  );    // add flags to support other controls
 
-    hRes = _Module.Init( NULL, hInstance );
+    HRESULT hRes = _Module.Init( NULL, hInstance );
+    int nRet;
     ATLASSERT( SUCCEEDED( hRes ) );
-
-    int nRet = Run( lpstrCmdLine, nCmdShow, &defaultLogger);
+    {
+        Application app;
+        nRet = app.Run(lpstrCmdLine, nCmdShow);
+    }
     _Module.Term();
-    //iuPluginManager.UnloadPlugins();
-    CScriptUploadEngine::DestroyScriptEngine();
+
+    
     OleUninitialize();
-    google::RemoveLogSink(&logSink);
+    //google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();
-    LogWindow.DestroyWindow();
     return nRet;
 }

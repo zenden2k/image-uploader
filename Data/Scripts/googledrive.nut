@@ -182,6 +182,37 @@ function DoLogin() {
 	EndLogin();
 	return res;
 }
+
+function IsAuthenticated() {
+    if (ServerParams.getParam("token") != "") {
+        return true;
+    }
+    return 0;
+}
+function DoLogout() {
+    local token = ServerParams.getParam("token");
+    if (token == "" ) {
+        return 0;
+    }
+    nm.setUrl("https://accounts.google.com/o/oauth2/revoke?token=" + nm.urlEncode(token));
+    nm.doPost("");
+    
+    if (nm.responseCode() == 200) {
+        ServerParams.setParam("token", "");
+        ServerParams.setParam("refreshToken", "");
+        return 1;
+    } else {
+        local t = ParseJSON(nm.responseBody());
+   
+        if ("error" in t && t.error == "invalid_token") {
+            ServerParams.setParam("token", "");
+            ServerParams.setParam("refreshToken", "");
+            return 1;  
+        }
+    }
+    return 0;
+}
+
 function GetFolderList(list)
 {
 	if(!DoLogin())

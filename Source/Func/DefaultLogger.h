@@ -20,14 +20,16 @@ public:
         std::wstring FileName;
         std::wstring Time;
     };
+
     class Listener {
     public:
         virtual ~Listener() = default;
         virtual void onItemAdded(int rowIndex, const LogEntry&) = 0;
     };
+
     DefaultLogger();
     void addListener(Listener* listener);
-    void removeListener(Listener* listener);
+    void removeListener(Listener* listener) ;
     size_t entryCount() const;
     void clear();
     void getEntry(int itemIndex, LogEntry* out);

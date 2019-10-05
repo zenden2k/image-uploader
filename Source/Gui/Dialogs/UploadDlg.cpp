@@ -371,7 +371,7 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     if ( !alreadyShortened_ && shortenUrl ) {
         GenerateOutput();
         
-        uploadManager_->shortenLinksInSession(uploadSession_, WizardDlg->urlShorteningFilter());
+        uploadManager_->shortenLinksInSession(uploadSession_, ServiceLocator::instance()->urlShorteningFilter().get());
     } else {
         GenerateOutput(true);
     }

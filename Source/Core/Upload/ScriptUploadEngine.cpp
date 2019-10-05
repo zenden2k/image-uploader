@@ -28,6 +28,7 @@
 #include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
+#include "AuthTask.h"
 
 CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
     std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
@@ -47,6 +48,29 @@ CScriptUploadEngine::~CScriptUploadEngine()
 void CScriptUploadEngine::PrintCallback(const std::string& output)
 {
     Log(ErrorInfo::mtInformation, output);
+}
+
+int CScriptUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
+    if (task->type() == UploadTask::TypeAuth) {
+        return processAuthTask(task);
+    } else {
+        return doUpload(task, params);
+    }
+}
+
+int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
+    SetStatus(stAuthorization);
+    auto authTask = std::dynamic_pointer_cast<AuthTask>(task);
+    if (!authTask) {
+        return 0;
+    }
+    switch (authTask->authActionType()) {
+    case AuthActionType::Login:
+        return doLogin();
+    case AuthActionType::Logout:
+        return doLogout();
+    }
+    return 0;
 }
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
@@ -280,6 +304,27 @@ int CScriptUploadEngine::doLogin()
     return 0;
 }
 
+int CScriptUploadEngine::doLogout() {
+    using namespace Sqrat;
+    try
+    {
+        checkCallingThread();
+
+        Function func(vm_.GetRootTable(), "DoLogout");
+        if (func.IsNull()) {
+            return 0;
+        }
+        int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        return res;
+    }
+    catch (std::exception& e)
+    {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogout\r\n" + std::string(e.what()));
+    }
+    FlushSquirrelOutput();
+    return 0;
+}
+
 int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
 {
     using namespace Sqrat;
@@ -442,3 +487,41 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     
     ErrorMessage(ei);
 }
+
+bool CScriptUploadEngine::isAuthenticated() {
+    using namespace Sqrat;
+    try
+    {
+        checkCallingThread();
+
+        Function func(vm_.GetRootTable(), "IsAuthenticated");
+        if (func.IsNull()) {
+            return false;
+        }
+        int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        return res;
+    }
+    catch (std::exception& e)
+    {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::isAuthenticated\r\n" + std::string(e.what()));
+    }
+    FlushSquirrelOutput();
+    return false;
+}
+
+bool CScriptUploadEngine::supportsLogout() {
+    using namespace Sqrat;
+    try {
+        checkCallingThread();
+        Function func(vm_.GetRootTable(), "DoLogout");
+        if (func.IsNull()) {
+            return false;
+        }
+    }
+    catch (std::exception& e) {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::supportsLogout\r\n" + std::string(e.what()));
+        return false;
+    }
+    FlushSquirrelOutput();
+    return true;
+};

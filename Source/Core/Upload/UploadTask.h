@@ -59,7 +59,7 @@ class UploadTask {
         void setUploadManager(CFileQueueUploader* uploadManager);
 
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
-        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl));
+        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl)(TypeAuth));
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
         enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed, StatusWaitingChildren };
         typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;

@@ -33,12 +33,12 @@ limitations under the License.
 #include "MegaNzUploadEngine.h"
 #endif
 
-UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, IUploadErrorHandler* uploadErrorHandler, 
-    std::shared_ptr<INetworkClientFactory> factory)
+UploadEngineManager::UploadEngineManager(std::shared_ptr<CUploadEngineList> uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
+    std::shared_ptr<INetworkClientFactory> factory) : 
+        uploadEngineList_(std::move(uploadEngineList)),
+        uploadErrorHandler_(std::move(uploadErrorHandler)), 
+        networkClientFactory_(std::move(factory)) 
 {
-    uploadEngineList_ = uploadEngineList;
-    uploadErrorHandler_ = uploadErrorHandler;
-    networkClientFactory_ = factory;
 }
 
 UploadEngineManager::~UploadEngineManager()
@@ -95,7 +95,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
-        CAbstractUploadEngine::ErrorMessageCallback errorCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
+        CAbstractUploadEngine::ErrorMessageCallback errorCallback(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
 #ifndef IU_DISABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
             result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
@@ -113,7 +113,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     
     result->setServerSettings(serverSettings);
     result->setUploadData(ue);
-    result->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
+    result->onErrorMessage.bind(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
     return result;
 }
 
@@ -147,7 +147,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     if (plugin) {
         ServerSettingsStruct* serverSettings = plugin->serverSettings();
         if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params->authData.Login) {
-            plugin->onErrorMessage.bind(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage);
+            plugin->onErrorMessage.bind(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
             plugin->switchToThisVM();
             return plugin;
         }
@@ -161,7 +161,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
     CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_, 
-        CAbstractUploadEngine::ErrorMessageCallback(uploadErrorHandler_, &IUploadErrorHandler::ErrorMessage));
+        CAbstractUploadEngine::ErrorMessageCallback(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage));
 
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][serverName] = newPlugin;

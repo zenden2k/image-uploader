@@ -34,6 +34,16 @@ CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageC
     fatalError_ = false;
 }
 
+int CDefaultUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
+    if (task->type() == UploadTask::TypeAuth) {
+        UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
+        return 0;
+    }
+    else {
+        return doUpload(task, params);
+    }
+}
+
 int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) {
     fatalError_ = false;
     int res = 0;

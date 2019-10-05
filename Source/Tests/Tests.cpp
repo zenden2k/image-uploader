@@ -165,14 +165,14 @@ int main(int argc, char *argv[]){
 #endif
     FLAGS_logtostderr = false;
     FLAGS_alsologtostderr = true;
-    ConsoleLogger defaultLogger;
-    ConsoleUploadErrorHandler uploadErrorHandler;
+    auto defaultLogger = std::make_shared<ConsoleLogger>();
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     Translator translator;
     ServiceLocator* serviceLocator = ServiceLocator::instance();
-    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
-    serviceLocator->setLogger(&defaultLogger);
+    serviceLocator->setUploadErrorHandler(uploadErrorHandler);
+    serviceLocator->setLogger(defaultLogger);
     serviceLocator->setTranslator(&translator);
-    MyLogSink logSink(&defaultLogger);
+    MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
 
     Sqrat::SqratVM vm;

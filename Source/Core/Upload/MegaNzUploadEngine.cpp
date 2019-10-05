@@ -347,6 +347,25 @@ int CMegaNzUploadEngine::doLogin() {
     return loginSuccess_ ? 1 : 0;
 }
 
+int CMegaNzUploadEngine::doLogout() {
+    return 0;
+}
+bool CMegaNzUploadEngine::isAuthenticated() {
+    return loginSuccess_;
+}
+bool CMegaNzUploadEngine::supportsLogout() {
+    return false;
+};
+
+int CMegaNzUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
+    if (task->type() == UploadTask::TypeAuth) {
+        return doLogin();
+    }
+    else {
+        return doUpload(task, params);
+    }
+}
+
 int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
     if (task->type() != UploadTask::TypeFile) {

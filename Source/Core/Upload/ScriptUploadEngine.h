@@ -42,7 +42,9 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         CScriptUploadEngine(const std::string& pluginName, ServerSync* serverSync, ServerSettingsStruct* settings, 
             std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
         ~CScriptUploadEngine();
-        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+
+     
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         virtual int getFolderList(CFolderList &FolderList) override;
@@ -50,21 +52,25 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         virtual int modifyFolder(CFolderItem &folder) override;
         virtual int getAccessTypeList(std::vector<std::string> &list) override;
         virtual int getServerParamList(std::map<std::string, std::string> &list) override;
-        virtual int doLogin() override;
-
+        int doLogin() override;
+        int doLogout() override;
+        bool supportsLogout() override;
         virtual bool supportsSettings() override;
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         Return true if there is "DoLogin" function in squirrel script
         **/
-        virtual bool supportsBeforehandAuthorization() override;
+        bool supportsBeforehandAuthorization() override;
+        bool isAuthenticated() override;
         std::string name();
 
         // FIXME: not working
         virtual void stop() override;         
     protected:
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
+        int processAuthTask(std::shared_ptr<UploadTask> task);
         bool preLoad() override;
         bool postLoad() override;
         virtual void logNetworkError(bool error, const std::string & msg) override;

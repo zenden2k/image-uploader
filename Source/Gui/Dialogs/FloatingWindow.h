@@ -97,9 +97,10 @@ public:
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
 
-    CFloatingWindow();
+    CFloatingWindow(CWizardDlg* wizardDlg, std::shared_ptr<UploadManager> uploadManager, 
+        std::shared_ptr<UploadEngineManager> uploadEngineManager);
     ~CFloatingWindow();
-    void setWizardDlg(CWizardDlg* wizardDlg);
+
     DECLARE_WND_CLASS(_T("CFloatingWindow"))
     
     BEGIN_MSG_MAP(CFloatingWindow)
@@ -199,8 +200,6 @@ public:
      LRESULT OnPasteFromWeb(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      void UploadScreenshot(const CString& realName, const CString &displayName);
-     void setUploadManager(UploadManager * manager);
-     void setUploadEngineManager(std::shared_ptr<UploadEngineManager> manager);
 
      // Text displayed in tray icon tooltip
      void setStatusText(const CString& text, int timeoutMs = 0);
@@ -218,7 +217,7 @@ public:
      
      // Text displayed in tray icon tooltip
      CString statusText_;
-     UploadManager * uploadManager_;
+     std::shared_ptr<UploadManager> uploadManager_;
      std::shared_ptr<UploadEngineManager> uploadEngineManager_;
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);

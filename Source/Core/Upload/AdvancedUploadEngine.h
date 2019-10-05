@@ -34,7 +34,7 @@
 class CAdvancedUploadEngine : public CAbstractUploadEngine
 {
     public:
-        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
         ~CAdvancedUploadEngine();
         void setNetworkClient(INetworkClient* nm) override;
@@ -45,6 +45,9 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         virtual int getAccessTypeList(std::vector<std::string> &list)=0;
         virtual int getServerParamList(std::map<std::string, std::string> &list)=0;
         virtual int doLogin()=0;
+        virtual int doLogout()=0;
+        virtual bool isAuthenticated() = 0;
+        virtual bool supportsLogout() = 0;
 
         virtual bool supportsSettings();
 

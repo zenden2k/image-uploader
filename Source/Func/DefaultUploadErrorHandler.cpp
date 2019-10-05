@@ -6,8 +6,9 @@
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
 
-DefaultUploadErrorHandler::DefaultUploadErrorHandler(ILogger* logger) {
-    logger_ = logger;
+DefaultUploadErrorHandler::DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger):
+    logger_(logger)
+{
     responseFileIndex_ = 0;
 }
 

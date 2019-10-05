@@ -52,10 +52,6 @@ class CWizardDlg;
 class CUpdateDlg;
 class CStatusDlg;
 class DefaultLogger;
-class UserFilter;
-class ImageConverterFilter;
-class SizeExceedFilter;
-class UrlShorteningFilter;
 class UploadManager;
 class UploadEngineManager;
 class ScriptsManager;
@@ -103,9 +99,13 @@ public:
         bool show;
     };
 
-    CWizardDlg(DefaultLogger* defaultLogger, CFloatingWindow* floatWnd);
+    CWizardDlg(std::shared_ptr<DefaultLogger> logger, std::shared_ptr<CMyEngineList> enginelist, 
+        std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<UploadManager> uploadManager, 
+        std::shared_ptr<ScriptsManager> scriptsManager, WtlGuiSettings* settings);
     virtual ~CWizardDlg();
-    
+
+    void setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd);
+
     BOOL PreTranslateMessage(MSG* pMsg) override;
     BOOL OnIdle() override;
 
@@ -200,7 +200,6 @@ public:
     //CSavingOptions SavingOptions;
     bool LoadUploadEngines(const CString &filename, CString &Error);
     bool ParseCmdLine();
-    UrlShorteningFilter* urlShorteningFilter() const;
     bool CommonScreenshot(ScreenCapture::CaptureMode mode);
     // functions
     bool funcAddImages(bool AnyFiles = false);
@@ -283,8 +282,8 @@ protected:
     CIcon hIconSmall;
     CHotkeyList m_hotkeys;
     CFolderAdd FolderAdd;
-    CMyEngineList m_EngineList;
-    std::unique_ptr<UploadManager> uploadManager_;
+   
+    std::shared_ptr<UploadManager> uploadManager_;
     std::shared_ptr<UploadEngineManager> uploadEngineManager_;
     std::shared_ptr<ScriptsManager> scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
@@ -297,21 +296,18 @@ protected:
     bool m_bShowAfter;
     bool isFirstRun_;
     WtlGuiSettings& Settings;
-    std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
-    std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
-    std::unique_ptr<UrlShorteningFilter> urlShorteningFilter_;
-    std::unique_ptr<UserFilter> userFilter_;
+
     std::map<CString, CLogWindow*> logWindowsByFileName_;
     std::vector<AddImageStruct> newImages_;
     std::mutex newImagesMutex_;
     std::shared_ptr<ScreenCapture::CScreenshotRegion> lastScreenshotRegion_;
     HMONITOR lastScreenshotMonitor_;
     std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
-    DefaultLogger* defaultLogger_;
+    std::shared_ptr<DefaultLogger> logger_;
     std::unique_ptr<CStatusDlg> statusDlg_;
     std::vector<TaskDispatcherTask> scheduledTasks_;
     std::mutex scheduledTasksMutex_;
-    CFloatingWindow* floatWnd_;
+    std::shared_ptr<CFloatingWindow> floatWnd_;
     DWORD mainThreadId_;
     std::unique_ptr<CUpdateDlg> updateDlg;
     HACCEL hLocalHotkeys;
@@ -327,6 +323,7 @@ protected:
     CWizardPage* Pages[5];
     int screenshotIndex;
     CString m_bCurrentFunc;
+    std::shared_ptr<CMyEngineList> enginelist_;
 };
 
 

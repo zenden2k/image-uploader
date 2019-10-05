@@ -28,6 +28,9 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/ServiceLocator.h"
+#include "Core/Upload/AuthTask.h"
+#include "Core/Upload/UploadSession.h"
+#include "Core/Upload/UploadManager.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -35,12 +38,16 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     m_UploadEngine = serverProfile.uploadEngineData();
     ignoreExistingAccount_ = false;
     serverSupportsBeforehandAuthorization_ = false;
+    serverSupportsLogout_ = false;
+    isAuthenticated_ = false;
     uploadEngineManager_ = uem;
     
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
         auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
         if ( plugin_ ) {
             serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
+            serverSupportsLogout_ = plugin_->supportsLogout();
+            isAuthenticated_ = plugin_->isAuthenticated();
         }
     }
     createNew_ = createNew;
@@ -64,6 +71,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
+    TRC(IDC_LOGOUT, "Logout");
 
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd)
@@ -74,10 +82,15 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         wndAnimation_.ShowWindow(SW_HIDE);
     }
 
-    loginButton_.m_hWnd = GetDlgItem(IDC_AUTHORIZEBUTTON);
+    loginButton_ = GetDlgItem(IDC_AUTHORIZEBUTTON);
     loginButton_.SetWindowText(TR("Sign in..."));
-    loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);
-    
+    bool showLoginButton = serverSupportsBeforehandAuthorization_ && !isAuthenticated_;
+    loginButton_.ShowWindow(showLoginButton ? SW_SHOW : SW_HIDE);
+
+    logoutButton_ = GetDlgItem(IDC_LOGOUT);
+    bool showLogoutButton = serverSupportsLogout_ && isAuthenticated_;
+    logoutButton_.ShowWindow(showLogoutButton ? SW_SHOW : SW_HIDE);
+
     if (!m_UploadEngine->RegistrationUrl.empty()) {
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
@@ -137,15 +150,19 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
 
 LRESULT CLoginDlg::OnDoLoginClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    enableControls(false);
-    Start();
+    startAuthentication(AuthActionType::Login);
+    return 0;
+}
+
+LRESULT CLoginDlg::OnLogoutClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    startAuthentication(AuthActionType::Logout);
     return 0;
 }
 
 LRESULT CLoginDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CString text = GuiTools::GetWindowText(hWndCtl);
-    loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ && !text.IsEmpty() ? SW_SHOW : SW_HIDE);
+    loginButton_.ShowWindow((serverSupportsBeforehandAuthorization_ && !isAuthenticated_) && !text.IsEmpty() ? SW_SHOW : SW_HIDE);
     return 0;
 }
 
@@ -154,19 +171,19 @@ CString CLoginDlg::accountName() const
     return accountName_;
 }
 
-DWORD CLoginDlg::Run()
+void CLoginDlg::startAuthentication(AuthActionType actionType)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
         CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
-        if ( !ignoreExistingAccount_ && createNew_ && Settings.ServersSettings[serverNameA].find(li.Login ) != Settings.ServersSettings[serverNameA].end() ) {
+        if ( !ignoreExistingAccount_ && createNew_ && Settings->ServersSettings[serverNameA].find(li.Login ) != Settings->ServersSettings[serverNameA].end() ) {
             LocalizedMessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
             OnProcessFinished();
-            return 0;
+            return;
         }
 
         ignoreExistingAccount_ = true;
@@ -180,18 +197,30 @@ DWORD CLoginDlg::Run()
         li.Password = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
         li.DoAuth = true;
 
-        ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
+        ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_, true);
 
         if (serverSettings) {
             serverSettings->authData = li;
         } else {
             LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
         }
+
+        auto authTask = std::make_shared<AuthTask>(actionType);
+        authTask->setServerProfile(serverProfile_);
+        authTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CLoginDlg::authTaskFinishedCallback));
+        //auto authSession = std::make_shared<UploadSession>();
+       // authSession->addTask(authTask);
+        auto uploadManager = ServiceLocator::instance()->uploadManager();
+        //authSession->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, ))
+        enableControls(false);
+        uploadManager->addSingleTask(authTask);
+
+        /*
         auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
         if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
             OnProcessFinished();
-            return 0;
+            return;
         }
 
         plugin_->setNetworkClient(NetworkClient_.get());
@@ -201,19 +230,16 @@ DWORD CLoginDlg::Run()
             LocalizedMessageBox(TR("Authenticated succesfully."));
             Accept();
             
-            return 0;
+            return;
         } else {
             loginButton_.SetWindowText(TR("Could not authenticate. Please try again."));
-        }
+        }*/
         
     }
-    OnProcessFinished();
-    return 0;
 }
 
 void CLoginDlg::OnProcessFinished()
 {
-    uploadEngineManager_->clearThreadData();
     ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]{
         enableControls(true);
     });
@@ -274,4 +300,30 @@ void CLoginDlg::enableControls(bool enable)
     GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
     loginButton_.EnableWindow(enable);
     deleteAccountLabel_.EnableWindow(enable);
+}
+
+
+void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
+    AuthTask* authTask = dynamic_cast<AuthTask*>(task);
+    if (!authTask) {
+        return;
+    }
+    if (authTask->authActionType() == AuthActionType::Login) {
+        if (ok) {
+            OnProcessFinished();
+            LocalizedMessageBox(TR("Authenticated succesfully."));
+            Accept();
+        }
+        else {
+            loginButton_.SetWindowText(TR("Could not authenticate. Please try again."));
+            OnProcessFinished();
+        }
+    } else if (authTask->authActionType() == AuthActionType::Logout) {
+        OnProcessFinished();
+        if (ok) {
+            LocalizedMessageBox(ok ? TR("Logout succesfully."): TR("Failed to logout."));
+            logoutButton_.ShowWindow(SW_HIDE);
+        }
+
+    }
 }

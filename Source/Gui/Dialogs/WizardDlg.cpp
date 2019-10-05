@@ -62,10 +62,6 @@
 #include "Core/ScreenCapture/Utils.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
-#include "Core/Upload/Filters/UserFilter.h"
-#include "Core/Upload/Filters/ImageConverterFilter.h"
-#include "Core/Upload/Filters/SizeExceedFilter.h"
-#include "Core/Upload/Filters/UrlShorteningFilter.h"
 #include "statusdlg.h"
 
 using namespace Gdiplus;
@@ -147,12 +143,17 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger, CFloatingWindow* floatWnd) :
+CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, std::shared_ptr<CMyEngineList> enginelist, 
+    std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<UploadManager> uploadManager, 
+    std::shared_ptr<ScriptsManager> scriptsManager, WtlGuiSettings* settings):
     m_lRef(0), 
     FolderAdd(this), 
-    Settings(*ServiceLocator::instance()->settings<WtlGuiSettings>()),
-    defaultLogger_(defaultLogger),
-    floatWnd_(floatWnd)
+    Settings(*settings),
+    logger_(std::move(logger)),
+    uploadManager_(std::move(uploadManager)),
+    uploadEngineManager_(std::move(uploadEngineManager)),
+    scriptsManager_(std::move(scriptsManager)),
+    enginelist_(std::move(enginelist))
 { 
     mainThreadId_ = GetCurrentThreadId();
     screenshotIndex = 1;
@@ -165,31 +166,8 @@ CWizardDlg::CWizardDlg(DefaultLogger* defaultLogger, CFloatingWindow* floatWnd) 
     QuickUploadMarker = false;
     m_bShowAfter = true;
     m_bHandleCmdLineFunc = false;
-    Settings.setEngineList(&m_EngineList);
     m_bScreenshotFromTray = false;
-    auto serviceLocator = ServiceLocator::instance();
-    serviceLocator->setEngineList(&m_EngineList);
-    serviceLocator->setMyEngineList(&m_EngineList);
-    serviceLocator->setTaskDispatcher(this);
     serversChanged_ = false;
-    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory);
-    IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = std::make_shared<UploadEngineManager>(&m_EngineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_.reset(new UploadManager(uploadEngineManager_, &m_EngineList, scriptsManager_, 
-        uploadErrorHandler, networkClientFactory, Settings.MaxThreads));
-    imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
-    sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(&m_EngineList, uploadEngineManager_.get());
-    urlShorteningFilter_ = std::make_unique<UrlShorteningFilter>();
-    userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
-    serviceLocator->setUploadManager(uploadManager_.get());
-    uploadManager_->addUploadFilter(imageConverterFilter_.get());
-    uploadManager_->addUploadFilter(userFilter_.get());
-    uploadManager_->addUploadFilter(sizeExceedFilter_.get());
-    uploadManager_->addUploadFilter(urlShorteningFilter_.get());
-
-    floatWnd_->setUploadManager(uploadManager_.get());
-    floatWnd_->setUploadEngineManager(uploadEngineManager_);
     Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
 }
 
@@ -252,6 +230,10 @@ CWizardDlg::~CWizardDlg()
         delete logWnd.second;
     }
 
+}
+
+void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
+    floatWnd_ = floatWnd;
 }
 
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
@@ -535,10 +517,6 @@ bool CWizardDlg::ParseCmdLine()
     return false;
 }
 
-UrlShorteningFilter* CWizardDlg::urlShorteningFilter() const {
-    return urlShorteningFilter_.get();
-}
-
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     if(floatWnd_->m_hWnd)
@@ -733,7 +711,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case 3:
             CUploadSettings *tmp3;
-            tmp3 = new CUploadSettings(&m_EngineList, uploadEngineManager_.get());
+            tmp3 = new CUploadSettings(enginelist_.get(), uploadEngineManager_.get());
             Pages[PageID]=tmp3;
             Pages[PageID]->WizardDlg=this;
             tmp3->Create(m_hWnd,rc2);
@@ -913,9 +891,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
     WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    m_EngineList.setNumOfRetries(Settings->FileRetryLimit, Settings->ActionRetryLimit);
-    bool Result = m_EngineList.loadFromFile(filename);
-    Error = m_EngineList.errorStr();
+    enginelist_->setNumOfRetries(Settings->FileRetryLimit, Settings->ActionRetryLimit);
+    bool Result = enginelist_->loadFromFile(filename);
+    Error = enginelist_->errorStr();
     return Result;
 }
 
@@ -2230,7 +2208,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
 }
 
 bool CWizardDlg::funcReuploadImages() {
-    CImageReuploaderDlg dlg(this, &m_EngineList, uploadManager_.get(), uploadEngineManager_.get(), CString());
+    CImageReuploaderDlg dlg(this, ServiceLocator::instance()->myEngineList(), uploadManager_.get(), uploadEngineManager_.get(), CString());
     dlg.DoModal(m_hWnd);
     return false;
 }
@@ -2327,10 +2305,11 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
         return;
     }
 
+    
     CLogWindow* wnd = new CLogWindow;
     wnd->Create(nullptr);
     wnd->setFileNameFilter(fileName);
-    wnd->setLogger(defaultLogger_);
+    wnd->setLogger(logger_.get());
     wnd->TranslateUI();
     logWindowsByFileName_[fileName] = wnd;
     wnd->reloadList();

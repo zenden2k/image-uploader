@@ -368,6 +368,7 @@
 #define IDC_FILEINFOBUTTON              1080
 #define IDC_VIEWLOG                     1080
 #define IDC_SHOWLOG                     1080
+#define IDC_LOGOUT                      1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
@@ -754,7 +755,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        317
+#define _APS_NEXT_RESOURCE_VALUE        318
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1329
 #define _APS_NEXT_SYMED_VALUE           128

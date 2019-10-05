@@ -8,11 +8,11 @@
 
 class DefaultUploadErrorHandler : public IUploadErrorHandler {
 public:
-    DefaultUploadErrorHandler(ILogger* logger);
+    DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger);
     void ErrorMessage(const ErrorInfo& errorInfo) override;
     void DebugMessage(const std::string& msg, bool isResponseBody) override;
 protected:
-    ILogger* logger_;
+    std::shared_ptr<ILogger> logger_;
     int responseFileIndex_;
 };
 #endif

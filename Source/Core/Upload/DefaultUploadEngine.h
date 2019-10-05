@@ -35,9 +35,9 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
 {
     public:
         CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
-        virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
-    
+        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
     protected:
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         bool DoAction(UploadAction &Action);
         bool DoUploadAction(UploadAction &Action, bool bUpload);
         bool DoGetAction(UploadAction &Action);
@@ -54,6 +54,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params);
         void prepareUpload(UploadParams& params);
         bool executeActions();
+
         static bool reg_single_match(const std::string& pattern, const std::string& text, std::string& res);
 
         std::string m_ErrorReason;

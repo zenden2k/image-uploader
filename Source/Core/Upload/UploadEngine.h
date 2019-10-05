@@ -353,7 +353,7 @@ class CAbstractUploadEngine
 
         CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
         virtual ~CAbstractUploadEngine();
-        virtual int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
+        virtual int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) = 0;
         void setServerSettings(ServerSettingsStruct* settings);
         ServerSettingsStruct * serverSettings() const;
         virtual int RetryLimit()=0;

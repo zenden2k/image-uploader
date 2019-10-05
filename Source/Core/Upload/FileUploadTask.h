@@ -4,7 +4,6 @@
 #include "UploadTask.h"
 #include <string>
 
-
 class FileUploadTask: public UploadTask {
     public:
         FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = 0);

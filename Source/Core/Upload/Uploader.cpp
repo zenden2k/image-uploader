@@ -174,7 +174,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             Cleanup();
             return false;
         }
-        EngineRes = m_CurrentEngine->doUpload(task, uparams);
+        EngineRes = m_CurrentEngine->processTask(task, uparams);
         task->setCurrentUploadEngine(nullptr);
 
         if ( EngineRes == -1 ) {
@@ -201,16 +201,20 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         Cleanup();
         return false;
     }
-    UploadResult* result = task->uploadResult();
-    result->directUrl = uparams.DirectUrl;
-    result->downloadUrl = uparams.ViewUrl;
-    if (result->thumbUrl.empty()) {
-        result->thumbUrl = uparams.ThumbUrl;
-    }
-    result->deleteUrl = uparams.DeleteUrl;
-    result->editUrl = uparams.EditUrl;
+    if (task->type() != UploadTask::TypeAuth) {
+        UploadResult* result = task->uploadResult();
+        result->directUrl = uparams.DirectUrl;
+        result->downloadUrl = uparams.ViewUrl;
+        if (result->thumbUrl.empty()) {
+            result->thumbUrl = uparams.ThumbUrl;
+        }
+        result->deleteUrl = uparams.DeleteUrl;
+        result->editUrl = uparams.EditUrl;
 
-    return !(result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty());
+        return !(result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty());
+    } else {
+        return EngineRes;
+    }
 }
 
 bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)

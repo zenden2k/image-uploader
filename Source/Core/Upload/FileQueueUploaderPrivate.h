@@ -44,7 +44,7 @@ public:
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
     FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<ScriptsManager> scriptsManager,
-        IUploadErrorHandler* uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads
+        std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads
         );
     virtual ~FileQueueUploaderPrivate();
     
@@ -94,7 +94,7 @@ protected:
     int startFromSession_;
     std::shared_ptr<UploadEngineManager> uploadEngineManager_;
     std::shared_ptr<ScriptsManager> scriptsManager_; 
-    IUploadErrorHandler* uploadErrorHandler_;
+    std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 

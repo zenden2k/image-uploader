@@ -48,3 +48,16 @@ function GetServerParamList()
 @endcode
 */
 table GetServerParamList();
+
+/**
+@return 1 - is authenticated,<br>
+0 - is not authenticated<br/>
+*/
+int IsAuthenticated();
+
+/**
+@return 1 - success,<br>
+0 - fail<br/>
+*/
+int DoLogout();
+

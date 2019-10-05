@@ -43,7 +43,8 @@ class MegaProxy;
 
 class CMegaNzUploadEngine : public CAdvancedUploadEngine {
     public:
-        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
         ~CMegaNzUploadEngine();
         //bool load(std::string fileName, ServerSettingsStruct& params);
@@ -55,6 +56,9 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
         int doLogin() override;
 
         bool supportsSettings() override;
+        int doLogout() override;
+        bool isAuthenticated() override;
+        bool supportsLogout() override;
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         **/

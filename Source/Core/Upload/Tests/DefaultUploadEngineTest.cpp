@@ -89,7 +89,7 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     UploadParams uploadParams;
     uploadParams.thumbWidth = 160;
     uploadParams.thumbHeight = 120;
-    int res = engine.doUpload(fileTask, uploadParams);
+    int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("https://serv2.example.com/file_with_const_size.png", uploadParams.getDirectUrl());
     EXPECT_EQ("https://serv4.example.com/thumb/file_with_const_size.png", uploadParams.getThumbUrl());
@@ -151,7 +151,7 @@ TEST_F(DefaultUploadEngineTest, login)
 
     engine.setServerSettings(&serverSettings);
     UploadParams uploadParams;
-    int res = engine.doUpload(fileTask, uploadParams);
+    int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
 }
 
@@ -208,7 +208,7 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     ServerSettingsStruct serverSettings;
     engine.setServerSettings(&serverSettings);
     UploadParams uploadParams;
-    int res = engine.doUpload(fileTask, uploadParams);
+    int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("http://te.st/qwe1234", uploadParams.getDirectUrl());
     EXPECT_EQ("", uploadParams.getThumbUrl());
