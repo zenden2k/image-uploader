@@ -749,6 +749,7 @@ void WtlGuiSettings::BindToManager() {
     general.n_bind(RememberFileServer);
     general.n_bind(RememberImageServer);
     general.n_bind(Hotkeys);
+    general.n_bind(DeviceId);
     SettingsNode& screenshot = mgr_["Screenshot"];
     screenshot.nm_bind(ScreenshotSettings, Delay);
     screenshot.nm_bind(ScreenshotSettings, Format);

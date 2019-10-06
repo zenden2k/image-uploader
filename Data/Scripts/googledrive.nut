@@ -185,7 +185,7 @@ function DoLogin() {
 
 function IsAuthenticated() {
     if (ServerParams.getParam("token") != "") {
-        return true;
+        return 1;
     }
     return 0;
 }

@@ -192,6 +192,32 @@ function DoLogin() {
     return res;
 }
 
+
+function IsAuthenticated() {
+    if (ServerParams.getParam("token") != "") {
+        return 1;
+    }
+    return 0;
+}
+
+function DoLogout() {
+    local token = ServerParams.getParam("token");
+    if (token == "" ) {
+        return 0;
+    }
+
+    ServerParams.setParam("token", "");
+    ServerParams.setParam("refreshToken", "");
+    
+    local browser = CWebBrowser();
+    browser.setTitle(tr("onedrive.browser.title", "OneDrive authorization"));
+    browser.navigateToUrl("https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=" + nm.urlEncode(redirectUri));
+    browser.showModal();
+    
+    return 1;
+}
+
+
 function GetFolderList(list) {
     if(!DoLogin()) {
         return 0;

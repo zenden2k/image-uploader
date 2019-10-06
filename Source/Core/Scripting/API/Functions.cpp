@@ -52,6 +52,8 @@
 #include "Core/Upload/UploadErrorHandler.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/BasicSettings.h"
+#include "Core/Utils/SystemUtils.h"
 
 using namespace Sqrat;
 
@@ -576,6 +578,25 @@ Sqrat::Table GetImageInfo(const std::string& fileName) {
     return obj;
 }
 
+std::string GetDeviceId() {
+    auto settings = ServiceLocator::instance()->basicSettings();
+    if (!settings) {
+        return {};
+    }
+    return settings->DeviceId;
+}
+
+std::string GetDeviceName() {
+    std::string res = IuCoreUtils::GetOsName() + "_PC";
+#ifdef _WIN32
+    TCHAR  computerName[MAX_PATH];
+    DWORD  bufCharCount = MAX_PATH;
+    if (GetComputerName(computerName, &bufCharCount)) {
+        res += "_" + IuCoreUtils::WstringToUtf8(computerName);
+    }
+#endif
+    return res;
+}
 /*
 void DebugMessage(const std::string& message, bool isServerResponseBody)
 {
@@ -635,7 +656,9 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("WriteLog", WriteLog)    
         .Func("GetCurrentScriptFileName", GetCurrentScriptFileName)
         .Func("GetCurrentThreadId", GetCurrentThreadId)
-        .Func("MessageBox", MessageBox);    
+        .Func("MessageBox", MessageBox)   
+        .Func("GetDeviceId", GetDeviceId)  
+        .Func("GetDeviceName", GetDeviceName);    
 
     using namespace IuCoreUtils;
     root

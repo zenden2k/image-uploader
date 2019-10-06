@@ -180,6 +180,10 @@ void UploadTask::finishTask(Status status)
     }*/
 }
 
+int UploadTask::retryLimit() {
+    return 0;
+}
+
 void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
 {
     child->setSession(session_);

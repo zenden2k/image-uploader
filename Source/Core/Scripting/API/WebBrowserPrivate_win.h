@@ -89,13 +89,10 @@ public:
 
 
     bool showModal() {
-        HWND parent = 
-#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-            ServiceLocator::instance()->programWindow()->getNativeHandle();
-#else 
-            0;
-#endif
-            create(parent);
+        auto programWindow = ServiceLocator::instance()->programWindow();
+        HWND parent = programWindow ? programWindow->getNativeHandle() : nullptr;
+
+        create(parent);
         
         if ( !initialUrl_.IsEmpty() ) {
             webViewWindow_.NavigateTo(initialUrl_);
@@ -103,7 +100,9 @@ public:
             webViewWindow_.view_.displayHTML(initialHtml_);
         }
         
-        return webViewWindow_.DoModal(parent) != 0;
+        bool res =  webViewWindow_.DoModal(parent) != 0;
+        clearCallbacks();
+        return res;
     }
 
     bool exec() {
@@ -114,7 +113,9 @@ public:
             webViewWindow_.view_.displayHTML(initialHtml_);
         }
 
-        return webViewWindow_.exec()!=0;
+        bool res =  webViewWindow_.exec()!=0;
+        clearCallbacks();
+        return res;
     }
 
     void show() {

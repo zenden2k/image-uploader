@@ -77,6 +77,7 @@ class UploadTask {
         bool isFinished();
         bool isFinishedItself();
         virtual void finishTask(Status status = StatusFinished);
+        virtual int retryLimit();
         //int getNextTask(UploadTaskAcceptor *acceptor, std::shared_ptr<UploadTask>& outTask);
         void addChildTask(std::shared_ptr<UploadTask> child);
         int childCount();

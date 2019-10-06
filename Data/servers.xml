@@ -60,7 +60,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="http://disk.yandex.ru">
+	<Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="https://disk.yandex.ru">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 <Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">

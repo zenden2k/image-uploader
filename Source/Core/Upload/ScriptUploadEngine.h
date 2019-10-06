@@ -47,15 +47,16 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
      
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
-        virtual int getFolderList(CFolderList &FolderList) override;
-        virtual int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
-        virtual int modifyFolder(CFolderItem &folder) override;
-        virtual int getAccessTypeList(std::vector<std::string> &list) override;
-        virtual int getServerParamList(std::map<std::string, std::string> &list) override;
+        int getFolderList(CFolderList &FolderList) override;
+        int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
+        int modifyFolder(CFolderItem &folder) override;
+        int getAccessTypeList(std::vector<std::string> &list) override;
+        int getServerParamList(std::map<std::string, std::string> &list) override;
         int doLogin() override;
         int doLogout() override;
         bool supportsLogout() override;
-        virtual bool supportsSettings() override;
+        bool supportsSettings() override;
+
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         Return true if there is "DoLogin" function in squirrel script

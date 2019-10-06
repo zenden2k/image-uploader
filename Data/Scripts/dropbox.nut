@@ -159,11 +159,35 @@ function DoLogin() {
 	return res;
 }
 
-function isAuthorized() {
-	if ( token != "" ) {
-		return true;
-	}
-	return false;
+function IsAuthenticated() {
+    if (ServerParams.getParam("token") != "") {
+        return 1;
+    }
+    return 0;
+}
+
+function DoLogout() {
+    local token = ServerParams.getParam("token");
+    if (token == "" ) {
+        return 0;
+    }
+    local url = "https://api.dropboxapi.com/2/auth/token/revoke";
+    nm.setUrl(url);
+    signRequest(url, token);
+    nm.addQueryHeader("Content-Type", "application/json");
+    nm.doPost("null");
+    ServerParams.setParam("token", "");
+    
+    if (nm.responseCode() == 200) {
+        return 1;
+    } else {
+        local t = ParseJSON(nm.responseBody());
+        if ("error" in t && t.error.rawget(".tag") == "invalid_access_token") {
+            WriteLog("error", "Token already revoked.");
+            return 1;
+        }
+    }
+    return 0;
 }
 
 function min(a,b) {

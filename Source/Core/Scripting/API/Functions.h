@@ -333,6 +333,9 @@ namespace ScriptAPI {
     @since 1.3.2.4616
      */
     Sqrat::Table GetImageInfo(const std::string& fileName);
+
+    std::string GetDeviceId();
+    std::string GetDeviceName();
 }
 
 #endif

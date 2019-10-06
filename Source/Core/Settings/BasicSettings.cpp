@@ -20,6 +20,10 @@ limitations under the License.
 
 #include "BasicSettings.h"
 
+#include <boost/uuid/uuid.hpp>           
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp> 
+
 #include "EncodedPassword.h"
 
 BasicSettings::BasicSettings()
@@ -41,6 +45,8 @@ BasicSettings::BasicSettings()
     ConnectionSettings.ProxyPort = 0;
     ConnectionSettings.NeedsAuth = false;
     ConnectionSettings.ProxyType = 0;
+    boost::uuids::uuid uuid = boost::uuids::random_generator()();
+    DeviceId = boost::uuids::to_string(uuid);
 }
 
 BasicSettings::~BasicSettings() {

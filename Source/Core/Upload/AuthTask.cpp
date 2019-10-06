@@ -30,3 +30,7 @@ std::string AuthTask::title() const {
 AuthActionType AuthTask::authActionType() const {
     return authActionType_;
 }
+
+int AuthTask::retryLimit() {
+    return 1;
+}

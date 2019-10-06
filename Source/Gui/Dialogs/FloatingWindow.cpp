@@ -61,9 +61,9 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = n
 // FloatingWindow
 CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, std::shared_ptr<UploadManager> uploadManager,
     std::shared_ptr<UploadEngineManager> uploadEngineManager): 
-    wizardDlg_(wizardDlg),
     uploadManager_(std::move(uploadManager)),
-    uploadEngineManager_(std::move(uploadEngineManager))
+    uploadEngineManager_(std::move(uploadEngineManager)),
+    wizardDlg_(wizardDlg)
 {
     m_bFromHotkey = false;
     m_ActiveWindow = nullptr;
@@ -73,12 +73,10 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, std::shared_ptr<UploadMa
     m_bStopCapturingWindows = false;
     WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
     m_bIsUploading = false;
-    uploadEngineManager_ = nullptr;
     lastUploadedItem_ = nullptr;
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
-    uploadManager_ = nullptr;
     uploadType_ = utImage;
 }
 

@@ -166,6 +166,10 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     }*/
     m_NetworkClient->setProgressCallback(INetworkClient::ProgressCallback(this, &CUploader::pluginProgressFunc));
     int EngineRes = 0;
+    int retryLimit = task->retryLimit();
+    if (!retryLimit) {
+        retryLimit = m_CurrentEngine->RetryLimit();
+    }
     int i = 0;
     do
     {
@@ -188,12 +192,12 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             Cleanup();
             return false;
         }
-        if (!EngineRes && i != m_CurrentEngine->RetryLimit())
+        if (!EngineRes && i != retryLimit)
         {
             Error(false, "", etRepeating, i, topLevelFileName);
         }
     }
-    while (!EngineRes && i < m_CurrentEngine->RetryLimit());
+    while (!EngineRes && i < retryLimit);
 
     if (!EngineRes)
     {

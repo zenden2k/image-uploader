@@ -31,6 +31,7 @@
 #include "Core/Upload/AuthTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
+#include <boost/format.hpp>
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -95,9 +96,8 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
         signupLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
-        CString linkText;
-        linkText.Format(TR("Don't have an account? Sign up on %s right now"), static_cast<LPCTSTR>(U2W(m_UploadEngine->Name)));
-        signupLink_.SetLabel(linkText);
+        std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now")) % IuCoreUtils::Utf8ToWstring(m_UploadEngine->Name));
+        signupLink_.SetLabel(linkText.c_str());
         signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
         signupLink_.ShowWindow(SW_SHOW);
     }
@@ -173,7 +173,7 @@ CString CLoginDlg::accountName() const
 
 void CLoginDlg::startAuthentication(AuthActionType actionType)
 {
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
@@ -208,33 +208,9 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
         authTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CLoginDlg::authTaskFinishedCallback));
-        //auto authSession = std::make_shared<UploadSession>();
-       // authSession->addTask(authTask);
         auto uploadManager = ServiceLocator::instance()->uploadManager();
-        //authSession->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, ))
         enableControls(false);
         uploadManager->addSingleTask(authTask);
-
-        /*
-        auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
-
-        if (!plugin_ || !plugin_->supportsBeforehandAuthorization()) {
-            OnProcessFinished();
-            return;
-        }
-
-        plugin_->setNetworkClient(NetworkClient_.get());
-        int res = plugin_->doLogin();
-        if ( res ) {
-            OnProcessFinished();
-            LocalizedMessageBox(TR("Authenticated succesfully."));
-            Accept();
-            
-            return;
-        } else {
-            loginButton_.SetWindowText(TR("Could not authenticate. Please try again."));
-        }*/
-        
     }
 }
 
@@ -304,15 +280,17 @@ void CLoginDlg::enableControls(bool enable)
 
 
 void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
-    AuthTask* authTask = dynamic_cast<AuthTask*>(task);
+    auto authTask = dynamic_cast<AuthTask*>(task);
     if (!authTask) {
         return;
     }
     if (authTask->authActionType() == AuthActionType::Login) {
         if (ok) {
             OnProcessFinished();
-            LocalizedMessageBox(TR("Authenticated succesfully."));
-            Accept();
+            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] {
+                LocalizedMessageBox(TR("Authenticated succesfully."));
+                Accept();
+            });
         }
         else {
             loginButton_.SetWindowText(TR("Could not authenticate. Please try again."));
@@ -321,8 +299,11 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
     } else if (authTask->authActionType() == AuthActionType::Logout) {
         OnProcessFinished();
         if (ok) {
-            LocalizedMessageBox(ok ? TR("Logout succesfully."): TR("Failed to logout."));
-            logoutButton_.ShowWindow(SW_HIDE);
+            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this, ok] {
+                LocalizedMessageBox(ok ? TR("Logout succesfully.") : TR("Failed to logout."));
+                logoutButton_.ShowWindow(SW_HIDE);
+                loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);
+            });
         }
 
     }

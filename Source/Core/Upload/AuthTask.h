@@ -10,12 +10,14 @@ class AuthTask: public UploadTask {
     public:
         AuthTask(AuthActionType type = AuthActionType::Login);
         ~AuthTask();
-        virtual Type type() const;
+        virtual Type type() const override;
         std::string getMimeType() const override;
         int64_t getDataLength() const override;
         std::string toString() override;
         std::string title() const override;
         AuthActionType authActionType() const;
+        int retryLimit() override;
+
 protected:
     AuthActionType authActionType_;
 };    

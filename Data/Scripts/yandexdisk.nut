@@ -14,6 +14,8 @@ tokenType <- "";
 login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
+clientId <- "a49c34035aa8418d9a77ff24e0660719";
+clientSecret <- "f9496665e3494022a00b7dbe9a5f0d9e";
 
 function BeginLogin() {
 	try {
@@ -33,61 +35,8 @@ function EndLogin() {
 	return true;
 }
 
-function base64Encode(input) {
-	local keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    local output = "";
-    local chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    local i = 0;
-	local len = input.len() ;
-
-    while ( i < len ) {
-
-        chr1 = input[i++];
-		if ( i< len) {
-			chr2 = input[i++];
-		} else {
-			chr2 = 0;
-		}
-		if ( i < len ) {
-			chr3 = input[i++];
-		} else {
-			chr3 = 0;
-		}
-
-        enc1 = chr1 >> 2;
-        enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-        enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-        enc4 = chr3 & 63;
-
-        if (chr2 == 0) {
-            enc3 = enc4 = 64;
-        } else if (chr3 == 0) {
-            enc4 = 64;
-        }
-		//print("enc1=" + enc1 + " enc2=" + enc2 + " enc3=" + enc3);
-        output = output + format("%c", keyStr[enc1] ) + 
-			format ( "%c", keyStr[enc2]) 
-			+ format("%c", keyStr[enc3])
-			+ format("%c", keyStr[enc4]);
-    }
-
-    return output;
-}
-
 function inputBox(prompt, title) {
-	try {
-		return InputDialog(prompt, "");
-	}catch (e){}
-	local tempScript = "%temp%\\imguploader_inputbox.vbs";
-	prompt = reg_replace(prompt, "\n", "\" ^& vbCrLf ^& \"" );
-	local tempOutput = getenv("TEMP") + "\\imguploader_inputbox_output.txt";
-	local command = "echo result = InputBox(\""+ prompt + "\", \""+ title + "\") : Set objFSO=CreateObject(\"Scripting.FileSystemObject\") : Set objFile = objFSO.CreateTextFile(\"" + tempOutput + "\",True) : objFile.Write result : objFile.Close  > \"" + tempScript + "\"";
-	system(command);
-	command = "cscript /nologo \"" + tempScript + "\"";// > \"" + tempOutput + "\"";*/
-	system(command);
-	local res = readFile(tempOutput);
-	system("rm \""+ tempOutput + "\"");
-	return res;
+    return InputDialog(prompt, "");
 }
 
 function regex_simple(data,regStr,start)
@@ -100,7 +49,6 @@ function regex_simple(data,regStr,start)
 	}
 		return resultStr;
 }
-
 
 function reg_replace(str, pattern, replace_with)
 {
@@ -116,27 +64,17 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
-}
-
 function checkResponse() {
 	if ( nm.responseCode() == 0 || (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
-		_WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
+		WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
 		return 0;
 	}
 	return 1;
 }
 
-
 function isSuccessCode(code) {
 	return ( code >= 200 && code < 300);
 }
-
 
 function getAuthorizationString() {
 	return "OAuth " + token;
@@ -371,8 +309,8 @@ function openUrl(url) {
 function _DoLogin() 
 { 
 	if ( enableOAuth ) {
-		token = ServerParams.getParam("token");
-	    	tokenType = ServerParams.getParam("tokenType");
+        token = ServerParams.getParam("token");
+        tokenType = ServerParams.getParam("tokenType");
 		if ( token != "" && ServerParams.getParam("PrevLogin") == ServerParams.getParam("Login") ) {
 			if ( tokenType == "oauth" ) {
 				local OAuthLogin = ServerParams.getParam("OAuthLogin");
@@ -384,15 +322,23 @@ function _DoLogin()
 		}
 		openUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=a49c34035aa8418d9a77ff24e0660719");
 		
-	    	local confirmCode = inputBox("You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
+        local confirmCode = inputBox("You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:", "Image Uploader - Enter confirmation code");
 		if ( confirmCode != "" ) {	
 			nm.setUrl("https://oauth.yandex.ru/token");
 			nm.addQueryParam("grant_type", "authorization_code");
 			nm.addQueryParam("code", confirmCode);
 			//nm.addQueryParam("client_id", "28d8d9c854554812ad8b60c150375462");
 			//nm.addQueryParam("client_secret", "7d6fee42d583498ea7740bcf8b753197");
-			nm.addQueryParam("client_id", "a49c34035aa8418d9a77ff24e0660719");
-			nm.addQueryParam("client_secret", "f9496665e3494022a00b7dbe9a5f0d9e");
+			nm.addQueryParam("client_id", clientId);
+			nm.addQueryParam("client_secret", clientSecret);
+            local deviceId = GetDeviceId();
+            if (deviceId != "") {
+                nm.addQueryParam("device_id", deviceId);
+            }
+            local deviceName = GetDeviceName();
+            if (deviceName != "") {
+                nm.addQueryParam("device_name", deviceName);
+            }
 			nm.doPost("");
 
 			if ( !checkResponse() ) {
@@ -410,7 +356,7 @@ function _DoLogin()
 			
 				return 1;
 			} else {
-				_WriteLog("error", "Unable to get OAuth token!");
+				WriteLog("error", "Unable to get OAuth token!");
 				return 0;
 			}
 		}
@@ -422,7 +368,7 @@ function _DoLogin()
 
 	if(login == "" || pass=="")
 	{
-		_WriteLog("error","E-mail and password should not be empty!");
+		WriteLog("error","E-mail and password should not be empty!");
 		return 0;
 	}
 	
@@ -437,6 +383,41 @@ function DoLogin() {
 	
 	EndLogin();
 	return res;
+}
+
+function IsAuthenticated() {
+    if (ServerParams.getParam("token") != "") {
+        return 1;
+    }
+    return 0;
+}
+
+function DoLogout() {
+    local token = ServerParams.getParam("token");
+    if (token == "" ) {
+        return 0;
+    }
+    local url = "https://oauth.yandex.ru/revoke_token";
+    nm.setUrl(url);
+    nm.addQueryParam("access_token", token);
+    nm.addQueryParam("client_id", clientId);
+    nm.addQueryParam("client_secret", clientSecret);
+    
+    nm.doPost("");
+
+    if (nm.responseCode() == 200) {
+        ServerParams.setParam("token", "");
+        return 1;
+    } else {
+        local t = ParseJSON(nm.responseBody());
+        if ("error" in t && t.error == "unsupported_token_type") {
+            // Token cannot be revoked, because token was issued without device_id
+            // Just remove it from local storage
+            ServerParams.setParam("token", "");
+            return 1;
+        }
+    }
+    return 0;
 }
 
 function  UploadFile(FileName, options)
@@ -541,7 +522,7 @@ function  UploadFile(FileName, options)
 			nm.addQueryHeader("Authorization",getAuthorizationString());
 			nm.doUpload(FileName, "");
 			if ( nm.responseCode() != 201 ) {
-				_WriteLog("error", "Failed to upload file " + ExtractFileName(FileName)+".");
+				WriteLog("error", "Failed to upload file " + ExtractFileName(FileName)+".");
 				return 0;
 			}
 			nm.setUrl(baseUrl + "publish?path=" + nm.urlEncode(remotePath));
@@ -551,9 +532,7 @@ function  UploadFile(FileName, options)
 			nm.addQueryHeader("Authorization",getAuthorizationString());
 			nm.setMethod("PUT");
 			nm.doGet("");
-			//nm.doPost("test1");
-			//_WriteLog("error", nm.responseCode().tostring());
-			//_WriteLog("error", nm.responseBody());
+
 			if ( nm.responseCode() == 200 ) {
 				local viewUrl = "";
 				
@@ -634,7 +613,7 @@ function  UploadFile(FileName, options)
 	
 	options.setViewUrl(viewUrl);
 	} catch ( ex ) {
-		_WriteLog("error", "Exception:" + ex.tostring());
+		WriteLog("error", "Exception:" + ex.tostring());
 		return 0;
 	}
 	

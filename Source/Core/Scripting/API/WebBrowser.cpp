@@ -180,7 +180,7 @@ void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
         .Func("setOnUrlChangedCallback", &CWebBrowser::setOnUrlChangedCallback)
         .Func("setOnLoadFinishedCallback", &CWebBrowser::setOnLoadFinishedCallback)
         .Func("setOnTimerCallback", &CWebBrowser::setOnTimerCallback)
-        .Func("setOnFileInputFilledCallback", &CWebBrowser::setOnFileInputFilledCallback)
+        //.Func("setOnFileInputFilledCallback", &CWebBrowser::setOnFileInputFilledCallback)
         .Func("setOnNavigateErrorCallback", &CWebBrowser::setOnNavigateErrorCallback)
     );
 }

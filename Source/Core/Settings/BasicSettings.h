@@ -51,6 +51,7 @@ public:
     std::string SettingsFolder;
 
     ConnectionSettingsStruct ConnectionSettings;
+    std::string DeviceId;
 
     ServerSettingsStruct* getServerSettings(const ServerProfile& profile, bool create = false);
 protected:

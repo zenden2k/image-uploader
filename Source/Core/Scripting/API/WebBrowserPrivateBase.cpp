@@ -3,7 +3,7 @@
 
 namespace ScriptAPI {
 
-WebBrowserPrivateBase::WebBrowserPrivateBase()
+WebBrowserPrivateBase::WebBrowserPrivateBase() : timerInterval_(0)
 {
     AddBrowserToVM(GetCurrentThreadVM(), this);
 }
