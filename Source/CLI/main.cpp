@@ -89,7 +89,7 @@ std::string proxyPassword;
 
 bool useSystemProxy = false;
 
-CUploadEngineList list;
+std::shared_ptr<CUploadEngineList> list;
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
@@ -178,7 +178,7 @@ void PrintHelp() {
 
 void PrintServerList()
 {
-    for (const auto& ued : list) {
+    for (const auto& ued : *list) {
         if (!ued.hasType(CUploadEngineData::TypeImageServer) && !ued.hasType(CUploadEngineData::TypeFileServer)) {
 		   continue;
         }
@@ -365,12 +365,12 @@ bool parseCommandLine(int argc, char *argv[])
 }
 
 CUploadEngineData* getServerByName(const std::string& name) {
-    CUploadEngineData*   uploadEngineData = list.byName(serverName);
+    CUploadEngineData*   uploadEngineData = list->byName(serverName);
     if(!uploadEngineData) {
-        for(int i=0; i<list.count(); i++)
+        for(int i=0; i<list->count(); i++)
         {
-            if((IuStringUtils::toLower(list.byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
-                return list.byIndex(i);
+            if((IuStringUtils::toLower(list->byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
+                return list->byIndex(i);
         }
     }
     return uploadEngineData;
@@ -478,25 +478,24 @@ void OnQueueFinished(CFileQueueUploader*) {
 }
 int func() {
 	int res = 0;
-    ConsoleUploadErrorHandler uploadErrorHandler;
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
-    serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
+    serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
     ConsoleScriptDialogProvider dialogProvider;
 
     serviceLocator->setDialogProvider(&dialogProvider);
     serviceLocator->setTranslator(&translator);
 
-    Settings.setEngineList(&list);
-    ServiceLocator::instance()->setEngineList(&list);
+    Settings.setEngineList(list.get());
+    ServiceLocator::instance()->setEngineList(list.get());
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     auto scriptsManager = std::make_shared<ScriptsManager>(networkClientFactory);
     std::shared_ptr<UploadEngineManager> uploadEngineManager;
-    uploadEngineManager.reset(new UploadEngineManager(&list, &uploadErrorHandler, networkClientFactory));
+    uploadEngineManager = std::make_shared<UploadEngineManager>(list, uploadErrorHandler, networkClientFactory);
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
-    std::unique_ptr<UploadManager> uploadManager;
-    uploadManager.reset(new UploadManager(uploadEngineManager, &list, scriptsManager, &uploadErrorHandler, networkClientFactory, 1));
+    std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager, list, scriptsManager, uploadErrorHandler, networkClientFactory, 1);
 
 
     if (useSystemProxy) {
@@ -521,8 +520,10 @@ int func() {
             return 0;
         }
     } else {
-        int index = list.getRandomImageServer();
-        uploadEngineData = list.byIndex(index);
+        std::cerr << "Server not set " << std::endl;
+        return -1;
+        //int index = list.getRandomImageServer();
+        //uploadEngineData = list.byIndex(index);
     }
 
     if (uploadEngineData->NeedAuthorization == CUploadEngineData::naObligatory && login.empty())
@@ -670,13 +671,13 @@ int main(int argc, char *argv[]){
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
     AppParams::instance()->setVersionInfo(appVersion);
-
-    ConsoleLogger defaultLogger;
+    list = std::make_shared<CUploadEngineList>();
+    std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
     
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setSettings(&Settings);
-    serviceLocator->setLogger(&defaultLogger);
-    MyLogSink logSink(&defaultLogger);
+    serviceLocator->setLogger(defaultLogger);
+    MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
 
     int res  = 0;
@@ -719,11 +720,11 @@ int main(int argc, char *argv[]){
     params->setTempDirectory("/var/tmp/");
 #endif
     PrintWelcomeMessage();
-    if(! list.loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
+    if(! list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list!"<<std::endl;
     }
 
-    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list.loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
+    if( IuCoreUtils::FileExists(dataFolder + "userservers.xml") && !list->loadFromFile(dataFolder + "userservers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list userservers.xml!"<<std::endl;
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");

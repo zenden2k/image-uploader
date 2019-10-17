@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget *parent = 0);
+    explicit MainWindow(std::shared_ptr<CUploadEngineList>, LogWindow* logWindow, QWidget *parent = 0);
     ~MainWindow();
 
     bool eventFilter(QObject *, QEvent *);

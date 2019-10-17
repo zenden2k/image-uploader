@@ -27,17 +27,17 @@
 #include "Core/OutputCodeGenerator.h"
 
 
-MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
+MainWindow::MainWindow(std::shared_ptr<CUploadEngineList> engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
-    ServiceLocator::instance()->setEngineList(engineList);
-    engineList_ = engineList;
+    ServiceLocator::instance()->setEngineList(engineList.get());
+    engineList_ = engineList.get();
 
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory);
-    IUploadErrorHandler* uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
+    auto uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
     uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_, engineList, scriptsManager_, uploadErrorHandler,
                                        networkClientFactory, 3);

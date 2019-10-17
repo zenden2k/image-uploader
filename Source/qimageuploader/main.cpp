@@ -82,12 +82,12 @@ int main(int argc, char *argv[])
 	QApplication a(argc, argv);
     LogWindow logWindow;
 	logWindow.show();
-	QtDefaultLogger logger(&logWindow);
-	QtUploadErrorHandler errorHandler(&logger);
+	auto logger = std::make_shared<QtDefaultLogger>(&logWindow);
+	auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get());
 	QtScriptDialogProvider dlgProvider;
 	ServiceLocator::instance()->setTranslator(&translator);
-	ServiceLocator::instance()->setUploadErrorHandler(&errorHandler);
-	ServiceLocator::instance()->setLogger(&logger);
+	ServiceLocator::instance()->setUploadErrorHandler(errorHandler);
+	ServiceLocator::instance()->setLogger(logger);
 	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
     QString appDirectory = QCoreApplication::applicationDirPath();
     QString settingsFolder;
@@ -123,18 +123,18 @@ settingsDir.mkpath(settingsFolder);
     }
 
 	Settings.LoadSettings(AppParams::instance()->settingsDirectory());
-	CUploadEngineList engineList;
-	if (!engineList.loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
+	auto engineList = std::make_shared<CUploadEngineList>();
+	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
 	}
     //google::AddLogSink(&logSink);
     //serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     //serviceLocator->setLogger(&defaultLogger);
 
-	Settings.setEngineList(&engineList);
+	Settings.setEngineList(engineList.get());
 	
     //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w(&engineList, &logWindow);
+    MainWindow w(engineList, &logWindow);
     w.show();
     
     int res =  a.exec();
