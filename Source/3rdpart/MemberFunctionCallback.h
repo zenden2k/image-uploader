@@ -6,7 +6,7 @@ Source: http://p-nand-q.com/programming/cplusplus/using_member_functions_with_c_
 */
 #pragma once
 #include <windows.h>
-#include "Core/3rdpart/fastdelegate.h"
+#include "Core/3rdpart/FastDelegate.h"
 
 typedef LRESULT (CALLBACK *LPFN_CBTHookCallback)(int nCode, WPARAM wParam, LPARAM lParam);
 
