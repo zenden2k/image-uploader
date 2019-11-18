@@ -82,7 +82,7 @@ bool IsMediaInfoInstalled()
 	return !MediaInfoDllPath.IsEmpty();
 }
 
-bool AreOnlyImages(CAtlArray<CString> & files)
+bool AreOnlyImages(const CAtlArray<CString> & files)
 {
 	if(files.GetCount()>1000) return false;
 
@@ -100,9 +100,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
-		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.HIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedHIconToBitmapPARGB32(ico): HBMMENU_CALLBACK;
 	} else {
-        MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, resid) : HBMMENU_CALLBACK;
+        MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(resid) : HBMMENU_CALLBACK;
 	}
 	
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
@@ -175,7 +175,7 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 			int iconID=0;
 
 			std::map<int, Shell_ContextMenuItem>::iterator it;
-			for(it=m_nCommands.begin(); it!=m_nCommands.end();it++)
+			for(it=m_nCommands.begin(); it!=m_nCommands.end();++it)
 			{
 				if(it->second.id == lpdis->itemID) 
 				{ 
@@ -190,7 +190,7 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 				h = 32;
 			}
 			if(iconID) {
-				hIcon = (HICON)LoadImage(hDllInstance, MAKEINTRESOURCE(iconID), IMAGE_ICON, w, h, LR_DEFAULTCOLOR);//m_nCommands[ LOWORD( lpdis->itemID )].icon;//(HICON)LoadImage(g_hResInst, resource, IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+				hIcon = (HICON)LoadImage(hDllInstance, MAKEINTRESOURCE(iconID), IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
 			}
 			else hIcon = NULL;
 			if (hIcon == NULL)
@@ -300,11 +300,11 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 			}
 				CString title = Reg2.ReadString(_T("Name"));
 				CString iconFileName = Reg2.ReadString(_T("Icon"));
-				CIcon ico;
+				HICON ico = nullptr;
 				if ( !iconFileName.IsEmpty() ) {
-					ico = (HICON)LoadImage(0,dataFolder +L"\\Favicons\\"+iconFileName,IMAGE_ICON	,w,h,LR_LOADFROMFILE);
+                    ico = GetCachedServerIcon(dataFolder + L"\\Favicons\\" + iconFileName, w, h);
 				}
-				MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_SERVER_PROFILE,title,idCmdFirst,keyNames[i],UseBitmaps,0,ico.IsNull() ? IDI_ICONUPLOAD : 0, ico.IsNull() ? 0 : ico);
+				MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_SERVER_PROFILE,title,idCmdFirst,keyNames[i],UseBitmaps,0, ico ? 0: IDI_ICONUPLOAD, ico ? ico : nullptr);
 		}
 	}
 
@@ -337,7 +337,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		InternalMenuItem.text = MenuItem.dwTypeData;
 		
 		InternalMenuItem.icon= IDI_ICONMAIN;
-		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, IDI_ICONMAIN): HBMMENU_CALLBACK;
+		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(IDI_ICONMAIN): HBMMENU_CALLBACK;
 		
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
@@ -464,6 +464,20 @@ CIShellContextMenu::CIShellContextMenu()
 	m_bMediaInfoInstalled = IsMediaInfoInstalled();
 }
 
+CIShellContextMenu::~CIShellContextMenu() {
+    for (auto& it: cachedServerIcons_) {
+        DestroyIcon(it.second.icon);
+    }
+
+    for (auto& it: cachedBitmaps_) {
+        DeleteObject(it.second);
+    }
+
+    for (auto& it : cachedIconBitmaps_) {
+        DeleteObject(it.second);
+    }
+}
+
 HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID)
 {
 	FORMATETC fmt = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -512,6 +526,45 @@ HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT da
 
 
 	return hr;
+}
+
+HICON CIShellContextMenu::GetCachedServerIcon(const CString& fileName, int w, int h) {
+    auto it = cachedServerIcons_.find(fileName);
+    if (it != cachedServerIcons_.end()) {
+        if (it->second.icon && (it->second.w != w || it->second.h !=h)) {
+            DestroyIcon(it->second.icon);
+            cachedServerIcons_.erase(it);
+        } else {
+            return it->second.icon;
+        }
+    }
+    auto icon = reinterpret_cast<HICON>(LoadImage(nullptr, fileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
+    IconCacheItem& iconCacheItem = cachedServerIcons_[fileName];
+    iconCacheItem.icon = icon;
+    iconCacheItem.w = w;
+    iconCacheItem.h = h;
+    return icon;
+}
+
+HBITMAP CIShellContextMenu::GetCachedIconToBitmapPARGB32(UINT uIcon) {
+    auto it = cachedBitmaps_.find(uIcon);
+    if (it != cachedBitmaps_.end()) {
+        return it->second;
+    }
+    HBITMAP bmp = m_IconBitmapUtils.IconToBitmapPARGB32(hDllInstance, uIcon);
+    cachedBitmaps_[uIcon] = bmp;
+    return bmp;
+}
+
+HBITMAP CIShellContextMenu::GetCachedHIconToBitmapPARGB32(HICON hIcon) {
+    auto it = cachedIconBitmaps_.find(hIcon);
+    if (it != cachedIconBitmaps_.end()) {
+        return it->second;
+    }
+    HBITMAP bmp = m_IconBitmapUtils.HIconToBitmapPARGB32(hIcon);
+    cachedIconBitmaps_[hIcon] = bmp;
+    return bmp;
+
 }
 
 

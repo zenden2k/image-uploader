@@ -58,10 +58,18 @@ class ATL_NO_VTABLE CIShellContextMenu :
     public IDispatchImpl<IIShellContextMenu, &IID_IIShellContextMenu, &LIBID_ExplorerIntegrationLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
     {
         public:
+        struct IconCacheItem {
+            HICON icon;
+            int w;
+            int h;
+        };
         CAtlArray<CString> m_FileList;
         std::map<int, Shell_ContextMenuItem> m_nCommands;
-        std::map<UINT, HBITMAP>        bitmaps;
+        std::map<UINT, HBITMAP> cachedBitmaps_;
+        std::map<HICON, HBITMAP> cachedIconBitmaps_;
+        std::map<CString, IconCacheItem> cachedServerIcons_;
         CIShellContextMenu();
+        ~CIShellContextMenu();
 
         DECLARE_REGISTRY_RESOURCEID(IDR_ISHELLCONTEXTMENU)
 
@@ -99,6 +107,11 @@ class ATL_NO_VTABLE CIShellContextMenu :
         STDMETHOD(InvokeCommand)(LPCMINVOKECOMMANDINFO lpici);
         STDMETHOD(GetCommandString)(UINT_PTR idCmd, UINT uType, UINT *pwReserved, LPSTR pszName, UINT cchMax);
           STDMETHOD(Initialize)(LPCITEMIDLIST pidlFolder, LPDATAOBJECT dataObject, HKEY hkeyProgID);
+
+protected:
+     HICON GetCachedServerIcon(const CString& fileName, int w, int h);
+     HBITMAP GetCachedIconToBitmapPARGB32(UINT uIcon);
+     HBITMAP GetCachedHIconToBitmapPARGB32(HICON hIcon);
 };
 
 OBJECT_ENTRY_AUTO(__uuidof(IShellContextMenu), CIShellContextMenu)
