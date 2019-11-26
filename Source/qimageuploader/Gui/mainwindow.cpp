@@ -27,19 +27,18 @@
 #include "Core/OutputCodeGenerator.h"
 
 
-MainWindow::MainWindow(std::shared_ptr<CUploadEngineList> engineList, LogWindow* logWindow, QWidget* parent) :
+MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
-    ServiceLocator::instance()->setEngineList(engineList.get());
-    engineList_ = engineList.get();
+    engineList_ = engineList;
 
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory);
+    scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
-    uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
-    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_, engineList, scriptsManager_, uploadErrorHandler,
+    uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
+    uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
                                        networkClientFactory, 3);
 
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";

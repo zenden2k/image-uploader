@@ -123,10 +123,11 @@ settingsDir.mkpath(settingsFolder);
     }
 
 	Settings.LoadSettings(AppParams::instance()->settingsDirectory());
-	auto engineList = std::make_shared<CUploadEngineList>();
+	auto engineList = std::make_unique<CUploadEngineList>();
 	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
 	}
+    ServiceLocator::instance()->setEngineList(engineList.get());
     //google::AddLogSink(&logSink);
     //serviceLocator->setUploadErrorHandler(&uploadErrorHandler);
     //serviceLocator->setLogger(&defaultLogger);
@@ -134,7 +135,7 @@ settingsDir.mkpath(settingsFolder);
 	Settings.setEngineList(engineList.get());
 	
     //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w(engineList, &logWindow);
+    MainWindow w(engineList.get(), &logWindow);
     w.show();
     
     int res =  a.exec();

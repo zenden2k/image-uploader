@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit MainWindow(std::shared_ptr<CUploadEngineList>, LogWindow* logWindow, QWidget *parent = 0);
+    explicit MainWindow(CUploadEngineList*, LogWindow* logWindow, QWidget *parent = 0);
     ~MainWindow();
 
     bool eventFilter(QObject *, QEvent *);
@@ -43,8 +43,8 @@ private:
     std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;
     std::unique_ptr<UploadManager> uploadManager_;
-    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
-    std::shared_ptr<ScriptsManager> scriptsManager_;
+    std::unique_ptr<UploadEngineManager> uploadEngineManager_;
+    std::unique_ptr<ScriptsManager> scriptsManager_;
 	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;
