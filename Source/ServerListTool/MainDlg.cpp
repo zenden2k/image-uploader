@@ -25,7 +25,7 @@ struct TaskDispatcherMessageStruct {
     bool async;
 };
 
-CMainDlg::CMainDlg(ServersCheckerSettings* settings, std::shared_ptr<UploadEngineManager> uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
+CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
                     std::shared_ptr<INetworkClientFactory> factory) :
                     settings_(settings),
                     model_(engineList), m_ListView(&model_), networkClientFactory_(std::move(factory))

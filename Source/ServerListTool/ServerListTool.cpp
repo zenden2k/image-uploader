@@ -45,12 +45,12 @@ class ServersCheckerApplication {
     CLang lang_;
     ServersCheckerSettings settings_;
     std::unique_ptr<MyLogSink> myLogSink_;
-    std::shared_ptr<ScriptsManager> scriptsManager_;
-    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
-    std::shared_ptr<UploadManager> uploadManager_;
+    std::unique_ptr<ScriptsManager> scriptsManager_;
+    std::unique_ptr<UploadEngineManager> uploadEngineManager_;
+    std::unique_ptr<UploadManager> uploadManager_;
     std::shared_ptr<DefaultLogger> logger_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
-    std::shared_ptr<CMyEngineList> engineList_;
+    std::unique_ptr<CMyEngineList> engineList_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
 
     CString commonTempFolder_, tempFolder_;
@@ -104,11 +104,11 @@ public:
         auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
         serviceLocator->setUploadErrorHandler(uploadErrorHandler);
         networkClientFactory_ = std::make_shared<NetworkClientFactory>();
-        scriptsManager_ = std::make_shared<ScriptsManager>(networkClientFactory_);
-        engineList_ = std::make_shared<CMyEngineList>();
-        uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList_, uploadErrorHandler, networkClientFactory_);
+        scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory_);
+        engineList_ = std::make_unique<CMyEngineList>();
+        uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList_.get(), uploadErrorHandler, networkClientFactory_);
         uploadEngineManager_->setScriptsDirectory(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Scripts\\")));
-        uploadManager_ = std::make_shared<UploadManager>(uploadEngineManager_, engineList_, scriptsManager_, uploadErrorHandler, networkClientFactory_, 5);
+        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList_.get(), scriptsManager_.get(), uploadErrorHandler, networkClientFactory_, 5);
         serviceLocator->setUploadManager(uploadManager_.get());
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
@@ -129,7 +129,7 @@ public:
 
         settings_.setEngineList(engineList_.get());
 
-        CMainDlg dlgMain(&settings_, uploadEngineManager_, uploadManager_.get(), engineList_.get(), networkClientFactory_);
+        CMainDlg dlgMain(&settings_, uploadEngineManager_.get(), uploadManager_.get(), engineList_.get(), networkClientFactory_);
         int nret = dlgMain.DoModal(0);
         return nret;
     }

@@ -89,7 +89,7 @@ std::string proxyPassword;
 
 bool useSystemProxy = false;
 
-std::shared_ptr<CUploadEngineList> list;
+std::unique_ptr<CUploadEngineList> list;
 
 ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
 ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
@@ -490,12 +490,12 @@ int func() {
     Settings.setEngineList(list.get());
     ServiceLocator::instance()->setEngineList(list.get());
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
-    auto scriptsManager = std::make_shared<ScriptsManager>(networkClientFactory);
-    std::shared_ptr<UploadEngineManager> uploadEngineManager;
-    uploadEngineManager = std::make_shared<UploadEngineManager>(list, uploadErrorHandler, networkClientFactory);
+    auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
+    std::unique_ptr<UploadEngineManager> uploadEngineManager;
+    uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
     std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
     uploadEngineManager->setScriptsDirectory(scriptsDirectory);
-    std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager, list, scriptsManager, uploadErrorHandler, networkClientFactory, 1);
+    std::shared_ptr<UploadManager> uploadManager = std::make_shared<UploadManager>(uploadEngineManager.get(), list.get(), scriptsManager.get(), uploadErrorHandler, networkClientFactory, 1);
 
 
     if (useSystemProxy) {
@@ -671,7 +671,7 @@ int main(int argc, char *argv[]){
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
     AppParams::instance()->setVersionInfo(appVersion);
-    list = std::make_shared<CUploadEngineList>();
+    list = std::make_unique<CUploadEngineList>();
     std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
     
     ServiceLocator* serviceLocator = ServiceLocator::instance();
