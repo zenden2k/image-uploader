@@ -25,6 +25,8 @@ limitations under the License.
 #include "Core/Logging.h"
 #include "Core/ThreadSync.h"
 
+std::mutex Sqrat::SqratVM::vmMutex;
+
 Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
     m_CreationTime = time(nullptr);

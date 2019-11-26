@@ -97,8 +97,8 @@ public:
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
 
-    CFloatingWindow(CWizardDlg* wizardDlg, std::shared_ptr<UploadManager> uploadManager, 
-        std::shared_ptr<UploadEngineManager> uploadEngineManager);
+    CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadManager, 
+        UploadEngineManager* uploadEngineManager);
     ~CFloatingWindow();
 
     DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -217,8 +217,8 @@ public:
      
      // Text displayed in tray icon tooltip
      CString statusText_;
-     std::shared_ptr<UploadManager> uploadManager_;
-     std::shared_ptr<UploadEngineManager> uploadEngineManager_;
+     UploadManager* uploadManager_;
+     UploadEngineManager* uploadEngineManager_;
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(const CString& url);

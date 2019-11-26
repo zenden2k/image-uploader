@@ -33,9 +33,9 @@ limitations under the License.
 #include "MegaNzUploadEngine.h"
 #endif
 
-UploadEngineManager::UploadEngineManager(std::shared_ptr<CUploadEngineList> uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
+UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
     std::shared_ptr<INetworkClientFactory> factory) : 
-        uploadEngineList_(std::move(uploadEngineList)),
+        uploadEngineList_(uploadEngineList),
         uploadErrorHandler_(std::move(uploadErrorHandler)), 
         networkClientFactory_(std::move(factory)) 
 {

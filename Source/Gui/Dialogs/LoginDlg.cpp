@@ -173,14 +173,14 @@ CString CLoginDlg::accountName() const
 
 void CLoginDlg::startAuthentication(AuthActionType actionType)
 {
-    auto Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
         CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
-        if ( !ignoreExistingAccount_ && createNew_ && Settings->ServersSettings[serverNameA].find(li.Login ) != Settings->ServersSettings[serverNameA].end() ) {
+        if ( !ignoreExistingAccount_ && createNew_ && settings->ServersSettings[serverNameA].find(li.Login ) != settings->ServersSettings[serverNameA].end() ) {
             LocalizedMessageBox(TR("Account with such name already exists."),TR("Error"), MB_ICONERROR);
             OnProcessFinished();
             return;
@@ -197,7 +197,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         li.Password = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
         li.DoAuth = true;
 
-        ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_, true);
+        ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_, true);
 
         if (serverSettings) {
             serverSettings->authData = li;

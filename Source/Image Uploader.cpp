@@ -57,12 +57,12 @@ class Application {
     WtlGuiSettings settings_;
     CLang lang_;
     std::shared_ptr<CFloatingWindow> floatWnd_;
-    std::shared_ptr<ScriptsManager> scriptsManager_;
+    std::unique_ptr<ScriptsManager> scriptsManager_;
     std::shared_ptr<DefaultLogger> logger_;
     std::unique_ptr<MyLogSink> myLogSink_;
-    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
-    std::shared_ptr<UploadManager> uploadManager_;
-    std::shared_ptr<CMyEngineList> engineList_;
+    std::unique_ptr<UploadEngineManager> uploadEngineManager_;
+    std::unique_ptr<UploadManager> uploadManager_;
+    std::unique_ptr<CMyEngineList> engineList_;
     std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
     std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
@@ -77,6 +77,7 @@ public:
 
     ~Application() {
         CScriptUploadEngine::DestroyScriptEngine();
+        //ServiceLocator::instance()->setUploadManager(nullptr);
         logWindow_.DestroyWindow();
         // Remove temporary files
         IuCommonFunctions::ClearTempFolder(tempFolder_);
@@ -128,13 +129,13 @@ public:
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
         serviceLocator->setTranslator(&lang_);
-        scriptsManager_ = std::make_shared<ScriptsManager>(serviceLocator->networkClientFactory());
-        engineList_ = std::make_shared<CMyEngineList>();
+        scriptsManager_ = std::make_unique<ScriptsManager>(serviceLocator->networkClientFactory());
+        engineList_ = std::make_unique<CMyEngineList>();
         serviceLocator->setEngineList(engineList_.get());
         serviceLocator->setMyEngineList(engineList_.get());
         settings_.setEngineList(engineList_.get());
-        uploadEngineManager_ = std::make_shared<UploadEngineManager>(engineList_, uploadErrorHandler, serviceLocator->networkClientFactory());
-        uploadManager_ = std::make_shared<UploadManager>(uploadEngineManager_, engineList_, scriptsManager_,
+        uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList_.get(), uploadErrorHandler, serviceLocator->networkClientFactory());
+        uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList_.get(), scriptsManager_.get(),
             uploadErrorHandler, serviceLocator->networkClientFactory(), settings_.MaxThreads);
         serviceLocator->setUploadManager(uploadManager_.get());
 
@@ -213,12 +214,12 @@ public:
         CMessageLoop theLoop;
         _Module.AddMessageLoop(&theLoop);
         
-        CWizardDlg  dlgMain(logger_, engineList_, uploadEngineManager_, uploadManager_, scriptsManager_, &settings_);
+        CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
         auto serviceLocator = ServiceLocator::instance();
         serviceLocator->setProgramWindow(&dlgMain);
         serviceLocator->setTaskDispatcher(&dlgMain);
 
-        floatWnd_ = std::make_shared<CFloatingWindow>(&dlgMain, uploadManager_, uploadEngineManager_);
+        floatWnd_ = std::make_shared<CFloatingWindow>(&dlgMain, uploadManager_.get(), uploadEngineManager_.get());
         dlgMain.setFloatWnd(floatWnd_);
         settings_.setFloatWnd(floatWnd_.get());
 

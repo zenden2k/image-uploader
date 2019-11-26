@@ -43,12 +43,12 @@ void SearchByImage::finish(bool success, const std::string& msg) {
     isRunning_ = false;
 }
 
-std::unique_ptr<SearchByImage> SearchByImage::createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, 
+std::unique_ptr<SearchByImage> SearchByImage::createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory,UploadManager* uploadManager,
     SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName) {
     if (se == seGoogle) {
         return std::make_unique<SearchGoogleImages>(networkClientFactory, fileName);
     } else if (se == seYandex) {
-        return std::make_unique<SearchYandexImages>(fileName, temporaryServer);
+        return std::make_unique<SearchYandexImages>(uploadManager, fileName, temporaryServer);
     }
     return nullptr;
 }

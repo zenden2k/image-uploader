@@ -59,10 +59,10 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = n
 }
 
 // FloatingWindow
-CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, std::shared_ptr<UploadManager> uploadManager,
-    std::shared_ptr<UploadEngineManager> uploadEngineManager): 
-    uploadManager_(std::move(uploadManager)),
-    uploadEngineManager_(std::move(uploadEngineManager)),
+CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadManager,
+    UploadEngineManager* uploadEngineManager): 
+    uploadManager_(uploadManager),
+    uploadEngineManager_(uploadEngineManager),
     wizardDlg_(wizardDlg)
 {
     m_bFromHotkey = false;
@@ -202,7 +202,7 @@ LRESULT CFloatingWindow::OnMenuSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl
         return 0;
     }
     HWND hParent  = wizardDlg_->m_hWnd; // wizardDlg_->IsWindowEnabled()?  : 0;
-    CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_.get());
+    CSettingsDlg dlg(CSettingsDlg::spTrayIcon, uploadEngineManager_);
     dlg.DoModal(hParent);
     return 0;
 }

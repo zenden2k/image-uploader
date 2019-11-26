@@ -19,7 +19,7 @@ class ServerProfile;
 class UploadEngineManager
 {
 public:
-    UploadEngineManager(std::shared_ptr<CUploadEngineList> uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> factory);
+    UploadEngineManager(CUploadEngineList* uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> factory);
     ~UploadEngineManager();
 
     /**
@@ -60,7 +60,7 @@ protected:
     std::map<std::thread::id, std::map< std::string, CAbstractUploadEngine*>> m_plugins;
     std::mutex pluginsMutex_;
     std::string scriptsDirectory_;
-    std::shared_ptr<CUploadEngineList> uploadEngineList_;
+    CUploadEngineList* uploadEngineList_;
     typedef std::pair<std::string, std::string> ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;

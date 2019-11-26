@@ -23,9 +23,13 @@ class CMyEngineList;
 class CLogWindow;
 class UrlShorteningFilter;
 
-class ServiceLocator : public Singleton<ServiceLocator> {
-public:
+class ServiceLocator {
     ServiceLocator();
+public:
+    ServiceLocator(ServiceLocator const&) = delete;
+    void operator=(ServiceLocator const&) = delete;
+    ~ServiceLocator() = default;
+
     std::shared_ptr<ILogger> logger();
     void setLogger(std::shared_ptr<ILogger> logger);
     ITranslator* translator();
@@ -36,7 +40,7 @@ public:
     void setUploadErrorHandler(std::shared_ptr<IUploadErrorHandler> errorHandler);
     ITaskDispatcher* taskDispatcher();
     void setTaskDispatcher(ITaskDispatcher* dispatcher);
-    UploadManager* uploadManager();
+    UploadManager* uploadManager() const;
     void setUploadManager(UploadManager* manager);
     void setMyEngineList(CMyEngineList* list);
     CMyEngineList* myEngineList() const;
@@ -61,6 +65,7 @@ public:
 
     void setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory);
     std::shared_ptr<INetworkClientFactory> networkClientFactory() const;
+    static ServiceLocator* instance();
 
 protected:
     std::shared_ptr<ServiceLocatorPrivate> d_ptr; // unique_ptr won't compile with incomplete type

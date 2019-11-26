@@ -96,12 +96,12 @@ public:
     struct AddImageStruct
     {
         CString RealFileName, VirtualFileName;
-        bool show;
+        bool show; 
     };
 
-    CWizardDlg(std::shared_ptr<DefaultLogger> logger, std::shared_ptr<CMyEngineList> enginelist, 
-        std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<UploadManager> uploadManager, 
-        std::shared_ptr<ScriptsManager> scriptsManager, WtlGuiSettings* settings);
+    CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
+        UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
+        ScriptsManager* scriptsManager, WtlGuiSettings* settings);
     virtual ~CWizardDlg();
 
     void setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd);
@@ -283,9 +283,9 @@ protected:
     CHotkeyList m_hotkeys;
     CFolderAdd FolderAdd;
    
-    std::shared_ptr<UploadManager> uploadManager_;
-    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
-    std::shared_ptr<ScriptsManager> scriptsManager_;
+    UploadManager* uploadManager_;
+    UploadEngineManager* uploadEngineManager_;
+    ScriptsManager* scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
     HwndScopedWrapper aboutButtonToolTip_;
     CIconButton helpButton_;
@@ -323,7 +323,7 @@ protected:
     CWizardPage* Pages[5];
     int screenshotIndex;
     CString m_bCurrentFunc;
-    std::shared_ptr<CMyEngineList> enginelist_;
+    CMyEngineList* enginelist_;
 };
 
 

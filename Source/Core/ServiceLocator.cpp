@@ -106,7 +106,7 @@ void ServiceLocator::setProgramWindow(IProgramWindow* window) {
 }
 
 
-UploadManager* ServiceLocator::uploadManager() {
+UploadManager* ServiceLocator::uploadManager() const {
     return d_ptr->uploadManager_;
 }
 
@@ -152,4 +152,9 @@ void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFacto
 
 std::shared_ptr<INetworkClientFactory> ServiceLocator::networkClientFactory() const {
     return d_ptr->networkClientFactory_;
+}
+
+ServiceLocator* ServiceLocator::instance() {
+    static ServiceLocator inst;
+    return &inst;
 }

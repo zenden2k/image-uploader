@@ -807,7 +807,8 @@ LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
     }
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        CSearchByImageDlg dlg(se, fileName);
+        auto uploadManager = ServiceLocator::instance()->uploadManager();
+        CSearchByImageDlg dlg(uploadManager, se, fileName);
         dlg.DoModal(m_hWnd);
     }
     return 0;

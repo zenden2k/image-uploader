@@ -130,7 +130,7 @@ Json::Value* translationRoot = 0;
 
 void CleanUpFunctions() {
     delete translationRoot;
-    translationRoot = 0;
+    translationRoot = nullptr;
 }
 
 bool LoadScriptTranslation() {

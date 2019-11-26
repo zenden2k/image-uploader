@@ -13,9 +13,10 @@
 #include "ServiceLocator.h"
 
 
-SearchYandexImages::SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer) 
+SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer)
     :SearchByImage(fileName),
-    temporaryServer_(temporaryServer) 
+    temporaryServer_(temporaryServer),
+    uploadManager_(uploadManager)
 {
     uploadFinished_ = false;
     uploadOk_ = false;
@@ -69,8 +70,6 @@ void SearchYandexImages::stop() {
 */
 
 void SearchYandexImages::run() {
-    UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
-    assert(uploadManager != nullptr);
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
     std::shared_ptr<UploadSession> uploadSession(new UploadSession(false));
@@ -79,7 +78,7 @@ void SearchYandexImages::run() {
 
     currentUploadTask_.reset(task);
     uploadSession->addTask(currentUploadTask_);
-    uploadManager->addSession(uploadSession);
+    uploadManager_->addSession(uploadSession);
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(uploadFinishSignalMutex_);

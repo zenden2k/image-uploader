@@ -29,7 +29,9 @@
 #include "Core/Settings/CommonGuiSettings.h"
 // CSearchByImageDlg
 
-CSearchByImageDlg::CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName) {
+CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName):
+    uploadManager_(uploadManager)
+{
     fileName_ = fileName;
     cancelPressed_ = false;
     searchEngine_ = searchEngine;
@@ -56,7 +58,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     CommonGuiSettings& Settings = *ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
-    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), searchEngine_, Settings.temporaryServer, W2U(fileName_));
+    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), uploadManager_, searchEngine_, Settings.temporaryServer, W2U(fileName_));
     seeker_->setOnFinished(std::bind(&CSearchByImageDlg::onSeekerFinished, this, _1, _2));
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     seeker_->start();

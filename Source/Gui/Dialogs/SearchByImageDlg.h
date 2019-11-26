@@ -34,7 +34,7 @@ class CSearchByImageDlg :
     public CCustomDialogIndirectImpl<CSearchByImageDlg>
 {
     public:
-        explicit CSearchByImageDlg(SearchByImage::SearchEngine searchEngine, CString fileName);
+        explicit CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName);
         ~CSearchByImageDlg();
         enum { IDD = IDD_SEARCHBYIMAGEDLG};
 
@@ -55,6 +55,7 @@ private:
     bool cancelPressed_;
     CPictureExWnd wndAnimation_;
     SearchByImage::SearchEngine searchEngine_;
+    UploadManager* uploadManager_;
     void onSeekerFinished(bool success, const std::string& msg);
 };
 

@@ -61,8 +61,8 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
     return false;
 }
 
-FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, std::shared_ptr<UploadEngineManager> uploadEngineManager, 
-    std::shared_ptr<ScriptsManager> scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads) {
+FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
+    ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads) {
     threadCount_ = maxThreads;
     stopSignal_ = false;
     isRunning_ = false;

@@ -1219,7 +1219,8 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
         LOG(ERROR) << "Unable to create temporary file";
         return 0;
     }
-    CSearchByImageDlg dlg(searchEngine_, fileName);
+    auto uploadManager = ServiceLocator::instance()->uploadManager();
+    CSearchByImageDlg dlg(uploadManager, searchEngine_, fileName);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         if (displayMode_ == wdmFullscreen &&  !shiftPressed) {
             EndDialog(drSearch);

@@ -4,16 +4,18 @@
 #include <string>
 #include <condition_variable>
 #include <mutex>
+#include <memory>
 
 #include "SearchByImage.h"
 #include "Core/Upload/ServerProfile.h"
 
 class UploadTask;
 class NetworkClient;
+class UploadManager;
 
 class SearchYandexImages: public SearchByImage  {
 public:
-    explicit SearchYandexImages(const std::string& fileName, const ServerProfile& temporaryServer);
+    explicit SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer);
     void stop() override;
 protected:
     void run() override;
@@ -26,6 +28,7 @@ protected:
     bool uploadFinished_;
     std::shared_ptr<UploadTask> currentUploadTask_;
     ServerProfile temporaryServer_;
+    UploadManager* uploadManager_;
 };
 
 #endif

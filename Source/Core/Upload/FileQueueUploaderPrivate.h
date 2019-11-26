@@ -43,7 +43,7 @@ public:
 };
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
-    FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<ScriptsManager> scriptsManager,
+    FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager,
         std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads
         );
     virtual ~FileQueueUploaderPrivate();
@@ -92,8 +92,8 @@ protected:
     void decrementThreadCount(const std::string& serverName);
     
     int startFromSession_;
-    std::shared_ptr<UploadEngineManager> uploadEngineManager_;
-    std::shared_ptr<ScriptsManager> scriptsManager_; 
+    UploadEngineManager* uploadEngineManager_;
+    ScriptsManager* scriptsManager_; 
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };

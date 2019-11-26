@@ -143,17 +143,17 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, std::shared_ptr<CMyEngineList> enginelist, 
-    std::shared_ptr<UploadEngineManager> uploadEngineManager, std::shared_ptr<UploadManager> uploadManager, 
-    std::shared_ptr<ScriptsManager> scriptsManager, WtlGuiSettings* settings):
+CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
+    UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
+    ScriptsManager* scriptsManager, WtlGuiSettings* settings):
     m_lRef(0), 
     FolderAdd(this), 
     Settings(*settings),
     logger_(std::move(logger)),
-    uploadManager_(std::move(uploadManager)),
-    uploadEngineManager_(std::move(uploadEngineManager)),
-    scriptsManager_(std::move(scriptsManager)),
-    enginelist_(std::move(enginelist))
+    uploadManager_(uploadManager),
+    uploadEngineManager_(uploadEngineManager),
+    scriptsManager_(scriptsManager),
+    enginelist_(enginelist)
 { 
     mainThreadId_ = GetCurrentThreadId();
     screenshotIndex = 1;
@@ -695,7 +695,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case 1:
             CVideoGrabberPage *tmp1;
-            tmp1 = new CVideoGrabberPage(uploadEngineManager_.get());
+            tmp1 = new CVideoGrabberPage(uploadEngineManager_);
             Pages[PageID]=tmp1;
             Pages[PageID]->WizardDlg=this;
             tmp1->Create(m_hWnd,rc);
@@ -711,7 +711,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case 3:
             CUploadSettings *tmp3;
-            tmp3 = new CUploadSettings(enginelist_.get(), uploadEngineManager_.get());
+            tmp3 = new CUploadSettings(enginelist_, uploadEngineManager_);
             Pages[PageID]=tmp3;
             Pages[PageID]->WizardDlg=this;
             tmp3->Create(m_hWnd,rc2);
@@ -719,7 +719,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             break;
         case 4:
             CUploadDlg *tmp4;
-            tmp4=new CUploadDlg(this, uploadManager_.get());
+            tmp4=new CUploadDlg(this, uploadManager_);
             Pages[PageID]=tmp4;
             Pages[PageID]->WizardDlg=this;
             tmp4->Create(m_hWnd, rc);
@@ -1787,7 +1787,7 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
 
 bool CWizardDlg::funcSettings()
 {
-    CSettingsDlg dlg(CSettingsDlg::spGeneral, uploadEngineManager_.get());
+    CSettingsDlg dlg(CSettingsDlg::spGeneral, uploadEngineManager_);
     //dlg.DoModal(m_hWnd);
     if(!IsWindowVisible())
         dlg.DoModal(0);
@@ -2208,13 +2208,13 @@ bool CWizardDlg::IsClipboardDataAvailable()
 }
 
 bool CWizardDlg::funcReuploadImages() {
-    CImageReuploaderDlg dlg(this, ServiceLocator::instance()->myEngineList(), uploadManager_.get(), uploadEngineManager_.get(), CString());
+    CImageReuploaderDlg dlg(this, ServiceLocator::instance()->myEngineList(), uploadManager_, uploadEngineManager_, CString());
     dlg.DoModal(m_hWnd);
     return false;
 }
 
 bool CWizardDlg::funcShortenUrl() {
-    CShortenUrlDlg dlg(this, uploadManager_.get(), uploadEngineManager_.get(), CString());
+    CShortenUrlDlg dlg(this, uploadManager_, uploadEngineManager_, CString());
     dlg.DoModal();
     return false;
 }
