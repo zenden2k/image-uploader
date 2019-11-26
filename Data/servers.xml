@@ -411,6 +411,16 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+     <Server Name="abcvg.org" MaxFileSize="10000000" Plugin="abcvg">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub"/>
+	</Server>
+    <Server Name="myfile.is"  Authorize="1" Debug="0" FileHost="1" Plugin="myfile.is" NeedPassword="0"> 
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub" />
+	</Server>
     <!--<Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
