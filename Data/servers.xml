@@ -144,9 +144,9 @@
 	</Server>
 	<Server Name="jpegshare.net">
 		<Actions>
-			<Action Type="upload" Url="http://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="Ссылка для просмотра:([\s\S]+)(https://jpegshare\.net/.+\.html)&quot;([\s\S]+)\[img\](.*?)\[" AssignVars="ViewUrl:1;Thumb:3;"/>
+			<Action Type="upload" Url="https://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="Ссылка для просмотра:([\s\S]+)(https://jpegshare\.net/.+\.html)&quot;([\s\S]+)\[img\](.*?)\[" AssignVars="ViewUrl:1;ImageUrl:3;"/>
 		</Actions>
-		<Result DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
+		<Result DownloadUrlTemplate="$(ViewUrl)" ImageUrlTemplate="$(ImageUrl)"/>
 	</Server>
 	<Server Name="load.to" FileHost="1" Debug="0">
 		<Actions>
