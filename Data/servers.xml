@@ -165,9 +165,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(DownloadUrl)"/>		
 	</Server>
-	<Server Name="tinypic.com" Plugin="tinypic">
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
-	</Server>
 	<Server Name="ipic.su">
 	<Actions>
 		<Action Type="upload" Url="http://ipic.su/api/index.php" PostParams="link=/;action=loadimg;origin=checked;quality=100;client=KISS075;tnsize=$(ThumbWidth);showall=1;image=%filename%" RegExp="(.+?)\r\n(.+?)\r\n(.+)" AssignVars="Line0:0;Line1:1;Line2:2;"/>
