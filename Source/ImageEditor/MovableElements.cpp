@@ -570,7 +570,9 @@ ImageEditor::ElementType Rectangle::getType() const
     return etRectangle;
 }
 
-Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(canvas, startX, startY, endX, endY)
+Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode mode) : 
+    Line(canvas, startX, startY, endX, endY),
+    mode_(mode)
 {
     isBackgroundColorUsed_ = false;
 }
@@ -578,27 +580,49 @@ Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY) : Line(ca
 void Arrow::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen(/* color_*/color_, static_cast<REAL>(penSize_) );
-    // Create two AdjustableArrowCap objects
-    AdjustableArrowCap cap1(/*penSize_/2*/3, /*penSize_/2*/3, true);
-    //AdjustableArrowCap cap2 = new AdjustableArrowCap(2, 1);
+    Gdiplus::Pen pen(/* color_*/color_, REAL(penSize_));
+    if (mode_ == ArrowMode::Mode1) {
+        AdjustableArrowCap cap1(5, 3, true);
+        cap1.SetBaseCap(LineCapTriangle);
+        cap1.SetStrokeJoin(LineJoinRound);
 
-    // Set cap properties
-    //cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
-    cap1.SetBaseCap(/*LineCapRound*/LineCapTriangle);
-    //cap1.SetMiddleInset(1);
-    //cap1.SetBaseInset(1);
-    cap1.SetStrokeJoin(/*LineJoinBevel*/LineJoinRound);
-    /*cap2.WidthScale = 3;
-    cap2.BaseCap = LineCap.Square;
-    cap2.Height = 1;*/
+        pen.SetStartCap(LineCapRound);
+        pen.SetCustomEndCap(&cap1);
 
+        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+    }
+    else {
+        pen.SetStartCap(LineCapRound);
+        pen.SetEndCap(LineCapRound);
+        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+        Gdiplus::Pen pen2(color_, REAL(penSize_));
 
-    // Set CustomStartCap and CustomEndCap properties
-    //blackPen.CustomStartCap = cap1;
-    pen.SetCustomEndCap(&cap1);
+        int head_length = penSize_ * 6;
+        int head_width = penSize_ * 4;
+        const auto dx = static_cast<float>(endPoint_.x - startPoint_.x);
+        const auto dy = static_cast<float>(endPoint_.y - startPoint_.y);
+        const auto length = std::sqrt(dx*dx + dy * dy);
+        if (head_length < 1 || length < head_length / 2.0) return;
+        // ux,uy is a unit vector parallel to the line.
+        const auto ux = dx / length;
+        const auto uy = dy / length;
 
-    gr->DrawLine( &pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y );
+        // vx,vy is a unit vector perpendicular to ux,uy
+        const auto vx = -uy;
+        const auto vy = ux;
+
+        const auto half_width = 0.5f * head_width;
+        Point p1{ (int)round(endPoint_.x - head_length * ux + half_width * vx),
+                 (int)round(endPoint_.y - head_length * uy + half_width * vy) };
+
+        Point p2{ (int)round(endPoint_.x - head_length * ux - half_width * vx),
+                (int)round(endPoint_.y - head_length * uy - half_width * vy) };
+
+        pen2.SetEndCap(LineCapRound);
+        pen2.SetStartCap(LineCapRound);
+        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p1.X, p1.Y);
+        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p2.X, p2.Y);
+    }
 }
 
 RECT Arrow::getPaintBoundingRect()

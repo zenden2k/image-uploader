@@ -135,13 +135,19 @@ public:
     DISALLOW_COPY_AND_ASSIGN(FilledRoundedRectangle);
 };
 
+
+
 class Arrow: public Line {
 public:
-    Arrow(Canvas* canvas,int startX, int startY, int endX,int endY);
+    enum class ArrowMode { Mode1, Mode2 };
+
+    Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode mode = ArrowMode::Mode1);
     void render(Painter* gr) override;
     RECT getPaintBoundingRect() override;
     ElementType getType() const override;
     DISALLOW_COPY_AND_ASSIGN(Arrow);
+protected:
+    ArrowMode mode_;
 };
 
 class Ellipse: public MovableElement {
