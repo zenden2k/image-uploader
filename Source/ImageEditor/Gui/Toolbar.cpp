@@ -236,6 +236,13 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
         fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
         fillBackgroundCheckbox_.SetFont(systemFont_);
+
+        RECT arrowTypeComboRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST, 0, ID_ARROWTYPECOMBOBOX);
+        arrowTypeCombobox_.SetFont(systemFont_);
+        arrowTypeCombobox_.AddString(TR("Arrow 1"));
+        arrowTypeCombobox_.AddString(TR("Arrow 2"));
     }
     return 0;
 }
@@ -593,6 +600,11 @@ int Toolbar::AutoSize()
         ScreenToClient(&penSizeSliderRect);
         pixelLabel_.SetWindowPos(0, penSizeSliderRect.right, static_cast<int>(buttonsRect_.bottom + 3 * dpiScaleY_), 0, 0, SWP_NOSIZE);
 
+        RECT pixelLabelRect_;
+        pixelLabel_.GetClientRect(&pixelLabelRect_);
+        pixelLabel_.ClientToScreen(&pixelLabelRect_);
+        ScreenToClient(&pixelLabelRect_);
+
         roundRadiusSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(150 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 1 * dpiScaleY_), 0, 0, SWP_NOSIZE| SWP_NOZORDER);
         roundRadiusSlider_.SetRange(1,Canvas::kMaxRoundingRadius);
         RECT radiusSliderRect;
@@ -629,6 +641,8 @@ int Toolbar::AutoSize()
 
         // Moving fill background checkbox
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
     }
 
@@ -844,13 +858,31 @@ void Toolbar::showFillBackgroundCheckbox(bool show) {
     fillBackgroundCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
+void Toolbar::showArrowTypeCombo(bool show) {
+    arrowTypeCombobox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
 LRESULT Toolbar::OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ::SendMessage(GetParent(), MTBM_FILLBACKGROUNDCHANGE, 0, 0);
     return 0;
 }
 
+LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_ARROWTYPECHANGE, 0, 0);
+    return 0;
+}
+
+
 bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
+}
+
+int Toolbar::getArrowType() const {
+    return arrowTypeCombobox_.GetCurSel();
+}
+
+void Toolbar::setArrowType(int type) {
+    arrowTypeCombobox_.SetCurSel(type);
 }
 
 }

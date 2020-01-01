@@ -10,6 +10,7 @@
 #include "MovableElement.h"
 #include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreTypes.h"
+#include "MovableElements.h"
 
 namespace ImageEditor {
 
@@ -148,6 +149,9 @@ class Canvas {
 
         void setFillTextBackground(bool fill);
         bool getFillTextBackground() const;
+
+        void setArrowMode(Arrow::ArrowMode arrowMode);
+        Arrow::ArrowMode getArrowMode() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
 
         Gdiplus::Rect lastAppliedCrop() const;
@@ -213,6 +217,7 @@ private:
         int nextNumber_; // next number for element StepNumber
         int stepFontSize_;
         bool fillTextBackground_;
+        Arrow::ArrowMode arrowMode_;
         
         Gdiplus::Rect updatedRect_;
         LOGFONT font_;

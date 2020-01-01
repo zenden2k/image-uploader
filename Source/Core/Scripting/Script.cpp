@@ -128,7 +128,7 @@ bool Script::load(const std::string& fileName)
  
         switchToThisVM();
         m_SquirrelScript = new Sqrat::Script(vm_.GetVM());
-        m_SquirrelScript->CompileString(scriptText.c_str(), IuCoreUtils::ExtractFileName(fileName).c_str());
+        m_SquirrelScript->CompileString(scriptText, IuCoreUtils::ExtractFileName(fileName));
 
         m_SquirrelScript->Run();
         ScriptAPI::RegisterShortTranslateFunctions(vm_);

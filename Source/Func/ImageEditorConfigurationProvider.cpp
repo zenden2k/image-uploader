@@ -15,6 +15,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
     searchEngine_ = Settings.ImageEditorSettings.SearchEngine;
     fillTextBackground_ = Settings.ImageEditorSettings.FillTextBackground;
+    arrowMode_ = Settings.ImageEditorSettings.ArrowType;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -30,5 +31,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     Settings.ImageEditorSettings.FillTextBackground = fillTextBackground_;
     Settings.ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
     Settings.ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
+    Settings.ImageEditorSettings.ArrowType = arrowMode_;
 }
 

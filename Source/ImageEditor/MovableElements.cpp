@@ -586,7 +586,7 @@ void Arrow::render(Painter* gr)
         cap1.SetBaseCap(LineCapTriangle);
         cap1.SetStrokeJoin(LineJoinRound);
 
-        pen.SetStartCap(LineCapRound);
+        //pen.SetStartCap(LineCapRound);
         pen.SetCustomEndCap(&cap1);
 
         gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
@@ -612,11 +612,11 @@ void Arrow::render(Painter* gr)
         const auto vy = ux;
 
         const auto half_width = 0.5f * head_width;
-        Point p1{ (int)round(endPoint_.x - head_length * ux + half_width * vx),
-                 (int)round(endPoint_.y - head_length * uy + half_width * vy) };
+        Point p1{ int(round(endPoint_.x - head_length * ux + half_width * vx)),
+                 int(round(endPoint_.y - head_length * uy + half_width * vy)) };
 
-        Point p2{ (int)round(endPoint_.x - head_length * ux - half_width * vx),
-                (int)round(endPoint_.y - head_length * uy - half_width * vy) };
+        Point p2{ int(round(endPoint_.x - head_length * ux - half_width * vx)),
+                int(round(endPoint_.y - head_length * uy - half_width * vy)) };
 
         pen2.SetEndCap(LineCapRound);
         pen2.SetStartCap(LineCapRound);

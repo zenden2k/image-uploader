@@ -508,6 +508,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.AllowEditingInFullscreen = false;
     ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
     WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
+    ImageEditorSettings.ArrowType = 0; // default arrow
 
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
     Hotkeys_changed = false;
@@ -774,6 +775,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, PenSize);
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
+    imageEditor.nm_bind(ImageEditorSettings, ArrowType);
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);

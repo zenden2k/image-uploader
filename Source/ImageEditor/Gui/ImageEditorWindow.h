@@ -96,6 +96,7 @@ public:
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
+        MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -162,6 +163,7 @@ public:
         LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnArrowTypeChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
@@ -235,6 +237,7 @@ public:
         searchEngine_ = SearchByImage::seGoogle;
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
+        arrowMode_ = 0;
     }
     virtual ~ConfigurationProvider() = default;
     virtual void saveConfiguration() {}
@@ -267,11 +270,18 @@ public:
     bool fillTextBackground() const {
         return fillTextBackground_;
     }
+    void setArrowMode(int mode) {
+        arrowMode_ = mode;
+    }
+    int getArrowMode() const {
+        return arrowMode_;
+    }
 protected:
     Gdiplus::Color foregroundColor_, backgroundColor_, 
         stepForegroundColor_, stepBackgroundColor_;
     int penSize_;
     int roundingRadius_;
+    int arrowMode_;
     LOGFONT font_;
     bool allowAltTab_;
     SearchByImage::SearchEngine searchEngine_;

@@ -311,7 +311,7 @@ void MoveAndResizeTool::createElement() {
     currentElement_ = 0;
     switch( elementType_ ) {
         case etArrow:
-            currentElement_ = new Arrow(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new Arrow(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getArrowMode());
             break;
         case etLine:
             currentElement_ = new Line(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);

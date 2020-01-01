@@ -10,6 +10,7 @@
 #define MTBM_FONTSIZECHANGE  (WM_USER + 401)
 #define MTBM_STEPINITIALVALUECHANGE (WM_USER + 402)
 #define MTBM_FILLBACKGROUNDCHANGE (WM_USER + 403)
+#define MTBM_ARROWTYPECHANGE (WM_USER + 404)
 
 namespace ImageEditor {
 
@@ -20,7 +21,7 @@ public:
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
-    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX};
+    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX};
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -76,7 +77,10 @@ public:
     void setStepInitialValue(int value);
     int getStepInitialValue() const;
     void showFillBackgroundCheckbox(bool show);
+    void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
+    int getArrowType() const;
+    void setArrowType(int type);
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -98,6 +102,7 @@ public:
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
+        COMMAND_HANDLER(ID_ARROWTYPECOMBOBOX, CBN_SELCHANGE, OnArrowTypeComboChange)
     END_MSG_MAP()
 
     // Handler prototypes (uncomment arguments if needed):
@@ -123,6 +128,7 @@ public:
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     SIZE CalcItemSize(int index);
     int AutoSize();
@@ -138,6 +144,7 @@ public:
     CEdit initialValueEdit_;
     CButton testButton_;
     CButton fillBackgroundCheckbox_;
+    CComboBox arrowTypeCombobox_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;

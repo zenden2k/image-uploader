@@ -10,12 +10,12 @@ function Login() {
 	nm.setUrl( "https://abload.de/login.php");
 	nm.addQueryParam( "name", login );
 	nm.addQueryParam( "password", pass );
-	nm.addQueryParam( "login_remember", "on" );
+	//nm.addQueryParam( "login_remember", "on" );
 	nm.addQueryParam( "cookie", "on" );
     nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION 
 	nm.doPost("");
 
-    if(nm.responseCode() == 302 ){
+    if(nm.responseCode() == 302 || nm.responseCode() == 200 ){
         nm.doGet("https://abload.de/calls/userXML.php");
         if ( nm.responseCode() == 200) {
             local data = nm.responseBody();
@@ -40,7 +40,7 @@ function Login() {
         
     } 
     
-    WriteLog("error", "abload.de: Autenfication failed using login '" + login + "'");
+    WriteLog("error", "abload.de: Authentication failed using login '" + login + "'");
 	return 0;
 }
 

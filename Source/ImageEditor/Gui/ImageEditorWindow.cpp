@@ -437,6 +437,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
         canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
         canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
+        canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(configurationProvider_->getArrowMode()));
         allowAltTab_ = configurationProvider_->allowAltTab();
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
@@ -890,6 +891,7 @@ void ImageEditorWindow::createToolbars()
     horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
     horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
     horizontalToolbar_.setStepInitialValue(1);
+    horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
 }  
 
 
@@ -1047,6 +1049,8 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
 
     bool showFillBackgound = currentDrawingTool_ == Canvas::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
+
+    horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == Canvas::dtArrow);
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
@@ -1307,6 +1311,8 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setFillTextBackground(canvas_->getFillTextBackground());
         configurationProvider_->setStepForegroundColor(canvas_->getStepForegroundColor());
         configurationProvider_->setStepBackgroundColor(canvas_->getStepBackgroundColor());
+        configurationProvider_->setArrowMode(static_cast<int>(canvas_->getArrowMode()));
+
         configurationProvider_->saveConfiguration();
     }
 }
@@ -1432,6 +1438,11 @@ LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wPar
 
 LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->setFillTextBackground(horizontalToolbar_.isFillBackgroundChecked());
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnArrowTypeChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(horizontalToolbar_.getArrowType()));
     return 0;
 }
 

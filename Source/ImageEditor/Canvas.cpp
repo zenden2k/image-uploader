@@ -1281,4 +1281,12 @@ bool Canvas::getFillTextBackground() const {
     return fillTextBackground_;
 }
 
+void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) {
+    arrowMode_ = arrowMode;
+}
+
+Arrow::ArrowMode Canvas::getArrowMode() const {
+    return arrowMode_;
+}
+
 }
