@@ -47,14 +47,13 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
             CString Info;
         };
 
-    public:
         CLogWindow();
         ~CLogWindow();
         void setLogger(DefaultLogger* logger);
         void setFileNameFilter(CString fileName);
         enum { IDD = IDD_LOGWINDOW };
         enum { IDC_CLEARLIST = 12000, IDC_COPYTEXTTOCLIPBOARD, IDC_SELECTALLITEMS, MYWM_WRITELOG = WM_USER + 100 };
-        virtual BOOL PreTranslateMessage(MSG* pMsg) override;
+        BOOL PreTranslateMessage(MSG* pMsg) override;
 
         BEGIN_MSG_MAP(CLogWindow)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -96,7 +95,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         void reloadList();
 protected:
     void WriteLogImpl(const DefaultLogger::LogEntry& entry);
-    DWORD mainThreadId;
+    DWORD mainThreadId_;
     std::vector<DefaultLogger::LogEntry> queuedItems_;
     std::mutex queueMutex_;
     DefaultLogger* logger_;

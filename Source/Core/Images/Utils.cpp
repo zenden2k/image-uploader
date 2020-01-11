@@ -20,7 +20,7 @@
 
 #include "Utils.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <cmath>
 #include <cassert>
 
@@ -39,6 +39,7 @@
 #include "Core/ServiceLocator.h"
 #include "Func/Library.h"
 #include "Core/AppParams.h"
+#include "ImageLoader.h"
 
 namespace ImageUtils {
 
@@ -77,30 +78,8 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
-    using namespace Gdiplus;
-    HRSRC hrsrc = FindResource(hInstance, szResName, szResType);
-    if (!hrsrc)
-        return nullptr;
-    // "Fake" HGLOBAL - look at MSDN
-    HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
-    DWORD sz = SizeofResource(hInstance, hrsrc);
-    void* ptr1 = LockResource(hg1);
-    HGLOBAL hg2 = GlobalAlloc(GMEM_FIXED, sz);
-
-    // Copy raster data
-    CopyMemory(LPVOID(hg2), ptr1, sz);
-    IStream* pStream;
-
-    // TRUE means free memory at Release
-    HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
-    if (FAILED(hr))
-        return nullptr;
-
-    // use load from IStream
-    std::unique_ptr<Gdiplus::Bitmap> image(Bitmap::FromStream(pStream));
-    pStream->Release();
-    // GlobalFree(hg2);
-    return image;
+    ImageLoader loader;
+    return loader.loadFromResource(hInstance, szResName, szResType);
 }
 
 void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
@@ -269,7 +248,7 @@ public:
         dataSize_ = stride * height;
         height_ = height;
     }
-    inline uint8_t& operator[](int i) {
+    uint8_t& operator[](int i) const {
         int pos = (i/width_)*stride_ + (i%width_)*4 + channel_;
         if ( pos >= dataSize_) {
             return data_[0];
@@ -837,154 +816,6 @@ CRect CenterRect(CRect r1, const CRect& intoR2)
     return r1;
 }
 
-void DrawRect(Bitmap& gr, Color& color, Rect rect)
-{
-    int i;
-    SolidBrush br(color);
-    for (i = rect.X; i < rect.Width; i++)
-    {
-        gr.SetPixel(i, 0, color);
-        gr.SetPixel(i, rect.Height - 1, color);
-    }
-
-    for (i = rect.Y; i < rect.Height; i++)
-    {
-        gr.SetPixel(0, i, color);
-        gr.SetPixel(rect.Width - 1, i, color);
-    }
-}
-/*int propertyCount = bm->GetPropertyCount();
-std::vector<PROPID> props;
-props.resize(propertyCount);
-bm->GetPropertyIdList(propertyCount, &props[0]);*/
-
-// Allocates storage for entire file 'file_name' and returns contents and size
-bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
-    int ok;
-    uint8_t* file_data;
-    size_t file_size;
-    FILE* in;
-
-    if (data == nullptr || data_size == nullptr) return 0;
-    *data = nullptr;
-    *data_size = 0;
-
-    in = _wfopen(file_name, L"rb");
-    if (in == nullptr) {
-        LOG(ERROR) << "cannot open input file " << file_name;
-        return false;
-    }
-    fseek(in, 0, SEEK_END);
-    file_size = ftell(in);
-    fseek(in, 0, SEEK_SET);
-    try {
-        file_data = new uint8_t[file_size];
-    } catch (std::exception &) {
-        LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
-        fclose(in);
-        return 0;
-    }
-    if (file_data == nullptr) return 0;
-    ok = (fread(file_data, 1, file_size, in) == file_size);
-    fclose(in);
-
-    if (!ok) {
-        LOG(ERROR) << boost::format("Could not read %d bytes of data from file ") % file_size << file_name;
-        delete[] file_data;
-        return false;
-    }
-    *data = file_data;
-    *data_size = file_size;
-    return true;
-}
-
-struct WebPPic {
-    int width;
-    int height; 
-    uint8_t* rgba;
-    bool animated;
-};
-
-bool ReadWebP(const uint8_t* const data, size_t data_size, WebPPic* pic) {
-    VP8StatusCode status = VP8_STATUS_OK;
-    WebPDecoderConfig config;
-    WebPDecBuffer* const output_buffer = &config.output;
-    WebPBitstreamFeatures* const bitstream = &config.input;
-
-    if (!WebPInitDecoderConfig(&config)) {
-        LOG(ERROR) << "Library version mismatch!\n";
-        return false;
-    }
-
-    status = WebPGetFeatures(data, data_size, bitstream);
-    if (status != VP8_STATUS_OK) {
-        LOG(WARNING) << "Error loading input webp data, status code=" << status;
-        return false;
-    }
-    pic->animated = !!bitstream->has_animation;
-
-    if (bitstream->has_animation) {
-        WebPData webp_data;
-        WebPDataInit(&webp_data);
-        webp_data.bytes = data;
-        webp_data.size = data_size;
-        WebPAnimDecoder* dec;
-        WebPAnimInfo anim_info;
-        WebPAnimDecoderOptions options;
-        memset(&options, 0, sizeof(options));
-        options.color_mode = MODE_BGRA;
-
-        dec = WebPAnimDecoderNew(&webp_data, &options);
-        if (dec == nullptr) {
-            LOG(WARNING) << "Error parsing webp image";
-            return false;
-        }
-
-        if (!WebPAnimDecoderGetInfo(dec, &anim_info)) {
-            LOG(WARNING) << "Error getting global info about the animation";
-            return false;
-        }
-
-        pic->width = anim_info.canvas_width;
-        pic->height = anim_info.canvas_height;
-
-        // Decode just first frame
-        if (WebPAnimDecoderHasMoreFrames(dec)) {
-            uint8_t* frame_rgba;
-            int timestamp;
-
-            if (!WebPAnimDecoderGetNext(dec, &frame_rgba, &timestamp)) {
-                return false;
-            }
-            unsigned int frameSize = anim_info.canvas_width*anim_info.canvas_height * 4;
-            pic->rgba = new uint8_t[frameSize];
-            memcpy(pic->rgba, frame_rgba, frameSize);
-        }
-        WebPAnimDecoderDelete(dec);
-
-    } else {
-        //output_buffer->colorspace = has_alpha ? MODE_RGBA : MODE_RGB;
-
-        pic->rgba = WebPDecodeBGRA(data, data_size, &pic->width, &pic->height);
-    }
-    if (!pic->rgba) {
-        return false;
-    }
-    /*if (status == VP8_STATUS_OK) {
-          /*pic->rgba = output_buffer->u.RGBA.rgba;
-          pic->stride = output_buffer->u.RGBA.stride;
-          pic->width = output_buffer->width;
-          pic->height = output_buffer->height;*/
-
-
-    /*ok = has_alpha ? WebPPictureImportRGBA(pic, rgba, stride)
-              : WebPPictureImportRGB(pic, rgba, stride);*
-      }*/
-
-
-    WebPFreeDecBuffer(output_buffer);
-    return true;
-}
 
 short GetImageOrientation(Image* img) {
     UINT totalBufferSize = 0, numProperties;
@@ -1034,58 +865,14 @@ bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag) {
 }
 
 std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName) {
-    std::unique_ptr<Bitmap>  bm;
-    CString ext = WinUtils::GetFileExt(fileName);
-    if (ext.MakeLower() == "webp") {
-
-        uint8_t* dataRaw = nullptr;
-        std::unique_ptr<uint8_t> data;
-        size_t dataSize = 0;
-        if (!ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
-            return nullptr;
-        }
-        data.reset(dataRaw);
-        WebPPic pic;
-        memset(&pic, 0, sizeof(pic));
-        if (!ReadWebP(data.get(), dataSize, &pic)) {
-            return nullptr;
-        }
-        bm.reset(new Bitmap(pic.width, pic.height, PixelFormat32bppARGB));
-
-        BitmapData dstData;
-        Rect rc(0, 0, pic.width, pic.height);
-
-        if (bm->LockBits(&rc, ImageLockModeWrite, PixelFormat32bppARGB, &dstData) == Ok) {
-            uint8_t* dstBits = reinterpret_cast<uint8_t *>(dstData.Scan0);
-            memcpy(dstBits, pic.rgba, pic.height * pic.width * 4);
-
-            bm->UnlockBits(&dstData);
-        }
-        if (pic.animated) {
-            delete[] pic.rgba;
-        } else {
-            WebPFree(pic.rgba);
-        }
-
-    } else {
-        bm.reset(new Gdiplus::Bitmap(fileName));
+    ImageLoader loader;
+    auto result = loader.loadFromFile(fileName);
+    if (!result) {
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Image Loader"),
+            _T("Cannot load image.") + CString(L"\r\n") + loader.getLastError().c_str(), 
+            CString(_T("File:")) + _T(" ") + fileName);
     }
-    Gdiplus::Status status = bm->GetLastStatus();
-    if (bm && status != Gdiplus::Ok) {
-        int lastError = GetLastError();
-
-        CString error = GdiplusStatusToString(status);
-
-        if (status == Gdiplus::Win32Error) {
-            error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError);
-        }
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Image Loader"), _T("Cannot load image.") + CString(L"\r\n") + error, CString(_T("File:")) + _T(" ") + fileName);
-        return nullptr;
-    }
-
-    short orient = GetImageOrientation(bm.get()); 
-    RotateAccordingToOrientation(orient, bm.get(), true);
-    return bm;
+    return result;
 }
 
 using PropertyItemPtr = std::unique_ptr<PropertyItem, void(*)(PropertyItem*)>;
@@ -1140,7 +927,7 @@ std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t imageSize) 
         if (!SHCreateMemStreamFunc) {
             SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
             if (!SHCreateMemStreamFunc) {
-                return 0;
+                return nullptr;
             }
         }
 
@@ -1303,11 +1090,8 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
     std::unique_ptr<Bitmap> bm (LoadImageFromFileExtended(filename));
-    if (!bm) {
-        return nullptr;
-    }
-    //Image bm(filename);
-    if (bm->GetLastStatus() != Ok) {
+
+    if (!bm || bm->GetLastStatus() != Ok) {
         return nullptr;
     }
     return GetThumbnail(bm.get(), width, height, realSize);
@@ -1648,6 +1432,45 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
         return false;
     }
     return false;
+}
+
+// Allocates storage for entire file 'file_name' and returns contents and size
+bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
+
+    uint8_t* file_data;
+
+    if (data == nullptr || data_size == nullptr) return 0;
+    *data = nullptr;
+    *data_size = 0;
+
+    FILE* in = _wfopen(file_name, L"rb");
+    if (in == nullptr) {
+        LOG(ERROR) << "cannot open input file " << file_name;
+        return false;
+    }
+    fseek(in, 0, SEEK_END);
+    size_t file_size = ftell(in);
+    fseek(in, 0, SEEK_SET);
+    try {
+        file_data = new uint8_t[file_size];
+    }
+    catch (std::exception &) {
+        LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
+        fclose(in);
+        return 0;
+    }
+    if (file_data == nullptr) return 0;
+    int ok = (fread(file_data, 1, file_size, in) == file_size);
+    fclose(in);
+
+    if (!ok) {
+        LOG(ERROR) << boost::format("Could not read %d bytes of data from file ") % file_size << file_name;
+        delete[] file_data;
+        return false;
+    }
+    *data = file_data;
+    *data_size = file_size;
+    return true;
 }
 
 }

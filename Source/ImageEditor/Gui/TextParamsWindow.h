@@ -31,7 +31,7 @@ class FontEnumerator;
 class TextParamsWindow;
 class CustomEdit: public CWindowImpl<CustomEdit, CEdit,CControlWinTraits>{
 public:
-    CustomEdit(TextParamsWindow* textParamsWindow);
+    explicit CustomEdit(TextParamsWindow* textParamsWindow);
     ~CustomEdit();
     DECLARE_WND_SUPERCLASS(_T("CustomComboBox"), CEdit::GetWndClassName())
 

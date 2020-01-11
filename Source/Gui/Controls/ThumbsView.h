@@ -40,6 +40,7 @@ struct ThumbsViewItem
     //CBitmap Image;
     bool ThumbLoaded;
     int Index;
+
     ThumbsViewItem() {
         ThumbOutDate = true;
         ThumbnailRequested = false;
@@ -47,8 +48,6 @@ struct ThumbsViewItem
         ThumbLoaded = false;
     }
 };
-
-
 
 class CThumbsView :
     public CWindowImpl<CThumbsView, CListViewCtrl>, public CThreadImpl<CThumbsView>, public CImageViewCallback
@@ -80,7 +79,7 @@ public:
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    typedef std::function<void(CThumbsView*, bool)> ItemCountChangedCallback;
+    using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

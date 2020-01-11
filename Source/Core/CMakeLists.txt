@@ -167,6 +167,9 @@ if(WIN32)
         ../Func/WinUtils.cpp
         ../Gui/GuiTools.cpp
         Images/Utils.cpp
+        Images/GdiplusImageReader.cpp
+        Images/WebpImageReader.cpp
+        Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
     )
     list(APPEND HEADER_LIST 
@@ -189,6 +192,10 @@ if(WIN32)
         ../Func/WinUtils.h
         ../Gui/GuiTools.h
         Images/Utils.h
+        Images/GdiplusImageReader.h
+        Images/WebpImageReader.h
+        Images/AbstractImageReader.h
+        Images/ImageLoader.h
         ../3rdpart/QColorQuantizer.h
     )
 else()

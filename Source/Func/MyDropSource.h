@@ -26,21 +26,20 @@
 #include "atlheaders.h"
 class CMyDropSource : public IDropSource
 {
-private:
     long m_lRefCount;
 
 public:
     CMyDropSource();
-    ~CMyDropSource();
+    virtual ~CMyDropSource();
 
     // IUnknown members.
-    HRESULT __stdcall QueryInterface(REFIID iid,void ** ppvObject);
-    ULONG __stdcall AddRef();
-    ULONG __stdcall Release();
+    HRESULT __stdcall QueryInterface(REFIID iid,void ** ppvObject) override;
+    ULONG __stdcall AddRef() override;
+    ULONG __stdcall Release() override;
 
     // IDropSource members.
-    HRESULT __stdcall QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState);
-    HRESULT __stdcall GiveFeedback(DWORD dwEffect);
+    HRESULT __stdcall QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState) override;
+    HRESULT __stdcall GiveFeedback(DWORD dwEffect) override;
 };
 
 #endif // MYDROPSOURCE_H

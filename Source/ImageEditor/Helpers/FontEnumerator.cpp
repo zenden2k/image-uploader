@@ -26,7 +26,7 @@ int CALLBACK FontEnumerator::EnumFontFamExProc(const LOGFONT *lpelfe, const TEXT
     return 1;
 }
 
-FontEnumerator::FontEnumerator(HDC dc, std::vector<LOGFONT>& fonts, const OnEnumerationFinishedDelegate& onEnumerationFinished) : fonts_(fonts) {
+FontEnumerator::FontEnumerator(HDC dc, std::vector<LOGFONT>& fonts, OnEnumerationFinishedDelegate onEnumerationFinished) : fonts_(fonts) {
     onEnumerationFinished_ = onEnumerationFinished;
     dc_ = dc;
 }

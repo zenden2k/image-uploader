@@ -22,7 +22,6 @@
 #define IU_FUNC_COMMON_H
 
 #include "atlheaders.h"
-#include <atlcoll.h>
 
 class CCmdLine;
 

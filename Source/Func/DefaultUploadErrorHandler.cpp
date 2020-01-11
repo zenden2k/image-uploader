@@ -7,7 +7,7 @@
 #include "Core/i18n/Translator.h"
 
 DefaultUploadErrorHandler::DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger):
-    logger_(logger)
+    logger_(std::move(logger))
 {
     responseFileIndex_ = 0;
 }

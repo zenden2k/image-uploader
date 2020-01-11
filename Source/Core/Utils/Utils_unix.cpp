@@ -75,12 +75,12 @@ std::string Utf16ToUtf8(const std::u16string& src) {
     return res;
 }
 
-std::string ConvertToUtf8(const std::string &text, const std::string codePage) {
+std::string ConvertToUtf8(const std::string &text, const std::string& codePage) {
     // FIXME: stub
     return text;
 }
 
-std::string GetFileMimeType(const std::string name)
+std::string GetFileMimeType(const std::string& name)
 {
     std::string defaultType = "application/octet-stream";
     FILE* stream = popen(Utf8ToSystemLocale("file -b --mime-type '" + name + "'").c_str(), "r");

@@ -77,9 +77,9 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
         return iconIt->second;
     
     CUploadEngineData *ued = CUploadEngineList::byName(name);
-    std::string newName =  name;
-    HICON icon = 0;
-    CString serverName = Utf8ToWCstring(newName);
+
+    HICON icon = nullptr;
+    CString serverName = Utf8ToWCstring(name);
     serverName.Replace(_T("\\"), _T("_"));
     serverName.Replace(_T("/"), _T("_"));
     CString dataFolder = IuCommonFunctions::GetDataFolder();
@@ -110,7 +110,7 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     }
     
     if ( !icon ) {
-        return 0;
+        return nullptr;
     }
     serverIcons_[name] = icon;
     return icon;
@@ -118,8 +118,7 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 
 CString CMyEngineList::getIconNameForServer(const std::string& name) {
     CUploadEngineData *ued = CUploadEngineList::byName(name);
-    std::string newName =  name;
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(newName)+_T(".ico");
+    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico");
 
     if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
         iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");

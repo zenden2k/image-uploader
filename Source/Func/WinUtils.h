@@ -59,7 +59,7 @@ namespace WinUtils {
     bool IsElevated();
     void DeleteDir2(LPCTSTR Dir);
     CString GetUniqFileName(const CString& filePath);
-    size_t GetFolderFileList(std::vector<CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>>>& list, CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>> folder, CStringT<wchar_t, StrTraitATL<wchar_t, ChTraitsCRT<wchar_t>>> mask);
+    size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mask);
 
     inline COLORREF RGB2COLORREF(unsigned int color) {
         return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
@@ -71,7 +71,6 @@ namespace WinUtils {
 
     bool FontToString(LOGFONT const * lFont, CString &Result);
     bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
-    RECT AutoSizeStaticControl(HWND control);
 
     bool ExtractStrFromList(
         LPCTSTR szString /* Source string */,
@@ -81,9 +80,7 @@ namespace WinUtils {
         LPCTSTR szDefString = _T(""),
         TCHAR cSeparator = _T(',') /* Character to be separator in list */);
     CString StringSection(const CString& str,TCHAR sep, int index);
-    bool IsWindows64Bit();
 
-    CString GetAppFolder();
     float GetMonitorScaleFactor();
     CString GetLastErrorAsString();
     bool MakeDirectoryWritable(LPCTSTR lpPath);

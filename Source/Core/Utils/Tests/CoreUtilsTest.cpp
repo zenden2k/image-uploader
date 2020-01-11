@@ -124,6 +124,7 @@ TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType)
     EXPECT_EQ(GetDefaultExtensionForMimeType("image/gif"), "gif");
     EXPECT_EQ(GetDefaultExtensionForMimeType("image/png"), "png");
     EXPECT_EQ(GetDefaultExtensionForMimeType("image/jpeg"), "jpg");
+    EXPECT_EQ(GetDefaultExtensionForMimeType("image/webp"), "webp");
     EXPECT_EQ(GetDefaultExtensionForMimeType("application/unknown"), "");
 }
 
@@ -220,4 +221,8 @@ TEST_F(CoreUtilsTest, GetFileMimeType) {
     std::string type = GetFileMimeType(constSizeFileName);
     ASSERT_EQ("image/png", type);
 
+    std::string webpFilePath = TestHelpers::resolvePath("Images/poroshok.webp");
+    ASSERT_TRUE(IuCoreUtils::FileExists(webpFilePath));
+    std::string type2 = GetFileMimeType(webpFilePath);
+    ASSERT_EQ("image/webp", type2);
 }

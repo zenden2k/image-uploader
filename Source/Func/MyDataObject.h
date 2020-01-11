@@ -27,26 +27,26 @@ class CMyDataObject : public IDataObject
 {
     public:
         CMyDataObject();
-        ~CMyDataObject();
+        virtual ~CMyDataObject();
 
         void Reset();
         void AddFile(LPCTSTR FileName);
 
         // IUnknown members.
-         HRESULT __stdcall QueryInterface(REFIID iid,void **ppvObject);
-         ULONG __stdcall AddRef();
-         ULONG __stdcall Release();
+         HRESULT __stdcall QueryInterface(REFIID iid,void **ppvObject) override;
+         ULONG __stdcall AddRef() override;
+         ULONG __stdcall Release() override;
             
          // IDataObject members.
-         HRESULT __stdcall GetData(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
-         HRESULT __stdcall GetDataHere(FORMATETC *pFormatEtc,STGMEDIUM *pmedium);
-         HRESULT __stdcall QueryGetData(FORMATETC *pFormatEtc);
-         HRESULT __stdcall GetCanonicalFormatEtc(FORMATETC *pFormatEct,FORMATETC *pFormatEtcOut);
-         HRESULT __stdcall SetData(FORMATETC *pFormatEtc,STGMEDIUM *pMedium,BOOL fRelease);
-         HRESULT __stdcall EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppEnumFormatEtc);
-         HRESULT __stdcall DAdvise(FORMATETC *pFormatEtc,DWORD advf,IAdviseSink *,DWORD *);
-         HRESULT __stdcall DUnadvise(DWORD dwConnection);
-         HRESULT __stdcall EnumDAdvise(IEnumSTATDATA **ppEnumAdvise);
+         HRESULT __stdcall GetData(FORMATETC *pFormatEtc,STGMEDIUM *pStgMedium) override;
+         HRESULT __stdcall GetDataHere(FORMATETC *pFormatEtc,STGMEDIUM *pmedium) override;
+         HRESULT __stdcall QueryGetData(FORMATETC *pFormatEtc) override;
+         HRESULT __stdcall GetCanonicalFormatEtc(FORMATETC *pFormatEct,FORMATETC *pFormatEtcOut) override;
+         HRESULT __stdcall SetData(FORMATETC *pFormatEtc,STGMEDIUM *pMedium,BOOL fRelease) override;
+         HRESULT __stdcall EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC **ppEnumFormatEtc) override;
+         HRESULT __stdcall DAdvise(FORMATETC *pFormatEtc,DWORD advf,IAdviseSink *,DWORD *) override;
+         HRESULT __stdcall DUnadvise(DWORD dwConnection) override;
+         HRESULT __stdcall EnumDAdvise(IEnumSTATDATA **ppEnumAdvise) override;
     private:
         long m_lRefCount;
         FORMATETC m_FormatEtc;

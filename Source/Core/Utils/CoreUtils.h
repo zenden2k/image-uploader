@@ -40,11 +40,11 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp);
 
 template <typename T>
 class defer {
-private:
     std::function<T()> mFunctor;
+public:
     defer& operator=(const defer&) = delete;
     defer(const defer&) = delete;
-public:
+
     defer(std::function<T()> functor) : mFunctor(functor) {}
     ~defer() { mFunctor(); }
 };
@@ -62,7 +62,7 @@ namespace IuCoreUtils
     std::string ExtractFileName(const std::string fileName);
     std::string ExtractFileExt(const std::string fileName);
     const std::string ExtractFileNameNoExt(const std::string& fileName);
-    std::string ExtractFileNameFromUrl(const std::string fileName);
+    std::string ExtractFileNameFromUrl(const std::string& url);
     std::string incrementFileName(const std::string& originalFileName, int counter);
     std::string toString(int value);
     std::string toString(unsigned int value);
@@ -71,10 +71,10 @@ namespace IuCoreUtils
     std::string SystemLocaleToUtf8(const std::string& str);
     std::string int64_tToString(int64_t value);
     int64_t stringToInt64(const std::string& str);
-    std::string GetFileMimeType(const std::string);
+    std::string GetFileMimeType(const std::string&);
     std::string GetDefaultExtensionForMimeType(const std::string);
     std::string StrReplace(std::string text, std::string s, std::string d);
-    std::string ConvertToUtf8(const std::string &text, const std::string codePage);
+    std::string ConvertToUtf8(const std::string &text, const std::string& codePage);
     bool ReadUtf8TextFile(std::string utf8Filename, std::string& data);
     bool PutFileContents(const std::string& utf8Filename, const std::string& content);
     const std::string GetFileContents(const std::string& filename);

@@ -20,7 +20,7 @@
 
 #include "CoreUtils.h"
 
-#include <time.h>
+#include <ctime>
 #include <locale>
 #include <cstdio>
 #include <map>
@@ -255,7 +255,7 @@ const std::string ExtractFileNameNoExt(const std::string& fileName)
     return result;
 }
 
-std::string ExtractFileNameFromUrl(const std::string url)
+std::string ExtractFileNameFromUrl(const std::string& url)
 {
     uriparser::Uri uri(url);
     return ExtractFileName(uri.path());

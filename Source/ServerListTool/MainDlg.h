@@ -18,9 +18,8 @@
 
 */
 
-// MainDlg.h : interface of the CMainDlg class
-//
-/////////////////////////////////////////////////////////////////////////////
+#ifndef IU_SERVERLISTTOOL_MAINDLG_H
+#define IU_SERVERLISTTOOL_MAINDLG_H
 
 #include <map>
 #include "atlheaders.h"
@@ -68,8 +67,7 @@ public:
         COMMAND_HANDLER(IDC_SETTINGSBTN, BN_CLICKED, OnBnClickedSettingsButton)
         //NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
-        REFLECT_NOTIFICATIONS()
-        
+        REFLECT_NOTIFICATIONS()   
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CMainDlg)
@@ -89,7 +87,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_CHECKIMAGESERVERS, checkImageServersCheckBox_)
         DDX_CONTROL_HANDLE(IDC_CHECKFILESERVERS, checkFileServersCheckBox_)
         DDX_CONTROL_HANDLE(IDC_CHECKURLSHORTENERS, checkUrlShortenersCheckBox_)
-        DDX_CONTROL(IDC_TOOLSERVERLIST, m_ListView)
+        DDX_CONTROL(IDC_TOOLSERVERLIST, listView_)
     END_DDX_MAP()
 
     // Handler prototypes (uncomment arguments if needed):
@@ -117,14 +115,14 @@ public:
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     int contextMenuItemId;
-    CImageList m_ImageList;
-    CString m_srcFileHash;
-    Helpers::MyFileInfo m_sourceFileInfo;
+    CImageList imageList_;
+    CString sourceFileHash_;
+    Helpers::MyFileInfo sourceFileInfo_;
     UploadEngineManager* uploadEngineManager_;
     UploadManager* uploadManager_;
     CMyEngineList* engineList_;
     ServersCheckerModel model_;
-    CServerListView m_ListView;
+    CServerListView listView_;
 
     SimpleXml xml;
     CIcon icon_, iconSmall_;
@@ -134,13 +132,14 @@ public:
     std::unique_ptr<ServersChecker> serversChecker_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     ServersCheckerSettings* settings_;
-    bool OnNeedStop();
+    bool OnNeedStop() const;
     void processFinished();
-    int Run();
     void stop();
     bool m_NeedStop;
-    bool isRunning();
+    bool isRunning() const;
    
 };
 
 }
+
+#endif

@@ -95,15 +95,15 @@ std::string Utf16ToUtf8(const std::u16string& src) {
 }
 
 
-std::string ConvertToUtf8(const std::string &text, const std::string codePage)
+std::string ConvertToUtf8(const std::string &text, const std::string& codePage)
 {
-    unsigned int codePageNum = CodepageByName(codePage.c_str());
+    unsigned int codePageNum = CodepageByName(codePage);
     if (codePageNum != CP_UTF8)
         return AnsiToUtf8(text, codePageNum);
     return text;
 }
 
-std::string GetFileMimeType(const std::string fileName)
+std::string GetFileMimeType(const std::string& fileName)
 {
     const std::string DefaultMimeType = "application/octet-stream";
     FILE * InputFile = fopen_utf8(fileName.c_str(), "rb");
@@ -136,7 +136,9 @@ std::string GetFileMimeType(const std::string fileName)
     else if (result == "image/pjpeg")
         result = "image/jpeg";
     else if (result == "application/octet-stream") {
-        if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F') {
+        if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F'
+            && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B'&& byBuff[11] == 'P'
+            ) {
             result = "image/webp";
         }
     }

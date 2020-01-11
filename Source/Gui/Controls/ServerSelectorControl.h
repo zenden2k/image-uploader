@@ -31,17 +31,19 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Core/3rdpart/FastDelegate.h"
+
 // CServerSelectorControl
 class IconBitmapUtils;
 class UploadEngineManager;
 
-#define WM_SERVERSELECTCONTROL_CHANGE (WM_USER+156)
-#define WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED (WM_USER+157)
+constexpr int WM_SERVERSELECTCONTROL_CHANGE = WM_USER + 156;
+constexpr int WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED = WM_USER + 157;
+
 class CServerSelectorControl : 
     public CDialogIndirectImpl<CServerSelectorControl>, public CSettingsPage
 {
 public:
-    CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
+    explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
 virtual ~CServerSelectorControl();
     enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
         IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003

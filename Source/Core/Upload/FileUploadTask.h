@@ -20,12 +20,13 @@ class FileUploadTask: public UploadTask {
         virtual void finishTask(Status status = StatusFinished) override;
         std::string toString() override;
         std::string title() const override;
-        bool isImage();
+        bool isImage() const;
         void setIsImage(bool image);
 protected:
         std::string fileName_;
         std::string originalFileName_;
         std::string displayName_;
+        mutable int64_t cachedFileSize_;
         bool isImage_;
         
 };    

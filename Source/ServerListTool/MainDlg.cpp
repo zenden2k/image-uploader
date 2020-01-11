@@ -4,9 +4,8 @@
 
 #include "MainDlg.h"
 
-#include "Core/Settings.h"
 #include "Gui/Dialogs/LogWindow.h"
-#include "3rdpart/GdiPlusH.h"
+#include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -27,8 +26,7 @@ struct TaskDispatcherMessageStruct {
 
 CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
                     std::shared_ptr<INetworkClientFactory> factory) :
-                    settings_(settings),
-                    model_(engineList), m_ListView(&model_), networkClientFactory_(std::move(factory))
+                    model_(engineList), listView_(&model_), networkClientFactory_(std::move(factory)), settings_(settings)
 {
     uploadEngineManager_ = uploadEngineManager;
     uploadManager_ = uploadManager;
@@ -39,7 +37,7 @@ CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* upload
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    BasicSettings& basicSettings = *ServiceLocator::instance()->settings<BasicSettings>();
+    auto basicSettings = ServiceLocator::instance()->settings<BasicSettings>();
     ServiceLocator::instance()->setTaskDispatcher(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -53,11 +51,11 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
 
-    m_ListView.Init();
+    listView_.Init();
 
     withAccountsRadioButton_.SetCheck(BST_CHECKED);
     checkImageServersCheckBox_.SetCheck(BST_CHECKED);
-    m_ListView.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+    listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
 
     /*CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
     CString testURL = "https://github.com/zenden2k/image-uploader/issues";
@@ -72,15 +70,15 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
             testURL = Utf8ToWstring(url).c_str();
         }
     }*/
-    basicSettings.MaxThreads = 10;
+    basicSettings->MaxThreads = 10;
 
     SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_->testFileName));
     SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
     serversChecker_->setOnFinishedCallback(std::bind(&CMainDlg::processFinished, this));
-    m_ImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
-    m_ListView.SetImageList(m_ImageList, LVSIL_NORMAL);
+    imageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    listView_.SetImageList(imageList_, LVSIL_NORMAL);
     return TRUE;
 }
 
@@ -101,10 +99,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if (lParam == -1) {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
-        int nCurItem = m_ListView.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        int nCurItem = listView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
         if (nCurItem >= 0) {
             CRect rc;
-            if (m_ListView.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
+            if (listView_.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
                 ClientPoint = rc.CenterPoint();
             }
         }
@@ -120,7 +118,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     LV_HITTESTINFO hti;
     memset(&hti, 0, sizeof(hti));
     hti.pt = ClientPoint;
-    m_ListView.HitTest(&hti);
+    listView_.HitTest(&hti);
 
     if (hti.iItem >= 0) {
         ServerData* sd = model_.getDataByIndex(hti.iItem);
@@ -139,8 +137,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
             contextMenuItemId = hti.iItem;
             menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
-        }
-        
+        } 
     }
 
     return 0;
@@ -160,21 +157,9 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
         MessageBox(CString(_T("Test file not found.")) + _T("\r\n") + fileName, APPNAME, MB_ICONERROR);
         return 0;
     }
-    /*m_ListView.DeleteAllItems();
-    for (int i = 0; i < engineList_->count(); i++) {
-        ServerData sd;
-        m_CheckedServersMap[i] = sd;
-        m_ListView.AddItem(i, 0, WinUtils::IntToStr(i + 1));
-        CUploadEngineData* ued = engineList_->byIndex(i);
-        CString name = Utf8ToWstring(ued->Name).c_str();
-        if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
-            name += _T("  [URL Shortener]");
-        }
-        m_ListView.SetItemText(i, 1, name);
-    }*/
 
-    m_srcFileHash = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
-    CString report = _T("Source file: ") + GetFileInfo(fileName, &m_sourceFileInfo);
+    sourceFileHash_ = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
+    CString report = _T("Source file: ") + GetFileInfo(fileName, &sourceFileInfo_);
     SetDlgItemText(IDC_TOOLSOURCEFILE, report);
     ::EnableWindow(GetDlgItem(IDOK), false);
     ::EnableWindow(GetDlgItem(IDCANCEL), false);
@@ -184,25 +169,24 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     bool useAccounts = withAccountsRadioButton_.GetCheck() == BST_CHECKED || alwaysWithAccountsRadioButton_.GetCheck() == BST_CHECKED;
     bool onlyAccs = alwaysWithAccountsRadioButton_.GetCheck() == BST_CHECKED;
 
-    bool CheckImageServers = checkImageServersCheckBox_.GetCheck() == BST_CHECKED;
-    bool CheckFileServers = checkFileServersCheckBox_.GetCheck() == BST_CHECKED;
-    bool CheckURLShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
+    bool checkImageServers = checkImageServersCheckBox_.GetCheck() == BST_CHECKED;
+    bool checkFileServers = checkFileServersCheckBox_.GetCheck() == BST_CHECKED;
+    bool checkUrlShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
 
-    serversChecker_->setCheckFileServers(CheckFileServers);
-    serversChecker_->setCheckImageServers(CheckImageServers);
-    serversChecker_->setCheckUrlShorteners(CheckURLShorteners);
+    serversChecker_->setCheckFileServers(checkFileServers);
+    serversChecker_->setCheckImageServers(checkImageServers);
+    serversChecker_->setCheckUrlShorteners(checkUrlShorteners);
     serversChecker_->setOnlyAccs(onlyAccs);
     serversChecker_->setUseAccounts(useAccounts);
     model_.resetData();
 
-    //CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
     if (!WinUtils::FileExists(fileName)) {
         LOG(ERROR) << "File not found " << fileName;
         processFinished();
         return -1;
     }
     CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
-    if (CheckURLShorteners && url.IsEmpty()) {
+    if (checkUrlShorteners && url.IsEmpty()) {
         LOG(ERROR) << "URL should not be empty!";
         processFinished();
         return -1;
@@ -226,15 +210,11 @@ LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOO
     return 0;
 }
 
-int CMainDlg::Run() {
-    return 0;
-}
-
 LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int nIndex = -1;
     do {
-        nIndex = m_ListView.GetNextItem(nIndex, LVNI_SELECTED);
+        nIndex = listView_.GetNextItem(nIndex, LVNI_SELECTED);
         if (nIndex == -1) break;
         ServerData* sd = model_.getDataByIndex(nIndex);
         if (sd) {
@@ -263,12 +243,12 @@ void CMainDlg::stop()
     serversChecker_->stop();
 }
 
-bool CMainDlg::isRunning()
+bool CMainDlg::isRunning() const
 {
     return serversChecker_->isRunning();
 }
 
-bool CMainDlg::OnNeedStop()
+bool CMainDlg::OnNeedStop() const
 {
     return m_NeedStop;
 }
@@ -295,7 +275,7 @@ LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
             sd->skip = !sd->skip;
         }
     }
-    m_ListView.Invalidate();
+    listView_.Invalidate();
     return 0;
 }
 

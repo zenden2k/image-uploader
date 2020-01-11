@@ -20,9 +20,8 @@
 
 #include "ServerSelectorControl.h"
 
-#include "Gui/Dialogs/wizarddlg.h"
+#include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/GuiTools.h"
-#include "Func/Common.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
 #include "Gui/Dialogs/UploadParamsDlg.h"
 #include "Func/WinUtils.h"
@@ -50,6 +49,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
         isChildWindow_ = isChildWindow;
         showFileSizeLimits_ = false;
         hMyDlgTemplate_ = nullptr;
+        isPopingUp_ = false;
 }
 
 CServerSelectorControl::~CServerSelectorControl()

@@ -20,14 +20,17 @@ limitations under the License.
 
 #include "FileUploadTask.h"
 
+#include <cassert>
+
 #include "Core/Utils/CoreUtils.h"
-#include <assert.h>
+
 
 FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {
     fileName_ = fileName;
     tempFileDeleter_ = nullptr;
     originalFileName_ = fileName;
     isImage_ = false;
+    cachedFileSize_ = -1;
     if ( displayName.empty() ) {
         displayName_ = IuCoreUtils::ExtractFileName(fileName);
     } else {
@@ -49,7 +52,11 @@ std::string FileUploadTask::getMimeType() const {
 }
 
 int64_t FileUploadTask::getDataLength() const {
-    return IuCoreUtils::getFileSize(fileName_);
+    if (cachedFileSize_ != -1) {
+        return cachedFileSize_;
+    }
+    cachedFileSize_ = IuCoreUtils::getFileSize(fileName_);
+    return cachedFileSize_;
 }
 
 std::string FileUploadTask::getFileName() const {
@@ -59,6 +66,7 @@ std::string FileUploadTask::getFileName() const {
 void FileUploadTask::setFileName(const std::string& fileName)
 {
     fileName_ = fileName;
+    cachedFileSize_ = -1;
 }
 
 std::string FileUploadTask::getDisplayName() const {
@@ -100,7 +108,7 @@ std::string FileUploadTask::title() const
     return IuCoreUtils::ExtractFileName(originalFileName());
 }
 
-bool FileUploadTask::isImage() {
+bool FileUploadTask::isImage() const {
     return isImage_;
 }
 

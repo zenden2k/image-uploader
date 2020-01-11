@@ -24,7 +24,7 @@
 #include "Core/Settings/BasicSettings.h"
 
 // CLogWindow
-CLogWindow::CLogWindow(): mainThreadId(GetCurrentThreadId()), logger_(nullptr)
+CLogWindow::CLogWindow(): mainThreadId_(GetCurrentThreadId()), logger_(nullptr)
 {
 }
 
@@ -196,7 +196,7 @@ void CLogWindow::WriteLog(const DefaultLogger::LogEntry& entry)
         }
     }
 
-    if (GetCurrentThreadId() == mainThreadId) {
+    if (GetCurrentThreadId() == mainThreadId_) {
         // Call directly
         WriteLogImpl(entry);
     } else {

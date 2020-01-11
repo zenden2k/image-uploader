@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 #include "atlheaders.h"
-#include <windows.h>
 #include "3rdpart/GdiplusH.h"
 
 namespace ImageUtils {
@@ -42,11 +41,9 @@ void DrawGradient(Gdiplus::Graphics& gr, Gdiplus::Rect rect, Gdiplus::Color& Col
 void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds, const Gdiplus::Font& font,
     const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0, int VertPos = 0,
     int width = 1);
-int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 void ChangeAlphaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sourceChannel, int destChannel);
 Gdiplus::Rect MeasureDisplayString(Gdiplus::Graphics& graphics, CString text, Gdiplus::RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, const CRect& intoR2);
-void DrawRect(Gdiplus::Bitmap& gr, Gdiplus::Color& color, Gdiplus::Rect rect);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
@@ -61,6 +58,7 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
 short GetImageOrientation(Gdiplus::Image* img);
 bool RotateAccordingToOrientation(short orient, Gdiplus::Image* img, bool removeTag = false);
 ImageInfo GetImageInfo(const wchar_t* fileName);
+CString GdiplusStatusToString(Gdiplus::Status statusID);
 
 }
 
