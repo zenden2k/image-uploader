@@ -28,11 +28,11 @@
 #include "resource.h"       // main symbols
 #include "3rdpart/thread.h"
 #include <atlcrack.h>
-#include "Gui/Controls/PictureExWnd.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/FolderList.h"
 #include "Core/Upload/AdvancedUploadEngine.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 // CServerFolderSelect
 #define ID_EDITFOLDER 10001
@@ -97,7 +97,7 @@ protected:
     {
         foGetFolders = 0, foCreateFolder, foModifyFolder 
     };
-    CPictureExWnd m_wndAnimation;
+    CProgressRingControl m_wndAnimation;
     CAdvancedUploadEngine *runningScript_;
     std::mutex runningScriptMutex_;
     UploadEngineManager * uploadEngineManager_;

@@ -55,6 +55,7 @@ set(SRC_LIST
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
+    Controls/ProgressRingControl.cpp
     Dialogs/ClearHistoryDlg.cpp
     Dialogs/FolderAddDlg.cpp
     Dialogs/SearchByImageDlg.cpp
@@ -223,6 +224,7 @@ set(HEADER_LIST
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h
+    Controls/ProgressRingControl.h
     Dialogs/ClearHistoryDlg.h
     Dialogs/FolderAddDlg.h
     Dialogs/SearchByImageDlg.h

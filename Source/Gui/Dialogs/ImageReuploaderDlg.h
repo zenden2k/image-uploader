@@ -40,6 +40,7 @@
 #include "Core/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 class CFileQueueUploader;
 class CMyEngineList;
@@ -142,7 +143,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         // bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkClient* nm){return true;}
 
         CString m_FileName;
-        CPictureExWnd m_wndAnimation;
+        CProgressRingControl m_wndAnimation;
         CFileDownloader m_FileDownloader;
         UploadManager* uploadManager_;
         CMyEngineList *m_EngineList;

@@ -70,8 +70,6 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
         wndAnimation_.SubclassWindow(hWnd);
-        if (wndAnimation_.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-            wndAnimation_.Draw();
         wndAnimation_.ShowWindow(SW_HIDE);
     }
     outputEditControl_.AttachToDlgItem(m_hWnd, IDC_RESULTSEDIT);

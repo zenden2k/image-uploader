@@ -51,8 +51,6 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
         wndAnimation_.SubclassWindow(hWnd);
-        if (wndAnimation_.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-            wndAnimation_.Draw();
         //wndAnimation_.ShowWindow(SW_HIDE);
     }
     CommonGuiSettings& Settings = *ServiceLocator::instance()->settings<CommonGuiSettings>();

@@ -25,8 +25,8 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/HistoryTreeControl.h"
-#include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 class CWizardDlg;
 class CHistoryReader;
@@ -82,6 +82,18 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             DLGRESIZE_CONTROL(IDC_SESSIONSCOUNTDESCR, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_UPLOADTRAFFICDESCR, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_UPLOADTRAFFICLABEL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_FILTERSGROUPBOX, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DATEFROMCHECKBOX, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DATEFROMPICKER, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DATETOLABEL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DATETOPICKER, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_FILENAMELABEL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_FILENAMEEDIT, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_URLLABEL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_URLEDIT, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_CLEARFILTERS, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_CLEARHISTORYBTN, DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
 
         // Handler prototypes:
@@ -115,7 +127,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         void applyFilters();
         void dateFromCheckboxChanged();
         void initSearchForm();
-        CPictureExWnd m_wndAnimation;
+        CProgressRingControl m_wndAnimation;
         CDateTimePickerCtrl dateFromPicker_, dateToPicker_;
         CButton dateFilterCheckbox_;
         // Context menu callbacks

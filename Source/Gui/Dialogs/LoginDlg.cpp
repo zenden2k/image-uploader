@@ -78,8 +78,6 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     if (hWnd)
     {
         wndAnimation_.SubclassWindow(hWnd);
-        if (wndAnimation_.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-            wndAnimation_.Draw();
         wndAnimation_.ShowWindow(SW_HIDE);
     }
 

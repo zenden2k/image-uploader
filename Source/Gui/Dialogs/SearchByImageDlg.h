@@ -24,8 +24,8 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/SearchByImage.h"
-#include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 // CSearchByImageDlg
 class SearchByImage;
@@ -53,7 +53,7 @@ private:
     CString fileName_;
     std::unique_ptr<SearchByImage> seeker_;
     bool cancelPressed_;
-    CPictureExWnd wndAnimation_;
+    CProgressRingControl wndAnimation_;
     SearchByImage::SearchEngine searchEngine_;
     UploadManager* uploadManager_;
     void onSeekerFinished(bool success, const std::string& msg);

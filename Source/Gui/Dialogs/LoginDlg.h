@@ -25,9 +25,9 @@
 #include "resource.h"       // main symbols
 #include "Core/Upload/UploadEngine.h"
 #include "3rdpart/thread.h"
-#include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Core/Upload/AuthTask.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 class ServerProfile;
 class UploadEngineManager;
@@ -78,7 +78,7 @@ protected:
     bool isAuthenticated_;
     void enableControls(bool enable);
     std::unique_ptr<INetworkClient> NetworkClient_;
-    CPictureExWnd wndAnimation_;
+    CProgressRingControl wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
     void authTaskFinishedCallback(UploadTask* task, bool ok);
 };

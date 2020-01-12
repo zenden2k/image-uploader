@@ -8,10 +8,10 @@
 #include "resource.h"       
 #include "WizardDlg.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/CustomEditControl.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 // CShortenUrlDlg
 class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
@@ -70,7 +70,7 @@ class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
         CString m_InitialBuffer;
         CWizardDlg *m_WizardDlg;
         UploadManager* uploadManager_;
-        CPictureExWnd wndAnimation_;
+        CProgressRingControl wndAnimation_;
         std::vector<CUploadEngineData*> servers_;
         CCustomEditControl outputEditControl_;
         CBrush backgroundBrush_;

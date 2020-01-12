@@ -118,8 +118,6 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
         m_wndAnimation.SubclassWindow(hWnd);
-        if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-            m_wndAnimation.Draw();
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
 

@@ -52,8 +52,6 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if (hWnd)
     {
         m_wndAnimation.SubclassWindow(hWnd);
-        if (m_wndAnimation.Load(MAKEINTRESOURCE(IDR_PROGRESSGIF), _T("GIF")))
-            m_wndAnimation.Draw();
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
 
