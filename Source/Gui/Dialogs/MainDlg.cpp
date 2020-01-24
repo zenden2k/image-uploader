@@ -85,8 +85,8 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
     ACCEL Accels[1];
     Accels[0].fVirt = FCONTROL | FSHIFT | FVIRTKEY;
-    Accels[0].key = VkKeyScan('c');;
-    Accels[0].cmd = IDM_COPYFILEPATH;
+    Accels[0].key = VkKeyScan('c');
+    Accels[0].cmd = MENUITEM_COPYFILEPATH;
     hotkeys_ = CreateAcceleratorTable(Accels, ARRAY_SIZE(Accels));
 
     WaitThreadStop.Create();
@@ -107,18 +107,6 @@ LRESULT CMainDlg::OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     return 0;
 }
 
-bool CMainDlg::CheckEditInteger(int Control)
-{
-    TCHAR Buffer[MAX_PATH];
-    GetDlgItemText(Control, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-    if(Buffer[0] == '\0') return false;
-    int n = GetDlgItemInt(Control);
-    if(n) SetDlgItemInt(Control, (n<0)?(-n):n);
-    else SetDlgItemText(Control, _T(""));
-
-    return false;
-}
-
 LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("addimages"));
@@ -127,8 +115,7 @@ LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    MENUITEMINFO mi;
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_FILELIST)) return 0;
@@ -160,31 +147,22 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     hti.pt = ClientPoint;
     ThumbsView.HitTest(&hti);
 
-    if(hti.iItem<0) // 
-    {
-        CMenu FolderMenu;
-        FolderMenu.LoadMenu(IDR_CONTEXTMENU2);
-        CMenuHandle sub(FolderMenu.GetSubMenu(0));
-        bool IsClipboard=    WizardDlg->IsClipboardDataAvailable();
-        sub.EnableMenuItem(IDC_PASTE, (IsClipboard) ? MF_ENABLED : MF_GRAYED);
-        mi.cbSize = sizeof(mi);
-        mi.fMask = MIIM_TYPE;
-        mi.fType = MFT_STRING;
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Add Images"));
-        sub.SetMenuItemInfo(IDC_ADDIMAGES, false, &mi);
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Add Files"));
-        sub.SetMenuItemInfo(IDM_ADDFILES, false, &mi);
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Add folder"));
-        sub.SetMenuItemInfo(IDM_ADDFOLDER, false, &mi);
-        TCHAR buf[MAX_PATH];
-        lstrcpy(buf, TR("Paste"));
-        lstrcat(buf, _T("\t"));
-        lstrcat(buf,Settings.Hotkeys.getByFunc("paste").localKey.toString());
-        mi.dwTypeData = buf;
-        sub.SetMenuItemInfo(IDC_PASTE, false, &mi);
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Remove all"));
-        sub.SetMenuItemInfo(IDC_DELETEALL, false, &mi);
-        sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+    if(hti.iItem < 0) { // no item selected
+        CMenu contextMenu;
+        contextMenu.CreatePopupMenu();
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDIMAGES, TR("Add Images"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFILES, TR("Add Files"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFOLDER, TR("Add folder"));
+
+        CString pasteMenuItemTitle(TR("Paste"));
+        pasteMenuItemTitle += _T("\t");
+        pasteMenuItemTitle += settings->Hotkeys.getByFunc("paste").localKey.toString();
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_PASTE, pasteMenuItemTitle);
+        contextMenu.EnableMenuItem(MENUITEM_PASTE, WizardDlg->IsClipboardDataAvailable() ? MF_ENABLED : MF_GRAYED);
+
+        contextMenu.AppendMenu(MF_SEPARATOR);
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETEALL, TR("Remove all"));
+        contextMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
     else
     {
@@ -194,106 +172,59 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             singleSelectedItem = getSelectedFileName();
             isImage = IuCommonFunctions::IsImage(singleSelectedItem);
         }
-        
-        TCHAR buf[MAX_PATH];
-        RECT r;
-        GetClientRect(&r);
-        menu.LoadMenu(IDR_CONTEXTMENU);
+        CString fileName = FileList[hti.iItem].FileName;
+        bool isImageFile = IuCommonFunctions::IsImage(fileName);
+        bool isVideoFile = IsVideoFile(fileName);
 
-        mi.cbSize = sizeof(mi);
-        mi.fMask = MIIM_TYPE;
-        mi.fType = MFT_STRING;
 
-        CMenuHandle sub(menu.GetSubMenu(0));
-        sub.SetMenuDefaultItem(0, true);
+        CMenu contextMenu;
+        contextMenu.CreatePopupMenu();
+        if (isImageFile && !singleSelectedItem.IsEmpty()) {
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_VIEW, TR("View"));
+            contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
+        }
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Show in default viewer"));
 
-		CString fileName = FileList[hti.iItem].FileName;
-		bool bIsImageFile = IuCommonFunctions::IsImage(fileName);
-		bool isVideoFile = IsVideoFile(fileName);
-
-        if(!bIsImageFile || singleSelectedItem.IsEmpty()){
-            sub.DeleteMenu(IDM_VIEW, MF_BYCOMMAND );
-            sub.DeleteMenu(IDM_EDIT, MF_BYCOMMAND );
-            sub.DeleteMenu(IDM_PRINT, MF_BYCOMMAND );
-			sub.DeleteMenu(IDM_EDITINEXTERNALEDITOR, MF_BYCOMMAND);
-            sub.DeleteMenu(IDM_SEARCHBYIMGITEM, MF_BYCOMMAND);
-            sub.DeleteMenu(IDM_SEARCHBYIMGYANDEX, MF_BYCOMMAND);
+        if (isImageFile && !singleSelectedItem.IsEmpty()) {
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDIT, TR("Edit"));
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_EDITINEXTERNALEDITOR, TR("Open in external editor"));
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_PRINT, TR("Print..."));
         }
 
-		if (!isVideoFile){
-			sub.DeleteMenu(IDM_EXTRACTFRAMES, MF_BYCOMMAND);
-		}
-
-        mi.dwTypeData = const_cast<LPWSTR>(TR("View"));
-        sub.SetMenuItemInfo(IDM_VIEW, false, &mi);
-
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Show in default viewer"));
-        sub.SetMenuItemInfo(IDM_OPENINDEFAULTVIEWER, false, &mi);
-
-        if (bIsImageFile) {
-            mi.dwTypeData = const_cast<LPWSTR>(TR("Print..."));
-            sub.SetMenuItemInfo(IDM_PRINT, false, &mi);
+        if (isVideoFile) {
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_EXTRACTFRAMES, TR("Extract frames"));
         }
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Open in folder"));
-        sub.SetMenuItemInfo(IDM_OPENINFOLDER, false, &mi);
 
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Save as..."));
-        sub.SetMenuItemInfo(IDM_SAVEAS, false, &mi); 
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINFOLDER, TR("Open in folder"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_SAVEAS, TR("Save as..."));
 
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Extract frames"));
-        sub.SetMenuItemInfo(IDM_EXTRACTFRAMES, false, &mi);
-        
+        CString menuItemTitle = (isImage ? TR("Copy image") : TR("Copy")) + CString(_T("\tCtrl+C"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_COPYFILETOCLIPBOARD, menuItemTitle);
 
-        CString menuItemTitle = ( isImage ?  TR("Copy image") : TR("Copy") ) + CString(_T("\tCtrl+C"));
-        lstrcpy(buf, menuItemTitle);
-        mi.dwTypeData  = buf;
-        sub.SetMenuItemInfo(IDM_COPYFILETOCLIPBOARD, false, &mi);
+        menuItemTitle = TR("Copy full path") + CString(_T("\tCtrl+Shift+C"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_COPYFILEPATH, menuItemTitle);
 
-        CString label = TR("Copy full path") + CString(_T("\tCtrl+Shift+C"));
-        mi.dwTypeData = const_cast<LPWSTR>((LPCTSTR)label);
-		sub.SetMenuItemInfo(IDM_COPYFILEPATH, false, &mi);
-
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Remove"));
-        sub.SetMenuItemInfo(IDM_DELETE, false, &mi);
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Properties"));
-        sub.SetMenuItemInfo(IDC_PROPERTIES, false, &mi);
-        
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Edit"));
-        sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
-
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Edit"));
-        sub.SetMenuItemInfo(IDM_EDIT, false, &mi);
-
-        mi.dwTypeData = const_cast<LPWSTR>(TR("Open in external editor"));
-        sub.SetMenuItemInfo(IDM_EDITINEXTERNALEDITOR, false, &mi);
-        
-        sub.EnableMenuItem(IDM_EDIT, bIsImageFile?MF_ENABLED    :MF_GRAYED    );
-
-        if (isImage) {
+        if (isImageFile && !singleSelectedItem.IsEmpty()) {
             CMenu subMenu;
             subMenu.CreatePopupMenu();
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, TR_CONST("data:URI"));
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (HTML)"));
 
-            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURI, TR_CONST("data:URI"));
-            subMenu.AppendMenu(MFT_STRING, IDM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (HTML)"));
-
-            MENUITEMINFO miiNew = { 0 };
-            miiNew.cbSize = sizeof(MENUITEMINFO);
-            miiNew.fMask = MIIM_SUBMENU | MIIM_STRING;
-            miiNew.hSubMenu = subMenu.Detach();   // Detach() to keep the pop-up menu alive
-            miiNew.dwTypeData = TR_CONST("Copy &as...");
-            sub.InsertMenuItem(IDM_SEARCHBYIMGITEM, false, &miiNew);
+            contextMenu.AppendMenu(0, subMenu.Detach(), TR_CONST("Copy &as..."));
 
             CString itemText;
             itemText.Format(TR("Search by image (%s)"), _T("Google"));
-            mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
-            sub.SetMenuItemInfo(IDM_SEARCHBYIMGITEM, false, &mi);
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGITEM, itemText);
 
             itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
-            mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
-            sub.SetMenuItemInfo(IDM_SEARCHBYIMGYANDEX, false, &mi);
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGYANDEX, itemText);
+
         }
 
-        sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_PROPERTIES, TR("Properties"));
+
+        contextMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
     return 0;
 }
@@ -354,8 +285,8 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     imageEditor.showAddToWizardButton(false);
     
     /*ImageEditorWindow::DialogResult dr = */
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, Settings.ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, settings->ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
     
     ThumbsView.OutDateThumb(nCurItem);
     
@@ -802,7 +733,7 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
 LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
     SearchByImage::SearchEngine se = SearchByImage::seGoogle;
-    if (wID == IDM_SEARCHBYIMGYANDEX) {
+    if (wID == MENUITEM_SEARCHBYIMGYANDEX) {
         se = SearchByImage::seYandex;
     }
     CString fileName = getSelectedFileName();

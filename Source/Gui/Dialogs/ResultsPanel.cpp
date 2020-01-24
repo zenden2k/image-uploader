@@ -22,7 +22,7 @@
 
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UploadSettings.h"
-#include "mediainfodlg.h"
+#include "MediaInfoDlg.h"
 #include "LogWindow.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
@@ -740,7 +740,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         mi.fType = MFT_STRING;
         mi.wID = IDC_SHORTENURLITEM;
         CString menuItemTitle;
-        if ( OnShortenUrlChanged ) {
+        if (onShortenUrlChanged_) {
             menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
         } else {
             menuItemTitle.Format(TR("Shorten URL"));
@@ -901,8 +901,8 @@ void CResultsPanel::InitUpload()
 
 LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     shortenUrl_ = !shortenUrl_;
-    if ( OnShortenUrlChanged ) {
-        OnShortenUrlChanged(shortenUrl_);
+    if (onShortenUrlChanged_) {
+        onShortenUrlChanged_(shortenUrl_);
     }
     return 0;
 }
@@ -981,4 +981,8 @@ void CResultsPanel::setRectNeeded(const RECT& rc) {
 
 void CResultsPanel::setShortenUrls(bool shorten) {
     shortenUrl_ = shorten;
+}
+
+void CResultsPanel::setOnShortenUrlChanged(ShortenUrlChangedCallback callback) {
+    onShortenUrlChanged_ = callback;
 }

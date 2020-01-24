@@ -27,6 +27,8 @@ c дефайном USE_OPENSSL и без
 
 Building on Ubuntu:
 sh autogen.sh
-./configure --without-sqlite --with-freeimage  --enable-static --disable-chat --disable-examples --disable-debug CPPFLAGS=-DNDEBUG
+./configure --without-sqlite --with-freeimage  --enable-static --disable-chat --disable-examples --disable-debug --enable-curl-checks=no CPPFLAGS=-DNDEBUG
+./configure --without-sqlite --without-ffmpeg --enable-static --disable-chat --disable-examples --disable-debug --enable-curl-checks=no CPPFLAGS=-DNDEBUG
+
 make
 sudo make install-strip

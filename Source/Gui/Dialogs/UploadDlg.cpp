@@ -34,7 +34,6 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Func/MediaInfoHelper.h"
 #include "Func/IuCommonFunctions.h"
-#include "Core/AppParams.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/UploadListModel.h"
@@ -72,7 +71,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     createToolbar();
 
     resultsWindow_->Create(m_hWnd);
-    resultsWindow_->SetWindowPos(nullptr, &rc, SWP_NOZORDER);
+    resultsWindow_->SetWindowPos(nullptr, &rc, SWP_NOZORDER|SWP_NOSIZE);
     #if  WINVER    >= 0x0601
         // Initializing Windows 7 taskbar related stuff
         //const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
@@ -394,9 +393,10 @@ void CUploadDlg::createToolbar()
         toolbarImageList_.Add(hBitmap, RGB(255, 0, 255));
     }
 
+    RECT placeholderRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TOOLBARPLACEHOLDER);
     RECT rc = { 0, 0, 100, 24 };
     GetClientRect(&rc);
-    rc.top = GuiTools::dlgY(24);
+    rc.top = placeholderRect.top;
     rc.bottom = rc.top + GuiTools::dlgY(16);
     rc.left = GuiTools::dlgX(6);
     rc.right -= GuiTools::dlgX(6);
@@ -412,6 +412,11 @@ void CUploadDlg::createToolbar()
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
     toolbar_.SetWindowPos(GetDlgItem(IDC_PROGRESSGROUPBOX), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+    SIZE toolbarSize;
+    if (toolbar_.GetMaxSize(&toolbarSize)) {
+       
+        toolbar_.SetWindowPos(nullptr, 0, 0, rc.right - rc.left, toolbarSize.cy, SWP_NOZORDER|SWP_NOMOVE);
+    }
     toolbar_.ShowWindow(SW_SHOW);
 }
 

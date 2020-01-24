@@ -63,6 +63,7 @@ BEGIN
     LTEXT           "100%",IDC_COMMONPERCENTS,346,10,29,8
     LTEXT           "Static",IDC_RESULTSPLACEHOLDER,7,51,385,187,NOT WS_VISIBLE
     CONTROL         "",IDC_UPLOADTABLE,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,6,51,373,179
+    LTEXT           "Static",IDC_TOOLBARPLACEHOLDER,6,29,372,13,NOT WS_VISIBLE
 END
 
 IDD_SCREENSHOTDLG DIALOGEX 0, 0, 195, 212
@@ -1395,46 +1396,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Menu
-//
-
-IDR_CONTEXTMENU MENU
-BEGIN
-    POPUP "0"
-    BEGIN
-        MENUITEM "Просмотр",                    IDM_VIEW
-        MENUITEM "#IDM_OPENINDEFAULTVIEWER",    IDM_OPENINDEFAULTVIEWER
-        MENUITEM "Edit",                        IDM_EDIT
-        MENUITEM "#Edit in external editor",    IDM_EDITINEXTERNALEDITOR
-        MENUITEM "#Print",                      IDM_PRINT
-        MENUITEM "Extract frames",              IDM_EXTRACTFRAMES
-        MENUITEM "Open in folder",              IDM_OPENINFOLDER
-        MENUITEM "Save as...",                  IDM_SAVEAS
-        MENUITEM "Копировать",                  IDM_COPYFILETOCLIPBOARD
-        MENUITEM "#Copy full path",             IDM_COPYFILEPATH
-        MENUITEM "#Search by image (Google)",   IDM_SEARCHBYIMGITEM
-        MENUITEM "#Search by image (Yandex)",   IDM_SEARCHBYIMGYANDEX
-        MENUITEM "Удалить\tDel",                IDM_DELETE
-        MENUITEM "Свойства",                    IDC_PROPERTIES
-    END
-END
-
-IDR_CONTEXTMENU2 MENU
-BEGIN
-    POPUP "0"
-    BEGIN
-        MENUITEM "1",                           IDC_ADDIMAGES
-        MENUITEM "Add files",                   IDM_ADDFILES
-        MENUITEM "2",                           IDM_ADDFOLDER
-        MENUITEM "3",                           IDC_PASTE
-        MENUITEM SEPARATOR
-        MENUITEM "4",                           IDC_DELETEALL
-    END
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Icon
 //
 
@@ -1685,6 +1646,11 @@ BEGIN
 END
 
 IDD_HISTORYWINDOW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_UPLOADDLG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

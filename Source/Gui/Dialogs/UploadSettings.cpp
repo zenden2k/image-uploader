@@ -185,6 +185,13 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
         CurrentToolbar.AutoSize();
         CurrentToolbar.SetWindowPos(i == 0 ? GetDlgItem(IDC_IMAGESERVERGROUPBOX) : Toolbar.m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        SIZE toolbarSize;
+        if (CurrentToolbar.GetMaxSize(&toolbarSize)) {
+            RECT rc = i ? Toolbar2Rect : Toolbar1Rect;
+            rc.top = rc.top + (rc.bottom - rc.top - toolbarSize.cy) / 2;
+            CurrentToolbar.SetWindowPos(nullptr, &rc, SWP_NOZORDER);
+        }
+
     }
 
     Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);

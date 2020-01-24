@@ -399,8 +399,9 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
             iconSourceFileName = Utf8ToWCstring(it2->directUrl);
         HICON ico = getIconForExtension(iconSourceFileName);
         CString text = Utf8ToWstring(fileName).c_str();
-        int iconWidth= 32;
-        int iconHeight = 32;
+        GuiTools::IconInfo info = GuiTools::GetIconInfo(ico);
+        int iconWidth= info.nWidth;
+        int iconHeight = info.nHeight;
         HistoryTreeItem * hti  = reinterpret_cast<HistoryTreeItem*>(item->userData());
         
         if(draw)

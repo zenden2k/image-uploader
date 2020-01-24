@@ -20,13 +20,15 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Func/common.h"
+#include "Func/Common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
 #include "Func/MyEngineList.h"
-#include <mutex>
+
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
@@ -73,8 +75,8 @@ class CResultsPanel :
             NOTIFY_HANDLER(IDC_RESULTSTOOLBAR, TBN_DROPDOWN, OnOptionsDropDown);
             NOTIFY_HANDLER_EX(IDC_RESULTSTOOLBAR, NM_CUSTOMDRAW, OnResulttoolbarNMCustomDraw)
         END_MSG_MAP()
+    using ShortenUrlChangedCallback = std::function<void(bool)>;
 
-    fastdelegate::FastDelegate1<bool> OnShortenUrlChanged;
     enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
     enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
     enum { kOutputTimer = 1};
@@ -127,6 +129,7 @@ class CResultsPanel :
     std::mutex& outputMutex();
     void setRectNeeded(const RECT& rc);
     void setShortenUrls(bool shorten);
+    void setOnShortenUrlChanged(ShortenUrlChangedCallback callback);
 protected:
     CToolBarCtrl Toolbar;
     CComboBox codeTypeComboBox;
@@ -146,6 +149,7 @@ protected:
     RECT rectNeeded;
     bool shortenUrl_;
     bool openedFromHistory_;
+    ShortenUrlChangedCallback onShortenUrlChanged_;
     
     void BBCode_Link(CString &Buffer, CUrlListItem &item);
     void Markdown_Link(CString &Buffer, CUrlListItem &item);

@@ -47,7 +47,6 @@
 #define IDD_IMAGEREUPLOADER             148
 #define IDD_SHORTENURL                  149
 #define IDD_ADDDIRECTORYSERVERDLG       150
-#define IDR_CONTEXTMENU                 202
 #define IDI_GRAB                        207
 #define IDI_IMAGES                      209
 #define IDB_BITMAP1                     214
@@ -57,7 +56,6 @@
 #define IDI_ICONINFO                    219
 #define IDI_ICON1                       220
 #define IDI_ICONREGION                  220
-#define IDR_CONTEXTMENU2                222
 #define IDI_CLIPBOARD                   223
 #define IDR_PNG1                        224
 #define IDR_PNG2                        225
@@ -706,50 +704,33 @@
 #define ID_VIEW_DELETE                  32775
 #define ID_VIEW                         32776
 #define ID_DELETE                       32777
-#define IDM_VIEW                        32778
-#define IDM_DELETE                      32779
 #define ID_PROPERTIES                   32780
 #define ID_VIEW_VIEW                    32781
 #define ID_0_32782                      32782
 #define ID_0_EDIT                       32783
-#define IDM_EDIT                        32784
 #define ID_0_32785                      32785
 #define ID_0_32786                      32786
 #define ID_0_32787                      32787
-#define IDC_PASTE                       32788
 #define ID_0_32789                      32789
-#define IDM_ADDFOLDER                   32790
 #define IC_DELETEALL                    32791
-#define IDC_DELETEALL                   32792
 #define ID_0_OPENINOLDER                32793
 #define ID_0_OPENFINOLDER               32794
 #define IDM_OPENFINOLDER                32795
-#define IDM_OPENINFOLDER                32796
 #define ID_Menu                         32797
-#define IDM_ADDFILES                    32798
 #define ID_Menu32799                    32799
 #define ID_0_32800                      32800
-#define IDM_COPYFILETOCLIPBOARD         32801
-#define IDM_SAVEAS                      32802
 #define ID_0_SAVEAS                     32802
 #define ID_0_EDITINEXTERNALEDITOR       32803
-#define IDM_EDITINEXTERNALEDITOR        32804
 #define ID_Menu32805                    32805
 #define ID__DATA                        32806
 #define ID__DATA32807                   32807
 #define ID_0_                           32808
-#define IDM_COPYFILEPATH                32809
 #define ID_0_EXTRACTFRAMES              32810
-#define IDM_EXTRACTFRAMES               32811
 #define ID_Menu32812                    32812
-#define IDM_OPENINDEFAULTVIEWER         32813
 #define ID_0_32814                      32814
-#define IDM_PRINT                       32815
 #define ID_Menu32816                    32816
 #define ID_SEARCHBYIMGITEM              32817
-#define IDM_SEARCHBYIMGITEM             32818
 #define ID_0_32819                      32819
-#define IDM_SEARCHBYIMGYANDEX           32820
 
 // Next default values for new objects
 // 

@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <functional>
+
 #include "atlheaders.h"
 #include "resource.h"       
 #include "ResultsPanel.h"
@@ -55,7 +57,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void EnableMediaInfo(bool Enable);
         DLGTEMPLATE* GetTemplate();
         std::mutex& outputMutex();
-        void setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd); 
+        void setOnShortenUrlChanged(std::function<void(bool)> fd); 
         void setShortenUrls(bool shorten);
         bool copyResultsToClipboard();
         enum { IDD = IDD_RESULTSWINDOW };

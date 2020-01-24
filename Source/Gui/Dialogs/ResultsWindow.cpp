@@ -46,8 +46,8 @@ CResultsWindow::~CResultsWindow()
     }
 }
 
-void CResultsWindow::setOnShortenUrlChanged(fastdelegate::FastDelegate1<bool> fd) {
-    ResultsPanel->OnShortenUrlChanged = fd;
+void CResultsWindow::setOnShortenUrlChanged(std::function<void(bool)> fd) {
+    ResultsPanel->setOnShortenUrlChanged(fd);
 }
 
 LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

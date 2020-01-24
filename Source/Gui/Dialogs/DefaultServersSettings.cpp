@@ -20,7 +20,7 @@
 
 #include "DefaultServersSettings.h"
 
-#include "Func/common.h"
+#include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "WizardDlg.h"

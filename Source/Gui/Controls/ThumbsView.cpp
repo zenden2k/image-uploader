@@ -31,6 +31,7 @@
 #include "Core/Images/Utils.h"
 #include "Func/IuCommonFunctions.h"
 #include "Gui/CommonDefines.h"
+#include "Gui/Dialogs/MainDlg.h"
 
 #define THUMBNAIL_WIDTH 170   // constants
 #define THUMBNAIL_HEIGHT 120
@@ -643,7 +644,7 @@ void CThumbsView::NotifyItemCountChanged(bool selected) {
 }
 
 bool CThumbsView::CopySelectedItemsToClipboard() const {
-    return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(IDM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
+    return ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CMainDlg::MENUITEM_COPYFILETOCLIPBOARD, 0), 0) != FALSE;
 }
 
 LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {

@@ -268,7 +268,7 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
 {
     bool result = false;
     HDC dc = ::GetDC(0);
-    int64_t FileSize = IuCoreUtils::getFileSize(W2U((imageFile)));
+    int64_t FileSize = IuCoreUtils::getFileSize(W2U(imageFile));
 
     // Saving thumbnail (without template)
     GdiPlusImage src(bm, false);

@@ -22,8 +22,7 @@
 
 #include "Core/Images/Utils.h"
 
-using namespace Gdiplus;
-// CMyImage
+
 CProgressRingControl::CProgressRingControl() :
     backBufferBm_(nullptr),
     oldBm_(nullptr),
@@ -47,6 +46,7 @@ CProgressRingControl::~CProgressRingControl()
 
 LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
+    using namespace Gdiplus;
     PAINTSTRUCT ps;
     HDC hdc;
     bHandled = true;
@@ -73,7 +73,7 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
     LinearGradientBrush lgBrush(Rect(-1, -1, arcWidth+10, arcWidth + 10),
         Color().Black, Color(0, 200, 200, 200), timerCounter_);
     Pen p(&lgBrush, penSize);
-    graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, timerCounter_, 300);
+    graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, timerCounter_, 180);
 
     
     BitBlt(hdc, 0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);
@@ -123,7 +123,7 @@ void CProgressRingControl::initControl() {
 
     backBufferDc_ = ::CreateCompatibleDC(dc);
     backBufferBm_ = ::CreateCompatibleBitmap(dc, backBufferWidth_, backBufferHeight_);
-    oldBm_ = (HBITMAP)::SelectObject(backBufferDc_, backBufferBm_);
+    oldBm_ = static_cast<HBITMAP>(::SelectObject(backBufferDc_, backBufferBm_));
 
     SetTimer(kTimerId, 50);
 }
