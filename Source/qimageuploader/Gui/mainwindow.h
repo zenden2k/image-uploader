@@ -31,6 +31,7 @@ private slots:
     void on_actionGrab_frames_triggered();
     void on_actionScreenshot_triggered();
     void on_actionAdd_files_triggered();
+    void on_actionAboutProgram_triggered();
 	void itemDoubleClicked(const QModelIndex &index);
 	void onCustomContextMenu(const QPoint &point);
 	void onShowLog();

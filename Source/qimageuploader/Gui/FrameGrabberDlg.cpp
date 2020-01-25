@@ -8,6 +8,7 @@
 #include "Core/Video/QtImage.h"
 #include "Core/AppParams.h"
 #include <QDesktopServices>
+#include <QDebug>
 
 Q_DECLARE_METATYPE(AbstractImage*)
 
@@ -44,11 +45,15 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
 		return;
 	}
     QString timeString = U2Q(timeStr);
-    QImage img = static_cast<QtImage*>(image.get())->toQImage();
+	auto qtImage = dynamic_cast<QtImage*>(image.get());
+	if (!qtImage) {
+	    return;
+	}
+    QImage img = qtImage->toQImage();
 
     if (!img.isNull()) {
-       
-        QTemporaryFile f(U2Q(AppParams::instance()->tempDirectory()) + "/grab_XXXXXX.png");
+        QString tempDirectory = U2Q(AppParams::instance()->tempDirectory());
+        QTemporaryFile f(tempDirectory + "/grab_XXXXXX.png");
         f.setAutoRemove(false);
         QString uniqueFileName;
         if (f.open()) {
@@ -57,7 +62,6 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
         }
         if (!uniqueFileName.isEmpty()) {
             if (img.save(uniqueFileName)) {
-                
                 QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
                 
                 QMetaObject::invokeMethod(this, "frameGrabbedSlot", Qt::BlockingQueuedConnection,
@@ -65,11 +69,6 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
             }
         }
     }
-
-    
-		
-	//ui->listWidget->settext(Qt::AlignCenter);
-   // ui->label->setPixmap(QPixmap::fromImage(image) );
 }
 
 void FrameGrabberDlg::frameGrabbedSlot(QString timeStr, QString fileName, QIcon ico) {
@@ -87,7 +86,7 @@ void FrameGrabberDlg::on_grabButton_clicked()
 	ui->stopButton->setVisible(true);
 	ui->browseButton->setEnabled(false);
 
-	grabber_.reset(new VideoGrabber());
+	grabber_ = std::make_unique<VideoGrabber>();
 	grabber_->setVideoEngine(static_cast<VideoGrabber::VideoEngine>(ui->comboBox->currentData().toInt()));
     using namespace std::placeholders;
 	grabber_->setOnFrameGrabbed(std::bind(&FrameGrabberDlg::frameGrabbed, this, _1, _2, _3));

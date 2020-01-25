@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
+    <width>603</width>
     <height>438</height>
    </rect>
   </property>
@@ -57,12 +57,15 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
-     <height>21</height>
+     <width>603</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>Main toolbar</string>
+   </property>
    <property name="movable">
     <bool>false</bool>
    </property>
@@ -82,12 +85,14 @@
    <addaction name="actionSettings"/>
    <addaction name="actionScreenshot"/>
    <addaction name="actionGrab_frames"/>
+   <addaction name="separator"/>
+   <addaction name="actionAboutProgram"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionAdd_files">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">
-     <normaloff>:/res/add.png</normaloff>:/res/add.png</iconset>
+     <normaloff>:/res/icon-plus.png</normaloff>:/res/icon-plus.png</iconset>
    </property>
    <property name="text">
     <string>Upload files</string>
@@ -105,7 +110,7 @@
   <action name="actionSettings">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">
-     <normaloff>:/res/settings.png</normaloff>:/res/settings.png</iconset>
+     <normaloff>:/res/icon-settings.png</normaloff>:/res/icon-settings.png</iconset>
    </property>
    <property name="text">
     <string>Settings</string>
@@ -114,7 +119,7 @@
   <action name="actionGrab_frames">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">
-     <normaloff>:/res/grabmovie.ico</normaloff>:/res/grabmovie.ico</iconset>
+     <normaloff>:/res/icon-movie.png</normaloff>:/res/icon-movie.png</iconset>
    </property>
    <property name="text">
     <string>Import video</string>
@@ -123,10 +128,19 @@
   <action name="actionScreenshot">
    <property name="icon">
     <iconset resource="../../qimageuploader.qrc">
-     <normaloff>:/res/screenshot.ico</normaloff>:/res/screenshot.ico</iconset>
+     <normaloff>:/res/icon-screenshot.png</normaloff>:/res/icon-screenshot.png</iconset>
    </property>
    <property name="text">
     <string>Screenshot</string>
+   </property>
+  </action>
+  <action name="actionAboutProgram">
+   <property name="icon">
+    <iconset resource="../../qimageuploader.qrc">
+     <normaloff>:/res/icon-information.png</normaloff>:/res/icon-information.png</iconset>
+   </property>
+   <property name="text">
+    <string>About program</string>
    </property>
   </action>
  </widget>

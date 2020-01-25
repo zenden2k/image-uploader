@@ -25,6 +25,7 @@
 #include "ResultsWindow.h"
 #include "Gui/LogWindow.h"
 #include "Core/OutputCodeGenerator.h"
+#include "AboutDialog.h"
 
 
 MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
@@ -299,4 +300,9 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
 void MainWindow::onShowLog() {
     logWindow_->show();
     logWindow_->activateWindow();
+}
+
+void MainWindow::on_actionAboutProgram_triggered() {
+    AboutDialog dlg(this);
+    dlg.exec();
 }

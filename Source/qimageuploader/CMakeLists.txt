@@ -35,6 +35,7 @@ set(SOURCE_FILES
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
     Gui/LoginDialog.cpp
+    Gui/AboutDialog.cpp
     ../Core/ScreenCapture/ScreenCapture.cpp
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
@@ -51,6 +52,7 @@ set(SOURCE_FILES
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui
     Gui/ui/LoginDialog.ui
+	Gui/ui/AboutDialog.ui
     qimageuploader.qrc
 )
 

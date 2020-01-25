@@ -65,7 +65,7 @@ set(Boost_USE_MULTITHREADED ON)
 
 if (NOT WIN32) 
     find_package(Boost COMPONENTS filesystem system locale thread program_options REQUIRED)
-    find_package(OpenSSL REQUIRED)
+    #find_package(OpenSSL REQUIRED)
     message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
     message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
     add_definitions(-DUSE_OPENSSL -DUSE_FREEIMAGE)
@@ -119,8 +119,10 @@ if(WIN32)
 
     list(APPEND COMMON_LIBS_LIST libcurl Oleacc glog minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib Crypt32 Wldap32)
 else()
-    list(APPEND COMMON_LIBS_LIST curl ssl crypto glog pthread uv rt sqlite3 freeimage gflags ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
+    list(APPEND COMMON_LIBS_LIST dl z base64 curl ssl crypto glog pthread uv_a rt sqlite3 freeimage gflags ${Boost_LIBRARIES})
+    SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
+# ${OPENSSL_LIBRARIES}
 
 add_subdirectory(Core)	
 add_subdirectory(CLI)	

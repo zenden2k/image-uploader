@@ -24,7 +24,7 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
     serverListComboBox = new QComboBox(this);
 
     accountButton = new QToolButton(this);
-    accountButton->setIcon(QIcon(":/res/icon-user.ico"));
+    accountButton->setIcon(QIcon(":/res/icon-user.png"));
     accountButton->setText(tr("<without account>"));
     accountButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     accountButton->setPopupMode(QToolButton::MenuButtonPopup);
