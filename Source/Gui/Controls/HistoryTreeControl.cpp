@@ -51,10 +51,6 @@ CHistoryTreeControl::~CHistoryTreeControl()
     }
 }
 
-void CHistoryTreeControl::Init()
-{
-}
-
 void CHistoryTreeControl::CreateDownloader()
 {
     using namespace std::placeholders;

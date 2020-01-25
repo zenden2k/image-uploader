@@ -45,7 +45,6 @@ CHistoryWindow::~CHistoryWindow()
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow();
     DlgResize_Init();
     dateFromPicker_ = GetDlgItem(IDC_DATEFROMPICKER);
@@ -80,7 +79,8 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         m_wndAnimation.ShowWindow(SW_HIDE);
     }
 
-    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(Settings.HistorySettings.EnableDownloading));
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_SETCHECK, static_cast<WPARAM>(settings->HistorySettings.EnableDownloading));
     //SelectedMonthChanged();
     initSearchForm();
     dateFromCheckboxChanged();
@@ -96,11 +96,11 @@ BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 
 LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     delayed_closing_ = true;
     if(!m_treeView.isRunning())
     {
-        Settings.HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
+        settings->HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
         EndDialog(0);
     }
     else

@@ -18,14 +18,14 @@
     
 */
 
-#include <math.h>
-#include <curl/curl.h>
+#include <cmath>
 #include <iostream>
-#include <fstream>
-#include <signal.h>
 #include <condition_variable>
-
 #include <boost/format.hpp>
+
+#include <curl/curl.h>
+#include <signal.h>
+
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClientFactory.h"
@@ -48,6 +48,7 @@
 #include "ConsoleScriptDialogProvider.h"
 #include "Core/Utils/ConsoleUtils.h"
 #include "Core/Scripting/ScriptsManager.h"
+
 #ifdef _WIN32
     #include <windows.h>
     #include "Func/UpdatePackage.h"
