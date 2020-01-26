@@ -99,11 +99,11 @@ int main(int argc, char *argv[])
     }
 #ifndef _WIN32
    else {
-dataFolder = "/usr/share/qimageuploader/";
+dataFolder = "/usr/share/zenden2k-imageuploader/";
    }
 
 #ifndef __APPLE__
-settingsFolder = getenv("HOME")+QString("/.config/qimageuploader/");
+settingsFolder = getenv("HOME")+QString("/.config/zenden2k-imageuploader/");
 QDir settingsDir = QDir::root();
 settingsDir.mkpath(settingsFolder);
 #endif

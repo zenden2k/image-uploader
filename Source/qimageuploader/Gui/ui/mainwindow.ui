@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>qimageuploader</string>
+   <string>Zenden2k Image Uploader (Qt GUI)</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../../qimageuploader.qrc">

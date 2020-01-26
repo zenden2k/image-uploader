@@ -46,6 +46,7 @@ set(SOURCE_FILES
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
     Gui/controls/ServerSelectorWidget.cpp
+    Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui

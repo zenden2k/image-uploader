@@ -154,6 +154,16 @@
       </widget>
      </item>
      <item>
+      <widget class="ProgressRingWidget" name="progressRing" native="true">
+       <property name="minimumSize">
+        <size>
+         <width>32</width>
+         <height>32</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -185,6 +195,12 @@
    <class>MyListWidget</class>
    <extends>QListWidget</extends>
    <header>Gui/controls/MyListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ProgressRingWidget</class>
+   <extends>QWidget</extends>
+   <header>Gui/controls/ProgressRingWidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

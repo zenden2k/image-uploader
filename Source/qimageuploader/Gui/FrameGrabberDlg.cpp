@@ -30,6 +30,7 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
     ui->comboBox->addItem("Directshow2", QVariant(int(VideoGrabber::veDirectShow2)));
 #endif
+    ui->progressRing->hide();
 	connect(ui->stopButton, &QPushButton::clicked, this, &FrameGrabberDlg::onStopButtonClicked);
     connect(ui->listWidget, &QListWidget::doubleClicked, this, &FrameGrabberDlg::itemDoubleClicked);
 
@@ -97,6 +98,7 @@ void FrameGrabberDlg::on_grabButton_clicked()
 		frameCount = 10;
 	}
 	grabber_->setFrameCount(frameCount);
+    ui->progressRing->show();
 	grabber_->grab(Q2U(ui->lineEdit->text()));
 }
 
@@ -119,6 +121,7 @@ void FrameGrabberDlg::grabFinishedSlot() {
     ui->stopButton->setVisible(false);
     ui->browseButton->setEnabled(true);
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    ui->progressRing->hide();
 }
 
 void FrameGrabberDlg::onStopButtonClicked() {
