@@ -107,12 +107,6 @@
         </Actions>
         <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
      </Server>
-     <Server Name="picimage.net" Authorize="0" MaxFileSize="3145728" Debug="0">
-		<Actions>
-			<Action Type="upload" Url="http://picimage.net/upload.php?0.$(_RAND16BITS)" PostParams="Filename=$(_FILENAME);http_import=0;thumbSize=$(_THUMBWIDTH);path_id=1;fileext=*.jpg\;*.gif\;*.png\;*.jpeg\;*.JPG\;*.GIF\;*.PNG\;*.JPEG;remote_upload=0;png_convert=0;rotateTo=0;fromjQuery=0;quality=85;safeResize=1;folder=/;image_file=%filename%;Upload=Submit Query" RegExp="\[url=(.*?)\]\[img\](.*?)\[\/img\]([\s\S]*?)\[img\](.*?)\[\/img\]" AssignVars="ViewUrl:0;Thumb:1;Image:3"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" DownloadUrlTemplate="$(ViewUrl)" ThumbUrlTemplate="$(Thumb)"/>
-     </Server>
 	<!--<Server Name="pix.am"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>
@@ -148,13 +142,13 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(ViewUrl)" ImageUrlTemplate="$(ImageUrl)"/>
 	</Server>
-	<Server Name="load.to" FileHost="1" Debug="0">
+	<!--<Server Name="load.to" FileHost="1" Debug="0">
 		<Actions>
-			<Action Type="get" Url="http://load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
+			<Action Type="get" Url="https://www.load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
 			<Action Type="upload" Url="http:$(_UploadUrl)" PostParams="upload_range=1;upfile_0=%filename%;email=;filecomment=;" RegExp="Download:([\s\S]+?)href=&quot;(https://www.load.to/.+?/[^&quot;]+)&quot;" AssignVars="DownloadUrl:1" />
 		</Actions>
 		<Result DownloadUrlTemplate="$(DownloadUrl)"/>
-	</Server>
+	</Server>-->
 	<Server Name="dfiles.ru" Debug="0" FileHost="1" Authorize="1">
 		<Actions>
 			<Action Type="login" Url="http://dfiles.ru/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
@@ -275,8 +269,8 @@
 		<Actions>
 			<Action 
 				Type="get"
-				Url="http://tinyurl.com/create.php?source=indexpage&amp;url=$(_ORIGINALURL|urlencode)&amp;submit=Make+TinyURL&amp;alias="
-				RegExp='https:\/\/preview\.tinyurl\.com\/(\w+)'
+				Url="http://tinyurl.com/api-create.php?url=$(_ORIGINALURL|urlencode)"
+				RegExp='tinyurl\.com\/(\w+)'
 				AssignVars="surl:0"
 			/>
 		</Actions>
@@ -293,9 +287,6 @@
 			<Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>
 		<Result DirectUrlTemplate="$(ShortUrl)" />
-	</Server2>
-	<Server2 Name="5cm.ru" Type="image" Plugin="5cm"  >
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" ViewUrlTemplate="stub"/>
 	</Server2>
 	<Server3 Name="vk.cc" Authorize="0" Type="urlshortening" Plugin="vk.cc" NeedPassword="0" >
 		<Result DirectUrlTemplate="stub"/>
@@ -329,12 +320,6 @@
 	</Server3>
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-	<Server Name="picplus.ru" MaxFileSize="5242880">
-		<Actions>
-			<Action Type="upload" Url="http://picplus.ru/upload.php" PostParams="userfile1=%filename%;thumb_size=$(_THUMBWIDTH);check_orent=h;texttype=dimensions;text=;" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;DownloadUrl:2;Thumb:3;"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(DownloadUrl)"/>
 	</Server>
 	<!--<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
 		<Actions>
