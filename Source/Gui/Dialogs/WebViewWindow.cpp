@@ -9,7 +9,8 @@
 
 HWND CWebViewWindow::window = 0;
  //CWebViewWindow* CWebViewWindow::instance = 0;
-CWebViewWindow::CWebViewWindow() : subclassWindow_(this), callback_(HookCallback(this, &CWebViewWindow::CBTHook)) {
+CWebViewWindow::CWebViewWindow() : subclassWindow_(this), 
+        callback_(std::bind(&CWebViewWindow::CBTHook, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {
     //instance = this;
     isModal_ = false;
     captureActivate_ = false;
@@ -254,6 +255,14 @@ void CWebViewWindow::handleDialogCreation(HWND wnd, bool fromHook)
     }
 }
 
+void CWebViewWindow::setOnTimerCallback(std::function<void()> cb) {
+    onTimer_ = cb;
+}
+
+void CWebViewWindow::setOnFileFieldFilledCallback(std::function<void(const CString&)> cb) {
+    onFileFieldFilled_ = cb;
+}
+
 void CWebViewWindow::SetFillTimer()
 {
     PostMessage(WM_SETFILLTIMER);
@@ -340,8 +349,8 @@ LRESULT CWebViewWindow::OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if ( wParam == kUserTimer && onTimer ) {
-        onTimer();
+    if ( wParam == kUserTimer && onTimer_ ) {
+        onTimer_();
         return 0;
     } /*else if ( wParam == kMessageLoopTimeoutTimer ) {
         KillTimer(kMessageLoopTimeoutTimer);
@@ -367,8 +376,8 @@ LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
                 ::SetActiveWindow(activeWindowBeforeFill_);
                 activeWindowBeforeFill_ = 0; 
                 KillTimer(1);
-                if (onFileFieldFilled ) {
-                    onFileFieldFilled(uploadFileName_);
+                if (onFileFieldFilled_ ) {
+                    onFileFieldFilled_(uploadFileName_);
                 }
                 UnhookWindowsHookEx(hook_);
                 hook_ = 0;
@@ -402,8 +411,8 @@ LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
                         activeWindowBeforeFill_ = 0; 
                         //fileDialogEvent_.PulseEvent();
                         KillTimer(1);
-                        if (onFileFieldFilled ) {
-                            onFileFieldFilled(uploadFileName_);
+                        if (onFileFieldFilled_ ) {
+                            onFileFieldFilled_(uploadFileName_);
                         }
                         UnhookWindowsHookEx(hook_);
                         hook_ = 0;
@@ -587,8 +596,8 @@ LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /
             if ( webViewWindow_->compareFileNameWithFileInputField() ) {
 
                 KillTimer(kFillTimerId);
-                if (webViewWindow_->onFileFieldFilled ) {
-                    webViewWindow_->onFileFieldFilled(webViewWindow_->uploadFileName_);
+                if (webViewWindow_->onFileFieldFilled_ ) {
+                    webViewWindow_->onFileFieldFilled_(webViewWindow_->uploadFileName_);
                 }
                 webViewWindow_->uploadFileName_.Empty();
                 editControl_ = 0;
@@ -613,8 +622,8 @@ LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /
                         webViewWindow_->activeWindowBeforeFill_ = 0; 
                         //fileDialogEvent_.PulseEvent();
                         KillTimer(kFillTimerId);
-                        if (webViewWindow_->onFileFieldFilled ) {
-                            webViewWindow_->onFileFieldFilled(webViewWindow_->uploadFileName_);
+                        if (webViewWindow_->onFileFieldFilled_ ) {
+                            webViewWindow_->onFileFieldFilled_(webViewWindow_->uploadFileName_);
                         }
                         webViewWindow_->uploadFileName_.Empty();
                             return 0;

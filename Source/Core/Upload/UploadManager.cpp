@@ -15,13 +15,13 @@ UploadManager::UploadManager(UploadEngineManager* uploadEngineManager,
 CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, threadCount)
 {
     uploadEngineManager_ = uploadEngineManager;
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    using namespace std::placeholders;
+    settingsChangedConnection_ = settings->onChange.connect(std::bind(&UploadManager::settingsChanged, this, _1));
 }
 
 UploadManager::~UploadManager() {
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    Settings->removeChangeCallback(BasicSettings::ChangeCallback(this, &UploadManager::settingsChanged));
+    settingsChangedConnection_.disconnect();
 }
 
 bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter)
@@ -47,7 +47,7 @@ bool UploadManager::shortenLinksInSession(std::shared_ptr<UploadSession> session
 void UploadManager::sessionAdded(UploadSession* session)
 {
     CFileQueueUploader::sessionAdded(session);
-    session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &UploadManager::onSessionFinished));
+    session->addSessionFinishedCallback(std::bind(&UploadManager::onSessionFinished, this, std::placeholders::_1));
 }
 
 void UploadManager::onSessionFinished(UploadSession* uploadSession)
@@ -122,7 +122,7 @@ void UploadManager::taskAdded(UploadTask* task)
     {
         return ;
     }
-    task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &UploadManager::onTaskFinished));
+    task->onTaskFinished.connect(std::bind(&UploadManager::onTaskFinished, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void UploadManager::settingsChanged(BasicSettings* settings)

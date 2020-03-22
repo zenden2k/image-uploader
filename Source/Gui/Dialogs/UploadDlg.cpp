@@ -26,7 +26,6 @@
 #include "Gui/Dialogs/LogWindow.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
-#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Upload/FileQueueUploader.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UploadManager.h"
@@ -46,7 +45,8 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsW
     backgroundThreadStarted_ = false;
     isEnableNextButtonTimerRunning_ = false;
     uploadManager_ = uploadManager;
-    resultsWindow_->setOnShortenUrlChanged(fastdelegate::MakeDelegate(this, &CUploadDlg::onShortenUrlChanged));
+    using namespace std::placeholders;
+    resultsWindow_->setOnShortenUrlChanged(std::bind(&CUploadDlg::onShortenUrlChanged, this, _1));
     #if  WINVER    >= 0x0601
         ptl = nullptr;
     #endif
@@ -139,14 +139,14 @@ bool CUploadDlg::startUpload() {
         task->setIsImage(isImage);
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
         task->setUrlShorteningServer(Settings.urlShorteningServer);
+        using namespace std::placeholders;
+        task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+        task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
 
-        task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
-        task->addChildTaskAddedCallback(UploadTask::ChildTaskAddedCallback(this, &CUploadDlg::onChildTaskAdded));
-
-        task->OnFolderUsed.bind(this, &CUploadDlg::OnFolderUsed);
+        task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
         uploadSession_->addTask(task);
     }
-    uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CUploadDlg::onSessionFinished));
+    uploadSession_->addSessionFinishedCallback(std::bind(&CUploadDlg::onSessionFinished, this, std::placeholders::_1));
 
     uploadListModel_ = std::make_unique<UploadListModel>(uploadSession_);
     uploadListView_.SetModel(uploadListModel_.get());
@@ -619,7 +619,8 @@ void CUploadDlg::onChildTaskAdded(UploadTask* child)
             backgroundThreadStarted();
         });
     }
-    child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CUploadDlg::onTaskFinished));
+    using namespace std::placeholders;
+    child->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
 }
 
 void CUploadDlg::backgroundThreadStarted()

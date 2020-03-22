@@ -45,10 +45,10 @@ CUploader::~CUploader(void)
 
 void CUploader::Cleanup()
 {
-    m_CurrentEngine->onDebugMessage.clear();
-    m_CurrentEngine->onNeedStop.clear();
-    m_CurrentEngine->onStatusChanged.clear();
-    m_CurrentEngine->onErrorMessage.clear();
+    m_CurrentEngine->setOnDebugMessageCallback(nullptr);
+    m_CurrentEngine->setOnNeedStopCallback(nullptr);
+    m_CurrentEngine->setOnStatusChangedCallback(nullptr);
+    m_CurrentEngine->setOnErrorMessageCallback(nullptr);
 }
 
 int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dlnow, double ultotal, double ulnow)
@@ -93,8 +93,9 @@ int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dl
     }
     uploader->currentTask_->uploadProgress(uploader->m_PrInfo);
 
-    if (uploader->onProgress)
-        uploader->onProgress(uploader, uploader->m_PrInfo);
+    if (uploader->onProgress_) {
+        uploader->onProgress_(uploader, uploader->m_PrInfo);
+    }
     return 0;
 }
 
@@ -134,15 +135,17 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     m_PrInfo.Uploaded = 0;
     m_FileName = FileName;
     m_bShouldStop = false;
-    if (onConfigureNetworkClient)
-        onConfigureNetworkClient(this, m_NetworkClient.get());
+    if (onConfigureNetworkClient_) {
+        onConfigureNetworkClient_(this, m_NetworkClient.get());
+    }
     m_NetworkClient->setLogger(nullptr);
 
     m_CurrentEngine->setNetworkClient(m_NetworkClient.get());
-    m_CurrentEngine->onDebugMessage.bind(this, &CUploader::DebugMessage);
-    m_CurrentEngine->onNeedStop.bind(this, &CUploader::needStop);
-    m_CurrentEngine->onStatusChanged.bind(this, &CUploader::SetStatus);
-    m_CurrentEngine->onErrorMessage.bind(this, &CUploader::ErrorMessage);
+    using namespace std::placeholders;
+    m_CurrentEngine->setOnDebugMessageCallback(std::bind(&CUploader::DebugMessage, this, _1, _2));
+    m_CurrentEngine->setOnNeedStopCallback(std::bind(&CUploader::needStop, this));
+    m_CurrentEngine->setOnStatusChangedCallback(std::bind(&CUploader::SetStatus, this, _1, _2, _3));
+    m_CurrentEngine->setOnErrorMessageCallback(std::bind(&CUploader::ErrorMessage, this, _1));
     m_CurrentEngine->setCurrentUploader(this);
 
     task->setCurrentUploadEngine(m_CurrentEngine);
@@ -164,7 +167,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
-    m_NetworkClient->setProgressCallback(INetworkClient::ProgressCallback(this, &CUploader::pluginProgressFunc));
+    m_NetworkClient->setProgressCallback(std::bind(&CUploader::pluginProgressFunc, this, _1, _2, _3, _4, _5));
     int EngineRes = 0;
     int retryLimit = task->retryLimit();
     if (!retryLimit) {
@@ -232,8 +235,9 @@ bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)
 void CUploader::SetStatus(StatusType status, int param1, std::string param)
 {
     m_CurrentStatus = status;
-    if (onStatusChanged)
-        onStatusChanged(this, status, param1,  param);
+    if (onStatusChanged_) {
+        onStatusChanged_(this, status, param1, param);
+    }
 }
 
 StatusType CUploader::GetStatus() const
@@ -265,8 +269,9 @@ bool CUploader::needStop()
         m_bShouldStop = true;
         return m_bShouldStop;
     }
-    if (onNeedStop)
-        m_bShouldStop = onNeedStop();  // delegate call
+    if (onNeedStop_) {
+    m_bShouldStop = onNeedStop_();  // delegate call
+    }
     return m_bShouldStop;
 }
 
@@ -275,16 +280,42 @@ std::shared_ptr<UploadTask> CUploader::currentTask() const
     return currentTask_;
 }
 
+void CUploader::setOnNeedStopCallback(std::function<bool()> cb) {
+    onNeedStop_ = cb;
+}
+
+void CUploader::setOnProgress(std::function<void(CUploader*, InfoProgress)> cb) {
+    onProgress_ = cb;
+}
+
+void CUploader::setOnStatusChanged(std::function<void(CUploader*, StatusType, int, std::string)> cb) {
+    onStatusChanged_ = cb;
+}
+
+void CUploader::setOnDebugMessage(std::function<void(CUploader*, const std::string&, bool)> cb) {
+    onDebugMessage_ = cb;
+}
+
+void CUploader::setOnErrorMessage(std::function<void(CUploader*, ErrorInfo)> cb) {
+    onErrorMessage_ = cb;
+}
+
+void CUploader::setOnConfigureNetworkClient(std::function<void(CUploader*, INetworkClient*)> cb) {
+    onConfigureNetworkClient_ = cb;
+}
+
 void CUploader::DebugMessage(const std::string& message, bool isServerResponseBody)
 {
-    if (onDebugMessage)
-        onDebugMessage(this, message, isServerResponseBody);
+    if (onDebugMessage_) {
+        onDebugMessage_(this, message, isServerResponseBody);
+    }
 }
 
 void CUploader::ErrorMessage(const ErrorInfo& error)
 {
-    if (onErrorMessage)
-        onErrorMessage(this, error);
+    if (onErrorMessage_) {
+        onErrorMessage_(this, error);
+    }
 }
 
 void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, const std::string& topLevelFileName)

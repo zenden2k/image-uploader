@@ -45,9 +45,7 @@ void TextTool::beginDraw( int x, int y ) {
             if (input) {
                 textElement->beginEdit();
                 input->show(true);
-                if (canvas_->onTextEditStarted) {
-                    canvas_->onTextEditStarted(textElement);
-                }
+                canvas_->onTextEditStarted(textElement);
             }
         }
     }
@@ -82,9 +80,7 @@ void TextTool::endDraw( int x, int y ) {
     if ( !inputBox ) {
         inputBox = canvas_->getInputBox( inputRect );
         textElement->setInputBox(inputBox);
-        if ( canvas_->onTextEditStarted ) {
-            canvas_->onTextEditStarted(textElement);
-        }
+        canvas_->onTextEditStarted(textElement);
     }
     //    currentElement_ = new TextElement(canvas_,inputBox, xStart,yStart, xEnd, yEnd);
     inputBox->show(true);

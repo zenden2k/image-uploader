@@ -5,15 +5,16 @@
 Source: http://p-nand-q.com/programming/cplusplus/using_member_functions_with_c_function_pointers.html
 */
 #pragma once
+#include <functional>
+
 #include <windows.h>
-#include "Core/3rdpart/FastDelegate.h"
 
 typedef LRESULT (CALLBACK *LPFN_CBTHookCallback)(int nCode, WPARAM wParam, LPARAM lParam);
 
 class CBTHookCallbackBase;
 enum { kMaxCallbacks = 5};
 extern  CBTHookCallbackBase* AvailableCallbackSlots[kMaxCallbacks];
-typedef fastdelegate::FastDelegate3<int, WPARAM, LPARAM, LRESULT> HookCallback;
+typedef std::function<LRESULT(int, WPARAM, LPARAM)> HookCallback;
 // this object holds the state for a C++ member function callback in memory
 class CBTHookCallbackBase
 {

@@ -21,7 +21,8 @@ class SearchByImage  {
         void start();
         virtual void stop();
         bool isRunning() const;
-        static std::unique_ptr<SearchByImage> createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager, SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName);
+        static std::unique_ptr<SearchByImage> createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, 
+            UploadManager* uploadManager, SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName);
         static std::string getSearchEngineDisplayName(SearchEngine se);
         static std::string searchEngineTypeToString(SearchEngine se);
         static SearchEngine searchEngineTypeFromString(const std::string& name); 

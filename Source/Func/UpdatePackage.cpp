@@ -270,7 +270,8 @@ bool CUpdateManager::internal_load_update(CString name)
     auto nm = networkClientFactory_->create();
     nm->setTreatErrorsAsWarnings(true);
     nm->enableResponseCodeChecking(false);
-    nm->setProgressCallback(NetworkClient::ProgressCallback(this,&CUpdateManager::progressCallback));
+    using namespace std::placeholders;
+    nm->setProgressCallback(std::bind(&CUpdateManager::progressCallback, this, _1, _2, _3, _4, _5));
 
     CString url = localPackage.updateUrl();
     Json::Value request;
@@ -588,7 +589,8 @@ CUpdateManager::CUpdateManager(std::shared_ptr<INetworkClientFactory> networkCli
     m_nSuccessPackageUpdates = 0;
     m_stop = false;
     nm_ = networkClientFactory_->create();
-    nm_->setProgressCallback(NetworkClient::ProgressCallback(this, &CUpdateManager::progressCallback));
+    using namespace std::placeholders;
+    nm_->setProgressCallback(std::bind(&CUpdateManager::progressCallback, this, _1, _2, _3, _4, _5));
     m_TempDirectory = tempDirectory;
 }
 

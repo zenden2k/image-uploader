@@ -11,7 +11,8 @@ SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> ne
 
 void SearchGoogleImages::run() {
     auto nc = networkClientFactory_->create();
-    nc->setProgressCallback(NetworkClient::ProgressCallback(this, &SearchGoogleImages::progressCallback));
+    using namespace std::placeholders;
+    nc->setProgressCallback(std::bind(&SearchGoogleImages::progressCallback, this, _1, _2, _3, _4, _5));
 
     try {
         nc->setUrl("https://images.google.com/searchbyimage/upload");

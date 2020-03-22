@@ -89,8 +89,6 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/pcreplusplus.h
     3rdpart/tinystr.h
     3rdpart/tinyxml.h
-    3rdpart/FastDelegate.h
-    3rdpart/FastDelegateBind.h
     3rdpart/utf8.h
     3rdpart/UriParser.h
     OutputCodeGenerator.h

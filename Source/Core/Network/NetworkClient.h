@@ -29,7 +29,6 @@
 
 #include <curl/curl.h>
 #include "INetworkClient.h"
-#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CoreTypes.h"
 #include "CurlShare.h"

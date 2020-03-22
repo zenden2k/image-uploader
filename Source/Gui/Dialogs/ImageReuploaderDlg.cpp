@@ -308,7 +308,8 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->setUserData(uploadItemData);
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
-    fileUploadTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CImageReuploaderDlg::OnFileFinished));
+    using namespace std::placeholders;
+    fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     uploadSessionMutex_.lock();
     uploadSession_->addTask(fileUploadTask);
     uploadManager_->addTaskToQueue(fileUploadTask);
@@ -452,7 +453,7 @@ bool CImageReuploaderDlg::BeginDownloading()
         return false;
     } else {
         uploadSession_.reset(new UploadSession());
-        uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CImageReuploaderDlg::OnQueueFinished));
+        uploadSession_->addSessionFinishedCallback(std::bind(&CImageReuploaderDlg::OnQueueFinished, this, std::placeholders::_1));
         uploadManager_->addSession(uploadSession_);
         std::string result;
         for (size_t i = 0; i < links.size(); i++) {

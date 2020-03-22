@@ -3,8 +3,8 @@
 
 /*! @cond PRIVATE */
 
+#include <functional>
 #include "Functions.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 namespace ScriptAPI {
 
@@ -16,7 +16,7 @@ void SetCurrentThreadVM(HSQUIRRELVM vm);
 void StopAssociatedBrowsers(HSQUIRRELVM vm);
 void AddBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser);
 void RemoveBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser);
-typedef fastdelegate::FastDelegate1<const std::string&> PrintCallback;
+typedef std::function<void(const std::string&)> PrintCallback;
 void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback);
 void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName);
 void ClearVmData(Sqrat::SqratVM& vm);

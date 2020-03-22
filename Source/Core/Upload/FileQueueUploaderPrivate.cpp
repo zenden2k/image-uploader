@@ -116,8 +116,8 @@ void FileQueueUploaderPrivate::taskAdded(UploadTask* task)
 
 void FileQueueUploaderPrivate::OnConfigureNetworkClient(CUploader* uploader, INetworkClient* nm)
 {
-    if (queueUploader_->OnConfigureNetworkClient){
-        queueUploader_->OnConfigureNetworkClient(queueUploader_, nm);
+    if (onConfigureNetworkClientCallback_){
+        onConfigureNetworkClientCallback_(queueUploader_, nm);
     }
 }
 
@@ -317,11 +317,12 @@ void FileQueueUploaderPrivate::run()
         }
 
         CUploader uploader(networkClientFactory_);
-        uploader.onConfigureNetworkClient.bind(this, &FileQueueUploaderPrivate::OnConfigureNetworkClient);
+        using namespace std::placeholders;
+        uploader.setOnConfigureNetworkClient(std::bind(&FileQueueUploaderPrivate::OnConfigureNetworkClient, this, _1, _2));
 
         // TODO
-        uploader.onErrorMessage.bind(this, &FileQueueUploaderPrivate::onErrorMessage);
-        uploader.onDebugMessage.bind(this, &FileQueueUploaderPrivate::onDebugMessage);
+        uploader.setOnErrorMessage(std::bind(&FileQueueUploaderPrivate::onErrorMessage, this, _1, _2));
+        uploader.setOnDebugMessage(std::bind(&FileQueueUploaderPrivate::onDebugMessage, this, _1, _2, _3));
         auto fut = dynamic_cast<FileUploadTask*>(it.get());
 
         UploadTask* topLevelTask = it->parentTask() ? it->parentTask() : it.get();
@@ -385,7 +386,7 @@ void FileQueueUploaderPrivate::run()
         }
         engine->serverSync()->incrementThreadCount();
         uploader.setUploadEngine(engine);
-        uploader.onNeedStop.bind(this, &FileQueueUploaderPrivate::onNeedStopHandler);
+        uploader.setOnNeedStopCallback(std::bind(&FileQueueUploaderPrivate::onNeedStopHandler, this));
         it->setStatusText(tr("Starting upload"));
 
         try {

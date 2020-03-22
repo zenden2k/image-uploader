@@ -61,7 +61,7 @@ class CUploadSettings :
 {
     public:
         explicit CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager);
-        ~CUploadSettings() = default;
+        ~CUploadSettings();
         enum { IDD = IDD_UPLOADSETTINGS };
 
         enum{ 
@@ -196,7 +196,7 @@ protected:
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;
     CIcon iconEdit_, iconDropdown_;
-
+    boost::signals2::connection settingsChangedConnection_;
 public:
     
     LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

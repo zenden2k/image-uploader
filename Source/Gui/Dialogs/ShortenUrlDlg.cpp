@@ -183,10 +183,11 @@ bool CShortenUrlDlg::StartProcess() {
     std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
     
     task->setServerProfile(profile);
-    task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CShortenUrlDlg::OnFileFinished));
+    using namespace std::placeholders;
+    task->onTaskFinished.connect(std::bind(&CShortenUrlDlg::OnFileFinished, this, _1, _2));
     uploadSession_ = std::make_shared<UploadSession>();
     uploadSession_->addTask(task);
-    uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CShortenUrlDlg::OnQueueFinished));
+    uploadSession_->addSessionFinishedCallback(std::bind(&CShortenUrlDlg::OnQueueFinished, this, std::placeholders::_1));
     isRunning_ = true;
     uploadManager_->addSession(uploadSession_);
 

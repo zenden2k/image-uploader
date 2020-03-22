@@ -1,8 +1,9 @@
 #ifndef DSSI_COLORBUTTON_H
 #define DSSI_COLORBUTTON_H
 
+#include <functional>
+
 #include "atlheaders.h"
-#include "Core/3rdpart/FastDelegate.h"
 //-----------------------------------------------------------------------------
 // 
 // @doc
@@ -229,7 +230,9 @@ public:
 
 	~CColorButton ();
 
-	fastdelegate::FastDelegate2<COLORREF, BOOL> OnSelChange;
+    void setOnSelChangeCallback(std::function<void(COLORREF, BOOL)> cb);
+
+	std::function<void(COLORREF, BOOL)> m_OnSelChange;
 
 // @access Public inline methods
 public:

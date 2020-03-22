@@ -145,6 +145,18 @@ HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
     return item ? item->hi : nullptr;
 }
 
+void CHistoryTreeControl::setOnThreadsFinishedCallback(std::function<void()> cb) {
+    onThreadsFinished_ = cb;
+}
+
+void CHistoryTreeControl::setOnThreadsStartedCallback(std::function<void()> cb) {
+    onThreadsStarted_ = cb;
+}
+
+void CHistoryTreeControl::setOnItemDblClickCallback(std::function<void(TreeItem*)> cb) {
+    onItemDblClick_ = cb;
+}
+
 HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
 {
     CString ext = WinUtils::GetFileExt(fileName);
@@ -637,8 +649,8 @@ LRESULT CHistoryTreeControl::OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam,
     if (idx != -1) {
         TreeItem* prop = GetItem(idx);
         ATLASSERT(prop);
-        if (onItemDblClick) {
-            onItemDblClick(prop);
+        if (onItemDblClick_) {
+            onItemDblClick_(prop);
         }
     }
     return CCustomTreeControlImpl<CHistoryTreeControl>::OnDblClick(uMsg, wParam, lParam, bHandled);
@@ -697,8 +709,8 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
         {
             CreateDownloader();
             m_FileDownloader->addFile(thumbUrl, it);
-            if(onThreadsStarted)    
-                onThreadsStarted();
+            if(onThreadsStarted_)    
+                onThreadsStarted_();
             m_FileDownloader->start();
         }
     }
@@ -732,8 +744,8 @@ void CHistoryTreeControl::StartLoadingThumbnails()
 {
     if(!IsRunning())
     {
-        if(onThreadsStarted)    
-            onThreadsStarted();
+        if(onThreadsStarted_)    
+            onThreadsStarted_();
         m_bIsRunning = true;
         this->Start();
     }
@@ -778,8 +790,9 @@ void CHistoryTreeControl::threadsFinished()
     m_thumbLoadingQueueMutex.lock();
     m_thumbLoadingQueue.clear();
     m_thumbLoadingQueueMutex.unlock();
-    if(onThreadsFinished)
-    onThreadsFinished();
+    if (onThreadsFinished_) {
+        onThreadsFinished_();
+    }
 }
 
 void CHistoryTreeControl::QueueFinishedEvent()

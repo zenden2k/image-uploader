@@ -202,10 +202,10 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         } else {
             LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
         }
-
+        using namespace std::placeholders;
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
-        authTask->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CLoginDlg::authTaskFinishedCallback));
+        authTask->onTaskFinished.connect(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
         auto uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
         uploadManager->addSingleTask(authTask);

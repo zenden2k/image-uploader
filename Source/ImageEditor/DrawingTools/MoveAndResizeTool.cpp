@@ -199,7 +199,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             }
         }
         
-        if ( currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged ) {
+        if ( currentElement_ && currentElement_->getType() == etCrop) {
             canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
@@ -223,7 +223,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             RECT updateRect;
             UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
             canvas_->updateView(updateRect);
-            if (currentElement_ && currentElement_->getType() == etCrop && canvas_->onCropChanged) {
+            if (currentElement_ && currentElement_->getType() == etCrop) {
                 canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
             }
             prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
@@ -249,7 +249,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 void MoveAndResizeTool::endDraw( int x, int y ) {
     if ( currentElement_ ) {
         currentElement_->endMove();
-        if ( currentElement_->getType() == etCrop && canvas_->onCropFinished ) {
+        if ( currentElement_->getType() == etCrop) {
             canvas_->onCropFinished(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
         if ( currentElement_->getType() != etCrop) {

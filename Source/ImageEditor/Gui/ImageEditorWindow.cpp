@@ -458,16 +458,17 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
 
-    canvas_->onDrawingToolChanged.bind(this, &ImageEditorWindow::OnDrawingToolChanged);
-    canvas_->onForegroundColorChanged.bind(this, &ImageEditorWindow::OnForegroundColorChanged);
-    canvas_->onBackgroundColorChanged.bind(this, &ImageEditorWindow::OnBackgroundColorChanged);
-    canvas_->onCropChanged.bind(this, &ImageEditorWindow::OnCropChanged);
-    canvas_->onFontChanged.bind(this, &ImageEditorWindow::onFontChanged);
-    canvas_->onTextEditStarted.bind(this, &ImageEditorWindow::OnTextEditStarted);
-    canvas_->onTextEditFinished.bind(this, &ImageEditorWindow::OnTextEditFinished);
-    canvas_->onSelectionChanged.bind(this, &ImageEditorWindow::OnSelectionChanged);
+    using namespace std::placeholders;
+    canvas_->onDrawingToolChanged.connect(std::bind(&ImageEditorWindow::OnDrawingToolChanged, this, _1));
+    canvas_->onForegroundColorChanged.connect(std::bind(&ImageEditorWindow::OnForegroundColorChanged, this, _1));
+    canvas_->onBackgroundColorChanged.connect(std::bind(&ImageEditorWindow::OnBackgroundColorChanged, this, _1));
+    canvas_->onCropChanged.connect(std::bind(&ImageEditorWindow::OnCropChanged, this, _1, _2, _3, _4));
+    canvas_->onFontChanged.connect(std::bind(&ImageEditorWindow::onFontChanged, this,  _1));
+    canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
+    canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
+    canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
     if (displayMode_ != wdmWindowed) {
-        canvas_->onCropFinished.bind(this, &ImageEditorWindow::OnCropFinished);
+        canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
     }
 
     if (initialDrawingTool_ != Canvas::dtCrop) {

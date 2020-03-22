@@ -1,7 +1,8 @@
 #ifndef IMAGEEDITOR_INPUTBOX_H
 #define IMAGEEDITOR_INPUTBOX_H
 
-#include "Core/3rdpart/FastDelegate.h"
+#include <boost/signals2.hpp>
+
 #include "3rdpart/GdiplusH.h"
 #include "MovableElement.h"
 
@@ -19,12 +20,12 @@ class InputBox {
         virtual void setRawText(const std::string& text) = 0;
         virtual std::string getRawText() = 0;
         virtual bool isEmpty() = 0;
-        fastdelegate::FastDelegate1<LPCTSTR> onTextChanged;
-        fastdelegate::FastDelegate2<int, int> onSizeChanged;
-        fastdelegate::FastDelegate0<void> onEditCanceled;
-        fastdelegate::FastDelegate0<void> onEditFinished;
-        fastdelegate::FastDelegate2<int,int> onResized;
-        fastdelegate::FastDelegate3<int,int,LOGFONT> onSelectionChanged;
+        boost::signals2::signal<void(LPCTSTR)> onTextChanged;
+        boost::signals2::signal<void(int, int)> onSizeChanged;
+        boost::signals2::signal<void()> onEditCanceled;
+        boost::signals2::signal<void()> onEditFinished;
+        boost::signals2::signal<void(int,int)> onResized;
+        boost::signals2::signal<void(int,int,LOGFONT)> onSelectionChanged;
 
 };
 }

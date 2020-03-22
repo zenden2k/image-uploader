@@ -223,11 +223,12 @@ void TextElement::setInputBox(InputBox* inputBox)
 {
     inputBox_ = inputBox;
     setTextColor();
-    inputBox_->onTextChanged.bind(this, &TextElement::onTextChanged);
-    inputBox_->onEditCanceled.bind(this, &TextElement::onEditCanceled);
-    inputBox_->onEditFinished.bind(this, &TextElement::onEditFinished);
-    inputBox_->onResized.bind(this, &TextElement::onControlResized);
-    inputBox_->onSelectionChanged.bind(this, &TextElement::onSelectionChanged);
+    using namespace std::placeholders;
+    inputBox_->onTextChanged.connect(std::bind(&TextElement::onTextChanged, this, _1));
+    inputBox_->onEditCanceled.connect(std::bind(&TextElement::onEditCanceled, this));
+    inputBox_->onEditFinished.connect(std::bind(&TextElement::onEditFinished, this));
+    inputBox_->onResized.connect(std::bind(&TextElement::onControlResized, this, _1, _2));
+    inputBox_->onSelectionChanged.connect(std::bind(&TextElement::onSelectionChanged, this, _1, _2, _3));
 }
 
 void TextElement::setFont(LOGFONT font,  DWORD changeMask)
@@ -294,9 +295,7 @@ void TextElement::setTextColor()
 void TextElement::onSelectionChanged(int min, int max, LOGFONT font)
 {
     font_ = font;
-    if (canvas_->onFontChanged ) {
-        canvas_->onFontChanged(font_);
-    }
+    canvas_->onFontChanged(font_);
 }
 
 void TextElement::setColor(Gdiplus::Color color)
@@ -318,9 +317,7 @@ void TextElement::setSelected(bool selected)
 {
     MovableElement::setSelected(selected);
     if ( inputBox_ && !selected ) {
-        if ( canvas_->onTextEditFinished ) {
-            canvas_->onTextEditFinished(this);
-        }
+        canvas_->onTextEditFinished(this);
         endEdit(true);
     
         inputBox_->show(false);

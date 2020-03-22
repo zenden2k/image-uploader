@@ -54,9 +54,10 @@ LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     dateFilterCheckbox_.SetCheck(BST_CHECKED);
 
     m_treeView.SubclassWindow(GetDlgItem(IDC_HISTORYTREE));
-    m_treeView.onThreadsFinished.bind(this, &CHistoryWindow::threadsFinished);
-    m_treeView.onThreadsStarted.bind(this, &CHistoryWindow::threadsStarted);
-    m_treeView.onItemDblClick.bind(this, &CHistoryWindow::onItemDblClick);
+    using namespace std::placeholders;
+    m_treeView.setOnThreadsFinishedCallback(std::bind(&CHistoryWindow::threadsFinished, this));
+    m_treeView.setOnThreadsStartedCallback(std::bind(&CHistoryWindow::threadsStarted, this));
+    m_treeView.setOnItemDblClickCallback(std::bind(&CHistoryWindow::onItemDblClick, this, _1));
     TRC(IDOK, "Apply");
     TRC(IDC_CLEARFILTERS, "Clear filters");
     TRC(IDC_FILTERSGROUPBOX, "Filters");

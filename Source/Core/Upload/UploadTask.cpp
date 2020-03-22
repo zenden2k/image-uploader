@@ -64,11 +64,13 @@ void UploadTask::taskFinished()
     }
    
     bool success = uploadSuccess();
-    
-    for (size_t i = 0; i < taskFinishedCallbacks_.size(); i++)
+
+    onTaskFinished(this, success);
+
+    /*for (size_t i = 0; i < taskFinishedCallbacks_.size(); i++)
     {
         taskFinishedCallbacks_[i](this, success); // invoke callback
-    }
+    }*/
    
     if (session_)
     {
@@ -80,9 +82,9 @@ void UploadTask::taskFinished()
 
 void UploadTask::statusChanged()
 {
-    if (OnStatusChanged && status_ != StatusPostponed) // use StatusPostponed to avoid deadlocks
+    if (onStatusChanged_ && status_ != StatusPostponed) // use StatusPostponed to avoid deadlocks
     {
-        OnStatusChanged(this);
+        onStatusChanged_(this);
     }
 }
 
@@ -195,9 +197,10 @@ void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
     if (session_) {
         session_->childTaskAdded(child.get());
     }
-    for (const auto& cb : childTaskAddedCallbacks_) {
+    onChildTaskAdded(child.get());
+    /*for (const auto& cb : childTaskAddedCallbacks_) {
         cb(child.get());
-    }
+    }*/
 
     if (uploadManager_) {
         uploadManager_->insertTaskAfter(this, child);
@@ -228,19 +231,16 @@ UploadProgress* UploadTask::progress()
     return &progress_;
 }
 
-void UploadTask::addTaskFinishedCallback(const TaskFinishedCallback& callback)
-{
-    auto it = std::find(taskFinishedCallbacks_.begin(), taskFinishedCallbacks_.end(), callback);
-    if (it == taskFinishedCallbacks_.end()) {
-        taskFinishedCallbacks_.push_back(callback);
-    }
+void UploadTask::setOnUploadProgressCallback(std::function<void(UploadTask*)> cb) {
+    onUploadProgress_ = cb;
 }
 
-void UploadTask::addChildTaskAddedCallback(const ChildTaskAddedCallback& callback) {
-    auto it = std::find(childTaskAddedCallbacks_.begin(), childTaskAddedCallbacks_.end(), callback);
-    if (it == childTaskAddedCallbacks_.end()) {
-        childTaskAddedCallbacks_.push_back(callback);
-    }
+void UploadTask::setOnStatusChangedCallback(std::function<void(UploadTask*)> cb) {
+    onStatusChanged_ = cb;
+}
+
+void UploadTask::setOnFolderUsedCallback(std::function<void(UploadTask*)> cb) {
+    onFolderUsed_ = cb;
 }
 
 std::string UploadTask::serverName() const
@@ -441,9 +441,9 @@ void UploadTask::uploadProgress(InfoProgress progress)
             progress_.speed.clear();
         }
         progress_.lastUpdateTime = curTime;
-        if (OnUploadProgress)
+        if (onUploadProgress_)
         {
-            OnUploadProgress(this); // invoke upload progress callback
+            onUploadProgress_(this); // invoke upload progress callback
         }
     }
 }

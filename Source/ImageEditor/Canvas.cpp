@@ -616,29 +616,19 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
             fgColor = stepForegroundColor_;
             bgColor = stepBackgroundColor_;
 
-            if (onForegroundColorChanged) {
-                onForegroundColorChanged(fgColor);
-            }
-
-            if (onBackgroundColorChanged) {
-                onBackgroundColorChanged(bgColor);
-            }
-        }
-    } else if (previousDrawingTool_ == dtStepNumber) {
-        if (onForegroundColorChanged) {
             onForegroundColorChanged(fgColor);
-        }
-
-        if (onBackgroundColorChanged) {
             onBackgroundColorChanged(bgColor);
         }
+    } else if (previousDrawingTool_ == dtStepNumber) {
+        onForegroundColorChanged(fgColor);
+        onBackgroundColorChanged(bgColor);
     }
 
     currentDrawingTool_->setPenSize(penSize_);
     currentDrawingTool_->setRoundingRadius(roundingRadius_);
     currentDrawingTool_->setForegroundColor(fgColor);
     currentDrawingTool_->setBackgroundColor(bgColor);
-    if ( notify && onDrawingToolChanged ) {
+    if ( notify ) {
         onDrawingToolChanged(toolType);
     }
 
@@ -763,9 +753,7 @@ void Canvas::showOverlay(bool show)
 
 void Canvas::selectionChanged()
 {
-    if ( onSelectionChanged ) {
-        onSelectionChanged();
-    }
+    onSelectionChanged();
 }
 
 void Canvas::deleteMovableElement(MovableElement* element)
@@ -1116,7 +1104,7 @@ bool Canvas::undo() {
             MovableElement * el = item.elements[i].movableElement;
             el->setStartPoint(item.elements[i].startPoint);
             el->setEndPoint(item.elements[i].endPoint);
-            if ( el->getType() == etCrop &&  onCropChanged ) {
+            if ( el->getType() == etCrop) {
                 onCropChanged(el->getX(), el->getY(), el->getWidth(), el->getHeight());
             }
         }

@@ -372,13 +372,14 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     if ( !url.IsEmpty() && !WebUtils::DoesTextLookLikeUrl(url) ) {
         return false;
     }
+    using namespace std::placeholders;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     lastUrlShorteningTask_ = std::make_shared<UrlShorteningTask>(W2U(url));
     lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
-    lastUrlShorteningTask_->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
+    lastUrlShorteningTask_->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(lastUrlShorteningTask_);
-    currentUploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CFloatingWindow::onUploadSessionFinished));
+    currentUploadSession_->addSessionFinishedCallback(std::bind(&CFloatingWindow::onUploadSessionFinished, this, _1));
     uploadManager_->addSession(currentUploadSession_);
 
     CString msg;
@@ -749,16 +750,17 @@ LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, H
 
 void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& displayName)
 {
+    using namespace std::placeholders;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
     task->setServerProfile(Settings.quickScreenshotServer);
-    task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &CFloatingWindow::OnFileFinished));
+    task->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(task);
-    currentUploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &CFloatingWindow::onUploadSessionFinished));
+    currentUploadSession_->addSessionFinishedCallback(std::bind(&CFloatingWindow::onUploadSessionFinished, this, std::placeholders::_1));
     uploadManager_->addSession(currentUploadSession_);
 
     CString msg;

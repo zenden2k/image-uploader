@@ -177,11 +177,9 @@ LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     WPARAM vKey = wParam;
     bHandled = false;
     if ( vKey == VK_ESCAPE ) {
-        if ( onEditCanceled ) {
-            onEditCanceled();
-        }
+        onEditCanceled();
         bHandled = true;
-    } else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80 && onEditFinished ) {
+    } else if ( vKey == VK_RETURN && GetKeyState(VK_CONTROL) & 0x80) {
         onEditFinished();
         bHandled = true;
     }
@@ -197,23 +195,19 @@ LRESULT InputBoxControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 */
 LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 {
-    if ( onTextChanged ) {
-        onTextChanged(L"");
-    }
+    onTextChanged(L"");
     return 0;
 }
 
 LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     bHandled = true;
-    REQRESIZE * pReqResize = (REQRESIZE *) pnmh; 
-    
-    if ( onResized ) {
-        SIZE sz = { pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top };
-        RECT windowRect;
-        GetWindowRect(&windowRect);
-        onResized(/*sz.cx*/windowRect.right - windowRect.left, sz.cy);
-    }
+    REQRESIZE * pReqResize = (REQRESIZE *) pnmh;
+
+    SIZE sz = {pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top};
+    RECT windowRect;
+    GetWindowRect(&windowRect);
+    onResized(/*sz.cx*/windowRect.right - windowRect.left, sz.cy);
 
     //*SetWindowPos(0, 0,0, pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top);
     return 0;
@@ -225,9 +219,7 @@ LRESULT InputBoxControl::OnSelChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     CHARFORMAT cf;
 
     GetSelectionCharFormat(cf);
-    if ( onSelectionChanged ) {
-        onSelectionChanged(selChange->chrg.cpMin, selChange->chrg.cpMax, GuiTools::CharFormatToLogFont(cf));
-    }
+    onSelectionChanged(selChange->chrg.cpMin, selChange->chrg.cpMax, GuiTools::CharFormatToLogFont(cf));
 
     return 0;
 }

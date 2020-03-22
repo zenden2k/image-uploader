@@ -11,10 +11,11 @@ UploadListModel::UploadListModel(std::shared_ptr<UploadSession> session) {
     for (int i = 0; i < n; i++) {
         auto task = session->getTask(i);
         auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task);
-        task->OnUploadProgress.bind(this, &UploadListModel::onTaskUploadProgress);
-        task->OnStatusChanged.bind(this, &UploadListModel::onTaskStatusChanged);
-        task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &UploadListModel::onTaskFinished));
-        task->addChildTaskAddedCallback(UploadTask::ChildTaskAddedCallback(this, &UploadListModel::onChildTaskAdded));
+        using namespace std::placeholders;
+        task->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
+        task->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
+        task->onTaskFinished.connect(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
+        task->onChildTaskAdded.connect(std::bind(&UploadListModel::onChildTaskAdded, this, _1));
         UploadListItem *sd = new UploadListItem();
         sd->tableRow = i;
         sd->setStatusText(TR("In queue"));
@@ -162,7 +163,8 @@ void UploadListModel::onChildTaskAdded(UploadTask* child) {
         fps->setStatusText(TR("Shortening link..."));
         notifyRowChanged(fps->tableRow);
     }
-    child->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &UploadListModel::onTaskFinished));
-    child->OnUploadProgress.bind(this, &UploadListModel::onTaskUploadProgress);
-    child->OnStatusChanged.bind(this, &UploadListModel::onTaskStatusChanged);
+    using namespace std::placeholders;
+    child->onTaskFinished.connect(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
+    child->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
+    child->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
 }

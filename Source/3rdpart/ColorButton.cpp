@@ -247,6 +247,10 @@ CColorButton::~CColorButton ()
         free (m_pszCustomText);
 }
 
+void CColorButton::setOnSelChangeCallback(std::function<void(COLORREF, BOOL)> cb) {
+    m_OnSelChange = cb;
+}
+
 //-----------------------------------------------------------------------------
 //
 // @mfunc Subclass the control
@@ -1931,8 +1935,8 @@ void CColorButton::SendNotification (UINT nCode, COLORREF clr, BOOL fColorValid)
     ::SendMessage (GetParent (), WM_NOTIFY, 
         (WPARAM) GetDlgCtrlID (), (LPARAM) &nmclr);
 
-    if ( nCode == CPN_SELENDOK && OnSelChange ) {
-        OnSelChange(clr, fColorValid);
+    if ( nCode == CPN_SELENDOK && m_OnSelChange ) {
+        m_OnSelChange(clr, fColorValid);
     }
 }
 

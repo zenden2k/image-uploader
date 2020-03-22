@@ -158,15 +158,15 @@ CAbstractUploadEngine::~CAbstractUploadEngine()
 
 bool CAbstractUploadEngine::DebugMessage(const std::string& message, bool isServerResponseBody)
 {
-    if (onDebugMessage)
-        onDebugMessage(message, isServerResponseBody);
+    if (onDebugMessage_)
+        onDebugMessage_(message, isServerResponseBody);
     return true;
 }
 
 bool CAbstractUploadEngine::ErrorMessage(ErrorInfo ei)
 {
-    if (onErrorMessage) {
-        onErrorMessage(ei);
+    if (onErrorMessage_) {
+        onErrorMessage_(ei);
     } else
     {
         (ei.messageType == ErrorInfo::mtError ? LOG(ERROR) : LOG(WARNING)) << ei.error;
@@ -188,15 +188,15 @@ bool CAbstractUploadEngine::needStop()
 {
     if (m_bShouldStop)
         return m_bShouldStop;
-    if (onNeedStop)
-        m_bShouldStop = onNeedStop();  // delegate call
+    if (onNeedStop_)
+        m_bShouldStop = onNeedStop_();  // delegate call
     return m_bShouldStop;
 }
 
 void CAbstractUploadEngine::SetStatus(StatusType status, const std::string& param)
 {
-    if (onStatusChanged)
-        onStatusChanged(status, 0,  param);
+    if (onStatusChanged_)
+        onStatusChanged_(status, 0,  param);
 }
 
 void CAbstractUploadEngine::setNetworkClient(INetworkClient* nm)
@@ -218,13 +218,33 @@ CAbstractUploadEngine::CAbstractUploadEngine(ServerSync* serverSync, ErrorMessag
     currUploader_ = nullptr;
     serverSync_ = serverSync;
     m_ServersSettings = nullptr;
-    onErrorMessage = errorCallback;
+    onErrorMessage_ = errorCallback;
 }
 
 
 CUploadEngineData* CAbstractUploadEngine::getUploadData() const
 {
     return m_UploadData;
+}
+
+void CAbstractUploadEngine::setOnNeedStopCallback(std::function<bool()> cb) {
+    onNeedStop_ = cb;
+}
+
+void CAbstractUploadEngine::setOnProgressCallback(std::function<void(InfoProgress)> cb) {
+    onProgress_ = cb;
+}
+
+void CAbstractUploadEngine::setOnStatusChangedCallback(std::function<void(StatusType, int, std::string)> cb) {
+    onStatusChanged_ = cb;
+}
+
+void CAbstractUploadEngine::setOnDebugMessageCallback(std::function<void(const std::string&, bool)> cb) {
+    onDebugMessage_ = cb;
+}
+
+void CAbstractUploadEngine::setOnErrorMessageCallback(ErrorMessageCallback cb) {
+    onErrorMessage_ = cb;
 }
 
 void CAbstractUploadEngine::setServerSync(ServerSync* sync)

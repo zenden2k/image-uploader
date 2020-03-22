@@ -1,6 +1,8 @@
 #ifndef IU_GUI_DIALOGS_WEBVIEWWINDOW_H
 #define IU_GUI_DIALOGS_WEBVIEWWINDOW_H
 
+#include <functional>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/WTLBrowserView.h"
@@ -67,12 +69,12 @@ public:
     void setTimerInterval(int interval);
     CWTLBrowserView view_;
     
-    fastdelegate::FastDelegate0<void> onTimer;
-    fastdelegate::FastDelegate1<const CString&> onFileFieldFilled;
     void fillInputFileField(const CString& uploadFileName, CComPtr<IHTMLInputFileElement> inputFileElement, CComPtr<IAccessible> accesible );
     //bool fillInputFileField();
     bool compareFileNameWithFileInputField();
     void handleDialogCreation(HWND wnd, bool fromHook = false);
+    void setOnTimerCallback(std::function<void()> cb);
+    void setOnFileFieldFilledCallback(std::function<void(const CString&)> cb);
     void SetFillTimer();
     static HWND window;
 protected:
@@ -124,14 +126,14 @@ protected:
     static HHOOK hook_;
     static BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam);
     /*static */LRESULT /*CALLBACK */CBTHook(int nCode, WPARAM wParam, LPARAM lParam);
-    /*typedef fastdelegate::FastDelegate3<int, WPARAM,LPARAM, LRESULT> FunctionDelegate;
-    FunctionDelegate CBTHookDelegate_;*/
 
 //    CDialogHook * dialogHook_;
     CComPtr<IAccessible> accesible_;
     //static CWebViewWindow* instance;
     CBTHookMemberFunctionCallback callback_;
     HMODULE urlmonDll_;
+    std::function<void()> onTimer_;
+    std::function<void(const CString&)> onFileFieldFilled_;
 };
 
 

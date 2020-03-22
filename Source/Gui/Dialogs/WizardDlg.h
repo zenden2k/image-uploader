@@ -23,6 +23,8 @@
 
 #pragma once
 
+#include <boost/signals2.hpp>
+
 #include "atlheaders.h"
 #include "Func/MyEngineList.h"
 #include "HotkeySettings.h"
@@ -324,6 +326,7 @@ protected:
     int screenshotIndex;
     CString m_bCurrentFunc;
     CMyEngineList* enginelist_;
+    boost::signals2::connection settingsChangedConnection_;
 };
 
 

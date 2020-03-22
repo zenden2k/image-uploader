@@ -563,8 +563,8 @@ void MyListener::onTransferUpdate(MegaApi *api, MegaTransfer *transfer)
         if (uploader) {
             uploader->SetStatus(stUploading);
             engine_->fileTask_->uploadProgress(prInfo);
-            if (uploader->onProgress)
-                uploader->onProgress(uploader, prInfo);
+            /*if (uploader->onProgress)
+                uploader->onProgress(uploader, prInfo);*/
         }
     }
 

@@ -138,7 +138,8 @@ DWORD CServerFolderSelect::Run()
     runningScriptMutex_.unlock();
 
     script->setNetworkClient(m_NetworkClient.get());
-    m_NetworkClient->setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+    using namespace std::placeholders;
+    m_NetworkClient->setProgressCallback(std::bind(&CServerFolderSelect::progressCallback, this, _1, _2, _3, _4, _5));
 
 
     if (m_FolderOperationType == foGetFolders)
@@ -148,7 +149,7 @@ DWORD CServerFolderSelect::Run()
         NetworkClientFactory factory;
         auto networkClient = factory.create();
         script->setNetworkClient(networkClient.get());
-        networkClient->setProgressCallback(NetworkClient::ProgressCallback(this, &CServerFolderSelect::progressCallback));
+        networkClient->setProgressCallback(std::bind(&CServerFolderSelect::progressCallback, this, _1, _2, _3, _4, _5));
 
         int retCode = script->getFolderList(m_FolderList);
         if (retCode < 1)

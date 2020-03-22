@@ -21,12 +21,13 @@
 #ifndef _UPLOADER_H_
 #define _UPLOADER_H_
 
+#include <functional>
+
 #include <string>
 #include <memory>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 class CUploader
 {
@@ -42,13 +43,13 @@ class CUploader
         void stop();
         bool needStop();
         std::shared_ptr<UploadTask> currentTask() const;
-        // events
-        fastdelegate::FastDelegate0<bool> onNeedStop;
-        fastdelegate::FastDelegate2<CUploader*,InfoProgress> onProgress;
-        fastdelegate::FastDelegate4<CUploader*, StatusType, int, std::string> onStatusChanged;
-        fastdelegate::FastDelegate3<CUploader*, const std::string&, bool> onDebugMessage;
-        fastdelegate::FastDelegate2<CUploader*, ErrorInfo> onErrorMessage;
-        fastdelegate::FastDelegate2<CUploader*, INetworkClient*> onConfigureNetworkClient;
+       
+        void setOnNeedStopCallback(std::function<bool()> cb);
+        void setOnProgress(std::function<void(CUploader*, InfoProgress)> cb);
+        void setOnStatusChanged(std::function<void(CUploader*, StatusType, int, std::string)> cb);
+        void setOnDebugMessage(std::function<void(CUploader*, const std::string&, bool)> cb);
+        void setOnErrorMessage(std::function<void(CUploader*, ErrorInfo)> cb);
+        void setOnConfigureNetworkClient(std::function<void(CUploader*, INetworkClient*)> cb);
 
         void DebugMessage(const std::string& message, bool isServerResponseBody = false);
         void SetStatus(StatusType status, int param1=0, std::string param="");
@@ -70,6 +71,13 @@ class CUploader
         std::unique_ptr<INetworkClient> m_NetworkClient;
         CAbstractUploadEngine *m_CurrentEngine;
         std::shared_ptr<UploadTask> currentTask_;
+        // events
+        std::function<bool()> onNeedStop_;
+        std::function<void(CUploader*, InfoProgress)> onProgress_;
+        std::function<void(CUploader*, StatusType, int, std::string)> onStatusChanged_;
+        std::function<void(CUploader*, const std::string&, bool)> onDebugMessage_;
+        std::function<void(CUploader*, ErrorInfo)> onErrorMessage_;
+        std::function<void(CUploader*, INetworkClient*)> onConfigureNetworkClient_;
         void Cleanup();
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploader);

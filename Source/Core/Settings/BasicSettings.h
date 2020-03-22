@@ -2,7 +2,8 @@
 #define IU_CORE_SETTINGS_BASICSETTINGS_H
 
 #pragma once
-#include "Core/3rdpart/FastDelegate.h"
+#include <boost/signals2.hpp>
+
 #include "Core/SettingsManager.h"
 #include "Core/Upload/UploadEngine.h"
 #include "EncodedPassword.h"
@@ -28,12 +29,11 @@ public:
     bool LoadSettings(const std::string& szDir = "", const std::string& fileName = "", bool LoadFromRegistry = true);
     bool SaveSettings();
     void notifyChange();
-    typedef fastdelegate::FastDelegate1<BasicSettings*> ChangeCallback;
-    std::vector<ChangeCallback> changeCallbacks_;
+    //typedef std::function<void(BasicSettings*)> ChangeCallback;
+    boost::signals2::signal<void(BasicSettings*)> onChange;
+    //std::vector<ChangeCallback> changeCallbacks_;
     unsigned int LastUpdateTime;
 
-    void addChangeCallback(const ChangeCallback& callback);
-    void removeChangeCallback(const ChangeCallback& callback);
 
     // Fields
     int FileRetryLimit;

@@ -57,11 +57,10 @@ class CFileQueueUploader
         int sessionCount();
         void stopSession(UploadSession* uploadSession);
         std::shared_ptr<UploadSession> session(int index);
-        fastdelegate::FastDelegate1<CFileQueueUploader*> OnQueueFinished;
-        fastdelegate::FastDelegate1<UploadSession*> OnSessionAdded;
-        fastdelegate::FastDelegate1<UploadTask*> OnTaskAdded;
-
-        fastdelegate::FastDelegate2<CFileQueueUploader*, INetworkClient*> OnConfigureNetworkClient;
+        void setOnQueueFinishedCallback(std::function<void(CFileQueueUploader*)> cb);
+        void setOnSessionAddedCallback(std::function<void(UploadSession*)> cb);
+        void setOnTaskAddedCallback(std::function<void(UploadTask*)> cb);
+        void setOnConfigureNetworkClient(std::function<void(CFileQueueUploader*, INetworkClient*)> cb);
         friend class FileQueueUploaderPrivate;
     private:
         DISALLOW_COPY_AND_ASSIGN(CFileQueueUploader);

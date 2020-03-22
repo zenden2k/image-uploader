@@ -50,11 +50,12 @@ public:
     WebBrowserPrivate(CWebBrowser * browser ) {
         owningThread_ = std::this_thread::get_id();
         browser_ = browser;
-        webViewWindow_.view_.onNavigateComplete2.bind(this, &WebBrowserPrivate::OnPageLoaded);
-        webViewWindow_.view_.onNavigateError.bind(this, &WebBrowserPrivate::OnNavigateError);
-        webViewWindow_.view_.onDocumentComplete.bind(this, &WebBrowserPrivate::OnDocumentComplete);
-        webViewWindow_.onTimer.bind(this, &WebBrowserPrivate::OnTimer);
-        webViewWindow_.onFileFieldFilled.bind(this, &WebBrowserPrivate::OnFileFieldFilled);
+        using namespace std::placeholders;
+        webViewWindow_.view_.setOnNavigateComplete2(std::bind(&WebBrowserPrivate::OnPageLoaded, this, _1));
+        webViewWindow_.view_.setOnNavigateError(std::bind(&WebBrowserPrivate::OnNavigateError, this, _1, _2));
+        webViewWindow_.view_.setOnDocumentComplete(std::bind(&WebBrowserPrivate::OnDocumentComplete, this, _1));
+        webViewWindow_.setOnTimerCallback(std::bind(&WebBrowserPrivate::OnTimer, this));
+        webViewWindow_.setOnFileFieldFilledCallback(std::bind(&WebBrowserPrivate::OnFileFieldFilled, this, _1));
         initialWidth_ = 800;
         initialHeight_ = 600;
         initialTitle_ = _T("Web Browser");

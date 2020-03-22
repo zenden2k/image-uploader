@@ -354,9 +354,9 @@ void CServerSelectorControl::setShowFilesizeLimits(bool show) {
 void CServerSelectorControl::notifyChange()
 {
     ::SendMessage(GetParent(), WM_SERVERSELECTCONTROL_CHANGE, reinterpret_cast<WPARAM>(m_hWnd), 0);
-    if (OnChange)
+    if (onChangeCallback_)
     {
-        OnChange(this);
+        onChangeCallback_(this);
     }
 }
 
@@ -631,6 +631,10 @@ void CServerSelectorControl::setShowImageProcessingParams(bool show) {
 
 void CServerSelectorControl::setShowParamsLink(bool show) {
     showParamsLink_ = show;
+}
+
+void CServerSelectorControl::setOnChangeCallback(std::function<void(CServerSelectorControl*)> cb) {
+    onChangeCallback_ = cb;
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

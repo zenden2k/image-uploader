@@ -74,7 +74,8 @@ void SearchYandexImages::run() {
     task->setIsImage(true);
     std::shared_ptr<UploadSession> uploadSession(new UploadSession(false));
     task->setServerProfile(temporaryServer_);
-    task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &SearchYandexImages::onFileFinished));
+    using namespace std::placeholders;
+    task->onTaskFinished.connect(std::bind(&SearchYandexImages::onFileFinished, this, _1, _2));
 
     currentUploadTask_.reset(task);
     uploadSession->addTask(currentUploadTask_);

@@ -95,7 +95,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
 
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
-        CAbstractUploadEngine::ErrorMessageCallback errorCallback(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
+        CAbstractUploadEngine::ErrorMessageCallback errorCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
 #ifndef IU_DISABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
             result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
@@ -113,7 +113,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
     
     result->setServerSettings(serverSettings);
     result->setUploadData(ue);
-    result->onErrorMessage.bind(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
+    result->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage,uploadErrorHandler_.get(),std::placeholders::_1));
     return result;
 }
 
@@ -147,7 +147,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     if (plugin) {
         ServerSettingsStruct* serverSettings = plugin->serverSettings();
         if (UseExisting && plugin->name() == pluginName && serverSettings->authData.Login == params->authData.Login) {
-            plugin->onErrorMessage.bind(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage);
+            plugin->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
             plugin->switchToThisVM();
             return plugin;
         }
@@ -161,7 +161,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
     CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_, 
-        CAbstractUploadEngine::ErrorMessageCallback(uploadErrorHandler_.get(), &IUploadErrorHandler::ErrorMessage));
+        std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
 
     if (newPlugin->isLoaded()) {
         m_plugins[threadId][serverName] = newPlugin;

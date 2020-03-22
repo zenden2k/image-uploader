@@ -79,7 +79,8 @@ void CFileDownloader::memberThreadFunc()
     std::unique_ptr<INetworkClient> nm(networkClientFactory_->create());
 
     // Providing callback function to stop downloading
-    nm->setProgressCallback(INetworkClient::ProgressCallback(this, &CFileDownloader::ProgressFunc));
+    using namespace std::placeholders;
+    nm->setProgressCallback(std::bind(&CFileDownloader::ProgressFunc, this, _1, _2, _3, _4, _5));
     mutex_.lock();
     if (onConfigureNetworkClient_) {
         onConfigureNetworkClient_(nm.get());

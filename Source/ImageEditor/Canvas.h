@@ -4,11 +4,12 @@
 #include <vector>
 #include <stack>
 
+#include <boost/signals2.hpp>
+
 #include "3rdpart/GdiplusH.h"
 #include "InputBox.h"
 #include "ImageEditor/Gui/InputBoxControl.h"
 #include "MovableElement.h"
-#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreTypes.h"
 #include "MovableElements.h"
 
@@ -156,15 +157,15 @@ class Canvas {
 
         Gdiplus::Rect lastAppliedCrop() const;
 
-        fastdelegate::FastDelegate4<int,int,int,int> onCropChanged;
-        fastdelegate::FastDelegate4<int,int,int,int> onCropFinished;
-        fastdelegate::FastDelegate1<DrawingToolType> onDrawingToolChanged;
-        fastdelegate::FastDelegate1<Gdiplus::Color> onForegroundColorChanged;
-        fastdelegate::FastDelegate1<Gdiplus::Color> onBackgroundColorChanged;
-        fastdelegate::FastDelegate1<LOGFONT> onFontChanged;
-        fastdelegate::FastDelegate1<TextElement*> onTextEditStarted;
-        fastdelegate::FastDelegate1<TextElement*> onTextEditFinished;
-        fastdelegate::FastDelegate0<void> onSelectionChanged;
+        boost::signals2::signal<void(int,int,int,int)> onCropChanged;
+        boost::signals2::signal<void(int,int,int,int)> onCropFinished;
+        boost::signals2::signal<void(DrawingToolType)> onDrawingToolChanged;
+        boost::signals2::signal<void(Gdiplus::Color)> onForegroundColorChanged;
+        boost::signals2::signal<void(Gdiplus::Color)> onBackgroundColorChanged;
+        boost::signals2::signal<void(LOGFONT)> onFontChanged;
+        boost::signals2::signal<void(TextElement*)> onTextEditStarted;
+        boost::signals2::signal<void(TextElement*)> onTextEditFinished;
+        boost::signals2::signal<void()> onSelectionChanged;
 
         friend class AbstractDrawingTool;
         friend class VectorElementTool;

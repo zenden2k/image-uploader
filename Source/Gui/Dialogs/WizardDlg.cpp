@@ -168,7 +168,8 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     m_bHandleCmdLineFunc = false;
     m_bScreenshotFromTray = false;
     serversChanged_ = false;
-    Settings.addChangeCallback(BasicSettings::ChangeCallback(this, &CWizardDlg::settingsChanged));
+    using namespace std::placeholders;
+    settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -229,7 +230,7 @@ CWizardDlg::~CWizardDlg()
         logWnd.second->DestroyWindow();
         delete logWnd.second;
     }
-
+    settingsChangedConnection_.disconnect();
 }
 
 void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {

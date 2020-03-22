@@ -26,8 +26,8 @@ limitations under the License.
 //
 #include <string>
 #include <memory>
+#include <functional>
 #include "Core/Utils/CoreTypes.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 typedef void CURL;
 class CurlShare;
@@ -40,7 +40,7 @@ class INetworkClient {
             atNone = 0, atPost, atUpload, atGet
         };
 
-        typedef fastdelegate::FastDelegate5<INetworkClient*, double, double, double, double, int> ProgressCallback;
+        typedef std::function<int(INetworkClient*, double, double, double, double)> ProgressCallback;
 
         class ProxyProvider {
         public:

@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <mutex>
 #include <unordered_map>
 
 #include "Core/Upload/UploadFilter.h"

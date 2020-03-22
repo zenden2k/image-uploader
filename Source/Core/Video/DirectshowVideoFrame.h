@@ -2,7 +2,7 @@
 #define IU_CORE_VIDEO_DIRECTSHOWVIDEOFRAME_H
 
 #include <windows.h>
-#include <streams.h>
+
 #include "AbstractVideoFrame.h"
 
 class DirectshowVideoFrame : public AbstractVideoFrame {

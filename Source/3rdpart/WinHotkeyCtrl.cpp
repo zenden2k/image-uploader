@@ -12,7 +12,8 @@ HHOOK CWinHotkeyCtrl::sm_hhookKb = NULL;
 CWinHotkeyCtrl* CWinHotkeyCtrl::sm_pwhcFocus = NULL;
 
 CWinHotkeyCtrl::CWinHotkeyCtrl()  
-    : m_vkCode(0), m_fModSet(0), m_fModRel(0), m_fIsPressed(FALSE), m_callback(HookCallback(this, &CWinHotkeyCtrl::LowLevelKeyboardProc)){
+    : m_vkCode(0), m_fModSet(0), m_fModRel(0), m_fIsPressed(FALSE), 
+      m_callback(std::bind(&CWinHotkeyCtrl::LowLevelKeyboardProc, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)){
 }
 
 CWinHotkeyCtrl::~CWinHotkeyCtrl() {

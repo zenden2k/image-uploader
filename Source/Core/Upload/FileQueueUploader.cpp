@@ -87,19 +87,35 @@ std::shared_ptr<UploadSession> CFileQueueUploader::session(int index)
     return _impl->session(index);
 }
 
+void CFileQueueUploader::setOnQueueFinishedCallback(std::function<void(CFileQueueUploader*)> cb) {
+    _impl->onQueueFinishedCallback_ = cb;
+}
+
+void CFileQueueUploader::setOnSessionAddedCallback(std::function<void(UploadSession*)> cb) {
+    _impl->onSessionAddedCallback_ = cb;
+}
+
+void CFileQueueUploader::setOnTaskAddedCallback(std::function<void(UploadTask*)> cb) {
+    _impl->onTaskAddedCallback_ = cb;
+}
+
+void CFileQueueUploader::setOnConfigureNetworkClient(std::function<void(CFileQueueUploader*, INetworkClient*)> cb) {
+    _impl->onConfigureNetworkClientCallback_ = cb;
+}
+
 void CFileQueueUploader::sessionAdded(UploadSession* session)
 {
-    if (OnSessionAdded)
+    if (_impl->onSessionAddedCallback_)
     {
-        OnSessionAdded(session);
+        _impl->onSessionAddedCallback_(session);
     }
 }
 
 void CFileQueueUploader::taskAdded(UploadTask* task)
 {
-    if (OnTaskAdded)
+    if (_impl->onTaskAddedCallback_)
     {
-        OnTaskAdded(task);
+        _impl->onTaskAddedCallback_(task);
     }
 }
 

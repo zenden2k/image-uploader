@@ -1,6 +1,7 @@
 #ifndef IU_CORE_UPLOADMANAGER_H
 #define IU_CORE_UPLOADMANAGER_H
 
+#include <boost/signals2.hpp>
 #include "FileQueueUploader.h"
 
 class CMyEngineList;
@@ -18,6 +19,7 @@ public:
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter);
 protected:
     UploadEngineManager* uploadEngineManager_;
+    boost::signals2::connection settingsChangedConnection_;
 
     void sessionAdded(UploadSession* session) override;
     void onSessionFinished(UploadSession* session);

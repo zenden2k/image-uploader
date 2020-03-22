@@ -38,15 +38,15 @@ void CWTLBrowserView::OnSetSecureLockIcon(long nSecureLockIcon)
 
 void CWTLBrowserView::OnNavigateComplete2(IDispatch* pDisp, const CString& szURL)
 {
-    if ( onNavigateComplete2 ) {
-        onNavigateComplete2(szURL);
+    if ( onNavigateComplete2_ ) {
+        onNavigateComplete2_(szURL);
     }
 }
 
 BOOL CWTLBrowserView::OnNavigateError(IDispatch* pDisp, const String& szURL, const String& szTargetFrameName, LONG nStatusCode)
 {
-    if ( onNavigateError ) {
-        return onNavigateError(szURL, nStatusCode);
+    if ( onNavigateError_ ) {
+        return onNavigateError_(szURL, nStatusCode);
     }
     return FALSE;
 }
@@ -77,12 +77,24 @@ void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
                         pWindow->focus();
                     }
                 }
-                if ( onDocumentComplete ) {
-                    onDocumentComplete(url);
+                if ( onDocumentComplete_ ) {
+                    onDocumentComplete_(url);
                 }
             }
         }
     }
     pUnkDisp->Release(); 
     pUnkBrowser->Release();
+}
+
+void CWTLBrowserView::setOnNavigateComplete2(std::function<void(const CString&)> cb) {
+    onNavigateComplete2_ = cb;
+}
+
+void CWTLBrowserView::setOnDocumentComplete(std::function<void(const CString&)> cb) {
+    onDocumentComplete_ = cb;
+}
+
+void CWTLBrowserView::setOnNavigateError(std::function<bool(const CString&, LONG)> cb) {
+    onNavigateError_ = cb;
 }

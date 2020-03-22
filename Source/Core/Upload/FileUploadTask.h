@@ -8,7 +8,7 @@ class FileUploadTask: public UploadTask {
     public:
         FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = 0);
         ~FileUploadTask();
-        virtual Type type() const;
+        virtual Type type() const override;
         virtual std::string getMimeType() const override;
         virtual int64_t getDataLength() const override;
         std::string getFileName() const;

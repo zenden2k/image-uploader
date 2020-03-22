@@ -34,7 +34,7 @@ bool SizeExceedFilter::PreUpload(UploadTask* task) {
                     UploadSessionData& data = uploadSessionDataMap_[fileTask->session()];
                     data.newImageServer = fileTask->serverProfile();
                     if (!data.callbackAdded) {
-                        fileTask->session()->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &SizeExceedFilter::onSessionFinished));
+                        fileTask->session()->addSessionFinishedCallback(std::bind(&SizeExceedFilter::onSessionFinished, this, std::placeholders::_1));
                         data.callbackAdded = true;
                     }
                     //InitialParams = iss; // if user choose button USE FOR ALL

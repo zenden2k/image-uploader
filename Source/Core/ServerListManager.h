@@ -12,7 +12,7 @@ class ServerListManager
 {
 public:
     ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
-    ~ServerListManager(void);
+    ~ServerListManager();
     bool addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
         const std::string &remoteDirectory, const std::string &downloadUrl);
     bool addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);

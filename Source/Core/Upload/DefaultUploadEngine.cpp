@@ -620,15 +620,15 @@ std::string CDefaultUploadEngine::ReplaceVars(const std::string& Text)
 bool CDefaultUploadEngine::needStop()
 {
     bool shouldStop = false;
-    if (onNeedStop)
-        shouldStop = onNeedStop();  // delegate call
+    if (onNeedStop_)
+        shouldStop = onNeedStop_();  // delegate call
     return shouldStop;
 }
 
 void CDefaultUploadEngine::SetStatus(StatusType status, const std::string& param)
 {
-    if (onStatusChanged)
-        onStatusChanged(status, m_CurrentActionIndex, param);
+    if (onStatusChanged_)
+        onStatusChanged_(status, m_CurrentActionIndex, param);
 }
 
 int CDefaultUploadEngine::RetryLimit()

@@ -26,7 +26,6 @@
 #include <string>
 #include <map>
 
-#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
@@ -349,7 +348,7 @@ class CUploader;
 class CAbstractUploadEngine
 {
     public:
-        typedef fastdelegate::FastDelegate1<const ErrorInfo&> ErrorMessageCallback;
+        typedef std::function<void(const ErrorInfo&)> ErrorMessageCallback;
 
         CAbstractUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback);
         virtual ~CAbstractUploadEngine();
@@ -366,12 +365,11 @@ class CAbstractUploadEngine
         ServerSync* serverSync() const;
         CUploadEngineData* getUploadData() const;
         // Events
-        fastdelegate::FastDelegate0<bool> onNeedStop;
-        fastdelegate::FastDelegate1<InfoProgress> onProgress;
-        fastdelegate::FastDelegate3<StatusType, int, std::string> onStatusChanged;
-        fastdelegate::FastDelegate2< const std::string&, bool> onDebugMessage;
-        
-        ErrorMessageCallback onErrorMessage;
+        void setOnNeedStopCallback(std::function<bool()> cb);
+        void setOnProgressCallback(std::function<void(InfoProgress)> cb);
+        void setOnStatusChangedCallback(std::function<void(StatusType, int, std::string)> cb);
+        void setOnDebugMessageCallback(std::function<void(const std::string&, bool)> cb);
+        void setOnErrorMessageCallback(ErrorMessageCallback cb);
         DISALLOW_COPY_AND_ASSIGN(CAbstractUploadEngine);
     protected:
         bool m_bShouldStop;
@@ -381,6 +379,12 @@ class CAbstractUploadEngine
         ServerSettingsStruct* m_ServersSettings;
         std::shared_ptr<UploadTask> currentTask_;
         ServerSync* serverSync_;
+        ErrorMessageCallback onErrorMessage_;
+
+        std::function<bool()> onNeedStop_;
+        std::function<void(InfoProgress)> onProgress_;
+        std::function<void(StatusType, int, std::string)> onStatusChanged_;
+        std::function<void(const std::string&, bool)> onDebugMessage_;
         bool DebugMessage(const std::string& message, bool isServerResponseBody = false);
         bool ErrorMessage(ErrorInfo);
         virtual bool needStop();

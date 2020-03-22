@@ -37,7 +37,9 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
     uploadSession_ = std::make_shared<UploadSession>(false);
-    uploadSession_->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(this, &ServersChecker::onSessionFinished));
+
+    using namespace std::placeholders;
+    uploadSession_->addSessionFinishedCallback(std::bind(&ServersChecker::onSessionFinished, this, _1));
     int taskCount = 0;
     for (size_t i = 0; i < model_->getCount(); i++) {
         ServerData* item = model_->getDataByIndex(i);
@@ -100,8 +102,8 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
 
         if (task) {
             task->setServerProfile(serverProfile);
-            task->OnStatusChanged.bind(this, &ServersChecker::onTaskStatusChanged);
-            task->addTaskFinishedCallback(UploadTask::TaskFinishedCallback(this, &ServersChecker::onTaskFinished));
+            task->setOnStatusChangedCallback(std::bind(&ServersChecker::onTaskStatusChanged, this, _1));
+            task->onTaskFinished.connect(std::bind(&ServersChecker::onTaskFinished, this, _1, _2));
             UploadTaskUserData* userData = new UploadTaskUserData();
             userData->rowIndex = i;
             task->setUserData(userData);

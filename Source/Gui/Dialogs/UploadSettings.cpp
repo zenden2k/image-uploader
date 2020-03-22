@@ -73,7 +73,12 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
     useServerThumbnailsTooltip_ = nullptr;
     uploadEngineManager_ = uploadEngineManager;
-    settings->addChangeCallback(BasicSettings::ChangeCallback(this, &CUploadSettings::settingsChanged));
+    using namespace std::placeholders;
+    settingsChangedConnection_ = settings->onChange.connect(std::bind(&CUploadSettings::settingsChanged, this, _1));
+}
+
+CUploadSettings::~CUploadSettings() {
+    settingsChangedConnection_.disconnect();
 }
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
@@ -1102,7 +1107,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     m_ShorteningServerButton.GetClientRect(&clientRect);
     m_ShorteningServerButton.ClientToScreen(&clientRect);
     POINT pt = { clientRect.left, clientRect.bottom };
-    serverSelectorControl.OnChange.bind(this, &CUploadSettings::shorteningUrlServerChanged);
+    serverSelectorControl.setOnChangeCallback(std::bind(&CUploadSettings::shorteningUrlServerChanged, this, std::placeholders::_1));
     serverSelectorControl.showPopup(m_hWnd, pt);
     Settings.urlShorteningServer = serverSelectorControl.serverProfile();
     updateUrlShorteningCheckboxLabel();

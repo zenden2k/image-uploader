@@ -4,10 +4,12 @@
 #include <string>
 #include <mutex>
 #include <deque>
+#include <functional>
+
+#include <boost/signals2.hpp>
 
 #include "Core/Utils/CoreTypes.h"
 #include "UploadResult.h"
-#include "Core/3rdpart/FastDelegate.h"
 #include "Core/Utils/EnumUtils.h"
 #include "ServerProfile.h"
 #include "Core/TempFileDeleter.h"
@@ -62,8 +64,8 @@ class UploadTask {
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl)(TypeAuth));
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
         enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed, StatusWaitingChildren };
-        typedef fastdelegate::FastDelegate2<UploadTask*, bool> TaskFinishedCallback;
-        typedef fastdelegate::FastDelegate1<UploadTask* > ChildTaskAddedCallback;
+        //typedef std::function<void(UploadTask*, bool)> TaskFinishedCallback;
+        //typedef std::function<void(UploadTask*)> ChildTaskAddedCallback;
 
         virtual Type type() const = 0;
         virtual std::string getMimeType() const = 0;
@@ -85,12 +87,14 @@ class UploadTask {
         void setIndex(int index); // sort index
         UploadResult* uploadResult();
         UploadProgress* progress();
-        void addTaskFinishedCallback(const TaskFinishedCallback& callback);
-        void addChildTaskAddedCallback(const ChildTaskAddedCallback& callback);
-        fastdelegate::FastDelegate1<UploadTask*> OnUploadProgress;
-        fastdelegate::FastDelegate1<UploadTask*> OnStatusChanged;
-        //fastdelegate::FastDelegate1<UploadTask*> OnChildTaskAdded;
-        fastdelegate::FastDelegate1<UploadTask*> OnFolderUsed;
+
+        boost::signals2::signal<void(UploadTask*, bool)> onTaskFinished;
+        boost::signals2::signal<void(UploadTask*)> onChildTaskAdded;
+
+        void setOnUploadProgressCallback(std::function<void(UploadTask*)> cb);
+        void setOnStatusChangedCallback(std::function<void(UploadTask*)> cb);
+        void setOnFolderUsedCallback(std::function<void(UploadTask*)> cb);
+
         std::string serverName() const;
         ServerProfile& serverProfile();
         void setServerProfile(ServerProfile profile);
@@ -119,6 +123,8 @@ class UploadTask {
         void deletePostponedChilds();
         void uploadProgress(InfoProgress progress);
         void restartTask(bool fullReset = true);
+
+        std::function<void(UploadTask*)> onFolderUsed_;
         friend class CUploader;
 
     protected:
@@ -144,8 +150,6 @@ class UploadTask {
         std::mutex finishMutex_;
         bool finishSignalSent_;
         Role role_;
-        std::vector<TaskFinishedCallback> taskFinishedCallbacks_;
-        std::vector<ChildTaskAddedCallback> childTaskAddedCallbacks_;
         bool shorteningStarted_;
         volatile bool stopSignal_;
         bool uploadSuccess_;
@@ -153,6 +157,9 @@ class UploadTask {
         TempFileDeleter* tempFileDeleter_;
         int index_;
         CFileQueueUploader* uploadManager_;
+        std::function<void(UploadTask*)> onUploadProgress_;
+        std::function<void(UploadTask*)> onStatusChanged_;
+
 };    
 
 #endif

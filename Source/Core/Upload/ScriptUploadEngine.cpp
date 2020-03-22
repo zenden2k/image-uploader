@@ -121,8 +121,8 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     params.task_ = task;
     int ival = 0;
 
-    if (!params.folderId.empty() && task->OnFolderUsed) {
-        task->OnFolderUsed(task.get());
+    if (!params.folderId.empty() && task->onFolderUsed_) {
+        task->onFolderUsed_(task.get());
     }
     try {
         checkCallingThread();
@@ -170,8 +170,8 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
 bool CScriptUploadEngine::needStop()
 {
     bool shouldStop = false;
-    if (onNeedStop) {
-        shouldStop = onNeedStop();  // delegate call
+    if (onNeedStop_) {
+        shouldStop = onNeedStop_();  // delegate call
     }
     return shouldStop;
 }

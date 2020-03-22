@@ -18,14 +18,15 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     foregroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     foregroundButton_.SetFont(font_);
     foregroundColorButton_.SubclassWindow(foregroundButton_.m_hWnd);
-    foregroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnForegroundButtonSelChanged);
+    using namespace std::placeholders;
+    foregroundColorButton_.setOnSelChangeCallback(std::bind(&ColorsDelegate::OnForegroundButtonSelChanged, this, _1, _2));
     foregroundColorButton_.SetCustomText(TR("More colors..."));
     foregroundColorButton_.SetColorCodeText(TR("Get color's code..."));
     foregroundColorButton_.SetListener(this);
     backgroundButton_.Create(toolbar->m_hWnd, rc, 0,WS_CHILD|WS_VISIBLE|BS_PUSHBUTTON);
     backgroundButton_.SetFont(font_);
     backgroundColorButton_.SubclassWindow(backgroundButton_.m_hWnd);
-    backgroundColorButton_.OnSelChange.bind(this, &ColorsDelegate::OnBackgroundButtonSelChanged);
+    backgroundColorButton_.setOnSelChangeCallback(std::bind(&ColorsDelegate::OnBackgroundButtonSelChanged, this, _1, _2));
     backgroundColorButton_.SetCustomText(TR("More colors..."));
     backgroundColorButton_.SetColorCodeText(TR("Get color's code..."));
     backgroundColorButton_.SetListener(this);

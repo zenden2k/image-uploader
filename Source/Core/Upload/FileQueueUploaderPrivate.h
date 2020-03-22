@@ -96,6 +96,10 @@ protected:
     ScriptsManager* scriptsManager_; 
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+    std::function<void(CFileQueueUploader*)> onQueueFinishedCallback_;
+    std::function<void(UploadSession*)> onSessionAddedCallback_;
+    std::function<void(UploadTask*)> onTaskAddedCallback_;
+    std::function<void(CFileQueueUploader*, INetworkClient*)> onConfigureNetworkClientCallback_;
 };
 
 #endif

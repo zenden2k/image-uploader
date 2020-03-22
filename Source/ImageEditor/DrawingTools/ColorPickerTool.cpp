@@ -45,9 +45,7 @@ void ColorPickerTool::endDraw(int x, int y)
     Gdiplus::Color color;
     canvas_->getBufferBitmap()->GetPixel(x,y, &color);
     canvas_->setForegroundColor(color);
-    if ( canvas_->onForegroundColorChanged ) {
-        canvas_->onForegroundColorChanged(color);
-    }
+    canvas_->onForegroundColorChanged(color);
     canvas_->setPreviousDrawingTool();
 }
 
@@ -66,9 +64,8 @@ void ColorPickerTool::rightButtonClick(int x, int y)
     Gdiplus::Color color;
     canvas_->getBufferBitmap()->GetPixel(x,y, &color);
     canvas_->setBackgroundColor(color);
-    if ( canvas_->onBackgroundColorChanged ) {
-        canvas_->onBackgroundColorChanged(color);
-    }
+
+    canvas_->onBackgroundColorChanged(color);
     canvas_->setPreviousDrawingTool();
 }
 

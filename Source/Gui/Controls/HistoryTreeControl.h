@@ -3,14 +3,11 @@
 #include <map>
 #include <mutex>
 #include <memory>
-#include "atlheaders.h"
-#include <atltheme.h>
-#include <atlmisc.h>
 
+#include "atlheaders.h"
 #include "3rdpart/thread.h"
 #include "Core/HistoryManager.h"
 #include "Core/FileDownloader.h"
-#include "Core/3rdpart/FastDelegate.h"
 #include "CustomTreeControl.h"
 
 class INetworkClientFactory;
@@ -64,9 +61,6 @@ class CHistoryTreeControl :
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
         LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
-        fastdelegate::FastDelegate0<> onThreadsFinished;
-        fastdelegate::FastDelegate0<> onThreadsStarted;
-        fastdelegate::FastDelegate1<TreeItem*> onItemDblClick;
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
         bool downloading_enabled_;
@@ -85,7 +79,9 @@ class CHistoryTreeControl :
         LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void ResetContent();
         static HistoryItem* getItemData(const TreeItem* res);
-
+        void setOnThreadsFinishedCallback(std::function<void()> cb);
+        void setOnThreadsStartedCallback(std::function<void()> cb);
+        void setOnItemDblClickCallback(std::function<void(TreeItem*)> cb);
     private:
         std::map<CString, HICON> m_fileIconCache;
         HICON getIconForExtension(const CString& fileName);
@@ -102,6 +98,8 @@ class CHistoryTreeControl :
         std::mutex m_thumbLoadingQueueMutex;
         std::unique_ptr<CFileDownloader> m_FileDownloader;
         std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+        std::function<void()> onThreadsFinished_, onThreadsStarted_;
+        std::function<void(TreeItem*)> onItemDblClick_;
         bool OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void DownloadThumb(HistoryTreeItem* it);
         int m_SessionItemHeight;

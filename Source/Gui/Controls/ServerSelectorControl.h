@@ -24,13 +24,14 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/settingspage.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/Controls/DialogIndirect.h"
-#include "Core/3rdpart/FastDelegate.h"
 
 // CServerSelectorControl
 class IconBitmapUtils;
@@ -98,7 +99,8 @@ virtual ~CServerSelectorControl();
     ServerProfile serverProfile() const;
     void setShowImageProcessingParams(bool show);
     void setShowParamsLink(bool show);
-    fastdelegate::FastDelegate1<CServerSelectorControl*> OnChange;
+    void setOnChangeCallback(std::function<void(CServerSelectorControl*)> cb);
+
 private:
     CComboBoxEx serverComboBox_;
     CHyperLink imageProcessingParamsLink_;
@@ -128,7 +130,7 @@ private:
     CString title_;
     CFont serverGroupboxFont_;
     HGLOBAL hMyDlgTemplate_;
-
+    std::function<void(CServerSelectorControl*)> onChangeCallback_;
 };
 
 #endif // IU_GUI_DIALOGS_ServerSelectorControl_H

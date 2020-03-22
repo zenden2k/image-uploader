@@ -2,8 +2,11 @@
 #define IU_CORE_UPLOAD_UPLOADSESSION_H
 
 #pragma once
-#include "UploadTask.h"
+
+#include <functional>
 #include <atomic>
+
+#include "UploadTask.h"
 
 class CHistorySession;
 class UploadSession
@@ -11,8 +14,8 @@ class UploadSession
     public:
         explicit UploadSession(bool enableHistory = true);
         ~UploadSession();
-        typedef fastdelegate::FastDelegate2<UploadSession*, UploadTask*> TaskAddedCallback;
-        typedef fastdelegate::FastDelegate1<UploadSession*> SessionFinishedCallback;
+        typedef std::function<void(UploadSession*, UploadTask*)> TaskAddedCallback;
+        typedef std::function<void(UploadSession*)> SessionFinishedCallback;
         /**
         This function is NOT thread safe!
         */
