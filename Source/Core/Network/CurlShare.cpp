@@ -45,11 +45,11 @@ CURLSH* CurlShare::getHandle() const
 }
 
 void CurlShare::lockData(CURL *handle, curl_lock_data data, curl_lock_access, void *useptr){
-    CurlShare* pthis = reinterpret_cast<CurlShare*>(useptr);
+    auto pthis = reinterpret_cast<CurlShare*>(useptr);
     pthis->mutexes_[data].lock();
 }
 /* unlock callback */
 void CurlShare::unlockData(CURL *handle, curl_lock_data data, void *useptr){
-    CurlShare* pthis = reinterpret_cast<CurlShare*>(useptr);
+    auto pthis = reinterpret_cast<CurlShare*>(useptr);
     pthis->mutexes_[data].unlock();
 }

@@ -1,9 +1,11 @@
 #ifndef IU_FUNC_WTLSCRIPTDIALOGPROVIDER_H
 #define IU_FUNC_WTLSCRIPTDIALOGPROVIDER_H
 
-#include <QObject>
-#include "Core/Scripting/DialogProvider.h"
 #include <mutex>
+
+#include <QObject>
+
+#include "Core/Scripting/DialogProvider.h"
 
 
 class QtScriptDialogProvider : public QObject, public IDialogProvider {

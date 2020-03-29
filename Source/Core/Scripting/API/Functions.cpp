@@ -121,7 +121,7 @@ Sqrat::Object IncludeScript(const std::string& filename)
         return Sqrat::Object();
     }
     Sqrat::Script squirrelScript(GetCurrentThreadVM());
-    squirrelScript.CompileString(scriptText.c_str(),IuCoreUtils::ExtractFileName(absolutePath).c_str());
+    squirrelScript.CompileString(scriptText, IuCoreUtils::ExtractFileName(absolutePath));
     squirrelScript.Run();
     return squirrelScript;
 }
@@ -143,10 +143,7 @@ bool LoadScriptTranslation() {
         }
         
         Json::Reader reader;
-        if ( reader.parse(jsonText, *translationRoot, false) ) {
-            return true;
-        }
-        return false;
+        return reader.parse(jsonText, *translationRoot, false);
     } else {
         return true;
     }
@@ -271,7 +268,7 @@ void DebugMessage(const std::string& msg, bool isResponseBody) {
     ServiceLocator::instance()->uploadErrorHandler()->DebugMessage(msg,isResponseBody);
 }
 
-const std::string MessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
+std::string MessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
 #if defined(_WIN32) && !defined(IU_CLI)
     UINT uButtons = MB_OK;
     if ( buttons == "ABORT_RETRY_IGNORE") {
@@ -547,7 +544,7 @@ std::string GetCurrentThreadId()
     return IuCoreUtils::ThreadIdToString(treadId);
 }
 #undef random
-// older versions of Squirrel Standart Library have broken srand() function
+// older versions of Squirrel Standard Library have broken srand() function
 int random()
 {
     return rand();

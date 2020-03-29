@@ -45,7 +45,7 @@ public:
     CRectRegion(int x, int y, int width, int height);
     CRectRegion(QRegion region);
     bool GetImage(QPixmap * src, QPixmap ** res) override;
-     QRect getBoundingRect();
+    QRect getBoundingRect() override;
     bool IsEmpty() const override;
     ~CRectRegion();
 protected:
@@ -57,8 +57,8 @@ class CWindowHandlesRegion: public CRectRegion
 {
 public:
     CWindowHandlesRegion();
-    CWindowHandlesRegion(WId windowId);
-    bool PrepareShooting(bool fromScreen);
+    explicit CWindowHandlesRegion(WId windowId);
+    bool PrepareShooting(bool fromScreen) override;
     void AddWindow(WId windowId, bool Include);
     void RemoveWindow(WId windowId);
     void Clear();
@@ -85,7 +85,7 @@ class CActiveWindowRegion: public CWindowHandlesRegion
 public:
     CActiveWindowRegion();
     bool GetImage(QPixmap * src, QPixmap ** res) override;
-    bool PrepareShooting(bool fromScreen);
+    bool PrepareShooting(bool fromScreen) override;
     DISALLOW_COPY_AND_ASSIGN(CActiveWindowRegion);
 };
 

@@ -1,6 +1,6 @@
 #include "ScreenCapture.h"
 
-#include <math.h>
+#include <cmath>
 #include <deque>
 
 #include <QPoint>
@@ -522,7 +522,7 @@ void TimerWait(int Delay)
 {
     QEventLoop loop;
     QTimer t;
-    t.connect(&t, SIGNAL(timeout()), &loop, SLOT(quit()));
+    QObject::connect(&t, SIGNAL(timeout()), &loop, SLOT(quit()));
     t.start(Delay);
 
     loop.exec();

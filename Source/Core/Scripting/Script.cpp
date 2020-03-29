@@ -28,7 +28,6 @@ limitations under the License.
 Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_ptr<INetworkClientFactory> networkClientFactory, bool doLoad)
 {
     m_CreationTime = time(nullptr);
-    m_SquirrelScript = nullptr;
     m_bIsPluginLoaded = false;
     sync_ = serverSync;
     owningThread_ = std::this_thread::get_id();
@@ -42,7 +41,6 @@ Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_
 Script::~Script()
 {
     ScriptAPI::ClearVmData(vm_);
-    delete m_SquirrelScript;
 }
 
 void Script::CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
@@ -127,7 +125,7 @@ bool Script::load(const std::string& fileName)
         preLoad();
  
         switchToThisVM();
-        m_SquirrelScript = new Sqrat::Script(vm_.GetVM());
+        m_SquirrelScript = std::make_unique<Sqrat::Script>(vm_.GetVM());
         m_SquirrelScript->CompileString(scriptText, IuCoreUtils::ExtractFileName(fileName));
 
         m_SquirrelScript->Run();

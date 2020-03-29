@@ -9,7 +9,7 @@
 namespace TestHelpers {
     void initDataPaths(const std::string& testDataPath);
     std::string resolvePath(const std::string &relPath);
-    bool getFileContents(std::string fileName, std::vector<std::string> & vecOfStrs);
+    bool getFileContents(const std::string& fileName, std::vector<std::string> & vecOfStrs);
 }
 
 #endif

@@ -25,7 +25,7 @@ limitations under the License.
 #include "Core/ServiceLocator.h"
 
 ScriptsManager::ScriptsManager(std::shared_ptr<INetworkClientFactory> networkClientFactory) :
-    networkClientFactory_(networkClientFactory)
+    networkClientFactory_(std::move(networkClientFactory))
 {
 }
 
@@ -52,7 +52,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
         }
     }
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    if (plugin && (time(0) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
+    if (plugin && (time(nullptr) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
         UseExisting = true;
 
     if ( plugin && UseExisting ) {
@@ -62,7 +62,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
 
     if (plugin) {
         delete plugin;
-        plugin = 0;
+        plugin = nullptr;
        
         scripts_.erase(threadId);
     }
@@ -83,7 +83,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
     else {
         delete newPlugin;
     }
-    return NULL;
+    return nullptr;
 }
 
 void ScriptsManager::unloadScripts()

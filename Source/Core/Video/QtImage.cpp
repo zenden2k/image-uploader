@@ -36,6 +36,8 @@ bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* dat
         img_ = QImage(newData, width, height, oldStripeSize, QImage::Format_RGB888, [](void* d) {
             delete[] reinterpret_cast<uint8_t*>(d);
         });
+        /*img_.save("/home/user/test.jpg");
+        return true;*/
         if (!img_.isNull()) {
             return true;
         }

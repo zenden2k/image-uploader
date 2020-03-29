@@ -66,14 +66,14 @@ std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item,
    return "";
 }
 
-std::string ZOutputCodeGenerator::image(std::string url)
+std::string ZOutputCodeGenerator::image(const std::string& url)
 {
 	if (m_lang == clBBCode)
 		return "[img]" + url +"[/img]";
 	else  return "<img border='0' src='" + url+ "'/>";
 }
 
-std::string ZOutputCodeGenerator::link(std::string url, std::string body)
+std::string ZOutputCodeGenerator::link(const std::string &url, const std::string &body)
 {
 	if (m_lang == clBBCode)
 		return "[url=" + url +"]"+body+"[/url]";

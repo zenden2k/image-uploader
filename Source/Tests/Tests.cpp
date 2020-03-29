@@ -41,9 +41,6 @@ void errorHandler(HSQUIRRELVM vm, const SQChar *s, ...)
 
     (void)vm;
 }
-#ifdef _WIN32
-
-CAppModule _Module;
 
 class Translator : public ITranslator {
 public:
@@ -62,6 +59,10 @@ public:
     }
 #endif
 };
+
+#ifdef _WIN32
+
+CAppModule _Module;
 
 // Convert UNICODE (UCS-2) command line arguments to utf-8
 char ** convertArgv(int argc, _TCHAR* argvW[]) {

@@ -23,29 +23,29 @@ class MockINetworkClient : public INetworkClient {
   MOCK_METHOD1(doGet,
       bool(const std::string& url));
   MOCK_METHOD0(responseBody,
-      const std::string());
+      std::string());
   MOCK_METHOD0(responseCode,
       int());
   MOCK_METHOD0(errorString,
-      const std::string());
+      std::string());
   MOCK_METHOD1(setUserAgent,
       void(const std::string& userAgentStr));
   MOCK_METHOD0(responseHeaderText,
-      const std::string());
+      std::string());
   MOCK_METHOD1(responseHeaderByName,
-      const std::string(const std::string& name));
+      std::string(const std::string& name));
   MOCK_METHOD2(responseHeaderByIndex,
       std::string(int index, std::string& name));
   MOCK_METHOD0(responseHeaderCount,
       int());
   MOCK_METHOD0(getCurlResultString,
-      const std::string());
+      std::string());
   MOCK_METHOD2(setCurlOption,
       void(int option, const std::string &value));
   MOCK_METHOD2(setCurlOptionInt,
       void(int option, long value));
   MOCK_METHOD1(getCurlInfoString,
-      const std::string(int option));
+      std::string(int option));
   MOCK_METHOD1(getCurlInfoInt,
       int(int option));
   MOCK_METHOD1(getCurlInfoDouble,
@@ -89,7 +89,7 @@ class MockINetworkClient : public INetworkClient {
   MOCK_METHOD1(setProxyProvider,
       void(ProxyProvider* provider));
   MOCK_METHOD1(urlEncode,
-      const std::string(const std::string& url));
+      std::string(const std::string& url));
   MOCK_METHOD1(urlDecode,
-      const std::string(const std::string& url));
+      std::string(const std::string& url));
 };

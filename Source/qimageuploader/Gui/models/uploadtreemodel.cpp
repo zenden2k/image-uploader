@@ -218,9 +218,10 @@ int UploadTreeModel::rowCount(const QModelIndex &parent) const
 void UploadTreeModel::setupModelData(UploadManager *uploadManager)
 {
     m_uploadManager = uploadManager;
-    m_uploadManager->OnTaskAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
+    using namespace std::placeholders;
+    m_uploadManager->setOnTaskAddedCallback(std::bind(&UploadTreeModel::data_OnChildAdded, this, _1));
     //m_uploadManager->OnChildAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
-    m_uploadManager->OnSessionAdded.bind(this,&UploadTreeModel::OnSessionAdded);
+    m_uploadManager->setOnSessionAddedCallback(std::bind(&UploadTreeModel::OnSessionAdded, this, _1));
     //m_uploadManager->OnU.bind(this,  &UploadTreeModel::data_OnUploadProgress);
      
     /*connect(uploadManager, SIGNAL(OnChildAdded(UploadTask*,UploadTask*)), this, SLOT(data_OnChildAdded(UploadTask*,UploadTask*))/, Qt::BlockingQueuedConnection*);
@@ -316,8 +317,9 @@ void UploadTreeModel::OnSessionAdded(UploadSession *session) {
 	int taskCount = session->taskCount();
 	for (int i = 0; i < taskCount; i++) {
 		auto task = session->getTask(i);
-		task->OnUploadProgress.bind(this, &UploadTreeModel::data_OnUploadProgress);
-		task->OnStatusChanged.bind(this, &UploadTreeModel::data_OnStatusChanged);
+		using namespace std::placeholders;
+		task->setOnUploadProgressCallback(std::bind(&UploadTreeModel::data_OnUploadProgress, this, _1));
+		task->setOnStatusChangedCallback(std::bind(&UploadTreeModel::data_OnStatusChanged, this, _1));
 
 	}
 }

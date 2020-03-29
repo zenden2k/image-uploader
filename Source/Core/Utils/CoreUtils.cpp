@@ -200,7 +200,7 @@ std::string Utf8ToSystemLocale(const std::string& str)
    return out;
 }
 
-std::string ExtractFileName(const std::string fileName)
+std::string ExtractFileName(const std::string& fileName)
 {
         std::string temp = fileName;
         int Qpos = temp.find_last_of('?'); //FIXME
@@ -214,7 +214,7 @@ std::string ExtractFileName(const std::string fileName)
         return temp.substr(i+1);
 }
 
-std::string ExtractFileExt(const std::string fileName)
+std::string ExtractFileExt(const std::string& fileName)
 {
     int nLen = fileName.length();
 
@@ -231,7 +231,7 @@ std::string ExtractFileExt(const std::string fileName)
     return result;
 }
 
-const std::string ExtractFilePath(const std::string& fileName)
+std::string ExtractFilePath(const std::string& fileName)
 {
     int i, len = fileName.length();
     for(i = len-1; i >= 0; i--)
@@ -245,7 +245,7 @@ const std::string ExtractFilePath(const std::string& fileName)
     return std::string();
 }
 
-const std::string ExtractFileNameNoExt(const std::string& fileName)
+std::string ExtractFileNameNoExt(const std::string& fileName)
 {
     std::string result = ExtractFileName(fileName);
     size_t Qpos = result.find_last_of('.');
@@ -457,7 +457,7 @@ int64_t getFileSize(const std::string& utf8Filename)
      return stats.st_size;
 }
 
-// Преобразование размера файла в строку
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 std::string fileSizeToString(int64_t nBytes)
 {
     double number = 0;
@@ -500,7 +500,7 @@ std::string toString(double value, int precision)
     return buffer;
 }
 
-std::string GetDefaultExtensionForMimeType(const std::string mimeType) {
+std::string GetDefaultExtensionForMimeType(const std::string& mimeType) {
     std::map<std::string, std::string> mimeToExt;
     mimeToExt["image/gif"] = "gif";
     mimeToExt["image/png"] = "png";

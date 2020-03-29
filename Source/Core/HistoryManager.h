@@ -51,6 +51,7 @@ struct HistoryItem
     CHistorySession* session;
 
     explicit HistoryItem(CHistorySession* historySession) : session(historySession){
+        timeStamp = 0;
         time(&timeStamp);
         uploadFileSize = 0;
         sortIndex = 0;
@@ -126,7 +127,7 @@ class CHistoryManager
 class CHistoryReader
 {
     public:
-        CHistoryReader(CHistoryManager* mgr);
+        explicit CHistoryReader(CHistoryManager* mgr);
         virtual ~CHistoryReader();
         // filename must be utf-8 encoded
         bool loadFromFile(const std::string& filename);

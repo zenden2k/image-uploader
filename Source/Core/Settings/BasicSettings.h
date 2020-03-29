@@ -29,13 +29,8 @@ public:
     bool LoadSettings(const std::string& szDir = "", const std::string& fileName = "", bool LoadFromRegistry = true);
     bool SaveSettings();
     void notifyChange();
-    //typedef std::function<void(BasicSettings*)> ChangeCallback;
     boost::signals2::signal<void(BasicSettings*)> onChange;
-    //std::vector<ChangeCallback> changeCallbacks_;
     unsigned int LastUpdateTime;
-
-
-    // Fields
     int FileRetryLimit;
     int ActionRetryLimit;
     std::mutex serverSettingsMutex_;

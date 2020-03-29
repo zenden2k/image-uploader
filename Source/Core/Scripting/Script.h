@@ -41,7 +41,7 @@ class Script {
         virtual bool postLoad();
         std::string fileName_;
         Sqrat::SqratVM vm_;
-        Sqrat::Script* m_SquirrelScript;
+        std::unique_ptr<Sqrat::Script> m_SquirrelScript;
         time_t m_CreationTime;
         bool m_bIsPluginLoaded;
         std::thread::id owningThread_;

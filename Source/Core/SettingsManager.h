@@ -36,7 +36,7 @@ class SettingsNodeBase
     public:
         virtual std::string getValue()=0;
         virtual void setValue(const std::string&)=0;
-        virtual ~SettingsNodeBase(){};
+        virtual ~SettingsNodeBase() = default;
 };
 
 template<class T> std::string myToString(const T& value)
@@ -69,25 +69,21 @@ template<class T> class SettingsNodeVariant: public SettingsNodeBase
 {
     private:
         T* value_;
-        //bool empty_;
     public:
-        SettingsNodeVariant(T* value)
+        explicit SettingsNodeVariant(T* value)
         {
             value_ = value;
         }
 
-        virtual std::string getValue() override
-        {
-            return 
-                myToString(*value_);
+        std::string getValue() override {
+            return myToString(*value_);
         }
-        virtual void setValue(const std::string& text) override
-        {
+
+        void setValue(const std::string& text) override {
             myFromString(text, *value_ );
         }
-        virtual ~SettingsNodeVariant()
-        {
-        }
+
+        virtual ~SettingsNodeVariant() = default;
 };
 
 class SettingsNode

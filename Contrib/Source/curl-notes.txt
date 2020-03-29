@@ -173,3 +173,8 @@ cleanup:
         return result;
     }
 #endif
+
+Ubuntu:
+
+./configure --disable-shared --enable-static --disable-dict --disable-telnet --disable-tftp --disable-rtsp --disable-pop3 --disable-imap --disable-smtp --disable-gopher --disable-smb
+

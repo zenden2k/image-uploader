@@ -192,10 +192,9 @@ bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
 }
 
 
-bool DirectoryExists(const std::string path)
+bool DirectoryExists(const std::string& path)
 {
     return boost::filesystem::is_directory(path) && boost::filesystem::exists(path);
-    return false;
 }
 
 }

@@ -34,7 +34,7 @@ class CurlShare;
 
 class INetworkClient {
     public:
-        virtual ~INetworkClient() {}
+        virtual ~INetworkClient() = default;
 
         enum ActionType {
             atNone = 0, atPost, atUpload, atGet
@@ -45,45 +45,45 @@ class INetworkClient {
         class ProxyProvider {
         public:
             virtual bool provideProxyForUrl(INetworkClient* client, const std::string& url) = 0;
-            virtual ~ProxyProvider(){};
+            virtual ~ProxyProvider() = default;
         };
 
         class Logger {
         public:
             virtual void logNetworkError(bool error, const std::string & msg) = 0;
-            virtual ~Logger(){}
+            virtual ~Logger() = default;
         };
 
         class AbortedException : public std::runtime_error {
         public:
-            AbortedException(const std::string& msg) : std::runtime_error(msg) {}
-            AbortedException(const AbortedException& ex) : std::runtime_error(ex) {}
+            explicit AbortedException(const std::string& msg) : std::runtime_error(msg) {}
+            AbortedException(const AbortedException& ex) = default;
         };
 
         virtual void addQueryParam(const std::string& name, const std::string& value){}
-        virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = ""){};
+        virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType){};
         virtual void addQueryHeader(const std::string& name, const std::string& value) {};
         virtual void setUrl(const std::string& url){};
-        virtual bool doPost(const std::string& data = "") { return false; }
+        virtual bool doPost(const std::string& data) { return false; }
         virtual bool doUploadMultipartData(){ return false; }
         virtual bool doUpload(const std::string& fileName, const std::string &data) { return false; }
-        virtual bool doGet(const std::string &url = ""){ return false; }
-        virtual const std::string responseBody() { return std::string(); };
+        virtual bool doGet(const std::string &url){ return false; }
+        virtual std::string responseBody() { return std::string(); };
         virtual int responseCode(){ return 0; }
-        virtual const std::string errorString(){ return std::string(); }
+        virtual std::string errorString(){ return std::string(); }
         virtual void setUserAgent(const std::string& userAgentStr) {}
-        virtual const std::string responseHeaderText() { return std::string(); }
-        virtual const std::string responseHeaderByName(const std::string& name){ return std::string(); }
+        virtual std::string responseHeaderText() { return std::string(); }
+        virtual std::string responseHeaderByName(const std::string& name){ return std::string(); }
         virtual std::string responseHeaderByIndex(int index, std::string& name){ return std::string(); }
         virtual int responseHeaderCount(){ return 0; }
-        virtual const std::string getCurlResultString(){ return std::string(); }
+        virtual std::string getCurlResultString(){ return std::string(); }
         virtual void setCurlOption(int option, const std::string &value){}
         virtual void setCurlOptionInt(int option, long value){}
-        virtual const std::string getCurlInfoString(int option){ return std::string(); }
+        virtual std::string getCurlInfoString(int option){ return std::string(); }
         virtual int getCurlInfoInt(int option){ return 0; };
         virtual double getCurlInfoDouble(int option){ return 0.0; }
         virtual void setMethod(const std::string &str){};
-        virtual void setProxy(const std::string &host, int port = 0, int type = 0){}
+        virtual void setProxy(const std::string &host, int port, int type){}
         virtual void setProxyUserPassword(const std::string &username, const std::string& password){}
         virtual void clearProxy(){};
         virtual void setReferer(const std::string &str){}
@@ -102,14 +102,14 @@ class INetworkClient {
         virtual void setUploadBufferSize(int size){}
         virtual void setProxyProvider(std::shared_ptr<ProxyProvider> provider){}
         virtual void setLogger(Logger* logger){}
-        virtual const std::string urlEncode(const std::string& str){ return std::string(); }
-        virtual const std::string urlDecode(const std::string& str){ return std::string(); }
+        virtual std::string urlEncode(const std::string& str){ return std::string(); }
+        virtual std::string urlDecode(const std::string& str){ return std::string(); }
 };
 
 class INetworkClientFactory {
 public:
     virtual std::unique_ptr<INetworkClient> create() = 0;
-    virtual ~INetworkClientFactory() {}
+    virtual ~INetworkClientFactory() = default;
 };
 
 #endif

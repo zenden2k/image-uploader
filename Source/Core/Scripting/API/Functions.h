@@ -110,7 +110,7 @@ namespace ScriptAPI {
      *   
      *   @returns Title of the clicked button ( ABORT,CANCEL, CONTINUE, IGNORE, YES, NO, OK, TRY).
      */
-    const std::string MessageBox(const std::string& message, const std::string &title, const std::string& buttons, const std::string& type);
+    std::string MessageBox(const std::string& message, const std::string &title, const std::string& buttons, const std::string& type);
 
     /**
      * @brief Shows a dialog box with a diagnostic message.

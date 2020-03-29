@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <vector>
+
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include "AppParams.h"
@@ -138,7 +139,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
             if (types.empty())
             {
-                types.push_back(fileHost ? "file" : "image");
+                types.emplace_back(fileHost ? "file" : "image");
             }
             for (auto& it : types)
             {
@@ -209,13 +210,12 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                 for (auto& reg : UA.Regexes)
                 {
                     std::vector<std::string> Vars;
-                    nm_splitString(reg.AssignVars, ";", Vars);
+                    IuStringUtils::Split(reg.AssignVars, ";", Vars);
 
-                    for (std::vector<std::string>::iterator it = Vars.begin(); it != Vars.end(); ++it)
+                    for (auto it = Vars.begin(); it != Vars.end(); ++it)
                     {
                         std::vector<std::string> NameAndValue;
-                        //    std::cout<<"*************"<<*it<<std::endl;
-                        nm_splitString(*it, ":", NameAndValue);
+                        IuStringUtils::Split(*it, ":", NameAndValue);
                         if (NameAndValue.size() == 2)
                         {
                             ActionVariable AV;

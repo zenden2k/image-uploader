@@ -341,37 +341,37 @@ Exit:
     return res;
 }
 
-const std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
+std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
 {
     return GetHashText(data, size, HashMd5);
 }
 
-const std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)
+std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)
 {
     return GetHashText(data.c_str(), data.length(), HashMd5);
 }
 
-const std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) {
+std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) {
     return GetHashTextFromFile(filename, HashMd5);
 }
 
-const std::string CryptoUtils::CalcSHA1Hash(const void* data, size_t size) {
+std::string CryptoUtils::CalcSHA1Hash(const void* data, size_t size) {
     return GetHashText(data, size, HashSha1);
 }
 
-const std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64) {
+std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64) {
     return HMAC(data, size, key, base64, CALG_SHA1);
 }
 
-const std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
+std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
     return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
 }
 
-const std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
+std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
     return CalcSHA1Hash( data.c_str(), data.size() );
 }
 
-const std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
+std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
     return GetHashTextFromFile(filename, HashSha1);
 }
 

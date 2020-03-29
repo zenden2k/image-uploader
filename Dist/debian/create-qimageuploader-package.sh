@@ -1,4 +1,4 @@
-AppVersion="0.1"
+AppVersion="0.1.1"
 
 # Get the machine Architecture
 Architecture=$(uname -m)
@@ -24,7 +24,7 @@ sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" ~/zenden2k-imageuploader/DEBIAN/con
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
-objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/bin/qimageuploader ~/zenden2k-imageuploader/usr/bin/zenden2k-imageuploader
+objcopy --strip-debug --strip-unneeded ../../Source/cmake-build-release/bin/qimageuploader ~/zenden2k-imageuploader/usr/bin/zenden2k-imageuploader
 cp ../../Data/servers.xml ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/servers.xml
 cp ../../Data/Scripts/*.nut ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 cp ../../Data/Favicons/*.ico ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/

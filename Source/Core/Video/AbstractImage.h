@@ -14,7 +14,7 @@ public:
     virtual int getWidth() const;
     virtual int getHeight() const;
     virtual bool isNull() const = 0;
-    virtual bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter = 0 ) = 0;
+    virtual bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) = 0;
     static AbstractImage* createImage();
 protected:
     int width_;

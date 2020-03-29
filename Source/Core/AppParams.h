@@ -1,8 +1,10 @@
 #ifndef IU_CORE_APPPARAMS_H
 #define IU_CORE_APPPARAMS_H
 
-#include "Core/Utils/Singleton.h"
 #include <string>
+
+#include "Core/Utils/Singleton.h"
+
 
 #ifdef _WIN32
 #include "atlheaders.h"

@@ -18,6 +18,8 @@
 
 */
 
+#include <boost/format.hpp>
+
 #ifndef TIXML_USE_STL
     #define TIXML_USE_STL
 #endif
@@ -25,7 +27,6 @@
 #include "SimpleXml.h"
 #include "Core/3rdpart/tinyxml.h"
 #include "CoreUtils.h"
-#include <boost/format.hpp>
 
 class SimpleXml_impl
 {

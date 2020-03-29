@@ -2,10 +2,6 @@
 
 #include "Core/Utils/CoreUtils.h"
 
-TempFileDeleter::TempFileDeleter()
-{
-}
-
 TempFileDeleter::~TempFileDeleter()
 {
     cleanup();
@@ -21,7 +17,7 @@ bool TempFileDeleter::cleanup()
     bool result = true;
     for (const auto& fileName: m_files)
     {
-        result = result && IuCoreUtils::RemoveFile(fileName);
+        result = IuCoreUtils::RemoveFile(fileName) && result;
     }
     m_files.clear();
     return result;

@@ -29,8 +29,8 @@ class ZOutputCodeGenerator
       std::string generate(const std::vector<ZUploadObject>& items);
     private:
       std::string generateCodeForItem(const ZUploadObject& item, int index);
-        std::string image(std::string url);
-        std::string link(std::string url, std::string body);
+        std::string image(const std::string& url);
+        std::string link(const std::string &url, const std::string &body);
         CodeLang m_lang;
         CodeType m_CodeType;
         bool m_PreferDirectLinks;

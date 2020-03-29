@@ -13,7 +13,7 @@
 class CEncodedPassword {
 public:
     CEncodedPassword();
-    CEncodedPassword(const std::string& d);
+    explicit CEncodedPassword(const std::string& d);
     std::string toEncodedData() const;
     void fromPlainText(const std::string& data)
     {

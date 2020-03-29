@@ -5,7 +5,6 @@
 #include <qapplication.h>
 #include "Core/Network/NetworkClient.h"
 #include "Core/Utils/DesktopUtils.h"
-#include "Core/Utils/CoreUtils.h"
 #include "Core/CommonDefs.h"
 
 

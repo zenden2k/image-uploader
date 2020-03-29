@@ -7,7 +7,6 @@
 
 #include <boost/filesystem.hpp>
 
-
 namespace TestHelpers {
 
 std::string testDataPath;
@@ -23,8 +22,8 @@ std::string resolvePath(const std::string &relPath) {
     return full_path.string();
 }
 
-bool getFileContents(std::string fileName, std::vector<std::string> & vecOfStrs) {
-    std::ifstream in(fileName.c_str());
+bool getFileContents(const std::string& fileName, std::vector<std::string> & vecOfStrs) {
+    std::ifstream in(fileName);
 
     // Check if object is valid
     if (!in) {
@@ -35,8 +34,7 @@ bool getFileContents(std::string fileName, std::vector<std::string> & vecOfStrs)
     std::string str;
 
     while (std::getline(in, str)) {
-        // Line contains string of length > 0 then save it in vector
-        if (str.size() > 0)
+        if (!str.empty())
             vecOfStrs.push_back(str);
     }
     in.close();

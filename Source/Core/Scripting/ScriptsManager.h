@@ -20,7 +20,6 @@ public:
 protected:
     std::map<std::thread::id, std::map<const std::string,Script*>> scripts_;
     std::mutex scriptsMutex_;
-    std::string scriptsDirectory_;
     typedef std::string ServerSyncMapKey;
     std::map<ServerSyncMapKey, ServerSync*> serverSyncs_;
     std::mutex serverSyncsMutex_;

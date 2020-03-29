@@ -11,7 +11,7 @@
 class TempFileDeleter
 {
 public:
-    TempFileDeleter();
+    TempFileDeleter() = default;
     ~TempFileDeleter();
     void addFile(const std::string& fileName);
     /**

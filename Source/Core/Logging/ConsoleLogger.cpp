@@ -1,9 +1,11 @@
 #include "ConsoleLogger.h"
 
 #include <iostream>
+#include <mutex>
+
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/ConsoleUtils.h"
-#include <mutex>
+
 
 void ConsoleLogger::write(LogMsgType MsgType, const std::string&  FileName, const std::string& Sender, const std::string& Msg, const std::string& Info) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());

@@ -20,7 +20,7 @@
 
 #include "StringUtils.h"
  
-#include <ctype.h>
+#include <cctype>
 #include <cstdio>
 #include <algorithm>
 #ifdef _WIN32
@@ -49,6 +49,21 @@ std::string Trim(const std::string& str)
     return res;
 }
 
+std::string_view TrimSV(std::string_view str)
+{
+    std::string_view res;
+    // Trim Both leading and trailing spaces
+    size_t startpos = str.find_first_not_of(" \t\r\n"); // Find the first character position after excluding leading blank spaces
+    size_t endpos = str.find_last_not_of(" \t\r\n"); // Find the first character position from reverse af
+
+    // if all spaces or empty return an empty string
+    if ((std::string::npos == startpos) || (std::string::npos == endpos))
+    {
+        return res;
+    }
+    return str.substr( startpos, endpos - startpos + 1 );
+}
+
 void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount)
 {
     // Skip delimiters at beginning.
@@ -72,6 +87,33 @@ void Split(const std::string& str, const std::string& delimiters, std::vector<st
         // Find next "non-delimiter"
         pos = str.find_first_of(delimiters, lastPos);
     }
+}
+
+std::vector<std::string_view> SplitSV(std::string_view strv, std::string_view delims, int maxCount) {
+    std::vector<std::string_view> output;
+    size_t first = 0;
+    int counter = 0;
+    while (first < strv.size())
+    {
+        counter++;
+        if (counter == maxCount)
+        {
+            output.push_back(strv.substr(first));
+            break;
+        } else {
+            const auto second = strv.find_first_of(delims, first);
+
+            if (first != second)
+                output.emplace_back(strv.substr(first, second - first));
+
+            if (second == std::string_view::npos)
+                break;
+
+            first = second + 1;
+        }
+    }
+
+    return output;
 }
 
 std::string Replace(const std::string& text, const std::string& s, const std::string& d)

@@ -1,6 +1,6 @@
 TODO before 1.3.2 release:
 
-- Syncronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
+- Synchronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
 - Write unit tests for Scripting API (see examples in sqrat)
 - Reload server list after update
 - [HIGH] Preserve photo order for some servers (like Picasa)

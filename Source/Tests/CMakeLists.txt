@@ -60,8 +60,9 @@ endif()
 add_executable(Tests ${SRC_LIST})
 
 set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
-
-set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+if(WIN32)
+    set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+endif()
 
 set(LIBS_LIST  "")
 
@@ -69,8 +70,12 @@ if(WIN32)
     list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm)
     target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
-    list(APPEND LIBS_LIST icuuc icui18n)
+    list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
 target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
-target_link_libraries(Tests debug gmockd optimized gmock)
+if(WIN32)
+    target_link_libraries(Tests debug gmockd optimized gmock)
+else()
+    target_link_libraries(Tests gmock)
+endif()

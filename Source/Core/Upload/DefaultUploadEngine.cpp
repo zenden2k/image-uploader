@@ -21,9 +21,8 @@
 #include "DefaultUploadEngine.h"
 
 #include "Core/3rdpart/pcreplusplus.h"
+#include "UrlShorteningTask.h"
 #include "FileUploadTask.h"
-#include "Core/Upload/UrlShorteningTask.h"
-#include "Core/Upload/FileUploadTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
@@ -217,7 +216,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
                 bool res = m_NetworkClient->doUploadMultipartData();
             }
         } else {
-            m_NetworkClient->doPost();
+            m_NetworkClient->doPost("");
         }
 
         return ReadServerResponse(Action);

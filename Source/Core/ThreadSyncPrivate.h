@@ -2,12 +2,13 @@
 #define IU_CORE_UPLOAD_THREADSYNCPRIVATE_H
 
 #pragma once
+#include <atomic>
 #include <mutex>
 #include <memory>
 #include <string>
 #include <map>
+
 #include "Network/CurlShare.h"
-#include <atomic>
 
 class ThreadSyncPrivate
 {
@@ -17,10 +18,10 @@ public:
     CurlShare curlShare_;
     std::atomic<int> threadCount_;
 
-    ThreadSyncPrivate()
+    ThreadSyncPrivate() : threadCount_(0)
     {
-        threadCount_ = 0;
     }
+
      virtual ~ThreadSyncPrivate()
     {
         

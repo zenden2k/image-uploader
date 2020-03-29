@@ -509,7 +509,7 @@ int func() {
         if( !proxyUser.empty()) {
             Settings.ConnectionSettings.NeedsAuth = true;
             Settings.ConnectionSettings.ProxyUser = proxyUser;
-            Settings.ConnectionSettings.ProxyPassword = proxyPassword;
+            Settings.ConnectionSettings.ProxyPassword.fromPlainText(proxyPassword);
         }
     }
 
@@ -560,8 +560,8 @@ int func() {
 
         std::shared_ptr<FileUploadTask> task(new FileUploadTask(filesToUpload[i], IuCoreUtils::ExtractFileName(filesToUpload[i])));
         task->setServerProfile(serverProfile);
-        task->OnUploadProgress.bind(UploadTaskProgress);
-        task->OnStatusChanged.bind(OnUploadTaskStatusChanged);
+        task->setOnUploadProgressCallback(UploadTaskProgress);
+        task->setOnStatusChangedCallback(OnUploadTaskStatusChanged);
         TaskUserData *userData = new TaskUserData;
         userData->index = i;
         task->setUserData(userData);
@@ -572,9 +572,8 @@ int func() {
     //ConsoleUtils::instance()->InitScreen();
     //ConsoleUtils::instance()->Clear();
     //PrintWelcomeMessage();
-    uploadManager->OnQueueFinished.bind(OnQueueFinished);
+    uploadManager->setOnQueueFinishedCallback(OnQueueFinished);
     uploadManager->addSession(session);
-   
 
     // Wait until upload session is finished
     std::unique_lock<std::mutex> lk(finishSignalMutex);

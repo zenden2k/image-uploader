@@ -29,8 +29,11 @@
 #include <memory.h>
 #include <cstdio>
 #include <algorithm>
+
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 #include "Core/Logging.h"
+#include "CurlShare.h"
 
 #ifdef USE_OPENSSL
 #include <openssl/ssl.h>
@@ -80,7 +83,7 @@ char CertFileName[1024] = "";
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
 
-static void lock_callback(int mode, int type, char const *file, int line)
+void lock_callback(int mode, int type, char const *file, int line)
 {
     (void)file;
     (void)line;
@@ -91,7 +94,7 @@ static void lock_callback(int mode, int type, char const *file, int line)
     }
 }
 
-static unsigned long thread_id(void)
+unsigned long thread_id()
 {
 #ifdef _WIN32
     return ::GetCurrentThreadId();
@@ -100,7 +103,7 @@ static unsigned long thread_id(void)
 #endif
 }
 
-static void init_locks(void)
+void init_locks()
 {
     int i;
 
@@ -113,7 +116,7 @@ static void init_locks(void)
     CRYPTO_set_locking_callback(lock_callback);
 }
 
-static void kill_locks(void)
+void kill_locks()
 {
     int i;
     if (lockarray.empty()) {
@@ -126,6 +129,7 @@ static void kill_locks(void)
     lockarray.clear();
 }
 #endif
+
 }
 
 int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
@@ -141,7 +145,7 @@ int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsockty
 
 int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
 {
-    CallBackData* cbd = reinterpret_cast<CallBackData*>(buffer_in);
+    auto cbd = reinterpret_cast<CallBackData*>(buffer_in);
     NetworkClient* nm = cbd->nmanager;
     if(nm)
     {
@@ -209,7 +213,7 @@ int NetworkClient::private_header_writer(char *data, size_t size, size_t nmemb)
 
 int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-    NetworkClient *nm = reinterpret_cast<NetworkClient*>(clientp);
+    auto nm = reinterpret_cast<NetworkClient*>(clientp);
     if(nm && nm->m_progressCallbackFunc)
     {
         if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
@@ -232,20 +236,20 @@ bool  NetworkClient::_curl_init = false;
 
 std::mutex NetworkClient::_mutex;
 
-NetworkClient::NetworkClient(void)
+NetworkClient::NetworkClient()
 {
     curl_init();
     enableResponseCodeChecking_ = true;
-    m_hOutFile = 0;
+    m_hOutFile = nullptr;
     chunkOffset_ = -1;
     chunkSize_ = -1;
     m_uploadingFileReadBytes = 0;
-    chunk_ = 0;
-    curlShare_ = 0;
+    chunk_ = nullptr;
+    curlShare_ = nullptr;
     m_CurrentFileSize = -1;
-    m_uploadingFile = NULL;
+    m_uploadingFile = nullptr;
     *m_errorBuffer = 0;
-    m_progressCallbackFunc = NULL;
+    m_progressCallbackFunc = nullptr;
     curl_handle = curl_easy_init(); // Initializing libcurl
     m_bodyFuncData.funcType = funcTypeBody;
     m_bodyFuncData.nmanager = this;
@@ -307,12 +311,12 @@ NetworkClient::NetworkClient(void)
     */
 }
 
-NetworkClient::~NetworkClient(void)
+NetworkClient::~NetworkClient()
 {
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, nullptr);
     curl_easy_cleanup(curl_handle);
 #ifdef USE_OPENSSL
-    ERR_remove_thread_state(0);
+    ERR_remove_thread_state(nullptr);
 #endif
     proxyProvider_ = nullptr;
 }
@@ -343,11 +347,10 @@ void NetworkClient::setUrl(const std::string& url)
     curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
 }
 
-void CloseFileList(std::vector<FILE *>& files)
+void NetworkClient::closeFileList(std::vector<FILE *>& files)
 {
-    for(size_t i=0; i<files.size(); i++)
-    {
-        fclose(files[i]);
+    for(auto f : files ) {
+        fclose(f);
     }
     files.clear();
 }
@@ -373,7 +376,7 @@ bool NetworkClient::doUploadMultipartData()
                     FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
                     if(!curFile) 
                     {
-                        CloseFileList(openedFiles);
+                        closeFileList(openedFiles);
                         return false; /* can't continue */
                     }
                     openedFiles.push_back(curFile);
@@ -436,7 +439,7 @@ bool NetworkClient::doUploadMultipartData()
     curl_easy_setopt(curl_handle, CURLOPT_HTTPPOST, formpost);
     m_currentActionType = atUpload;
     curl_result = curl_easy_perform(curl_handle);
-    CloseFileList(openedFiles);
+    closeFileList(openedFiles);
     curl_formfree(formpost);
     return private_on_finish_request();
 }
@@ -457,7 +460,7 @@ bool NetworkClient::private_on_finish_request()
     return true;
 }
 
-const std::string NetworkClient::responseBody()
+std::string NetworkClient::responseBody()
 {
     return internalBuffer;
 }
@@ -471,10 +474,7 @@ int NetworkClient::responseCode()
 
 void NetworkClient::addQueryHeader(const std::string& name, const std::string& value)
 {
-    CustomHeaderItem chi;
-    chi.name = name;
-    chi.value = /*nm_trimStr*/(value);
-    m_QueryHeaders.push_back(chi);
+    m_QueryHeaders.emplace_back(name, value);
 }
 
 bool NetworkClient::doGet(const std::string & url)
@@ -520,7 +520,7 @@ bool NetworkClient::doPost(const std::string& data)
     return private_on_finish_request();
 }
 
-const std::string NetworkClient::urlEncode(const std::string& str)
+std::string NetworkClient::urlEncode(const std::string& str)
 {
     char * encoded = curl_easy_escape(curl_handle, str.c_str() , str.length() );
     std::string res = encoded;
@@ -529,7 +529,7 @@ const std::string NetworkClient::urlEncode(const std::string& str)
     return res;
 }
 
-const std::string NetworkClient::urlDecode(const std::string& str) {
+std::string NetworkClient::urlDecode(const std::string& str) {
     char * decoded = curl_easy_unescape(curl_handle, str.c_str(), str.length(), nullptr);
     std::string res = decoded;
     res += "";
@@ -537,7 +537,7 @@ const std::string NetworkClient::urlDecode(const std::string& str) {
     return res;
 }
 
-const std::string NetworkClient::errorString()
+std::string NetworkClient::errorString()
 {
     return m_errorBuffer;
 }
@@ -557,7 +557,7 @@ void NetworkClient::private_initTransfer()
     curl_easy_setopt(curl_handle, CURLOPT_SSL_OPTIONS, CURLSSLOPT_NO_REVOKE);
 #endif
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
-    chunk_ = NULL; 
+    chunk_ = nullptr;
 
     for(it = m_QueryHeaders.begin(); it!=end; ++it)
     {
@@ -643,78 +643,32 @@ void NetworkClient::curl_cleanup()
 #endif
 }
 
-const std::string NetworkClient::responseHeaderText()
+std::string NetworkClient::responseHeaderText()
 {
     return m_headerBuffer;
 }
 
-void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount)
-{
-    // Skip delimiters at beginning.
-    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
-    // Find first "non-delimiter".
-    std::string::size_type pos     = str.find_first_of(delimiters, lastPos);
-    int counter =0;
-    while (std::string::npos != pos || std::string::npos != lastPos)
-    {
-         counter++;
-         if(counter == maxCount){
-             tokens.push_back(str.substr(lastPos, str.length()));break;
-         }
-         else
-
-        // Found a token, add it to the vector.
-        tokens.push_back(str.substr(lastPos, pos - lastPos));
-        // Skip delimiters.  Note the "not_of"
-        lastPos = str.find_first_not_of(delimiters, pos);
-        // Find next "non-delimiter"
-        pos = str.find_first_of(delimiters, lastPos);
-    }
-}
 void NetworkClient::setProgressCallback(const ProgressCallback& func)
 {
     m_progressCallbackFunc = func;
 }
 
-std::string nm_trimStr(const std::string& str)
-{
-    std::string res;
-    // Trim Both leading and trailing spaces
-    size_t startpos = str.find_first_not_of(" \t\r\n"); // Find the first character position after excluding leading blank spaces
-    size_t endpos = str.find_last_not_of(" \t\r\n"); // Find the first character position from reverse af
-
-    // if all spaces or empty return an empty string
-    if(( std::string::npos == startpos ) || ( std::string::npos == endpos))
-    {
-       res.clear();
-    }
-   else
-       res = str.substr( startpos, endpos-startpos+1 );
-    return res;
-}
-
 void NetworkClient::private_parse_headers()
 {
-    std::vector<std::string> headers;
-    nm_splitString(m_headerBuffer, "\n",headers);
-    std::vector<std::string>::iterator it;
+    auto headers = IuStringUtils::SplitSV(m_headerBuffer, "\n");
 
-    for(it=headers.begin(); it!=headers.end(); ++it)
-    {
-        std::vector<std::string> thisHeader;
-        nm_splitString(*it, ":",thisHeader, 2);
+    for (const auto &it: headers) {
+        auto parts = IuStringUtils::SplitSV(it, ":", 2);
 
-        if(thisHeader.size() == 2)
-        {
-            CustomHeaderItem chi;
-            chi.name = nm_trimStr(thisHeader[0]);
-            chi.value = nm_trimStr(thisHeader[1]);
-            m_ResponseHeaders.push_back(chi);
+        if (parts.size() == 2) {
+            std::string name(IuStringUtils::TrimSV(parts[0]));
+            std::string value(IuStringUtils::TrimSV(parts[1]));
+            m_ResponseHeaders.emplace_back(name, value);
         }
     }
 }
 
-const std::string NetworkClient::responseHeaderByName(const std::string& name)
+std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
     std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
     
@@ -764,14 +718,14 @@ void NetworkClient::private_cleanup_after()
     if(m_hOutFile)
     {
         fclose(m_hOutFile);
-        m_hOutFile = 0;
+        m_hOutFile = nullptr;
     }
     m_OutFileName.clear();
     m_method.clear();
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
 
     m_uploadData.clear();
-    m_uploadingFile = NULL;
+    m_uploadingFile = nullptr;
     chunkOffset_ = -1;
     chunkSize_ = -1;
     enableResponseCodeChecking_ = true;
@@ -781,14 +735,16 @@ void NetworkClient::private_cleanup_after()
     if(chunk_)
     {
         curl_slist_free_all(chunk_);
-        chunk_ = 0;
+        chunk_ = nullptr;
     }
 }
 
 size_t NetworkClient::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    NetworkClient* nm = reinterpret_cast<NetworkClient*>(stream);;
-    if(!nm) return 0;
+    auto nm = reinterpret_cast<NetworkClient*>(stream);;
+    if(!nm) {
+        return 0;
+    }
     return nm->private_read_callback(ptr, size, nmemb, stream);
 } 
 
@@ -819,7 +775,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
 }
 
 int NetworkClient::private_seek_callback(void *userp, curl_off_t offset, int origin) {
-    NetworkClient* nc = reinterpret_cast<NetworkClient*>(userp);
+    auto nc = reinterpret_cast<NetworkClient*>(userp);
 
     if (nc->m_uploadingFile) {
         int64_t newOffset = offset;
@@ -966,10 +922,10 @@ void NetworkClient::setTreatErrorsAsWarnings(bool treat)
     treatErrorsAsWarnings_ = treat;
 }
 
-const std::string  NetworkClient::getCurlResultString()
+std::string NetworkClient::getCurlResultString()
 {
     const char * str = curl_easy_strerror(curl_result);
-    std::string res = str;
+    std::string res(str);
     res+="";
     //curl_free(str);
     return res;
@@ -1007,7 +963,7 @@ void NetworkClient::setCurlOptionInt(int option, long value) {
     curl_easy_setopt(curl_handle, static_cast<CURLoption>(option), value);
 }
 
-const std::string NetworkClient::getCurlInfoString(int option)
+std::string NetworkClient::getCurlInfoString(int option)
 {
     char* buf = nullptr;
     curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &buf);

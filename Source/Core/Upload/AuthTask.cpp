@@ -4,9 +4,6 @@ AuthTask::AuthTask(AuthActionType type) {
     authActionType_ = type;
 }
 
-AuthTask::~AuthTask() {
-}
-
 UploadTask::Type AuthTask::type() const {
     return TypeAuth;
 }

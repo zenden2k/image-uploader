@@ -31,10 +31,8 @@
 #include "INetworkClient.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CoreTypes.h"
-#include "CurlShare.h"
 
-std::string nm_trimStr(const std::string& str);
-void nm_splitString(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount = -1);
+class CurlShare;
 
 /**
 @brief  HTTP/FTP client (libcurl wrapper).
@@ -52,8 +50,8 @@ class NetworkClient: public INetworkClient
         };
         
         /*! @endcond */
-        NetworkClient(void);
-        ~NetworkClient(void);
+        NetworkClient();
+        ~NetworkClient();
         /**
          * Adds a parameter to the POST request with the name and value
          */
@@ -71,7 +69,7 @@ class NetworkClient: public INetworkClient
          * @param contentType is the mime file type, can be an empty string or obtained using the GetFileMimeType function). 
          * The method is similar to the HTML form element - <input type = "file">.
          */
-        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName = "", const std::string& contentType = "") override;
+        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
         
         /**
          * Sets the value of the HTTP request header. To delete a header, pass in an empty string. To set an empty value, pass "\n".
@@ -94,7 +92,7 @@ class NetworkClient: public INetworkClient
         Example 2
         @include networkclient_post_raw.nut
         */
-        bool doPost(const std::string& data = "") override;
+        bool doPost(const std::string& data) override;
 
         /**
          * Sends a request to the address set by the function setUrl as parameters and files encoded in the 
@@ -122,7 +120,7 @@ class NetworkClient: public INetworkClient
         @include networkclient_get_file.nut
         */
         bool doGet(const std::string &url = "") override;
-        const std::string responseBody() override;
+        std::string responseBody() override;
 
         /**
          * Returns the response code (for example, 200 means HTTP OK).
@@ -132,14 +130,14 @@ class NetworkClient: public INetworkClient
         /**
          * Returns the error text for the last request executed (for example, "HTTP 404 not found").
          */
-        const std::string errorString() override;
+        std::string errorString() override;
         void setUserAgent(const std::string& userAgentStr) override;
 
         /**
          * Returns all response headers
          */
-        const std::string responseHeaderText() override;
-        const std::string responseHeaderByName(const std::string& name) override;
+        std::string responseHeaderText() override;
+        std::string responseHeaderByName(const std::string& name) override;
         std::string responseHeaderByIndex(int index, std::string& name) override;
 
         /**
@@ -152,13 +150,13 @@ class NetworkClient: public INetworkClient
         /**
          * Percent ecoding, it necessary when preparing a valid GET request.
          */
-        const std::string urlEncode(const std::string& str) override;
+        std::string urlEncode(const std::string& str) override;
 
         /**
         @since 1.3.2
         */
-        const std::string urlDecode(const std::string& str) override;
-        const std::string getCurlResultString() override;
+        std::string urlDecode(const std::string& str) override;
+        std::string getCurlResultString() override;
 
         /**
          * Sets the string value for an option of the CURL object. Equivalent to calling the <a href="http://curl.haxx.se/libcurl/c/curl_easy_setopt.html">curl_easy_setopt</a> function. 
@@ -175,7 +173,7 @@ class NetworkClient: public INetworkClient
          * Get information from curl. <a href="http://curl.haxx.se/libcurl/c/curl_easy_getinfo.html">curl_easy_getinfo</a>. 
          * Numeric values of CURLINFO_* constants you can find <a href="../curl_constants.txt">here</a>.
          */
-        const std::string getCurlInfoString(int option) override;
+        std::string getCurlInfoString(int option) override;
         int getCurlInfoInt(int option) override;
         double getCurlInfoDouble(int option) override;
 
@@ -184,7 +182,7 @@ class NetworkClient: public INetworkClient
          */
         void setMethod(const std::string &str) override;
         /*! @cond PRIVATE */
-        void setProxy(const std::string &host, int port = 0, int type = 0) override;
+        void setProxy(const std::string &host, int port, int type) override;
         void setProxyUserPassword(const std::string &username, const std::string& password) override;
         void clearProxy() override;
         /*! @endcond */
@@ -240,6 +238,10 @@ class NetworkClient: public INetworkClient
         {
             std::string name;
             std::string value;
+
+            CustomHeaderItem(std::string n, std::string v):
+                name(std::move(n)), value(std::move(v))  {
+            }
         };
 
         struct QueryParam
@@ -270,6 +272,7 @@ class NetworkClient: public INetworkClient
         /*! @cond PRIVATE */
         static void curl_init();
         static void curl_cleanup();
+        static void closeFileList(std::vector<FILE *>& files);
         /*! @endcond */
         protected:
 
@@ -286,7 +289,6 @@ class NetworkClient: public INetworkClient
         ProgressCallback m_progressCallbackFunc;
         CallBackData m_headerFuncData;
         std::string m_url;
-        void* m_progressData;
         CURLcode curl_result;
         int64_t m_CurrentFileSize;
         int64_t m_currentUploadDataSize;
