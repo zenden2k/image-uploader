@@ -128,7 +128,7 @@ ImageUploadParams& ServerProfile::getImageUploadParamsRef()
 
 void ServerProfile::setImageUploadParams(ImageUploadParams iup)
 {
-    imageUploadParams = iup;
+    imageUploadParams = std::move(iup);
 }
 
 // TODO: Remove this method

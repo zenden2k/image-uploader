@@ -19,6 +19,7 @@ limitations under the License.
 */
 
 #include "FolderList.h"
+
 #include <string>
 
 void CFolderList::AddFolder(const std::string& title, const std::string& summary, const std::string& id,

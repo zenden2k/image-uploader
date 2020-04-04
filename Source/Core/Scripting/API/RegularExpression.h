@@ -20,10 +20,12 @@
 #ifndef IU_CORE_SCRIPTAPI_H
 #define IU_CORE_SCRIPTAPI_H
 
-#include "Core/3rdpart/pcreplusplus.h"
 #include <string>
+
+#include "Core/3rdpart/pcreplusplus.h"
 #include "../Squirrelnc.h"
 #include "Core/Utils/CoreTypes.h"
+
 namespace ScriptAPI {
 
 /**
@@ -87,11 +89,11 @@ public:
     Sqrat::Array splitWithLimitOffset(const std::string& piece, int limit, int start_offset);
     Sqrat::Array splitWithLimitStartEndOffset(const std::string& piece, int limit, int start_offset, int end_offset);
 
-    const std::string getMatch(int pos) const;
+    std::string getMatch(int pos) const;
     bool search(const std::string& stuff);
     bool searchWithOffset(const std::string& stuff, int OffSet);
     Sqrat::Array findAll(const std::string& stuff);
-    const std::string replace(const std::string& piece, const std::string& with);
+    std::string replace(const std::string& piece, const std::string& with);
     int getEntireMatchStart() const;
     int getMatchStart(int pos) const;
     int getEntireMatchEnd() const;

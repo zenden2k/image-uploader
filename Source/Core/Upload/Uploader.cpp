@@ -31,7 +31,7 @@ CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory
     srand((unsigned int)time(0));
     m_bShouldStop = false;
     m_CurrentStatus = stNone;
-    m_CurrentEngine = NULL;
+    m_CurrentEngine = nullptr;
     m_PrInfo.IsUploading = false;
     m_PrInfo.Total = 0;
     m_PrInfo.Uploaded = 0;
@@ -39,7 +39,7 @@ CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory
     m_NetworkClient = networkClientFactory->create();
 }
 
-CUploader::~CUploader(void)
+CUploader::~CUploader()
 {
 }
 
@@ -232,7 +232,7 @@ bool CUploader::setUploadEngine(CAbstractUploadEngine* UploadEngine)
     return true;
 }
 
-void CUploader::SetStatus(StatusType status, int param1, std::string param)
+void CUploader::SetStatus(StatusType status, int param1, const std::string& param)
 {
     m_CurrentStatus = status;
     if (onStatusChanged_) {

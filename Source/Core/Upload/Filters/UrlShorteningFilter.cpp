@@ -24,7 +24,7 @@ bool UrlShorteningFilter::PostUpload(UploadTask* task)
         return true;
     }
 
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask) {
         return true;
     }

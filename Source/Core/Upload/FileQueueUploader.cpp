@@ -34,7 +34,7 @@ CFileQueueUploader::CFileQueueUploader(UploadEngineManager* uploadEngineManager,
 
 void CFileQueueUploader::addSession(std::shared_ptr<UploadSession> uploadSession)
 {
-    _impl->AddSession(uploadSession);
+    _impl->AddSession(std::move(uploadSession));
 }
 
 

@@ -2,9 +2,11 @@
 #define CORE_UPLOAD_FOLDERLIST_H
 #pragma once
 
-#include "UploadEngine.h"
 #include <string>
 #include <vector>
+
+#include "UploadEngine.h"
+
 
 /**
 CFolderList class

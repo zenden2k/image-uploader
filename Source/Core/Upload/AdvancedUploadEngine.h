@@ -23,7 +23,7 @@
 
 #include <vector>
 #include <string>
-
+#include <memory>
 
 #include "CommonTypes.h"
 #include "UploadEngine.h"

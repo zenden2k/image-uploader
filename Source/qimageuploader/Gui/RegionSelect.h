@@ -26,7 +26,6 @@
 #include <QDesktopWidget>
 #include <QMouseEvent>
 #include <QPainter>
-//#include <QDebug>
 
 #include "Core/ScreenCapture/ScreenCapture.h"
 
@@ -37,15 +36,15 @@ QT_END_NAMESPACE
 class RegionSelect : public QDialog        
 {
 public:
-	 RegionSelect(QWidget *parent = 0, QPixmap* src = 0);
+	 RegionSelect(QWidget *parent = nullptr, QPixmap* src = nullptr);
     ~RegionSelect();
     QPixmap getSelection();
 	 CScreenshotRegion* selectedRegion();
 
 protected:
-    bool event(QEvent *event);
-    void paintEvent(QPaintEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+    bool event(QEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
     QRect selectRect;

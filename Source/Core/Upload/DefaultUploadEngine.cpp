@@ -27,7 +27,7 @@
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
 
-CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, errorCallback)
+CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback))
 {
     m_CurrentActionIndex = -1;
     fatalError_ = false;
@@ -248,7 +248,7 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
 bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const std::string& text, std::string& res)
 {
     pcrepp::Pcre reg(pattern, "imc"); // Case insensitive match
-    if ( reg.search(text) == true ) {
+    if (reg.search(text)) {
         if ( reg.matches() > 0 ) {
             res = reg.get_match(1);
         }
@@ -345,8 +345,9 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     m_CurrentActionIndex = Action.Index;
     if (Action.OnlyOnce)
     {
-        if (m_PerformedActions[Action.Index] == true)
+        if (m_PerformedActions[Action.Index]) {
             return true;
+        }
     }
 
     if (!Action.Description.empty())

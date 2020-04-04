@@ -1,4 +1,5 @@
 #include "AbstractVideoFrame.h"
+
 #include "AbstractImage.h"
 #include "Core/Logging.h"
 

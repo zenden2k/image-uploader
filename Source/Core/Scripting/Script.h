@@ -5,6 +5,7 @@
 
 #include <string>
 #include <thread>
+#include <memory>
 
 #include "Squirrelnc.h"
 #include "Core/ThreadSync.h"

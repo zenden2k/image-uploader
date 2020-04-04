@@ -1,7 +1,9 @@
 #include "UrlShorteningTask.h"
 
+#include <cassert>
+
 #include "Core/Utils/CoreUtils.h"
-#include <assert.h>
+
 
 UrlShorteningTask::UrlShorteningTask(const std::string& url, UploadTask* parentTask) : UploadTask(parentTask) {
     url_ = url;

@@ -3,7 +3,10 @@
 
 #pragma once
 #include <thread>
+#include <memory>
 #include <mutex>
+#include <map>
+
 #include "Script.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/ServerSync.h"

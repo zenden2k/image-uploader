@@ -6,18 +6,18 @@
 
 class FileUploadTask: public UploadTask {
     public:
-        FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = 0);
+        FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask = nullptr);
         ~FileUploadTask();
-        virtual Type type() const override;
-        virtual std::string getMimeType() const override;
-        virtual int64_t getDataLength() const override;
+        Type type() const override;
+        std::string getMimeType() const override;
+        int64_t getDataLength() const override;
         std::string getFileName() const;
         int64_t getFileSize() const;
         void setFileName(const std::string& fileName);
         std::string getDisplayName() const;
         void setDisplayName(const std::string& name);
         std::string originalFileName() const;
-        virtual void finishTask(Status status = StatusFinished) override;
+        void finishTask(Status status = StatusFinished) override;
         std::string toString() override;
         std::string title() const override;
         bool isImage() const;
@@ -28,7 +28,6 @@ protected:
         std::string displayName_;
         mutable int64_t cachedFileSize_;
         bool isImage_;
-        
 };    
 
 #endif

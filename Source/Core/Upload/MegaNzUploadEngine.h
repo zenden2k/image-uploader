@@ -62,7 +62,7 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
         /**
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         **/
-        virtual bool supportsBeforehandAuthorization() override;
+        bool supportsBeforehandAuthorization() override;
         friend class MyListener;
     protected:
         DISALLOW_COPY_AND_ASSIGN(CMegaNzUploadEngine);

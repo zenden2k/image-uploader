@@ -3,9 +3,9 @@
 
 #pragma once
 
-
 #include <mutex>
 #include <memory>
+
 #include "Core/ThreadSync.h"
 #include "Core/Utils/CoreTypes.h"
 
@@ -14,7 +14,7 @@ class ThreadSyncPrivate;
 
 class ServerSyncException : public std::runtime_error {
 public:
-    ServerSyncException(const char* msg) : std::runtime_error(msg){}
+    explicit ServerSyncException(const char* msg) : std::runtime_error(msg){}
 };
 
 /**

@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-ConsoleUploadErrorHandler::ConsoleUploadErrorHandler() {
-}
 
 void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
     std::string errorMsg;

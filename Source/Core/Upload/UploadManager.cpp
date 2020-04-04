@@ -69,7 +69,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         }
     }
 
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask)
     {
         return ;
@@ -112,15 +112,13 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 
 void UploadManager::taskAdded(UploadTask* task)
 {
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (!fileTask)
-    {
+    auto fileTask = dynamic_cast<FileUploadTask*>(task);
+    if (!fileTask) {
         return;
     }
 
-    if (task->parentTask())
-    {
-        return ;
+    if (task->parentTask()){
+        return;
     }
     task->onTaskFinished.connect(std::bind(&UploadManager::onTaskFinished, this, std::placeholders::_1, std::placeholders::_2));
 }

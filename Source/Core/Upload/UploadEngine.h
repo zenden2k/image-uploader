@@ -46,7 +46,7 @@ struct ActionVariable
 {
     std::string Name;
     int nIndex;
-    ActionVariable(const std::string& name, int index) :Name(name), nIndex(index) {
+    ActionVariable(std::string name, int index): Name(std::move(name)), nIndex(index) {
 
     }
     ActionVariable() : nIndex(0) {
@@ -65,6 +65,7 @@ struct ActionRegExp {
         
     }
 };
+
 struct UploadAction
 {
     int Index;
@@ -257,7 +258,7 @@ public:
      *    THUMBWIDTH
      *    THUMBHEIGHT 
      */
-    const std::string getParam(const std::string& name)
+    std::string getParam(const std::string& name)
     {
         temp_.clear();
         if(name == "THUMBWIDTH")
@@ -267,7 +268,7 @@ public:
         return temp_;
     }
 
-    const std::string getFolderID() { return folderId; }
+    std::string getFolderID() { return folderId; }
     void setDirectUrl(const std::string& url) { DirectUrl = url;}
     void setThumbUrl(const std::string& url) { ThumbUrl = url;}
     void setViewUrl(const std::string& url) { ViewUrl = url;}
@@ -316,7 +317,7 @@ public:
         return DeleteUrl;
     }
 
-    const std::string getServerFileName() const { return ServerFileName; }
+    std::string getServerFileName() const { return ServerFileName; }
     ScriptAPI::UploadTaskWrapper getTask() { return task_; }
 };
 

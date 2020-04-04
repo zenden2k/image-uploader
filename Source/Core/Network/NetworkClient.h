@@ -119,7 +119,7 @@ class NetworkClient: public INetworkClient
         Example 2 
         @include networkclient_get_file.nut
         */
-        bool doGet(const std::string &url = "") override;
+        bool doGet(const std::string &url) override;
         std::string responseBody() override;
 
         /**
@@ -311,7 +311,6 @@ class NetworkClient: public INetworkClient
         std::shared_ptr<ProxyProvider> proxyProvider_;
         static std::mutex _mutex;
         static bool _curl_init;
-//        static bool _is_openssl;
 };
 
 #endif

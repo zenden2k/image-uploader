@@ -167,20 +167,20 @@ public:
     ~MyListener() {
         
     }
-    virtual void onRequestFinish(mega::MegaApi* api, mega::MegaRequest *request, mega::MegaError* e) override;
+    void onRequestFinish(mega::MegaApi* api, mega::MegaRequest *request, mega::MegaError* e) override;
     //Currently, this callback is only valid for the request fetchNodes()
-    virtual void onRequestUpdate(mega::MegaApi*api, mega::MegaRequest *request) override;
-    virtual void onRequestTemporaryError(mega::MegaApi *api, mega::MegaRequest *request, mega::MegaError* error) override;
-    virtual void onTransferFinish(mega::MegaApi* api, mega::MegaTransfer *transfer, mega::MegaError* error) override;
-    virtual void onTransferUpdate(mega::MegaApi *api, mega::MegaTransfer *transfer) override;
-    virtual void onTransferTemporaryError(mega::MegaApi *api, mega::MegaTransfer *transfer, mega::MegaError* error) override;
-    virtual void onUsersUpdate(mega::MegaApi* api, mega::MegaUserList *users) override;
-    virtual void onNodesUpdate(mega::MegaApi* api, mega::MegaNodeList *nodes) override;
+    void onRequestUpdate(mega::MegaApi*api, mega::MegaRequest *request) override;
+    void onRequestTemporaryError(mega::MegaApi *api, mega::MegaRequest *request, mega::MegaError* error) override;
+    void onTransferFinish(mega::MegaApi* api, mega::MegaTransfer *transfer, mega::MegaError* error) override;
+    void onTransferUpdate(mega::MegaApi *api, mega::MegaTransfer *transfer) override;
+    void onTransferTemporaryError(mega::MegaApi *api, mega::MegaTransfer *transfer, mega::MegaError* error) override;
+    void onUsersUpdate(mega::MegaApi* api, mega::MegaUserList *users) override;
+    void onNodesUpdate(mega::MegaApi* api, mega::MegaNodeList *nodes) override;
 private:
     CMegaNzUploadEngine* engine_;
 };
 CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
-    CAdvancedUploadEngine(serverSync, settings, errorCallback)
+    CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback))
 {
     setServerSettings(settings);
     loginFinished_ = false;

@@ -65,7 +65,7 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
     return  fread(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
 }
 
-// Wee might need this function for avoiding "cannot rewind" error, 
+// We might need this function for avoiding "cannot rewind" error,
 // but it is not being called when CURLFORM_STREAM is used.
 // KNOWN bug in curl: https://github.com/curl/curl/issues/768
 /*int simple_seek_callback(void *userp, curl_off_t offset, int origin)
@@ -79,7 +79,6 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 #if defined(USE_OPENSSL) 
 char CertFileName[1024] = "";
 
-#define NUMT 4
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
 
@@ -103,6 +102,7 @@ unsigned long thread_id()
 #endif
 }
 
+// TODO: remove this function
 void init_locks()
 {
     int i;
@@ -193,7 +193,7 @@ int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
     if(!m_OutFileName.empty())
     {
         if(!m_hOutFile)
-            if ((m_hOutFile = IuCoreUtils::fopen_utf8(m_OutFileName.c_str(), "wb")) == 0) {
+            if ((m_hOutFile = IuCoreUtils::fopen_utf8(m_OutFileName.c_str(), "wb")) == nullptr) {
                 LOG(ERROR) << "Unable to create output file:" << std::endl << m_OutFileName;
                 throw NetworkClient::AbortedException("Unable to create output file");
             }
@@ -232,7 +232,6 @@ void NetworkClient::setMethod(const std::string &str)
 }
 
 bool  NetworkClient::_curl_init = false;
-//bool  NetworkClient::_is_openssl = false;
 
 std::mutex NetworkClient::_mutex;
 
@@ -686,7 +685,7 @@ int NetworkClient::responseHeaderCount()
     return m_ResponseHeaders.size();
 }
 
-std::string NetworkClient::responseHeaderByIndex(const int index, std::string& name)
+std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)
 {
     if (index >= 0 && static_cast<size_t>(index) < m_ResponseHeaders.size()) {
         name = m_ResponseHeaders[index].name;

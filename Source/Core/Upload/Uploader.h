@@ -22,9 +22,9 @@
 #define _UPLOADER_H_
 
 #include <functional>
-
 #include <string>
 #include <memory>
+
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
@@ -33,7 +33,7 @@ class CUploader
 {
     public:
         explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
-        ~CUploader(void);
+        ~CUploader();
         
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
         CAbstractUploadEngine * getUploadEngine();
@@ -52,7 +52,7 @@ class CUploader
         void setOnConfigureNetworkClient(std::function<void(CUploader*, INetworkClient*)> cb);
 
         void DebugMessage(const std::string& message, bool isServerResponseBody = false);
-        void SetStatus(StatusType status, int param1=0, std::string param="");
+        void SetStatus(StatusType status, int param1=0, const std::string& param="");
         StatusType GetStatus() const;
         bool isFatalError() const;
     protected:

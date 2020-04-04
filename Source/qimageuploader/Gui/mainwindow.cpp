@@ -9,6 +9,7 @@
 #include <QDesktopServices>
 #include <QTemporaryFile>
 #include <QClipboard>
+#include <QSystemTrayIcon>
 #include <Gui/FrameGrabberDlg.h>
 #include <Gui/RegionSelect.h>
 #include "Gui/controls/ServerSelectorWidget.h"
@@ -69,6 +70,22 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     fileServerWidget->updateServerList();
     ui->verticalLayout->insertWidget(2, fileServerWidget);
 
+    QMenu* contextMenu = new QMenu(this);
+    QAction* exitAction = contextMenu->addAction(tr("Exit"));
+    connect(exitAction, &QAction::triggered, this, &MainWindow::quitApp);
+    systemTrayIcon_ = new QSystemTrayIcon(this);
+    systemTrayIcon_->setIcon(QIcon(":/res/icon_main.ico"));
+    systemTrayIcon_->setContextMenu(contextMenu);
+    connect(systemTrayIcon_, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
+        if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick){
+            setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
+            show();
+            activateWindow();
+        }
+    });
+    systemTrayIcon_->show();
+    qDebug() << systemTrayIcon_->geometry();
+
     connect(ui->showLogButton, &QPushButton::clicked, this, &MainWindow::onShowLog);
 }
 
@@ -100,14 +117,14 @@ void MainWindow::on_actionGrab_frames_triggered() {
 }
 
 void MainWindow::on_actionScreenshot_triggered() {
-    std::unique_ptr<RegionSelect> selector;
+
     CScreenCaptureEngine eng;
     eng.setDelay(450);
     hide();
     eng.captureScreen();
 
     std::unique_ptr<CScreenshotRegion> r;
-    selector.reset(new RegionSelect(nullptr, eng.capturedBitmap()));
+    std::unique_ptr<RegionSelect> selector = std::make_unique<RegionSelect>(nullptr, eng.capturedBitmap());
 
     if (selector->exec() == QDialog::Accepted) {
         r.reset(selector->selectedRegion());
@@ -117,7 +134,7 @@ void MainWindow::on_actionScreenshot_triggered() {
     }
 
     if (!r) {
-        r.reset(new CActiveWindowRegion());
+        r = std::make_unique<CActiveWindowRegion>();
     }
 
     eng.setSource(*eng.capturedBitmap());
@@ -305,4 +322,8 @@ void MainWindow::onShowLog() {
 void MainWindow::on_actionAboutProgram_triggered() {
     AboutDialog dlg(this);
     dlg.exec();
+}
+
+void MainWindow::quitApp() {
+    close();
 }

@@ -11,6 +11,7 @@ class ScriptsManager;
 struct ZUploadObject;
 class ServerSelectorWidget;
 class LogWindow;
+class QSystemTrayIcon;
 
 namespace Ui {
 class MainWindow;
@@ -40,12 +41,14 @@ protected:
 	bool addMultipleFilesToList(QStringList fileNames);
 	void uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
+	void quitApp();
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;
     std::unique_ptr<UploadManager> uploadManager_;
     std::unique_ptr<UploadEngineManager> uploadEngineManager_;
     std::unique_ptr<ScriptsManager> scriptsManager_;
+    QSystemTrayIcon* systemTrayIcon_;
 	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;

@@ -7,7 +7,7 @@
 
 class ConsoleUploadErrorHandler : public IUploadErrorHandler {
 public:
-    ConsoleUploadErrorHandler();
+    ConsoleUploadErrorHandler() = default;
     void ErrorMessage(const ErrorInfo& errorInfo) override;
     void DebugMessage(const std::string& msg, bool isResponseBody) override;
 };

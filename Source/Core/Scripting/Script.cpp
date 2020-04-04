@@ -31,7 +31,7 @@ Script::Script(const std::string& fileName, ThreadSync* serverSync, std::shared_
     m_bIsPluginLoaded = false;
     sync_ = serverSync;
     owningThread_ = std::this_thread::get_id();
-    networkClientFactory_ = networkClientFactory;
+    networkClientFactory_ = std::move(networkClientFactory);
     fileName_ = fileName;
     if (doLoad) {
         load(fileName);

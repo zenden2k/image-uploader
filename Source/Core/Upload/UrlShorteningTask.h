@@ -1,13 +1,14 @@
 #ifndef CORE_UPLOAD_URLSHORTENINGTASK_H
 #define CORE_UPLOAD_URLSHORTENINGTASK_H
 
-#include "UploadTask.h"
 #include <string>
+
+#include "UploadTask.h"
 #include "Core/Utils/EnumUtils.h"
 
 class UrlShorteningTask: public UploadTask {
     public:
-        UrlShorteningTask(const std::string& url, UploadTask* parentTask = 0);
+        explicit UrlShorteningTask(const std::string& url, UploadTask* parentTask = nullptr);
 
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(ParentUrlType, 
             (None)(DirectUrl)(DownloadUrl));

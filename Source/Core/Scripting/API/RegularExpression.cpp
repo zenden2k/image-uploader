@@ -105,7 +105,7 @@ Sqrat::Array RegularExpression::splitWithLimitStartEndOffset(const std::string& 
     }
 }
 
-const std::string RegularExpression::getMatch(int pos) const
+std::string RegularExpression::getMatch(int pos) const
 {
     try {
         return pcre_->get_match(pos);
@@ -136,7 +136,7 @@ bool RegularExpression::searchWithOffset(const std::string& stuff, int OffSet)
     }
 }
 
-const std::string RegularExpression::replace(const std::string& piece, const std::string& with)
+std::string RegularExpression::replace(const std::string& piece, const std::string& with)
 {
     try {
         return pcre_->replace(piece, with);

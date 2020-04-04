@@ -75,13 +75,12 @@ int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
-    //LOG(INFO) << "CScriptUploadEngine::doUpload this=" << this << " thread=" << threadId;
     using namespace Sqrat;
     std::string FileName;
 
     currentTask_ = task;
     if (task->type() == UploadTask::TypeFile ) {
-        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
+        auto fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if (fileTask) {
             FileName = fileTask->getFileName();
         }

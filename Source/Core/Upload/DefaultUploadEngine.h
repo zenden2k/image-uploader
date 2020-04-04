@@ -18,11 +18,12 @@
 
 */
 
-#ifndef IU_DEFAULT_UPLOAD_ENGINE_H
-#define IU_DEFAULT_UPLOAD_ENGINE_H
+#ifndef IU_CORE_UPLOAD_DEFAULTUPLOADENGINE_H
+#define IU_CORE_UPLOAD_DEFAULTUPLOADENGINE_H
 
 #include <map>
 #include <string>
+
 #include "CommonTypes.h"
 #include "UploadEngine.h"
 #include "Core/Network/NetworkClient.h"
@@ -69,7 +70,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         std::map<size_t, bool> m_PerformedActions;
     private:
         DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
-        virtual void logNetworkError(bool error, const std::string & msg) override;
+        void logNetworkError(bool error, const std::string & msg) override;
 };
 
 #endif

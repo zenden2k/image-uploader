@@ -42,7 +42,9 @@ public:
         isRunning_ = false;
     }
 
-    virtual ~VideoGrabberRunnable() = default;
+    virtual ~VideoGrabberRunnable() {
+
+    }
 
     void cancel()
     {
@@ -126,7 +128,8 @@ VideoGrabber::VideoGrabber()
     frameCount_ = 5;
 }
 
-VideoGrabber::~VideoGrabber() {
+VideoGrabber::~VideoGrabber(){
+
 }
 
 void VideoGrabber::grab(const std::string& fileName) {
@@ -135,7 +138,7 @@ void VideoGrabber::grab(const std::string& fileName) {
      }
      std::string ext = IuCoreUtils::ExtractFileExt(fileName);
      fileName_ = fileName;
-     worker_.reset(new VideoGrabberRunnable(this));
+     worker_ = std::make_unique<VideoGrabberRunnable>(this);
      std::thread t1(&VideoGrabberRunnable::run, worker_.get());
      t1.detach();
  }

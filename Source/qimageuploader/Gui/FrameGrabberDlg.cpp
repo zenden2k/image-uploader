@@ -12,7 +12,6 @@
 
 Q_DECLARE_METATYPE(AbstractImage*)
 
-
 FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::FrameGrabberDlg)

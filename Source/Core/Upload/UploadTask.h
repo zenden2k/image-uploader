@@ -50,13 +50,13 @@ class UploadTaskAcceptor
 {
 public:
     virtual bool canAcceptUploadTask(UploadTask* task) = 0;
-    virtual ~UploadTaskAcceptor(){}
+    virtual ~UploadTaskAcceptor() = default;
 };
 
 class UploadTask {
     public:
         UploadTask();
-        UploadTask(UploadTask* parentTask);
+        explicit UploadTask(UploadTask* parentTask);
         virtual ~UploadTask();
         void setUploadManager(CFileQueueUploader* uploadManager);
 

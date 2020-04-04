@@ -23,6 +23,7 @@
 
 #include <string>
 #include <memory>
+
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
 #include "UploadSession.h"
