@@ -147,7 +147,7 @@ std::string GetFileMimeType(const std::string& fileName)
     return result;
 }
 
-bool DirectoryExists(const std::string path)
+bool DirectoryExists(const std::string& path)
 {
     DWORD dwFileAttributes = GetFileAttributes(Utf8ToWstring(path).c_str());
     if (dwFileAttributes != INVALID_FILE_ATTRIBUTES && (dwFileAttributes &

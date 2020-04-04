@@ -40,7 +40,7 @@ bool DirectshowVideoFrame::saveToFile(const std::string& fileName) const {
     if (!image) {
         return false;
     }
-    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_)) {
+    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
         return false;
     }
     return image->saveToFile(fileName);
@@ -51,7 +51,7 @@ std::unique_ptr<AbstractImage> DirectshowVideoFrame::toImage() const {
     if (!image) {
         return nullptr;
     }
-    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_)) {
+    if (!image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_, data_, dataSize_, nullptr)) {
         image.reset();
     }
     return image;

@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <cmath>
 #include <cassert>
+#include <memory>
 
 #include <boost/format.hpp>
 #include <libbase64.h>
@@ -152,7 +153,7 @@ bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int 
         }
     }
 
-    std::auto_ptr<Bitmap> quantizedImage;
+    std::unique_ptr<Bitmap> quantizedImage;
     //TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
     TCHAR szMimeTypes[3][12] = {_T("image/jpeg"), _T("image/png"), _T("image/gif")};
 

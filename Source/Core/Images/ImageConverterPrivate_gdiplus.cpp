@@ -1,6 +1,7 @@
 ﻿#include "ImageConverterPrivate_gdiplus.h"
 
 #include <cassert>
+#include <memory>
 
 #include "Func/MyUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -31,7 +32,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     }
 
     Bitmap* thumbSource = bm.get();
-    std::auto_ptr<Bitmap> BackBuffer;
+    std::unique_ptr<Bitmap> BackBuffer;
     imgwidth = float(bm->GetWidth());
     imgheight = float(bm->GetHeight());
     double NewWidth = atof(m_imageConvertingParams.strNewWidth.c_str());

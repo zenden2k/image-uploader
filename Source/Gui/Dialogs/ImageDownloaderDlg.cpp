@@ -250,7 +250,7 @@ bool CImageDownloaderDlg::BeginDownloading()
 {
     std::string links = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT)));
     std::vector<std::string> tokens;
-    nm_splitString(links,"\n",tokens,-1);
+    IuStringUtils::Split(links,"\n",tokens,-1);
     m_nFilesCount =0;
     m_nFileDownloaded = 0;
     for(size_t i=0; i<tokens.size(); i++)
@@ -259,7 +259,7 @@ bool CImageDownloaderDlg::BeginDownloading()
         if (token.empty() || IuStringUtils::Trim(token).empty()) {
             continue;
         }
-        m_FileDownloader.addFile(nm_trimStr(token), reinterpret_cast<void*>(i));
+        m_FileDownloader.addFile(IuStringUtils::Trim(token), reinterpret_cast<void*>(i));
         m_nFilesCount++;
     }
     if(m_nFilesCount)
