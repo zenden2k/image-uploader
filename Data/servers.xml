@@ -100,13 +100,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-	<Server Name="imagevenue.com" Authorize="0" MaxFileSize="3145728" Debug="0">
+	<Server Name="imagevenue.com" Authorize="1" Plugin="imagevenue">
 		<Actions>
-			<!--<Action Type="login" Url="http://users.imagevenue.com/process_logon.php" PostParams="user=$(_LOGIN);password=$(_PASSWORD);action=1"/>-->
-			<Action Type="upload" Url="http://www.imagevenue.com/upload.php" PostParams="userfile[]=%filename%;imgcontent=safe;MAX_FILE_SIZE=;action=1;img_resize=;" RegExp="\[URL=(.*?)\]\[IMG\](.*?)\[\/IMG\]" AssignVars="Image:0;Thumb:1;"/>
-        </Actions>
-        <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-     </Server>
+		</Actions>
+        <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+    </Server>
 	<!--<Server Name="pix.am"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>
