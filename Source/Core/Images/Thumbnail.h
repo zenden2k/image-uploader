@@ -55,9 +55,9 @@ class Thumbnail
 
         Thumbnail();
         virtual ~Thumbnail();
-        bool LoadFromFile(const std::string& filename);
-        void CreateNew();
-        bool SaveToFile(const std::string& filename = "" );
+        bool loadFromFile(const std::string& filename);
+        void createNew();
+        bool saveToFile(const std::string& filename = "" );
 
         /* accessor functions */ 
         std::string getSpriteFileName() const;

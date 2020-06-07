@@ -209,3 +209,76 @@ TEST_F(UtilsTest, ExUtilReadFile) {
     EXPECT_TRUE(data != nullptr);
     delete[] data;
 }
+
+TEST_F(UtilsTest, StringToColor) {
+    {
+        Gdiplus::Color clr = StringToColor("#ffffff");
+        EXPECT_EQ(255, clr.GetR());
+        EXPECT_EQ(255, clr.GetG());
+        EXPECT_EQ(255, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("#000000");
+        EXPECT_EQ(0, clr.GetR());
+        EXPECT_EQ(0, clr.GetG());
+        EXPECT_EQ(0, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgb(0,0,1)");
+        EXPECT_EQ(0, clr.GetR());
+        EXPECT_EQ(0, clr.GetG());
+        EXPECT_EQ(1, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgb(255,13,184)");
+        EXPECT_EQ(255, clr.GetR());
+        EXPECT_EQ(13, clr.GetG());
+        EXPECT_EQ(184, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgb(255, 13, 184)");
+        EXPECT_EQ(255, clr.GetR());
+        EXPECT_EQ(13, clr.GetG());
+        EXPECT_EQ(184, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgba(255,13,184,1.0)");
+        EXPECT_EQ(255, clr.GetR());
+        EXPECT_EQ(13, clr.GetG());
+        EXPECT_EQ(184, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgba(122,40,11,0.2)");
+        EXPECT_EQ(122, clr.GetR());
+        EXPECT_EQ(40, clr.GetG());
+        EXPECT_EQ(11, clr.GetB());
+        EXPECT_EQ(51, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("rgba(122, 40, 11, 0.2)");
+        EXPECT_EQ(122, clr.GetR());
+        EXPECT_EQ(40, clr.GetG());
+        EXPECT_EQ(11, clr.GetB());
+        EXPECT_EQ(51, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("#$$2$$$");
+        EXPECT_EQ(0, clr.GetR());
+        EXPECT_EQ(0, clr.GetG());
+        EXPECT_EQ(0, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+    {
+        Gdiplus::Color clr = StringToColor("");
+        EXPECT_EQ(0, clr.GetR());
+        EXPECT_EQ(0, clr.GetG());
+        EXPECT_EQ(0, clr.GetB());
+        EXPECT_EQ(255, clr.GetA());
+    }
+}

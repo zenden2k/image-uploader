@@ -18,10 +18,12 @@
 
 */
 
-#include "myutils.h"
+#include "MyUtils.h"
+
+#include <string>
 
 #include "atlheaders.h"
-#include <string>
+
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
@@ -39,11 +41,7 @@ bool IsVideoFile(LPCTSTR szFileName)
 {
     std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
     std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
-    if(std::find(extensions.begin(), extensions.end(), ext) != extensions.end()) {
-        return true;
-    } else {
-    return false;
-    }
+    return std::find(extensions.begin(), extensions.end(), ext) != extensions.end();
 }
 
 int GetSavingFormat(LPCTSTR szFileName)

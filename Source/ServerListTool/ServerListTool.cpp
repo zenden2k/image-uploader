@@ -52,6 +52,7 @@ class ServersCheckerApplication {
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::unique_ptr<CMyEngineList> engineList_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
+    std::unique_ptr<TaskDispatcher> taskDispatcher_;
 
     CString commonTempFolder_, tempFolder_;
 public:
@@ -101,6 +102,9 @@ public:
 
     void initServices() {
         ServiceLocator* serviceLocator = ServiceLocator::instance();
+        taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
+        serviceLocator->setTaskDispatcher(taskDispatcher_.get());
+
         auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
         serviceLocator->setUploadErrorHandler(uploadErrorHandler);
         networkClientFactory_ = std::make_shared<NetworkClientFactory>();

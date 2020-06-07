@@ -32,15 +32,15 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + templateName +
         _T(".xml");
 
-    if (!thumb.LoadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)thumbTemplateFileName)))
+    if (!thumb.loadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)thumbTemplateFileName)))
     {
         LOG(ERROR) << TR("Couldn't load thumbnail preset!") + CString(_T("\r\n")) + thumbTemplateFileName;
         return false;
     }
     task->setStatusText(_("Preparing image..."));
     imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(imageUploadParams.ImageProfileName)]);
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    imageConverter.setImageConvertingParams(settings->ConvertProfiles[U2W(imageUploadParams.ImageProfileName)]);
     imageConverter.setThumbCreatingParams(imageUploadParams.getThumb());
     bool GenThumbs = imageUploadParams.CreateThumbs &&
         ((!imageUploadParams.UseServerThumbs) || (!task->serverProfile().uploadEngineData()->SupportThumbnails));

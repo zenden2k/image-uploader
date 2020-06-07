@@ -85,7 +85,7 @@ class CWizardDlg :
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
         public CUpdateDlg::CUpdateDlgCallback,
         public IProgramWindow,
-        public ITaskDispatcher
+        public ITaskRunner
 {
 public:
     enum { IDD = IDD_WIZARDDLG };
@@ -179,7 +179,7 @@ public:
 
     void ShowUpdateMessage(const CString& msg) override;
 
-    void runInGuiThread(TaskDispatcherTask&& task, bool async) override;
+    void runInGuiThread(TaskRunnerTask&& task, bool async) override;
 
     template<class T> T* getPage(WizardPageId id) {
         if (id < 0 || id >= ARRAY_SIZE(Pages)) {
@@ -307,7 +307,7 @@ protected:
     std::vector<std::function<void(bool)>> lastRegionAvailabilityChangeCallbacks_;
     std::shared_ptr<DefaultLogger> logger_;
     std::unique_ptr<CStatusDlg> statusDlg_;
-    std::vector<TaskDispatcherTask> scheduledTasks_;
+    std::vector<TaskRunnerTask> scheduledTasks_;
     std::mutex scheduledTasksMutex_;
     std::shared_ptr<CFloatingWindow> floatWnd_;
     DWORD mainThreadId_;

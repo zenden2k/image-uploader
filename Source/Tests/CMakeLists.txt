@@ -18,6 +18,7 @@ set(SRC_LIST
    ../Core/Upload/Tests/ScriptUploadEngineTest.cpp
    ../Core/Upload/Tests/DefaultUploadEngineTest.cpp
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
+   ../Core/DownloadTaskTest.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 

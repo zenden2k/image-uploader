@@ -4,7 +4,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Tests/TestHelpers.h"
-#include <Core/Images/ImageConverterPrivate_gdiplus.h>
+#include "Core/Images/ImageConverterPrivate_gdiplus.h"
 
 class ImageConverterTest : public ::testing::Test {
 private:
@@ -45,7 +45,7 @@ TEST_F(ImageConverterTest, Convert)
         thumbParams.Size = 320; // Generate thumbnail with width = 320
         converter.setThumbCreatingParams(thumbParams);
         Thumbnail thumb;
-        ASSERT_TRUE(thumb.LoadFromFile(TestHelpers::resolvePath("classic.xml")));
+        ASSERT_TRUE(thumb.loadFromFile(TestHelpers::resolvePath("classic.xml")));
         thumb.setParam("DrawFrame", 0);
         thumb.setParam("DrawText", 0);
 
@@ -80,7 +80,7 @@ TEST_F(ImageConverterTest, Convert)
         thumbParams.ResizeMode = ThumbCreatingParams::trByHeight;
         converter.setThumbCreatingParams(thumbParams);
         Thumbnail thumb;
-        ASSERT_TRUE(thumb.LoadFromFile(TestHelpers::resolvePath("classic.xml")));
+        ASSERT_TRUE(thumb.loadFromFile(TestHelpers::resolvePath("classic.xml")));
         thumb.setParam("DrawFrame", 0);
         thumb.setParam("DrawText", 0);
 

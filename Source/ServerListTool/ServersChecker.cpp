@@ -376,7 +376,7 @@ void ServersChecker::MarkServer(int id)
         }
     }
 
-    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         model_->notifyRowChanged(id);
     });
 

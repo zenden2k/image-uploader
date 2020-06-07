@@ -27,7 +27,6 @@
 
 #include <boost/format.hpp>
 #include <libbase64.h>
-#include <webp/decode.h>
 #include <webp/demux.h>
 #include "3rdpart/GdiplusH.h"
 #include "Core/Logging.h"
@@ -231,9 +230,9 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
         return nullptr;
     }
 
-    std::unique_ptr<Gdiplus::Bitmap> image(new Gdiplus::Bitmap(
+    std::unique_ptr<Gdiplus::Bitmap> image = std::make_unique<Gdiplus::Bitmap>(
         lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
-        PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0)));
+        PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
 
     temp.UnlockBits(&lockedBitmapData);
     return image;
@@ -501,26 +500,42 @@ Gdiplus::Color StringToColor(const std::string& str) {
     if ( str.empty() ) {
         return Gdiplus::Color();
     }
-    if ( str[0] == '#' ) {
-        std::string res = IuStringUtils::Replace(str, "#", "0x");
-        return strtoul(res.c_str(), 0, 0);
-    } else if ( str.substr(0,4) == "rgba" && str.length() >= 14 ) {
-        std::vector<std::string> tokens;
-        IuStringUtils::Split(str.substr(5, str.length()-5 ),",", tokens,4);
-        if ( tokens.size() == 4 ) {
-            return Gdiplus::Color(static_cast<BYTE>(round(atof(tokens[3].c_str())*255)), static_cast<BYTE>(atoi(tokens[0].c_str())),
-                static_cast<BYTE>(atoi(tokens[1].c_str())), static_cast<BYTE>(atoi(tokens[2].c_str())));
+    try {
+        BYTE r = 0, g = 0, b = 0, a = 255;
+        if ( str[0] == '#' && str.length() == 7 ) {
+            r = static_cast<BYTE>(std::stoul(str.substr(1, 2), nullptr, 16));
+            g = static_cast<BYTE>(std::stoul(str.substr(3, 2), nullptr, 16));
+            b = static_cast<BYTE>(std::stoul(str.substr(5, 2), nullptr, 16));
+
+            return Gdiplus::Color(r, g, b);
+        } else if ( str.substr(0,4) == "rgba" && str.length() >= 14 ) {
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(str.substr(5, str.length()-6 ),",", tokens,4);
+            if ( tokens.size() == 4 ) {
+                char * e = nullptr;
+                errno = 0;
+                a = static_cast<BYTE>(round(std::strtod(tokens[3].c_str(), &e) * 255));
+                if (errno != 0 || (e && *e != '\0')) {
+                    return Gdiplus::Color();
+                }
+                r = static_cast<BYTE>(std::stoul(tokens[0]));
+                g = static_cast<BYTE>(std::stoul(tokens[1]));
+                b = static_cast<BYTE>(std::stoul(tokens[2]));
+                return Gdiplus::Color(a, r, g, b);
+            }
+        } else if ( str.substr(0,3) == "rgb" && str.length() >= 10 ) {
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(str.substr(4, str.length()-5 ), ",", tokens,3);
+            if ( tokens.size() == 3 ) {
+                return Gdiplus::Color( static_cast<BYTE>(std::stoul(tokens[0])), static_cast<BYTE>(std::stoul(tokens[1])), 
+                    static_cast<BYTE>(std::stoul(tokens[2])));
+            }
         }
-    } else if ( str.substr(0,4) == "rgb" && str.length() >= 13 ) {
-        std::vector<std::string> tokens;
-        IuStringUtils::Split(str.substr(4, str.length()-4 ),",", tokens,3);
-        if ( tokens.size() == 3 ) {
-            return Gdiplus::Color( static_cast<BYTE>(atoi(tokens[0].c_str())), static_cast<BYTE>(atoi(tokens[1].c_str())), static_cast<BYTE>(atoi(tokens[2].c_str())));
-        }
+    } catch (const std::invalid_argument&) {
+    } catch (const std::out_of_range&) {    
     }
     return Gdiplus::Color();
 }
-
 
 
 struct BGRA_COLOR
@@ -1458,7 +1473,7 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     catch (std::exception &) {
         LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
         fclose(in);
-        return 0;
+        return false;
     }
     if (file_data == nullptr) return 0;
     int ok = (fread(file_data, 1, file_size, in) == file_size);

@@ -62,7 +62,7 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
                 ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 CString name = CString(currentDir) + CString(_T("\\")) + CString(s_Dir.name);
                 ais.RealFileName = name;
-                ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+                ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
                     if (m_pWizardDlg->AddImage(ais.RealFileName, ais.VirtualFileName, ais.show)) {
                         count++;
                     }
@@ -97,7 +97,7 @@ DWORD CFolderAdd::Run()
         if (dlg.NeedStop()) break;
     }
 
-    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         m_pWizardDlg->SetActiveWindow();
     });
     

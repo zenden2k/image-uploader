@@ -68,6 +68,7 @@ class Application {
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
     std::unique_ptr<UserFilter> userFilter_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
+    std::unique_ptr<TaskDispatcher> taskDispatcher_;
     CString commonTempFolder_, tempFolder_;
 public:
     Application() {
@@ -124,6 +125,9 @@ public:
 
     void initServices() {
         ServiceLocator* serviceLocator = ServiceLocator::instance();
+        taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
+        serviceLocator->setTaskDispatcher(taskDispatcher_.get());
+
         auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
         serviceLocator->setUploadErrorHandler(uploadErrorHandler);
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
@@ -217,7 +221,7 @@ public:
         CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
         auto serviceLocator = ServiceLocator::instance();
         serviceLocator->setProgramWindow(&dlgMain);
-        serviceLocator->setTaskDispatcher(&dlgMain);
+        serviceLocator->setTaskRunner(&dlgMain);
 
         floatWnd_ = std::make_shared<CFloatingWindow>(&dlgMain, uploadManager_.get(), uploadEngineManager_.get());
         dlgMain.setFloatWnd(floatWnd_);

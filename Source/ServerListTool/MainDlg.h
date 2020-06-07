@@ -42,7 +42,7 @@ namespace ServersListTool {
 class ServersChecker;
 
 class CMainDlg :
-    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>, public ITaskDispatcher {
+    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>, public ITaskRunner {
 public:
     enum { IDD = IDD_MAINDLG };
     enum {
@@ -111,7 +111,7 @@ public:
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-    void runInGuiThread(TaskDispatcherTask&& task, bool async = false) override;
+    void runInGuiThread(TaskRunnerTask&& task, bool async = false) override;
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     int contextMenuItemId;

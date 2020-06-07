@@ -28,9 +28,11 @@
 
 #pragma once
 
+#include <memory>
+
 #include "atlheaders.h"
 #include "resource.h"       
-#include "Core/FileDownloader.h"
+#include "Core/DownloadTask.h"
 #include "WizardDlg.h"
 #include "Gui/Controls/DialogIndirect.h"
 
@@ -85,12 +87,11 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         static bool LinksAvailableInText(const CString &text);
         void ParseBuffer(const CString& text, bool OnlyImages);
         void OnQueueFinished();
-        bool OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
+        bool OnFileFinished(bool ok, int statusCode, const DownloadTask::DownloadItem& it);
         void clipboardUpdated();
         CMessageLoop m_loop;
         int m_retCode;
         CString m_FileName;
-        CFileDownloader m_FileDownloader;
         CWizardDlg * m_WizardDlg;
         std::vector<CString> m_downloadedFiles;
         int m_nFilesCount;
@@ -99,6 +100,8 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         CString m_InitialBuffer;
         bool isVistaOrLater_;
         CAccelerator accel_;
+        std::shared_ptr<DownloadTask> downloadTask_;
+        bool isRunning_;
         typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
         typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
         RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;

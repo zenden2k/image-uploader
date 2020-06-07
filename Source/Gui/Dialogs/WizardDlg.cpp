@@ -69,7 +69,7 @@ namespace
 {
 
 struct TaskDispatcherMessageStruct {
-    TaskDispatcherTask callback;
+    TaskRunnerTask callback;
     bool async;
     //Object* sender;
 };
@@ -348,7 +348,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         std::thread t([&]() {
             historyManager->convertHistory();
             Settings.HistorySettings.HistoryConverted = true;
-            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([this]
             {
                 EnableWindow(TRUE);
                 statusDlg_->ProcessFinished();
@@ -2278,7 +2278,7 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
 
-void CWizardDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
+void CWizardDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
     if (async) {
         std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
         scheduledTasks_.push_back(std::move(task));

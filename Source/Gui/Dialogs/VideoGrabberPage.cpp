@@ -267,7 +267,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
         if (snapshotsFolder.IsEmpty()) {
             snapshotsFolder = AppParams::instance()->tempDirectoryW();
         }
-        ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
     }
 
     CString wOutDir;

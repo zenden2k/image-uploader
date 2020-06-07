@@ -18,10 +18,11 @@ class LocalFileCache;
 class CHistoryManager;
 class ServiceLocatorPrivate;
 class ITranslator;
-class ITaskDispatcher;
+class ITaskRunner;
 class CMyEngineList;
 class CLogWindow;
 class UrlShorteningFilter;
+class TaskDispatcher;
 
 class ServiceLocator {
     ServiceLocator();
@@ -38,8 +39,8 @@ public:
     void setDialogProvider(IDialogProvider* dialogProvider);
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler();
     void setUploadErrorHandler(std::shared_ptr<IUploadErrorHandler> errorHandler);
-    ITaskDispatcher* taskDispatcher();
-    void setTaskDispatcher(ITaskDispatcher* dispatcher);
+    ITaskRunner* taskRunner();
+    void setTaskRunner(ITaskRunner* dispatcher);
     UploadManager* uploadManager() const;
     void setUploadManager(UploadManager* manager);
     void setMyEngineList(CMyEngineList* list);
@@ -65,6 +66,9 @@ public:
 
     void setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory);
     std::shared_ptr<INetworkClientFactory> networkClientFactory() const;
+
+    void setTaskDispatcher(TaskDispatcher* dispatcher);
+    TaskDispatcher* taskDispatcher() const;
     static ServiceLocator* instance();
 
 protected:

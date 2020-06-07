@@ -246,7 +246,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
             ImageConverter imageConverter;
             Thumbnail thumb;
 
-            if (!thumb.LoadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\"))
+            if (!thumb.loadFromFile(WCstringToUtf8(IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\"))
                 + serverProfile_.getImageUploadParams().getThumb().TemplateName +
                 ".xml")) {
                 ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, TR("Couldn't load thumbnail preset!"));

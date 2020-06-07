@@ -27,6 +27,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Scripting/API/RegularExpression.cpp
     Scripting/API/ScriptAPI.cpp
     Logging.cpp
+	DownloadTask.cpp
     Upload/ConsoleUploadErrorHandler.cpp
     Upload/FileQueueUploader.cpp
     Upload/FileQueueUploaderPrivate.cpp

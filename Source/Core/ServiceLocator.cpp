@@ -14,9 +14,10 @@ public:
         dialogProvider_ = nullptr;
         uploadManager_ = nullptr;
         myEngineList_ = nullptr;
-        dispatcher_ = nullptr;
+        taskRunner_ = nullptr;
         logWindow_ = nullptr;
         settings_ = nullptr;
+        taskDispatcher_ = nullptr;
     }
     std::shared_ptr<ILogger> logger_;
     ITranslator* translator_;
@@ -25,13 +26,14 @@ public:
     IProgramWindow* programWindow_;
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     IDialogProvider* dialogProvider_;
-    ITaskDispatcher* dispatcher_;
+    ITaskRunner* taskRunner_;
     UploadManager* uploadManager_;
     CMyEngineList* myEngineList_;
     CLogWindow* logWindow_;
     BasicSettings* settings_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    TaskDispatcher* taskDispatcher_;
 };
 
 
@@ -93,12 +95,12 @@ void ServiceLocator::setDialogProvider(IDialogProvider* dialogProvider) {
     d_ptr->dialogProvider_ = dialogProvider;
 }
 
-ITaskDispatcher* ServiceLocator::taskDispatcher() {
-    return d_ptr->dispatcher_;
+ITaskRunner* ServiceLocator::taskRunner() {
+    return d_ptr->taskRunner_;
 }
 
-void ServiceLocator::setTaskDispatcher(ITaskDispatcher* dispatcher) {
-    d_ptr->dispatcher_ = dispatcher;
+void ServiceLocator::setTaskRunner(ITaskRunner* dispatcher) {
+    d_ptr->taskRunner_ = dispatcher;
 }
 
 void ServiceLocator::setProgramWindow(IProgramWindow* window) {
@@ -152,6 +154,14 @@ void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFacto
 
 std::shared_ptr<INetworkClientFactory> ServiceLocator::networkClientFactory() const {
     return d_ptr->networkClientFactory_;
+}
+
+void ServiceLocator::setTaskDispatcher(TaskDispatcher* dispatcher) {
+    d_ptr->taskDispatcher_ = dispatcher;
+}
+
+TaskDispatcher* ServiceLocator::taskDispatcher() const {
+    return d_ptr->taskDispatcher_;
 }
 
 ServiceLocator* ServiceLocator::instance() {

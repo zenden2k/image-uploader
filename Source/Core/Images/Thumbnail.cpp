@@ -34,7 +34,7 @@ Thumbnail::~Thumbnail()
 {
 }
 
-bool Thumbnail::LoadFromFile(const std::string& filename)
+bool Thumbnail::loadFromFile(const std::string& filename)
 {
     SimpleXml xml;
     if (!xml.LoadFromFile(filename))
@@ -83,7 +83,7 @@ bool Thumbnail::LoadFromFile(const std::string& filename)
     return true;
 }
 
-void Thumbnail::CreateNew()
+void Thumbnail::createNew()
 {
     data_.colors_["FrameColor"] = "#004A6F";
     data_.colors_["StrokeColor"] = "0";
@@ -92,7 +92,7 @@ void Thumbnail::CreateNew()
     data_.colors_["TextColor"] = "0";
 }
 
-bool Thumbnail::SaveToFile(const std::string& filename)
+bool Thumbnail::saveToFile(const std::string& filename)
 {
     SimpleXml xml;
     std::string fileToSave = filename;

@@ -521,7 +521,7 @@ void CUploadDlg::showUploadProgressTab() {
 // This callback is being executed in worker thread
 void CUploadDlg::onSessionFinished(UploadSession* session)
 {
-    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([&] {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         onSessionFinished_UiThread(session);
     });
 }
@@ -566,7 +566,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
     {
         return;
     }
-    auto taskDispatcher = ServiceLocator::instance()->taskDispatcher();
+    auto taskDispatcher = ServiceLocator::instance()->taskRunner();
     if (fileTask->role() == UploadTask::DefaultRole && ok) {
         UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->userData());
         if (!fps)
@@ -612,7 +612,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-    auto dispatcher = ServiceLocator::instance()->taskDispatcher();
+    auto dispatcher = ServiceLocator::instance()->taskRunner();
     if (!backgroundThreadStarted_)
     {
         dispatcher->runInGuiThread([&] {

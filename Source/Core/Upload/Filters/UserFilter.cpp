@@ -11,10 +11,10 @@ UserFilter::UserFilter(ScriptsManager* scriptsManager)
 
 bool UserFilter::PreUpload(UploadTask* task)
 {
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    if (Settings.ExecuteScript && !Settings.ScriptFileName.empty())
+    auto settings = ServiceLocator::instance()->basicSettings();
+    if (settings->ExecuteScript && !settings->ScriptFileName.empty())
     {
-        UploadFilterScript* script = dynamic_cast<UploadFilterScript*>(scriptsManager_->getScript(Settings.ScriptFileName, ScriptsManager::TypeUploadFilterScript));
+        UploadFilterScript* script = dynamic_cast<UploadFilterScript*>(scriptsManager_->getScript(settings->ScriptFileName, ScriptsManager::TypeUploadFilterScript));
         if (!script)
         {
             return false;
@@ -26,10 +26,10 @@ bool UserFilter::PreUpload(UploadTask* task)
 
 bool UserFilter::PostUpload(UploadTask* task)
 {
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    if (Settings.ExecuteScript && !Settings.ScriptFileName.empty())
+    auto settings = ServiceLocator::instance()->basicSettings();
+    if (settings->ExecuteScript && !settings->ScriptFileName.empty())
     {
-        UploadFilterScript* script = dynamic_cast<UploadFilterScript*>(scriptsManager_->getScript(Settings.ScriptFileName, ScriptsManager::TypeUploadFilterScript));
+        UploadFilterScript* script = dynamic_cast<UploadFilterScript*>(scriptsManager_->getScript(settings->ScriptFileName, ScriptsManager::TypeUploadFilterScript));
         if (!script)
         {
             return false;

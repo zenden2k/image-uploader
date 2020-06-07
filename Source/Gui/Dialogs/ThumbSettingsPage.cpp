@@ -122,7 +122,7 @@ bool CThumbSettingsPage::Apply()
     Settings.imageServer.setImageUploadParams(iup);
 
     for (std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it != thumb_cache_.end(); ++it) {
-        it->second->SaveToFile();
+        it->second->saveToFile();
     }
     return TRUE;
 }
@@ -160,7 +160,7 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
     { 
         thumb = new Thumbnail();
         autoPtrThumb.reset(thumb);
-        if(!thumb->LoadFromFile(fileName))
+        if(!thumb->loadFromFile(fileName))
         {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
             return 0;
@@ -219,7 +219,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     { 
         thumb = new Thumbnail();
         autoPtrThumb.reset(thumb);
-        if(!thumb->LoadFromFile(fileName))
+        if(!thumb->loadFromFile(fileName))
         {
             ServiceLocator::instance()->logger()->write(ILogger::logError, _T("CThumbSettingsPage"), TR("Couldn't load thumbnail preset!"));
             return;
@@ -275,7 +275,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     } else {
         thumbPtr = std::make_unique<Thumbnail>();
         thumb = thumbPtr.get();
-        thumb->LoadFromFile(fileName);
+        thumb->loadFromFile(fileName);
     }
     std::string sprite = thumb->getSpriteFileName();
     thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
@@ -292,7 +292,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         return false;
     }
 
-    if (!thumb->SaveToFile(destination)) {
+    if (!thumb->saveToFile(destination)) {
         LOG(ERROR) << "Unable to save thumbnail template to file '" << destination << "'";
         return false;
     }

@@ -3,7 +3,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include <boost/filesystem.hpp>
 

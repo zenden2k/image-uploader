@@ -20,7 +20,7 @@ namespace ServersListTool
 {
 
 struct TaskDispatcherMessageStruct {
-    TaskDispatcherTask callback;
+    TaskRunnerTask callback;
     bool async;
 };
 
@@ -38,7 +38,7 @@ CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* upload
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     auto basicSettings = ServiceLocator::instance()->settings<BasicSettings>();
-    ServiceLocator::instance()->setTaskDispatcher(this);
+    ServiceLocator::instance()->setTaskRunner(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
@@ -322,7 +322,7 @@ LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
-void CMainDlg::runInGuiThread(TaskDispatcherTask&& task, bool async) {
+void CMainDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
     if (async) {
         TaskDispatcherMessageStruct* msg = new TaskDispatcherMessageStruct();
         msg->callback = std::move(task);

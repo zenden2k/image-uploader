@@ -26,7 +26,7 @@ class SearchByImage  {
         static std::string getSearchEngineDisplayName(SearchEngine se);
         static std::string searchEngineTypeToString(SearchEngine se);
         static SearchEngine searchEngineTypeFromString(const std::string& name); 
-        typedef std::function<void(bool, const std::string&)> FinishedDelegate;
+        using FinishedDelegate = std::function<void(bool, const std::string&)>;
         void setOnFinished(const FinishedDelegate& fd);
 protected:
     std::string fileName_;

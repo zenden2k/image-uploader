@@ -81,21 +81,24 @@ void CFileDownloader::memberThreadFunc()
     // Providing callback function to stop downloading
     using namespace std::placeholders;
     nm->setProgressCallback(std::bind(&CFileDownloader::ProgressFunc, this, _1, _2, _3, _4, _5));
-    mutex_.lock();
-    if (onConfigureNetworkClient_) {
-        onConfigureNetworkClient_(nm.get());
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        if (onConfigureNetworkClient_) {
+            onConfigureNetworkClient_(nm.get());
+        }
     }
-    mutex_.unlock();
 
-    for (;; )
+    for (;;)
     {
         DownloadFileListItem curItem;
-        if (!getNextJob(curItem))
+        if (!getNextJob(curItem)) {
             break;
+        }
 
         std::string url = curItem.url;
-        if (url.empty())
+        if (url.empty()) {
             break;
+        }
         url = IuStringUtils::Replace(url, " ", "%20");
 
         nm->setOutputFile(curItem.fileName);
@@ -108,38 +111,46 @@ void CFileDownloader::memberThreadFunc()
             break;
         }
         
-        if (stopSignal_)
+        if (stopSignal_) {
             break;
-
-        mutex_.lock();
-        bool success = nm->responseCode() >= 200 && nm->responseCode() <= 299;
-
-        if (onFileFinished_) {
-            onFileFinished_(success, nm->responseCode(), curItem);
         }
 
-        if (stopSignal_)
+        {
+            std::lock_guard<std::mutex> lk(mutex_);
+
+            bool success = nm->responseCode() >= 200 && nm->responseCode() <= 299;
+
+            if (onFileFinished_) {
+                onFileFinished_(success, nm->responseCode(), curItem);
+            }
+
+            if (stopSignal_) {
+                fileList_.clear();
+            }
+        }
+    }
+
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        runningThreads_--;
+
+        if (stopSignal_) {
             fileList_.clear();
-        mutex_.unlock();
-    }
-
-    mutex_.lock();
-    runningThreads_--;
-
-    if (stopSignal_)
-        fileList_.clear();
-    mutex_.unlock();  // We need to release  mutex before calling  onQueueFinished()
-
-    threadsStatusMutex_.lock();
-    // otherwise we may get a deadlock
-    if (!runningThreads_ && isRunning_){
-        isRunning_ = false;
-        stopSignal_ = false;
-        if (onQueueFinished_) {
-            onQueueFinished_();
         }
     }
-    threadsStatusMutex_.unlock();
+
+    
+    {
+        std::lock_guard<std::mutex> lk(threadsStatusMutex_);
+        // otherwise we may get a deadlock
+        if (!runningThreads_ && isRunning_) {
+            isRunning_ = false;
+            stopSignal_ = false;
+            if (onQueueFinished_) {
+                onQueueFinished_();
+            }
+        }
+    }
 }
 
 bool CFileDownloader::getNextJob(DownloadFileListItem& item)

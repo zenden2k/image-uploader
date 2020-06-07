@@ -32,12 +32,11 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/DownloadTask.h"
 
 
 // CImageDownloaderDlg
-CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer)
-                                            :m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory())                                    
-{
+CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
     fRemoveClipboardFormatListener_ = NULL;
@@ -47,7 +46,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
     m_nFileDownloaded = 0;
     m_nSuccessfullDownloads = 0;
     isVistaOrLater_ = WinUtils::IsVistaOrLater();
-    m_FileDownloader.setThreadCount(1);
+    isRunning_ = false;
     ACCEL accels[] = {
         { FVIRTKEY|FCONTROL , VK_RETURN, IDOK },
         { FVIRTKEY , VK_ESCAPE, IDCANCEL },
@@ -136,9 +135,9 @@ LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
 LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(m_FileDownloader.isRunning()) 
-        m_FileDownloader.stop();
-    else
+    if (isRunning_) {
+        downloadTask_->cancel();
+    } else
     {
         WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
         Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
@@ -177,7 +176,7 @@ void CImageDownloaderDlg::OnDrawClipboard()
     if (PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
-bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
+bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const DownloadTask::DownloadItem& it)
 {
     if(ok)
     {
@@ -199,8 +198,10 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const CFileDow
                 {
                     CString newFileName = ais.RealFileName + _T(".") + ext;
                     MoveFile(ais.RealFileName, newFileName);
-                     ais.RealFileName = newFileName;
-                    ais.VirtualFileName+=_T(".")+ext;
+                    ais.RealFileName = newFileName;
+                    if (CString(WinUtils::GetFileExt(ais.VirtualFileName)).MakeLower() != ext) {
+                        ais.VirtualFileName += _T(".") + ext;
+                    }
                 }
             }
             else 
@@ -234,6 +235,7 @@ void CImageDownloaderDlg::OnQueueFinished()
 {
     if(!m_InitialBuffer.IsEmpty())
     {
+        isRunning_ = false;
         EmulateEndDialog(0);
         WinUtils::CopyTextToClipboard("");
         return;
@@ -244,6 +246,7 @@ void CImageDownloaderDlg::OnQueueFinished()
     SetDlgItemText(IDC_FILEINFOEDIT, _T(""));
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS),SW_HIDE);
     ::EnableWindow(GetDlgItem(IDC_WATCHCLIPBOARD),true);
+    isRunning_ = false;
 }
 
 bool CImageDownloaderDlg::BeginDownloading()
@@ -253,13 +256,19 @@ bool CImageDownloaderDlg::BeginDownloading()
     IuStringUtils::Split(links,"\n",tokens,-1);
     m_nFilesCount =0;
     m_nFileDownloaded = 0;
+    std::vector<DownloadTask::DownloadItem> downloadItems;
+    
     for(size_t i=0; i<tokens.size(); i++)
     {
         const std::string& token = tokens[i];
         if (token.empty() || IuStringUtils::Trim(token).empty()) {
             continue;
         }
-        m_FileDownloader.addFile(IuStringUtils::Trim(token), reinterpret_cast<void*>(i));
+
+        DownloadTask::DownloadItem di;
+        di.url = IuStringUtils::Trim(token);
+        di.id = reinterpret_cast<void*>(i);
+        downloadItems.push_back(di);
         m_nFilesCount++;
     }
     if(m_nFilesCount)
@@ -272,9 +281,13 @@ bool CImageDownloaderDlg::BeginDownloading()
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETRANGE, 0, MAKELPARAM(0, m_nFilesCount));
         SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  0);
         using namespace std::placeholders;
-        m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3)); 
-        m_FileDownloader.setOnQueueFinishedCallback(std::bind(&CImageDownloaderDlg::OnQueueFinished, this));
-        m_FileDownloader.start();
+
+        auto networkClientFactory = ServiceLocator::instance()->networkClientFactory();
+        downloadTask_ = std::make_shared<DownloadTask>(networkClientFactory, AppParams::instance()->tempDirectory(), downloadItems);
+        downloadTask_->onFileFinished.connect(std::bind(&CImageDownloaderDlg::OnFileFinished, this, _1, _2, _3));
+        downloadTask_->onTaskFinished.connect(std::bind(&CImageDownloaderDlg::OnQueueFinished, this));
+        isRunning_ = true;
+        ServiceLocator::instance()->taskDispatcher()->postTask(downloadTask_);
         return true;
     }
     return false;
@@ -309,7 +322,7 @@ void CImageDownloaderDlg::clipboardUpdated()
 {
     bool IsClipboard = IsClipboardFormatAvailable(CF_UNICODETEXT) != 0;
 
-    if (IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) == BST_CHECKED && !m_FileDownloader.isRunning())
+    if (IsClipboard && SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) == BST_CHECKED && !isRunning_)
     {
         CString str;
         if (WinUtils::GetClipboardText(str, m_hWnd, true))

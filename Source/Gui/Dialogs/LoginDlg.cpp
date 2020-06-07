@@ -214,7 +214,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
 
 void CLoginDlg::OnProcessFinished()
 {
-    ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this]{
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this]{
         enableControls(true);
     });
 }
@@ -285,7 +285,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
     if (authTask->authActionType() == AuthActionType::Login) {
         if (ok) {
             OnProcessFinished();
-            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this] {
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
                 LocalizedMessageBox(TR("Authenticated succesfully."));
                 Accept();
             });
@@ -297,7 +297,7 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
     } else if (authTask->authActionType() == AuthActionType::Logout) {
         OnProcessFinished();
         if (ok) {
-            ServiceLocator::instance()->taskDispatcher()->runInGuiThread([this, ok] {
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([this, ok] {
                 LocalizedMessageBox(ok ? TR("Logout succesfully.") : TR("Failed to logout."));
                 logoutButton_.ShowWindow(SW_HIDE);
                 loginButton_.ShowWindow(serverSupportsBeforehandAuthorization_ ? SW_SHOW : SW_HIDE);

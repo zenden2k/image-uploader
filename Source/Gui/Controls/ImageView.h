@@ -68,7 +68,6 @@ class CImageViewWindow :
         LRESULT OnKillFocus(HWND hwndNewFocus);
         LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
         void setCallback(CImageViewCallback* callback);
-    public:
         bool ViewImage(const CImageViewItem&, HWND Parent = NULL);
         LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
         void MyCenterWindow(HWND hWndCenter, int width, int height);
