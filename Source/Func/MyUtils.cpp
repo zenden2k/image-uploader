@@ -29,9 +29,6 @@
 #include "Core/Video/VideoUtils.h"
 #include "Func/WinUtils.h"
 
-typedef void (WINAPI *PGNSI)(LPSYSTEM_INFO);
-typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
-
 int GetFontSizeInTwips(int nFontSize)
 {
    return MulDiv(nFontSize, 1440, 72);
@@ -40,7 +37,7 @@ int GetFontSizeInTwips(int nFontSize)
 bool IsVideoFile(LPCTSTR szFileName)
 {
     std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
-    std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
+    const std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
     return std::find(extensions.begin(), extensions.end(), ext) != extensions.end();
 }
 

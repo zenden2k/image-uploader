@@ -57,7 +57,7 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         **/
         virtual bool supportsBeforehandAuthorization();
     protected:
-        void Log(ErrorInfo::MessageType mt, const std::string& error);
+        void log(ErrorInfo::MessageType mt, const std::string& error);
         CFolderList folderList_;
         std::string name_;
         std::string m_ErrorReason;

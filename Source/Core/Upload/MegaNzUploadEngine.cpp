@@ -210,7 +210,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
 
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy) {
         if (Settings.ConnectionSettings.ProxyType != 0) {
-            Log(ErrorInfo::mtError, "This proxy type is not supported by Mega.Nz engine.");
+            log(ErrorInfo::mtError, "This proxy type is not supported by Mega.Nz engine.");
         }
         else {
             proxy_->setProxyType(MegaProxy::PROXY_CUSTOM);
@@ -283,7 +283,7 @@ int CMegaNzUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
         }
        
         if (!parentNode || !parentNode->isFolder()) {
-            Log(ErrorInfo::mtError, "Unable to find parent folder");
+            log(ErrorInfo::mtError, "Unable to find parent folder");
             return 0;
         }
         megaApi_->createFolder(folder.getTitle().c_str(), parentNode.get());
@@ -312,7 +312,7 @@ int CMegaNzUploadEngine::modifyFolder(CFolderItem& folder) {
         std::unique_ptr<MegaNode> node(megaApi_->getNodeByPath(folder.getId().c_str()));
         
         if (!node || !node->isFolder()) {
-            Log(ErrorInfo::mtError, "Unable to find folder '"+folder.getId()+"'");
+            log(ErrorInfo::mtError, "Unable to find folder '"+folder.getId()+"'");
             return 0;
         }
         megaApi_->renameNode(node.get(), folder.getTitle().c_str());
@@ -389,7 +389,7 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         } else {
             root.reset(megaApi_->getNodeByPath(folderId.c_str()));
             if (root == nullptr) {
-                Log(ErrorInfo::mtError, "Folder '" + folderId + "' not found");
+                log(ErrorInfo::mtError, "Folder '" + folderId + "' not found");
                 return 0;
             }
         }
@@ -460,7 +460,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
     {
         engine_->loginSuccess_ = e->getErrorCode() == MegaError::API_OK;
         if (!engine_->loginSuccess_) {
-            engine_->Log(ErrorInfo::mtError, "Login failed: " + std::string(e->getErrorString()));
+            engine_->log(ErrorInfo::mtError, "Login failed: " + std::string(e->getErrorString()));
         }
         engine_->loginFinished_ = true;
         break;
@@ -470,7 +470,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
         if (e->getErrorCode() == MegaError::API_OK) {
             engine_->fetchNodesSuccess_ = true;
         } else {
-            engine_->Log(ErrorInfo::mtError, "Unable to fetch remote filesystem: " + std::string(e->getErrorString()));
+            engine_->log(ErrorInfo::mtError, "Unable to fetch remote filesystem: " + std::string(e->getErrorString()));
         }
         engine_->fetchNodesFinished_ = true;
 
@@ -502,7 +502,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
                 engine_->createFolderSuccess_ = true;
             }
         } else {
-            engine_->Log(ErrorInfo::mtError, "Unable to create folder: " + std::string(e->getErrorString()));
+            engine_->log(ErrorInfo::mtError, "Unable to create folder: " + std::string(e->getErrorString()));
         }
         engine_->createFolderFinished_ = true;
     }
@@ -512,7 +512,7 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
         if (e->getErrorCode() == MegaError::API_OK) {
             engine_->renameFolderSuccess_ = true;
         } else {
-            engine_->Log(ErrorInfo::mtError, "Unable to rename folder: " + std::string(e->getErrorString()));
+            engine_->log(ErrorInfo::mtError, "Unable to rename folder: " + std::string(e->getErrorString()));
         }
         engine_->renameFolderFinished_ = true;
     }
@@ -530,13 +530,13 @@ void MyListener::onRequestUpdate(MegaApi*api, MegaRequest *request)
 
 void MyListener::onRequestTemporaryError(MegaApi *api, MegaRequest *request, MegaError* error)
 {
-    engine_->Log(ErrorInfo::mtWarning, "Mega.nz request error: " + std::string(error->getErrorString()));
+    engine_->log(ErrorInfo::mtWarning, "Mega.nz request error: " + std::string(error->getErrorString()));
 }
 
 void MyListener::onTransferFinish(MegaApi* api, MegaTransfer *transfer, MegaError* error)
 {
     if (error->getErrorCode()) {
-        engine_->Log(ErrorInfo::mtError, "Transfer finished with error: " + std::string(error->getErrorString()));
+        engine_->log(ErrorInfo::mtError, "Transfer finished with error: " + std::string(error->getErrorString()));
     } else {
         MegaHandle handle = transfer->getNodeHandle();
         std::unique_ptr<MegaNode> node(api->getNodeByHandle(handle));

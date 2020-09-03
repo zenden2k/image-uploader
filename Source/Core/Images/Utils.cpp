@@ -1115,16 +1115,15 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width
 
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
 {
+    if (szMax.Width < 1 || szMax.Height < 1 || szReal.Width < 1 || szReal.Height < 1) {
+        return Size();
+    }
+
+    double sMaxRatio = szMax.Width / static_cast<double>(szMax.Height);
+    double sRealRatio = szReal.Width / static_cast<double>(szReal.Height);
+
     int nWidth;
     int nHeight;
-    double sMaxRatio;
-    double sRealRatio;
-
-    if (szMax.Width < 1 || szMax.Height < 1 || szReal.Width < 1 || szReal.Height < 1)
-        return Size();
-
-    sMaxRatio = szMax.Width / static_cast<double>(szMax.Height);
-    sRealRatio = szReal.Width / static_cast<double>(szReal.Height);
 
     if (sMaxRatio < sRealRatio) {
         nWidth = min(szMax.Width, szReal.Width);

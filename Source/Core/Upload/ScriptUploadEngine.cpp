@@ -133,8 +133,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
                  currentTask_ = nullptr;
                  return -1;
             }
-            std::string fname = FileName;
-            ival = ScriptAPI::GetValue(func.Evaluate<int>(fname.c_str(), &params));
+            ival = ScriptAPI::GetValue(func.Evaluate<int>(FileName.c_str(), &params));
         } else if (task->type() == UploadTask::TypeUrl ) {
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");

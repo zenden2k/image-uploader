@@ -54,7 +54,7 @@ bool CAdvancedUploadEngine::supportsBeforehandAuthorization()
     return false;
 }
 
-void CAdvancedUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& error)
+void CAdvancedUploadEngine::log(ErrorInfo::MessageType mt, const std::string& error)
 {
     ErrorInfo ei;
     ei.ActionIndex = -1;

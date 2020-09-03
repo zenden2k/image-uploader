@@ -21,7 +21,7 @@ MonitorEnumerator::MonitorInfo* MonitorEnumerator::getByIndex(size_t index) {
 
 BOOL CALLBACK MonitorEnumerator::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
     MonitorInfo info;
-    MonitorEnumerator* pthis = reinterpret_cast<MonitorEnumerator*>(dwData);
+    auto pthis = reinterpret_cast<MonitorEnumerator*>(dwData);
     info.monitor = hMonitor;
     if (lprcMonitor) {
         info.rect = *lprcMonitor;

@@ -24,8 +24,8 @@ bool LocalFileCache::ensureHistoryParsed() {
 bool LocalFileCache::parseHistory() {
     std::lock_guard<std::recursive_mutex> guard(mutex_);
     std::vector<std::string> files;
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    std::string historyFolder = Settings.SettingsFolder + "/History/";
+    auto settings = ServiceLocator::instance()->basicSettings();
+    std::string historyFolder = settings->SettingsFolder + "/History/";
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 
     pcrepp::Pcre regexp("^history.+\\.xml$");

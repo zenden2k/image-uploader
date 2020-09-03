@@ -3,8 +3,6 @@
 #include <windows.h>
 #include <winreg.h>
 
-#include <string.h>
-//#include "Func/MyUtils.h"
 #define CLASS_NAME_LENGTH 255
 
 /* IMPORTANT NOTES ABOUT CREGISTRY:

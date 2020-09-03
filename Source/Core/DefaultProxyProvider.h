@@ -18,7 +18,7 @@ protected:
     bool configObtained_;
     bool openWinHttpSession();
     void closeWinHttpSession();
-    std::string extractProxyForUrlFromList(const std::string& list, const std::string& url);
+    static std::string extractProxyForUrlFromList(const std::string& list, const std::string& url);
     bool obtainProxyConfig();
     CString proxyForUrlErrorToString(DWORD errorCode) const;
     DISALLOW_COPY_AND_ASSIGN(DefaultProxyProvider);

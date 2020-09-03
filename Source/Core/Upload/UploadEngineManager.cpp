@@ -44,7 +44,7 @@ UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, st
 UploadEngineManager::~UploadEngineManager()
 {
     unloadUploadEngines();
-    for (auto sync : serverSyncs_)
+    for (auto& sync : serverSyncs_)
     {
         delete sync.second;
     }

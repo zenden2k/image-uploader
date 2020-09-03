@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <streams.h>
 
-// некий COM-object для передачи в callback-функция GraphBulder, что-бы не грузить субтитры 
+// некий COM-object для передачи в callback-функция GraphBulder, чтобы не грузить субтитры 
 class NoDirectVobSub : public IAMGraphBuilderCallback
 {
     int Refs;
