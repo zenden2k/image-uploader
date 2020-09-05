@@ -38,9 +38,8 @@ int CDefaultUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadPa
         UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
         return 0;
     }
-    else {
-        return doUpload(task, params);
-    }
+    
+    return doUpload(task, params);
 }
 
 int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params) {
@@ -68,8 +67,8 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
 }
 
 bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params) {
-    std::string fileName = task->getFileName();
-    std::string displayName = task->getDisplayName();
+    const std::string fileName = task->getFileName();
+    const std::string displayName = task->getDisplayName();
     if ( fileName.empty() ) {
         UploadError( true, "Filename should not be empty!", 0 );
         return false;
@@ -83,25 +82,19 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
     m_displayFileName = displayName;
 
     prepareUpload(params);
-    std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
+    const std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
     m_Vars["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
-    std::string OnlyFname;
-    OnlyFname = IuCoreUtils::ExtractFileNameNoExt(displayName);
+    const std::string OnlyFname = IuCoreUtils::ExtractFileNameNoExt(displayName);
     m_Vars["_FILENAMEWITHOUTEXT"] = OnlyFname;
     m_Vars["_FILEEXT"] = FileExt;
 
-    bool actionsExecuteResult = executeActions();
-    if ( !actionsExecuteResult ) {
+    if ( !executeActions()) {
         return false;
     }
 
-    std::string m_ThumbUrl    = ReplaceVars( m_UploadData->ThumbUrlTemplate ); 
-    std::string m_ImageUrl    = ReplaceVars( m_UploadData->ImageUrlTemplate ); 
-    std::string m_DownloadUrl = ReplaceVars( m_UploadData->DownloadUrlTemplate ); 
-
-    params.ThumbUrl  = m_ThumbUrl;
-    params.DirectUrl = m_ImageUrl;
-    params.ViewUrl   = m_DownloadUrl;
+    params.ThumbUrl  = ReplaceVars(m_UploadData->ThumbUrlTemplate);
+    params.DirectUrl = ReplaceVars(m_UploadData->ImageUrlTemplate);
+    params.ViewUrl   = ReplaceVars(m_UploadData->DownloadUrlTemplate);
     params.EditUrl = ReplaceVars(m_UploadData->EditUrlTemplate);
     params.DeleteUrl = ReplaceVars(m_UploadData->DeleteUrlTemplate);
     return true;
@@ -137,14 +130,13 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
             m_Vars["_PASSWORD"] = li.Password;
         }
     }
-    int n = rand() % (256 * 256);
+    const int n = rand() % (256 * 256);
     char nStr[10];
     sprintf(nStr, "%05d", n);
-    std::thread::id currentThreadId = std::this_thread::get_id();
     m_Vars["_RAND16BITS"] = nStr;
-    m_Vars["_THUMBWIDTH"] = IuCoreUtils::toString(params.thumbWidth);
-    m_Vars["_THUMBHEIGHT"] = IuCoreUtils::toString(params.thumbHeight);
-    m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(currentThreadId);
+    m_Vars["_THUMBWIDTH"] = std::to_string(params.thumbWidth);
+    m_Vars["_THUMBHEIGHT"] = std::to_string(params.thumbHeight);
+    m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
     m_NetworkClient->enableResponseCodeChecking(false);
     m_NetworkClient->setLogger(this);
 }
@@ -178,8 +170,8 @@ bool CDefaultUploadEngine::executeActions() {
                 else {
                     errorType = etActionRepeating;
                     ErrorStr += "retrying last action... ";
-                    ErrorStr += "(" + IuCoreUtils::toString(NumOfTries + 1)
-                        + " of " + IuCoreUtils::toString(m_UploadData->Actions[i].RetryLimit) + ")";
+                    ErrorStr += "(" + std::to_string(NumOfTries + 1)
+                        + " of " + std::to_string(m_UploadData->Actions[i].RetryLimit) + ")";
                 }
                 UploadError( false, ErrorStr, 0, false );
             }
@@ -283,7 +275,7 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
 
                 DebugVars += "Regex: " + actionRegExp.Pattern + "\r\n\r\n";
                 if (reg.search(*data)) {
-                    reg.matches();
+                    //reg.matches();
                     if (actionRegExp.Variables.empty()) {
                         DebugVars += "Variables list is empty!\r\n";
                     }
@@ -434,7 +426,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
         }
         else
         {
-            error += "Server response code: " + IuCoreUtils::toString(StatusCode) + "\r\n";
+            error += "Server response code: " + std::to_string(StatusCode) + "\r\n";
             error += m_NetworkClient->errorString();
         }
         if (!StatusCode)

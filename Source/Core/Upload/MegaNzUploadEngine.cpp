@@ -214,7 +214,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
         }
         else {
             proxy_->setProxyType(MegaProxy::PROXY_CUSTOM);
-            proxy_->setProxyURL((std::string("http://") + Settings.ConnectionSettings.ServerAddress + ":" + IuCoreUtils::toString(Settings.ConnectionSettings.ProxyPort) + "/").c_str());
+            proxy_->setProxyURL((std::string("http://") + Settings.ConnectionSettings.ServerAddress + ":" + std::to_string(Settings.ConnectionSettings.ProxyPort) + "/").c_str());
             if (Settings.ConnectionSettings.NeedsAuth) {
                 proxy_->setCredentials(Settings.ConnectionSettings.ProxyUser.c_str(), std::string(Settings.ConnectionSettings.ProxyPassword).c_str());
             }

@@ -113,7 +113,7 @@ IDI_ICONWARNING         ICON                    "res\\Warning.ico"
 
 IDI_ERRORICON           ICON                    "res\\Error.ico"
 
-IDI_ICONINFOBIG         ICON                    "D:\\Develop\\imageuploader-1.3.2-vs2013\\image-uploader\\Source\\res\\icon-infobig.ico"
+IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -3,6 +3,7 @@
 
 #include "atlheaders.h"
 #include <vector>
+#include <string>
 
 namespace Gdiplus {
     class Bitmap;

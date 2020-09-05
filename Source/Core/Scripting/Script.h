@@ -35,7 +35,7 @@ class Script {
         void setCurrentTopLevelFileName(const std::string& fileName);
     protected:
         virtual void PrintCallback(const std::string& output);
-        void checkCallingThread();
+        void checkCallingThread() const;
         bool load(const std::string& fileName);
         void FlushSquirrelOutput();
         virtual bool preLoad();

@@ -8,7 +8,7 @@
 
 class NetworkClient;
 
-class SearchGoogleImages: public SearchByImage  {
+class SearchGoogleImages: public SearchByImageTask  {
     public:
         explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:

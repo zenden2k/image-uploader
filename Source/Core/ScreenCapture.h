@@ -130,8 +130,8 @@ public:
     void setSource(HBITMAP src);
     bool captureRegion(CScreenshotRegion* region);
     void setDelay(int msec);
-    void setMonitorMode(MonitorMode monitorMode, HMONITOR monitor = NULL);
-    std::shared_ptr<Gdiplus::Bitmap> capturedBitmap() const;
+    void setMonitorMode(MonitorMode monitorMode, HMONITOR monitor = nullptr);
+    [[nodiscard]] std::shared_ptr<Gdiplus::Bitmap> capturedBitmap() const;
     Gdiplus::Bitmap* releaseCapturedBitmap();
 
 private:

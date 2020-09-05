@@ -35,6 +35,7 @@ CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, SearchByImage
     fileName_ = fileName;
     cancelPressed_ = false;
     searchEngine_ = searchEngine;
+    finished_ = false;
 }
 
 CSearchByImageDlg::~CSearchByImageDlg()
@@ -56,29 +57,27 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     CommonGuiSettings& Settings = *ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
-    seeker_ = SearchByImage::createSearchEngine(std::make_shared<NetworkClientFactory>(), uploadManager_, searchEngine_, Settings.temporaryServer, W2U(fileName_));
-    seeker_->setOnFinished(std::bind(&CSearchByImageDlg::onSeekerFinished, this, _1, _2));
+    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, Settings.temporaryServer, W2U(fileName_));
+    seeker_->onTaskFinished.connect(std::bind(&CSearchByImageDlg::onSeekerFinished, this, _1, _2, _3));
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
-    seeker_->start();
+    ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
     return 1;  // Let the system set the focus
 }
 
 LRESULT CSearchByImageDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     cancelPressed_ = true;
-    seeker_->stop();
+    seeker_->cancel();
 
-    if (!seeker_->isRunning()) {
+    if (finished_) {
         EndDialog(IDCANCEL);
     }
     return 0;
 }
 
-bool CSearchByImageDlg::IsRunning() {
-    return false;
-}
 
-void CSearchByImageDlg::onSeekerFinished(bool success, const std::string& msg) {
+void CSearchByImageDlg::onSeekerFinished(SearchByImageTask* task, bool success, const std::string& msg) {
+    finished_ = true;
     wndAnimation_.ShowWindow(SW_HIDE);
     if (success) {
         EndDialog(IDOK);

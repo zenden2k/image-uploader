@@ -18,5 +18,4 @@ bjam  --with-filesystem --toolset=msvc -j4 debug release link=static runtime-lin
 Building boost 1.57 with VS 2017:
 https://stackoverflow.com/questions/41464356/build-boost-with-msvc-14-1-vs2017-rc
 
-#b2 toolset=msvc-14.0 
-bjam  --with-filesystem --toolset=msvc-14.0  -j4 debug release link=static runtime-link=shared 
+./b2 --with-filesystem --with-locale -j4 debug release link=static runtime-link=static 

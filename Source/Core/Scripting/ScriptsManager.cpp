@@ -68,7 +68,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
     }
     ServerSync* serverSync = getServerSync(fileName);
     Script* newPlugin;
-    if (type == TypeUploadFilterScript)
+    if (type == ScriptType::TypeUploadFilterScript)
     {
         newPlugin = new UploadFilterScript(fileName, serverSync, networkClientFactory_);
     } else

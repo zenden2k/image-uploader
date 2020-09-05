@@ -82,6 +82,7 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
+	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/win32/)
 endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})

@@ -31,7 +31,7 @@
 
 // TODO: Use pimpl
 CFileDownloader::CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading)
-    : tempDirectory_(tempDirectory), networkClientFactory_(factory), createFileBeforeDownloading_(createFilesBeforeDownloading)
+    : tempDirectory_(tempDirectory), networkClientFactory_(std::move(factory)), createFileBeforeDownloading_(createFilesBeforeDownloading)
 {
     maxThreads_ = 3;
     stopSignal_ = false;

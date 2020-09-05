@@ -22,7 +22,7 @@ void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
 
 
     if (errorInfo.ActionIndex != -1)
-        infoText += "Action: #" + IuCoreUtils::toString(errorInfo.ActionIndex);
+        infoText += "Action: #" + std::to_string(errorInfo.ActionIndex);
 
 
     if (!errorInfo.error.empty()) {

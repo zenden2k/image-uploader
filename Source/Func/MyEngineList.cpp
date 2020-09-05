@@ -72,9 +72,10 @@ bool CMyEngineList::loadFromFile(const CString& filename)
 }
 
 HICON CMyEngineList::getIconForServer(const std::string& name) {
-    auto iconIt = serverIcons_.find(name);
-    if ( iconIt != serverIcons_.end() )
+    const auto iconIt = serverIcons_.find(name);
+    if (iconIt != serverIcons_.end()) {
         return iconIt->second;
+    }
     
     CUploadEngineData *ued = CUploadEngineList::byName(name);
 
@@ -82,7 +83,7 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     CString serverName = Utf8ToWCstring(name);
     serverName.Replace(_T("\\"), _T("_"));
     serverName.Replace(_T("/"), _T("_"));
-    CString dataFolder = IuCommonFunctions::GetDataFolder();
+    const CString dataFolder = IuCommonFunctions::GetDataFolder();
     CString iconFileName = dataFolder  + _T("Favicons\\")+ serverName +_T(".ico");
 
     if ( !WinUtils::FileExists(iconFileName) ) {
@@ -99,14 +100,14 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
         
     }
 
-    int w = GetSystemMetrics(SM_CXSMICON);
-    int h = GetSystemMetrics(SM_CYSMICON);
+    const int w = GetSystemMetrics(SM_CXSMICON);
+    const int h = GetSystemMetrics(SM_CYSMICON);
     if (LoadIconWithScaleDownFunc_) {
         LoadIconWithScaleDownFunc_(nullptr, iconFileName, w, h, &icon);
     }
 
     if (!icon) {
-        icon = reinterpret_cast<HICON>(LoadImage(0, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
+        icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
     }
     
     if ( !icon ) {
@@ -126,5 +127,5 @@ CString CMyEngineList::getIconNameForServer(const std::string& name) {
             return CString();
         }
     }
-    return Utf8ToWCstring( IuCoreUtils::ExtractFileName(WCstringToUtf8(iconFileName)) );
+    return U2W( IuCoreUtils::ExtractFileName(W2U(iconFileName)) );
 }

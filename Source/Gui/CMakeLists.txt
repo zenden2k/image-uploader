@@ -12,6 +12,7 @@ set(SRC_LIST
     ../Core/Scripting/Script.cpp
     ../Core/Scripting/ScriptsManager.cpp
     ../Core/SearchByImage.cpp
+	../Core/SearchByImageTask.cpp
     ../Core/SearchGoogleImages.cpp
     ../Core/SearchYandexImages.cpp
     ../Core/Settings/CommonGuiSettings.cpp
@@ -181,6 +182,7 @@ set(HEADER_LIST
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
     ../Core/SearchByImage.h
+	../Core/SearchByImageTask.h
     ../Core/SearchGoogleImages.h
     ../Core/SearchYandexImages.h
     ../Core/Settings/CommonGuiSettings.h

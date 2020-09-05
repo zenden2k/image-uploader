@@ -36,8 +36,8 @@ public:
     std::mutex& getEntryMutex();
     void write(LogMsgType MsgType, const std::string&  Sender, const std::string&  Msg, const std::string&  Info, const std::string&  FileName) override;
     void write(LogMsgType MsgType, const wchar_t*  Sender, const wchar_t*   Msg, const wchar_t*  Info, const wchar_t*  FileName) override;
-    std::vector<LogEntry>::const_iterator begin() const;
-    std::vector<LogEntry>::const_iterator end() const;
+    [[nodiscard]] std::vector<LogEntry>::const_iterator begin() const;
+    [[nodiscard]] std::vector<LogEntry>::const_iterator end() const;
 private:
     std::vector<LogEntry> entries_;
     std::vector<Listener*> listeners_;

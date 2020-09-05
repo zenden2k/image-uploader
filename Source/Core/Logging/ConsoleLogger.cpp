@@ -10,7 +10,7 @@
 void ConsoleLogger::write(LogMsgType MsgType, const std::string&  FileName, const std::string& Sender, const std::string& Msg, const std::string& Info) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
 //#ifdef _WIN32
-    std::wcerr << IuCoreUtils::Utf8ToWstring(Msg) << std::endl;;
+    std::wcerr << IuCoreUtils::Utf8ToWstring(Msg) << std::endl;
 /*#else
     std::cerr << IuCoreUtils::Utf8ToSystemLocale(Msg) << std::endl;
 #endif*/

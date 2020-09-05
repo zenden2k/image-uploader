@@ -24,6 +24,7 @@
 
 #include <deque>
 #include <condition_variable>
+#include <functional>
 
 #include "atlheaders.h"
 #include "3rdpart/thread.h"

@@ -4,12 +4,16 @@
 #include "Utils/CryptoUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 
-SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName) :SearchByImage(fileName),
+SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName): SearchByImageTask(fileName),
     networkClientFactory_(std::move(networkClientFactory))
 {
 }
 
 void SearchGoogleImages::run() {
+    if (stopSignal_) {
+        finish(false, "Aborted by user.");
+        return;
+    }
     auto nc = networkClientFactory_->create();
     using namespace std::placeholders;
     nc->setProgressCallback(std::bind(&SearchGoogleImages::progressCallback, this, _1, _2, _3, _4, _5));
@@ -36,7 +40,7 @@ void SearchGoogleImages::run() {
             return;
         }
 
-        std::string url = nc->responseHeaderByName("Location");
+        const std::string url = nc->responseHeaderByName("Location");
 
         if (url.empty()) {
             finish(false, "Server sent unexpected result.");
@@ -61,7 +65,7 @@ bool SearchGoogleImages::base64EncodeCompat(const std::string& file, std::string
         return false;
     }
 
-    for (unsigned int i = 0; i < output.length(); i++) {
+    for (size_t i = 0; i < output.length(); i++) {
         if (output[i] == '+') {
             output[i] = '-';
         } else if (output[i] == '/') {

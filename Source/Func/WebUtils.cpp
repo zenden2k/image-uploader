@@ -10,7 +10,7 @@ namespace WebUtils {
             return true;
         }
         
-        std::string utf8Text = WCstringToUtf8(text);
+        const std::string utf8Text = WCstringToUtf8(text);
         pcrepp::Pcre regexp2("^(http|https|ftp)://", "imcu");
         if ( regexp2.search(utf8Text, 0) ) { 
             if ( regexp2.get_match_start() == 0) {

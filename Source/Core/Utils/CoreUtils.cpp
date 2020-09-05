@@ -119,7 +119,6 @@ bool FileExists(const std::string& fileName)
     if (res == static_cast<DWORD>(-1)) {
         switch (GetLastError()) {
         case ERROR_FILE_NOT_FOUND:
-            return false;
         case ERROR_PATH_NOT_FOUND:
             return false;
         case ERROR_ACCESS_DENIED:
@@ -257,14 +256,14 @@ std::string ExtractFileNameNoExt(const std::string& fileName)
 
 std::string ExtractFileNameFromUrl(const std::string& url)
 {
-    uriparser::Uri uri(url);
+    const uriparser::Uri uri(url);
     return ExtractFileName(uri.path());
 }
 
 std::string incrementFileName(const std::string& originalFileName, int counter) {
-    std::string ext = ExtractFileExt(originalFileName);
+    const std::string ext = ExtractFileExt(originalFileName);
     std::string name = ExtractFileNameNoExt(originalFileName);
-    name += "(" + toString(counter) + ")";
+    name += "(" + std::to_string(counter) + ")";
     if (!ext.empty()) {
         name += "." + ext;
     }
@@ -274,9 +273,7 @@ std::string incrementFileName(const std::string& originalFileName, int counter) 
 
 std::string toString(int value)
 {
-    char buffer[256];
-    sprintf(buffer, "%d", value);
-    return buffer;
+    return std::to_string(value);
 }
 
 std::string toString(unsigned int value)
@@ -496,22 +493,24 @@ std::string fileSizeToString(int64_t nBytes)
 std::string toString(double value, int precision)
 {
     char buffer[100];
-    sprintf(buffer, ("%0." + toString(precision) + "f").c_str(), value);
+    sprintf(buffer, ("%0." + std::to_string(precision) + "f").c_str(), value);
     return buffer;
 }
 
 std::string GetDefaultExtensionForMimeType(const std::string& mimeType) {
-    std::map<std::string, std::string> mimeToExt;
-    mimeToExt["image/gif"] = "gif";
-    mimeToExt["image/png"] = "png";
-    mimeToExt["image/jpeg"] = "jpg";
-    mimeToExt["image/webp"] = "webp";
-
-    auto found = mimeToExt.find(mimeType);
-    if ( found != mimeToExt.end() ) {
-        return found->second;
+	if (mimeType == "image/gif") {
+        return "gif";
+	}
+	if (mimeType == "image/png") {
+        return "png";
+	}
+	if (mimeType == "image/jpeg") {
+        return "jpg";
     }
-    return std::string();
+	if (mimeType == "image/webp") {
+	    return "webp";
+    }
+    return {};
 }
 
 std::string ThreadIdToString(const std::thread::id& id)

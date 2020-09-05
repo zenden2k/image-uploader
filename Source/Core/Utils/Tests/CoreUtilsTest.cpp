@@ -121,11 +121,11 @@ TEST_F(CoreUtilsTest, stringToint64_t)
 
 TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType) 
 {
-    EXPECT_EQ(GetDefaultExtensionForMimeType("image/gif"), "gif");
-    EXPECT_EQ(GetDefaultExtensionForMimeType("image/png"), "png");
-    EXPECT_EQ(GetDefaultExtensionForMimeType("image/jpeg"), "jpg");
-    EXPECT_EQ(GetDefaultExtensionForMimeType("image/webp"), "webp");
-    EXPECT_EQ(GetDefaultExtensionForMimeType("application/unknown"), "");
+    EXPECT_EQ("gif", GetDefaultExtensionForMimeType("image/gif"));
+    EXPECT_EQ("png", GetDefaultExtensionForMimeType("image/png"));
+    EXPECT_EQ("jpg", GetDefaultExtensionForMimeType("image/jpeg"));
+    EXPECT_EQ("webp", GetDefaultExtensionForMimeType("image/webp"));
+    EXPECT_EQ("", GetDefaultExtensionForMimeType("application/unknown"));
 }
 
 TEST_F(CoreUtilsTest, fileSizeToString) 

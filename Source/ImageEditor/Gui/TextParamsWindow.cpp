@@ -123,9 +123,9 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     textToolbar_.SetButtonStructSize();
     textToolbar_.SetButtonSize(30,18);
     textToolbar_.SetImageList(toolbarImageList_);
-    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, 0, 0);
-    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 1, 0, 0);
-    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 2, 0, 0);
+    textToolbar_.AddButton(IDC_BOLD, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, nullptr, 0);
+    textToolbar_.AddButton(IDC_ITALIC, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 1, nullptr, 0);
+    textToolbar_.AddButton(IDC_UNDERLINE, TBSTYLE_CHECK|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 2, nullptr, 0);
     textToolbar_.ShowWindow(SW_SHOW);
 
     return TRUE;

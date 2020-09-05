@@ -262,9 +262,9 @@ public:
     {
         temp_.clear();
         if(name == "THUMBWIDTH")
-            temp_= IuCoreUtils::toString(thumbWidth);
+            temp_= std::to_string(thumbWidth);
         else if (name == "THUMBHEIGHT")
-            temp_ =  IuCoreUtils::toString(thumbHeight);
+            temp_ =  std::to_string(thumbHeight);
         return temp_;
     }
 

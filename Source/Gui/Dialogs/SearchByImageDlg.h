@@ -48,15 +48,15 @@ class CSearchByImageDlg :
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        bool IsRunning();
 private:
     CString fileName_;
-    std::unique_ptr<SearchByImage> seeker_;
+    std::shared_ptr<SearchByImageTask> seeker_;
     bool cancelPressed_;
+    std::atomic_bool finished_;
     CProgressRingControl wndAnimation_;
     SearchByImage::SearchEngine searchEngine_;
     UploadManager* uploadManager_;
-    void onSeekerFinished(bool success, const std::string& msg);
+    void onSeekerFinished(SearchByImageTask* task, bool success, const std::string& msg);
 };
 
 #endif // STATUSDLG_H

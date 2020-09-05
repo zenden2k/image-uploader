@@ -147,13 +147,13 @@ bool Script::load(const std::string& fileName)
 
 void Script::PrintCallback(const std::string& output)
 {
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     LOG(WARNING) << IuCoreUtils::ExtractFileName(fileName_) << " [ThreadId=" << IuCoreUtils::ThreadIdToString(threadId) << "]\r\n" << output;
 }
 
-void Script::checkCallingThread()
+void Script::checkCallingThread() const
 {
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     if (threadId != owningThread_)
     {
         throw std::runtime_error("Script methods should be called only in the owning thread.");

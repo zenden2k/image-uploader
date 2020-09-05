@@ -8,16 +8,16 @@
 
 std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {   
     std::lock_guard<std::mutex> guard(dialogMutex_);
-    CString wFileName = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + Utf8ToWstring("captcha").c_str());
+    const CString wFileName = WinUtils::GetUniqFileName(AppParams::instance()->tempDirectoryW() + Utf8ToWstring("captcha").c_str());
 
     nm->setOutputFile(W2U(wFileName));
     if (!nm->doGet(url))
-        return "";
+        return {};
     CInputDialog dlg(_T("Image Uploader"), TR("Please enter the text you see in the image:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()), wFileName);
-    nm->setOutputFile("");
+    nm->setOutputFile({});
     if (dlg.DoModal() == IDOK)
         return W2U(dlg.getValue());
-    return "";
+    return {};
 }
 
 std::string WtlScriptDialogProvider::inputDialog(const std::string& text, const std::string& defaultValue) {
@@ -27,5 +27,5 @@ std::string WtlScriptDialogProvider::inputDialog(const std::string& text, const 
     if (dlg.DoModal(GetActiveWindow()) == IDOK) {
         return W2U(dlg.getValue());
     }
-    return "";
+    return {};
 }

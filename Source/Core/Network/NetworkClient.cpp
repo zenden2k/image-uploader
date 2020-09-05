@@ -588,7 +588,7 @@ void NetworkClient::private_checkResponse()
         errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
         
         if (code) {
-            errorDescr += "Response code: " + IuCoreUtils::toString(code) + "\r\n";
+            errorDescr += "Response code: " + std::to_string(code) + "\r\n";
         }
         std::string errDescr = errorString();
         if (!errDescr.empty()) {

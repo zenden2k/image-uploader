@@ -14,7 +14,7 @@
 
 
 SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer)
-    :SearchByImage(fileName),
+    :SearchByImageTask(fileName),
     temporaryServer_(temporaryServer),
     uploadManager_(uploadManager)
 {
@@ -22,8 +22,8 @@ SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::
     uploadOk_ = false;
 }
 
-void SearchYandexImages::stop() {
-    SearchByImage::stop();
+void SearchYandexImages::cancel() {
+    SearchByImageTask::cancel();
     currentUploadTask_->stop();
 }
 
@@ -70,6 +70,10 @@ void SearchYandexImages::stop() {
 */
 
 void SearchYandexImages::run() {
+    if (stopSignal_) {
+        finish(false, "Aborted by user.");
+        return;
+    }
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
     std::shared_ptr<UploadSession> uploadSession(new UploadSession(false));
@@ -94,7 +98,7 @@ void SearchYandexImages::run() {
 
     if (uploadOk_) {
         NetworkClient nc;
-        std::string urlToOpen = "https://yandex.com/images/search?rpt=imageview&img_url=" + nc.urlEncode(uploadedImageUrl_);
+        const std::string urlToOpen = "https://yandex.com/images/search?rpt=imageview&img_url=" + nc.urlEncode(uploadedImageUrl_);
         if (!DesktopUtils::ShellOpenUrl(urlToOpen)) {
             finish(false, "Unable to launch default web browser.");
             return;
@@ -102,6 +106,7 @@ void SearchYandexImages::run() {
         
     } else {
         finish(false, uploadErrorMessage_);
+        return;
     }
 
     finish(true);
@@ -111,7 +116,7 @@ void SearchYandexImages::run() {
 void SearchYandexImages::onFileFinished(UploadTask* task, bool ok) {
     
     if (ok) {
-        std::string url = task->uploadResult()->directUrl;
+        const std::string url = task->uploadResult()->directUrl;
         if (url.empty()) {
             uploadOk_ = false;
             uploadErrorMessage_ = "Image hosting server doesn't support direct links.";
