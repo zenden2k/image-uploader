@@ -47,7 +47,7 @@ class CFileDownloader
         std::function<void()> onQueueFinished_;
         std::function<void(INetworkClient*)> onConfigureNetworkClient_;
     public:
-        CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading = true);
+        CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, std::string tempDirectory, bool createFilesBeforeDownloading = true);
         virtual ~CFileDownloader();
         void addFile(const std::string& url, void* id, const std::string& referer = std::string());
         void start();

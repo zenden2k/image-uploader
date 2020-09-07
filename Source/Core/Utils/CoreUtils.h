@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _IU_CORE_UTILS_H
-#define _IU_CORE_UTILS_H
+#ifndef IU_CORE_UTILS_H
+#define IU_CORE_UTILS_H
 
 #pragma once
 

@@ -5,7 +5,7 @@ MonitorEnumerator::MonitorEnumerator() {
 }
 
 BOOL MonitorEnumerator::enumDisplayMonitors(HDC hdc, LPCRECT lprcClip) {
-    return EnumDisplayMonitors(hdc, lprcClip, MonitorEnumProc, reinterpret_cast<LPARAM>(this));
+    return EnumDisplayMonitors(hdc, lprcClip, monitorEnumProc, reinterpret_cast<LPARAM>(this));
 }
 
 size_t MonitorEnumerator::getCount() const {
@@ -19,9 +19,9 @@ MonitorEnumerator::MonitorInfo* MonitorEnumerator::getByIndex(size_t index) {
     return nullptr;
 }
 
-BOOL CALLBACK MonitorEnumerator::MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
+BOOL CALLBACK MonitorEnumerator::monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData) {
     MonitorInfo info;
-    auto pthis = reinterpret_cast<MonitorEnumerator*>(dwData);
+    auto* pthis = reinterpret_cast<MonitorEnumerator*>(dwData);
     info.monitor = hMonitor;
     if (lprcMonitor) {
         info.rect = *lprcMonitor;

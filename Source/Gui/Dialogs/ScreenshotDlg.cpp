@@ -33,18 +33,10 @@ CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
 
-BOOL SetClientRect(HWND hWnd, int x, int y)
-{
-    RECT rect = {0,0,x,y}, rect2;
-    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), (BOOL)GetMenu(hWnd), GetWindowLong(hWnd, GWL_EXSTYLE));
-    GetWindowRect(hWnd, &rect2);
-    return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
-}
-
 #define LOADICO16(x) (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(x), IMAGE_ICON    , 16,16,0)
 LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CommandBox.SubclassWindow(GetDlgItem(IDC_COMMANDBOX));
     RECT ClientRect;
     GetClientRect(&ClientRect);
@@ -64,19 +56,19 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDC_DELAYLABEL, "Timeout:");
     TRC(IDC_SECLABEL, "sec");
     TRC(IDC_OPENSCREENSHOTINEDITORCHECKBOX, "Open screenshot in the editor");
-    GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, Settings.ScreenshotSettings.OpenInEditor);
-    SetDlgItemInt(IDC_DELAYEDIT, Settings.ScreenshotSettings.Delay);
+    GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, settings->ScreenshotSettings.OpenInEditor);
+    SetDlgItemInt(IDC_DELAYEDIT, settings->ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
 
     m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
-    int itemIndex = -1;
+
     int selectedIndex = 0;
     
-    itemIndex = m_monitorCombobox.AddString(TR("Current monitor"));
+    int itemIndex = m_monitorCombobox.AddString(TR("Current monitor"));
 
     if (itemIndex >= 0) {
         m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kCurrentMonitor));
-        if (Settings.ScreenshotSettings.MonitorMode == kCurrentMonitor) {
+        if (settings->ScreenshotSettings.MonitorMode == kCurrentMonitor) {
             selectedIndex = itemIndex;
         }
     }
@@ -85,7 +77,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     if (itemIndex >= 0) {
         m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kAllMonitors));
-        if (Settings.ScreenshotSettings.MonitorMode == kAllMonitors) {
+        if (settings->ScreenshotSettings.MonitorMode == kAllMonitors) {
             selectedIndex = itemIndex;
         }
     }
@@ -103,7 +95,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             itemIndex = m_monitorCombobox.AddString(itemTitle);
             if (itemIndex >= 0) {
                 m_monitorCombobox.SetItemData(itemIndex, static_cast<DWORD_PTR>(kSelectedMonitor + i));
-                if (Settings.ScreenshotSettings.MonitorMode == kSelectedMonitor + i) {
+                if (settings->ScreenshotSettings.MonitorMode == kSelectedMonitor + i) {
                     selectedIndex = itemIndex;
                 }
             }

@@ -2,6 +2,7 @@
 #define IU_CORE_SCREENCAPTURE_UTILS
 
 #include <vector>
+
 #include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 
@@ -10,20 +11,20 @@ class MonitorEnumerator {
 public:
     MonitorEnumerator();
     BOOL enumDisplayMonitors(HDC hdc, LPCRECT lprcClip);
-    size_t getCount() const;
+    [[nodiscard]] size_t getCount() const;
 
     struct MonitorInfo {
-        HMONITOR monitor;
+        HMONITOR monitor = nullptr;
         CRect rect;
         CString deviceName;
     };
 
-    std::vector<MonitorInfo>::const_iterator begin();
-    std::vector<MonitorInfo>::const_iterator end();
+    [[nodiscard]] std::vector<MonitorInfo>::const_iterator begin();
+    [[nodiscard]] std::vector<MonitorInfo>::const_iterator end();
 
     MonitorInfo* getByIndex(size_t index);
 protected:
-    static BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
+    static BOOL CALLBACK monitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData);
     std::vector<MonitorInfo> monitors_;
     DISALLOW_COPY_AND_ASSIGN(MonitorEnumerator);
 };

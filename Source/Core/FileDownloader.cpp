@@ -30,8 +30,8 @@
 #include "Network/NetworkClient.h"
 
 // TODO: Use pimpl
-CFileDownloader::CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, bool createFilesBeforeDownloading)
-    : tempDirectory_(tempDirectory), networkClientFactory_(std::move(factory)), createFileBeforeDownloading_(createFilesBeforeDownloading)
+CFileDownloader::CFileDownloader(std::shared_ptr<INetworkClientFactory> factory, std::string tempDirectory, bool createFilesBeforeDownloading)
+    : tempDirectory_(std::move(tempDirectory)), networkClientFactory_(std::move(factory)), createFileBeforeDownloading_(createFilesBeforeDownloading)
 {
     maxThreads_ = 3;
     stopSignal_ = false;
@@ -66,7 +66,7 @@ void CFileDownloader::start() {
     stopSignal_ = false;
     std::lock_guard<std::mutex> guard(mutex_);
 
-    size_t numThreads = std::min(maxThreads_ - runningThreads_, int(fileList_.size()));
+    const size_t numThreads = std::min(maxThreads_ - runningThreads_, int(fileList_.size()));
     for (size_t i = 0; i < numThreads; i++) {
         runningThreads_++;
         isRunning_ = true;

@@ -20,10 +20,11 @@
 
 #include "Gui/GuiTools.h"
 
-#include "Func/WinUtils.h"
+#include <cmath>
+
 #include <Shobjidl.h>
-#include <math.h>
-#include "resource.h"
+
+#include "Func/WinUtils.h"
 #include "Func/Library.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
@@ -622,5 +623,13 @@ int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType
         uType |= MB_RTLREADING;
     }
     return MessageBox(hWnd, lpText, lpCaption, uType);
+}
+
+BOOL SetClientRect(HWND hWnd, int x, int y)
+{
+    RECT rect = {0,0,x,y}, rect2;
+    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), (BOOL)GetMenu(hWnd), GetWindowLong(hWnd, GWL_EXSTYLE));
+    GetWindowRect(hWnd, &rect2);
+    return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }
 };

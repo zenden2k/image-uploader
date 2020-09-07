@@ -2,7 +2,7 @@
 #define IU_CORE_SERVERLISTMANAGER_H
 
 #include <string>
-#include <map>
+
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/UploadEngine.h"
 

@@ -28,6 +28,7 @@
 #include "3rdpart/GdiplusH.h"
 
 namespace ScreenCapture {
+
 HRGN GetWindowVisibleRegion(HWND wnd);
 
 enum CaptureMode { cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles, cmLastRegion };

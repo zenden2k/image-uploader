@@ -34,7 +34,7 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
@@ -67,7 +67,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     CString memoText;
     
-    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ Settings.getSettingsFileName() + _T("\r\n\r\n");
+    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ settings->getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";

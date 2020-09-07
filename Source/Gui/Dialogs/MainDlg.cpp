@@ -732,9 +732,9 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
-    SearchByImage::SearchEngine se = SearchByImage::seGoogle;
+    SearchByImage::SearchEngine se = SearchByImage::SearchEngine::seGoogle;
     if (wID == MENUITEM_SEARCHBYIMGYANDEX) {
-        se = SearchByImage::seYandex;
+        se = SearchByImage::SearchEngine::seYandex;
     }
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {

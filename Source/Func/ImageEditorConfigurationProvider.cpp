@@ -4,33 +4,33 @@
 
 ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    penSize_ = Settings.ImageEditorSettings.PenSize;
-    foregroundColor_ = Settings.ImageEditorSettings.ForegroundColor;
-    backgroundColor_ = Settings.ImageEditorSettings.BackgroundColor;
-    stepForegroundColor_ = Settings.ImageEditorSettings.StepForegroundColor;
-    stepBackgroundColor_ = Settings.ImageEditorSettings.StepBackgroundColor;
-    font_ =  Settings.ImageEditorSettings.Font;
-    roundingRadius_ = Settings.ImageEditorSettings.RoundingRadius;
-    allowAltTab_ = Settings.ImageEditorSettings.AllowAltTab;
-    searchEngine_ = Settings.ImageEditorSettings.SearchEngine;
-    fillTextBackground_ = Settings.ImageEditorSettings.FillTextBackground;
-    arrowMode_ = Settings.ImageEditorSettings.ArrowType;
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    penSize_ = settings->ImageEditorSettings.PenSize;
+    foregroundColor_ = settings->ImageEditorSettings.ForegroundColor;
+    backgroundColor_ = settings->ImageEditorSettings.BackgroundColor;
+    stepForegroundColor_ = settings->ImageEditorSettings.StepForegroundColor;
+    stepBackgroundColor_ = settings->ImageEditorSettings.StepBackgroundColor;
+    font_ =  settings->ImageEditorSettings.Font;
+    roundingRadius_ = settings->ImageEditorSettings.RoundingRadius;
+    allowAltTab_ = settings->ImageEditorSettings.AllowAltTab;
+    searchEngine_ = settings->ImageEditorSettings.SearchEngine;
+    fillTextBackground_ = settings->ImageEditorSettings.FillTextBackground;
+    arrowMode_ = settings->ImageEditorSettings.ArrowType;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ImageEditorSettings.PenSize = penSize_;
-    Settings.ImageEditorSettings.ForegroundColor = foregroundColor_;
-    Settings.ImageEditorSettings.BackgroundColor = backgroundColor_;
-    Settings.ImageEditorSettings.Font = font_;
-    Settings.ImageEditorSettings.RoundingRadius = roundingRadius_;
-    Settings.ImageEditorSettings.AllowAltTab = allowAltTab_;
-    Settings.ImageEditorSettings.SearchEngine = searchEngine_;
-    Settings.ImageEditorSettings.FillTextBackground = fillTextBackground_;
-    Settings.ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
-    Settings.ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
-    Settings.ImageEditorSettings.ArrowType = arrowMode_;
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ImageEditorSettings.PenSize = penSize_;
+    settings->ImageEditorSettings.ForegroundColor = foregroundColor_;
+    settings->ImageEditorSettings.BackgroundColor = backgroundColor_;
+    settings->ImageEditorSettings.Font = font_;
+    settings->ImageEditorSettings.RoundingRadius = roundingRadius_;
+    settings->ImageEditorSettings.AllowAltTab = allowAltTab_;
+    settings->ImageEditorSettings.SearchEngine = searchEngine_;
+    settings->ImageEditorSettings.FillTextBackground = fillTextBackground_;
+    settings->ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
+    settings->ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
+    settings->ImageEditorSettings.ArrowType = arrowMode_;
 }
 

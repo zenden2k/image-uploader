@@ -2,11 +2,9 @@
 #define CORE_SEARCHBYIMAGE_H
 
 #include <string>
-#include <atomic>
 #include <memory>
 #include <functional>
 
-#include "Core/Utils/CoreTypes.h"
 #include "Network/INetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
 #include "SearchByImageTask.h"
@@ -16,7 +14,7 @@ class UploadManager;
 
 class SearchByImage  {
     public:
-        enum SearchEngine { seGoogle, seYandex};
+        enum class SearchEngine { seGoogle, seYandex};
         static std::unique_ptr<SearchByImageTask> createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, 
             UploadManager* uploadManager, SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName);
         static std::string getSearchEngineDisplayName(SearchEngine se);

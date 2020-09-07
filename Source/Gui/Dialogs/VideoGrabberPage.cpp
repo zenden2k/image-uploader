@@ -156,7 +156,7 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 
 LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString fileName = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
     if ( fileName.IsEmpty() ) {
         return 0;
@@ -188,7 +188,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     int videoEngineIndex = videoEngineCombo_.GetCurSel();
     CString buf;
     videoEngineCombo_.GetLBText(videoEngineIndex, buf);
-    Settings.VideoSettings.Engine = buf;
+    settings->VideoSettings.Engine = buf;
 
     SetNextCaption(TR("Next >"));
     EnableNext(false);
@@ -308,7 +308,10 @@ int CVideoGrabberPage::ThreadTerminated()
     }
     ::InvalidateRect(grabInfoLabelHwnd, 0, true);
 
-    openInFolderLink_.ShowWindow(SW_SHOW);
+    if (IuCoreUtils::DirectoryExists(W2U(snapshotsFolder))) {
+        openInFolderLink_.ShowWindow(SW_SHOW);
+    }
+
     Terminated = true;
     KillTimer(1);
     IsStopTimer = false;

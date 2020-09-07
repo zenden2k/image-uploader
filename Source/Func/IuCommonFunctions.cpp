@@ -181,15 +181,15 @@ CString FindDataFolder()
 CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
 {
     CString result = templateStr;
-    time_t t = time(0);
+    time_t t = time(nullptr);
     tm* timeinfo = localtime(&t);
     CString indexStr;
     CString day, month, year;
     CString hours, seconds, minutes;
     indexStr.Format(_T("%03d"), index);
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::ThreadIdToString(threadId) + IuCoreUtils::int64_tToString(GetTickCount() + rand() % (100)))).c_str();
-    result.Replace(_T("%md5"), (LPCTSTR)md5);
+    result.Replace(_T("%md5"), md5);
     result.Replace(_T("%width%"), WinUtils::IntToStr(size.x));
     result.Replace(_T("%height%"), WinUtils::IntToStr(size.y));
     year.Format(_T("%04d"), 1900 + timeinfo->tm_year);

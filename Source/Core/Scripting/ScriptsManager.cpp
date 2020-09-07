@@ -41,8 +41,8 @@ ScriptsManager::~ScriptsManager()
 Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
-    bool UseExisting = false;
-    std::thread::id threadId = std::this_thread::get_id();
+    bool useExisting = false;
+    const std::thread::id threadId = std::this_thread::get_id();
     Script* plugin = nullptr;
     auto it = scripts_.find(threadId);
     if (it != scripts_.end()) {
@@ -51,11 +51,12 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
             plugin = it2->second;
         }
     }
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
-    if (plugin && (time(nullptr) - plugin->getCreationTime() < (Settings.DeveloperMode ? 3000 : 1000 * 60 * 5 )))
-        UseExisting = true;
+    const auto settings = ServiceLocator::instance()->basicSettings();
+    if (plugin && (time(nullptr) - plugin->getCreationTime() < (settings->DeveloperMode ? 3000 : 1000 * 60 * 5))) {
+        useExisting = true;
+    }
 
-    if ( plugin && UseExisting ) {
+    if ( plugin && useExisting ) {
         plugin->switchToThisVM();
         return plugin;
     }
@@ -100,7 +101,7 @@ void ScriptsManager::unloadScripts()
 void ScriptsManager::clearThreadData()
 {
     std::lock_guard<std::mutex> lock(scriptsMutex_);
-    std::thread::id threadId = std::this_thread::get_id();
+    const std::thread::id threadId = std::this_thread::get_id();
     auto it = scripts_.find(threadId);
     if (it != scripts_.end()) {
         for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {

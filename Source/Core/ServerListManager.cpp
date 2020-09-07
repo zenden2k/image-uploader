@@ -32,7 +32,7 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
     serversDirectory_ = serversDirectory;
 }
 
-ServerListManager::~ServerListManager(void)
+ServerListManager::~ServerListManager()
 {
 }
 
@@ -127,7 +127,7 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
     ServerSettingsStruct &ss = serversSettings_[newName][""];
     ss.setParam("directory",directory);
     ss.setParam("downloadUrl",downloadUrl);
-    ss.setParam("convertUncPath",IuCoreUtils::int64_tToString((int)convertUncPath));
+    ss.setParam("convertUncPath",std::to_string(static_cast<int>(convertUncPath)));
     ss.authData.DoAuth = false;
     createdServerName_ = newName;
     return uploadEngineList_->loadFromFile(outFile,serversSettings_);

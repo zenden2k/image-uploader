@@ -506,7 +506,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
     ImageEditorSettings.AllowAltTab = false;
     ImageEditorSettings.AllowEditingInFullscreen = false;
-    ImageEditorSettings.SearchEngine = SearchByImage::seGoogle;
+    ImageEditorSettings.SearchEngine = SearchByImage::SearchEngine::seGoogle;
     WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
     ImageEditorSettings.ArrowType = 0; // default arrow
 

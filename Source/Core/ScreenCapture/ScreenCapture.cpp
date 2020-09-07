@@ -119,7 +119,7 @@ HWND GetTopParent(HWND wnd) {
 bool GetScreenBounds(RECT &rect)
 {
     monitorsRects.clear();
-    EnumDisplayMonitors(0,0, MonitorEnumProc, 0);
+    EnumDisplayMonitors(0,0, monitorEnumProc, 0);
     CRect result;
     //POINT topLeft = {0,0};
     //POINT bottomRight ={0, 0};

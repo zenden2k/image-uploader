@@ -1,8 +1,3 @@
-// MainFrm.cpp : implmentation of the CMainFrame class
-//
-/////////////////////////////////////////////////////////////////////////////
-
-
 #include "ImageEditorWindow.h"
 
 #include <boost/format.hpp>
@@ -11,7 +6,6 @@
 #include "ImageEditor/Gui/Toolbar.h"
 #include "ColorsDelegate.h"
 #include "Core/Logging.h"
-#include "resource.h"
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -24,7 +18,7 @@ namespace ImageEditor {
     
 ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
-    currentDoc_ =  new ImageEditor::Document(bitmap, hasTransparentPixels);
+    currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
@@ -40,7 +34,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
             GuiTools::LocalizedMessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
         }
     }
-    currentDoc_ = new ImageEditor::Document(imageFileName);
+    currentDoc_ = std::make_unique<ImageEditor::Document>(imageFileName);
     sourceFileName_ = imageFileName;
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
@@ -64,9 +58,9 @@ void ImageEditorWindow::init()
     showAddToWizardButton_ = true;
     prevPenSize_ = 0;
     prevRoundingRadius_ = 0;
-    colorsDelegate_ = 0;
+    colorsDelegate_ = nullptr;
     imageQuality_ = 85;
-    searchEngine_ = SearchByImage::seGoogle;
+    searchEngine_ = SearchByImage::SearchEngine::seGoogle;
     currentDrawingTool_ = Canvas::dtNone;
     initialDrawingTool_ = Canvas::dtBrush;
     displayMode_ = wdmAuto;
@@ -195,7 +189,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
 }
 
 CString ImageEditorWindow::saveToTempFile() {
-    std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
+    const std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
     CString result;
     if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, 1, 95)) {
         return result;
@@ -213,9 +207,9 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
     updateRoundingRadiusSlider();
     updateFontSizeControls();
 
-    std::map<Canvas::DrawingToolType, SubMenuItem>::iterator submenuIter = subMenuItems_.find(dt);
+    const auto submenuIter = subMenuItems_.find(dt);
     if ( submenuIter != subMenuItems_.end() ) {
-        int buttonIndex = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
+        const int buttonIndex = verticalToolbar_.getItemIndexByCommand(selectedSubMenuItems_[submenuIter->second.parentCommand]);
         if ( buttonIndex != -1 ) {
             Toolbar::Item* item = verticalToolbar_.getItem(buttonIndex);
             if ( item ) {
@@ -246,7 +240,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
         createTooltip();
     } else if ( cropToolTip_ ) {
         ::DestroyWindow(cropToolTip_);
-        cropToolTip_ = 0;
+        cropToolTip_ = nullptr;
     }
     
 }
@@ -271,7 +265,6 @@ void ImageEditorWindow::onFontChanged(LOGFONT font)
 ImageEditorWindow::~ImageEditorWindow()
 {
     FreeLibrary(richeditLib_);
-    delete currentDoc_;
     delete canvas_;
     delete colorsDelegate_;
 }
@@ -291,12 +284,12 @@ void ImageEditorWindow::showAddToWizardButton(bool show)
     showAddToWizardButton_ = show;
 }
 
-void ImageEditorWindow::setSuggestedFileName(CString string)
+void ImageEditorWindow::setSuggestedFileName(CString fileName)
 {
-    suggestedFileName_ = string;
+    suggestedFileName_ = fileName;
 }
 
-std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap()
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
 {
     return resultingBitmap_;
 }
@@ -421,7 +414,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     canvas_ = new ImageEditor::Canvas(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
-    canvas_->setDocument(currentDoc_);
+    canvas_->setDocument(currentDoc_.get());
 
     std::wstring windowTitle;
     windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
@@ -1200,9 +1193,9 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
     if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
-    bool res = saveDocument(); // Save screenshot in default format
+    const bool res = saveDocument(); // Save screenshot in default format
     if (res) {
-        std::vector<CString> files = { outFileName_ };
+        const std::vector<CString> files = { outFileName_ };
         WinUtils::DisplaySystemPrintDialogForImage(files, m_hWnd);
         if (displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
             EndDialog(drPrintRequested);
@@ -1213,13 +1206,13 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     if (wID == ID_SEARCHBYIMAGEINGOOGLE) {
-        searchEngine_ = SearchByImage::seGoogle;
+        searchEngine_ = SearchByImage::SearchEngine::seGoogle;
     } else if (wID == ID_SEARCHBYIMAGEINYANDEX) {
-        searchEngine_ = SearchByImage::seYandex;
+        searchEngine_ = SearchByImage::SearchEngine::seYandex;
     }
-    bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000)!=0;
+    const bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000)!=0;
     updateSearchButton();
-    CString fileName = saveToTempFile();
+    const CString fileName = saveToTempFile();
     if (fileName.IsEmpty()) {
         LOG(ERROR) << "Unable to create temporary file";
         return 0;
@@ -1322,7 +1315,7 @@ bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
     if (GetFocus() != m_view.m_hWnd) {
         ::SetFocus(m_view.m_hWnd);
     }
-    bool res = saveDocument(format);
+    const bool res = saveDocument(format);
     if (res && displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
         EndDialog(drCopiedToClipboard);
     }

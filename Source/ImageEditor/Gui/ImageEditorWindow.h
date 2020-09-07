@@ -67,8 +67,8 @@ public:
     void setInitialDrawingTool(Canvas::DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
-    void setSuggestedFileName(CString string);
-    std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap();
+    void setSuggestedFileName(CString fileName);
+    std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap() const;
     Gdiplus::Rect lastAppliedCrop() const;
 
     /**
@@ -124,7 +124,7 @@ public:
         CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)*/
     END_MSG_MAP()
     private:
-        ImageEditor::Document* currentDoc_;
+        std::unique_ptr<ImageEditor::Document> currentDoc_;
         // Handler prototypes (uncomment arguments if needed):
         //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
         //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -234,7 +234,7 @@ public:
         penSize_ = 12;
         roundingRadius_ = 5;
         allowAltTab_ = false; 
-        searchEngine_ = SearchByImage::seGoogle;
+        searchEngine_ = SearchByImage::SearchEngine::seGoogle;
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
         arrowMode_ = 0;
