@@ -23,6 +23,6 @@ public:
 
 class MyFileDialogFactory {
 public:
-    static std::shared_ptr<IMyFileDialog> createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect = false, bool openDialog = true);
+    static std::unique_ptr<IMyFileDialog> createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect = false, bool openDialog = true);
 };
 #endif

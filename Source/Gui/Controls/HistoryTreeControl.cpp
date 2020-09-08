@@ -33,8 +33,8 @@
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
+    : networkClientFactory_(std::move(factory))
 {
-    networkClientFactory_ = factory;
     m_SessionItemHeight = 0;
     m_SubItemHeight = 0;
     downloading_enabled_ = true;
@@ -190,7 +190,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect clientRect;
     GetClientRect(clientRect);
     //HistoryItem * it2 = new HistoryItem(it);
-    CHistorySession* ses = reinterpret_cast<CHistorySession*>(item->userData());
+    auto* ses = static_cast<CHistorySession*>(item->userData());
     std::string label = "["+ IuCoreUtils::timeStampToString(ses->timeStamp()) +"]";
     std::string serverName = ses->serverName();
     if(ses->entriesCount())
@@ -755,13 +755,15 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, const CFileDow
 {
     if(ok && !it.fileName.empty())
     {
-        HistoryTreeItem * hit = reinterpret_cast<HistoryTreeItem*> (it.id);
+        auto* hit = static_cast<HistoryTreeItem*> (it.id);
         if(hit) {
             hit->thumbnailSource = it.fileName;
             ServiceLocator::instance()->localFileCache()->addFile(it.url, it.fileName);
-            m_thumbLoadingQueueMutex.lock();
-            m_thumbLoadingQueue.push_back(hit);
-            m_thumbLoadingQueueMutex.unlock();
+            {
+                std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
+                m_thumbLoadingQueue.push_back(hit);
+            }   
+
             StartLoadingThumbnails();
         }
     }
@@ -770,7 +772,7 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, const CFileDow
 
 void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
 {
-    HistoryTreeItem* hti = reinterpret_cast<HistoryTreeItem*> (item->userData());
+    auto* hti = static_cast<HistoryTreeItem*> (item->userData());
     if (!hti) {
         return;
     }
@@ -787,9 +789,11 @@ void CHistoryTreeControl::OnTreeItemDelete(TreeItem* item)
 
 void CHistoryTreeControl::threadsFinished()
 {
-    m_thumbLoadingQueueMutex.lock();
-    m_thumbLoadingQueue.clear();
-    m_thumbLoadingQueueMutex.unlock();
+    {
+        std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
+        m_thumbLoadingQueue.clear();
+    }
+
     if (onThreadsFinished_) {
         onThreadsFinished_();
     }
@@ -815,12 +819,14 @@ void CHistoryTreeControl::ResetContent()
 {
     if(m_bIsRunning || (m_FileDownloader && m_FileDownloader->isRunning()))
     {
-        //MessageBox(_T("Cannot reset list while threads are still running!"));
+        LOG(ERROR) << _T("Cannot reset list while threads are still running!");
         return;
     }
-    m_thumbLoadingQueueMutex.lock(); 
-    m_thumbLoadingQueue.clear();
-    m_thumbLoadingQueueMutex.unlock();
+    {
+        std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
+        m_thumbLoadingQueue.clear();
+    }
+   
     CCustomTreeControlImpl<CHistoryTreeControl>::ResetContent();
 }
 

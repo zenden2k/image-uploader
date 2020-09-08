@@ -44,7 +44,6 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
-#include "Core/3rdpart/base64.h"
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"
 #include "ScriptAPI.h"
@@ -58,8 +57,6 @@
 using namespace Sqrat;
 
 namespace ScriptAPI {
-/*
-SquirrelObject* RootTable = 0;*/
 
 const std::string GetScriptsDirectory()
 {
@@ -401,18 +398,16 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
 }
 
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
-    Json::ValueIterator it;
     obj = Sqrat::Array (GetCurrentThreadVM(), root.size());
-    for(it = root.begin(); it != root.end(); ++it) {
+    for(Json::ValueIterator it = root.begin(); it != root.end(); ++it) {
         int key = it.key().asInt();
         setObjValues(key, it, obj);
     }
 }
 
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
-    Json::ValueIterator it;
     obj = Sqrat::Table (GetCurrentThreadVM());
-    for(it = root.begin(); it != root.end(); ++it) {
+    for(Json::ValueIterator it = root.begin(); it != root.end(); ++it) {
         std::string key = it.key().asString();
         setObjValues(key.data(), it, obj);
     }
@@ -421,22 +416,22 @@ void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
 Sqrat::Object parseJSONObj(const Json::Value& root) {
     Json::ValueIterator it;
     //SquirrelObject obj;
-    bool isArray = root.isArray();
+
     
-    if ( isArray ) {
+    if (root.isArray()) {
         Sqrat::Array obj(GetCurrentThreadVM(), root.size());
         for(it = root.begin(); it != root.end(); ++it) {
             int key = it.key().asInt();
             setObjValues(key, it, obj);
         }
-        return obj;
+        return Sqrat::Object(obj);
     } else {
         Sqrat::Table obj(GetCurrentThreadVM());
         for(it = root.begin(); it != root.end(); ++it) {
             std::string key = it.key().asString();
             setObjValues(key.data(), it, obj);
         }
-        return obj;
+        return Sqrat::Object(obj);
     }
 }
 
@@ -454,20 +449,18 @@ Json::Value sqValueToJson(const Sqrat::Object& obj ) {
     switch ( obj.GetType() ) {
         case OT_NULL:
             return Json::Value(Json::nullValue);
+
         case OT_INTEGER:
             return SQINT_TO_JSON_VALUE(obj.Cast<int>());
-            break;
+
         case OT_FLOAT:
             return obj.Cast<float>();
-            break;
 
         case OT_BOOL:
             return obj.Cast<bool>();
-            break;
 
         case OT_STRING:
             return obj.Cast<std::string>();
-            break;
     }
     return Json::Value(Json::nullValue);
 }
@@ -475,6 +468,7 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
     HSQUIRRELVM vm = GetCurrentThreadVM();
     Json::Value res;
     Sqrat::Object::iterator it;
+
     switch ( obj.GetType() ) {
             case OT_NULL:
             case OT_INTEGER:
@@ -482,7 +476,6 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
             case OT_BOOL:
             case OT_STRING:
                 return sqValueToJson(obj);
-                break;
             case OT_TABLE:
                 res = Json::Value(Json::objectValue);
                 while(obj.Next(it) ) {
@@ -506,9 +499,6 @@ const std::string ToJSON(const Sqrat::Object&  obj) {
     builder["indentation"] = "   ";  
     return Json::writeString(builder, root);
 }
-
-
-
 
 int64_t ScriptGetFileSize(const std::string& filename) {
     return IuCoreUtils::getFileSize(filename);
@@ -540,8 +530,7 @@ const std::string GetAppLocale() {
 
 std::string GetCurrentThreadId()
 {
-    std::thread::id treadId = std::this_thread::get_id();
-    return IuCoreUtils::ThreadIdToString(treadId);
+    return IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
 }
 #undef random
 // older versions of Squirrel Standard Library have broken srand() function
@@ -611,7 +600,7 @@ void DebugMessage(const std::string& message, bool isServerResponseBody)
 void RegisterFunctions(Sqrat::SqratVM& vm)
 {
     Sqrat::RootTable& root = vm.GetRootTable();
-    /*RootTable = rootTable;*/
+
     root
         .Func("GetScriptsDirectory", GetScriptsDirectory)
         .Func("GetAppLanguageFile", GetAppLanguageFile)
@@ -667,10 +656,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)
-        .Func("DebugMessage", DebugMessage);
-    srand(static_cast<unsigned int>(time(0)));
-
-    
+        .Func("DebugMessage", DebugMessage);    
 }
 //    atexit(&CleanUpFunctions);
 

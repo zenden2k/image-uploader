@@ -5,9 +5,8 @@
 #include "../Squirrelnc.h"
 
 class NetworkClient;
-#ifdef random
+
 #undef random
-#endif
 
 /** @file Functions.h
 @section Globals Global functions

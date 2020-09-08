@@ -122,7 +122,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
         { TR("All files"), _T("*.*") }
     };
 
-    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), TR("Choose program"), filters, false);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), TR("Choose program"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }

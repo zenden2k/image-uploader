@@ -173,9 +173,11 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
-    CommonGuiSettings* settings = static_cast<CommonGuiSettings*>(settingsBase);
-    std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
-    sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+    auto settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
+    if (settings) {
+        const std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
+        sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+    }
 }
 
 bool CWizardDlg::pasteFromClipboard() {
@@ -218,7 +220,7 @@ bool CWizardDlg::pasteFromClipboard() {
 
 CWizardDlg::~CWizardDlg()
 {
-    for (auto page: Pages) {
+    for (auto* page: Pages) {
         delete page;
     }
     if (hLocalHotkeys) {
@@ -242,7 +244,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
     auto translator = ServiceLocator::instance()->translator();
     ATLASSERT(translator != nullptr);
-    srand(unsigned int(time(0)));
+
     m_bShowWindow = true;
 
     win7JumpList_ = std::make_unique<Win7JumpList>();
@@ -264,7 +266,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ATLASSERT(pLoop != NULL);
     pLoop->AddMessageFilter(this);
     pLoop->AddIdleHandler(this);
-    OleInitialize(NULL);
+
     ::RegisterDragDrop(m_hWnd, this);
     MediaInfoHelper::FindMediaInfoDllPath();
     SetWindowText(APPNAME);
@@ -273,7 +275,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 
-    helpButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, static_cast<int>(16 * dpiScaleX), 
+    helpButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, static_cast<int>(16 * dpiScaleX), 
         static_cast<int>(16 * dpiScaleY), 0));
     SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
     helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
@@ -435,7 +437,7 @@ bool CWizardDlg::ParseCmdLine()
                 m_bShowWindow = true;
                 m_bHandleCmdLineFunc = true;
             }
-            return 1;
+            return true;
         }
     }
 
@@ -1814,7 +1816,7 @@ bool CWizardDlg::funcMediaInfo()
         { TR("All files"), _T("*.*") }
     };
 
-    std::shared_ptr<IMyFileDialog> fileDlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
+    auto fileDlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
     
     if (fileDlg->DoModal(m_hWnd) != IDOK) {
         return false;
@@ -1841,7 +1843,7 @@ bool CWizardDlg::funcAddFiles()
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };
-    std::shared_ptr<IMyFileDialog> fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
+    auto fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
     
     fileDialog->setFileTypeIndex(3);
 

@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _MYUTILS_H_
-#define _MYUTILS_H_
+#ifndef IU_FUNC_MYUTILS_H
+#define IU_FUNC_MYUTILS_H
 
 #include <atlheaders.h>
 #include <tchar.h>
@@ -37,7 +37,6 @@ bool IsVideoFile(LPCTSTR szFileName);
 int GetSavingFormat(LPCTSTR szFileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
-CString TrimString(const CString& source, int nMaxLen);
 
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
 

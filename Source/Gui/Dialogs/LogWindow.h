@@ -25,7 +25,7 @@
 #include <mutex>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/loglistbox.h"
+#include "Gui/Controls/LogListBox.h"
 #include "Core/Upload/CommonTypes.h"
 #include "Core/Logging/Logger.h"
 #include "Func/DefaultLogger.h"

@@ -37,7 +37,7 @@ int GetFontSizeInTwips(int nFontSize)
 bool IsVideoFile(LPCTSTR szFileName)
 {
     std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
-    const std::vector<std::string>& extensions = VideoUtils::Instance().videoFilesExtensions;
+    const std::vector<std::string>& extensions = VideoUtils::instance().videoFilesExtensions;
     return std::find(extensions.begin(), extensions.end(), ext) != extensions.end();
 }
 
@@ -70,15 +70,6 @@ LPTSTR fgetline(LPTSTR buf,int num,FILE *f)
     return Result;
 }
 
-CString TrimString(const CString& source, int nMaxLen)
-{
-    int nLen = source.GetLength();
-    if(nLen <= nMaxLen) return source;
-
-    int PartSize = (nMaxLen-3) / 2;
-    return source.Left(PartSize)+_T("...")+source.Right(PartSize);
-}
-
 LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize)
 {
     int nLen=0;
@@ -99,9 +90,6 @@ LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int n
 
     return szStart+1;
 }
-
-#undef PixelFormat8bppIndexed 
-#define PixelFormat8bppIndexed (3 | ( 8 << 8) | PixelFormatIndexed | PixelFormatGDI)
 
 LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern)
 {

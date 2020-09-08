@@ -479,7 +479,7 @@ LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*
         { TR("All files"), _T("*.*") }
     };
 
-    std::shared_ptr<IMyFileDialog> dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }

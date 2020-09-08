@@ -281,7 +281,7 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
     }
     if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
 
-        HBITMAP bmp = reinterpret_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
+        HBITMAP bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (bmp) {
             CString filePath;
@@ -836,7 +836,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
         if ( ok ) {
             CString url = Utf8ToWCstring(task->uploadResult()->directUrl);
             WinUtils::CopyTextToClipboard(url);
-            CString text = TrimString(url, 70) + CString("\r\n")
+            CString text = WinUtils::TrimString(url, 70) + CString("\r\n")
                 + TR("(the link has been copied to the clipboard)");
             ShowBaloonTip(text, TR("Short URL"), 17000);
             setStatusText(text, kStatusHideTimeout);
@@ -882,7 +882,7 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
     WinUtils::CopyTextToClipboard(url);
-    CString trimmedUrl = TrimString(url, 70);
+    CString trimmedUrl = WinUtils::TrimString(url, 70);
     ShowBaloonTip(trimmedUrl + CString("\r\n")
         + TR("(the link has been copied to the clipboard)")+ CString("\r\n") + TR("Click on this message to view details...") , 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });

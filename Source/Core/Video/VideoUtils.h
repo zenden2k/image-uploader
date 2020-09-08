@@ -6,12 +6,11 @@
 
 class VideoUtils {
     public:
-        static VideoUtils& Instance();
+        static VideoUtils& instance();
         std::vector<std::string> videoFilesExtensions;
+        VideoUtils(const VideoUtils&) = delete;
+        VideoUtils& operator=(const VideoUtils&) = delete;
     private:  
         VideoUtils();
-        VideoUtils(VideoUtils& root){}
-        VideoUtils& operator=(VideoUtils&){return *this;}
-
 };
 #endif

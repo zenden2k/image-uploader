@@ -72,6 +72,7 @@ class Application {
     CString commonTempFolder_, tempFolder_;
 public:
     Application() {
+        srand(static_cast<unsigned>(time(nullptr)));
         setAppVersion();
         initBasicServices();
     }
@@ -85,7 +86,7 @@ public:
         std::vector<CString> folders;
         WinUtils::GetFolderFileList(folders, commonTempFolder_, "iu_temp_*");
         for (const auto& folder : folders) {
-            // Extract Proccess ID from temp folder name
+            // Extract process ID from temp folder name
             CString pidStr = folder;
             pidStr.Replace(_T("iu_temp_"), _T(""));
             unsigned long pid = wcstoul(pidStr, 0, 16) ^ 0xa1234568;
@@ -219,7 +220,7 @@ public:
         _Module.AddMessageLoop(&theLoop);
         
         CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
-        auto serviceLocator = ServiceLocator::instance();
+        auto* serviceLocator = ServiceLocator::instance();
         serviceLocator->setProgramWindow(&dlgMain);
         serviceLocator->setTaskRunner(&dlgMain);
 

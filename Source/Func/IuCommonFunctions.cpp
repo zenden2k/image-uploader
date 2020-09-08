@@ -211,8 +211,13 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
 
 bool IsImage(LPCTSTR szFileName)
 {
+    if (!szFileName) {
+        return false;
+    }
     LPCTSTR szExt = WinUtils::GetFileExt(szFileName);
-    if (lstrlen(szExt)<1) return false;
+    if (!lstrlen(szExt)) {
+        return false;
+    }
     return WinUtils::IsStrInList(szExt, _T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0webp\0\0"));
 }
 
