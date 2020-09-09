@@ -20,6 +20,8 @@
 
 #include "HistoryWindow.h"
 
+#include <boost/date_time/gregorian/gregorian.hpp>
+
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/HistoryManager.h"
@@ -29,6 +31,27 @@
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
 #include "Core/Utils/DesktopUtils.h"
+
+namespace {
+    SYSTEMTIME GregorianDateToSystemTime(const boost::gregorian::date& d) {
+
+        if (d.is_special()) {
+            throw std::out_of_range("Cannot handle such date");
+        }
+
+        SYSTEMTIME st;
+
+        boost::gregorian::date::ymd_type ymd = d.year_month_day();
+        std::memset(&st, 0, sizeof(st));
+
+        st.wYear = ymd.year;
+        st.wMonth = ymd.month;
+        st.wDay = ymd.day;
+        st.wDayOfWeek = d.day_of_week();
+
+        return st;
+    }
+}
 
 // CHistoryWindow
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg) :
@@ -474,12 +497,15 @@ LRESULT CHistoryWindow::OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 }
 
 void CHistoryWindow::initSearchForm() {
-    SYSTEMTIME st, st2;
+    using namespace boost::gregorian;
+    date today = day_clock::local_day();
+    date start = today - days(30);
 
-    GetLocalTime(&st);
-    st2 = WinUtils::SystemTimeAdd(st, -30 * 3600 * 24);
-    dateFromPicker_.SetSystemTime(GDT_VALID, &st2);
-    dateToPicker_.SetSystemTime(GDT_VALID, &st);
+    SYSTEMTIME dateFrom = GregorianDateToSystemTime(start);
+    SYSTEMTIME dateTo = GregorianDateToSystemTime(today);
+
+    dateFromPicker_.SetSystemTime(GDT_VALID, &dateFrom);
+    dateToPicker_.SetSystemTime(GDT_VALID, &dateTo);
 
     SetDlgItemText(IDC_FILENAMEEDIT, _T(""));
     SetDlgItemText(IDC_URLEDIT, _T(""));

@@ -1433,7 +1433,7 @@ bool ShowFileInFolder(CString fileName, HWND wnd) {
     return true;
 }
 
-SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {
+/*SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {
 
     FILETIME f;
     SystemTimeToFileTime(&s, &f);
@@ -1448,7 +1448,7 @@ SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {
     SYSTEMTIME res;
     FileTimeToSystemTime(&f, &res);
     return res;
-}
+}*/
 
 time_t SystemTimeToTime(const SYSTEMTIME &st) {
     std::tm tm;
