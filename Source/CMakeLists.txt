@@ -30,6 +30,7 @@ project(ImageUploader)
 
 set(IU_DISABLE_MEGANZ OFF CACHE BOOL "Disable support of mega.nz")
 set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
+set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
 
 if (MSVC)
     set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
@@ -49,6 +50,9 @@ if (WIN32)
     add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DCURL_STATICLIB -DPCRE_STATIC -DGOOGLE_GLOG_DLL_DECL=)
     if (IU_USE_OPENSSL)
         add_definitions(-DUSE_OPENSSL)
+    endif()
+	if (IU_ENABLE_WEBVIEW2)
+        add_definitions(-DIU_ENABLE_WEBVIEW2)
     endif()
 endif()
 
@@ -119,6 +123,28 @@ if(WIN32)
     endif()
 
     list(APPEND COMMON_LIBS_LIST libcurl Oleacc glog minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib Crypt32 Wldap32)
+	
+	if (IU_ENABLE_WEBVIEW2)
+		find_program(NUGET nuget)
+		if(NOT NUGET)
+			message(FATAL  "CMake could not find the nuget command line tool. Please install it!")
+		else()
+			# Copy the Nuget config file from source location to the CMake build directory.
+			configure_file(packages.config.in packages.config COPYONLY)
+			# Run Nuget using the .config file to install any missing dependencies to the build directory.
+			execute_process(COMMAND 
+				${NUGET} restore ${CMAKE_BINARY_DIR}/packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
+				WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
+			)    
+		endif()
+
+		include_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary.1.0.200902.2/include/) 
+		include_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.0.9.622.11/build/native/include/) 
+		link_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.0.9.622.11/build/native/x86/)
+		
+		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
+	endif()	
+	
 else()
     list(APPEND COMMON_LIBS_LIST dl z base64 curl ssl crypto glog pthread uv_a rt sqlite3 freeimage gflags ${Boost_LIBRARIES})
     SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")

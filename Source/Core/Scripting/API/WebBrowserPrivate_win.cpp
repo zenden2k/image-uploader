@@ -24,14 +24,8 @@
 
 namespace ScriptAPI {;
 
-HtmlDocument WebBrowserPrivate::document() {
-    IDispatchPtr doc = webViewWindow_.view_.GetDocument();
-    //CComQIPtr<IHTMLDocument3,&IID_IHTMLDocument2> spHTML();
 
-    return new HtmlDocumentPrivate(doc, this);
-}
-
-void WebBrowserPrivate::OnPageLoaded(const CString& url) {
+void WebBrowserPrivate::OnUrlChanged(const CString& url) {
     if ( !onUrlChangedCallback_.IsNull() ) {
         try
         {
@@ -106,52 +100,6 @@ bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
         }
     }
     return false;
-}
-
-void WebBrowserPrivate::OnTimer()
-{
-    if ( !onTimerCallback_.IsNull() ) {
-        try
-        {
-            Sqrat::Table data(GetCurrentThreadVM());
-            //data.SetValue("url", url());
-            data.SetInstance("browser", browser_);
-            //SquirrelFunction<void> func(onTimerCallbackContext_.IsNull() ? *RootTable : onTimerCallbackContext_, onTimerCallback_);
-            if (onTimerCallback_.IsNull())
-                return;
-
-            onTimerCallback_.Execute(data);
-        }
-        catch (std::exception& e)
-        {
-            LOG(ERROR) << "onTimerCallback: " << std::string(e.what());
-            FlushSquirrelOutput(GetCurrentThreadVM());
-        }
-    }
-}
-
-void WebBrowserPrivate::OnFileFieldFilled(const CString& fileName)
-{
-    if ( !onFileFieldFilledCallback_.IsNull() ) {
-        try
-        {
-            Sqrat::Table data(GetCurrentThreadVM());
-            std::string fileNameA = IuCoreUtils::WstringToUtf8((LPCTSTR)fileName);
-            data.SetValue("fileName", fileNameA.c_str());
-            data.SetInstance("browser", browser_);
-            //SquirrelFunction<void> func(onFileFieldFilledCallbackContext_.IsNull() ? *RootTable : onFileFieldFilledCallbackContext_, onFileFieldFilledCallback_);
-            if (onFileFieldFilledCallback_.IsNull())
-                return;
-
-            onFileFieldFilledCallback_.Execute(data);
-        }
-        
-        catch (std::exception& e)
-        {
-            LOG(ERROR) << "onFileFieldFilledCallback: " << std::string(e.what());
-            FlushSquirrelOutput(GetCurrentThreadVM());
-        }
-    }
 }
 
 }

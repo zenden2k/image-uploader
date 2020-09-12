@@ -191,7 +191,7 @@ void CThumbsView::MyDeleteAllItems()
 
 bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 {
-    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
+    auto *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
 
     if (deletePhysicalFiles_ && deleteFile && !TVI->FileName.IsEmpty()) {
         DeleteFile(TVI->FileName); // delete file from disk (enabled only on videograbber page)
@@ -205,7 +205,7 @@ bool CThumbsView::SimpleDelete(int ItemIndex, bool DeleteThumb, bool deleteFile)
 
 LPCTSTR CThumbsView::GetFileName(int ItemIndex)
 {
-    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
+    auto *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
     if(!TVI) {
         return _T("");
     } 
@@ -526,7 +526,7 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 {
     int count = GetItemCount();
     for (int i = 0; i < count; i++) {
-        ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
+        auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         delete tvi;
     }
     return 0;
@@ -534,7 +534,7 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 
 void CThumbsView::OutDateThumb(int nIndex)
 {
-    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(nIndex));
+    auto *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(nIndex));
     if (!TVI) {
         return;
     }

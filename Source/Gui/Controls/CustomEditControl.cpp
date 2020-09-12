@@ -7,7 +7,7 @@ bool CCustomEditControl::AttachToDlgItem(HWND parent, UINT dlgID) {
 }
 
 void CCustomEditControl::setOnPasteCallback(PasteCallback callback) {
-    onPasteCallback_ = callback;
+    onPasteCallback_ = std::move(callback);
 }
 
 LRESULT CCustomEditControl::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {

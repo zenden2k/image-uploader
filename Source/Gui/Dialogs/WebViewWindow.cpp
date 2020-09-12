@@ -5,36 +5,27 @@
 #include "Func/WinUtils.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
+#ifdef IU_ENABLE_WEBVIEW2
+    #include <wrl.h>
+    #include <wil/com.h>
+    #include "WebView2.h"
+#endif
 
+HWND CWebViewWindow::window = nullptr;
 
-HWND CWebViewWindow::window = 0;
- //CWebViewWindow* CWebViewWindow::instance = 0;
-CWebViewWindow::CWebViewWindow() : subclassWindow_(this), 
-        callback_(std::bind(&CWebViewWindow::CBTHook, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)) {
+CWebViewWindow::CWebViewWindow()
+        {
     //instance = this;
     isModal_ = false;
-    captureActivate_ = false;
-    timerInterval_ = 0;
-    combobox_ = 0;
-    editControl_= 0;
-    fileDialogEvent_.Create();
-    fileFieldSuccess_ = false;
     messageLoopIsRunning_ = false;
-    activeWindowBeforeFill_ = 0;
+
     urlmonDll_ = nullptr;
     hWndClient_ = nullptr;
-    fileDialog_ = nullptr;
     //dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {
     if (urlmonDll_) {
         FreeLibrary(urlmonDll_);
-    }
-    /*if ( dialogHook_) {
-        dialogHook_->Hook(0);
-    }*/
-    if ( hook_ ) {
-        UnhookWindowsHookEx(hook_);
     }
 
     //instance = 0;
@@ -49,34 +40,124 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
 
-    WinUtils::UseLatestInternetExplorerVersion(false);
+    HWND hWnd = m_hWnd;
+    ::CoInitialize(NULL);
+    HRESULT hr = -1;
+#ifdef IU_ENABLE_WEBVIEW2
+    using namespace Microsoft::WRL;
+    hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr,
+    Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+        [hWnd, this](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+            
+            // Create a CoreWebView2Controller and get the associated CoreWebView2 whose parent is the main window hWnd
+            env->CreateCoreWebView2Controller(hWnd, Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+                [hWnd, this](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
+                if (controller != nullptr) {
+                    webviewController_ = controller;
+                    webviewController_->get_CoreWebView2(&webviewWindow_);
+                }
+                
+                // Add a few settings for the webview
+                // The demo step is redundant since the values are the default settings
+                /*ICoreWebView2Settings* Settings;
+                webviewWindow_->get_Settings(&Settings);
+                Settings->put_IsScriptEnabled(TRUE);
+                Settings->put_AreDefaultScriptDialogsEnabled(TRUE);
+                Settings->put_IsWebMessageEnabled(TRUE);*/
+                
+                // Resize WebView to fit the bounds of the parent window
+                RECT bounds;
+                ::GetClientRect(hWnd, &bounds);
+                HRESULT hr2 = webviewController_->put_Bounds(bounds);
+                if (FAILED(hr2)) {
+                    LOG(ERROR) << "Failed to put bounds on webview";
+                }
+                // Schedule an async task to navigate to Bing
+                    if (!initialUrl_.IsEmpty()) {
+                                        webviewWindow_->Navigate(initialUrl_);
+                    }
 
-    typedef HRESULT  (STDAPICALLTYPE *CoInternetSetFeatureEnabledFuncType) (INTERNETFEATURELIST , DWORD , BOOL); 
-    if (!urlmonDll_) {
-        urlmonDll_ = LoadLibrary(_T("Urlmon.dll"));
+                  EventRegistrationToken token;
+                    webviewWindow_->add_NavigationStarting(Callback<ICoreWebView2NavigationStartingEventHandler>(
+                        [this](ICoreWebView2* webview, ICoreWebView2NavigationStartingEventArgs * args) -> HRESULT {
+                            PWSTR uri;
+                            args->get_Uri(&uri);
+                            std::wstring source(uri);
+                            if (onUrlChanged_) {
+                                onUrlChanged_(source.c_str());
+                            }
+  
+                            CoTaskMemFree(uri);
+                            return S_OK;
+                 }).Get(), &token);
+
+                 /*webviewWindow_->add_NavigationCompleted(Callback<ICoreWebView2NavigationCompletedEventHandler>(
+                        [this](ICoreWebView2* webview, ICoreWebView2NavigationCompletedEventArgs * args) -> HRESULT {
+                            PWSTR uri;
+                            args->(&uri);
+                            std::wstring source(uri);
+                            if (onUrlChanged_) {
+                                onUrlChanged_(source.c_str());
+                            }
+  
+                            CoTaskMemFree(uri);
+                            return S_OK;
+                 }).Get(), &token); */ 
+                
+                return S_OK;
+            }).Get());
+        return S_OK;
+    }).Get());
+#endif
+    if (FAILED(hr)) {
+        WinUtils::UseLatestInternetExplorerVersion(false);
+
+        typedef HRESULT  (STDAPICALLTYPE *CoInternetSetFeatureEnabledFuncType) (INTERNETFEATURELIST , DWORD , BOOL); 
+        if (!urlmonDll_) {
+            urlmonDll_ = LoadLibrary(_T("Urlmon.dll"));
+        }
+        CoInternetSetFeatureEnabledFuncType CoInternetSetFeatureEnabledFunc = reinterpret_cast<CoInternetSetFeatureEnabledFuncType>(GetProcAddress(urlmonDll_, "CoInternetSetFeatureEnabled"));
+        if ( CoInternetSetFeatureEnabledFunc ) { 
+            CoInternetSetFeatureEnabledFunc(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
+        }
+        RECT rc;
+        GetWindowRect(&rc);
+        hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, 0);
+        view_.PutSilent(TRUE); // Supress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
+        view_.SetFocus();
     }
-    CoInternetSetFeatureEnabledFuncType CoInternetSetFeatureEnabledFunc = reinterpret_cast<CoInternetSetFeatureEnabledFuncType>(GetProcAddress(urlmonDll_, "CoInternetSetFeatureEnabled"));
-    if ( CoInternetSetFeatureEnabledFunc ) { 
-        CoInternetSetFeatureEnabledFunc(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
-    }
-    RECT rc;
-    GetWindowRect(&rc);
-    hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, 0);
-    view_.PutSilent(TRUE); // Supress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
-    //view_.SetFocus();
+    
     return 0;
 }
 
 LRESULT CWebViewWindow::OnResize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     RECT clientRect;
     GetClientRect(&clientRect);
-
-    view_.SetWindowPos(NULL, &clientRect, SWP_NOMOVE);
+     if (view_.m_hWnd) {
+        view_.SetWindowPos(NULL, &clientRect, SWP_NOMOVE);
+    }
+#ifdef IU_ENABLE_WEBVIEW2
+    else if (webviewController_) {
+         HRESULT hr2 = webviewController_->put_Bounds(clientRect);
+    }
+#endif
+   
     return 0;
 }
 
 bool CWebViewWindow::NavigateTo(const CString& url) {
-    view_.Navigate(url);
+    if (view_.m_hWnd) {
+        view_.Navigate(url);
+    }
+#ifdef IU_ENABLE_WEBVIEW2
+    else {
+        if (webviewWindow_) {
+            webviewWindow_->Navigate(url);
+        } else {
+            initialUrl_ = url;
+        }
+    }
+#endif     
     return true;
 }
 
@@ -85,9 +166,6 @@ int CWebViewWindow::DoModal(HWND parent, bool show )
     
     isModal_ = true;
 
-    if ( timerInterval_ ) {
-        SetTimer(kUserTimer, timerInterval_);
-    }
     if ( show ) {
         ShowWindow(SW_SHOW);
         SetActiveWindow();
@@ -102,9 +180,7 @@ int CWebViewWindow::DoModal(HWND parent, bool show )
 
     CMessageLoop loop;
     int res = loop.Run();
-    if ( timerInterval_ ) {
-        KillTimer(kUserTimer);
-    }
+
     if ( show ) {
         if ( parent ) {
             ::EnableWindow(parent, true);
@@ -138,11 +214,6 @@ void CWebViewWindow::destroyFromAnotherThread()
     SendMessage(WM_DESTROYWEBVIEWWINDOW);
 }
 
-void CWebViewWindow::setTimerInterval(int interval)
-{
-    timerInterval_ = interval;
-}
-
  TCHAR m_szClassName[MAX_PATH];
  #define CLASSNAME_LEN 100
 // helper to get class name (lowercase)
@@ -163,110 +234,6 @@ LPCTSTR GetWndClass(WPARAM wParam, LPARAM lParam)
     CharLower(m_szClassName);
     return m_szClassName;
 }
-//FIXME: only one instance of CBThook may exist.
-
-LRESULT /*CALLBACK*/ CWebViewWindow::CBTHook(int nCode, WPARAM wParam, LPARAM lParam)
-{
-    if(nCode == HCBT_CREATEWND)
-    {
-        HWND hwnd = (HWND)wParam;
-        //CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;
-
-        if ( !lstrcmp(GetWndClass(wParam, lParam), _T("#32770"))) { 
-                /*instance->*/handleDialogCreation(hwnd, true);
-        }
-
-    }
-    if (nCode < 0)
-    {
-    return CallNextHookEx(hook_, nCode, wParam, lParam);
-    }
-    return 0;
-
-}
-HHOOK CWebViewWindow::hook_ = 0;
-void CWebViewWindow::fillInputFileField(const CString& uploadFileName, CComPtr<IHTMLInputFileElement> inputFileElement, CComPtr<IAccessible> accesible )
-{
-    if ( !WinUtils::FileExists(uploadFileName)) {
-        return;
-    }
-    activeWindowBeforeFill_ = ::GetActiveWindow();
-    uploadFileName_ = uploadFileName;
-    inputFileElement_ = inputFileElement;
-    accesible_ = accesible;
-    /*if ( !dialogHook_ ) {
-        dialogHook_ = new CDialogHook(this);
-    }*/
-    
-    PostMessage(WM_FILLINPUTFIELD);
-    //LOG(INFO) << "threadId="<<GetCurrentThreadId();
-}
-/*
-bool CWebViewWindow::fillInputFileField()
-{
-    fileFieldSuccess_ = false;
-
-    //WinUtils::MsgWaitForSingleObject(fileDialogEvent_, 10000);
-    messageLoopIsRunning_ = true;
-    SetTimer(kMessageLoopTimeoutTimer, 10000);
-    WinUtils::TimerWait(5000);
-    /*CMessageLoop loop;
-    loop.Run();*
-    messageLoopIsRunning_ = false;
-    //uploadFileName_.Empty();
-    return fileFieldSuccess_;
-}*/
-
-bool CWebViewWindow::compareFileNameWithFileInputField()
-{
-    CComBSTR res;
-    if ( SUCCEEDED( inputFileElement_->get_value(&res) ) && res  ) {
-        return res.Length() && res[0] == uploadFileName_[0];
-    }
-    return false;
-}
-
-void CWebViewWindow::handleDialogCreation(HWND wnd, bool fromHook)
-{
-    if ( fromHook ) {
-        FileDialogSubclassWindow *sw = new FileDialogSubclassWindow(this);
-        sw->SubclassWindow(wnd);
-        subclassedWindows_.push_back(sw);
-        return;
-    }
-    //return;
-    //LOG(ERROR) << "CWebViewWindowOnActivate="<<GuiTools::GetWindowText(wnd);
-    EnumChildWindows(wnd, EnumChildProc, (LPARAM)this);
-
-    //bool isWindowVisible = ::IsWindowVisible(fileDialog_)!=FALSE;
-    if (editControl_ ) {
-
-        fileDialog_ = wnd;
-
-        //LOG(INFO) << "isWindowVisible" << isWindowVisible;
-        ::SetWindowLong(fileDialog_, GWL_STYLE, ::GetWindowLong(fileDialog_, GWL_STYLE) & WS_CHILD & ~ (WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-            WS_MINIMIZEBOX|WS_POPUP|WS_BORDER|WS_VISIBLE));
-        ::ShowWindow(fileDialog_, SW_HIDE);
-        ::SetWindowPos(HWND_BOTTOM, fileDialog_,0,0,1,1,SWP_HIDEWINDOW);
-
-        if ( !subclassWindow_.m_hWnd ) {
-            subclassWindow_.SubclassWindow(fileDialog_);
-        }
-    }
-}
-
-void CWebViewWindow::setOnTimerCallback(std::function<void()> cb) {
-    onTimer_ = cb;
-}
-
-void CWebViewWindow::setOnFileFieldFilledCallback(std::function<void(const CString&)> cb) {
-    onFileFieldFilled_ = cb;
-}
-
-void CWebViewWindow::SetFillTimer()
-{
-    PostMessage(WM_SETFILLTIMER);
-}
 
 LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if ( isModal_ ) {
@@ -278,190 +245,6 @@ LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     return 1;
 }
 
-LRESULT CWebViewWindow::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( !wParam && !uploadFileName_.IsEmpty()) {
-        //HWND wnd  = ::GetActiveWindow();
-        //LOG(ERROR) << "CWebViewWindow window disabled ";
-        captureActivate_ = true;
-    }
-    return 0;
-}
-/*
-LRESULT CALLBACK MyHookProc(int nCode, WPARAM wParam, LPARAM lParam) 
-{ 
-    if (nCode < 0) 
-        return CallNextHookEx(hook, nCode, wParam, lParam); 
-
-    if (nCode == HCBT_CREATEWND) 
-    { 
-        char szBuf[30]; 
-        GetClassName((HWND)wParam, szBuf, sizeof(szBuf)); 
-
-        if (strcmp(szBuf, "Notepad") == 0) 
-        { 
-            return 1; 
-        } 
-    } 
-    return CallNextHookEx(hook, nCode, wParam, lParam); 
-}*/
-
-
-
-
-LRESULT CWebViewWindow::OnActivate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( captureActivate_  && wParam == WA_INACTIVE && !::IsWindowEnabled(m_hWnd) ) {
-        captureActivate_ = false;
-        HWND wnd  = (HWND)lParam;
-        
-
-        TCHAR Buffer[MAX_PATH];
-        GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-        if ( !lstrcmp(Buffer, _T("#32770"))) {
-            ::EnableWindow(m_hWnd, true);
-            ::SetActiveWindow(m_hWnd);
-
-            
-            
-            
-            
-            handleDialogCreation(wnd);
-            SetTimer(1,400);
-            /*CComPtr<IAccessible> editControlAccesible;
-            VARIANT v;
-            v.vt = VT_I4 ;
-            v.lVal  = CHILDID_SELF;
-
-            HRESULT hr = ::AccessibleObjectFromWindow(editControl_, OBJID_CLIENT , IID_IAccessible, (void**)(&editControlAccesible)); // 1 - захардкоженный идентификатор ловушк
-            *//*if ( editControlAccesible ) {
-                editControlAccesible->put_accValue(v, CComBSTR(uploadFileName_));
-            }*/
-        
-        }
-
-
-        
-        /*::EndDialog(wnd, IDOK);*/
-    }
-    return 0;
-}
-
-LRESULT CWebViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( wParam == kUserTimer && onTimer_ ) {
-        onTimer_();
-        return 0;
-    } /*else if ( wParam == kMessageLoopTimeoutTimer ) {
-        KillTimer(kMessageLoopTimeoutTimer);
-        if ( messageLoopIsRunning_ ) {
-            messageLoopIsRunning_ = false;
-            PostQuitMessage(0);
-        }
-    }*/
-    else if ( wParam == 1 ) {
-
-        VARIANT v;
-        v.vt = VT_I4 ;
-        v.lVal  = CHILDID_SELF;
-        CComPtr<IAccessible> editControlAccesible;
-        if ( ::IsWindow(editControl_) ) {
-            
-            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, static_cast<DWORD>(OBJID_CLIENT), IID_IAccessible, (void**)(&editControlAccesible)); 
-        }
-
-        if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {
-            if ( compareFileNameWithFileInputField() ) {
-                fileFieldSuccess_ = true;
-                ::SetActiveWindow(activeWindowBeforeFill_);
-                activeWindowBeforeFill_ = 0; 
-                KillTimer(1);
-                if (onFileFieldFilled_ ) {
-                    onFileFieldFilled_(uploadFileName_);
-                }
-                UnhookWindowsHookEx(hook_);
-                hook_ = 0;
-                uploadFileName_.Empty();
-                editControl_ = 0;
-                return 0;
-            }
-        } 
-
-         {
-            
-            if ( editControlAccesible ) {
-                /*for ( int i = 0; i < 5; i++ )*/ {
-                    if ( ::IsWindow(fileDialog_) && !::IsWindowEnabled(fileDialog_)) {
-                        //LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
-                        HWND activeWindow  = ::GetActiveWindow();
-                        if ( activeWindow !=fileDialog_  ) {
-                            ::EndDialog(activeWindow, IDOK);
-                        }
-                    } 
-                    if ( compareFileNameWithFileInputField() ) {
-                        fileFieldSuccess_ = true;
-
-                        KillTimer(kMessageLoopTimeoutTimer);
-                        /*if ( messageLoopIsRunning_ ) {
-                            messageLoopIsRunning_ = false;
-                            PostQuitMessage(0);
-                        }*/
-                        
-                        ::SetActiveWindow(activeWindowBeforeFill_);
-                        activeWindowBeforeFill_ = 0; 
-                        //fileDialogEvent_.PulseEvent();
-                        KillTimer(1);
-                        if (onFileFieldFilled_ ) {
-                            onFileFieldFilled_(uploadFileName_);
-                        }
-                        UnhookWindowsHookEx(hook_);
-                        hook_ = 0;
-                        uploadFileName_.Empty();
-                            return 0;
-                    }
-
-                    for ( int j = 0; j < 5; j++ ) {
-                        editControlAccesible->put_accValue(v, CComBSTR(uploadFileName_));
-                        if ( GuiTools::GetWindowText(editControl_) == uploadFileName_) {
-                            break;
-                        }
-                    }
-                    
-                    if ( GuiTools::GetWindowText(editControl_) == uploadFileName_) {
-                        ::SendMessage(fileDialog_, WM_COMMAND, MAKELPARAM(IDOK, BN_CLICKED), (LPARAM)::GetDlgItem(fileDialog_, IDOK));
-
-                        if ( ::IsWindow(fileDialog_) && !::IsWindowEnabled(fileDialog_)  ) {
-                            HWND activeWindow  = ::GetActiveWindow();
-                            if ( activeWindow !=fileDialog_  ) {
-                                ::EndDialog(activeWindow, IDOK);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-        }
-        
-    }
-    return 0;
-}
-
-LRESULT CWebViewWindow::OnSetFillTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    SetTimer(1, 400);
-    return 0;
-}
-
-LRESULT CWebViewWindow::OnFillInputField(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    //CBTHookDelegate_.bind(this, &CWebViewWindow::CBTHook);
-
-//    hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) MakeCallback(&CWebViewWindow::CBTHook), _Module.GetModuleInstance(), GetCurrentThreadId());
-    hook_ = SetWindowsHookEx(WH_CBT, (HOOKPROC) /*CBTHook*/callback_, _Module.GetModuleInstance(), GetCurrentThreadId());
-    accesible_->accDoDefaultAction(CComVariant(0));
-    return 0;
-}
-
 LRESULT CWebViewWindow::OnDestroyFromAnotherThread(UINT, WPARAM, LPARAM, BOOL&)
 {
     DestroyWindow();
@@ -469,284 +252,31 @@ LRESULT CWebViewWindow::OnDestroyFromAnotherThread(UINT, WPARAM, LPARAM, BOOL&)
     return 0;
 }
 
-BOOL CALLBACK CWebViewWindow::EnumChildProc(HWND wnd, LPARAM lParam)
-{
-    CWebViewWindow* this_ = reinterpret_cast<CWebViewWindow*>(lParam);
-
-    TCHAR Buffer[MAX_PATH] = _T("");
-    GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-    if ( (!lstrcmpi(Buffer, _T("ComboBoxEx32")) &&  (::GetWindowLong(wnd, GWL_STYLE))& CBS_DROPDOWN) ) {
-        HWND edit = FindWindowEx(wnd, 0, _T("Edit"),0);
-        if ( !edit ) {
-            HWND combobox = FindWindowEx(wnd, 0, _T("Combobox"),0);
-            edit = FindWindowEx(combobox, 0, _T("Edit"),0);
-        }
-        this_->editControl_ = edit;
-        this_->combobox_ = wnd;
-        
-    } else if ( !lstrcmpi(Buffer, _T("Edit"))  ) {
-        this_->editControl_ = wnd;
-        this_->combobox_ = 0; 
-    }
-    return TRUE;
-}
-
-void FileDialogSubclassWindow::SubclassWindow(HWND wnd)
-{
-    TBase::SubclassWindow(wnd);
-    SetTimer(kTimerId, 50);
-}
-
-FileDialogSubclassWindow::FileDialogSubclassWindow(CWebViewWindow* webViewWindow)
-{
-    webViewWindow_ = webViewWindow;
-    editControl_ = 0;
-    combobox_ = 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    bHandled = false;
-    EnumChildWindows(m_hWnd, EnumChildProc, (LPARAM)this);
-
-    if (this->editControl_ ) {
-        this->SetWindowLong( GWL_STYLE, this->GetWindowLong(GWL_STYLE) & WS_CHILD & ~ (WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-            WS_MINIMIZEBOX|WS_POPUP|WS_BORDER|WS_VISIBLE));
-        this->SetWindowLong( GWL_EXSTYLE, 0);
-        this->ShowWindow(SW_HIDE);
-        this->SetWindowPos(HWND_BOTTOM,0,0,1,1,SWP_HIDEWINDOW);
-        //SetTimer(kFillTimerId,400);
-        webViewWindow_->fileDialog_ = m_hWnd;
-        webViewWindow_->editControl_ = editControl_;
-        webViewWindow_->combobox_  = combobox_;
-        webViewWindow_->SetFillTimer();
-    }
-    return 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnShow(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    if ( wParam == TRUE ) {
-        //LOG(INFO) << "FileDialogSubclassWindow::OnShow";
-        //::SetWindowLong(m_hWnd, GWL_STYLE, ::GetWindowLong(m_hWnd, GWL_STYLE) & ~ (WS_VISIBLE));
-        ::SetWindowLong(m_hWnd, GWL_STYLE, ::GetWindowLong(m_hWnd, GWL_STYLE) & ~ (WS_VISIBLE|WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-            WS_MINIMIZEBOX));
-        //SetWindowLong(GWL_STYLE, GetWindowLong(GWL_STYLE) & ~WS_VISIBLE);
-        ::SetWindowPos(HWND_BOTTOM, m_hWnd,0,0,1,1,SWP_HIDEWINDOW);
-        ShowWindow(SW_HIDE);
-        bHandled = true;
-    }
-    return 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    Detach();
-    bHandled = false;
-    return 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
-{
-    //LOG(INFO) << "OnGetMinMaxInfo";
-    MINMAXINFO* mmi = (MINMAXINFO*) lParam;
-    ZeroMemory(mmi, sizeof(MINMAXINFO));
-    /*mmi->ptMaxSize.x = 1;
-    mmi->ptMaxSize.y = 1;
-    mmi->ptMaxPosition.x=1;
-    mmi->ptMaxPosition.y=1;
-    mmi->ptMaxPosition.x=1;
-    mmi->ptMaxPosition.y=1;
-    mmi->ptMinTrackSize.x=1;
-    mmi->ptMinTrackSize.x=1;
-    mmi->ptMaxTrackSize.x=1;
-    mmi->ptMaxTrackSize.y=1;*/
-    bHandled = true;
-    return 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    if ( LOWORD(wParam) == WA_ACTIVE ) {
-        bHandled = true;
-        HWND old = (HWND)lParam;
-        if ( old != m_hWnd ) {
-            ::SetActiveWindow(old);
-        }
-    }
-    return 0;
-}
-
-LRESULT FileDialogSubclassWindow::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    bHandled = false;
-    if ( wParam == kTimerId ) {
-        ShowWindow(SW_HIDE);
-        ::SetWindowPos(HWND_BOTTOM, m_hWnd,0,0,1,1,SWP_HIDEWINDOW);
-    } else if (  wParam == kFillTimerId  ) {
-        VARIANT v;
-        v.vt = VT_I4 ;
-        v.lVal  = CHILDID_SELF;
-        CComPtr<IAccessible> editControlAccesible;
-        if ( ::IsWindow(editControl_) ) {
-            /*HRESULT hr =*/ ::AccessibleObjectFromWindow(editControl_, static_cast<DWORD>(OBJID_CLIENT), IID_IAccessible, (void**)(&editControlAccesible)); 
-        }
-
-        if ( editControl_ && (!::IsWindow(editControl_) || !editControlAccesible )) {
-            if ( webViewWindow_->compareFileNameWithFileInputField() ) {
-
-                KillTimer(kFillTimerId);
-                if (webViewWindow_->onFileFieldFilled_ ) {
-                    webViewWindow_->onFileFieldFilled_(webViewWindow_->uploadFileName_);
-                }
-                webViewWindow_->uploadFileName_.Empty();
-                editControl_ = 0;
-                return 0;
-            }
-        } 
-
-         {
-            
-            if ( editControlAccesible ) {
-                /*for ( int i = 0; i < 5; i++ )*/ {
-                    if ( IsWindow() && !IsWindowEnabled()) {
-                        //LOG(ERROR) << "fileDialog_ is disabled. Enabling it again.";
-                        HWND activeWindow  = ::GetActiveWindow();
-                        if ( activeWindow != m_hWnd  ) {
-                            ::EndDialog(activeWindow, IDOK);
-                        }
-                    } 
-                    if ( webViewWindow_->compareFileNameWithFileInputField() ) {
-                        
-                        ::SetActiveWindow(webViewWindow_->activeWindowBeforeFill_);
-                        webViewWindow_->activeWindowBeforeFill_ = 0; 
-                        //fileDialogEvent_.PulseEvent();
-                        KillTimer(kFillTimerId);
-                        if (webViewWindow_->onFileFieldFilled_ ) {
-                            webViewWindow_->onFileFieldFilled_(webViewWindow_->uploadFileName_);
-                        }
-                        webViewWindow_->uploadFileName_.Empty();
-                            return 0;
-                    }
-
-                    for ( int j = 0; j < 5; j++ ) {
-                        editControlAccesible->put_accValue(v, CComBSTR(webViewWindow_->uploadFileName_));
-                        if ( GuiTools::GetWindowText(editControl_) == webViewWindow_->uploadFileName_) {
-                            break;
-                        }
-                    }
-                    
-                    if ( GuiTools::GetWindowText(editControl_) == webViewWindow_->uploadFileName_) {
-                        SendMessage(WM_COMMAND, MAKELPARAM(IDOK, BN_CLICKED), (LPARAM)(HWND)GetDlgItem(IDOK));
-
-                        if ( IsWindow() && !IsWindowEnabled()  ) {
-                            HWND activeWindow  = ::GetActiveWindow();
-                            if ( activeWindow !=m_hWnd  ) {
-                                ::EndDialog(activeWindow, IDOK);
-                            }
-                        }
-                        
-                    }
-                }
-            }
-        }
-    }
-        
-    return 0;
-}
-
-
-LRESULT FileDialogSubclassWindow::OnWindowPosChanging(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = true;
-    WINDOWPOS *wp = (WINDOWPOS *)lParam;
-    wp->cx = 0;
-    wp->cy = 0;
-    wp->x = 0;
-    wp->y = 0;
-    wp->hwndInsertAfter = HWND_BOTTOM;
-    wp->flags &=  SWP_HIDEWINDOW;
-    return 0;
-}
-
-BOOL CALLBACK FileDialogSubclassWindow::EnumChildProc(HWND wnd, LPARAM lParam)
-{
-    FileDialogSubclassWindow* this_ = reinterpret_cast<FileDialogSubclassWindow*>(lParam);
-
-    TCHAR Buffer[MAX_PATH] = _T("");
-    GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-    if ( (!lstrcmpi(Buffer, _T("ComboBoxEx32")) &&  (::GetWindowLong(wnd, GWL_STYLE))& CBS_DROPDOWN) ) {
-        HWND edit = FindWindowEx(wnd, 0, _T("Edit"),0);
-        if ( !edit ) {
-            HWND combobox = FindWindowEx(wnd, 0, _T("Combobox"),0);
-            edit = FindWindowEx(combobox, 0, _T("Edit"),0);
-        }
-        this_->editControl_ = edit;
-        this_->combobox_ = wnd;
-
-    } else if ( !lstrcmpi(Buffer, _T("Edit"))  ) {
-        this_->editControl_ = wnd;
-        this_->combobox_ = 0; 
-    }
-    return TRUE;
-}
-
-
-/*LRESULT CALLBACK FileDialogSubclassWindow::MyWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    // a thunk substitutes 'this' pointer for HWND parameter on the 
-    FileDialogSubclassWindow* pThis = 
-        static_cast<FileDialogSubclassWindow*>(reinterpret_cast<TBase*>(hWnd)); 
-    HWND wnd  = pThis->m_hWnd;
-    if ( uMsg == WM_INITDIALOG ) {
-        EnumChildWindows(wnd, EnumChildProc, (LPARAM)pThis);
-
-        bool isWindowVisible = pThis->IsWindowVisible();
-        if (pThis->editControl_ ) {
-
-
-            LOG(INFO) << "isWindowVisible" << isWindowVisible;
-            pThis->SetWindowLong( GWL_STYLE, pThis->GetWindowLong(GWL_STYLE) & WS_CHILD & ~ (WS_CAPTION |  WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | 
-                WS_MINIMIZEBOX|WS_POPUP|WS_BORDER|WS_VISIBLE));
-            pThis->ShowWindow(SW_HIDE);
-            pThis->SetWindowPos(HWND_BOTTOM,0,0,1,1,0);
-        }
-
-        LRESULT res = TBase::WindowProc(hWnd, uMsg, wParam, lParam);
-        pThis->SetTimer(kFillTimerId,400);
-        //LOG(ERROR) << "CWebViewWindowOnActivate="<<GuiTools::GetWindowText(wnd);
-        
-    }
-    // forward to original proc if you want 
-    return TBase::WindowProc(hWnd, uMsg, wParam, lParam); 
-}*/
-/*
-CDialogHook::CDialogHook(CWebViewWindow* webViewWindow)
-{
-    webViewWindow_ = webViewWindow;
-    Hook();
-}
-
-CDialogHook::~CDialogHook()
-{
-    Hook(0);
-}
-
-LRESULT CDialogHook::HookProc(int nCode, WPARAM wParam, LPARAM lParam)
-{
-    
-    if(nCode == HCBT_CREATEWND)
-    {
-        HWND hwnd = (HWND)wParam;
-        CBT_CREATEWND *cw = (CBT_CREATEWND*)lParam;
-        if ( !lstrcmp(    GetWndClass(wParam, lParam), _T("#32770"))
-                && !lstrcmp(cw->lpcs->lpszName, _T("Открытие"))
-            ) { 
-            webViewWindow_->handleDialogCreation(hwnd, true);
-            
-        }
-
-        return CCBTHook::HookProc(nCode, wParam, lParam); // calls next hook
+void CWebViewWindow::setSilent(bool silent) {
+    if (view_.m_hWnd) {
+        view_.PutSilent(silent);
+    } else {
+        //initialSilent_ = silent;
     }
 }
-*/
+
+bool CWebViewWindow::displayHTML(const CString& html) {
+    return view_.displayHTML(html) == ERROR_SUCCESS;
+}
+
+void CWebViewWindow::setOnUrlChanged(std::function<void(const CString&)> cb) {
+    if (view_.m_hWnd) {
+        view_.setOnNavigateComplete2(std::move(cb));
+    } else {
+        onUrlChanged_ = cb;
+    }
+
+}
+
+void CWebViewWindow::setOnDocumentComplete(std::function<void(const CString&)> cb) {
+    onDocumentComplete_ = cb;
+}
+
+void CWebViewWindow::setOnNavigateError(std::function<bool(const CString&, LONG)> cb) {
+    onNavigateError_ = cb;
+}

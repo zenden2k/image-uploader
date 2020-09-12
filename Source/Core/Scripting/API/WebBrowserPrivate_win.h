@@ -33,7 +33,6 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #endif
 #include "3rdpart/Registry.h"
-#include "HtmlDocumentPrivate_win.h"
 #include "Func/WinUtils.h"
 #include "COMUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
@@ -44,26 +43,22 @@ class CWebBrowser;
 
 using namespace Sqrat;
 
-
 class WebBrowserPrivate : public WebBrowserPrivateBase {
 public:
     WebBrowserPrivate(CWebBrowser * browser ) {
         owningThread_ = std::this_thread::get_id();
         browser_ = browser;
         using namespace std::placeholders;
-        webViewWindow_.view_.setOnNavigateComplete2(std::bind(&WebBrowserPrivate::OnPageLoaded, this, _1));
+        webViewWindow_.setOnUrlChanged(std::bind(&WebBrowserPrivate::OnUrlChanged, this, _1));
         webViewWindow_.view_.setOnNavigateError(std::bind(&WebBrowserPrivate::OnNavigateError, this, _1, _2));
         webViewWindow_.view_.setOnDocumentComplete(std::bind(&WebBrowserPrivate::OnDocumentComplete, this, _1));
-        webViewWindow_.setOnTimerCallback(std::bind(&WebBrowserPrivate::OnTimer, this));
-        webViewWindow_.setOnFileFieldFilledCallback(std::bind(&WebBrowserPrivate::OnFileFieldFilled, this, _1));
         initialWidth_ = 800;
         initialHeight_ = 600;
         initialTitle_ = _T("Web Browser");
         timerInterval_ = 0;
-        initialSilent_ = true;
     }
 
-    ~WebBrowserPrivate() {
+    virtual ~WebBrowserPrivate() {
         assert(owningThread_ == std::this_thread::get_id()); 
         // WTF? WebViewWindow should be destroyed in the same thread it was created
         if ( IsWindow(webViewWindow_.m_hWnd) ) {
@@ -72,13 +67,6 @@ public:
         webViewWindow_.m_hWnd = 0;
     }
 
-    void setSilent(bool silent) {
-        if ( webViewWindow_.m_hWnd) {
-            webViewWindow_.view_.PutSilent(silent);
-        } else {
-            initialSilent_ = silent;
-        }
-    }
     bool navigateToUrl(const std::string& url) {
         if ( webViewWindow_.m_hWnd) {
             return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
@@ -144,7 +132,7 @@ public:
 
     bool setHtml(const std::string& html) {
         if ( webViewWindow_.m_hWnd) {
-            return webViewWindow_.view_.displayHTML(IuCoreUtils::Utf8ToWstring(html).c_str()) == ERROR_SUCCESS;
+            return webViewWindow_.displayHTML(U2W(html));
         } else {
             initialHtml_ = IuCoreUtils::Utf8ToWstring(html).c_str();
             return true;
@@ -187,7 +175,9 @@ public:
     }
 
     const std::string getDocumentContents() {
-        return /*IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetHTML());*/document().getHTML();
+        // TODO: not implemented
+        return {};
+        //return W2U(webViewWindow_.getDocumentContents());
     }
 
     void addTrustedSite(const std::string& site) {
@@ -251,7 +241,6 @@ protected:
     CString initialTitle_;
     CString initialHtml_;
     CWebBrowser* browser_;
-    bool initialSilent_;
     int initialWidth_;
     int initialHeight_;
     std::thread::id owningThread_;
@@ -263,7 +252,6 @@ protected:
 
         //CRect r(0,0, initialWidth_, initialWidth_);
         webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW    );
-        webViewWindow_.view_.PutSilent(initialSilent_);
         CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
         float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
         float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -271,15 +259,10 @@ protected:
         if ( initialWidth_ && initialHeight_ ) {
             webViewWindow_.ResizeClient(static_cast<int>(initialWidth_ * dpiScaleX_), static_cast<int>(initialHeight_ * dpiScaleY_));
         }
-        if ( timerInterval_ ) {
-            webViewWindow_.setTimerInterval(timerInterval_);
-        }
     }
-    void OnPageLoaded(const CString& url);
+    void OnUrlChanged(const CString& url);
     void OnDocumentComplete(const CString& url);
     bool OnNavigateError(const CString& url, LONG statusCode);
-    void OnTimer();
-    void OnFileFieldFilled(const CString& fileName);
 };
 
 }

@@ -27,7 +27,7 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
         itemIndex = entries_.size() - 1;
     }
    
-    for (auto listener : listeners_) {
+    for (auto* listener : listeners_) {
         listener->onItemAdded(itemIndex, entry);
     }
 }

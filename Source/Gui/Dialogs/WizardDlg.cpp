@@ -1682,7 +1682,7 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 // TODO: remove this functionality
 LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    CString webViewClass(_T("CWebViewWindow"));
+    /*CString webViewClass(_T("CWebViewWindow"));
     CString fileDialogClass(_T("FileDialogSubclassWindow"));
     CString dialogClass(_T("#32770"));
     HWND browserWindow = CWebViewWindow::window;
@@ -1733,7 +1733,7 @@ LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
             
         }
         
-    }
+    }*/
     return 0;
 }
 

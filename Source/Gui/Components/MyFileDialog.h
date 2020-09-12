@@ -8,8 +8,8 @@
 
 class IMyFileDialog {
 public:
-    typedef std::pair<CString, CString> FileFilter;
-    typedef std::vector<FileFilter> FileFilterArray;
+    using FileFilter = std::pair<CString, CString>;
+    using FileFilterArray = std::vector<FileFilter>;
     virtual ~IMyFileDialog();
     virtual INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())=0;
     virtual CString getFolderPath();

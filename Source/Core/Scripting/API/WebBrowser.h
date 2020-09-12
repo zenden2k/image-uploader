@@ -74,7 +74,6 @@ class WebBrowserPrivate;
             Returns current page contents.
             */
             const std::string getDocumentContents();
-            HtmlDocument document();
             bool setHtml(const std::string& html);
             const std::string runJavaScript(const std::string& code);
             const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
@@ -118,29 +117,6 @@ class WebBrowserPrivate;
                 @endcode
              */
             void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
-            /**
-             * Arguments passed to callback:
-                <b>data</b> - a table containing:
-                @code
-                {
-                  browser = WebBrowser,
-                }
-                @endcode
-             */
-            void setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context);
-            
-            /**
-             * Arguments passed to callback:
-                <b>data</b> - a table containing:
-                @code
-                {
-                  browser = WebBrowser,
-                  fileName = string
-                }
-                @endcode
-             */
-            void setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context);
-
             
             friend class WebBrowserPrivate;
         protected:

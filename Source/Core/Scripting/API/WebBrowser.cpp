@@ -19,15 +19,12 @@
 */
 
 #include "WebBrowser.h"
-//using namespace ScriptAPI;
-
 
 #ifdef _WIN32
 #include "WebBrowserPrivate_win.h"
 #else
 // Not implemented
 #endif
-
 
 namespace ScriptAPI {
 
@@ -62,25 +59,12 @@ void CWebBrowser::setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Obj
     d_->setOnLoadFinishedCallback(callBack, context);
 }
 
-void CWebBrowser::setOnTimerCallback(int timerInterval, Sqrat::Function callBack, Sqrat::Object context)
-{
-    d_->setOnTimerCallback(timerInterval,  callBack, context);
-}
-
-void CWebBrowser::setOnFileInputFilledCallback(Sqrat::Function callBack, Sqrat::Object context)
-{
-    d_->setOnFileInputFilledCallback(callBack, context);
-}
 
 const std::string CWebBrowser::getDocumentContents()
 {
     return d_->getDocumentContents();
 }
 
-ScriptAPI::HtmlDocument CWebBrowser::document()
-{
-    return d_->document();
-}    
 
 bool CWebBrowser::setHtml(const std::string& html)
 {
@@ -95,11 +79,6 @@ const std::string CWebBrowser::runJavaScript(const std::string& code)
 const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, Sqrat::Object args)
 {
     return d_->callJavaScriptFunction(funcName, args);
-}
-
-void CWebBrowser::setSilent(bool silent)
-{
-    d_->setSilent(silent);
 }
 
 void CWebBrowser::addTrustedSite(const std::string& domain)
@@ -170,17 +149,13 @@ void RegisterWebBrowserClass(Sqrat::SqratVM& vm) {
         .Func("url", &CWebBrowser::url)
         .Func("title", &CWebBrowser::title)
         .Func("getDocumentContents", &CWebBrowser::getDocumentContents)
-        .Func("document", &CWebBrowser::document)
         .Func("setHtml", &CWebBrowser::setHtml)
         .Func("runJavaScript", &CWebBrowser::runJavaScript)
-        .Func("setSilent", &CWebBrowser::setSilent)
         .Func("addTrustedSite", &CWebBrowser::addTrustedSite)
         .Func("getMajorVersion", &CWebBrowser::getMajorVersion)
         .Func("callJavaScriptFunction", &CWebBrowser::callJavaScriptFunction)
         .Func("setOnUrlChangedCallback", &CWebBrowser::setOnUrlChangedCallback)
         .Func("setOnLoadFinishedCallback", &CWebBrowser::setOnLoadFinishedCallback)
-        .Func("setOnTimerCallback", &CWebBrowser::setOnTimerCallback)
-        //.Func("setOnFileInputFilledCallback", &CWebBrowser::setOnFileInputFilledCallback)
         .Func("setOnNavigateErrorCallback", &CWebBrowser::setOnNavigateErrorCallback)
     );
 }

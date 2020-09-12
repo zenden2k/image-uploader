@@ -26,8 +26,6 @@
 #ifdef _WIN32
 //#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #include "WebBrowser.h"
-#include "HtmlDocument.h"
-#include "HtmlElement.h"
 #include "WebBrowserPrivateBase.h"
 #endif
 
@@ -260,8 +258,8 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
 //#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #ifdef _WIN32
     RegisterWebBrowserClass(vm);
-    RegisterHtmlDocumentClass(vm);
-    RegisterHtmlElementClass(vm);
+    //RegisterHtmlDocumentClass(vm);
+    //RegisterHtmlElementClass(vm);
 #endif
 }
 void RegisterAPI(Sqrat::SqratVM& vm)

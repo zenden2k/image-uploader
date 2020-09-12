@@ -18,8 +18,8 @@
 
 */
 
-#ifndef IU_GUI_DIALOGS_ServerSelectorControl_H
-#define IU_GUI_DIALOGS_ServerSelectorControl_H
+#ifndef IU_GUI_DIALOGS_SERVERSELECTORCONTROL_H
+#define IU_GUI_DIALOGS_SERVERSELECTORCONTROL_H
 
 
 #pragma once
@@ -133,6 +133,6 @@ private:
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
 };
 
-#endif // IU_GUI_DIALOGS_ServerSelectorControl_H
+#endif
 
 

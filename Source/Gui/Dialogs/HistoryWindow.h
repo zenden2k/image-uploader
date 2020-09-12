@@ -18,8 +18,8 @@
 
 */
 
-#ifndef HISTORYWINDOW_H
-#define HISTORYWINDOW_H
+#ifndef IU_GUI_DIALOGS_HISTORYWINDOW_H
+#define IU_GUI_DIALOGS_HISTORYWINDOW_H
 #pragma once
 
 #include "atlheaders.h"
@@ -33,13 +33,13 @@ class CHistoryReader;
 
 // CHistoryWindow
 
-#define ID_OPENINBROWSER 13000
-#define ID_COPYTOCLIPBOARD (ID_OPENINBROWSER + 1)
-#define ID_VIEWBBCODE (ID_OPENINBROWSER + 2)
-#define ID_OPENFOLDER (ID_OPENINBROWSER + 3)
-#define ID_EDITFILEONSERVER (ID_OPENINBROWSER + 4)
-#define ID_DELETEFILEONSERVER (ID_OPENINBROWSER + 5)
-#define WM_MY_OPENHISTORYFILE (WM_USER + 101)
+constexpr int ID_OPENINBROWSER = 13000;
+constexpr int ID_COPYTOCLIPBOARD = (ID_OPENINBROWSER + 1);
+constexpr int ID_VIEWBBCODE = (ID_OPENINBROWSER + 2);
+constexpr int ID_OPENFOLDER = (ID_OPENINBROWSER + 3);
+constexpr int ID_EDITFILEONSERVER (ID_OPENINBROWSER + 4);
+constexpr int ID_DELETEFILEONSERVER = (ID_OPENINBROWSER + 5);
+constexpr int WM_MY_OPENHISTORYFILE = (WM_USER + 101);
 
 class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
     public CDialogResize <CHistoryWindow>,
@@ -140,4 +140,4 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 };
 
-#endif // HISTORYWINDOW_H
+#endif

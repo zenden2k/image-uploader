@@ -277,16 +277,3 @@ BOOL IU_CreateFilePath(LPCTSTR szFilePath)
 
     return bRes;
 }
-
-HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
-{
-    SHFILEINFO Info;
-    DWORD Flags;
-
-    if (Small)
-        Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-    else
-        Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES | SHGFI_ADDOVERLAYS;
-    SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
-    return Info.hIcon;
-}

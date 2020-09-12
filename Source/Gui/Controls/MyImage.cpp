@@ -61,8 +61,6 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
         RECT rc;
         GetClientRect(&rc);
         SetBkMode(hdc, TRANSPARENT);
-        HBRUSH br = CreateSolidBrush(RGB(0x52, 0xaa, 0x99));
-        DeleteObject(br);
         BitBlt(hdc, 0, 0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
     }
 

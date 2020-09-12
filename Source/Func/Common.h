@@ -58,19 +58,9 @@ extern CCmdLine CmdLine;
 bool IULaunchCopy(CString params, const CAtlArray<CString> &files);
 bool IULaunchCopy(CString additionalParams=_T(""));
 
-inline COLORREF RGB2COLORREF(unsigned int color)
-{
-    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-}
-
-inline unsigned int COLORREF2RGB( COLORREF color)
-{
-    return RGB(GetBValue(color), GetGValue(color), GetRValue(color));
-}
 void IU_RunElevated(CString params);
 
 DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
-HICON GetAssociatedIcon (LPCTSTR filename, bool Small);
 
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");

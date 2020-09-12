@@ -141,7 +141,7 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
 }
 HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
-    HistoryTreeItem* item = reinterpret_cast<HistoryTreeItem*> (res->userData());
+    auto* item = static_cast<HistoryTreeItem*> (res->userData());
     return item ? item->hi : nullptr;
 }
 
@@ -168,7 +168,7 @@ HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
         return it->second;
     }
 
-    HICON res = GetAssociatedIcon(fileName, false);
+    HICON res = WinUtils::GetAssociatedIcon(fileName, false);
     if(!res) return 0;
     m_fileIconCache[ext]=res;
     return res;
@@ -345,7 +345,7 @@ void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
 {
     HDC hdcMem = CreateCompatibleDC(hdc);
     BITMAP bm;
-    HBITMAP hbmOld = reinterpret_cast<HBITMAP>(SelectObject(hdcMem, bmp));
+    HBITMAP hbmOld = static_cast<HBITMAP>(SelectObject(hdcMem, bmp));
     GetObject(bmp, sizeof(bm), &bm);
     BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
     SelectObject(hdcMem, hbmOld);
@@ -410,7 +410,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         GuiTools::IconInfo info = GuiTools::GetIconInfo(ico);
         int iconWidth= info.nWidth;
         int iconHeight = info.nHeight;
-        HistoryTreeItem * hti  = reinterpret_cast<HistoryTreeItem*>(item->userData());
+        auto * hti  = static_cast<HistoryTreeItem*>(item->userData());
         
         if(draw)
         {
