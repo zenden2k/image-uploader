@@ -22,7 +22,7 @@
 
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
-#include "Core/ScreenCapture/Utils.h"
+#include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
 using namespace ScreenCapture;

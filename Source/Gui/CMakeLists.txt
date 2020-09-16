@@ -8,7 +8,8 @@ set(SRC_LIST
     ../3rdpart/ShellPidl.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
-    ../Core/ScreenCapture/Utils.cpp
+    ../Core/ScreenCapture/MonitorEnumerator.cpp
+    ../Core/ScreenCapture/ScreenshotHelper.cpp
     ../Core/Scripting/Script.cpp
     ../Core/Scripting/ScriptsManager.cpp
     ../Core/SearchByImage.cpp
@@ -178,7 +179,8 @@ set(HEADER_LIST
     ../3rdpart/ShellPidl.h
     ../Core/Images/ImageConverterPrivateBase.h
     ../Core/Images/ImageConverterPrivate_gdiplus.h
-    ../Core/ScreenCapture/Utils.h
+    ../Core/ScreenCapture/MonitorEnumerator.h
+    ../Core/ScreenCapture/ScreenshotHelper.h
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
     ../Core/SearchByImage.h

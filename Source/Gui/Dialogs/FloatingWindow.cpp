@@ -32,7 +32,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Core/ScreenCapture/Utils.h"
+#include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
 
 namespace {

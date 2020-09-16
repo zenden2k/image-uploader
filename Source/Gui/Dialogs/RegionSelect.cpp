@@ -21,6 +21,7 @@
 #include "atlheaders.h"
 #include "RegionSelect.h"
 #include "Core/i18n/Translator.h"
+#include "Core/ScreenCapture/ScreenshotHelper.h"
 #include "Gui/GuiTools.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -182,7 +183,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         RECT SelWndRect;
         if(hSelWnd)
         {
-            CRgn WindowRgn = GetWindowVisibleRegion(hSelWnd);
+            CRgn WindowRgn = ScreenshotHelper::getInstance().getWindowVisibleRegion(hSelWnd);
             WindowRgn.OffsetRgn(topLeft);
             WindowRgn.GetRgnBox(&SelWndRect);
             CRect DrawingRect = SelWndRect;

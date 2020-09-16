@@ -29,12 +29,9 @@
 #include "resource.h"
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
+#include "Core/ScreenCapture/ScreenshotHelper.h"
 
 namespace ScreenCapture {
-
-typedef HRESULT (WINAPI * DwmGetWindowAttribute_Func)(HWND, DWORD, PVOID, DWORD);
-typedef HRESULT (WINAPI * DwmIsCompositionEnabled_Func)(BOOL*);
-RECT MaximizedWindowFix(HWND handle, RECT windowRect);
 
 using namespace Gdiplus;
 
@@ -48,13 +45,6 @@ void ProcessEvents(void)
     }
 }
 
-bool IsWindowMaximized(HWND handle)
-{
-    WINDOWPLACEMENT wp;
-    GetWindowPlacement(handle, &wp);
-    return wp.showCmd == static_cast<UINT>(SW_MAXIMIZE);
-}
-
 void ActivateWindowRepeat(HWND handle, int count)
 {
     for (int i = 0; GetForegroundWindow() != handle && i < count; i++)
@@ -65,38 +55,7 @@ void ActivateWindowRepeat(HWND handle, int count)
     }
 }
 
-BOOL MyGetWindowRect(HWND hWnd, RECT* res, bool MaximizedFix = true)
-{
-    if (!WinUtils::IsVistaOrLater())
-    {
-        return GetWindowRect(hWnd, res);
-    }
-    static HMODULE DllModule =  LoadLibrary(_T("dwmapi.dll"));
-    if (DllModule)
-    {
-        DwmIsCompositionEnabled_Func IsCompEnabledFunc = reinterpret_cast<DwmIsCompositionEnabled_Func>( GetProcAddress(
-              DllModule, "DwmIsCompositionEnabled"));
-        if (IsCompEnabledFunc)
-        {
-            BOOL isEnabled = false;
-            if (S_OK == IsCompEnabledFunc( &isEnabled))
-                if (isEnabled)
-                {
-                    DwmGetWindowAttribute_Func Func = reinterpret_cast<DwmGetWindowAttribute_Func>(GetProcAddress(DllModule, "DwmGetWindowAttribute"));
-                    if (Func)
-                    {
-                        if (S_OK == Func( hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT)))
-                        {
-                            if (MaximizedFix)
-                                *res = MaximizedWindowFix(hWnd, *res);
-                            return TRUE;
-                        }
-                    }
-                }
-        }
-    }
-    return GetWindowRect(hWnd, res);
-}
+
 
 HRGN CloneRegion(HRGN source)
 {
@@ -139,47 +98,7 @@ bool GetScreenBounds(RECT& rect)
     return true;
 
 }
-RECT ScreenFromRectangle(RECT rc)
-{
-    monitorsRects.clear();
-    EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
-    int max = 0;
-    size_t iMax = 0;
-    for (size_t i = 0; i < monitorsRects.size(); i++)
-    {
-        CRect Bounds = monitorsRects[i];
-        Bounds.IntersectRect(&Bounds, &rc);
-        if (Bounds.Width() * Bounds.Height() > max)
-        {
-            max = Bounds.Width() * Bounds.Height();
-            iMax = i;
-        }
-        // result.UnionRect(result,Bounds);
-    }
-    return monitorsRects[iMax];
-}
 
-RECT MaximizedWindowFix(HWND handle, RECT windowRect)
-{
-    RECT res = windowRect;
-    if (IsWindowMaximized(handle))
-    {
-        RECT screenRect = ScreenFromRectangle(windowRect);
-        if (windowRect.left < screenRect.left)
-        {
-            windowRect.right -= (screenRect.left - windowRect.left) /** 2*/;
-            windowRect.left = screenRect.left;
-        }
-        if (windowRect.top < screenRect.top)
-        {
-            windowRect.bottom -= (screenRect.top - windowRect.top) /** 2*/;
-            windowRect.top = screenRect.top;
-        }
-        IntersectRect(&res, &windowRect, &screenRect);
-        //  windowRect.Intersect(screenRect);
-    }
-    return res;
-}
 
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
@@ -264,45 +183,6 @@ void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsig
             }
         }
     }
-}
-
-HRGN GetWindowRegion(HWND wnd)
-{
-    RECT WndRect;
-    MyGetWindowRect(wnd, &WndRect );
-    CRgn WindowRgn;
-    WindowRgn.CreateRectRgnIndirect(&WndRect);
-    if (::GetWindowRgn(wnd, WindowRgn) != ERROR)
-    {
-        // WindowRegion.GetRgnBox( &WindowRect);
-        WindowRgn.OffsetRgn( WndRect.left, WndRect.top);
-    }
-    return WindowRgn.Detach();
-}
-
-HRGN GetWindowVisibleRegion(HWND wnd)
-{
-    CRgn winReg;
-    CRect result;
-    if (!(GetWindowLong(wnd, GWL_STYLE) & WS_CHILD))
-    {
-        winReg = GetWindowRegion(wnd);
-        return winReg.Detach();
-    }
-    MyGetWindowRect(wnd, &result);
-    while (GetWindowLong(wnd, GWL_STYLE) & WS_CHILD)
-    {
-        wnd = GetParent(wnd);
-        RECT rc;
-        if (GetClientRect(wnd, &rc))
-        {
-            MapWindowPoints(wnd, 0, reinterpret_cast<POINT*>(&rc), 2);
-            // parentRgn.CreateRectRgnIndirect(&rc);
-        }
-        result.IntersectRect(&result, &rc);
-    }
-    winReg.CreateRectRgnIndirect(&result);
-    return winReg.Detach();
 }
 
 CRectRegion::CRectRegion()
@@ -794,7 +674,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     SetForegroundWindow(target);
     // CRgn newRegion=GetWindowVisibleRegion(target);
     CRect actualWindowRect;
-    MyGetWindowRect(target, &actualWindowRect, false);
+    ScreenshotHelper::getInstance().getActualWindowRect(target, &actualWindowRect, false);
 //    bool IsSimpleRectWindow = newRegion.GetRgnBox(&windowRect)==SIMPLEREGION;
     bgColor = RGB(255, 255, 255);
     HWND wnd = 0;
@@ -879,7 +759,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
             bm3 = 0;
         }
     }
-    if ((m_RemoveCorners || (m_PreserveShadow)) /*&& !preResult*/ && !IsWindowMaximized(target))   // We don't have to clear window corners if we already have capture with aplha-channel
+    if ((m_RemoveCorners || (m_PreserveShadow)) /*&& !preResult*/ && !ScreenshotHelper::isWindowMaximized(target))   // We don't have to clear window corners if we already have capture with aplha-channel
     {
         bgColor = RGB(255, 0, 0);
         ShowWindow(wnd, SW_SHOWNOACTIVATE);
@@ -896,7 +776,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
             preResult = ress;
         }
     }
-    if (preResult && m_PreserveShadow && !IsWindowMaximized(target))
+    if (preResult && m_PreserveShadow && !ScreenshotHelper::isWindowMaximized(target))
     {
         Bitmap* shadowed = 0;
         AddBorderShadow(preResult, true, &shadowed);
@@ -925,7 +805,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
     m_ScreenRegion.CreateRectRgnIndirect(&captureRect);
     for (size_t i = 0; i < m_hWnds.size(); i++)
     {
-        CRgn newRegion = GetWindowVisibleRegion(m_hWnds[i].wnd);
+        CRgn newRegion = ScreenshotHelper::getInstance().getWindowVisibleRegion(m_hWnds[i].wnd);
         m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR : RGN_DIFF);
     }
     bool move = false;

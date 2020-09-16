@@ -59,7 +59,7 @@
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
 #include "Gui/Components/MyFileDialog.h"
-#include "Core/ScreenCapture/Utils.h"
+#include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "statusdlg.h"
