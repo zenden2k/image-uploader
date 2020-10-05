@@ -109,7 +109,7 @@ bool Thumbnail::saveToFile(const std::string& filename)
     }
     SimpleXmlNode colorsNode = root.GetChild("Definitions").GetChild("Params");
     colorsNode.DeleteChilds();
-    for (std::map<std::string, std::string>::iterator it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
+    for (auto it = data_.colors_.begin(); it != data_.colors_.end(); ++it)
     {
         SimpleXmlNode colorNode = colorsNode.CreateChild("Param");
         colorNode.SetAttribute("Name", it->first);

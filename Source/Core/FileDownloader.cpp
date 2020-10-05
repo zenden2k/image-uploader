@@ -70,7 +70,7 @@ void CFileDownloader::start() {
     for (size_t i = 0; i < numThreads; i++) {
         runningThreads_++;
         isRunning_ = true;
-        threads_.push_back(std::thread(&CFileDownloader::memberThreadFunc, this));
+        threads_.emplace_back(&CFileDownloader::memberThreadFunc, this);
     }
 }
 
@@ -215,11 +215,11 @@ void CFileDownloader::setOnFileFinishedCallback(decltype(onFileFinished_) callba
 }
 
 void CFileDownloader::setOnQueueFinishedCallback(decltype(onQueueFinished_) callback) {
-    onQueueFinished_ = callback;
+    onQueueFinished_ = std::move(callback);
 }
 
 void CFileDownloader::setOnConfigureNetworkClientCallback(decltype(onConfigureNetworkClient_) callback) {
-    onConfigureNetworkClient_ = callback;
+    onConfigureNetworkClient_ = std::move(callback);
 }
 
 bool CFileDownloader::waitForFinished()

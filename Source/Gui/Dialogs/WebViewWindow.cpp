@@ -214,26 +214,6 @@ void CWebViewWindow::destroyFromAnotherThread()
     SendMessage(WM_DESTROYWEBVIEWWINDOW);
 }
 
- TCHAR m_szClassName[MAX_PATH];
- #define CLASSNAME_LEN 100
-// helper to get class name (lowercase)
-LPCTSTR GetWndClass(WPARAM wParam, LPARAM lParam)
-{
-    CBT_CREATEWND* pcw = (CBT_CREATEWND*)lParam;
-    ATLASSERT(pcw);
-    ATLASSERT(wParam);
-
-    m_szClassName[0] = 0;
-    LPCTSTR clname = pcw->lpcs->lpszClass;
-    if(IS_INTRESOURCE(clname))
-        ::GetClassName((HWND)wParam, m_szClassName, CLASSNAME_LEN-1);
-    else
-        lstrcpy(m_szClassName, clname);
-
-    ATLASSERT(m_szClassName[0]);
-    CharLower(m_szClassName);
-    return m_szClassName;
-}
 
 LRESULT CWebViewWindow::OnClose(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if ( isModal_ ) {
@@ -265,11 +245,11 @@ bool CWebViewWindow::displayHTML(const CString& html) {
 }
 
 void CWebViewWindow::setOnUrlChanged(std::function<void(const CString&)> cb) {
-    if (view_.m_hWnd) {
+    //if (view_.m_hWnd) {
         view_.setOnNavigateComplete2(std::move(cb));
-    } else {
+    /*} else {
         onUrlChanged_ = cb;
-    }
+    }*/
 
 }
 

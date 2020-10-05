@@ -7,7 +7,7 @@
 std::vector<RECT> ScreenshotHelper::monitorsRects_;
 
 ScreenshotHelper::ScreenshotHelper() {
-    if (!WinUtils::IsVistaOrLater()) {
+    if (WinUtils::IsVistaOrLater()) {
         dwmIsCompEnabledFunc_ = dwmApiLibrary.GetProcAddress<DwmIsCompositionEnabled_Func>("DwmIsCompositionEnabled");
         dwmGetWindowAttributeFunc_ = dwmApiLibrary.GetProcAddress<DwmGetWindowAttribute_Func>("DwmGetWindowAttribute");
     }
@@ -67,8 +67,13 @@ RECT ScreenshotHelper::maximizedWindowFix(HWND handle, RECT windowRect)
 bool ScreenshotHelper::isWindowMaximized(HWND handle)
 {
     WINDOWPLACEMENT wp;
-    GetWindowPlacement(handle, &wp);
-    return wp.showCmd == static_cast<UINT>(SW_MAXIMIZE);
+    memset(&wp, 0, sizeof(WINDOWPLACEMENT));
+    wp.length = sizeof(WINDOWPLACEMENT);
+
+    if (GetWindowPlacement(handle, &wp)) {
+        return wp.showCmd == static_cast<UINT>(SW_MAXIMIZE);
+    }
+    return false;
 }
 
 RECT ScreenshotHelper::screenFromRectangle(RECT rc)

@@ -183,7 +183,7 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
 bool CWizardDlg::pasteFromClipboard() {
     if (IsClipboardFormatAvailable(CF_BITMAP)) {
         if (!OpenClipboard()) return 0;
-        HBITMAP bmp = reinterpret_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
+        HBITMAP bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (!bmp) {
             CloseClipboard();
@@ -242,7 +242,7 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    auto translator = ServiceLocator::instance()->translator();
+    auto* translator = ServiceLocator::instance()->translator();
     ATLASSERT(translator != nullptr);
 
     m_bShowWindow = true;
@@ -529,9 +529,9 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
             getPage<CMainDlg>(wpMainPage)->ThumbsView.MyDeleteAllItems();
         }
         ShowPage(wpWelcomePage); 
-    }
-    else
+    } else {
         CloseWizard();
+    }
     return 0;
 }
 

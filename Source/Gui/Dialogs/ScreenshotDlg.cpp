@@ -167,14 +167,14 @@ CaptureMode CScreenshotDlg::captureMode() const
 
 LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
-    Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
+    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    Settings->ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
+    Settings->ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 
-    int itemIndex = m_monitorCombobox.GetCurSel();
+    const int itemIndex = m_monitorCombobox.GetCurSel();
     if (itemIndex >= 0) {
         MonitorMode monitorMode = static_cast<MonitorMode>(m_monitorCombobox.GetItemData(itemIndex));
-        Settings.ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
+        Settings->ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
     }
     
     return 0;

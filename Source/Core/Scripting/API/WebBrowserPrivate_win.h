@@ -195,7 +195,6 @@ public:
             Reg.WriteDword(CString(protocol.c_str()), 2);
         }    
     }
-    HtmlDocument document();
 
     IWebBrowser2* getBrowserInterface() {
         return  webViewWindow_.view_.GetBrowserInterface();
@@ -234,7 +233,6 @@ public:
     }
 
     void setFocus();
-    friend class HtmlElementPrivate;
 protected:
     CWebViewWindow webViewWindow_;
     CString initialUrl_;
