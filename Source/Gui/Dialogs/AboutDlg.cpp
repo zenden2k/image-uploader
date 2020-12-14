@@ -39,9 +39,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
-    
-    auto ver = AppParams::instance()->GetAppVersion();
-    auto translator = ServiceLocator::instance()->translator();
+
+    const auto ver = AppParams::instance()->GetAppVersion();
+    auto* translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
     m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
@@ -144,7 +144,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     CString boostVersion = CString(BOOST_LIB_VERSION);
     boostVersion.Replace(L'_', L'.');
     CString versionLabel;
-    versionLabel.Format(_T("%s version:"), _T("Boost"));
+    versionLabel.Format(_T("%s version: "), _T("Boost"));
     memoText += versionLabel + boostVersion + CString("\r\n");
     
     int webpVersion = WebPGetDecoderVersion();

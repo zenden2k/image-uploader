@@ -53,7 +53,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
-    CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
+    const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
 
     if (!WinUtils::IsVistaOrLater()) {
         // Try to remove Unicode Left-To-Right marks from text on Windows XP
@@ -62,7 +62,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     }
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
    
-    presetButtonIcon_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    presetButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
     presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
@@ -114,15 +114,15 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
 
     }
 
-    bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
+    const bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
-    if ( slm.addDirectoryAsServer(W2U(connectionName), W2U(directory), W2U(downloadUrl), addFileProtocol) ) {
-            createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
-            EndDialog(wID);
-    } else {
+    try {
+        createdServerName_ = U2W(slm.addDirectoryAsServer(W2U(connectionName), W2U(directory), W2U(downloadUrl), addFileProtocol));
+        EndDialog(wID);
+    } catch (const std::exception& ex) {
         CString errorMessage = TR("Could not add server.");
-        CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
+        const CString reason = U2W(ex.what());
         if ( !reason.IsEmpty() ) {
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
@@ -171,7 +171,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotif
 LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
     if ( !connectionNameEdited ) {   
-        CString serverName = TR("Folder ") + WinUtils::TrimString(directory, 30);
+        const CString serverName = TR("Folder ") + WinUtils::TrimString(directory, 30);
         SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
     }
     GenerateDownloadLink();

@@ -61,24 +61,8 @@ class Win7JumpList;
 class WtlGuiSettings;
 class CFloatingWindow;
 
-class CMyFolderDialog : public CFolderDialogImpl<CMyFolderDialog> {
-public:
-    void OnInitialized();
-    static BOOL CALLBACK DialogProc(
-
-        HWND hwndDlg,    // handle to dialog box
-        UINT uMsg,    // message
-        WPARAM wParam,    // first message parameter
-        LPARAM lParam     // second message parameter
-        );
-    DLGPROC OldProc;
-    CMyFolderDialog(HWND hWnd);
-    bool m_bSubdirs;
-    HWND SubdirsCheckbox;
-};
 
 extern TCHAR MediaInfoDllPath[MAX_PATH];
-
 
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,

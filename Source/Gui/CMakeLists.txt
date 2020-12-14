@@ -53,7 +53,6 @@ set(SRC_LIST
     Components/MyFileDialog.cpp
     Components/NewStyleFileDialog.cpp
     Components/NewStyleFileSaveDialog.cpp
-    Components/OldStyleFileDialog.cpp
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
@@ -224,7 +223,6 @@ set(HEADER_LIST
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h
-    Components/OldStyleFileDialog.h
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h
@@ -354,7 +352,7 @@ set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_D
 
 set(LIBS_LIST base64 libwebpdecoder libwebpdemux 
     gdiplus Ws2_32 avcodec avformat avutil swscale dwmapi winmm wininet IPHLPAPI
-    Secur32 Netapi32 Oleacc Winhttp Userenv Psapi
+    Secur32 Netapi32 Oleacc Winhttp Userenv Psapi uxtheme Urlmon
 )
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
@@ -366,7 +364,7 @@ target_link_libraries(GUI iucore
 )
 
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
-set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:uxtheme.dll /DELAYLOAD:dwmapi.dll /DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
+set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 
 add_custom_command(TARGET GUI
     PRE_BUILD

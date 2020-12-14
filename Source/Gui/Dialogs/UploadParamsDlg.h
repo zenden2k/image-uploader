@@ -35,7 +35,7 @@ class CUploadParamsDlg : public CCustomDialogIndirectImpl<CUploadParamsDlg>
         CUploadParamsDlg(ServerProfile& serverProfile, bool showImageProcessingParams = true, bool defaultServer = false);
         ~CUploadParamsDlg();
         enum { IDD = IDD_UPLOADPARAMSDLG };
-        ImageUploadParams imageUploadParams();
+        ImageUploadParams imageUploadParams() const;
     protected:
         BEGIN_MSG_MAP(CUploadParamsDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)

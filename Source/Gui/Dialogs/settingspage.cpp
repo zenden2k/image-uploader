@@ -18,12 +18,11 @@
 
 */
 
-#include "settingspage.h"
+#include "SettingsPage.h"
 
-#include "wizarddlg.h"
-#include "uxtheme.h"
+#include <Uxtheme.h>
+#include "Gui/Dialogs/WizardDlg.h"
 
-#pragma comment(lib, "uxtheme.lib")
 
 bool CSettingsPage::OnShow()
 {
@@ -91,7 +90,7 @@ bool CSettingsPage::Apply()
     return true;
 }
 
-void CSettingsPage::FixBackground()
+void CSettingsPage::FixBackground() const
 {
     TabBackgroundFix(PageWnd);
 }

@@ -65,7 +65,7 @@ namespace {
 CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) 
     :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles)
 {
-    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     nImageIndex = nFileIndex = -1;
     m_EngineList = EngineList;
     m_ProfileChanged  = false;
@@ -83,8 +83,10 @@ CUploadSettings::~CUploadSettings() {
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 {
-    WtlGuiSettings* settings = static_cast<WtlGuiSettings*>(settingsBase);
-    sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
+    auto* settings = dynamic_cast<WtlGuiSettings*>(settingsBase);
+    if (settings) {
+        sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
+    }   
 }
 
 void CUploadSettings::TranslateUI()
@@ -131,7 +133,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
     ::ReleaseDC(HWND_DESKTOP, dc) ;
-    iconDropdown_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    iconDropdown_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
     m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
 
@@ -139,7 +141,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
 
 
-    iconEdit_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
+    iconEdit_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
@@ -231,7 +233,7 @@ LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
-    if ( lpmis == NULL ) {
+    if ( lpmis == nullptr ) {
         return 0;
     }
 
@@ -244,7 +246,7 @@ LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
-    if ((lpdis == NULL) || (lpdis->CtlType != ODT_MENU))
+    if ((lpdis == nullptr) || (lpdis->CtlType != ODT_MENU))
         return S_OK; //not for a menu
     auto it = serverMenuIcons_.find(lpdis->itemID);
     if (it == serverMenuIcons_.end()) {
@@ -284,7 +286,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 {
     ImageUploadParams params = sessionImageServer_.getImageUploadParams();
     SendDlgItemMessage(IDC_KEEPASIS, BM_SETCHECK, params.ProcessImages);
-    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, (int)params.getThumb().Format);
+    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>(params.getThumb().Format));
     SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_SETCHECK, params.CreateThumbs);
     SendDlgItemMessage(IDC_ADDFILESIZE, BM_SETCHECK, params.getThumb().AddImageSize);
     SendDlgItemMessage(IDC_USESERVERTHUMBNAILS, BM_SETCHECK, params.UseServerThumbs);
@@ -312,7 +314,6 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
     ::EnableWindow(GetDlgItem(IDC_ADDFILESIZE), checked);
     ::EnableWindow(GetDlgItem(IDC_WIDTHLABEL), checked);
     ::EnableWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), checked);
-      
     ::EnableWindow(GetDlgItem(IDC_PXLABEL), checked);
         
     return 0;
@@ -320,7 +321,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
 
 bool CUploadSettings::OnNext()
 {    
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(!sessionImageServer_.serverName().empty())
     {
         CUploadEngineData *ue = sessionImageServer_.uploadEngineData();
@@ -354,15 +355,11 @@ bool CUploadSettings::OnNext()
         sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
    }*/
 
-#define IS_CHECKED(ctrl) (SendDlgItemMessage(ctrl,BM_GETCHECK,0)==BST_CHECKED)
-
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
-    imageUploadParams.CreateThumbs = IS_CHECKED(IDC_CREATETHUMBNAILS);
-    imageUploadParams.UseServerThumbs = IS_CHECKED(IDC_USESERVERTHUMBNAILS);
-    imageUploadParams.getThumbRef().AddImageSize = IS_CHECKED(IDC_ADDFILESIZE);
+    imageUploadParams.CreateThumbs = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
+    imageUploadParams.UseServerThumbs = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
+    imageUploadParams.getThumbRef().AddImageSize = GuiTools::IsChecked(m_hWnd, IDC_ADDFILESIZE);
     imageUploadParams.getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
-
-#undef IS_CHECKED 
 
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
@@ -374,11 +371,11 @@ bool CUploadSettings::OnNext()
 
     WizardDlg->setSessionImageServer(sessionImageServer_);
     WizardDlg->setSessionFileServer(sessionFileServer_);
-    if ( Settings.RememberImageServer ) {
-        Settings.imageServer = sessionImageServer_;
+    if ( settings->RememberImageServer ) {
+        settings->imageServer = sessionImageServer_;
     }
-    if ( Settings.RememberFileServer ) {
-        Settings.fileServer = sessionFileServer_;
+    if ( settings->RememberFileServer ) {
+        settings->fileServer = sessionFileServer_;
     }
     SaveCurrentProfile();
     return true;
@@ -468,11 +465,11 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
     if(ue->SupportsFolders){
         CServerFolderSelect as(serverProfile, uploadEngineManager_);
 
-        as.m_SelectedFolder.id= serverProfile.folderId();
+        as.m_SelectedFolder.id = serverProfile.folderId();
         
         if(as.DoModal() == IDOK){
-            BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-            ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile);
+            BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+            ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile);
 
             if(!as.m_SelectedFolder.id.empty()){
                 if (serverSettings) {
@@ -489,9 +486,8 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
                 serverProfile.setFolderId("");
                 serverProfile.setFolderTitle("");
                 serverProfile.setFolderUrl("");
-
             }
-        UpdateAllPlaceSelectors();
+            UpdateAllPlaceSelectors();
         }
     }
     return 0;
@@ -606,7 +602,7 @@ void CUploadSettings::UpdateAllPlaceSelectors()
 
 LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    int nServerIndex = wID - IDC_IMAGESERVER_FIRST_ID;
+    int nServerIndex = static_cast<int>(wID - IDC_IMAGESERVER_FIRST_ID);
     selectServer(sessionImageServer_, nServerIndex);
     
     UpdateAllPlaceSelectors();
@@ -615,7 +611,7 @@ LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWN
 
 LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    int nServerIndex = wID - IDC_FILESERVER_FIRST_ID;
+    int nServerIndex = static_cast<int>(wID - IDC_FILESERVER_FIRST_ID);
     
     selectServer(sessionFileServer_, nServerIndex);
     UpdateAllPlaceSelectors();
@@ -626,7 +622,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 {
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
+    auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
     bool isVistaOrLater = WinUtils::IsVistaOrLater();
 
     bool isImageServer = (idCtrl == IDC_IMAGETOOLBAR);
@@ -882,7 +878,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         
     RECT rc;
     ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
-    ::MapWindowPoints(CurrentToolbar.m_hWnd, nullptr, (LPPOINT)&rc, 2);
+    ::MapWindowPoints(CurrentToolbar.m_hWnd, nullptr, reinterpret_cast<LPPOINT>(&rc), 2);
     //CurrentToolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -976,7 +972,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
      CNewFolderDlg dlg(newFolder, true, accessTypeList);
      if(dlg.DoModal(m_hWnd) == IDOK)
      {
-         serverProfile.setFolderTitle(newFolder.title.c_str());
+         serverProfile.setFolderTitle(newFolder.title);
          serverProfile.setFolderId(CFolderItem::NewFolderMark);
          serverProfile.setFolderUrl("");
          newFolder.setId(CFolderItem::NewFolderMark);
@@ -1005,7 +1001,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
 {
     ServerProfile & serverProfile = isImageServerToolbar? sessionImageServer_ : sessionFileServer_;
     if ( serverProfile.isNull() ) {
-        return ;
+        return;
     }
     CMenu sub;    
     MENUITEMINFO mi;
@@ -1135,7 +1131,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
 {
    SaveCurrentProfile();
    CSettingsDlg dlg(CSettingsDlg::spImages, uploadEngineManager_);
-    dlg.DoModal(m_hWnd);
+   dlg.DoModal(m_hWnd);
    CurrentProfileName.Empty();
    ShowParams(U2W(sessionImageServer_.getImageUploadParamsRef().ImageProfileName));
    UpdateProfileList();
@@ -1199,22 +1195,23 @@ void CUploadSettings::shorteningUrlServerChanged(CServerSelectorControl* serverS
 }
 
 void CUploadSettings::ShowParams(const ImageConvertingParams& params)
- {
-   m_ProfileChanged = false;
-   m_CatchChanges = false;
-   if(params.Quality)
-        SetDlgItemInt(IDC_QUALITYEDIT,params.Quality);
-    else
-        SetDlgItemText(IDC_QUALITYEDIT,_T(""));
-   
-   SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
-   SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK,  params.AddLogo);
-   SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK,  params.AddText);
-   SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
+{
+    m_ProfileChanged = false;
+    m_CatchChanges = false;
+    if (params.Quality) {
+        SetDlgItemInt(IDC_QUALITYEDIT, params.Quality);
+    } else {
+        SetDlgItemText(IDC_QUALITYEDIT, _T(""));
+    }
+
+    SendDlgItemMessage(IDC_FORMATLIST,CB_SETCURSEL, params.Format);
+    SendDlgItemMessage(IDC_YOURLOGO,BM_SETCHECK, params.AddLogo);
+    SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, params.AddText);
+    SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
     SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
-   m_ProfileChanged = false;
+    m_ProfileChanged = false;
     m_CatchChanges = true;
- }
+}
 
 void CUploadSettings::ShowParams(const CString& profileName) {
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
@@ -1357,16 +1354,16 @@ LRESULT CUploadSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWN
 LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     CAddFtpServerDialog dlg(m_EngineList);
-    if ( dlg.DoModal(m_hWnd) == IDOK ) {
-            if ( wID == IDC_ADD_FTP_SERVER ) {
-                sessionImageServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
-                sessionImageServer_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
-            } else {
-                sessionFileServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
-                sessionFileServer_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
-            }
-        
-            UpdateAllPlaceSelectors();
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (wID == IDC_ADD_FTP_SERVER) {
+            sessionImageServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+            sessionImageServer_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
+        } else {
+            sessionFileServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+            sessionFileServer_.setProfileName(WCstringToUtf8(dlg.createdServerLogin()));
+        }
+
+        UpdateAllPlaceSelectors();
     }
     return 0;
 }
@@ -1375,18 +1372,17 @@ LRESULT CUploadSettings::OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND
 {
     CAddDirectoryServerDialog dlg(m_EngineList);
     if ( dlg.DoModal(m_hWnd) == IDOK ) {
-            if ( wID == IDC_ADD_DIRECTORY_AS_SERVER ) {
-                sessionImageServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
-                sessionImageServer_.setProfileName("");
-                sessionImageServer_.clearFolderInfo();
-            } else {
-                sessionFileServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
-                sessionFileServer_.setProfileName("");
-                sessionFileServer_.clearFolderInfo();
-            }
+        if (wID == IDC_ADD_DIRECTORY_AS_SERVER) {
+            sessionImageServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+            sessionImageServer_.setProfileName("");
+            sessionImageServer_.clearFolderInfo();
+        } else {
+            sessionFileServer_.setServerName(WCstringToUtf8(dlg.createdServerName()));
+            sessionFileServer_.setProfileName("");
+            sessionFileServer_.clearFolderInfo();
+        }
 
-            UpdateAllPlaceSelectors();
-
+        UpdateAllPlaceSelectors();
     }
     return 0;
 }

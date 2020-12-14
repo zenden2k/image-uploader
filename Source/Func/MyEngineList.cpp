@@ -29,13 +29,8 @@ char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList() :dllModule_(_T("comctl32.dll"))
+CMyEngineList::CMyEngineList()
 {
-    if (WinUtils::IsVistaOrLater()) {
-        LoadIconWithScaleDownFunc_ = dllModule_.GetProcAddress<LoadIconWithScaleDownFuncType>("LoadIconWithScaleDown");
-    } else {
-        LoadIconWithScaleDownFunc_ = nullptr;
-    }
 }
 
 CMyEngineList::~CMyEngineList()
@@ -102,9 +97,9 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 
     const int w = GetSystemMetrics(SM_CXSMICON);
     const int h = GetSystemMetrics(SM_CYSMICON);
-    if (LoadIconWithScaleDownFunc_) {
-        LoadIconWithScaleDownFunc_(nullptr, iconFileName, w, h, &icon);
-    }
+
+    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+    
 
     if (!icon) {
         icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));

@@ -21,7 +21,7 @@
 #include "ThumbSettingsPage.h"
 
 #include "3rdpart/GdiplusH.h"
-#include <GdiPlusPixelFormats.h>
+#include <gdipluspixelformats.h>
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Thumbnail.h"
@@ -34,20 +34,17 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-#pragma comment( lib, "uxtheme.lib" )
-
 CThumbSettingsPage::CThumbSettingsPage()
 {
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    params_ = Settings->imageServer.getImageUploadParams().getThumb();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    params_ = settings->imageServer.getImageUploadParams().getThumb();
     m_CatchFormChanges = false;
 }
 
 CThumbSettingsPage::~CThumbSettingsPage()
 {
-    for(std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it!= thumb_cache_.end(); ++it)
-    {
-        delete it->second;
+    for (const auto& [fst, snd] : thumb_cache_) {
+        delete snd;
     }
 }
 
@@ -121,7 +118,7 @@ bool CThumbSettingsPage::Apply()
     iup.setThumb(params_);
     Settings.imageServer.setImageUploadParams(iup);
 
-    for (std::map<std::string, Thumbnail*>::const_iterator it = thumb_cache_.begin(); it != thumb_cache_.end(); ++it) {
+    for (auto it = thumb_cache_.begin(); it != thumb_cache_.end(); ++it) {
         it->second->saveToFile();
     }
     return TRUE;
@@ -139,7 +136,7 @@ LRESULT CThumbSettingsPage::OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND
     return 0;
 }
 
-LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     std::string fileName = getSelectedThumbnailName();
     bool isStandartThumbnail = (fileName == "default" || fileName == "classic" || fileName == "classic2" || fileName == "flat"
@@ -153,9 +150,12 @@ LRESULT  CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, H
     }
     fileName = getSelectedThumbnailFileName();
     std::unique_ptr<Thumbnail> autoPtrThumb;
-    Thumbnail * thumb = 0;
-    if(thumb_cache_.count(fileName))
-    thumb  = thumb_cache_[fileName];
+    Thumbnail * thumb = nullptr;
+    const auto it = thumb_cache_.find(fileName);
+    if (it != thumb_cache_.end()) {
+        thumb = it->second;
+    }
+    
     if(!thumb)
     { 
         thumb = new Thumbnail();
@@ -208,13 +208,17 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
 {
     using namespace Gdiplus;
     std::string fileName = getSelectedThumbnailFileName();
-    if(fileName.empty())
-        return ;
+    if (fileName.empty()) {
+        return;
+    }
 
     std::unique_ptr<Thumbnail> autoPtrThumb;
     Thumbnail * thumb = nullptr;
-    if(thumb_cache_.count(fileName))
-        thumb  = thumb_cache_[fileName];
+    const auto it = thumb_cache_.find(fileName);
+
+    if (it != thumb_cache_.end()) {
+        thumb = it->second;
+    }
     if(!thumb)
     { 
         thumb = new Thumbnail();
@@ -238,7 +242,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     GdiPlusImage source(toUse);
     std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
     if (result) {
-        GdiPlusImage* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
+        auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
         if (resultImg) {
             img.LoadImage(0, resultImg->getBitmap());
         }

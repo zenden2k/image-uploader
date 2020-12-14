@@ -669,7 +669,7 @@ void CFloatingWindow::RegisterHotkeys()
 
 LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 {
-    if (HotKeyID < 0 || HotKeyID > int(m_hotkeys.size()) - 1)
+    if (HotKeyID < 0 || HotKeyID > static_cast<int>(m_hotkeys.size()) - 1)
         return 0;
     if (m_bIsUploading)
         return 0;
@@ -722,14 +722,14 @@ LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 LRESULT CFloatingWindow::OnMonitorAllMonitors(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.MonitorMode = ScreenCapture::kAllMonitors;
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ScreenshotSettings.MonitorMode = ScreenCapture::kAllMonitors;
     return 0;
 }
 
 LRESULT CFloatingWindow::OnMonitorCurrentMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ScreenshotSettings.MonitorMode = ScreenCapture::kCurrentMonitor;
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ScreenshotSettings.MonitorMode = ScreenCapture::kCurrentMonitor;
     return 0;
 }
 

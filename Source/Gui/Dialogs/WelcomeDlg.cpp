@@ -31,7 +31,6 @@ CWelcomeDlg::CWelcomeDlg()
 {
     br = CreateSolidBrush(RGB(255, 255, 255));
     PrevClipboardViewer = NULL;
-    fRemoveClipboardFormatListener_ = nullptr;
     QuickRegionPrint = false;
 }
 
@@ -59,13 +58,13 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.Init();
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
     
-    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON, 16,16,0)));
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON, 16,16,0)));
     
-    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON, 16, 16, 0)), true);
+    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON, 16, 16, 0)), true);
 
-    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON, 16,16,0)),true,0,true);
+    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON, 16,16,0)),true,0,true);
 
-    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON, 16,16,0)),true);
+    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON, 16,16,0)),true);
     
     ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true, 0, true);
     ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true, 0, false);
@@ -77,7 +76,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
     if(lstrlen(MediaInfoDllPath))
-        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
+        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, static_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
 
     ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS));
     ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
@@ -105,15 +104,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ShowNext(false);
     ShowPrev(false);    
 
-    if (WinUtils::IsVistaOrLater()) {
-        HMODULE module = GetModuleHandle(_T("user32.dll"));
-        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
-        fAddClipboardFormatListener(m_hWnd);
-        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
-    }
-    else {
-        PrevClipboardViewer = SetClipboardViewer(); // using old fragile cliboard listening method on pre Vista systems
-    }
+    AddClipboardFormatListener(m_hWnd);
 
     //ListBox.SetFocus();
     ShowWindow(SW_HIDE);
@@ -181,13 +172,6 @@ LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
     
-void CWelcomeDlg::OnDrawClipboard()
-{
-    clipboardUpdated();
-
-    //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::PostMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
-}
 
 void CWelcomeDlg::clipboardUpdated()
 {
@@ -211,16 +195,6 @@ void CWelcomeDlg::lastRegionAvailabilityChanged(bool available) {
         item->Visible = available;
         ListBox.InvalidateRect(&item->ItemRect, false); 
     }
-}
-
-LRESULT CWelcomeDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
-    HWND hwndNext = reinterpret_cast<HWND>(lParam);
-
-    if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-    else ::PostMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
-    return 0;
 }
 
 LRESULT CWelcomeDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

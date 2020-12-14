@@ -97,53 +97,48 @@ std::string Utf16ToUtf8(const std::u16string& src) {
 
 std::string ConvertToUtf8(const std::string &text, const std::string& codePage)
 {
-    unsigned int codePageNum = CodepageByName(codePage);
-    if (codePageNum != CP_UTF8)
+    int codePageNum = CodepageByName(codePage);
+    if (codePageNum != CP_UTF8) {
         return AnsiToUtf8(text, codePageNum);
+    }
+
     return text;
 }
 
 std::string GetFileMimeType(const std::string& fileName)
 {
-    const std::string DefaultMimeType = "application/octet-stream";
-    FILE * InputFile = fopen_utf8(fileName.c_str(), "rb");
-    if (!InputFile) return "";
+    std::string DefaultMimeType = "application/octet-stream";
+    FILE* InputFile = fopen_utf8(fileName.c_str(), "rb");
+    if (!InputFile) {
+        return DefaultMimeType;
+    }
 
     BYTE byBuff[256];
-    unsigned int nRead = static_cast<unsigned int>(fread(byBuff, 1, 256, InputFile));
+    auto nRead = static_cast<unsigned int>(fread(byBuff, 1, 256, InputFile));
 
     fclose(InputFile);
 
-    PWSTR        szMimeW = NULL;
+    PWSTR szMimeW = nullptr;
 
-    HMODULE urlMonDll = LoadLibraryA("urlmon.dll");
-    if (!urlMonDll)
-        return DefaultMimeType;
-    FindMimeFromDataFunc _Win32_FindMimeFromData = reinterpret_cast<FindMimeFromDataFunc>(GetProcAddress(urlMonDll, "FindMimeFromData"));
-
-    if (!_Win32_FindMimeFromData)
-        return DefaultMimeType;
-
-    if (NOERROR != _Win32_FindMimeFromData(NULL, NULL, byBuff, nRead, NULL, 0, &szMimeW, 0)) {
-        FreeLibrary(urlMonDll);
+    if (NOERROR != FindMimeFromData(nullptr, nullptr, byBuff, nRead, nullptr, 0, &szMimeW, 0)) {
         return DefaultMimeType;
     }
 
     std::string result = WstringToUtf8(szMimeW);
+    CoTaskMemFree(szMimeW);
 
-    if (result == "image/x-png")
+    if (result == "image/x-png") {
         result = "image/png";
-    else if (result == "image/pjpeg")
+    } else if (result == "image/pjpeg") {
         result = "image/jpeg";
-    else if (result == "application/octet-stream") {
+    } else if (result == "application/octet-stream") {
         if (byBuff[0] == 'R' && byBuff[1] == 'I' &&byBuff[2] == 'F' &&byBuff[3] == 'F'
             && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B'&& byBuff[11] == 'P'
             ) {
             result = "image/webp";
         }
     }
-    FreeLibrary(urlMonDll);
-    //delete szMimeW;
+
     return result;
 }
 

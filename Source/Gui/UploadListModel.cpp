@@ -83,7 +83,7 @@ void UploadListModel::resetData() {
 
 // This callback is being executed in worker thread
 void UploadListModel::onTaskUploadProgress(UploadTask* task) {
-    UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+    UploadListItem* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
     if (!fps) {
         return;
     }
@@ -112,7 +112,7 @@ void UploadListModel::onTaskUploadProgress(UploadTask* task) {
 
 void UploadListModel::onTaskStatusChanged(UploadTask* task) {
     UploadProgress* progress = task->progress();
-    UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+    UploadListItem* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
     if (!fps) {
         return;
     }
@@ -148,7 +148,7 @@ void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
         return;
     }
     if (fileTask->role() == UploadTask::ThumbRole) {
-        UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->parentTask()->userData());
+        UploadListItem* fps = static_cast<UploadListItem*>(task->parentTask()->userData());
         if (!fps) {
             return;
         }
@@ -159,7 +159,7 @@ void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
 
 void UploadListModel::onChildTaskAdded(UploadTask* child) {
     if (child->role() == UploadTask::UrlShorteningRole) {
-        UploadListItem* fps = reinterpret_cast<UploadListItem*>(child->parentTask()->userData());
+        UploadListItem* fps = static_cast<UploadListItem*>(child->parentTask()->userData());
         fps->setStatusText(TR("Shortening link..."));
         notifyRowChanged(fps->tableRow);
     }

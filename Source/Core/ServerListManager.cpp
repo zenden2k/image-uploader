@@ -23,7 +23,6 @@ limitations under the License.
 #include "Core/Utils/SimpleXml.h"
 #include "UploadEngineList.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/Logging.h"
 
 ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
     serversSettings_(serversSettings)
@@ -32,19 +31,15 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
     serversDirectory_ = serversDirectory;
 }
 
-ServerListManager::~ServerListManager()
-{
-}
 
-bool ServerListManager::addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl)
+std::string ServerListManager::addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl)
 {
     SimpleXml xml;
     SimpleXmlNode root = xml.getRoot("Servers");
     std::string newName = name + " (ftp)";
 
     if ( uploadEngineList_->byName(newName) ) {
-        errorMessage_ = "Server with such name already exists.";
-        return false;
+        throw std::runtime_error("Server with such name already exists.");
     }
 
     SimpleXmlNode serverNode = root.GetChild("Server");
@@ -58,18 +53,16 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
     resultNode.SetAttribute("ThumbUrlTemplate", "stub");
     resultNode.SetAttribute("DownloadUrlTemplate", "stub");
 
-    std::string outFile = serversDirectory_ + name + ".xml";
+    const std::string outFile = serversDirectory_ + name + ".xml";
     if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
         if (!IuCoreUtils::createDirectory(serversDirectory_)) {
-            LOG(ERROR) << "Cannot create directory " << serversDirectory_;
-            return false;
+            throw std::runtime_error("Cannot create directory " + serversDirectory_);
         }
     }
     
-    bool res = xml.SaveToFile(outFile);
+    const bool res = xml.SaveToFile(outFile);
     if ( !res ) {
-        errorMessage_ = "Unable to save file " + outFile;
-        return false;
+        throw std::runtime_error("Unable to save file " + outFile);
     }
 
     ServerSettingsStruct &ss = serversSettings_[newName][login];
@@ -79,23 +72,23 @@ bool ServerListManager::addFtpServer(const std::string &name, const std::string 
     ss.authData.Login = login;
     ss.authData.Password = password;
     ss.authData.DoAuth = !login.empty();
-    createdServerName_ = newName;
-    return uploadEngineList_->loadFromFile(outFile,serversSettings_);
+    if (!uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
+        throw std::runtime_error("Unable to load file " + outFile);
+    }
+    return newName;
 }
 
-bool ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath)
+std::string ServerListManager::addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath)
 {
     SimpleXml xml;
     SimpleXmlNode root = xml.getRoot("Servers");
-    std::string newName = name;
 
-    if ( uploadEngineList_->byName(newName) ) {
-        errorMessage_ = "Server with such name already exists.";
-        return false;
+    if ( uploadEngineList_->byName(name) ) {
+        throw std::runtime_error("Server with such name already exists.");
     }
 
     SimpleXmlNode serverNode = root.GetChild("Server");
-    serverNode.SetAttribute("Name", newName);
+    serverNode.SetAttribute("Name", name);
     serverNode.SetAttribute("Plugin", "directory");
     serverNode.SetAttribute("FileHost", 1);
     serverNode.SetAttribute("Authorize", 0);
@@ -105,40 +98,31 @@ bool ServerListManager::addDirectoryAsServer(const std::string &name, const std:
     resultNode.SetAttribute("ThumbUrlTemplate", "stub");
     resultNode.SetAttribute("DownloadUrlTemplate", "stub");
 
-    std::string filename = name;
-    filename = IuStringUtils::Replace(filename,":","_");
+    std::string filename = IuStringUtils::Replace(name,":","_");
     filename = IuStringUtils::Replace(filename,"\\","_");
     filename = IuStringUtils::Replace(filename," ","_");
     filename = IuStringUtils::Replace(filename,"/","_");
-    std::string outFile = serversDirectory_ + filename + ".xml";
+    const std::string outFile = serversDirectory_ + filename + ".xml";
     if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
         if (!IuCoreUtils::createDirectory(serversDirectory_)) {
-            LOG(ERROR) << "Cannot create directory " << serversDirectory_;
-            return false;
+            throw std::runtime_error("Cannot create directory " + serversDirectory_);
         }
     }
 
-    bool res = xml.SaveToFile(outFile);
+    const bool res = xml.SaveToFile(outFile);
     if ( !res ) {
-        errorMessage_ = "Unable to save file " + outFile;
-        return false;
+        throw std::runtime_error("Unable to save file " + outFile);
     }
 
-    ServerSettingsStruct &ss = serversSettings_[newName][""];
+    ServerSettingsStruct &ss = serversSettings_[name][""];
     ss.setParam("directory",directory);
     ss.setParam("downloadUrl",downloadUrl);
     ss.setParam("convertUncPath",std::to_string(static_cast<int>(convertUncPath)));
     ss.authData.DoAuth = false;
-    createdServerName_ = newName;
-    return uploadEngineList_->loadFromFile(outFile,serversSettings_);
-}
 
-std::string ServerListManager::errorMessage() const
-{
-    return errorMessage_;
-}
-
-std::string ServerListManager::createdServerName() const
-{
-    return createdServerName_;
+   
+    if (!uploadEngineList_->loadFromFile(outFile,serversSettings_)) {
+        throw std::runtime_error("Unable to load file " + outFile);
+    }
+    return name;
 }

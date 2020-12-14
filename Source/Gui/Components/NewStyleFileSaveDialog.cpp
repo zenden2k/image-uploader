@@ -1,14 +1,5 @@
 #include "NewStyleFileSaveDialog.h"
 
-typedef HRESULT(STDAPICALLTYPE *SHGetKnownFolderPath_func)(_In_ REFKNOWNFOLDERID rfid,
-    _In_ DWORD /* KNOWN_FOLDER_FLAG */ dwFlags,
-    _In_opt_ HANDLE hToken,
-    _Outptr_ PWSTR *ppszPath); // free *ppszPath with CoTaskMemFree
-
-
-typedef HRESULT(STDAPICALLTYPE *SHCreateItemFromParsingName_func)(_In_ PCWSTR pszPath, _In_opt_ IBindCtx *pbc, _In_ REFIID riid, _Outptr_ void **ppv);
-
-
 CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters){
     COMDLG_FILTERSPEC* fileTypes = nullptr;
     
@@ -42,9 +33,7 @@ CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& ini
 
     CComPtr<IShellItem> psiFolder;
 
-
-    SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = shellDll_.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
-    hr = SHCreateItemFromParsingNameFunc(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
+    hr = SHCreateItemFromParsingName(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
 
     if (SUCCEEDED(hr)) {
         newStyleDialog_->SetDefaultFolder(psiFolder);

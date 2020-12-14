@@ -27,53 +27,55 @@
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/ServerSelectorControl.h"
-#define IDC_SELECTFOLDER 4050
-#define IDC_SERVERBUTTON 4000
-#define IDC_IMAGETOOLBAR 4010
-#define IDC_FILETOOLBAR 4011
 
-#define IDC_NEWFOLDER 4012
+constexpr unsigned int IDC_SELECTFOLDER = 4050;
+constexpr unsigned int IDC_SERVERBUTTON = 4000;
+constexpr unsigned int IDC_IMAGETOOLBAR = 4010;
+constexpr unsigned int IDC_FILETOOLBAR = 4011;
 
-#define IDC_OPENINBROWSER 4014
+constexpr unsigned int IDC_NEWFOLDER = 4012;
 
-#define IDC_SERVERPARAMS 4016
-#define IDC_OPENREGISTERURL 4018
-#define IDC_LOGINTOOLBUTTON 4020
+constexpr unsigned int IDC_OPENINBROWSER = 4014;
 
-#define IDC_TOOLBARSEPARATOR1 4002
-#define IDC_TOOLBARSEPARATOR2 4003
+constexpr unsigned int IDC_SERVERPARAMS = 4016;
+constexpr unsigned int IDC_OPENREGISTERURL = 4018;
+constexpr unsigned int IDC_LOGINTOOLBUTTON = 4020;
 
-#define IDC_IMAGESERVER_FIRST_ID 14000
-#define IDC_IMAGESERVER_LAST_ID 15000
+constexpr unsigned int IDC_TOOLBARSEPARATOR1 = 4002;
+constexpr unsigned int IDC_TOOLBARSEPARATOR2 = 4003;
 
-#define IDC_FILESERVER_FIRST_ID 16000
-#define IDC_FILESERVER_LAST_ID 17000
+constexpr unsigned int IDC_IMAGESERVER_FIRST_ID = 14000;
+constexpr unsigned int IDC_IMAGESERVER_LAST_ID = 15000;
 
-#define IDC_RESIZEPRESETMENU_FIRST_ID 18000
-#define IDC_RESIZEPRESETMENU_LAST_ID 18100
+constexpr unsigned int IDC_FILESERVER_FIRST_ID = 16000;
+constexpr unsigned int IDC_FILESERVER_LAST_ID = 17000;
+
+constexpr unsigned int IDC_RESIZEPRESETMENU_FIRST_ID = 18000;
+constexpr unsigned int IDC_RESIZEPRESETMENU_LAST_ID = 18100;
 
 class CMyEngineList;
 class IconBitmapUtils;
 class CServerSelectorControl;
 
-class CUploadSettings : 
-    public CDialogImpl<CUploadSettings>    , public CWizardPage
+class CUploadSettings: 
+    public CDialogImpl<CUploadSettings>,
+    public CWizardPage
 {
     public:
         explicit CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager);
-        ~CUploadSettings();
+        ~CUploadSettings() override;
         enum { IDD = IDD_UPLOADSETTINGS };
 
         enum{ 
-            IDC_ADD_FTP_SERVER= 19001,
-            IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST=19002,
-            IDC_ADD_DIRECTORY_AS_SERVER= 19003,
-            IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST= 19004,
+            IDC_ADD_FTP_SERVER = 19001,
+            IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST = 19002,
+            IDC_ADD_DIRECTORY_AS_SERVER = 19003,
+            IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST = 19004,
             IDC_USERNAME_FIRST_ID = 20000,
-            IDC_USERNAME_LAST_ID =  21000,
+            IDC_USERNAME_LAST_ID = 21000,
             IDC_ADD_ACCOUNT = 21001,
-            IDC_ADD_ACCOUNT_FROM_FILE_SERVER  = 21002,
-            IDC_NO_ACCOUNT =  21003,
+            IDC_ADD_ACCOUNT_FROM_FILE_SERVER = 21002,
+            IDC_NO_ACCOUNT = 21003,
             IDC_NO_ACCOUNT_FROM_FILE_SERVER = 21004
         };
 
@@ -103,8 +105,8 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_ADD_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnAddAccountClicked)
         COMMAND_HANDLER(IDC_NO_ACCOUNT, BN_CLICKED, OnNoAccountClicked)
         COMMAND_HANDLER(IDC_NO_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnNoAccountClicked)
-        NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
-        NOTIFY_HANDLER(IDC_FILETOOLBAR, TBN_DROPDOWN, OnServerDropDown);
+        NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown)
+        NOTIFY_HANDLER(IDC_FILETOOLBAR, TBN_DROPDOWN, OnServerDropDown)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu);
 
         COMMAND_HANDLER(IDC_FORMATLIST, CBN_SELCHANGE, OnProfileEditedCommand)
@@ -113,10 +115,10 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
 
 
-        COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect);
-        COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect);
-        COMMAND_RANGE_HANDLER(IDC_RESIZEPRESETMENU_FIRST_ID, IDC_RESIZEPRESETMENU_LAST_ID, OnResizePresetMenuItemClick);
-        COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
+        COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect)
+        COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect)
+        COMMAND_RANGE_HANDLER(IDC_RESIZEPRESETMENU_FIRST_ID, IDC_RESIZEPRESETMENU_LAST_ID, OnResizePresetMenuItemClick)
+        COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick)
 
         COMMAND_HANDLER_EX(IDC_RESIZEPRESETSBUTTON, BN_CLICKED, OnResizePresetButtonClicked)
         COMMAND_HANDLER_EX(IDC_SHORTENINGURLSERVERBUTTON, BN_CLICKED, OnShorteningUrlServerButtonClicked)

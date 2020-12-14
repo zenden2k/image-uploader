@@ -65,8 +65,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
             COMMAND_HANDLER(IDC_LINKSLISTRADIO, BN_CLICKED, OnClickedOutputRadioButton)        
             COMMAND_HANDLER(IDC_COPYTOCLIPBOARD, BN_CLICKED, OnClickedCopyToClipboardButton)
             COMMAND_HANDLER(IDC_SHOWLOG, BN_CLICKED, OnShowLogClicked)
-            MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
-            MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
             CHAIN_MSG_MAP(CDialogResize<CImageReuploaderDlg>)
@@ -85,8 +83,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
             DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
             DLGRESIZE_CONTROL(IDC_SOURCEURLEDIT, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
-        
-        HWND PrevClipboardViewer;
 
         struct DownloadItemData {
             std::string originalUrl;
@@ -111,8 +107,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        void OnDrawClipboard();
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -166,7 +160,6 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         std::vector<std::unique_ptr<DownloadItemData>> downloadItems_; 
         std::vector<std::unique_ptr<UploadItemData>> uploadItems_;
         std::mutex uploadItemsMutex_;
-        RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 
         struct Match {
             int start;

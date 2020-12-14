@@ -68,7 +68,7 @@ endif()
 set(LIBS_LIST  "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm)
+    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm urlmon)
     target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
     list(APPEND LIBS_LIST icuuc icui18n gtest)

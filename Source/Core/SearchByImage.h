@@ -3,7 +3,6 @@
 
 #include <string>
 #include <memory>
-#include <functional>
 
 #include "Network/INetworkClient.h"
 #include "Core/Upload/UploadEngine.h"

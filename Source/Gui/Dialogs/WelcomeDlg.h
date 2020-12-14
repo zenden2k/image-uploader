@@ -45,7 +45,6 @@ public:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
         MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)
-        MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
         ///    MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBkg)
         COMMAND_ID_HANDLER(IDC_CLIPBOARD,  OnClipboardClick)
         COMMAND_ID_HANDLER(IDC_ADDFOLDER,  OnAddFolderClick)
@@ -63,7 +62,6 @@ public:
         COMMAND_HANDLER(IDC_SHORTENURL, BN_CLICKED, OnBnClickedShortenUrl)
         MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-        MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -77,7 +75,6 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
     LRESULT OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedAddvideo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -96,7 +93,6 @@ public:
     LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    void OnDrawClipboard();
     void clipboardUpdated();
     void lastRegionAvailabilityChanged(bool available);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -109,9 +105,6 @@ public:
     bool QuickRegionPrint;
     CMyImage LeftImage;CMyImage LogoImage;
     CFont NewFont;
-    typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
-    typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
-    RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 };
 
 

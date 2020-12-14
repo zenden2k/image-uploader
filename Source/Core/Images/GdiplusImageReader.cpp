@@ -16,36 +16,18 @@ std::unique_ptr<Gdiplus::Bitmap> GdiplusImageReader::readFromFile(const wchar_t*
 }
 
 std::unique_ptr<Gdiplus::Bitmap> GdiplusImageReader::readFromMemory(uint8_t* data, size_t size) {
-    if (WinUtils::IsVistaOrLater()) {
-        auto SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
-        if (!SHCreateMemStreamFunc) {
-            return nullptr;
-        }
+    auto SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
+    if (!SHCreateMemStreamFunc) {
+        return nullptr;
+    }
 
-        IStream* pStream = SHCreateMemStreamFunc(data, size);
-        if (pStream) {
-            std::unique_ptr<Gdiplus::Bitmap> bitmap = readFromStream(pStream);
-            pStream->Release();
-            return bitmap;
-        }
+    IStream* pStream = SHCreateMemStreamFunc(data, size);
+    if (pStream) {
+        std::unique_ptr<Gdiplus::Bitmap> bitmap = readFromStream(pStream);
+        pStream->Release();
+        return bitmap;
     }
-    else {
-        HGLOBAL buffer = ::GlobalAlloc(GMEM_MOVEABLE, size);
-        if (buffer) {
-            void* pBuffer = ::GlobalLock(buffer);
-            if (pBuffer) {
-                CopyMemory(pBuffer, data, size);
-                IStream* pStream = nullptr;
-                if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK) {
-                    std::unique_ptr<Gdiplus::Bitmap> bitmap = readFromStream(pStream);
-                    pStream->Release();
-                    return bitmap;
-                }
-                ::GlobalUnlock(buffer);
-            }
-            ::GlobalFree(buffer);
-        }
-    }
+
     return nullptr;
 }
 
@@ -55,7 +37,7 @@ std::unique_ptr<Gdiplus::Bitmap> GdiplusImageReader::readFromStream(IStream* str
     if (!checkLastStatus(bm.get())) {
         return nullptr;
     }
-    ;
+    
     postLoad(bm.get());
     return bm;
 }

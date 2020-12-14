@@ -43,8 +43,7 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     CComPtr<IShellItem> psiFolder;
 
 
-    SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = shellDll_.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
-    hr = SHCreateItemFromParsingNameFunc(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
+    hr = SHCreateItemFromParsingName(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
 
     if (SUCCEEDED(hr)) {
         newStyleDialog_->SetDefaultFolder(psiFolder);

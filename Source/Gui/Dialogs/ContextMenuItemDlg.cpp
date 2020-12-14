@@ -41,7 +41,7 @@ CContextMenuItemDlg::~CContextMenuItemDlg()
 
 LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
@@ -50,7 +50,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->setTitle(TR("Choose server"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top , SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(Settings.imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer);
 
     SetWindowText(TR("Add Menu Item"));
     TRC(IDC_MENUITEMLABEL, "Name:");

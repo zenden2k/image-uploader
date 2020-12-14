@@ -56,7 +56,7 @@ class CSettingsPage
         void ShowNext(bool Show = true);
         void ShowPrev(bool Show = true);
 
-        void FixBackground();
+        void FixBackground() const;
         static void TabBackgroundFix(HWND hwnd);
         
         virtual bool Apply();

@@ -220,7 +220,7 @@ bool CUpdateManager::CheckUpdates()
     bool Result = true;
 
     m_localUpdateInfo.clear();
-    if (fileList.size() == 0) {
+    if (fileList.empty()) {
         m_ErrorStr = "No update files found in folder '" + IuCommonFunctions::GetDataFolder() + _T("Update\\'");
         return false;
     }

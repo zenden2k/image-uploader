@@ -39,8 +39,6 @@
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) {
     m_WizardDlg = wizardDlg;
     m_InitialBuffer = initialBuffer;
-    fRemoveClipboardFormatListener_ = NULL;
-    PrevClipboardViewer = NULL;
     m_retCode = 0;
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;
@@ -59,15 +57,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     CenterWindow(GetParent());
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    if (isVistaOrLater_)
-    {
-        HMODULE module = GetModuleHandle(_T("user32.dll"));
-        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
-        fAddClipboardFormatListener(m_hWnd);
-        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
-    } else {
-        PrevClipboardViewer = SetClipboardViewer(); // using old fragile cliboard listening method on pre Vista systems
-    }
+    AddClipboardFormatListener(m_hWnd);
     
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
  
@@ -99,12 +89,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if (isVistaOrLater_) {
-        fRemoveClipboardFormatListener_(m_hWnd);
-    } else {
-        ChangeClipboardChain(PrevClipboardViewer);
-    }
-
+    RemoveClipboardFormatListener(m_hWnd);
     return 0;
 }
 
@@ -157,23 +142,6 @@ BOOL CImageDownloaderDlg::PreTranslateMessage(MSG* pMsg) {
         return TRUE;
     }
     return FALSE;
-}
-
-LRESULT CImageDownloaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
-    HWND hwndNext = reinterpret_cast<HWND>(lParam);
-
-    if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
-    else ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
-    return 0;
-}
-
-void CImageDownloaderDlg::OnDrawClipboard()
-{
-    clipboardUpdated();
-    //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if (PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 
 bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const DownloadTask::DownloadItem& it)

@@ -441,7 +441,7 @@ HWND CreateDummyWindow(const RECT& rc)
     WndClsEx.cbWndExtra    = 0;
     WndClsEx.hIcon         = LoadIcon(NULL, IDI_APPLICATION);
     WndClsEx.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    WndClsEx.hbrBackground = reinterpret_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+    WndClsEx.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
     WndClsEx.lpszMenuName  = NULL;
     WndClsEx.lpszClassName = clsName;
     WndClsEx.hInstance     = GetModuleHandle(0);
@@ -674,7 +674,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     SetForegroundWindow(target);
     // CRgn newRegion=GetWindowVisibleRegion(target);
     CRect actualWindowRect;
-    ScreenshotHelper::getInstance().getActualWindowRect(target, &actualWindowRect, false);
+    ScreenshotHelper::getActualWindowRect(target, &actualWindowRect, false);
 //    bool IsSimpleRectWindow = newRegion.GetRgnBox(&windowRect)==SIMPLEREGION;
     bgColor = RGB(255, 255, 255);
     HWND wnd = 0;
@@ -805,7 +805,7 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
     m_ScreenRegion.CreateRectRgnIndirect(&captureRect);
     for (size_t i = 0; i < m_hWnds.size(); i++)
     {
-        CRgn newRegion = ScreenshotHelper::getInstance().getWindowVisibleRegion(m_hWnds[i].wnd);
+        CRgn newRegion = ScreenshotHelper::getWindowVisibleRegion(m_hWnds[i].wnd);
         m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR : RGN_DIFF);
     }
     bool move = false;

@@ -53,8 +53,6 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_ID_HANDLER(IDOK, OnClickedOK)
             COMMAND_ID_HANDLER(IDCANCEL, OnClickedCancel)
-            MSG_WM_DRAWCLIPBOARD(OnDrawClipboard)
-            MESSAGE_HANDLER(WM_CHANGECBCHAIN, OnChangeCbChain)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
             CHAIN_MSG_MAP(CDialogResize<CImageDownloaderDlg>)
@@ -70,13 +68,10 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         
         
         BOOL EmulateEndDialog(int nRetCode);
-        HWND PrevClipboardViewer;
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        void OnDrawClipboard();
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -102,9 +97,6 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         CAccelerator accel_;
         std::shared_ptr<DownloadTask> downloadTask_;
         bool isRunning_;
-        typedef BOOL(WINAPI * AddClipboardFormatListenerFunc)(HWND hwnd);
-        typedef BOOL(WINAPI * RemoveClipboardFormatListenerFunc)(HWND hwnd);
-        RemoveClipboardFormatListenerFunc fRemoveClipboardFormatListener_;
 };
 
 

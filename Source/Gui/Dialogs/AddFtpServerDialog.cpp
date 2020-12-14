@@ -5,7 +5,6 @@
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include "Func/IuCommonFunctions.h"
 
 // CAddFtpServerDialog
 CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
@@ -34,7 +33,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND serverEditHwnd = GetDlgItem(IDC_SERVEREDIT);
         LONG styleEx = ::GetWindowLong(serverEditHwnd, GWL_EXSTYLE);
         ::SetWindowLong(serverEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
@@ -98,24 +97,21 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
 
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    ServerListManager slm(Settings.SettingsFolder + "\\Servers\\", uploadEngineList_, Settings.ServersSettings);
-    if ( slm.addFtpServer(IuCoreUtils::WstringToUtf8((LPCTSTR)connectionName), IuCoreUtils::WstringToUtf8((LPCTSTR)serverName), IuCoreUtils::WstringToUtf8((LPCTSTR)login), 
-        IuCoreUtils::WstringToUtf8((LPCTSTR)password), IuCoreUtils::WstringToUtf8((LPCTSTR)remoteDirectory), IuCoreUtils::WstringToUtf8((LPCTSTR)downloadUrl)) ) {
-            createdServerName_ = IuCoreUtils::Utf8ToWstring(slm.createdServerName()).c_str();
-            createdServerLogin_ = login;
-            EndDialog(wID);
-    } else {
+    ServerListManager slm(settings->SettingsFolder + "\\Servers\\", uploadEngineList_, settings->ServersSettings);
+    try {
+        createdServerName_ = U2W(slm.addFtpServer(W2U(connectionName), W2U(serverName), W2U(login), W2U(password), W2U(remoteDirectory), W2U(downloadUrl)));
+        createdServerLogin_ = login;
+        EndDialog(wID);
+    } catch (const std::exception& ex) {
         CString errorMessage = TR("Could not add server.");
-        CString reason = IuCoreUtils::Utf8ToWstring(slm.errorMessage()).c_str();
+        const CString reason = U2W(ex.what());
         if ( !reason.IsEmpty() ) {
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
         LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
-
     }
-
     
     return 0;
 }
@@ -167,12 +163,12 @@ LRESULT CAddFtpServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID,
     return 0;
 }
 
-CString CAddFtpServerDialog::createdServerName()
+CString CAddFtpServerDialog::createdServerName() const
 {
     return createdServerName_;
 }
 
-CString CAddFtpServerDialog::createdServerLogin()
+CString CAddFtpServerDialog::createdServerLogin() const
 {
     return createdServerLogin_;
 }
@@ -194,9 +190,9 @@ void CAddFtpServerDialog::GenerateDownloadLink()
             remoteDirectory += _T("/");
 
         }
-        CString generatedDownloadUrl = "http://" + serverName + remoteDirectory;
-        
+
         if ( !serverName.IsEmpty() ) {
+            const CString generatedDownloadUrl = "http://" + serverName + remoteDirectory;
             SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl);
             
         }

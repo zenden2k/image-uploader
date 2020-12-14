@@ -24,7 +24,6 @@
 
 #include <WinInet.h>
 #include "atlheaders.h"
-#include "Func/Common.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "LogWindow.h"
 #include "Gui/GuiTools.h"
@@ -54,29 +53,17 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
     uploadManager_ = uploadManager;
     htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
     uploadEngineManager_ = uploadEngineManager;
-    PrevClipboardViewer = nullptr;
     m_nFilesCount = 0;
     m_nFilesUploaded = 0;
     m_nFilesDownloaded = 0;
-    fRemoveClipboardFormatListener_ = nullptr;
 }
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
-    if (WinUtils::IsVistaOrLater()) {
-        HMODULE module = GetModuleHandle(_T("user32.dll"));
-        AddClipboardFormatListenerFunc fAddClipboardFormatListener = reinterpret_cast<AddClipboardFormatListenerFunc>(GetProcAddress(module, "AddClipboardFormatListener"));
-        if (!fAddClipboardFormatListener(m_hWnd)) {
-            DWORD errCode = GetLastError();
-            LOG(WARNING) << WinUtils::FormatWindowsErrorMessage(errCode);
-        }
-        fRemoveClipboardFormatListener_ = reinterpret_cast<RemoveClipboardFormatListenerFunc>(GetProcAddress(module, "RemoveClipboardFormatListener"));
-    } else {
-        PrevClipboardViewer = SetClipboardViewer();
-    }
-
+    AddClipboardFormatListener(m_hWnd);
+ 
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     sourceTextEditControl.AttachToDlgItem(m_hWnd, IDC_INPUTTEXT);
 
@@ -162,33 +149,9 @@ LRESULT CImageReuploaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     return 0;
 }
 
-LRESULT CImageReuploaderDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
-    HWND hwndNext = reinterpret_cast<HWND>(lParam);
-
-    if ( hwndRemove == PrevClipboardViewer ) {
-        PrevClipboardViewer = hwndNext;
-    } else {
-        ::SendMessage(PrevClipboardViewer, WM_CHANGECBCHAIN, wParam, lParam);
-    }
-    return 0;
-}
-
-void CImageReuploaderDlg::OnDrawClipboard()
-{
-    clipboardUpdated();
-    //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
-}
-
 LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if (WinUtils::IsVistaOrLater()) {
-        fRemoveClipboardFormatListener_(m_hWnd);
-    } else {
-        ChangeClipboardChain(PrevClipboardViewer);
-    }
+    RemoveClipboardFormatListener(m_hWnd);
     return 0;
 }
 

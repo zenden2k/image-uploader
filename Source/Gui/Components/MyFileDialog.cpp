@@ -4,7 +4,6 @@
 
 #include "Func/WinUtils.h"
 #include "NewStyleFileDialog.h"
-#include "OldStyleFileDialog.h"
 #include "NewStyleFileSaveDialog.h"
 
 
@@ -34,17 +33,16 @@ CString IMyFileDialog::getFile() {
 }
 
 
-std::unique_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent, const CString& initialFolder, const CString& title, const IMyFileDialog::FileFilterArray& filters, bool multiselect, bool openDialog) {
+std::unique_ptr<IMyFileDialog> MyFileDialogFactory::createFileDialog(HWND parent, const CString& initialFolder,
+                                                                     const CString& title,
+                                                                     const IMyFileDialog::FileFilterArray& filters,
+                                                                     bool multiselect, bool openDialog) {
     if (multiselect) {
-        assert(openDialog==true);
+        assert(openDialog == true);
     }
-    if (WinUtils::IsVistaOrLater()) {
-        if (openDialog) {
-            return std::make_unique<CNewStyleFileDialog>(parent, initialFolder, title, filters, multiselect, openDialog);
-        } else {
-            return std::make_unique<CNewStyleFileSaveDialog>(parent, initialFolder, title, filters);
-        }
-    } else {
-        return std::make_unique<COldStyleFileDialog>(parent, initialFolder, title, filters, multiselect, openDialog);
-    }
+
+    if (openDialog) {
+        return std::make_unique<CNewStyleFileDialog>(parent, initialFolder, title, filters, multiselect, openDialog);
+    } 
+    return std::make_unique<CNewStyleFileSaveDialog>(parent, initialFolder, title, filters);
 }

@@ -18,15 +18,11 @@ CWebViewWindow::CWebViewWindow()
     //instance = this;
     isModal_ = false;
     messageLoopIsRunning_ = false;
-
-    urlmonDll_ = nullptr;
     hWndClient_ = nullptr;
     //dialogHook_ = 0;
 }
 CWebViewWindow::~CWebViewWindow() {
-    if (urlmonDll_) {
-        FreeLibrary(urlmonDll_);
-    }
+
 
     //instance = 0;
     //delete dialogHook_;
@@ -112,18 +108,12 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (FAILED(hr)) {
         WinUtils::UseLatestInternetExplorerVersion(false);
 
-        typedef HRESULT  (STDAPICALLTYPE *CoInternetSetFeatureEnabledFuncType) (INTERNETFEATURELIST , DWORD , BOOL); 
-        if (!urlmonDll_) {
-            urlmonDll_ = LoadLibrary(_T("Urlmon.dll"));
-        }
-        CoInternetSetFeatureEnabledFuncType CoInternetSetFeatureEnabledFunc = reinterpret_cast<CoInternetSetFeatureEnabledFuncType>(GetProcAddress(urlmonDll_, "CoInternetSetFeatureEnabled"));
-        if ( CoInternetSetFeatureEnabledFunc ) { 
-            CoInternetSetFeatureEnabledFunc(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
-        }
+        CoInternetSetFeatureEnabled(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
+        
         RECT rc;
         GetWindowRect(&rc);
         hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, 0);
-        view_.PutSilent(TRUE); // Supress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
+        view_.PutSilent(TRUE); // Suppress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
         view_.SetFocus();
     }
     

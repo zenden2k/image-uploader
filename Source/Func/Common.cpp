@@ -115,7 +115,7 @@ bool IULaunchCopy(CString params, const CAtlArray<CString>& files)
 
 void IU_RunElevated(CString params)
 {
-    SHELLEXECUTEINFO TempInfo = {0};
+    SHELLEXECUTEINFO TempInfo = {};
     CString appDir = WinUtils::GetAppFolder();
     CString Command = CmdLine[0];
     CString parameters = _T(" ") + params;

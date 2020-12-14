@@ -42,10 +42,6 @@ class CMyEngineList: public CUploadEngineList
     private:
         std::map<std::string, HICON> serverIcons_;
         CString m_ErrorStr;
-        typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
-
-        LoadIconWithScaleDownFuncType LoadIconWithScaleDownFunc_;
-        Library dllModule_;
         DISALLOW_COPY_AND_ASSIGN(CMyEngineList);
 };
 #endif

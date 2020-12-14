@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "Core/Utils/CoreTypes.h"
-#include "ImageConverter.h"
 #include <string>
 #include <map>
+
+#include "Core/Utils/CoreTypes.h"
+#include "ImageConverter.h"
 
 class ImageConverterPrivateBase {
 public:

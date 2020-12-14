@@ -40,8 +40,8 @@ public:
     LRESULT OnRemoteDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-    CString createdServerName();
-    CString createdServerLogin();
+    CString createdServerName() const;
+    CString createdServerLogin() const;
 protected:
     void GenerateDownloadLink();
     void GenerateExampleUrl();

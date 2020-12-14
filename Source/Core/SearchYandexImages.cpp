@@ -10,8 +10,6 @@
 */
 #include "Core/Utils/DesktopUtils.h"
 #include "Upload/FileUploadTask.h"
-#include "ServiceLocator.h"
-
 
 SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer)
     :SearchByImageTask(fileName),

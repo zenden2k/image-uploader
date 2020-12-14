@@ -183,7 +183,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         RECT SelWndRect;
         if(hSelWnd)
         {
-            CRgn WindowRgn = ScreenshotHelper::getInstance().getWindowVisibleRegion(hSelWnd);
+            CRgn WindowRgn = ScreenshotHelper::getWindowVisibleRegion(hSelWnd);
             WindowRgn.OffsetRgn(topLeft);
             WindowRgn.GetRgnBox(&SelWndRect);
             CRect DrawingRect = SelWndRect;

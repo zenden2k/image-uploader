@@ -19,6 +19,7 @@
 */
 #include "WizardDlg.h"
 
+#include <ShObjIdl.h>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
@@ -52,7 +53,6 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Func/myutils.h"
-#include "Func/Library.h"
 #include "Core/ServiceLocator.h"
 #include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
@@ -236,7 +236,7 @@ CWizardDlg::~CWizardDlg()
 }
 
 void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
-    floatWnd_ = floatWnd;
+    floatWnd_ = std::move(floatWnd);
 }
 
 TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
@@ -1198,41 +1198,9 @@ bool CWizardDlg::AddImageAsync(const CString &FileName, const CString &VirtualFi
 
 LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {    
-    AddImageStruct* ais = reinterpret_cast<AddImageStruct*>(wParam);
+    auto* ais = reinterpret_cast<AddImageStruct*>(wParam);
     if(!ais) return 0;
     return  AddImage(ais->RealFileName, ais->VirtualFileName, ais->show);
-}
-
-CMyFolderDialog::CMyFolderDialog(HWND hWnd):
-                CFolderDialogImpl(hWnd, TR("Select folder"), BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE|BIF_NONEWFOLDERBUTTON|BIF_VALIDATE )
-{
-    OldProc = nullptr;
-    m_bSubdirs = true;
-    SubdirsCheckbox = nullptr;
-    OleInitialize(NULL);
-}
-void CMyFolderDialog::OnInitialized()
-{
-    HWND wnd = CreateWindowEx(0, _T("button"), TR("Including subdirectories"), WS_VISIBLE|BS_CHECKBOX|WS_CHILD|BS_AUTOCHECKBOX, 15,30, 200,24, m_hWnd, 0,0, 0);
-    HFONT font = reinterpret_cast<HFONT>(SendMessage(m_hWnd, WM_GETFONT, 0, 0));
-    SendMessage(wnd, WM_SETFONT, (WPARAM)font,  MAKELPARAM(false, 0));
-    SendMessage(wnd, BM_SETCHECK, (WPARAM)(m_bSubdirs?BST_CHECKED    :BST_UNCHECKED),0);
-    SetProp(m_hWnd, PROP_OBJECT_PTR, (HANDLE) this);
-    OldProc  = reinterpret_cast<DLGPROC>(SetWindowLongPtr(m_hWnd, DWLP_DLGPROC, reinterpret_cast<LONG_PTR>(DialogProc)));    
-    SubdirsCheckbox = wnd;
-    m_bSubdirs = true;
-}
-
-//  Overloaded WinProc function for BrowseForFolders dialog
-BOOL CALLBACK CMyFolderDialog::DialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-    CMyFolderDialog *th = reinterpret_cast<CMyFolderDialog *>(GetProp(hwndDlg, PROP_OBJECT_PTR));
-    if(!th) return FALSE;
-
-    if(uMsg == WM_COMMAND && HIWORD(wParam)== BN_CLICKED && ((HWND) lParam)== th->SubdirsCheckbox)
-        th->m_bSubdirs = SendMessage(th->SubdirsCheckbox, BM_GETCHECK,0,0) == BST_CHECKED;
-    
-    return th->OldProc(hwndDlg, uMsg, wParam, lParam);
 }
 
  LRESULT CWizardDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
@@ -1277,165 +1245,118 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
     int nCount = 0;
 
-    if (WinUtils::IsVistaOrLater()) {//vista or later
-        
-        CComPtr<IFileOpenDialog> pDlg;
-        TCHAR filterBuffer[256];
+    CComPtr<IFileOpenDialog> pDlg;
+    TCHAR filterBuffer[256];
 
-        lstrcpy(filterBuffer, CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"));
-        COMDLG_FILTERSPEC aFileTypes[] = {
-            { filterBuffer, _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp") },
-            { TR("Any file"), _T("*.*") }
-        };
-        DWORD dwFlags = 0;
+    lstrcpy(filterBuffer, CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"));
+    COMDLG_FILTERSPEC aFileTypes[] = {
+        {filterBuffer, _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp")},
+        {TR("Any file"), _T("*.*")}
+    };
+    DWORD dwFlags = 0;
 
-        // Create the file-save dialog COM object.
-        HRESULT hr = pDlg.CoCreateInstance(CLSID_FileOpenDialog);
+    // Create the file-save dialog COM object.
+    HRESULT hr = pDlg.CoCreateInstance(CLSID_FileOpenDialog);
 
-        if (FAILED(hr))
-            return false;
+    if (FAILED(hr))
+        return false;
 
-        pDlg->SetFileTypes(_countof(aFileTypes), aFileTypes);
+    pDlg->SetFileTypes(_countof(aFileTypes), aFileTypes);
 
-        CComPtr<IShellItem> psiFolder;
-        LPWSTR wszPath = NULL;
+    CComPtr<IShellItem> psiFolder;
+    LPWSTR wszPath = NULL;
 
-        Library DllModule(_T("Shell32.dll"));
-        if (Settings.ImagesFolder.IsEmpty()) {
-            SHGetKnownFolderPath_func SHGetKnownFolderPathFunc = DllModule.GetProcAddress<SHGetKnownFolderPath_func>("SHGetKnownFolderPath");
-            if (SHGetKnownFolderPathFunc) {
-                hr = SHGetKnownFolderPathFunc(FOLDERID_Pictures, KF_FLAG_CREATE,
-                    NULL, &wszPath);
+    if (Settings.ImagesFolder.IsEmpty()) {
 
-                if (SUCCEEDED(hr)) {
-                    SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = DllModule.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
-                    hr = SHCreateItemFromParsingNameFunc(wszPath, NULL, IID_PPV_ARGS(&psiFolder));
+        hr = SHGetKnownFolderPath(FOLDERID_Pictures, KF_FLAG_CREATE,
+                                  NULL, &wszPath);
 
-                    if (SUCCEEDED(hr))
-                        pDlg->SetDefaultFolder(psiFolder);
-
-                    CoTaskMemFree(wszPath);
-                }
-            }
-        } else {
-            SHCreateItemFromParsingName_func SHCreateItemFromParsingNameFunc = DllModule.GetProcAddress<SHCreateItemFromParsingName_func>("SHCreateItemFromParsingName");
-            hr = SHCreateItemFromParsingNameFunc(Settings.ImagesFolder, NULL, IID_PPV_ARGS(&psiFolder));
-
-            if (SUCCEEDED(hr)) {
-                pDlg->SetDefaultFolder(psiFolder);
-            }
-        }
-        
-        //pDlg->SetTitle(L"A File-Save Dialog");
-        //pDlg->SetOkButtonLabel(L"D&o It!");
-        //pDlg->SetFileName(L"mystuff.txt");
-        //pDlg->SetDefaultExtension(L"txt");
-
-        pDlg->GetOptions(&dwFlags);
-        pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT | FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM);
-        // Create the file-open dialog COM object.
-        hr = pDlg->Show(m_hWnd);
-
-        // If the user chose any files, loop thru the array of files.
         if (SUCCEEDED(hr)) {
-            CComPtr<IShellItemArray> pItemArray;
+            hr = SHCreateItemFromParsingName(wszPath, NULL, IID_PPV_ARGS(&psiFolder));
 
-            hr = pDlg->GetResults(&pItemArray);
+            if (SUCCEEDED(hr))
+                pDlg->SetDefaultFolder(psiFolder);
+
+            CoTaskMemFree(wszPath);
+        }
+
+    } else {
+
+        hr = SHCreateItemFromParsingName(Settings.ImagesFolder, NULL, IID_PPV_ARGS(&psiFolder));
+
+        if (SUCCEEDED(hr)) {
+            pDlg->SetDefaultFolder(psiFolder);
+        }
+    }
+
+    //pDlg->SetTitle(L"A File-Save Dialog");
+    //pDlg->SetOkButtonLabel(L"D&o It!");
+    //pDlg->SetFileName(L"mystuff.txt");
+    //pDlg->SetDefaultExtension(L"txt");
+
+    pDlg->GetOptions(&dwFlags);
+    pDlg->SetOptions(dwFlags | FOS_ALLOWMULTISELECT | FOS_FILEMUSTEXIST | FOS_FORCEFILESYSTEM);
+    // Create the file-open dialog COM object.
+    hr = pDlg->Show(m_hWnd);
+
+    // If the user chose any files, loop thru the array of files.
+    if (SUCCEEDED(hr)) {
+        CComPtr<IShellItemArray> pItemArray;
+
+        hr = pDlg->GetResults(&pItemArray);
+
+        if (SUCCEEDED(hr)) {
+            DWORD cSelItems;
+
+            // Get the number of selected files.
+            hr = pItemArray->GetCount(&cSelItems);
 
             if (SUCCEEDED(hr)) {
-                DWORD cSelItems;
+                if (!cSelItems) {
+                    return 0;
+                }
+                for (DWORD j = 0; j < cSelItems; j++) {
+                    CComPtr<IShellItem> pItem;
 
-                // Get the number of selected files.
-                hr = pItemArray->GetCount(&cSelItems);
+                    // Get an IShellItem interface on the next file.
+                    hr = pItemArray->GetItemAt(j, &pItem);
 
-                if (SUCCEEDED(hr)) {
-                    if (!cSelItems) {
-                        return 0;
-                    }
-                    for (DWORD j = 0; j < cSelItems; j++) {
-                        CComPtr<IShellItem> pItem;
+                    if (SUCCEEDED(hr)) {
+                        LPOLESTR pwsz = NULL;
 
-                        // Get an IShellItem interface on the next file.
-                        hr = pItemArray->GetItemAt(j, &pItem);
+                        // Get its file system path.
+                        hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
                         if (SUCCEEDED(hr)) {
-                            LPOLESTR pwsz = NULL;
-
-                            // Get its file system path.
-                            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
-
-                            if (SUCCEEDED(hr)) {
-                                CreatePage(wpMainPage);
-                                if (((CMainDlg*)Pages[2])->AddToFileList(pwsz)) {
-                                    nCount++;
-                                }
-                                CoTaskMemFree(pwsz);
-                            } 
+                            CreatePage(wpMainPage);
+                            if (((CMainDlg*)Pages[2])->AddToFileList(pwsz)) {
+                                nCount++;
+                            }
+                            CoTaskMemFree(pwsz);
                         }
                     }
-                }
-            } else {
-                return 0;
-            }
-            CComPtr<IShellItem> pFolderItem;
-            hr = pDlg->GetFolder(&pFolderItem);
-            if (SUCCEEDED(hr)) {
-                LPOLESTR pwsz = NULL;
-
-                // Get its file system path.
-                hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
-
-                if (SUCCEEDED(hr)) {
-                    Settings.ImagesFolder = pwsz;
-                    CoTaskMemFree(pwsz);
                 }
             }
         } else {
             return 0;
         }
-    } else {
-        TCHAR Buf[MAX_PATH * 4];
-        if (AnyFiles)
-            GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 1, TR("Any file"),
-            _T("*.*"));
-        else
-            GuiTools::SelectDialogFilter(Buf, sizeof(Buf) / sizeof(TCHAR), 2,
-            CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"),
-            _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp"), TR("Any file"),
-            _T("*.*"));
-        CMultiFileDialog fd(0, 0, OFN_HIDEREADONLY, Buf, m_hWnd);
+        CComPtr<IShellItem> pFolderItem;
+        hr = pDlg->GetFolder(&pFolderItem);
+        if (SUCCEEDED(hr)) {
+            LPOLESTR pwsz = NULL;
 
-        TCHAR Buffer[1000];
-        fd.m_ofn.lpstrInitialDir = Settings.ImagesFolder;
+            // Get its file system path.
+            hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
-        if(fd.DoModal(m_hWnd) != IDOK) return 0;
-
-        LPCTSTR FileName = 0;
-        fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-        CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
-        do
-        {
-            FileName = (FileName) ? fd.GetNextFileName() : fd.GetFirstFileName();
-            if (!FileName) break;
-            fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-
-            if(Buffer[lstrlen(Buffer)-1] != '\\')
-            lstrcat(Buffer, _T("\\"));
-
-
-            lstrcat(Buffer, FileName);
-            if (mainDlg->AddToFileList(Buffer)) {
-                nCount++;
+            if (SUCCEEDED(hr)) {
+                Settings.ImagesFolder = pwsz;
+                CoTaskMemFree(pwsz);
             }
-        
-        } while (true);
-
-
-        fd.GetDirectory(Buffer, sizeof(Buffer)/sizeof(TCHAR));
-        Settings.ImagesFolder = Buffer;
+        }
+    } else {
+        return 0;
     }
+    
     
     if (nCount) {
         ShowPage(wpMainPage, 0, 3);
@@ -1636,30 +1557,18 @@ bool CWizardDlg::funcLastRegionScreenshot() {
     return CommonScreenshot(ScreenCapture::cmLastRegion);
 }
 
-bool CWizardDlg::funcAddFolder()
-{
-    if (WinUtils::IsVistaOrLater()) {
-        const DWORD kCheckboxId = 2000;
-        CNewStyleFolderDialog dlg(m_hWnd, CString(), TR("Choose folder"), true);
-        dlg.AddCheckbox(kCheckboxId, TR("Including subdirectories"), Settings.ParseSubDirs);
-        if (dlg.DoModal(m_hWnd) == IDOK) {
-            Settings.ParseSubDirs = dlg.IsCheckboxChecked(kCheckboxId);
-            m_bShowWindow = true;
-            AddFolder(dlg.GetFolderPath(), Settings.ParseSubDirs);
-        }   
-        return false;
-    } else {
-        CMyFolderDialog fd(m_hWnd);
-        fd.m_bSubdirs = Settings.ParseSubDirs;
-        if (fd.DoModal(m_hWnd) == IDOK) {
-            Settings.ParseSubDirs = fd.m_bSubdirs;
-            ShowWindow(SW_SHOW);
-            m_bShowWindow = true;
-            AddFolder(fd.GetFolderPath(), fd.m_bSubdirs);
+bool CWizardDlg::funcAddFolder() {
 
-            return true;
-        } else return false;
+    const DWORD kCheckboxId = 2000;
+    CNewStyleFolderDialog dlg(m_hWnd, CString(), TR("Choose folder"), true);
+    dlg.AddCheckbox(kCheckboxId, TR("Including subdirectories"), Settings.ParseSubDirs);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        Settings.ParseSubDirs = dlg.IsCheckboxChecked(kCheckboxId);
+        m_bShowWindow = true;
+        AddFolder(dlg.GetFolderPath(), Settings.ParseSubDirs);
     }
+    return false;
+
 }
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {

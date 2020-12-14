@@ -73,7 +73,6 @@ protected:
 //    CDialogHook * dialogHook_;
     CComPtr<IAccessible> accesible_;
     //static CWebViewWindow* instance;
-    HMODULE urlmonDll_;
 };
 
 

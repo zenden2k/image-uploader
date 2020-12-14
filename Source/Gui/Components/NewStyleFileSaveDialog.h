@@ -20,7 +20,6 @@ public:
     void setFileTypeIndex(UINT iFileType) override;
 
 protected:
-    Library shellDll_{ L"shell32.dll" };
     CComPtr<IFileSaveDialog> newStyleDialog_;
 private:
     DISALLOW_COPY_AND_ASSIGN(CNewStyleFileSaveDialog);

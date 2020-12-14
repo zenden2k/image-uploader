@@ -12,19 +12,15 @@ class ServerListManager
 {
 public:
     ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
-    ~ServerListManager();
-    bool addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
+    ~ServerListManager()=default;
+    std::string addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
         const std::string &remoteDirectory, const std::string &downloadUrl);
-    bool addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);
-    std::string errorMessage() const;
-    std::string createdServerName() const;
+    std::string addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);
 protected:
     DISALLOW_COPY_AND_ASSIGN(ServerListManager);
     CUploadEngineList * uploadEngineList_;
     std::string serversDirectory_;
     ServerSettingsMap& serversSettings_;
-    std::string errorMessage_;
-    std::string createdServerName_;
 };
 
 #endif

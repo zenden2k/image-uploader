@@ -20,7 +20,7 @@
 
 #include "UploadParamsDlg.h"
 
-#include "wizarddlg.h"
+#include "Gui/Dialogs/wizarddlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -70,10 +70,10 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     thumbTemplateCombo_ = GetDlgItem(IDC_THUMBTEMPLATECOMBO);
     //Fill profile combobox
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
-    std::map<CString, ImageConvertingParams>::const_iterator it;
+
     int selectedIndex = -1;
     int i = 0;
-    for (it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
+    for (auto it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
         GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
         if (it->first == U2W(serverProfile_.getImageUploadParams().ImageProfileName)) {
 
@@ -276,12 +276,12 @@ void CUploadParamsDlg::useServerThumbnailsChanged() {
 
     if ( useServerThumbnails ) {
         // Select item 'resize by width'
-        SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, 0,0);
+        SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, 0, 0);
     }
 
     defaultThumbSettingsCheckboxChanged();
 }
 
-ImageUploadParams CUploadParamsDlg::imageUploadParams() {
+ImageUploadParams CUploadParamsDlg::imageUploadParams() const {
     return params_;
 }
