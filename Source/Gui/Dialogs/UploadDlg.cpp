@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -281,7 +281,7 @@ bool CUploadDlg::OnShow()
     int newcode = code;
     bool Thumbs = sessionImageServer_.getImageUploadParams().CreateThumbs!=0;
 
-    // Корректировка типа кода в зависимости от включения превьюшек
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     if(Thumbs)
     {
         if(code<4 && code>1)
@@ -585,7 +585,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
             urlList_[fps->tableRow] = item;
         }
-        //uploadListView_.SetItemText(fps->tableRow, 1, _T("Готово"));
+        //uploadListView_.SetItemText(fps->tableRow, 1, _T("пїЅпїЅпїЅпїЅпїЅпїЅ"));
         /*taskDispatcher->runInGuiThread([this] { 
             updateTotalProgress(); 
         });*/

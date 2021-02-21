@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,6 +23,17 @@
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
 
+namespace {
+    void OffsetControl(HWND control, int offset)
+    {
+        RECT rc;
+
+        GetWindowRect(control, &rc);
+        MapWindowPoints(0, GetParent(control), reinterpret_cast<LPPOINT>(&rc), 2);
+        SetWindowPos(control, 0, rc.left, rc.top + offset, 0, 0, SWP_NOSIZE);
+    }
+}
+
 // CInputDialog
 CInputDialog::CInputDialog(const CString& title, const CString& descr, const CString& defaultValue,
                            const CString& image)
@@ -35,15 +46,6 @@ CInputDialog::CInputDialog(const CString& title, const CString& descr, const CSt
 
 CInputDialog::~CInputDialog()
 {
-}
-
-void OffsetControl(HWND control, int offset)
-{
-    RECT rc;
-
-    GetWindowRect(control, &rc);
-    MapWindowPoints(0, GetParent(control), reinterpret_cast<LPPOINT>(&rc), 2);
-    SetWindowPos(control, 0, rc.left, rc.top + offset, 0, 0, SWP_NOSIZE);
 }
 
 LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

@@ -2,7 +2,7 @@
 
 Image Uploader -  free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, st
 UploadEngineManager::~UploadEngineManager()
 {
     unloadUploadEngines();
-    for (auto& sync : serverSyncs_)
-    {
+    for (auto& sync : serverSyncs_) {
         delete sync.second;
     }
     serverSyncs_.clear();
@@ -53,14 +52,12 @@ UploadEngineManager::~UploadEngineManager()
 
 CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serverProfile)
 {
-    if (serverProfile.serverName().empty())
-    {
+    if (serverProfile.serverName().empty()) {
         LOG(ERROR) << "UploadEngineManager::getUploadEngine" << " empty server name";
         return nullptr;
     }
     CUploadEngineData *ue = uploadEngineList_->byName(serverProfile.serverName());
-    if (!ue)
-    {
+    if (!ue) {
         LOG(ERROR) << "No such server " << serverProfile.serverName();
         return nullptr;
     }
@@ -209,8 +206,7 @@ void UploadEngineManager::resetAuthorization(const ServerProfile& serverProfile)
 void UploadEngineManager::resetFailedAuthorization()
 {
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);
-    for (auto sync : serverSyncs_)
-    {
+    for (auto sync : serverSyncs_) {
         sync.second->resetFailedAuthorization();
     }
 }
@@ -220,8 +216,7 @@ ServerSync* UploadEngineManager::getServerSync(const ServerProfile& serverProfil
     std::lock_guard<std::mutex> lock(serverSyncsMutex_);
     ServerSyncMapKey key = std::make_pair(serverProfile.serverName(), serverProfile.profileName());
     auto it = serverSyncs_.find(key);
-    if (it == serverSyncs_.end())
-    {
+    if (it == serverSyncs_.end()) {
         ServerSync *sync = new ServerSync();
         serverSyncs_[key] = sync;
         return sync;

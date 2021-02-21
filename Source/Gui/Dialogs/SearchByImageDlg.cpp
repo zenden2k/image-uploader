@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     using namespace std::placeholders;
     seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, Settings.temporaryServer, W2U(fileName_));
-    seeker_->onTaskFinished.connect(std::bind(&CSearchByImageDlg::onSeekerFinished, this, _1, _2, _3));
+    seeker_->onTaskFinished.connect([this](SearchByImageTask* task, bool success, const std::string& msg) { onSeekerFinished(task, success, msg); });
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
     return 1;  // Let the system set the focus

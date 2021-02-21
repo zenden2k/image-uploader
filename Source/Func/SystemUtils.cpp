@@ -15,15 +15,15 @@ bool CopyFileAndImageToClipboard(LPCTSTR fileName) {
         CopyImageToClipboard(fileName);
     }
     std::vector<CString> fileNames;
-    fileNames.push_back(fileName);
+    fileNames.emplace_back(fileName);
     return CopyFilesToClipboard(fileNames, false);
 }
 
 bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipboard ) {
-    int argc = fileNames.size();
-    WCHAR *pFullNames = new WCHAR[argc * MAX_PATH + 1];
-    WCHAR *p = pFullNames;
-    for ( int i = 0; i < argc; i++ ) {
+    size_t argc = fileNames.size();
+    std::unique_ptr<WCHAR[]> pFullNames(new WCHAR[argc * MAX_PATH + 1]);
+    WCHAR *p = pFullNames.get();
+    for (size_t i = 0; i < argc; i++ ) {
         LPTSTR end = nullptr;
         StringCchCopyEx(p, MAX_PATH, fileNames[i], &end, nullptr, 0);
         if (!end) {
@@ -32,12 +32,19 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipb
         p = end + 1;
     }
     *p++ = 0; 
-    DWORD dwDataBytes = sizeof(WCHAR) * (p - pFullNames);
+    DWORD dwDataBytes = sizeof(WCHAR) * (p - pFullNames.get());
     DROPFILES df = {sizeof(DROPFILES), {0, 0}, 0, TRUE};
     HGLOBAL hMem = GlobalAlloc(GMEM_ZEROINIT|GMEM_MOVEABLE|GMEM_DDESHARE, sizeof(DROPFILES) + dwDataBytes);
-    char *pGlobal = reinterpret_cast<char*>(GlobalLock(hMem));
+    if (!hMem) {
+        return false;
+    }
+    char *pGlobal = static_cast<char*>(GlobalLock(hMem));
+    if (!pGlobal) {
+        GlobalFree(hMem);
+        return false;
+    }
     CopyMemory(pGlobal, &df, sizeof(DROPFILES));
-    CopyMemory(pGlobal + sizeof(DROPFILES), pFullNames, dwDataBytes); // that's pGlobal + 20 bytes (the size of DROPFILES);
+    CopyMemory(pGlobal + sizeof(DROPFILES), pFullNames.get(), dwDataBytes); // that's pGlobal + 20 bytes (the size of DROPFILES);
     GlobalUnlock(hMem);
     if ( OpenClipboard(nullptr) ) {
         if ( clearClipboard ) {
@@ -46,7 +53,7 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipb
         SetClipboardData(CF_HDROP, hMem);
         CloseClipboard();
     }
-    delete[] pFullNames;
+
     return true;
 }
 
@@ -61,7 +68,7 @@ bool CopyImageToClipboard(LPCTSTR fileName) {
 }
 
 bool CopyImageToClipboard(Gdiplus::Bitmap* image) {
-    if ( OpenClipboard(NULL) ) {
+    if ( OpenClipboard(nullptr) ) {
         EmptyClipboard();
         //if ( savingFormat != 0 ) {
             //Gdip_RemoveAlpha(*image, Color(255,255,255,255));

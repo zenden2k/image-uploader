@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -47,12 +47,12 @@ CResultsWindow::~CResultsWindow()
 }
 
 void CResultsWindow::setOnShortenUrlChanged(std::function<void(bool)> fd) {
-    ResultsPanel->setOnShortenUrlChanged(fd);
+    ResultsPanel->setOnShortenUrlChanged(std::move(fd));
 }
 
 LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if(m_childWindow)
     {
         ::ShowWindow(GetDlgItem(IDOK),SW_HIDE);
@@ -79,7 +79,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     resultsTabCtrl_.InsertItem(1, TR("HTML code"));
     resultsTabCtrl_.InsertItem(2, _T("Markdown"));
     resultsTabCtrl_.InsertItem(3, TR("Links (URL)"));
-    resultsTabCtrl_.SetCurSel(Settings.CodeLang);
+    resultsTabCtrl_.SetCurSel(settings->CodeLang);
 
     // Creating panel with results
     WINDOWPLACEMENT wp;
@@ -115,10 +115,9 @@ LRESULT CResultsWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 LRESULT CResultsWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     return 0;
-
 }
 
-int CResultsWindow::GetCodeType()
+int CResultsWindow::GetCodeType() const
 {
     return ResultsPanel->GetCodeType();
 }
@@ -159,7 +158,7 @@ int CResultsWindow::GetPage()
     auto it = tabPageToCodeLang.find(curTab);
     return it != tabPageToCodeLang.end()? it->second : 0;
 }
-void CResultsWindow::AddServer(ServerProfile server)
+void CResultsWindow::AddServer(const ServerProfile& server)
 {
     ResultsPanel->AddServer(server);
 }

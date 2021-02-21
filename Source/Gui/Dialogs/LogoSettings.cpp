@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ CLogoSettings::~CLogoSettings()
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    ñonvert_profiles_ = Settings.ConvertProfiles;
+    ï¿½onvert_profiles_ = Settings.ConvertProfiles;
     TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
@@ -126,7 +126,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     CString profileName = U2W(Settings.imageServer.getImageUploadParams().ImageProfileName);
 
-    if (ñonvert_profiles_.find(profileName) == ñonvert_profiles_.end()) {
+    if (ï¿½onvert_profiles_.find(profileName) == ï¿½onvert_profiles_.end()) {
         profileName = _T("Default");
     }
     ShowParams(profileName);
@@ -198,9 +198,9 @@ bool CLogoSettings::Apply()
    if(CurrentProfileOriginalName == _T("Default"))
     saveToProfile = CurrentProfileOriginalName;
 
-   if(!SaveParams(ñonvert_profiles_[saveToProfile]))
+   if(!SaveParams(ï¿½onvert_profiles_[saveToProfile]))
       return false;
-   Settings.ConvertProfiles = ñonvert_profiles_;
+   Settings.ConvertProfiles = ï¿½onvert_profiles_;
     //Settings.CurrentConvertProfileName  = saveToProfile;
     return TRUE;
 }
@@ -264,7 +264,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     int LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
     int TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
     
-    if(LogoPos == TextPos && addLogo && addText) // åñëè "âîäÿíîé çíàê" è íàäïèñü ïîñòàâëåíû â îäíî è òî æå ìåñòî íà êàðòèíêå
+    if(LogoPos == TextPos && addLogo && addText) // ï¿½ï¿½ï¿½ï¿½ "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½" ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     {
         if(MessageBox(TR("Are you sure to place text and logo in the same position on image?"),TR("Image settings"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
             return false;
@@ -295,7 +295,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
 
     bool found = false;
-    for (auto it = ñonvert_profiles_.begin(); it != ñonvert_profiles_.end(); ++it) {
+    for (auto it = ï¿½onvert_profiles_.begin(); it != ï¿½onvert_profiles_.end(); ++it) {
       GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }
@@ -309,7 +309,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     {
          ImageConvertingParams params;
          SaveParams(params);
-         ñonvert_profiles_[dlg.getValue()] = params;
+         ï¿½onvert_profiles_[dlg.getValue()] = params;
          CurrentProfileName = dlg.getValue();
          CurrentProfileOriginalName = dlg.getValue();
          m_ProfileChanged = false;
@@ -342,7 +342,7 @@ void CLogoSettings::ShowParams(const CString profileName)
 
     CurrentProfileName = profileName;
     CurrentProfileOriginalName = profileName; 
-    ShowParams(ñonvert_profiles_[profileName]);
+    ShowParams(ï¿½onvert_profiles_[profileName]);
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
 }
 
@@ -376,7 +376,7 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     CString name = TR("New profile");
     CString generatedName = name;
     int i = 1;
-    while(ñonvert_profiles_.count(generatedName) > 0)
+    while(ï¿½onvert_profiles_.count(generatedName) > 0)
     {
         generatedName = name  + _T(" ") + WinUtils::IntToStr(i++);
     }
@@ -395,8 +395,8 @@ LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     if (GuiTools::LocalizedMessageBox(m_hWnd, question, TR("Image settings"), MB_ICONQUESTION | MB_YESNO) != IDYES)
         return 0;
     if(CurrentProfileName=="Default") return 0;
-    if(ñonvert_profiles_.count(CurrentProfileName)>0)
-        ñonvert_profiles_.erase(CurrentProfileName);
+    if(ï¿½onvert_profiles_.count(CurrentProfileName)>0)
+        ï¿½onvert_profiles_.erase(CurrentProfileName);
     
     ShowParams("Default");
     UpdateProfileList();

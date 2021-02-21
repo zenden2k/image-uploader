@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -38,13 +38,16 @@ CHyperLinkControl::CHyperLinkControl()
     CursorHand = false;
     m_bHyperLinks = true;
     m_BkColor = RGB(0, 0, 0);
-    HandCursor = LoadCursor(NULL, IDC_HAND); // Loading "Hand" cursor into memory
+    handCursor_ = LoadCursor(nullptr, IDC_HAND); // Loading "Hand" cursor into memory
+    arrowCursor_ = LoadCursor(nullptr, IDC_ARROW);
     SetThemeClassList ( L"globals" );
-    HDC hdc = ::GetDC(NULL);
+    HDC hdc = ::GetDC(nullptr);
     if (hdc) {
         dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
         dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
-        ::ReleaseDC(NULL, hdc);
+        ::ReleaseDC(nullptr, hdc);
+    } else {
+        dpiX = dpiY = 96.0;
     }
 }
 
@@ -72,17 +75,17 @@ size_t CHyperLinkControl::ItemCount() const {
 }
 
 CString CHyperLinkControl::GetItemTitle(size_t item) const {
-    if (item >= 0 && item < Items.GetCount()) {
+    if (item < Items.GetCount()) {
         return Items[item].szTitle; 
     }
-    return CString();
+    return {};
 }
 
 CString CHyperLinkControl::GetItemDescription(size_t item) const {
     if (item < Items.GetCount()) {
         return Items[item].szTip;
     }
-    return CString();
+    return {};
 }
 
 CRect CHyperLinkControl::GetItemRect(size_t itemIndex) const {
@@ -234,7 +237,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
             if(m_bHyperLinks  || !*Items[i].szTip)
             {
                 if(!CursorHand)
-                    SetCursor(HandCursor);  // we need this because system doesn't send WM_CURSOR message immediately
+                    SetCursor(handCursor_);  // we need this because system doesn't send WM_CURSOR message immediately
             }
             if(static_cast<size_t>(hoverItemIndex_) == i ) return 0;
             Items[i].Hover = true;
@@ -577,15 +580,12 @@ int CHyperLinkControl::selectedItemIndex() const {
 
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)
 {
-    //if(m_bHyperLinks)
-    {
-        bool SubItem = false;
-        if(hoverItemIndex_ != -1)
-            if(*Items[hoverItemIndex_].szTip == 0)
-                SubItem = true;
-        CursorHand = (hoverItemIndex_ !=-1)&&(m_bHyperLinks || SubItem);
-        SetCursor(CursorHand? SetCursor(HandCursor) : LoadCursor(NULL,IDC_ARROW));
+    bool SubItem = false;
+    if (hoverItemIndex_ != -1 && *Items[hoverItemIndex_].szTip == 0) {
+        SubItem = true;
     }
+    CursorHand = (hoverItemIndex_ != -1) && (m_bHyperLinks || SubItem);
+    SetCursor(CursorHand ? handCursor_ : arrowCursor_);
 
     return TRUE;
 }

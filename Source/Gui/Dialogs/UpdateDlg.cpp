@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ namespace {
     /* This function doesn't work as intended */
     bool CanWriteToFolder(const CString& folder)
     {
-        HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, NULL);
+        HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
 
         if (hFile == INVALID_HANDLE_VALUE) {
             return false;
@@ -167,8 +167,8 @@ void CUpdateDlg::CheckUpdates()
         return;
     }
 
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.LastUpdateTime = static_cast<int>(time(0));
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->LastUpdateTime = static_cast<int>(time(0));
     if (m_UpdateManager.AreManualUpdates()) {
         CString text2 = m_UpdateManager.generateReport(true);
         CString message = TR("A new version is available:");
@@ -261,8 +261,8 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
         m_Checked = false;
     }
     m_Modal = true;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.LastUpdateTime = static_cast<int>(time(0));
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->LastUpdateTime = static_cast<int>(time(0));
     if (!m_hWnd)
         Create(parent);
     m_bClose = false;

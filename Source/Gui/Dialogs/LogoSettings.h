@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ protected:
    void ShowParams(const ImageConvertingParams& params);
    void ShowParams(const CString profileName);
    bool SaveParams(ImageConvertingParams& params);
-   std::map<CString, ImageConvertingParams> ñonvert_profiles_;
+   std::map<CString, ImageConvertingParams> ï¿½onvert_profiles_;
    CImageListManaged profileEditToolbarImagelist_;
    LRESULT OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
    LRESULT OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);

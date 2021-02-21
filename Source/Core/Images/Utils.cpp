@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -921,67 +921,26 @@ UINT VoidToInt(void* data, unsigned int size) {
     }
 }
 
-typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
-SHCreateMemStreamFuncType SHCreateMemStreamFunc = 0;
-
-Library shlwapiLib(L"Shlwapi.dll");
 
 CComPtr<IStream>  CreateMemStream(const BYTE* pInit, UINT cbInit) {
     CComPtr<IStream> res;
-    if (!SHCreateMemStreamFunc) {
-        SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>(WinUtils::IsVistaOrLater() ? "SHCreateMemStream" : MAKEINTRESOURCEA(12));
-        if (!SHCreateMemStreamFunc) {
-            return res;
-        }
-    }
-    res.Attach(SHCreateMemStreamFunc(pInit, cbInit));
+    res.Attach(SHCreateMemStream(pInit, cbInit));
     return res;
 }
 
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t imageSize) {
-    if (WinUtils::IsVistaOrLater()) {
-        if (!SHCreateMemStreamFunc) {
-            SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
-            if (!SHCreateMemStreamFunc) {
-                return nullptr;
+    std::unique_ptr<Gdiplus::Bitmap> bitmap;
+    IStream* pStream = SHCreateMemStream(data, imageSize);
+    if (pStream) {
+        bitmap.reset(Gdiplus::Bitmap::FromStream(pStream));
+        pStream->Release();
+        if (bitmap) {
+            if (bitmap->GetLastStatus() == Gdiplus::Ok) {
+                return bitmap;
             }
-        }
-
-        std::unique_ptr<Gdiplus::Bitmap> bitmap;
-        IStream* pStream = SHCreateMemStreamFunc(data, imageSize);
-        if (pStream) {
-            bitmap.reset(Gdiplus::Bitmap::FromStream(pStream));
-            pStream->Release();
-            if (bitmap) {
-                if (bitmap->GetLastStatus() == Gdiplus::Ok) {
-                    return bitmap;
-                }
-            }
-        }
-    } else {
-        HGLOBAL buffer = ::GlobalAlloc(GMEM_MOVEABLE, imageSize);
-        if (buffer) {
-            void* pBuffer = ::GlobalLock(buffer);
-            if (pBuffer) {
-                std::unique_ptr<Gdiplus::Bitmap> bitmap;
-                CopyMemory(pBuffer, data, imageSize);
-
-                IStream* pStream = nullptr;
-                if (::CreateStreamOnHGlobal(buffer, FALSE, &pStream) == S_OK) {
-                    bitmap.reset(Gdiplus::Bitmap::FromStream(pStream));
-                    pStream->Release();
-                    if (bitmap) {
-                        if (bitmap->GetLastStatus() == Gdiplus::Ok) {
-                            return bitmap;
-                        }
-                    }
-                }
-                ::GlobalUnlock(buffer);
-            }
-            ::GlobalFree(buffer);
         }
     }
-
+    
     return nullptr;
 }
 

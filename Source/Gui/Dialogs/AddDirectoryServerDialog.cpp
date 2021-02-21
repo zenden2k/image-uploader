@@ -2,7 +2,7 @@
 
 Image Uploader -  free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -55,11 +55,11 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
 
-    if (!WinUtils::IsVistaOrLater()) {
+    /*if (!WinUtils::IsVistaOrLater()) {
         // Try to remove Unicode Left-To-Right marks from text on Windows XP
         // addFileProcotolLabelText.Replace(L"\u200E", L"");
         // Actually we do not need this, because installing of language pack for RTL languages solves this problem on Windows XP
-    }
+    }*/
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
    
     presetButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));

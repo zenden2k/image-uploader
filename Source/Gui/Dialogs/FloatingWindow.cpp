@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -77,7 +77,6 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
-    uploadType_ = utImage;
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -229,8 +228,8 @@ LRESULT CFloatingWindow::OnReloadSettings(UINT uMsg, WPARAM wParam, LPARAM lPara
         UnRegisterHotkeys();
 
     if (!wParam) {
-        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-        Settings.LoadSettings();
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        settings->LoadSettings();
     }
 
     if (!lParam)
@@ -818,7 +817,7 @@ void CFloatingWindow::showLastUploadedCode() {
         it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
         it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
         it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
+        auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
         if (fileTask) {
             it.FileName = U2W(fileTask->getDisplayName());
         }
@@ -901,7 +900,7 @@ CString CFloatingWindow::HotkeyToString(CString funcName, CString menuItemText) 
     int cur = Settings.Hotkeys.getFuncIndex(funcName);
     if (cur<0) {
         return menuItemText;
-    };
+    }
 
     CHotkeyItem item = Settings.Hotkeys[cur];
     CString hotkeyStr = item.globalKey.toString();

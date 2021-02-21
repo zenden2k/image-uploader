@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -170,11 +170,10 @@ void AffectedSegments::markRect(RECT rc)
 }
 
 HRGN AffectedSegments::createRegionFromSegments() {
-    typedef std::map<unsigned int, bool>::iterator iter;
     CRgn rgn;
     rgn.CreateRectRgn(0, 0, 0, 0);
 
-    for( iter i = segments_.begin(); i != segments_.end(); ++i ) {
+    for( auto i = segments_.begin(); i != segments_.end(); ++i ) {
         CRgn tempRegion;
         unsigned int index = i->first;
         int xIndex = LOWORD( index );
@@ -186,10 +185,9 @@ HRGN AffectedSegments::createRegionFromSegments() {
 }
 
 void AffectedSegments::getRects( std::deque<RECT>& rects, int maxWidth, int maxHeight) const {
-    typedef std::map<unsigned int, bool>::const_iterator iter;
     RECT bounds = { 0, 0, maxWidth, maxHeight };
     bool checkBounds = maxWidth && maxHeight;
-    for( iter i = segments_.begin(); i != segments_.end(); ++i ) {
+    for( auto i = segments_.begin(); i != segments_.end(); ++i ) {
         unsigned int index = i->first;
         int xIndex = LOWORD( index );
         int yIndex = HIWORD( index );
@@ -202,8 +200,7 @@ void AffectedSegments::getRects( std::deque<RECT>& rects, int maxWidth, int maxH
 }
 
 AffectedSegments& AffectedSegments::operator+= ( const AffectedSegments& segments ) {
-    typedef std::map<unsigned int, bool>::const_iterator iter;
-    for( iter i = segments.segments_.begin(); i != segments.segments_.end(); ++i ) {
+    for( auto i = segments.segments_.begin(); i != segments.segments_.end(); ++i ) {
         segments_[ i->first ] = true;
             //segments.segments_[ i->first ];
     }

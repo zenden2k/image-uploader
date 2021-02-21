@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 */
 
 #include "HistoryTreeControl.h"
+
+#include <utility>
 
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
@@ -55,12 +57,13 @@ void CHistoryTreeControl::CreateDownloader()
 {
     using namespace std::placeholders;
 
-    if(!m_FileDownloader)
-    {
+    if(!m_FileDownloader) {
         m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
-        m_FileDownloader->setOnConfigureNetworkClientCallback(std::bind(&CHistoryTreeControl::OnConfigureNetworkClient, this, _1));
-        m_FileDownloader->setOnFileFinishedCallback(std::bind(&CHistoryTreeControl::OnFileFinished, this, _1, _2, _3));
-        m_FileDownloader->setOnQueueFinishedCallback(std::bind(&CHistoryTreeControl::QueueFinishedEvent, this));
+        m_FileDownloader->setOnConfigureNetworkClientCallback([this](auto* nm) { OnConfigureNetworkClient(nm); });
+        m_FileDownloader->setOnFileFinishedCallback([this](bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it) {
+            return OnFileFinished(ok, statusCode, it);
+        });
+        m_FileDownloader->setOnQueueFinishedCallback([this] { QueueFinishedEvent(); });
     }
 }
 
@@ -122,11 +125,11 @@ void CHistoryTreeControl::Clear()
 
 void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand)
 {
-    HistoryTreeItem * it2 = new HistoryTreeItem();
+    auto* it2 = new HistoryTreeItem();
     TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::timeStampToString(it->timeStamp)+ " "+ it->localFilePath), res, it2, autoExpand);
     item->setCallback(this);
     it2->hi = it;
-    it2->thumbnail = 0;
+    it2->thumbnail = nullptr;
     it2->ThumbnailRequested = false;
 }
 
@@ -146,15 +149,15 @@ HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 }
 
 void CHistoryTreeControl::setOnThreadsFinishedCallback(std::function<void()> cb) {
-    onThreadsFinished_ = cb;
+    onThreadsFinished_ = std::move(cb);
 }
 
 void CHistoryTreeControl::setOnThreadsStartedCallback(std::function<void()> cb) {
-    onThreadsStarted_ = cb;
+    onThreadsStarted_ = std::move(cb);
 }
 
 void CHistoryTreeControl::setOnItemDblClickCallback(std::function<void(TreeItem*)> cb) {
-    onItemDblClick_ = cb;
+    onItemDblClick_ = std::move(cb);
 }
 
 HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
@@ -169,7 +172,9 @@ HICON CHistoryTreeControl::getIconForExtension(const CString& fileName)
     }
 
     HICON res = WinUtils::GetAssociatedIcon(fileName, false);
-    if(!res) return 0;
+    if (!res) {
+        return nullptr;
+    }
     m_fileIconCache[ext]=res;
     return res;
 }
@@ -264,7 +269,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         curX  += iconOffsetX + plusIconSize.cx;
         if(theme)
         {
-            DrawThemeBackground( dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED,&plusIconRect);  // закрытая папка
+            DrawThemeBackground( dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED,&plusIconRect);  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             CloseThemeData();
         }
         else
@@ -345,7 +350,7 @@ void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
 {
     HDC hdcMem = CreateCompatibleDC(hdc);
     BITMAP bm;
-    HBITMAP hbmOld = static_cast<HBITMAP>(SelectObject(hdcMem, bmp));
+    auto hbmOld = static_cast<HBITMAP>(SelectObject(hdcMem, bmp));
     GetObject(bmp, sizeof(bm), &bm);
     BitBlt(hdc, x, y, bm.bmWidth, bm.bmHeight, hdcMem, 0, 0, SRCCOPY);
     SelectObject(hdcMem, hbmOld);
@@ -445,7 +450,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
 HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
-    auto engineList = ServiceLocator::instance()->myEngineList();
+    auto* engineList = ServiceLocator::instance()->myEngineList();
     return engineList->getIconForServer(W2U(serverName));
 }
 
@@ -755,7 +760,7 @@ bool CHistoryTreeControl::OnFileFinished(bool ok, int statusCode, const CFileDow
 {
     if(ok && !it.fileName.empty())
     {
-        auto* hit = static_cast<HistoryTreeItem*> (it.id);
+        auto* hit = static_cast<HistoryTreeItem*>(it.id);
         if(hit) {
             hit->thumbnailSource = it.fileName;
             ServiceLocator::instance()->localFileCache()->addFile(it.url, it.fileName);

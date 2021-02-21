@@ -5,6 +5,7 @@
 #endif
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
+#include "Gui/GuiTools.h"
 
 DefaultUploadErrorHandler::DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger):
     logger_(std::move(logger))
@@ -77,7 +78,7 @@ void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
 void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody)
 {
     if (!isResponseBody)
-        MessageBox(0, Utf8ToWCstring(msg), _T("Uploader"), MB_ICONINFORMATION);
+        GuiTools::LocalizedMessageBox(nullptr, Utf8ToWCstring(msg), _T("Uploader"), MB_ICONINFORMATION);
     else {
 #ifdef IU_WTL_APP
         CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),

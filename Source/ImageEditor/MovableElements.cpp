@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -35,9 +35,7 @@ Line::Line(Canvas* canvas, int startX, int startY, int endX, int endY) :MovableE
     drawDashedRectangle_ = false;
     isBackgroundColorUsed_ = false;
     grips_.resize(2);
-
 }
-
 
 void Line::setEndPoint(POINT endPoint) {
     int kAccuracy = 7;
@@ -289,7 +287,6 @@ void TextElement::setTextColor()
             //endEdit(true); // saving to undo history
         }
     }
-
 }
 
 void TextElement::onSelectionChanged(int min, int max, LOGFONT font)
@@ -806,34 +803,33 @@ void Ellipse::render(Painter* gr)
         gr->FillEllipse(&br, x,y,width,height);
     }
     gr->DrawEllipse(&pen, x,y,width,height);
-    gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
-    
+    gr->SetClip(canvas_->currentRenderingRect()); // restoring clip  
 }
 
-bool Ellipse::ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
+bool Ellipse::containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
     using namespace Gdiplus;
     Point center(
-                ellipse.GetLeft() + (ellipse.Width / 2),
-                  ellipse.GetTop() + (ellipse.Height / 2));
+        ellipse.GetLeft() + (ellipse.Width / 2),
+        ellipse.GetTop() + (ellipse.Height / 2));
 
-            double _xRadius = ellipse.Width / 2.0;
-            double _yRadius = ellipse.Height / 2.0;
+    double _xRadius = ellipse.Width / 2.0;
+    double _yRadius = ellipse.Height / 2.0;
 
 
-            if (_xRadius <= 0.0 || _yRadius <= 0.0)
-                return false;
-            /* This is a more general form of the circle equation
-             *
-             * X^2/a^2 + Y^2/b^2 <= 1
-             */
+    if (_xRadius <= 0.0 || _yRadius <= 0.0)
+        return false;
+    /* This is a more general form of the circle equation
+     *
+     * X^2/a^2 + Y^2/b^2 <= 1
+     */
 
-            Point normalized(location.X - center.X,
-                                         location.Y - center.Y);
+    Point normalized(location.X - center.X,
+                     location.Y - center.Y);
 
-            return ((double)(normalized.X * normalized.X)
-                     / (_xRadius * _xRadius)) + ((double)(normalized.Y * normalized.Y) / (_yRadius * _yRadius))
-                <= 1.0;
-        }
+    return ((double)(normalized.X * normalized.X)
+            / (_xRadius * _xRadius)) + ((double)(normalized.Y * normalized.Y) / (_yRadius * _yRadius))
+        <= 1.0;
+}
 
 
 void Ellipse::createGrips()
@@ -875,10 +871,10 @@ bool Ellipse::isItemAtPos(int x, int y)
     int height = getHeight();
     int selectRadius = std::max<int>(penSize_, kSelectRadius);
     if ( filled_ ) {
-        return ContainsPoint(Rect(elX,elY, width, height), Point(x,y));
+        return containsPoint(Rect(elX,elY, width, height), Point(x,y));
     } else {
-        return ContainsPoint(Rect(elX-selectRadius,elY-selectRadius, width+selectRadius*2, height+selectRadius*2), Point(x,y))
-            && !ContainsPoint(Rect(elX+selectRadius,elY+selectRadius, width-selectRadius*2, height-selectRadius*2), Point(x,y) );
+        return containsPoint(Rect(elX-selectRadius,elY-selectRadius, width+selectRadius*2, height+selectRadius*2), Point(x,y))
+            && !containsPoint(Rect(elX+selectRadius,elY+selectRadius, width-selectRadius*2, height-selectRadius*2), Point(x,y) );
     }
 }
 
@@ -981,6 +977,5 @@ void StepNumber::setFontSize(int size) {
     }
 
 }
-
 
 }

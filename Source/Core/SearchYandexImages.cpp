@@ -11,9 +11,9 @@
 #include "Core/Utils/DesktopUtils.h"
 #include "Upload/FileUploadTask.h"
 
-SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer)
+SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer)
     :SearchByImageTask(fileName),
-    temporaryServer_(temporaryServer),
+    temporaryServer_(std::move(temporaryServer)),
     uploadManager_(uploadManager)
 {
     uploadFinished_ = false;
@@ -74,7 +74,7 @@ void SearchYandexImages::run() {
     }
     FileUploadTask *  task(new FileUploadTask(fileName_, IuCoreUtils::ExtractFileName(fileName_)));
     task->setIsImage(true);
-    std::shared_ptr<UploadSession> uploadSession(new UploadSession(false));
+    std::shared_ptr<UploadSession> uploadSession = std::make_shared<UploadSession>(false);
     task->setServerProfile(temporaryServer_);
     using namespace std::placeholders;
     task->onTaskFinished.connect(std::bind(&SearchYandexImages::onFileFinished, this, _1, _2));

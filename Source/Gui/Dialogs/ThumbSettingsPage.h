@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
     limitations under the License.
 
 */
-#ifndef THUMBSETTINGSPAGE_H
-#define THUMBSETTINGSPAGE_H
-
+#ifndef IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H
+#define IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H
 
 #pragma once
+
+#include <string>
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "SettingsPage.h"
 #include "3rdpart/ColorButton.h"
-#include <atlcrack.h>
 #include "Core/Images/ImageConverter.h"
 
 // CThumbSettingsPage
@@ -48,10 +48,10 @@ public:
         COMMAND_HANDLER(IDC_EDITTHUMBNAILPRESET, BN_CLICKED, OnEditThumbnailPreset)
         COMMAND_HANDLER(IDC_THUMBTEXTCHECKBOX, BN_CLICKED,OnThumbTextCheckboxClick )
         COMMAND_HANDLER(IDC_THUMBTEXT, EN_CHANGE, OnThumbTextChange)
-       COMMAND_HANDLER_EX(IDC_HEIGHTRADIO, BN_CLICKED, OnWidthEditChange) 
-      COMMAND_HANDLER_EX(IDC_WIDTHRADIO, BN_CLICKED, OnWidthEditChange) 
-      COMMAND_HANDLER_EX(IDC_HEIGHTEDIT, EN_CHANGE, OnWidthEditChange) 
-      COMMAND_HANDLER_EX(IDC_WIDTHEDIT, EN_CHANGE, OnWidthEditChange)
+        COMMAND_HANDLER_EX(IDC_HEIGHTRADIO, BN_CLICKED, OnWidthEditChange) 
+        COMMAND_HANDLER_EX(IDC_WIDTHRADIO, BN_CLICKED, OnWidthEditChange) 
+        COMMAND_HANDLER_EX(IDC_HEIGHTEDIT, EN_CHANGE, OnWidthEditChange) 
+        COMMAND_HANDLER_EX(IDC_WIDTHEDIT, EN_CHANGE, OnWidthEditChange)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:
@@ -80,5 +80,5 @@ public:
         CComboBox thumbsCombo_;
 };
 
-#endif // THUMBSETTINGSPAGE_H
+#endif // IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H
 

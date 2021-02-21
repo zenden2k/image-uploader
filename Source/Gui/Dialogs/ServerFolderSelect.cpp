@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEng
 {
     m_UploadEngine = serverProfile_.uploadEngineData();
     uploadEngineManager_ = uploadEngineManager;
-    m_FolderOperationType = foGetFolders;
+    m_FolderOperationType = FolderOperationType::foGetFolders;
     runningScript_ = nullptr;
     NetworkClientFactory factory;
     m_NetworkClient = factory.create();
@@ -71,8 +71,8 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_FolderTree.SetImageList(m_PlaceSelectorImageList);
     m_FolderMap[L""] = nullptr;
    
-    m_FolderOperationType = foGetFolders;
-    CAdvancedUploadEngine *uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    m_FolderOperationType = FolderOperationType::foGetFolders;
+    auto* uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
     if (!uploadScript)
     {
@@ -80,8 +80,8 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         return 0;
     }
     CString title;
-    title.Format(TR("Folder list on server %s for account '%s':"), (LPCTSTR)Utf8ToWCstring(m_UploadEngine->Name),
-                 (LPCTSTR)Utf8ToWCstring(serverProfile_.profileName()));
+    title.Format(TR("Folder list on server %s for account '%s':"), U2W(m_UploadEngine->Name).GetString(),
+                 U2W(serverProfile_.profileName()).GetString());
     SetDlgItemText(IDC_FOLDERLISTLABEL, title);
 
     uploadScript->setNetworkClient(m_NetworkClient.get());
@@ -142,7 +142,7 @@ DWORD CServerFolderSelect::Run()
     m_NetworkClient->setProgressCallback(std::bind(&CServerFolderSelect::progressCallback, this, _1, _2, _3, _4, _5));
 
 
-    if (m_FolderOperationType == foGetFolders)
+    if (m_FolderOperationType == FolderOperationType::foGetFolders)
     {
         m_FolderList.Clear();
         m_FolderMap.clear();
@@ -168,18 +168,18 @@ DWORD CServerFolderSelect::Run()
         m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
     }
 
-    else if (m_FolderOperationType == foCreateFolder)
+    else if (m_FolderOperationType == FolderOperationType::foCreateFolder)
     {
         script->createFolder(CFolderItem(), m_newFolder);
-        m_FolderOperationType = foGetFolders;
+        m_FolderOperationType = FolderOperationType::foGetFolders;
         Run();
         m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
     }
 
-    else if (m_FolderOperationType == foModifyFolder) // Modifying an existing folder
+    else if (m_FolderOperationType == FolderOperationType::foModifyFolder) // Modifying an existing folder
     {
         script->modifyFolder(m_newFolder);
-        m_FolderOperationType = foGetFolders;
+        m_FolderOperationType = FolderOperationType::foGetFolders;
         Run();
         m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
     }
@@ -207,7 +207,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
     {
         m_newFolder = newFolder;
         m_newFolder.parentid = WCstringToUtf8(parentFolderId);
-        m_FolderOperationType = foCreateFolder;
+        m_FolderOperationType = FolderOperationType::foCreateFolder;
         if (!IsRunning())
         {
             CreateLoadingThread();
@@ -276,7 +276,7 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     int nIndex = m_FolderTree.GetItemData(selectedItem);
     bool showViewInBrowserItem = false;
     if (nIndex >= 0 && nIndex < m_FolderList.GetCount()) {
-        CFolderItem& folder = m_FolderList[nIndex];
+        const CFolderItem& folder = m_FolderList[nIndex];
         if (!folder.getViewUrl().empty()) {
             showViewInBrowserItem = true;
         }
@@ -313,7 +313,7 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
     CNewFolderDlg dlg(folder, false, m_accessTypeList);
     if (dlg.DoModal() == IDOK)
     {
-        m_FolderOperationType = foModifyFolder;  // Editing an existing folder
+        m_FolderOperationType = FolderOperationType::foModifyFolder;  // Editing an existing folder
         m_newFolder = folder;
         if (!IsRunning())
         {
@@ -383,10 +383,12 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const 
             m_FolderTree.SetItemData(res, i);
 
             m_FolderMap[Utf8ToWstring(cur.id)] = res;
-            if (cur.id != "")
+            if (!cur.id.empty()) {
                 BuildFolderTree(list, cur.id.c_str());
-            if (parentFolderId.IsEmpty())
+            }
+            if (parentFolderId.IsEmpty()) {
                 m_FolderTree.Expand(res);
+            }
         }
     }
 }

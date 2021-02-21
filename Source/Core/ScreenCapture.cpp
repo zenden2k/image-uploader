@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 #include <cassert>
 #include <deque>
 
-#include <Dwmapi.h>
+#include <dwmapi.h>
+
 #include "atlheaders.h"
 #include "Func/WinUtils.h"
 #include "resource.h"
@@ -99,8 +100,6 @@ bool GetScreenBounds(RECT& rect)
 
 }
 
-
-
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
 
 enum ChannelARGB {
@@ -119,8 +118,8 @@ void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
     BitmapData bdDst;
     source.LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc);
     dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
-    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
-    BYTE* bpDst = reinterpret_cast<BYTE*>(bdDst.Scan0);
+    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+    BYTE* bpDst = static_cast<BYTE*>(bdDst.Scan0);
     bpSrc += (int)sourceChannel;
     bpDst += (int)destChannel;
     for ( int i = r.Height * r.Width; i > 0; i-- )
@@ -233,7 +232,7 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
     int bmHeight = regionBoundingRect.bottom  - regionBoundingRect.top;
     
     CBitmap tempBm; // Temporary bitmap and device context
-    CDC tempDC;    //  which were added to avoid artefacts with BitBlt
+    CDC tempDC;    //  which were added to avoid artifacts with BitBlt
     HDC dc = GetDC( 0 );
     tempBm.CreateCompatibleBitmap( dc, bmWidth, bmHeight );
     tempDC.CreateCompatibleDC( dc );
@@ -247,7 +246,7 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
         return false;
     }
 
-    Bitmap* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
+    auto* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
     Graphics gr( resultBm );
 
     Bitmap srcBm( tempBm, 0);

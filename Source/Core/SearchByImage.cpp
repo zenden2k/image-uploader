@@ -3,11 +3,10 @@
 #include "SearchGoogleImages.h"
 #include "SearchYandexImages.h"
 
-
-std::unique_ptr<SearchByImageTask> SearchByImage::createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory,UploadManager* uploadManager,
+std::unique_ptr<SearchByImageTask> SearchByImage::createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager,
     SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName) {
     if (se == SearchEngine::seGoogle) {
-        return std::make_unique<SearchGoogleImages>(networkClientFactory, fileName);
+        return std::make_unique<SearchGoogleImages>(std::move(networkClientFactory), fileName);
     } else if (se == SearchEngine::seYandex) {
         return std::make_unique<SearchYandexImages>(uploadManager, fileName, temporaryServer);
     }
@@ -20,7 +19,7 @@ std::string SearchByImage::getSearchEngineDisplayName(SearchEngine se) {
     } else if (se == SearchEngine::seYandex) {
         return "Yandex";
     }
-    return std::string();
+    return {};
 }
 
 std::string SearchByImage::searchEngineTypeToString(SearchEngine se) {
@@ -29,7 +28,7 @@ std::string SearchByImage::searchEngineTypeToString(SearchEngine se) {
     } else if (se == SearchEngine::seYandex) {
         return "yandex";
     }
-    return std::string();
+    return {};
 }
 
 SearchByImage::SearchEngine SearchByImage::searchEngineTypeFromString(const std::string& name) {

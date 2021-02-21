@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
-    hIcon = reinterpret_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+    hIcon = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
     SetIcon(hIcon, TRUE);
     hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
@@ -145,7 +145,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     int serverComboElementIndex = serverComboBox_.GetCurSel();
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
-        CUploadEngineData * uploadEngineData = ((CUploadEngineList *)myEngineList)->byName(serverNameA);
+        CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
         Settings.imageServer.setServerName(uploadEngineData->Name) ;
         bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
         if ( needAuth ) {
@@ -245,7 +245,7 @@ void  CQuickSetupDlg::serverChanged() {
             return;
         }
         std::string serverNameA = serverName;
-        CUploadEngineData * uploadEngineData = ((CUploadEngineList *)myEngineList)->byName(serverNameA);
+        CUploadEngineData* uploadEngineData = myEngineList->byName(serverNameA);
         if ( !uploadEngineData ) {
             return ;
         }

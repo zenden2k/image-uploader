@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,8 +40,9 @@ CProgressRingControl::~CProgressRingControl()
         ::SelectObject(backBufferDc_, oldBm_);
         DeleteDC(backBufferDc_);
     }
-    if (backBufferBm_)
+    if (backBufferBm_) {
         DeleteObject(backBufferBm_);
+    }
 }
 
 LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -59,7 +60,6 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
    
     CRect clientRect;
     GetClientRect(&clientRect);
-    DWORD colorBtnFace = GetSysColor(COLOR_BTNFACE);
     HBRUSH sysBr = GetSysColorBrush(COLOR_BTNFACE);
     FillRect(backBufferDc_, &clientRect, sysBr);
    
@@ -71,9 +71,9 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
     int arcWidth = std::min<>(clientRect.Width(), clientRect.Height())- penSize*2;
     //graphics.FillRectangle(&br, 0, 0, clientRect.Width(), clientRect.Height());
     LinearGradientBrush lgBrush(Rect(-1, -1, arcWidth+10, arcWidth + 10),
-        Color().Black, Color(0, 200, 200, 200), timerCounter_);
+        Color().Black, Color(0, 200, 200, 200), static_cast<REAL>(timerCounter_));
     Pen p(&lgBrush, penSize);
-    graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, timerCounter_, 180);
+    graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, static_cast<REAL>(timerCounter_), 180);
 
     
     BitBlt(hdc, 0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);

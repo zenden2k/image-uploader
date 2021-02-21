@@ -15,7 +15,7 @@ class UploadManager;
 
 class SearchYandexImages: public SearchByImageTask  {
 public:
-    explicit SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, const ServerProfile& temporaryServer);
+    explicit SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer);
     void cancel() override;
 protected:
     void run() override;

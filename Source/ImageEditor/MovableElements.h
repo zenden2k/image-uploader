@@ -159,7 +159,7 @@ public:
     RECT getPaintBoundingRect() override;
 protected:
     bool filled_;
-    bool ContainsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
+    bool containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location);
     void createGrips() override;
     DISALLOW_COPY_AND_ASSIGN(Ellipse);
 };

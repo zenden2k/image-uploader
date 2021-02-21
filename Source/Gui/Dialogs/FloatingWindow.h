@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -234,7 +234,6 @@ public:
      enum UploadType {
          utImage, utUrl, utShorteningImageUrl
      };
-     UploadType uploadType_;
      CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
     protected:

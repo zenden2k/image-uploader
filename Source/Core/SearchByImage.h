@@ -19,8 +19,7 @@ class SearchByImage  {
         static std::string getSearchEngineDisplayName(SearchEngine se);
         static std::string searchEngineTypeToString(SearchEngine se);
         static SearchEngine searchEngineTypeFromString(const std::string& name); 
-protected:
-    SearchByImage();
+        SearchByImage() = delete;
 };
 
 #endif

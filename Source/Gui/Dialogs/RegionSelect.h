@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,19 +30,19 @@
 class CRegionSelectCallback
 {
 public: 
-    virtual void OnScreenshotFinished(int Result)=NULL;
-    virtual void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm)=NULL;
+    virtual void OnScreenshotFinished(int Result)=0;
+    virtual void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm)=0;
 };
 
-enum SelectionMode {smRectangles, smFreeform, smWindowHandles };
+enum class SelectionMode {smRectangles, smFreeform, smWindowHandles };
 
 class CRegionSelect: public CWindowImpl<CRegionSelect>
 {
     public:
         CRegionSelect();
         ~CRegionSelect();
-        CRect m_screenBounds;
-        bool wasImageEdited();
+
+        bool wasImageEdited() const;
         std::shared_ptr<ScreenCapture::CScreenshotRegion> region() const;
         bool Execute(HBITMAP screenshot, int width, int height);
 
@@ -93,7 +93,6 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         SelectionMode m_SelectionMode;
         HWND hSelWnd;
         RECT m_PrevWindowRect;
-        void ShowW(HWND Parent, HBITMAP bmp,int w,int h);
         POINT Start,End;
         bool Down;
         std::vector<POINT> m_curvePoints;
@@ -133,7 +132,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         CToolBarCtrl Toolbar;
         ScreenCapture::CWindowHandlesRegion m_SelectedWindowsRegion;
         int lineType;
-
+        CRect m_screenBounds;
 };
 
 extern CRegionSelect RegionSelect;

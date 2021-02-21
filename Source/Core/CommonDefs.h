@@ -12,7 +12,7 @@
 #define _(str) str
 
 // CString <-> std::string(utf-8) conversion macroses
-#define W2U(str) IuCoreUtils::WstringToUtf8(((LPCTSTR)(str)))
+#define W2U(str) IuCoreUtils::WstringToUtf8((static_cast<LPCTSTR>(str)))
 #define U2W(str) CString(IuCoreUtils::Utf8ToWstring(str).c_str())
 
 #pragma warning(disable:4996)

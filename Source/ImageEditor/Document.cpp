@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ void Document::init() {
     //currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
 
     /*
-    рисуем сетку*/ 
+    пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ*/ 
     /*for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
         Pen pen(Color::DarkGray);
         currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
@@ -137,7 +137,7 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
         return ;
     }
     
-    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
 
     unsigned char* pImageData = imageData;
     AffectedSegments outSegments(srcImageWidth, srcImageHeight);
@@ -181,7 +181,7 @@ void Document::checkTransparentPixels()
     BitmapData bitmapData;
     Rect lockRect(0,0, std::min<int>(10, currentImage_->GetWidth()), std::min<int>(10, currentImage_->GetHeight()));
     if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
-        uint8_t * source = (uint8_t *) bitmapData.Scan0;
+        auto* source = static_cast<uint8_t*>(bitmapData.Scan0);
         unsigned int stride;
         if ( bitmapData.Stride > 0) { 
             stride = bitmapData.Stride;
@@ -207,11 +207,10 @@ void Document::render(Painter *gr, Gdiplus::Rect rc) {
     gr->DrawImage( currentImage_.get(),rc.X, rc.Y, rc.X, rc.Y, rc.Width, rc.Height, Gdiplus::UnitPixel);
 }
 
-bool  Document::undo() {
+bool Document::undo() {
     if ( history_.empty() ) {
         return false;
     }
-    typedef std::deque<RECT>::iterator iter;
     HistoryItem undoItem = history_.back();
     history_.pop_back();
     std::deque<RECT> rects;
@@ -222,11 +221,11 @@ bool  Document::undo() {
     if ( currentImage_->LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
         return false ;
     }
-    BYTE* bpSrc = (BYTE*)bdSrc.Scan0;
+    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
     unsigned char* pdata = undoItem.data;
     int pixelSize = 4;
 
-    for ( iter it = rects.begin(); it != rects.end(); ++it ) {
+    for ( auto it = rects.begin(); it != rects.end(); ++it ) {
         int x = it->left;
         int y = it->top;
         int rectWidth  = it->right - it->left;

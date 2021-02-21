@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * 
 
 LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
     AddClipboardFormatListener(m_hWnd);
  
@@ -97,10 +97,10 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(Settings.imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer);
 
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
-    GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV);
+    GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, settings->ImageReuploaderSettings.PasteHtmlOnCtrlV);
     GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
@@ -191,14 +191,14 @@ bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
 }
 
 bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage) {
-    DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+    auto* dit = static_cast<DownloadItemData*>(it.id);
     LocalFileCache* localFileCache = LocalFileCache::instance();
     bool success = false;
     localFileCache->ensureHistoryParsed();
     std::string localFile = localFileCache->get(dit->originalUrl);
     CString message;
     if ( !localFile.empty() ) {
-        message.Format(_T("File '%s' has been found on local computer ('%s')"), (LPCTSTR)Utf8ToWCstring(it.url), (LPCTSTR)Utf8ToWCstring(localFile) );
+        message.Format(_T("File '%s' has been found on local computer ('%s')"), U2W(it.url).GetString(), U2W(localFile).GetString() );
         if ( addUploadTask(it, localFile) ) {
             updateStats();
             success = true;
@@ -214,10 +214,10 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
                 ".xml")) {
                 ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, TR("Couldn't load thumbnail preset!"));
             } else {
-                message.Format(_T("Generating the thumbnail from local file ('%s')"),  (LPCTSTR)Utf8ToWCstring(localFile) );
+                message.Format(_T("Generating the thumbnail from local file ('%s')"), U2W(localFile).GetString() );
                 imageConverter.setEnableProcessing(false);
-                WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-                imageConverter.setImageConvertingParams(Settings.ConvertProfiles[U2W(serverProfile_.getImageUploadParams().ImageProfileName)]);
+                auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+                imageConverter.setImageConvertingParams(settings->ConvertProfiles[U2W(serverProfile_.getImageUploadParams().ImageProfileName)]);
                 imageConverter.setThumbCreatingParams(serverProfile_.getImageUploadParams().getThumb());
                 /*bool GenThumbs = serverProfile_.getImageUploadParams().CreateThumbs &&
                     ((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));*/
@@ -248,9 +248,9 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
         return false;
     } 
 
-    DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
+    auto* dit = static_cast<DownloadItemData*>(it.id);
     
-    UploadItemData* uploadItemData = new UploadItemData;
+    auto* uploadItemData = new UploadItemData;
     uploadItemsMutex_.lock();
     uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
     uploadItemsMutex_.unlock();
@@ -269,8 +269,8 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->setServerProfile(serverProfile_);
     fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    fileUploadTask->setUrlShorteningServer(Settings.urlShorteningServer);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
     using namespace std::placeholders;
     fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     uploadSessionMutex_.lock();
@@ -415,7 +415,7 @@ bool CImageReuploaderDlg::BeginDownloading()
         LocalizedMessageBox(TR("Could not find links in the given text!"), APPNAME, MB_OK | MB_ICONEXCLAMATION);
         return false;
     } else {
-        uploadSession_.reset(new UploadSession());
+        uploadSession_ = std::make_shared<UploadSession>();
         uploadSession_->addSessionFinishedCallback(std::bind(&CImageReuploaderDlg::OnQueueFinished, this, std::placeholders::_1));
         uploadManager_->addSession(uploadSession_);
         std::string result;
@@ -494,14 +494,14 @@ void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
         if (!fileUploadTask) {
             return;
         }
-        UploadItemData* uploadItemData = reinterpret_cast<UploadItemData*>(fileUploadTask->userData());
+        auto* uploadItemData = static_cast<UploadItemData*>(fileUploadTask->userData());
         UploadedItem item;
         item.sourceUrl   = uploadItemData->sourceUrl;
         item.originalUrl = uploadItemData->originalUrl;
         UploadResult * result = task->uploadResult();
         item.newUrl = result->directUrl;
         mutex_.lock();
-        uploadedItems_[uploadItemData->sourceIndex] =  item ;
+        uploadedItems_[uploadItemData->sourceIndex] = item ;
 
         generateOutputText();
         m_nFilesUploaded++;
@@ -571,7 +571,7 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl)
     if (OpenClipboard(NULL))
     {
         HGLOBAL hglb = GetClipboardData(clipboardFormat);
-        LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+        LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
         //std::string tempStr = lpstr;
         std::string ansiString = lpstr;
 

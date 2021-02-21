@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -265,7 +265,7 @@ bool CImageDownloaderDlg::LinksAvailableInText(const CString &text)
 {
     std::vector<CString> links;
     ExtractLinks(text,links);
-    return links.size()!=0;
+    return !links.empty();
 }
 
 void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)

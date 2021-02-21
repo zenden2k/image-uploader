@@ -10,7 +10,7 @@
 
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask) {
         return true;
     }
@@ -32,20 +32,20 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
     CString thumbTemplateFileName = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\") + templateName +
         _T(".xml");
 
-    if (!thumb.loadFromFile(IuCoreUtils::WstringToUtf8((LPCTSTR)thumbTemplateFileName)))
+    if (!thumb.loadFromFile(W2U(thumbTemplateFileName)))
     {
         LOG(ERROR) << TR("Couldn't load thumbnail preset!") + CString(_T("\r\n")) + thumbTemplateFileName;
         return false;
     }
     task->setStatusText(_("Preparing image..."));
     imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageConverter.setImageConvertingParams(settings->ConvertProfiles[U2W(imageUploadParams.ImageProfileName)]);
     imageConverter.setThumbCreatingParams(imageUploadParams.getThumb());
-    bool GenThumbs = imageUploadParams.CreateThumbs &&
+    bool genThumbs = imageUploadParams.CreateThumbs &&
         ((!imageUploadParams.UseServerThumbs) || (!task->serverProfile().uploadEngineData()->SupportThumbnails));
     imageConverter.setThumbnail(&thumb);
-    imageConverter.setGenerateThumb(GenThumbs);
+    imageConverter.setGenerateThumb(genThumbs);
     if (imageConverter.Convert(fileTask->getFileName())) {
         
         std::string convertedImageFileName = imageConverter.getImageFileName();
@@ -60,11 +60,11 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
             fileTask->setDisplayName(virtualName);
             fileTask->setFileName(convertedImageFileName);
         } 
-        if (GenThumbs) {
+        if (genThumbs) {
             std::string thumbFileName = imageConverter.getThumbFileName();
             if (!thumbFileName.empty())
             {
-                std::shared_ptr<FileUploadTask> thumbTask(new FileUploadTask(thumbFileName, "", task));
+                auto thumbTask = std::make_shared<FileUploadTask>(thumbFileName, "", task);
 
                 TempFileDeleter* deleter = fileTask->tempFileDeleter();
                 deleter->addFile(thumbFileName);

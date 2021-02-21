@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -284,7 +284,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
     CString ErrorStr;
-    if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // Завершаем работу программы, если файл servers.lst отсутствует
+    if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ servers.lst пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     {
         CString ErrBuf;
         ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
@@ -464,7 +464,8 @@ bool CWizardDlg::ParseCmdLine()
             
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), serverProfileName);
+                msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
+                    serverProfileName.GetString());
                 LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
             } else {
@@ -785,7 +786,7 @@ void CWizardDlg::ShowUpdateMessage(const CString& msg) {
     }
 }
 
-// Функция генерации заголовка страницы (если он нужен)
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ)
 HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
 {
     if (PageID != wpUploadSettingsPage && PageID != wpUploadPage) {
@@ -1895,7 +1896,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     HMONITOR monitor = nullptr;
     if (mode == cmLastRegion) {
         monitor = lastScreenshotMonitor_;
-    } else if (monitorMode == kCurrentMonitor) {
+    } else if (monitorMode == MonitorMode::kCurrentMonitor) {
         monitor = ::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
     } else if (monitorMode >= 0) {
         MonitorEnumerator enumerator;
@@ -1943,13 +1944,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         } else {
             // Show old window for selecting screen region
             RegionSelect.Parent = m_hWnd;
-            SelectionMode selMode = smRectangles;
+            SelectionMode selMode = SelectionMode::smRectangles;
             if(mode == cmFreeform)
-                selMode = smFreeform;
+                selMode = SelectionMode::smFreeform;
             if(mode == cmRectangles)
-                selMode = smRectangles;
+                selMode = SelectionMode::smRectangles;
             if(mode == cmWindowHandles)
-                selMode = smWindowHandles;
+                selMode = SelectionMode::smWindowHandles;
 
             RegionSelect.m_SelectionMode = selMode;
             std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());

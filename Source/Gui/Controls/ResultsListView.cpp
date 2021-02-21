@@ -21,10 +21,11 @@ void CResultsListView::Init() {
     AddColumn(TR("Thumbnail"), 2);
 
     CWindowDC hdc(m_hWnd);
-    float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    SetColumnWidth(0, static_cast<int>(170 * dpiScaleX));
-    SetColumnWidth(1, static_cast<int>(170 * dpiScaleX));
-    SetColumnWidth(2, static_cast<int>(170 * dpiScaleX));
+    float dpiScaleX = static_cast<float>(GetDeviceCaps(hdc, LOGPIXELSX)) / 96.0f;
+    int columnWidth = static_cast<int>(170 * dpiScaleX);
+    SetColumnWidth(0, columnWidth);
+    SetColumnWidth(1, columnWidth);
+    SetColumnWidth(2, columnWidth);
     CreateDoubleBuffer();
 }
 
@@ -42,7 +43,7 @@ LRESULT CResultsListView::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     if (::IsWindow(pCtrl.m_hWnd) )
     {
-        CRect  aHeaderRect;
+        CRect aHeaderRect;
         pCtrl.GetClientRect(&aHeaderRect);
         pCtrl.RedrawWindow(&aHeaderRect);
     }
@@ -87,14 +88,14 @@ void CResultsListView::SetModel(UploadListModel* model) {
     }
     model_ = model;
     using namespace std::placeholders;
-    SetItemCount(model_ ? model_->getCount() : 0);
+    SetItemCount(model_ ? static_cast<int>(model_->getCount()) : 0);
     if (model_) {
         model_->setOnRowChangedCallback(std::bind(&CResultsListView::onRowChanged, this, _1));
     }
 }
 
 LRESULT CResultsListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
+    auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
     LV_ITEM* pItem = &(pDispInfo)->item;
     DWORD n = pItem->iItem;
 
@@ -109,7 +110,7 @@ LRESULT CResultsListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 // Disabled in MSG MAP
 LRESULT CResultsListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
+    auto* lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
 
     switch (lplvcd->nmcd.dwDrawStage) {
         case CDDS_PREPAINT:

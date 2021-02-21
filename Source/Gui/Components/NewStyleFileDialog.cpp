@@ -1,14 +1,5 @@
 #include "NewStyleFileDialog.h"
 
-typedef HRESULT(STDAPICALLTYPE *SHGetKnownFolderPath_func)(_In_ REFKNOWNFOLDERID rfid,
-    _In_ DWORD /* KNOWN_FOLDER_FLAG */ dwFlags,
-    _In_opt_ HANDLE hToken,
-    _Outptr_ PWSTR *ppszPath); // free *ppszPath with CoTaskMemFree
-
-
-typedef HRESULT(STDAPICALLTYPE *SHCreateItemFromParsingName_func)(_In_ PCWSTR pszPath, _In_opt_ IBindCtx *pbc, _In_ REFIID riid, _Outptr_ void **ppv);
-
-
 CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog){
     COMDLG_FILTERSPEC* fileTypes = nullptr;
     

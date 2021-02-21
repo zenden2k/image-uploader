@@ -2,7 +2,7 @@
 
 Image Uploader -  free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
     TCHAR Buffer[MAX_PATH];
 
     Buffer[0] = _T('.');
-    lstrcpy(Buffer + 1, Extension); // Формируем строку вида ".ext"
+    lstrcpy(Buffer + 1, Extension); // Р¤РѕСЂРјРёСЂСѓРµРј СЃС‚СЂРѕРєСѓ РІРёРґР° ".ext"
     RegCreateKeyEx(HKEY_CLASSES_ROOT, Buffer, 0, 0, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, 0, &ExtKey, NULL);
 
     TCHAR ClassName[MAX_PATH] = _T("\0");
@@ -180,8 +180,8 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
         NULL);
 
     if (res != ERROR_SUCCESS) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"), CString(TR(
-            "Не могу создать запись в реестре для расширения ")) +
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"), 
+            CString(TR("Cannot create registry key for extension: ")) +
             Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
         return 0;
     }
@@ -262,8 +262,10 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
     TempInfo.nShow = SW_NORMAL;
     //MessageBox(0,TempInfo.lpParameters,0,0);
     ::ShellExecuteEx(&TempInfo);
-    WaitForSingleObject(TempInfo.hProcess, INFINITE);
-    CloseHandle(TempInfo.hProcess);
+    if (TempInfo.hProcess) {
+        WaitForSingleObject(TempInfo.hProcess, INFINITE);
+        CloseHandle(TempInfo.hProcess);
+    }
 }
 
 /*
@@ -275,9 +277,9 @@ void WtlGuiSettings::FindDataFolder()
     AppParams* params = AppParams::instance();
     if (WinUtils::IsDirectory(WinUtils::GetAppFolder() + _T("Data"))) {
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
-        SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(DataFolder));
+        SettingsFolder = W2U(DataFolder);
 
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+        params->setDataDirectory(IuStringUtils::Replace(W2U(DataFolder), "\\", "/"));
         params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
         IsPortable = true;
         return;
@@ -525,7 +527,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         Language = _T("Turkish");
     } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430")) {
         Language = _T("Ukrainian");
-    } else if (Language == _T("Русский")) {
+    } else if (Language == _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ")) {
         Language = _T("Russian");
     }
 

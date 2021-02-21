@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Remember image server's settings in wizard");
     TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
-    RECT serverSelectorRect;
-    serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
+    RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
     imageServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_, true);
     if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
         return 0;

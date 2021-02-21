@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 
 bool CThumbSettingsPage::Apply()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     TCHAR buf[256] = _T("\0");
     GetDlgItemText(IDC_THUMBSCOMBO, buf, 255);
@@ -114,12 +114,12 @@ bool CThumbSettingsPage::Apply()
     params_.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT)));
     params_.Size = params_.ResizeMode == ThumbCreatingParams::trByWidth ? GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
     params_.BackgroundColor = ThumbBackground.GetColor();
-    ImageUploadParams iup = Settings.imageServer.getImageUploadParamsRef();
+    ImageUploadParams iup = settings->imageServer.getImageUploadParamsRef();
     iup.setThumb(params_);
-    Settings.imageServer.setImageUploadParams(iup);
+    settings->imageServer.setImageUploadParams(iup);
 
-    for (auto it = thumb_cache_.begin(); it != thumb_cache_.end(); ++it) {
-        it->second->saveToFile();
+    for (const auto& it: thumb_cache_) {
+        it.second->saveToFile();
     }
     return TRUE;
 }
@@ -150,7 +150,7 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     }
     fileName = getSelectedThumbnailFileName();
     std::unique_ptr<Thumbnail> autoPtrThumb;
-    Thumbnail * thumb = nullptr;
+    Thumbnail *thumb = nullptr;
     const auto it = thumb_cache_.find(fileName);
     if (it != thumb_cache_.end()) {
         thumb = it->second;
@@ -182,14 +182,14 @@ std::string CThumbSettingsPage::getSelectedThumbnailFileName() const
     CString buf;
     int index = thumbsCombo_.GetCurSel();
     if (index < 0) {
-        return std::string();
+        return {};
     }
     if (thumbsCombo_.GetLBText(index, buf) < 0) {
-        return std::string();
+        return {};
     }
     CString thumbFileName = buf;
     Thumbnail thumb;
-    CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
+    CString folder = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\");
     return WCstringToUtf8(folder + thumbFileName+".xml");
 }
 
@@ -272,7 +272,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         GuiTools::LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
         return false;
     }
-    Thumbnail * thumb = nullptr;
+    Thumbnail* thumb = nullptr;
     std::unique_ptr<Thumbnail> thumbPtr;
     if (thumb_cache_.count(fileName)) {
         thumb = thumb_cache_[fileName];

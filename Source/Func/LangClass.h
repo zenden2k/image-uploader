@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 */
 
-#ifndef LANGCLASS_H
-#define LANGCLASS_H
+#ifndef IU_FUNC_LANGCLASS_H
+#define IU_FUNC_LANGCLASS_H
 #pragma once
 
 #include "atlheaders.h"
@@ -43,7 +43,7 @@ class CLang
         CLang();
         ~CLang();
         LPCTSTR GetString(LPCTSTR Name) const;
-        bool SetDirectory(LPCTSTR Directory);
+        void SetDirectory(LPCTSTR Directory);
         bool LoadLanguage(LPCTSTR Lang);
         CString GetLanguageName() const;
         CString getLanguage() const;
@@ -68,7 +68,7 @@ class CLang
             TCHAR *Name;
             TCHAR *Text;
         };
-        TCHAR m_Directory[MAX_PATH];
+        CString m_Directory;
         CString m_sLang;
         std::unordered_map<int, TranslateListItem> StringList;
         std::vector<CString> LanguagesList;
@@ -78,4 +78,4 @@ class CLang
         bool isRTL_;
 };
 
-#endif  // LANGCLASS_H
+#endif  // IU_FUNC_LANGCLASS_H

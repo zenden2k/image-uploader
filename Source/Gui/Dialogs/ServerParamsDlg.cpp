@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     DlgResize_Init();
     CString WindowTitle;
     CString serverName = Utf8ToWCstring(m_ue->Name);
-    WindowTitle.Format(TR("%s server settings"), (LPCTSTR)serverName);
+    WindowTitle.Format(TR("%s server settings"), serverName.GetString());
     SetWindowText(WindowTitle);
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
@@ -67,8 +67,8 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, m_ue->SupportsFolders);
 
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
 
     LoginInfo li = serverSettings ? serverSettings->authData : LoginInfo();
     SetDlgItemText(IDC_LOGINEDIT, Utf8ToWCstring(li.Login));
@@ -95,11 +95,10 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     if (m_pluginLoader) {
         m_pluginLoader->getServerParamList(m_paramNameList);
 
-        std::map<std::string, std::string>::iterator it;
-        for (it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
-           CString name = it->first.c_str();
+        for (auto it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
+            CString name = it->first.c_str();
             CString humanName = it->second.c_str();
-           m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
+            m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
         }
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle()) ;
@@ -114,17 +113,17 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
     serverProfile_.setProfileName(WCstringToUtf8(login));
 
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
 
     if (serverSettings) {
         serverSettings->authData.DoAuth = GuiTools::GetCheck(m_hWnd, IDC_DOAUTH);
         serverSettings->authData.Login = WCstringToUtf8(login);
         serverSettings->authData.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
 
-        for (const auto& it: m_paramNameList){
-            CString name = it.first.c_str();
-            CString humanName = it.second.c_str();
+        for (const auto& [first, second]: m_paramNameList){
+            CString name = first.c_str();
+            CString humanName = second.c_str();
 
             HPROPERTY pr = m_wndParamList.FindProperty(humanName);
             CComVariant vValue;
@@ -224,7 +223,7 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
     return 0;
 }
 
-ServerProfile CServerParamsDlg::serverProfile()
+ServerProfile CServerParamsDlg::serverProfile() const
 {
     return serverProfile_;
 }

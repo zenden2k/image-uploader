@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -181,16 +181,13 @@ std::wstring StringToWideString(const std::string &str, UINT codePage)
 
 CLang::CLang()
 {
-    *m_Directory = 0;
     locale_ = "en_US";
     language_ = "en";
     isRTL_ = false;
 }
-
-bool CLang::SetDirectory(LPCTSTR Directory)
+void CLang::SetDirectory(LPCTSTR Directory)
 {
-    lstrcpyn(m_Directory, Directory, sizeof(m_Directory) / sizeof(TCHAR));
-    return true;
+    m_Directory = Directory;
 }
 
 bool CLang::LoadLanguage(LPCTSTR Lang)

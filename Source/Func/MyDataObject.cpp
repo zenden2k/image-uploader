@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -113,8 +113,8 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
     pStgMedium->hGlobal = 
         GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
     
-    // Формирование структуры DROPFILES для драгндропа файлов
-    DROPFILES *DP = reinterpret_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ DROPFILES пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    DROPFILES *DP = static_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
     ZeroMemory(DP, sizeof(DROPFILES));
     DP->fWide = TRUE;
     DP->pFiles = sizeof(DROPFILES);

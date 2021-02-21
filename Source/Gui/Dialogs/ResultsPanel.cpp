@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 
 #include "ResultsPanel.h"
 
+#include <utility>
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UploadSettings.h"
 #include "MediaInfoDlg.h"
@@ -35,18 +37,21 @@
 #include "Gui/GuiTools.h"
 
 // CResultsPanel
-CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory) :WizardDlg(dlg), UrlList(urlList)
+CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>& urlList, bool openedFromHistory):
+    WizardDlg(dlg), UrlList(urlList)
 {
     webViewWindow_ = nullptr;
     m_nImgServer = m_nFileServer = -1;
     TemplateHead = TemplateFoot = nullptr; 
     openedFromHistory_ = openedFromHistory;
+    rectNeeded = {};
     rectNeeded.left = -1;
     CString TemplateLoadError;
     shortenUrl_ = false;
     outputChanged_ = false;
-    if(!LoadTemplates(TemplateLoadError))
-    {
+    m_Page = kBbCode;
+    m_EngineList = nullptr;
+    if(!LoadTemplates(TemplateLoadError)) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), TemplateLoadError);
     }
 }
@@ -103,7 +108,7 @@ bool CResultsPanel::LoadTemplate()
 
 LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_IMAGEUPLOADERLABEL, "Images per string:");
     TRC(IDC_CODETYPELABEL, "Code type:");
     if(rectNeeded.left != -1)
@@ -124,7 +129,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
         
         m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | rtlStyle, 0, 6);
-        ImageList_Add(m_hToolBarImageList,hBitmap,NULL);
+        ImageList_Add(m_hToolBarImageList, hBitmap, nullptr);
     }
     else
     {
@@ -135,7 +140,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     }
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND codeEditHwnd = GetDlgItem(IDC_CODEEDIT);
         LONG styleEx = ::GetWindowLong(codeEditHwnd, GWL_EXSTYLE);
         ::SetWindowLong(codeEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
@@ -178,7 +183,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     codeTypeComboBox = GetDlgItem(IDC_CODETYPE);
 
-    SetDlgItemInt(IDC_THUMBSPERLINE, Settings.ThumbsPerLine);
+    SetDlgItemInt(IDC_THUMBSPERLINE, settings->ThumbsPerLine);
     SendDlgItemMessage(IDC_THUMBPERLINESPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0) );
 
     codeTypeComboBox.AddString(TR("Table of clickable thumbnails"));
@@ -234,9 +239,9 @@ void CResultsPanel::SetPage(TabPage Index)
 
 void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("[url=");
-    if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+    if(*item.getImageUrl(shortenUrl_) && (settings->UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
     else 
         Buffer += item.getDownloadUrl(shortenUrl_);
@@ -248,9 +253,9 @@ void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
 
 void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("<a href=\"");
-    if(*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+    if(*item.getImageUrl(shortenUrl_) && (settings->UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
     else 
         Buffer += item.getDownloadUrl(shortenUrl_);
@@ -261,11 +266,11 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
 
 void CResultsPanel::Markdown_Link(CString &Buffer, CUrlListItem &item)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("[");
     Buffer += WinUtils::myExtractFileName(item.FileName);
     Buffer += _T("](");
-    if (*item.getImageUrl(shortenUrl_) && (Settings.UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
+    if (*item.getImageUrl(shortenUrl_) && (settings->UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
     else
         Buffer += item.getDownloadUrl(shortenUrl_);
@@ -280,7 +285,7 @@ bool CResultsPanel::copyResultsToClipboard() {
 
 CString CResultsPanel::GenerateOutput()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString Buffer;
     if (!Toolbar.m_hWnd) return _T("");
     int Index = GetCodeType();
@@ -291,12 +296,12 @@ CString CResultsPanel::GenerateOutput()
     int n=UrlList.size();
     int p=GetDlgItemInt(IDC_THUMBSPERLINE);
     if(p>=0 && p<5555)
-        Settings.ThumbsPerLine = p;
+        settings->ThumbsPerLine = p;
 
-    bool UseTemplate = Settings.UseTxtTemplate;
-    bool preferDirectLinks = Settings.UseDirectLinks;
-    //Toolbar.IsButtonChecked(IDC_USETEMPLATE); //IsChecked(IDC_USETEMPLATE);
-    Settings.UseTxtTemplate = UseTemplate;
+    bool UseTemplate = settings->UseTxtTemplate;
+    bool preferDirectLinks = settings->UseDirectLinks;
+
+    settings->UseTxtTemplate = UseTemplate;
     if (UseTemplate && TemplateHead && m_Page != kPlainText) {
         Buffer += TemplateHead;
     }
@@ -584,8 +589,8 @@ LRESULT CResultsPanel::OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/
 void CResultsPanel::onCodeTypeChanged() {
     UpdateOutput(true);
     BOOL temp;
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (Settings->AutoCopyToClipboard) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    if (settings->AutoCopyToClipboard) {
         OnBnClickedCopyall(0, 0, 0, temp);
     }
 }
@@ -639,11 +644,11 @@ void  CResultsPanel::EnableMediaInfo(bool Enable)
 
 bool CResultsPanel::LoadTemplates(CString &Error)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
     LoadTemplateFromFile(XmlFileName, Error);
     CString userTemplateError;
-    CString userTemplateFile = Utf8ToWCstring(Settings.SettingsFolder) +  _T("user_templates.xml");
+    CString userTemplateFile = Utf8ToWCstring(settings->SettingsFolder) +  _T("user_templates.xml");
     LoadTemplateFromFile(userTemplateFile, userTemplateError);
 
     return true;
@@ -725,8 +730,8 @@ CString CResultsPanel::ReplaceVars(const CString& Text)
 
 LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    NMTOOLBAR* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
     CMenu sub;    
     MENUITEMINFO mi;
     mi.cbSize = sizeof(mi);
@@ -741,11 +746,11 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         mi.wID = IDC_SHORTENURLITEM;
         CString menuItemTitle;
         if (onShortenUrlChanged_) {
-            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str());
+            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str());
         } else {
             menuItemTitle.Format(TR("Shorten URL"));
         }
-        mi.dwTypeData  = (LPWSTR)(LPCTSTR)menuItemTitle;
+        mi.dwTypeData  = const_cast<LPWSTR>(menuItemTitle.GetString());
         sub.InsertMenuItem(count++, true, &mi);
     
 
@@ -777,7 +782,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
         CString title = TR("Copy URL  ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
         mi.wID = IDC_COPYFOLDERURL + i;
-        mi.dwTypeData  = (LPWSTR)(LPCTSTR) title;//TR("Autorization parameters");
+        mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         sub.InsertMenuItem(count++, true, &mi);
         insertedServersCount++;
     }
@@ -790,8 +795,8 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         count++;
     }
 
-    sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (Settings.UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
-    sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (Settings.UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );        
+    sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (settings->UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
+    sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (settings->UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );    
     
     ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
@@ -808,16 +813,16 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
 LRESULT CResultsPanel::OnUseTemplateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.UseTxtTemplate = !Settings.UseTxtTemplate;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->UseTxtTemplate = !settings->UseTxtTemplate;
     UpdateOutput(true);
     return 0;
 }
 
 LRESULT CResultsPanel::OnUseDirectLinksClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.UseDirectLinks = !Settings.UseDirectLinks;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->UseDirectLinks = !settings->UseDirectLinks;
     UpdateOutput(true);
     return 0;
 }
@@ -846,7 +851,7 @@ void CResultsPanel::AddServer(const ServerProfile& server)
 }
 LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 {
-    LPNMTBCUSTOMDRAW lpNMCustomDraw = reinterpret_cast<LPNMTBCUSTOMDRAW>(pnmh);
+    auto* lpNMCustomDraw = reinterpret_cast<LPNMTBCUSTOMDRAW>(pnmh);
     HDC dc = lpNMCustomDraw->nmcd.hdc;
     RECT toolbarRect = lpNMCustomDraw->nmcd.rc;
     //HTHEME hTheme = OpenThemeData(m_hWnd, _T("TAB"));
@@ -869,7 +874,7 @@ LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
 
         HDC hDCMem = ::CreateCompatibleDC(dc);
         HBITMAP hBmp = ::CreateCompatibleBitmap(dc, rc.right - rc.left, rc.bottom - rc.top);
-        HBITMAP hBmpOld = reinterpret_cast<HBITMAP>(::SelectObject(hDCMem, hBmp));
+        HBITMAP hBmpOld = static_cast<HBITMAP>(::SelectObject(hDCMem, hBmp));
 
         // Tell the tab control to paint in our DC
 
@@ -984,5 +989,5 @@ void CResultsPanel::setShortenUrls(bool shorten) {
 }
 
 void CResultsPanel::setOnShortenUrlChanged(ShortenUrlChangedCallback callback) {
-    onShortenUrlChanged_ = callback;
+    onShortenUrlChanged_ = std::move(callback);
 }

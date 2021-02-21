@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ bool CUpdateInfo::LoadUpdateFromFile(const CString& filename)
     return true;
 }
 
-bool CUpdateInfo::SaveToFile(const CString& filename)
+bool CUpdateInfo::SaveToFile(const CString& filename) const
 {
     FILE *f = _wfopen(filename, _T("wb"));
     if(!f) return false;
@@ -324,7 +324,7 @@ bool CUpdateManager::internal_load_update(CString name)
    
     if (nm->responseCode() != 200 || nm->responseHeaderByName("Content-Type") != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Невозможно загрузить информацию о пакете обновления ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 

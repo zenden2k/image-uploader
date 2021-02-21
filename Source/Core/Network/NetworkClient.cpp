@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ namespace NetworkClientInternal {
 
 size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    return  fread(ptr, size, nmemb, reinterpret_cast<FILE*>(stream));
+    return  fread(ptr, size, nmemb, static_cast<FILE*>(stream));
 }
 
 // We might need this function for avoiding "cannot rewind" error,
@@ -136,7 +136,7 @@ int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsockty
 {
     #ifdef _WIN32
         // See http://support.microsoft.com/kb/823764
-        NetworkClient* nm = reinterpret_cast<NetworkClient*>(clientp);
+        auto* nm = static_cast<NetworkClient*>(clientp);
         int val = nm->m_UploadBufferSize + 32;
         setsockopt(sockfd, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<const char *>(&val), sizeof(val));
     #endif
@@ -145,7 +145,7 @@ int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsockty
 
 int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
 {
-    auto cbd = reinterpret_cast<CallBackData*>(buffer_in);
+    auto* cbd = static_cast<CallBackData*>(buffer_in);
     NetworkClient* nm = cbd->nmanager;
     if(nm)
     {
@@ -153,8 +153,8 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
         {
             return nm->private_writer(data, size, nmemb);
         }
-        else
-            return nm->private_header_writer(data, size, nmemb);
+
+        return nm->private_header_writer(data, size, nmemb);
     }
     return 0;
 }
@@ -213,7 +213,7 @@ int NetworkClient::private_header_writer(char *data, size_t size, size_t nmemb)
 
 int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-    auto nm = reinterpret_cast<NetworkClient*>(clientp);
+    auto* nm = static_cast<NetworkClient*>(clientp);
     if(nm && nm->m_progressCallbackFunc)
     {
         if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
@@ -348,7 +348,7 @@ void NetworkClient::setUrl(const std::string& url)
 
 void NetworkClient::closeFileList(std::vector<FILE *>& files)
 {
-    for(auto f : files ) {
+    for(auto* f : files ) {
         fclose(f);
     }
     files.clear();
@@ -740,7 +740,7 @@ void NetworkClient::private_cleanup_after()
 
 size_t NetworkClient::read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-    auto nm = reinterpret_cast<NetworkClient*>(stream);;
+    auto* nm = static_cast<NetworkClient*>(stream);
     if(!nm) {
         return 0;
     }
@@ -774,7 +774,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
 }
 
 int NetworkClient::private_seek_callback(void *userp, curl_off_t offset, int origin) {
-    auto nc = reinterpret_cast<NetworkClient*>(userp);
+    auto* nc = static_cast<NetworkClient*>(userp);
 
     if (nc->m_uploadingFile) {
         int64_t newOffset = offset;

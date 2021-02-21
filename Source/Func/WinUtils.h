@@ -1,9 +1,10 @@
 #ifndef FUNC_WINUTILS_H
 #define FUNC_WINUTILS_H
 
-#include "atlheaders.h"
 #include <vector>
 #include <string>
+
+#include "atlheaders.h"
 
 namespace Gdiplus {
     class Bitmap;
@@ -13,7 +14,7 @@ const std::wstring Utf8ToWstring(const std::string &str);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 #define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
 //wstostr(str, CP_UTF8)
-#define WCstringToUtf8(str) WinUtils::wstostr(((LPCTSTR)(str)), CP_UTF8)
+#define WCstringToUtf8(str) WinUtils::wstostr((static_cast<LPCTSTR>(str)), CP_UTF8)
 #define Utf8ToWCstring(str) CString(Utf8ToWstring(str).c_str())
 
 namespace WinUtils {
@@ -50,7 +51,7 @@ namespace WinUtils {
     CString TrimString(const CString& source, int nMaxLen);
     CString TrimStringEnd(const CString& source, int nMaxLen);
     bool IsStrInList(LPCTSTR szExt,LPCTSTR szList);
-    bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize);
+    bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize);
     bool ShowFilePropertiesDialog(HWND hWnd, const CString& fileName);
     CString IntToStr(int n);
     CString GetModuleFullName(HMODULE module = NULL);

@@ -85,7 +85,7 @@ class CHistoryTreeControl :
     private:
         std::map<CString, HICON> m_fileIconCache;
         HICON getIconForExtension(const CString& fileName);
-        HICON getIconForServer(const CString& serverName);
+        static HICON getIconForServer(const CString& serverName);
         int CalcItemHeight(TreeItem* item);
         LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 

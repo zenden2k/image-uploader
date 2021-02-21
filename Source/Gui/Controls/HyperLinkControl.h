@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -90,8 +90,6 @@ public:
     CRect GetItemRect(size_t itemIndex) const;
     int SelectedIndex() const;
     int ItemFromPoint(POINT pt) const;
-    int ScaleX(int x) const;
-    int ScaleY(int y) const;
     bool m_bHyperLinks;
     int NotifyParent(int nItem);
     void SelectItem(int Index);
@@ -105,7 +103,7 @@ protected:
     int selectedItemIndex_;
     int hoverItemIndex_;
     bool CursorHand;
-    HCURSOR HandCursor;
+    HCURSOR handCursor_, arrowCursor_;
     CFont NormalFont;
     COLORREF m_BkColor;
     int dpiX;
@@ -113,6 +111,8 @@ protected:
     int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
     static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
+    int ScaleX(int x) const;
+    int ScaleY(int y) const;
 };
 
 

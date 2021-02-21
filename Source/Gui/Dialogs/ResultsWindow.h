@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -43,13 +43,13 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         CResultsWindow(CWizardDlg *wizardDlg, std::vector<CUrlListItem>  & urlList, bool ChildWindow);
         ~CResultsWindow();
 
-        int GetCodeType();
+        int GetCodeType() const;
         void UpdateOutput(bool immediately = false);
         void SetCodeType(int Index);
         void Clear();
         void SetPage(CResultsPanel::TabPage Index);
         int GetPage();
-        void AddServer(ServerProfile  server);
+        void AddServer(const ServerProfile& server);
         void InitUpload();
         void FinishUpload();
         void Lock();

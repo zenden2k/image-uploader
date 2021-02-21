@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -73,9 +73,9 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     serverTypeCombo_.AddString(_T("SOCKS5"));
     serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
 
-    // ---- Инициализация элементов (заполнение) ----
+    // ---- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ) ----
     
-    // ---- заполнение connection settings -----
+    // ---- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ connection settings -----
     SetDlgItemText(IDC_ADDRESSEDIT, U2W(Settings.ConnectionSettings.ServerAddress));
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
@@ -88,7 +88,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
-    if(Settings.ConnectionSettings.ProxyPort) // Только если порт не равен нулю
+    if(Settings.ConnectionSettings.ProxyPort) // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
 
@@ -99,7 +99,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetDlgItemInt(IDC_FILERETRYLIMIT, Settings.FileRetryLimit);
     SetDlgItemInt(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit);
 
-    // Уведомление элементов
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     executeScriptCheckboxChanged();

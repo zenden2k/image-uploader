@@ -221,4 +221,4 @@ bool IsImage(LPCTSTR szFileName)
     return WinUtils::IsStrInList(szExt, _T("jpg\0jpeg\0png\0bmp\0gif\0tif\0tiff\0webp\0\0"));
 }
 
-};
+}

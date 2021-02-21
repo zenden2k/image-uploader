@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@
 // CMediaInfoDlg
 CMediaInfoDlg::CMediaInfoDlg()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    infoType_ = static_cast<InfoType>(Settings.MediaInfoSettings.InfoType);
-    generateTextInEnglish_ = !Settings.MediaInfoSettings.EnableLocalization;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    infoType_ = static_cast<InfoType>(settings->MediaInfoSettings.InfoType);
+    generateTextInEnglish_ = !settings->MediaInfoSettings.EnableLocalization;
 }
 
 LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -57,16 +57,10 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     SetDlgItemText(IDC_FILEINFOEDIT, TR("Loading..."));
 
-    if (infoType_ == itFullInformation) {
-        GuiTools::SetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON, true);
-    } else {
-        GuiTools::SetCheck(m_hWnd, IDC_SUMMARYRADIOBUTTON, true);
-        //::EnableWindow(GetDlgItem(IDC_GENERATETEXTINENGLISHCHECKBOX), false);
-    }
+    GuiTools::SetCheck(m_hWnd, infoType_ == InfoType::itFullInformation ? IDC_FULLINFORADIOBUTTON: IDC_SUMMARYRADIOBUTTON, true);
 
     GuiTools::SetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX, generateTextInEnglish_);
 
-    
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     FixEditRTL();
     GenerateInfo(); 
@@ -93,7 +87,7 @@ void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
 
 DWORD CMediaInfoDlg::Run()
 {
-    CString  ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
+    CString ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
     if(!WinUtils::FileExists(m_FileName))
     { 
         SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));
@@ -161,10 +155,10 @@ LRESULT CMediaInfoDlg::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    //::EnableWindow(GetDlgItem(IDC_GENERATETEXTINENGLISHCHECKBOX), fullInfo);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
-    Settings.MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
+    settings->MediaInfoSettings.InfoType = fullInfo ? 1 : 0;
     return 0;
 }
 
@@ -172,8 +166,8 @@ LRESULT CMediaInfoDlg::OnShowInEnglishCheckboxClicked(WORD, WORD, HWND, BOOL&) {
     generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
     
     FixEditRTL();
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;
     GenerateInfo();
     return 0;
 }

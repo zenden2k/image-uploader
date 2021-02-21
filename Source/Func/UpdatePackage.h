@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class CUpdateInfo
         bool LoadUpdateFromFile(const CString& filename);
         bool LoadUpdateFromBuffer(const std::string& buffer);
         bool DoUpdate(const CUpdateInfo& newPackage);
-        bool SaveToFile(const CString& filename);
+        bool SaveToFile(const CString& filename) const;
         bool Parse(SimpleXml& xml);    
         bool CheckUpdates();
         CString getHash() const;

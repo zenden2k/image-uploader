@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -165,13 +165,13 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     DrawText(dc, item->strTitle, lstrlen(item->strTitle), &Dimensions,    DT_CALCRECT);
     item->TitleHeight = Dimensions.bottom - Dimensions.top;
     
-    // Считаем размеры подзаголовка
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     Dimensions.bottom = 0;
     DrawText(dc, item->Info, item->Info.GetLength(), &Dimensions,    DT_CALCRECT);
     item->InfoHeight = Dimensions.bottom - Dimensions.top;
 
     SelectObject(dc, BoldFont);
-    // Считаем размеры основного текста
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     Dimensions.bottom = 0;
     DrawText(dc, item->strText, item->strText.GetLength(), &Dimensions,    DT_CALCRECT);
     item->TextHeight = Dimensions.bottom - Dimensions.top;
@@ -261,7 +261,7 @@ void CLogListBox::Clear()
 
     int n = GetCount();
     for(int i= 0; i<n; i++){
-        LogListBoxItem * item = reinterpret_cast<LogListBoxItem *>(GetItemDataPtr(i));
+        auto* item = static_cast<LogListBoxItem *>(GetItemDataPtr(i));
         delete item;
     }
     ResetContent();
@@ -280,6 +280,6 @@ void CLogListBox::SelectAll() {
     }
 }
 
-LogListBoxItem* CLogListBox::getItemFromIndex(int index) {
-    return reinterpret_cast<LogListBoxItem *>( GetItemDataPtr(index) );
+LogListBoxItem* CLogListBox::getItemFromIndex(int index) const {
+    return static_cast<LogListBoxItem *>(GetItemDataPtr(index));
 }

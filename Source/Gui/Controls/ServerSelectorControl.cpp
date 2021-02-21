@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
 #include "Gui/IconBitmapUtils.h"
 #include "Gui/Dialogs/LoginDlg.h"
 #include "Gui/Dialogs/AddFtpServerDialog.h"
-#include "Gui/Dialogs/AddDirectoryServerDialog.h"
+#include "Gui/Dialogs/AddDirectoryServerDIalog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -71,7 +71,6 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     accountLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
     accountLink_.SetToolTipText(TR("User name"));
 
-
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
     imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
     imageProcessingParamsLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
@@ -79,7 +78,6 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
     imageProcessingParamsLink_.ShowWindow(showParamsLink_ ? SW_SHOW : SW_HIDE);
-    
 
     createSettingsButton();
     setTitle(title_);
@@ -87,7 +85,6 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
     updateServerList();
-    //GuiTools::ShowDialogItem(m_hWnd, IDC_IMAGEPROCESSINGPARAMS, showImageProcessingParams_);
 
     return FALSE;  
 }
@@ -95,22 +92,18 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 LRESULT CServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     int count = serverComboBox_.GetCount();
-    for (int i = 0; i < count; i++)
-    {
-        char * data = reinterpret_cast<char*>(serverComboBox_.GetItemDataPtr(i));
-        if (data && *data != '<')
-        {
+    for (int i = 0; i < count; i++) {
+        char * data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
+        if (data && *data != '<') {
             delete[] data;
-        }
-        
+        } 
     }
 
     return 0;
 }
 
 void CServerSelectorControl::setTitle(CString title) {
-    if (m_hWnd)
-    {
+    if (m_hWnd){
         SetDlgItemText(IDC_SERVERGROUPBOX, title);
     }
     title_ = title;
@@ -130,7 +123,7 @@ void CServerSelectorControl::setServerProfile(const ServerProfile& serverProfile
     int count = serverComboBox_.GetCount();
     int comboboxItemIndex = CB_ERR;
     for (int i = 0; i < count; i++) {
-        char * data = reinterpret_cast<char*>(serverComboBox_.GetItemDataPtr(i));
+        char * data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
         if (data && !strcmp(data, serverProfile.serverName().c_str())) {
             comboboxItemIndex = i; 
             break;
@@ -234,9 +227,9 @@ void CServerSelectorControl::serverChanged() {
             if ( !uploadEngineData ) {
                 return ;
             }
-            WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-            auto ssIt = Settings->ServersSettings.find("serverName");
-            if ( ssIt != Settings->ServersSettings.end() ) {
+            auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+            auto ssIt = settings->ServersSettings.find("serverName");
+            if ( ssIt != settings->ServersSettings.end() ) {
                 std::map <std::string, ServerSettingsStruct>& ss = ssIt->second;
                 auto it = ss.begin();
                 if ( it->first.empty() ) {
@@ -293,8 +286,8 @@ void CServerSelectorControl::updateInfoLabel() {
     showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
     
     CString accountInfoText;
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* res = Settings->getServerSettings(serverProfile_);
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* res = settings->getServerSettings(serverProfile_);
 
     LoginInfo loginInfo = res ? res->authData : LoginInfo();
     
@@ -376,7 +369,6 @@ void CServerSelectorControl::updateServerList()
     if ( showDefaultServerItem_ ) {
         serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
     }
-    //serverComboBox_.AddItem(L"", -1, -1, 0, reinterpret_cast<LPARAM>( strdup("random") ) );
 
     //CIcon hImageIcon = NULL, hFileIcon = NULL;
     int selectedIndex = 0;
@@ -455,9 +447,9 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    std::map<std::string, ServerSettingsStruct>& serverUsers = Settings.ServersSettings[serverProfile_.serverName()];
+    std::map<std::string, ServerSettingsStruct>& serverUsers = settings->ServersSettings[serverProfile_.serverName()];
 
     if (!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
         bool addedSeparator = false;
@@ -497,7 +489,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
                 mi.fType = MFT_STRING;
                 mi.wID = command;
 
-                mi.dwTypeData = (LPWSTR)(LPCTSTR)login;
+                mi.dwTypeData = const_cast<LPWSTR>(login.GetString());
 
                 mi.hbmpItem = WinUtils::IsVistaOrLater() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
                 if (mi.hbmpItem) {
@@ -516,7 +508,9 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             mi.fType = MFT_STRING;
             mi.wID = IDC_NO_ACCOUNT;
 
-            mi.dwTypeData = (LPWSTR)(LPCTSTR)TR("<no authentication>");
+            CString text = TR("<no authentication>");
+
+            mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
             sub.InsertMenuItem(i++, true, &mi);
         }
 
@@ -534,7 +528,9 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         mi.fType = MFT_STRING;
         mi.wID = IDC_ADD_ACCOUNT ;
 
-        mi.dwTypeData = (LPWSTR)(LPCTSTR)TR("New account...");
+        CString text = TR("New account...");
+
+        mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
 
 
         sub.InsertMenuItem(i++, true, &mi);
@@ -567,8 +563,8 @@ LRESULT CServerSelectorControl::OnAddAccountClick(WORD wNotifyCode, WORD wID, HW
 
 LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
     std::string UserName = serverSettings ? serverSettings->authData.Login: std::string();
     ServerProfile copy = serverProfile_;
     CLoginDlg dlg(copy, uploadEngineManager_);
@@ -609,7 +605,7 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    CIcon ico = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON    , 16,16,0));
+    CIcon ico = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON, 16, 16, 0));
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_SETTINGSBUTTONPLACEHOLDER), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
@@ -634,7 +630,7 @@ void CServerSelectorControl::setShowParamsLink(bool show) {
 }
 
 void CServerSelectorControl::setOnChangeCallback(std::function<void(CServerSelectorControl*)> cb) {
-    onChangeCallback_ = cb;
+    onChangeCallback_ = std::move(cb);
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

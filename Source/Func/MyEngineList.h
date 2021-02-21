@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,7 +32,10 @@ class CMyEngineList: public CUploadEngineList
         CMyEngineList();
         ~CMyEngineList();
         CString errorStr() const;
+
+        using CUploadEngineListBase::byName;
         CUploadEngineData* byName(const CString &name);
+
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
         HICON getIconForServer(const std::string& name);

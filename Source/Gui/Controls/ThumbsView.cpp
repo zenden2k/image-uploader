@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     RECT rc;
     GetClientRect(&rc);
 
-    // Если ImageList пустой, создаем дефолтную картинку
+    // пїЅпїЅпїЅпїЅ ImageList пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     if(ImageList.GetImageCount() < 1)
         LoadThumbnail(-1, nullptr, nullptr);
 
@@ -90,14 +90,14 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     //TVI->Image = nullptr;
     SetItemData(n, reinterpret_cast<DWORD_PTR>(TVI));
 
-    // Если уже есть загруженная картинка, генерируем эскиз немедленно
-    // Это нужно для Video Grabber-a
+    // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ Video Grabber-a
 
     if (Img) {
         LoadThumbnail(n, TVI, Img);
     }
 
-    // Упорядочиваем картинки
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     Arrange(LVA_ALIGNTOP);
      
     if (ensureVisible) {
@@ -112,12 +112,12 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 {
     if( ItemIndex < 0 || ItemIndex > GetItemCount()-1) return false;
 
-    SimpleDelete(ItemIndex, true, deletePhysicalFiles_); // Удаляем превьюшку из Imagelist
-    DeleteItem(ItemIndex);    // Удаляем непостредственно из контрола
+    SimpleDelete(ItemIndex, true, deletePhysicalFiles_); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ Imagelist
+    DeleteItem(ItemIndex);    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     Arrange(LVA_ALIGNTOP);
 
-    // Показываем ту картинку, которая шла после удаленной
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     EnsureVisible(ItemIndex,true);
 
     return true;
@@ -125,7 +125,7 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 
 LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-    // Получаем координаты курсора
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     POINT p = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
     int ItemIndex = HitTest(p, 0); //Getting the index of item was clicked (by middle button)
@@ -133,17 +133,17 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
     if(GetItemState(ItemIndex, LVIS_SELECTED) != LVIS_SELECTED)
     {
-        // Удаляем только элемент под указателем
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         MyDeleteItem(ItemIndex);
         NotifyItemCountChanged();
     }
     else if(GetNextItem(-1,LVNI_SELECTED)>=0)
     {
-        // Если под указателем выбранная картинка, удаляем все выбранные
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         DeleteSelected();
     }
 
-    bHandled = true; //Не даем обработать соообщение стандартной процедуре
+    bHandled = true; //пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     return 0;
 }
 

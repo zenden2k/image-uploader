@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -45,11 +45,8 @@ MovableElement::MovableElement(Canvas* canvas){
     drawDashedRectangleWhenSelected_ = false;
 }
 
-
 void MovableElement::render(Painter* gr)
 {
-    
-
 }
 
 void MovableElement::renderGrips(Painter* gr)
@@ -114,7 +111,7 @@ ElementType MovableElement::getType() const
 
 CursorType MovableElement::GetCursorForBoundary(BoundaryType bt)
 {
-    switch (bt ) {
+    switch (bt) {
         case btTopLeft:
         case btBottomRight:
             return ctResizeDiagonalMain;
@@ -139,7 +136,7 @@ void MovableElement::setDrawDashedRectangle(bool draw)
 
 int MovableElement::getX() 
 {
-    return getMinPoint(axisX)->x ;
+    return getMinPoint(axisX)->x;
 }
 
 int MovableElement::getY() 

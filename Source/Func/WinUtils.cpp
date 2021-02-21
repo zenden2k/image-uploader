@@ -618,14 +618,12 @@ CString IntToStr(int n)
     return Result;
 }
 
-// Преобразование размера файла в строку
-bool NewBytesToString(__int64 nBytes, LPTSTR szBuffer, int nBufSize)
+bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize)
 {
     std::string res = IuCoreUtils::fileSizeToString(nBytes);
     lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
     return TRUE;
 }
-
 
 bool IsElevated() 
 {

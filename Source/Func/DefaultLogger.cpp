@@ -53,7 +53,7 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
     }
 
 
-    for (auto listener : listeners_) {
+    for (auto* listener : listeners_) {
         listener->onItemAdded(itemIndex, entry);
     }
 }
@@ -63,7 +63,7 @@ void DefaultLogger::addListener(Listener* listener) {
 }
 
 void  DefaultLogger::removeListener(Listener* listener) {
-    for (int i = listeners_.size() - 1; i >= 0; i--) {
+    for (int i = static_cast<int>(listeners_.size()) - 1; i >= 0; i--) {
         if (listeners_[i] == listener) {
             listeners_[i] = listeners_[listeners_.size() - 1];
             listeners_.pop_back();

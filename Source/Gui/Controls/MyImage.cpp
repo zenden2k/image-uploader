@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@yandex.ru)
+    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -64,8 +64,9 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
         BitBlt(hdc, 0, 0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
     }
 
-    if (!wParam)
+    if (!wParam) {
         EndPaint(&ps);
+    }
     bHandled = true;
     return 0;
 }
@@ -231,8 +232,9 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
 LRESULT CMyImage::OnLButtonDown(UINT Flags, CPoint Pt)
 {
-    if (HideParent)
+    if (HideParent) {
         ::ShowWindow(GetParent(), SW_HIDE);
+    }
     return 0;
 }
 
