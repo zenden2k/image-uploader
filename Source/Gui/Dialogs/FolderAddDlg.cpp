@@ -8,11 +8,11 @@
 #include "MainDlg.h"
 #include "Func/IuCommonFunctions.h"
 
-CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg) : 
-    m_pWizardDlg(WizardDlg), 
+CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): 
+    count(0), 
     m_bImagesOnly(false),
-    findfile(nullptr),
-    count(0)
+    m_pWizardDlg(WizardDlg),
+    findfile(nullptr)
 {
     m_bSubDirs = true;
     m_szPath[0] = '\0';
@@ -39,10 +39,8 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
 
 int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
 {
-    CString strWildcard;
-
     dlg.SetInfo(CString(TR("Processing folder:")), currentDir);
-    strWildcard = currentDir + "\\*";
+    CString strWildcard = currentDir + "\\*";
 
     _tfinddata_t s_Dir;
     intptr_t hDir;

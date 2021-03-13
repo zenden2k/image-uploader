@@ -31,7 +31,7 @@ CTabListBox::~CTabListBox()
 
 LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    LPDRAWITEMSTRUCT lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+    auto* lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
     int iItemIndex = lpdis->itemID;
     CDCHandle dc(lpdis->hDC);
     TCHAR buf[256]=_T("");
@@ -68,7 +68,7 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
 LRESULT CTabListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    LPMEASUREITEMSTRUCT lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
+    auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
     CWindowDC dc(m_hWnd);
     int iItemIndex = lpmis->itemID;
     TCHAR buf[256] = _T("");

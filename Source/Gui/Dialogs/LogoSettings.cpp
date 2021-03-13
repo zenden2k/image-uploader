@@ -68,15 +68,15 @@ CLogoSettings::~CLogoSettings()
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    �onvert_profiles_ = Settings.ConvertProfiles;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    сonvert_profiles_ = settings->ConvertProfiles;
     TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
     RECT rc = {13, 20, 290, 95};
     img.Create(GetDlgItem(IDC_LOGOGROUP), rc);
     img.ShowWindow(SW_HIDE);
-    img.LoadImage(0);
+    img.LoadImage(nullptr);
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"));
@@ -124,9 +124,9 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
-    CString profileName = U2W(Settings.imageServer.getImageUploadParams().ImageProfileName);
+    CString profileName = U2W(settings->imageServer.getImageUploadParams().ImageProfileName);
 
-    if (�onvert_profiles_.find(profileName) == �onvert_profiles_.end()) {
+    if (сonvert_profiles_.find(profileName) == сonvert_profiles_.end()) {
         profileName = _T("Default");
     }
     ShowParams(profileName);
@@ -193,24 +193,24 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
 
 bool CLogoSettings::Apply()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-   CString saveToProfile = CurrentProfileName;
-   if(CurrentProfileOriginalName == _T("Default"))
-    saveToProfile = CurrentProfileOriginalName;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    CString saveToProfile = CurrentProfileName;
+    if (CurrentProfileOriginalName == _T("Default"))
+        saveToProfile = CurrentProfileOriginalName;
 
-   if(!SaveParams(�onvert_profiles_[saveToProfile]))
-      return false;
-   Settings.ConvertProfiles = �onvert_profiles_;
+    if (!SaveParams(сonvert_profiles_[saveToProfile]))
+        return false;
+    settings->ConvertProfiles = сonvert_profiles_;
     //Settings.CurrentConvertProfileName  = saveToProfile;
     return TRUE;
 }
 
 LRESULT CLogoSettings::OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-   bool bChecked = SendDlgItemMessage(IDC_YOURLOGO, BM_GETCHECK) == BST_CHECKED;
+    bool bChecked = SendDlgItemMessage(IDC_YOURLOGO, BM_GETCHECK) == BST_CHECKED;
     GuiTools::EnableNextN(hWndCtl, 5, bChecked);
     ProfileChanged();
-   return 0;
+    return 0;
 }
 
 LRESULT CLogoSettings::OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
@@ -264,8 +264,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     int LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
     int TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
     
-    if(LogoPos == TextPos && addLogo && addText) // ���� "������� ����" � ������� ���������� � ���� � �� �� ����� �� ��������
-    {
+    if(LogoPos == TextPos && addLogo && addText) {
         if(MessageBox(TR("Are you sure to place text and logo in the same position on image?"),TR("Image settings"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
             return false;
     }
@@ -295,12 +294,12 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
 
     bool found = false;
-    for (auto it = �onvert_profiles_.begin(); it != �onvert_profiles_.end(); ++it) {
+    for (auto it = сonvert_profiles_.begin(); it != сonvert_profiles_.end(); ++it) {
       GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
       if(it->first == CurrentProfileName) found = true;
     }
     if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(CurrentProfileName.GetString())); 
  }
  LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
  {
@@ -309,7 +308,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     {
          ImageConvertingParams params;
          SaveParams(params);
-         �onvert_profiles_[dlg.getValue()] = params;
+         сonvert_profiles_[dlg.getValue()] = params;
          CurrentProfileName = dlg.getValue();
          CurrentProfileOriginalName = dlg.getValue();
          m_ProfileChanged = false;
@@ -324,7 +323,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     {
         if (GuiTools::LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APPNAME, MB_YESNO | MB_ICONWARNING) != IDYES)
         {
-            SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
+            SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(CurrentProfileName.GetString())); 
             return 0;
         }
     }
@@ -342,8 +341,8 @@ void CLogoSettings::ShowParams(const CString profileName)
 
     CurrentProfileName = profileName;
     CurrentProfileOriginalName = profileName; 
-    ShowParams(�onvert_profiles_[profileName]);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
+    ShowParams(сonvert_profiles_[profileName]);
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(profileName.GetString())); 
 }
 
 LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -376,7 +375,7 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     CString name = TR("New profile");
     CString generatedName = name;
     int i = 1;
-    while(�onvert_profiles_.count(generatedName) > 0)
+    while(сonvert_profiles_.count(generatedName) > 0)
     {
         generatedName = name  + _T(" ") + WinUtils::IntToStr(i++);
     }
@@ -391,12 +390,12 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     CString question;
-    question.Format(TR("Are you sure you want to delete profile '%s'?"), CurrentProfileName);
+    question.Format(TR("Are you sure you want to delete profile '%s'?"), CurrentProfileName.GetString());
     if (GuiTools::LocalizedMessageBox(m_hWnd, question, TR("Image settings"), MB_ICONQUESTION | MB_YESNO) != IDYES)
         return 0;
     if(CurrentProfileName=="Default") return 0;
-    if(�onvert_profiles_.count(CurrentProfileName)>0)
-        �onvert_profiles_.erase(CurrentProfileName);
+    if(сonvert_profiles_.count(CurrentProfileName)>0)
+        сonvert_profiles_.erase(CurrentProfileName);
     
     ShowParams("Default");
     UpdateProfileList();

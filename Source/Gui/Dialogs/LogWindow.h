@@ -17,12 +17,14 @@
     limitations under the License.
 
 */
-#ifndef LOGWINDOW_H
-#define LOGWINDOW_H
+#ifndef IU_GUI_DIALOGS_LOGWINDOW_H
+#define IU_GUI_DIALOGS_LOGWINDOW_H
 
 #pragma once
 
 #include <mutex>
+#include <vector>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/LogListBox.h"
@@ -102,4 +104,4 @@ protected:
     CString fileNameFilter_;
 };
 
-#endif // LOGWINDOW_H
+#endif

@@ -34,7 +34,6 @@ class CInputDialog :
 {
     public:
         CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image = _T(""));
-        ~CInputDialog();
         enum { IDD = IDD_INPUTDIALOG };
 
         BEGIN_MSG_MAP(CInputDialog)

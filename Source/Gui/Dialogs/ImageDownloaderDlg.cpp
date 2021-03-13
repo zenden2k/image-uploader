@@ -55,7 +55,7 @@ CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &i
 LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     AddClipboardFormatListener(m_hWnd);
     
@@ -69,7 +69,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_WATCHCLIPBOARD, "Watch Clipboard for URLs");
     TRC(IDC_IMAGEDOWNLOADERTIP, "Enter URLs (one http:// or ftp:// link per line)");
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
-    SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, Settings.WatchClipboard?BST_CHECKED:BST_UNCHECKED);
+    SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_SETCHECK, settings->WatchClipboard?BST_CHECKED:BST_UNCHECKED);
 
     if(!m_InitialBuffer.IsEmpty())
     {
@@ -124,8 +124,8 @@ LRESULT CImageDownloaderDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
         downloadTask_->cancel();
     } else
     {
-        WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-        Settings.WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        settings->WatchClipboard = SendDlgItemMessage(IDC_WATCHCLIPBOARD, BM_GETCHECK) != 0;
         EmulateEndDialog(wID);
     }
     return 0;

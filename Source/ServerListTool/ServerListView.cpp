@@ -7,7 +7,7 @@ namespace ServersListTool {
 
 CServerListView::CServerListView(ServersCheckerModel* model) : model_(model){
     using namespace std::placeholders;
-    model_->setOnRowChangedCallback(std::bind(&CServerListView::onRowChanged, this, _1));
+    model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
 }
 
 CServerListView::~CServerListView() {
@@ -33,7 +33,7 @@ void CServerListView::Init() {
 }
 
 LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    LV_DISPINFO* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
+    auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
     LV_ITEM* pItem = &(pDispInfo)->item;
     DWORD n = pItem->iItem;
 
@@ -47,7 +47,7 @@ LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 
 LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    LPNMLVCUSTOMDRAW lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
+    auto* lplvcd = reinterpret_cast<LPNMLVCUSTOMDRAW>(pnmh);
 
     switch (lplvcd->nmcd.dwDrawStage) {
     case CDDS_PREPAINT:

@@ -202,7 +202,6 @@ void AffectedSegments::getRects( std::deque<RECT>& rects, int maxWidth, int maxH
 AffectedSegments& AffectedSegments::operator+= ( const AffectedSegments& segments ) {
     for( auto i = segments.segments_.begin(); i != segments.segments_.end(); ++i ) {
         segments_[ i->first ] = true;
-            //segments.segments_[ i->first ];
     }
     return *this;
 }

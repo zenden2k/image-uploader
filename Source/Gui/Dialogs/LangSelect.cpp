@@ -108,7 +108,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         SelectLang(_T("English"));
     }
 
-    return 1;  // ��������� ������� �������������� ���������� ����� �����
+    return 1;
 }
 
 LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

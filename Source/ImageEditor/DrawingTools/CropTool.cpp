@@ -23,7 +23,7 @@
 
 namespace ImageEditor {
 
-CropTool::CropTool(Canvas* canvas) : MoveAndResizeTool(canvas, etCrop) {
+CropTool::CropTool(Canvas* canvas) : MoveAndResizeTool(canvas, ElementType::etCrop) {
 
 }
 

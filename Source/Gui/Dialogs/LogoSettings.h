@@ -17,8 +17,8 @@
     limitations under the License.
 
 */
-#ifndef LOGOSETTINGS_H
-#define LOGOSETTINGS_H
+#ifndef IU_GUI_DIALOGS_LOGOSETTINGS_H
+#define IU_GUI_DIALOGS_LOGOSETTINGS_H
 
 
 #pragma once
@@ -26,14 +26,13 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/myimage.h"
-#include "settingspage.h"
+#include "SettingsPage.h"
 #include "3rdpart/ColorButton.h"
 #include "Core/Images/ImageConverter.h"
-#include <atlcrack.h>
 
-#define IDC_NEWPROFILE 10001
-#define IDC_SAVEPROFILE 10002
-#define IDC_DELETEPROFILE 10003
+constexpr int IDC_NEWPROFILE = 10001;
+constexpr int IDC_SAVEPROFILE = 10002;
+constexpr int IDC_DELETEPROFILE = 10003;
 
 class CLogoSettings : 
     public CDialogImpl<CLogoSettings>, public CSettingsPage    
@@ -79,40 +78,39 @@ protected:
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     CMyImage img;
-   LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnProfileEditedNotification(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    
+
     LRESULT OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedSelectfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     CColorButton FrameColor;
-    CColorButton Color1,Color2,ThumbTextColor,TextColor, StrokeColor;
+    CColorButton Color1, Color2, ThumbTextColor, TextColor, StrokeColor;
     //LogoParams *params;
-    LOGFONT lf,ThumbFont;
-   CString CurrentProfileOriginalName;
+    LOGFONT lf, ThumbFont;
+    CString CurrentProfileOriginalName;
     bool Apply() override;
-   void ShowParams(const ImageConvertingParams& params);
-   void ShowParams(const CString profileName);
-   bool SaveParams(ImageConvertingParams& params);
-   std::map<CString, ImageConvertingParams> �onvert_profiles_;
-   CImageListManaged profileEditToolbarImagelist_;
-   LRESULT OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-   LRESULT OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-   CToolBarCtrl m_ProfileEditToolbar;
-   void UpdateProfileList();
-   LRESULT OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    void ShowParams(const ImageConvertingParams& params);
+    void ShowParams(const CString profileName);
+    bool SaveParams(ImageConvertingParams& params);
+    std::map<CString, ImageConvertingParams> сonvert_profiles_;
+    CImageListManaged profileEditToolbarImagelist_;
+    LRESULT OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    LRESULT OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    CToolBarCtrl m_ProfileEditToolbar;
+    void UpdateProfileList();
+    LRESULT OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-   CString CurrentProfileName;
-   LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-   void ProfileChanged();
-   bool m_CatchChanges;
-   bool m_ProfileChanged;
-    public:
-        void TranslateUI();
-    
+    CString CurrentProfileName;
+    LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    void ProfileChanged();
+    bool m_CatchChanges;
+    bool m_ProfileChanged;
+public:
+    void TranslateUI();
 };
 
-#endif // LOGOSETTINGS_H
+#endif
 
 

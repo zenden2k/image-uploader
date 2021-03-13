@@ -77,7 +77,6 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     RECT rc;
     GetClientRect(&rc);
 
-    // ���� ImageList ������, ������� ��������� ��������
     if(ImageList.GetImageCount() < 1)
         LoadThumbnail(-1, nullptr, nullptr);
 
@@ -90,14 +89,10 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     //TVI->Image = nullptr;
     SetItemData(n, reinterpret_cast<DWORD_PTR>(TVI));
 
-    // ���� ��� ���� ����������� ��������, ���������� ����� ����������
-    // ��� ����� ��� Video Grabber-a
-
     if (Img) {
         LoadThumbnail(n, TVI, Img);
     }
 
-    // ������������� ��������
     Arrange(LVA_ALIGNTOP);
      
     if (ensureVisible) {
@@ -112,12 +107,11 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 {
     if( ItemIndex < 0 || ItemIndex > GetItemCount()-1) return false;
 
-    SimpleDelete(ItemIndex, true, deletePhysicalFiles_); // ������� ��������� �� Imagelist
-    DeleteItem(ItemIndex);    // ������� ���������������� �� ��������
+    SimpleDelete(ItemIndex, true, deletePhysicalFiles_);
+    DeleteItem(ItemIndex);   
 
     Arrange(LVA_ALIGNTOP);
 
-    // ���������� �� ��������, ������� ��� ����� ���������
     EnsureVisible(ItemIndex,true);
 
     return true;
@@ -125,7 +119,6 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
 
 LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& bHandled)
 {
-    // �������� ���������� �������
     POINT p = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 
     int ItemIndex = HitTest(p, 0); //Getting the index of item was clicked (by middle button)
@@ -133,17 +126,15 @@ LRESULT CThumbsView::OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam
 
     if(GetItemState(ItemIndex, LVIS_SELECTED) != LVIS_SELECTED)
     {
-        // ������� ������ ������� ��� ����������
         MyDeleteItem(ItemIndex);
         NotifyItemCountChanged();
     }
     else if(GetNextItem(-1,LVNI_SELECTED)>=0)
     {
-        // ���� ��� ���������� ��������� ��������, ������� ��� ���������
         DeleteSelected();
     }
 
-    bHandled = true; //�� ���� ���������� ���������� ����������� ���������
+    bHandled = true;
     return 0;
 }
 
@@ -577,7 +568,7 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     LPNMLISTVIEW pNotificationInfo = reinterpret_cast<LPNMLISTVIEW>(pnmh);
     if (pNotificationInfo->iItem == -1) return FALSE;
-    ThumbsViewItem *TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
+    auto* TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
     delete TVI;
     return 0;
 }
@@ -725,7 +716,7 @@ LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
 }
 
 void CThumbsView::getThumbnail(int itemIndex) {
-    ThumbsViewItem *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(itemIndex));
+    auto* tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(itemIndex));
     if (!tvi || tvi->ThumbLoaded || tvi->ThumbnailRequested) {
         return;
     }

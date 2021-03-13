@@ -56,10 +56,6 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
     MainDlg = nullptr;
 }
 
-CVideoGrabberPage::~CVideoGrabberPage()
-{
-}
-
 bool CVideoGrabberPage::SetFileName(LPCTSTR FileName)
 {
     fileName_ = FileName;
@@ -140,13 +136,13 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
         if (!IsStopTimer)
         {
             TimerCounter = 8;           
-            SetTimer(1, 1000, NULL);
+            SetTimer(1, 1000, nullptr);
             IsStopTimer = true;
         }
         else
         {
             CanceledByUser = true;
-            //Terminate();      // ������� �����
+            //Terminate();  
             //ThreadTerminated();
         }
     }
@@ -225,7 +221,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
 bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 {
     using namespace Gdiplus;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString fileNameBuffer;
 
     SetGrabbingStatusText(CString(TR("Extracting frame ")) + title);
@@ -248,8 +244,8 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     CString videoFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 
     if ( snapshotsFolder.IsEmpty() ) {
-        if ( !Settings.VideoSettings.SnapshotsFolder.IsEmpty() ) {
-            CString path = Settings.VideoSettings.SnapshotsFolder + "\\" + Settings.VideoSettings.SnapshotFileTemplate;
+        if ( !settings->VideoSettings.SnapshotsFolder.IsEmpty() ) {
+            CString path = settings->VideoSettings.SnapshotsFolder + "\\" + settings->VideoSettings.SnapshotFileTemplate;
             CString snapshotsFolderTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFilePath(WCstringToUtf8(path)) );
             snapshotsFolder = GenerateFileNameFromTemplate(snapshotsFolderTemplate, 1, CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
             std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
@@ -274,7 +270,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     if ( IuCoreUtils::DirectoryExists(WCstringToUtf8(snapshotsFolder)) ) {
         wOutDir = snapshotsFolder;
     }
-    CString snapshotFileTemplate =  Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(Settings.VideoSettings.SnapshotFileTemplate)) );
+    CString snapshotFileTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(settings->VideoSettings.SnapshotFileTemplate)) );
 
     
     CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
@@ -473,30 +469,30 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), Settings.prepareVideoDialogFilters(), },
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), settings->prepareVideoDialogFilters(), },
         { TR("All files"), _T("*.*") }
     };
 
-    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose video file"), filters, false);
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, settings->VideoFolder, TR("Choose video file"), filters, false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         return 0;
     }
 
     fileEdit_.SetWindowText(dlg->getFile());
-    Settings.VideoFolder = dlg->getFolderPath();
+    settings->VideoFolder = dlg->getFolderPath();
 
     return 0;
 }
 
 int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString videoEngine = Settings.VideoSettings.Engine;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    CString videoEngine = settings->VideoSettings.Engine;
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
-        if ( !Settings.IsFFmpegAvailable() ) {
+        if ( !settings->IsFFmpegAvailable() ) {
             videoEngine = WtlGuiSettings::VideoEngineDirectshow;
         } else {
             videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
@@ -507,7 +503,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
         }
     }
 
-    Settings.VideoSettings.NumOfFrames = NumOfFrames;
+    settings->VideoSettings.NumOfFrames = NumOfFrames;
 
     videoGrabber_ = std::make_unique<VideoGrabber>();
     videoGrabber_->setFrameCount(NumOfFrames);
@@ -607,15 +603,14 @@ bool CVideoGrabberPage::OnNext()
     }
 
     ThumbsView.MyDeleteAllItems();
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.VideoSettings.NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->VideoSettings.NumOfFrames = GetDlgItemInt(IDC_NUMOFFRAMESEDIT);
 
     return true;
 }
 
 LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
 {
-    // � ������ ����������� ������ ������������ ������ "�����"
     CheckEnableNext();
     return 0;
 }

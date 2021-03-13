@@ -52,8 +52,7 @@
 #include "Core/Upload/UploadManager.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Scripting/ScriptsManager.h"
-#include "Func/myutils.h"
-#include "Core/ServiceLocator.h"
+#include "Func/MyUtils.h"
 #include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
@@ -1971,10 +1970,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                     auto rgn = RegionSelect.region();
                     if(rgn)
                     {
-                        CWindowHandlesRegion *whr =  dynamic_cast<CWindowHandlesRegion*>(rgn.get());
+                        auto* whr =  dynamic_cast<CWindowHandlesRegion*>(rgn.get());
                         if(whr)
                         {
-                            whr->SetWindowHidingDelay(int(Settings.ScreenshotSettings.WindowHidingDelay*1.2));
+                            whr->SetWindowHidingDelay(static_cast<int>(Settings.ScreenshotSettings.WindowHidingDelay * 1.2));
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
                         engine.captureRegion(rgn.get());    
@@ -1998,7 +1997,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     {
         ImageEditorConfigurationProvider configProvider;
         ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
-        imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::Canvas::dtCrop : ImageEditor::Canvas::dtBrush);
+        imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(m_bScreenshotFromTray!=0);
         if ( m_bScreenshotFromTray ) {
             imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));

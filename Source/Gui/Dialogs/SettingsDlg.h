@@ -17,29 +17,24 @@
     limitations under the License.
 
 */
-#ifndef SETTINGSDLG_H
-#define SETTINGSDLG_H
+#ifndef IU_CORE_GUI_DIALOGS_SETTINGSDLG_H
+#define IU_CORE_GUI_DIALOGS_SETTINGSDLG_H
 
 #pragma once
 #include "atlheaders.h"
-#include "maindlg.h"
+#include "MainDlg.h"
 #include "VideoGrabberPage.h"
-#include "uploadsettings.h"
-#include "aboutdlg.h"
+#include "UploadSettings.h"
+#include "AboutDlg.h"
 #include "resource.h"       // main symbols
-#include <atlcrack.h>
-#include "logosettings.h"
-#include "settingspage.h"
-#include "Gui/Controls/tablistbox.h"
-// CSettingsDlg
-
-//const int SettingsPageCount = 10;
+#include "LogoSettings.h"
+#include "SettingsPage.h"
+#include "Gui/Controls/TabListBox.h"
 
 class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
 {
     public:
         CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
-        ~CSettingsDlg();
         enum { IDD = IDD_SETTINGSDLG };
         enum { kStatusLabelTimer = 1, SettingsPageCount = 10 };
         enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
@@ -85,4 +80,4 @@ protected:
     CFont saveStatusLabel_;
 };
 
-#endif // SETTINGSDLG_H
+#endif // IU_CORE_GUI_DIALOGS_SETTINGSDLG_H

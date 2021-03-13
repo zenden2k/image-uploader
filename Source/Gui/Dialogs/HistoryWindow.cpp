@@ -140,8 +140,9 @@ LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 void CHistoryWindow::Show()
 {
-    if(!IsWindowVisible())
-            ShowWindow(SW_SHOW);
+    if (!IsWindowVisible()) {
+        ShowWindow(SW_SHOW);
+    }
     SetForegroundWindow(m_hWnd);
 }
 
@@ -150,7 +151,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_HISTORYTREE)) return 0;
-    bool isSessionItem = false;
+    
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
 
@@ -177,7 +178,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         ::ScreenToClient(hwnd, &ClientPoint);
     }
    
-    isSessionItem = item->level()==0;
+    bool isSessionItem = item->level()==0;
     
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     CMenu menu;
@@ -210,14 +211,14 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return 0;
 }
 
-void CHistoryWindow::FillList(CHistoryReader * mgr)
+void CHistoryWindow::FillList(CHistoryReader* mgr)
 {
     bool enabledDownload = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
     m_treeView.setDownloadingEnabled(enabledDownload);
     int nSessionsCount = mgr->getSessionCount();
 
     m_treeView.SetRedraw(false);
-    TreeItem* res = 0;
+    TreeItem* res = nullptr;
     int nFilesCount = 0;
     int64_t totalFileSize = 0;
     for(int i=0; i<nSessionsCount; i++)
@@ -237,7 +238,7 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
             }
             m_treeView.addSubEntry(res, &ses->entry(j),nCount<4);
         }
-        ses->setDeleteItems(false); // treeView will manage histroy items
+        ses->setDeleteItems(false); // treeView will manage history items
         //m_treeView.ExpandItem(res);
     }
     if(res)
@@ -255,7 +256,6 @@ void CHistoryWindow::FillList(CHistoryReader * mgr)
 LRESULT CHistoryWindow::OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     bHandled = true;
-    if(m_treeView.m_hWnd == 0) return 0;
     return 0;
 }
 
@@ -297,7 +297,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 
     if(item->level()==0)
     {
-        CHistorySession* ses = reinterpret_cast<CHistorySession*>(item->userData());
+        auto* ses = static_cast<CHistorySession*>(item->userData());
         for(int i=0; i<ses->entriesCount(); i++)
         {
             CUrlListItem it  =fromHistoryItem(ses->entry(i));
@@ -402,7 +402,7 @@ void CHistoryWindow::LoadHistory()
     }
 }
 
-void CHistoryWindow::OpenInBrowser(const TreeItem* item) {
+void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
     WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
@@ -434,9 +434,9 @@ void CHistoryWindow::threadsStarted()
 
 LRESULT CHistoryWindow::OnDownloadThumbsCheckboxChecked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
-    m_treeView.setDownloadingEnabled(Settings.HistorySettings.EnableDownloading);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
+    m_treeView.setDownloadingEnabled(settings->HistorySettings.EnableDownloading);
     return 0;
 }
         

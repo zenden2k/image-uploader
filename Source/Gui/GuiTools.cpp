@@ -25,7 +25,6 @@
 #include <Shobjidl.h>
 
 #include "Func/WinUtils.h"
-#include "Func/Library.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
 
@@ -114,7 +113,7 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     MenuItem.wID = id;
     MenuItem.hbmpChecked = bm;
     MenuItem.hbmpUnchecked = bm;
-    MenuItem.dwTypeData = (LPWSTR)szTitle;
+    MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 

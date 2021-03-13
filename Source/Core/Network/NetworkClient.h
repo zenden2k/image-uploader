@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _NETWORK_CLIENT_H_
-#define _NETWORK_CLIENT_H_
+#ifndef IU_CORE_NETWORK_NETWORK_CLIENT_H
+#define IU_CORE_NETWORK_NETWORK_CLIENT_H
 
 
 #include <mutex>
@@ -45,13 +45,18 @@ class NetworkClient: public INetworkClient
 {
     public:
         /*! @cond PRIVATE */
-        enum ActionType {
+        enum class ActionType {
             atNone = 0, atPost, atUpload, atGet
         };
+
+        NetworkClient(NetworkClient const&) = delete;
+        void operator=(NetworkClient const&) = delete;
         
         /*! @endcond */
+
         NetworkClient();
-        ~NetworkClient();
+        ~NetworkClient() override;
+
         /**
          * Adds a parameter to the POST request with the name and value
          */
@@ -225,8 +230,8 @@ class NetworkClient: public INetworkClient
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
         /*! @endcond */
     private:
-        //DISALLOW_COPY_AND_ASSIGN(NetworkClient);
-        enum CallBackFuncType{funcTypeBody,funcTypeHeader};
+
+        enum class CallBackFuncType{funcTypeBody,funcTypeHeader};
 
         struct CallBackData
         {

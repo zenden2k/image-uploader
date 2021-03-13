@@ -64,7 +64,7 @@ public:
     ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
     ~ImageEditorWindow();
-    void setInitialDrawingTool(Canvas::DrawingToolType dt);
+    void setInitialDrawingTool(DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
     void setSuggestedFileName(CString fileName);
@@ -169,14 +169,14 @@ public:
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
         ImageEditor::Canvas* canvas_;
-        std::map<int, Canvas::DrawingToolType> menuItems_;
-        std::map<Canvas::DrawingToolType, SubMenuItem> subMenuItems_;
+        std::map<int, DrawingToolType> menuItems_;
+        std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;
-        std::map<DrawingToolHotkey, Canvas::DrawingToolType> drawingToolsHotkeys_;
+        std::map<DrawingToolHotkey, DrawingToolType> drawingToolsHotkeys_;
         DialogResult dialogResult_;
         WindowDisplayMode displayMode_;
-        Canvas::DrawingToolType initialDrawingTool_;
-        Canvas::DrawingToolType currentDrawingTool_;
+        DrawingToolType initialDrawingTool_;
+        DrawingToolType currentDrawingTool_;
         bool showUploadButton_;
         bool showAddToWizardButton_;
         bool askBeforeClose_;
@@ -201,7 +201,7 @@ public:
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);
-        void OnDrawingToolChanged(Canvas::DrawingToolType drawingTool);
+        void OnDrawingToolChanged(DrawingToolType drawingTool);
         void OnTextEditStarted(ImageEditor::TextElement * textElement);
         void OnTextEditFinished(ImageEditor::TextElement * textElement);
         void OnSelectionChanged();
@@ -213,7 +213,7 @@ public:
         void init();
         bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None);
         CString saveToTempFile();
-        void updateToolbarDrawingTool(Canvas::DrawingToolType dt);
+        void updateToolbarDrawingTool(DrawingToolType dt);
         void OnForegroundColorChanged(Gdiplus::Color color);
         void OnBackgroundColorChanged(Gdiplus::Color color);
         void onFontChanged(LOGFONT font);

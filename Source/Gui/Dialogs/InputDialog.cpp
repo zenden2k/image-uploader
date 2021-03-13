@@ -44,10 +44,6 @@ CInputDialog::CInputDialog(const CString& title, const CString& descr, const CSt
     image_ = image;
 }
 
-CInputDialog::~CInputDialog()
-{
-}
-
 LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     SetWindowText(title_);

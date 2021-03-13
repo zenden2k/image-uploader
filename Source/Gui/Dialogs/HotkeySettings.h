@@ -42,7 +42,7 @@ class CHotkeyList: public std::vector<CHotkeyItem>
         CHotkeyList();
         CHotkeyList(const CHotkeyList&) = delete;
         bool m_bChanged;
-        bool Changed();
+        bool Changed() const;
 
         CHotkeyItem& getByFunc(const CString &func);
         void AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow = true, WORD Code = 0, WORD modif = 0);

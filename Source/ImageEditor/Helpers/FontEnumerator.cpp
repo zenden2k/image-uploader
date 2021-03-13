@@ -1,25 +1,24 @@
 #include "FontEnumerator.h"
 
 #include <algorithm>
+#include <utility>
+
 #include <tchar.h>
 
-namespace
-{
+namespace {
 
-static bool compareLogFont(LOGFONT font1, LOGFONT font2)
-{
+bool compareLogFont(LOGFONT font1, LOGFONT font2) {
     return lstrcmp(font1.lfFaceName, font2.lfFaceName) == 0;
 };
 
-static bool sortCompareLogFont(LOGFONT font1, LOGFONT font2)
-{
+bool sortCompareLogFont(LOGFONT font1, LOGFONT font2) {
     return lstrcmp(font1.lfFaceName, font2.lfFaceName) <0;
 };
 
 }
 
 int CALLBACK FontEnumerator::EnumFontFamExProc(const LOGFONT *lpelfe, const TEXTMETRIC *lpntme, DWORD FontType, LPARAM lParam) {
-    FontEnumerator* enumerator = reinterpret_cast<FontEnumerator*>(lParam);
+    auto* enumerator = reinterpret_cast<FontEnumerator*>(lParam);
     if (lpelfe->lfFaceName[0] != _T('@')) {
         enumerator->fonts_.push_back(*lpelfe);
     }
@@ -27,7 +26,7 @@ int CALLBACK FontEnumerator::EnumFontFamExProc(const LOGFONT *lpelfe, const TEXT
 }
 
 FontEnumerator::FontEnumerator(HDC dc, std::vector<LOGFONT>& fonts, OnEnumerationFinishedDelegate onEnumerationFinished) : fonts_(fonts) {
-    onEnumerationFinished_ = onEnumerationFinished;
+    onEnumerationFinished_ = std::move(onEnumerationFinished);
     dc_ = dc;
 }
 
@@ -38,7 +37,7 @@ void FontEnumerator::run()
     logFont.lfCharSet = DEFAULT_CHARSET;
     EnumFontFamiliesEx(dc_, &logFont, EnumFontFamExProc, reinterpret_cast<LPARAM>(this), 0);
     std::sort(fonts_.begin(), fonts_.end(), sortCompareLogFont);
-    std::vector<LOGFONT>::iterator it = std::unique(fonts_.begin(), fonts_.end(), compareLogFont);
+    auto it = std::unique(fonts_.begin(), fonts_.end(), compareLogFont);
     fonts_.resize(std::distance(fonts_.begin(), it));
     onEnumerationFinished_();
 }

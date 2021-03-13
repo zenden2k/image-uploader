@@ -71,7 +71,7 @@ void PenTool::render( Painter* gr ) {
 
 CursorType PenTool::getCursor(int x, int y)
 {
-    return ctCross;
+    return CursorType::ctCross;
 }
 
 }

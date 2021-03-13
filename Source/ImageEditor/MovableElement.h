@@ -15,7 +15,9 @@ class MovableElement: public DrawingElement {
     public:
         
         enum { kGripSize = 6 ,kSelectRadius = 5};
-        enum GripPointType {gptNone, gptStartPoint, gptEndPoint};
+
+        enum class GripPointType {gptNone, gptStartPoint, gptEndPoint};
+
         struct Grip {
             POINT pt;
             BoundaryType bt;
@@ -23,8 +25,8 @@ class MovableElement: public DrawingElement {
             Grip() {
                 pt.x = -1;
                 pt.y = -1;
-                bt = btNone;
-                gpt = gptNone;
+                bt = BoundaryType::btNone;
+                gpt = GripPointType::gptNone;
             }
         };
         MovableElement(Canvas* canvas_);

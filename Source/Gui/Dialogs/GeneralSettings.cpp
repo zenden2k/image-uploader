@@ -65,7 +65,7 @@ int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     // Translating controls
     TRC(IDC_CHANGESWILLBE, "Please note that program needs to be restarted for new language settings to take affect.");
     TRC(IDC_LANGUAGELABEL, "Interface language:");
@@ -77,10 +77,10 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
     TRC(IDC_DEVELOPERMODE, "Developer mode");
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
-    SetDlgItemText(IDC_IMAGEEDITORPATH, Settings.ImageEditorPath);
+    SetDlgItemText(IDC_IMAGEEDITORPATH, settings->ImageEditorPath);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND imageEditorPathHwnd = GetDlgItem(IDC_IMAGEEDITORPATH);
         LONG styleEx = ::GetWindowLong(imageEditorPathHwnd, GWL_EXSTYLE);
         ::SetWindowLong(imageEditorPathHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
@@ -103,15 +103,15 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         langListCombo_.AddString(buf2);
     }
 
-    int Index = langListCombo_.FindString(0, Settings.Language);
+    int Index = langListCombo_.FindString(0, settings->Language);
     if(Index==-1) Index=0;
     langListCombo_.SetCurSel(Index);
 
-    SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, Settings.ConfirmOnExit);
-    SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, Settings.AutoShowLog);
-    GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, Settings.DropVideoFilesToTheList);
-    GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
-    GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
+    SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, settings->ConfirmOnExit);
+    SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, settings->AutoShowLog);
+    GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, settings->DropVideoFilesToTheList);
+    GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
+    GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
     return 1;  // Let the system set the focus
 }
 
@@ -142,23 +142,23 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
     
 bool CGeneralSettings::Apply()
 {
-    int Index = langListCombo_.GetCurSel();
-    if (Index < 0) {
+    int index = langListCombo_.GetCurSel();
+    if (index < 0) {
         return false;
     }
 
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString buf;
-    langListCombo_.GetLBText(Index, buf);
-    Settings.Language = buf;
+    langListCombo_.GetLBText(index, buf);
+    settings->Language = buf;
 
-    Settings.ImageEditorPath = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH));
+    settings->ImageEditorPath = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH));
     
-    Settings.AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
-    Settings.ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
-    Settings.DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
-    GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, Settings.DeveloperMode);
-    GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, Settings.AutomaticallyCheckUpdates);
+    settings->AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
+    settings->ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
+    settings->DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
+    GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
+    GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
     
     return true;
 }

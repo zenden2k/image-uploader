@@ -33,10 +33,6 @@ CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngi
     uploadEngineManager_ = uploadEngineManager;
 }
 
-CDefaultServersSettings::~CDefaultServersSettings()
-{
-}
-
 LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     imageServerSelector_->updateServerList();
@@ -127,31 +123,32 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
  
 bool CDefaultServersSettings::Apply()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     CServerSelectorControl* controls[] = { fileServerSelector_.get(), imageServerSelector_.get(), trayServerSelector_.get(),
         contextMenuServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
         if (controls[i]->serverProfile().serverName().empty()) {
             CString message;
-            message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle());
+            message.Format(TR("You have not selected \"%s\""), controls[i]->getTitle().GetString());
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return false;
-        } else if ( !controls[i]->isAccountChosen() ) {
+        }
+        if ( !controls[i]->isAccountChosen() ) {
             CString message;
             message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(controls[i]->serverProfile().serverName()).c_str());
             GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
             return false;
         }
     }
-    Settings.fileServer = fileServerSelector_->serverProfile();
-    Settings.imageServer = imageServerSelector_->serverProfile();
-    Settings.quickScreenshotServer = trayServerSelector_->serverProfile();
-    Settings.contextMenuServer = contextMenuServerSelector_->serverProfile();
-    Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
-    Settings.temporaryServer = temporaryServerSelector_->serverProfile();
-    Settings.RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);
-    Settings.RememberFileServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS);
+    settings->fileServer = fileServerSelector_->serverProfile();
+    settings->imageServer = imageServerSelector_->serverProfile();
+    settings->quickScreenshotServer = trayServerSelector_->serverProfile();
+    settings->contextMenuServer = contextMenuServerSelector_->serverProfile();
+    settings->urlShorteningServer = urlShortenerServerSelector_->serverProfile();
+    settings->temporaryServer = temporaryServerSelector_->serverProfile();
+    settings->RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);
+    settings->RememberFileServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERFILESERVERSETTINGS);
     ServiceLocator::instance()->programWindow()->setServersChanged(true);
     return true;
 }

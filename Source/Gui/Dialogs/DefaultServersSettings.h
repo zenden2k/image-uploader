@@ -37,7 +37,6 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
         enum { IDD = IDD_DEFAULTSERVERSSETTINGS };
 
         CDefaultServersSettings(UploadEngineManager* uploadEngineManager);
-        virtual ~CDefaultServersSettings();
         bool Apply() override;
 
     protected:

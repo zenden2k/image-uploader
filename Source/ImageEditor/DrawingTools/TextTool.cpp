@@ -25,7 +25,7 @@
 
 namespace ImageEditor {
 
-TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, etText ) {
+TextTool::TextTool( Canvas* canvas ) : MoveAndResizeTool( canvas, ElementType::etText ) {
 
 }
 
@@ -105,9 +105,9 @@ ImageEditor::CursorType TextTool::getCursor(int x, int y)
     CursorType ct = MoveAndResizeTool::getCursor(x,y);
     TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
     InputBox* inputBox = textElement ? textElement->getInputBox() : nullptr;
-    if ( (ct == ctDefault || ( ct == ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
+    if ( (ct == CursorType::ctDefault || ( ct == CursorType::ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
         ( !inputBox || !inputBox->isVisible() )) {
-            ct = ctEdit;
+            ct = CursorType::ctEdit;
     }
     return ct;
 }

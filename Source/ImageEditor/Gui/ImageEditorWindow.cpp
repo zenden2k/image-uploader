@@ -61,65 +61,65 @@ void ImageEditorWindow::init()
     colorsDelegate_ = nullptr;
     imageQuality_ = 85;
     searchEngine_ = SearchByImage::SearchEngine::seGoogle;
-    currentDrawingTool_ = Canvas::dtNone;
-    initialDrawingTool_ = Canvas::dtBrush;
+    currentDrawingTool_ = DrawingToolType::dtNone;
+    initialDrawingTool_ = DrawingToolType::dtBrush;
     displayMode_ = wdmAuto;
     accelerators_ = nullptr;
-    menuItems_[ID_PEN]             = Canvas::dtPen; 
-    menuItems_[ID_LINE]            = Canvas::dtLine;
-    menuItems_[ID_BRUSH]           = Canvas::dtBrush;
-    menuItems_[ID_MARKER]          = Canvas::dtMarker;
-    menuItems_[ID_RECTANGLE]       = Canvas::dtRectangle;
-    menuItems_[ID_FILLEDRECTANGLE] = Canvas::dtFilledRectangle;
-    menuItems_[ID_CROP]            = Canvas::dtCrop;
-    menuItems_[ID_MOVE]            = Canvas::dtMove;
-    menuItems_[ID_ARROW]           = Canvas::dtArrow;
-    menuItems_[ID_SELECTION]       = Canvas::dtSelection;
-    menuItems_[ID_BLUR]            = Canvas::dtBlur;
-    menuItems_[ID_BLURRINGRECTANGLE]   = Canvas::dtBlurrringRectangle;
-    menuItems_[ID_PIXELATERECTANGLE]   = Canvas::dtPixelateRectangle;
-    menuItems_[ID_COLORPICKER]     = Canvas::dtColorPicker;
-    menuItems_[ID_ROUNDEDRECTANGLE]     = Canvas::dtRoundedRectangle;
-    menuItems_[ID_ELLIPSE]     = Canvas::dtEllipse;
-    menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = Canvas::dtFilledRoundedRectangle;
-    menuItems_[ID_FILLEDELLIPSE]     = Canvas::dtFilledEllipse;
-    menuItems_[ID_TEXT]     = Canvas::dtText;
-    menuItems_[ID_STEPNUMBER]     = Canvas::dtStepNumber;
+    menuItems_[ID_PEN]             = DrawingToolType::dtPen;
+    menuItems_[ID_LINE]            = DrawingToolType::dtLine;
+    menuItems_[ID_BRUSH]           = DrawingToolType::dtBrush;
+    menuItems_[ID_MARKER]          = DrawingToolType::dtMarker;
+    menuItems_[ID_RECTANGLE]       = DrawingToolType::dtRectangle;
+    menuItems_[ID_FILLEDRECTANGLE] = DrawingToolType::dtFilledRectangle;
+    menuItems_[ID_CROP]            = DrawingToolType::dtCrop;
+    menuItems_[ID_MOVE]            = DrawingToolType::dtMove;
+    menuItems_[ID_ARROW]           = DrawingToolType::dtArrow;
+    menuItems_[ID_SELECTION]       = DrawingToolType::dtSelection;
+    menuItems_[ID_BLUR]            = DrawingToolType::dtBlur;
+    menuItems_[ID_BLURRINGRECTANGLE]   = DrawingToolType::dtBlurrringRectangle;
+    menuItems_[ID_PIXELATERECTANGLE]   = DrawingToolType::dtPixelateRectangle;
+    menuItems_[ID_COLORPICKER]     = DrawingToolType::dtColorPicker;
+    menuItems_[ID_ROUNDEDRECTANGLE]     = DrawingToolType::dtRoundedRectangle;
+    menuItems_[ID_ELLIPSE]     = DrawingToolType::dtEllipse;
+    menuItems_[ID_FILLEDROUNDEDRECTANGLE]     = DrawingToolType::dtFilledRoundedRectangle;
+    menuItems_[ID_FILLEDELLIPSE]     = DrawingToolType::dtFilledEllipse;
+    menuItems_[ID_TEXT]     = DrawingToolType::dtText;
+    menuItems_[ID_STEPNUMBER]     = DrawingToolType::dtStepNumber;
 
     SubMenuItem item;
     item.parentCommand = ID_RECTANGLE;
     item.icon = loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG);
     item.command = ID_RECTANGLE;
     item.hint = TR("Rectangle");
-    subMenuItems_[Canvas::dtRectangle] = item;
+    subMenuItems_[DrawingToolType::dtRectangle] = item;
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLROUNDEDRECTANGLE);
     item.command = ID_ROUNDEDRECTANGLE;
     item.hint = TR("Rounded rectangle");
-    subMenuItems_[Canvas::dtRoundedRectangle] = item;
+    subMenuItems_[DrawingToolType::dtRoundedRectangle] = item;
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLELLIPSE);
     item.command = ID_ELLIPSE;
     item.hint = TR("Ellipse");
-    subMenuItems_[Canvas::dtEllipse] = item;
+    subMenuItems_[DrawingToolType::dtEllipse] = item;
 
     item.parentCommand = ID_FILLEDRECTANGLE;
     item.command = ID_FILLEDRECTANGLE;
     item.hint = TR("Filled rectangle");
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE);
-    subMenuItems_[Canvas::dtFilledRectangle] = item;
+    subMenuItems_[DrawingToolType::dtFilledRectangle] = item;
 
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDROUNDEDRECTANGLE);
     item.command = ID_FILLEDROUNDEDRECTANGLE;
     item.hint = TR("Rounded rectangle");
-    subMenuItems_[Canvas::dtFilledRoundedRectangle] = item;
+    subMenuItems_[DrawingToolType::dtFilledRoundedRectangle] = item;
 
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDELLIPSE);
     item.command = ID_FILLEDELLIPSE;
     item.hint =  TR("Filled ellipse");
-    subMenuItems_[Canvas::dtFilledEllipse] = item;
+    subMenuItems_[DrawingToolType::dtFilledEllipse] = item;
 
     SubMenuItem item2;
     item2.parentCommand = ID_BLURRINGRECTANGLE;
@@ -127,30 +127,30 @@ void ImageEditorWindow::init()
     item2.icon = loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG);
     item2.command = ID_BLURRINGRECTANGLE;
     item2.hint = TR("Blurring rectangle");
-    subMenuItems_[Canvas::dtBlurrringRectangle] = item2;
+    subMenuItems_[DrawingToolType::dtBlurrringRectangle] = item2;
 
     item2.icon = loadToolbarIcon(IDB_ICONTOOLPIXELATE);
     item2.command = ID_PIXELATERECTANGLE;
     item2.hint = TR("Pixelation");
-    subMenuItems_[Canvas::dtPixelateRectangle] = item2;
+    subMenuItems_[DrawingToolType::dtPixelateRectangle] = item2;
 
 
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
     selectedSubMenuItems_[ID_BLURRINGRECTANGLE] = ID_BLURRINGRECTANGLE;
 
-    drawingToolsHotkeys_[kMoveKey] = Canvas::dtMove;
-    drawingToolsHotkeys_[kBrushKey] = Canvas::dtBrush;
-    drawingToolsHotkeys_[kTextKey] = Canvas::dtText;
-    drawingToolsHotkeys_[kRectangleKey] = Canvas::dtRectangle;
-    drawingToolsHotkeys_[kColorPickerKey] = Canvas::dtColorPicker;
-    drawingToolsHotkeys_[kCropKey] = Canvas::dtCrop;
-    drawingToolsHotkeys_[kMarkerKey] = Canvas::dtMarker;
-    drawingToolsHotkeys_[kBlurringRectangleKey] = Canvas::dtBlurrringRectangle;
-    drawingToolsHotkeys_[kArrowKey] = Canvas::dtArrow;
-    drawingToolsHotkeys_[kLineKey] = Canvas::dtLine;
-    drawingToolsHotkeys_[kFilledRectangle] = Canvas::dtFilledRectangle;
-    drawingToolsHotkeys_[kStepNumber] = Canvas::dtStepNumber;
+    drawingToolsHotkeys_[kMoveKey] = DrawingToolType::dtMove;
+    drawingToolsHotkeys_[kBrushKey] = DrawingToolType::dtBrush;
+    drawingToolsHotkeys_[kTextKey] = DrawingToolType::dtText;
+    drawingToolsHotkeys_[kRectangleKey] = DrawingToolType::dtRectangle;
+    drawingToolsHotkeys_[kColorPickerKey] = DrawingToolType::dtColorPicker;
+    drawingToolsHotkeys_[kCropKey] = DrawingToolType::dtCrop;
+    drawingToolsHotkeys_[kMarkerKey] = DrawingToolType::dtMarker;
+    drawingToolsHotkeys_[kBlurringRectangleKey] = DrawingToolType::dtBlurrringRectangle;
+    drawingToolsHotkeys_[kArrowKey] = DrawingToolType::dtArrow;
+    drawingToolsHotkeys_[kLineKey] = DrawingToolType::dtLine;
+    drawingToolsHotkeys_[kFilledRectangle] = DrawingToolType::dtFilledRectangle;
+    drawingToolsHotkeys_[kStepNumber] = DrawingToolType::dtStepNumber;
     
     dialogResult_ = drCancel;
 }
@@ -197,7 +197,7 @@ CString ImageEditorWindow::saveToTempFile() {
     return CString();
 }
 
-void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
+void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
 {
     if ( currentDrawingTool_ == dt ) {
         return;
@@ -226,7 +226,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
     }
 
     //std::map<int, Canvas::DrawingToolType>::iterator it = std::find(menuItems_.begin(), menuItems_.end(), dt);
-    std::map<int, Canvas::DrawingToolType>::iterator it;
+    std::map<int, DrawingToolType>::iterator it;
     for( it = menuItems_.begin(); it != menuItems_.end(); ++it ) {
         if ( it->second == dt ) {
             int buttonIndex = verticalToolbar_.getItemIndexByCommand(it->first);
@@ -236,7 +236,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(Canvas::DrawingToolType dt)
             }
         }
     }
-    if ( dt == Canvas::dtCrop ) {
+    if ( dt == DrawingToolType::dtCrop ) {
         createTooltip();
     } else if ( cropToolTip_ ) {
         ::DestroyWindow(cropToolTip_);
@@ -269,7 +269,7 @@ ImageEditorWindow::~ImageEditorWindow()
     delete colorsDelegate_;
 }
 
-void ImageEditorWindow::setInitialDrawingTool(Canvas::DrawingToolType dt)
+void ImageEditorWindow::setInitialDrawingTool(DrawingToolType dt)
 {
     initialDrawingTool_ = dt;
 }
@@ -464,7 +464,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
     }
 
-    if (initialDrawingTool_ != Canvas::dtCrop) {
+    if (initialDrawingTool_ != DrawingToolType::dtCrop) {
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
@@ -644,7 +644,7 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-     std::map<DrawingToolHotkey, Canvas::DrawingToolType>::iterator it;
+     std::map<DrawingToolHotkey, DrawingToolType>::iterator it;
      //HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
      if ( wParam == VK_ESCAPE ) {
         onClose();
@@ -992,7 +992,7 @@ void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
     }
 }
 
-void ImageEditorWindow::OnDrawingToolChanged(Canvas::DrawingToolType drawingTool)
+void ImageEditorWindow::OnDrawingToolChanged(DrawingToolType drawingTool)
 {
     updateToolbarDrawingTool(drawingTool);
     SendMessage(WM_SETCURSOR,0,0);
@@ -1000,7 +1000,10 @@ void ImageEditorWindow::OnDrawingToolChanged(Canvas::DrawingToolType drawingTool
 
 void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement)
 {
-    InputBoxControl * control = static_cast<InputBoxControl*>(textElement->getInputBox());
+    auto* control = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
+    if (!control) {
+        return;
+    }
     RECT inputControlRect;
     control->GetWindowRect(&inputControlRect);
     int kOffset = 30;
@@ -1034,21 +1037,21 @@ void ImageEditorWindow::OnSelectionChanged()
 
 void ImageEditorWindow::updateRoundingRadiusSlider()
 {
-    bool showLineWidth = ( currentDrawingTool_ != Canvas::dtStepNumber && currentDrawingTool_ != Canvas::dtText);
+    bool showLineWidth = ( currentDrawingTool_ != DrawingToolType::dtStepNumber && currentDrawingTool_ != DrawingToolType::dtText);
     horizontalToolbar_.showPenSize(showLineWidth);
 
-    bool showRoundingRadiusSlider = currentDrawingTool_ == Canvas::dtRoundedRectangle || currentDrawingTool_ == Canvas::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
+    bool showRoundingRadiusSlider = currentDrawingTool_ == DrawingToolType::dtRoundedRectangle || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
     horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
     horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 
-    bool showFillBackgound = currentDrawingTool_ == Canvas::dtText;
+    bool showFillBackgound = currentDrawingTool_ == DrawingToolType::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
 
-    horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == Canvas::dtArrow);
+    horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
-    bool showFontSizeControls = currentDrawingTool_ == Canvas::dtStepNumber;
+    bool showFontSizeControls = currentDrawingTool_ == DrawingToolType::dtStepNumber;
     horizontalToolbar_.showStepFontSize(showFontSizeControls);
 }
 
@@ -1081,7 +1084,7 @@ LRESULT ImageEditorWindow::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND 
     {
         ::SetFocus(m_view.m_hWnd);
     }
-    Canvas::DrawingToolType toolId =  static_cast<Canvas::DrawingToolType>(menuItems_[wID]);
+    DrawingToolType toolId =  static_cast<DrawingToolType>(menuItems_[wID]);
     canvas_->setDrawingToolType( toolId  );
     updateToolbarDrawingTool(toolId);
     return 0;
@@ -1095,8 +1098,8 @@ LRESULT ImageEditorWindow::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 
 LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
 
-    canvas_->setDrawingToolType( Canvas::dtText );
-    updateToolbarDrawingTool(Canvas::dtText);
+    canvas_->setDrawingToolType(DrawingToolType::dtText );
+    updateToolbarDrawingTool(DrawingToolType::dtText);
     return 0;
 }
 

@@ -52,7 +52,7 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = n
     MenuItem.wID = id;
     MenuItem.hbmpChecked = bm;
     MenuItem.hbmpUnchecked = bm;
-    MenuItem.dwTypeData = (LPWSTR)szTitle;
+    MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem) != 0;
 }
 
@@ -280,7 +280,7 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
     }
     if (IsClipboardFormatAvailable(CF_BITMAP) != 0 && OpenClipboard()) {
 
-        HBITMAP bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
+        auto bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (bmp) {
             CString filePath;
@@ -648,8 +648,8 @@ BOOL CFloatingWindow::IsRunningFloatingWnd() {
 
 void CFloatingWindow::RegisterHotkeys()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    m_hotkeys = Settings.Hotkeys;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    m_hotkeys = settings->Hotkeys;
 
     for (size_t i = 0; i < m_hotkeys.size(); i++)
     {

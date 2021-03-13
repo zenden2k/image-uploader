@@ -25,7 +25,6 @@
 #include "../Document.h"
 #include "../MovableElements.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
 #include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
@@ -33,7 +32,7 @@ namespace ImageEditor {
 CropOverlay* MoveAndResizeTool::cropOverlay_ = 0;
 
 MoveAndResizeTool::MoveAndResizeTool( Canvas* canvas, ElementType type ) : AbstractDrawingTool( canvas ) {
-    currentElement_       = NULL;
+    currentElement_       = nullptr;
     elementType_          = type;
 //    draggedBoundary_. = btNone;
     isMoving_ = false;
@@ -57,7 +56,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
     elementJustCreated_ = false;
     if ( allowMovingElements_ ) {
         draggedBoundary_ = checkElementsBoundaries(x,y, &currentElement_);
-        if ( draggedBoundary_.bt!= btNone ) {
+        if ( draggedBoundary_.bt!= BoundaryType::btNone ) {
             canvas_->unselectAllElements();
             currentElement_->setSelected(true);
             canvas_->selectionChanged();
@@ -67,8 +66,8 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
             return;
         }
-        MovableElement* el = canvas_->getElementAtPosition(x, y, elementType_== etCrop ? etCrop : etNone );
-        if ( el && ( elementType_ == el->getType() ||  ( elementType_== etNone  && el->getType()  != etCrop )) ) {
+        MovableElement* el = canvas_->getElementAtPosition(x, y, elementType_== ElementType::etCrop ? ElementType::etCrop : ElementType::etNone );
+        if ( el && ( elementType_ == el->getType() ||  ( elementType_== ElementType::etNone  && el->getType()  != ElementType::etCrop )) ) {
             //currentElement_->setSelected(true);
             canvas_->unselectAllElements();
             el->setSelected(true);
@@ -85,7 +84,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             return;
         }
     }
-    if ( elementType_== etCrop  ) {
+    if ( elementType_== ElementType::etCrop  ) {
         canvas_->deleteElementsByType(elementType_);
     }
 
@@ -113,7 +112,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             currentElement_->beginMove();
             
         }
-        if ( !currentElement_ || currentElement_->getType() == etCrop ) {
+        if ( !currentElement_ || currentElement_->getType() == ElementType::etCrop ) {
             //canvas_->updateView(); // update the whole canvas
         } else {
             canvas_->updateView(currentElement_->getPaintBoundingRect());
@@ -129,11 +128,11 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
 void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
-    if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= btNone ) {
+    if ( currentElement_ && currentElement_->isResizable() && draggedBoundary_.bt!= BoundaryType::btNone ) {
         POINT* elementBasePoint = 0;
-        if ( draggedBoundary_.gpt == MovableElement::gptStartPoint ) {
+        if ( draggedBoundary_.gpt == MovableElement::GripPointType::gptStartPoint ) {
             elementBasePoint = &currentElement_->startPoint_;
-        } else if ( draggedBoundary_.gpt == MovableElement::gptEndPoint ) {
+        } else if ( draggedBoundary_.gpt == MovableElement::GripPointType::gptEndPoint ) {
             elementBasePoint = &currentElement_->endPoint_;
         }
         int elWidth  = 0;
@@ -153,39 +152,39 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             elX = currentElement_->getX();
             elY  = currentElement_->getY();
             switch ( draggedBoundary_.bt ) {
-                case btBottomRight:
+                case BoundaryType::btBottomRight:
                     elWidth = x - elX+1;
                     elHeight = y - elY+1;
                     break;
-                case btBottom:
+                case BoundaryType::btBottom:
                     elHeight = y - elY+1;
                     break;
-                case btRight:
+                case BoundaryType::btRight:
                     elWidth = x - elX+1;
                     break;
-                case btTopLeft:
+                case BoundaryType::btTopLeft:
                     
                     elWidth =  elX - x + elWidth;
                     elHeight = elY - y + elHeight;
                     elX = x;
                     elY = y;
                     break;
-                case btLeft:
+                case BoundaryType::btLeft:
                     
                     elWidth = elX - x + elWidth;
                     elX = x;
                     break;
-                case btTop:
+                case BoundaryType::btTop:
                     elHeight =  elY - y + elHeight;
                     elY = y;
                     break;
-                case btBottomLeft:
+                case BoundaryType::btBottomLeft:
                     
                     elWidth = elX - x + elWidth;
                     elHeight = y - elY+1;
                     elX = x;
                     break;
-                case btTopRight:
+                case BoundaryType::btTopRight:
                     
                     elWidth =  x - elX+1;
                     elHeight = elY - y + elHeight;
@@ -194,12 +193,12 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             
 
             currentElement_->setPos(elX, elY);
-            if (draggedBoundary_.bt != btNone) {
+            if (draggedBoundary_.bt != BoundaryType::btNone) {
                 currentElement_->resize(elWidth, elHeight);
             }
         }
         
-        if ( currentElement_ && currentElement_->getType() == etCrop) {
+        if ( currentElement_ && currentElement_->getType() == ElementType::etCrop) {
             canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
@@ -223,7 +222,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             RECT updateRect;
             UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
             canvas_->updateView(updateRect);
-            if (currentElement_ && currentElement_->getType() == etCrop) {
+            if (currentElement_ && currentElement_->getType() == ElementType::etCrop) {
                 canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
             }
             prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
@@ -249,10 +248,10 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 void MoveAndResizeTool::endDraw( int x, int y ) {
     if ( currentElement_ ) {
         currentElement_->endMove();
-        if ( currentElement_->getType() == etCrop) {
+        if ( currentElement_->getType() == ElementType::etCrop) {
             canvas_->onCropFinished(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
-        if ( currentElement_->getType() != etCrop) {
+        if ( currentElement_->getType() != ElementType::etCrop) {
             currentElement_->setDrawDashedRectangle(false);
         }
 
@@ -262,7 +261,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
         if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
             &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
             Canvas::UndoHistoryItem uhi;
-            uhi.type = Canvas::uitElementPositionChanged;
+            uhi.type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
             Canvas::UndoHistoryItemElement uhie;
             uhie.startPoint = originalStartPoint_;
             uhie.endPoint = originalEndPoint_;
@@ -275,7 +274,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
         RECT updateRect;
         UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
-        currentElement_ = 0;
+        currentElement_ = nullptr;
         prevPaintBoundingRect_.bottom = -1;
         prevPaintBoundingRect_.left = -1;
         prevPaintBoundingRect_.right = -1;
@@ -290,9 +289,9 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     endPoint_.x   = -1;
     endPoint_.y   = -1;
 
-    if ( draggedBoundary_.bt!= btNone ) {
+    if ( draggedBoundary_.bt!= BoundaryType::btNone ) {
         
-        draggedBoundary_.bt = btNone;
+        draggedBoundary_.bt = BoundaryType::btNone;
         return;
     }
     if ( isMoving_ ) {
@@ -310,19 +309,19 @@ void MoveAndResizeTool::createElement() {
     //delete currentElement_;
     currentElement_ = 0;
     switch( elementType_ ) {
-        case etArrow:
+        case ElementType::etArrow:
             currentElement_ = new Arrow(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getArrowMode());
             break;
-        case etLine:
+        case ElementType::etLine:
             currentElement_ = new Line(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etText:
+        case ElementType::etText:
             currentElement_ = new TextElement(canvas_, 0, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getFillTextBackground());
             break;
-        case etSelection:
+        case ElementType::etSelection:
             currentElement_ = new Selection(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etCrop:
+        case ElementType::etCrop:
             /*if ( !cropOverlay_ ) {
                 cropOverlay_ = new CropOverlay(canvas_, 0,0, canvas_->getWidth(), canvas_->getHeigth());
                 
@@ -331,33 +330,33 @@ void MoveAndResizeTool::createElement() {
             canvas_->showOverlay(true);
             currentElement_ = new Crop(canvas_, 0, 0, 0, 0 );
             break;
-        case etRectangle:
+        case ElementType::etRectangle:
             currentElement_ = new Rectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etRoundedRectangle:
+        case ElementType::etRoundedRectangle:
             currentElement_ = new RoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
-        case etFilledRoundedRectangle:
+        case ElementType::etFilledRoundedRectangle:
             currentElement_ = new FilledRoundedRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             currentElement_->setRoundingRadius(roundingRadius_);
             break;
-        case etEllipse:
+        case ElementType::etEllipse:
             currentElement_ = new Ellipse(canvas_);
             break;
-        case etFilledEllipse:
+        case ElementType::etFilledEllipse:
             currentElement_ = new FilledEllipse(canvas_);
             break;
-        case etPixelateRectangle:
+        case ElementType::etPixelateRectangle:
             currentElement_ = new PixelateRectangle(canvas_, float(canvas_->getPixelateBlockSize()), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etBlurringRectangle:
+        case ElementType::etBlurringRectangle:
             currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etFilledRectangle:
+        case ElementType::etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
             break;
-        case etStepNumber:
+        case ElementType::etStepNumber:
             currentElement_ = new StepNumber(canvas_, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getNextNumber(), canvas_->getStepFontSize());
             break;
         /*default:
@@ -367,7 +366,7 @@ void MoveAndResizeTool::createElement() {
         currentElement_->setPenSize(penSize_);
         Gdiplus::Color fgColor = foregroundColor_;
         Gdiplus::Color bgColor = backgroundColor_;
-        if (elementType_ == etStepNumber && !canvas_->isStepColorSet()) {
+        if (elementType_ == ElementType::etStepNumber && !canvas_->isStepColorSet()) {
             canvas_->setStepColors(fgColor, bgColor);
         }
         currentElement_->setColor(fgColor);
@@ -381,11 +380,11 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
     canvas_->getElementsByType(elementType_, cropElements);
     int count = cropElements.size();
     for( int i  = count-1; i>= 0; i-- ) {
-        if ( !cropElements[i]->isSelected() && cropElements[i]->getType() != etCrop ) {
+        if ( !cropElements[i]->isSelected() && cropElements[i]->getType() != ElementType::etCrop ) {
             continue;
         }
         MovableElement::Grip grip = checkElementBoundaries(cropElements[i], x , y);
-        if ( grip.bt != btNone ) {
+        if ( grip.bt != BoundaryType::btNone ) {
             if ( elem ) {
                 *elem = cropElements[i];
             }
@@ -413,24 +412,24 @@ void MoveAndResizeTool::cleanUp()
 
 CursorType MoveAndResizeTool::getCursor(int x, int y)
 {
-    CursorType  ct = ctDefault;
+    CursorType  ct = CursorType::ctDefault;
     
     switch( elementType_ ) {
-        case etArrow:
+        case ElementType::etArrow:
             //currentElement_ = new Line( 0, 0, 0, 0 );
             break;
-        case etCrop:
-            ct = ctCross;
+        case ElementType::etCrop:
+            ct = CursorType::ctCross;
             break;
     }
     MovableElement::Grip grip = checkElementsBoundaries( x, y); 
-    if ( grip.bt != btNone ) {
+    if ( grip.bt != BoundaryType::btNone ) {
         return MovableElement::GetCursorForBoundary(grip.bt);
     }
     MovableElement* el = canvas_->getElementAtPosition(x,y);
-    if ( el &&  (el->getType() != etCrop || elementType_ == etCrop)  ) {
+    if ( el &&  (el->getType() != ElementType::etCrop || elementType_ == ElementType::etCrop)  ) {
 
-        return ctMove;
+        return CursorType::ctMove;
     }
     return ct;
 }
@@ -438,9 +437,9 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
 void MoveAndResizeTool::mouseDoubleClick(int x, int y)
 {
     MovableElement* el = canvas_->getElementAtPosition(x,y);
-    if ( el &&  el->getType() == etText && elementType_ != etText ) {
+    if ( el &&  el->getType() == ElementType::etText && elementType_ != ElementType::etText ) {
         // WARNING!!! After this line "this" is DELETED!!!!
-        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(Canvas::dtText, true);    
+        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(DrawingToolType::dtText, true);    
         if ( dtool ) {
             dtool->beginDraw(x,y);
         }

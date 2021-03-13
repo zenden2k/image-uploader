@@ -38,37 +38,35 @@ Canvas::Canvas( HWND parent ) {
     oldPoint_.x           = -1;
     oldPoint_.y           = -1;
     callback_             = 0;
-    drawingToolType_      = dtNone;
-    previousDrawingTool_ = dtNone; 
+    drawingToolType_      = DrawingToolType::dtNone;
+    previousDrawingTool_ = DrawingToolType::dtNone; 
     leftMouseDownPoint_.x = -1;
     leftMouseDownPoint_.y = -1;
     leftMouseUpPoint_ = { -1, -1 };
 //    buffer_               = NULL;
     inputBox_             = nullptr;
-    currentCursor_    = ctDefault;
+    currentCursor_    = CursorType::ctDefault;
     scrollOffset_.x = 0;
     scrollOffset_.y = 0;
     overlay_ = 0;
     showOverlay_ = false;
     zoomFactor_ = 1;
-    currentlyEditedTextElement_ = 0;
+    currentlyEditedTextElement_ = nullptr;
     foregroundColor_ = Gdiplus::Color(255,0,0);
     backgroundColor_ = Gdiplus::Color(255,255,255);
-    /*stepForegroundColor_ = Gdiplus::Color(255, 0, 0);
-    stepBackgroundColor_ = Gdiplus::Color(255, 255, 255);*/
     stepColorsSet_ = false;
     penSize_ = 12;
     originalPenSize_ = 0;
     roundingRadius_ = 12;
     originalRoundingRadius_ = 0;
-    selection_ = 0;
+    selection_ = nullptr;
     canvasChanged_ = true;
     fullRender_ = true;
     blurRadius_ = 5;
     pixelateBlockSize_ = 12;
     blurRectanglesCount_ = 0;
-    currentDrawingTool_ = 0;
-    bufferedGr_ = 0;
+    currentDrawingTool_ = nullptr;
+    bufferedGr_ = nullptr;
     isDocumentModified_ = false;
     memset(&font_, 0, sizeof(font_));
     doc_ = nullptr;
@@ -260,8 +258,8 @@ Gdiplus::Rect Canvas::currentRenderingRect() const
 
 bool Canvas::isRoundingRectangleSelected() const
 {
-    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle ) ) {
+    for (auto el : elementsOnCanvas_) {
+        if (el->isSelected() && (el->getType() == ElementType::etRoundedRectangle || el->getType() == ElementType::etFilledRoundedRectangle ) ) {
             return true;
         }
     }
@@ -290,11 +288,11 @@ void Canvas::setPenSize(int size) {
     if ( currentDrawingTool_ ) {
         currentDrawingTool_->setPenSize(size);
     }
-    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isPenSizeUsed() ) {
-            RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-            elementsOnCanvas_[i]->setPenSize(size);
-            RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+    for (auto& el : elementsOnCanvas_) {
+        if (el->isSelected() && el->isPenSizeUsed() ) {
+            RECT paintRect = el->getPaintBoundingRect();
+            el->setPenSize(size);
+            RECT newPaintRect = el->getPaintBoundingRect();
             UnionRect(&paintRect, &paintRect, &newPaintRect);
             updateView(paintRect);
         }
@@ -321,7 +319,7 @@ void Canvas::endPenSizeChanging(int penSize) {
     }
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitPenSizeChanged;
+    uhi.type = UndoHistoryItemType::uitPenSizeChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected()) {
             UndoHistoryItemElement uhie;
@@ -382,9 +380,9 @@ void Canvas::endRoundingRadiusChanging(int radius) {
     }
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitRoundingRadiusChanged;
+    uhi.type = UndoHistoryItemType::uitRoundingRadiusChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == etRoundedRectangle || elementsOnCanvas_[i]->getType() == etFilledRoundedRectangle)) {
+        if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == ElementType::etRoundedRectangle || elementsOnCanvas_[i]->getType() == ElementType::etFilledRoundedRectangle)) {
             UndoHistoryItemElement uhie;
             uhie.penSize = originalRoundingRadius_;
             RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
@@ -405,7 +403,7 @@ void Canvas::endRoundingRadiusChanging(int radius) {
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
 {
-    if (drawingToolType_ == dtStepNumber) {
+    if (drawingToolType_ == DrawingToolType::dtStepNumber) {
         stepForegroundColor_ = color;
     } else {
         foregroundColor_ = color;
@@ -415,7 +413,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
     }
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitElementForegroundColorChanged;
+    uhi.type = UndoHistoryItemType::uitElementForegroundColorChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isColorUsed() ) {
             UndoHistoryItemElement uhie;
@@ -423,7 +421,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
             uhie.pos = i;
             uhie.movableElement = elementsOnCanvas_[i];
             elementsOnCanvas_[i]->setColor(color);
-            if ( elementsOnCanvas_[i]->getType() != etText ) { // TextElements saves it's color by itself
+            if ( elementsOnCanvas_[i]->getType() != ElementType::etText ) { // TextElements saves it's color by itself
                 uhi.elements.push_back(uhie);
                 updatedElementsCount++;
             }
@@ -437,7 +435,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
 
 void Canvas::setBackgroundColor(Gdiplus::Color color)
 {
-    if (drawingToolType_ == dtStepNumber) {
+    if (drawingToolType_ == DrawingToolType::dtStepNumber) {
         stepBackgroundColor_ = color;
     }
     else {
@@ -449,7 +447,7 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
     }
     int updatedElementsCount = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitElementBackgroundColorChanged;
+    uhi.type = UndoHistoryItemType::uitElementBackgroundColorChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isBackgroundColorUsed()) {
             UndoHistoryItemElement uhie;
@@ -504,12 +502,12 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
 /*    UndoHistoryItem uhi;
     uhi.type = uitFontChanged;*/
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() == etText ) {
+        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() == ElementType::etText ) {
             /*UndoHistoryItemElement uhie;
             uhie.color = elementsOnCanvas_[i]->getColor();
             uhie.pos = i;
             uhie.movableElement = elementsOnCanvas_[i];*/
-            static_cast<TextElement*>(elementsOnCanvas_[i])->setFont(font, changeMask);
+            dynamic_cast<TextElement*>(elementsOnCanvas_[i])->setFont(font, changeMask);
             /*uhi.elements.push_back(uhie);
             updatedElementsCount++;*/
         }
@@ -531,7 +529,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     }
     previousDrawingTool_ = drawingToolType_;
     drawingToolType_ = toolType;
-    if ( toolType != dtColorPicker ) {
+    if ( toolType != DrawingToolType::dtColorPicker ) {
         unselectAllElements();
     }
     
@@ -539,67 +537,67 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 
     delete currentDrawingTool_;
     currentDrawingTool_ = nullptr;
-    if ( toolType == dtPen) {
+    if ( toolType == DrawingToolType::dtPen) {
         currentDrawingTool_ = new PenTool( this );
-    } else if ( toolType == dtBrush) {
+    } else if ( toolType == DrawingToolType::dtBrush) {
         currentDrawingTool_ = new BrushTool( this );
-    } else if ( toolType == dtMarker) {
+    } else if ( toolType == DrawingToolType::dtMarker) {
         currentDrawingTool_ = new MarkerTool( this );
-    }else if ( toolType == dtBlur) {
+    }else if ( toolType == DrawingToolType::dtBlur) {
         #if GDIPVER >= 0x0110 
         currentDrawingTool_ = new BlurTool( this );
         #else
         LOG(ERROR) << "Blur effect is not supported by current version of GdiPlus.";
         #endif
-    }else if ( toolType == dtColorPicker) {
+    }else if ( toolType == DrawingToolType::dtColorPicker) {
         currentDrawingTool_ = new ColorPickerTool( this );
-    }else if ( toolType == dtText) {
+    }else if ( toolType == DrawingToolType::dtText) {
         currentDrawingTool_ = new TextTool( this );
-    } else if ( toolType == dtCrop ) {
+    } else if ( toolType == DrawingToolType::dtCrop ) {
         currentDrawingTool_ = new CropTool( this );
         showOverlay(true);
     } 
     else {
         ElementType type; 
         bool createVectorTool = true;
-        if ( toolType == dtLine ) {
-            type = etLine;
-        } else if ( toolType == dtArrow ) {
-            type = etArrow;
-        } else if ( toolType == dtRectangle ) {
-            type = etRectangle;
-        } else if ( toolType == dtBlurrringRectangle ) {
-            type = etBlurringRectangle;
-        } else if (toolType == dtPixelateRectangle) {
-            type = etPixelateRectangle;
-        } else if ( toolType == dtFilledRectangle ) {
-            type = etFilledRectangle;
-        } else if ( toolType == dtRoundedRectangle ) {
-            type = etRoundedRectangle;
-        } else if ( toolType == dtEllipse ) {
-            type = etEllipse;
-        } else if ( toolType == dtFilledRoundedRectangle ) {
-            type = etFilledRoundedRectangle;
-        } else if ( toolType == dtFilledEllipse ) {
-            type = etFilledEllipse;
+        if ( toolType == DrawingToolType::dtLine ) {
+            type = ElementType::etLine;
+        } else if ( toolType == DrawingToolType::dtArrow ) {
+            type = ElementType::etArrow;
+        } else if ( toolType == DrawingToolType::dtRectangle ) {
+            type = ElementType::etRectangle;
+        } else if ( toolType == DrawingToolType::dtBlurrringRectangle ) {
+            type = ElementType::etBlurringRectangle;
+        } else if (toolType == DrawingToolType::dtPixelateRectangle) {
+            type = ElementType::etPixelateRectangle;
+        } else if ( toolType == DrawingToolType::dtFilledRectangle ) {
+            type = ElementType::etFilledRectangle;
+        } else if ( toolType == DrawingToolType::dtRoundedRectangle ) {
+            type = ElementType::etRoundedRectangle;
+        } else if ( toolType == DrawingToolType::dtEllipse ) {
+            type = ElementType::etEllipse;
+        } else if ( toolType == DrawingToolType::dtFilledRoundedRectangle ) {
+            type = ElementType::etFilledRoundedRectangle;
+        } else if ( toolType == DrawingToolType::dtFilledEllipse ) {
+            type = ElementType::etFilledEllipse;
         }
-        else if (toolType == dtStepNumber) {
-            type = etStepNumber;
+        else if (toolType == DrawingToolType::dtStepNumber) {
+            type = ElementType::etStepNumber;
         }
-        else if ( toolType == dtMove ) {
-            currentDrawingTool_ = new MoveAndResizeTool( this, etNone );
+        else if ( toolType == DrawingToolType::dtMove ) {
+            currentDrawingTool_ = new MoveAndResizeTool( this, ElementType::etNone );
             createVectorTool = false;
             /*updateView();
             return currentDrawingTool_;*/
-        } else if ( toolType == dtSelection ) {
+        } else if ( toolType == DrawingToolType::dtSelection ) {
             currentDrawingTool_ = new SelectionTool( this );
             createVectorTool = false;
             /*updateView();
             return currentDrawingTool_;*/
         }
         else {
-            LOG(ERROR) << "createElement for toolType="<<toolType<<" not implemented.";
-            return 0;
+            LOG(ERROR) << "createElement for toolType=" << static_cast<int>(toolType) << " not implemented.";
+            return nullptr;
         }
 
         if (createVectorTool) {
@@ -611,7 +609,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
     Gdiplus::Color fgColor = foregroundColor_;
     Gdiplus::Color bgColor = backgroundColor_;
 
-    if (toolType == dtStepNumber) {
+    if (toolType == DrawingToolType::dtStepNumber) {
         if (stepColorsSet_) {
             fgColor = stepForegroundColor_;
             bgColor = stepBackgroundColor_;
@@ -619,7 +617,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
             onForegroundColorChanged(fgColor);
             onBackgroundColorChanged(bgColor);
         }
-    } else if (previousDrawingTool_ == dtStepNumber) {
+    } else if (previousDrawingTool_ == DrawingToolType::dtStepNumber) {
         onForegroundColorChanged(fgColor);
         onBackgroundColorChanged(bgColor);
     }
@@ -638,7 +636,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
 
 void Canvas::setPreviousDrawingTool()
 {
-    if ( previousDrawingTool_ != dtNone ) {
+    if ( previousDrawingTool_ != DrawingToolType::dtNone ) {
         setDrawingToolType(previousDrawingTool_, true);
     }
 }    
@@ -650,7 +648,7 @@ AbstractDrawingTool* Canvas::getCurrentDrawingTool() const
 
 void Canvas::addMovableElement(MovableElement* element)
 {
-    if ( element->getType() == etSelection ) {
+    if ( element->getType() == ElementType::etSelection ) {
         delete selection_;
         selection_ = element;
         return;
@@ -660,11 +658,11 @@ void Canvas::addMovableElement(MovableElement* element)
     if (it == elementsOnCanvas_.end()) {
 
         elementsOnCanvas_.push_back(element);
-        if ( element->getType() == etBlurringRectangle || element->getType() == etPixelateRectangle) {
+        if ( element->getType() == ElementType::etBlurringRectangle || element->getType() == ElementType::etPixelateRectangle) {
             blurRectanglesCount_ ++;
         }
         UndoHistoryItem historyItem;
-        historyItem.type = uitElementAdded;
+        historyItem.type = UndoHistoryItemType::uitElementAdded;
         UndoHistoryItemElement uhie;
         uhie.pos = elementsOnCanvas_.size();
         uhie.movableElement = element;
@@ -686,7 +684,7 @@ void Canvas::endDocDrawing()
 {
     currentDocument()->endDrawing();
     UndoHistoryItem historyItem;
-    historyItem.type = uitDocumentChanged;
+    historyItem.type = UndoHistoryItemType::uitDocumentChanged;
     isDocumentModified_ = true;
     undoHistory_.push(historyItem);
 }
@@ -695,17 +693,17 @@ int Canvas::deleteSelectedElements()
 {
     int deletedCount = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitElementRemoved;
+    uhi.type = UndoHistoryItemType::uitElementRemoved;
     bool isStepNumberRemoved = false;
 
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != etCrop ) {
+        if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->getType() != ElementType::etCrop ) {
             UndoHistoryItemElement uhie;
             uhie.movableElement = elementsOnCanvas_[i];
             uhie.pos = i;
             uhi.elements.push_back(uhie );
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
-            if (uhie.movableElement->getType() == etStepNumber) {
+            if (uhie.movableElement->getType() == ElementType::etStepNumber) {
                 isStepNumberRemoved = true;
             }
             i--;
@@ -762,13 +760,13 @@ void Canvas::deleteMovableElement(MovableElement* element)
         if ( elementsOnCanvas_[i] == element ) {
 
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
-            if ( element->getType() == etBlurringRectangle || element->getType() == etPixelateRectangle ) {
+            if ( element->getType() == ElementType::etBlurringRectangle || element->getType() == ElementType::etPixelateRectangle ) {
                 blurRectanglesCount_--;
             }
-            if ( element->getType() == etCrop && (drawingToolType_ != dtCrop ) ) {
+            if ( element->getType() == ElementType::etCrop && (drawingToolType_ != DrawingToolType::dtCrop ) ) {
                 showOverlay(false);
             }
-            if (element->getType() == etStepNumber) {
+            if (element->getType() == ElementType::etStepNumber) {
                 recalcStepNumbers();
             }
             //delete element;
@@ -914,8 +912,8 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
             overlay_->render(bufferedGr_);
         }
 
-        for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
-            elementsOnCanvas_[i]->renderGrips(bufferedGr_);
+        for (auto& el : elementsOnCanvas_) {
+            el->renderGrips(bufferedGr_);
         }
     }
     canvasChanged_ = false;
@@ -927,7 +925,7 @@ void Canvas::getElementsByType(ElementType elementType, std::vector<MovableEleme
 {
     int count = elementsOnCanvas_.size();
     for ( int i = 0; i < count; i++ ) {
-        if ( elementType == etNone || elementsOnCanvas_[i]->getType() == elementType ) {
+        if ( elementType == ElementType::etNone || elementsOnCanvas_[i]->getType() == elementType ) {
             out.push_back(elementsOnCanvas_[i]);
         }
     }
@@ -959,7 +957,7 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 
     // Find first Crop element
     for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->getType() == etCrop ) {
+        if ( elementsOnCanvas_[i]->getType() == ElementType::etCrop ) {
             crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
             break;
         }
@@ -992,7 +990,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
 {
     int count = elementsOnCanvas_.size();
     for ( int i = count-1; i >=0 ; i-- ) {
-        if ( elementsOnCanvas_[i]->getType() != etCrop && ( et == etNone || et == elementsOnCanvas_[i]->getType()) ) {    
+        if ( elementsOnCanvas_[i]->getType() != ElementType::etCrop && ( et == ElementType::etNone || et == elementsOnCanvas_[i]->getType()) ) {    
             if ( elementsOnCanvas_[i]->isItemAtPos(x,y) ) {
                 return  elementsOnCanvas_[i];
             }
@@ -1000,7 +998,7 @@ MovableElement* Canvas::getElementAtPosition(int x, int y, ElementType et)
     }
 
     for ( int i = count-1; i >=0; i-- ) {
-        if ( elementsOnCanvas_[i]->getType() == etCrop ) {
+        if ( elementsOnCanvas_[i]->getType() == ElementType::etCrop ) {
             int elementX = elementsOnCanvas_[i]->getX();
             int elementY = elementsOnCanvas_[i]->getY();
             int elementWidth = elementsOnCanvas_[i]->getWidth();
@@ -1052,74 +1050,74 @@ bool Canvas::undo() {
     }
     bool result = false;
     UndoHistoryItem item = undoHistory_.top();
-    if ( item.type == uitDocumentChanged ){
+    if ( item.type == UndoHistoryItemType::uitDocumentChanged ){
         result =  doc_->undo();
-    } else if ( item.type == uitElementAdded ) {
+    } else if ( item.type == UndoHistoryItemType::uitElementAdded ) {
         for (size_t i = 0; i< item.elements.size(); i++) {
             deleteMovableElement(item.elements[i].movableElement);
         }
         result = true;
-    } else if  ( item.type == uitElementRemoved ) {
+    } else if  ( item.type == UndoHistoryItemType::uitElementRemoved ) {
         int itemCount = item.elements.size();
         // Insert elements in their initial positions
         for ( int i = itemCount-1; i>=0; i-- ) {
             elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
-            if ( item.elements[i].movableElement->getType() == etBlurringRectangle
-                || item.elements[i].movableElement->getType() == etPixelateRectangle) {
+            if ( item.elements[i].movableElement->getType() == ElementType::etBlurringRectangle
+                || item.elements[i].movableElement->getType() == ElementType::etPixelateRectangle) {
                 blurRectanglesCount_++;
             }
         }
         recalcStepNumbers();
         result = true;
-    } else if ( item.type == uitElementForegroundColorChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitElementForegroundColorChanged ) {
         int itemCount = item.elements.size();
         for ( int i = itemCount-1; i>=0; i-- ) {
             item.elements[i].movableElement->setColor(item.elements[i].color);
         }
         result = true;
-    } else if ( item.type == uitElementBackgroundColorChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitElementBackgroundColorChanged ) {
         int itemCount = item.elements.size();
         for ( int i = itemCount-1; i>=0; i-- ) {
             item.elements[i].movableElement->setBackgroundColor(item.elements[i].color);
         }
         result = true;
-    } else if ( item.type == uitPenSizeChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitPenSizeChanged ) {
         int itemCount = item.elements.size();
         for ( int i = itemCount-1; i>=0; i-- ) {
             item.elements[i].movableElement->setPenSize(item.elements[i].penSize);
         }
         result = true;
-    } else if ( item.type == uitRoundingRadiusChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitRoundingRadiusChanged ) {
         int itemCount = item.elements.size();
         for ( int i = itemCount-1; i>=0; i-- ) {
-            if ( item.elements[i].movableElement->getType() == etFilledRoundedRectangle || item.elements[i].movableElement->getType() == etRoundedRectangle ) {
+            if ( item.elements[i].movableElement->getType() == ElementType::etFilledRoundedRectangle || item.elements[i].movableElement->getType() == ElementType::etRoundedRectangle ) {
                 item.elements[i].movableElement->setRoundingRadius(item.elements[i].penSize);
             }
         }
         result = true;
-    } else if ( item.type == uitElementPositionChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitElementPositionChanged ) {
         int itemCount = item.elements.size();
         // Insert elements in their initial positions
         for ( int i = itemCount-1; i>=0; i-- ) {
             MovableElement * el = item.elements[i].movableElement;
             el->setStartPoint(item.elements[i].startPoint);
             el->setEndPoint(item.elements[i].endPoint);
-            if ( el->getType() == etCrop) {
+            if ( el->getType() == ElementType::etCrop) {
                 onCropChanged(el->getX(), el->getY(), el->getWidth(), el->getHeight());
             }
         }
         result = true;
-    } else if ( item.type == uitTextChanged ) {
+    } else if ( item.type == UndoHistoryItemType::uitTextChanged ) {
         int itemCount = item.elements.size();
         for ( int i = itemCount-1; i>=0; i-- ) {
-            static_cast<TextElement*>(item.elements[i].movableElement)->setRawText(item.elements[i].rawText);
+            dynamic_cast<TextElement*>(item.elements[i].movableElement)->setRawText(item.elements[i].rawText);
         }
         result = true;
-    } else if (item.type == uitFillBackgroundChanged) {
+    } else if (item.type == UndoHistoryItemType::uitFillBackgroundChanged) {
         int itemCount = item.elements.size();
 
         for (int i = itemCount - 1; i >= 0; i--) {
-            static_cast<TextElement*>(item.elements[i].movableElement)->setFillBackground(item.elements[i].penSize);
+            dynamic_cast<TextElement*>(item.elements[i].movableElement)->setFillBackground(item.elements[i].penSize);
         }
         result = true;
     }
@@ -1197,10 +1195,12 @@ void Canvas::recalcStepNumbers() {
     nextNumber_ = stepInitialValue_;
     int count = 0;
     for (const auto& el : elementsOnCanvas_) {
-        if (el->getType() == etStepNumber) {
-            auto stepNumberElement = dynamic_cast<StepNumber*>(el);
-            stepNumberElement->setNumber(nextNumber_++);
-            count++;
+        if (el->getType() == ElementType::etStepNumber) {
+            auto* stepNumberElement = dynamic_cast<StepNumber*>(el);
+            if (stepNumberElement) {
+                stepNumberElement->setNumber(nextNumber_++);
+                count++;
+            }
         }
     }
     if (count) {
@@ -1224,7 +1224,7 @@ Gdiplus::Rect Canvas::lastAppliedCrop() const {
 void Canvas::setStepFontSize(int fontSize) {
     stepFontSize_ = fontSize;
     for ( const auto& el: elementsOnCanvas_) {
-        if (el->getType() == etStepNumber) {
+        if (el->getType() == ElementType::etStepNumber) {
             dynamic_cast<StepNumber*>(el)->setFontSize(fontSize);
             
         }
@@ -1240,23 +1240,25 @@ void Canvas::setFillTextBackground(bool fill) {
     fillTextBackground_ = fill;
     int count = 0;
     UndoHistoryItem uhi;
-    uhi.type = uitFillBackgroundChanged;
+    uhi.type = UndoHistoryItemType::uitFillBackgroundChanged;
     
     for ( auto& el: elementsOnCanvas_) {
-        if (el->isSelected() && el->getType() == etText) {
-            auto textEl = dynamic_cast<TextElement*>(el);
-            bool prev = textEl->getFillBackground();
-            if (prev == fill) {
-                continue;
+        if (el->isSelected() && el->getType() == ElementType::etText) {
+            auto* textEl = dynamic_cast<TextElement*>(el);
+            if (textEl) {
+                bool prev = textEl->getFillBackground();
+                if (prev == fill) {
+                    continue;
+                }
+                textEl->setFillBackground(fill);
+
+                UndoHistoryItemElement uhie;
+                uhie.pos = 0;
+                uhie.movableElement = el;
+                uhie.penSize = prev;
+                uhi.elements.push_back(uhie);
+                count++;
             }
-            textEl->setFillBackground(fill);
-            
-            UndoHistoryItemElement uhie;
-            uhie.pos = 0;
-            uhie.movableElement = el;
-            uhie.penSize = prev;
-            uhi.elements.push_back(uhie);
-            count++;
         }
     }
     if (count) {

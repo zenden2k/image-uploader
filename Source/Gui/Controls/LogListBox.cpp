@@ -144,7 +144,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
 LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
-    LPMEASUREITEMSTRUCT lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
+    auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
     
     LogListBoxItem * item = reinterpret_cast<LogListBoxItem *>(lpmis->itemData);
     if(!item) {
@@ -165,13 +165,12 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     DrawText(dc, item->strTitle, lstrlen(item->strTitle), &Dimensions,    DT_CALCRECT);
     item->TitleHeight = Dimensions.bottom - Dimensions.top;
     
-    // ������� ������� ������������
     Dimensions.bottom = 0;
     DrawText(dc, item->Info, item->Info.GetLength(), &Dimensions,    DT_CALCRECT);
     item->InfoHeight = Dimensions.bottom - Dimensions.top;
 
     SelectObject(dc, BoldFont);
-    // ������� ������� ��������� ������
+
     Dimensions.bottom = 0;
     DrawText(dc, item->strText, item->strText.GetLength(), &Dimensions,    DT_CALCRECT);
     item->TextHeight = Dimensions.bottom - Dimensions.top;

@@ -53,7 +53,7 @@ void AbstractDrawingTool::mouseDoubleClick(int x, int y)
 
 CursorType AbstractDrawingTool::getCursor(int x, int y)
 {
-    return ctDefault;
+    return CursorType::ctDefault;
 }
 
 void AbstractDrawingTool::rightButtonClick(int x, int y)

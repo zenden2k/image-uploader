@@ -21,32 +21,35 @@ class DrawingTool;
 class TextElement;
 class InputBoxControl;
 
+enum class DrawingToolType {
+    dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection,
+    dtBlur, dtBlurrringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
+    dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
+};
+
 class Canvas {
     public:
         class Callback {
-        public:
-            virtual void updateView( Canvas* canvas, Gdiplus::Rect rect ) = 0;
-            virtual ~Callback(){};
-        };
-        
-        enum DrawingToolType {
-            dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection, dtBlur, dtBlurrringRectangle, dtPixelateRectangle, dtColorPicker,
-            dtRoundedRectangle, dtEllipse, dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
-        };
+            public:
+                virtual void updateView(Canvas* canvas, Gdiplus::Rect rect) = 0;
+                virtual ~Callback(){}
+        }; 
 
-        enum UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
+        enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
+
         struct UndoHistoryItemElement {
-            MovableElement * movableElement;
+            MovableElement* movableElement;
             int pos;
-            POINT startPoint;
-            POINT endPoint;
+            POINT startPoint{};
+            POINT endPoint{};
             Gdiplus::Color color;
-            int penSize; // pensize or rounding radius or fill background
+            int penSize; // pen size or rounding radius or fill background
             std::string rawText;
+
             UndoHistoryItemElement() {
                 pos = -1;
                 startPoint.x = -1;
@@ -57,13 +60,14 @@ class Canvas {
                 movableElement = nullptr;
             }
         };
+
         struct UndoHistoryItem {
             UndoHistoryItemType type;
             
             std::vector<UndoHistoryItemElement> elements;
         };
-       
-        Canvas( HWND parent );
+
+        explicit Canvas( HWND parent );
         ~Canvas();
         void setDocument( Document *doc );
         void setSize( int x, int y );
@@ -114,7 +118,7 @@ class Canvas {
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
     
         float getZoomFactor() const;
-        MovableElement* getElementAtPosition(int x, int y, ElementType et = etNone);
+        MovableElement* getElementAtPosition(int x, int y, ElementType et = ElementType::etNone);
         int deleteElementsByType(ElementType elementType);
         int getWidth() const;
         int getHeigth() const;
@@ -230,6 +234,5 @@ private:
 };
 
 }
-
 
 #endif

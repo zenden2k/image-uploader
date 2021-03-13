@@ -15,10 +15,6 @@ CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
     uploadEngineList_ = uploadEngineList;
 }
 
-CAddFtpServerDialog::~CAddFtpServerDialog()
-{
-}
-
 LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     SetWindowText(TR("Add FTP server"));
@@ -53,7 +49,6 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
     }
 
-    //TRC(IDC_CONNECTIONNAMEEDIT, "New FTP Connection");
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     SetDlgItemText(IDC_REMOTEDIRECTORYEDIT, _T("/"));
     CenterWindow(GetParent());

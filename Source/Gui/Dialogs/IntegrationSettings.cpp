@@ -20,7 +20,7 @@
 
 #include "IntegrationSettings.h"
 
-#include "Func/common.h"
+#include "Func/Common.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -37,15 +37,10 @@ CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineMana
     menuItemsChanged_ = false;
 }
 
-CIntegrationSettings::~CIntegrationSettings()
-{
-
-}
-
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    serverProfiles_ = Settings.ServerProfiles;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    serverProfiles_ = settings->ServerProfiles;
     menuItemsChanged_ = false;
     // Translating controls
     TRC(IDC_INTEGRATIONGROUP, "Windows Explorer integration");
@@ -59,32 +54,32 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     menuItemsListBox_.m_hWnd = GetDlgItem(IDC_CONTEXTMENUITEMSLIST);
 
-    SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerContextMenu);
+    SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_SETCHECK, settings->ExplorerContextMenu);
     
-    bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
+    bool shellIntegrationAvailable = WinUtils::FileExists(settings->getShellExtensionFileName())!=0;
 
-    SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, Settings.ExplorerVideoContextMenu);
-    SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, Settings.SendToContextMenu);
-    SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_SETCHECK, Settings.ExplorerCascadedMenu);
+    SendDlgItemMessage(IDC_SHELLVIDEOCONTEXTMENUITEM, BM_SETCHECK, settings->ExplorerVideoContextMenu);
+    SendDlgItemMessage(IDC_SHELLSENDTOITEM, BM_SETCHECK, settings->SendToContextMenu);
+    SendDlgItemMessage(IDC_CASCADEDCONTEXTMENU, BM_SETCHECK, settings->ExplorerCascadedMenu);
     
-    SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, Settings.QuickUpload);
+    SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, settings->QuickUpload);
 
-    icon_ = (HICON)LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON, 16, 16, 0);
+    icon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon_);
     addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
 
-    icon2_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON, 16, 16, 0));
+    icon2_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2_);
     deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
     GuiTools::AddToolTip(toolTipCtrl_, deleteItemButton_.m_hWnd, TR("Remove Item"));
 
-    icon3_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON, 16, 16, 0));
+    icon3_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3_);
     upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
     GuiTools::AddToolTip(toolTipCtrl_, upButton_.m_hWnd, TR("Move Up"));
 
-    icon4_ = reinterpret_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON, 16, 16, 0));
+    icon4_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON, 16, 16, 0));
     SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4_);
     downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
     GuiTools::AddToolTip(toolTipCtrl_, downButton_.m_hWnd, TR("Move Down"));
@@ -96,16 +91,16 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     std::vector<CString> keyNames;
     CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
     Reg.GetChildKeysNames(keyPath,keyNames);
-    for(size_t i =0; i < keyNames.size() ; i++ ) {
+    for (size_t i =0; i < keyNames.size(); i++) {
         if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
             CString title = Reg.ReadString("Name");
             CString displayTitle = title;
-            ListItemData* lid = new    ListItemData();
-            if ( Settings.ServerProfiles.find(keyNames[i])==  Settings.ServerProfiles.end()) {
+            ListItemData* lid = new ListItemData();
+            if (settings->ServerProfiles.find(keyNames[i])== settings->ServerProfiles.end()) {
                 displayTitle = _T("[invalid] ") + displayTitle;
                 lid->invalid = true;
             } else {
-                lid->serverProfile = Settings.ServerProfiles[keyNames[i]];
+                lid->serverProfile = settings->ServerProfiles[keyNames[i]];
             }
             lid->name  = title;
             int newIndex = menuItemsListBox_.AddString(displayTitle);
@@ -113,8 +108,6 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
         }
     }
 
-    BOOL b;
-    OnClickedQuickUpload(0, IDC_STARTUPLOADINGFROMSHELL,0, b);
     ::EnableWindow(GetDlgItem(IDC_SHELLVIDEOCONTEXTMENUITEM), shellIntegrationAvailable);
     ::EnableWindow(GetDlgItem(IDC_CASCADEDCONTEXTMENU), shellIntegrationAvailable);
     ::EnableWindow(GetDlgItem(IDC_SHELLIMGCONTEXTMENUITEM), shellIntegrationAvailable);
@@ -194,11 +187,6 @@ bool CIntegrationSettings::Apply()
     return true;
 }
 
-LRESULT CIntegrationSettings::OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    return 0;
-}
-
 LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     ShellIntegrationChanged();
@@ -207,8 +195,8 @@ LRESULT CIntegrationSettings::OnShellIntegrationCheckboxChanged(WORD wNotifyCode
 
 void CIntegrationSettings::ShellIntegrationChanged()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    bool shellIntegrationAvailable = WinUtils::FileExists(Settings.getShellExtensionFileName())!=0;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    bool shellIntegrationAvailable = WinUtils::FileExists(settings->getShellExtensionFileName())!=0;
     bool checked = SendDlgItemMessage(IDC_SHELLIMGCONTEXTMENUITEM, BM_GETCHECK)==BST_CHECKED && shellIntegrationAvailable;
     GuiTools::EnableNextN(GetDlgItem(IDC_SHELLINTEGRATION), 2, checked);
     HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
@@ -221,7 +209,7 @@ LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wI
     CContextMenuItemDlg dlg(uploadEngineManager_);
     if ( dlg.DoModal(m_hWnd) == IDOK ) {
         int newIndex = menuItemsListBox_.AddString(dlg.menuItemTitle());
-        ListItemData* lid = new ListItemData();
+        auto* lid = new ListItemData();
         lid->name = dlg.menuItemTitle();
         lid->serverProfile = dlg.serverProfile();
         menuItemsListBox_.SetItemData(newIndex, reinterpret_cast<DWORD_PTR>(lid));
@@ -235,7 +223,7 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
 {
     int currentIndex = menuItemsListBox_.GetCurSel();
     if ( currentIndex != -1 ) {
-        ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(currentIndex));
+        auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(currentIndex));
         menuItemsListBox_.DeleteString(currentIndex);
         delete lid;
         menuItemsChanged_ = true;
@@ -247,8 +235,9 @@ LRESULT CIntegrationSettings::OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /
 LRESULT CIntegrationSettings::OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int itemIndex = menuItemsListBox_.GetCurSel();
-    if(itemIndex == -1) 
+    if (itemIndex == -1) {
         return 0;
+    }
 
     if(itemIndex < menuItemsListBox_.GetCount() - 1)
     {
@@ -293,7 +282,7 @@ LRESULT CIntegrationSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,
 {
     int itemCount = menuItemsListBox_.GetCount();
     for( int i =0; i < itemCount; i++ ){
-        ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
+        auto* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
         delete lid;
     }
     menuItemsListBox_.ResetContent();

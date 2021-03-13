@@ -23,7 +23,7 @@
 
 namespace ImageEditor {
 
-SelectionTool::SelectionTool(Canvas* canvas) : MoveAndResizeTool(canvas, etSelection)
+SelectionTool::SelectionTool(Canvas* canvas) : MoveAndResizeTool(canvas, ElementType::etSelection)
 {
 
 }

@@ -37,7 +37,7 @@ CHotkeySettingsPage::~CHotkeySettingsPage()
 
 LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     TabBackgroundFix(m_hWnd);
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
     TRC(IDC_EDITHOTKEY, "Edit hotkey...");
@@ -53,7 +53,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_HotkeyList.SetColumnWidth(1, static_cast<int>(82 * dpiScaleX));
     m_HotkeyList.SetColumnWidth(2, static_cast<int>(82 * dpiScaleX));
     m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
-    hotkeyList = Settings.Hotkeys;
+    hotkeyList = settings->Hotkeys;
 
     for(int i=0; i < int(hotkeyList.size())-1; i++)
     {
@@ -77,18 +77,20 @@ LRESULT CHotkeySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 }
 bool CHotkeySettingsPage::Apply()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if(!(Settings.Hotkeys == hotkeyList))
-        Settings.Hotkeys_changed = true;
-    Settings.Hotkeys = hotkeyList;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    if (!(settings->Hotkeys == hotkeyList)) {
+        settings->Hotkeys_changed = true;
+    }
+    settings->Hotkeys = hotkeyList;
     return true;
 }
 
 LRESULT CHotkeySettingsPage::OnHotkeylistNmDblclk(LPNMHDR pnmh)
 {
-    LPNMITEMACTIVATE ia = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
-    if(ia)
+    auto* ia = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+    if (ia) {
         EditHotkey(ia->iItem);
+    }
 
     return 0;
 }
@@ -121,7 +123,7 @@ LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, H
 
 LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND     hwnd = reinterpret_cast<HWND>(wParam);  
+    HWND hwnd = reinterpret_cast<HWND>(wParam);  
     POINT ClientPoint, ScreenPoint;
 
     if(lParam == -1) 
@@ -245,7 +247,7 @@ void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, bool setF
     push_back(hi);
 }
 
-bool CHotkeyList::Changed()
+bool CHotkeyList::Changed() const
 {
     return m_bChanged;
 }

@@ -23,12 +23,10 @@ limitations under the License.
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include <Ws2tcpip.h>
 #include <winsock2.h> 
 #include <iphlpapi.h>
 #define SECURITY_WIN32 
 #include <security.h>
-#include <secext.h>
 #include "Core/CommonDefs.h"
 #include <Lm.h>
 #include "Gui/Components/NewStyleFolderDialog.h"
@@ -41,10 +39,6 @@ CAddDirectoryServerDialog::CAddDirectoryServerDialog(CUploadEngineList* uploadEn
     uploadEngineList_ = uploadEngineList;
 }
 
-CAddDirectoryServerDialog::~CAddDirectoryServerDialog()
-{
-}
-
 LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     SetWindowText(TR("Adding directory as server"));
@@ -55,11 +49,6 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
 
-    /*if (!WinUtils::IsVistaOrLater()) {
-        // Try to remove Unicode Left-To-Right marks from text on Windows XP
-        // addFileProcotolLabelText.Replace(L"\u200E", L"");
-        // Actually we do not need this, because installing of language pack for RTL languages solves this problem on Windows XP
-    }*/
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
    
     presetButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
@@ -70,7 +59,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     GuiTools::ShowDialogItem(m_hWnd, IDC_ADDFILEPROTOCOL, false);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND downloadUrlEditHwnd = GetDlgItem(IDC_DOWNLOADURLEDIT);
         LONG styleEx = ::GetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE);
         ::SetWindowLong(downloadUrlEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
@@ -115,8 +104,8 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     }
 
     const bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    ServerListManager slm(Settings.SettingsFolder + "Servers\\", uploadEngineList_, Settings.ServersSettings);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    ServerListManager slm(settings->SettingsFolder + "Servers\\", uploadEngineList_, settings->ServersSettings);
     try {
         createdServerName_ = U2W(slm.addDirectoryAsServer(W2U(connectionName), W2U(directory), W2U(downloadUrl), addFileProtocol));
         EndDialog(wID);
@@ -235,7 +224,7 @@ LRESULT CAddDirectoryServerDialog::OnDownloadUrlEditChange(WORD wNotifyCode, WOR
     return 0;
 }
 
-CString CAddDirectoryServerDialog::createdServerName()
+CString CAddDirectoryServerDialog::createdServerName() const
 {
     return createdServerName_;
 }
@@ -276,142 +265,103 @@ void CAddDirectoryServerDialog::GenerateExampleUrl()
 #define FREE(x) HeapFree(GetProcessHeap(), 0, (x))
 bool CAddDirectoryServerDialog::LoadComputerAddresses()
 {
-    bool isWindowsXpOrLater;
-    OSVERSIONINFO ovi = { 0 };
-    ovi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    /*BOOL bRet = */::GetVersionEx(&ovi);
-    isWindowsXpOrLater =  ovi.dwMajorVersion > 5 || (ovi.dwMajorVersion == 5 && ovi.dwMinorVersion >= 1);
+    /* Declare and initialize variables */
 
+    DWORD dwRetVal = 0;
 
-    if (isWindowsXpOrLater) {
-        /* Declare and initialize variables */
+    unsigned int i = 0;
 
-        DWORD dwRetVal = 0;
+    // Set the flags to pass to GetAdaptersAddresses
+    ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
 
-        unsigned int i = 0;
+    // default to unspecified address family (both)
+    ULONG family = AF_UNSPEC;
 
-        // Set the flags to pass to GetAdaptersAddresses
-        ULONG flags = GAA_FLAG_INCLUDE_PREFIX;
+    LPVOID lpMsgBuf = NULL;
 
-        // default to unspecified address family (both)
-        ULONG family = AF_UNSPEC;
+    PIP_ADAPTER_ADDRESSES pAddresses = NULL;
+    ULONG outBufLen = 0;
+    ULONG Iterations = 0;
 
-        LPVOID lpMsgBuf = NULL;
+    PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
+    PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
+    /*PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
+    PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
+    IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;*/
+    //IP_ADAPTER_PREFIX *pPrefix = NULL;
 
-        PIP_ADAPTER_ADDRESSES pAddresses = NULL;
-        ULONG outBufLen = 0;
-        ULONG Iterations = 0;
+    family = AF_INET;
 
-        PIP_ADAPTER_ADDRESSES pCurrAddresses = NULL;
-        PIP_ADAPTER_UNICAST_ADDRESS pUnicast = NULL;
-        /*PIP_ADAPTER_ANYCAST_ADDRESS pAnycast = NULL;
-        PIP_ADAPTER_MULTICAST_ADDRESS pMulticast = NULL;
-        IP_ADAPTER_DNS_SERVER_ADDRESS *pDnServer = NULL;*/
-        //IP_ADAPTER_PREFIX *pPrefix = NULL;
+    outBufLen = WORKING_BUFFER_SIZE;
 
-        family = AF_INET;
+    do {
 
-        outBufLen = WORKING_BUFFER_SIZE;
-
-        do {
-
-            pAddresses = reinterpret_cast<IP_ADAPTER_ADDRESSES *>(MALLOC(outBufLen));
-            if (pAddresses == NULL) {
-                printf
-                    ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
-            }
-
-            dwRetVal =
-                GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
-
-            if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
-                FREE(pAddresses);
-                pAddresses = NULL;
-            } else {
-                break;
-            }
-
-            Iterations++;
-
-        } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
-
-        if (dwRetVal == NO_ERROR) {
-            // If successful, output some information from the data we received
-            pCurrAddresses = pAddresses;
-            while (pCurrAddresses) {
-
-                pUnicast = pCurrAddresses->FirstUnicastAddress;
-                if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType != IF_TYPE_SOFTWARE_LOOPBACK ) {
-                    for (i = 0; pUnicast != NULL; i++) {
-                        sockaddr_in  *addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
-                        char *ip = inet_ntoa(addr->sin_addr);
-                        addresses_.push_back(CString(L"http://")+ip+L"/");
-                        pUnicast = pUnicast->Next;
-                    }
-                } 
-
-                pCurrAddresses = pCurrAddresses->Next;
-            }
-        } else {
-            printf("Call to GetAdaptersAddresses failed with error: %d\n", (int)dwRetVal);
-            if (dwRetVal == ERROR_NO_DATA) {}
-                //printf("\tNo addresses were found for the requested parameters\n");
-            else {
-
-                if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                    FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, 
-                    NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),   
-                    // Default language
-                    (LPTSTR) & lpMsgBuf, 0, NULL)) {
-                        //printf("\tError: %s", reinterpret_cast<>lpMsgBuf);
-                        LocalFree(lpMsgBuf);
-                        if (pAddresses)
-                            FREE(pAddresses);
-                        pAddresses = nullptr;
-                }
-            }
+        pAddresses = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(MALLOC(outBufLen));
+        if (pAddresses == NULL) {
+            printf
+                ("Memory allocation failed for IP_ADAPTER_ADDRESSES struct\n");
         }
 
-        if (pAddresses) {
+        dwRetVal =
+            GetAdaptersAddresses(family, flags, NULL, pAddresses, &outBufLen);
+
+        if (dwRetVal == ERROR_BUFFER_OVERFLOW) {
             FREE(pAddresses);
+            pAddresses = NULL;
+        } else {
+            break;
+        }
+
+        Iterations++;
+
+    } while ((dwRetVal == ERROR_BUFFER_OVERFLOW) && (Iterations < MAX_TRIES));
+
+    if (dwRetVal == NO_ERROR) {
+        // If successful, output some information from the data we received
+        pCurrAddresses = pAddresses;
+        while (pCurrAddresses) {
+
+            pUnicast = pCurrAddresses->FirstUnicastAddress;
+            if (pUnicast != NULL && pCurrAddresses->OperStatus == IfOperStatusUp && pCurrAddresses->IfType !=
+                IF_TYPE_SOFTWARE_LOOPBACK) {
+                for (i = 0; pUnicast != NULL; i++) {
+                    sockaddr_in* addr = (sockaddr_in*)pUnicast->Address.lpSockaddr;
+                    char* ip = inet_ntoa(addr->sin_addr);
+                    addresses_.push_back(CString(L"http://") + ip + L"/");
+                    pUnicast = pUnicast->Next;
+                }
+            }
+
+            pCurrAddresses = pCurrAddresses->Next;
         }
     } else {
-        PIP_ADAPTER_INFO pAdapterInfo;
-        PIP_ADAPTER_INFO pAdapter = NULL;
-        DWORD dwRetVal = 0;
-
-        ULONG ulOutBufLen = sizeof (IP_ADAPTER_INFO);
-        pAdapterInfo = reinterpret_cast<IP_ADAPTER_INFO *>(MALLOC(sizeof (IP_ADAPTER_INFO)));
-        if (pAdapterInfo == NULL) {
-            printf("Error allocating memory needed to call GetAdaptersinfo\n");
-            return 1;
+        printf("Call to GetAdaptersAddresses failed with error: %d\n", (int)dwRetVal);
+        if (dwRetVal == ERROR_NO_DATA) {
         }
-        // Make an initial call to GetAdaptersInfo to get
-        // the necessary size into the ulOutBufLen variable
-        if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-            FREE(pAdapterInfo);
-            pAdapterInfo = reinterpret_cast<IP_ADAPTER_INFO *>(MALLOC(ulOutBufLen));
-            if (pAdapterInfo == NULL) {
-                printf("Error allocating memory needed to call GetAdaptersinfo\n");
-                return 1;
+            //printf("\tNo addresses were found for the requested parameters\n");
+        else {
+
+            if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                              FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                              NULL, dwRetVal, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                              // Default language
+                              (LPTSTR)&lpMsgBuf, 0, NULL)) {
+                //printf("\tError: %s", reinterpret_cast<>lpMsgBuf);
+                LocalFree(lpMsgBuf);
+                if (pAddresses)
+                    FREE(pAddresses);
+                pAddresses = nullptr;
             }
         }
-
-        if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
-            pAdapter = pAdapterInfo;
-            while (pAdapter) {
-                addresses_.push_back(CString(L"http://")+pAdapter->IpAddressList.IpAddress.String+L"/");
-                pAdapter = pAdapter->Next;
-                }
-            }else {
-
-        }
-        FREE(pAdapterInfo);
     }
 
-    TCHAR computerName[1024]=L"";
+    if (pAddresses) {
+        FREE(pAddresses);
+    }
+
+    TCHAR computerName[1024] = L"";
     DWORD size = ARRAY_SIZE(computerName);
-    if ( GetComputerName(computerName, &size) ) {
+    if (GetComputerName(computerName, &size)) {
         computerName_ = computerName;
         addresses_.push_back(CString(L"\\\\") + computerName + L"\\");
     }
@@ -441,7 +391,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
     popupMenu.CreatePopupMenu();
     int id =  IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID;
 
-    for( size_t i =0; i< sharedFolders_.size(); i++ ) {
+    for( size_t i =0; i < sharedFolders_.size(); i++ ) {
         // Adding Unicode Left-To-Right marks to text to be rendered correctly if RTL language is choosen
         CString itemTitle = L"\u200E" + sharedFolders_[i];
         if (ServiceLocator::instance()->translator()->isRTL()) {
@@ -452,7 +402,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetButtonClicked(WORD wNotifyCode, WORD 
 
     }
     id =  IDC_PRESETMENU_FIRST_ID;
-    for (size_t i = 0; i< addresses_.size(); i++) {
+    for (size_t i = 0; i < addresses_.size(); i++) {
         CString itemTitle = L"\u200E" +  addresses_[i];
         if (ServiceLocator::instance()->translator()->isRTL()) {
             itemTitle.Replace(L"\\", L"\\\u200E");

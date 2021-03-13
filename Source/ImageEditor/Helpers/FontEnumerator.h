@@ -1,9 +1,11 @@
 #ifndef IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 #define IMAGEDITOR_HELPERS_FONT_ENUMERATOR
 
-#include <Windows.h>
 #include <vector>
 #include <functional>
+
+#include <Windows.h>
+
 
 class FontEnumerator {
 

@@ -20,7 +20,7 @@
 
 #include "SizeExceed.h"
 
-#include "Func/common.h"
+#include "Func/Common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -38,10 +38,6 @@ CSizeExceed::CSizeExceed(FileUploadTask * fileTask, CUploadEngineList * EngineLi
     uploadEngineManager_ = uploadEngineManager;
 }
 
-CSizeExceed::~CSizeExceed()
-{
-}
-
 void CSizeExceed::Translate()
 {
     TRC(IDC_WHATTODO, "Change image processing settings or choose another server, so your image can be uploaded.");
@@ -54,7 +50,7 @@ void CSizeExceed::Translate()
 
 LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     RECT rc = {12, 30, 162, 144};
     img.Create(m_hWnd, rc);
     bool isImage = fileTask_->isImage() && IuCommonFunctions::IsImage(m_szFileName);
@@ -76,7 +72,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     imageServerSelector_->ShowWindow(SW_SHOW);
     imageServerSelector_->SetWindowPos(nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
                                         serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(Settings.imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer);
     
     //CString serverName = U2W(fileTask_->serverProfile().serverName());
 
@@ -86,7 +82,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     WCHAR buf2[25];
     WinUtils::NewBytesToString(fileSize, buf2, 25);
 
-    CString name;
+
     CString params; 
     CString onlyFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_szFileName), 40);
     if (isImage) {
@@ -95,7 +91,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(onlyFileName), static_cast<LPCTSTR>(buf2));
     }
    
-    name = TR("File") + params;
+    CString name = TR("File") + params;
 
     SetDlgItemText(IDC_FILEEXCEEDNAME, name);
     WinUtils::NewBytesToString(m_EngineList->byName(fileTask_->serverProfile().serverName())->MaxFileSize, buf2, 25);

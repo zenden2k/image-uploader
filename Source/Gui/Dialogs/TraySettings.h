@@ -37,7 +37,6 @@ struct TrayItem
 class CTrayActions: public CAtlArray<TrayItem>
 {
     public:
-    CTrayActions();
     void AddTrayAction(CString text, DWORD id)
     {
         TrayItem item;
@@ -54,8 +53,6 @@ class CTraySettingsPage :
     public CWinDataExchange <CTraySettingsPage>
 {
 public:
-    CTraySettingsPage();
-    ~CTraySettingsPage();
     enum { IDD = IDD_TRAYSETTINGSPAGE};
 
     BEGIN_MSG_MAP(CTraySettingsPage)

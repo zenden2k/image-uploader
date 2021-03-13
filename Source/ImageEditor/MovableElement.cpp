@@ -70,10 +70,10 @@ void MovableElement::renderGrips(Painter* gr)
         gr->DrawRectangle( &pen, x, y, width, height );
     }
 
-    if ( (isSelected_ || getType() == etCrop) && isResizable() ) {
+    if ( (isSelected_ || getType() == ElementType::etCrop) && isResizable() ) {
         int rectSize = kGripSize;
         int halfSize = rectSize /2 ;
-        Gdiplus::Pen pen( Color( 255,255, 255) );
+        Gdiplus::Pen pen2( Color( 255,255, 255) );
         //pen.SetDashStyle(DashStyleDash);
         /*int x = getX();
         int y = getY();
@@ -88,7 +88,7 @@ void MovableElement::renderGrips(Painter* gr)
             int x = grips_[i].pt.x;
             int y = grips_[i].pt.y;
             gr->FillRectangle( &brush, x-halfSize, y-halfSize, rectSize, rectSize );
-            gr->DrawRectangle( &pen, x-halfSize-1, y-halfSize-1, rectSize+1, rectSize+1 );
+            gr->DrawRectangle( &pen2, x-halfSize-1, y-halfSize-1, rectSize+1, rectSize+1 );
         }
 
     }
@@ -106,26 +106,26 @@ bool MovableElement::isSelected() const
 
 ElementType MovableElement::getType() const
 {
-    return etUnknown;
+    return ElementType::etUnknown;
 }
 
 CursorType MovableElement::GetCursorForBoundary(BoundaryType bt)
 {
     switch (bt) {
-        case btTopLeft:
-        case btBottomRight:
-            return ctResizeDiagonalMain;
-        case btTopRight:
-        case btBottomLeft:
-            return ctResizeDiagonalAnti;
-        case btTop:
-        case btBottom:
-            return ctResizeVertical;
-        case btLeft:
-        case btRight:
-            return ctResizeHorizontal;
+        case BoundaryType::btTopLeft:
+        case BoundaryType::btBottomRight:
+            return CursorType::ctResizeDiagonalMain;
+        case BoundaryType::btTopRight:
+        case BoundaryType::btBottomLeft:
+            return CursorType::ctResizeDiagonalAnti;
+        case BoundaryType::btTop:
+        case BoundaryType::btBottom:
+            return CursorType::ctResizeVertical;
+        case BoundaryType::btLeft:
+        case BoundaryType::btRight:
+            return CursorType::ctResizeHorizontal;
         default:
-            return ctDefault;
+            return CursorType::ctDefault;
     }
 }
 
@@ -240,7 +240,7 @@ void MovableElement::createGrips()
     int width = getWidth()-1;
     int height = getHeight()-1;
 
-    // item order is important!!!! FIXME: use std::map
+    // item order is important!!!! 
     POINT pts[8] = {
     {x+width,y+height},  {x+width/2, y+height}, {x,y+height},{x+width,y+height/2}, {x,y+height/2}, {x,y}, {x + width / 2, y}, {x+width,y}, 
     };
@@ -252,9 +252,9 @@ void MovableElement::createGrips()
         grip.pt.x = x;
         grip.pt.y = y;
         if ( x == startPoint_.x && y == startPoint_.y ) {
-            grip.gpt = gptStartPoint;
+            grip.gpt = GripPointType::gptStartPoint;
         } else if ( x == endPoint_.x &&   y == endPoint_.y ) {
-            grip.gpt = gptEndPoint;
+            grip.gpt = GripPointType::gptEndPoint;
         }
         grip.bt = static_cast<BoundaryType>(i);
         grips_[i] = grip;

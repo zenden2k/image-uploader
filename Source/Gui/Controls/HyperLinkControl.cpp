@@ -135,7 +135,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle,LPCTSTR szTip,int idCommand,HIC
     RECT ClientRect;
     GetClientRect(&ClientRect);
 
-    HyperLinkControlItem * item = new  HyperLinkControlItem;
+    auto* item = new  HyperLinkControlItem;
     if(szTip)
         lstrcpy(item->szTip,szTip);
     else 

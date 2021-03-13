@@ -20,7 +20,6 @@
 
 #include "RegionSelect.h"
 
-#include "Core/i18n/Translator.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
 #include "Gui/GuiTools.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -116,7 +115,6 @@ CRegionSelect::CRegionSelect()
     m_brushColor = RGB(0, 0, 0);
     m_bPictureChanged = false;
 }
-
 
 CRegionSelect::~CRegionSelect()
 { 

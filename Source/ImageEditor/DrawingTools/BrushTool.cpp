@@ -82,7 +82,7 @@ void BrushTool::render( Painter* gr ) {
 
 ImageEditor::CursorType BrushTool::getCursor(int x, int y)
 {
-    return ctBrush;
+    return CursorType::ctBrush;
 }
 
 void BrushTool::drawLine(int x0, int y0, int x1, int y1) {

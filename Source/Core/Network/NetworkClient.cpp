@@ -149,7 +149,7 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
     NetworkClient* nm = cbd->nmanager;
     if(nm)
     {
-        if(cbd->funcType == funcTypeBody)
+        if(cbd->funcType == CallBackFuncType::funcTypeBody)
         {
             return nm->private_writer(data, size, nmemb);
         }
@@ -216,10 +216,10 @@ int NetworkClient::ProgressFunc(void *clientp, double dltotal, double dlnow, dou
     auto* nm = static_cast<NetworkClient*>(clientp);
     if(nm && nm->m_progressCallbackFunc)
     {
-        if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == atUpload) {
+        if  (nm->chunkOffset_>=0 && nm->chunkSize_>0 && nm->m_currentActionType == ActionType::atUpload) {
             ultotal = static_cast<double>(nm->m_CurrentFileSize);
             ulnow = nm->chunkOffset_ + ulnow;
-        } else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == atUpload)
+        } else if( ((ultotal<=0 && nm->m_CurrentFileSize>0)) && nm->m_currentActionType == ActionType::atUpload)
             ultotal = double(nm->m_CurrentFileSize);
         return nm->m_progressCallbackFunc(nm, dltotal, dlnow, ultotal, ulnow);
     }
@@ -250,10 +250,10 @@ NetworkClient::NetworkClient()
     *m_errorBuffer = 0;
     m_progressCallbackFunc = nullptr;
     curl_handle = curl_easy_init(); // Initializing libcurl
-    m_bodyFuncData.funcType = funcTypeBody;
+    m_bodyFuncData.funcType = CallBackFuncType::funcTypeBody;
     m_bodyFuncData.nmanager = this;
     m_UploadBufferSize = 1048576;
-    m_headerFuncData.funcType = funcTypeHeader;
+    m_headerFuncData.funcType = CallBackFuncType::funcTypeHeader;
     m_headerFuncData.nmanager = this;
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
@@ -436,7 +436,7 @@ bool NetworkClient::doUploadMultipartData()
     }
 
     curl_easy_setopt(curl_handle, CURLOPT_HTTPPOST, formpost);
-    m_currentActionType = atUpload;
+    m_currentActionType = ActionType::atUpload;
     curl_result = curl_easy_perform(curl_handle);
     closeFileList(openedFiles);
     curl_formfree(formpost);
@@ -484,7 +484,7 @@ bool NetworkClient::doGet(const std::string & url)
     private_initTransfer();
     if(!private_apply_method())
         curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1);
-    m_currentActionType = atGet;
+    m_currentActionType = ActionType::atGet;
     curl_result = curl_easy_perform(curl_handle);
     return private_on_finish_request();
 
@@ -508,13 +508,14 @@ bool NetworkClient::doPost(const std::string& data)
 
     if(data.empty()) {
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, postData.c_str());
+        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, static_cast<long>(postData.length()));
     }
     else {
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, (const char*)data.data());
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, (long)data.length());
     }
 
-    m_currentActionType = atPost;    
+    m_currentActionType = ActionType::atPost;    
     curl_result = curl_easy_perform(curl_handle);
     return private_on_finish_request();
 }
@@ -610,9 +611,7 @@ void NetworkClient::curl_init() {
         NetworkClientInternal::init_locks(); // init locks should be called BEFORE curl_global_init
 #endif
 
-        curl_global_init(CURL_GLOBAL_ALL);
-        //curl_version_info_data * infoData = curl_version_info(CURLVERSION_NOW);
-        //_is_openssl = strstr(infoData->ssl_version, "WinSSL") != infoData->ssl_version;
+    curl_global_init(CURL_GLOBAL_ALL);
 
 #if defined(WIN32) && defined(USE_OPENSSL)
             using namespace NetworkClientInternal;
@@ -711,7 +710,7 @@ void NetworkClient::private_cleanup_before()
 
 void NetworkClient::private_cleanup_after()
 {
-    m_currentActionType = atNone;
+    m_currentActionType = ActionType::atNone;
     m_QueryHeaders.clear();
     m_QueryParams.clear();
     if(m_hOutFile)
@@ -826,7 +825,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
             }
         }
         m_uploadingFileReadBytes = 0;
-        m_currentActionType = atUpload;
+        m_currentActionType = ActionType::atUpload;
     }
     else
     {
@@ -834,7 +833,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         m_uploadData = data;
         m_CurrentFileSize = data.length();
         m_currentUploadDataSize = m_CurrentFileSize;
-        m_currentActionType = atPost;
+        m_currentActionType = ActionType::atPost;
     }
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);

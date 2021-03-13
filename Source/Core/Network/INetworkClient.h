@@ -36,10 +36,6 @@ class INetworkClient {
     public:
         virtual ~INetworkClient() = default;
 
-        enum ActionType {
-            atNone = 0, atPost, atUpload, atGet
-        };
-
         typedef std::function<int(INetworkClient*, double, double, double, double)> ProgressCallback;
 
         class ProxyProvider {

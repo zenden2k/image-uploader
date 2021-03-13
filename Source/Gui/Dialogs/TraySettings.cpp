@@ -21,21 +21,10 @@
 #include "TraySettings.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
- 
-CTrayActions::CTrayActions(){
-}
-
-// CTraySettingsPage
-CTraySettingsPage::CTraySettingsPage() {
-
-}
-
-CTraySettingsPage::~CTraySettingsPage() {
-}
 
 LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     DoDataExchange(FALSE);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_SHOWTRAYICON, "Show tray icon");
     TRC(IDC_MOUSEREACTIONGROUP, "Mouse clicks handlers");
     TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL, "Left button double-click");
@@ -48,32 +37,32 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     int leftDoubleClickIndex = 0, leftClickIndex = 0,
     middleClickIndex = 0, rightClickIndex = 0;
     int index = 0;
-    for(const auto& hotkey: Settings.Hotkeys) {
+    for(const auto& hotkey: settings->Hotkeys) {
         leftButtonDblClickCombo_.AddString(hotkey.GetDisplayName()); 
         leftButtonClickCombo_.AddString(hotkey.GetDisplayName());
         middleButtonClickCombo_.AddString(hotkey.GetDisplayName());
         rightButtoClickCombo_.AddString(hotkey.GetDisplayName());
 
-        if (hotkey.func == Settings.TrayIconSettings.LeftDoubleClickCommandStr) {
+        if (hotkey.func == settings->TrayIconSettings.LeftDoubleClickCommandStr) {
             leftDoubleClickIndex = index;
         }
-        if (hotkey.func == Settings.TrayIconSettings.LeftClickCommandStr) {
+        if (hotkey.func == settings->TrayIconSettings.LeftClickCommandStr) {
             leftClickIndex = index;
         }
-        if (hotkey.func == Settings.TrayIconSettings.MiddleClickCommandStr) {
+        if (hotkey.func == settings->TrayIconSettings.MiddleClickCommandStr) {
             middleClickIndex = index;
         }
-        if (hotkey.func == Settings.TrayIconSettings.RightClickCommandStr) {
+        if (hotkey.func == settings->TrayIconSettings.RightClickCommandStr) {
             rightClickIndex = index;
         }
         indexToCommand_[index] = hotkey.func;
         index++;
     }
 
-    SendDlgItemMessage(IDC_SHOWTRAYICON, BM_SETCHECK,Settings.ShowTrayIcon);
-    SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK,Settings.AutoStartup);
+    SendDlgItemMessage(IDC_SHOWTRAYICON, BM_SETCHECK, settings->ShowTrayIcon);
+    SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, settings->AutoStartup);
 
-    SendDlgItemMessage(IDC_ONEINSTANCE, BM_SETCHECK,Settings.TrayIconSettings.DontLaunchCopy);
+    SendDlgItemMessage(IDC_ONEINSTANCE, BM_SETCHECK, settings->TrayIconSettings.DontLaunchCopy);
     OnShowTrayIconBnClicked(BN_CLICKED, IDC_SHOWTRAYICON, 0);
 
     leftButtonDblClickCombo_.SetCurSel(leftDoubleClickIndex);
@@ -85,23 +74,23 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 }
 
 bool CTraySettingsPage::Apply() {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ShowTrayIcon_changed = Settings.ShowTrayIcon;
-    Settings.ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
-    Settings.ShowTrayIcon_changed ^= Settings.ShowTrayIcon;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ShowTrayIcon_changed = settings->ShowTrayIcon;
+    settings->ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
+    settings->ShowTrayIcon_changed ^= settings->ShowTrayIcon;
 
 
-    Settings.AutoStartup_changed = Settings.AutoStartup;
-    Settings.AutoStartup = SendDlgItemMessage(IDC_AUTOSTARTUP, BM_GETCHECK)==BST_CHECKED;
-    Settings.AutoStartup_changed ^= Settings.AutoStartup;
+    settings->AutoStartup_changed = settings->AutoStartup;
+    settings->AutoStartup = SendDlgItemMessage(IDC_AUTOSTARTUP, BM_GETCHECK)==BST_CHECKED;
+    settings->AutoStartup_changed ^= settings->AutoStartup;
 
     //Settings.ExplorerContextMenu_changed = true;
-    Settings.TrayIconSettings.LeftDoubleClickCommandStr = getCommandByIndex(leftButtonDblClickCombo_.GetCurSel());
-    Settings.TrayIconSettings.LeftClickCommandStr = getCommandByIndex(leftButtonClickCombo_.GetCurSel());
-    Settings.TrayIconSettings.MiddleClickCommandStr = getCommandByIndex(middleButtonClickCombo_.GetCurSel());
-    Settings.TrayIconSettings.RightClickCommandStr = getCommandByIndex(rightButtoClickCombo_.GetCurSel());
+    settings->TrayIconSettings.LeftDoubleClickCommandStr = getCommandByIndex(leftButtonDblClickCombo_.GetCurSel());
+    settings->TrayIconSettings.LeftClickCommandStr = getCommandByIndex(leftButtonClickCombo_.GetCurSel());
+    settings->TrayIconSettings.MiddleClickCommandStr = getCommandByIndex(middleButtonClickCombo_.GetCurSel());
+    settings->TrayIconSettings.RightClickCommandStr = getCommandByIndex(rightButtoClickCombo_.GetCurSel());
     
-    Settings.TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
+    settings->TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
     
     return true;
 }
@@ -111,7 +100,7 @@ LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, H
     if (!bShowTrayIcon ) {
         SendDlgItemMessage(IDC_AUTOSTARTUP, BM_SETCHECK, FALSE);
     }
-    GuiTools::EnableNextN(GetDlgItem(wID),11,bShowTrayIcon);
+    GuiTools::EnableNextN(GetDlgItem(wID), 11, bShowTrayIcon);
     return 0;
 }
 

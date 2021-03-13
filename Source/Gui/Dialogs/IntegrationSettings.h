@@ -38,8 +38,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         enum { IDD = IDD_INTEGRATIONSETTINGS };
 
         CIntegrationSettings(UploadEngineManager *uploadEngineManager);
-        virtual ~CIntegrationSettings();
-        virtual bool Apply() override;
+        bool Apply() override;
 
         struct ListItemData {
             ServerProfile serverProfile;
@@ -55,8 +54,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         BEGIN_MSG_MAP(CIntegrationSettings)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-            COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
-            COMMAND_HANDLER(IDC_STARTUPLOADINGFROMSHELL, BN_CLICKED, OnClickedQuickUpload)    
+            COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)    
             COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
             COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
             COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)
@@ -70,7 +68,6 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void ShellIntegrationChanged();
-        LRESULT OnClickedQuickUpload(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         ServerProfilesMap serverProfiles_;
         CListBox menuItemsListBox_;
         bool menuItemsChanged_;

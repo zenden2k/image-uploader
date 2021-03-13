@@ -9,7 +9,7 @@ CResultsListView::CResultsListView() : bmpOld_(nullptr), model_(nullptr) {
 bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
 
     HWND hWnd = ::GetDlgItem(parent,dlgID);
-    bool res =  SubclassWindow(hWnd)!=FALSE;
+    bool res = SubclassWindow(hWnd)!=FALSE;
     Init();
     return res;
 }
@@ -90,7 +90,7 @@ void CResultsListView::SetModel(UploadListModel* model) {
     using namespace std::placeholders;
     SetItemCount(model_ ? static_cast<int>(model_->getCount()) : 0);
     if (model_) {
-        model_->setOnRowChangedCallback(std::bind(&CResultsListView::onRowChanged, this, _1));
+        model_->setOnRowChangedCallback([this](size_t index) { onRowChanged(index); });
     }
 }
 

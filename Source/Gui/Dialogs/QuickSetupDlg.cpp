@@ -36,7 +36,7 @@ CQuickSetupDlg::~CQuickSetupDlg() {
 
 
 LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled){
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     translateUI();
     SetWindowText( APPNAME );
     CString titleText;
@@ -51,7 +51,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetIcon(hIconSmall, FALSE);
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
-    if ( !Settings.IsPortable ) {
+    if ( !settings->IsPortable ) {
         SendDlgItemMessage( IDC_AUTOSTARTUPCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
         SendDlgItemMessage( IDC_CAPTUREPRINTSCREENCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
         SendDlgItemMessage( IDC_EXPLORERINTEGRATION, BM_SETCHECK, BST_CHECKED, 0);

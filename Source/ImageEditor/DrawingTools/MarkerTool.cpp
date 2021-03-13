@@ -20,10 +20,8 @@
 
 #include "../Canvas.h"
 #include "../Document.h"
-#include "../MovableElements.h"
 
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
 
 #include <cmath>
 #include <cassert>
@@ -90,7 +88,7 @@ void MarkerTool::render( Painter* gr ) {
 
 ImageEditor::CursorType MarkerTool::getCursor(int x, int y)
 {
-    return ctBrush;
+    return CursorType::ctBrush;
 }
 
 void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {

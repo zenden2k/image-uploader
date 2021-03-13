@@ -40,7 +40,7 @@ class CSizeExceed :
 {
     public:
         CSizeExceed(FileUploadTask * fileTask, CUploadEngineList* EngineList, UploadEngineManager* uploadEngineManager);
-        ~CSizeExceed();
+
         enum { IDD = IDD_SIZEEXCEED };
 
         BEGIN_MSG_MAP(CSizeExceed)
@@ -61,7 +61,7 @@ class CSizeExceed :
 
     private:
         CMyImage img;
-        FileUploadTask * fileTask_;
+        FileUploadTask* fileTask_;
         CUploadEngineList* m_EngineList;
         std::unique_ptr<CServerSelectorControl> imageServerSelector_;
         UploadEngineManager* uploadEngineManager_;

@@ -104,26 +104,26 @@ void Line::createGrips()
     Grip grip2;
     grip1.pt.x = startPoint_.x;
     grip1.pt.y = startPoint_.y;
-    grip1.gpt = MovableElement::gptStartPoint;
+    grip1.gpt = MovableElement::GripPointType::gptStartPoint;
     grip2.pt.x = endPoint_.x;
     grip2.pt.y =  endPoint_.y;
-    grip2.gpt = MovableElement::gptEndPoint;
+    grip2.gpt = MovableElement::GripPointType::gptEndPoint;
 
     if ( grip1.pt.x <= grip2.pt.x ) {
         if (  grip1.pt.y <= grip2.pt.y  ) {
-            grip1.bt = btTopLeft;
-            grip2.bt = btBottomRight;
+            grip1.bt = BoundaryType::btTopLeft;
+            grip2.bt = BoundaryType::btBottomRight;
         } else {
-            grip1.bt = btBottomLeft;
-            grip2.bt = btTopRight;
+            grip1.bt = BoundaryType::btBottomLeft;
+            grip2.bt = BoundaryType::btTopRight;
         }
     } else {
         if (  grip2.pt.y > grip1.pt.y  ) {
-            grip1.bt = btTopRight;
-            grip2.bt = btBottomLeft;
+            grip1.bt = BoundaryType::btTopRight;
+            grip2.bt = BoundaryType::btBottomLeft;
         } else {
-            grip1.bt = btBottomRight;
-            grip2.bt = btTopLeft;
+            grip1.bt = BoundaryType::btBottomRight;
+            grip2.bt = BoundaryType::btTopLeft;
         }
     }
     grips_[0] = grip1;    
@@ -158,7 +158,7 @@ bool Line::isItemAtPos(int x, int y)
 
 ImageEditor::ElementType Line::getType() const
 {
-    return etLine;
+    return ElementType::etLine;
 }
 
 TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY, bool filled) :MovableElement(canvas) {
@@ -307,7 +307,7 @@ bool TextElement::isEmpty() const {
 
 ElementType TextElement::getType() const
 {
-    return etText;
+    return ElementType::etText;
 }
 
 void TextElement::setSelected(bool selected)
@@ -346,7 +346,7 @@ void TextElement::saveToHistory() {
     if (originalRawText_ != inputBox_->getRawText()) {
         Canvas::UndoHistoryItem uhi;
         Canvas::UndoHistoryItemElement uhie;
-        uhi.type = Canvas::uitTextChanged;
+        uhi.type = Canvas::UndoHistoryItemType::uitTextChanged;
         uhie.movableElement = this;
         uhie.rawText = originalRawText_;
         uhi.elements.push_back(uhie);
@@ -400,7 +400,7 @@ void Crop::getAffectedSegments( AffectedSegments* segments ) {
 
 ImageEditor::ElementType Crop::getType() const
 {
-    return etCrop;
+    return ElementType::etCrop;
 }
 
 void Crop::setPos(int x, int y) {
@@ -459,12 +459,12 @@ void CropOverlay::render(Painter* gr)
     Gdiplus::SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
     
     std::vector<MovableElement*> crops;
-    canvas_->getElementsByType(etCrop, crops);
+    canvas_->getElementsByType(ElementType::etCrop, crops);
     Rect rc (0,0, canvas_->getWidth(), canvas_->getHeigth());
     rc.Intersect(canvas_->currentRenderingRect());
     Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
-    for (size_t i = 0; i < crops.size(); i++) {
-        rgn = rgn.subtracted(Region(crops[i]->getX(),crops[i]->getY(),crops[i]->getWidth(),crops[i]->getHeight()));
+    for (auto& crop : crops) {
+        rgn = rgn.subtracted(Region(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight()));
     }
 
     Gdiplus::Region oldRegion;
@@ -561,7 +561,7 @@ RECT Rectangle::getPaintBoundingRect()
 
 ImageEditor::ElementType Rectangle::getType() const
 {
-    return etRectangle;
+    return ElementType::etRectangle;
 }
 
 Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode mode) : 
@@ -631,7 +631,7 @@ RECT Arrow::getPaintBoundingRect()
 
 ImageEditor::ElementType Arrow::getType() const
 {
-    return etArrow;
+    return ElementType::etArrow;
 }
 
 Selection::Selection(Canvas* canvas, int startX, int startY, int endX,int endY) : MovableElement(canvas)
@@ -648,7 +648,7 @@ void Selection::render(Painter* gr)
 
 ImageEditor::ElementType Selection::getType() const
 {
-    return etSelection;
+    return ElementType::etSelection;
 }
 
 void Selection::createGrips()
@@ -662,7 +662,7 @@ FilledRectangle::FilledRectangle(Canvas* canvas, int startX, int startY, int end
 
 ElementType FilledRectangle::getType() const
 {
-    return etBlurringRectangle;
+    return ElementType::etBlurringRectangle;
 }
 
 BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate) : MovableElement(canvas)
@@ -728,7 +728,7 @@ void BlurringRectangle::render(Painter* gr)
 
 ImageEditor::ElementType BlurringRectangle::getType() const
 {
-    return etBlurringRectangle;
+    return ElementType::etBlurringRectangle;
 }
 
 
@@ -739,7 +739,7 @@ PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int start
 
 ElementType PixelateRectangle::getType() const
 {
-    return etPixelateRectangle;
+    return ElementType::etPixelateRectangle;
 }
 
 
@@ -768,7 +768,7 @@ void RoundedRectangle::render(Painter* gr)
 
 ImageEditor::ElementType RoundedRectangle::getType() const
 {
-    return etRoundedRectangle;
+    return ElementType::etRoundedRectangle;
 }
 
 FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY) : RoundedRectangle(canvas, startX, startY, endX,endY, true)
@@ -778,7 +778,7 @@ FilledRoundedRectangle::FilledRoundedRectangle(Canvas* canvas, int startX, int s
 
 ImageEditor::ElementType FilledRoundedRectangle::getType() const
 {
-    return etFilledRoundedRectangle;
+    return ElementType::etFilledRoundedRectangle;
 }
 
 Ellipse::Ellipse(Canvas* canvas, bool filled /*= false */) : MovableElement(canvas)
@@ -837,10 +837,10 @@ void Ellipse::createGrips()
     grips_.resize(8);
     MovableElement::createGrips();
     //btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight, 
-        grips_.erase(grips_.begin() + btTopRight);
-        grips_.erase(grips_.begin() + btTopLeft);
-            grips_.erase(grips_.begin() + btBottomLeft);
-    grips_.erase(grips_.begin() + btBottomRight);
+        grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopRight));
+        grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopLeft));
+            grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btBottomLeft));
+    grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btBottomRight));
 }
 
 RECT Ellipse::getPaintBoundingRect()
@@ -859,7 +859,7 @@ RECT Ellipse::getPaintBoundingRect()
 
 ImageEditor::ElementType Ellipse::getType() const
 {
-    return etEllipse;
+    return ElementType::etEllipse;
 }
 
 bool Ellipse::isItemAtPos(int x, int y)
@@ -885,7 +885,7 @@ FilledEllipse::FilledEllipse(Canvas* canvas) : Ellipse(canvas, true)
 
 ImageEditor::ElementType FilledEllipse::getType() const
 {
-    return etFilledEllipse;
+    return ElementType::etFilledEllipse;
 }
 
 StepNumber::StepNumber(Canvas* canvas, int startX, int startY, int endX, int endY, int number, int fontSize): MovableElement(canvas) {
@@ -938,7 +938,7 @@ RECT StepNumber::getPaintBoundingRect() {
 }
 
 ElementType StepNumber::getType() const {
-    return etStepNumber;
+    return ElementType::etStepNumber;
 }
 
 int StepNumber::recalcRadius() {

@@ -63,7 +63,7 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
         SetScrollOffset(0, 0);
         SetScrollSize(sz);
         canvas_->setCallback( this );
-        canvas_->setDrawingToolType(Canvas::dtRectangle);
+        canvas_->setDrawingToolType(DrawingToolType::dtRectangle);
     }
 }
 
@@ -220,7 +220,7 @@ LRESULT CImageEditorView::OnSetCursor(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
     if ( PtInRect(&clientRect, cursorPos ) && PtInRect(&canvasRect, pt) ) {
         SetCursor(getCachedCursor(canvas_->getCursor()));
     } else {
-        SetCursor(getCachedCursor(ctDefault));
+        SetCursor(getCachedCursor(CursorType::ctDefault));
     }
     return 0;
 }
@@ -253,34 +253,34 @@ HCURSOR CImageEditorView::getCachedCursor(CursorType cursorType)
     }
     LPCTSTR lpCursorName = 0;
     switch( cursorType ) {
-        case ctEdit:
+        case CursorType::ctEdit:
             lpCursorName = IDC_IBEAM;
             break;
-        case ctResizeVertical:
+        case CursorType::ctResizeVertical:
             lpCursorName = IDC_SIZENS;
             break;
-        case ctResizeHorizontal:
+        case CursorType::ctResizeHorizontal:
             lpCursorName = IDC_SIZEWE;
             break;
-        case ctResizeDiagonalMain:
+        case CursorType::ctResizeDiagonalMain:
             lpCursorName = IDC_SIZENWSE;
             break;
-        case ctResizeDiagonalAnti:
+        case CursorType::ctResizeDiagonalAnti:
             lpCursorName = IDC_SIZENESW;
             break;
         
-        case ctMove:
+        case CursorType::ctMove:
             lpCursorName = IDC_SIZEALL;
             break;
-        case ctCross:
+        case CursorType::ctCross:
             cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_CROSSHAIRCURSOR));
             cursorCache_[cursorType] = cur;
             return cur;
-        case ctColorPicker:
+        case CursorType::ctColorPicker:
             cur = LoadCursor(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDC_COLORPICKERCURSOR));
             cursorCache_[cursorType] = cur;
             return cur;
-        case ctBrush:
+        case CursorType::ctBrush:
             if ( brushCursorCache_[penSize] ) {
                 return brushCursorCache_[penSize] ;
             }

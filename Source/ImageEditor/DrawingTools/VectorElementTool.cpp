@@ -30,7 +30,7 @@ VectorElementTool::VectorElementTool( Canvas* canvas, ElementType type ) : MoveA
 
 ImageEditor::CursorType VectorElementTool::getCursor(int x, int y)
 {
-    return ctCross;
+    return CursorType::ctCross;
 }
 
 }

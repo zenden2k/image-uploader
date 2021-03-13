@@ -2,9 +2,11 @@
 // Declaration of the CAddDirectoryServerDialog
 
 #pragma once
-#include "atlheaders.h"
-#include "resource.h"       // main symbols
+
 #include <vector>
+
+#include "atlheaders.h"
+#include "resource.h"   
 #include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/DialogIndirect.h"
 
@@ -16,7 +18,6 @@ class CAddDirectoryServerDialog :
 {
 public:
     CAddDirectoryServerDialog(CUploadEngineList* uploadEngineList);
-    ~CAddDirectoryServerDialog();
     enum { IDD = IDD_ADDDIRECTORYSERVERDLG, IDC_PRESETMENU_FIRST_ID = 15000,IDC_PRESETMENU_LAST_ID = 15100,
         IDC_PRESETMENU_SHARED_FOLDER_FIRST_ID=15200,  IDC_PRESETMENU_SHARED_FOLDER_LAST_ID = 15400};
 
@@ -47,7 +48,7 @@ public:
     LRESULT OnPresetMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnPresetSharedFolderMenuItemClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-    CString createdServerName();
+    CString createdServerName() const;
 protected:
     void GenerateDownloadLink();
     void GenerateExampleUrl();

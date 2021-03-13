@@ -14,7 +14,7 @@ class CAddFtpServerDialog :
 {
 public:
     CAddFtpServerDialog(CUploadEngineList* uploadEngineList);
-    ~CAddFtpServerDialog();
+
     enum { IDD = IDD_ADDFTPSERVERDIALOG };
 
     BEGIN_MSG_MAP(CAddFtpServerDialog)

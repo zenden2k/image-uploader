@@ -262,7 +262,6 @@ bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, b
     return TRUE;
 }
 
-// ������ ����� ���� ��� ������ ������ �������� ����� �� ������
 LRESULT CMainDlg::OnDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     ThumbsView.DeleteSelected();
@@ -409,9 +408,8 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     // TODO: Edit this bullshit
     CString EditorCmd = Settings.ImageEditorPath;
-    CString EditorCmdLine ;
     EditorCmd.Replace(_T("%1"), FileName);
-    EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
+    CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
     TCHAR FilePathBuffer[256];
     WinUtils::ExtractFilePath(FileName, FilePathBuffer, ARRAY_SIZE(FilePathBuffer));

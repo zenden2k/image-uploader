@@ -87,13 +87,13 @@ void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
 }
 
 void CWTLBrowserView::setOnNavigateComplete2(std::function<void(const CString&)> cb) {
-    onNavigateComplete2_ = cb;
+    onNavigateComplete2_ = std::move(cb);
 }
 
 void CWTLBrowserView::setOnDocumentComplete(std::function<void(const CString&)> cb) {
-    onDocumentComplete_ = cb;
+    onDocumentComplete_ = std::move(cb);
 }
 
 void CWTLBrowserView::setOnNavigateError(std::function<bool(const CString&, LONG)> cb) {
-    onNavigateError_ = cb;
+    onNavigateError_ = std::move(cb);
 }

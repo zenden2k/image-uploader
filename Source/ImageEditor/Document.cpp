@@ -43,15 +43,15 @@ Document::Document(const wchar_t* fileName) {
 }
 
 Document::Document(std::shared_ptr<Gdiplus::Bitmap> sourceImage,  bool hasTransparentPixels ) {
-    currentImage_ = sourceImage;
+    currentImage_ = std::move(sourceImage);
     hasTransparentPixels_ = hasTransparentPixels;
     init();
 }
 
 Document::~Document()
 {
-    for( size_t i = 0; i < history_.size(); i++ ) {
-        delete[] history_[i].data;
+    for (auto& i : history_) {
+        delete[] i.data;
     }
     delete currentCanvas_;
 }
@@ -64,15 +64,6 @@ void Document::init() {
         currentCanvas_ = new Gdiplus::Graphics( currentImage_.get() );
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
-    //currentCanvas_->Clear( Gdiplus::Color( 150, 0, 0 ) );
-
-    /*
-    ������ �����*/ 
-    /*for ( int i = 0; i < currentImage_->GetWidth() /  AffectedSegments::kSegmentSize; i++ ) {
-        Pen pen(Color::DarkGray);
-        currentCanvas_->DrawLine(&pen, i * AffectedSegments::kSegmentSize, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetHeight() );
-        currentCanvas_->DrawLine(&pen, 0, i * AffectedSegments::kSegmentSize, currentImage_->GetWidth(),  i * AffectedSegments::kSegmentSize  );
-    }*/
 }
 
 void Document::beginDrawing(bool cloneImage) {

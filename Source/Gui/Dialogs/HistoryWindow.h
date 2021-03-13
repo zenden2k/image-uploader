@@ -34,12 +34,12 @@ class CHistoryReader;
 // CHistoryWindow
 
 constexpr int ID_OPENINBROWSER = 13000;
-constexpr int ID_COPYTOCLIPBOARD = (ID_OPENINBROWSER + 1);
-constexpr int ID_VIEWBBCODE = (ID_OPENINBROWSER + 2);
-constexpr int ID_OPENFOLDER = (ID_OPENINBROWSER + 3);
-constexpr int ID_EDITFILEONSERVER (ID_OPENINBROWSER + 4);
-constexpr int ID_DELETEFILEONSERVER = (ID_OPENINBROWSER + 5);
-constexpr int WM_MY_OPENHISTORYFILE = (WM_USER + 101);
+constexpr int ID_COPYTOCLIPBOARD = ID_OPENINBROWSER + 1;
+constexpr int ID_VIEWBBCODE = ID_OPENINBROWSER + 2;
+constexpr int ID_OPENFOLDER = ID_OPENINBROWSER + 3;
+constexpr int ID_EDITFILEONSERVER = ID_OPENINBROWSER + 4;
+constexpr int ID_DELETEFILEONSERVER = ID_OPENINBROWSER + 5;
+constexpr int WM_MY_OPENHISTORYFILE = WM_USER + 101;
 
 class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
     public CDialogResize <CHistoryWindow>,
@@ -123,7 +123,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         CString historyFolder;
         CWizardDlg* wizardDlg_;
         void LoadHistory();
-        void OpenInBrowser(const TreeItem* item);
+        void OpenInBrowser(const TreeItem* item) const;
         void applyFilters();
         void dateFromCheckboxChanged();
         void initSearchForm();

@@ -20,12 +20,12 @@
 
 #include "SettingsDlg.h"
 
-#include "traysettings.h"
-#include "hotkeysettings.h"
+#include "TraySettings.h"
+#include "HotkeySettings.h"
 #include "ScreenshotSettingsPage.h"
 #include "ThumbSettingsPage.h"
-#include "generalsettings.h"
-#include "uploadSettingsPage.h"
+#include "GeneralSettings.h"
+#include "UploadSettingsPage.h"
 #include "VideoGrabberParams.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
@@ -36,16 +36,9 @@ CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
 {
     CurPage = -1;
     PageToShow = Page;
-    ZeroMemory(Pages, sizeof(Pages));
+    memset(&Pages, 0, sizeof(Pages));
     uploadEngineManager_ = uploadEngineManager;
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
-}
-
-CSettingsDlg::~CSettingsDlg()
-{
-    /*for (int i = 0; i < SettingsPageCount; i++) {
-        delete Pages[i];
-    }*/
 }
 
 LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -124,10 +117,10 @@ LRESULT CSettingsDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
 
 LRESULT CSettingsDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    for (int i = 0; i < SettingsPageCount; i++) {
-        if (Pages[i]) {
-            ::DestroyWindow(Pages[i]->PageWnd);
-            delete Pages[i];
+    for (auto& page : Pages) {
+        if (page) {
+            ::DestroyWindow(page->PageWnd);
+            delete page;
         }
     }
     return 0;
@@ -165,8 +158,6 @@ bool CSettingsDlg::ShowPage(int idPage)
     CurPage = idPage;
 
     m_SettingsPagesListBox.SetCurSel(CurPage);
-    /*if(CurPage !=    TabCtrl_GetCurSel(GetDlgItem(IDC_TABCONTROL)))
-    TabCtrl_SetCurSel(GetDlgItem(IDC_TABCONTROL), CurPage);*/
     return true;
 }
 
@@ -193,8 +184,8 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     }
     GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
     SetTimer(kStatusLabelTimer, 3000);
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.SaveSettings();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->SaveSettings();
     return 0;
 }
 

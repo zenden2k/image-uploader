@@ -34,13 +34,13 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
-    const auto ver = AppParams::instance()->GetAppVersion();
+    auto* ver = AppParams::instance()->GetAppVersion();
     auto* translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
@@ -90,7 +90,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     //memoText += CString(T_R("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
     memoText += CString(TR("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
     // \u200E is Unicode Left-To-Right order mark
-    // We need to use it to display URLs properly when RTL language is choosen
+    // We need to use it to display URLs properly when RTL language is chosen
     memoText += CString(L"WTL")+ L"\t\thttp://sourceforge.net/projects/wtl/\u200E\r\n";
     memoText += CString(L"libcurl") + L"\t\thttp://curl.haxx.se/libcurl/\u200E\r\n";
 //#ifdef USE_OPENSSL

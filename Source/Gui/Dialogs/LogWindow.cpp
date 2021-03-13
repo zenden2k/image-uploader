@@ -65,9 +65,9 @@ LRESULT CLogWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 
 void CLogWindow::WriteLogImpl(const DefaultLogger::LogEntry& entry)
 {
-    BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
+    auto* settings = ServiceLocator::instance()->basicSettings();
     MsgList.AddString(entry.MsgType, entry.Sender.c_str(), entry.Msg.c_str(), entry.Info.c_str(), entry.Time.c_str());
-    if (entry.MsgType == ILogger::logError && Settings.AutoShowLog) {
+    if (entry.MsgType == ILogger::logError && settings->AutoShowLog) {
         Show();
     }
 }
