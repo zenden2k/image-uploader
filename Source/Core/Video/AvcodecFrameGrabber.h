@@ -6,9 +6,10 @@
 class AvcodecFrameGrabberPrivate;
 
 class AvcodecFrameGrabber: public AbstractFrameGrabber {
+
     public:
         AvcodecFrameGrabber();
-        ~AvcodecFrameGrabber();
+        ~AvcodecFrameGrabber() override;
         bool open(const std::string& fileName) override;
         bool seek(int64_t time) override;
         AbstractVideoFrame* grabCurrentFrame() override;

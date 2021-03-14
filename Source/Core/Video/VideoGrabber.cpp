@@ -42,9 +42,7 @@ public:
         isRunning_ = false;
     }
 
-    virtual ~VideoGrabberRunnable() {
-
-    }
+    virtual ~VideoGrabberRunnable() = default;
 
     void cancel()
     {
@@ -66,7 +64,12 @@ public:
         if ( !grabber ) {
             return;
         }
-        if ( !grabber->open(videoGrabber_->fileName_) ) {
+        try {
+            if (!grabber->open(videoGrabber_->fileName_)) {
+                throw std::runtime_error("Failed to open video file");
+            }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
 
             if ( videoGrabber_->onFinished_ ) {
                 videoGrabber_->onFinished_();
@@ -81,26 +84,30 @@ public:
             if ( canceled_) {
                 break;
             }
-            int64_t curTime = static_cast<int64_t>(( i + 0.5 ) * step);
-            
-            grabber->seek(curTime);
-            AbstractVideoFrame *frame =  grabber->grabCurrentFrame();
-            if (!frame ) {
+            int64_t curTime = static_cast<int64_t>(( i + 0.5 ) * static_cast<double>(step));
+            AbstractVideoFrame* frame = nullptr;
+            try {
                 grabber->seek(curTime);
-                frame =  grabber->grabCurrentFrame();
+                frame = grabber->grabCurrentFrame();
+                if (!frame) {
+                    grabber->seek(curTime);
+                    frame = grabber->grabCurrentFrame();
+                }
+            } catch (const std::exception& ex) {
+                LOG(WARNING) << ex.what();
             }
             if ( ! frame ) {
                 LOG(WARNING) <<"grabber->grabCurrentFrame returned NULL";
                 continue;
             }
-            int64_t SampleTime = frame->getTime();
-            int hours = int(SampleTime / 3600);
-            int minutes = int((long(SampleTime) / 60) % 60);
-            int seconds = int(long(long(SampleTime) % 60));
+            int64_t sampleTime = frame->getTime();
+            int hours = static_cast<int>(sampleTime / 3600);
+            int minutes = static_cast<int>(sampleTime / 60 % 60);
+            int seconds = static_cast<int>(sampleTime % 60);
             std::string s = str(boost::format("%02d:%02d:%02d") % hours % minutes % seconds);
 
             if ( /*frame && */videoGrabber_->onFrameGrabbed_ ) {
-                videoGrabber_->onFrameGrabbed_(s, SampleTime, frame->toImage());
+                videoGrabber_->onFrameGrabbed_(s, sampleTime, frame->toImage());
             }
             delete frame;
         }

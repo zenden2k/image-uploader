@@ -38,11 +38,12 @@
     <ProjectGuid>{0F66AC48-52A3-4F8A-90A5-809A2B331FF9}</ProjectGuid>
     <RootNamespace>ExplorerIntegration</RootNamespace>
     <Keyword>AtlProj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -56,7 +57,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -69,7 +70,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release optimized|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <UseOfAtl>false</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -193,7 +194,6 @@
       <DllDataFileName />
       <InterfaceIdentifierFileName>ExplorerIntegration_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>ExplorerIntegration_p.c</ProxyFileName>
-      <ValidateAllParameters>false</ValidateAllParameters>
       <OutputDirectory>$(ProjectDir)Generated</OutputDirectory>
     </Midl>
     <ClCompile>
@@ -443,7 +443,6 @@
       <DllDataFileName />
       <InterfaceIdentifierFileName>ExplorerIntegration_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>ExplorerIntegration_p.c</ProxyFileName>
-      <ValidateAllParameters>false</ValidateAllParameters>
     </Midl>
     <ClCompile>
       <AdditionalOptions>/MP$(NUMBER_OF_PROCESSORS) /Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
@@ -461,6 +460,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -511,6 +511,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <ForcedIncludeFiles>stdafx.h</ForcedIncludeFiles>
       <AdditionalOptions>/Zc:threadSafeInit- %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>

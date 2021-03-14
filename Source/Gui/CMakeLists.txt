@@ -40,6 +40,7 @@ set(SRC_LIST
     ../Core/Video/GdiPlusImage.cpp
     ../Core/Video/VideoGrabber.cpp
     ../Core/Video/VideoUtils.cpp
+	../Core/Video/FrameGrabberException.cpp
     ../Core/Upload/Filters/ImageConverterFilter.cpp
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
@@ -210,6 +211,7 @@ set(HEADER_LIST
     ../Core/Video/GdiPlusImage.h
     ../Core/Video/VideoGrabber.h
     ../Core/Video/VideoUtils.h
+	../Core/Video/FrameGrabberException.cpp
     ../Core/Upload/Filters/ImageConverterFilter.h
     ../Core/Upload/Filters/SizeExceedFilter.h
     ../Core/Upload/Filters/UrlShorteningFilter.h

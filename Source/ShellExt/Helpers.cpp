@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <string>
+#include <memory>
 
 #include "Core/CommonDefs.h"
 #include "../3rdpart/Registry.h"
