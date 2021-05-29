@@ -105,7 +105,7 @@ bool CUploadDlg::startUpload() {
     if (!MainDlg) {
         return false;
     }
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     
     #if  WINVER  >= 0x0601
         if(ptl)
@@ -138,7 +138,7 @@ bool CUploadDlg::startUpload() {
         task->setIndex(i);
         task->setIsImage(isImage);
         task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
-        task->setUrlShorteningServer(Settings.urlShorteningServer);
+        task->setUrlShorteningServer(settings->urlShorteningServer);
         using namespace std::placeholders;
         task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
         task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
@@ -251,7 +251,7 @@ int CUploadDlg::ThreadTerminated(void)
 
 bool CUploadDlg::OnShow()
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     EnableNext(false);
     ShowNext();
     ShowPrev();
@@ -281,7 +281,6 @@ bool CUploadDlg::OnShow()
     int newcode = code;
     bool Thumbs = sessionImageServer_.getImageUploadParams().CreateThumbs!=0;
 
-    // ������������� ���� ���� � ����������� �� ��������� ���������
     if(Thumbs)
     {
         if(code<4 && code>1)
@@ -293,7 +292,7 @@ bool CUploadDlg::OnShow()
             newcode=2;
     }
     resultsWindow_->SetCodeType(newcode);
-    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
+    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(settings->CodeLang));
 
     ::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;
@@ -326,10 +325,10 @@ bool CUploadDlg::OnHide()
     uploadListView_.SetModel(nullptr);
     uploadListModel_.reset();
 
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
-    Settings.CodeType = resultsWindow_->GetCodeType();
-    Settings.CodeLang = resultsWindow_->GetPage();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->UseTxtTemplate = (SendDlgItemMessage(IDC_USETEMPLATE, BM_GETCHECK) == BST_CHECKED);
+    settings->CodeType = resultsWindow_->GetCodeType();
+    settings->CodeLang = resultsWindow_->GetPage();
     return true; 
 }
 
@@ -446,7 +445,7 @@ LRESULT CUploadDlg::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT CUploadDlg::OnUploadTableDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
-    auto lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+    auto* lpnmitem = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
     int row = lpnmitem->iItem;
     viewImage(row);
     return 0;
@@ -528,7 +527,7 @@ void CUploadDlg::onSessionFinished(UploadSession* session)
 
 // This function is being executed in UI thread
 void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     int totalFileCount = session->taskCount();
@@ -550,7 +549,7 @@ void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
     updateTotalProgress();
     ThreadTerminated();
     if (successFileCount == totalFileCount) {
-        if (Settings.AutoCopyToClipboard) {
+        if (settings->AutoCopyToClipboard) {
             resultsWindow_->copyResultsToClipboard();
         }
         showUploadResultsTab();
@@ -566,9 +565,10 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
     {
         return;
     }
-    auto taskDispatcher = ServiceLocator::instance()->taskRunner();
+    auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
+
     if (fileTask->role() == UploadTask::DefaultRole && ok) {
-        UploadListItem* fps = reinterpret_cast<UploadListItem*>(task->userData());
+        UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
             return;
@@ -593,7 +593,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
     } else if (fileTask->role() == UploadTask::UrlShorteningRole && ok) {
         UploadTask* parentTask = task->parentTask();
-        UploadListItem* fps = reinterpret_cast<UploadListItem*>(parentTask->userData());
+        UploadListItem* fps = static_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
             return;
         }
@@ -612,7 +612,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-    auto dispatcher = ServiceLocator::instance()->taskRunner();
+    auto* dispatcher = ServiceLocator::instance()->taskRunner();
     if (!backgroundThreadStarted_)
     {
         dispatcher->runInGuiThread([&] {

@@ -105,12 +105,12 @@ else()
 endif()
 
 # libiucore depends on these libraries
-set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser jsoncpp sqlite3)
+set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser jsoncpp sqlite3 ssh2)
 if (NOT IU_DISABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST mega cryptopp cares)
-    if (IU_USE_OPENSSL)
-        list(APPEND COMMON_LIBS_LIST mega_openssl)
-    endif()
+    #if (IU_USE_OPENSSL)
+    #    list(APPEND COMMON_LIBS_LIST mega_openssl)
+    #endif()
 endif()
 
 if(WIN32)

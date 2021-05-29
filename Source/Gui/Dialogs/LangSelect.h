@@ -32,10 +32,8 @@
 class CLangSelect : public CDialogImpl<CLangSelect>    
 {
     public:
-        CLangSelect();
-        ~CLangSelect();
-    
         enum { IDD = IDD_LANGSELECT };
+        CString getLanguage() const;
     protected:
         BEGIN_MSG_MAP(CLangSelect)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -46,16 +44,12 @@ class CLangSelect : public CDialogImpl<CLangSelect>
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    
-        int GetNextLngFile(LPTSTR szBuffer, int nLength);
-        CString Language;
-
+   
     private:
-        WIN32_FIND_DATA wfd;
-        HANDLE findfile;
         CMyImage LogoImage;
         CComboBox langListCombo_;
         CFont boldFont_;
+        CString language_;
         void SelectLang(LPCTSTR Lang);
 };
 

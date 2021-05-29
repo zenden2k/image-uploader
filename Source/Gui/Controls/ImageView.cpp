@@ -73,9 +73,8 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
         float height = static_cast<float>(GetSystemMetrics(SM_CYSCREEN) - 50);
         float imgwidth = static_cast<float>(img->GetWidth());
         float imgheight = static_cast<float>(img->GetHeight());
-        float newheight, newwidth;
-        newwidth = imgwidth;
-        newheight = imgheight;
+        float newwidth = imgwidth;
+        float newheight = imgheight;
 
         if (newwidth > width || newheight > height) {
             float k1 = imgwidth / imgheight;

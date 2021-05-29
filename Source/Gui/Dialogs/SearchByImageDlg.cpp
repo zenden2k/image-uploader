@@ -54,10 +54,10 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
         wndAnimation_.SubclassWindow(hWnd);
         //wndAnimation_.ShowWindow(SW_HIDE);
     }
-    CommonGuiSettings& Settings = *ServiceLocator::instance()->settings<CommonGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
-    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, Settings.temporaryServer, W2U(fileName_));
+    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer, W2U(fileName_));
     seeker_->onTaskFinished.connect([this](SearchByImageTask* task, bool success, const std::string& msg) { onSeekerFinished(task, success, msg); });
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);

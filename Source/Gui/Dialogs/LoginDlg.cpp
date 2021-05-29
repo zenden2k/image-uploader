@@ -20,6 +20,8 @@
 
 #include "LoginDlg.h"
 
+#include <boost/format.hpp>
+
 #include "WizardDlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
@@ -31,7 +33,7 @@
 #include "Core/Upload/AuthTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
-#include <boost/format.hpp>
+
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -44,7 +46,7 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     uploadEngineManager_ = uem;
     
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
-        auto plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+        auto* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
         if ( plugin_ ) {
             serverSupportsBeforehandAuthorization_ = plugin_->supportsBeforehandAuthorization();
             serverSupportsLogout_ = plugin_->supportsLogout();
@@ -64,7 +66,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
     LoginInfo li = serverSettings ? serverSettings->authData : LoginInfo();
-    auto uploadEngineData = serverProfile_.uploadEngineData();
+    auto* uploadEngineData = serverProfile_.uploadEngineData();
     SetWindowText(TR("Autorization parameters"));
     CString loginLabelText = uploadEngineData->LoginLabel.empty() ? CString(TR("Login:")) : CString(U2W(uploadEngineData->LoginLabel)) + _T(":");
     SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
@@ -137,8 +139,8 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
     if (LocalizedMessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APPNAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
         return 0;
     }
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    std::map <std::string, ServerSettingsStruct>& ss = Settings.ServersSettings[serverProfile_.serverName()];
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    std::map <std::string, ServerSettingsStruct>& ss = settings->ServersSettings[serverProfile_.serverName()];
     ss.erase(WCstringToUtf8(accountName_));
 
     accountName_.Empty();
@@ -171,7 +173,7 @@ CString CLoginDlg::accountName() const
 
 void CLoginDlg::startAuthentication(AuthActionType actionType)
 {
-    auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
@@ -206,7 +208,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
         authTask->onTaskFinished.connect(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
-        auto uploadManager = ServiceLocator::instance()->uploadManager();
+        auto* uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
         uploadManager->addSingleTask(authTask);
     }
@@ -278,7 +280,7 @@ void CLoginDlg::enableControls(bool enable)
 
 
 void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
-    auto authTask = dynamic_cast<AuthTask*>(task);
+    auto* authTask = dynamic_cast<AuthTask*>(task);
     if (!authTask) {
         return;
     }

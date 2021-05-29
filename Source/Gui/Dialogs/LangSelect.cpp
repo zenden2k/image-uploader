@@ -23,50 +23,11 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
-
-// CLangSelect
-CLangSelect::CLangSelect()
-{
-    findfile = NULL;
-    memset(&wfd, 0, sizeof(wfd));
-}
-
-CLangSelect::~CLangSelect()
-{
-}
-
-int CLangSelect::GetNextLngFile(LPTSTR szBuffer, int nLength)
-{
-    *wfd.cFileName = 0;
-
-    if (!findfile)
-    {
-        findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
-        if (!findfile)
-            goto error;
-    }
-    else if (!FindNextFile(findfile, &wfd))
-        goto error;
-
-    int nLen = lstrlen(wfd.cFileName);
-
-    if (!nLen)
-        goto error;
-    lstrcpyn(szBuffer, wfd.cFileName, std::min(nLength, nLen + 1));
-
-    return TRUE;
-
-error:     // File not found
-    if (findfile)
-        FindClose(findfile);
-    return FALSE;
-}
+#include "Gui/Helpers/LangHelper.h"
 
 LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     langListCombo_ = GetDlgItem(IDC_LANGLIST);
-    TCHAR buf[256];
-    CString buf2;
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
@@ -76,30 +37,22 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     // English language is always in language list
     langListCombo_.AddString(_T("English"));
 
-    int n = 0;
-    while (GetNextLngFile(buf, sizeof(buf) / sizeof(TCHAR)) )
-    {
-        if (buf[0] == '\0' || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng")))
-            continue;
-        buf2 = WinUtils::GetOnlyFileName(buf);
-        if (buf2 == _T("English")) {
-            continue;
-        }
-        langListCombo_.AddString(buf2);
-        n++;
+    std::vector<std::wstring> languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+
+    for (const auto& language : languageList) {
+        langListCombo_.AddString(language.c_str());
     }
 
-    if (!n)
-    {
+    if (languageList.empty()) {
         EndDialog(IDOK);
-        Language = _T("English");
+        language_ = _T("English");
         return 0;
     }
 
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     // FIXME: detect system language and select corresponding language file
-    if ( !Settings.Language.IsEmpty() ) {
-            SelectLang(Settings.Language);
+    if ( !settings->Language.IsEmpty() ) {
+        SelectLang(settings->Language);
     } else  if (GetUserDefaultLangID() == 0x419) {
         SelectLang(_T("Russian"));
     } else if (GetUserDefaultLangID() == 0x0418) {
@@ -117,7 +70,7 @@ LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
     if (Index < 0) {
         return 0;
     }
-    langListCombo_.GetLBText(Index, Language);
+    langListCombo_.GetLBText(Index, language_);
     return EndDialog(wID);
 }
 
@@ -134,4 +87,8 @@ void CLangSelect::SelectLang(LPCTSTR Lang)
         return;
     }
     langListCombo_.SetCurSel(Index);
+}
+
+CString CLangSelect::getLanguage() const {
+    return language_;
 }

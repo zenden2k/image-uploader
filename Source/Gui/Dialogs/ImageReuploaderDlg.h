@@ -35,7 +35,6 @@
 #include "Core/FileDownloader.h"
 #include "WizardDlg.h"
 #include "Core/Upload/FileQueueUploader.h"
-#include "Gui/Controls/PictureExWnd.h"
 #include "Gui/Controls/CustomEditControl.h"
 #include "Core/HistoryManager.h"
 #include "Core/Upload/UploadManager.h"
@@ -164,10 +163,10 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         struct Match {
             int start;
             int length;
-            bool operator< (const Match &other ) {
+            bool operator< (const Match &other ) const {
                 return start < other.start;
             }
-            bool operator== (const Match &other ) {
+            bool operator== (const Match &other ) const {
                 return start == other.start;
             }
         };

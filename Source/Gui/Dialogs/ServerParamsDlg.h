@@ -77,10 +77,6 @@ class CServerParamsDlg :
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;
         void doAuthChanged();
-
-
-
-
 };
 
 

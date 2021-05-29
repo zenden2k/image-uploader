@@ -11,10 +11,12 @@ class CUploadEngineList;
 class ServerListManager
 {
 public:
+    enum class ServerType { stFTP = 0, stSFTP = 1 };
+
     ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings);
     ~ServerListManager()=default;
-    std::string addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
-        const std::string &remoteDirectory, const std::string &downloadUrl);
+    std::string addFtpServer(ServerType serverType, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
+        const std::string &remoteDirectory, const std::string &downloadUrl, const std::string& privateKeyFile);
     std::string addDirectoryAsServer(const std::string &name, const std::string &directory, const std::string &downloadUrl, bool convertUncPath);
 protected:
     DISALLOW_COPY_AND_ASSIGN(ServerListManager);

@@ -289,18 +289,19 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     return true;
 }
 
- void CLogoSettings::UpdateProfileList()
- {
+void CLogoSettings::UpdateProfileList() {
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
 
     bool found = false;
     for (auto it = сonvert_profiles_.begin(); it != сonvert_profiles_.end(); ++it) {
-      GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
-      if(it->first == CurrentProfileName) found = true;
+        GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+        if (it->first == CurrentProfileName) found = true;
     }
-    if(!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(CurrentProfileName.GetString())); 
- }
+    if (!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),
+                       reinterpret_cast<LPARAM>(CurrentProfileName.GetString()));
+}
+
  LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
  {
     CInputDialog dlg(TR("New Profile Name"), TR("Enter new profile name:"), CurrentProfileOriginalName);

@@ -33,24 +33,26 @@
 #include "Core/Utils/DesktopUtils.h"
 
 namespace {
-    SYSTEMTIME GregorianDateToSystemTime(const boost::gregorian::date& d) {
 
-        if (d.is_special()) {
-            throw std::out_of_range("Cannot handle such date");
-        }
+SYSTEMTIME GregorianDateToSystemTime(const boost::gregorian::date& d) {
 
-        SYSTEMTIME st;
-
-        boost::gregorian::date::ymd_type ymd = d.year_month_day();
-        std::memset(&st, 0, sizeof(st));
-
-        st.wYear = ymd.year;
-        st.wMonth = ymd.month;
-        st.wDay = ymd.day;
-        st.wDayOfWeek = d.day_of_week();
-
-        return st;
+    if (d.is_special()) {
+        throw std::out_of_range("Cannot handle such date");
     }
+
+    SYSTEMTIME st;
+
+    boost::gregorian::date::ymd_type ymd = d.year_month_day();
+    std::memset(&st, 0, sizeof(st));
+
+    st.wYear = ymd.year;
+    st.wMonth = ymd.month;
+    st.wDay = ymd.day;
+    st.wDayOfWeek = d.day_of_week();
+
+    return st;
+}
+
 }
 
 // CHistoryWindow

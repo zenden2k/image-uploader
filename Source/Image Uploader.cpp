@@ -275,7 +275,7 @@ public:
                 //*DlgCreationResult = 1;
                 return 0;
             }
-            settings_.Language = LS.Language;
+            settings_.Language = LS.getLanguage();
             lang_.LoadLanguage(settings_.Language);
             settings_.SaveSettings();
         }

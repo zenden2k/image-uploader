@@ -20,7 +20,7 @@
 
 #include "UploadParamsDlg.h"
 
-#include "Gui/Dialogs/wizarddlg.h"
+#include "Gui/Dialogs/WizardDlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"

@@ -38,18 +38,18 @@ const TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] 
 // CServerSelectorControl
 CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow)
 {
-        showDefaultServerItem_ = false;
-        serversMask_ = smImageServers | smFileServers;
-        showImageProcessingParams_ = true;
-        showParamsLink_ = true;
-        defaultServer_ = defaultServer;
-        iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
-        previousSelectedServerIndex = -1;
-        uploadEngineManager_ = uploadEngineManager;
-        isChildWindow_ = isChildWindow;
-        showFileSizeLimits_ = false;
-        hMyDlgTemplate_ = nullptr;
-        isPopingUp_ = false;
+    showDefaultServerItem_ = false;
+    serversMask_ = smImageServers | smFileServers;
+    showImageProcessingParams_ = true;
+    showParamsLink_ = true;
+    defaultServer_ = defaultServer;
+    iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
+    previousSelectedServerIndex = -1;
+    uploadEngineManager_ = uploadEngineManager;
+    isChildWindow_ = isChildWindow;
+    showFileSizeLimits_ = false;
+    hMyDlgTemplate_ = nullptr;
+    isPopingUp_ = false;
 }
 
 CServerSelectorControl::~CServerSelectorControl()

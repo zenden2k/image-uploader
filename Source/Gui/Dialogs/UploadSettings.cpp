@@ -756,7 +756,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             lastMenuBreakIndex = menuItemCount;
         }
         
-        mi.dwTypeData = TR_CONST("Add FTP server...");
+        mi.dwTypeData = TR_CONST("Add FTP/SFTP server...");
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 

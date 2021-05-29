@@ -25,8 +25,7 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/MyImage.h"
-#include "Gui/Dialogs/settingspage.h"
+#include "Gui/Dialogs/SettingsPage.h"
 
 class CGeneralSettings : public CDialogImpl<CGeneralSettings>, 
                           public CSettingsPage    
@@ -34,8 +33,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
     public:
         enum { IDD = IDD_GENERALSETTINGS };
 
-        CGeneralSettings();
-        virtual ~CGeneralSettings();
+        virtual ~CGeneralSettings() = default;
         bool Apply() override;
 
     protected:
@@ -51,11 +49,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        int GetNextLngFile(LPTSTR szBuffer, int nLength);
         
-        HANDLE findfile;
-        CMyImage img;
-        WIN32_FIND_DATA wfd;
         CComboBox langListCombo_;
         CToolTipCtrl toolTipCtrl_;
 };

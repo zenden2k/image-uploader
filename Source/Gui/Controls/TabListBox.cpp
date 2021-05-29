@@ -20,15 +20,6 @@ limitations under the License.
 
 #include "TabListBox.h"
 
-// CTabListBox
-CTabListBox::CTabListBox()
-{
-}
-
-CTabListBox::~CTabListBox()
-{
-}
-
 LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);

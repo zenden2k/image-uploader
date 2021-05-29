@@ -18,10 +18,6 @@
 
 */
 
-// ImageDownloaderDlg.h : Declaration of the CImageDownloaderDlg
-// 
-// This dialog window shows technical information 
-// about  video/audio file that user had selected
 #ifndef IMAGEDOWNLOADERDLG_H
 #define IMAGEDOWNLOADERDLG_H
 
@@ -98,7 +94,5 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         std::shared_ptr<DownloadTask> downloadTask_;
         bool isRunning_;
 };
-
-
 
 #endif // IMAGEDOWNLOADERDLG_H

@@ -18,8 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "ServerParamsDlg.h"
+
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerFolderSelect.h"
@@ -77,13 +77,12 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     SendDlgItemMessage(IDC_DOAUTH, BM_SETCHECK, (li.DoAuth ? BST_CHECKED : BST_UNCHECKED));
     doAuthChanged();
-    int result = 1;
+
     if (focusOnLoginControl_ && m_ue->NeedAuthorization) {
         GuiTools::SetCheck(m_hWnd, IDC_DOAUTH, true);
         doAuthChanged();
         ::SetFocus(GetDlgItem(IDC_LOGINEDIT));
         SendDlgItemMessage(IDC_LOGINEDIT, EM_SETSEL, 0, -1);
-        result = 0;
     }
 
     GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, !oldLogin_.IsEmpty());
@@ -101,7 +100,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
             m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
         }
     }
-    CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle()) ;
+    CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle());
 
     SetDlgItemText(IDC_FOLDERNAMELABEL, folderTitle.IsEmpty() ? (CString("<") + TR("not selected") + CString(">")) : folderTitle);
 

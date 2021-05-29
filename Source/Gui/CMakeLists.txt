@@ -125,6 +125,7 @@ set(SRC_LIST
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
+	Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
     ../3rdpart/QColorQuantizer.cpp
@@ -296,6 +297,7 @@ set(HEADER_LIST
     Controls/TabListBox.h
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
+	Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
     ../3rdpart/QColorQuantizer.h

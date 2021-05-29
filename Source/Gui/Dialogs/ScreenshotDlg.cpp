@@ -33,7 +33,6 @@ CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
 
-#define LOADICO16(x) (HICON)LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(x), IMAGE_ICON    , 16,16,0)
 LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -49,8 +48,6 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
     CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
     CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONWINDOWS));
-    //CommandBox.AddString(TR(""),0, IDC_VIEWSETTINGS,LOADICO16(IDI_ADDITIONAL));
-    //CommandBox.AddString(TR("Close"), 0, IDCANCEL,LOADICO16(IDI_CLOSE),true, 2);
     
     SetWindowText(TR("Screen Capture"));
     TRC(IDC_DELAYLABEL, "Timeout:");
@@ -167,14 +164,14 @@ CaptureMode CScreenshotDlg::captureMode() const
 
 LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings->ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
-    Settings->ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
+    settings->ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 
     const int itemIndex = m_monitorCombobox.GetCurSel();
     if (itemIndex >= 0) {
         MonitorMode monitorMode = static_cast<MonitorMode>(m_monitorCombobox.GetItemData(itemIndex));
-        Settings->ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
+        settings->ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
     }
     
     return 0;

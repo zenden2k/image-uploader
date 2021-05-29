@@ -32,11 +32,12 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
 }
 
 
-std::string ServerListManager::addFtpServer(const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl)
+std::string ServerListManager::addFtpServer(ServerType serverType, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl, 
+    const std::string& privateKeyFile)
 {
     SimpleXml xml;
     SimpleXmlNode root = xml.getRoot("Servers");
-    std::string newName = name + " (ftp)";
+    std::string newName = name + (serverType == ServerType::stSFTP ? " (sftp)" : " (ftp)");
 
     if ( uploadEngineList_->byName(newName) ) {
         throw std::runtime_error("Server with such name already exists.");
@@ -44,7 +45,7 @@ std::string ServerListManager::addFtpServer(const std::string &name, const std::
 
     SimpleXmlNode serverNode = root.GetChild("Server");
     serverNode.SetAttribute("Name", newName);
-    serverNode.SetAttribute("Plugin", "ftp");
+    serverNode.SetAttribute("Plugin", serverType == ServerType::stSFTP ? "sftp" : "ftp");
     serverNode.SetAttribute("FileHost", 1);
     serverNode.SetAttribute("Authorize", 1);
 
@@ -69,6 +70,10 @@ std::string ServerListManager::addFtpServer(const std::string &name, const std::
     ss.setParam("hostname",serverName);
     ss.setParam("folder",remoteDirectory);
     ss.setParam("downloadPath",downloadUrl);
+
+    if (serverType == ServerType::stSFTP) {
+        ss.setParam("privateKeyPath", privateKeyFile);
+    }
     ss.authData.Login = login;
     ss.authData.Password = password;
     ss.authData.DoAuth = !login.empty();

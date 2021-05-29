@@ -637,8 +637,8 @@ bool CImageReuploaderDlg::pasteHtml() {
 }
 
 bool CImageReuploaderDlg::OnClose() {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.ImageReuploaderSettings.PasteHtmlOnCtrlV = GuiTools::GetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->ImageReuploaderSettings.PasteHtmlOnCtrlV = GuiTools::GetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX);
     return true;
 }
 

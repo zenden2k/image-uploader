@@ -7,6 +7,7 @@
 #include <vector>
 #include <functional>
 #include <mutex>
+
 #include "atlheaders.h"
 #include "Core/Utils/CoreTypes.h"
 
@@ -85,7 +86,7 @@ public:
 
 class UploadListModel {
 public:
-    UploadListModel(std::shared_ptr<UploadSession> session);
+    explicit UploadListModel(std::shared_ptr<UploadSession> session);
     ~UploadListModel();
     CString getItemText(int row, int column) const;
     COLORREF getItemTextColor(int row) const;

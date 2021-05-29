@@ -34,6 +34,24 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
 
+namespace {
+
+bool ExtractLinks(CString text, std::vector<CString>& result) {
+    pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
+    std::string str = WCstringToUtf8(text);
+    size_t pos = 0;
+    while (pos <= str.length()) {
+        if (reg.search(str, pos)) {
+            pos = reg.get_match_end() + 1;
+            CString temp = Utf8ToWstring(reg[1]).c_str();
+            result.push_back(temp);
+        } else
+            break;
+    }
+    return true;
+}
+
+}
 
 // CImageDownloaderDlg
 CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) {
@@ -91,25 +109,6 @@ LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 {
     RemoveClipboardFormatListener(m_hWnd);
     return 0;
-}
-
-bool ExtractLinks(CString text, std::vector<CString> &result)
-{
-    pcrepp::Pcre reg("((http|https|ftp)://[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)", "imcu");
-    std::string str = WCstringToUtf8(text);
-    size_t pos = 0;
-    while (pos <= str.length()) 
-    {
-        if( reg.search(str, pos)) 
-        { 
-            pos = reg.get_match_end()+1;
-            CString temp = Utf8ToWstring(reg[1]).c_str();
-            result.push_back(temp);
-        }
-        else
-            break;
-    }
-    return true;
 }
 
 LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

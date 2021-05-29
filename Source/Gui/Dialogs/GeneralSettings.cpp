@@ -26,42 +26,7 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/WtlGuiSettings.h"
-
-// CGeneralSettings
-CGeneralSettings::CGeneralSettings()
-{
-    findfile = nullptr;
-    memset(&wfd, 0, sizeof(wfd));
-}
-
-CGeneralSettings::~CGeneralSettings()
-{
-
-}
-    
-int CGeneralSettings::GetNextLngFile(LPTSTR szBuffer, int nLength)
-{
-    *wfd.cFileName = 0;
-    
-    if(!findfile)
-    {
-        findfile = FindFirstFile(WinUtils::GetAppFolder() + "Lang\\*.lng", &wfd);
-        if(!findfile) goto error;
-    }
-    else if(!FindNextFile(findfile,&wfd)) goto error;
-    
-    int nLen = lstrlen(wfd.cFileName);
-
-    if(!nLen) goto error;
-
-    lstrcpyn(szBuffer, wfd.cFileName, std::min(nLength, nLen+1));
-
-    return TRUE;
-
-    error:  // File not found
-        if(findfile) FindClose(findfile);
-        return FALSE;
-}
+#include "Gui/Helpers/LangHelper.h"
 
 LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
@@ -88,24 +53,20 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     langListCombo_ = GetDlgItem(IDC_LANGLIST);
 
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
-    TCHAR buf[MAX_PATH];
-    CString buf2;
 
     langListCombo_.AddString(_T("English"));
 
-    while(GetNextLngFile(buf, sizeof(buf)/sizeof(TCHAR)))
-    {
-        if (buf[0] == '\0' || lstrcmpi(WinUtils::GetFileExt(buf), _T("lng"))) continue;
-        buf2 = WinUtils::GetOnlyFileName(buf );
-        if (buf2 == _T("English")) {
-            continue;
-        }
-        langListCombo_.AddString(buf2);
+    std::vector<std::wstring> languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+
+    for (const auto& language: languageList) {
+        langListCombo_.AddString(language.c_str());
     }
 
-    int Index = langListCombo_.FindString(0, settings->Language);
-    if(Index==-1) Index=0;
-    langListCombo_.SetCurSel(Index);
+    int index = langListCombo_.FindString(0, settings->Language);
+    if (index == -1) {
+        index = 0;
+    }
+    langListCombo_.SetCurSel(index);
 
     SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, settings->ConfirmOnExit);
     SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, settings->AutoShowLog);

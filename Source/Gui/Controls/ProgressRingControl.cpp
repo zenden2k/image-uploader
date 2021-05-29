@@ -77,8 +77,9 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
 
     
     BitBlt(hdc, 0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);
-    if (!wParam)
+    if (!wParam) {
         EndPaint(&ps);
+    }
     bHandled = true;
     return 0;
 }

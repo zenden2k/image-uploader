@@ -18,8 +18,8 @@
 
 */
 
-#ifndef TRAYSETTINGS_H
-#define TRAYSETTINGS_H
+#ifndef IU_GUI_DIALOGS_TRAYSETTINGS_H
+#define IU_GUI_DIALOGS_TRAYSETTINGS_H
 
 #pragma once
 #include "atlheaders.h"
@@ -81,4 +81,4 @@ protected:
 
 
 
-#endif // TRAYSETTINGS_H
+#endif

@@ -23,7 +23,6 @@
 #include <boost/format.hpp>
 #include <shlobj.h>
 
-#include "atlheaders.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"

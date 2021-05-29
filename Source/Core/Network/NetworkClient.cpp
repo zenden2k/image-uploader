@@ -44,13 +44,13 @@
 #include <openssl/engine.h>
 #endif
 
-#ifdef _MSC_VER
+/*#ifdef _MSC_VER
     #if defined(USE_OPENSSL) 
         #pragma comment(lib, "libcurl_openssl.lib")
     #else
         #pragma comment(lib, "libcurl.lib")
     #endif
-#endif
+#endif*/
 
 #if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
     #define UTF8_FILENAME(name) name
@@ -156,6 +156,7 @@ int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, 
 
         return nm->private_header_writer(data, size, nmemb);
     }
+
     return 0;
 }
 
@@ -966,7 +967,7 @@ std::string NetworkClient::getCurlInfoString(int option)
     char* buf = nullptr;
     curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &buf);
     std::string res = buf ? buf : std::string();
-    return res;
+    return res; 
 }
 
 int NetworkClient::getCurlInfoInt(int option)

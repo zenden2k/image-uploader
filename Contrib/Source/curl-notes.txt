@@ -1,6 +1,6 @@
 cd winbuild
-nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 
-nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 
+nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=yes ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86 WITH_SSH2=static
+nmake /f Makefile.vc mode=static VC=15 ENABLE_WINSSL=yes ENABLE_IPV6=yes WITH_ZLIB=static DEBUG=no ENABLE_IDN=no ENABLE_SSPI=yes RTLIBCFG=static MACHINE=x86  WITH_SSH2=static
 
 
 Add to "lib\config-win32.h"

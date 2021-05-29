@@ -104,7 +104,8 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Build\Gui\Release\sw*.dll" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "Dll\gdiplus.dll" %temp_dir%\
-
+Copy "..\Build\Gui\Release\curl-ca-bundle.crt" %temp_dir%\
+if ERRORLEVEL 1 goto CopyFailed
 
 if exist "%temp_dir%\Lang\default.lng" (
     del "%temp_dir%\Lang\default.lng"
@@ -118,7 +119,7 @@ rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader
 
 
 cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z "*"
+%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
 if ERRORLEVEL 1 goto ZipFailed
 cd ..\..\
 
@@ -127,15 +128,14 @@ if ERRORLEVEL 1 (
     echo Deleting %temp_dir%\Image Uploader.exe failed
     goto End
 )
-Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\release openssl\curl-ca-bundle.crt" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
+rem Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\
+rem if ERRORLEVEL 1 goto CopyFailed
 
-cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
-if ERRORLEVEL 1 goto ZipFailed
-cd ..\..\
+
+rem cd %temp_dir%
+rem %zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
+rem if ERRORLEVEL 1 goto ZipFailed
+rem cd ..\..\
 
 rem rmdir /q /s  %temp_dir%
 goto End

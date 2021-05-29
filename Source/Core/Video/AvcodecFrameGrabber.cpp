@@ -277,22 +277,23 @@ public:
 
                 ret = avcodec_send_packet(pCodecCtx, &packet);
                 if (ret < 0) {
-                    throw FrameGrabberException("Error sending a packet for decoding");
-                }
+                    LOG(ERROR) << "Error sending a packet for decoding";
+                } else {
 
-                ret = avcodec_receive_frame(pCodecCtx, pFrame);
+                    ret = avcodec_receive_frame(pCodecCtx, pFrame);
 
-                if (ret == AVERROR(EAGAIN)) {
-                    continue;
-                    //return false;
-                } else if (ret == AVERROR_EOF) {
-                    return false;
-                } else if (ret < 0) {
-                    throw FrameGrabberException("Error during decoding");
+                    if (ret == AVERROR(EAGAIN)) {
+                        continue;
+                        //return false;
+                    } else if (ret == AVERROR_EOF) {
+                        return false;
+                    } else if (ret < 0) {
+                        throw FrameGrabberException("Error during decoding");
+                    }
+                    frameFinished = true;
+                    av_packet_unref(&packet);
+                    break;
                 }
-                frameFinished = true;
-                av_packet_unref(&packet);
-                break;
                 
             }
 

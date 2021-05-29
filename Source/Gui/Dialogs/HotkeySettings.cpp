@@ -20,10 +20,9 @@
 
 #include "HotkeySettings.h"
 
-#include "traysettings.h"
-#include "hotkeyeditor.h"
+#include "TraySettings.h"
+#include "HotkeyEditor.h"
 #include "Gui/GuiTools.h"
-#include "Core/Scripting/API/WebBrowserPrivate_win.h"
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()

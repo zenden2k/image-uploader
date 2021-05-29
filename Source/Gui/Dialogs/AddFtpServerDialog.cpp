@@ -5,6 +5,7 @@
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Components/MyFileDialog.h"
 
 // CAddFtpServerDialog
 CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
@@ -13,11 +14,12 @@ CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
     downloadUrlEdited = false;
     serverNameEdited = false;
     uploadEngineList_ = uploadEngineList;
+    serverType_ = ServerListManager::ServerType::stFTP;
 }
 
 LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    SetWindowText(TR("Add FTP server"));
+    SetWindowText(TR("Add FTP/SFTP server"));
     TRC(IDC_CONNECTIONNAMELABEL, "Connection  name:");
     TRC(IDC_SERVERSTATIC, "Server [:port]:");
     TRC(IDC_AUTHENTICATIONLABEL, "Authenticaton:");
@@ -27,6 +29,14 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
+    TRC(IDC_SERVERTYPELABEL, "Server type:");
+    TRC(IDC_PRIVATEKEYLABEL, "Private key file:");
+
+    serverTypeComboBox_ = GetDlgItem(IDC_SERVERTYPECOMBO);
+    serverTypeComboBox_.AddString(TR("FTP"));
+    serverTypeComboBox_.AddString(TR("SFTP"));
+
+    serverTypeComboBox_.SetCurSel(static_cast<int>(ServerListManager::ServerType::stFTP));
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
@@ -49,6 +59,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
     }
 
+    onServerTypeChange();
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     SetDlgItemText(IDC_REMOTEDIRECTORYEDIT, _T("/"));
     CenterWindow(GetParent());
@@ -91,12 +102,22 @@ LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     }
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
+    serverType_ = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+    std::string privateKeyFile;
+    if (serverType_ == ServerListManager::ServerType::stSFTP) {
+        privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
 
+        if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
+            LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
+            return 0;
+        }
+    }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     ServerListManager slm(settings->SettingsFolder + "\\Servers\\", uploadEngineList_, settings->ServersSettings);
     try {
-        createdServerName_ = U2W(slm.addFtpServer(W2U(connectionName), W2U(serverName), W2U(login), W2U(password), W2U(remoteDirectory), W2U(downloadUrl)));
+        createdServerName_ = U2W(slm.addFtpServer(serverType_, W2U(connectionName), W2U(serverName), W2U(login), 
+            W2U(password), W2U(remoteDirectory), W2U(downloadUrl), privateKeyFile));
         createdServerLogin_ = login;
         EndDialog(wID);
     } catch (const std::exception& ex) {
@@ -200,4 +221,31 @@ void CAddFtpServerDialog::GenerateExampleUrl()
     CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
 
     SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");
+}
+
+LRESULT CAddFtpServerDialog::OnBnClickedBrowsePrivateKey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    IMyFileDialog::FileFilterArray filters = {
+        { TR("All files"), _T("*.*") }
+    };
+
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), TR("Choose program"), filters, false);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
+
+    SetDlgItemText(IDC_PRIVATEKEYEDIT, dlg->getFile());
+    return 0;
+}
+
+LRESULT CAddFtpServerDialog::OnServerTypeComboChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    onServerTypeChange();
+    return 0;
+}
+
+void CAddFtpServerDialog::onServerTypeChange() {
+    ServerListManager::ServerType serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+    bool enable = serverType == ServerListManager::ServerType::stSFTP;
+    GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYLABEL, enable);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYEDIT, enable);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSEPRIVATEKEYBUTTON, enable);
 }

@@ -27,7 +27,7 @@ UploadListModel::UploadListModel(std::shared_ptr<UploadSession> session) {
 }
 
 UploadListModel::~UploadListModel() {
-    for (auto it : items_) {
+    for (auto* it : items_) {
         delete it;
     }
 }
@@ -83,11 +83,11 @@ void UploadListModel::resetData() {
 
 // This callback is being executed in worker thread
 void UploadListModel::onTaskUploadProgress(UploadTask* task) {
-    UploadListItem* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
+    auto* fps = static_cast<UploadListItem*>(task->role() == UploadTask::DefaultRole ? task->userData() : task->parentTask()->userData());
     if (!fps) {
         return;
     }
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (fileTask) {
         bool isThumb = task->role() == UploadTask::ThumbRole;
         int percent = 0;
@@ -98,7 +98,7 @@ void UploadListModel::onTaskUploadProgress(UploadTask* task) {
         CString uploadSpeed = U2W(progress->speed);
         CString progressText;
         progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->uploaded)),
-            (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, (LPCTSTR)uploadSpeed);
+            (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, uploadSpeed.GetString());
 
         int columnIndex = isThumb ? 2 : 1;
         if (isThumb) {

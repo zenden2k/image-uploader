@@ -76,7 +76,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "..\Build\release optimized\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\Gui\Release\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Lang\English.lng.src"; DestDir: "{app}\Lang"; Flags: ignoreversion
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs

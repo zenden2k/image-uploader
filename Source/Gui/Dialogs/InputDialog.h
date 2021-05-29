@@ -61,4 +61,4 @@ class CInputDialog :
         CMyImage imgControl;
 };
 
-#endif // INPUTDIALOG_H
+#endif
