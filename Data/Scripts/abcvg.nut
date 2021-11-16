@@ -2,7 +2,7 @@
 function UploadFile(FileName, options) {
    
     local name = ExtractFileName(FileName);
-    local mime = GetFileMimeType(name);
+    local mime = GetFileMimeType(FileName);
 
     nm.setUrl("https://abcvg.org/server/php/");
     nm.addQueryParamFile("files[]", FileName, name, mime);

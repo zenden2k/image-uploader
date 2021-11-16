@@ -1,7 +1,7 @@
 clientId <- "4851603";
 redirectUri <- "https://oauth.vk.com/blank.html";
 redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
-apiVersion <- "5.29";
+apiVersion <- "5.131";
 token <- "";
 expiresIn <- 0;
 userId <- "";
@@ -44,6 +44,17 @@ function StringPrivacyToAccessType(s) {
 		return 2;
 	}
 	return 0;
+}
+
+function AccessTypeToPrivacy(s) {
+	if ( s == 3 ) {
+		return "nobody";
+	} else if ( s == 1 ) {
+		return "friends";
+	} else if ( s == 2 ) {
+		return "friends_of_friends";
+	}
+	return "all";
 }
 
 function OnUrlChangedCallback(data) {
@@ -167,7 +178,7 @@ function GetFolderList(list)
 		album.setId(item.id.tostring());
 		album.setTitle(item.title);
 		album.setSummary(item.description );
-		album.setAccessType(StringPrivacyToAccessType(item.privacy_view.type));
+		album.setAccessType(StringPrivacyToAccessType(item.privacy_view.category));
 		album.setViewUrl("https://vk.com/album" + userId + "_" + item.id);
 		list.AddFolderItem(album);
 	}
@@ -209,8 +220,8 @@ function CreateFolder(parentAlbum,album)
 	}
 	nm.addQueryParam("title", title);
 	nm.addQueryParam("description", summary);
-	nm.addQueryParam("privacy", accessType.tostring());
-	nm.addQueryParam("comment_privacy", accessType.tostring());
+	nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
+	nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
 	
 	nm.setUrl("https://api.vk.com/method/photos.createAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
@@ -226,7 +237,7 @@ function CreateFolder(parentAlbum,album)
 	album.setId(t.response.id.tostring());
 	album.setTitle(t.response.title);
 	album.setSummary(t.response.description);
-	album.setAccessType(StringPrivacyToAccessType(t.response.privacy_view.type));
+	album.setAccessType(StringPrivacyToAccessType(t.response.privacy_view.category));
 	album.setTitle(t.response.title);
 	album.setViewUrl("https://vk.com/album" + userId + "_" + t.response.id);
 
@@ -243,14 +254,13 @@ function ModifyFolder(album)
 	local summary = album.getSummary();
 	local accessType = album.getAccessType();
 	local parentId = album.getParentId; 
-	local strAcessType = "private";
 	
 	nm.addQueryParam("album_id", id);
 	nm.addQueryParam("title", title);
 	nm.addQueryParam("description", summary);
 	nm.addQueryParam("owner_id", userId);
-	nm.addQueryParam("privacy", accessType.tostring());
-	nm.addQueryParam("comment_privacy", accessType.tostring());
+	nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
+	nm.addQueryParam("privacy_comment", AccessTypeToPrivacy(accessType));
 	nm.setUrl("https://api.vk.com/method/photos.editAlbum?user_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 
 	nm.doPost("");
@@ -278,7 +288,7 @@ function  UploadFile(FileName, options)
 			local newAlbum = CFolderItem();
 			newAlbum.setTitle("Image Uploader");
 			newAlbum.setAccessType(3);
-			newAlbum.setSummary(tr("vk.default_album_desc", "Images uploaded by Image Uploader") +"\r\nhttp://zenden.ws/imageuploader");
+			newAlbum.setSummary(tr("vk.default_album_desc", "Images uploaded by Image Uploader") +"\r\nhttps://svistunov.dev/imageuploader");
 			
 			if ( !CreateFolder(CFolderItem(), newAlbum) ) {
 				return 0;
@@ -326,16 +336,16 @@ function  UploadFile(FileName, options)
 			local foundSize = 0;
 			local directUrl = "";
 			local thumbUrl = "";
-			//DebugMessage(nm.responseBody());
+
 			local item = t.response[0];
 			for ( local i = 0; i < item.sizes.len(); i++ ) {
 				local s = item.sizes[i];
 				if ( abs(s.width - thumbWidth) < foundThumbDist ) {
 					foundThumbDist = abs(s.width - thumbWidth);
-					thumbUrl = s.src;
+					thumbUrl = s.url;
 				}
 				if ( s.width > foundSize ) {
-					directUrl = s.src;
+					directUrl = s.url;
 					foundSize = s.width;
 				}
 			}

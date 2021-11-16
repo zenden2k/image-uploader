@@ -1,4 +1,5 @@
 session_key <- "";
+apiKey <- "KAAK63MDZJ";
 
 function doLogin() 
 { 
@@ -7,31 +8,32 @@ function doLogin()
 
 	if(login == "" || pass=="")
 	{
-		print("E-mail and password should not be empty!");
+		WriteLog("error", "E-mail and password should not be empty!");
 		return 0;
 	}
 	
-
 	nm.addQueryHeader("Expect","");
 	
-nm.setUrl("http://api.sendspace.com/rest/?method=auth.createtoken&api_key=KAAK63MDZJ&api_version=1.0&response_format=xml");
-
-   nm.doGet("");
-   local data =  nm.responseBody();
-  
-
-  
-  local ex = regexp("<token>(.+)</token>");
-  local token = "";
-		local res = ex.capture(data);
-		if(res != null){	
-			token = data.slice(res[1].begin,res[1].end);
-		
-		}
+	nm.setUrl("https://api.sendspace.com/rest/?method=auth.createtoken&api_key=" + apiKey + "&api_version=1.0&response_format=xml");
+	nm.doGet("");
+	local data =  nm.responseBody();
+    
+	local ex = regexp("<token>(.+)</token>");
+	local token = "";
+	
+	local res = ex.capture(data);
+	if(res != null){	
+		token = data.slice(res[1].begin,res[1].end);
+	}
+	
+	if (token == "") {
+		WriteLog("error", "Unable to obtain auth token!");
+		return 0;
+	}
 		
  
 	local tokened_password = md5(token + md5(pass));
-	local authUrl = "http://api.sendspace.com/rest/?method=auth.login&token="+ token+"&user_name="+login+"&tokened_password="+ tokened_password;
+	local authUrl = "https://api.sendspace.com/rest/?method=auth.login&token="+ token+"&user_name="+login+"&tokened_password="+ tokened_password;
 	nm.doGet(authUrl);
 
 	data =  nm.responseBody();
@@ -39,15 +41,13 @@ nm.setUrl("http://api.sendspace.com/rest/?method=auth.createtoken&api_key=KAAK63
 	ex = regexp("<session_key>(.+)</session_key>");
 
 	res = ex.capture(data);
-		if(res != null){	
-			session_key = data.slice(res[1].begin,res[1].end);
+	if(res != null){	
+		session_key = data.slice(res[1].begin,res[1].end);
+	}
 		
-		}
-		
-	//print("token = "+token+"\r\n"+session_key);
 	if(session_key == "")
 	{
-		print("Eror while authencation using username "+login);
+		print("Error while authentication with username " + login);
 			return 0;
 	}
 	return 1; //Success login

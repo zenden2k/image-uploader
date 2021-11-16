@@ -33,11 +33,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>	
-	<Server Name="keep4u.ru" MaxFileSize="10000000" Debug="0" Plugin="keep4u">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
 	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0">
 		<Actions>
 		</Actions>
@@ -47,11 +42,6 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
-	</Server>
-	<Server Name="funkyimg.com" Authorize="1" Plugin="funkyimg">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000" DefaultForTypes="image">
 		<Actions>
@@ -89,11 +79,6 @@
 	</Server>
 	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-	<Server Name="rgho.st" Authorize="1" FileHost="1" Debug="0" Plugin="rghost" PasswordLabel="API key">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub"/>
 	</Server>
 	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
 		<Actions>
@@ -134,12 +119,7 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
 	</Server>
-	<Server Name="jpegshare.net">
-		<Actions>
-			<Action Type="upload" Url="https://jpegshare.net/upload.php" PostParams="imgfile=%filename%;" RegExp="Ссылка для просмотра:([\s\S]+)(https://jpegshare\.net/.+\.html)&quot;([\s\S]+)\[img\](.*?)\[" AssignVars="ViewUrl:1;ImageUrl:3;"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(ViewUrl)" ImageUrlTemplate="$(ImageUrl)"/>
-	</Server>
+
 	<!--<Server Name="load.to" FileHost="1" Debug="0">
 		<Actions>
 			<Action Type="get" Url="https://www.load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
@@ -162,12 +142,6 @@
 		<Action Type="upload" Url="http://ipic.su/api/index.php" PostParams="link=/;action=loadimg;origin=checked;quality=100;client=KISS075;tnsize=$(ThumbWidth);showall=1;image=%filename%" RegExp="(.+?)\r\n(.+?)\r\n(.+)" AssignVars="Line0:0;Line1:1;Line2:2;"/>
 	</Actions>
 	<Result ImageUrlTemplate="http://ipic.su$(Line2)/fs/$(Line0)" ThumbUrlTemplate="http://ipic.su$(Line2)/tn/$(Line0)"/>
-	</Server>
-	<Server Name="bild.me" Debug="0">
-		<Actions>
-			<Action Type="upload" Url="http://www.bild.me/index.php" PostParams="F1=%filename%;C1=ON;upload=Upload!;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Thumb:0;Image:2;"/>
-		</Actions>
-	<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
 	<Server Name="datafilehost.com" FileHost="1">
 	<Actions>
@@ -208,28 +182,6 @@
         </Actions> 
         <Result DownloadUrlTemplate="stub" /> 
     </Server> 
-	<!--<Server Name="multiupload.biz" FileHost="1" Debug="0">
-		<Actions>
-			<Action Type="get" Url="http://multiupload.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
-			<Action	Type="upload" Url="$(Url)"
-				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload;links=;site=1000;site=1007;site=1016;site=1037;site=1027;site=1030;site=1041;site=1044;site=1049;site=1059;site=1060;site=1071"
-			/>
-			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)', filename: &quot;([^&quot;]+)" AssignVars="Code:0;Name:1;"	/>
-		</Actions>
-		<Result DownloadUrlTemplate="http://$(Host)/$(Code)/$(Name)" />
-	</Server>-->
-	<!-- server's response code 500 should be ignored in the upload action
-	<Server Name="multi.hotshare.biz" FileHost="1" Debug="0" Authorize="2">
-		<Actions>
-			<Action Type="login" Url="http://multi.hotshare.biz/login" PostParams="q=q:login_reg;usr_login=$(_LOGIN);usr_password=$(_PASSWORD);" OnlyOnce="1"/>
-			<Action Type="get" Url="http://multi.hotshare.biz/" RegExp="(http:\/\/(([\w.-]+)[:\d]*)\/cgi-bin\/+upload\.cgi\?upload_id=(\d+))" AssignVars="Url:0;HostPort:1;Host:2;ID:3" OnlyOnce="0" />
-			<Action	Type="upload" Url="$(Url)"
-				PostParams="u_hash=;remote=0;upload_id=$(ID);files=1;file0=%filename%;description1=;submit_btn=%20Start%20Upload%20;site=1074;site=1000;site=1044;site=1075;site=1027;site=1030;site=1004;site=1041;site=1024;site=1033;site=1042;site=1067"
-			/>
-			<Action Type="get" Url="http://$(HostPort)/tmp/$(ID).json" RegExp="code: '(\w+)'" AssignVars="Code:0;"	/>  no filename 
-		</Actions>
-		<Result DownloadUrlTemplate="http://$(Host)/$(Code)" />
-	</Server>--> 
 	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
@@ -319,20 +271,6 @@
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<!--<Server Name="ovrload.ru" FileHost="1" Type="file" Types="image,file">
-		<Actions>
-			<Action Type="upload" Url="https://ovrload.ru/" PostParams="clipboard=;fileframe=true;file=%filename%;" RegExp="&quot;(https:\/\/ovrload\.ru:443\/.*?)&quot;" AssignVars="File:0;"/>
-		</Actions>
-	<Result ImageUrlTemplate="$(File)" />
-	</Server>-->
-    <Server Name="imagebam.com">
-        <Actions>
-            <Action Type="upload" Url="http://www.imagebam.com/sys/upload/save" PostParams="file[]=%filename%;content_type=1;thumb_size=180;thumb_aspect_ratio=resize;thumb_file_type=jpg;" RegExp="\[URL=(.*?)\]([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;">
-                <RegExp Pattern="(http:\/\/www\.imagebam\.com\/remove\/[0-9a-z]+\/[0-9a-z]+)" AssignVars="DeleteUrl:0"/>
-            </Action>
-        </Actions>
-    <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
-    </Server>
     <Server Name="ifotki.info">
         <Actions>
             <Action Type="upload" Url="http://ifotki.info/index.php?mode=" PostParams="add=true;foto1=%filename%;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
@@ -381,12 +319,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-    <Server Name="lostpic.net" Plugin="lostpic" Authorize="1">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-    <Server Name="imgbb.com" MaxFileSize="16000000" Plugin="imgbb">
+    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

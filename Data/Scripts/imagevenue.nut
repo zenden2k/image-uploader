@@ -5,7 +5,7 @@ function _DoLogin()
     
 	if(login!="" && pass != "")
 	{
-        nm.doGet("http://www.imagevenue.com/auth/login");
+        nm.doGet("https://www.imagevenue.com/auth/login");
         if (nm.responseCode() != 200) {
             return 0;
         }
@@ -19,7 +19,7 @@ function _DoLogin()
         }
         
         
-		nm.setUrl("http://www.imagevenue.com/auth/login");
+		nm.setUrl("https://www.imagevenue.com/auth/login");
 		nm.addQueryParam("_token", token);
 		nm.addQueryParam("email", login);
 		nm.addQueryParam("password", pass);
@@ -28,7 +28,7 @@ function _DoLogin()
         
         if(nm.responseCode() == 302 ){
             local destUrl = nm.responseHeaderByName("Location");
-            if (destUrl == "http://www.imagevenue.com/auth/login") {
+            if (destUrl == "https://www.imagevenue.com/auth/login") {
                 WriteLog("error", "imagevenue.com: authentication failed for username '" + login + "'");
                 return 0;
             }
@@ -55,14 +55,14 @@ function UploadFile(FileName, options) {
     if (!DoLogin()) {
         return 0;
     }
-    nm.doGet("http://www.imagevenue.com");
+    nm.doGet("https://www.imagevenue.com");
     local name = ExtractFileName(FileName);
 	local mime = GetFileMimeType(name);
     
     if (nm.responseCode() == 200) {
         local doc = Document(nm.responseBody());
         local csrfToken = doc.find("meta[name=\"csrf-token\"]").at(0).attr("content");
-        nm.setUrl("http://www.imagevenue.com/upload/session");
+        nm.setUrl("https://www.imagevenue.com/upload/session");
         
         nm.addQueryHeader("X-CSRF-TOKEN", csrfToken);
         nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
@@ -76,7 +76,7 @@ function UploadFile(FileName, options) {
             local tt = ParseJSON(nm.responseBody());
             
             if ("data" in tt) {
-                nm.setUrl("http://www.imagevenue.com/upload");
+                nm.setUrl("https://www.imagevenue.com/upload");
                 nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
                 nm.addQueryParam("data", tt.data);
                 nm.addQueryParam("_token", csrfToken);

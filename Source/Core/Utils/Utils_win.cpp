@@ -27,8 +27,6 @@
 namespace IuCoreUtils
 {
 
-typedef HRESULT(STDAPICALLTYPE  *FindMimeFromDataFunc)(LPBC, LPCWSTR, LPVOID, DWORD, LPCWSTR, DWORD, LPWSTR*, DWORD);
-
 std::wstring strtows(const std::string &str, UINT codePage)
 {
     std::wstring ws;

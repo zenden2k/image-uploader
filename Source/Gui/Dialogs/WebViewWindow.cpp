@@ -1,10 +1,14 @@
 #include "WebViewWindow.h"
 
-#include <UrlMon.h>
+#include <urlmon.h>
 
+
+#include "Core/AppParams.h"
 #include "Func/WinUtils.h"
 #include "Gui/GuiTools.h"
 #include "Core/Logging.h"
+#include "Core/Utils/CoreUtils.h"
+
 #ifdef IU_ENABLE_WEBVIEW2
     #include <wrl.h>
     #include <wil/com.h>
@@ -41,7 +45,8 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     HRESULT hr = -1;
 #ifdef IU_ENABLE_WEBVIEW2
     using namespace Microsoft::WRL;
-    hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, nullptr, nullptr,
+
+    hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, U2W(AppParams::instance()->settingsDirectory()), nullptr,
     Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
         [hWnd, this](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
             
@@ -123,7 +128,7 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 LRESULT CWebViewWindow::OnResize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     RECT clientRect;
     GetClientRect(&clientRect);
-     if (view_.m_hWnd) {
+    if (view_.m_hWnd) {
         view_.SetWindowPos(NULL, &clientRect, SWP_NOMOVE);
     }
 #ifdef IU_ENABLE_WEBVIEW2
@@ -235,11 +240,11 @@ bool CWebViewWindow::displayHTML(const CString& html) {
 }
 
 void CWebViewWindow::setOnUrlChanged(std::function<void(const CString&)> cb) {
-    //if (view_.m_hWnd) {
+    if (view_.m_hWnd) {
         view_.setOnNavigateComplete2(std::move(cb));
-    /*} else {
+    } else {
         onUrlChanged_ = cb;
-    }*/
+    }
 
 }
 

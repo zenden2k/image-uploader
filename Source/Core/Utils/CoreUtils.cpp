@@ -454,7 +454,6 @@ int64_t getFileSize(const std::string& utf8Filename)
      return stats.st_size;
 }
 
-// �������������� ������� ����� � ������
 std::string fileSizeToString(int64_t nBytes)
 {
     double number = 0;
