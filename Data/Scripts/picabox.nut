@@ -1,5 +1,5 @@
 function UploadFile(FileName, options) {
-    nm.setUrl("http://picabox.ru/image/upload");
+    nm.setUrl("https://picabox.ru/image/upload");
     local mimeType = GetFileMimeType(FileName);
     nm.addQueryParam("ImagesForm[text]", "");
     nm.addQueryParamFile("ImagesForm[imageFiles][]", FileName, ExtractFileName(FileName), mimeType);

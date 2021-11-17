@@ -8,7 +8,7 @@ function UploadFile(FileName, options) {
     }
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
-    local url = "https://api.myfile.is/upload";
+    local url = "https://api.anonfiles.com/upload";
     if (apiKey != "") {
         url += "?token=" + apiKey;
     }

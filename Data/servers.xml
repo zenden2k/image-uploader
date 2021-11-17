@@ -143,12 +143,6 @@
 	</Actions>
 	<Result ImageUrlTemplate="http://ipic.su$(Line2)/fs/$(Line0)" ThumbUrlTemplate="http://ipic.su$(Line2)/tn/$(Line0)"/>
 	</Server>
-	<Server Name="datafilehost.com" FileHost="1">
-	<Actions>
-		<Action Type="upload" Url="http://www.datafilehost.com/upload.php" PostParams="MAX_FILE_SIZE=158334976;upfile=%filename%;" RegExp="name='download' size='\d+' value='(.+?)' " AssignVars="File:0;"/>
-	</Actions>
-	<Result DownloadUrlTemplate="$(File)" />
-	</Server>
 	<Server Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
 		<Actions>
 		</Actions>
@@ -159,29 +153,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<!-- Thanks to Alex_Qwerty -->
-	<Server Name="embedupload.com" FileHost="1" MaxFileSize="3299985472" Debug="0"> 
-        <Actions> 
-            <Action Type="get" Url="http://embedupload.com/" 
-                RegExp="urlPlUplod_httpHostPathToUpload = '([^']+)'"
-                AssignVars="UploadPath:0" 
-                OnlyOnce="0" 
-            />
-            <Action 
-                Type="upload" 
-                Url="$(UploadPath)" 
-                PostParams="name=$(_FILENAME);Fichier=1;Filerio=1;Turbobit=1;Shareonline=1;Hugefiles=1;Zippyshare=1;Cloudyvideos=1;Sendmyway=1;Solidfiles=1;site=http://;do=upload;email=;file_1=%filename%;" 
-                RegExp="^(\w+)$" 
-                AssignVars="DownloadID:0;" 
-            /> 
-        </Actions> 
-        <Result DownloadUrlTemplate="http://www.embedupload.com/?d=$(DownloadID)" /> 
-    </Server> 
-	 <Server Name="jheberg.net" FileHost="1" Plugin="jheberg" Authorize="1"> 
-        <Actions> 
-        </Actions> 
-        <Result DownloadUrlTemplate="stub" /> 
-    </Server> 
 	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
@@ -271,6 +242,14 @@
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<!--<Server Name="imagebam.com">
+        <Actions>
+            <Action Type="upload" Url="http://www.imagebam.com/sys/upload/save" PostParams="file[]=%filename%;content_type=1;thumb_size=180;thumb_aspect_ratio=resize;thumb_file_type=jpg;" RegExp="\[URL=(.*?)\]([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;">
+                <RegExp Pattern="(http:\/\/www\.imagebam\.com\/remove\/[0-9a-z]+\/[0-9a-z]+)" AssignVars="DeleteUrl:0"/>
+            </Action>
+        </Actions>
+    <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
+    </Server>-->
     <Server Name="ifotki.info">
         <Actions>
             <Action Type="upload" Url="http://ifotki.info/index.php?mode=" PostParams="add=true;foto1=%filename%;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
@@ -304,20 +283,10 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server3>
-    <!--<Server Name="photoland.io" Authorize="0" Type="image" Plugin="photoland">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
     <Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
-    <Server Name="ge.tt" Authorize="2" FileHost="1" Plugin="gett" LoginLabel="E-mail">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub"/>
 	</Server>
     <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb">
 		<Actions>
@@ -329,7 +298,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-    <Server Name="myfile.is"  Authorize="1" Debug="0" FileHost="1" Plugin="myfile.is" NeedPassword="0"> 
+    <Server Name="anonfiles.com" Authorize="1" Debug="0" FileHost="1" Plugin="anonfiles.com" NeedPassword="0"> 
 		<Actions>
 		</Actions>
 		<Result DownloadUrlTemplate="stub" />
@@ -337,9 +306,9 @@
     <!--<Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
-    <!--<Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
+    <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
+	</Server>
 </Servers>
