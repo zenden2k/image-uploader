@@ -71,7 +71,7 @@ bool CUpdateInfo::SaveToFile(const CString& filename) const
     
     fwrite(m_Buffer.c_str(), 1, m_Buffer.size(), f);
     fclose(f);
-    return false;
+    return true;
 }
 
 bool CUpdateInfo::LoadUpdateFromBuffer(const std::string& buffer)
@@ -324,7 +324,7 @@ bool CUpdateManager::internal_load_update(CString name)
    
     if (nm->responseCode() != 200 || nm->responseHeaderByName("Content-Type") != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("���������� ��������� ���������� � ������ ���������� ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
@@ -446,8 +446,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
     if(root.IsNull()) return false;
 
-    CString packageName;
-    packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
+    CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_TimeStamp =  root.AttributeInt("TimeStamp");
         
     int core=root.AttributeInt("CoreUpdate");

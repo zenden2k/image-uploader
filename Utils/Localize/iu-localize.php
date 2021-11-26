@@ -1,3 +1,9 @@
+<?php 
+error_reporting(E_ALL & ~E_NOTICE);
+if (PHP_INT_SIZE !== 8) {
+    die('This script should be executed by 64-bit PHP engine');
+}
+?>
 <head>
     <title> Image Uploader Localization Script</title></head>
 <body>
@@ -28,7 +34,7 @@
         fwrite( $f, $head );
     }
 
-	$f = fopen( $lang_dir . "\\English.lng.src", "w" );
+	$f = fopen( $lang_dir . "/English.lng.src", "w" );
 
 	if ( !$f ) {
         die( "Could not create output file" );
@@ -42,14 +48,21 @@
         return $Ziffer[( $intega % 256 ) / 16] . $Ziffer[$intega % 16];
     }
 
-	function myhash( $key ) {
+    function overflow32($in) {
+        return unpack('l', pack('i', $in & 0xFFFFFFFF))[1];
+    }
+
+
+    function myhash( $key ) {
         $hash = 222;
         $len = strlen( $key );
 
         for ( $i = 0; $i < $len; ++$i )
         {
-            $hash = ( $hash ^ ord( $key[$i] ) ) + ( ( $hash << 26 ) + ( $hash >> 6 ) );
+            $hash = overflow32($hash) ;
+            $hash = ( $hash ^ ord( $key[$i] ) ) +overflow32 (( ( $hash << 26 ) + ( $hash >> 6 ) ));
         }
+        $hash = overflow32($hash );
         return $hash;
     }
 
@@ -75,10 +88,8 @@
     }
 
 	function dump_dword( $hash ) {
-        //$f = fopen( "aaaa", "a+" );
         $hash = pack( "l", $hash );
-        //fwrite( $f, $hash );
-        //fclose( $f );
+
         $res = sprintf( "%02x%02x%02x%02x", ord( $hash[0] ), ord( $hash[1] ), ord( $hash[2] ), ord( $hash[3] ) );
         return $res;
     }
@@ -88,7 +99,7 @@
         $data = trim( file_get_contents( $filename ) );
         //$data = trim( mb_convert_encoding( $data, "UTF-8", "UTF-16LE" ) );
         $strings = explode( "\r\n", $data );
-
+        //var_dump($strings);
         foreach ( $strings as $key => $item )
         {
             /*if ( $key == 0 ) {
@@ -110,7 +121,7 @@
 
 
         if ( $filename != "default" && $filename != "English" ) {
-            $english_strings = read_language_file( $path . "\\English.lng.src" );
+            $english_strings = read_language_file( $path . "/English.lng.src" );
             //var_dump( $english_strings );
         }
 
@@ -170,7 +181,32 @@
     }
 
 	function parse_dir( $path ) {
-        $dh = opendir( $path );
+        $directory = new RecursiveDirectoryIterator($path);
+        $iterator = new RecursiveIteratorIterator($directory);
+
+        foreach ($iterator as $item) {
+            /** @var SplFileInfo $item */
+            $file = $item->getPathname();
+            $fileName = $item->getFilename();
+
+            if ( $fileName != "." && $fileName != ".." ) {
+                //echo "<br>".$fileName ."<br>";
+                if ( substr( $fileName, -4, 4 ) == ".cpp" || substr( $fileName, -2, 2 ) == ".h" ) {
+                    echo "<p><B>$i. Parsing $file<br /></b>";
+                    parse_source_file( $file );
+                }
+                /*else {
+                    if ( is_dir( $path . '\\' . $file ) && $file != 'qimageuploader' ) {
+
+                        echo "<p><B>$i. Parsing subdir $file<br /></b>";
+                        parse_dir( $path . '\\' . $file . '\\' );
+
+                    }
+                }*/
+                $i++;
+            }
+        }
+        /*$dh = opendir( $path );
         $i = 2;
         while ( ( $file = readdir( $dh ) ) !== false ) {
             if ( $file != "." && $file != ".." ) {
@@ -189,19 +225,19 @@
                 $i++;
             }
         }
-        closedir( $dh );
+        closedir( $dh );*/
     }
 
  parse_dir( $dir );
 print "<p><b>All source files parsed</b>";
 
-
-
-$count = 0;echo "<p>Saving to file...</p>";
+$count = 0;
+echo "<p>Saving to file...</p>";
 foreach ( $hashes as $key => $item ) {
 
     $item_u = mb_convert_encoding( $item, "UTF-16LE", "UTF-8" );
-
+    //var_dump($item_u);
+    //echo "<br>";
     $hass = myhash( $item_u );
 
     $str = dump_dword( $hass ) . " = $item\r\n";
@@ -214,7 +250,7 @@ echo "Total $count language records";
 
 fclose( $f );
 
-var_dump($hashes);
+    var_dump($hashes);
 	if ( $lang_dir ) {
         echo "<p><h3>Parsing other language files (in directory \"" . stripslashes( $lang_dir ) . "\") </h3>";
         $dh = opendir( $lang_dir );
@@ -225,7 +261,7 @@ var_dump($hashes);
             if ( $file != "." && $file != ".." ) {
                 if ( substr( $file, -4, 4 ) == ".lng" && $file != "English.lng.src" ) {
                     echo "<p><B>$i. Parsing $file<br /></b>";
-                    parse_language_file( $lang_dir, $lang_dir . '\\' . $file, $hashes );
+                    parse_language_file( $lang_dir, $lang_dir . '/' . $file, $hashes );
                     $i++;
                 }
                 else {

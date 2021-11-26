@@ -66,8 +66,6 @@ bool IULaunchCopy(CString additionalParams)
     return true;
 }
 
-#define HOTKEY(modifier, key) ((((modifier) & 0xff) << 8) | ((key) & 0xff))
-
 bool IULaunchCopy(CString params, const CAtlArray<CString>& files)
 {
     STARTUPINFO si;

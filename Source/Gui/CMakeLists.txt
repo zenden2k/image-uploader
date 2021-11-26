@@ -142,7 +142,6 @@ set(SRC_LIST
     ../Func/MyEngineList.cpp
     ../Func/MyUtils.cpp
     ../Func/SystemUtils.cpp
-    ../Func/UpdatePackage.cpp
     ../Func/WebUtils.cpp
     ../ImageEditor/Canvas.cpp
     ../ImageEditor/Document.cpp
@@ -314,7 +313,6 @@ set(HEADER_LIST
     ../Func/MyEngineList.h
     ../Func/MyUtils.h
     ../Func/SystemUtils.h
-    ../Func/UpdatePackage.h
     ../Func/WebUtils.h
     ../ImageEditor/Canvas.h
     ../ImageEditor/Document.h

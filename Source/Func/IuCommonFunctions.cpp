@@ -11,12 +11,7 @@ namespace IuCommonFunctions {
 CString GetDataFolder()
 {
     CString result = U2W(AppParams::instance()->dataDirectory());
-/*#if !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)&& !defined(IU_TESTS)
-    result= Settings.DataFolder;
-#else 
-    result= WinUtils::GetAppFolder()+"\\Data\\";
-#endif
-    */
+
     if (result.Right(1) != "\\" && result.Right(1) != "/") {
         result += "\\";
     }
