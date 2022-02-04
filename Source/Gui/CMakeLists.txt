@@ -352,7 +352,7 @@ add_executable(GUI WIN32
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
-set(LIBS_LIST base64 libwebpdecoder libwebpdemux 
+set(LIBS_LIST wtl::wtl base64::base64 WebP::webpdemux WebP::webpdecoder
     gdiplus Ws2_32 avcodec avformat avutil swscale dwmapi winmm wininet IPHLPAPI
     Secur32 Netapi32 Oleacc Winhttp Userenv Psapi uxtheme Urlmon
 )
@@ -365,6 +365,9 @@ target_link_libraries(GUI iucore
     debug strmbasd optimized strmbase
 )
 
+set_property(TARGET GUI PROPERTY
+  MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 

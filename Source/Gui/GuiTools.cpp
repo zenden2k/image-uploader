@@ -22,7 +22,7 @@
 
 #include <cmath>
 
-#include <Shobjidl.h>
+#include <ShObjIdl.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"

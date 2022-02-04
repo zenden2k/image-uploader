@@ -528,7 +528,7 @@ bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(fileName_);
-    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (MediaInfoHelper::IsMediaInfoAvailable()) ? SW_SHOW : SW_HIDE);
     SetGrabbingStatusText(_T(""));
     EnableNext(true);
     ShowPrev();

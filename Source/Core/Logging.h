@@ -1,7 +1,9 @@
 #ifndef CORE_LOGGING_H
 #define CORE_LOGGING_H
 
-#define GLOG_NO_ABBREVIATED_SEVERITIES
+#ifndef GLOG_NO_ABBREVIATED_SEVERITIES
+    #define GLOG_NO_ABBREVIATED_SEVERITIES
+#endif
 #include <glog/logging.h>
 #include <cwchar>
 

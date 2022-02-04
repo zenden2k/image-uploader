@@ -3,26 +3,7 @@ cmake_minimum_required(VERSION 3.1.0)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
 
-if (CMAKE_VERSION VERSION_LESS "3.1")
-#    include(CheckCXXCompilerFlag)
-#    CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-#    CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-#    if(COMPILER_SUPPORTS_CXX11)
-#        message("Compiler supports C++11.")
-#        
-#    elseif(COMPILER_SUPPORTS_CXX0X)
-#        message("Compiler supports c++0x.")
-#        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
-#    else()
-#        message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-#    endif()
-    
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
-    message("Stadart set to 17")
-else ()
-    set (CMAKE_CXX_STANDARD 17)
-endif ()
-
+set(CMAKE_CXX_STANDARD 17)
 
 #use_cxx11()
 set(CMAKE_SKIP_RPATH 1)   
@@ -31,6 +12,13 @@ project(ImageUploader)
 set(IU_DISABLE_MEGANZ OFF CACHE BOOL "Disable support of mega.nz")
 set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
 set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+
+include(conan.cmake)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
 if (MSVC)
     set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
@@ -60,54 +48,125 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
 endif(MSVC)
 
+conan_cmake_configure(REQUIRES boost/1.77.0 
+						openssl/1.1.1l
+						libcurl/7.79.1
+						pcre/8.45
+						uriparser/0.9.5
+						zlib/1.2.11
+						minizip/1.2.11
+						wtl/10.0.9163		
+						jsoncpp/1.9.5
+						libssh2/1.10.0
+						sqlite3/3.36.0
+						base64/0.4.0
+						glog/0.5.0
+						cryptopp/8.5.0
+						c-ares/1.17.2
+						libuv/1.42.0
+						libwebp/1.2.1
+						libmediainfo/21.09
+						megaio/3.5.2@demo/testing
+						gumbo-parser/0.10.1@demo/testing
+						GENERATORS cmake_find_package_multi 
+						OPTIONS boost:shared=False 
+						libcurl:with_libssh2=True
+						)
+
+foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+	if (${TYPE} STREQUAL "Debug")
+		SET(msvc_link_setting compiler.runtime=MTd)
+	else()
+		SET(msvc_link_setting compiler.runtime=MT)
+	endif()
+    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+    conan_cmake_install(PATH_OR_REFERENCE .
+                        BUILD missing
+                        REMOTE conancenter
+                        SETTINGS ${settings}
+						SETTINGS ${msvc_link_setting})
+endforeach()
+
+set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
+
+find_package(Boost CONFIG COMPONENTS program_options REQUIRED)
+find_package(OpenSSL CONFIG REQUIRED)
+find_package(CURL CONFIG REQUIRED)
+find_package(PCRE CONFIG REQUIRED)
+find_package(uriparser CONFIG REQUIRED)
+find_package(ZLIB CONFIG REQUIRED)
+find_package(uriparser CONFIG REQUIRED)
+if(WIN32)
+	find_package(wtl CONFIG REQUIRED)
+endif()
+find_package(base64 CONFIG REQUIRED)
+find_package(jsoncpp CONFIG REQUIRED)
+find_package(libssh2 CONFIG REQUIRED)
+find_package(SQLite3 CONFIG REQUIRED)
+find_package(minizip CONFIG REQUIRED)
+find_package(glog CONFIG REQUIRED)
+find_package(cryptopp CONFIG REQUIRED)
+find_package(c-ares CONFIG REQUIRED)
+find_package(libuv CONFIG REQUIRED)
+find_package(WebP CONFIG REQUIRED)
+find_package(MediaInfoLib CONFIG REQUIRED) 
+find_package(megaio CONFIG REQUIRED) 
+find_package(gumbo-parser CONFIG REQUIRED) 
+#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
+#set(Boost_USE_STATIC_LIBS ON)
+#set(Boost_USE_MULTITHREADED ON)
 
-if (NOT WIN32) 
-    find_package(Boost COMPONENTS filesystem system locale thread program_options REQUIRED)
+#if (NOT WIN32) 
+#    find_package(Boost COMPONENTS filesystem system locale thread program_options REQUIRED)
     #find_package(OpenSSL REQUIRED)
-    message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-    message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-    add_definitions(-DUSE_OPENSSL -DUSE_FREEIMAGE)
-endif()
+#    message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
+#    message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
+#    add_definitions(-DUSE_OPENSSL -DUSE_FREEIMAGE)
+#endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/squirrel/)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/sqplus/)
 include_directories(${CMAKE_SOURCE_DIR}/)
 
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
+   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/)
+   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
+   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
+   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/win32/)
 endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
-add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS)
+add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD)
 
 if(IU_DISABLE_MEGANZ)
     add_definitions(-DIU_DISABLE_MEGANZ)
 endif()
 
+#message(WARNING  ${CONAN_INCLUDE_DIRS})
+
 if(WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
-    link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/ ${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/stage/lib/)
+    #include_directories(${CONAN_INCLUDE_DIRS})
+	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
+    link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/)
 else()
-    include_directories(${Boost_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
+    include_directories(${CONAN_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 endif()
 
+
+
 # libiucore depends on these libraries
-set(COMMON_LIBS_LIST squirrel sqstdlib pcre gumbo uriparser jsoncpp sqlite3 ssh2)
+# ${CONAN_LIBS}
+set(COMMON_LIBS_LIST Boost::Boost CURL::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel sqstdlib gumbo-parser::gumbo-parser)
 if (NOT IU_DISABLE_MEGANZ)
-    list(APPEND COMMON_LIBS_LIST mega cryptopp cares)
+    list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
     #if (IU_USE_OPENSSL)
     #    list(APPEND COMMON_LIBS_LIST mega_openssl)
     #endif()
@@ -115,44 +174,26 @@ endif()
 
 if(WIN32)
     if (NOT IU_DISABLE_MEGANZ)
-        list(APPEND COMMON_LIBS_LIST libuv)
+        list(APPEND COMMON_LIBS_LIST libuv::libuv)
     endif()
     
     if (IU_USE_OPENSSL)
-        list(APPEND COMMON_LIBS_LIST libssl libcrypto)
+        list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
     endif()
 
-    list(APPEND COMMON_LIBS_LIST libcurl Oleacc glog minizip Userenv Psapi Iphlpapi Winhttp base64 libwebpdecoder libwebpdemux zlib Crypt32 Wldap32)
+    list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp base64::base64 WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32)
 	
 	if (IU_ENABLE_WEBVIEW2)
-		find_program(NUGET nuget)
-		if(NOT NUGET)
-			message(FATAL  "CMake could not find the nuget command line tool. Please install it!")
-		else()
-			# Copy the Nuget config file from source location to the CMake build directory.
-			configure_file(packages.config.in packages.config COPYONLY)
-			# Run Nuget using the .config file to install any missing dependencies to the build directory.
-			execute_process(COMMAND 
-				${NUGET} restore ${CMAKE_BINARY_DIR}/packages.config -SolutionDirectory ${CMAKE_BINARY_DIR}
-				WORKING_DIRECTORY ${CMAKE_BINARY_DIR} 
-			)    
-		endif()
-
-		include_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary.1.0.200902.2/include/) 
-		include_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.0.9.622.11/build/native/include/) 
-		link_directories(${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2.0.9.622.11/build/native/x86/)
-		
 		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
 	endif()	
-	
 else()
-    list(APPEND COMMON_LIBS_LIST dl z base64 curl ssl crypto glog pthread uv_a rt sqlite3 freeimage gflags ${Boost_LIBRARIES})
+    list(APPEND COMMON_LIBS_LIST dl z base64::base64  ssl crypto pthread uv_a rt sqlite3 freeimage gflags)
     SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
-# ${OPENSSL_LIBRARIES}
+
 
 add_subdirectory(Core)	
-add_subdirectory(CLI)	
+add_subdirectory(CLI)
 if(WIN32)
     add_subdirectory(Gui)
     add_subdirectory(ServerListTool)

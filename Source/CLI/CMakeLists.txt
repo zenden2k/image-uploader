@@ -15,7 +15,7 @@ add_executable(CLI
 
 set_target_properties( CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)
 
-set(LIBS_LIST )
+#set(LIBS_LIST )
 
 #if(WIN32)
 #    list(APPEND LIBS_LIST)
