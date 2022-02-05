@@ -130,7 +130,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"entities.c") + L"\t\thttps://bitbucket.org/cggaertner/cstuff/\u200E\r\n";
     memoText += CString(L"base64") + L"\t\thttps://github.com/aklomp/base64/\u200E\r\n";
     memoText += CString(L"Mega SDK") + L"\thttps://github.com/meganz/sdk\r\n";
-    memoText += CString(L"Crypto++") + L"\thttps://www.cryptopp.com/\u200E\r\n";
+    memoText += CString(L"Crypto++") + L" \thttps://www.cryptopp.com/\u200E\r\n";
     memoText += CString(L"c-ares") + L"\t\thttps://c-ares.haxx.se/\u200E\r\n";
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
             
@@ -151,7 +151,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     CString webpVersionStr;
     webpVersionStr.Format(_T("%u.%u.%u"), (webpVersion >> 16) & 0xff, (webpVersion >> 8) & 0xff, webpVersion & 0xff);
 
-    memoText += CString(L"Webp: v") + webpVersionStr + L"\r\n";
+    memoText += CString(L"libwebp: v") + webpVersionStr + L"\r\n";
     memoText += CString(L"sqlite: v") + sqlite3_libversion() + L"\r\n";
 
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
@@ -160,9 +160,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     }*/
 
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n") + 
+        memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n")/* +
             CString(L"MediaInfo.DLL path:\r\n") + MediaInfoHelper::GetLibraryPath() + 
-             + _T("\r\n");
+             + _T("\r\n")*/;
     }
 
     SYSTEMTIME systime;

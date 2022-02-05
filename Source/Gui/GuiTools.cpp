@@ -594,8 +594,6 @@ HICON LoadSmallIcon(int resourceId) {
         IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
-typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
-
 HICON LoadBigIcon(int resourceId) {
     int iconWidth = ::GetSystemMetrics(SM_CXICON);
     int iconHeight = ::GetSystemMetrics(SM_CYICON);

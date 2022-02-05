@@ -38,7 +38,7 @@ add_executable(ServersChecker WIN32
 
 set_target_properties(ServersChecker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/ServersChecker/)
 
-set(LIBS_LIST base64 libwebpdecoder libwebpdemux urlmon)
+set(LIBS_LIST WebP::webpdemux WebP::webpdecoder)
 
 #if(WIN32)
 #    list(APPEND LIBS_LIST)

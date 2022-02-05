@@ -27,8 +27,9 @@ THE SOFTWARE.
 #define _SQ64
 #endif
 
+#undef _UNICODE
 #include "squirrel.h"
-
+#define _UNICODE
 /*
  * \def SQTEST_API
  * \brief Define SQTEST_EXPORTS if building a dll version of squirreltest.

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_SKIP_RPATH 1)   
 project(ImageUploader)	
 
-set(IU_DISABLE_MEGANZ OFF CACHE BOOL "Disable support of mega.nz")
+set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
 set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
 set(Boost_USE_STATIC_LIBS ON)
@@ -33,7 +33,6 @@ if (MSVC AND IU_STATIC_RUNTIME)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
 endif()
 
-#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE,5.01")
 if (WIN32)
     add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DCURL_STATICLIB -DPCRE_STATIC -DGOOGLE_GLOG_DLL_DECL=)
     if (IU_USE_OPENSSL)
@@ -48,30 +47,39 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
 endif(MSVC)
 
-conan_cmake_configure(REQUIRES boost/1.77.0 
-						openssl/1.1.1l
-						libcurl/7.79.1
-						pcre/8.45
-						uriparser/0.9.5
-						zlib/1.2.11
-						minizip/1.2.11
-						wtl/10.0.9163		
-						jsoncpp/1.9.5
-						libssh2/1.10.0
-						sqlite3/3.36.0
-						base64/0.4.0
-						glog/0.5.0
-						cryptopp/8.5.0
-						c-ares/1.17.2
-						libuv/1.42.0
-						libwebp/1.2.1
-						libmediainfo/21.09
-						megaio/3.5.2@demo/testing
-						gumbo-parser/0.10.1@demo/testing
+SET(COMMON_DEPS boost/1.77.0 
+				openssl/1.1.1l
+				libcurl/7.79.1
+				pcre/8.45
+				uriparser/0.9.5
+				zlib/1.2.11
+				minizip/1.2.11
+				wtl/10.0.9163		
+				jsoncpp/1.9.5
+				libssh2/1.9.0 
+				sqlite3/3.36.0
+				base64/0.4.0
+				glog/0.5.0
+				cryptopp/8.5.0
+				c-ares/1.17.2
+				libuv/1.42.0
+				libwebp/1.2.1
+				libmediainfo/21.09
+				gumbo-parser/0.10.1@zenden2k/stable
+				squirrel/3.0.0@zenden2k/stable
+)
+
+if (IU_ENABLE_MEGANZ)
+	list(APPEND COMMON_DEPS megaio/3.5.2@zenden2k/stable)
+endif()
+	
+conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
 						OPTIONS boost:shared=False 
 						libcurl:with_libssh2=True
 						)
+
+# ffmpeg package supports Windows x64 only as target system, so we have to build ffmpeg separately
 
 foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
 	if (${TYPE} STREQUAL "Debug")
@@ -110,70 +118,49 @@ find_package(c-ares CONFIG REQUIRED)
 find_package(libuv CONFIG REQUIRED)
 find_package(WebP CONFIG REQUIRED)
 find_package(MediaInfoLib CONFIG REQUIRED) 
-find_package(megaio CONFIG REQUIRED) 
+if(IU_ENABLE_MEGANZ)
+	find_package(megaio CONFIG REQUIRED) 
+endif()	
 find_package(gumbo-parser CONFIG REQUIRED) 
-#include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-
+find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
+  
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
-#set(Boost_USE_STATIC_LIBS ON)
-#set(Boost_USE_MULTITHREADED ON)
-
-#if (NOT WIN32) 
-#    find_package(Boost COMPONENTS filesystem system locale thread program_options REQUIRED)
-    #find_package(OpenSSL REQUIRED)
-#    message("OpenSSL include dir: ${OPENSSL_INCLUDE_DIR}")
-#    message("OpenSSL libraries: ${OPENSSL_LIBRARIES}")
-#    add_definitions(-DUSE_OPENSSL -DUSE_FREEIMAGE)
-#endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/squirrel/)
 include_directories(${CMAKE_SOURCE_DIR}/)
 
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
-   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Source/boost/)
-   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
-   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/gumbo/)
-   # include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/pcre/)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/win32/)
 endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-
+ 
 add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD)
 
-if(IU_DISABLE_MEGANZ)
-    add_definitions(-DIU_DISABLE_MEGANZ)
+if(IU_ENABLE_MEGANZ)
+    add_definitions(-DIU_ENABLE_MEGANZ)
 endif()
 
-#message(WARNING  ${CONAN_INCLUDE_DIRS})
-
 if(WIN32)
-    #include_directories(${CONAN_INCLUDE_DIRS})
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
     link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/)
 else()
     include_directories(${CONAN_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 endif()
 
-
-
-# libiucore depends on these libraries
-# ${CONAN_LIBS}
-set(COMMON_LIBS_LIST Boost::Boost CURL::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel sqstdlib gumbo-parser::gumbo-parser)
-if (NOT IU_DISABLE_MEGANZ)
+set(COMMON_LIBS_LIST Boost::Boost CURL::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel::squirrel squirrel::sqstdlib gumbo-parser::gumbo-parser base64::base64)
+if (IU_ENABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
-    #if (IU_USE_OPENSSL)
-    #    list(APPEND COMMON_LIBS_LIST mega_openssl)
-    #endif()
 endif()
 
 if(WIN32)
-    if (NOT IU_DISABLE_MEGANZ)
+	list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
+	
+    if (IU_ENABLE_MEGANZ)
         list(APPEND COMMON_LIBS_LIST libuv::libuv)
     endif()
     
@@ -181,8 +168,6 @@ if(WIN32)
         list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
     endif()
 
-    list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp base64::base64 WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32)
-	
 	if (IU_ENABLE_WEBVIEW2)
 		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
 	endif()	
@@ -190,7 +175,6 @@ else()
     list(APPEND COMMON_LIBS_LIST dl z base64::base64  ssl crypto pthread uv_a rt sqlite3 freeimage gflags)
     SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
-
 
 add_subdirectory(Core)	
 add_subdirectory(CLI)

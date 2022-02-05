@@ -65,10 +65,10 @@ if(WIN32)
     set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
 endif()
 
-set(LIBS_LIST  "")
+set(LIBS_LIST "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm urlmon)
+    list(APPEND LIBS_LIST gdiplus WebP::webpdemux WebP::webpdecoder avformat avutil swscale avcodec winmm urlmon)
     target_link_libraries(Tests debug strmbasd optimized strmbase)
 else()
     list(APPEND LIBS_LIST icuuc icui18n gtest)

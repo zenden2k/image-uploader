@@ -18,7 +18,7 @@
 
 */
 
-#ifndef IU_DISABLE_MEGANZ
+#ifdef IU_ENABLE_MEGANZ
 
 #include "MegaNzUploadEngine.h"
 

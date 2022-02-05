@@ -205,7 +205,7 @@ else()
         Utils/CryptoUtils_unix.cpp)
 endif()
 
-if(NOT IU_DISABLE_MEGANZ)
+if(IU_ENABLE_MEGANZ)
        list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
        list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
 endif() 
