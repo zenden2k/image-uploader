@@ -65,6 +65,7 @@ SET(COMMON_DEPS boost/1.77.0
 				libuv/1.42.0
 				libwebp/1.2.1
 				libmediainfo/21.09
+				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
 )
@@ -90,7 +91,7 @@ foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
-                        REMOTE conancenter
+                        REMOTE zenden2k conancenter  
                         SETTINGS ${settings}
 						SETTINGS ${msvc_link_setting})
 endforeach()
@@ -122,6 +123,7 @@ if(IU_ENABLE_MEGANZ)
 	find_package(megaio CONFIG REQUIRED) 
 endif()	
 find_package(gumbo-parser CONFIG REQUIRED) 
+find_package(gtest CONFIG REQUIRED)
 find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
   
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")

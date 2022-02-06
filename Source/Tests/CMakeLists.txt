@@ -75,8 +75,6 @@ else()
 endif()
 
 target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
-if(WIN32)
-    target_link_libraries(Tests debug gmockd optimized gmock)
-else()
-    target_link_libraries(Tests gmock)
-endif()
+
+target_link_libraries(Tests GTest::GTest)
+
