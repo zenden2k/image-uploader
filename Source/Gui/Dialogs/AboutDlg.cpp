@@ -24,7 +24,7 @@
 #include <sqlite3.h>
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include <libavutil/ffversion.h>
+//#include <libavutil/ffversion.h>
 #include <boost/config.hpp>
 #include <boost/version.hpp>
 #include <webp/decode.h>
