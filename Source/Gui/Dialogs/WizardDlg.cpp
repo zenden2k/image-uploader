@@ -362,7 +362,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
 
-	if (!*MediaInfoDllPath) {
+	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
 	} 
 	if(!CmdLine.IsOption(_T("tray")))

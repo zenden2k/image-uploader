@@ -30,13 +30,13 @@ for line in content:
             now = datetime.datetime.now()
             out_text += "#define {} \"{}\"\n".format(define_name, now.strftime("%d.%m.%Y"))   
         elif define_name == "IU_COMMIT_HASH":
-            git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip()
+            git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode("utf-8").strip()
             out_text += "#define {} \"{}\"\n".format(define_name, git_hash)
         elif define_name == "IU_COMMIT_HASH_SHORT":
-            git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+            git_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode("utf-8").strip()
             out_text += "#define {} \"{}\"\n".format(define_name, git_hash)              
         elif define_name == "IU_BRANCH_NAME":        
-            git_branch_name = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).strip()
+            git_branch_name = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode("utf-8").strip()
             out_text += "#define {} \"{}\"\n".format(define_name, git_branch_name)  
         else:
             out_text += line + "\n"

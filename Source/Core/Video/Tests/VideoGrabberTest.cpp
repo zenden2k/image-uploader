@@ -2,7 +2,9 @@
 
 #include "Core/UploadEngineList.h"
 #include "Tests/TestHelpers.h"
-#include "Core/Video/AvcodecFrameGrabber.h"
+#ifdef IU_ENABLE_FFMPEG
+    #include "Core/Video/AvcodecFrameGrabber.h"
+#endif
 #include "Core/Video/DirectshowFrameGrabber.h"
 
 class VideoGrabberTest : public ::testing::Test {
@@ -17,6 +19,7 @@ protected:
     std::vector<std::string> videoFiles_;
 };
 
+#ifdef IU_ENABLE_FFMPEG
 TEST_F(VideoGrabberTest, avcodecVideoGrabber)
 {
     for (const auto& videoFile : videoFiles_) {
@@ -36,6 +39,7 @@ TEST_F(VideoGrabberTest, avcodecVideoGrabber)
     }
 
 }
+#endif
 
 TEST_F(VideoGrabberTest, directShowFrameGrabber)
 {

@@ -38,5 +38,5 @@ rcedit_arguments =  [rcedit_path, exename, '--set-file-version', file_version, '
 if "openssl" in exename and ".exe" in exename:
     rcedit_arguments += ["--set-version-string", "FileDescription", "Image Uploader (with OpenSSL)"]
 #print rcedit_arguments
-print(subprocess.check_output(rcedit_arguments).strip())
+print(subprocess.check_output(rcedit_arguments).decode("utf-8").strip())
 print("Successfully patched")

@@ -12,6 +12,7 @@ project(ImageUploader)
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
 set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg librari")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -33,8 +34,14 @@ if (MSVC AND IU_STATIC_RUNTIME)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
 endif()
 
+if (IU_ENABLE_FFMPEG)
+	add_definitions(-DIU_ENABLE_FFMPEG)
+endif()
+
+
 if (WIN32)
-    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DCURL_STATICLIB -DPCRE_STATIC -DGOOGLE_GLOG_DLL_DECL=)
+# -DPCRE_STATIC 
+    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DGOOGLE_GLOG_DLL_DECL=)
     if (IU_USE_OPENSSL)
         add_definitions(-DUSE_OPENSSL)
     endif()
@@ -68,6 +75,7 @@ SET(COMMON_DEPS boost/1.77.0
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
+				base-classes/1.0.0@zenden2k/stable
 )
 
 if (IU_ENABLE_MEGANZ)
@@ -125,11 +133,11 @@ endif()
 find_package(gumbo-parser CONFIG REQUIRED) 
 find_package(gtest CONFIG REQUIRED)
 find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
+find_package(base-classes CONFIG REQUIRED)
   
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
-
 
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
 include_directories(${CMAKE_SOURCE_DIR}/)
@@ -141,7 +149,8 @@ endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
  
-add_definitions(-DTIXML_USE_STL -DENABLE_SYNC -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD)
+ # -DENABLE_SYNC
+add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD)
 
 if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)

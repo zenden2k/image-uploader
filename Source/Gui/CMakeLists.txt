@@ -30,7 +30,6 @@ set(SRC_LIST
     ../Core/Video/AbstractFrameGrabber.cpp
     ../Core/Video/AbstractImage.cpp
     ../Core/Video/AbstractVideoFrame.cpp
-    ../Core/Video/AvcodecFrameGrabber.cpp
     ../Core/Video/DirectshowFrameGrabber.cpp
     ../Core/Video/DirectshowFrameGrabber2.cpp
     ../Core/Video/DirectshowVideoFrame.cpp
@@ -172,6 +171,10 @@ set(SRC_LIST
     
 )
 
+if (IU_ENABLE_FFMPEG)
+	list(APPEND SRC_LIST ../Core/Video/AvcodecFrameGrabber.cpp)
+endif()	
+
 set(RESOURCE_LIST  "../Image Uploader.rc"
     "../res/image uploader.exe.manifest")
     
@@ -201,7 +204,6 @@ set(HEADER_LIST
     ../Core/Video/AbstractFrameGrabber.h
     ../Core/Video/AbstractImage.h
     ../Core/Video/AbstractVideoFrame.h
-    ../Core/Video/AvcodecFrameGrabber.h
     ../Core/Video/DirectshowFrameGrabber.h
     ../Core/Video/DirectshowFrameGrabber2.h
     ../Core/Video/DirectshowVideoFrame.h
@@ -343,6 +345,10 @@ set(HEADER_LIST
     ../resource.h
 )
 
+if (IU_ENABLE_FFMPEG)
+	list(APPEND HEADER_LIST ../Core/Video/AvcodecFrameGrabber.h)
+endif()
+	
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 source_group("Resource Files" FILES ${RESOURCE_LIST})
 
@@ -353,16 +359,20 @@ add_executable(GUI WIN32
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
 set(LIBS_LIST wtl::wtl base64::base64 WebP::webpdemux WebP::webpdecoder
-    gdiplus Ws2_32 avcodec avformat avutil swscale dwmapi winmm wininet IPHLPAPI
+    gdiplus Ws2_32 dwmapi winmm wininet IPHLPAPI
     Secur32 Netapi32 Oleacc Winhttp Userenv Psapi uxtheme Urlmon
 )
+
+if (IU_ENABLE_FFMPEG)
+	list(APPEND LIBS_LIST avcodec avformat avutil swscale)
+endif()	
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
 target_link_libraries(GUI iucore 
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
-    debug strmbasd optimized strmbase
+    base-classes::base-classes
 )
 
 set_property(TARGET GUI PROPERTY

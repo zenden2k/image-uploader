@@ -19,7 +19,7 @@
 #include "atlheaders.h" 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
-
+ 
 #include "Gui/Dialogs/LogWindow.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Dialogs/FloatingWindow.h"
@@ -193,7 +193,7 @@ public:
                 logWindow_.Show();
             }
         }
-
+        
         // for Windows Vista and later versions
         if (CmdLine.IsOption(_T("integration"))) {
             settings_.LoadSettings("", "", false);

@@ -108,10 +108,9 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
     MI.Option(__T("Internet"), __T(""));
     //MI.Option(__T("Complete"), __T("1"));
     if (enableLocalization) {
-        TCHAR path[MAX_PATH];
-        //WinUtils::ExtractFilePath(MediaInfoDllPath, path, MAX_PATH);
-        CString langDir = path + CString(_T("MediaInfoLang\\"));
-        auto translator = ServiceLocator::instance()->translator();
+        CString path = WinUtils::GetAppFolder();
+        CString langDir = path + CString(_T("Modules\\MediaInfoLang\\"));
+        auto* translator = ServiceLocator::instance()->translator();
         std::string locale = translator->getCurrentLocale();
         CString lang = U2W(locale).Left(2);
         if (!lang.IsEmpty()) {

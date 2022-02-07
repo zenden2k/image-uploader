@@ -30,7 +30,6 @@ set(SOURCE_FILES
     ../Core/Video/AbstractFrameGrabber.cpp
     ../Core/Video/AbstractVideoFrame.cpp
     ../Core/Video/VideoGrabber.cpp
-    ../Core/Video/AvcodecFrameGrabber.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -57,8 +56,12 @@ set(SOURCE_FILES
     qimageuploader.qrc
 )
 
+if (IU_ENABLE_FFMPEG)
+	list(APPEND SOURCE_FILES ../Core/Video/AvcodecFrameGrabber.cpp)
+endif()	
+
+
 if(WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
     SET(OPTIONS WIN32)
     list(APPEND SOURCE_FILES 
@@ -77,10 +80,12 @@ add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
-target_link_libraries(${PROJECT_NAME} avcodec avformat avutil swscale)
+if (IU_ENABLE_FFMPEG)
+	target_link_libraries(${PROJECT_NAME} avcodec avformat avutil swscale)
+endif()
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} gdi32 winmm dwmapi debug strmbasd optimized strmbase urlmon)
+    target_link_libraries(${PROJECT_NAME} gdi32 winmm dwmapi base-classes::base-classes urlmon)
 endif()
 
 target_link_libraries(qimageuploader iucore ${COMMON_LIBS_LIST})
