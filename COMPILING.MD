@@ -6,16 +6,11 @@ Python 3 interpreter should be installed for performing pre-build and post-build
 variable includes the directory of your Python distribution.
 
 To build Image Uploader from source files you will need:
+- Git 		https://git-scm.com/downloads
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
 - CMake (tested with v3.18.2)    https://cmake.org/
-- Conan (C++ package manager)   https://conan.io/
 - Python 3    https://www.python.org/downloads/
-
-After installing Conan, you should add "conan.zenden2k.com" as remote server:
-
-```
-conan remote add zenden2k http://conan.zenden2k.com/
-```
+- Conan (C++ package manager)   https://conan.io/
 
 To generate a Visual Studio solution from CMakeLists.txt you need to create a directory for 
 temporary files and call cmake:

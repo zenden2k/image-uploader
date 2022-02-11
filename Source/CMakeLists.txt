@@ -10,13 +10,16 @@ set(CMAKE_SKIP_RPATH 1)
 project(ImageUploader)	
 
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
-set(IU_USE_OPENSSL OFF CACHE BOOL "Use OpenSSL library for secured connections")
+set(IU_USE_OPENSSL ON CACHE BOOL "Use OpenSSL library for secured connections")
 set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
-set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg librari")
+set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
 include(conan.cmake)
+
+conan_add_remote(NAME zenden2k INDEX 1
+            URL http://conan.zenden2k.com)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
@@ -54,7 +57,7 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
 endif(MSVC)
 
-SET(COMMON_DEPS boost/1.77.0 
+SET(COMMON_DEPS boost/1.78.0
 				openssl/1.1.1l
 				libcurl/7.79.1
 				pcre/8.45
@@ -99,7 +102,6 @@ foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
-                        REMOTE zenden2k conancenter  
                         SETTINGS ${settings}
 						SETTINGS ${msvc_link_setting})
 endforeach()
@@ -149,7 +151,6 @@ endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
  
- # -DENABLE_SYNC
 add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD)
 
 if(IU_ENABLE_MEGANZ)
