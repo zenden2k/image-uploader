@@ -11,7 +11,9 @@ project(ImageUploader)
 
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL ON CACHE BOOL "Use OpenSSL library for secured connections")
-set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+if(WIN32)
+	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+endif()
 set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
@@ -63,8 +65,7 @@ SET(COMMON_DEPS boost/1.78.0
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.11
-				minizip/1.2.11
-				wtl/10.0.9163		
+				minizip/1.2.11	
 				jsoncpp/1.9.5
 				libssh2/1.9.0 
 				sqlite3/3.36.0
@@ -84,6 +85,12 @@ SET(COMMON_DEPS boost/1.78.0
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS megaio/3.5.2@zenden2k/stable)
 endif()
+
+if (WIN32)
+	list(APPEND COMMON_DEPS wtl/10.0.9163 
+			base-classes/1.0.0@zenden2k/stable
+	)
+endif()	
 	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
@@ -93,12 +100,16 @@ conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 
 # ffmpeg package supports Windows x64 only as target system, so we have to build ffmpeg separately
 
+SET(msvc_link_setting "")
+
 foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
-	if (${TYPE} STREQUAL "Debug")
-		SET(msvc_link_setting compiler.runtime=MTd)
-	else()
-		SET(msvc_link_setting compiler.runtime=MT)
-	endif()
+	if (MSVC)
+		if (${TYPE} STREQUAL "Debug")
+			SET(msvc_link_setting compiler.runtime=MTd)
+		else()
+			SET(msvc_link_setting compiler.runtime=MT)
+		endif()	
+	endif()	
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
