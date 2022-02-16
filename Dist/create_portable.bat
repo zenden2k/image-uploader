@@ -60,8 +60,6 @@ Copy "..\Lang\*.lng" %temp_dir%\Lang\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Modules\*" %temp_dir%\Modules\
-if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Modules\MediaInfoLang\*.csv" %temp_dir%\Modules\MediaInfoLang\
 if ERRORLEVEL 1 goto CopyFailed
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i
