@@ -29,7 +29,7 @@ limitations under the License.
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/UploadErrorHandler.h"
 #include "Core/ServiceLocator.h"
-#ifndef IU_DISABLE_MEGANZ
+#ifdef IU_ENABLE_MEGANZ
 #include "MegaNzUploadEngine.h"
 #endif
 
@@ -93,7 +93,7 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
         CAbstractUploadEngine::ErrorMessageCallback errorCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
-#ifndef IU_DISABLE_MEGANZ
+#ifdef IU_ENABLE_MEGANZ
         if (ue->Engine == "MegaNz") {
             result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
         } 

@@ -347,38 +347,42 @@ bool CHistoryManager::convertHistory() {
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 
     pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
+    try {
 
-    for (boost::filesystem::directory_iterator i(historyFolder); i != end_itr; ++i) {
-        // Skip if not a file
-        if (!boost::filesystem::is_regular_file(i->status())) {
-            continue;
-        }
+        for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
+            // Skip if not a file
+            if (!boost::filesystem::is_regular_file(i->status())) {
+                continue;
+            }
 
-        // Skip if no match
-        if (!regexp.search(i->path().filename().string())) {
-            continue;
-        }
-        int year = atoi(regexp[1].c_str());
-        int month = atoi(regexp[2].c_str());
-        
-        std::string fileName = i->path().string();
+            // Skip if no match
+            if (!regexp.search(i->path().filename().string())) {
+                continue;
+            }
+            int year = atoi(regexp[1].c_str());
+            int month = atoi(regexp[2].c_str());
 
-        CHistoryReader reader(this);
-        if (!reader.loadFromFile(fileName)) {
-            LOG(ERROR) << "Failed to convert history file " << fileName;
-            continue;
-        }
+            std::string fileName = i->path().string();
+
+            CHistoryReader reader(this);
+            if (!reader.loadFromFile(fileName)) {
+                LOG(ERROR) << "Failed to convert history file " << fileName;
+                continue;
+            }
 
 
-        for (auto& session : reader) {
-            for (auto& item : *session) {
-                saveHistoryItem(item);
+            for (auto& session : reader) {
+                for (auto& item : *session) {
+                    saveHistoryItem(item);
+                }
+            }
+            std::string newName = historyFolder + i->path().filename().string() + ".bak";
+            if (!IuCoreUtils::MoveFileOrFolder(i->path().string(), newName)) {
+                LOG(ERROR) << "Unable to rename file " << i->path();
             }
         }
-        std::string newName = historyFolder + i->path().filename().string() + ".bak";
-        if (!IuCoreUtils::MoveFileOrFolder(i->path().string(), newName)) {
-            LOG(ERROR) << "Unable to rename file " << i->path();
-        }
+    } catch (boost::filesystem::filesystem_error& e) {
+        LOG(ERROR) << "filesystem_error:" << e.what();
     }
     return true;
 }

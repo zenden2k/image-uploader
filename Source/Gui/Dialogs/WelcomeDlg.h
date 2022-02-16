@@ -98,7 +98,6 @@ public:
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-    HWND PrevClipboardViewer;
     CBrush br; 
     bool OnShow() override;
     void SetInitialFocus() override;

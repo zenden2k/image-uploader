@@ -29,7 +29,9 @@
 #include "DirectshowFrameGrabber2.h"
 #endif
 #include "AbstractVideoFrame.h"
-#include "AvcodecFrameGrabber.h"
+#ifdef IU_ENABLE_FFMPEG
+    #include "AvcodecFrameGrabber.h"
+#endif
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 
@@ -181,15 +183,18 @@ void VideoGrabber::setOnFinished(VoidCallback cb) {
 std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
     std::unique_ptr<AbstractFrameGrabber> grabber;
 #ifdef _WIN32
+    #ifdef IU_ENABLE_FFMPEG
     if ( videoEngine_ == veAvcodec ) {
         grabber.reset(new AvcodecFrameGrabber());
-    } else if (videoEngine_ == veDirectShow2) {
+    } else
+    #endif
+    if (videoEngine_ == veDirectShow2) {
         grabber.reset(new DirectshowFrameGrabber2());
     }
     else {
         grabber.reset(new DirectshowFrameGrabber());
     }
-#else
+#elif defined(IU_ENABLE_FFMPEG)
     grabber.reset(new AvcodecFrameGrabber());
 #endif
     return grabber;

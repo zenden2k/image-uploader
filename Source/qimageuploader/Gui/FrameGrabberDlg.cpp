@@ -24,7 +24,10 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
 	ui->stopButton->setVisible(false);
 	ui->lineEdit->setText(fileName);
     ui->comboBox->addItem("Auto", QVariant(int(VideoGrabber::veAuto)));
+#ifdef IU_ENABLE_FFMPEG
     ui->comboBox->addItem("Avcodec", QVariant(int(VideoGrabber::veAvcodec)));
+#endif
+
 #ifdef _WIN32
     ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
     ui->comboBox->addItem("Directshow2", QVariant(int(VideoGrabber::veDirectShow2)));

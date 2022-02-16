@@ -511,9 +511,12 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
     videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this));
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
+#ifdef IU_ENABLE_FFMPEG
     if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
         engine = VideoGrabber::veAvcodec;
-    } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow) {
+    } else
+#endif
+    if (videoEngine == WtlGuiSettings::VideoEngineDirectshow) {
         engine = VideoGrabber::veDirectShow;
     } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow2) {
         engine = VideoGrabber::veDirectShow2;
@@ -528,7 +531,7 @@ bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(fileName_);
-    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (*MediaInfoDllPath) ? SW_SHOW : SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (MediaInfoHelper::IsMediaInfoAvailable()) ? SW_SHOW : SW_HIDE);
     SetGrabbingStatusText(_T(""));
     EnableNext(true);
     ShowPrev();

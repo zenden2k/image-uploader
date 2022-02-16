@@ -25,7 +25,8 @@
 
 #include "Core/CommonDefs.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/3rdpart/MediaInfoDLL.h"
+#include <MediaInfo/MediaInfo.h>
+//#include "Core/3rdpart/MediaInfoDLL.h"
 #include "Core/i18n/Translator.h"
 #include "WinUtils.h"
 
@@ -67,7 +68,7 @@ std::string TimestampToStr(int64_t duration, int64_t units) {
 }
 
 bool FindMediaInfoDllPath() {
-    *MediaInfoDllPath = 0;
+    /*MediaInfoDllPath = 0;
 
     CString MediaDll = WinUtils::GetAppFolder() + _T("\\Modules\\MediaInfo.dll");
     if (WinUtils::FileExists(MediaDll)) {
@@ -75,7 +76,7 @@ bool FindMediaInfoDllPath() {
         return true;
     } else {
         HKEY ExtKey;
-        RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\KLCodecPack"), 0,/* REG_OPTION_NON_VOLATILE, */KEY_QUERY_VALUE, &ExtKey/* NULL*/);
+        RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\KLCodecPack"), 0,KEY_QUERY_VALUE, &ExtKey/* NULL);
         TCHAR ClassName[MAX_PATH] = _T("\0");
         DWORD BufSize = sizeof(ClassName) / sizeof(TCHAR);
         DWORD Type = REG_SZ;
@@ -86,29 +87,30 @@ bool FindMediaInfoDllPath() {
             StringCchCopy(MediaInfoDllPath, ARRAY_SIZE(MediaInfoDllPath), MediaDll2);
             return true;
         }
-    }
+    }*/
     return false;
 }
 
 bool IsMediaInfoAvailable() {
-    return *MediaInfoDllPath != _T('\0');
+    return true;
+    //return *MediaInfoDllPath != _T('\0');
 }
 
 bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool enableLocalization)
 {
-    using namespace MediaInfoDLL;
+    using namespace MediaInfoLib;
+    //using namespace MediaInfoDLL;
     MediaInfo MI;
-    if (!MI.IsReady()) {
+    /*if (!MI.IsReady()) {
         Buffer = TR("Unable to load library MediaInfo.dll!");
         return false;
-    }
+    }*/
     MI.Option(__T("Internet"), __T(""));
     //MI.Option(__T("Complete"), __T("1"));
     if (enableLocalization) {
-        TCHAR path[MAX_PATH];
-        WinUtils::ExtractFilePath(MediaInfoDllPath, path, MAX_PATH);
-        CString langDir = path + CString(_T("MediaInfoLang\\"));
-        auto translator = ServiceLocator::instance()->translator();
+        CString path = WinUtils::GetAppFolder();
+        CString langDir = path + CString(_T("Modules\\MediaInfoLang\\"));
+        auto* translator = ServiceLocator::instance()->translator();
         std::string locale = translator->getCurrentLocale();
         CString lang = U2W(locale).Left(2);
         if (!lang.IsEmpty()) {
@@ -290,16 +292,13 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
 }
 
 CString GetLibraryVersion() {
-    using namespace MediaInfoDLL;
-    MediaInfo MI;
-    if (!MI.IsReady()) {
-        return CString();
-    }
+   // using namespace MediaInfoDLL;
+    MediaInfoLib::MediaInfo MI;
     return MI.Option(__T("Info_Version")).c_str();
 }
 
 CString GetLibraryPath() {
-    return MediaInfoDllPath; 
+    return L"";
 }
 
 }

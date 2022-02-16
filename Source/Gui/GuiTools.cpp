@@ -22,7 +22,7 @@
 
 #include <cmath>
 
-#include <Shobjidl.h>
+#include <ShObjIdl.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -593,8 +593,6 @@ HICON LoadSmallIcon(int resourceId) {
     return static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
         IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
-
-typedef HRESULT(WINAPI *LoadIconWithScaleDownFuncType)(HINSTANCE hinst, PCWSTR pszName, int cx, int cy, _Out_ HICON *phico);
 
 HICON LoadBigIcon(int resourceId) {
     int iconWidth = ::GetSystemMetrics(SM_CXICON);

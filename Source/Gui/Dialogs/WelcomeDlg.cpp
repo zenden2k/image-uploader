@@ -24,13 +24,13 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
+#include "Func/MediaInfoHelper.h"
 #include "WizardDlg.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
     br = CreateSolidBrush(RGB(255, 255, 255));
-    PrevClipboardViewer = NULL;
     QuickRegionPrint = false;
 }
 
@@ -75,7 +75,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
 
-    if(lstrlen(MediaInfoDllPath))
+    if(MediaInfoHelper::IsMediaInfoAvailable())
         ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, static_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
 
     ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS));
@@ -201,7 +201,6 @@ LRESULT CWelcomeDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
 {
     LeftImage.UnsubclassWindow();
     LogoImage.UnsubclassWindow();
-    ChangeClipboardChain(PrevClipboardViewer); //Removing window from the chain of clipboard viewers
     return 0;
 }
 

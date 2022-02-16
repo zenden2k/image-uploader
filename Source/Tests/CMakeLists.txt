@@ -39,7 +39,6 @@ if(WIN32)
         ../3rdpart/QColorQuantizer.cpp
 		../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
-        ../Core/Video/AvcodecFrameGrabber.cpp
         ../Core/Video/AbstractFrameGrabber.cpp
         ../Core/Video/DirectshowFrameGrabber.cpp
         ../Core/Video/DirectshowFrameGrabber2.cpp
@@ -54,29 +53,33 @@ if(WIN32)
         ../Core/3rdpart/dxerr.cpp
         ../Core/Settings/CliSettings.cpp
     )
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
+
+if (IU_ENABLE_FFMPEG)
+	list(APPEND SRC_LIST ../Core/Video/AvcodecFrameGrabber.cpp)
+endif()	
 
 add_executable(Tests ${SRC_LIST})
 
 set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
-if(WIN32)
+if(WIN32 AND IU_ENABLE_FFMPEG)
     set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
 endif()
 
-set(LIBS_LIST  "")
+set(LIBS_LIST "")
 
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus libwebpdecoder libwebpdemux base64 avformat avutil swscale avcodec winmm urlmon)
-    target_link_libraries(Tests debug strmbasd optimized strmbase)
+    list(APPEND LIBS_LIST gdiplus WebP::webpdemux WebP::webpdecoder winmm urlmon)
+	if (IU_ENABLE_FFMPEG)
+		list(APPEND LIBS_LIST avformat avutil swscale avcodec)
+	endif()
+    target_link_libraries(Tests base-classes::base-classes)
 else()
-    list(APPEND LIBS_LIST icuuc icui18n gtest)
+    #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
 target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
-if(WIN32)
-    target_link_libraries(Tests debug gmockd optimized gmock)
-else()
-    target_link_libraries(Tests gmock)
-endif()
+
+target_link_libraries(Tests GTest::GTest)
+

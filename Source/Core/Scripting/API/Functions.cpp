@@ -358,7 +358,7 @@ std::string MessageBox( const std::string& message, const std::string &title,con
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj);
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj);
 
-template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &obj) {
+template<class T,class V> void setObjValues(T key, Json::Value::const_iterator it, V &obj) {
     using namespace Json;
     Sqrat::Array newArr;
     Sqrat::Table newObj;
@@ -399,7 +399,7 @@ template<class T,class V> void setObjValues(T key, Json::ValueIterator it, V &ob
 
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
     obj = Sqrat::Array (GetCurrentThreadVM(), root.size());
-    for(Json::ValueIterator it = root.begin(); it != root.end(); ++it) {
+    for(auto it = root.begin(); it != root.end(); ++it) {
         int key = it.key().asInt();
         setObjValues(key, it, obj);
     }
@@ -407,27 +407,26 @@ void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
 
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
     obj = Sqrat::Table (GetCurrentThreadVM());
-    for(Json::ValueIterator it = root.begin(); it != root.end(); ++it) {
+    for(auto it = root.begin(); it != root.end(); ++it) {
         std::string key = it.key().asString();
         setObjValues(key.data(), it, obj);
     }
 }
 
 Sqrat::Object parseJSONObj(const Json::Value& root) {
-    Json::ValueIterator it;
     //SquirrelObject obj;
 
     
     if (root.isArray()) {
         Sqrat::Array obj(GetCurrentThreadVM(), root.size());
-        for(it = root.begin(); it != root.end(); ++it) {
+        for(auto it = root.begin(); it != root.end(); ++it) {
             int key = it.key().asInt();
             setObjValues(key, it, obj);
         }
         return Sqrat::Object(obj);
     } else {
         Sqrat::Table obj(GetCurrentThreadVM());
-        for(it = root.begin(); it != root.end(); ++it) {
+        for(auto it = root.begin(); it != root.end(); ++it) {
             std::string key = it.key().asString();
             setObjValues(key.data(), it, obj);
         }

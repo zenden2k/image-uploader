@@ -1,6 +1,7 @@
 ﻿#include "Process.h"
 
 #undef environ
+#include <algorithm>
 #include <boost/process.hpp>
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"

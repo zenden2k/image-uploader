@@ -44,6 +44,10 @@ CommonGuiSettings::~CommonGuiSettings() {
 }
 
 bool CommonGuiSettings::IsFFmpegAvailable() {
+#ifndef IU_ENABLE_FFMPEG
+    return false;
+#else 
     CString appFolder = WinUtils::GetAppFolder();
     return WinUtils::FileExists(appFolder + "avcodec-58.dll");
+#endif
 }

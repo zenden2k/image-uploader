@@ -1,0 +1,58 @@
+ include/megaapi.h    | 2 +-
+ src/gfx/external.cpp | 2 +-
+ src/megaapi.cpp      | 2 +-
+ src/utils.cpp        | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/include/megaapi.h b/include/megaapi.h
+index 9c417921b..7efd12d6b 100644
+--- a/include/megaapi.h
++++ b/include/megaapi.h
+@@ -126,7 +126,7 @@ public:
+      * @param path Path of the file that is going to be processed
+      * @return True if the implementation is able to manage the file, false otherwise.
+      */
+-    virtual bool readBitmap(const char* path);
++    virtual bool readBitmap(const std::string& path);
+ 
+     /**
+      * @brief Returns the width of the image
+diff --git a/src/gfx/external.cpp b/src/gfx/external.cpp
+index 21ae7aee5..e45b2a9ed 100644
+--- a/src/gfx/external.cpp
++++ b/src/gfx/external.cpp
+@@ -63,7 +63,7 @@ bool GfxProcExternal::readbitmap(FileAccess* /*fa*/, string* localname, int /*si
+ {
+     if(!processor) return false;
+ 
+-	bool result = processor->readBitmap(localname->c_str());
++	bool result = processor->readBitmap(*localname);
+ 	if(!result) return false;
+ 
+ 	w = processor->getWidth();
+diff --git a/src/megaapi.cpp b/src/megaapi.cpp
+index ad55f8053..96788d5f9 100644
+--- a/src/megaapi.cpp
++++ b/src/megaapi.cpp
+@@ -4898,7 +4898,7 @@ void MegaLogger::log(const char* /*time*/, int /*loglevel*/, const char* /*sourc
+ 
+ }
+ 
+-bool MegaGfxProcessor::readBitmap(const char* /*path*/)
++bool MegaGfxProcessor::readBitmap(const std::string& /*path*/)
+ {
+     return false;
+ }
+diff --git a/src/utils.cpp b/src/utils.cpp
+index 5e31ea660..45e7ed50f 100644
+--- a/src/utils.cpp
++++ b/src/utils.cpp
+@@ -1463,7 +1463,7 @@ m_time_t m_mktime(struct tm* stm)
+     return mktime(stm);
+ }
+ 
+-int m_clock_getmonotonictime(timespec *t)
++int m_clock_getmonotonictime(::timespec *t)
+ {
+ #ifdef __APPLE__
+     struct timeval now;

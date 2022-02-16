@@ -1,3 +1,5 @@
+include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
+
 set(SRC_LIST Network/NetworkClient.cpp
 	Network/NetworkClientFactory.cpp
     Upload/DefaultUploadEngine.cpp
@@ -203,14 +205,19 @@ else()
         Utils/CryptoUtils_unix.cpp)
 endif()
 
-if(NOT IU_DISABLE_MEGANZ)
+if(IU_ENABLE_MEGANZ)
        list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
        list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
-endif()       
+endif() 
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
 add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
+
+target_link_libraries(iucore 
+    ${LIBS_LIST} 
+    ${COMMON_LIBS_LIST}
+)
 
 if(MSVC)
     target_compile_options(iucore PRIVATE "/MP")

@@ -7,8 +7,8 @@
 #include "atlheaders.h"
 #include "Unzipper.h"
 #define ZLIB_WIN32_NODLL
-#include "zlib\unzip.h"
-#include "zlib\iowin32.h"
+#include "minizip/unzip.h"
+#include "minizip/iowin32.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE

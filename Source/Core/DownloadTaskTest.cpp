@@ -65,7 +65,7 @@ TEST_F(DownloadTaskTest, Download)
         EXPECT_TRUE(ok);
         EXPECT_EQ(url, item.url);
         EXPECT_EQ("test.png", item.displayName);
-        EXPECT_EQ(123, reinterpret_cast<int>(item.id));
+        EXPECT_EQ(123, reinterpret_cast<intptr_t>(item.id));
         EXPECT_EQ(referer, item.referer);
         EXPECT_EQ(200, responseCode);
         EXPECT_FALSE(item.fileName.empty());
