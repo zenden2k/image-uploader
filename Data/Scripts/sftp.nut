@@ -1,5 +1,3 @@
-token <- "";
-
 if(ServerParams.getParam("hostname") == "")
 {
 	ServerParams.setParam("hostname", "ftp.example.com") ;
@@ -58,8 +56,7 @@ function  UploadFile(FileName, options)
 		
 	if(folder.slice(folder.len()-1) != "/")
 		folder += "/";
-	local url = "sftp://" + authStr + host + folder + ansiFileName;
-	
+	local url = "sftp://" + authStr + host + folder + nm.urlEncode(ansiFileName);
 	local privateKeyPath = ServerParams.getParam("privateKeyPath");
 	if (privateKeyPath.len()) {
 		nm.setCurlOption(10153, privateKeyPath); //CURLOPT_SSH_PRIVATE_KEYFILE
@@ -73,9 +70,10 @@ function  UploadFile(FileName, options)
 	if(!result) {
 		local errorStr = "Code=" + nm.responseCode()+"\r\n"+nm.errorString();
 		
-		if(nm.responseCode() == 530)
-		errorStr += " (wrong username/password?)";
-		print(errorStr);
+		if(nm.responseCode() == 530) {
+			errorStr += " (wrong username/password?)";
+		}
+		WriteLog("error", errorStr);
 		return 0;
 	}
 	if(downloadPath == ""){

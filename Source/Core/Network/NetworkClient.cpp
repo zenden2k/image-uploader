@@ -261,7 +261,7 @@ NetworkClient::NetworkClient()
     logger_ = nullptr;
     proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
-    m_userAgent = "Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36";
+    m_userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36";
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);    
@@ -584,11 +584,17 @@ void NetworkClient::private_checkResponse()
     int code = responseCode();
     if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
         std::string errorDescr;
+
         if (!errorLogIdString_.empty()) {
             errorDescr = errorLogIdString_ + "\r\n";
         }
+
+
         errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
-        
+
+        if (curl_result != CURLE_OK) {
+            errorDescr += getCurlResultString();
+        }
         if (code) {
             errorDescr += "Response code: " + std::to_string(code) + "\r\n";
         }

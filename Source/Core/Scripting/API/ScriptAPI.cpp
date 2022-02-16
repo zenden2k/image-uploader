@@ -106,6 +106,7 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("getCurlInfoString", &INetworkClient::getCurlInfoString).
         Func("getCurlInfoInt", &INetworkClient::getCurlInfoInt).
         Func("getCurlInfoDouble", &INetworkClient::getCurlInfoDouble).
+        Func("getCurlResultString", &INetworkClient::getCurlResultString).
         Func("setReferer", &INetworkClient::setReferer));
 }
 
