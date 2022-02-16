@@ -30,41 +30,15 @@ If you want to build Image Uploader with FFmpeg libraries (`IU_ENABLE_FFMPEG=On`
 If you need Microsoft Edge Webview2 (`IU_ENABLE_WEBVIEW2=On`), you should install it using NuGet package manager (https://docs.microsoft.com/en-us/microsoft-edge/webview2/get-started/win32),
 then copy header files `(*.h)` to the "Contrib\Include" directory, and copy `*.lib` files to Contrib\Lib directory.
 
-# Building console utility (imgupload) on Ubuntu 
+# Building console utility (imgupload) on Ubuntu (incomplete instruction)
 
 Before compiling install the following packages:
 
 ```
-sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot libgtest-dev libboost-dev libboost-filesystem-dev libboost-system-dev libboost-locale-dev libboost-thread-dev libssl-dev libpcre3-dev libc-ares-dev liburiparser-dev libicu-dev libsqlite3-dev libreadline-dev libfreeimage-dev libcurl4-openssl-dev
+sudo apt-get install g++ cmake cmake-qt-gui autoconf automake libtool fakeroot
 ```
 
-Image Uploader is using Google Mock library for tests. If you want to run them, you have to build gmock library from source:
-
-```
-cd /usr/src/gtest
-sudo cmake .
-sudo make
-sudo mv libg* /usr/lib/
-```
-
-Note that the following libraries: glog, gflags, libuv, cryptopp, gumbo, jsoncpp have to be statically built from source. 
-Before building glog remove package libgflags-dev from your system.
-
-Debian package dependencies:
-```
-libpcre3
-#libgumbo1
-#libcrypto++9v5
-libcurl3
-libssl1.0.0
-#libgoogle-glog0
-
-Including those for mega.nz:
-libc-ares2
-libuv1
-libsqlite3-0
-libfreeimage3
-```
+Use the same approach with Conan to build imgupload on Linux.
 
 # Building qimageuploader on Ubuntu
 
