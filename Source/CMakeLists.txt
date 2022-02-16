@@ -15,6 +15,7 @@ if(WIN32)
 	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
 endif()
 set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
+set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -79,7 +80,7 @@ SET(COMMON_DEPS boost/1.78.0
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
-				base-classes/1.0.0@zenden2k/stable
+
 )
 
 if (IU_ENABLE_MEGANZ)
@@ -92,13 +93,18 @@ if (WIN32)
 	)
 endif()	
 	
+if (WIN32)
+	list(APPEND COMMON_DEPS wtl/10.0.9163 base-classes/1.0.0@zenden2k/stable)
+endif()	
+	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
-						GENERATORS cmake_find_package_multi 
+						GENERATORS cmake_find_package_multi
 						OPTIONS boost:shared=False 
 						libcurl:with_libssh2=True
 						)
 
 # ffmpeg package supports Windows x64 only as target system, so we have to build ffmpeg separately
+SET(msvc_link_setting "")
 
 SET(msvc_link_setting "")
 
@@ -131,7 +137,7 @@ if(WIN32)
 endif()
 find_package(base64 CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-find_package(libssh2 CONFIG REQUIRED)
+find_package(Libssh2 CONFIG REQUIRED)
 find_package(SQLite3 CONFIG REQUIRED)
 find_package(minizip CONFIG REQUIRED)
 find_package(glog CONFIG REQUIRED)
@@ -144,9 +150,11 @@ if(IU_ENABLE_MEGANZ)
 	find_package(megaio CONFIG REQUIRED) 
 endif()	
 find_package(gumbo-parser CONFIG REQUIRED) 
-find_package(gtest CONFIG REQUIRED)
+find_package(GTest CONFIG REQUIRED)
 find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
-find_package(base-classes CONFIG REQUIRED)
+if(WIN32)
+	find_package(base-classes CONFIG REQUIRED)
+endif()	
   
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
@@ -180,22 +188,23 @@ if (IU_ENABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
 endif()
 
+if (IU_ENABLE_MEGANZ)
+	list(APPEND COMMON_LIBS_LIST libuv::libuv)
+endif()
+    
+if (IU_USE_OPENSSL)
+	list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
+endif()
+
 if(WIN32)
 	list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
 	
-    if (IU_ENABLE_MEGANZ)
-        list(APPEND COMMON_LIBS_LIST libuv::libuv)
-    endif()
     
-    if (IU_USE_OPENSSL)
-        list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
-    endif()
-
 	if (IU_ENABLE_WEBVIEW2)
 		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
 	endif()	
 else()
-    list(APPEND COMMON_LIBS_LIST dl z base64::base64  ssl crypto pthread uv_a rt sqlite3 freeimage gflags)
+    list(APPEND COMMON_LIBS_LIST dl base64::base64  OpenSSL::OpenSSL pthread rt gflags)
     SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
 
@@ -206,5 +215,7 @@ if(WIN32)
     add_subdirectory(ServerListTool)
 endif()
 
-add_subdirectory(qimageuploader)	
+if(IU_BUILD_QIMAGEUPLOADER)
+	add_subdirectory(qimageuploader)	
+endif()	
 add_subdirectory(Tests)	

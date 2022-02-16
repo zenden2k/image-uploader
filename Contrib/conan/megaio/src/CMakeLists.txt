@@ -83,7 +83,7 @@ IF(WIN32)
         set(Mega3rdPartyDir "${MegaDir}/../3rdParty" CACHE TYPE STRING)
     endif()
 ELSE(WIN32)
-    set(MegaDir "${CMAKE_CURRENT_LIST_DIR}/")
+    set(MegaDir "${CMAKE_CURRENT_LIST_DIR}/../")
     if ("${Mega3rdPartyDir}" STREQUAL "")
         set (Mega3rdPartyDir "${MegaDir}/../3rdParty/")
     endif()
@@ -154,7 +154,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR}
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})			
 
-IF(WIN32)
+
     #if(USE_PREBUILT_3RDPARTY)
 		find_package(ZLIB REQUIRED)
         
@@ -200,7 +200,7 @@ IF(WIN32)
             add_definitions( -DWEBRTC_WIN )
         ENDIF()
     
-		find_package(gtest REQUIRED)
+		find_package(GTest REQUIRED)
 		
 
         # IF(USE_FREEIMAGE)
@@ -242,7 +242,8 @@ IF(WIN32)
         IF(USE_SQLITE)
 			find_package(SQLite3 REQUIRED)
         ENDIF(USE_SQLITE)
-
+        
+IF(WIN32)
     
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DCURL_STATICLIB -DCARES_STATICLIB -DWIN32_LEAN_AND_MEAN -DUNICODE -DSODIUM_STATIC -DPCRE_STATICWIN32 -D_CONSOLE )
     SET(Mega_PlatformSpecificIncludes ${MegaDir}/include/mega/$<IF:${USE_CURL},wincurl,win32>)

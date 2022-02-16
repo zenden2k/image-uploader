@@ -27,14 +27,14 @@ void cpuid(int CPUInfo[4], int InfoType){
         );
 }
 #if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4
-static inline unsigned long long _xgetbv(unsigned int index){
+static inline unsigned long long __xgetbv(unsigned int index){
   unsigned int eax, edx;
   __asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
   return ((unsigned long long)edx << 32) | eax;
 
 }
  #else
-#define _xgetbv() 0
+#define __xgetbv() 0
 #endif
 
 
@@ -162,7 +162,7 @@ std::string GetCpuFeatures() {
 
     if (osUsesXSAVE_XRSTORE && cpuAVXSuport) {
         // Check if the OS will save the YMM registers
-        unsigned long long xcrFeatureMask = _xgetbv(/*_XCR_XFEATURE_ENABLED_MASK*/0);
+        unsigned long long xcrFeatureMask = __xgetbv(/*_XCR_XFEATURE_ENABLED_MASK*/0);
         avxSupported = (xcrFeatureMask & 0x6) || false;
     }
 

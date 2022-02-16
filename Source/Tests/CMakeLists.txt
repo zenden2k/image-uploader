@@ -76,7 +76,7 @@ if(WIN32)
 	endif()
     target_link_libraries(Tests base-classes::base-classes)
 else()
-    list(APPEND LIBS_LIST icuuc icui18n gtest)
+    #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
 target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
