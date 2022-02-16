@@ -33,4 +33,4 @@ http://svistunov.dev/imageuploader-cli
 
 ## Building from source
 
-See COMPILING.md
+See COMPILING.MD

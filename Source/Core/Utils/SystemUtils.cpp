@@ -10,6 +10,7 @@
 // https://code.google.com/p/chromium/codesearch#chromium/src/base/cpu.cc&sq=package:chromium&type=cs
 #ifdef _WIN32
 #include <intrin.h>
+#define __xgetbv _xgetbv
 //  Windows
 #define cpuid(info,x)    __cpuidex(info,x,0)
 

@@ -163,7 +163,7 @@ link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
         ENDIF(USE_CRYPTOPP)
 
         IF(USE_CURL)
-            find_package(CURL REQUIRED)
+            find_package(libcurl REQUIRED)
 			find_package(c-ares REQUIRED)
         ENDIF(USE_CURL)
         
@@ -341,7 +341,7 @@ target_link_libraries(megaio PUBLIC ZLIB::ZLIB
                 $<$<AND:${USE_OPENSSL},$<NOT:${USE_WEBRTC}>>:ssl> 
                 $<$<AND:${USE_OPENSSL},$<NOT:${USE_WEBRTC}>>:crypto> 
                 $<${USE_WEBRTC}:webrtc::webrtc> 
-                $<${USE_CURL}:CURL::libcurl>  
+                $<${USE_CURL}:libcurl::libcurl>  
                 $<${USE_CURL}:c-ares::c-ares> 
                 $<${USE_SQLITE}:SQLite::SQLite3>
                 $<${USE_MEDIAINFO}:MediaInfoLib::MediaInfoLib> $<${USE_MEDIAINFO}:ZenLib::ZenLib> 
