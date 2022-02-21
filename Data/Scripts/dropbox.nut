@@ -1,4 +1,4 @@
-﻿appKey <- "973quph3jxdgqoe";
+appKey <- "973quph3jxdgqoe";
 appSecret <- "wloizpn331cc8zd";
 accessType <- "app_folder";
 
@@ -8,8 +8,7 @@ redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
 authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
-token <- "";
-accountId <- "";
+authCode <- "";
 
 regMatchOffset <- 0;
 
@@ -48,25 +47,6 @@ function tr(key, text) {
 	}
 }
 	
-function regex_simple(data,regStr,start)
-{
-	local ex = regexp(regStr);
-	local res = ex.capture(data, start);
-	local resultStr = "";
-	if(res != null){	
-		resultStr = data.slice(res[1].begin, res[1].end);
-	}
-		return resultStr;
-}
-
-function _WriteLog(type,message) {
-	try {
-		WriteLog(type, message);
-	} catch (ex ) {
-		print(type + " : " + message);
-	}
-}
-
 function signRequest(url, token) {
 	nm.addQueryHeader("Authorization", "Bearer " + token);
 	
@@ -74,33 +54,17 @@ function signRequest(url, token) {
 }
 
 function OnUrlChangedCallback(data) {
-	local reg = CRegExp("^" +redirectUrlEscaped, "");
+	local reg = CRegExp("^" + redirectUrlEscaped, "");
 	if ( reg.match(data.url) ) {
-        //DebugMessage(data.url, true);
 		local br = data.browser;
 		local regError = CRegExp("error=([^&]+)", "");
 		if ( regError.match(data.url) ) {
 			WriteLog("warning", regError.getMatch(regMatchOffset+0));
 		} else {
-			local regToken = CRegExp("access_token=([^&]+)", "");
-			if ( regToken.match(data.url) ) {
-				token = regToken.getMatch(regMatchOffset+0);
+			local codeRegexp = CRegExp("code=([^&]+)", "");
+			if ( codeRegexp.match(data.url) ) {
+				authCode = codeRegexp.getMatch(regMatchOffset+0);
 			}
-			
-			local regAccountId = CRegExp("account_id=([^&]+)", "");
-			if ( regAccountId.match(data.url) ) {
-				accountId = regAccountId.getMatch(regMatchOffset+0);
-			}
-            
-            local tokenType ="";
-            local regTokenTypeId = CRegExp("token_type=([^&]+)", "");
-			if ( regTokenTypeId.match(data.url) ) {
-				tokenType = regTokenTypeId.getMatch(regMatchOffset+0);
-			}
-			ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));
-			ServerParams.setParam("token", token);
-			ServerParams.setParam("accountId", accountId);	
-			ServerParams.setParam("tokenTime", time().tostring());	
 		}
 		br.close();
 	}
@@ -111,16 +75,62 @@ function sendOauthRequest(url, token) {
 	nm.doPost("" );
 	return 0;
 }
-function openUrl(url) {
-	try{
-		return ShellOpenUrl(url);
-	}catch(ex){}
 
-	system("start "+ reg_replace(url,"&","^&") );
+function RefreshToken() {
+	local expiresIn = ServerParams.getParam("expiresIn").tointeger();
+	local refreshToken = ServerParams.getParam("refreshToken"); 
+	if (time() > expiresIn) {
+		nm.setUrl("https://api.dropboxapi.com/oauth2/token");
+		nm.addQueryParam("grant_type", "refresh_token");
+		nm.addQueryParam("client_id", appKey);
+		nm.addQueryParam("client_secret", appSecret);
+		nm.addQueryParam("refresh_token", refreshToken);
+		nm.doPost("");
+
+		if (nm.responseCode() == 200) {
+			local t = ParseJSON(nm.responseBody());
+			ServerParams.setParam("token", t.access_token);
+			ServerParams.setParam("expiresIn", t.expires_in + time());
+			return 1;
+		} else {
+			WriteLog("error", "[dropbox.nut] Unable to refresh  token, response code: " + nm.responseCode());
+			return 0;
+		}
+	}
+	return 1;
+}
+
+function ObtainAccessToken()  {
+	if (authCode != ""){
+		local url = "https://api.dropboxapi.com/oauth2/token";
+		nm.setUrl(url);
+		nm.addQueryParam("code", authCode);
+		nm.addQueryParam("grant_type", "authorization_code");
+		nm.addQueryParam("redirect_uri", redirectUri);
+		nm.addQueryParam("client_id", appKey);
+		nm.addQueryParam("client_secret", appSecret);
+		nm.doPost("");
+
+		if (nm.responseCode() == 200) {
+			local t = ParseJSON(nm.responseBody());
+			ServerParams.setParam("token", t.access_token);
+			ServerParams.setParam("refreshToken", t.refresh_token);
+			ServerParams.setParam("expiresIn", t.expires_in + time());
+			ServerParams.setParam("accountId", t.account_id);	
+			ServerParams.setParam("tokenTime", time().tostring());	
+			ServerParams.setParam("uid", t.uid);
+			authCode = "";	
+			return 1;
+		} else {
+			WriteLog("error", "[dropbox.nut] Unable to obtain bearer token, response code: " + nm.responseCode());
+		}
+	} else {
+		RefreshToken();
+	}
 }
 
 function _DoLogin() {
-	token = ServerParams.getParam("token");
+	local token = ServerParams.getParam("token");
 	
 	if ( token != ""){
 		return 1;
@@ -132,21 +142,14 @@ function _DoLogin() {
 	
 	local url = "https://www.dropbox.com/oauth2/authorize?" + 
 			"client_id=" + appKey  + 
-			"&response_type=token" +
+			"&response_type=code" +
+			"&token_access_type=offline" + 
 			"&redirect_uri=" + nm.urlEncode(redirectUri);
 
 	browser.navigateToUrl(url);
 	browser.showModal();
 	
-    if ( token != ""){
-        /*local url = "https://api.dropboxapi.com/2/users/get_current_account";
-        nm.addQueryHeader("Content-Type","")
-        sendOauthRequest(url, token);
-        WriteLog("warning", nm.responseBody() );*/
-		return 1;
-	}
-    
-	return 0;
+	return ObtainAccessToken();
 }
 
 function DoLogin() {
@@ -183,7 +186,7 @@ function DoLogout() {
     } else {
         local t = ParseJSON(nm.responseBody());
         if ("error" in t && t.error.rawget(".tag") == "invalid_access_token") {
-            WriteLog("error", "Token already revoked.");
+            WriteLog("warning", "[dropbox.nut] Token already revoked.");
             return 1;
         }
     }
@@ -193,8 +196,13 @@ function DoLogout() {
 function min(a,b) {
 	return a < b ? a : b;
 }
+
 function  UploadFile(FileName, options) {		
 	if (!DoLogin() ) {
+		return 0;
+	}
+	local token =  ServerParams.getParam("token");
+	if (!RefreshToken()) {
 		return 0;
 	}
 	local url = null;
@@ -211,7 +219,7 @@ function  UploadFile(FileName, options) {
 	}
 	
 	if ( fileSize < 0 ) {
-		_WriteLog("error","fileSize < 0 ");
+		WriteLog("error", "[dropbox.nut] fileSize < 0 ");
 		return 0;
 	}
 	local path = "/"+ userPath;
@@ -228,7 +236,7 @@ function  UploadFile(FileName, options) {
 				try {
 					nm.setChunkOffset(offset.tofloat());
 				} catch ( ex ) {
-					_WriteLog("error", "Your Image Uploader version does not support chunked uploads for big files. \r\nPlease update to the latest version");
+					WriteLog("error", "Your Image Uploader version does not support chunked uploads for big files. \r\nPlease update to the latest version");
 					return 0;
 				}
 				if( session==""){
@@ -252,16 +260,16 @@ function  UploadFile(FileName, options) {
                     local json = reg_replace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 }
-				local chunkSize = min(chunkSize,fileSize.tofloat()-offset);
+				local chunkSize = min(chunkSize,fileSize.tofloat()-offset).tointeger();
 				nm.setChunkSize(chunkSize);
                 nm.addQueryHeader("Content-Type", "application/octet-stream");
 				nm.setUrl(url);
 				nm.doUpload(FileName,"");
                 
 				if ( nm.responseCode() != 200 ) {
-					_WriteLog("warning","Chunk upload failed, offset="+offset+", size="+chunkSize+(j< 1? "Trying again..." : ""));
+					WriteLog("warning", "[dropbox.nut] Chunk upload failed, offset="+offset+", size="+chunkSize+(j< 1? "Trying again..." : ""));
 					if ( nm.responseCode() == 403 ) {
-						_WriteLog("error","Upload failed. Access denied");
+						WriteLog("error", "[dropbox.nut] Upload failed. Access denied");
 						return 0;
 					}
 				} else {
@@ -278,8 +286,8 @@ function  UploadFile(FileName, options) {
 			}
 			//return 0;
 		}
-		if ( session=="" ) {
-			_WriteLog("error","Upload failed");
+		if ( session == "" ) {
+			WriteLog("error", "[dropbox.nut] Upload failed");
 			return 0;
 		}
 		url = "https://content.dropboxapi.com/2/files/upload_session/finish";
@@ -306,7 +314,6 @@ function  UploadFile(FileName, options) {
 
 		if ( nm.responseCode() != 200 ) {
             return 0;
-			//_WriteLog("error",nm.responseCode().tostring());
 		}
         local data = ParseJSON(nm.responseBody());
 
@@ -323,12 +330,12 @@ function  UploadFile(FileName, options) {
         local json = reg_replace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
 		nm.setUrl(url);
-		nm.doUpload(FileName,"");
+		nm.doUpload(FileName, "");
 	}
 
     local data = ParseJSON(nm.responseBody());
     if(nm.responseCode()!=200){
-        _WriteLog("error",nm.responseBody());
+        WriteLog("error", "[dropbox.nut] " + nm.responseBody());
         return 0;
     }
 
@@ -343,11 +350,10 @@ function  UploadFile(FileName, options) {
             }
     };
     local json = reg_replace(ToJSON(arg),"\n","");
-    //_WriteLog("error",json);
     nm.addQueryHeader("Content-Type","application/json")
 	nm.setUrl(url);
     nm.enableResponseCodeChecking(false);
-	nm.doUpload("",json);
+	nm.doPost(json);
     
     local viewUrl = "";
     
@@ -371,17 +377,17 @@ function  UploadFile(FileName, options) {
                     options.setViewUrl( viewUrl );
                 }
             } else {
-                _WriteLog("error",nm.responseBody());
+                WriteLog("error", "[dropbox.nut] " + nm.responseBody());
                 return 0;
             }
         } else {
-             _WriteLog("error",nm.responseBody());
+            WriteLog("error", "[dropbox.nut] " + nm.responseBody());
             return 0;
         }
        
     } else {
         data = ParseJSON(nm.responseBody());
-        viewUrl =data.url;
+        viewUrl = data.url;
         options.setViewUrl( viewUrl);
     }
 	
@@ -391,7 +397,6 @@ function  UploadFile(FileName, options) {
  	
 	return 0;
 }
-
 
 function reg_replace(str, pattern, replace_with)
 {
@@ -407,64 +412,10 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
-
-
-
-function hex2int(str){
-	local res = 0;
-	local step = 1;
-	for( local i = str.len() -1; i >= 0; i-- ) {
-		local val = 0;
-		local ch = str[i];
-		if ( ch >= 'a' && ch <= 'f' ) {
-			val = 10 + ch - 'a';
-		}
-		else if ( ch >= '0' && ch <= '9' ) {
-			val = ch - '0';
-		}
-		res += step * val;
-		step = step * 16;
-	}
-	return res;
-}
-
-function unescape_json_string(data) {
-    local tmp;
-
-    local ch = 0x0424;
-	local result = data;
-	local ex = regexp("\\\\u([0-9a-fA-F]{1,4})");
-	local start = 0;
-	local res = null;
-	for(;;) {
-		res = ex.capture(data, start);
-		local resultStr = "";
-		if (res == null){
-			break;
-		}
-			
-		resultStr = data.slice(res[1].begin, res[1].end);
-		ch = hex2int(resultStr);
-		start = res[1].end;
-		 if(ch>=0x00000000 && ch<=0x0000007F)
-			tmp = format("%c",(ch&0x7f));
-		else if(ch>=0x00000080 && ch<=0x000007FF)
-			tmp = format("%c%c",(((ch>>6)&0x1f)|0xc0),((ch&0x3f)|0x80));
-		else if(ch>=0x00000800 && ch<=0x0000FFFF)
-		   tmp= format("%c%c%c",(((ch>>12)&0x0f)|0xe0),(((ch>>6)&0x3f)|0x80),((ch&0x3f)|0x80));
-			result = reg_replace( result, "\\u"+resultStr, tmp);
-   
-	}
-
-    return result;
-}
-
 function GetServerParamList()
 {
-	local a =
-	{
+	return {
         token = "token"
 		UploadPath = "Upload Path"
-	}
-	return a;
+	};
 }
