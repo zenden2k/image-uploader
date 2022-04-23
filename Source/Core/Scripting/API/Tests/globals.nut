@@ -6,7 +6,7 @@ expect_eq("Base64 is a generic term for a number of similar encoding schemes tha
     
 local fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
 expect_eq("Image Uploader.exe", ExtractFileName(fileName));
-/*
+
 local t = {
     a = "test1",
     b = 1.0,
@@ -25,4 +25,3 @@ local expected = "{\n   \"a\" : \n   {\n      \"aa\" : \"test\"\n   },\n   \"b\"
 local actual = ToJSON(t2);
 //expect_eq(expected.len(), actual.len());
 expect_streq(expected, actual);
-*/

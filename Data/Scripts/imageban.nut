@@ -18,9 +18,7 @@ function getThumbnailWidth() {
     local result = "180";
     try{
         result = options.getParam("THUMBWIDTH");
-    }
-    catch(ex)
-    {
+    } catch(ex) {
     }
     return result;
 }

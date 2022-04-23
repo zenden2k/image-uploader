@@ -21,14 +21,7 @@
                %appdata%\Image Uploader\Servers\    (если вы использовали инсталлятор)
            Создайте там XML файл с такой же структурой, как у текущего файла.
     --> 
-		<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
-		<Actions>
-			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
-			<Action Type="upload" Url="http://radikal.ru/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;Upload=Submit Query" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0" Referer="http://radikal.ru/Content/Clients/FotoFlashApplet3.swf?v=13"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-	</Server>
-	<Server Name="ImageBan.ru"  Authorize="1" Plugin="imageban" NeedPassword="0">
+	<Server Name="ImageBan.ru" Authorize="1" Plugin="imageban" NeedPassword="0">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -53,8 +46,8 @@
 	<Server Name="Yandex.Disk" Debug="0"  NeedPassword="0" Authorize="2" Plugin="yandexdisk" FileHost="1" SupportsFolders="1" RegistrationUrl="https://disk.yandex.ru">
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-<Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
-	<Result ImageUrlTemplate="stub" />
+	<Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
+		<Result ImageUrlTemplate="stub" />
 	</Server>
 	<Server Name="image2you.ru" Authorize="2" Debug="0" MaxThreads="1">
 		<Actions>
@@ -90,14 +83,6 @@
 		</Actions>
         <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
-	<!--<Server Name="pix.am"  Authorize="1" Debug="0">
-		<Actions>
-			<Action Type="login" Url="http://pix.am/api/auth/" PostParams="email=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1" RegExp='user_id&quot;: (\d*), &quot;user_hash&quot;: &quot;(.*?)&quot;' AssignVars="_UserId:0;_UserHash:1"/>
-			<Action Type="upload" Url="http://pix.am/post/" PostParams="user_id=$(_UserId);user_hash=$(_UserHash);image=%filename%" RegExp="http:\/\/pix\.am\/(\S*)\/" AssignVars="ID:0;"/>
-			<Action Type="get" Url="http://pix.am/full/$(ID)/" RegExp="Direct link([\s\S]*?)http:\/\/pix\.am\/([^&quot;]*)" AssignVars="Link:1;"/>
-		</Actions>
-		<Result ImageUrlTemplate="http://pix.am/$(Link)"/>
-	</Server>-->
 	<Server Name="hostingkartinok.com"  Authorize="1" Debug="0">
 		<Actions>
 			<Action Type="upload" Url="https://hostingkartinok.com/login.php" PostParams="autologin=1;email=$(_LOGIN);password=$(_PASSWORD);login=Войти" OnlyOnce="1" />
@@ -119,14 +104,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
 	</Server>
-
-	<!--<Server Name="load.to" FileHost="1" Debug="0">
-		<Actions>
-			<Action Type="get" Url="https://www.load.to" RegExp="&lt;form name=&quot;form_upload&quot;([^&gt;]+)action=&quot;(.+?)&quot;" AssignVars="_UploadUrl:1" OnlyOnce="1" />
-			<Action Type="upload" Url="http:$(_UploadUrl)" PostParams="upload_range=1;upfile_0=%filename%;email=;filecomment=;" RegExp="Download:([\s\S]+?)href=&quot;(https://www.load.to/.+?/[^&quot;]+)&quot;" AssignVars="DownloadUrl:1" />
-		</Actions>
-		<Result DownloadUrlTemplate="$(DownloadUrl)"/>
-	</Server>-->
 	<Server Name="dfiles.ru" Debug="0" FileHost="1" Authorize="1">
 		<Actions>
 			<Action Type="login" Url="http://dfiles.ru/en/login.php" PostParams="go=1;login=$(_LOGIN);password=$(_PASSWORD);" OnlyOnce="1"/>
@@ -153,7 +130,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	 <Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
+	<Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647"> 
         <Actions> 
             <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server" 
                 RegExp="&quot;server&quot;:&quot;https:\\/\\/(\w+)" 
@@ -250,12 +227,6 @@
         </Actions>
     <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
     </Server>-->
-    <Server Name="ifotki.info">
-        <Actions>
-            <Action Type="upload" Url="http://ifotki.info/index.php?mode=" PostParams="add=true;foto1=%filename%;" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;"/>
-        </Actions>
-        <Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
-    </Server>
     <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000">
         <Actions>
             <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
@@ -293,7 +264,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-     <Server Name="abcvg.org" MaxFileSize="10000000" Plugin="abcvg">
+    <Server Name="abcvg.org" MaxFileSize="10000000" Plugin="abcvg">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
