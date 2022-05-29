@@ -28,6 +28,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Scripting/API/Functions.cpp
     Scripting/API/RegularExpression.cpp
     Scripting/API/ScriptAPI.cpp
+    Scripting/API/WebServer.cpp
     Logging.cpp
 	DownloadTask.cpp
     Upload/ConsoleUploadErrorHandler.cpp
@@ -101,6 +102,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Scripting/API/Functions.h
     Scripting/API/RegularExpression.h
     Scripting/API/ScriptAPI.h
+    Scripting/API/WebServer.h
     Logging.h
     Upload/ConsoleUploadErrorHandler.h
     Upload/FileQueueUploader.h

@@ -36,8 +36,12 @@
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/Scripting/Squirrelnc.h"
+#include "WebServer.h"
+
 #include <set>
 #include <unordered_map>
+
+
 #ifndef _WIN32
 #include <unistd.h>
 #endif
@@ -244,7 +248,8 @@ thread_local  HSQUIRRELVM threadVm;
 #endif
 
 std::unordered_map<HSQUIRRELVM, std::set<WebBrowserPrivateBase*>> vmBrowsers;
-std::mutex vmBrowsersMutex;
+std::unordered_map<HSQUIRRELVM, std::set<WebServerPrivateBase*>> vmServers;
+std::mutex vmBrowsersMutex, vmServersMutex;
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
    // Sqrat::DefaultVM::Set(vm.GetVM());
@@ -255,7 +260,8 @@ void RegisterClasses(Sqrat::SqratVM& vm) {
     RegisterProcessClass(vm);
     RegisterSimpleXmlClass(vm);
     RegisterGumboClasses(vm);
-
+    RegisterWebServerClass(vm);
+	
 //#if defined(IU_WTL) && !defined(IU_NOWEBBROWSER)
 #ifdef _WIN32
     RegisterWebBrowserClass(vm);
@@ -287,12 +293,20 @@ void SetCurrentThreadVM(HSQUIRRELVM vm) {
 void StopAssociatedBrowsers(HSQUIRRELVM vm)
 {
 #ifdef _WIN32
-    std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-    for ( auto& it : vmBrowsers[vm])
     {
-        it->abort();
+        std::lock_guard<std::mutex> guard(vmBrowsersMutex);
+        for (auto& it : vmBrowsers[vm]) {
+            it->abort();
+        }
     }
 #endif
+
+    {
+        std::lock_guard<std::mutex> guard(vmServersMutex);
+        for (auto& it : vmServers[vm]) {
+            it->stop();
+        }
+    }
 }
 
 void AddBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser)

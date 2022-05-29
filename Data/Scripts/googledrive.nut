@@ -75,7 +75,6 @@ function _DoLogin()
 { 
 	local login = ServerParams.getParam("Login");
 	local scope = "https://www.googleapis.com/auth/drive";
-	local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
 	local clientSecret = "65ie-G5nWqGMv_THtY3z2snZ";
 	local clientId = "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
 
@@ -131,12 +130,34 @@ function _DoLogin()
 			return 1;
 		}
 	}
+	local server = WebServer();
+	local confirmCode = "";
+
+	server.resource("^/$", "GET", function(d) {
+		local responseBody = "";
+		if ("code" in d.queryParams){
+			confirmCode = d.queryParams.code;
+			responseBody = "Success";
+		} else {
+			responseBody = "Failed to obtain confirmation code";
+		}
+		
+		return {
+			responseBody = responseBody,
+			stopDelay = 500
+		};
+		//server.stop();
+	}, null);
+	
+	local port = server.bind(0);
+
+	local redirectUrl = "http://127.0.0.1:" + port + "/";
 
 	local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
 	ShellOpenUrl(url);
-	
-	local confirmCode = InputDialog(tr("googledrive.confirmation.text", "You need to need to sign in to your Google account\r\n in web browser which just have opened and then\r\n copy confirmation code into the text field below.\r\nPlease enter confirmation code:"),"");
-	
+
+	server.start();
+
 	if ( confirmCode == "" ) {
 		print("Cannot authenticate without confirm code");
 		return 0;
