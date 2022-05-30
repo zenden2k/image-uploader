@@ -3,10 +3,11 @@
 
 #pragma once
 
+#include "ScriptAPI.h"
 #include "Core/Scripting/Squirrelnc.h"
 
 namespace ScriptAPI {
-    class WebBrowserPrivateBase {
+    class WebBrowserPrivateBase: public Stoppable {
     public:
         WebBrowserPrivateBase();
         virtual ~WebBrowserPrivateBase();
@@ -38,6 +39,7 @@ namespace ScriptAPI {
 
         virtual void close() = 0;
         virtual void abort();
+        virtual void stop();
         void clearCallbacks();
 
     protected:

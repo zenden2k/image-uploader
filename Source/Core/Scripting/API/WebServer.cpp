@@ -9,18 +9,24 @@ namespace ScriptAPI {
 
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 
-class WebServerPrivate: public WebServerPrivateBase{
+class WebServerPrivate: public Stoppable{
 
 public:
 	HttpServer server_;
     std::vector<Sqrat::Function> callbacks_;
 
-    virtual void stop() override {
+    WebServerPrivate() {
+	    AddServiceToVM(GetCurrentThreadVM(), this);
+    }
+    virtual ~WebServerPrivate() {
+        RemoveServiceFromVM(GetCurrentThreadVM(), this);
+    }
+    void stop() override {
 		server_.stop();
     }
 };
 
-WebServerRequest::WebServerRequest() {
+/*WebServerRequest::WebServerRequest() {
 	
 }
 
@@ -37,7 +43,7 @@ std::string WebServerRequest::queryString() const {
 }
 std::string WebServerRequest::httpVersion() const {
     return httpVersion_;
-}
+}*/
 
 WebServer::WebServer(): d_(std::make_shared<WebServerPrivate>()){
 }

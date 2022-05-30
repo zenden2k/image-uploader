@@ -5,17 +5,21 @@ namespace ScriptAPI {
 
 WebBrowserPrivateBase::WebBrowserPrivateBase() : timerInterval_(0)
 {
-    AddBrowserToVM(GetCurrentThreadVM(), this);
+    AddServiceToVM(GetCurrentThreadVM(), this);
 }
 
 WebBrowserPrivateBase::~WebBrowserPrivateBase()
 {
-    RemoveBrowserToVM(GetCurrentThreadVM(), this);
+    RemoveServiceFromVM(GetCurrentThreadVM(), this);
 }
 
 void WebBrowserPrivateBase::abort()
 {
     clearCallbacks();
+}
+
+void WebBrowserPrivateBase::stop() {
+    abort();
 }
 
 void WebBrowserPrivateBase::clearCallbacks()

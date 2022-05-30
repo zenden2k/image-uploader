@@ -80,6 +80,7 @@ protected:
     std::unique_ptr<INetworkClient> NetworkClient_;
     CProgressRingControl wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
+    std::shared_ptr<AuthTask> currentTask_;
     void authTaskFinishedCallback(UploadTask* task, bool ok);
 };
 

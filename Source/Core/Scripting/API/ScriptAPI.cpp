@@ -247,9 +247,8 @@ HSQUIRRELVM threadVm;
 thread_local  HSQUIRRELVM threadVm;
 #endif
 
-std::unordered_map<HSQUIRRELVM, std::set<WebBrowserPrivateBase*>> vmBrowsers;
-std::unordered_map<HSQUIRRELVM, std::set<WebServerPrivateBase*>> vmServers;
-std::mutex vmBrowsersMutex, vmServersMutex;
+std::unordered_map<HSQUIRRELVM, std::set<Stoppable*>> vmServices;
+std::mutex vmServicesMutex;
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
    // Sqrat::DefaultVM::Set(vm.GetVM());
@@ -290,42 +289,32 @@ void SetCurrentThreadVM(HSQUIRRELVM vm) {
     threadVm = vm;
 }
 
-void StopAssociatedBrowsers(HSQUIRRELVM vm)
+void StopAssociatedServices(HSQUIRRELVM vm)
 {
-#ifdef _WIN32
     {
-        std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-        for (auto& it : vmBrowsers[vm]) {
-            it->abort();
-        }
-    }
-#endif
-
-    {
-        std::lock_guard<std::mutex> guard(vmServersMutex);
-        for (auto& it : vmServers[vm]) {
+        std::lock_guard<std::mutex> guard(vmServicesMutex);
+        for (auto* it : vmServices[vm]) {
             it->stop();
         }
     }
 }
 
-void AddBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser)
+void AddServiceToVM(HSQUIRRELVM vm, Stoppable* service)
 {
-    std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-    vmBrowsers[vm].insert(browser);
+    std::lock_guard<std::mutex> guard(vmServicesMutex);
+    vmServices[vm].insert(service);
 }
 
-void RemoveBrowserToVM(HSQUIRRELVM vm, WebBrowserPrivateBase* browser)
+void RemoveServiceFromVM(HSQUIRRELVM vm, Stoppable* service)
 {
     try
     {
-        std::lock_guard<std::mutex> guard(vmBrowsersMutex);
-        vmBrowsers[vm].erase(browser);
+        std::lock_guard<std::mutex> guard(vmServicesMutex);
+        vmServices[vm].erase(service);
     } catch (std::exception& ex)
     {
         LOG(ERROR) << ex.what();
     }
-
 }
 
 void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback)

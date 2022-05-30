@@ -6,16 +6,10 @@
 #include "Core/Scripting/Squirrelnc.h"
 
 namespace ScriptAPI {
-
-class WebServerPrivateBase {
-	public:
-		virtual ~WebServerPrivateBase() {}
-		virtual void stop() {}
-};
 		
 class WebServerPrivate;
 
-class WebServerRequest
+/*class WebServerRequest
 {
 	std::string method_, path_, queryString_, httpVersion_;
 public:
@@ -24,7 +18,7 @@ public:
 	std::string path() const;
 	std::string queryString() const;
 	std::string httpVersion() const;
-};
+};*/
 class WebServer {
 	public:
 		WebServer();

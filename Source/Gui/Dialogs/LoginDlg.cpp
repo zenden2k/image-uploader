@@ -130,7 +130,12 @@ LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& b
 
 LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    EndDialog(wID);
+	if (currentTask_) {
+        currentTask_->stop();
+	} else {
+        EndDialog(wID);
+	}
+	
     return 0;
 }
 
@@ -210,6 +215,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         authTask->onTaskFinished.connect(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
         auto* uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
+        currentTask_ = authTask;
         uploadManager->addSingleTask(authTask);
     }
 }
@@ -273,7 +279,7 @@ void CLoginDlg::enableControls(bool enable)
     GuiTools::EnableDialogItem(m_hWnd, IDC_LOGINEDIT, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_PASSWORDEDIT, enable&&m_UploadEngine->NeedPassword);
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
-    GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
+    //GuiTools::EnableDialogItem(m_hWnd, IDCANCEL, enable);
     loginButton_.EnableWindow(enable);
     deleteAccountLabel_.EnableWindow(enable);
 }
@@ -307,4 +313,5 @@ void CLoginDlg::authTaskFinishedCallback(UploadTask* task, bool ok) {
         }
 
     }
+    currentTask_.reset();
 }
