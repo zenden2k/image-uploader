@@ -12,7 +12,7 @@ function EndLogin() {
 	try {
 		return Sync.endAuth();
 	} catch ( ex ) {
-		
+
 	}
 	return true;
 }
@@ -22,7 +22,7 @@ function regex_simple(data,regStr,start)
 	local ex = regexp(regStr);
 	local res = ex.capture(data, start);
 	local resultStr = "";
-	if(res != null){	
+	if(res != null){
 		resultStr = data.slice(res[1].begin, res[1].end);
 	}
 		return resultStr;
@@ -30,11 +30,11 @@ function regex_simple(data,regStr,start)
 
 function reg_replace(str, pattern, replace_with)
 {
-	local resultStr = str;	
+	local resultStr = str;
 	local res;
 	local start = 0;
 
-	while( (res = resultStr.find(pattern,start)) != null ) {	
+	while( (res = resultStr.find(pattern,start)) != null ) {
 
 		resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
 		start = res + replace_with.len();
@@ -71,8 +71,8 @@ function checkResponse() {
 	return 1;
 }
 
-function _DoLogin() 
-{ 
+function _DoLogin()
+{
 	local login = ServerParams.getParam("Login");
 	local scope = "https://www.googleapis.com/auth/drive";
 	local clientSecret = "65ie-G5nWqGMv_THtY3z2snZ";
@@ -82,33 +82,33 @@ function _DoLogin()
 		WriteLog("error", "E-mail should not be empty!");
 		return 0;
 	}
-	
+
 	local token = ServerParams.getParam("token");
 	local tokenType = ServerParams.getParam("tokenType");
 	if ( token != "" && tokenType != "" &&  ServerParams.getParam("prevLogin") == login ) {
 		local tokenTime  = 0;
 		local expiresIn = 0;
 		local refreshToken = "";
-		try { 
+		try {
 			tokenTime = ServerParams.getParam("tokenTime").tointeger();
-			
-			
+
+
 		} catch ( ex ) {
-			
+
 		}
-		try { 
+		try {
 		expiresIn = ServerParams.getParam("expiresIn").tointeger();
 		} catch ( ex ) {
-			
+
 		}
 		refreshToken = ServerParams.getParam("refreshToken");
 		if ( time() > tokenTime + expiresIn && refreshToken != "") {
 			// Refresh access token
 			nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-			nm.addQueryParam("refresh_token", refreshToken); 
-			nm.addQueryParam("client_id", clientId); 
-			nm.addQueryParam("client_secret", clientSecret); 
-			nm.addQueryParam("grant_type", "refresh_token"); 
+			nm.addQueryParam("refresh_token", refreshToken);
+			nm.addQueryParam("client_id", clientId);
+			nm.addQueryParam("client_secret", clientSecret);
+			nm.addQueryParam("grant_type", "refresh_token");
 			nm.doPost("");
 			if ( checkResponse() ) {
 				local data =  nm.responseBody();
@@ -141,14 +141,14 @@ function _DoLogin()
 		} else {
 			responseBody = "Failed to obtain confirmation code";
 		}
-		
+
 		return {
 			responseBody = responseBody,
 			stopDelay = 500
 		};
 		//server.stop();
 	}, null);
-	
+
 	local port = server.bind(0);
 
 	local redirectUrl = "http://127.0.0.1:" + port + "/";
@@ -162,13 +162,13 @@ function _DoLogin()
 		print("Cannot authenticate without confirm code");
 		return 0;
 	}
-	
+
 	nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
-	nm.addQueryParam("code", confirmCode); 
-	nm.addQueryParam("client_id", clientId); 
-	nm.addQueryParam("client_secret", clientSecret); 
-	nm.addQueryParam("redirect_uri", redirectUrl); 
-	nm.addQueryParam("grant_type", "authorization_code"); 
+	nm.addQueryParam("code", confirmCode);
+	nm.addQueryParam("client_id", clientId);
+	nm.addQueryParam("client_secret", clientSecret);
+	nm.addQueryParam("redirect_uri", redirectUrl);
+	nm.addQueryParam("grant_type", "authorization_code");
 	nm.doPost("");
 	if ( !checkResponse() ) {
 		return 0;
@@ -178,7 +178,7 @@ function _DoLogin()
 	local timestamp = time();
 	if ( accessToken != "" ) {
 		token = accessToken;
-		
+
 		ServerParams.setParam("token", token);
 		ServerParams.setParam("expiresIn", regex_simple(data, "expires_in\": (\\d+)", 0));
 		ServerParams.setParam("refreshToken", regex_simple(data, "refresh_token\": \"(.+)\"", 0));
@@ -191,15 +191,15 @@ function _DoLogin()
 	}	else {
 		WriteLog("error", "Authentication failed");
 	}
-	return 0;		
-} 
+	return 0;
+}
 
 function DoLogin() {
 	if (!BeginLogin() ) {
 		return false;
 	}
 	local res = _DoLogin();
-	
+
 	EndLogin();
 	return res;
 }
@@ -217,18 +217,18 @@ function DoLogout() {
     }
     nm.setUrl("https://accounts.google.com/o/oauth2/revoke?token=" + nm.urlEncode(token));
     nm.doPost("");
-    
+
     if (nm.responseCode() == 200) {
         ServerParams.setParam("token", "");
         ServerParams.setParam("refreshToken", "");
         return 1;
     } else {
         local t = ParseJSON(nm.responseBody());
-   
+
         if ("error" in t && t.error == "invalid_token") {
             ServerParams.setParam("token", "");
             ServerParams.setParam("refreshToken", "");
-            return 1;  
+            return 1;
         }
     }
     return 0;
@@ -260,7 +260,7 @@ function GetFolderList(list)
 			return 1;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -272,7 +272,7 @@ function CreateFolder(parentFolder, folder)
 
 	nm.setUrl("https://www.googleapis.com/drive/v2/files");
 	nm.addQueryHeader("Authorization", getAuthorizationString());
-	
+
 	local data = {
 		title = folder.getTitle(),
 		mimeType = "application/vnd.google-apps.folder"
@@ -297,7 +297,7 @@ function ModifyFolder(folder)
 {
 	if(!DoLogin())
 		return 0;
-	
+
 	local title = folder.getTitle();
 	local id = folder.getId();
 
@@ -315,22 +315,22 @@ function ModifyFolder(folder)
 
 	return 0;
 }
-	
+
 
 function  UploadFile(FileName, options)
 {
 	if(!DoLogin())
 		return -1;
-	
+
 	/*nm.addQueryHeader("Authorization", getAuthorizationString()); // just for fiddler
 	nm.doGet("https://www.googleapis.com/");*/
-	
+
 	local fileSizeStr = GetFileSizeDouble(FileName).tostring();
 	local mimeType = GetFileMimeType(FileName);
 	nm.addQueryHeader("Content-Type", "application/json; charset=UTF-8");
 	nm.addQueryHeader("X-Upload-Content-Type", mimeType);
 	nm.addQueryHeader("X-Upload-Content-Length", fileSizeStr);
-	nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION 
+	nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION
 	local postData = {
 		title = ExtractFileName(FileName),
 		parents = [],
@@ -340,7 +340,7 @@ function  UploadFile(FileName, options)
 		postData.parents = [ {id = folderId, kind = "drive#parentReference"}];
 	}
 	local str = ToJSON(postData);
-	
+
 	nm.setUrl("https://www.googleapis.com/upload/drive/v2/files?uploadType=resumable");
 	nm.addQueryHeader("Authorization", getAuthorizationString());
 	nm.setMethod("POST");
@@ -351,6 +351,7 @@ function  UploadFile(FileName, options)
 			nm.setMethod("PUT");
 			nm.addQueryHeader("Authorization", getAuthorizationString());
 			nm.addQueryHeader("Content-Type", mimeType);
+			nm.addQueryHeader("Content-Length", fileSizeStr);
 			nm.setUrl(sessionUri);
 			nm.doUpload(FileName, "");
 			if ( checkResponse() ) {
@@ -360,7 +361,7 @@ function  UploadFile(FileName, options)
 					nm.setUrl("https://www.googleapis.com/drive/v2/files/"+ item.id + "/permissions");
 					local postData = {
 						role = "reader",
-						type = "anyone", 
+						type = "anyone",
 					};
 					nm.addQueryHeader("Content-Type", "application/json");
 					nm.setMethod("POST");
@@ -369,12 +370,12 @@ function  UploadFile(FileName, options)
 					try {
 						options.setThumbnailUrl(item.thumbnailLink);
 					} catch ( ex ) {
-						
+
 					}
 					/*try {
 						options.setDirectUrl(item.webContentLink);
 					} catch ( ex ) {
-						
+
 					}*/
 					return 1;
 			}

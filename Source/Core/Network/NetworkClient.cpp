@@ -593,14 +593,14 @@ void NetworkClient::private_checkResponse()
         errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
 
         if (curl_result != CURLE_OK) {
-            errorDescr += getCurlResultString();
+            errorDescr += getCurlResultString() + "\r\n";
         }
         if (code) {
             errorDescr += "Response code: " + std::to_string(code) + "\r\n";
         }
-        std::string errDescr = errorString();
-        if (!errDescr.empty()) {
-            errorDescr += errDescr  + "\r\n";
+        std::string fullErrorString = errorString();
+        if (!fullErrorString.empty()) {
+            errorDescr += fullErrorString  + "\r\n";
         }
         errorDescr += internalBuffer;
         if (logger_) {
