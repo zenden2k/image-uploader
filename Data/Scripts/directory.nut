@@ -13,8 +13,6 @@ function reg_replace(str, pattern, replace_with) {
 }
 
 function  UploadFile(FileName, options) {
-
-
     local newFilename = ExtractFileName(FileName);
     local directory = ServerParams.getParam("directory");
     local convertUncPath = 0;
@@ -45,7 +43,6 @@ function  UploadFile(FileName, options) {
         encodedFileName = reg_replace(nm.urlEncode(newFilename), "%2E", ".");
     }
 
-
     options.setDirectUrl(downloadUrl + encodedFileName);
 
     if (downloadUrl.find("\\\\") == 0) {
@@ -62,11 +59,9 @@ function  UploadFile(FileName, options) {
 }
 
 function GetServerParamList() {
-    local a =
-    {
+    return {
         directory = "Directory"
         downloadUrl = "Download path (ftp or http)",
         convertUncPath = "Convert UNC path \"\\\\\" to file://///"
     }
-    return a;
 }

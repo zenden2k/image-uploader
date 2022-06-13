@@ -1,6 +1,5 @@
-
 function UploadFile(FileName, options) {
-   
+
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(FileName);
 
@@ -14,7 +13,7 @@ function UploadFile(FileName, options) {
             if ("files" in t && t.files.len()) {
                 local f = t.files[0];
                 options.setDirectUrl(f.url);
-                return 1; 
+                return 1;
             } else {
                  WriteLog("error", "abcvg.org: Invalid server response");
             }

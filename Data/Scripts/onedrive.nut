@@ -15,7 +15,7 @@ function EndLogin() {
     try {
         return Sync.endAuth();
     } catch ( ex ) {
-        
+
     }
     return true;
 }
@@ -70,8 +70,8 @@ function OnUrlChangedCallback(data) {
     }
 }
 
-function _DoLogin() 
-{ 
+function _DoLogin()
+{
     local login = ServerParams.getParam("Login");
     local scope = "offline_access files.readwrite";
 
@@ -81,30 +81,30 @@ function _DoLogin()
         WriteLog("error", "E-mail should not be empty!");
         return 0;
     }
-    
+
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
     if ( token != "" && tokenType != "" ) {
         local tokenTime  = 0;
         local expiresIn = 0;
         local refreshToken = "";
-        try { 
+        try {
             tokenTime = ServerParams.getParam("tokenTime").tointeger();
         } catch ( ex ) {
-            
+
         }
-        try { 
+        try {
         expiresIn = ServerParams.getParam("expiresIn").tointeger();
         } catch ( ex ) {
-            
+
         }
         refreshToken = ServerParams.getParam("refreshToken");
         if ( time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
             nm.setUrl("https://login.microsoftonline.com/common/oauth2/v2.0/token");
-            nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", clientId); 
-            nm.addQueryParam("grant_type", "refresh_token"); 
+            nm.addQueryParam("refresh_token", refreshToken);
+            nm.addQueryParam("client_id", clientId);
+            nm.addQueryParam("grant_type", "refresh_token");
             nm.doPost("");
             if ( checkResponse() ) {
                 local data =  nm.responseBody();
@@ -135,36 +135,36 @@ function _DoLogin()
         }
     }
 
-    local url = "https://login.live.com/oauth20_authorize.srf?client_id=" + clientId + "&scope="+ nm.urlEncode(scope) + "&response_type=code&redirect_uri=" + redirectUri 
+    local url = "https://login.live.com/oauth20_authorize.srf?client_id=" + clientId + "&scope="+ nm.urlEncode(scope) + "&response_type=code&redirect_uri=" + redirectUri
     local browser = CWebBrowser();
     browser.setTitle(tr("onedrive.browser.title", "OneDrive authorization"));
     browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
     browser.navigateToUrl(url);
     browser.showModal();
-    
-    local confirmCode = code; 
+
+    local confirmCode = code;
     if ( confirmCode == "" ) {
         print("Cannot authenticate without confirm code");
         return 0;
     }
-    
+
     nm.setUrl("https://login.microsoftonline.com/common/oauth2/v2.0/token");
-    nm.addQueryParam("code", confirmCode); 
-    nm.addQueryParam("client_id", clientId); 
-    nm.addQueryParam("redirect_uri", redirectUri); 
-    nm.addQueryParam("grant_type", "authorization_code"); 
+    nm.addQueryParam("code", confirmCode);
+    nm.addQueryParam("client_id", clientId);
+    nm.addQueryParam("redirect_uri", redirectUri);
+    nm.addQueryParam("grant_type", "authorization_code");
     nm.doPost("");
     if ( !checkResponse() ) {
         return 0;
     }
     local data =  nm.responseBody();
     local t = ParseJSON(data);
-    
+
     local accessToken = "";
     if ("access_token" in t) {
         accessToken = t.access_token;
     }
-    
+
     if ( accessToken != "" ) {
         token = accessToken;
         local timestamp = time();
@@ -179,15 +179,15 @@ function _DoLogin()
     }    else {
         WriteLog("error", "Authentication failed");
     }
-    return 0;        
-} 
+    return 0;
+}
 
 function DoLogin() {
     if (!BeginLogin() ) {
         return false;
     }
     local res = _DoLogin();
-    
+
     EndLogin();
     return res;
 }
@@ -208,15 +208,14 @@ function DoLogout() {
 
     ServerParams.setParam("token", "");
     ServerParams.setParam("refreshToken", "");
-    
+
     local browser = CWebBrowser();
     browser.setTitle(tr("onedrive.browser.title", "OneDrive authorization"));
     browser.navigateToUrl("https://login.microsoftonline.com/common/oauth2/v2.0/logout?post_logout_redirect_uri=" + nm.urlEncode(redirectUri));
     browser.showModal();
-    
+
     return 1;
 }
-
 
 function GetFolderList(list) {
     if(!DoLogin()) {
@@ -234,7 +233,7 @@ function GetFolderList(list) {
                     WriteLog("error", "onedrive: " + t.error.message);
                 } else {
                     WriteLog("error", "onedrive: You have no drives." );
-                    
+
                 }
                 return 0;
             }
@@ -243,7 +242,7 @@ function GetFolderList(list) {
             rootFolder.setTitle("/");
             list.AddFolderItem(rootFolder);
             if ("value" in t)  {
-                
+
                 local num = t.value.len();
                 for (local i = 0; i < num; i++) {
                     local item = t.value[i];
@@ -259,7 +258,7 @@ function GetFolderList(list) {
             WriteLog("error", "onedrive: failed to parse answer");
         }
     }
-    
+
     return 0;
 }
 
@@ -273,9 +272,9 @@ function CreateFolder(parentFolder, folder) {
     } else{
         nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/" + parentFolder.getId() + "/children");
     }
-    
+
     nm.addQueryHeader("Authorization", getAuthorizationString());
-    
+
     local data = {
         name = folder.getTitle(),
         "folder": { },
@@ -303,10 +302,10 @@ function ModifyFolder(folder)
     if(!DoLogin()) {
         return 0;
     }
-    
+
     local title = folder.getTitle();
     local id = folder.getId();
-    
+
     if (id == "root" || id == "") {
         WriteLog("error", "Cannot rename root folder");
         return 0;
@@ -333,10 +332,10 @@ function  UploadFile(FileName, options) {
     if(!DoLogin()) {
         return -1;
     }
-    
+
     local fileSizeStr = GetFileSizeDouble(FileName).tostring();
     local mimeType = GetFileMimeType(FileName);
-    
+
     local postData = {
         item = {
             "@microsoft.graph.conflictBehavior": "rename"
@@ -347,20 +346,20 @@ function  UploadFile(FileName, options) {
         folderId = "root";
     }
     local onlyFileName = ExtractFileName(FileName);
-    
+
     nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/" + folderId + ":/" + nm.urlEncode(onlyFileName) + ":/createUploadSession");
     nm.addQueryHeader("Authorization", getAuthorizationString());
     nm.addQueryHeader("Content-Type", "application/json");
     nm.setMethod("POST");
     nm.doPost(ToJSON(postData));
     local chunkSize = 32768000;
-    
+
     if ( checkResponse() ) {
         local t = ParseJSON(nm.responseBody());
         local uploadUrl = t.uploadUrl;
         local fileSize = GetFileSize(FileName);
         local chunkCount = ceil(GetFileSizeDouble(FileName).tofloat() / chunkSize);
-        
+
         for ( local i = 0; i < chunkCount; i++) {
             local offset = i * chunkSize;
             local currentRequestSize = min(chunkSize, fileSize - offset);
@@ -389,9 +388,9 @@ function  UploadFile(FileName, options) {
                         return 1;
                     }
                 }
-               
+
             }
-            
+
         }
     }
 

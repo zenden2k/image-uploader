@@ -1,9 +1,8 @@
-function ShortenUrl(url, options)
-{	
+function ShortenUrl(url, options) {
     local apiKey = ServerParams.getParam("Login");
-    
-    if (apiKey == "") { // Anonimous upload
-        nm.setUrl("https://link.ac/");           
+
+    if (apiKey == "") { // Anonymous upload
+        nm.setUrl("https://link.ac/");
         nm.addQueryParam("qmode", "cutlink");
         nm.addQueryParam("needurl", "");
         nm.addQueryParam("url", url);
@@ -12,16 +11,16 @@ function ShortenUrl(url, options)
         if (nm.responseCode() == 200) {
             local data = nm.responseBody();
             local reg = CRegExp("\\[URL\\](.+?)\\[/URL\\]","i");
-            if ( !reg.match(data) ) {
+            if (!reg.match(data) ) {
                 return 0;
             }
-            
+
             local shortUrl = reg.getMatch(1);
-            
+
             if (shortUrl != "") {
-                options.setDirectUrl(shortUrl); 
+                options.setDirectUrl(shortUrl);
                 return 1;
-            } 
+            }
         }
     } else {
         nm.doGet("https://link.ac/?key=" + nm.urlEncode(apiKey) +"&url="+ nm.urlEncode(url));
@@ -29,13 +28,13 @@ function ShortenUrl(url, options)
             local response = nm.responseBody();
             local reg = CRegExp("^https:\\/\\/link\\.ac\\/[\\w]+$","i");
             if (reg.match(response)) {
-                options.setDirectUrl(response); 
+                options.setDirectUrl(response);
                 return 1;
             } else {
                 WriteLog("error", "link.ac error: " + response);
             }
         }
     }
-	return 0;
+    return 0;
 }
 

@@ -6,7 +6,7 @@
 #define MyAppName "Image Uploader"
 #define MyAppVersion IU_APP_VER
 #define MyAppPublisher "Sergey Svistunov"
-#define MyAppURL "http://zenden2k.atwebpages.com/imageuploader"
+#define MyAppURL "http://svistunov.dev/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
 #include "it_download.iss"

@@ -8,7 +8,7 @@ std::unique_ptr<SearchByImageTask> SearchByImage::createSearchEngine(std::shared
     if (se == SearchEngine::seGoogle) {
         return std::make_unique<SearchGoogleImages>(std::move(networkClientFactory), fileName);
     } else if (se == SearchEngine::seYandex) {
-        return std::make_unique<SearchYandexImages>(uploadManager, fileName, temporaryServer);
+        return std::make_unique<SearchYandexImages>(std::move(networkClientFactory), uploadManager, fileName, temporaryServer);
     }
     return nullptr;
 }

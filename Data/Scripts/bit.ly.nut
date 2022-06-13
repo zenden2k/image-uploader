@@ -5,64 +5,69 @@ redirectUrlEscaped <- "https:\\/\\/oauth\\.vk\\.com\\/blank\\.html";
 code <- "";
 token <- "";
 login <- "";
-apiKey <- "";
 //Docs: https://dev.bitly.com/get_started.html
 
 
 function BeginLogin() {
-	try {
-		return Sync.beginAuth();
-	}
-	catch ( ex ) {
-	}
-	return true;
+    try {
+        return Sync.beginAuth();
+    }
+    catch ( ex ) {
+    }
+    return true;
 }
 
 function EndLogin() {
-	try {
-		return Sync.endAuth();
-	} catch ( ex ) {
-		
-	}
-	return true;
+    try {
+        return Sync.endAuth();
+    } catch ( ex ) {
+
+    }
+    return true;
 }
 
+function IsAuthenticated() {
+    if (ServerParams.getParam("token") != "") {
+        return 1;
+    }
+    return 0;
+}
 
 function OnUrlChangedCallback(data) {
-	local reg = CRegExp("^" +redirectUrlEscaped, "");
-	if ( reg.match(data.url) ) {
-		local br = data.browser;
-		local regError = CRegExp("error=([^&]+)", "");
-		if ( regError.match(data.url) ) {
-			WriteLog("warning", regError.getMatch(1));
-		} else {
-			local regToken = CRegExp("code=([^&]+)", "");
-			if ( regToken.match(data.url) ) {
-				code = regToken.getMatch(1);
-			}	
-		}
-		br.close();
-	}
+    local reg = CRegExp("^" +redirectUrlEscaped, "");
+    if ( reg.match(data.url) ) {
+        local br = data.browser;
+        local regError = CRegExp("error=([^&]+)", "");
+        if ( regError.match(data.url) ) {
+            WriteLog("warning", regError.getMatch(1));
+        } else {
+            local regToken = CRegExp("code=([^&]+)", "");
+            if ( regToken.match(data.url) ) {
+                code = regToken.getMatch(1);
+            }
+        }
+        br.close();
+    }
 }
 
 function _DoLogin() {
     token = ServerParams.getParam("token");
-	
-	if ( token != ""){
-		return 1;
-	}
-    
-    local browser = CWebBrowser();
-	browser.setTitle("Bit.ly authorization");
-	browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
-	
-	local url = "https://bitly.com/oauth/authorize?" + 
-			"client_id=" + clientId  + 
-			"&redirect_uri=" + nm.urlEncode(redirectUri);
 
-	browser.navigateToUrl(url);
-	browser.showModal();
-    
+    if ( token != ""){
+        return 1;
+    }
+
+    local browser = CWebBrowser();
+    browser.setTitle("Bit.ly authorization");
+    browser.setOnUrlChangedCallback(OnUrlChangedCallback, null);
+
+    local url = "https://bitly.com/oauth/authorize?" +
+            "client_id=" + clientId  +
+            "&redirect_uri=" + nm.urlEncode(redirectUri);
+
+    browser.navigateToUrl(url);
+    browser.showModal();
+
     if (code != ""){
         nm.setUrl("https://api-ssl.bitly.com/oauth/access_token");
         nm.addQueryParam("client_id", clientId);
@@ -77,7 +82,6 @@ function _DoLogin() {
             ServerParams.setParam("token", token);
             login = t.login;
             ServerParams.setParam("actual_login", login);
-            apiKey = t.apiKey;
             return 1;
         }
     }
@@ -85,21 +89,21 @@ function _DoLogin() {
 }
 
 function DoLogin() {
-	if (!BeginLogin() ) {
-		return false;
-	}
-	local res = _DoLogin();
-	
-	EndLogin();
-	return res;
+    if (!BeginLogin() ) {
+        return false;
+    }
+    local res = _DoLogin();
+
+    EndLogin();
+    return res;
 }
 
 function ShortenUrl(url, options)
-{	
+{
     if(!DoLogin()) {
         return 0;
     }
-    
+
     nm.setUrl("https://api-ssl.bitly.com/v4/shorten");
     nm.addQueryHeader("Content-Type", "application/json");
     nm.addQueryHeader("Authorization", "Bearer " + token );
@@ -116,14 +120,14 @@ function ShortenUrl(url, options)
              return 1;
         }
     }
-    
-	return 0;
+
+    return 0;
 }
 
 
 function GetServerParamList()
 {
-	return {
+    return {
         token = "Token"
-	};
+    };
 }

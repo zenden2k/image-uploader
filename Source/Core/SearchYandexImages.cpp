@@ -4,17 +4,22 @@
 
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadManager.h"
+#ifdef _WIN32
+	#include "Core/Images/ImageLoader.h"
+#endif
 /*
 #include "CoreFunctions.h"
 #include "Utils/CryptoUtils.h"
 */
+
 #include "Core/Utils/DesktopUtils.h"
 #include "Upload/FileUploadTask.h"
 
-SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer)
+SearchYandexImages::SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer)
     :SearchByImageTask(fileName),
     temporaryServer_(std::move(temporaryServer)),
-    uploadManager_(uploadManager)
+    uploadManager_(uploadManager),
+	networkClientFactory_(std::move(networkClientFactory))
 {
     uploadFinished_ = false;
     uploadOk_ = false;
@@ -22,32 +27,49 @@ SearchYandexImages::SearchYandexImages(UploadManager* uploadManager, const std::
 
 void SearchYandexImages::cancel() {
     SearchByImageTask::cancel();
-    currentUploadTask_->stop();
+	
+    if (currentUploadTask_) {
+        currentUploadTask_->stop();
+    }
 }
 
-/*void SearchYandexImages::run() {
-    NetworkClient nc;
-    CoreFunctions::ConfigureProxy(&nc);
-    nc.setProgressCallback(NetworkClient::ProgressCallback(this, &SearchYandexImages::progressCallback));
+void SearchYandexImages::run() {
+    int width = 500;
+    int height = 500;
+#ifdef _WIN32
+    ImageLoader loader;
+    auto img = loader.loadFromFile(IuCoreUtils::Utf8ToWstring(fileName_).c_str());
+	if (img) {
+        width = img->GetWidth();
+        height = img->GetHeight();
+	}
+#endif
+
+    auto nc = networkClientFactory_->create();
+    using namespace std::placeholders;
+    nc->setProgressCallback(std::bind(&SearchYandexImages::progressCallback, this, _1, _2, _3, _4, _5));
 
     try {
-        nc.setUrl("https://yandex.ru/images/search?rpt=imageview&cbird=5");
-        nc.addQueryHeader("Origin", "https://yandex.ru");
-        nc.addQueryParamFile("upfile", fileName_, IuCoreUtils::ExtractFileName(fileName_));
-        nc.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-        nc.setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 YaBrowser/18.9.0.3409 Yowser/2.5 Safari/537.36");
-        nc.doUploadMultipartData();
+        nc->setUrl("https://yandex.ru/images/search?rpt=imageview");
+        nc->addQueryHeader("Origin", "https://yandex.ru");
+        nc->addQueryParamFile("upfile", fileName_, IuCoreUtils::ExtractFileName(fileName_), "");
+        nc->addQueryParam("original_width", std::to_string(width));
+        nc->addQueryParam("original_height", std::to_string(height));
+        nc->addQueryParam("prg", "1");
+        nc->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
+        //nc->setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 YaBrowser/18.9.0.3409 Yowser/2.5 Safari/537.36");
+        nc->doUploadMultipartData();
 
         if (stopSignal_) {
             finish(false, "Aborted by user.");
             return;
         }
-        if (nc.responseCode() < 301 || nc.responseCode() > 303) {
+        if (nc->responseCode() < 301 || nc->responseCode() > 303) {
             finish(false, "Server sent unexpected result.");
             return;
         }
 
-        std::string url = nc.responseHeaderByName("Location");
+        std::string url = nc->responseHeaderByName("Location");
 
         if (url.empty()) {
             finish(false, "Server sent unexpected result.");
@@ -65,9 +87,9 @@ void SearchYandexImages::cancel() {
     
     finish(true);
 }
-*/
 
-void SearchYandexImages::run() {
+
+/*void SearchYandexImages::run() {
     if (stopSignal_) {
         finish(false, "Aborted by user.");
         return;
@@ -108,7 +130,7 @@ void SearchYandexImages::run() {
     }
 
     finish(true);
-}
+}*/
 
 
 void SearchYandexImages::onFileFinished(UploadTask* task, bool ok) {

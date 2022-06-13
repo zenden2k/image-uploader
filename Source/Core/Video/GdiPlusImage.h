@@ -11,7 +11,8 @@ class GdiPlusImage: public AbstractImage
 public:
     GdiPlusImage();
     explicit GdiPlusImage(Gdiplus::Bitmap *bm, bool takeOwnership  = true);
-    virtual ~GdiPlusImage();
+    ~GdiPlusImage() override;
+    bool loadFromFile(const std::string& fileName) override;
     bool saveToFile(const std::string& fileName) const override;
     bool isNull() const override;
     bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data,size_t dataSize, void* parameter) override;

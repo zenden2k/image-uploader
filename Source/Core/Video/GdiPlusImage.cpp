@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "Core/logging.h"
+#include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
@@ -34,6 +34,18 @@ void GdiPlusImage::init()
 
 GdiPlusImage::~GdiPlusImage() {
     delete[] data_;
+}
+
+bool GdiPlusImage::loadFromFile(const std::string& fileName) {
+    bm_ = std::make_shared<Gdiplus::Bitmap>(U2W(fileName));
+
+    if (bm_->GetLastStatus() == Ok) {
+        width_ = bm_->GetWidth();
+        height_ = bm_->GetHeight();
+        return true;
+    }
+
+    return false;
 }
 
 
