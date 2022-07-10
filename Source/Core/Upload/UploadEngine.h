@@ -25,6 +25,8 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <random>
+
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
@@ -330,8 +332,8 @@ public:
     CUploadEngineData* byName(const std::string& name);
     CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
     int count() const;
-    int getRandomImageServer() const;
-    int getRandomFileServer() const;
+    int getRandomImageServer();
+    int getRandomFileServer();
     int getUploadEngineIndex(const std::string& Name) const;
     std::vector<CUploadEngineData>::const_iterator begin() const;
     std::vector<CUploadEngineData>::const_iterator end() const;
@@ -339,6 +341,7 @@ public:
 protected:
     std::vector<CUploadEngineData> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;
+    std::mt19937 mt_;
 private:
     DISALLOW_COPY_AND_ASSIGN(CUploadEngineListBase);
 };

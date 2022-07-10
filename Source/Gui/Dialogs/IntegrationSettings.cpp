@@ -146,7 +146,8 @@ bool CIntegrationSettings::Apply()
         Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
         CString itemId;
         if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
-
+            std::mt19937 mt{ std::random_device{}() };
+            std::uniform_int_distribution<int> dist(0, 999999);
                 for( int i = 0; i< menuItemCount; i++ ){
                     ListItemData* lid = reinterpret_cast<ListItemData*>(menuItemsListBox_.GetItemData(i));
                     if ( lid->invalid ) {
@@ -157,7 +158,8 @@ bool CIntegrationSettings::Apply()
                     CRegistry Reg2 = Reg;
                     CString itemNumber;
                     itemNumber.Format(_T("%04d"), i);
-                    itemId = itemNumber+_T("_")+Utf8ToWCstring(lid->serverProfile.serverName()) + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::int64_tToString(rand() % 999999)).c_str();
+                    const int randInt = dist(mt);
+                    itemId = itemNumber+_T("_")+Utf8ToWCstring(lid->serverProfile.serverName()) + L"_" + IuCoreUtils::CryptoUtils::CalcMD5HashFromString(std::to_string(randInt)).c_str();
                     itemId.Replace(L" ",L"_");
                     itemId.Replace(L":",L"_");
                     itemId.Replace(L"\\",L"_");

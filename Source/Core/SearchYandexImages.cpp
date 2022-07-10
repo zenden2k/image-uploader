@@ -1,36 +1,18 @@
 #include "SearchYandexImages.h"
 
-#include <cassert>  
-
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadManager.h"
 #ifdef _WIN32
 	#include "Core/Images/ImageLoader.h"
 #endif
-/*
-#include "CoreFunctions.h"
-#include "Utils/CryptoUtils.h"
-*/
 
 #include "Core/Utils/DesktopUtils.h"
-#include "Upload/FileUploadTask.h"
 
-SearchYandexImages::SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer)
+SearchYandexImages::SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName)
     :SearchByImageTask(fileName),
-    temporaryServer_(std::move(temporaryServer)),
-    uploadManager_(uploadManager),
 	networkClientFactory_(std::move(networkClientFactory))
 {
-    uploadFinished_ = false;
     uploadOk_ = false;
-}
-
-void SearchYandexImages::cancel() {
-    SearchByImageTask::cancel();
-	
-    if (currentUploadTask_) {
-        currentUploadTask_->stop();
-    }
 }
 
 void SearchYandexImages::run() {
@@ -132,7 +114,7 @@ void SearchYandexImages::run() {
     finish(true);
 }*/
 
-
+/*
 void SearchYandexImages::onFileFinished(UploadTask* task, bool ok) {
     
     if (ok) {
@@ -156,4 +138,4 @@ void SearchYandexImages::onFileFinished(UploadTask* task, bool ok) {
     }
 
     uploadFinishSignal_.notify_one();
-}
+}*/

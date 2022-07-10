@@ -203,6 +203,13 @@ class NetworkClient: public INetworkClient
         */
         void setChunkOffset(double offset) override;
 
+		/**
+		@since 1.3.3
+		*/
+        void setMaxUploadSpeed(uint64_t speed) override;
+        void setMaxDownloadSpeed(uint64_t speed) override;
+
+	
         /**
         Sets size of current chunk.
         @since 1.3.0

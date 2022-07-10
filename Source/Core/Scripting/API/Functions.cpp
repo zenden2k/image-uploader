@@ -43,7 +43,7 @@
 #include <json/json.h>
 #include <sstream>
 #include <iomanip>
-#include <cmath>
+#include <random>
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"
 #include "ScriptAPI.h"
@@ -535,7 +535,9 @@ std::string GetCurrentThreadId()
 // older versions of Squirrel Standard Library have broken srand() function
 int random()
 {
-    return rand();
+    static thread_local std::mt19937 generator{ std::random_device{}() };
+    std::uniform_int_distribution<int> dist;
+    return dist(generator);
 }
 
 const std::string ExtractFileName(const std::string& path)

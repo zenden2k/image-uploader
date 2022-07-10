@@ -28,6 +28,7 @@ void ConfigureProxy(INetworkClient* nm)
         }
     }
     nm->setUploadBufferSize(Settings.UploadBufferSize);
+    nm->setMaxUploadSpeed(Settings.MaxUploadSpeed*1024);
 }
 
 }

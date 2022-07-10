@@ -68,7 +68,7 @@ public:
         }
         try {
             if (!grabber->open(videoGrabber_->fileName_)) {
-                throw std::runtime_error("Failed to open video file");
+                throw std::runtime_error("Failed to open video file "+ videoGrabber_->fileName_);
             }
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();

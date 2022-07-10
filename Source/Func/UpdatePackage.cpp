@@ -426,7 +426,6 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
 CUpdatePackage::CUpdatePackage()
 {
     m_statusCallback = nullptr;
-    srand(static_cast<unsigned int>(time(nullptr)));
     m_nUpdatedFiles = 0;
     m_nTotalFiles = 0;
     m_CoreUpdate = false;

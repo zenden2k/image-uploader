@@ -68,11 +68,6 @@ protected:
     std::function<void(const CString&)> onUrlChanged_;
     std::function<void(const CString&)> onDocumentComplete_;
     std::function<bool(const CString&, LONG)> onNavigateError_;
-
-
-//    CDialogHook * dialogHook_;
-    CComPtr<IAccessible> accesible_;
-    //static CWebViewWindow* instance;
 };
 
 

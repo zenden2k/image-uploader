@@ -275,6 +275,7 @@ NetworkClient::NetworkClient()
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
+
     /*
     TODO: use new progress callbacks
 #if LIBCURL_VERSION_NUM >= 0x072000
@@ -998,4 +999,12 @@ void NetworkClient::setTimeout(uint32_t timeout)
 void NetworkClient::setConnectionTimeout(uint32_t connection_timeout)
 {
     curl_easy_setopt(curl_handle, CURLOPT_CONNECTTIMEOUT, static_cast<long>(connection_timeout));
+}
+
+void NetworkClient::setMaxUploadSpeed(uint64_t speed) {
+    curl_easy_setopt(curl_handle, CURLOPT_MAX_SEND_SPEED_LARGE, static_cast<curl_off_t>(speed));
+}
+
+void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
+    curl_easy_setopt(curl_handle, CURLOPT_MAX_RECV_SPEED_LARGE, static_cast<curl_off_t>(speed));
 }

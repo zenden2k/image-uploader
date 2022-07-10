@@ -1,5 +1,8 @@
 #include "IuCommonFunctions.h"
 
+#include <random>
+
+
 #include "WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "3rdpart/Registry.h"
@@ -175,6 +178,7 @@ CString FindDataFolder()
 
 CString GenerateFileName(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
 {
+	static std::mt19937 mt{std::random_device{}()};
     CString result = templateStr;
     time_t t = time(nullptr);
     tm* timeinfo = localtime(&t);
@@ -183,7 +187,8 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
     CString hours, seconds, minutes;
     indexStr.Format(_T("%03d"), index);
     const std::thread::id threadId = std::this_thread::get_id();
-    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::ThreadIdToString(threadId) + IuCoreUtils::int64_tToString(GetTickCount() + rand() % (100)))).c_str();
+    std::uniform_int_distribution<int> dist(0, 100);
+    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(IuCoreUtils::ThreadIdToString(threadId) + IuCoreUtils::int64_tToString(GetTickCount() + dist(mt)))).c_str();
     result.Replace(_T("%md5"), md5);
     result.Replace(_T("%width%"), WinUtils::IntToStr(size.x));
     result.Replace(_T("%height%"), WinUtils::IntToStr(size.y));

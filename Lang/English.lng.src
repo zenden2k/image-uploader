@@ -557,6 +557,7 @@ ef1e8e59 = Copy automatically results to clipboard
 8084e079 = Upload Buffer Size:
 45c61d90 = Threads number:
 9e5fc8ca = Execute Squirrel script for each task (file)
+26739dbe = Upload speed limit per thread:
 dd97c781 = Open containing folder
 5610f22e = Video engine which is used to extract frames from a video file.
 41dbb3f7 = Deinterlace video

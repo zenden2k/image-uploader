@@ -15,20 +15,11 @@ class UploadManager;
 
 class SearchYandexImages: public SearchByImageTask  {
 public:
-    explicit SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager, const std::string& fileName, ServerProfile temporaryServer);
-    void cancel() override;
+    explicit SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:
     void run() override;
-    void onFileFinished(UploadTask*  task, bool ok);
-    std::mutex uploadFinishSignalMutex_;
-    std::condition_variable uploadFinishSignal_;
     bool uploadOk_;
     std::string uploadErrorMessage_;
-    std::string uploadedImageUrl_;
-    bool uploadFinished_;
-    std::shared_ptr<UploadTask> currentUploadTask_;
-    ServerProfile temporaryServer_;
-    UploadManager* uploadManager_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };
 

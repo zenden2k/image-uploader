@@ -20,6 +20,8 @@
 #ifndef IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H
 #define IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H
 
+#include <random>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"
@@ -121,7 +123,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
         CComboBox videoEngineCombo_;
 		UploadEngineManager * uploadEngineManager_;
         CToolTipCtrl toolTipCtrl_;
-        CUpDownCtrl frameCountUpDownCtrl_;
+		CUpDownCtrl frameCountUpDownCtrl_;
 };
 
 #endif // VIDEOGRABBER_H

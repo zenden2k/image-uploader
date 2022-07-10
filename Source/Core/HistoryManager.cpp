@@ -44,7 +44,7 @@ class CHistoryReader_impl
 
 const char CHistoryManager::globalMutexName[] = "IuHistoryFileSessionMutex";
 
-CHistoryManager::CHistoryManager() : db_(nullptr)
+CHistoryManager::CHistoryManager() : db_(nullptr), mt_(rd_())
 {
     m_historyFileNamePrefix = "history";
 }
@@ -181,8 +181,10 @@ std::shared_ptr<CHistorySession> CHistoryManager::newSession()
     time_t t = time(nullptr);
     tm * timeinfo = localtime ( &t );
     std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + std::to_string(1900+timeinfo->tm_year)+"_" + std::to_string(timeinfo->tm_mon+1) + ".xml";
-    std::string str = std::to_string(rand()%(256 * 256)) + std::to_string(int(t));
-    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + std::to_string(rand()%(256))).substr(0, 16);
+    std::uniform_int_distribution<int> dist1(256 * 256);
+    std::uniform_int_distribution<int> dist2(256);
+	std::string str = std::to_string(dist1(mt_)) + std::to_string(int(t));
+    std::string id = IuCoreUtils::CryptoUtils::CalcMD5HashFromString(str + std::to_string(dist2(mt_))).substr(0, 16);
     auto res = std::make_shared<CHistorySession>(fileName, id);
     res->setTimeStamp(t);
     return res;

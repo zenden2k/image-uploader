@@ -20,15 +20,12 @@
 
 #include "Uploader.h"
 
-#include <cstdlib>
-#include <ctime>
 #include <cmath>
 
 #include "Core/Upload/FileUploadTask.h"
 
 CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory)
 {
-    srand((unsigned int)time(0));
     m_bShouldStop = false;
     m_CurrentStatus = stNone;
     m_CurrentEngine = nullptr;

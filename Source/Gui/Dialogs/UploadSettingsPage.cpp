@@ -56,6 +56,7 @@ void CUploadSettingsPage::TranslateUI()
     TRC(IDC_UPLOADBUFFERLABEL, "Upload Buffer Size:");
     TRC(IDC_MAXTHREADSLABEL, "Threads number:");
     TRC(IDC_EXECUTESCRIPTCHECKBOX, "Execute Squirrel script for each task (file)");
+    TRC(IDC_UPLOADSPEEDLIMITLABEL, "Upload speed limit per thread:");
 }
     
 LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -104,7 +105,8 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     executeScriptCheckboxChanged();
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
-
+    SetDlgItemInt(IDC_UPLOADSPEEDLIMITEDIT, Settings.MaxUploadSpeed);
+	
     return 1;  // Let the system set the focus
 }
 
@@ -188,6 +190,12 @@ bool CUploadSettingsPage::Apply()
     {
         Settings.MaxThreads = 3;
     }
+
+	int maxUploadSpeed = GetDlgItemInt(IDC_UPLOADSPEEDLIMITEDIT);
+	if (maxUploadSpeed < 0) {
+        maxUploadSpeed = 0;
+	}
+    Settings.MaxUploadSpeed = maxUploadSpeed;
 
     GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);

@@ -42,7 +42,7 @@
 
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
-CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager * uploadEngineManager)
+CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
 {
 	Terminated = true;
     grabbedFramesCount = 0;
@@ -629,6 +629,9 @@ LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD 
 
 CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateStr, int index, const CPoint& size, const CString& originalName)
 {
+    std::mt19937 mt_{ std::random_device{}() };
+    std::uniform_int_distribution<int> dist(0, 100);
+	
     CString result = templateStr;
     time_t t = time(0);
     tm* timeinfo = localtime ( &t );
@@ -639,7 +642,8 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
     CString fileName = Utf8ToWCstring(IuCoreUtils::ExtractFileName(originalNameUtf8));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(originalNameUtf8));
     indexStr.Format(_T("%03d"), index);
-    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + rand()%100)))).c_str();
+
+    CString md5 = Utf8ToWstring(IuCoreUtils::CryptoUtils::CalcMD5HashFromString(WCstringToUtf8(WinUtils::IntToStr(GetTickCount() + dist(mt_))))).c_str();
     CString uid = md5.Mid(5,6);
     result.Replace(_T("%md5%"), md5);
     result.Replace(_T("%uid%"), uid);

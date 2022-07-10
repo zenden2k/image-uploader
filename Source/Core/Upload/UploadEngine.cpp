@@ -58,7 +58,7 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
     return TypeInvalid;
 }
 
-CUploadEngineListBase::CUploadEngineListBase()
+CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 {
 }
 
@@ -94,7 +94,7 @@ CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::
     return nullptr;
 }
 
-int CUploadEngineListBase::getRandomImageServer() const
+int CUploadEngineListBase::getRandomImageServer()
 {
     std::vector<int> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
@@ -106,10 +106,13 @@ int CUploadEngineListBase::getRandomImageServer() const
     if (m_suitableServers.empty()) {
         return -1;
     }
-    return m_suitableServers[rand() % (m_suitableServers.size())];
+	
+    std::uniform_int_distribution<int> dist(0, m_suitableServers.size());
+	
+    return m_suitableServers[dist(mt_)];
 }
 
-int CUploadEngineListBase::getRandomFileServer() const
+int CUploadEngineListBase::getRandomFileServer()
 {
     std::vector<size_t> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
@@ -121,7 +124,8 @@ int CUploadEngineListBase::getRandomFileServer() const
     if (m_suitableServers.empty()) {
         return -1;
     }
-    return m_suitableServers[rand() % m_suitableServers.size()];
+    std::uniform_int_distribution<int> dist(0, m_suitableServers.size());
+    return m_suitableServers[dist(mt_)];
 }
 
 int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const

@@ -2,7 +2,6 @@
 
 #include <urlmon.h>
 
-
 #include "Core/AppParams.h"
 #include "Func/WinUtils.h"
 #include "Gui/GuiTools.h"
@@ -17,14 +16,12 @@
 
 HWND CWebViewWindow::window = nullptr;
 
-CWebViewWindow::CWebViewWindow()
-        {
-    //instance = this;
+CWebViewWindow::CWebViewWindow() {
     isModal_ = false;
     messageLoopIsRunning_ = false;
     hWndClient_ = nullptr;
-    //dialogHook_ = 0;
 }
+
 CWebViewWindow::~CWebViewWindow() {
 
 
@@ -74,12 +71,12 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
                     LOG(ERROR) << "Failed to put bounds on webview";
                 }
                 // Schedule an async task to navigate to Bing
-                    if (!initialUrl_.IsEmpty()) {
-                                        webviewWindow_->Navigate(initialUrl_);
-                    }
+                if (!initialUrl_.IsEmpty()) {
+	                webviewWindow_->Navigate(initialUrl_);
+                }
 
-                  EventRegistrationToken token;
-                    webviewWindow_->add_NavigationStarting(Callback<ICoreWebView2NavigationStartingEventHandler>(
+                EventRegistrationToken token;
+                webviewWindow_->add_NavigationStarting(Callback<ICoreWebView2NavigationStartingEventHandler>(
                         [this](ICoreWebView2* webview, ICoreWebView2NavigationStartingEventArgs * args) -> HRESULT {
                             PWSTR uri;
                             args->get_Uri(&uri);

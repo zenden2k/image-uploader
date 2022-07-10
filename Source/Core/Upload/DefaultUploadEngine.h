@@ -22,6 +22,7 @@
 #define IU_CORE_UPLOAD_DEFAULTUPLOADENGINE_H
 
 #include <map>
+#include <random>
 #include <string>
 
 #include "CommonTypes.h"
@@ -68,6 +69,8 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         int m_CurrentActionIndex;
         std::map<std::string, std::string> m_Vars;
         std::map<size_t, bool> m_PerformedActions;
+        std::random_device randomDevice_;
+        std::mt19937 mt_;
     private:
         DISALLOW_COPY_AND_ASSIGN(CDefaultUploadEngine);
         void logNetworkError(bool error, const std::string & msg) override;

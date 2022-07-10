@@ -43,6 +43,7 @@ public:
     bool AutoShowLog;
 
     int UploadBufferSize;
+    unsigned int MaxUploadSpeed; // measured in KB/s
     std::string SettingsFolder;
 
     ConnectionSettingsStruct ConnectionSettings;

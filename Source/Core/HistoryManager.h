@@ -26,6 +26,8 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <random>
+
 
 #include "Core/Utils/CoreTypes.h"
 
@@ -120,6 +122,8 @@ class CHistoryManager
         std::string m_historyFilePath;
         std::string m_historyFileNamePrefix;
         sqlite3* db_;
+        std::random_device rd_;
+        std::mt19937 mt_;
         bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
         friend class CHistoryReader;
 };

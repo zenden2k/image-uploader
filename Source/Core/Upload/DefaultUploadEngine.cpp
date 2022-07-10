@@ -20,6 +20,8 @@
 
 #include "DefaultUploadEngine.h"
 
+#include <boost/format.hpp>
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UrlShorteningTask.h"
 #include "FileUploadTask.h"
@@ -27,7 +29,7 @@
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
 
-CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback))
+CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
 {
     m_CurrentActionIndex = -1;
     fatalError_ = false;
@@ -130,10 +132,9 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
             m_Vars["_PASSWORD"] = li.Password;
         }
     }
-    const int n = rand() % (256 * 256);
-    char nStr[10];
-    sprintf(nStr, "%05d", n);
-    m_Vars["_RAND16BITS"] = nStr;
+    std::uniform_int_distribution<int> dist(0, 256 * 256);
+    const int n = dist(mt_);
+    m_Vars["_RAND16BITS"] = str(boost::format("%05d") % n);
     m_Vars["_THUMBWIDTH"] = std::to_string(params.thumbWidth);
     m_Vars["_THUMBHEIGHT"] = std::to_string(params.thumbHeight);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());

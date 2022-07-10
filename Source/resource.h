@@ -696,6 +696,9 @@
 #define IDC_PRIVATEKEYLABEL             1330
 #define IDC_EDIT3                       1331
 #define IDC_PRIVATEKEYEDIT              1331
+#define IDC_UPLOADSPEEDLIMITEDIT        1331
+#define IDC_UPLOADSPEEDLIMITLABEL       1332
+#define IDC_UPLOADSPEEDLIMITKBPSLABEL   1333
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -741,9 +744,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        319
+#define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1332
+#define _APS_NEXT_CONTROL_VALUE         1334
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

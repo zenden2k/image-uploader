@@ -39,6 +39,7 @@ BasicSettings::BasicSettings()
     DeveloperMode = false;
     AutoShowLog = true;
     engineList_ = nullptr;
+    MaxUploadSpeed = 0;
 
     ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
 
@@ -148,6 +149,7 @@ void BasicSettings::BindToManager()
 {
     SettingsNode& upload = mgr_["Uploading"];
     upload.n_bind(MaxThreads);
+    upload.n_bind(MaxUploadSpeed);
 }
 
 bool BasicSettings::PostLoadSettings(SimpleXml &xml)

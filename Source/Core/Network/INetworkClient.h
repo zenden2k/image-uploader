@@ -100,6 +100,8 @@ class INetworkClient {
         virtual void setLogger(Logger* logger){}
         virtual std::string urlEncode(const std::string& str){ return std::string(); }
         virtual std::string urlDecode(const std::string& str){ return std::string(); }
+        virtual void setMaxUploadSpeed(uint64_t speed){}
+        virtual void setMaxDownloadSpeed(uint64_t speed) {}
 };
 
 class INetworkClientFactory {
