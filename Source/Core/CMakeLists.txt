@@ -145,7 +145,9 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/GlobalMutex.h
     Utils/TextUtils.h
     Scripting/UploadFilterScript.h
-    3rdpart/htmlentities.h)
+    3rdpart/htmlentities.h
+    BackgroundTask.h
+)
     
 if(WIN32)
     list(APPEND SRC_LIST 

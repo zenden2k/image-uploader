@@ -39,6 +39,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/AppParams.h"
+#include "Func/ImageGenerator.h"
 
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 
@@ -375,6 +376,37 @@ void CVideoGrabberPage::SavingMethodChanged(void)
 
 int CVideoGrabberPage::GenPicture(CString& outFileName)
 {
+	
+    {
+        CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+        TCHAR buf[256] = _T("\0");
+        int n = ThumbsView.GetItemCount();
+        std::vector<ImageGeneratorTask::FileItem> items;
+        for (int i = 0; i < n; i++) {
+            buf[0] = _T('\0');
+            CString fileName = ThumbsView.GetFileName(i);
+            ThumbsView.GetItemText(i, 0, buf, 256);
+            items.emplace_back(fileName, buf);
+        }
+        CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+        std::shared_ptr<ImageGeneratorTask> task = std::make_shared<ImageGeneratorTask>(m_hWnd, items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
+        task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, bool) {
+            if (!task->outFileName().IsEmpty()) {
+                mainDlg->AddToFileList(task->outFileName());
+            }
+               
+        });
+        CStatusDlg dlg(task);
+        if (dlg.DoModal() == IDOK) {
+            return 1;
+        }
+
+        
+    	
+    }
+    return 0;
+	
+	
     using namespace Gdiplus;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     RectF TextRect;
@@ -600,9 +632,10 @@ bool CVideoGrabberPage::OnNext()
     else
     {
         CString outFileName;
-        GenPicture(outFileName);
-        if (!outFileName.IsEmpty())
-            mainDlg->AddToFileList(outFileName);
+        if (!GenPicture(outFileName)) {
+            return false;
+        }
+
     }
 
     ThumbsView.MyDeleteAllItems();

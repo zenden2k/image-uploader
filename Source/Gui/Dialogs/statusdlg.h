@@ -22,8 +22,10 @@
 
 #pragma once
 #include <mutex>
+#include <memory>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
+#include "Core/BackgroundTask.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CStatusDlg
@@ -32,7 +34,8 @@ class CStatusDlg :
     public CCustomDialogIndirectImpl<CStatusDlg>
 {
     public:
-        CStatusDlg(bool canBeStopped = true);
+        explicit CStatusDlg(std::shared_ptr<BackgroundTask> task);
+        explicit CStatusDlg(bool canBeStopped = true);
         ~CStatusDlg();
         enum { IDD = IDD_STATUSDLG };
         enum { kUpdateTimer = 1};
@@ -61,6 +64,8 @@ protected:
     bool canBeStopped_;
     bool processFinished_;
     std::mutex CriticalSection, Section2;
+    std::shared_ptr<BackgroundTask> task_;
+    CProgressBarCtrl progressBar_;
 };
 
 #endif // STATUSDLG_H

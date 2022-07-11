@@ -50,6 +50,7 @@ set(SRC_LIST
     ../Func/GdiPlusInitializer.cpp
     ../Func/MediaInfoHelper.cpp
     ../Func/WtlScriptDialogProvider.cpp
+    ../Func/ImageGenerator.cpp
     Components/MyFileDialog.cpp
     Components/NewStyleFileDialog.cpp
     Components/NewStyleFileSaveDialog.cpp
@@ -224,6 +225,7 @@ set(HEADER_LIST
     ../Func/GdiPlusInitializer.h
     ../Func/MediaInfoHelper.h
     ../Func/WtlScriptDialogProvider.h
+	../Func/ImageGenerator.h
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h

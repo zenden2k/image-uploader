@@ -23,6 +23,41 @@
 #include "atlheaders.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
+#include "Core/Utils/CoreUtils.h"
+
+CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
+    m_bNeedStop(false),
+    canBeStopped_(true),
+    processFinished_(false),
+	task_(std::move(task))
+{
+    task_->onTaskFinished.connect([&](BackgroundTask*, bool success) {
+        ProcessFinished();
+        EndDialog(success? IDOK: IDCANCEL);
+    });
+
+    task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
+        CString statusW = U2W(status);
+        SetInfo(statusW, L"");
+        SetDlgItemText(IDC_TITLE, statusW);
+    	if (pos < 0) {
+    		if ((progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
+                progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() | PBS_MARQUEE);
+    		}
+            progressBar_.SetMarquee(TRUE);
+    	} else {
+            if ((progressBar_.GetStyle() & PBS_MARQUEE )== PBS_MARQUEE) {
+                progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() & ~PBS_MARQUEE);
+                progressBar_.SetMarquee(FALSE);
+            }
+
+            progressBar_.SetRange(0, max);
+            progressBar_.SetPos(pos);
+    	}
+        
+    });
+}
+
 // CStatusDlg
 CStatusDlg::CStatusDlg(bool canBeStopped) : 
     m_bNeedStop(false), 
@@ -39,6 +74,7 @@ CStatusDlg::~CStatusDlg()
 LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
+    progressBar_ = GetDlgItem(IDC_PROGRESSBAR);
     m_bNeedStop = false;
     SetDlgItemText(IDC_TITLE, m_Title);
     SetDlgItemText(IDC_TEXT, m_Text);
@@ -46,6 +82,14 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     TRC(IDCANCEL, "Stop");
     ::ShowWindow(GetDlgItem(IDCANCEL), canBeStopped_ ? SW_SHOW : SW_HIDE);
     titleFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
+	
+    progressBar_.ShowWindow(SW_SHOW);
+    progressBar_.SetMarquee(TRUE);
+	
+	if (task_) {
+
+        ServiceLocator::instance()->taskDispatcher()->postTask(task_);
+	}
     return 1;  // Let the system set the focus
 }
 
@@ -53,6 +97,10 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 {
     std::lock_guard<std::mutex> lk(Section2);
     m_bNeedStop = true;
+
+	if (task_) {
+        task_->cancel();
+	}
     KillTimer(kUpdateTimer);
     
     return 0;

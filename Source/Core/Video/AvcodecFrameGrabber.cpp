@@ -277,7 +277,7 @@ public:
 
                 ret = avcodec_send_packet(pCodecCtx, &packet);
                 if (ret < 0) {
-                    LOG(ERROR) << "Error sending a packet for decoding";
+                    LOG(WARNING) << "Error sending a packet for decoding";
                 } else {
 
                     ret = avcodec_receive_frame(pCodecCtx, pFrame);
