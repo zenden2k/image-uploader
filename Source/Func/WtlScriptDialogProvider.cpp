@@ -15,7 +15,8 @@ std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std
         return {};
     CInputDialog dlg(_T("Image Uploader"), TR("Please enter the text you see in the image:"), CString(IuCoreUtils::Utf8ToWstring("").c_str()), wFileName);
     nm->setOutputFile({});
-    if (dlg.DoModal() == IDOK)
+    IProgramWindow* window = ServiceLocator::instance()->programWindow();
+    if (dlg.DoModal(window ? window->getHandle() : GetActiveWindow()) == IDOK)
         return W2U(dlg.getValue());
     return {};
 }
@@ -23,8 +24,9 @@ std::string WtlScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std
 std::string WtlScriptDialogProvider::inputDialog(const std::string& text, const std::string& defaultValue) {
     std::lock_guard<std::mutex> guard(dialogMutex_);
     CInputDialog dlg(_T("Image Uploader"), Utf8ToWCstring(text), Utf8ToWCstring(defaultValue));
-
-    if (dlg.DoModal(GetActiveWindow()) == IDOK) {
+    IProgramWindow* window = ServiceLocator::instance()->programWindow();
+	
+    if (dlg.DoModal(window? window->getHandle(): GetActiveWindow()) == IDOK) {
         return W2U(dlg.getValue());
     }
     return {};

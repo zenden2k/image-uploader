@@ -177,7 +177,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     CServerFolderSelect folderSelectDlg(serverProfile_, uploadEngineManager_);
     folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
 
-    if ( folderSelectDlg.DoModal() == IDOK ) {
+    if ( folderSelectDlg.DoModal(m_hWnd) == IDOK ) {
         CFolderItem folder = folderSelectDlg.m_SelectedFolder;
     
 

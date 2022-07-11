@@ -467,7 +467,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 
         as.m_SelectedFolder.id = serverProfile.folderId();
         
-        if(as.DoModal() == IDOK){
+        if(as.DoModal(m_hWnd) == IDOK){
             BasicSettings* settings = ServiceLocator::instance()->basicSettings();
             ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile);
 
@@ -1034,7 +1034,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
     }
 
     CServerParamsDlg dlg(serverProfile, uploadEngineManager_);
-    if ( dlg.DoModal() == IDOK) {
+    if ( dlg.DoModal(m_hWnd) == IDOK) {
         serverProfile = dlg.serverProfile();
         UpdateAllPlaceSelectors();
     }

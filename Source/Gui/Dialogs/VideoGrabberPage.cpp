@@ -376,127 +376,32 @@ void CVideoGrabberPage::SavingMethodChanged(void)
 
 int CVideoGrabberPage::GenPicture(CString& outFileName)
 {
+	CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+	TCHAR buf[256] = _T("\0");
+	int n = ThumbsView.GetItemCount();
+	std::vector<ImageGeneratorTask::FileItem> items;
+	for (int i = 0; i < n; i++) {
+		buf[0] = _T('\0');
+		CString fileName = ThumbsView.GetFileName(i);
+		ThumbsView.GetItemText(i, 0, buf, 256);
+		items.emplace_back(fileName, buf);
+	}
+	CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
+	auto task = std::make_shared<ImageGeneratorTask>(
+		m_hWnd, items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
 	
-    {
-        CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
-        TCHAR buf[256] = _T("\0");
-        int n = ThumbsView.GetItemCount();
-        std::vector<ImageGeneratorTask::FileItem> items;
-        for (int i = 0; i < n; i++) {
-            buf[0] = _T('\0');
-            CString fileName = ThumbsView.GetFileName(i);
-            ThumbsView.GetItemText(i, 0, buf, 256);
-            items.emplace_back(fileName, buf);
-        }
-        CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
-        std::shared_ptr<ImageGeneratorTask> task = std::make_shared<ImageGeneratorTask>(m_hWnd, items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
-        task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, bool) {
-            if (!task->outFileName().IsEmpty()) {
-                mainDlg->AddToFileList(task->outFileName());
-            }
-               
-        });
-        CStatusDlg dlg(task);
-        if (dlg.DoModal() == IDOK) {
-            return 1;
-        }
+	task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
+		if (taskResult == BackgroundTaskResult::Success && !task->outFileName().IsEmpty()) {
+			mainDlg->AddToFileList(task->outFileName());
+		}
 
-        
-    	
-    }
-    return 0;
-	
-	
-    using namespace Gdiplus;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    RectF TextRect;
-    int infoHeight = 0;
-    CString Report, fullInfo;
+	});
+	CStatusDlg dlg(task);
+	if (dlg.DoModal(m_hWnd) == IDOK) {
+		return 1;
+	}
 
-    if (Settings.VideoSettings.ShowMediaInfo)
-    {
-        TCHAR buffer[256];
-        GetDlgItemText(IDC_FILEEDIT, buffer, 256);
-        /*bool bMediaInfoResult = */
-        MediaInfoHelper::GetMediaFileInfo(buffer, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
-
-        Graphics g1(m_hWnd);
-
-        CWindowDC dc(nullptr);
-        Font font(dc, &Settings.VideoSettings.Font);
-
-        FontFamily ff;
-        font.GetFamily(&ff);
-        g1.SetPageUnit(UnitPixel);
-        g1.MeasureString(Report, -1, &font, PointF(0, 0), &TextRect);
-        infoHeight = int(TextRect.Height);
-    }
-
-    int n = ThumbsView.GetItemCount();
-    int ncols = min(Settings.VideoSettings.Columns, n);
-    if (ncols <= 0) {
-        ncols = 1;
-    }
-    int nstrings = n / ncols + ((n % ncols) ? 1 : 0);
-    int maxwidth = ThumbsView.maxwidth;
-    int maxheight = ThumbsView.maxheight;
-    int gapwidth = Settings.VideoSettings.GapWidth;
-    int gapheight = Settings.VideoSettings.GapHeight;
-    infoHeight += gapheight;
-    int tilewidth = Settings.VideoSettings.TileWidth;
-    int tileheight = static_cast<int>(((float)tilewidth) / ((float)maxwidth) * ((float)maxheight));
-    int needwidth = gapwidth + ncols * (tilewidth + gapwidth);
-    int needheight = gapheight + nstrings * (tileheight + gapheight) + infoHeight;
-
-    RECT rc;
-    GetClientRect(&rc);
-    
-    Graphics g(m_hWnd, true);
-    auto BackBuffer = std::make_unique<Bitmap>(needwidth, needheight, &g);
-    Graphics gr(BackBuffer.get());
-    Image* bm = NULL;
-    Rect r(0, 0, needwidth, needheight);
-    gr.Clear(Color(255, 180, 180, 180));
-    LinearGradientBrush br(r, Color(255, 224, 224, 224), Color(255, 243, 243, 243),
-                           LinearGradientModeBackwardDiagonal);
-    gr.FillRectangle(&br, r);
-    int x, y;
-    Pen Framepen(Color(90, 90, 90));
-    TCHAR buf[256] = _T("\0");
-    Font font(L"Tahoma", 10, FontStyleBold);
-    Color ColorText(140, 255, 255, 255);
-    Color ColorStroke(120, 0, 0, 0);
-
-    for (int i = 0; i < n; i++)
-    {
-        bm = new Image(ThumbsView.GetFileName(i));
-        x = gapwidth + (i % ncols) * (tilewidth + gapwidth);
-        y = infoHeight + (infoHeight ? gapheight : 0) + ((i / ncols)) * (tileheight + gapheight);
-        ThumbsView.GetItemText(i, 0, buf, 256);
-        gr.DrawImage(bm, (int)(x /*(tilewidth-newwidth)/2*/), (int)y, (int)tilewidth, (int)tileheight);
-        ImageUtils::DrawStrokedText(gr, buf, RectF(float(x), float(y), float(tilewidth),
-                                       float(tileheight)), font, ColorText, ColorStroke, 3, 3);
-        gr.DrawRectangle(&Framepen, Rect(x /*(tilewidth-newwidth)/2*/, (int)y, (int)tilewidth, (int)tileheight));
-        delete bm;
-    }
-
-    if (infoHeight)
-    {
-        StringFormat format;
-        format.SetAlignment(StringAlignmentNear);
-        format.SetLineAlignment(StringAlignmentNear);
-        CWindowDC dc(nullptr);
-        Font font(dc, &Settings.VideoSettings.Font);
-        // Font font(L"Arial", 12, FontStyleBold);
-
-        SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
-        RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));
-        gr.DrawString(Report, -1, &font, textBounds, &format, &br);
-        // /DrawStrokedText(gr, Report,textBounds,font,ColorText,ColorStroke,3,3);
-    }
-
-    ImageUtils::MySaveImage(BackBuffer.get(), _T("grab_custom"), outFileName, 1, 100);
-    return 0;
+	return 0;
 }
 
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -656,7 +561,7 @@ LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD 
     CMediaInfoDlg dlg;
     CString fileName;
     fileEdit_.GetWindowText(fileName);
-    dlg.ShowInfo(fileName);
+    dlg.ShowInfo(m_hWnd, fileName);
     return 0;
 }
 

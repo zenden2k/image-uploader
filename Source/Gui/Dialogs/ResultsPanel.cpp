@@ -617,7 +617,7 @@ LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, 
         return 0;
     }
     CMediaInfoDlg dlg;
-    dlg.ShowInfo(WizardDlg->getLastVideoFile());
+    dlg.ShowInfo(m_hWnd, WizardDlg->getLastVideoFile());
     return 0;
     
 }

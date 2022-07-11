@@ -79,10 +79,10 @@ LRESULT CMediaInfoDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     return 0;
 }
 
-void CMediaInfoDlg::ShowInfo(LPCTSTR FileName)
+void CMediaInfoDlg::ShowInfo(HWND parentWnd, LPCTSTR FileName)
 {
     m_FileName = FileName;
-    DoModal();
+    DoModal(parentWnd);
 }
 
 DWORD CMediaInfoDlg::Run()

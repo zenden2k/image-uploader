@@ -305,7 +305,7 @@ void CLogoSettings::UpdateProfileList() {
  LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
  {
     CInputDialog dlg(TR("New Profile Name"), TR("Enter new profile name:"), CurrentProfileOriginalName);
-    if(dlg.DoModal()==IDOK)
+    if(dlg.DoModal(m_hWnd)==IDOK)
     {
          ImageConvertingParams params;
          SaveParams(params);

@@ -44,6 +44,7 @@ set(SRC_LIST
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
     ../Core/Upload/Filters/UserFilter.cpp
+	../Core/BackgroundTask.cpp
     ../Func/CmdLine.cpp
     ../Func/DefaultLogger.cpp
     ../Func/DefaultUploadErrorHandler.cpp

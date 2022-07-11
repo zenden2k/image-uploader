@@ -261,7 +261,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     CInputDialog dlg(TR("Creating new thumbnail preset"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
     dlg.setForbiddenCharacters(_T("\\/:*?\"<>|"));
 
-    if (dlg.DoModal() == IDOK) {
+    if (dlg.DoModal(m_hWnd) == IDOK) {
         newName = WCstringToUtf8(dlg.getValue());
     } else {
         return false;

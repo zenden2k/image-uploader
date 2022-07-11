@@ -21,7 +21,6 @@
 #define IU_GUI_DIALOGS_VIDEOGRABBERPAGE_H
 
 #include <random>
-
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"

@@ -409,7 +409,7 @@ bool CWizardDlg::ParseCmdLine()
         if(CmdLine.GetNextFile(VideoFileName, nIndex))
         {
             CMediaInfoDlg dlg;
-            dlg.ShowInfo(VideoFileName);
+            dlg.ShowInfo(m_hWnd, VideoFileName);
             PostQuitMessage(0);
             return true;
         }
@@ -1741,7 +1741,7 @@ bool CWizardDlg::funcMediaInfo()
     Settings.VideoFolder = Buffer;
     CMediaInfoDlg dlg;
     LastVideoFile = fileName;
-    dlg.ShowInfo(fileName);
+    dlg.ShowInfo(m_hWnd, fileName);
     return true;
 }
 

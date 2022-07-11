@@ -146,7 +146,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CSimpleDialog<IDD_ABOUTBOX, TRUE> dlg;
-    dlg.DoModal();
+    dlg.DoModal(m_hWnd);
     return 0;
 }
 

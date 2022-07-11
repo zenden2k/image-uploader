@@ -6,7 +6,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
 endif()
 
-add_definitions(-DIU_SERVERLISTTOOL)
+add_definitions(-DIU_SERVERLISTTOOL -DIU_WTL)
 
 add_executable(ServersChecker WIN32  
     ServerListTool.cpp 

@@ -66,6 +66,7 @@ protected:
     std::mutex CriticalSection, Section2;
     std::shared_ptr<BackgroundTask> task_;
     CProgressBarCtrl progressBar_;
+    boost::signals2::scoped_connection taskFinishedConnection_, taskProgressConnection_;
 };
 
 #endif // STATUSDLG_H

@@ -31,12 +31,12 @@ CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
     processFinished_(false),
 	task_(std::move(task))
 {
-    task_->onTaskFinished.connect([&](BackgroundTask*, bool success) {
+    taskFinishedConnection_ = task_->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
         ProcessFinished();
-        EndDialog(success? IDOK: IDCANCEL);
+        EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK: IDCANCEL);
     });
 
-    task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
+    taskProgressConnection_ = task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
         CString statusW = U2W(status);
         SetInfo(statusW, L"");
         SetDlgItemText(IDC_TITLE, statusW);

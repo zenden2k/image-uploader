@@ -311,7 +311,7 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
     CFolderItem& folder = m_FolderList[nIndex];
 
     CNewFolderDlg dlg(folder, false, m_accessTypeList);
-    if (dlg.DoModal() == IDOK)
+    if (dlg.DoModal(m_hWnd) == IDOK)
     {
         m_FolderOperationType = FolderOperationType::foModifyFolder;  // Editing an existing folder
         m_newFolder = folder;
