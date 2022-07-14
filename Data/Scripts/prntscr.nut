@@ -30,19 +30,20 @@ function UploadFile(FileName, options) {
     nm.addQueryParamFile("image", FileName, name, mime);
     nm.doUploadMultipartData();
     
-    
     if (nm.responseCode() == 200) {
         local xml = SimpleXml();
         if(xml.LoadFromString(nm.responseBody())) {
             local root = xml.GetRoot("response", false);
             local statusNode = root.GetChild("status", false);
             if (statusNode.Text() != "success"){
+                WriteLog("[prntscr.com] Upload status: " + statusNode.Text());
                 return 0;
             }
             local directUrl = root.GetChild("url", false).Text();
             local thumb = root.GetChild("thumb", false).Text();
             
-            if (directUrl == "" || thumb == "") {
+            if (directUrl == "") {
+                WriteLog("error", "[prntscr.com] Server response does not contain required data.");
                 return 0;
             }
             
@@ -52,7 +53,7 @@ function UploadFile(FileName, options) {
                 id   = 1,
                 params = {
                     img_url = directUrl,
-                    thumb_url = thumb,
+                    //thumb_url = thumb,
                     delete_hash = "",
                     app_id = uuid,
                     width = imageInfo.Width,
@@ -68,10 +69,12 @@ function UploadFile(FileName, options) {
                     options.setThumbUrl(thumb);
                     options.setDirectUrl(directUrl);
                     return 1;   
+                } else {
+                    WriteLog("error", "[prntscr.com] Server response does not contain required data.");
                 }
             }
         }
-    }        
+    }       
     
     return 0;
 }

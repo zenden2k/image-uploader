@@ -91,8 +91,6 @@ function OnUrlChangedCallback(data) {
 	}
 }
 
-
-
 function OnNavigateError(data) {
 }
 
@@ -158,21 +156,25 @@ function DoLogin() {
 	return res;
 }
 
-function GetFolderList(list)
-{
-	if(!DoLogin())
+function IsAuthenticated() {
+    return ServerParams.getParam("token") != "" ? 1 : 0;
+}
+
+function GetFolderList(list) {
+	if (!DoLogin()) {
 		return 0;
+	}
 
 	nm.doGet("https://api.vk.com/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
-	if ( nm.responseCode() != 200 ) {
+	if (nm.responseCode() != 200) {
 		return 0;
 	}
 	local t = ParseJSON(nm.responseBody());
-	if ( !checkResponse(t) ) {
+	if (!checkResponse(t)) {
 		return 0;
 	}
 
-	for ( local i = 0; i < t.response.count; i++ ) {
+	for (local i = 0; i < t.response.count; i++) {
 		local item = t.response.items[i];
 		local album = CFolderItem();
 		album.setId(item.id.tostring());
@@ -185,39 +187,38 @@ function GetFolderList(list)
 	return 1;
 }
 
-function GetFirstAlbumId()
-{
-	if(!DoLogin())
+function GetFirstAlbumId() {
+	if(!DoLogin()) {
 		return 0;
+	}
 
 	nm.doGet("https://api.vk.com/method/photos.getAlbums?owner_id=" + userId +"&v=" + apiVersion + "&access_token=" + token);
 	if ( nm.responseCode() != 200 ) {
 		return 0;
 	}
 	local t = ParseJSON(nm.responseBody());
-	if ( !checkResponse(t) ) {
+	if (!checkResponse(t)) {
 		return 0;
 	}
 
-	for ( local i = 0; i < t.response.count; i++ ) {
+	for (local i = 0; i < t.response.count; i++ ) {
 		local item = t.response.items[i];
-		if ( item.title == "Image Uploader") {
+		if (item.title == "Image Uploader") {
 			return item.id;
 		}
 	}
 	return "";
 }
 
-
-function CreateFolder(parentAlbum,album)
-{
-	local title =album.getTitle();
+function CreateFolder(parentAlbum, album) {
+	local title = album.getTitle();
 	local summary = album.getSummary();
 	local accessType = album.getAccessType();
 
-	if ( !DoLogin() ) {
+	if (!DoLogin()) {
 		return 0;
 	}
+
 	nm.addQueryParam("title", title);
 	nm.addQueryParam("description", summary);
 	nm.addQueryParam("privacy_view", AccessTypeToPrivacy(accessType));
@@ -244,10 +245,10 @@ function CreateFolder(parentAlbum,album)
 	return 1;
 }
 
-function ModifyFolder(album)
-{
-	if(!DoLogin())
+function ModifyFolder(album) {
+	if (!DoLogin()) {
 		return 0;
+	}
 
 	local title = album.getTitle();
 	local id = album.getId();
@@ -274,10 +275,7 @@ function ModifyFolder(album)
 	return 0; // failure
 }
 
-
-
-function  UploadFile(FileName, options)
-{
+function UploadFile(FileName, options) {
 	if ( !DoLogin() ) {
 		return -1;
 	}
@@ -360,8 +358,7 @@ function  UploadFile(FileName, options)
 	return 0;
 }
 
-function GetFolderAccessTypeList()
-{
+function GetFolderAccessTypeList() {
 	return [
 		tr("vk.privacy.all_users", "All users"),
 		tr("vk.privacy.friends_only", "Friends only"),

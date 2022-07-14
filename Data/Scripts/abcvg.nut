@@ -1,5 +1,4 @@
 function UploadFile(FileName, options) {
-
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(FileName);
 
@@ -15,10 +14,10 @@ function UploadFile(FileName, options) {
                 options.setDirectUrl(f.url);
                 return 1;
             } else {
-                 WriteLog("error", "abcvg.org: Invalid server response");
+                WriteLog("error", "abcvg.org: Invalid server response");
             }
         } else {
-            WriteLog("error", "abcvg.org: Failed to parse server's answer aj json.");
+            WriteLog("error", "abcvg.org: Failed to parse server's answer as JSON.");
         }
 
     } else {
