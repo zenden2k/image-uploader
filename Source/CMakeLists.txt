@@ -98,7 +98,7 @@ if (WIN32)
 endif()	
 	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
-						GENERATORS cmake_find_package_multi
+						GENERATORS cmake_find_package_multi 
 						OPTIONS boost:shared=False 
 						libcurl:with_libssh2=True
 						)
@@ -108,7 +108,13 @@ SET(msvc_link_setting "")
 
 SET(msvc_link_setting "")
 
-foreach(TYPE ${CMAKE_CONFIGURATION_TYPES})
+#if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
+#   SET(CONFIGURATION_TYPES "Release")
+#else()
+	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
+#endif()	
+
+foreach(TYPE ${CONFIGURATION_TYPES})
 	if (MSVC)
 		if (${TYPE} STREQUAL "Debug")
 			SET(msvc_link_setting compiler.runtime=MTd)
@@ -127,7 +133,7 @@ set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
 find_package(Boost CONFIG COMPONENTS program_options REQUIRED)
 find_package(OpenSSL CONFIG REQUIRED)
-find_package(libcurl CONFIG REQUIRED)
+find_package(CURL CONFIG REQUIRED)
 find_package(PCRE CONFIG REQUIRED)
 find_package(uriparser CONFIG REQUIRED)
 find_package(ZLIB CONFIG REQUIRED)
@@ -183,7 +189,7 @@ else()
     include_directories(${CONAN_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 endif()
 
-set(COMMON_LIBS_LIST Boost::Boost libcurl::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel::squirrel squirrel::sqstdlib gumbo-parser::gumbo-parser base64::base64)
+set(COMMON_LIBS_LIST Boost::Boost CURL::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel::squirrel squirrel::sqstdlib gumbo-parser::gumbo-parser base64::base64)
 if (IU_ENABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
 endif()
