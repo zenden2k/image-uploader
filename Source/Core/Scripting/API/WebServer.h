@@ -11,16 +11,6 @@ namespace ScriptAPI {
 		
 class WebServerPrivate;
 
-/*class WebServerRequest
-{
-	std::string method_, path_, queryString_, httpVersion_;
-public:
-	WebServerRequest();
-	std::string method() const;
-	std::string path() const;
-	std::string queryString() const;
-	std::string httpVersion() const;
-};*/
 class WebServer {
 	public:
 		WebServer();

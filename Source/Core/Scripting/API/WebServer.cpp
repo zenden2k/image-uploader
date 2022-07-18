@@ -9,41 +9,22 @@ namespace ScriptAPI {
 
 using HttpServer = SimpleWeb::Server<SimpleWeb::HTTP>;
 
-class WebServerPrivate: public Stoppable{
+class WebServerPrivate : public Stoppable {
 
 public:
-	HttpServer server_;
+    HttpServer server_;
     std::vector<Sqrat::Function> callbacks_;
 
     WebServerPrivate() {
-	    AddServiceToVM(GetCurrentThreadVM(), this);
+        AddServiceToVM(GetCurrentThreadVM(), this);
     }
     virtual ~WebServerPrivate() {
         RemoveServiceFromVM(GetCurrentThreadVM(), this);
     }
     void stop() override {
-		server_.stop();
+        server_.stop();
     }
 };
-
-/*WebServerRequest::WebServerRequest() {
-	
-}
-
-std::string WebServerRequest::method() const {
-    return method_;
-	
-}
-std::string WebServerRequest::path() const {
-    return path_;
-}
-std::string WebServerRequest::queryString() const {
-    return queryString_;
-	
-}
-std::string WebServerRequest::httpVersion() const {
-    return httpVersion_;
-}*/
 
 WebServer::WebServer(): d_(std::make_shared<WebServerPrivate>()){
 }
@@ -93,7 +74,8 @@ void WebServer::resource(const std::string& path, const std::string& method, Sqr
             }
 
             *response << "HTTP/1.1 200 OK\r\n"
-                << "Content-Length: " << responseBody->length() << "\r\n\r\n"
+                << "Content-Length: " << responseBody->length() << "\r\n"
+        		    "Content-Type: text/html; charset=utf-8" << "\r\n\r\n"
                 << *responseBody.Get();
         }
         catch (const std::exception& e) {

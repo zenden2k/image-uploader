@@ -103,9 +103,9 @@ function _DoLogin() {
         local responseBody = "";
         if ("code" in d.queryParams){
             confirmCode = d.queryParams.code;
-            responseBody = "Success";
+            responseBody = "<h1>" + tr("googledrive.oauth.title", "Authorization") + "</h1><p>" + tr("googledrive.oauth.success", "Success! Now you can close this page.")+"</p>";
         } else {
-            responseBody = "Failed to obtain confirmation code";
+            responseBody = "<h1>" + tr("googledrive.oauth.title", "Authorization") + "</h1><p>" + tr("googledrive.oauth.success", "Failed to obtain confirmation code") + "</p>";
         }
 
         return {
@@ -118,7 +118,7 @@ function _DoLogin() {
 
     local redirectUrl = "http://127.0.0.1:" + port + "/";
 
-    local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
+    local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+nm.urlEncode(redirectUrl)+"&response_type=code&"+ "client_id="+clientId;
     ShellOpenUrl(url);
 
     server.start();
