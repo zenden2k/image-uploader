@@ -321,8 +321,11 @@ bool CUpdateManager::internal_load_update(CString name)
     } catch ( NetworkClient::AbortedException&) {
         return false;
     }
-   
-    if (nm->responseCode() != 200 || nm->responseHeaderByName("Content-Type") != "text/xml")
+
+    std::string contentType = nm->responseHeaderByName("Content-Type");
+    std::vector<std::string_view> tokens = IuStringUtils::SplitSV(contentType, ";");
+
+    if (nm->responseCode() != 200 || tokens.empty() || tokens[0] != "text/xml")
     {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
