@@ -256,7 +256,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb">
+    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" LoginLabel="API key" NeedPassword="0">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -275,6 +275,11 @@
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
     <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
+	<Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" NeedPassword="0" LoginLabel="User key">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

@@ -1,6 +1,6 @@
 auth_token <- "";
 
-function ObtainToken() {
+function _ObtainToken() {
     if (auth_token == "") {
         nm.doGet("https://imgbb.com/");
         if (nm.responseCode() != 200) {
@@ -14,12 +14,39 @@ function ObtainToken() {
     return auth_token;
 }
 
+function _UploadToAccount(FileName, options) {
+    nm.enableResponseCodeChecking(true);
+    local apiKey = ServerParams.getParam("Login");
+    nm.addQueryParam("key", apiKey);
+    nm.addQueryParamFile("image", FileName, ExtractFileName(FileName), "");
+    nm.setUrl("https://api.imgbb.com/1/upload");
+    nm.doUploadMultipartData();
+    local t = ParseJSON(nm.responseBody());
+    if (nm.responseCode() == 200) { 
+        if (t.success) {
+            options.setViewUrl(t.data.url_viewer);
+            options.setDirectUrl(t.data.url);
+            options.setThumbUrl(t.data.thumb.url);
+            //options.setDeleteUrl(t.data.delete_url);
+            return 1;
+        }
+    } else if ("error" in t) {
+        WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + t.error.message);
+    }
+    return 0;
+}
+
 function UploadFile(FileName, options) {
     nm.enableResponseCodeChecking(false);
+    local apiKey = ServerParams.getParam("Login");
+
+    if (apiKey != "") {
+        return _UploadToAccount(FileName, options);
+    }
 
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
-    local token = ObtainToken();
+    local token = _ObtainToken();
     if (token == "") {
         WriteLog("error", "[imgbb.com] Unable to obtain auth token");
         
