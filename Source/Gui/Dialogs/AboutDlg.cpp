@@ -62,8 +62,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_EmailLink.SetLabel((translator->getCurrentLanguage() == "Russian" ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (zenden2k@gmail.com)")));
-    m_EmailLink.SetHyperLink(_T("mailto:zenden2k@gmail.com"));
+        : _T("Sergey Svistunov")) + CString(_T(" (")) + authorEmail + CString(_T(")")));
+    m_EmailLink.SetHyperLink(CString(_T("mailto:")) + authorEmail);
 
     CString memoText;
     
@@ -220,4 +220,28 @@ LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPara
     }
     
     return reinterpret_cast<LRESULT>(GetSysColorBrush(COLOR_BTNFACE));
+}
+
+LRESULT CAboutDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    HWND wnd = reinterpret_cast<HWND>(wParam);
+    HWND authorNameLabelWnd = GetDlgItem(IDC_AUTHORNAMELABEL);
+	
+	if (wnd == authorNameLabelWnd) {
+        RECT rc;
+        ::GetWindowRect(authorNameLabelWnd, &rc);
+        POINT menuOrigin{ rc.left,rc.bottom };
+		
+        CMenu contextMenu;
+        contextMenu.CreatePopupMenu();
+        contextMenu.AppendMenu(MF_STRING, ID_COPYAUTHOREMAIL, TR("Copy e-mail"));
+        //contextMenu.SetMenuDefaultItem(ID_COPYAUTHOREMAIL, FALSE);
+        contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
+	}
+
+    return 0;
+}
+
+LRESULT CAboutDlg::OnCopyAuthorEmail(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    WinUtils::CopyTextToClipboard(authorEmail);
+    return 0;
 }

@@ -27,14 +27,17 @@
 class CAboutDlg : public CCustomDialogIndirectImpl<CAboutDlg>
 {
     public:
-        enum { IDD = IDD_ABOUTBOX };
+		// Custom commands should be in the range 0x8000 to 0xDFFF
+        enum { IDD = IDD_ABOUTBOX, ID_COPYAUTHOREMAIL = 0x8001 };
 
     protected:
         BEGIN_MSG_MAP(CAboutDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_ID_HANDLER(IDOK, OnCloseCmd)
             COMMAND_ID_HANDLER(IDCANCEL, OnCloseCmd)
+            COMMAND_ID_HANDLER(ID_COPYAUTHOREMAIL, OnCopyAuthorEmail)
             MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
+            MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         END_MSG_MAP()
         CMyImage LogoImage;
         CHyperLink m_WebSiteLink;
@@ -52,4 +55,8 @@ class CAboutDlg : public CCustomDialogIndirectImpl<CAboutDlg>
         LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnCtlColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnCopyAuthorEmail(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+
+        const wchar_t* authorEmail = L"zenden2k@gmail.com";
 };
