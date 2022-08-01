@@ -41,6 +41,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     iconSizeY_ = 0;
     subpanelHeight_ = 0;
     subpanelLeftOffset_ = 0;
+    movable_ = true;
 }
 
 Toolbar::~Toolbar()
@@ -80,6 +81,9 @@ bool Toolbar::Create(HWND parent, bool child )
         style = WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
         exStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
     }
+	
+    movable_ = !child;
+	
     HWND wnd = TParent::Create(parent, rc, _T("ImageEditor Toolbar"), style, exStyle);
     if ( !wnd ) {
         LOG(ERROR) << WinUtils::GetLastErrorAsString();
@@ -508,7 +512,7 @@ LRESULT Toolbar::OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
     bHandled = false;
-    if ( ::GetKeyState(VK_MENU) & 0x8000 ) {
+    if (movable_ && ::GetKeyState(VK_MENU) & 0x8000) {
         // User can drag toolbars with ALT pressed
         bHandled = true;
         return HTCAPTION;
@@ -883,6 +887,10 @@ int Toolbar::getArrowType() const {
 
 void Toolbar::setArrowType(int type) {
     arrowTypeCombobox_.SetCurSel(type);
+}
+
+void Toolbar::setMovable(bool value) {
+    movable_ = value;
 }
 
 }

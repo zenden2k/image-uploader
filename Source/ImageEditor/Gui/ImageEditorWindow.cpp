@@ -52,7 +52,7 @@ void ImageEditorWindow::init()
 {
     richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
 //    resultingBitmap_ = 0;
-    canvas_ = 0;
+    canvas_ = nullptr;
     cropToolTip_ = 0;
     showUploadButton_ = true;
     showAddToWizardButton_ = true;
@@ -155,10 +155,13 @@ void ImageEditorWindow::init()
     dialogResult_ = drCancel;
 }
 
-bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat)
+bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveAs)
 {
     resultingBitmap_ = canvas_->getBitmapForExport();
-    canvas_->setDocumentModified(false);
+	if (!saveAs) {
+        canvas_->setDocumentModified(false);
+	}
+
     if ( !resultingBitmap_ ) {
         LOG(ERROR) << "canvas_->getBitmapForExport() returned NULL";
         return false;
@@ -416,9 +419,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
     canvas_->setDocument(currentDoc_.get());
 
-    std::wstring windowTitle;
-    windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
-    SetWindowText(windowTitle.c_str());
+    updateWindowTitle();
 
     textParamsWindow_.Create(m_hWnd);
 
@@ -463,6 +464,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     if (displayMode_ != wdmWindowed) {
         canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
     }
+
+    canvas_->onDocumentModified.connect([this] { updateWindowTitle();  });
 
     if (initialDrawingTool_ != DrawingToolType::dtCrop) {
         verticalToolbar_.ShowWindow(SW_SHOW);
@@ -1292,7 +1295,7 @@ bool ImageEditorWindow::OnSaveAs()
     }
     enableToolbarsIfNecessary(true);
     outFileName_ = dlg->getFile();
-    saveDocument();
+    saveDocument(ClipboardFormat::None, true);
     return true;
 }
 
@@ -1453,6 +1456,27 @@ void ImageEditorWindow::enableToolbarsIfNecessary(bool enable) {
 LRESULT ImageEditorWindow::OnEnable(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     enableToolbarsIfNecessary(static_cast<BOOL>(wParam));
     return 0;
+}
+
+void ImageEditorWindow::updateWindowTitle() {
+    std::wstring windowTitle;
+    if (sourceFileName_.IsEmpty()) {
+        windowTitle = str(boost::wformat(TR("Image Editor  (%1%x%2%)")) % currentDoc_->getWidth() % currentDoc_->getHeight());
+    }
+    else {
+        CString fileNameStr = WinUtils::TrimString(WinUtils::myExtractFileName(sourceFileName_), 60);
+        std::wstring fileNameWstring{ fileNameStr };
+
+        windowTitle = str(boost::wformat(TR("Image Editor - %1% (%2%x%3%)")) % fileNameWstring % currentDoc_->getWidth() % currentDoc_->getHeight());
+    }
+
+	if (canvas_->isDocumentModified()) {
+        windowTitle = L"* " + windowTitle;
+	}
+    if (windowTitle != windowTitle_) {
+        windowTitle_ = windowTitle;
+        SetWindowText(windowTitle.c_str());
+    }
 }
 
 

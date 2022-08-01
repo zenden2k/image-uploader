@@ -170,7 +170,8 @@ class Canvas {
         boost::signals2::signal<void(TextElement*)> onTextEditStarted;
         boost::signals2::signal<void(TextElement*)> onTextEditFinished;
         boost::signals2::signal<void()> onSelectionChanged;
-
+        boost::signals2::signal<void()> onDocumentModified;
+	
         friend class AbstractDrawingTool;
         friend class VectorElementTool;
         friend class PenTool;

@@ -82,6 +82,7 @@ public:
     bool isFillBackgroundChecked() const;
     int getArrowType() const;
     void setArrowType(int type);
+    void setMovable(bool value);
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -173,6 +174,7 @@ protected:
     CDC backBufferDc_;
     HBITMAP oldSelectedBm_;
     Gdiplus::TextRenderingHint textRenderingHint_;
+    bool movable_;
     void createHintForSliders(HWND slider, CString hint);
 };
 

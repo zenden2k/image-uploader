@@ -3,6 +3,9 @@
 
 #pragma once
 
+#include <memory>
+#include <map>
+
 #include "atlheaders.h"
 #include "resource.h"
 #include "ImageEditorView.h"
@@ -194,6 +197,7 @@ public:
         bool allowAltTab_;
         SearchByImage::SearchEngine searchEngine_;
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
+        std::wstring windowTitle_;
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
@@ -211,7 +215,7 @@ public:
         std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
         void EndDialog(DialogResult dr);
         void init();
-        bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None);
+        bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None, bool saveAs = false);
         CString saveToTempFile();
         void updateToolbarDrawingTool(DrawingToolType dt);
         void OnForegroundColorChanged(Gdiplus::Color color);
@@ -226,6 +230,7 @@ public:
         bool OnClickedSave();
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
+        void updateWindowTitle();
 };
 
 class ConfigurationProvider {

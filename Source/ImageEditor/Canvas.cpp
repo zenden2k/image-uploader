@@ -274,6 +274,7 @@ bool Canvas::isDocumentModified() const
 void Canvas::setDocumentModified(bool modified)
 {
     isDocumentModified_ = modified;
+    onDocumentModified();
 }
 
 void  Canvas::setCallback(Callback * callback) {
@@ -335,7 +336,7 @@ void Canvas::endPenSizeChanging(int penSize) {
         }
     }
     if ( updatedElementsCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
     }
     originalPenSize_= 0;
 }
@@ -396,7 +397,7 @@ void Canvas::endRoundingRadiusChanging(int radius) {
         }
     }
     if ( updatedElementsCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
     }
     originalPenSize_= 0;
 }
@@ -428,7 +429,7 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
         }
     }
     if ( updatedElementsCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
         updateView();
     }
 }
@@ -460,7 +461,7 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
         }
     }
     if ( updatedElementsCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
         updateView();
     }
 }
@@ -513,7 +514,7 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
         }
     }
     /*if ( updatedElementsCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
         updateView();
     }*/
 }
@@ -667,8 +668,8 @@ void Canvas::addMovableElement(MovableElement* element)
         uhie.pos = elementsOnCanvas_.size();
         uhie.movableElement = element;
         historyItem.elements.push_back(uhie);
-        undoHistory_.push(historyItem);
-        isDocumentModified_ = true;
+        addUndoHistoryItem(historyItem);
+        setDocumentModified(true);
         elementsToDelete_.push_back(element);
     }
 }
@@ -685,8 +686,7 @@ void Canvas::endDocDrawing()
     currentDocument()->endDrawing();
     UndoHistoryItem historyItem;
     historyItem.type = UndoHistoryItemType::uitDocumentChanged;
-    isDocumentModified_ = true;
-    undoHistory_.push(historyItem);
+    addUndoHistoryItem(historyItem);
 }
 
 int Canvas::deleteSelectedElements()
@@ -711,7 +711,7 @@ int Canvas::deleteSelectedElements()
         }
     }
     if ( deletedCount ) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
         if (isStepNumberRemoved) {
             recalcStepNumbers();
         }
@@ -944,7 +944,7 @@ Gdiplus::Bitmap* Canvas::getBufferBitmap() const
 void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 {
     undoHistory_.push(item);
-    isDocumentModified_ = true;
+    setDocumentModified(true);
 }
 
 std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
@@ -1123,7 +1123,7 @@ bool Canvas::undo() {
     }
     if ( result ) {
         undoHistory_.pop();
-        isDocumentModified_ = true;
+        setDocumentModified(true);
     }
     updateView();
     return result;
@@ -1262,7 +1262,7 @@ void Canvas::setFillTextBackground(bool fill) {
         }
     }
     if (count) {
-        undoHistory_.push(uhi);
+        addUndoHistoryItem(uhi);
         updateView();
     }
 }
