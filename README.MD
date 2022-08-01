@@ -1,17 +1,17 @@
 # Image Uploader
 Free program for Windows that allows you to upload images, screenshots, or any other files to over 30 different file hosting services. 
-Official website: http://svistunov.dev/imageuploader
+Official website: https://svistunov.dev/imageuploader
 
 ![Image Uploader main window](https://lh3.googleusercontent.com/-Cn0FbMwNmME/VXvtHdBlKgI/AAAAAAAAF0A/r7soROnyqrg/s0/clipboard_5956_12792.png)
 
-[![Download Image Uploader](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](http://svistunov.dev/imageuploader_downloads)
+[![Download Image Uploader](https://lh4.googleusercontent.com/-D6wvBfMHonw/VQHgBb9ZFzI/AAAAAAAAD1s/Hq1uUei_C-s/s0/download-button-en.png)](https://svistunov.dev/imageuploader_downloads)
 
 Supported operating systems: Windows 10/8/7/Vista/XP SP3+ (also server versions starting with Windows Server 2003 SP1)
 
 ## Main Features
 
 ### Uploading files to image hostings and file hostings
-It can upload to more than [20 image hostings sites](http://svistunov.dev/imageuploader_servers). After uploading, Image Uploader generates HTML code, BBCode for forums and Markdown code.
+It can upload to more than [20 image hostings sites](https://svistunov.dev/imageuploader_servers). After uploading, Image Uploader generates HTML code, BBCode for forums and Markdown code.
 
 It is also possible to specify your own output format template.
 
@@ -29,7 +29,7 @@ Image Uploader is available in the following languages: English, Russian, Swedis
 
 Available options:
 
-http://svistunov.dev/imageuploader-cli
+https://svistunov.dev/imageuploader-cli
 
 ## Building from source
 
