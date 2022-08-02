@@ -36,6 +36,7 @@ CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync
     Script(fileName, serverSync, factory, false)
 {
     setServerSettings(settings);
+    newAuthMode = false;
     name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);
     load(fileName);
 }
@@ -75,19 +76,22 @@ int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
 
 int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
+    if (checkAuth() < 1) {
+        return -1;
+    }
     using namespace Sqrat;
     std::string FileName;
 
     currentTask_ = task;
     if (task->type() == UploadTask::TypeFile ) {
-        auto fileTask = dynamic_cast<FileUploadTask*>(task.get());
+        auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if (fileTask) {
             FileName = fileTask->getFileName();
         }
     }
 
     UploadTask* topLevelTask = task->parentTask() ? task->parentTask() : task.get();
-    auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
+    auto* topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
     if (topLevelFileTask) {
         setCurrentTopLevelFileName(topLevelFileTask->getFileName());
     }
@@ -192,6 +196,9 @@ bool CScriptUploadEngine::preLoad()
 bool CScriptUploadEngine::postLoad()
 {
     ScriptAPI::RegisterShortTranslateFunctions(vm_);
+	if (functionExists("Authenticate")) {
+        newAuthMode = true;
+	}
     return true;
 }
 
@@ -279,23 +286,39 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
 int CScriptUploadEngine::doLogin()
 {
     using namespace Sqrat;
+    if (newAuthMode) {
+        try {
+            serverSync_->beginAuth();
+        } catch (const ServerSyncException&) {
+            return 0;
+        }
+    }
+    defer<void> d([&] { // Run at function exit
+        if (newAuthMode) {
+            serverSync_->endAuth();
+        }
+    });
+	
     try
     {
         checkCallingThread();
 
-        Function func(vm_.GetRootTable(), "DoLogin");
+        Function func(vm_.GetRootTable(), newAuthMode ? "Authenticate" : "DoLogin");
         if (func.IsNull()) {
             return 0;
         }
         int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        serverSync_->setAuthPerformed(res == 1);
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
         }*/
+        
         return res;
     }
     catch (std::exception& e)
     {
+        serverSync_->setAuthPerformed(false);
         Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.what()));
     }
     FlushSquirrelOutput();
@@ -325,6 +348,9 @@ int CScriptUploadEngine::doLogout() {
 
 int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
 {
+    if (checkAuth() < 1) {
+        return 0;
+    }
     using namespace Sqrat;
     int res = 1;
     try
@@ -350,6 +376,9 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
 
 int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
 {
+    if (checkAuth() < 1) {
+        return 0;
+    }
     using namespace Sqrat;
     int ival = 0;
     try
@@ -383,6 +412,9 @@ std::string CScriptUploadEngine::name()
 
 int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& folder)
 {
+    if (checkAuth() < 1) {
+        return 0;
+    }
     using namespace Sqrat;
     int ival = 0;
     try
@@ -409,7 +441,7 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
 
 void CScriptUploadEngine::setNetworkClient(INetworkClient* nm)
 {
-    CAbstractUploadEngine::setNetworkClient(nm);
+    CAdvancedUploadEngine::setNetworkClient(nm);
     if (!m_UploadData->UserAgent.empty()) {
         nm->setUserAgent(m_UploadData->UserAgent);
     }
@@ -440,14 +472,19 @@ bool CScriptUploadEngine::supportsSettings()
 
 bool CScriptUploadEngine::supportsBeforehandAuthorization()
 {
+    return newAuthMode || functionExists("DoLogin");
+}
+
+bool CScriptUploadEngine::functionExists(const std::string& name){
     using namespace Sqrat;
     try {
         checkCallingThread();
-        Function func(vm_.GetRootTable(), "DoLogin");
+        Function func(vm_.GetRootTable(), name.c_str());
         if (func.IsNull()) {
             return false;
         }
-    } catch (std::exception& e) {
+    }
+    catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::supportsBeforehandAuthorization\r\n" + std::string(e.what()));
         return false;
     }
@@ -522,4 +559,27 @@ bool CScriptUploadEngine::supportsLogout() {
     }
     FlushSquirrelOutput();
     return true;
-};
+}
+
+int CScriptUploadEngine::checkAuth() {
+    using namespace Sqrat;
+	if (newAuthMode && m_UploadData->NeedAuthorization && m_ServersSettings->authData.DoAuth) {
+		if(!serverSync_->isAuthPerformed()) {
+            try {
+                checkCallingThread();
+                
+                if (!isAuthenticated()) {
+                	try {
+                        return doLogin();
+                	} catch (const std::exception& e) {
+                        Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
+                	}
+                }
+            	
+            } catch (const std::exception& e) {
+                Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
+            }  
+		}
+	}
+    return 1;
+}

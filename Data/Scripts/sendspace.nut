@@ -7,17 +7,7 @@ function IsAuthenticated() {
     return 0;
 }
 
-function DoLogin() {
-    if (!Sync.beginAuth()) {
-        return 0;
-    }
-    local res = _DoLogin();
-
-    Sync.endAuth();
-    return res;
-}
-
-function _DoLogin() { 
+function Authenticate() { 
     if (Sync.getValue("sessionKey") != "") {
         return 1;
     }
@@ -151,23 +141,12 @@ function internal_parseAlbumList(data,list)
     }
 }
 
-function internal_loadAlbumList(list) {
+function GetFolderList(list) {
     local sessionKey = Sync.getValue("sessionKey");
     nm.setUrl("https://api.sendspace.com/rest/?method=folders.getall&session_key=" + sessionKey);
     nm.addQueryHeader("Expect","");
     nm.doGet("");
     internal_parseAlbumList(nm.responseBody(), list);
-}
-
-function GetFolderList(list) {
-    local sessionKey = Sync.getValue("sessionKey");
-    if(sessionKey == "") {
-        if(!DoLogin()) {
-            return 0;
-        }
-    }
-
-    internal_loadAlbumList(list);
     return 1; //success
 }
 
@@ -178,12 +157,6 @@ function CreateFolder(parentAlbum, album) {
     local parentId = album.getParentId(); 
     local strAcessType = "private";
     local sessionKey = Sync.getValue("sessionKey");
-
-    if (sessionKey == ""){
-        if(!DoLogin()) {
-            return 0;
-        }
-    }
 
     if (accessType == ""){
         accessType = 0;
@@ -217,13 +190,6 @@ function CreateFolder(parentAlbum, album) {
 
 function UploadFile(FileName, options) {
     local sessionKey = Sync.getValue("sessionKey");
-    if(sessionKey == "" && ServerParams.getParam("Login") != "") {
-        if(!DoLogin()){
-            return 0;
-        }
-    }
-
-    sessionKey = Sync.getValue("sessionKey");
   
     local albumID = options.getFolderID();
     if(albumID == "") {

@@ -74,7 +74,9 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int processAuthTask(std::shared_ptr<UploadTask> task);
         bool preLoad() override;
         bool postLoad() override;
-        virtual void logNetworkError(bool error, const std::string & msg) override;
+        void logNetworkError(bool error, const std::string & msg) override;
+        bool functionExists(const std::string& name);
+        int checkAuth();
         CFolderList folderList_;
         std::string name_;
         bool needStop() override;
@@ -82,6 +84,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         std::string m_FileName;
         std::string m_displayFileName;
         LoginInfo li;
+        bool newAuthMode;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 #endif
