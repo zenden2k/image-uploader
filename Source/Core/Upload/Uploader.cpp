@@ -110,7 +110,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     currentTask_ = task;
 
     if (task->type() == UploadTask::TypeFile) {
-        FileName = static_cast<FileUploadTask*>(task.get())->getFileName();
+        FileName = dynamic_cast<FileUploadTask*>(task.get())->getFileName();
         if ( FileName.empty() ) {
             Error(true, "Empty filename!");
             return false;
@@ -122,7 +122,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         }
     }
     UploadTask* topLevelTask = task->parentTask() ? task->parentTask() : task.get();
-    auto topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
+    auto* topLevelFileTask = dynamic_cast<FileUploadTask*>(topLevelTask);
     std::string topLevelFileName;
     if (topLevelFileTask) {
         topLevelFileName = topLevelFileTask->getFileName();

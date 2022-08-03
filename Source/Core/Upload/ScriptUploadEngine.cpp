@@ -55,7 +55,15 @@ int CScriptUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadPar
     if (task->type() == UploadTask::TypeAuth) {
         return processAuthTask(task);
     } else {
-        return doUpload(task, params);
+        int res = doUpload(task, params);
+    	if (res == -2) {
+            serverSync_->resetAuthorization();
+    		res = doUpload(task, params);
+    		if (res == -2) {
+                return -1;
+    		}
+    	}
+        return res;
     }
 }
 
@@ -159,6 +167,13 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     catch (ServerSyncException& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
         ival = -1; // fatal error
+    }
+	catch (const Sqrat::Exception& e) {
+    	if (!strcmp(e.what(), "unauthorized_exception")) {
+            ival = -2;
+    	} else {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+    	}
     }
     catch (std::exception & e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
@@ -405,7 +420,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
     return ival;
 }
 
-std::string CScriptUploadEngine::name()
+std::string CScriptUploadEngine::name() const
 {
     return name_;
 }
@@ -512,7 +527,7 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     if (currentTask_) {
         ei.FileName = currentTask_->toString();
         UploadTask* task = currentTask_->parentTask() ? currentTask_->parentTask() : currentTask_.get();
-        auto fileTask = dynamic_cast<FileUploadTask*>(task);
+        auto* fileTask = dynamic_cast<FileUploadTask*>(task);
         if (fileTask) {
             ei.TopLevelFileName = fileTask->getFileName();
         }

@@ -69,7 +69,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         }
     }
 
-    auto fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask)
     {
         return ;
@@ -112,7 +112,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 
 void UploadManager::taskAdded(UploadTask* task)
 {
-    auto fileTask = dynamic_cast<FileUploadTask*>(task);
+    auto* fileTask = dynamic_cast<FileUploadTask*>(task);
     if (!fileTask) {
         return;
     }

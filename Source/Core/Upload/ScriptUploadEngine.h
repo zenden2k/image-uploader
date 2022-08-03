@@ -63,7 +63,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         **/
         bool supportsBeforehandAuthorization() override;
         bool isAuthenticated() override;
-        std::string name();
+        std::string name() const;
 
         // FIXME: not working
         virtual void stop() override;         

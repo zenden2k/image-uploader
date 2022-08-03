@@ -7,31 +7,12 @@ if (ServerParams.getParam("useWebdav") == "") {
     ServerParams.setParam("token", "");
     ServerParams.setParam("tokenType", "");
 }
-token <- "";
-tokenType <- "";
+
 login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 clientId <- "a49c34035aa8418d9a77ff24e0660719";
 clientSecret <- "f9496665e3494022a00b7dbe9a5f0d9e";
-
-function BeginLogin() {
-    try {
-        return Sync.beginAuth();
-    }
-    catch ( ex ) {
-    }
-    return true;
-}
-
-function EndLogin() {
-    try {
-        return Sync.endAuth();
-    } catch ( ex ) {
-
-    }
-    return true;
-}
 
 function regex_simple(data, regStr, start) {
     local ex = regexp(regStr);
@@ -82,7 +63,7 @@ function _IsSuccessCode(code) {
 }
 
 function _GetAuthorizationString() {
-    return "OAuth " + token;
+    return "OAuth " + ServerParams.getParam("token");
 }
 
 function _ParseAlbumList(data,list,parentid)
@@ -127,12 +108,6 @@ function _ParseAlbumList(data,list,parentid)
 }
 
 function _LoadAlbumList(list) {
-    if (token == "") {
-        if(!DoLogin()) {
-            return 0;
-        }
-    }
-
     if (_UseRestApi()) {
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");
@@ -142,9 +117,7 @@ function _LoadAlbumList(list) {
         local code = nm.responseCode();
         if (code == 401){
             ServerParams.setParam("token","");
-            if (!DoLogin()){
-                return 0;
-            }
+            throw "unauthorized_exception";
         }
 
         local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
@@ -199,21 +172,10 @@ function _LoadAlbumList(list) {
 }
 
 function GetFolderList(list) {
-    /*if(token == "")
-    {
-        if(!DoLogin())
-            return 0;
-    }*/
-
     return _LoadAlbumList(list);
 }
 
 function CreateFolder(parentAlbum, album) {
-    if (token == "") {
-        if(!DoLogin()) {
-            return 0;
-        }
-    }
     local folderName = album.getTitle();
     if (folderName == "") {
         return 0;
@@ -286,11 +248,10 @@ function _UseRestApi() {
     return (l == "") || ( l != "true" && l != "yes" && l != "1");
 }
 
-function _DoLogin()
-{
+function Authenticate() {
     if ( enableOAuth ) {
-        token = ServerParams.getParam("token");
-        tokenType = ServerParams.getParam("tokenType");
+        local token = ServerParams.getParam("token");
+        local tokenType = ServerParams.getParam("tokenType");
         if ( token != "" && ServerParams.getParam("PrevLogin") == ServerParams.getParam("Login") ) {
             if ( tokenType == "oauth" ) {
                 local OAuthLogin = ServerParams.getParam("OAuthLogin");
@@ -359,16 +320,6 @@ function _DoLogin()
     return 0;
 }
 
-function DoLogin() {
-    if (!BeginLogin() ) {
-        return false;
-    }
-    local res = _DoLogin();
-
-    EndLogin();
-    return res;
-}
-
 function IsAuthenticated() {
     if (ServerParams.getParam("token") != "") {
         return 1;
@@ -405,12 +356,6 @@ function DoLogout() {
 }
 
 function UploadFile(FileName, options) {
-    if (token == "") {
-        if (!DoLogin()) {
-            return 0;
-        }
-    }
-
     local ansiFileName = ExtractFileName(FileName);
     local fileSize = GetFileSize(FileName);
 
@@ -442,13 +387,11 @@ function UploadFile(FileName, options) {
 
         if (nm.responseCode() == 401) { // not authorized
             ServerParams.setParam("token", "");
-            if (!DoLogin()) { // obtain token again
-                return 0;
-            }
+            throw "unauthorized_exception";
             //try again
-            nm.addQueryHeader("Accept", "application/json");
+            /*nm.addQueryHeader("Accept", "application/json");
             nm.addQueryHeader("Authorization", _GetAuthorizationString());
-            nm.doGet(url);
+            nm.doGet(url);*/
         }
 
         while ( nm.responseCode() == 409 ) {

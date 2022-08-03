@@ -2,50 +2,42 @@ redirectUri <- "https://login.microsoftonline.com/common/oauth2/nativeclient";
 redirectUrlEscaped <- "https:\\/\\/login\\.microsoftonline\\.com\\/common\\/oauth2\\/nativeclient";
 code <- "";
 
-function BeginLogin() {
-    try {
-        return Sync.beginAuth();
-    }
-    catch ( ex ) {
-    }
-    return true;
-}
-
-function EndLogin() {
-    try {
-        return Sync.endAuth();
-    } catch ( ex ) {
-
-    }
-    return true;
-}
-
 function min(a,b) {
     return (a < b) ?  a : b;
 }
 
-function getAuthorizationString() {
-    local token = ServerParams.getParam("token");
-    local tokenType = ServerParams.getParam("tokenType");
-    return tokenType + " " + token ;
+function _GetAuthorizationString() {
+    return ServerParams.getParam("tokenType") + " " + ServerParams.getParam("token");
 }
 
+function _ClearAuthData() {
+    ServerParams.setParam("token", "");
+    ServerParams.setParam("expiresIn", "");
+    ServerParams.setParam("refreshToken", "");
+    ServerParams.setParam("tokenType", "");
+    ServerParams.setParam("prevLogin", "");
+    ServerParams.setParam("tokenTime", "");
+}
 
-function checkResponse() {
+function _CheckResponse(except = true) {
     if ( nm.responseCode() == 403 ) {
         if ( nm.responseBody().find("Invalid token",0)!= null) {
             WriteLog("warning", nm.responseBody());
-            ServerParams.setParam("token", "");
-            ServerParams.setParam("expiresIn", "");
-            ServerParams.setParam("refreshToken", "");
-            ServerParams.setParam("tokenType", "");
-            ServerParams.setParam("prevLogin", "");
-            ServerParams.setParam("tokenTime", "");
-            return 1 + DoLogin();
+            _ClearAuthData();
+            if (except) {
+                throw "unauthorized_exception";
+            } 
+            return 0;
         } else {
             WriteLog("error", "403 Access denied" );
             return 0;
         }
+    } else if (nm.responseCode() == 401)  {
+        _ClearAuthData();
+        if (except) {
+            throw "unauthorized_exception";
+        } 
+        return 0;
     } else if ( /*nm.responseCode() == 0 ||*/ (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
         WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
         return 0;
@@ -70,8 +62,7 @@ function OnUrlChangedCallback(data) {
     }
 }
 
-function _DoLogin()
-{
+function Authenticate() {
     local login = ServerParams.getParam("Login");
     local scope = "offline_access files.readwrite";
 
@@ -106,7 +97,7 @@ function _DoLogin()
             nm.addQueryParam("client_id", clientId);
             nm.addQueryParam("grant_type", "refresh_token");
             nm.doPost("");
-            if ( checkResponse() ) {
+            if ( _CheckResponse() ) {
                 local data =  nm.responseBody();
                 local t = ParseJSON(data);
                 if ("access_token" in t) {
@@ -154,7 +145,7 @@ function _DoLogin()
     nm.addQueryParam("redirect_uri", redirectUri);
     nm.addQueryParam("grant_type", "authorization_code");
     nm.doPost("");
-    if ( !checkResponse() ) {
+    if ( !_CheckResponse(false) ) {
         return 0;
     }
     local data =  nm.responseBody();
@@ -165,7 +156,7 @@ function _DoLogin()
         accessToken = t.access_token;
     }
 
-    if ( accessToken != "" ) {
+    if (accessToken != "") {
         token = accessToken;
         local timestamp = time();
         ServerParams.setParam("token", token);
@@ -176,22 +167,11 @@ function _DoLogin()
         ServerParams.setParam("prevLogin", login);
         ServerParams.setParam("tokenTime", timestamp.tostring());
         return 1;
-    }    else {
+    } else {
         WriteLog("error", "Authentication failed");
     }
     return 0;
 }
-
-function DoLogin() {
-    if (!BeginLogin() ) {
-        return false;
-    }
-    local res = _DoLogin();
-
-    EndLogin();
-    return res;
-}
-
 
 function IsAuthenticated() {
     if (ServerParams.getParam("token") != "") {
@@ -218,10 +198,7 @@ function DoLogout() {
 }
 
 function GetFolderList(list) {
-    if(!DoLogin()) {
-        return 0;
-    }
-    nm.addQueryHeader("Authorization", getAuthorizationString());
+    nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.enableResponseCodeChecking(false);
     nm.doGet("https://graph.microsoft.com/v1.0/drive/root/children?select=id%2cname&filter=folder%20ne%20null");
     nm.enableResponseCodeChecking(true);
@@ -263,9 +240,6 @@ function GetFolderList(list) {
 }
 
 function CreateFolder(parentFolder, folder) {
-    if(!DoLogin()) {
-        return 0;
-    }
     local parentId = parentFolder.getId();
     if (parentId == "root" || parentId == "") {
         nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/root/children");
@@ -273,7 +247,7 @@ function CreateFolder(parentFolder, folder) {
         nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/" + parentFolder.getId() + "/children");
     }
 
-    nm.addQueryHeader("Authorization", getAuthorizationString());
+    nm.addQueryHeader("Authorization", _GetAuthorizationString());
 
     local data = {
         name = folder.getTitle(),
@@ -282,7 +256,7 @@ function CreateFolder(parentFolder, folder) {
     };
     nm.addQueryHeader("Content-Type","application/json");
     nm.doPost(ToJSON(data));
-    if ( checkResponse() && nm.responseCode() == 201 ) {
+    if (_CheckResponse() && nm.responseCode() == 201) {
         local responseData = nm.responseBody();
         local item = ParseJSON(responseData);
         if ( item != null ) {
@@ -297,12 +271,7 @@ function CreateFolder(parentFolder, folder) {
     return 0;
 }
 
-function ModifyFolder(folder)
-{
-    if(!DoLogin()) {
-        return 0;
-    }
-
+function ModifyFolder(folder) {
     local title = folder.getTitle();
     local id = folder.getId();
 
@@ -313,13 +282,13 @@ function ModifyFolder(folder)
 
     nm.setMethod("PATCH");
     nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/" + id);
-    nm.addQueryHeader("Authorization", getAuthorizationString());
+    nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.addQueryHeader("Content-Type", "application/json");
     local postData = {
         name = title,
     };
     nm.doUpload("", ToJSON(postData));
-    if ( checkResponse() ) {
+    if (_CheckResponse()) {
         return 1;
     } else {
         WriteLog("error", "onedrive: Unable to rename folder");
@@ -328,11 +297,7 @@ function ModifyFolder(folder)
     return 0;
 }
 
-function  UploadFile(FileName, options) {
-    if(!DoLogin()) {
-        return -1;
-    }
-
+function UploadFile(FileName, options) {
     local fileSizeStr = GetFileSizeDouble(FileName).tostring();
     local mimeType = GetFileMimeType(FileName);
 
@@ -347,14 +312,15 @@ function  UploadFile(FileName, options) {
     }
     local onlyFileName = ExtractFileName(FileName);
 
+    nm.enableResponseCodeChecking(false);
     nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/" + folderId + ":/" + nm.urlEncode(onlyFileName) + ":/createUploadSession");
-    nm.addQueryHeader("Authorization", getAuthorizationString());
+    nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.addQueryHeader("Content-Type", "application/json");
     nm.setMethod("POST");
     nm.doPost(ToJSON(postData));
     local chunkSize = 32768000;
 
-    if ( checkResponse() ) {
+    if (_CheckResponse()) {
         local t = ParseJSON(nm.responseBody());
         local uploadUrl = t.uploadUrl;
         local fileSize = GetFileSize(FileName);
@@ -371,6 +337,7 @@ function  UploadFile(FileName, options) {
             nm.addQueryHeader("Content-Range", "bytes " + offset + "-"+ (offset+currentRequestSize-1) + "/"+ fileSize);
             nm.addQueryHeader("Transfer-Encoding","");
             nm.doUpload(FileName, "");
+
             if (nm.responseCode() == 201) {
                 local answer = ParseJSON(nm.responseBody());
                 local fileId = answer.id;
@@ -378,7 +345,7 @@ function  UploadFile(FileName, options) {
                     type = "view"
                 };
                 nm.setUrl("https://graph.microsoft.com/v1.0/me/drive/items/"+fileId + "/createLink");
-                nm.addQueryHeader("Authorization", getAuthorizationString());
+                nm.addQueryHeader("Authorization", _GetAuthorizationString());
                 nm.addQueryHeader("Content-Type", "application/json");
                 nm.doPost(ToJSON(postData2));
                 if (nm.responseCode() == 201) {
@@ -388,9 +355,7 @@ function  UploadFile(FileName, options) {
                         return 1;
                     }
                 }
-
             }
-
         }
     }
 
