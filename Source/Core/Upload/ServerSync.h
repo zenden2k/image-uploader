@@ -39,6 +39,7 @@ class ServerSync: public ThreadSync
         void setConstVar(const std::string& name, const std::string& value);
         std::string getConstVar(const std::string& name);
         std::mutex& folderMutex();
+        std::mutex& refreshTokenMutex();
         /* @endcond */
     private:
         MY_DECLARE_PRIVATE_PTR(ServerSync);

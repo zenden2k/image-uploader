@@ -14,6 +14,7 @@ public:
     std::map<std::string, std::string> constVars_;
     std::mutex  constVarsMutex_;
     std::mutex  folderMutex_;
+    std::mutex refreshTokenMutex_;
 };
 ServerSync::ServerSync() : ThreadSync(new ServerSyncPrivate())
 {
@@ -106,4 +107,9 @@ std::string ServerSync::getConstVar(const std::string& name)
 std::mutex& ServerSync::folderMutex() {
     MY_D(ServerSync);
     return d->folderMutex_;
+}
+
+std::mutex& ServerSync::refreshTokenMutex() {
+    MY_D(ServerSync);
+    return d->refreshTokenMutex_;
 }

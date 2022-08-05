@@ -55,7 +55,7 @@ int CScriptUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadPar
     if (task->type() == UploadTask::TypeAuth) {
         return processAuthTask(task);
     } else {
-        int res = doUpload(task, params);
+    	int res = doUpload(task, params);
     	if (res == -2) {
             serverSync_->resetAuthorization();
     		res = doUpload(task, params);
@@ -214,6 +214,7 @@ bool CScriptUploadEngine::postLoad()
 	if (functionExists("Authenticate")) {
         newAuthMode = true;
 	}
+    hasRefreshTokenFunc_ = functionExists("RefreshToken");
     return true;
 }
 
@@ -331,7 +332,7 @@ int CScriptUploadEngine::doLogin()
         
         return res;
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         serverSync_->setAuthPerformed(false);
         Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.what()));
@@ -578,6 +579,7 @@ bool CScriptUploadEngine::supportsLogout() {
 
 int CScriptUploadEngine::checkAuth() {
     using namespace Sqrat;
+    int res = 1, res2 = 1;
 	if (newAuthMode && m_UploadData->NeedAuthorization && m_ServersSettings->authData.DoAuth) {
 		if(!serverSync_->isAuthPerformed()) {
             try {
@@ -585,7 +587,7 @@ int CScriptUploadEngine::checkAuth() {
                 
                 if (!isAuthenticated()) {
                 	try {
-                        return doLogin();
+                        res = doLogin();
                 	} catch (const std::exception& e) {
                         Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
                 	}
@@ -596,5 +598,35 @@ int CScriptUploadEngine::checkAuth() {
             }  
 		}
 	}
-    return 1;
+	
+    if (hasRefreshTokenFunc_) {
+        res2 = refreshToken();      
+    }
+    return static_cast<int>(res>=1 && res2>=1);
+}
+
+int CScriptUploadEngine::refreshToken()
+{
+    using namespace Sqrat;
+
+    try
+    {
+        checkCallingThread();
+
+        std::lock_guard<std::mutex> lk(serverSync_->refreshTokenMutex());
+        Function func(vm_.GetRootTable(), "RefreshToken");
+        if (func.IsNull()) {
+            return 0;
+        }
+        int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        
+
+        return res;
+    }
+    catch (std::exception& e)
+    {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(e.what()));
+    }
+    FlushSquirrelOutput();
+    return 0;
 }

@@ -72,6 +72,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
         int processAuthTask(std::shared_ptr<UploadTask> task);
+        int refreshToken();
         bool preLoad() override;
         bool postLoad() override;
         void logNetworkError(bool error, const std::string & msg) override;
@@ -85,6 +86,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         std::string m_displayFileName;
         LoginInfo li;
         bool newAuthMode;
+        bool hasRefreshTokenFunc_;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 #endif

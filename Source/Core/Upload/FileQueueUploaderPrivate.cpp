@@ -388,7 +388,7 @@ void FileQueueUploaderPrivate::run()
         uploader.setUploadEngine(engine);
         uploader.setOnNeedStopCallback(std::bind(&FileQueueUploaderPrivate::onNeedStopHandler, this));
         it->setStatusText(tr("Starting upload"));
-
+        bool dec = false;
         try {
             res = uploader.Upload(it);
 
@@ -425,14 +425,21 @@ void FileQueueUploaderPrivate::run()
             if (it->stopSignal()) {
                 st = UploadTask::StatusStopped;
             }
+            decrementThreadCount(serverName);
+            engine->serverSync()->decrementThreadCount();
+            dec = true;
             it->finishTask(st);
 
         } catch (NetworkClient::AbortedException &) {
+        	if (!dec) {
+                decrementThreadCount(serverName);
+                engine->serverSync()->decrementThreadCount();
+        	}
             it->finishTask(UploadTask::StatusStopped);
         }
 
-        decrementThreadCount(serverName);
-        engine->serverSync()->decrementThreadCount();
+        
+        
        
         //callMutex_.unlock();
 
