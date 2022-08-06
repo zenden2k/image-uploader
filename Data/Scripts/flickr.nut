@@ -5,27 +5,6 @@ accessType <- "app_folder";
 authStep1Url <- "https://www.flickr.com/services/oauth/request_token";
 authStep2Url <- "https://www.flickr.com/services/oauth/access_token";
 
-oauth_token_secret <- "";
-oauth_token <- "";
-
-function BeginLogin() {
-    try {
-        return Sync.beginAuth();
-    }
-    catch ( ex ) {
-    }
-    return true;
-}
-
-function EndLogin() {
-    try {
-        return Sync.endAuth();
-    } catch ( ex ) {
-
-    }
-    return true;
-}
-
 function regex_simple(data, regStr, start) {
     local ex = regexp(regStr);
     local res = ex.capture(data, start);
@@ -116,7 +95,7 @@ function sendOauthRequest(method, url, params, token, tokenSecret) {
     return 0;
 }
 
-function _DoLogin() {
+function Authenticate() {
     oauth_token_secret = ServerParams.getParam("oauth_token_secret");
     oauth_token = ServerParams.getParam("oauth_token");
 
@@ -125,18 +104,18 @@ function _DoLogin() {
     }
     local email = ServerParams.getParam("Login");
 
-    local params=[	{a="oauth_consumer_key", b=appKey},
+    local params = [{a="oauth_consumer_key", b=appKey},
                     {a="oauth_signature_method", b="HMAC-SHA1"},
                     {a="oauth_timestamp", b=""+time()},
                     {a="oauth_version", b="1.0"},
                     {a="oauth_nonce", b=generateNonce() },
                     {a="oauth_callback", b="oob"}
-              ];
+    ];
     sendOauthRequest("GET", authStep1Url, params, "", "");
-    if ( !checkResponse() ) {
+    if (!checkResponse()) {
         return 0;
     }
-    local data =  nm.responseBody();
+    local data = nm.responseBody();
 
     local temp_oauth_token_secret = regex_simple(data, "oauth_token_secret=([^&]+)", 0);
     local temp_oauth_token = regex_simple(data, "oauth_token=([^&]+)", 0);
@@ -171,24 +150,13 @@ function _DoLogin() {
     return 0;
 }
 
-function DoLogin() {
-    if (!BeginLogin() ) {
-        return false;
-    }
-    local res = _DoLogin();
-
-    EndLogin();
-    return res;
-}
-
 function IsAuthenticated() {
     return ServerParams.getParam("oauth_token_secret") != "" && ServerParams.getParam("oauth_token") != "";
 }
 
 function UploadFile(FileName, options) {
-    if (!DoLogin() ) {
-        return 0;
-    }
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
     local userPath = ServerParams.getParam("UploadPath");
     if ( userPath!="" && userPath[userPath.len()-1] != "/") {
         userPath+= "/";
@@ -232,7 +200,7 @@ function UploadFile(FileName, options) {
     local originalPhoto = "";
     local thumbUrl = "";
 
-    if (!"sizes" in t) {
+    if (!("sizes" in t)) {
         WriteLog("error", "[flickr] Invalid response from server");
         return 0;
     }
@@ -288,10 +256,8 @@ function UploadFile(FileName, options) {
 }
 
 function GetFolderList(list) {
-    if (!DoLogin() ) {
-        return 0;
-    }
-
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
     local params=[
         {a="oauth_consumer_key", b=appKey},
         {a="oauth_signature_method", b="HMAC-SHA1"},
@@ -310,7 +276,7 @@ function GetFolderList(list) {
     }
 
     local t = ParseJSON(nm.responseBody());
-    if (!"photoset" in t) {
+    if (!("photosets" in t)) {
         WriteLog("error", "[flickr] Invalid response from server");
         return 0;
     }

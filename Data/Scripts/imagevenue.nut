@@ -1,10 +1,8 @@
-function _DoLogin()
-{
-	local login = ServerParams.getParam("Login");
-	local pass =  ServerParams.getParam("Password");
+function Authenticate() {
+    local login = ServerParams.getParam("Login");
+    local pass =  ServerParams.getParam("Password");
     
-	if(login!="" && pass != "")
-	{
+    if (login != "" && pass != "") {
         nm.doGet("https://www.imagevenue.com/auth/login");
         if (nm.responseCode() != 200) {
             return 0;
@@ -18,46 +16,28 @@ function _DoLogin()
             return 0;
         }
         
-        
-		nm.setUrl("https://www.imagevenue.com/auth/login");
-		nm.addQueryParam("_token", token);
-		nm.addQueryParam("email", login);
-		nm.addQueryParam("password", pass);
+        nm.setUrl("https://www.imagevenue.com/auth/login");
+        nm.addQueryParam("_token", token);
+        nm.addQueryParam("email", login);
+        nm.addQueryParam("password", pass);
         nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION 
-		nm.doPost("");
+        nm.doPost("");
         
-        if(nm.responseCode() == 302 ){
+        if(nm.responseCode() == 302){
             local destUrl = nm.responseHeaderByName("Location");
             if (destUrl == "https://www.imagevenue.com/auth/login") {
                 WriteLog("error", "imagevenue.com: authentication failed for username '" + login + "'");
                 return 0;
             }
         }
-	}
-	Sync.setAuthPerformed(true);
-	return 1;
+    }
+    return 1;
 }
-
-function DoLogin() {
-	if (!Sync.beginAuth() ) {
-		return false;
-	}
-	local res  = 1;
-	if ( !Sync.isAuthPerformed() ) {
-		res = _DoLogin();
-	}
-	Sync.endAuth();
-	return res;
-}
-
 
 function UploadFile(FileName, options) {
-    if (!DoLogin()) {
-        return 0;
-    }
     nm.doGet("https://www.imagevenue.com");
     local name = ExtractFileName(FileName);
-	local mime = GetFileMimeType(name);
+    local mime = GetFileMimeType(name);
     
     if (nm.responseCode() == 200) {
         local doc = Document(nm.responseBody());
@@ -113,7 +93,6 @@ function UploadFile(FileName, options) {
                   WriteLog("error", "imagevenue.com: Invalid response from server.");
             }
         }
-        
         
         return 0;
     }
