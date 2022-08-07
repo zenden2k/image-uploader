@@ -12,8 +12,6 @@ Required function for server Type="image" or Type="file".
 @return 1 - success,<br>
 0 - fail<br/>
 -1 - fail and abort upload  (for example, authorization failed, this value supported since v.1.3.1)
--2 - unauthorized. You must clear auth tokens in script before returning this value. 
-     Upload will be retried. 
 */
 int UploadFile(string pathToFile, UploadParams params);
 
@@ -63,6 +61,13 @@ int IsAuthenticated();
 0 - failure<br/>
 */
 int Authenticate();
+
+/**
+@since 1.3.3
+@return 1 - success,<br>
+0 - failure<br/>
+*/
+int RefreshToken();
 
 /**
 @return 1 - success,<br>

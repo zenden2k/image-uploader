@@ -1,4 +1,4 @@
-from conans import ConanFile, CMake
+from conans import ConanFile, CMake, tools
 import shutil
 
 class GumboParserConan(ConanFile):
@@ -18,6 +18,7 @@ class GumboParserConan(ConanFile):
         shutil.copyfile("CMakeLists.txt", "gumbo-parser/CMakeLists.txt")
         
     def build(self):
+        tools.patch(base_path="gumbo-parser", patch_file="src/patch.diff")
         cmake = CMake(self)
         cmake.configure(source_folder="gumbo-parser")
         cmake.build()

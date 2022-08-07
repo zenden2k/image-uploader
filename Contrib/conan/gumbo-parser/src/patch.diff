@@ -1,0 +1,17 @@
+ src/gumbo.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gumbo.h b/src/gumbo.h
+index f45a583..6ef7005 100644
+--- a/src/gumbo.h
++++ b/src/gumbo.h
+@@ -43,7 +43,9 @@
+ #define GUMBO_GUMBO_H_
+ 
+ #ifdef _MSC_VER
++#ifndef _CRT_SECURE_NO_WARNINGS
+ #define _CRT_SECURE_NO_WARNINGS
++#endif
+ #define fileno _fileno
+ #endif
+ 
