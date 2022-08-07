@@ -284,4 +284,22 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server Name="yourfilestore.com" FileHost="1" MaxFileSize="500000000">
+		<Actions>
+			<Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" AssignVars="FileId:0;">
+				<RegExp Pattern="(https://yourfilestore.com/delete/.+?)&quot;" AssignVars="DeleteUrl:0"/>
+			</Action>
+		</Actions>
+		<Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
+	</Server>
+	<Server Name="myfile.is" Authorize="0" FileHost="1" Plugin="myfile.is" NeedPassword="0"> 
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub" />
+	</Server>
+	<Server Name="freeimage.host" Authorize="0" Type="image" Plugin="freeimage.host">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 </Servers>
