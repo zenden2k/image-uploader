@@ -44,6 +44,14 @@ public:
     ServersCheckerSettings* settings_;
     BasicSettings* basicSettings_;
     CButton useProxyRadioButton_, useSystemProxyRadioButton_, noProxyRadioButton_;
+    std::vector<std::pair<CString, int>> proxyTypes = {
+        { _T("HTTP"), 0 },
+        { _T("HTTPS"), 5 },
+        { _T("SOCKS4"), 1 },
+        { _T("SOCKS4A"), 2 },
+        { _T("SOCKS5"), 3 },
+        { _T("SOCKS5(DNS)"), 4 },
+    };
 };
 
 }

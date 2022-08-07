@@ -67,6 +67,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::MapWindowPoints(0,m_hWnd, reinterpret_cast<POINT*>(&rc), 2);
 
     uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
+    uploadListView_.SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
 
     createToolbar();
 

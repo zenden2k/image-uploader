@@ -36,20 +36,13 @@ add_executable(ServersChecker WIN32
     ../Core/Video/VideoUtils.cpp
     ../Core/FileDownloader.cpp
     ../Core/Settings/CliSettings.cpp
+    res/ServersChecker.exe.manifest
 )
 
 set_target_properties(ServersChecker PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/ServersChecker/)
 
 set(LIBS_LIST WebP::webpdemux WebP::webpdecoder)
 
-#if(WIN32)
-#    list(APPEND LIBS_LIST)
-#else()
-#    list(APPEND LIBS_LIST)
-#endif()
-
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
 target_link_libraries(ServersChecker iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
-
-#target_link_libraries(CLI optimized iucore.lib)

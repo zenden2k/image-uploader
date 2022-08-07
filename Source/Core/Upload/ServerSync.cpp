@@ -113,3 +113,8 @@ std::mutex& ServerSync::refreshTokenMutex() {
     MY_D(ServerSync);
     return d->refreshTokenMutex_;
 }
+
+std::mutex& ServerSync::loginMutex() {
+    MY_D(ServerSync);
+    return d->loginMutex_;
+}

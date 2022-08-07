@@ -20,19 +20,24 @@ CSettingsDlg::CSettingsDlg(ServersCheckerSettings* settings, BasicSettings* basi
 LRESULT CSettingsDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     DoDataExchange(FALSE);
-    serverTypeCombo_.AddString(_T("HTTP"));
-    serverTypeCombo_.AddString(_T("SOCKS4"));
-    serverTypeCombo_.AddString(_T("SOCKS4A"));
-    serverTypeCombo_.AddString(_T("SOCKS5"));
-    serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
 
+    int selectedProxyTypeIndex = 0;
+    for (size_t i = 0; i < proxyTypes.size(); i++) {
+        auto& item = proxyTypes[i];
+        if (item.second == settings_->ConnectionSettings.ProxyType) {
+            selectedProxyTypeIndex = i;
+        }
+        int index = serverTypeCombo_.AddString(item.first);
+        serverTypeCombo_.SetItemData(index, item.second);
+    }
+	
     useProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy ? BST_CHECKED : BST_UNCHECKED);
     useSystemProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy ? BST_CHECKED : BST_UNCHECKED);
     noProxyRadioButton_.SetCheck(settings_->ConnectionSettings.UseProxy == ConnectionSettingsStruct::kNoProxy ? BST_CHECKED : BST_UNCHECKED);
 
     SetDlgItemInt(IDC_PORTEDIT, settings_->ConnectionSettings.ProxyPort);
     SetDlgItemText(IDC_ADDRESSEDIT, U2W(settings_->ConnectionSettings.ServerAddress));
-    serverTypeCombo_.SetCurSel(settings_->ConnectionSettings.ProxyType);
+    serverTypeCombo_.SetCurSel(selectedProxyTypeIndex);
     proxyTypeChanged();
     return TRUE;
 }
@@ -45,6 +50,8 @@ LRESULT CSettingsDlg::OnCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCt
 LRESULT CSettingsDlg::OnOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     settings_->ConnectionSettings.ServerAddress = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_ADDRESSEDIT)));
     settings_->ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
+    int proxyTypeIndex = serverTypeCombo_.GetCurSel();
+    settings_->ConnectionSettings.ProxyType = serverTypeCombo_.GetItemData(proxyTypeIndex);
     if (SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0) {
         settings_->ConnectionSettings.UseProxy = ConnectionSettingsStruct::kUserProxy;
     }

@@ -73,6 +73,14 @@ virtual ~CUploadSettingsPage();
 protected:
     CComboBox serverTypeCombo_;
     void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1) const;
+    std::vector<std::pair<CString, int>> proxyTypes = {
+        { _T("HTTP"), 0 },
+        { _T("HTTPS"), 5 },
+        { _T("SOCKS4"), 1 },
+        { _T("SOCKS4A"), 2 },
+        { _T("SOCKS5"), 3 },
+        { _T("SOCKS5(DNS)"), 4 },
+    };
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

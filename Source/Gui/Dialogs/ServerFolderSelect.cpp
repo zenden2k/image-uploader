@@ -44,6 +44,7 @@ CServerFolderSelect::~CServerFolderSelect()
 LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     m_FolderTree = GetDlgItem(IDC_FOLDERTREE);
+    m_FolderTree.SetExtendedStyle(TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
     CenterWindow(GetParent());
 
     DlgResize_Init();

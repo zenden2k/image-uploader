@@ -67,16 +67,25 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     BOOL temp;
     DoDataExchange(FALSE);
-    serverTypeCombo_.AddString(_T("HTTP"));
+    int selectedProxyTypeIndex = 0;
+    for (size_t i = 0; i < proxyTypes.size(); i++) {
+        auto& item = proxyTypes[i];
+		if (item.second == Settings.ConnectionSettings.ProxyType) {
+            selectedProxyTypeIndex = i;
+		}
+        int index = serverTypeCombo_.AddString(item.first);
+        serverTypeCombo_.SetItemData(index, item.second);
 
+	}
+    /*serverTypeCombo_.AddString(_T("HTTP"));
     serverTypeCombo_.AddString(_T("SOCKS4"));
     serverTypeCombo_.AddString(_T("SOCKS4A"));
     serverTypeCombo_.AddString(_T("SOCKS5"));
     serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
-
-    // ---- ������������� ��������� (����������) ----
+    serverTypeCombo_.AddString(_T("HTTPS"));*/
+	
     
-    // ---- ���������� connection settings -----
+    // ---- connection settings -----
     SetDlgItemText(IDC_ADDRESSEDIT, U2W(Settings.ConnectionSettings.ServerAddress));
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
@@ -92,8 +101,8 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if(Settings.ConnectionSettings.ProxyPort) // ������ ���� ���� �� ����� ����
         SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
+    serverTypeCombo_.SetCurSel(selectedProxyTypeIndex);
 
-    SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_SETCURSEL, Settings.ConnectionSettings.ProxyType);
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SetDlgItemInt(IDC_MAXTHREADSEDIT, Settings.MaxThreads);
 
@@ -179,7 +188,7 @@ bool CUploadSettingsPage::Apply()
     Settings.ConnectionSettings.ProxyUser = W2U(Buffer);
     GetDlgItemText(IDC_PROXYPASSWORDEDIT, Buffer, 128);
     Settings.ConnectionSettings.ProxyPassword = Buffer;
-    Settings.ConnectionSettings.ProxyType = SendDlgItemMessage(IDC_SERVERTYPECOMBO, CB_GETCURSEL);
+    Settings.ConnectionSettings.ProxyType = serverTypeCombo_.GetItemData(serverTypeCombo_.GetCurSel());
     Settings.UploadBufferSize = static_cast<int>(GetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT) * 1024);
     if (!Settings.UploadBufferSize) {
         Settings.UploadBufferSize = 65536;
