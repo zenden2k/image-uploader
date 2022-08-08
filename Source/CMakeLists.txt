@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#use_cxx11()
 set(CMAKE_SKIP_RPATH 1)   
 project(ImageUploader)	
 
@@ -92,11 +91,7 @@ if (WIN32)
 			base-classes/1.0.0@zenden2k/stable
 	)
 endif()	
-	
-if (WIN32)
-	list(APPEND COMMON_DEPS wtl/10.0.9163 base-classes/1.0.0@zenden2k/stable)
-endif()	
-	
+		
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
 						OPTIONS boost:shared=False 
