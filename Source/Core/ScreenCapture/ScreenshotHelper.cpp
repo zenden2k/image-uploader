@@ -13,8 +13,8 @@ BOOL getActualWindowRect(HWND hWnd, RECT* res, bool maximizedFix) {
     if (S_OK == DwmIsCompositionEnabled(&isEnabled)) {
         if (isEnabled) {
             if (S_OK == DwmGetWindowAttribute(hWnd, DWMWA_EXTENDED_FRAME_BOUNDS, res, sizeof(RECT))) {
-                if (maximizedFix)
-                    *res = maximizedWindowFix(hWnd, *res);
+                /*if (maximizedFix)
+                    *res = maximizedWindowFix(hWnd, *res);*/
                 return TRUE;
             }
 

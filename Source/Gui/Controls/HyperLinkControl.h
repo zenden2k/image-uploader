@@ -52,6 +52,7 @@ public:
         MESSAGE_HANDLER(WM_PAINT, OnPaint)
         MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkg)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER(WM_SIZE, OnSize)
         MSG_WM_MOUSEMOVE(OnMouseMove)
         MSG_WM_MOUSELEAVE(OnMouseLeave)
         MSG_WM_KILLFOCUS(OnKillFocus)
@@ -72,6 +73,7 @@ public:
     LRESULT OnMouseMove(UINT Flags, CPoint Pt);
     bool MouseSel,Track;
     LRESULT OnMouseLeave(void);
+    LRESULT OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnKillFocus(HWND hwndNewFocus);
     LRESULT OnSetFocus(HWND hwndOldFocus);
     LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
@@ -110,6 +112,10 @@ protected:
     int dpiY;
     int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
+    void CreateDoubleBuffer();
+    CDC dcMem_;
+    CBitmap bmMem_;
+    HBITMAP bmpOld_;
     static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
     int ScaleX(int x) const;
     int ScaleY(int y) const;

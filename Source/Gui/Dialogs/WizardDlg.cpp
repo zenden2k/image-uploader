@@ -172,7 +172,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
-    auto settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
+    auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
     if (settings) {
         const std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
         sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
@@ -333,7 +333,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
     }
-    auto historyManager = ServiceLocator::instance()->historyManager();
+    auto* historyManager = ServiceLocator::instance()->historyManager();
     historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
     historyManager->openDatabase();
 

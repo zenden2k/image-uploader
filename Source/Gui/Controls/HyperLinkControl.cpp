@@ -53,7 +53,9 @@ CHyperLinkControl::CHyperLinkControl()
 
 CHyperLinkControl::~CHyperLinkControl()
 {
-
+    if (dcMem_.m_hDC) {
+        SelectObject(dcMem_, bmpOld_);
+    }
 }
 
 /* CHyperLinkControl::Init
@@ -68,6 +70,7 @@ void CHyperLinkControl::Init(COLORREF BkColor)
     BoldUnderLineFont = GuiTools::MakeFontUnderLine(BoldFont);
     m_BkColor = BkColor;
     OpenThemeData();
+    CreateDoubleBuffer();
 }
 
 size_t CHyperLinkControl::ItemCount() const {
@@ -381,17 +384,38 @@ int CHyperLinkControl::NotifyParent(int nItem)
     return 0;
 }
 
+LRESULT CHyperLinkControl::OnSize(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    CreateDoubleBuffer();
+    return 0;
+}
+
+void CHyperLinkControl::CreateDoubleBuffer() {
+    if (dcMem_.m_hDC) {
+        SelectObject(dcMem_, bmpOld_);
+        dcMem_.DeleteDC();
+        bmMem_.DeleteObject();
+    }
+    CRect rcClient;
+    GetClientRect(rcClient);
+    CWindowDC dc(m_hWnd);
+
+    dcMem_.CreateCompatibleDC(dc);
+
+    bmMem_.CreateCompatibleBitmap(dc, rcClient.Width(), rcClient.Height());
+    bmpOld_ = dcMem_.SelectBitmap(bmMem_);
+
+    dcMem_.FillSolidRect(rcClient, ::GetSysColor(COLOR_WINDOW));
+}
+
 LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    CPaintDC dc(m_hWnd);
     RECT rc;
     GetClientRect(&rc);
-
-    
     CRect r(rc);
     CBrush br;
     //br.CreateSolidBrush(RGB(0,0,0));
     br.CreateSolidBrush(m_BkColor);
+    CDC& dc = dcMem_;
     dc.FillRect(r,br);
 
     dc.SetBkMode(TRANSPARENT);
@@ -476,7 +500,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         }
     }
 
-    //EndPaint(&ps);
+    CPaintDC paintDc(m_hWnd);
+
+    paintDc.BitBlt(0, 0, rc.right - rc.left, rc.bottom - rc.top, dcMem_, 0, 0, SRCCOPY);
     return 0;
 }
 
