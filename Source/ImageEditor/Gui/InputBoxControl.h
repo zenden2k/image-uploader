@@ -24,7 +24,7 @@ class InputBoxControl :
     public:
         typedef CWindowImpl<InputBoxControl, CRichEditCtrl,CControlWinTraits> Base;
         InputBoxControl(Canvas* canvas);
-        ~InputBoxControl();
+        ~InputBoxControl() override;
         DECLARE_WND_SUPERCLASS(_T("CInputBoxControl"), CRichEditCtrl::GetWndClassName())
 
         enum {  IDMM_UNDO = 100, IDMM_REDO, IDMM_CUT, IDMM_COPY, IDMM_PASTE};

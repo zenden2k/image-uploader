@@ -202,7 +202,7 @@ LRESULT InputBoxControl::OnChange(UINT wNotifyCode,int, HWND)
 LRESULT InputBoxControl::OnRequestResize(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     bHandled = true;
-    REQRESIZE * pReqResize = (REQRESIZE *) pnmh;
+    REQRESIZE * pReqResize = reinterpret_cast<REQRESIZE*>(pnmh);
 
     SIZE sz = {pReqResize->rc.right - pReqResize->rc.left, pReqResize->rc.bottom - pReqResize->rc.top};
     RECT windowRect;

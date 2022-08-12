@@ -24,7 +24,7 @@
 #include <boost/format.hpp>
 
 #include <curl/curl.h>
-#include <signal.h>
+#include <csignal>
 
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
@@ -316,8 +316,9 @@ bool parseCommandLine(int argc, char *argv[])
             types["socks4a"] = CURLPROXY_SOCKS4A;
             types["socks5"] = CURLPROXY_SOCKS5;
             types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
+            types["https"] = CURLPROXY_HTTPS;
             auto it = types.find(type);
-            if ( it != types.end() ) {
+            if (it != types.end()) {
                 proxyType = it->second;
             } else {
                 std::cerr<<"Invalid proxy type"<<std::endl;
@@ -366,7 +367,7 @@ bool parseCommandLine(int argc, char *argv[])
 }
 
 CUploadEngineData* getServerByName(const std::string& name) {
-    CUploadEngineData*   uploadEngineData = list->byName(serverName);
+    CUploadEngineData* uploadEngineData = list->byName(serverName);
     if(!uploadEngineData) {
         for(int i=0; i<list->count(); i++)
         {
@@ -380,10 +381,10 @@ CUploadEngineData* getServerByName(const std::string& name) {
 void OnUploadSessionFinished(UploadSession* session) {
     int taskCount = session->taskCount();
     std::vector<ZUploadObject> uploadedList;
-    for ( int i = 0; i < taskCount; i++ ) {
+    for (int i = 0; i < taskCount; i++) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
-        FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
+        auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
             ZUploadObject uo;
             uo.directUrl = res->directUrl;
@@ -419,9 +420,9 @@ void OnUploadSessionFinished(UploadSession* session) {
 void UploadTaskProgress(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
-    TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
+    auto* userData = static_cast<TaskUserData*>(task->userData());
 
-    struct timeval tp;
+    timeval tp;
     gettimeofday(&tp, NULL);
     int64_t ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
@@ -430,8 +431,9 @@ void UploadTaskProgress(UploadTask* task) {
     }
     lastProgressTime = ms;
     int totaldotz=30;
-    if(progress->totalUpload == 0)
+    if (progress->totalUpload == 0) {
         return;
+    }
 
     //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
@@ -462,7 +464,7 @@ void UploadTaskProgress(UploadTask* task) {
 void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
-    TaskUserData *userData = reinterpret_cast<TaskUserData*>(task->userData());
+    auto* userData = static_cast<TaskUserData*>(task->userData());
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
     fputs(progress->statusText.c_str(), stderr);
     fprintf(stderr, "\r");
@@ -548,7 +550,7 @@ int func() {
     s.setParam("FolderID", folderId);
     serverProfile.setFolderId(folderId);
 
-    session.reset(new UploadSession(false));
+    session = std::make_shared<UploadSession>(false);
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
         {
@@ -729,13 +731,13 @@ int main(int argc, char *argv[]){
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");
 
-
-    if(!parseCommandLine(argc, argv))
-    {
+    if(!parseCommandLine(argc, argv)) {
         return 0;
     }
-    if(!filesToUpload.size())
+	
+    if (filesToUpload.empty()) {
         return 0;
+    }
 
 #ifdef _WIN32
     if (autoUpdate) {
