@@ -18,13 +18,13 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.0
     - name: Create Build Environment
-      run: cmake -E make_directory ${{github.workspace}}/build
+      run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
       shell: bash
-      working-directory: ${{github.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      working-directory: ${{github.workspace}}/Build
+      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
     - name: Build
-      working-directory: ${{github.workspace}}/build
+      working-directory: ${{github.workspace}}/Build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
     

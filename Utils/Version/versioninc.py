@@ -2,11 +2,16 @@ import sys
 import re
 import datetime
 import subprocess
+import shutil
+import os.path
 
 if len(sys.argv) < 2:
     print("You should provide path to versioninfo.h as argument.")
     sys.exit(1)
 filename = sys.argv[1]
+
+if not os.path.exists(filename):
+    shutil.copyfile(filename + ".dist", filename)
 
 if len(sys.argv) == 3 and sys.argv[2]!= "1" and sys.argv[2] != "Release" and sys.argv[2] != "MinSizeRel":
     print("versioninc.py: command ommitted for non-release build")
