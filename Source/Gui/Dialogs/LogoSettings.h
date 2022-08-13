@@ -93,7 +93,7 @@ protected:
     void ShowParams(const ImageConvertingParams& params);
     void ShowParams(const CString profileName);
     bool SaveParams(ImageConvertingParams& params);
-    std::map<CString, ImageConvertingParams> сonvert_profiles_;
+    std::map<CString, ImageConvertingParams> convert_profiles_;
     CImageListManaged profileEditToolbarImagelist_;
     LRESULT OnYourLogoCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddTextChecboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
