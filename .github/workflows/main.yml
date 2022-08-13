@@ -6,7 +6,7 @@ on:
 jobs:
   windows:
     name: run on windows
-    runs-on: windows-2019
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -27,4 +27,16 @@ jobs:
       working-directory: ${{github.workspace}}/Build
       shell: bash
       run: cmake --build . --config $BUILD_TYPE
-    
+    - name: Tests
+      working-directory: ${{github.workspace}}/Build
+      shell: bash
+      run: ./Tests/Release/Tests.exe --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      if: "env.BUILD_TYPE == 'Release'"
+      with:
+        name: windows_artifacts
+        path: |
+          ${{github.workspace}}/Build/GUI/Release/GUI.exe
+          ${{github.workspace}}/Build/CLI/Release/CLI.exe
+          ${{github.workspace}}/Build/Tests/Release/Tests.exe

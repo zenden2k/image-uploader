@@ -61,7 +61,7 @@ endif(MSVC)
 
 SET(COMMON_DEPS boost/1.78.0
 				openssl/1.1.1l
-				libcurl/7.79.1
+				libcurl/7.84.0
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.11
@@ -75,7 +75,7 @@ SET(COMMON_DEPS boost/1.78.0
 				c-ares/1.17.2
 				libuv/1.42.0
 				libwebp/1.2.1
-				libmediainfo/21.09
+				libmediainfo/22.03
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
