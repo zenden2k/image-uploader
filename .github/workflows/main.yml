@@ -1,8 +1,8 @@
-name: Compile Image Uploader
+name: Compile and test Image Uploader
 
 on:
   workflow_dispatch:
-
+ 
 jobs:
   windows:
     name: run on windows
