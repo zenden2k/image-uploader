@@ -1,0 +1,30 @@
+name: Compile Image Uploader
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    name: run on windows
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release]
+    env:
+      BUILD_TYPE: ${{ matrix.build_type }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.0
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/build
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/build
+      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 16 2019" -A x86 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+    - name: Build
+      working-directory: ${{github.workspace}}/build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+    
