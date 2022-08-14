@@ -106,7 +106,7 @@ void CUploadSettings::TranslateUI()
     TRC(IDC_ADDFILESIZE, "Add text on thumbnail");
     TRC(IDC_PRESSUPLOADBUTTON, "Click button \"Upload\" for starting process of uploading.");
     TRC(IDC_FILESERVERGROUPBOX, "Server to host other file formats");
-    useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("This means that the thumbnail will be created by site, not the program.")); //  \r\n��� ���� ��, ��� ��� ����� ���������, �������� ������� �� ���������� �����.
+    useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("This means that the thumbnail will be created by site, not the program."));
 }
 
 LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

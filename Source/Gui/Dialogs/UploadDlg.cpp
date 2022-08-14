@@ -586,7 +586,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
             urlList_[fps->tableRow] = item;
         }
-        //uploadListView_.SetItemText(fps->tableRow, 1, _T("������"));
+
         /*taskDispatcher->runInGuiThread([this] { 
             updateTotalProgress(); 
         });*/

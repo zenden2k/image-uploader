@@ -269,7 +269,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         curX  += iconOffsetX + plusIconSize.cx;
         if(theme)
         {
-            DrawThemeBackground( dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED,&plusIconRect);  // �������� �����
+            DrawThemeBackground( dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED,&plusIconRect);
             CloseThemeData();
         }
         else

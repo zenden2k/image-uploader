@@ -13,7 +13,7 @@ local t = {
     c = 256,
     d = null
 };
-expect_eq("{\n   \"a\" : \"test1\",\n   \"b\" : 1,\n   \"c\" : 256,\n   \"d\" : null\n}", ToJSON(t));
+expect_eq("{\n   \"a\" : \"test1\",\n   \"b\" : 1.0,\n   \"c\" : 256,\n   \"d\" : null\n}", ToJSON(t));
 
 local t2 = {
     a = {

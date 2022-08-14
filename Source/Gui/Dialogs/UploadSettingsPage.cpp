@@ -98,7 +98,7 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
     SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
-    if(Settings.ConnectionSettings.ProxyPort) // ������ ���� ���� �� ����� ����
+    if(Settings.ConnectionSettings.ProxyPort) 
         SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
 
     serverTypeCombo_.SetCurSel(selectedProxyTypeIndex);
@@ -109,7 +109,6 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetDlgItemInt(IDC_FILERETRYLIMIT, Settings.FileRetryLimit);
     SetDlgItemInt(IDC_ACTIONRETRYLIMIT, Settings.ActionRetryLimit);
 
-    // ����������� ���������
     OnClickedUseProxy(BN_CLICKED, IDC_USEPROXYSERVER, 0, temp);
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     executeScriptCheckboxChanged();

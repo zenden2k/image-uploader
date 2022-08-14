@@ -500,7 +500,7 @@ HRESULT CIShellContextMenu::Initialize(LPCITEMIDLIST pidlFolder, LPDATAOBJECT da
 		return E_INVALIDARG;
 	}
 
-	// Sanity check – make sure there is at least one filename.
+	// Sanity check - make sure there is at least one filename.
 	UINT uNumFiles = DragQueryFile ( hDrop, 0xFFFFFFFF, NULL, 0 );
 
 	if ( 0 == uNumFiles )

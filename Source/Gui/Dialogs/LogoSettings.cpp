@@ -69,7 +69,7 @@ CLogoSettings::~CLogoSettings()
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    сonvert_profiles_ = settings->ConvertProfiles;
+    convert_profiles_ = settings->ConvertProfiles;
     TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
@@ -126,7 +126,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     CString profileName = U2W(settings->imageServer.getImageUploadParams().ImageProfileName);
 
-    if (сonvert_profiles_.find(profileName) == сonvert_profiles_.end()) {
+    if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         profileName = _T("Default");
     }
     ShowParams(profileName);
@@ -198,9 +198,9 @@ bool CLogoSettings::Apply()
     if (CurrentProfileOriginalName == _T("Default"))
         saveToProfile = CurrentProfileOriginalName;
 
-    if (!SaveParams(сonvert_profiles_[saveToProfile]))
+    if (!SaveParams(convert_profiles_[saveToProfile]))
         return false;
-    settings->ConvertProfiles = сonvert_profiles_;
+    settings->ConvertProfiles = convert_profiles_;
     //Settings.CurrentConvertProfileName  = saveToProfile;
     return TRUE;
 }
@@ -293,7 +293,7 @@ void CLogoSettings::UpdateProfileList() {
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
 
     bool found = false;
-    for (auto it = сonvert_profiles_.begin(); it != сonvert_profiles_.end(); ++it) {
+    for (auto it = convert_profiles_.begin(); it != convert_profiles_.end(); ++it) {
         GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
         if (it->first == CurrentProfileName) found = true;
     }
@@ -309,7 +309,7 @@ void CLogoSettings::UpdateProfileList() {
     {
          ImageConvertingParams params;
          SaveParams(params);
-         сonvert_profiles_[dlg.getValue()] = params;
+         convert_profiles_[dlg.getValue()] = params;
          CurrentProfileName = dlg.getValue();
          CurrentProfileOriginalName = dlg.getValue();
          m_ProfileChanged = false;
@@ -342,7 +342,7 @@ void CLogoSettings::ShowParams(const CString profileName)
 
     CurrentProfileName = profileName;
     CurrentProfileOriginalName = profileName; 
-    ShowParams(сonvert_profiles_[profileName]);
+    ShowParams(convert_profiles_[profileName]);
     SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(profileName.GetString())); 
 }
 
@@ -376,7 +376,7 @@ LRESULT CLogoSettings::OnNewProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     CString name = TR("New profile");
     CString generatedName = name;
     int i = 1;
-    while(сonvert_profiles_.count(generatedName) > 0)
+    while(convert_profiles_.count(generatedName) > 0)
     {
         generatedName = name  + _T(" ") + WinUtils::IntToStr(i++);
     }
@@ -395,8 +395,8 @@ LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     if (GuiTools::LocalizedMessageBox(m_hWnd, question, TR("Image settings"), MB_ICONQUESTION | MB_YESNO) != IDYES)
         return 0;
     if(CurrentProfileName=="Default") return 0;
-    if(сonvert_profiles_.count(CurrentProfileName)>0)
-        сonvert_profiles_.erase(CurrentProfileName);
+    if(convert_profiles_.count(CurrentProfileName)>0)
+        convert_profiles_.erase(CurrentProfileName);
     
     ShowParams("Default");
     UpdateProfileList();

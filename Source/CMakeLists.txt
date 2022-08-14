@@ -61,7 +61,7 @@ endif(MSVC)
 
 SET(COMMON_DEPS boost/1.78.0
 				openssl/1.1.1l
-				libcurl/7.79.1
+				libcurl/7.84.0
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.11
@@ -75,7 +75,7 @@ SET(COMMON_DEPS boost/1.78.0
 				c-ares/1.17.2
 				libuv/1.42.0
 				libwebp/1.2.1
-				libmediainfo/21.09
+				libmediainfo/22.03
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
@@ -94,7 +94,29 @@ endif()
 		
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
-						OPTIONS boost:shared=False 
+						OPTIONS 
+						boost:shared=False
+						boost:without_context=True
+						boost:without_contract=True
+						boost:without_coroutine=True
+						boost:without_fiber=True
+						boost:without_graph=True
+						boost:without_graph_parallel=True
+						boost:without_json=True
+						boost:without_iostreams=True
+						boost:without_log=True
+						boost:without_math=True
+						boost:without_mpi=True
+						boost:without_nowide=True
+						boost:without_python=True
+						boost:without_random=True
+						boost:without_regex=True
+						boost:without_serialization=True
+						boost:without_stacktrace=True
+						boost:without_test=True
+						boost:without_timer=True 
+						boost:without_type_erasure=True
+						boost:without_wave=True
 						libcurl:with_libssh2=True
 						)
 
@@ -200,7 +222,6 @@ endif()
 if(WIN32)
 	list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
 	
-    
 	if (IU_ENABLE_WEBVIEW2)
 		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
 	endif()	
@@ -210,11 +231,13 @@ else()
 endif()
 
 add_subdirectory(Core)	
-add_subdirectory(CLI)
+
 if(WIN32)
     add_subdirectory(Gui)
     add_subdirectory(ServerListTool)
 endif()
+
+add_subdirectory(CLI)
 
 if(IU_BUILD_QIMAGEUPLOADER)
 	add_subdirectory(qimageuploader)	

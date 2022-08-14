@@ -856,7 +856,6 @@ void ImageEditorWindow::createToolbars()
     //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
 
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Crop")+ CString(_T(" (")) + (char)kCropKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLPENCIL), ID_PEN,T_R("Карандаш"), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Brush")+ CString(_T(" (")) + (char)kBrushKey  + CString(_T(")")), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Highlight")+ CString(_T(" (")) + (char)kMarkerKey  + CString(_T(")")), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Line")+ CString(_T(" (")) + (char)kLineKey  + CString(_T(")")), Toolbar::itButton, true,1));

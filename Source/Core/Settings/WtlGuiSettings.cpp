@@ -523,11 +523,11 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
     imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
-    if (Language == _T("T\u00FCrk\u00E7e")) {  //fixes
+    if (Language == L"T\u00FCrk\u00E7e") {  //fixes
         Language = _T("Turkish");
-    } else if (Language == _T("\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430")) {
+    } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
         Language = _T("Ukrainian");
-    } else if (Language == _T("�������")) {
+    } else if (Language == L"\u0420\u0443\u0441\u0441\u043a\u0438\u0439") {
         Language = _T("Russian");
     }
 
