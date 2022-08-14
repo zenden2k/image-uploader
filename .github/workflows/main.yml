@@ -40,3 +40,4 @@ jobs:
           ${{github.workspace}}/Build/GUI/Release/GUI.exe
           ${{github.workspace}}/Build/CLI/Release/CLI.exe
           ${{github.workspace}}/Build/Tests/Release/Tests.exe
+          ${{github.workspace}}/Build/ServersChecker/Release/ServersChecker.exe

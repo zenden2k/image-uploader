@@ -231,11 +231,13 @@ else()
 endif()
 
 add_subdirectory(Core)	
-add_subdirectory(CLI)
+
 if(WIN32)
     add_subdirectory(Gui)
     add_subdirectory(ServerListTool)
 endif()
+
+add_subdirectory(CLI)
 
 if(IU_BUILD_QIMAGEUPLOADER)
 	add_subdirectory(qimageuploader)	
