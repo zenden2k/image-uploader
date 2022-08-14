@@ -35,13 +35,17 @@ jobs:
       working-directory: ${{github.workspace}}/Build
       shell: bash
       run: ./Tests/Release/Tests.exe --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
+    - name: Copy executable
+      shell: bash
+      working-directory: ${{github.workspace}}/Build
+      run: cp "./GUI/Release/Image Uploader.exe" ./GUI/Release/ImageUploader.exe
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       if: "env.BUILD_TYPE == 'Release'"
       with:
         name: windows_artifacts
         path: |
-          ${{github.workspace}}/Build/GUI/Release/GUI.exe
+          ${{github.workspace}}/Build/GUI/Release/ImageUploader.exe
           ${{github.workspace}}/Build/CLI/Release/CLI.exe
           ${{github.workspace}}/Build/Tests/Release/Tests.exe
           ${{github.workspace}}/Build/ServersChecker/Release/ServersChecker.exe
