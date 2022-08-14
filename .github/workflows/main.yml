@@ -9,7 +9,6 @@ on:
  
 jobs:
   windows:
-    if: ${{ false }}  # disable for now
     name: run on windows
     runs-on: windows-2022
     strategy:
