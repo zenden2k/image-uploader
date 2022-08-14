@@ -50,7 +50,7 @@ public:
     LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     Gdiplus::Bitmap *bm_;
     bool IsImage;
-    bool HideParent; // ���������� ��� ������������ ���� ���������
+    bool HideParent;
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

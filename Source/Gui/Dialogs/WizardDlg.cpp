@@ -283,7 +283,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
     CString ErrorStr;
-    if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))  // ��������� ������ ���������, ���� ���� servers.lst �����������
+    if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))
     {
         CString ErrBuf;
         ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
@@ -785,7 +785,6 @@ void CWizardDlg::ShowUpdateMessage(const CString& msg) {
     }
 }
 
-// ������� ��������� ��������� �������� (���� �� �����)
 HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
 {
     if (PageID != wpUploadSettingsPage && PageID != wpUploadPage) {

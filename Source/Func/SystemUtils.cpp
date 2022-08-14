@@ -87,7 +87,7 @@ bool CopyImageToClipboard(Gdiplus::Bitmap* image) {
         destDC.SelectBitmap(oldDestBmp);
         origDC.SelectBitmap(oldOrigBmp);
         SetClipboardData(CF_BITMAP, destBmp);
-        CloseClipboard(); //закрываем буфер обмена
+        CloseClipboard();
         DeleteObject(out);
         ReleaseDC(NULL, dc);
         return true;

@@ -19,7 +19,6 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
 bool IsWinXP()
 {
-    // Проверка операционной системы
     DWORD dwVersion = GetVersion();
 
     // Get major and minor version numbers of Windows
@@ -37,7 +36,6 @@ bool IsWinXP()
 
 bool IsWinXPOrLater()
 {
-    // Проверка операционной системы
     DWORD dwVersion = GetVersion();
 
     // Get major and minor version numbers of Windows
@@ -267,7 +265,7 @@ bool CreateShortCut(
     IPersistFile* pPF;
     HRESULT hRes;
     CoInitialize(NULL);
-    // return false;
+
     // Получение экземпляра компонента "Ярлык"
     hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&pSL));
 

@@ -105,11 +105,9 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     }
     
     videoEngineCombo_.SetCurSel(itemIndex);
-    // ������� � ��������� ���� ��� �����, ���������� �� �������� ����
     fileEdit_.SetWindowText(fileName_);
 
     bool check = true;
-    // ��������� ������ ����������
     SendDlgItemMessage(IDC_MULTIPLEFILES, BM_SETCHECK, check);
     SendDlgItemMessage(IDC_SAVEASONE, BM_SETCHECK, !check);
 

@@ -26,7 +26,6 @@ STDMETHODIMP_(ULONG) NoDirectVobSub::Release()  {
 HRESULT STDMETHODCALLTYPE NoDirectVobSub::SelectedFilter( /* [in] */ IMoniker* pMon) 
 {
     HRESULT ret = S_OK;
-    //CLSID id; pMon->GetClassID( &id ); // получает всегда CLSID_DeviceMoniker - по нему не проверишь
 
     IBindCtx* bind; ;
     if (SUCCEEDED(CreateBindCtx(0, &bind)))
