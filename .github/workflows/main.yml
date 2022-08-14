@@ -15,6 +15,10 @@ jobs:
       BUILD_TYPE: ${{ matrix.build_type }}
     steps:
     - uses: actions/checkout@v2
+    - name: Prepare sources
+      shell: bash
+      working-directory: ${{github.workspace}}/Source
+      run: cp versioninfo.h.dist versioninfo.h
     - name: Get Conan
       uses: turtlebrowser/get-conan@v1.0
     - name: Create Build Environment
