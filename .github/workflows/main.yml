@@ -9,6 +9,7 @@ on:
  
 jobs:
   windows:
+    if: ${{ false }}  # disable for now
     name: run on windows
     runs-on: windows-2022
     strategy:
@@ -53,3 +54,43 @@ jobs:
           ${{github.workspace}}/Build/CLI/Release/CLI.exe
           ${{github.workspace}}/Build/Tests/Release/Tests.exe
           ${{github.workspace}}/Build/ServersChecker/Release/ServersChecker.exe
+  ubuntu:
+    name: run on ubuntu
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [Release]
+    env:
+      BUILD_TYPE: ${{ matrix.build_type }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: seanmiddleditch/gha-setup-ninja@master
+    - name: Prepare sources
+      shell: bash
+      working-directory: ${{github.workspace}}/Source
+      run: cp versioninfo.h.dist versioninfo.h
+    - name: Get Conan
+      uses: turtlebrowser/get-conan@v1.0
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{github.workspace}}/Build
+    - name: Configure CMake
+      shell: bash
+      working-directory: ${{github.workspace}}/Build
+      run: cmake $GITHUB_WORKSPACE/Source -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
+    - name: Build
+      working-directory: ${{github.workspace}}/Build
+      shell: bash
+      run: cmake --build . --config $BUILD_TYPE
+    - name: Tests
+      working-directory: ${{github.workspace}}/Build
+      shell: bash
+      run: ./Tests/Release/Tests --dir "${{github.workspace}}/Source/Tests/TestData" --sqdir "${{github.workspace}}/Source/Core/Scripting/API/Tests/"
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      if: "env.BUILD_TYPE == 'Release'"
+      with:
+        name: ubuntu_artifacts
+        path: |
+          ${{github.workspace}}/Build/CLI/Release/CLI
+          ${{github.workspace}}/Build/Tests/Release/Tests
