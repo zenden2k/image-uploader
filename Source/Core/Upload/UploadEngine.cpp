@@ -107,8 +107,7 @@ int CUploadEngineListBase::getRandomImageServer()
         return -1;
     }
 	
-    std::uniform_int_distribution<int> dist(0, m_suitableServers.size());
-	
+    std::uniform_int_distribution<int> dist(0, m_suitableServers.size() - 1);
     return m_suitableServers[dist(mt_)];
 }
 
@@ -124,7 +123,7 @@ int CUploadEngineListBase::getRandomFileServer()
     if (m_suitableServers.empty()) {
         return -1;
     }
-    std::uniform_int_distribution<int> dist(0, m_suitableServers.size());
+    std::uniform_int_distribution<int> dist(0, m_suitableServers.size() - 1);
     return m_suitableServers[dist(mt_)];
 }
 
