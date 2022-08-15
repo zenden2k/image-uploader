@@ -2004,7 +2004,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
-            Rect lastCrop = imageEditor.lastAppliedCrop();
+            Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
             if (!lastCrop.IsEmptyArea()) {
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }

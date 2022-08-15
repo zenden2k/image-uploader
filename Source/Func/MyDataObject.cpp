@@ -113,7 +113,6 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
     pStgMedium->hGlobal = 
         GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
     
-    // ������������ ��������� DROPFILES ��� ���������� ������
     DROPFILES *DP = static_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
     ZeroMemory(DP, sizeof(DROPFILES));
     DP->fWide = TRUE;
