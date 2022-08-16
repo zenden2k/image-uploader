@@ -54,6 +54,8 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
 int CScriptUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
     if (task->type() == UploadTask::TypeAuth) {
         return processAuthTask(task);
+    } if (task->type() == UploadTask::TypeTest) {
+        return processTestTask(task);
     } else {
     	int res = doUpload(task, params);
     	if (res == -2) {
@@ -79,6 +81,34 @@ int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
     case AuthActionType::Logout:
         return doLogout();
     }
+    return 0;
+}
+
+int CScriptUploadEngine::processTestTask(std::shared_ptr<UploadTask> task) {
+    using namespace Sqrat;
+    try {
+        checkCallingThread();
+
+        Function func(vm_.GetRootTable(), "TestConnection");
+        if (func.IsNull()) {
+            return 0;
+        }
+
+        auto tbl = func.Evaluate<Sqrat::Table>();
+
+        int res = ScriptAPI::GetValue(tbl->GetValue<SQInteger>("status"));
+        auto msg = ScriptAPI::GetValue(tbl->GetValue<Sqrat::string>("message"));
+        task->uploadResult()->message = msg;
+
+        return res;
+    }
+    catch (const Sqrat::Exception& e) {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + e.Message()); 
+    }
+    catch (std::exception& e) {
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + std::string(e.what()));
+    }
+    FlushSquirrelOutput();
     return 0;
 }
 
@@ -598,7 +628,7 @@ int CScriptUploadEngine::checkAuth() {
             }  
 		}
 	}
-	
+	 
     if (hasRefreshTokenFunc_) {
         res2 = refreshToken();      
     }

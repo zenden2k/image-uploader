@@ -64,7 +64,7 @@ CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 
 CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) {
     if ( index < m_list.size() ) {
-        return &m_list[index];
+        return m_list[index].get();
     } 
     return nullptr;
 }
@@ -78,8 +78,8 @@ CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
 {
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (!IuStringUtils::stricmp(m_list[i].Name.c_str(), name.c_str()))
-            return &m_list[i];
+        if (!IuStringUtils::stricmp(m_list[i]->Name.c_str(), name.c_str()))
+            return m_list[i].get();
     }
     return nullptr;
 }
@@ -87,8 +87,8 @@ CUploadEngineData* CUploadEngineListBase::byName(const std::string& name)
 CUploadEngineData*  CUploadEngineListBase::firstEngineOfType(CUploadEngineData::ServerType type) {
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if ( m_list[i].hasType(type)) {
-            return &m_list[i];
+        if ( m_list[i]->hasType(type)) {
+            return m_list[i].get();
         }
     }
     return nullptr;
@@ -99,7 +99,7 @@ int CUploadEngineListBase::getRandomImageServer()
     std::vector<int> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != CUploadEngineData::naObligatory && m_list[i].hasType(CUploadEngineData::TypeImageServer)) {
+        if (m_list[i]->NeedAuthorization != CUploadEngineData::naObligatory && m_list[i]->hasType(CUploadEngineData::TypeImageServer)) {
             m_suitableServers.push_back(i);
         }
     }
@@ -116,7 +116,7 @@ int CUploadEngineListBase::getRandomFileServer()
     std::vector<size_t> m_suitableServers;
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].NeedAuthorization != CUploadEngineData::naObligatory && m_list[i].hasType(CUploadEngineData::TypeFileServer)) {
+        if (m_list[i]->NeedAuthorization != CUploadEngineData::naObligatory && m_list[i]->hasType(CUploadEngineData::TypeFileServer)) {
             m_suitableServers.push_back(i);
         }
     }
@@ -131,16 +131,16 @@ int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const
 {
     for (size_t i = 0; i < m_list.size(); i++)
     {
-        if (m_list[i].Name == Name)
+        if (m_list[i]->Name == Name)
             return i;
     }
     return -1;
 }
 
-std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::begin() const {
+std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator CUploadEngineListBase::begin() const {
     return m_list.begin();
 }
-std::vector<CUploadEngineData>::const_iterator CUploadEngineListBase::end() const {
+std::vector< std::unique_ptr<CUploadEngineData>>::const_iterator CUploadEngineListBase::end() const {
     return m_list.end();
 }
 
@@ -152,6 +152,10 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
     return {};
 }
 
+void CUploadEngineListBase::removeServer(const std::string& name) {
+    m_list.erase(std::remove_if(m_list.begin(), m_list.end(),
+        [name](auto& x) { return x->Name == name; }));
+}
 
 /* CAbstractUploadEngine */
 

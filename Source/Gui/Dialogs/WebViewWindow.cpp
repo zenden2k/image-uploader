@@ -117,6 +117,9 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         hWndClient_ = view_.Create(m_hWnd, rc, _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, 0);
         view_.PutSilent(TRUE); // Suppress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
         view_.SetFocus();
+        view_.setOnNavigateComplete2(onUrlChanged_);
+        view_.setOnDocumentComplete(onDocumentComplete_);
+        view_.setOnNavigateError(onNavigateError_);
     }
     
     return 0;
@@ -237,12 +240,7 @@ bool CWebViewWindow::displayHTML(const CString& html) {
 }
 
 void CWebViewWindow::setOnUrlChanged(std::function<void(const CString&)> cb) {
-    if (view_.m_hWnd) {
-        view_.setOnNavigateComplete2(std::move(cb));
-    } else {
-        onUrlChanged_ = cb;
-    }
-
+    onUrlChanged_ = cb;
 }
 
 void CWebViewWindow::setOnDocumentComplete(std::function<void(const CString&)> cb) {

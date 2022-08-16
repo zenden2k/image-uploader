@@ -2,10 +2,14 @@
 // Declaration of the CAddFtpServerDialog
 
 #pragma once
+
+#include <memory>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/ServerListManager.h"
+#include "Core/Upload/TestConnectionTask.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Controls/ProgressRingControl.h"
 
 class CUploadEngineList;
 // CAddFtpServerDialog
@@ -23,12 +27,14 @@ public:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        COMMAND_HANDLER(IDC_TESTCONNECTIONBTN, BN_CLICKED, OnClickedTestConnection)
         COMMAND_HANDLER(IDC_CONNECTIONNAMEEDIT, EN_CHANGE, OnConnectionNameEditChange);
         COMMAND_HANDLER(IDC_SERVEREDIT, EN_CHANGE, OnServerEditChange);
         COMMAND_HANDLER(IDC_REMOTEDIRECTORYEDIT, EN_CHANGE, OnRemoteDirectoryEditChange);
         COMMAND_HANDLER(IDC_DOWNLOADURLEDIT, EN_CHANGE, OnDownloadUrlEditChange);
         COMMAND_HANDLER(IDC_BROWSEPRIVATEKEYBUTTON, BN_CLICKED, OnBnClickedBrowsePrivateKey)
         COMMAND_HANDLER(IDC_SERVERTYPECOMBO, LBN_SELCHANGE, OnServerTypeComboChange)
+        MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)
     END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -43,6 +49,8 @@ public:
     LRESULT OnDownloadUrlEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnClickedBrowsePrivateKey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnServerTypeComboChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnClickedTestConnection(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
 
     CString createdServerName() const;
     CString createdServerLogin() const;
@@ -57,7 +65,15 @@ protected:
     CString createdServerLogin_;
     CComboBox serverTypeComboBox_;
     ServerListManager::ServerType serverType_;
+    std::shared_ptr<TestConnectionTask> currentTask_;
+    std::shared_ptr<UploadSession> uploadSession_;
+    CBrush backgroundBrush_;
+    CFont connectionStatusLabelFont_;
+    bool testSuccess_;
+    CProgressRingControl wndAnimation_;
     void onServerTypeChange();
+    void addServer(bool test);
+    void enableControls(bool enable);
 };
 
 

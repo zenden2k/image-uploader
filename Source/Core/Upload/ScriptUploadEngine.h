@@ -66,12 +66,13 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         std::string name() const;
 
         // FIXME: not working
-        virtual void stop() override;         
+        void stop() override;         
     protected:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         void Log(ErrorInfo::MessageType mt, const std::string& error);
         virtual void PrintCallback(const std::string& output) override;
         int processAuthTask(std::shared_ptr<UploadTask> task);
+        int processTestTask(std::shared_ptr<UploadTask> task);
         int refreshToken();
         bool preLoad() override;
         bool postLoad() override;

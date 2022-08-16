@@ -54,7 +54,8 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     for(size_t i=0; i<childs.size(); i++)
     {
         SimpleXmlNode &cur = childs[i];
-        CUploadEngineData UE;
+        auto uploadEngineData = std::make_unique<CUploadEngineData>();
+        CUploadEngineData &UE = *uploadEngineData.get();
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
         UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::stringToInt64(needPassword)!=0);
@@ -261,16 +262,16 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
             }
             UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
-            m_list.push_back(UE);
+            m_list.push_back(std::move(uploadEngineData));
         }
 
     std::sort(m_list.begin(), m_list.end(), compareEngines );
     return true;
 }
 
-bool CUploadEngineList::compareEngines(const CUploadEngineData& elem1, const CUploadEngineData& elem2)
+bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, std::unique_ptr<CUploadEngineData>& elem2)
 {
-    return IuStringUtils::stricmp(elem1.Name.c_str(), elem2.Name.c_str()) < 0;
+    return IuStringUtils::stricmp(elem1->Name.c_str(), elem2->Name.c_str()) < 0;
 }
 
 void CUploadEngineList::setNumOfRetries(int Engine, int Action)
@@ -281,7 +282,9 @@ void CUploadEngineList::setNumOfRetries(int Engine, int Action)
 
 bool CUploadEngineList::addServer(const CUploadEngineData& data)
 {
-    m_list.push_back(data);
+    auto uploadEngineData = std::make_unique<CUploadEngineData>();
+    *uploadEngineData = data;
+    m_list.push_back(std::move(uploadEngineData));
     std::sort(m_list.begin(), m_list.end(), compareEngines );
     return true;
 }

@@ -5,7 +5,10 @@
 #include "Gui/GuiTools.h"
 #include "Core/ServerListManager.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/Upload/TestConnectionTask.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/Upload/UploadManager.h"
+#include "Core/UploadEngineList.h"
 
 // CAddFtpServerDialog
 CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
@@ -15,10 +18,13 @@ CAddFtpServerDialog::CAddFtpServerDialog(CUploadEngineList* uploadEngineList)
     serverNameEdited = false;
     uploadEngineList_ = uploadEngineList;
     serverType_ = ServerListManager::ServerType::stFTP;
+    testSuccess_ = false;
 }
 
 LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
+
     SetWindowText(TR("Add FTP/SFTP server"));
     TRC(IDC_CONNECTIONNAMELABEL, "Connection  name:");
     TRC(IDC_SERVERSTATIC, "Server [:port]:");
@@ -31,13 +37,14 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     TRC(IDC_SERVERTYPELABEL, "Server type:");
     TRC(IDC_PRIVATEKEYLABEL, "Private key file:");
+    TRC(IDC_TESTCONNECTIONBTN, "Test connection");
 
     serverTypeComboBox_ = GetDlgItem(IDC_SERVERTYPECOMBO);
     serverTypeComboBox_.AddString(TR("FTP"));
     serverTypeComboBox_.AddString(TR("SFTP"));
 
     serverTypeComboBox_.SetCurSel(static_cast<int>(ServerListManager::ServerType::stFTP));
-
+    connectionStatusLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_CONNECTIONSTATUSLABEL));
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND serverEditHwnd = GetDlgItem(IDC_SERVEREDIT);
@@ -59,6 +66,13 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         ::SetWindowLong(exampleUrlLabel, GWL_STYLE, style | SS_RIGHT);
     }
 
+    HWND hWnd = GetDlgItem(IDC_ANIMATION);
+    if (hWnd)
+    {
+        wndAnimation_.SubclassWindow(hWnd);
+        wndAnimation_.ShowWindow(SW_HIDE); 
+    }
+
     onServerTypeChange();
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));
     SetDlgItemText(IDC_REMOTEDIRECTORYEDIT, _T("/"));
@@ -67,74 +81,20 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 LRESULT CAddFtpServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    CString serverName = GuiTools::GetDlgItemText(m_hWnd, IDC_SERVEREDIT);
-    serverName.TrimLeft(L" ");
-    serverName.TrimRight(L" ");
-
-    if ( serverName.IsEmpty() ) {
-        MessageBox(TR("Server's name cannot be empty"),TR("Error"), MB_ICONERROR);
-        return 0;
-    }
-    CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
-    connectionName.TrimLeft(L" ");
-    connectionName.TrimRight(L" ");
-    if ( connectionName.IsEmpty() ) {
-        LocalizedMessageBox(TR("Connection name cannot be empty"), TR("Error"), MB_ICONERROR);
-        return 0;
-    }
-
-    CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
-    downloadUrl.TrimLeft(L" ");
-    downloadUrl.TrimRight(L" ");
-    if ( downloadUrl.IsEmpty() ) {
-        LocalizedMessageBox(TR("Download URL cannot be empty."), TR("Error"), MB_ICONERROR);
-        return 0;
-    }
-
-    CString remoteDirectory = GuiTools::GetDlgItemText(m_hWnd, IDC_REMOTEDIRECTORYEDIT);
-    if ( remoteDirectory.Left(1) != _T("/") ) {
-        remoteDirectory = _T("/") + remoteDirectory;
-    }
-    if ( remoteDirectory.Right(1) != _T("/") ) {
-        remoteDirectory += _T("/");
-
-    }
-    CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
-    CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
-    serverType_ = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
-    std::string privateKeyFile;
-    if (serverType_ == ServerListManager::ServerType::stSFTP) {
-        privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
-
-        if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
-            LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
-            return 0;
-        }
-    }
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-
-    ServerListManager slm(settings->SettingsFolder + "\\Servers\\", uploadEngineList_, settings->ServersSettings);
-    try {
-        createdServerName_ = U2W(slm.addFtpServer(serverType_, W2U(connectionName), W2U(serverName), W2U(login), 
-            W2U(password), W2U(remoteDirectory), W2U(downloadUrl), privateKeyFile));
-        createdServerLogin_ = login;
-        EndDialog(wID);
-    } catch (const std::exception& ex) {
-        CString errorMessage = TR("Could not add server.");
-        const CString reason = U2W(ex.what());
-        if ( !reason.IsEmpty() ) {
-            errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
-        }
-        LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
-    }
-    
+{ 
+    addServer(false);
     return 0;
 }
 
 LRESULT CAddFtpServerDialog::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    EndDialog(wID);
+    if (uploadSession_) {
+        auto* uploadManager = ServiceLocator::instance()->uploadManager();
+        uploadManager->stopSession(uploadSession_.get());
+    } else {
+        EndDialog(wID);
+    }
+
     return 0;
 }
 
@@ -248,4 +208,126 @@ void CAddFtpServerDialog::onServerTypeChange() {
     GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYLABEL, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYEDIT, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSEPRIVATEKEYBUTTON, enable);
+}
+
+LRESULT CAddFtpServerDialog::OnClickedTestConnection(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    addServer(true);
+    return 0;
+}
+
+void CAddFtpServerDialog::addServer(bool test) {
+    CString serverName = GuiTools::GetDlgItemText(m_hWnd, IDC_SERVEREDIT);
+    serverName.TrimLeft(L" ");
+    serverName.TrimRight(L" ");
+
+    if (serverName.IsEmpty()) {
+        MessageBox(TR("Server's name cannot be empty"), TR("Error"), MB_ICONERROR);
+        return;
+    }
+    CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
+    connectionName.TrimLeft(L" ");
+    connectionName.TrimRight(L" ");
+    if (connectionName.IsEmpty()) {
+        LocalizedMessageBox(TR("Connection name cannot be empty"), TR("Error"), MB_ICONERROR);
+        return;
+    }
+
+    CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
+    downloadUrl.TrimLeft(L" ");
+    downloadUrl.TrimRight(L" ");
+    if (downloadUrl.IsEmpty()) {
+        LocalizedMessageBox(TR("Download URL cannot be empty."), TR("Error"), MB_ICONERROR);
+        return;
+    }
+
+    CString remoteDirectory = GuiTools::GetDlgItemText(m_hWnd, IDC_REMOTEDIRECTORYEDIT);
+    if (remoteDirectory.Left(1) != _T("/")) {
+        remoteDirectory = _T("/") + remoteDirectory;
+    }
+    if (remoteDirectory.Right(1) != _T("/")) {
+        remoteDirectory += _T("/");
+
+    }
+    CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
+    CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
+    serverType_ = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+    std::string privateKeyFile;
+    if (serverType_ == ServerListManager::ServerType::stSFTP) {
+        privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
+
+        if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
+            LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
+            return ;
+        }
+    }
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    ServerListManager slm(settings->SettingsFolder + "\\Servers\\", uploadEngineList_, settings->ServersSettings);
+    try {
+        std::string servName = slm.addFtpServer(serverType_, test, W2U(connectionName), W2U(serverName), W2U(login),
+            W2U(password), W2U(remoteDirectory), W2U(downloadUrl), privateKeyFile);
+        createdServerName_ = U2W(servName);
+        createdServerLogin_ = login;
+        if (test) {
+            SetDlgItemText(IDC_CONNECTIONSTATUSLABEL, _T(""));
+            using namespace std::placeholders;
+            auto authTask = std::make_shared<TestConnectionTask>();
+            ServerProfile serverProfile(servName);
+            serverProfile.setProfileName(W2U(login));
+            authTask->setServerProfile(serverProfile);
+            authTask->onTaskFinished.connect([this](UploadTask* task, bool success) {
+                testSuccess_ = success;
+                CString msg = U2W(task->uploadResult()->message);
+                if (msg.IsEmpty()) {
+                    msg = success ? TR("Success") : TR("Test failed");
+                }
+                SetDlgItemText(IDC_CONNECTIONSTATUSLABEL, msg);
+                currentTask_.reset();
+            });
+            auto* uploadManager = ServiceLocator::instance()->uploadManager();
+            enableControls(false);
+            wndAnimation_.ShowWindow(SW_SHOW);
+            currentTask_ = authTask;
+            uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addTask(currentTask_);
+            uploadSession_->addSessionFinishedCallback([this, servName](UploadSession*) {
+                uploadSession_.reset();
+                uploadEngineList_->removeServer(servName);
+                ServiceLocator::instance()->settings<WtlGuiSettings>()->ServersSettings.erase(servName);
+                enableControls(true);
+                wndAnimation_.ShowWindow(SW_HIDE);
+            });
+            uploadManager->addSession(uploadSession_);
+        } else {
+            EndDialog(IDOK);
+        }
+        
+    }
+    catch (const std::exception& ex) {
+        CString errorMessage = TR("Could not add server.");
+        const CString reason = U2W(ex.what());
+        if (!reason.IsEmpty()) {
+            errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
+        }
+        LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
+    }
+}
+
+void CAddFtpServerDialog::enableControls(bool enable) {
+    GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_TESTCONNECTIONBTN, enable);
+}
+
+
+LRESULT CAddFtpServerDialog::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild) {
+    if (hwndChild == GetDlgItem(IDC_CONNECTIONSTATUSLABEL)) {
+        if (testSuccess_) {
+            SetTextColor(hdc, RGB(0, 180, 0));
+        } else {
+            SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));
+        }
+        SetBkMode(hdc, TRANSPARENT);
+        return reinterpret_cast<LRESULT>(backgroundBrush_.m_hBrush);
+    }
+    return 0;
 }

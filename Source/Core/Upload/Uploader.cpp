@@ -205,7 +205,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         Cleanup();
         return false;
     }
-    if (task->type() != UploadTask::TypeAuth) {
+    if (task->type() != UploadTask::TypeAuth && task->type() != UploadTask::TypeTest) {
         UploadResult* result = task->uploadResult();
         result->directUrl = uparams.DirectUrl;
         result->downloadUrl = uparams.ViewUrl;

@@ -571,6 +571,7 @@
 #define IDC_AUTHORIZEBUTTON             1263
 #define IDC_DOWNLOADBUTTON              1263
 #define IDC_COPYHEXBUTTON               1263
+#define IDC_TESTCONNECTIONBTN           1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -699,6 +700,8 @@
 #define IDC_UPLOADSPEEDLIMITEDIT        1331
 #define IDC_UPLOADSPEEDLIMITLABEL       1332
 #define IDC_UPLOADSPEEDLIMITKBPSLABEL   1333
+#define IDC_CONNECTIONSTATUSLABEL       1334
+#define IDC_ANIMATION                   1335
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -746,7 +749,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        320
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1334
+#define _APS_NEXT_CONTROL_VALUE         1336
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

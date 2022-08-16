@@ -583,7 +583,7 @@ void NetworkClient::private_checkResponse()
         return;
     }
     int code = responseCode();
-    if ( ( !code || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
+    if ( (curl_result != CURLE_OK || (code>= 400 && code<=499)) && errorString() != "Callback aborted" ) {
         std::string errorDescr;
 
         if (!errorLogIdString_.empty()) {

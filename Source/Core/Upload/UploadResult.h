@@ -19,6 +19,7 @@ public:
     std::string serverName;
     std::string editUrl;
     std::string deleteUrl;
+    std::string message;
     /* @endcond */
 
 

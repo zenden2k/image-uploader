@@ -52,7 +52,7 @@ function OnUrlChangedCallback(data) {
         local br = data.browser;
         local regError = CRegExp("error=([^&]+)", "");
         if ( regError.match(data.url) ) {
-            WriteLog("warning", regError.getMatch(1));
+            //WriteLog("warning", regError.getMatch(1));
         } else {
             local codeToken = CRegExp("code=([^&]+)", "");
             if ( codeToken.match(data.url) ) {

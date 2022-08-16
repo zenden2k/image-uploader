@@ -20,6 +20,10 @@ limitations under the License.
 
 #include "ServerListManager.h"
 
+#include <boost/uuid/uuid.hpp>           
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include "Core/Utils/SimpleXml.h"
 #include "UploadEngineList.h"
 #include "Core/Utils/StringUtils.h"
@@ -32,40 +36,62 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
 }
 
 
-std::string ServerListManager::addFtpServer(ServerType serverType, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl, 
+std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl, 
     const std::string& privateKeyFile)
 {
     SimpleXml xml;
     SimpleXmlNode root = xml.getRoot("Servers");
-    std::string newName = name + (serverType == ServerType::stSFTP ? " (sftp)" : " (ftp)");
+    std::string newName;
+    std::string outFile;
+
+    if (temporary) {
+        boost::uuids::uuid uuid = boost::uuids::random_generator()();
+        newName = boost::uuids::to_string(uuid); 
+    } else {
+        newName = name + (serverType == ServerType::stSFTP ? " (sftp)" : " (ftp)");
+    }
+    
 
     if ( uploadEngineList_->byName(newName) ) {
         throw std::runtime_error("Server with such name already exists.");
     }
+    if (temporary) {
+        CUploadEngineData data;
+        data.Name = newName;
+        data.UsingPlugin = true;
+        data.PluginName = serverType == ServerType::stSFTP ? "sftp" : "ftp";
+        data.TypeMask = CUploadEngineData::TypeFileServer;
+        data.NeedAuthorization = 2;
+        data.ImageUrlTemplate = "stub";
+        data.ThumbUrlTemplate = "stub";
+        data.DownloadUrlTemplate = "stub";
 
-    SimpleXmlNode serverNode = root.GetChild("Server");
-    serverNode.SetAttribute("Name", newName);
-    serverNode.SetAttribute("Plugin", serverType == ServerType::stSFTP ? "sftp" : "ftp");
-    serverNode.SetAttribute("FileHost", 1);
-    serverNode.SetAttribute("Authorize", 1);
+        uploadEngineList_->addServer(data);
+    } else {
+        SimpleXmlNode serverNode = root.GetChild("Server");
+        serverNode.SetAttribute("Name", newName);
+        serverNode.SetAttribute("Plugin", serverType == ServerType::stSFTP ? "sftp" : "ftp");
+        serverNode.SetAttribute("FileHost", 1);
+        serverNode.SetAttribute("Authorize", 1);
 
-    SimpleXmlNode resultNode = serverNode.GetChild("Result");
-    resultNode.SetAttribute("ImageUrlTemplate", "stub");
-    resultNode.SetAttribute("ThumbUrlTemplate", "stub");
-    resultNode.SetAttribute("DownloadUrlTemplate", "stub");
+        SimpleXmlNode resultNode = serverNode.GetChild("Result");
+        resultNode.SetAttribute("ImageUrlTemplate", "stub");
+        resultNode.SetAttribute("ThumbUrlTemplate", "stub");
+        resultNode.SetAttribute("DownloadUrlTemplate", "stub");
 
-    const std::string outFile = serversDirectory_ + name + ".xml";
-    if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
-        if (!IuCoreUtils::createDirectory(serversDirectory_)) {
-            throw std::runtime_error("Cannot create directory " + serversDirectory_);
+        outFile = serversDirectory_ + name + ".xml";
+        if (!IuCoreUtils::DirectoryExists(serversDirectory_)) {
+            if (!IuCoreUtils::createDirectory(serversDirectory_)) {
+                throw std::runtime_error("Cannot create directory " + serversDirectory_);
+            }
+        }
+        const bool res = xml.SaveToFile(outFile);
+        if (!res) {
+            throw std::runtime_error("Unable to save file " + outFile);
         }
     }
-    
-    const bool res = xml.SaveToFile(outFile);
-    if ( !res ) {
-        throw std::runtime_error("Unable to save file " + outFile);
-    }
 
+   
     ServerSettingsStruct &ss = serversSettings_[newName][login];
     ss.setParam("hostname",serverName);
     ss.setParam("folder",remoteDirectory);
@@ -77,7 +103,9 @@ std::string ServerListManager::addFtpServer(ServerType serverType, const std::st
     ss.authData.Login = login;
     ss.authData.Password = password;
     ss.authData.DoAuth = !login.empty();
-    if (!uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
+
+    
+    if (!temporary && !uploadEngineList_->loadFromFile(outFile, serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }
     return newName;
@@ -108,7 +136,7 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     filename = IuStringUtils::Replace(filename," ","_");
     filename = IuStringUtils::Replace(filename,"/","_");
     const std::string outFile = serversDirectory_ + filename + ".xml";
-    if ( !IuCoreUtils::DirectoryExists(serversDirectory_)) {
+    if (!IuCoreUtils::DirectoryExists(serversDirectory_)) {
         if (!IuCoreUtils::createDirectory(serversDirectory_)) {
             throw std::runtime_error("Cannot create directory " + serversDirectory_);
         }

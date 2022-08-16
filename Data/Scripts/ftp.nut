@@ -1,17 +1,14 @@
 token <- "";
 
-if(ServerParams.getParam("hostname") == "")
-{
+if(ServerParams.getParam("hostname") == "") {
 	ServerParams.setParam("hostname", "ftp.example.com") ;
 }
 
-if(ServerParams.getParam("folder") == "")
-{
+if(ServerParams.getParam("folder") == "") {
 	ServerParams.setParam("folder", "/somefolder") ;
 }
 
-if(ServerParams.getParam("downloadPath") == "")
-{
+if(ServerParams.getParam("downloadPath") == "") {
 	ServerParams.setParam("downloadPath", "http://dl.example.com/somefolder");
 }
 
@@ -30,9 +27,47 @@ function reg_replace(str, pattern, replace_with)
 	return resultStr;
 }
 
+function TestConnection() {
+    local host = ServerParams.getParam("hostname");
+    local login = ServerParams.getParam("Login");
+    local pass =  ServerParams.getParam("Password");
+    local authStr = "";
+    local folder = ServerParams.getParam("folder");
 
-function  UploadFile(FileName, options)
-{
+        
+    if(login.len()) {
+        if (pass.len()) {
+            authStr = login + ":" + pass + "@";
+        } else {
+            authStr = login + "@";
+        }  
+    }
+    if(folder.slice(0,1) != "/") {
+        folder = "/" + folder;
+    }
+        
+    if(folder.slice(folder.len()-1) != "/") {
+        folder += "/";
+    }
+
+	local url = "ftp://" + authStr + host + folder;
+
+    if (nm.doGet(url)){
+        if (nm.responseBody() != "") {
+            return {
+                status = 1,
+                message = ""
+            };
+        }
+    }
+
+    return {
+        status = 0,
+        message = ""
+    };
+}
+
+function  UploadFile(FileName, options) {
 	local newFilename = ExtractFileName(FileName);
 	newFilename = random() +"_"+newFilename;
 	local ansiFileName = newFilename;
@@ -53,7 +88,8 @@ function  UploadFile(FileName, options)
 		
 	if(folder.slice(folder.len()-1) != "/")
 		folder += "/";
-	local url = "ftp://" + authStr+ host + folder+ansiFileName;
+	ansiFileName = reg_replace(ansiFileName, " ", "_");
+	local url = "ftp://" + authStr+ host + folder+ ansiFileName;
 
 	nm.setUrl(url);
 	nm.setMethod("PUT");
@@ -79,13 +115,10 @@ function  UploadFile(FileName, options)
 	return 1;
 }
 
-function GetServerParamList()
-{
-	local a =
-	{
+function GetServerParamList() {
+	return {
 		hostname = "Server ip or hostname [:port]"
 		folder = "Remote folder"
 		downloadPath = "Download path (ftp or http)"
 	}
-	return a;
 }

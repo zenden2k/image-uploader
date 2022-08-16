@@ -50,8 +50,8 @@ public:
         browser_ = browser;
         using namespace std::placeholders;
         webViewWindow_.setOnUrlChanged(std::bind(&WebBrowserPrivate::OnUrlChanged, this, _1));
-        webViewWindow_.view_.setOnNavigateError(std::bind(&WebBrowserPrivate::OnNavigateError, this, _1, _2));
-        webViewWindow_.view_.setOnDocumentComplete(std::bind(&WebBrowserPrivate::OnDocumentComplete, this, _1));
+        webViewWindow_.setOnNavigateError(std::bind(&WebBrowserPrivate::OnNavigateError, this, _1, _2));
+        webViewWindow_.setOnDocumentComplete(std::bind(&WebBrowserPrivate::OnDocumentComplete, this, _1));
         initialWidth_ = 800;
         initialHeight_ = 600;
         initialTitle_ = _T("Web Browser");

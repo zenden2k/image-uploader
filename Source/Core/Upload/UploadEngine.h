@@ -331,15 +331,16 @@ public:
     CUploadEngineData* byIndex(size_t index);
     CUploadEngineData* byName(const std::string& name);
     CUploadEngineData* firstEngineOfType(CUploadEngineData::ServerType type);
+    void removeServer(const std::string& name);
     int count() const;
     int getRandomImageServer();
     int getRandomFileServer();
     int getUploadEngineIndex(const std::string& Name) const;
-    std::vector<CUploadEngineData>::const_iterator begin() const;
-    std::vector<CUploadEngineData>::const_iterator end() const;
+    std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
+    std::vector< std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
 protected:
-    std::vector<CUploadEngineData> m_list;
+    std::vector<std::unique_ptr<CUploadEngineData>> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;
     std::mt19937 mt_;
 private:
