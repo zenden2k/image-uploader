@@ -123,6 +123,8 @@ function Authenticate() {
     if (ServerParams.getParam("token") != "") {
         return 1;
     }
+    local token = "";
+    local tokenType = "";
     local login = ServerParams.getParam("Login");
     local scope = "offline_access files.readwrite";
 
