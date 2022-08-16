@@ -180,10 +180,10 @@ void PrintHelp() {
 void PrintServerList()
 {
     for (const auto& ued : *list) {
-        if (!ued.hasType(CUploadEngineData::TypeImageServer) && !ued.hasType(CUploadEngineData::TypeFileServer)) {
+        if (!ued->hasType(CUploadEngineData::TypeImageServer) && !ued->hasType(CUploadEngineData::TypeFileServer)) {
 		   continue;
         }
-        std::cout << ued.Name << std::endl;
+        std::cout << ued->Name << std::endl;
    }
 }
 
