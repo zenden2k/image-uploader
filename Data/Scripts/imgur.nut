@@ -45,6 +45,10 @@ function checkResponse(except = true) {
 }
 
 function RefreshToken() {
+    local login = ServerParams.getParam("Login");
+    if (login == "") {
+        return 1;
+    }
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
     if (token != "" && tokenType != "" ) {
@@ -103,7 +107,8 @@ function RefreshToken() {
 }
 
 function Authenticate()  {
-    if (ServerParams.getParam("token") != "") {
+    local login = ServerParams.getParam("Login");
+    if (login == "" || ServerParams.getParam("token") != "") {
         return 1;
     } 
     local login = ServerParams.getParam("Login");

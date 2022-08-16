@@ -372,9 +372,9 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
         return false;
     }
     using namespace std::placeholders;
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     lastUrlShorteningTask_ = std::make_shared<UrlShorteningTask>(W2U(url));
-    lastUrlShorteningTask_->setServerProfile(Settings.urlShorteningServer);
+    lastUrlShorteningTask_->setServerProfile(settings->urlShorteningServer);
     lastUrlShorteningTask_->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(lastUrlShorteningTask_);
@@ -383,8 +383,12 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 
     CString msg;
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
-        static_cast<LPCTSTR>(Utf8ToWstring(Settings.urlShorteningServer.serverName()).c_str()));
-    ShowBaloonTip(msg, _T("Image Uploader"), 6000);
+        static_cast<LPCTSTR>(Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str()));
+
+    // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
+    if (!IsWindows10OrGreater()) {
+        ShowBaloonTip(msg, _T("Image Uploader"), 6000);
+    }
     setStatusText(msg);
     startIconAnimation();
     return 0;
@@ -766,7 +770,12 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
     msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
         static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
-    ShowBaloonTip(msg, TR("Uploading screenshot"), 6000);
+
+    // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
+    if (!IsWindows10OrGreater()) {
+        ShowBaloonTip(msg, TR("Uploading screenshot"), 6000);
+    }
+
     setStatusText(msg);
     startIconAnimation();
 }

@@ -1,3 +1,6 @@
+clientSecret <- "65ie-G5nWqGMv_THtY3z2snZ";
+clientId <- "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
+
 function _GetAuthorizationString() {
     return ServerParams.getParam("tokenType") + " " + ServerParams.getParam("token");
 }
@@ -88,8 +91,6 @@ function RefreshToken() {
 function Authenticate() {
     local login = ServerParams.getParam("Login");
     local scope = "https://www.googleapis.com/auth/drive";
-    local clientSecret = "65ie-G5nWqGMv_THtY3z2snZ";
-    local clientId = "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
 
     if (login == "") {
         WriteLog("error", "E-mail should not be empty!");

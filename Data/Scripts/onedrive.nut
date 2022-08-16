@@ -1,6 +1,7 @@
 redirectUri <- "https://login.microsoftonline.com/common/oauth2/nativeclient";
 redirectUrlEscaped <- "https:\\/\\/login\\.microsoftonline\\.com\\/common\\/oauth2\\/nativeclient";
 code <- "";
+clientId <- "a6cf69e8-63c8-444a-a73f-97228fa01ae3";
 
 function min(a,b) {
     return (a < b) ?  a : b;
@@ -62,17 +63,7 @@ function OnUrlChangedCallback(data) {
     }
 }
 
-function Authenticate() {
-    local login = ServerParams.getParam("Login");
-    local scope = "offline_access files.readwrite";
-
-    local clientId = "a6cf69e8-63c8-444a-a73f-97228fa01ae3";
-
-    if(login == "" ) {
-        WriteLog("error", "E-mail should not be empty!");
-        return 0;
-    }
-
+function RefreshToken() {
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
     if ( token != "" && tokenType != "" ) {
@@ -125,6 +116,20 @@ function Authenticate() {
             return 1;
         }
     }
+    return 1;
+}
+
+function Authenticate() {
+    if (ServerParams.getParam("token") != "") {
+        return 1;
+    }
+    local login = ServerParams.getParam("Login");
+    local scope = "offline_access files.readwrite";
+
+    if(login == "" ) {
+        WriteLog("error", "E-mail should not be empty!");
+        return 0;
+    }
 
     local url = "https://login.live.com/oauth20_authorize.srf?client_id=" + clientId + "&scope="+ nm.urlEncode(scope) + "&response_type=code&redirect_uri=" + redirectUri
     local browser = CWebBrowser();
@@ -134,8 +139,8 @@ function Authenticate() {
     browser.showModal();
 
     local confirmCode = code;
-    if ( confirmCode == "" ) {
-        print("Cannot authenticate without confirm code");
+    if (confirmCode == "") {
+        WriteLog("error", "Cannot authenticate without confirm code");
         return 0;
     }
 
@@ -145,7 +150,7 @@ function Authenticate() {
     nm.addQueryParam("redirect_uri", redirectUri);
     nm.addQueryParam("grant_type", "authorization_code");
     nm.doPost("");
-    if ( !_CheckResponse(false) ) {
+    if (!_CheckResponse(false)) {
         return 0;
     }
     local data =  nm.responseBody();
