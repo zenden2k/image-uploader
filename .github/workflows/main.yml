@@ -2,9 +2,17 @@ name: Compile and test Image Uploader
 
 on:
   pull_request:
+    paths:
+      - .github/workflows/main.yml
+      - Source/**
+      - Contrib/Include/**
   push:
     branches:
       - 'master'
+    paths:
+      - .github/workflows/main.yml
+      - Source/**
+      - Contrib/Include/**
   workflow_dispatch:
  
 jobs:

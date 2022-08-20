@@ -1,6 +1,8 @@
 add_definitions(-DIU_CLI)
 
-set(RESOURCE_LIST "../res/CLI.exe.manifest")
+if (WIN32)
+    set(RESOURCE_LIST "../res/CLI.exe.manifest")
+endif()
 
 add_executable(CLI 
     main.cpp 
