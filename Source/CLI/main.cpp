@@ -114,7 +114,7 @@ void SignalHandler (int param) {
 }
 
 void PrintWelcomeMessage() {
-    std::cerr << "imgupload v" << IU_CLI_VER << " (based on core of IU v" << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
+    std::cerr << "imgupload " << "(Image Uploader " << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
 }
 
 class Translator : public ITranslator {

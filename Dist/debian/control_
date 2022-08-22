@@ -7,5 +7,5 @@ Maintainer: Sergey Svistunov <zenden2k@gmail.com>
 Description: Zenden Image Uploader CLI
  Console utility that allows you to upload files to image/file 
  hosting servers without necessity to visit their websites.
-Depends:libc6 (>= 2.27),libpcre3,libc-ares2,libsqlite3-0,libfreeimage3
+Depends:libc6 (>= 2.27)
 Priority: optional
