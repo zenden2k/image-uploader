@@ -23,6 +23,8 @@
 #include <Uxtheme.h>
 #include "Gui/Dialogs/WizardDlg.h"
 
+CSettingsPage::CSettingsPage() {
+}
 
 bool CSettingsPage::OnShow()
 {
@@ -92,8 +94,4 @@ bool CSettingsPage::Apply()
 void CSettingsPage::FixBackground() const
 {
     TabBackgroundFix(PageWnd);
-}
-
-CSettingsPage::~CSettingsPage()
-{
 }

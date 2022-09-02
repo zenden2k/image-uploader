@@ -306,8 +306,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     ThumbnailText.Replace(_T("%height%"), WinUtils::IntToStr(newheight));
     ThumbnailText.Replace(_T("%size%"), sizeString);
 
-    int thumbwidth = m_thumbCreatingParams.Size;
-    int thumbheight = m_thumbCreatingParams.Size;
+    int thumbwidth = m_thumbCreatingParams.Width;
+    int thumbheight = m_thumbCreatingParams.Height;
     Graphics g1(dc);
     CString filePath = U2W(thumbnailTemplate_->getSpriteFileName());
     Image templ(filePath);
@@ -348,19 +348,22 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
 
     m_Vars["DrawText"] = IuCoreUtils::toString(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.AddImageSize);
 
-    if (!m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByHeight)
+    if (m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByWidth)
     {
         thumbwidth -= EvaluateExpression(thumbnailTemplate_->getWidthAddition());
         if (thumbwidth < 10)
             thumbwidth = 10;
         thumbheight = int(round((float)thumbwidth / (float)newwidth * newheight));
     }
-    else
+    else if (m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByHeight)
     {
         thumbheight -= EvaluateExpression(thumbnailTemplate_->getHeightAddition());
         if (thumbheight < 10)
             thumbheight = 10;
         thumbwidth = int(round((float)thumbheight / (float)newheight * newwidth));
+    } else if (m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByBoth) {
+        thumbwidth -= EvaluateExpression(thumbnailTemplate_->getWidthAddition());
+        thumbheight -= EvaluateExpression(thumbnailTemplate_->getHeightAddition());
     }
 
     int RealThumbWidth = thumbwidth + EvaluateExpression(thumbnailTemplate_->getWidthAddition());
@@ -472,8 +475,26 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             tempGr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
                             tempGr.SetSmoothingMode(SmoothingModeHighQuality);
                             tempGr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
-                            tempGr.DrawImage(image->getBitmap(), dest, (INT)0, (int)0, (int)image->getWidth(),
-                                (int)image->getHeight(), UnitPixel, &attr);
+
+                            if (m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByBoth) {
+                                CRect srcRect, destRect;
+                                CRect dRect(t.X, t.Y, t.X + thumbwidth, t.Y + thumbheight);
+                                calcCropSize(image->getWidth(), image->getHeight(), dRect, destRect, srcRect);
+                                // = sourceRect.MulDiv(1, k);
+                                SolidBrush br(Color(255, 255, 255));
+                                tempGr.FillRectangle(&br, dRect.left, dRect.top, dRect.Width(), dRect.Height());
+                                tempGr.DrawImage(image->getBitmap(),
+                                    RectF(float(destRect.left), float(destRect.top), float(destRect.Width()),
+                                        float(destRect.Height()))
+                                    , float(srcRect.left), float(srcRect.top), float(srcRect.Width()),
+                                    float(srcRect.Height()), UnitPixel,
+                                    &attr);
+                            } else {
+                                tempGr.DrawImage(image->getBitmap(), dest, (INT)0, (int)0, (int)image->getWidth(),
+                                    (int)image->getHeight(), UnitPixel, &attr);
+                            }
+
+
                             ImageUtils::ChangeAlphaChannel(*MaskBuffer, tempImage, 3, 3);
                             gr->DrawImage(&tempImage, 0, 0);
                             tempGr.SetSmoothingMode(SmoothingModeNone);
@@ -552,4 +573,24 @@ Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& 
     }
     SolidBrush* br = new SolidBrush(0);
     return br;
+}
+
+void ImageConverterPrivate::calcCropSize(int srcWidth, int srcHeight, CRect targetRect, CRect& destRect, CRect& srcRect) {
+    float imgwidth = static_cast<float>(srcWidth);
+    float imgheight = static_cast<float>(srcHeight);
+
+    int thumbwidth = targetRect.Width();
+    int thumbheight = targetRect.Height();
+    
+    float ratio = std::min<float>((float)thumbwidth / imgwidth, (float)thumbheight / imgheight);
+
+    CSize sizeDrawingImage;
+    sizeDrawingImage.cx = static_cast<LONG>(round(imgwidth * ratio));
+    sizeDrawingImage.cy = static_cast<LONG>(round(imgheight * ratio));
+
+    CRect rectDrawing(CPoint(0, 0), sizeDrawingImage);
+    rectDrawing.OffsetRect(targetRect.left + (thumbwidth - sizeDrawingImage.cx) / 2, targetRect.top + (thumbheight - sizeDrawingImage.cy) / 2);
+
+    destRect = rectDrawing;
+    srcRect = CRect(0,0, srcWidth, srcHeight);
 }

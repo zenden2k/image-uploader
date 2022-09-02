@@ -157,6 +157,8 @@ protected:
     bool PostSaveSettings(SimpleXml &xml) override;
     void RegisterShellExtension(bool Register);
 
+    void PostLoadServerProfile(ServerProfile& profile);
+
     void BindToManager();
 private:
     TCHAR m_Directory[MAX_PATH];

@@ -42,7 +42,7 @@ TEST_F(ImageConverterTest, Convert)
         ImageConverter converter;
         converter.setGenerateThumb(true);
         ThumbCreatingParams thumbParams;
-        thumbParams.Size = 320; // Generate thumbnail with width = 320
+        thumbParams.Width = 320; // Generate thumbnail with width = 320
         converter.setThumbCreatingParams(thumbParams);
         Thumbnail thumb;
         ASSERT_TRUE(thumb.loadFromFile(TestHelpers::resolvePath("classic.xml")));
@@ -76,7 +76,7 @@ TEST_F(ImageConverterTest, Convert)
         ImageConverter converter;
         converter.setGenerateThumb(true);
         ThumbCreatingParams thumbParams;
-        thumbParams.Size = 240; // Generate thumbnail with height = 240
+        thumbParams.Height = 240; // Generate thumbnail with height = 240
         thumbParams.ResizeMode = ThumbCreatingParams::trByHeight;
         converter.setThumbCreatingParams(thumbParams);
         Thumbnail thumb;

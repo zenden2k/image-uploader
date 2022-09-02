@@ -33,24 +33,31 @@ struct ImageConvertingParams
     bool PreserveExifInformation;
 };
 
+
 struct ThumbCreatingParams
 {
     enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
-    enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBiggerSide };
+    enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBoth };
 
     unsigned int Quality;
     std::string Text;
     std::string TemplateName;
     int Size;
+    int Width;
+    int Height;
     bool DrawFrame;
     bool AddImageSize;
     uint32_t BackgroundColor;
     EnumWrapper<ThumbFormatEnum> Format;
     ThumbResizeEnum ResizeMode;
 
+    static const int DEFAULT_THUMB_WIDTH = 180;
+
     ThumbCreatingParams() {
         Quality = 95;
         Size = 0;
+        Width = 0;
+        Height = 0;
         DrawFrame = true;
         AddImageSize = true;
         BackgroundColor = 0;

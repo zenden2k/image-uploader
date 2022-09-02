@@ -35,11 +35,11 @@ struct FullUploadProfile {
     ImageConvertingParams convert_profile;
 };
 
-struct ThumbSettingsStruct : public ThumbCreatingParams {
+/*struct ThumbSettingsStruct : public ThumbCreatingParams {
     TCHAR FontName[256];
     BOOL UseServerThumbs;
     bool CreateThumbs;
-};
+};*/
 
 struct VideoSettingsStruct {
     int Columns;

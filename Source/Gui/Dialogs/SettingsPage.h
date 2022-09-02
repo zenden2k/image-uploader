@@ -42,9 +42,10 @@ public:
 class CSettingsPage
 {
     public:
-        virtual ~CSettingsPage()=0;
-        CWizardDlg *WizardDlg;
-        HBITMAP HeadBitmap;
+        CSettingsPage();
+        virtual ~CSettingsPage() = default;
+        CWizardDlg *WizardDlg = nullptr;
+        HBITMAP HeadBitmap = nullptr;
         virtual bool OnShow();
         virtual bool OnHide();
         virtual bool OnNext();
@@ -52,7 +53,7 @@ class CSettingsPage
         void EnablePrev(bool Enable = true);
         void EnableExit(bool Enable = true);
         void SetNextCaption(LPTSTR Caption);
-        HWND PageWnd;
+        HWND PageWnd = nullptr;
         void ShowNext(bool Show = true);
         void ShowPrev(bool Show = true);
 

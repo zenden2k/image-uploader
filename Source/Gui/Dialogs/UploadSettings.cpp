@@ -31,7 +31,7 @@
 #include "Gui/IconBitmapUtils.h"
 #include "Func/WinUtils.h"
 #include "AddFtpServerDialog.h"
-#include "AddDirectoryServerDIalog.h"
+#include "AddDirectoryServerDialog.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 #include "Gui/Dialogs/WizardDlg.h"
 #include "LoginDlg.h"
@@ -102,7 +102,7 @@ void CUploadSettings::TranslateUI()
     TRC(IDC_CREATETHUMBNAILS, "Create thumbnails");
     TRC(IDC_IMAGESERVERGROUPBOX, "Server to host your images");
     TRC(IDC_USESERVERTHUMBNAILS, "Use server-side thumbnails");
-    TRC(IDC_WIDTHLABEL, "Thumbnail width:");
+    TRC(IDC_WIDTHLABEL, "Thumbnail's size:");
     TRC(IDC_ADDFILESIZE, "Add text on thumbnail");
     TRC(IDC_PRESSUPLOADBUTTON, "Click button \"Upload\" for starting process of uploading.");
     TRC(IDC_FILESERVERGROUPBOX, "Server to host other file formats");
@@ -203,8 +203,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
     FileServerSelectBar.SetWindowLong(GWL_ID, IDC_FILETOOLBAR);
-
-    SendDlgItemMessage(IDC_THUMBWIDTHSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)1000, (short)40) );
     
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
@@ -311,6 +309,7 @@ LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD 
     BOOL checked = SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_GETCHECK, 0, 0);
     
     ::EnableWindow(GetDlgItem(IDC_THUMBWIDTH), checked);
+    ::EnableWindow(GetDlgItem(IDC_THUMBHEIGHT), checked);
     ::EnableWindow(GetDlgItem(IDC_ADDFILESIZE), checked);
     ::EnableWindow(GetDlgItem(IDC_WIDTHLABEL), checked);
     ::EnableWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), checked);
@@ -346,20 +345,29 @@ bool CUploadSettings::OnNext()
     }
 
     ImageUploadParams& imageUploadParams = sessionImageServer_.getImageUploadParamsRef();
-   //if(sessionImageServer_.getImageUploadParamsRef().getThumbRef().ResizeMode != ThumbCreatingParams::trByHeight)
-   {
-        imageUploadParams.getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
-   }
-   /*else
-   {
-        sessionImageServer_.getImageUploadParamsRef().getThumbRef().Size=  GetDlgItemInt(IDC_THUMBWIDTH);
-   }*/
-
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
     imageUploadParams.CreateThumbs = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     imageUploadParams.UseServerThumbs = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
     imageUploadParams.getThumbRef().AddImageSize = GuiTools::IsChecked(m_hWnd, IDC_ADDFILESIZE);
-    imageUploadParams.getThumbRef().Size = GetDlgItemInt(IDC_THUMBWIDTH);
+
+    int thumbWidth = GetDlgItemInt(IDC_THUMBWIDTH);
+    int thumbHeight = GetDlgItemInt(IDC_THUMBHEIGHT);
+
+    if (!thumbWidth && !thumbHeight) {
+        thumbWidth = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
+    }
+
+    auto& thumb = imageUploadParams.getThumbRef();
+    thumb.Width = thumbWidth;
+    thumb.Height = thumbHeight;
+
+    if (thumb.Width && thumb.Height) {
+        thumb.ResizeMode = ThumbCreatingParams::trByBoth;
+    } else if (thumb.Height) {
+        thumb.ResizeMode = ThumbCreatingParams::trByHeight;
+    } else {
+        thumb.ResizeMode = ThumbCreatingParams::trByWidth;
+    }
 
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
@@ -1217,13 +1225,18 @@ void CUploadSettings::ShowParams(const CString& profileName) {
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         return;
     }
-    if (sessionImageServer_.getImageUploadParams().getThumb().ResizeMode!= ThumbCreatingParams::trByHeight){
-        TRC(IDC_WIDTHLABEL, "Width:");
-        SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
-    } else {
-      TRC(IDC_WIDTHLABEL, "Height:");
-      SetDlgItemInt(IDC_THUMBWIDTH,sessionImageServer_.getImageUploadParams().getThumb().Size);
+    auto thumb = sessionImageServer_.getImageUploadParams().getThumb();
+
+    SetDlgItemText(IDC_THUMBWIDTH, L"");
+    SetDlgItemText(IDC_THUMBHEIGHT, L"");
+
+    if (thumb.Width && (thumb.ResizeMode == ThumbCreatingParams::trByWidth || thumb.ResizeMode == ThumbCreatingParams::trByBoth)){
+        SetDlgItemInt(IDC_THUMBWIDTH, thumb.Width);
     }
+    if (thumb.Height && (thumb.ResizeMode == ThumbCreatingParams::trByHeight || thumb.ResizeMode == ThumbCreatingParams::trByBoth)) {
+        SetDlgItemInt(IDC_THUMBHEIGHT, thumb.Height);
+    }
+
     if (CurrentProfileName == profileName) {
         return;
     }

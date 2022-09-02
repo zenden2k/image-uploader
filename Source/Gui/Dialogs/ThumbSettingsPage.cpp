@@ -55,8 +55,8 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
 
     TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
     TRC(IDC_THUMBBACKGROUNDLABEL, "Background color:");
-    TRC(IDC_WIDTHRADIO, "Width:");
-    TRC(IDC_HEIGHTRADIO, "Height:");
+    TRC(IDC_WIDTHCHECKBOX, "Width:");
+    TRC(IDC_HEIGHTCHECKBOX, "Height:");
     TRC(IDC_THUMBSCOMBOLABEL, "Thumbnail Preset:");
     TRC(IDC_EDITTHUMBNAILPRESET, "Edit");
     TRC(IDC_NEWTHUMBNAIL, "Create a Copy");
@@ -88,15 +88,17 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
     SetDlgItemInt(IDC_THUMBQUALITYEDIT, params_.Quality);
     SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, params_.Format);
-    SendDlgItemMessage(IDC_WIDTHRADIO, BM_SETCHECK, params_.ResizeMode == ThumbCreatingParams::trByWidth);
-    SendDlgItemMessage(IDC_HEIGHTRADIO, BM_SETCHECK, params_.ResizeMode == ThumbCreatingParams::trByHeight);
-    SetDlgItemInt(IDC_WIDTHEDIT, params_.Size);
-    SetDlgItemInt(IDC_HEIGHTEDIT, params_.Size);
+    bool enableWidth = params_.ResizeMode == ThumbCreatingParams::trByWidth || params_.ResizeMode == ThumbCreatingParams::trByBoth;
+    bool enableHeight = params_.ResizeMode == ThumbCreatingParams::trByHeight || params_.ResizeMode == ThumbCreatingParams::trByBoth;
+    SendDlgItemMessage(IDC_WIDTHCHECKBOX, BM_SETCHECK, enableWidth);
+    SendDlgItemMessage(IDC_HEIGHTCHECKBOX, BM_SETCHECK, enableHeight);
+    SetDlgItemInt(IDC_WIDTHEDIT, params_.Width);
+    SetDlgItemInt(IDC_HEIGHTEDIT, params_.Height);
     BOOL b;
     ThumbBackground.SetColor(params_.BackgroundColor);
     OnThumbComboChanged(0, 0, 0, b);
-    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
-    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), ThumbCreatingParams::trByHeight);
+    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), enableWidth);
+    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), enableHeight);
     m_CatchFormChanges = true;
     return 1;  // Let the system set the focus
 }
@@ -110,9 +112,22 @@ bool CThumbSettingsPage::Apply()
     params_.TemplateName = W2U(buf);
     params_.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
     params_.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
-    params_.ResizeMode = SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth;
     params_.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT)));
-    params_.Size = params_.ResizeMode == ThumbCreatingParams::trByWidth ? GetDlgItemInt(IDC_WIDTHEDIT) : GetDlgItemInt(IDC_HEIGHTEDIT);
+    params_.Width = GetDlgItemInt(IDC_WIDTHEDIT);
+    params_.Height = GetDlgItemInt(IDC_HEIGHTEDIT);
+
+    bool setWidth = SendDlgItemMessage(IDC_WIDTHCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+    bool setHeight = SendDlgItemMessage(IDC_HEIGHTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+
+    if (setWidth && setHeight) {
+        params_.ResizeMode = ThumbCreatingParams::trByBoth;
+    } else if (setHeight) {
+        params_.ResizeMode = ThumbCreatingParams::trByHeight;
+    } else {
+        params_.ResizeMode = ThumbCreatingParams::trByWidth;
+    }
+
+    params_.Size = 0;
     params_.BackgroundColor = ThumbBackground.GetColor();
     ImageUploadParams iup = settings->imageServer.getImageUploadParamsRef();
     iup.setThumb(params_);
@@ -232,13 +247,13 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     ImageConverter conv;
     conv.setThumbCreatingParams(params_);
     conv.setThumbnail(thumb);
-    std::unique_ptr<Bitmap> bm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2),_T("PNG"));
+    std::unique_ptr<Bitmap> bm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
     if(!bm) {
         GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
         return;
     }
     
-    Bitmap *toUse = bm->Clone(0,300, bm->GetWidth(), bm->GetHeight()-300, PixelFormatDontCare);
+    Bitmap *toUse = bm->Clone(0,/*300*/50, bm->GetWidth(), /*bm->GetHeight() / 2*/100, PixelFormatDontCare);
     GdiPlusImage source(toUse);
     std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
     if (result) {
@@ -332,12 +347,42 @@ LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND h
 
 LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
-    if (!m_CatchFormChanges) return 0;
-    params_.ResizeMode = (SendDlgItemMessage(IDC_WIDTHRADIO, BM_GETCHECK) == FALSE) ? ThumbCreatingParams::trByHeight : ThumbCreatingParams::trByWidth ;
-    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), params_.ResizeMode == ThumbCreatingParams::trByWidth);
-    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), params_.ResizeMode == ThumbCreatingParams::trByHeight);
-    params_.Size = GetDlgItemInt(IDC_WIDTHEDIT);
-    params_.Size = GetDlgItemInt(IDC_HEIGHTEDIT);
+    if (!m_CatchFormChanges) {
+        return 0;
+    }
+
+    bool setWidth = SendDlgItemMessage(IDC_WIDTHCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+    bool setHeight = SendDlgItemMessage(IDC_HEIGHTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
+
+    if (!setWidth && !setHeight) {
+        setWidth = true;
+    }
+    params_.Width = GetDlgItemInt(IDC_WIDTHEDIT);
+    if (params_.Width < 0) {
+        params_.Width = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
+    }
+    params_.Height = GetDlgItemInt(IDC_HEIGHTEDIT);
+    if (params_.Height < 0) {
+        params_.Height = 0;
+    }
+
+    if (!params_.Width && !params_.Height) {
+        params_.Width = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
+    }
+
+    if (setWidth && setHeight) {
+        params_.ResizeMode = ThumbCreatingParams::trByBoth;
+    }
+    else if (setHeight) {
+        params_.ResizeMode = ThumbCreatingParams::trByHeight;
+    }
+    else {
+        params_.ResizeMode = ThumbCreatingParams::trByWidth;
+    }
+
+    ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), setWidth);
+    ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), setHeight);
+    
     showSelectedThumbnailPreview();
     return 0;
 }

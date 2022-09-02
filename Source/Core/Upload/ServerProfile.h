@@ -16,7 +16,7 @@ struct ImageUploadParams {
         UseDefaultThumbSettings = true;
         ThumbAddImageSize = true;
         ImageProfileName = "Default";
-        Thumb.Size = 180;
+        Thumb.Size = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
         Thumb.ResizeMode = ThumbCreatingParams::trByWidth;
         Thumb.AddImageSize = true;
         Thumb.Format = ThumbCreatingParams::tfPNG;

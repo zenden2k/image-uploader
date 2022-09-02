@@ -275,6 +275,7 @@
 #define IDC_MEMO                        1040
 #define IDC_MENUITEMTITLEEDIT           1040
 #define IDC_FILENAMEEDIT                1040
+#define IDC_THUMBHEIGHT                 1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -446,6 +447,7 @@
 #define IDC_REMOVECORNERS               1142
 #define IDC_SHOWINENGLISHCKECKBOX       1142
 #define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
+#define IDC_HEIGHTCHECKBOX              1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -598,6 +600,7 @@
 #define IDC_ENABLEFULLSCREENEDITORCHECK 1272
 #define IDC_ALLOWFULLSCREENEDITORCHECK  1272
 #define IDC_DATEFROMCHECKBOX            1272
+#define IDC_WIDTHCHECKBOX               1272
 #define IDC_VIDEOENGINECOMBO            1273
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
@@ -747,7 +750,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        320
+#define _APS_NEXT_RESOURCE_VALUE        322
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1336
 #define _APS_NEXT_SYMED_VALUE           128

@@ -15,4 +15,5 @@ protected:
     bool createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, int fileformat);
     Gdiplus::Brush* CreateBrushFromString(const std::string& br, const RECT& rect);
     bool EvaluateRect(const std::string& rectStr, RECT* out);
+    static void calcCropSize(int srcWidth, int srcHeight, CRect targetRect, CRect& destRect, CRect& srcRect);
 };

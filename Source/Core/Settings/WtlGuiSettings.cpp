@@ -585,29 +585,12 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
     LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
 
-    // Fixing profies
-    if (!imageServer.profileName().empty() && ServersSettings[imageServer.serverName()].find(imageServer.profileName()) == ServersSettings[imageServer.serverName()].end()) {
-        imageServer.setProfileName("");
-    }
-
-    if (!fileServer.profileName().empty() && ServersSettings[fileServer.serverName()].find(fileServer.profileName()) == ServersSettings[fileServer.serverName()].end()) {
-        fileServer.setProfileName("");
-    }
-    if (!contextMenuServer.profileName().empty() && ServersSettings[contextMenuServer.serverName()].find(contextMenuServer.profileName()) == ServersSettings[contextMenuServer.serverName()].end()) {
-        contextMenuServer.setProfileName("");
-    }
-
-    if (!quickScreenshotServer.profileName().empty() && ServersSettings[quickScreenshotServer.serverName()].find(quickScreenshotServer.profileName()) == ServersSettings[quickScreenshotServer.serverName()].end()) {
-        quickScreenshotServer.setProfileName("");
-    }
-
-    if (!urlShorteningServer.profileName().empty() && ServersSettings[urlShorteningServer.serverName()].find(urlShorteningServer.profileName()) == ServersSettings[urlShorteningServer.serverName()].end()) {
-        urlShorteningServer.setProfileName("");
-    }
-
-    if (!temporaryServer.profileName().empty() && ServersSettings[temporaryServer.serverName()].find(temporaryServer.profileName()) == ServersSettings[temporaryServer.serverName()].end()) {
-        temporaryServer.setProfileName("");
-    }
+    PostLoadServerProfile(imageServer);
+    PostLoadServerProfile(fileServer);
+    PostLoadServerProfile(contextMenuServer);
+    PostLoadServerProfile(quickScreenshotServer);
+    PostLoadServerProfile(urlShorteningServer);
+    PostLoadServerProfile(temporaryServer);
 
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
@@ -1095,6 +1078,24 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     }
 }
 
+void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
+    if (!profile.profileName().empty() && ServersSettings[profile.serverName()].find(profile.profileName()) == ServersSettings[profile.serverName()].end()) {
+        profile.setProfileName("");
+    }
+
+    ThumbCreatingParams& th = profile.getImageUploadParamsRef().getThumbRef();
+    if (!th.Width && !th.Height && th.Size) {
+        if (th.ResizeMode == ThumbCreatingParams::trByWidth) {
+            th.Width = th.Size;
+            th.Size = 0;
+        }
+        else if (th.ResizeMode == ThumbCreatingParams::trByHeight) {
+            th.Height = th.Size;
+            th.Size = 0;
+        }
+    }
+}
+
 CString WtlGuiSettings::prepareVideoDialogFilters() {
     CString result;
     std::vector<std::string>& extensions = VideoUtils::instance().videoFilesExtensions;
@@ -1140,6 +1141,8 @@ void ImageUploadParams::bind(SettingsNode& n){
     SettingsNode & thumb = node["Thumb"];
     thumb.nm_bind(Thumb, TemplateName);
     thumb.nm_bind(Thumb, Size);
+    thumb.nm_bind(Thumb, Width);
+    thumb.nm_bind(Thumb, Height);
     thumb["ResizeMode"].bind((int&)Thumb.ResizeMode);
     thumb.nm_bind(Thumb, AddImageSize);
     thumb.nm_bind(Thumb, DrawFrame);
