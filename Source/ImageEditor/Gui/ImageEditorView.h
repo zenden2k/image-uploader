@@ -62,6 +62,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         POINT oldPoint;
+        void canvasSizeChanged() override;
     private:
         Canvas *canvas_;
         std::map<CursorType, CCursor> cursorCache_;

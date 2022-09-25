@@ -247,6 +247,14 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         arrowTypeCombobox_.SetFont(systemFont_);
         arrowTypeCombobox_.AddString(TR("Arrow 1"));
         arrowTypeCombobox_.AddString(TR("Arrow 2"));
+
+        RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+        applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
+        applyButton_.SetFont(systemFont_);
+
+        RECT cancelButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+        cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
+        cancelOperationButton_.SetFont(systemFont_);
     }
     return 0;
 }
@@ -648,6 +656,10 @@ int Toolbar::AutoSize()
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
+        applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(10 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -876,6 +888,16 @@ LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     return 0;
 }
 
+LRESULT Toolbar::OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_APPLY, 0, 0);
+    return 0;
+}
+
+LRESULT Toolbar::OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_CANCEL, 0, 0);
+    return 0;
+}
+
 
 bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
@@ -891,6 +913,11 @@ void Toolbar::setArrowType(int type) {
 
 void Toolbar::setMovable(bool value) {
     movable_ = value;
+}
+
+void Toolbar::showApplyButtons(bool show) {
+    applyButton_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+    cancelOperationButton_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
 }

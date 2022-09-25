@@ -317,4 +317,10 @@ HICON CImageEditorView::createBrushCursor(int size)
     return res;
 }
 
+void CImageEditorView::canvasSizeChanged() {
+    SIZE sz = { canvas_->getWidth(), canvas_->getHeigth() };
+    SetScrollOffset(0, 0);
+    SetScrollSize(sz);
+}
+
 }

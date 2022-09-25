@@ -64,7 +64,7 @@ public:
     void getAffectedSegments(AffectedSegments* segments) override;
     ElementType getType() const override;
     void setPos(int  x, int y) override;
-    bool move(int  offsetX, int offsetY) override;
+    bool move(int  offsetX, int offsetY, bool checkBounds) override;
     void resize(int width, int height) override;
     DISALLOW_COPY_AND_ASSIGN(Crop);
 };

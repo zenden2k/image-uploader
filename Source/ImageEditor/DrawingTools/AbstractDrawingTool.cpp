@@ -81,4 +81,12 @@ void AbstractDrawingTool::setBackgroundColor(Gdiplus::Color color)
     backgroundColor_ = color;
 }
 
+void AbstractDrawingTool::applyOperation() {
+    
+}
+
+void AbstractDrawingTool::cancelOperation() {
+    
+}
+
 }

@@ -104,11 +104,11 @@ Gdiplus::Bitmap* Document::getBitmap() const
     return currentImage_.get();
 }
 
-void Document::saveDocumentState( /*DrawingElement* element*/ ) {
+void Document::saveDocumentState(bool full) {
     int pixelSize = 4;
     typedef std::deque<RECT>::iterator iter;
     std::deque<RECT> rects;
-    Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
+    Gdiplus::Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
     int srcImageWidth = srcImage->GetWidth();
     int srcImageHeight = srcImage->GetHeight();
 
@@ -118,48 +118,63 @@ void Document::saveDocumentState( /*DrawingElement* element*/ ) {
     pixels = rects.size() * AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
     
     unsigned int dataSize    = pixels * pixelSize;
-    unsigned char* imageData = new unsigned char[dataSize];
-    
-    Gdiplus::BitmapData bdSrc;
-    Gdiplus::Rect r ( 0,0, currentImage_->GetWidth(), currentImage_->GetHeight() );
-    
-    if ( srcImage->LockBits( &r,  ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
-        delete[] imageData;
-        return ;
-    }
-    
-    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+    unsigned char* imageData = nullptr;
 
-    unsigned char* pImageData = imageData;
-    AffectedSegments outSegments(srcImageWidth, srcImageHeight);
-    
-    for ( iter it = rects.begin(); it != rects.end(); ++it ) {
-        int x = it->left;
-        int y = it->top;
-        if ( x < 0 || y < 0 ) {
-            continue;;
-        }
-        int rectWidth  = std::min<int>(it->right - it->left, srcImageWidth - x);
-        int rectHeight = std::min<int>(it->bottom - it->top, srcImageHeight - y);
-        if ( rectWidth <= 0 || rectHeight <= 0) {
-            // invalid rectangle. Out of bounds;
-            continue;
-        }
-        outSegments.markRect(x,y, rectWidth,rectHeight);
-        for( int j = 0; j < rectHeight; j++ ) {
-            unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
-            unsigned int rowSize = rectWidth * pixelSize;
-            memcpy ( pImageData,  bpSrc + dataOffset, rowSize );
-            //memset( pImageData, 255, rowSize );
-            pImageData += rowSize;
+    if (!full) {
+        imageData = new unsigned char[dataSize];
+        Gdiplus::BitmapData bdSrc;
+        Gdiplus::Rect r(0, 0, currentImage_->GetWidth(), currentImage_->GetHeight());
+
+        if (srcImage->LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok) {
+            delete[] imageData;
+            return;
         }
 
+        BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+
+        unsigned char* pImageData = imageData;
+
+
+        {
+
+            AffectedSegments outSegments(srcImageWidth, srcImageHeight);
+
+            for (iter it = rects.begin(); it != rects.end(); ++it) {
+                int x = it->left;
+                int y = it->top;
+                if (x < 0 || y < 0) {
+                    continue;
+                }
+                int rectWidth = std::min<int>(it->right - it->left, srcImageWidth - x);
+                int rectHeight = std::min<int>(it->bottom - it->top, srcImageHeight - y);
+                if (rectWidth <= 0 || rectHeight <= 0) {
+                    // invalid rectangle. Out of bounds;
+                    continue;
+                }
+                outSegments.markRect(x, y, rectWidth, rectHeight);
+                for (int j = 0; j < rectHeight; j++) {
+                    unsigned int dataOffset = (r.Width * (y + j) + x) * pixelSize;
+                    unsigned int rowSize = rectWidth * pixelSize;
+                    memcpy(pImageData, bpSrc + dataOffset, rowSize);
+                    //memset( pImageData, 255, rowSize );
+                    pImageData += rowSize;
+                }
+
+            }
+        }
+        currentImage_->UnlockBits(&bdSrc);
     }
-    currentImage_->UnlockBits( &bdSrc );
+    
     HistoryItem item;
     item.data     = imageData;
     item.segments = changedSegments_;
     item.size     = dataSize;
+    item.full = full;
+    if (full) {
+        item.width = srcImageWidth;
+        item.height = srcImageHeight;
+        item.bmp = currentImage_;
+    }
     history_.push_back( item );
     delete originalImage_;
     originalImage_ = 0;
@@ -205,35 +220,44 @@ bool Document::undo() {
     HistoryItem undoItem = history_.back();
     history_.pop_back();
     std::deque<RECT> rects;
-    undoItem.segments.getRects( rects, currentImage_->GetWidth(),currentImage_->GetHeight() );
+    auto image = currentImage_;
+    undoItem.segments.getRects( rects, image->GetWidth(), image->GetHeight() );
     
     Gdiplus::BitmapData bdSrc;
-    Gdiplus::Rect r ( 0,0, currentImage_->GetWidth(), currentImage_->GetHeight() );
-    if ( currentImage_->LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
+    Gdiplus::Rect r ( 0,0, image->GetWidth(), image->GetHeight() );
+    if (image->LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
         return false ;
     }
     BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
     unsigned char* pdata = undoItem.data;
     int pixelSize = 4;
 
-    for ( auto it = rects.begin(); it != rects.end(); ++it ) {
-        int x = it->left;
-        int y = it->top;
-        int rectWidth  = it->right - it->left;
-        int rectHeight = it->bottom - it->top;
+    if (undoItem.full) {
+        /*std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(undoItem.width, undoItem.height);
+        memcpy(bpSrc, pdata, undoItem.size);*/
+        currentImage_ = undoItem.bmp;
+    } else {
+        for (auto it = rects.begin(); it != rects.end(); ++it) {
+            int x = it->left;
+            int y = it->top;
+            int rectWidth = it->right - it->left;
+            int rectHeight = it->bottom - it->top;
 
-        for( int j = 0; j < rectHeight; j++ ) {
-            unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
-            unsigned int rowSize    = rectWidth * pixelSize;
-            memcpy ( bpSrc + dstDataOffset,  pdata, rowSize );
-            //memset( bpSrc + dstDataOffset, 255, rowSize );
-            pdata += rowSize;
+            for (int j = 0; j < rectHeight; j++) {
+                unsigned int dstDataOffset = (r.Width * (y + j) + x) * pixelSize;
+                unsigned int rowSize = rectWidth * pixelSize;
+                memcpy(bpSrc + dstDataOffset, pdata, rowSize);
+                //memset( bpSrc + dstDataOffset, 255, rowSize );
+                pdata += rowSize;
+            }
+
+
         }
-        
-
     }
+
+   
     delete[] undoItem.data;
-    currentImage_->UnlockBits( &bdSrc );
+    image->UnlockBits( &bdSrc );
     return true;
 }
 
@@ -261,4 +285,14 @@ bool Document::hasTransparentPixels() const
 Painter* Document::getGraphicsObject() const {
     return currentCanvas_;
 }
+
+void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
+    saveDocumentState(true);
+    using namespace Gdiplus;
+    std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
+    Gdiplus::Graphics gr(newBitmap.get());
+    gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
+    currentImage_ = newBitmap;
+}
+
 }

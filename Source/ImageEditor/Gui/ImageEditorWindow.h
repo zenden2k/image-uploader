@@ -100,6 +100,8 @@ public:
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
+        MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
+        MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
@@ -168,6 +170,8 @@ public:
         LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnArrowTypeChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -231,6 +235,7 @@ public:
         void onClose();
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
+        void showApplyButtons();
 };
 
 class ConfigurationProvider {

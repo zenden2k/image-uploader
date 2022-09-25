@@ -418,6 +418,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     canvas_ = new ImageEditor::Canvas(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
     canvas_->setDocument(currentDoc_.get());
+    canvas_->setCropOnExport(displayMode_ == wdmFullscreen);
 
     updateWindowTitle();
 
@@ -461,7 +462,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
     canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
     canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
-    if (displayMode_ != wdmWindowed) {
+    /*if (displayMode_ != wdmWindowed)*/ {
         canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
     }
 
@@ -897,6 +898,7 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
         ::DestroyWindow(cropToolTip_);
         cropToolTip_ = 0;
     }
+
     if ( displayMode_ != wdmFullscreen ) {
         return;
     }
@@ -987,7 +989,12 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
+    showApplyButtons();
+
     OnCropChanged(x,y,w,h);
+    if (displayMode_ != wdmFullscreen) {
+        return;
+    }
     if ( !verticalToolbar_.IsWindowVisible() ) {
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
@@ -1039,7 +1046,10 @@ void ImageEditorWindow::OnSelectionChanged()
 
 void ImageEditorWindow::updateRoundingRadiusSlider()
 {
-    bool showLineWidth = ( currentDrawingTool_ != DrawingToolType::dtStepNumber && currentDrawingTool_ != DrawingToolType::dtText);
+    bool showLineWidth = ( currentDrawingTool_ != DrawingToolType::dtStepNumber 
+        && currentDrawingTool_ != DrawingToolType::dtText 
+        && currentDrawingTool_ != DrawingToolType::dtCrop
+    );
     horizontalToolbar_.showPenSize(showLineWidth);
 
     bool showRoundingRadiusSlider = currentDrawingTool_ == DrawingToolType::dtRoundedRectangle || currentDrawingTool_ == DrawingToolType::dtFilledRoundedRectangle || canvas_->isRoundingRectangleSelected();
@@ -1050,6 +1060,8 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
+
+    showApplyButtons();
 }
 
 void ImageEditorWindow::updateFontSizeControls() {
@@ -1478,6 +1490,20 @@ void ImageEditorWindow::updateWindowTitle() {
     }
 }
 
+LRESULT ImageEditorWindow::OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->applyCurrentOperation();
+    showApplyButtons();
+    return 0;
+}
 
+LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->cancelCurrentOperation();
+    showApplyButtons();
+    return 0;
+}
+
+void ImageEditorWindow::showApplyButtons() {
+    horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
+}
 
 }

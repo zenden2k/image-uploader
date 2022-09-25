@@ -76,6 +76,7 @@ Canvas::Canvas( HWND parent ) {
     stepFontSize_ = kDefaultStepFontSize;
     stepInitialValue_ = 1;
     fillTextBackground_ = false;
+    cropOnExport_ = true;
     createDoubleBuffer();
 }
 
@@ -955,11 +956,13 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
     renderInBuffer(rc, true);
     Crop * crop = nullptr;
 
-    // Find first Crop element
-    for (size_t i = 0; i< elementsOnCanvas_.size(); i++) {
-        if ( elementsOnCanvas_[i]->getType() == ElementType::etCrop ) {
-            crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
-            break;
+    if (cropOnExport_) {
+        // Find first Crop element
+        for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
+            if (elementsOnCanvas_[i]->getType() == ElementType::etCrop) {
+                crop = dynamic_cast<Crop*>(elementsOnCanvas_[i]);
+                break;
+            }
         }
     }
 
@@ -1052,6 +1055,20 @@ bool Canvas::undo() {
     UndoHistoryItem item = undoHistory_.top();
     if ( item.type == UndoHistoryItemType::uitDocumentChanged ){
         result =  doc_->undo();
+    } else if (item.type == UndoHistoryItemType::uitCropApplied) {
+        result = doc_->undo();
+        canvasWidth_ = doc_->getWidth();
+        canvasHeight_ = doc_->getHeight();
+        createDoubleBuffer();
+            
+        POINT p = item.elements[0].startPoint;
+        
+        for (auto& el : elementsOnCanvas_) {
+            el->move(p.x, p.y, false);
+        }
+        if (callback_) {
+            callback_->canvasSizeChanged();
+        }
     } else if ( item.type == UndoHistoryItemType::uitElementAdded ) {
         for (size_t i = 0; i< item.elements.size(); i++) {
             deleteMovableElement(item.elements[i].movableElement);
@@ -1242,7 +1259,7 @@ void Canvas::setFillTextBackground(bool fill) {
     UndoHistoryItem uhi;
     uhi.type = UndoHistoryItemType::uitFillBackgroundChanged;
     
-    for ( auto& el: elementsOnCanvas_) {
+    for (auto& el: elementsOnCanvas_) {
         if (el->isSelected() && el->getType() == ElementType::etText) {
             auto* textEl = dynamic_cast<TextElement*>(el);
             if (textEl) {
@@ -1277,6 +1294,61 @@ void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) {
 
 Arrow::ArrowMode Canvas::getArrowMode() const {
     return arrowMode_;
+}
+
+void Canvas::applyCurrentOperation() {
+    currentDrawingTool_->applyOperation();
+}
+
+void Canvas::cancelCurrentOperation() {
+    currentDrawingTool_->cancelOperation();
+}
+
+void Canvas::applyCrop(Crop* crop) {
+    using namespace Gdiplus;
+    int cropX = crop->getX();
+    int cropY = crop->getY();
+    int cropWidth = crop->getWidth();
+    int cropHeight = crop->getHeight();
+
+    doc_->applyCrop(cropX, cropY, cropWidth, cropHeight);
+
+    auto bm = std::make_shared<Bitmap>(cropWidth, cropHeight);
+    Graphics gr(bm.get());
+    gr.DrawImage(buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
+    lastAppliedCrop_ = Rect(cropX, cropY, cropWidth, cropHeight);
+
+    UndoHistoryItem historyItem;
+    historyItem.type = UndoHistoryItemType::uitCropApplied;
+    UndoHistoryItemElement element;
+    element.startPoint = { cropX , cropY };
+    element.endPoint = { cropX + cropWidth, cropY + cropHeight };
+    historyItem.elements.push_back(element);
+    addUndoHistoryItem(historyItem);
+    canvasWidth_ = cropWidth;
+    canvasHeight_ = cropHeight;
+    for (auto& el : elementsOnCanvas_) {
+        if (el != crop) {
+            el->move(-cropX, -cropY, false);
+        }
+    }
+    createDoubleBuffer();
+    if (callback_) {
+        callback_->canvasSizeChanged();
+    }
+}
+
+bool Canvas::hasElementOfType(ElementType type) const {
+    for (const auto& el : elementsOnCanvas_) {
+        if (el->getType() == type) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Canvas::setCropOnExport(bool crop) {
+    cropOnExport_ = crop;
 }
 
 }

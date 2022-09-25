@@ -183,7 +183,7 @@ void MovableElement::setPos(int x, int y) {
     resize(width, height);
 }
 
-bool MovableElement::move(int offsetX, int offsetY) {
+bool MovableElement::move(int offsetX, int offsetY, bool checkBounds) {
     int canvasWidth = canvas_->getWidth();
     int canvasHeight = canvas_->getHeigth();
     int x = getX();
@@ -194,12 +194,14 @@ bool MovableElement::move(int offsetX, int offsetY) {
     int newY = y + offsetY;
     int newRight = right + offsetX;
     int newBottom = bottom + offsetY;
-    
-    if ((newX < 0 || newX >= canvasWidth) && (newRight < 0 || newRight >= canvasWidth)) {
-        offsetX = 0;
-    } 
-    if ((newY < 0 || newY >= canvasHeight) && (newBottom < 0 || newBottom >= canvasHeight)) {
-        offsetY = 0;
+
+    if (checkBounds) {
+        if ((newX < 0 || newX >= canvasWidth) && (newRight < 0 || newRight >= canvasWidth)) {
+            offsetX = 0;
+        }
+        if ((newY < 0 || newY >= canvasHeight) && (newBottom < 0 || newBottom >= canvasHeight)) {
+            offsetY = 0;
+        }
     }
     
     if (offsetX == 0 && offsetY == 0) {

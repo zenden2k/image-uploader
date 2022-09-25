@@ -24,7 +24,6 @@
 namespace ImageEditor {
 
 CropTool::CropTool(Canvas* canvas) : MoveAndResizeTool(canvas, ElementType::etCrop) {
-
 }
 
 void CropTool::beginDraw(int x, int y)
@@ -52,15 +51,38 @@ void CropTool::continueDraw(int x, int y, DWORD flags)
 
 void CropTool::endDraw(int x, int y)
 {
+    lastCropElement_ = currentElement_;
     MoveAndResizeTool::endDraw(x, y);
     if ( currentElement_ ) {
         if ( x == startPoint_.x && y == startPoint_.y ) {
             canvas_->deleteMovableElement(currentElement_);
-            currentElement_ = 0;
+            currentElement_ = nullptr;
             canvas_->showOverlay(false);
+        } else {
+            
         }
         canvas_->updateView();
-        currentElement_ = 0;
+        currentElement_ = nullptr;
+    }
+}
+
+void CropTool::applyOperation() {
+    if (lastCropElement_) {
+        Crop* cropEl = dynamic_cast<Crop*>(lastCropElement_);
+        if (cropEl) {
+            canvas_->applyCrop(cropEl);
+            canvas_->deleteMovableElement(lastCropElement_);
+            lastCropElement_ = nullptr;
+            canvas_->showOverlay(false);
+        }
+    }
+}
+
+void CropTool::cancelOperation() {
+    if (lastCropElement_) {
+        canvas_->deleteMovableElement(lastCropElement_);
+        lastCropElement_ = nullptr;
+        canvas_->showOverlay(false);
     }
 }
 

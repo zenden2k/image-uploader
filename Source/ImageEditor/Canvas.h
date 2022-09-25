@@ -32,12 +32,14 @@ class Canvas {
         class Callback {
             public:
                 virtual void updateView(Canvas* canvas, Gdiplus::Rect rect) = 0;
+                virtual void canvasSizeChanged() = 0;
                 virtual ~Callback(){}
         }; 
 
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
-            uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged
+            uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
+            uitCropApplied
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
 
@@ -161,6 +163,12 @@ class Canvas {
 
         Gdiplus::Rect lastAppliedCrop() const;
 
+        void applyCurrentOperation();
+        void cancelCurrentOperation();
+
+        bool hasElementOfType(ElementType type) const;
+
+        void setCropOnExport(bool crop);
         boost::signals2::signal<void(int,int,int,int)> onCropChanged;
         boost::signals2::signal<void(int,int,int,int)> onCropFinished;
         boost::signals2::signal<void(DrawingToolType)> onDrawingToolChanged;
@@ -184,6 +192,7 @@ private:
         void setCursor(CursorType cursor);
         void renderInBuffer(Gdiplus::Rect rc, bool forExport =false);
         void recalcStepNumbers();
+        void applyCrop(Crop* cropElement);
 
         std::shared_ptr<Gdiplus::Bitmap> buffer_;
         Document* doc_;
@@ -232,6 +241,7 @@ private:
         HWND parentWindow_;
         InputBoxControl* inputBox_;
         Gdiplus::Rect lastAppliedCrop_;
+        bool cropOnExport_;
 };
 
 }
