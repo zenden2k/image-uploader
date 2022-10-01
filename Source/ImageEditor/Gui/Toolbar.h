@@ -81,6 +81,7 @@ public:
     void setStepInitialValue(int value);
     int getStepInitialValue() const;
     void showFillBackgroundCheckbox(bool show);
+    void setFillBackgroundCheckbox(bool fill);
     void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
     int getArrowType() const;

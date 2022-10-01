@@ -193,7 +193,7 @@ public:
         int prevRoundingRadius_;
         CIcon icon_;
         CIcon iconSmall_;
-        ColorsDelegate* colorsDelegate_;
+        std::unique_ptr<ColorsDelegate> colorsDelegate_;
         CString sourceFileName_;
         CString outFileName_;
         HWND cropToolTip_;

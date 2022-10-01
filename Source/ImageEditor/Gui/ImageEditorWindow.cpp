@@ -58,7 +58,6 @@ void ImageEditorWindow::init()
     showAddToWizardButton_ = true;
     prevPenSize_ = 0;
     prevRoundingRadius_ = 0;
-    colorsDelegate_ = nullptr;
     imageQuality_ = 85;
     searchEngine_ = SearchByImage::SearchEngine::seGoogle;
     currentDrawingTool_ = DrawingToolType::dtNone;
@@ -269,7 +268,6 @@ ImageEditorWindow::~ImageEditorWindow()
 {
     FreeLibrary(richeditLib_);
     delete canvas_;
-    delete colorsDelegate_;
 }
 
 void ImageEditorWindow::setInitialDrawingTool(DrawingToolType dt)
@@ -874,8 +872,8 @@ void ImageEditorWindow::createToolbars()
     int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
     Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,CString(), Toolbar::itButton, false);
-    colorsDelegate_ = new ColorsDelegate(&verticalToolbar_, index+1, canvas_);
-    colorsButton.itemDelegate = colorsDelegate_;
+    colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index+1, canvas_);
+    colorsButton.itemDelegate = colorsDelegate_.get();
     colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
     colorsDelegate_->setForegroundColor(canvas_->getForegroundColor());
     verticalToolbar_.addButton(colorsButton);
@@ -889,6 +887,7 @@ void ImageEditorWindow::createToolbars()
     horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
     horizontalToolbar_.setStepInitialValue(1);
     horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
+    horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
 }  
 
 

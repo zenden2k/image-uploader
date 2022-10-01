@@ -920,4 +920,8 @@ void Toolbar::showApplyButtons(bool show) {
     cancelOperationButton_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
+void Toolbar::setFillBackgroundCheckbox(bool fill) {
+    fillBackgroundCheckbox_.SetCheck(fill ? BST_CHECKED : BST_UNCHECKED);
+}
+
 }
