@@ -819,8 +819,6 @@ void WtlGuiSettings::BindToManager() {
     history.nm_bind(HistorySettings, EnableDownloading);
     history.nm_bind(HistorySettings, HistoryConverted);
 
-
-
     SettingsNode& imageReuploader = mgr_["ImageReuploader"];
     imageReuploader.nm_bind(ImageReuploaderSettings, PasteHtmlOnCtrlV);
 
@@ -1040,7 +1038,6 @@ void WtlGuiSettings::Uninstall() {
 
     CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
     DeleteFile(ShortcutName);
-
 }
 
 void WtlGuiSettings::EnableAutostartup(bool enable) {
@@ -1070,8 +1067,7 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     } else {
         // deleting from Startup (autorun)
         HKEY hKey;
-        LONG lRet;
-        lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
+        LONG lRet = RegOpenKeyEx(HKEY_CURRENT_USER, _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_WRITE,
             &hKey);
         RegDeleteValue(hKey, _T("ImageUploader"));
         RegCloseKey(hKey);

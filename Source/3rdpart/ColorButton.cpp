@@ -223,8 +223,8 @@ CColorButton::CColorButton () : m_wndPicker (this, 1)
     m_clrCurrent = CLR_DEFAULT;
     m_clrDefault = ::GetSysColor (COLOR_APPWORKSPACE);
     m_pszDefaultText = _tcsdup(_T(""));//_tcsdup (_T ("Automatic"));
-    m_pszCustomText = _tcsdup (_T ("More Colors..."));
-    m_GetColorCodeText = _T("Get color code...");
+    m_pszCustomText = _tcsdup (TR("More colors..."));
+    m_GetColorCodeText = TR("Get color's code...");
     m_fPopupActive = FALSE;
     m_fTrackSelection = FALSE;
     m_fMouseOver = FALSE;

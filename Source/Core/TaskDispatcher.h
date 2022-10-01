@@ -7,7 +7,8 @@
 #include <boost/asio/thread_pool.hpp>
 #include <boost/asio/post.hpp>
 
-typedef std::function<void()> TaskRunnerTask;
+using TaskRunnerTask = std::function<void()>;
+
 /*
 What if posted message will be never processed by receiver, e.g. it will be closed for some reason? 
 In this case Func object will be leaked wasting your memory.

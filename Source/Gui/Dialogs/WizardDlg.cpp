@@ -29,10 +29,10 @@
 #include "WelcomeDlg.h"
 #include "MainDlg.h"
 #include "VideoGrabberPage.h"
-#include "uploadsettings.h"
-#include "uploaddlg.h"
-#include "aboutdlg.h"
-#include "floatingwindow.h"
+#include "UploadSettings.h"
+#include "UploadDlg.h"
+#include "AboutDlg.h"
+#include "FloatingWindow.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
 #include "Func/CmdLine.h"
@@ -238,7 +238,6 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
     floatWnd_ = std::move(floatWnd);
 }
 
-TCHAR MediaInfoDllPath[MAX_PATH] = _T("");
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* translator = ServiceLocator::instance()->translator();
@@ -364,11 +363,13 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
-	} 
-	if(!CmdLine.IsOption(_T("tray")))
+	}
+
+    if (!CmdLine.IsOption(_T("tray"))) {
         TRC(IDCANCEL, "Exit");
-    else 
+    } else {
         TRC(IDCANCEL, "Hide");
+    }
     //TRC(IDC_UPDATESLABEL, "Check for Updates");
     TRC(IDC_PREV, "< Back");
 
@@ -681,14 +682,13 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 {
     RECT rc = {3,3,636,500};
     RECT rc2 = {3,100,636,500};
-    RECT rcc;
-    GetClientRect(&rcc);
+
     if (Pages[PageID] != nullptr) {
         return true;
     }
     switch(PageID)
     {
-        case 0:
+        case wpWelcomePage:
             CWelcomeDlg *tmp;
             tmp = new CWelcomeDlg();
             Pages[PageID] = tmp;
@@ -696,7 +696,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             tmp->Create(m_hWnd,rc);
             break;
 
-        case 1:
+        case wpVideoGrabberPage:
             CVideoGrabberPage *tmp1;
             tmp1 = new CVideoGrabberPage(uploadEngineManager_);
             Pages[PageID]=tmp1;
@@ -704,7 +704,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             tmp1->Create(m_hWnd,rc);
             break;
 
-        case 2:
+        case wpMainPage:
             CMainDlg *tmp2;
             tmp2=new CMainDlg();
             Pages[PageID]=tmp2;
@@ -712,7 +712,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             tmp2->Create(m_hWnd,rc);
             break;
 
-        case 3:
+        case wpUploadSettingsPage:
             CUploadSettings *tmp3;
             tmp3 = new CUploadSettings(enginelist_, uploadEngineManager_);
             Pages[PageID]=tmp3;
@@ -720,7 +720,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             tmp3->Create(m_hWnd,rc2);
             tmp3->SetWindowPos(0,0,50,0,0,SWP_NOSIZE);
             break;
-        case 4:
+        case wpUploadPage:
             CUploadDlg *tmp4;
             tmp4=new CUploadDlg(this, uploadManager_);
             Pages[PageID]=tmp4;
@@ -892,8 +892,8 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
 {
-    WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    enginelist_->setNumOfRetries(Settings->FileRetryLimit, Settings->ActionRetryLimit);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    enginelist_->setNumOfRetries(settings->FileRetryLimit, settings->ActionRetryLimit);
     bool Result = enginelist_->loadFromFile(filename);
     Error = enginelist_->errorStr();
     return Result;
@@ -1157,7 +1157,6 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
             CreatePage(wpMainPage);
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
-//            MainDlg->ThumbsView.LoadThumbnails();
             ShowPage(wpMainPage);
         }
     }
@@ -1183,7 +1182,6 @@ bool CWizardDlg::AddImage(const CString &FileName, const CString &VirtualFileNam
     }
     MainDlg->AddToFileList(FileName, VirtualFileName);
     if(Show){
-//        MainDlg->ThumbsView.LoadThumbnails();
         ShowPage(wpMainPage);
     }
     return true;
@@ -1200,12 +1198,6 @@ LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     auto* ais = reinterpret_cast<AddImageStruct*>(wParam);
     if(!ais) return 0;
     return  AddImage(ais->RealFileName, ais->VirtualFileName, ais->show);
-}
-
- LRESULT CWizardDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    bHandled = true; 
-    return 1;
 }
     
 LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -1232,13 +1224,6 @@ LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
     }
     return 0;
 }
-
-typedef HRESULT (STDAPICALLTYPE *SHGetKnownFolderPath_func)(_In_ REFKNOWNFOLDERID rfid,
-    _In_ DWORD /* KNOWN_FOLDER_FLAG */ dwFlags,
-    _In_opt_ HANDLE hToken,
-    _Outptr_ PWSTR *ppszPath); // free *ppszPath with CoTaskMemFree
-
-typedef HRESULT (STDAPICALLTYPE *SHCreateItemFromParsingName_func)(_In_ PCWSTR pszPath, _In_opt_ IBindCtx *pbc, _In_ REFIID riid, _Outptr_ void **ppv);
 
 bool CWizardDlg::funcAddImages(bool AnyFiles)
 {
@@ -1328,7 +1313,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
                         if (SUCCEEDED(hr)) {
                             CreatePage(wpMainPage);
-                            if (((CMainDlg*)Pages[2])->AddToFileList(pwsz)) {
+                            if (getPage<CMainDlg>(wpMainPage)->AddToFileList(pwsz)) {
                                 nCount++;
                             }
                             CoTaskMemFree(pwsz);
@@ -1358,7 +1343,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     
     
     if (nCount) {
-        ShowPage(wpMainPage, 0, 3);
+        ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
         CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
         mainDlg->UpdateStatusLabel();
 
@@ -1451,7 +1436,7 @@ bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
     CreatePage(wpVideoGrabberPage);
     LastVideoFile = fileName;
     getPage<CVideoGrabberPage>(wpVideoGrabberPage)->SetFileName(fileName);
-    ShowPage(wpVideoGrabberPage, prevPage, (Pages[2]) ? 2 : 3);
+    ShowPage(wpVideoGrabberPage, prevPage, Pages[wpMainPage] ? wpMainPage : wpUploadSettingsPage);
     return true;
 }
 
@@ -1584,67 +1569,6 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-// Prevent app's window from losing focus
-// when filling out the file dialog's edit box 
-// in web-browser control
-// TODO: remove this functionality
-LRESULT CWizardDlg::OnActivate(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    /*CString webViewClass(_T("CWebViewWindow"));
-    CString fileDialogClass(_T("FileDialogSubclassWindow"));
-    CString dialogClass(_T("#32770"));
-    HWND browserWindow = CWebViewWindow::window;
-    if ( !browserWindow || ::IsWindowVisible(browserWindow) ) {
-        return 0;
-    }
-    if ( wParam == WA_INACTIVE ) {
-        HWND wnd = (HWND)lParam;
-        if ( wnd == 0 ) {
-            SetActiveWindow();
-            bHandled = true;
-            return 0;
-        }
-        TCHAR Buffer[MAX_PATH] = _T("");
-        GetClassName(wnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-        if ( Buffer[0] == 0 ) {
-            SetActiveWindow();
-            bHandled = true;
-            return 0;
-        }
-        if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
-            HWND parent = ::GetParent(wnd);
-            if ( parent ) {
-                GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-                if ( (Buffer == dialogClass || Buffer == fileDialogClass) ) {
-                     parent = ::GetParent(parent);
-                    if ( parent ) {
-                        GetClassName(parent, Buffer, sizeof(Buffer)/sizeof(TCHAR));
-                        if ( Buffer == webViewClass && !::IsWindowVisible(parent) ){
-                            SetActiveWindow();
-                            bHandled = true;
-                            return 0;
-                        }
-                    } else {
-                            SetActiveWindow();
-                            bHandled = true;
-                            return 0;
-                    
-                        
-                    }
-                } else if ( Buffer ==webViewClass && !::IsWindowVisible(parent) ){
-                    SetActiveWindow();
-                    bHandled = true;
-                    return 0;
-                }
-                
-            }
-            
-        }
-        
-    }*/
-    return 0;
-}
-
 void CWizardDlg::CloseWizard()
 {
     if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
@@ -1652,7 +1576,6 @@ void CWizardDlg::CloseWizard()
     
     CloseDialog(0);
 }
-
 
 bool CWizardDlg::RegisterLocalHotkeys()
 {
@@ -1690,7 +1613,7 @@ bool CWizardDlg::UnRegisterLocalHotkeys()
     if ( hLocalHotkeys ) {
         DestroyAcceleratorTable(hLocalHotkeys);
     }
-    //LOG(INFO) << "m_hotkeys="<<m_hotkeys.GetCount();
+
     m_hotkeys.clear();
     hLocalHotkeys = nullptr;
     return true;
@@ -1777,9 +1700,6 @@ bool CWizardDlg::funcAddFiles()
         }
         mainDlg->UpdateStatusLabel();
 
-//       if (CurPage == wpMainPage) {
-//            mainDlg->ThumbsView.LoadThumbnails();
-//        }
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     }

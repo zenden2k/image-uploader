@@ -7,7 +7,7 @@
 #include <boost/filesystem/path.hpp>
 
 #include "atlheaders.h"
-#include "3rdpart/GdiPlusH.h"
+#include "3rdpart/GdiplusH.h"
 #include "Func/IuCommonFunctions.h"
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
