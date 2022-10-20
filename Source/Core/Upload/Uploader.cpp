@@ -151,14 +151,13 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 #ifdef _WIN32
     ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
     ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
-    if (tcParams.Size) {
-        if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByWidth) {
-            uparams.thumbWidth = tcParams.Width;   
-        }
-        if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
-            uparams.thumbHeight = tcParams.Height;
-        }
+
+    if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByWidth) {
+        uparams.thumbWidth = tcParams.Width;
+    } if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
+        uparams.thumbHeight = tcParams.Height;
     }
+    
 #else
     uparams.thumbWidth = 180;
 #endif
