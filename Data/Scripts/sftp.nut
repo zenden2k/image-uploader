@@ -1,4 +1,6 @@
 const CURLOPT_SSH_PRIVATE_KEYFILE = 10153;
+const CURLOPT_USERNAME = 10173;
+const CURLOPT_PASSWORD = 10174;
 
 if(ServerParams.getParam("hostname") == "") {
     ServerParams.setParam("hostname", "sftp.example.com") ;
@@ -28,16 +30,13 @@ function TestConnection() {
     local host = ServerParams.getParam("hostname");
     local login = ServerParams.getParam("Login");
     local pass =  ServerParams.getParam("Password");
-    local authStr = "";
     local folder = ServerParams.getParam("folder");
         
     if(login.len()) {
-        if (pass.len()) {
-            authStr = login + ":" + pass + "@";
-        } else {
-            authStr = login + "@";
-        }  
+        nm.setCurlOption(CURLOPT_USERNAME, login);
+        nm.setCurlOption(CURLOPT_PASSWORD, pass);
     }
+
     if(folder.slice(0,1) != "/") {
         folder = "/" + folder;
     }
@@ -51,7 +50,7 @@ function TestConnection() {
         nm.setCurlOption(CURLOPT_SSH_PRIVATE_KEYFILE, privateKeyPath); //
     }
 
-    if (nm.doGet("sftp://" + authStr + host + folder)){
+    if (nm.doGet("sftp://" + host + folder)){
         if (nm.responseBody() != "") {
             return {
                 status = 1,
@@ -75,16 +74,13 @@ function UploadFile(FileName, options) {
     
     local login = ServerParams.getParam("Login");
     local pass =  ServerParams.getParam("Password");
-    local downloadPath =  ServerParams.getParam("downloadPath");
-    local authStr="";
+    local downloadPath = ServerParams.getParam("downloadPath");
         
     if(login.len()) {
-        if (pass.len()) {
-            authStr = login + ":" + pass + "@";
-        } else {
-            authStr = login + "@";
-        }  
+        nm.setCurlOption(CURLOPT_USERNAME, login);
+        nm.setCurlOption(CURLOPT_PASSWORD, pass);
     }
+
     if(folder.slice(0,1) != "/") {
         folder = "/" + folder;
     }
@@ -92,9 +88,8 @@ function UploadFile(FileName, options) {
     if(folder.slice(folder.len()-1) != "/") {
         folder += "/";
     }
-
     
-    local url = "sftp://" + authStr + host + folder + nm.urlEncode(ansiFileName);
+    local url = "sftp://" + host + folder + nm.urlEncode(ansiFileName);
     local privateKeyPath = ServerParams.getParam("privateKeyPath");
     if (privateKeyPath.len()) {
         nm.setCurlOption(CURLOPT_SSH_PRIVATE_KEYFILE, privateKeyPath);

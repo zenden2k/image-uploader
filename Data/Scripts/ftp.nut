@@ -1,3 +1,6 @@
+const CURLOPT_USERNAME = 10173;
+const CURLOPT_PASSWORD = 10174;
+
 token <- "";
 
 if(ServerParams.getParam("hostname") == "") {
@@ -31,17 +34,14 @@ function TestConnection() {
     local host = ServerParams.getParam("hostname");
     local login = ServerParams.getParam("Login");
     local pass =  ServerParams.getParam("Password");
-    local authStr = "";
     local folder = ServerParams.getParam("folder");
 
         
-    if(login.len()) {
-        if (pass.len()) {
-            authStr = login + ":" + pass + "@";
-        } else {
-            authStr = login + "@";
-        }  
+	if(login.len()) {
+        nm.setCurlOption(CURLOPT_USERNAME, login);
+        nm.setCurlOption(CURLOPT_PASSWORD, pass);
     }
+
     if(folder.slice(0,1) != "/") {
         folder = "/" + folder;
     }
@@ -50,7 +50,7 @@ function TestConnection() {
         folder += "/";
     }
 
-	local url = "ftp://" + authStr + host + folder;
+	local url = "ftp://" + host + folder;
 
     if (nm.doGet(url)){
         if (nm.responseBody() != "") {
@@ -76,20 +76,20 @@ function  UploadFile(FileName, options) {
 	
 	local login = ServerParams.getParam("Login");
 	local pass =  ServerParams.getParam("Password");
-	local downloadPath =  ServerParams.getParam("downloadPath");
-	local authStr="";
+	local downloadPath = ServerParams.getParam("downloadPath");
 	
-	if(login.len())
-	{
-		authStr = login + ":" + pass + "@";
-	}
+	if(login.len()) {
+        nm.setCurlOption(CURLOPT_USERNAME, login);
+        nm.setCurlOption(CURLOPT_PASSWORD, pass);
+    }
+
 	if(folder.slice(0,1) != "/")
 		folder = "/" + folder;
 		
 	if(folder.slice(folder.len()-1) != "/")
 		folder += "/";
 	ansiFileName = reg_replace(ansiFileName, " ", "_");
-	local url = "ftp://" + authStr+ host + folder+ ansiFileName;
+	local url = "ftp://" + host + folder+ ansiFileName;
 
 	nm.setUrl(url);
 	nm.setMethod("PUT");
