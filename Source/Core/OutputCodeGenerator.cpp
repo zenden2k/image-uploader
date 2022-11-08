@@ -19,37 +19,84 @@
 */
 
 #include "OutputCodeGenerator.h"
+
+#include "Core/3rdpart/inja/inja.hpp"
+#include <nlohmann/json.hpp>
 #include "Utils/CoreUtils.h"
 
-ZOutputCodeGenerator::ZOutputCodeGenerator()
+
+OutputCodeGenerator::OutputCodeGenerator()
 {
 	m_PreferDirectLinks = true;
 	m_lang = clPlain;
 	m_CodeType = ctLinks;
 }
 
-void ZOutputCodeGenerator::setLang(CodeLang lang)
+void OutputCodeGenerator::setLang(CodeLang lang)
 {
 	m_lang = lang;
 }
 
-void ZOutputCodeGenerator::setType(CodeType type)
+void OutputCodeGenerator::setType(CodeType type)
 {
 	m_CodeType = type;
 }
 
-std::string ZOutputCodeGenerator::generate(const std::vector<ZUploadObject>& items)
+std::string OutputCodeGenerator::generate(const std::vector<UploadResultItem>& items, const std::string& templateFilePath, bool shortened)
 {
-    std::string result;
-	for(size_t i=0; i < items.size(); i++)
-	{
-		if(i) result += "\r\n";
-		result += generateCodeForItem(items[i], i);
+	if (!templateFilePath.empty()) {
+		using namespace inja;
+		json data;
+		data["rowSize"] = rowSize_;
+		std::string templateBody = IuCoreUtils::GetFileContents(templateFilePath);
+
+		if (templateBody.empty()) {
+			LOG(ERROR) << "Unable to load template " << templateFilePath;
+		}
+		json arr = nlohmann::json::array();
+		int i = 0;
+		for(const auto& item: items) {
+			if (item.isNull()) {
+			    continue;
+			}
+			std::string url;
+			if (!item.getImageUrl(shortened).empty() && (m_PreferDirectLinks || item.getDownloadUrl(shortened).empty()))
+				url = item.getImageUrl(shortened);
+			else
+				url = item.getDownloadUrl(shortened);
+
+			arr[i++] = {
+			    {"url", url },
+				{"thumbUrl", item.getThumbUrl(shortened)},
+				{"imageUrl", item.getImageUrl(shortened)},
+				{"downloadUrl", item.getDownloadUrl(shortened)},
+				{"filePath", item.localFilePath},
+				{"fileName", item.displayFileName},
+				{"fileNameWithoutExt", IuCoreUtils::ExtractFileNameNoExt(item.displayFileName)},
+				{"rowStart", !(i % rowSize_)},
+				{"rowEnd", !((i + 1) % rowSize_)},
+				//{"index", 
+			};
+		}
+		data["items"] = arr;
+		try {
+			return render(templateBody, data);
+		} catch (const std::exception& ex) {
+			LOG(ERROR) << "Error while rendering template " << templateFilePath << std::endl << ex.what();
+		}
+	} else {
+		std::string result;
+		for (size_t i = 0; i < items.size(); i++)
+		{
+			if (i) result += "\r\n";
+			result += generateCodeForItem(items[i], i);
+		}
+		return result;
 	}
-	return result;
+	return {};
 }
 
-std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item, int index)
+std::string OutputCodeGenerator::generateCodeForItem(const UploadResultItem& item, int index)
 {
 	if(m_lang == clPlain)
       return item.directUrl.empty()?item.viewUrl:item.directUrl;
@@ -66,21 +113,25 @@ std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item,
    return "";
 }
 
-std::string ZOutputCodeGenerator::image(const std::string& url)
+std::string OutputCodeGenerator::image(const std::string& url)
 {
 	if (m_lang == clBBCode)
 		return "[img]" + url +"[/img]";
 	else  return "<img border='0' src='" + url+ "'/>";
 }
 
-std::string ZOutputCodeGenerator::link(const std::string &url, const std::string &body)
+std::string OutputCodeGenerator::link(const std::string &url, const std::string &body)
 {
 	if (m_lang == clBBCode)
 		return "[url=" + url +"]"+body+"[/url]";
 	else  return "<a href='"+url+"'>"+body+"</a>";
 }
 
-void ZOutputCodeGenerator::setPreferDirectLinks(bool prefer)
+void OutputCodeGenerator::setPreferDirectLinks(bool prefer)
 {
 	m_PreferDirectLinks = prefer;
+}
+
+void OutputCodeGenerator::setRowSize(unsigned int rowSize) {
+	rowSize_ = rowSize;
 }

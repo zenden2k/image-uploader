@@ -817,21 +817,21 @@ void CFloatingWindow::stopIconAnimation() {
 }
 
 void CFloatingWindow::showLastUploadedCode() {
-    std::vector<CUrlListItem> items;
-    CUrlListItem it;
+    std::vector<UploadResultItem> items;
+    UploadResultItem it;
     if (lastUploadedItem_) {
         UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-        it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
-        it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
-        it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
-        it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
-        it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
+        it.directUrl = uploadResult->directUrl;
+        it.directUrlShortened = uploadResult->directUrlShortened;
+        it.thumbUrl = uploadResult->thumbUrl;
+        it.viewUrl = uploadResult->downloadUrl;
+        it.viewUrlShortened = uploadResult->downloadUrlShortened;
         auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
         if (fileTask) {
-            it.FileName = U2W(fileTask->getDisplayName());
+            it.displayFileName = fileTask->getDisplayName();
         }
         items.push_back(it);
-        if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
+        if (it.directUrl.empty() && it.viewUrl.empty())
             return ;
         CResultsWindow rp(wizardDlg_, items, false);
         rp.DoModal(m_hWnd);

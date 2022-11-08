@@ -24,6 +24,7 @@
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
+#include "Core/OutputCodeGenerator.h"
 #include "Func/Common.h"
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
@@ -54,7 +55,7 @@ class CResultsPanel :
     public CDialogImpl<CResultsPanel>    
 {
     public:
-        CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory = false);
+        CResultsPanel(CWizardDlg *dlg, std::vector<UploadResultItem>  & urlList, bool openedFromHistory = false);
         virtual ~CResultsPanel();
         enum { IDD = IDD_RESULTSPANEL};
 
@@ -113,9 +114,6 @@ class CResultsPanel :
      * First four indices correspond to CodeType enum
      */
     int GetCodeType() const;
-    void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
-    void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
-    void GenerateMarkdownCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void UpdateOutput(bool immediately = false);
     void SetCodeType(int Index);
     void Clear();
@@ -136,7 +134,7 @@ protected:
     TabPage m_Page;
     std::map<CString, CString> m_Vars;
     std::vector<ServerProfile> m_Servers;
-    std::vector<CUrlListItem>  &UrlList;
+    std::vector<UploadResultItem>  &UrlList;
     std::mutex UrlListCS;
     int m_nImgServer, m_nFileServer;
     CString code_;
@@ -150,10 +148,6 @@ protected:
     bool shortenUrl_;
     bool openedFromHistory_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
-    
-    void BBCode_Link(CString &Buffer, CUrlListItem &item);
-    void Markdown_Link(CString &Buffer, CUrlListItem &item);
-    void HTML_Link(CString &Buffer, CUrlListItem &item);
    
     void onCodeTypeChanged();
 };

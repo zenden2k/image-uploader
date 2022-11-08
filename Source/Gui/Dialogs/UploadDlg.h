@@ -26,6 +26,7 @@
 #include <ShObjidl.h>
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
+#include "Core/OutputCodeGenerator.h"
 #include "Core/Upload/Uploader.h"
 #include "Gui/Dialogs/MainDlg.h"
 #include "Gui/Dialogs/ResultsWindow.h"
@@ -71,7 +72,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
         int ThreadTerminated(void);
-        std::vector<CUrlListItem> urlList_;
+        std::vector<UploadResultItem> urlList_;
         bool OnShow() override;
         bool OnNext() override;
         bool OnHide() override;

@@ -92,8 +92,8 @@ bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
 
-ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
-ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
+OutputCodeGenerator::CodeType codeType = OutputCodeGenerator::ctClickableThumbnails;
+OutputCodeGenerator::CodeLang codeLang = OutputCodeGenerator::clPlain;
 bool autoUpdate = false;
 std::shared_ptr<UploadSession> session;
 
@@ -225,11 +225,11 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codelang = argv[++i];
             if(!IuStringUtils::stricmp(codelang, "plain"))
-                codeLang =  ZOutputCodeGenerator::clPlain;
+                codeLang =  OutputCodeGenerator::clPlain;
             else if(!IuStringUtils::stricmp(codelang, "html"))
-                codeLang =  ZOutputCodeGenerator::clHTML;
+                codeLang =  OutputCodeGenerator::clHTML;
             else if(!IuStringUtils::stricmp(codelang, "bbcode"))
-                codeLang =  ZOutputCodeGenerator::clBBCode;
+                codeLang =  OutputCodeGenerator::clBBCode;
             i++;
             continue;
         }
@@ -239,13 +239,13 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codetype = argv[++i];
             if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
-                codeType =  ZOutputCodeGenerator::ctTableOfThumbnails;
+                codeType =  OutputCodeGenerator::ctTableOfThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
-                codeType =  ZOutputCodeGenerator::ctClickableThumbnails;
+                codeType =  OutputCodeGenerator::ctClickableThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "Images"))
-                codeType =  ZOutputCodeGenerator::ctImages;
+                codeType =  OutputCodeGenerator::ctImages;
             else if(!IuStringUtils::stricmp(codetype, "Links"))
-                codeType =  ZOutputCodeGenerator::ctLinks;
+                codeType =  OutputCodeGenerator::ctLinks;
             i++;
             continue;
         }
@@ -380,13 +380,13 @@ CUploadEngineData* getServerByName(const std::string& name) {
 
 void OnUploadSessionFinished(UploadSession* session) {
     int taskCount = session->taskCount();
-    std::vector<ZUploadObject> uploadedList;
+    std::vector<UploadResultItem> uploadedList;
     for (int i = 0; i < taskCount; i++) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
         auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
-            ZUploadObject uo;
+            UploadResultItem uo;
             uo.directUrl = res->directUrl;
             uo.thumbUrl = res->thumbUrl;
             uo.viewUrl = res->downloadUrl;
@@ -399,7 +399,7 @@ void OnUploadSessionFinished(UploadSession* session) {
             uploadedList.push_back(uo);
         }
     }
-    ZOutputCodeGenerator generator;
+    OutputCodeGenerator generator;
     generator.setLang(codeLang);
     generator.setType(codeType);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);

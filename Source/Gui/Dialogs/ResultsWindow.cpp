@@ -26,7 +26,7 @@
 #include "Core/Settings/WtlGuiSettings.h"
 
 // CResultsWindow
-CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
+CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<UploadResultItem>  & urlList,bool ChildWindow)
 {
     m_WizardDlg = wizardDlg;
     ResultsPanel.reset(new CResultsPanel(wizardDlg, urlList, !ChildWindow));

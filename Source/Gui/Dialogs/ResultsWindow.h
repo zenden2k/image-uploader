@@ -40,7 +40,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
     private:
         CWizardDlg *m_WizardDlg;
     public:
-        CResultsWindow(CWizardDlg *wizardDlg, std::vector<CUrlListItem>  & urlList, bool ChildWindow);
+        CResultsWindow(CWizardDlg *wizardDlg, std::vector<UploadResultItem>  & urlList, bool ChildWindow);
         ~CResultsWindow();
 
         int GetCodeType() const;

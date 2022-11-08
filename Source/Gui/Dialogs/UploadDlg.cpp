@@ -574,14 +574,14 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         {
             return;
         }
-        CUrlListItem item;
+        UploadResultItem item;
         UploadResult* uploadResult = task->uploadResult();
-        item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
-        item.ImageUrlShortened = Utf8ToWCstring(uploadResult->directUrlShortened);
-        item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
-        item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
-        item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
+        item.directUrl = uploadResult->directUrl;
+        item.directUrlShortened = uploadResult->directUrlShortened;
+        item.displayFileName = fileTask->getDisplayName();
+        item.viewUrl = uploadResult->downloadUrl;
+        item.viewUrlShortened = uploadResult->downloadUrlShortened;
+        item.thumbUrl = uploadResult->thumbUrl;
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
             urlList_[fps->tableRow] = item;
@@ -600,9 +600,9 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         }
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            auto& row = urlList_[fps->tableRow];
-            row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
-            row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
+            UploadResultItem& row = urlList_[fps->tableRow];
+            row.directUrlShortened = parentTask->uploadResult()->getDirectUrlShortened();
+            row.viewUrlShortened = parentTask->uploadResult()->getDownloadUrlShortened();
         }
         
     }

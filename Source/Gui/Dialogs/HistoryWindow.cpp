@@ -279,15 +279,15 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     return 0;
 }
 
-CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
+UploadResultItem fromHistoryItem(const HistoryItem& historyItem)
 {
-    CUrlListItem it;
-    it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
-    it.ImageUrlShortened = Utf8ToWstring(historyItem.directUrlShortened).c_str();
-    it.ThumbUrl =  Utf8ToWstring(historyItem.thumbUrl).c_str();
-    it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
-    it.DownloadUrlShortened = Utf8ToWstring(historyItem.viewUrlShortened).c_str();
-    it.FileName = Utf8ToWstring(historyItem.displayName).c_str();
+    UploadResultItem it;
+    it.directUrl = historyItem.directUrl;
+    it.directUrlShortened = historyItem.directUrlShortened;
+    it.thumbUrl =  historyItem.thumbUrl;
+    it.viewUrl = historyItem.viewUrl;
+    it.viewUrlShortened = historyItem.viewUrlShortened;
+    it.displayFileName = historyItem.displayName;
     return it;
 }
 
@@ -295,21 +295,21 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    std::vector<CUrlListItem> items;
+    std::vector<UploadResultItem> items;
 
     if(item->level()==0)
     {
         auto* ses = static_cast<CHistorySession*>(item->userData());
         for(int i=0; i<ses->entriesCount(); i++)
         {
-            CUrlListItem it  =fromHistoryItem(ses->entry(i));
+            UploadResultItem it = fromHistoryItem(ses->entry(i));
             items.push_back(it);
         }
     }
     else
     {
         HistoryItem* hit = CHistoryTreeControl::getItemData(item);
-        CUrlListItem it  = fromHistoryItem(*hit);
+        UploadResultItem it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
     CResultsWindow rp(wizardDlg_, items, false);
