@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<UpdateInfo Name="iu_core" TimeStamp="1660653049" ManualUpdate="1" CoreUpdate="0" Date="16.08.2022 00:00:00" 
-     DownloadPage="https://svistunov.dev/imageuploader_nightly" UpdateUrl="https://svistunov.dev/updates/update.php" DisplayName="Image Uploader nightly build 4944">
+<UpdateInfo Name="iu_core" TimeStamp="1662123977" ManualUpdate="1" CoreUpdate="0" Date="02.09.2022 00:00:00" 
+     DownloadPage="https://svistunov.dev/imageuploader_nightly" UpdateUrl="https://svistunov.dev/updates/update.php" DisplayName="Image Uploader nightly build 4948">
   <Info>
   Fixed bugs
 </Info>

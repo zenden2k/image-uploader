@@ -169,11 +169,16 @@ void CLogWindow::TranslateUI()
 
 LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    std::lock_guard<std::mutex> lk(queueMutex_);
-    for (const auto& item : queuedItems_) {
+    std::vector<DefaultLogger::LogEntry> items;
+    {
+        std::lock_guard<std::mutex> lk(queueMutex_);
+        // Copy vector to avoid deadlocks (it is a hack)
+        items = queuedItems_;
+        queuedItems_.clear();
+    }
+    for (const auto& item : items) {
         WriteLogImpl(item);
     }
-    queuedItems_.clear();
     
     return 0;
 }
