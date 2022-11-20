@@ -263,17 +263,6 @@ To remove default field, pass an empty value.
 <code>urlencode</code> - процентное кодирование. Пример <code>Url="http://example.com?filename=$(_FILENAME|urlencode)"</code><br>
 <code>htmldecode</code> - (version >= 1.3.2) decode HTML entities <br>
 
-<h3>Утилита автоматического генерирования servers.xml</h3>
-<p>
-<a href="https://bintray.com/artifact/download/zenden/zenden-image-uploader/IU_Helper_0.1.1.7z">Скачать IU Helper</a><br>
-Подходит для хостингов с обычной загрузочной формой (работает только в самых простых случаях, без JavaScript, Flash, сессий и т.д. )
-Вводите в ней адрес сайта, авторизовываетесь на сайте (если надо),
- загружаете картинку, затем копируете со страницы адрес картинки и адрес миниатюры 
-(если надо) в текстовые поля, которые находятся ниже, и нажимаете "Анализ". 
-Сгенерированный xml код, обрамленный тегами   <code>&lt;Servers&gt;  ... &lt;/Servers&gt;</code>, 
-сохраните в файле <code>имя_вашего_сервера.xml</code> в каталоге <code>Data\Servers</code> 
-(находящемся в каталоге, в которой установлена программа) либо в системном каталоге <code>с:\ProgramData\Image Uploader\Servers</code>
- (если программа установлена с помощью инсталлятора). </p>
 <a name="scripts"></a>
 <h2>Создание плагинов</h2> 
 <p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
@@ -285,7 +274,6 @@ To remove default field, pass an empty value.
 <a href="http://www.squirrel-lang.org/doc/sqstdlib3.html" target="_blank">Документация стандартной библиотеки языка Squirrel</a>
 </p>
 
-</pre>
 </div>
 </div>
 </div>

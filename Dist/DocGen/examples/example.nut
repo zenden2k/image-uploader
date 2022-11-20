@@ -1,12 +1,11 @@
 test <- "example"; // global variable
 
-// Function which is actually doing upload of a file
+// This is the function that performs the upload of the file
 // @param string pathToFile 
 // @param UploadParams options
 // @return int - success(1), failure(0)
 
-function  UploadFile(pathToFile, options)
-{
+function UploadFile(pathToFile, options) {
     nm.setUrl("http://example.com/upload.php");
     nm.addQueryParamFile("file", pathToFile, ExtractFileName(pathToFile),"");
     nm.addQueryParam("submit", "Upload file!");
@@ -20,7 +19,6 @@ function  UploadFile(pathToFile, options)
     return 1; //SUCCESS
 }
 
- 
 // Helper function that simplifies working with regular expressions
 // @param string data - the string we are looking in
 // @param string regStr - regular expression, in the format supported by the standard squirrel language library.
@@ -29,8 +27,7 @@ function  UploadFile(pathToFile, options)
 // @param int start - starting position
 // @return string - returns text captured by the first subpattern.
 //
-function regex_simple(data,regStr,start)
-{
+function regex_simple(data,regStr,start) {
     local ex = regexp(regStr);
     local res = ex.capture(data, start);
     local resultStr = "";
@@ -40,26 +37,32 @@ function regex_simple(data,regStr,start)
     return resultStr;
 }
 
-/** 
-* Optional function:
-* Retreving folder (album) list from server
-* @var CFolderList list
-* @return int - success(1), failure(0) 
-**/
-function GetFolderList(list)
-{
+// Authenticating on remote server (optional function)
+// @var CFolderList list
+// @return int - success(1), failure(0) 
+function Authenticate() {
+    // TODO: Your code
+    return 1; //SUCCESS
+}
+
+
+// Optional function:
+// Retrieving folder (album) list from server
+// @var CFolderList list
+// @return int - success(1), failure(0) 
+//
+function GetFolderList(list) {
     // TODO: Your code
     return 1; //SUCCESS
 }
  
-/** 
-* Create an folder or an album
-* @var CFolderItem parentAlbum
-* @var CFolderItem album
-* @return int - success(1), failure(0)
-**/
-function CreateFolder(parentAlbum,album)
-{
+ 
+// Create an folder or an album
+// @var CFolderItem parentAlbum
+// @var CFolderItem album
+// @return int - success(1), failure(0)
+//
+function CreateFolder(parentAlbum,album) {
     // TODO: Your code
     return 1; //SUCCESS
 }
@@ -68,8 +71,7 @@ function CreateFolder(parentAlbum,album)
 // @var CFolderItem album
 // @return int - success(1), failure(0) 
 //
-function ModifyFolder(album)
-{
+function ModifyFolder(album) {
     // TODO: Your code
     return 1; //SUCCESS
 }
@@ -77,7 +79,6 @@ function ModifyFolder(album)
 // A function that returns a list of types of access restrictions to an album:
 // private, public, only for friends, etc.
 // @return array 
-function GetFolderAccessTypeList()
-{
+function GetFolderAccessTypeList() {
     return ["Private", "Public"];
 }
