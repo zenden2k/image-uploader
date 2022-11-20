@@ -88,9 +88,8 @@ function checkResponse(json) {
 function Authenticate() {
     local token = ServerParams.getParam("token");
     local userId = ServerParams.getParam("userId");
-    local login = ServerParams.getParam("Login");
 
-    if ( token != "" && ServerParams.getParam("prevLogin") == login ) {
+    if ( token != "") { 
         local tokenTime  = 0;
         local expiresIn = 0;
         try {
@@ -124,11 +123,28 @@ function Authenticate() {
 
     browser.navigateToUrl(url);
     browser.showModal();
-    return  ServerParams.getParam("token") != "" ? 1: 0;
+    return ServerParams.getParam("token") != "" ? 1: 0;
 }
 
 function IsAuthenticated() {
-    return ServerParams.getParam("token") != "" ? 1 : 0;
+    local token = ServerParams.getParam("token");
+    local userId = ServerParams.getParam("userId");
+
+    if ( token != "") {
+        local tokenTime  = 0;
+        local expiresIn = 0;
+        try {
+            tokenTime = ServerParams.getParam("tokenTime").tointeger();
+            expiresIn = ServerParams.getParam("expiresIn").tointeger();
+        } catch ( ex ) {
+        }
+
+        if ( time() > tokenTime + expiresIn ) {
+            return 0;
+        }
+        return 1;
+    }
+    return 0;
 }
 
 function GetFolderList(list) {

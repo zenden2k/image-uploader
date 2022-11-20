@@ -34,7 +34,6 @@
 #endif
 #include "3rdpart/Registry.h"
 #include "Func/WinUtils.h"
-#include "COMUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/ServiceLocator.h"
 
@@ -45,7 +44,7 @@ using namespace Sqrat;
 
 class WebBrowserPrivate : public WebBrowserPrivateBase {
 public:
-    WebBrowserPrivate(CWebBrowser * browser ) {
+    WebBrowserPrivate(CWebBrowser * browser) {
         owningThread_ = std::this_thread::get_id();
         browser_ = browser;
         using namespace std::placeholders;
@@ -58,7 +57,7 @@ public:
         timerInterval_ = 0;
     }
 
-    virtual ~WebBrowserPrivate() {
+    ~WebBrowserPrivate() override {
         assert(owningThread_ == std::this_thread::get_id()); 
         // WTF? WebViewWindow should be destroyed in the same thread it was created
         if ( IsWindow(webViewWindow_.m_hWnd) ) {
@@ -68,14 +67,8 @@ public:
     }
 
     bool navigateToUrl(const std::string& url) {
-        if ( webViewWindow_.m_hWnd) {
-            return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
-        } else {
-            initialUrl_ = IuCoreUtils::Utf8ToWstring(url).c_str();
-            return true;
-        }
+        return webViewWindow_.NavigateTo(IuCoreUtils::Utf8ToWstring(url).c_str());
     }
-
 
     bool showModal() {
         auto programWindow = ServiceLocator::instance()->programWindow();
@@ -86,23 +79,23 @@ public:
         if ( !initialUrl_.IsEmpty() ) {
             webViewWindow_.NavigateTo(initialUrl_);
         } else if ( !initialHtml_.IsEmpty()) {
-            webViewWindow_.view_.displayHTML(initialHtml_);
+            webViewWindow_.displayHTML(initialHtml_);
         }
         
-        bool res =  webViewWindow_.DoModal(parent) != 0;
+        bool res = webViewWindow_.DoModal(parent) != 0;
         clearCallbacks();
         return res;
     }
 
     bool exec() {
         create();
-        if ( !initialUrl_.IsEmpty() ) {
+        if (!initialUrl_.IsEmpty()) {
             webViewWindow_.NavigateTo(initialUrl_);
         } else if ( !initialHtml_.IsEmpty()) {
-            webViewWindow_.view_.displayHTML(initialHtml_);
+            webViewWindow_.displayHTML(initialHtml_);
         }
 
-        bool res =  webViewWindow_.exec()!=0;
+        bool res = webViewWindow_.exec()!=0;
         clearCallbacks();
         return res;
     }
@@ -131,12 +124,7 @@ public:
     }
 
     bool setHtml(const std::string& html) {
-        if ( webViewWindow_.m_hWnd) {
-            return webViewWindow_.displayHTML(U2W(html));
-        } else {
-            initialHtml_ = IuCoreUtils::Utf8ToWstring(html).c_str();
-            return true;
-        }
+        return webViewWindow_.displayHTML(U2W(html));
     }
 
     void resize(int w, int h) {
@@ -162,16 +150,13 @@ public:
 
     const std::string url() {
         if ( webViewWindow_.m_hWnd) {
-            return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationURL());
+            return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.getUrl());
         } 
         return std::string();
     }
 
     const std::string title() {
-        if ( webViewWindow_.m_hWnd) {
-            return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.view_.GetLocationName());
-        } 
-        return IuCoreUtils::WstringToUtf8((LPCTSTR)initialTitle_);
+        return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.getTitle());
     }
 
     const std::string getDocumentContents() {
@@ -196,39 +181,22 @@ public:
         }    
     }
 
-    IWebBrowser2* getBrowserInterface() {
-        return  webViewWindow_.view_.GetBrowserInterface();
-    }
-
     int getMajorVersion() {
         return WinUtils::GetInternetExplorerMajorVersion();
     }
 
-    const std::string runJavaScript(const std::string& code) {
-        if ( webViewWindow_.m_hWnd) {
-            CComVariant res;
-            /*CComBSTR strSource();
-            CComVariant bstrTarget;
-            
-            bstrTarget.vt = VT_BSTR;
-            bstrTarget.bstrVal = strSource.Copy();*/
-            if ( webViewWindow_.view_.CallJScript(_T("eval"), IuCoreUtils::Utf8ToWstring(code).c_str(), &res) ) {
-                return ComVariantToString(res);
-            }
-        } else {
-            LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
-        }
-        return std::string();
+    std::string runJavaScript(const std::string& code) {
+        return webViewWindow_.runJavaScript(IuCoreUtils::Utf8ToWstring(code).c_str());
     }
 
-    const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Array args) {
-        if ( webViewWindow_.m_hWnd) {
+    std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Array args) {
+        /*if (webViewWindow_.m_hWnd) {
             CComVariant res;
             webViewWindow_.view_.CallJScript(IuCoreUtils::Utf8ToWstring(funcName).c_str(), &res);
             return ComVariantToString(res);
         } else {
             LOG(ERROR) << "injectJavaScript: WebBrowser control is not created yet.";
-        }
+        }*/
         return std::string();
     }
 

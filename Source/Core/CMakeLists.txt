@@ -179,6 +179,11 @@ if(WIN32)
         Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
     )
+    
+    if (IU_ENABLE_WEBVIEW2)
+        list(APPEND SRC_LIST  ../Gui/Controls/Webview2BrowserView.cpp)
+    endif()
+
     list(APPEND HEADER_LIST 
         DefaultProxyProvider.h 
         3rdpart/CodePages.h 

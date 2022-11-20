@@ -5,7 +5,27 @@
 
 #include "WTLBrowserView.h"
 
+#include <urlmon.h>
+
 #include "Core/Logging.h"
+#include "Core/Scripting/API/COMUtils.h"
+#include "Core/Utils/CoreUtils.h"
+#include "Func/WinUtils.h"
+
+bool CWTLBrowserView::createBrowserView(HWND parentWnd, const RECT& bounds) {
+    WinUtils::UseLatestInternetExplorerVersion(false);
+    CoInternetSetFeatureEnabled(FEATURE_DISABLE_NAVIGATION_SOUNDS, SET_FEATURE_ON_PROCESS, true);
+    HWND res = Create(parentWnd, const_cast<RECT&>(bounds), _T("about:blank"), WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_HSCROLL | WS_VSCROLL, 0);
+    if (!res) {
+        return false;
+    }
+    PutSilent(TRUE); // Suppress javascript errors http://stackoverflow.com/questions/7646055/supressing-script-error-in-ie8-c
+    return true;
+}
+
+void CWTLBrowserView::resize(const RECT& rc) {
+    SetWindowPos(NULL, &rc, SWP_NOMOVE | SWP_NOZORDER);
+}
 
 BOOL CWTLBrowserView::PreTranslateMessage(MSG* pMsg)
 {
@@ -37,8 +57,8 @@ void CWTLBrowserView::OnSetSecureLockIcon(long nSecureLockIcon)
 
 void CWTLBrowserView::OnNavigateComplete2(IDispatch* pDisp, const CString& szURL)
 {
-    if ( onNavigateComplete2_ ) {
-        onNavigateComplete2_(szURL);
+    if ( onUrlChanged_ ) {
+        onUrlChanged_(szURL);
     }
 }
 
@@ -86,14 +106,30 @@ void CWTLBrowserView::OnDocumentComplete(IDispatch* pDisp, const String& szURL)
     pUnkBrowser->Release();
 }
 
-void CWTLBrowserView::setOnNavigateComplete2(std::function<void(const CString&)> cb) {
-    onNavigateComplete2_ = std::move(cb);
+void CWTLBrowserView::navigateTo(CString url) {
+    Navigate(url);
 }
 
-void CWTLBrowserView::setOnDocumentComplete(std::function<void(const CString&)> cb) {
-    onDocumentComplete_ = std::move(cb);
+bool CWTLBrowserView::showHTML(CString html) {
+    return SUCCEEDED(displayHTML(html));
 }
 
-void CWTLBrowserView::setOnNavigateError(std::function<bool(const CString&, LONG)> cb) {
-    onNavigateError_ = std::move(cb);
+std::string CWTLBrowserView::runJavaScript(CString code) {
+    CComVariant res;
+    if (CallJScript(_T("eval"), code, &res)) {
+        return ScriptAPI::ComVariantToString(res);
+    }
+    return {};
+}
+
+CString CWTLBrowserView::getUrl() {
+    return GetLocationURL();
+}
+
+CString CWTLBrowserView::getTitle() {
+    return GetLocationName();
+}
+
+void CWTLBrowserView::setFocus() {
+    SetFocus();
 }

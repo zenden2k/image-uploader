@@ -3,13 +3,13 @@
 
 #include <functional>
 
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
-#include "Gui/Controls/WTLBrowserView.h"
+
 #include "3rdpart/thread.h"
-#ifdef IU_ENABLE_WEBVIEW2
-    #include "WebView2.h"
-#endif
+
+class AbstractBrowserView;
 
 class CWebViewWindow: public CWindowImpl<CWebViewWindow>//, public TimerAdapter<CWebViewWindow>
 {
@@ -25,10 +25,12 @@ public:
     void close(int retCode = 1);
     void abortFromAnotherThread();
     void destroyFromAnotherThread();
-    void setSilent(bool silent);
     bool displayHTML(const CString& html);
-    CWTLBrowserView view_;
-    static HWND window;
+    std::string runJavaScript(const CString& js);
+    CString getUrl();
+    CString getTitle();
+    void setBrowserFocus();
+
 protected:
     enum { kUserTimer = 400, kMessageLoopTimeoutTimer = 401, WM_SETFILLTIMER = WM_USER +55, WM_FILLINPUTFIELD, WM_DESTROYWEBVIEWWINDOW};
     BEGIN_MSG_MAP(CWebViewWindow)
@@ -53,13 +55,10 @@ protected:
     CIcon icon_;
     CIcon iconSmall_;
     CString uploadFileName_;
-    CString initialUrl_;
+    CString initialUrl_, initialHtml_;
     bool messageLoopIsRunning_;
-    #ifdef IU_ENABLE_WEBVIEW2
-    CComPtr<ICoreWebView2Controller> webviewController_;
-    CComPtr<ICoreWebView2> webviewWindow_;
-    #endif
     
+    std::unique_ptr<AbstractBrowserView> browserView_;
     void setOnUrlChanged(std::function<void(const CString&)> cb);
     void setOnDocumentComplete(std::function<void(const CString&)> cb);
     void setOnNavigateError(std::function<bool(const CString&, LONG)> cb);

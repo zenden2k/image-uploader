@@ -39,7 +39,7 @@ namespace ScriptAPI {
 
         virtual void close() = 0;
         virtual void abort();
-        virtual void stop();
+        void stop() override;
         void clearCallbacks();
 
     protected:

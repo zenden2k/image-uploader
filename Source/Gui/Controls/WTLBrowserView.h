@@ -11,14 +11,15 @@
 
 #include "atlheaders.h"
 #include "Browser.h"
+#include "Gui/Controls/AbstractBrowserView.h"
 
-class CWTLBrowserView : public CWindowImpl<CWTLBrowserView, CAxWindow>, public CWebBrowser2<CWTLBrowserView>
+class CWTLBrowserView : public CWindowImpl<CWTLBrowserView, CAxWindow>, public CWebBrowser2<CWTLBrowserView>, public AbstractBrowserView
 {
 public:
     CWTLBrowserView() : m_bSecured(FALSE)
     {
     }
-    
+
     DECLARE_WND_SUPERCLASS(NULL, CAxWindow::GetWndClassName())
 
     BOOL PreTranslateMessage(MSG* pMsg);
@@ -27,6 +28,14 @@ public:
         CHAIN_MSG_MAP(CWebBrowser2<CWTLBrowserView>)
     END_MSG_MAP()
 
+    bool createBrowserView(HWND parentWnd, const RECT& bounds) override;
+    void resize(const RECT& rc) override;
+    void navigateTo(CString url) override;
+    bool showHTML(CString html) override;
+    std::string runJavaScript(CString code) override;
+    CString getUrl() override;
+    CString getTitle() override;
+    void setFocus() override;
 // Handler prototypes (uncomment arguments if needed):
 //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -45,14 +54,7 @@ public:
         return m_bSecured;
     }
 
-    void setOnNavigateComplete2(std::function<void(const CString&)> cb);
-    void setOnDocumentComplete(std::function<void(const CString&)> cb);
-    void setOnNavigateError(std::function<bool(const CString&, LONG)> cb);
 
-protected:
-    std::function<void(const CString&)> onNavigateComplete2_;
-    std::function<void(const CString&)> onDocumentComplete_;
-    std::function<bool(const CString&, LONG)> onNavigateError_;
 protected:
     BOOL m_bSecured;
 };

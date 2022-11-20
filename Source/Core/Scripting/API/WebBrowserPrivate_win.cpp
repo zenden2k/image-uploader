@@ -68,14 +68,7 @@ void WebBrowserPrivate::OnDocumentComplete(const CString& url) {
 
 void WebBrowserPrivate::setFocus()
 {
-    /*CComQIPtr<IHTMLDocument4> doc4(webViewWindow_.view_.GetDocument());
-    if ( doc4 ) {
-        doc4->focus();
-    }*/
-    CComQIPtr<IHTMLDocument2> doc2(webViewWindow_.view_.GetDocument());
-    CComQIPtr<IHTMLWindow2>  pWindow;
-    doc2->get_parentWindow(&pWindow);
-    pWindow->focus();
+    webViewWindow_.setBrowserFocus();
 }
 
 bool WebBrowserPrivate::OnNavigateError(const CString& url, LONG statusCode) {
