@@ -445,7 +445,6 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
     int n = UrlList.size();
     // Lang: HTML, Type: "Table of clickable thumbnails" or "Clickable thumbnails"
     if (codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails) {
-        Buffer += _T("<center>");
         for (int i = 0; i<n; i++) {
             CUrlListItem& item = UrlList[i];
             if (item.isNull()) {
@@ -468,8 +467,7 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
                 Buffer += _T("&nbsp;&nbsp;");
             if (!((i + 1) % p) && codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails)
                 Buffer += _T("<br/>&nbsp;<br/>\r\n");
-        }
-        Buffer += _T("</center>");
+        }  
     }
 
     // Lang: HTML, Type: Full-sized images

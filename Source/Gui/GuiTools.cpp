@@ -335,7 +335,7 @@ int ScreenBPP(){
 }
 
 BOOL Is32BPP(){
-    return (WinUtils::IsWinXP() & (ScreenBPP() >= 32));
+    return ScreenBPP() >= 32;
 }
 
 RECT GetDialogItemRect(HWND dialog, int itemId) {

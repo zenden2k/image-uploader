@@ -1833,7 +1833,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     {
         engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
         engine.captureScreen();
-        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+        result = engine.capturedBitmap();
     }
     else if (mode == cmActiveWindow)
     {
@@ -1844,7 +1844,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         winRegion.setWindowCapturingFlags(wcfFlags);
         winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
         engine.captureRegion(&winRegion);
-        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+        result = engine.capturedBitmap();
     } else if (mode == cmLastRegion) {
         if (!lastScreenshotRegion_) {
             LOG(ERROR) << "Last region is empty!";
@@ -1852,13 +1852,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         else {
             engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay * 1000);
             engine.captureRegion(lastScreenshotRegion_.get());
-            result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+            result = engine.capturedBitmap();
         }
     }
     else if(engine.captureScreen())
     {
         if ( mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod ) {
-            result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+            result = engine.capturedBitmap();
         } else {
             // Show old window for selecting screen region
             RegionSelect.Parent = m_hWnd;
@@ -1896,7 +1896,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
                         engine.captureRegion(rgn.get());    
-                        result = std::shared_ptr<Gdiplus::Bitmap>(engine.capturedBitmap());
+                        result = engine.capturedBitmap();
                         DeleteObject(gdiBitmap);
                     }
                     setLastScreenshotRegion(rgn, monitor);

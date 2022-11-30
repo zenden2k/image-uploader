@@ -21,6 +21,7 @@
 #ifndef IU_CORE_SCREEN_CAPTURE_H
 #define IU_CORE_SCREEN_CAPTURE_H
 
+#include <memory>
 #include <vector>
 
 #include "Core/Utils/CoreTypes.h"
@@ -38,7 +39,7 @@ public:
     CScreenshotRegion() : m_bFromScreen(false) {
     }
 
-    virtual bool GetImage(HDC src, Gdiplus::Bitmap** res) = 0;
+    virtual std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) = 0;
     virtual ~CScreenshotRegion() = default;
 
     virtual bool PrepareShooting(bool fromScreen) {
@@ -62,9 +63,9 @@ public:
     CRectRegion();
     CRectRegion(int x, int y, int width, int height);
     explicit CRectRegion(HRGN region);
-    bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+    std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
-    ~CRectRegion();
+    ~CRectRegion() override;
 protected:
     CRgn m_ScreenRegion;
 };
@@ -84,16 +85,16 @@ public:
     void Clear();
     void SetWindowHidingDelay(int delay);
     void setWindowCapturingFlags(WindowCapturingFlags flags);
-    bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+    std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
-    ~CWindowHandlesRegion();
+    ~CWindowHandlesRegion() override;
 protected:
     struct CWindowHandlesRegionItem {
         HWND wnd;
         bool Include;
     };
 
-    Gdiplus::Bitmap* CaptureWithTransparencyUsingDWM();
+    std::shared_ptr<Gdiplus::Bitmap> CaptureWithTransparencyUsingDWM();
     HWND topWindow;
     int m_WindowHidingDelay;
     bool m_ClearBackground;
@@ -106,7 +107,7 @@ protected:
 class CActiveWindowRegion : public CWindowHandlesRegion {
 public:
     CActiveWindowRegion();
-    bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
+    std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
 };
 
 class CFreeFormRegion : public CRectRegion {
@@ -115,8 +116,8 @@ public:
     void AddPoint(POINT point);
     void Clear();
     bool IsEmpty() override;
-    bool GetImage(HDC src, Gdiplus::Bitmap** res) override;
-    ~CFreeFormRegion();
+    std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
+    ~CFreeFormRegion() override;
 protected:
     std::vector<POINT> m_curvePoints;
 };
@@ -124,24 +125,20 @@ protected:
 class CScreenCaptureEngine {
 public:
     CScreenCaptureEngine();
-    ~CScreenCaptureEngine();
+    ~CScreenCaptureEngine() = default;
     bool captureScreen();
     void setSource(HBITMAP src);
     bool captureRegion(CScreenshotRegion* region);
     void setDelay(int msec);
     void setMonitorMode(MonitorMode monitorMode, HMONITOR monitor = nullptr);
     [[nodiscard]] std::shared_ptr<Gdiplus::Bitmap> capturedBitmap() const;
-    Gdiplus::Bitmap* releaseCapturedBitmap();
 
 private:
     int m_captureDelay;
     std::shared_ptr<Gdiplus::Bitmap> m_capturedBitmap;
-    release_deleter<Gdiplus::Bitmap> capturedBitmapDeleter_;
-    bool capturedBitmapReleased_;
     HBITMAP m_source;
     MonitorMode monitorMode_;
     HMONITOR monitor_;
-    void capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm);
     DISALLOW_COPY_AND_ASSIGN(CScreenCaptureEngine);
 };
 

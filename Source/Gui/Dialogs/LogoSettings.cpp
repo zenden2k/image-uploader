@@ -107,7 +107,10 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
 
-    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+    // Put the toolbar after placeholder
+    m_ProfileEditToolbar.SetWindowPos(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     m_ProfileEditToolbar.SetButtonStructSize();
     m_ProfileEditToolbar.SetButtonSize(17, 17);

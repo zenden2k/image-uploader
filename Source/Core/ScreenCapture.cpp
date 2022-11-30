@@ -31,6 +31,7 @@
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
+#include "Gui/GuiTools.h"
 
 namespace ScreenCapture {
 
@@ -84,20 +85,6 @@ BOOL CALLBACK MonitorEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMoni
         monitorsRects.push_back(*lprcMonitor);
     }
     return TRUE;
-}
-bool GetScreenBounds(RECT& rect)
-{
-    monitorsRects.clear();
-    EnumDisplayMonitors(0, 0, MonitorEnumProc, 0);
-    CRect result;
-    for (size_t i = 0; i < monitorsRects.size(); i++)
-    {
-        CRect Bounds = monitorsRects[i];
-        result.UnionRect(result, Bounds);
-    }
-    rect = result;
-    return true;
-
 }
 
 void average_polyline(std::vector<POINT>& path, std::vector<POINT>& path2, unsigned n);
@@ -213,13 +200,13 @@ bool CRectRegion::IsEmpty()
     return rect.IsRectEmpty() != 0;
 }
 
-bool CRectRegion::GetImage(HDC src, Bitmap** res)
+std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
 {
     RECT regionBoundingRect;
     CRgn screenRegion = CloneRegion(m_ScreenRegion);
     RECT screenBounds;
 
-    GetScreenBounds( screenBounds );
+    GuiTools::GetScreenBounds(screenBounds);
     CRgn FullScreenRgn;
     FullScreenRgn.CreateRectRgnIndirect(&screenBounds);
     if ( !m_bFromScreen ) {
@@ -246,8 +233,8 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
         return false;
     }
 
-    auto* resultBm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
-    Graphics gr( resultBm );
+    auto resultBm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
+    Graphics gr( resultBm.get() );
 
     Bitmap srcBm( tempBm, 0);
     gr.SetClip( screenRegion );
@@ -256,8 +243,7 @@ bool CRectRegion::GetImage(HDC src, Bitmap** res)
     gr.DrawImage( &srcBm, 0, 0);
     gr.Flush();
     tempDC.SelectBitmap( oldBm );
-    *res = resultBm;
-    return true;
+    return resultBm;
 }
 
 CWindowHandlesRegion::CWindowHandlesRegion()
@@ -307,8 +293,8 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
     BitmapData b2Data;
     b2->LockBits(&rect, ImageLockModeRead, PixelFormat32bppARGB, &b2Data);
     assert(sizeof(unsigned long) == 4);
-    unsigned long* pImage1 = reinterpret_cast<unsigned long*>(b1Data.Scan0);
-    unsigned long* pImage2 = reinterpret_cast<unsigned long*>(b2Data.Scan0);
+    unsigned long* pImage1 = static_cast<unsigned long*>(b1Data.Scan0);
+    unsigned long* pImage2 = static_cast<unsigned long*>(b2Data.Scan0);
     for (int y = 0; y < height; y++)
     {
         for (int x = 0; x < width; x++)
@@ -325,15 +311,14 @@ bool AreImagesEqual(Bitmap* b1, Bitmap* b2)
     return result;
 }
 
-bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap** out)
+std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage)
 {
     assert(whiteBGImage);
     assert(blackBGImage);
-    assert(out);
 
     int width = whiteBGImage->GetWidth();
     int height = whiteBGImage->GetHeight();
-    Bitmap* resultImage = new Bitmap(width, height, PixelFormat32bppARGB);
+    std::unique_ptr<Bitmap> resultImage = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
     Gdiplus::Rect rect(0, 0, blackBGImage->GetWidth(), blackBGImage->GetHeight());
     // Access the image data directly for faster image processing
     BitmapData blackImageData;
@@ -388,8 +373,7 @@ bool ComputeOriginal(Bitmap* whiteBGImage, Bitmap* blackBGImage, Bitmap** out)
     whiteBGImage->UnlockBits(&whiteImageData);
     // whiteBGImage2->UnlockBits(&whiteImageData2);
     resultImage->UnlockBits(&resultImageData);
-    *out = resultImage;
-    return true;
+    return resultImage;
 }
 
 void OnEraseBgrnd(HWND hWnd)
@@ -656,11 +640,10 @@ bool CheckRect(const RECT& rect, COLORREF color)
     return result;
 }
 
-Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
+std::shared_ptr<Bitmap> CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 {
-    Bitmap* resultBm = 0;
-    Bitmap* original = 0;
-    Bitmap* redBgBitmap = 0;
+    std::shared_ptr<Bitmap> resultBm;
+    std::shared_ptr<Bitmap> redBgBitmap;
     bool move = false;
     HWND target = topWindow;
     TCHAR Buffer[MAX_PATH];
@@ -679,9 +662,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
     HWND wnd = 0;
     CScreenCaptureEngine eng;
     CRectRegion reg(m_ScreenRegion);
-    Bitmap* bm1 = 0;
-    Bitmap* bm2 = 0;
-    Bitmap* bm3 = 0;
+    std::shared_ptr<Bitmap> bm1, bm2, bm3;
     HTHUMBNAIL thumb = 0;
     if (m_ClearBackground || m_RemoveCorners || m_PreserveShadow)
     {
@@ -714,7 +695,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
         DwmUpdateThumbnailProperties(thumb, &props);
         ProcessEvents();
         eng.captureRegion(&reg);
-        bm1 = eng.releaseCapturedBitmap();
+        bm1 = eng.capturedBitmap();
     }
     if (m_ClearBackground)
     {
@@ -723,7 +704,7 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
         ProcessEvents();
         DwmFlush();
         eng.captureRegion(&reg);
-        bm2 = eng.releaseCapturedBitmap();
+        bm2 = eng.capturedBitmap();
     }
     if (m_ClearBackground || m_RemoveCorners)
     {
@@ -732,14 +713,14 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
         ::InvalidateRect(wnd, NULL, true);
         ProcessEvents();
         eng.captureRegion(&reg);
-        bm3 = eng.releaseCapturedBitmap();
+        bm3 = eng.capturedBitmap();
     }
-    Bitmap* preResult = 0;
+    std::shared_ptr<Bitmap> preResult = 0;
     if (m_ClearBackground)
     {
-        if (AreImagesEqual(bm1, bm3))
+        if (AreImagesEqual(bm1.get(), bm3.get()))
         {
-            ComputeOriginal(bm1, bm2, &original);
+            std::shared_ptr<Bitmap> original = ComputeOriginal(bm1.get(), bm2.get());
             if (original)
             {
                 preResult = original;
@@ -748,14 +729,14 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
             {
                 assert(bm3);
                 preResult = bm3;
-                bm3 = 0;
+                bm3.reset();
             }
         }
         else
         {
             assert(bm3);
             preResult = bm3;
-            bm3 = 0;
+            bm3.reset();
         }
     }
     if ((m_RemoveCorners || (m_PreserveShadow)) /*&& !preResult*/ && !ScreenshotHelper::isWindowMaximized(target))   // We don't have to clear window corners if we already have capture with aplha-channel
@@ -766,36 +747,30 @@ Bitmap* CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
         ProcessEvents();
         ActivateWindowRepeat(target, 250);
         eng.captureRegion(&reg);
-        redBgBitmap = eng.releaseCapturedBitmap();
-        Bitmap* ress = 0;
-        if (RemoveCorners(preResult ? preResult : bm1, redBgBitmap, &ress))
+        redBgBitmap = eng.capturedBitmap();
+        Bitmap* ress = nullptr;
+        if (RemoveCorners(preResult ? preResult.get() : bm1.get(), redBgBitmap.get(), &ress))
         {
             assert(ress);
-            delete preResult;
-            preResult = ress;
+            preResult.reset(ress);
         }
     }
     if (preResult && m_PreserveShadow && !ScreenshotHelper::isWindowMaximized(target))
     {
-        Bitmap* shadowed = 0;
-        AddBorderShadow(preResult, true, &shadowed);
-        delete preResult;
-        preResult = shadowed;
+        Bitmap* shadowed = nullptr;
+        AddBorderShadow(preResult.get(), true, &shadowed);
+        preResult.reset(shadowed);
     }
     resultBm = preResult;
     if (target && move)
         ::SetWindowPos(target, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     DestroyWindow(wnd);
-    delete bm1;
-    delete bm2;
-    delete bm3;
     DwmUnregisterThumbnail(thumb);
-    delete redBgBitmap;
     return resultBm;
 }
 
 // TODO : fix vista maximized window capturing
-bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
+std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
 {
     if (m_hWnds.empty()) return false;
     RECT captureRect = {0, 0, 0, 0};
@@ -837,23 +812,23 @@ bool CWindowHandlesRegion::GetImage(HDC src, Bitmap** res)
         }
     }
     CRect scr;
-    GetScreenBounds(scr);
+    GuiTools::GetScreenBounds(scr);
     m_ScreenRegion.OffsetRgn(-scr.left, -scr.top);
-    Bitmap* resultBm = 0;
+    std::shared_ptr<Bitmap> resultBm;
     if (m_bFromScreen && parentIsInList /*&& GetParent(topWindow)==HWND_DESKTOP */ &&  WinUtils::IsVistaOrLater() &&
         IsCompositionActive() && topWindow && !(GetWindowLong(topWindow, GWL_STYLE) & WS_CHILD)
         && (m_ClearBackground || m_RemoveCorners || m_PreserveShadow))
     {
         resultBm = CaptureWithTransparencyUsingDWM();
     }
-    *res = resultBm;
+
     if (!resultBm)
     {
-        /*bool result = */CRectRegion::GetImage(src, res);
+        resultBm = CRectRegion::GetImage(src);
         if (topWindow && move)
             ::SetWindowPos(topWindow, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
-    return resultBm != 0;
+    return resultBm;
 }
 
 CWindowHandlesRegion::~CWindowHandlesRegion()
@@ -894,23 +869,16 @@ void CWindowHandlesRegion::Clear()
 
 CScreenCaptureEngine::CScreenCaptureEngine()
 {
-//    m_capturedBitmap = NULL;
     m_captureDelay = 0;
-    capturedBitmapReleased_ = false;
     m_source = 0;
     monitorMode_ = kAllMonitors;
     monitor_ = NULL;
 }
 
-CScreenCaptureEngine::~CScreenCaptureEngine()
-{
-    //delete m_capturedBitmap;
-}
-
 bool CScreenCaptureEngine::captureScreen()
 {
     CRect screenBounds;
-    GetScreenBounds(screenBounds);
+    GuiTools::GetScreenBounds(screenBounds);
    
     CRect captureRect;
 
@@ -975,16 +943,8 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
         }
     }
     region->PrepareShooting(!(bool)(m_source != 0));
-    Gdiplus::Bitmap* capturedBitmap;
-    bool result =  region->GetImage(srcDC, &capturedBitmap);
-    typedef release_deleter<Gdiplus::Bitmap>& releaseDeleterRef;
-    //m_capturedBitmap.reset<Gdiplus::Bitmap>(capturedBitmap, std::bind(&CScreenCaptureEngine::capturedBitmapDeleteFunction, this, _1));
-    capturedBitmapReleased_ = false;
-    m_capturedBitmap.reset(capturedBitmap,capturedBitmapDeleter_);
-    /*m_capturedBitmap.reset<Gdiplus::Bitmap,  release_deleter<Gdiplus::Bitmap>&>(capturedBitmap, std::ref(capturedBitmapDeleter_));
-    m_c*apturedBitmap.reset<Gdiplus::Bitmap,  std::reference_wrapper<release_deleter<Gdiplus::Bitmap>>>(capturedBitmap, std::ref(capturedBitmapDeleter_));*
-    */
-    capturedBitmapDeleter_.reset_released();
+    std::shared_ptr<Gdiplus::Bitmap> capturedBitmap;
+    m_capturedBitmap = region->GetImage(srcDC);
     region->AfterShooting();
     if (m_source)
     {
@@ -992,25 +952,7 @@ bool CScreenCaptureEngine::captureRegion(CScreenshotRegion* region)
         DeleteDC(srcDC);
     }
     ReleaseDC(0, screenDC);
-    return result;
-}
-
-Gdiplus::Bitmap* CScreenCaptureEngine::releaseCapturedBitmap()
-{
-    capturedBitmapDeleter_.release();
-    capturedBitmapReleased_ = true;
-    Gdiplus::Bitmap*  res =  m_capturedBitmap.get();
-    m_capturedBitmap.reset();
-    //capturedBitmapDeleter_.reset_released();
-    capturedBitmapReleased_ = false;
-    return res;
-}
-
-void CScreenCaptureEngine::capturedBitmapDeleteFunction(Gdiplus::Bitmap* bm)
-{
-    if ( !capturedBitmapReleased_ ) {
-        delete bm;
-    }
+    return !!m_capturedBitmap;
 }
 
 //bool CScreenCaptureEngine::capturedBitmapReleased_ = false;
@@ -1048,7 +990,7 @@ bool CFreeFormRegion::IsEmpty()
     return !(bmWidth * bmHeight);
 }
 
-bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
+std::shared_ptr<Gdiplus::Bitmap> CFreeFormRegion::GetImage(HDC src)
 {
     GraphicsPath grPath;
     std::vector<Point> points;
@@ -1079,8 +1021,8 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
     alphaGr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     alphaGr.SetSmoothingMode(SmoothingModeAntiAlias);
     alphaGr.FillPath(&gdipBrush, &grPath);
-    Bitmap* finalbm = new Bitmap(bmWidth, bmHeight, PixelFormat32bppARGB);
-    Graphics gr(finalbm);
+    std::shared_ptr<Bitmap> finalbm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
+    Graphics gr(finalbm.get());
     gr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
     gr.DrawImage(&b, 0, 0);
@@ -1088,8 +1030,7 @@ bool CFreeFormRegion::GetImage(HDC src, Bitmap** res)
     Pen pn(Color(255, 40, 255), 1.0f) ;
     Pen pn2(Color(40, 0, 255), 1.0f) ;
     transferOneARGBChannelFromOneBitmapToAnother(alphaBm, *finalbm, Alpha, Alpha);
-    *res = finalbm;
-    return true;
+    return finalbm;
 }
 
 CFreeFormRegion::~CFreeFormRegion()
@@ -1100,11 +1041,11 @@ CActiveWindowRegion::CActiveWindowRegion()
 {
 }
 
-bool CActiveWindowRegion::GetImage(HDC src, Bitmap** res)
+std::shared_ptr<Gdiplus::Bitmap> CActiveWindowRegion::GetImage(HDC src)
 {
     Clear();
     AddWindow(GetForegroundWindow(), true);
-    return CWindowHandlesRegion::GetImage(src, res);
+    return CWindowHandlesRegion::GetImage(src);
 }
 
 }
