@@ -66,7 +66,11 @@ LRESULT CImageViewWindow::OnKillFocus(HWND hwndNewFocus)
 
 bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
     currentItem_ = item;
-    std::unique_ptr<Gdiplus::Bitmap> img(ImageUtils::LoadImageFromFileExtended(item.fileName));
+    std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(item.fileName);
+    if (!srcImg) {
+        return false;
+    }
+    Gdiplus::Bitmap* img = srcImg->getBitmap();
     
     if (img) {
         float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
@@ -97,7 +101,7 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
 
         //MoveWindow(0, 0, realwidth, realheight);
         Img.MoveWindow(0, 0, realwidth, realheight);
-        Img.LoadImage(item.fileName, img.get());
+        Img.LoadImage(item.fileName, img);
         
         currentParent_ = Parent;
         MyCenterWindow(Parent, realwidth, realheight);

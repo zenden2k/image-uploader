@@ -5,6 +5,7 @@
 #include <string>
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
+#include "Core/Video/GdiPlusImage.h"
 
 namespace ImageUtils {
 
@@ -52,14 +53,14 @@ bool CopyBitmapToClipboardInDataUriFormat(Gdiplus::Bitmap* bm, int Format, int Q
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
 bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);
 // Load image from file with webp support
-std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileExtended(const CString& fileName);
+std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
 bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size);
 short GetImageOrientation(Gdiplus::Image* img);
 bool RotateAccordingToOrientation(short orient, Gdiplus::Image* img, bool removeTag = false);
 ImageInfo GetImageInfo(const wchar_t* fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
-
+bool IsImageAnimated(Gdiplus::Image* img);
 }
 
 #endif

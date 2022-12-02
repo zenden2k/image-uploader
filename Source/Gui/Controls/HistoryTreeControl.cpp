@@ -522,7 +522,8 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     const int THUMBNAIL_HEIGHT = 54;
     using namespace Gdiplus;
     std::unique_ptr<Bitmap> ImgBuffer;
-    std::unique_ptr<Image> bm;
+    Image* bm;
+    std::unique_ptr<GdiPlusImage> srcImg;
 
     CString filename ;
     if(!item->thumbnailSource.empty())
@@ -533,7 +534,11 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     bool error = false;
     if(IuCommonFunctions::IsImage(filename))
     {
-        bm = ImageUtils::LoadImageFromFileExtended(filename);
+        srcImg = ImageUtils::LoadImageFromFileExtended(filename);
+        if (!srcImg) {
+            return false;
+        }
+        bm = srcImg->getBitmap();
         if (!bm) {
             return false;
         }
@@ -602,7 +607,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
         if(bm)
-                gr.DrawImage(/*backBuffer*/bm.get(), (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
+                gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
     
 
         RectF bounds(0, float(height), float(width), float(20));

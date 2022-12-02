@@ -4,7 +4,6 @@
 
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
-#include "Core/Logging.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Images/Utils.h"
 
@@ -17,12 +16,9 @@ GdiPlusImage::GdiPlusImage() {
 
 GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm, bool takeOwnership)
 {
-    release_deleter<Gdiplus::Bitmap> deleter;
-    if (!takeOwnership) {
-        deleter.release();
-    }
-    bm_.reset(bm, deleter);
     init();
+    bm_ = bm;
+    takeOwnership_ = takeOwnership;
 }
 
 void GdiPlusImage::init()
@@ -30,14 +26,19 @@ void GdiPlusImage::init()
     data_ = nullptr;
     width_ = 0;
     height_ = 0;
+    takeOwnership_ = true;
+    isSrcAnimated_ = false;
 }
 
 GdiPlusImage::~GdiPlusImage() {
     delete[] data_;
+    if (takeOwnership_) {
+        delete bm_;
+    }
 }
 
 bool GdiPlusImage::loadFromFile(const std::string& fileName) {
-    bm_ = std::make_shared<Gdiplus::Bitmap>(U2W(fileName));
+    bm_ = new Gdiplus::Bitmap(U2W(fileName));
 
     if (bm_->GetLastStatus() == Ok) {
         width_ = bm_->GetWidth();
@@ -123,7 +124,7 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
 
 Gdiplus::Bitmap* GdiPlusImage::getBitmap() const
 {
-    return bm_.get();
+    return bm_;
 }
 
 int GdiPlusImage::getWidth() const
@@ -153,7 +154,7 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
    
     /*size_t newLineSize = 4 * ((width * 3 + 3) / 4);
     bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
-    bm_ = std::make_shared<Gdiplus::Bitmap>(&bi, data);
+    bm_ = new Gdiplus::Bitmap(&bi, data);
 
     if ( bm_->GetLastStatus() == Ok ) {
         width_ = width;
@@ -162,4 +163,17 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
     }
 
     return false;
+}
+
+Gdiplus::Bitmap* GdiPlusImage::releaseBitmap() {
+    takeOwnership_ = false;
+    return bm_;
+}
+
+void GdiPlusImage::setSrcAnimated(bool animated) {
+    isSrcAnimated_ = animated;
+}
+
+bool GdiPlusImage::isSrcAnimated() const {
+    return isSrcAnimated_;
 }

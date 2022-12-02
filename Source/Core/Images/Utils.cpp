@@ -79,7 +79,8 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
     ImageLoader loader;
-    return loader.loadFromResource(hInstance, szResName, szResType);
+    auto res = loader.loadFromResource(hInstance, szResName, szResType);
+    return std::unique_ptr<Gdiplus::Bitmap>(res->releaseBitmap());
 }
 
 void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea) {
@@ -465,8 +466,11 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
     using namespace Gdiplus;
-
-    std::unique_ptr<Bitmap> src(LoadImageFromFileExtended(fileName));
+    auto img = LoadImageFromFileExtended(fileName);
+    if (!img) {
+        return nullptr;
+    }
+    std::unique_ptr<Bitmap> src(img->releaseBitmap());
     if ( !src || src->GetLastStatus() != Ok ) {
         return nullptr;
     }
@@ -770,7 +774,7 @@ CString GdiplusStatusToString(Gdiplus::Status statusID) {
     //case Gdiplus::ProfileNotFound: return "ProfileNotFound"; break;
     default: return "Status Type Not Found."; break;
 
-    };
+    }
 }
 bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality, CString* mimeType) {
     std::unique_ptr<Bitmap> quantizedImage;
@@ -793,7 +797,7 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
         eps.Parameter[0].Type = EncoderParameterValueTypeLong;
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
-    } else if (Format == 2) {
+    } else if (Format == 2) { // GIF
         QColorQuantizer quantizer;
         quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
         if (quantizedImage.get() != 0)
@@ -880,7 +884,7 @@ bool RotateAccordingToOrientation(short orient, Image* img, bool removeTag) {
     return false;
 }
 
-std::unique_ptr<Bitmap> LoadImageFromFileExtended(const CString& fileName) {
+std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName) {
     ImageLoader loader;
     auto result = loader.loadFromFile(fileName);
     if (!result) {
@@ -1064,10 +1068,15 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
 
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
     using namespace Gdiplus;
-    std::unique_ptr<Bitmap> bm (LoadImageFromFileExtended(filename));
+    std::unique_ptr<GdiPlusImage> img = LoadImageFromFileExtended(filename);
+    if (!img) {
+        return {};
+    }
+
+    std::unique_ptr<Bitmap> bm (img->releaseBitmap());
 
     if (!bm || bm->GetLastStatus() != Ok) {
-        return nullptr;
+        return {};
     }
     return GetThumbnail(bm.get(), width, height, realSize);
 }
@@ -1334,7 +1343,8 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, b
 }
 
 ImageInfo GetImageInfo(const wchar_t* fileName) {
-    std::unique_ptr<Bitmap> bm(LoadImageFromFileExtended(fileName));
+    auto img = LoadImageFromFileExtended(fileName);
+    auto* bm = img->getBitmap();
     ImageInfo res;
     if (bm) {
         res.width = bm->GetWidth();
@@ -1445,6 +1455,18 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     *data = file_data;
     *data_size = file_size;
     return true;
+}
+
+bool IsImageAnimated(Gdiplus::Image* img) {
+    UINT count = img->GetFrameDimensionsCount();
+    GUID* pDimensionIDs = new GUID[count];
+
+    // Get the list of frame dimensions from the Image object.
+    img->GetFrameDimensionsList(pDimensionIDs, count);
+
+    // Get the number of frames in the first dimension.
+    int frameCount = img->GetFrameCount(&pDimensionIDs[0]);
+    return frameCount > 1;
 }
 
 }

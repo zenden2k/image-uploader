@@ -7,14 +7,15 @@
 #include <string>
 
 #include "3rdpart/GdiplusH.h"
+#include "Core/Video/GdiPlusImage.h"
 
 
 class AbstractImageReader {
 public:
     virtual ~AbstractImageReader() = default;
-    virtual std::unique_ptr<Gdiplus::Bitmap> readFromFile(const wchar_t* fileName) = 0;
-    virtual std::unique_ptr<Gdiplus::Bitmap> readFromMemory(uint8_t* data, size_t size) = 0;
-    virtual std::unique_ptr<Gdiplus::Bitmap> readFromStream(IStream* stream) = 0;
+    virtual std::unique_ptr<GdiPlusImage> readFromFile(const wchar_t* fileName) = 0;
+    virtual std::unique_ptr<GdiPlusImage> readFromMemory(uint8_t* data, size_t size) = 0;
+    virtual std::unique_ptr<GdiPlusImage> readFromStream(IStream* stream) = 0;
     virtual std::wstring getLastError() = 0;
 };
 

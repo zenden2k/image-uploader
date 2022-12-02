@@ -19,6 +19,7 @@
 */
 
 #include "ImageConverter.h"
+
 #include "Core/CommonDefs.h"
 #include "Core/Utils/CoreUtils.h"
 
@@ -26,7 +27,6 @@
     #include "ImageConverterPrivate_gdiplus.h"
 #endif
 
-using namespace Gdiplus;
 #include "Func/WinUtils.h"
 
 ImageConvertingParams::ImageConvertingParams()
@@ -46,6 +46,7 @@ ImageConvertingParams::ImageConvertingParams()
     TextColor = 0x00ffffff;
     WinUtils::StringToFont(_T("Tahoma,8,,204"), &Font);
     PreserveExifInformation = true;
+    SkipAnimated = true;
 }
 
 ImageConverter::ImageConverter() : d_ptr(new ImageConverterPrivate())

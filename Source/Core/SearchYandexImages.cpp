@@ -22,8 +22,8 @@ void SearchYandexImages::run() {
     ImageLoader loader;
     auto img = loader.loadFromFile(IuCoreUtils::Utf8ToWstring(fileName_).c_str());
 	if (img) {
-        width = img->GetWidth();
-        height = img->GetHeight();
+        width = img->getWidth();
+        height = img->getHeight();
 	}
 #endif
 

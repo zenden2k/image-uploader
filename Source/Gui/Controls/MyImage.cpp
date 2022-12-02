@@ -123,7 +123,10 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     if (img) {
         bm = img;
     } else if (FileName) {
-        newBm = ImageUtils::LoadImageFromFileExtended(FileName);
+        std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(FileName);
+        if (srcImg) {
+            newBm = std::unique_ptr<Image>(srcImg->releaseBitmap());
+        }
     }
     else if (ResourceID){
         if (!Bmp)

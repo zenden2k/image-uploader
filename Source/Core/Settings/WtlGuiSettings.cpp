@@ -1006,6 +1006,7 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
     image.nm_bind(params, ResizeMode);
     image.nm_bind(params, SmartConverting);
     image.nm_bind(params, PreserveExifInformation);
+    image.nm_bind(params, SkipAnimated);
     image["Logo"].bind(params.LogoFileName);
     image["Logo"]["@LogoPosition"].bind(params.LogoPosition);
     image["Logo"]["@LogoBlend"].bind(params.LogoBlend);

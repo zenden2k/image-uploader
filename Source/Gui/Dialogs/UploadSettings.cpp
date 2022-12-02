@@ -106,6 +106,7 @@ void CUploadSettings::TranslateUI()
     TRC(IDC_ADDFILESIZE, "Add text on thumbnail");
     TRC(IDC_PRESSUPLOADBUTTON, "Click button \"Upload\" for starting process of uploading.");
     TRC(IDC_FILESERVERGROUPBOX, "Server to host other file formats");
+    TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
     useServerThumbnailsTooltip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), TR("This means that the thumbnail will be created by site, not the program."));
 }
 
@@ -275,7 +276,7 @@ LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCt
 LRESULT CUploadSettings::OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool checked = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0, 0)!=FALSE;
-    GuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 13, checked);
+    GuiTools::EnableNextN(GetDlgItem(IDC_KEEPASIS), 15, checked);
     m_ProfileEditToolbar.EnableWindow(checked);
     return 0;
 }
@@ -1217,6 +1218,7 @@ void CUploadSettings::ShowParams(const ImageConvertingParams& params)
     SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, params.AddText);
     SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
     SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
+    SendDlgItemMessage(IDC_SKIPANIMATEDCHECKBOX, BM_SETCHECK, params.SkipAnimated ? BST_CHECKED : BST_UNCHECKED);
     m_ProfileChanged = false;
     m_CatchChanges = true;
 }
@@ -1254,6 +1256,7 @@ bool CUploadSettings::SaveParams(ImageConvertingParams& params) {
     params.strNewWidth = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEWIDTH)));
 
     params.strNewHeight = W2U(GuiTools::GetWindowText( GetDlgItem(IDC_IMAGEHEIGHT)));
+    params.SkipAnimated = GuiTools::GetCheck(m_hWnd, IDC_SKIPANIMATEDCHECKBOX);
     return true;
 }
 

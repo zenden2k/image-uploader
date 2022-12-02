@@ -24,14 +24,15 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     double width, height, imgwidth, imgheight, newwidth, newheight;
     CString sourceFileW = U2W(sourceFile);
     CString imageFile = sourceFileW;
-    std::unique_ptr<Bitmap> bm(ImageUtils::LoadImageFromFileExtended(sourceFileW));
+    auto srcImg = ImageUtils::LoadImageFromFileExtended(sourceFileW);
+    Bitmap* bm = srcImg->getBitmap();
 
     if (!bm) {
         LOG(ERROR) << "ImageConverter: unable to load source file " << sourceFileW;
         return false;
     }
 
-    Bitmap* thumbSource = bm.get();
+    Bitmap* thumbSource = bm;
     std::unique_ptr<Bitmap> BackBuffer;
     imgwidth = float(bm->GetWidth());
     imgheight = float(bm->GetHeight());
@@ -53,8 +54,13 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     else
         fileformat = m_imageConvertingParams.Format - 1;
 
-    if (fileformat == GetSavingFormat(sourceFileW) && imgwidth < width && imgheight < height)
+    if (m_imageConvertingParams.SmartConverting && fileformat == GetSavingFormat(sourceFileW) && imgwidth < width && imgheight < height) {
         processingEnabled_ = false;
+    }
+
+    if (m_imageConvertingParams.SkipAnimated && srcImg->isSrcAnimated()) {
+        processingEnabled_ = false;
+    }
 
     newwidth = imgwidth;
     newheight = imgheight;
@@ -128,9 +134,9 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
             ImageConvertingParams::irmStretch)
         {
             if ((!width && !height) || ((int)newwidth == (int)imgwidth && (int)newheight == (int)imgheight))
-                gr.DrawImage(/*backBuffer*/ bm.get(), (int)0, (int)0, (int)newwidth, (int)newheight);
+                gr.DrawImage(/*backBuffer*/ bm, (int)0, (int)0, (int)newwidth, (int)newheight);
             else
-                gr.DrawImage(bm.get(),
+                gr.DrawImage(bm,
                 RectF(0.0, 0.0, float(newwidth), float(newheight)),
                 0,
                 0,
@@ -169,7 +175,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
                 sourceRect.right = int(sourceRect.right / k);
                 sourceRect.bottom = int(sourceRect.bottom / k);
                 // = sourceRect.MulDiv(1, k);
-                gr.DrawImage(bm.get(),
+                gr.DrawImage(bm,
                     RectF(float(croppedRect.left), float(croppedRect.top), float(croppedRect.Width()),
                     float(croppedRect.Height()))
                     , float(sourceRect.left), float(sourceRect.top), float(sourceRect.Width()),
@@ -268,7 +274,6 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
 bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, int fileformat)
 {
     bool result = false;
-    HDC dc = ::GetDC(0);
     int64_t FileSize = IuCoreUtils::getFileSize(W2U(imageFile));
 
     // Saving thumbnail (without template)
@@ -281,7 +286,6 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
         thumbFileName_ = W2U(thumbFileName);
     }
 
-    ReleaseDC(0, dc);
     return result;
 }
 

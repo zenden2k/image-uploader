@@ -6,7 +6,7 @@
 #include "WebpImageReader.h"
 #include "GdiplusImageReader.h"
 
-std::unique_ptr<Gdiplus::Bitmap> ImageLoader::loadFromFile(const wchar_t* fileName) {
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName) {
     FILE* f = _wfopen(fileName, L"rb");
     if (!f) {
         lastError_ = str(boost::wformat(L"Cannot open file %s for reading.") % std::wstring(fileName));
@@ -24,7 +24,7 @@ std::unique_ptr<Gdiplus::Bitmap> ImageLoader::loadFromFile(const wchar_t* fileNa
     return result;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> ImageLoader::loadFromMemory(uint8_t* data, size_t size) {
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromMemory(uint8_t* data, size_t size) {
     ImageFormat format = getImageFormatFromData(data, sizeof(size));
     auto reader = createReaderForFormat(format);
     auto result = reader->readFromMemory(data, size);
@@ -34,7 +34,7 @@ std::unique_ptr<Gdiplus::Bitmap> ImageLoader::loadFromMemory(uint8_t* data, size
     return result;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> ImageLoader::loadFromResource(HINSTANCE hInstance, LPCTSTR szResName,
+std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance, LPCTSTR szResName,
     LPCTSTR szResType) {
     using namespace Gdiplus;
     HRSRC hrsrc = FindResource(hInstance, szResName, szResType);

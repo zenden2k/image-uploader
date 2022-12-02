@@ -58,6 +58,7 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_SELECTFONT, "Font...");
     TRC(IDC_TEXTPOSITIONLABEL, "Text position:");
     TRC(IDC_PRESERVE_EXIF, "Preserve EXIF data");
+    TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
     SetWindowText(TR("Additional params"));    
 }
 
@@ -250,6 +251,7 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
     SendDlgItemMessage(IDC_YOURTEXT,BM_SETCHECK, params.AddText);
 
     GuiTools::SetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
+    GuiTools::SetCheck(m_hWnd, IDC_SKIPANIMATEDCHECKBOX, params.SkipAnimated);
     SetDlgItemText(IDC_IMAGEWIDTH,U2W(params.strNewWidth));
 
     SetDlgItemText(IDC_IMAGEHEIGHT,U2W(params.strNewHeight));
@@ -281,6 +283,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     params.AddText = addText;
 
     GuiTools::GetCheck(m_hWnd, IDC_SMARTCONVERTING, params.SmartConverting);
+    GuiTools::GetCheck(m_hWnd, IDC_SKIPANIMATEDCHECKBOX, params.SkipAnimated);
     params.TextColor = TextColor.GetColor();
     params.StrokeColor = StrokeColor.GetColor();
     params.Quality = GetDlgItemInt(IDC_QUALITYEDIT);

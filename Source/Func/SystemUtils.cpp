@@ -58,13 +58,18 @@ bool CopyFilesToClipboard(const std::vector<CString>& fileNames, bool clearClipb
 }
 
 bool CopyImageToClipboard(LPCTSTR fileName) {
-    std::unique_ptr<Gdiplus::Bitmap> src(ImageUtils::LoadImageFromFileExtended(fileName));
+    std::unique_ptr<GdiPlusImage> img = ImageUtils::LoadImageFromFileExtended(fileName);
+    if (!img) {
+        LOG(ERROR) << "Unable to load image:" << std::endl << fileName;
+        return false;
+    }
+    Gdiplus::Bitmap* src = img->getBitmap();
     if (!src || src->GetLastStatus() != Gdiplus::Ok) {
         LOG(ERROR) << "Unable to load image:" << std::endl << fileName;
         return false;
     }
 
-    return CopyImageToClipboard(src.get());
+    return CopyImageToClipboard(src);
 }
 
 bool CopyImageToClipboard(Gdiplus::Bitmap* image) {

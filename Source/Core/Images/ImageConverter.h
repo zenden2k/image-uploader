@@ -31,6 +31,7 @@ struct ImageConvertingParams
     uint32_t TextColor, StrokeColor;
     EnumWrapper<ImageResizeMode> ResizeMode;
     bool PreserveExifInformation;
+    bool SkipAnimated;
 };
 
 

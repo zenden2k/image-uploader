@@ -6,6 +6,7 @@
 #include <boost/format.hpp>
 
 #include "Core/Logging.h"
+#include "Core/Video/GdiPlusImage.h"
 #include "Utils.h"
 
 struct WebPPic {
@@ -17,7 +18,7 @@ struct WebPPic {
 
 using namespace Gdiplus;
 
-std::unique_ptr<Gdiplus::Bitmap> WebpImageReader::readFromFile(const wchar_t* fileName) {
+std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileName) {
     uint8_t* dataRaw = nullptr;
     std::unique_ptr<uint8_t> data;
     size_t dataSize = 0;
@@ -28,19 +29,21 @@ std::unique_ptr<Gdiplus::Bitmap> WebpImageReader::readFromFile(const wchar_t* fi
     return readFromMemory(dataRaw, dataSize);
 }
 
-std::unique_ptr<Gdiplus::Bitmap> WebpImageReader::readFromMemory(uint8_t* data, size_t size) {
+std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, size_t size) {
     WebPPic pic;
     memset(&pic, 0, sizeof(pic));
     if (!readWebP(data, size, &pic)) {
         return nullptr;
     }
-    std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(pic.width, pic.height, PixelFormat32bppARGB);
 
+    Gdiplus::Bitmap* bm = new Gdiplus::Bitmap(pic.width, pic.height, PixelFormat32bppARGB);
+    std::unique_ptr<GdiPlusImage> img = std::make_unique<GdiPlusImage>(bm);
+    //std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(pic.width, pic.height, PixelFormat32bppARGB);
     BitmapData dstData;
     Rect rc(0, 0, pic.width, pic.height);
 
     if (bm->LockBits(&rc, ImageLockModeWrite, PixelFormat32bppARGB, &dstData) == Ok) {
-        auto dstBits = reinterpret_cast<uint8_t *>(dstData.Scan0);
+        auto dstBits = static_cast<uint8_t *>(dstData.Scan0);
         memcpy(dstBits, pic.rgba, pic.height * pic.width * 4);
 
         bm->UnlockBits(&dstData);
@@ -51,10 +54,11 @@ std::unique_ptr<Gdiplus::Bitmap> WebpImageReader::readFromMemory(uint8_t* data, 
     else {
         WebPFree(pic.rgba);
     }
-    return bm;
+    img->setSrcAnimated(pic.animated);
+    return img;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> WebpImageReader::readFromStream(IStream* stream) {
+std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
     LARGE_INTEGER li;
     li.QuadPart = 0;
 

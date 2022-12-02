@@ -56,7 +56,7 @@ public:
     bool getBitmapData(char *bitmapData, size_t size) override;
     void freeBitmap() override;
 
-    virtual ~MyGfxProcessor();
+    virtual ~MyGfxProcessor() override;
 protected:
     std::unique_ptr<Gdiplus::Bitmap> bitmap_; 
     HGLOBAL hGlobal_;
@@ -73,7 +73,11 @@ bool MyGfxProcessor::readBitmap(const std::string& path) {
     if (!IuCommonFunctions::IsImage(widePath)) {
         return false;
     }
-    bitmap_ = ImageUtils::LoadImageFromFileExtended(widePath);
+    std::unique_ptr<GdiPlusImage> img = ImageUtils::LoadImageFromFileExtended(widePath);
+    if (!img) {
+        return false;
+    }
+    bitmap_ = std::unique_ptr<Gdiplus::Bitmap>(img->releaseBitmap());
     if (!bitmap_) {
         return false;
     }

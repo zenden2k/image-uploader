@@ -448,6 +448,7 @@
 #define IDC_SHOWINENGLISHCKECKBOX       1142
 #define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
 #define IDC_HEIGHTCHECKBOX              1142
+#define IDC_SKIPANIMATEDCHECKBOX        1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
