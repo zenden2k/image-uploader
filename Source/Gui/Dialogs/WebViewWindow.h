@@ -2,7 +2,8 @@
 #define IU_GUI_DIALOGS_WEBVIEWWINDOW_H
 
 #include <functional>
-
+#include <string>
+#include <memory>
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols

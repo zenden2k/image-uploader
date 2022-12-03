@@ -1344,8 +1344,12 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, b
 
 ImageInfo GetImageInfo(const wchar_t* fileName) {
     auto img = LoadImageFromFileExtended(fileName);
-    auto* bm = img->getBitmap();
+    
     ImageInfo res;
+    if (!img) {
+        return res;
+    }
+    auto* bm = img->getBitmap();
     if (bm) {
         res.width = bm->GetWidth();
         res.height = bm->GetHeight();
