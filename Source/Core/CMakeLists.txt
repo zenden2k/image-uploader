@@ -178,6 +178,8 @@ if(WIN32)
         Images/WebpImageReader.cpp
         Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
+        Video/AbstractImage.cpp
+        Video/GdiPlusImage.cpp
     )
     
     if (IU_ENABLE_WEBVIEW2)
