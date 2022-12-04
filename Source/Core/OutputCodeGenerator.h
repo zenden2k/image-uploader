@@ -3,9 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "Utils/CoreTypes.h"
 
-struct ZUploadObject
+struct UploadObject
 {
    std::string localFilePath;
    std::string directUrl;
@@ -17,18 +16,18 @@ struct ZUploadObject
    int64_t uploadFileSize;
 };
 
-class ZOutputCodeGenerator
+class OutputCodeGenerator
 {
     public:
         enum CodeLang {clHTML, clBBCode, clPlain};
         enum CodeType {ctTableOfThumbnails, ctClickableThumbnails, ctImages, ctLinks};
-        ZOutputCodeGenerator();
+        OutputCodeGenerator();
         void setLang(CodeLang lang);
         void setType(CodeType type);
         void setPreferDirectLinks(bool prefer);
-      std::string generate(const std::vector<ZUploadObject>& items);
+        std::string generate(const std::vector<UploadObject>& items);
     private:
-      std::string generateCodeForItem(const ZUploadObject& item, int index);
+        std::string generateCodeForItem(const UploadObject& item, int index);
         std::string image(const std::string& url);
         std::string link(const std::string &url, const std::string &body);
         CodeLang m_lang;

@@ -38,7 +38,7 @@ struct ImageUploadParams {
     bool UseDefaultThumbSettings;
     ThumbCreatingParams getThumb();
     ThumbCreatingParams& getThumbRef();
-    void setThumb(ThumbCreatingParams tcp);
+    void setThumb(const ThumbCreatingParams& tcp);
 protected:
     ThumbCreatingParams Thumb;
 };

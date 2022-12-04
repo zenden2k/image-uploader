@@ -287,8 +287,8 @@ bool CHotkeyList::DeSerialize(const CString &data)
             _T(""),
             _T(';')))
     {
-        TCHAR funcName[30];
-        TCHAR localKeyStr[20],globalKeyStr[20];
+        TCHAR funcName[30]=_T("");
+        TCHAR localKeyStr[20] = _T(""), globalKeyStr[20] = _T("");
 
         WinUtils::ExtractStrFromList(hotkey , 0, funcName,sizeof(funcName)/sizeof(TCHAR), _T(""),_T('='));
         //(*this)[i].localKey.DeSerialize(localKeyStr);

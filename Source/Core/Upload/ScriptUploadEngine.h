@@ -79,13 +79,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         void logNetworkError(bool error, const std::string & msg) override;
         bool functionExists(const std::string& name);
         int checkAuth();
-        CFolderList folderList_;
-        std::string name_;
         bool needStop() override;
-        std::string m_ErrorReason;
-        std::string m_FileName;
-        std::string m_displayFileName;
-        LoginInfo li;
         bool newAuthMode;
         bool hasRefreshTokenFunc_;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);

@@ -1162,7 +1162,7 @@ ThumbCreatingParams& ImageUploadParams::getThumbRef()
     return Thumb;
 }
 
-void ImageUploadParams::setThumb(ThumbCreatingParams tcp)
+void ImageUploadParams::setThumb(const ThumbCreatingParams& tcp)
 {
     Thumb = tcp;
 }

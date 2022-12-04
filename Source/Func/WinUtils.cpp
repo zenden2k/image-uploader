@@ -82,7 +82,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                         //CloseClipboard();
                     }
                 } else {
-                    LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+                    LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
                     text = lpstr;
                     GlobalUnlock(hglb);
                     CloseClipboard();
@@ -91,7 +91,7 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                 CloseClipboard();
                 return false;
             }
-            LPCWSTR lpstr = reinterpret_cast<LPCWSTR>(GlobalLock(hglb));
+            LPCWSTR lpstr = static_cast<LPCWSTR>(GlobalLock(hglb));
             text = lpstr;
             GlobalUnlock(hglb);
             CloseClipboard();
@@ -163,7 +163,7 @@ bool CopyHtmlToClipboard(const CString& text, bool emptyClipboard)
         CloseClipboard();
         return FALSE;
     }
-    lptstrCopy = reinterpret_cast<LPSTR>(GlobalLock(hglbCopy));
+    lptstrCopy = static_cast<LPSTR>(GlobalLock(hglbCopy));
     memcpy(lptstrCopy, html.c_str(), cch);
     lptstrCopy[cch] = 0;
     GlobalUnlock(hglbCopy);
@@ -1253,13 +1253,13 @@ std::string wstostr(const std::wstring &ws, UINT codePage)
     return str;
 }
 
-const std::string AnsiToUtf8(const std::string &str, int codepage)
+std::string AnsiToUtf8(const std::string &str, int codepage)
 {
 
     return wstostr(strtows(str, codepage), CP_UTF8);
 }
 
-const std::string Utf8ToAnsi(const std::string &str, int codepage)
+std::string Utf8ToAnsi(const std::string &str, int codepage)
 {
 
     return wstostr(strtows(str, CP_UTF8), codepage);

@@ -94,8 +94,8 @@ namespace WinUtils {
     bool IsProcessRunning(DWORD pid);
     std::wstring strtows(const std::string &str, UINT codePage);
     std::string wstostr(const std::wstring &ws, UINT codePage);
-    const std::string AnsiToUtf8(const std::string &str, int codepage);
-    const std::string Utf8ToAnsi(const std::string &str, int codepage);
+    std::string AnsiToUtf8(const std::string &str, int codepage);
+    std::string Utf8ToAnsi(const std::string &str, int codepage);
     CString GetProcessName(DWORD pid);
     CString ErrorCodeToString(DWORD idCode);
     CString ExpandEnvironmentStrings(const CString& s);
@@ -103,7 +103,7 @@ namespace WinUtils {
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
     std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
-    bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = CString());
+    bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = {});
     bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
     //SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds);
     time_t SystemTimeToTime(const SYSTEMTIME &s);

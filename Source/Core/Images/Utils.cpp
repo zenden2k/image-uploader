@@ -80,6 +80,9 @@ std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR
 {
     ImageLoader loader;
     auto res = loader.loadFromResource(hInstance, szResName, szResType);
+    if (!res) {
+        return {};
+    }
     return std::unique_ptr<Gdiplus::Bitmap>(res->releaseBitmap());
 }
 

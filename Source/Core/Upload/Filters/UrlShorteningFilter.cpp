@@ -32,7 +32,7 @@ bool UrlShorteningFilter::PostUpload(UploadTask* task)
     std::string downloadUrl = fileTask->uploadResult()->downloadUrl;
     bool res = true;
     if (!directUrl.empty()) {
-        std::shared_ptr<UrlShorteningTask> shorteningTask(new UrlShorteningTask(directUrl, task));
+        std::shared_ptr<UrlShorteningTask> shorteningTask = std::make_shared<UrlShorteningTask>(directUrl, task);
         shorteningTask->setServerProfile(server);
         shorteningTask->setRole(UploadTask::UrlShorteningRole);
         shorteningTask->setParentUrlType(UrlShorteningTask::DirectUrl);
@@ -41,7 +41,7 @@ bool UrlShorteningFilter::PostUpload(UploadTask* task)
         res = true;
     }
     else if (!downloadUrl.empty()) {
-        std::shared_ptr<UrlShorteningTask> shorteningTask(new UrlShorteningTask(downloadUrl, task));
+        std::shared_ptr<UrlShorteningTask> shorteningTask = std::make_shared<UrlShorteningTask>(downloadUrl, task);
         shorteningTask->setServerProfile(server);
         shorteningTask->setRole(UploadTask::UrlShorteningRole);
         shorteningTask->setParentUrlType(UrlShorteningTask::DownloadUrl);

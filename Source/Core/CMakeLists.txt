@@ -180,6 +180,7 @@ if(WIN32)
         ../3rdpart/QColorQuantizer.cpp
         Video/AbstractImage.cpp
         Video/GdiPlusImage.cpp
+        ../Func/GdiPlusInitializer.cpp
     )
     
     if (IU_ENABLE_WEBVIEW2)

@@ -54,8 +54,9 @@
     #include "Func/UpdatePackage.h"
     #include <fcntl.h>
     #include <io.h>
-    #include <stdio.h>
+    #include <cstdio>
     #include "Func/IuCommonFunctions.h"
+    #include "Func/GdiPlusInitializer.h"
     //#ifndef NDEBUG
         //#include <vld.h>
     //#endif
@@ -64,9 +65,6 @@
     #include <sys/time.h>
 #endif
 #include "versioninfo.h"
-
-
-#define IU_CLI_VER "0.2.9"
 
 #ifdef _WIN32
 
@@ -92,8 +90,8 @@ bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
 
-ZOutputCodeGenerator::CodeType codeType = ZOutputCodeGenerator::ctClickableThumbnails;
-ZOutputCodeGenerator::CodeLang codeLang = ZOutputCodeGenerator::clPlain;
+OutputCodeGenerator::CodeType codeType = OutputCodeGenerator::ctClickableThumbnails;
+OutputCodeGenerator::CodeLang codeLang = OutputCodeGenerator::clPlain;
 bool autoUpdate = false;
 std::shared_ptr<UploadSession> session;
 
@@ -225,11 +223,11 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codelang = argv[++i];
             if(!IuStringUtils::stricmp(codelang, "plain"))
-                codeLang =  ZOutputCodeGenerator::clPlain;
+                codeLang =  OutputCodeGenerator::clPlain;
             else if(!IuStringUtils::stricmp(codelang, "html"))
-                codeLang =  ZOutputCodeGenerator::clHTML;
+                codeLang =  OutputCodeGenerator::clHTML;
             else if(!IuStringUtils::stricmp(codelang, "bbcode"))
-                codeLang =  ZOutputCodeGenerator::clBBCode;
+                codeLang =  OutputCodeGenerator::clBBCode;
             i++;
             continue;
         }
@@ -239,13 +237,13 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codetype = argv[++i];
             if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
-                codeType =  ZOutputCodeGenerator::ctTableOfThumbnails;
+                codeType =  OutputCodeGenerator::ctTableOfThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
-                codeType =  ZOutputCodeGenerator::ctClickableThumbnails;
+                codeType =  OutputCodeGenerator::ctClickableThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "Images"))
-                codeType =  ZOutputCodeGenerator::ctImages;
+                codeType =  OutputCodeGenerator::ctImages;
             else if(!IuStringUtils::stricmp(codetype, "Links"))
-                codeType =  ZOutputCodeGenerator::ctLinks;
+                codeType =  OutputCodeGenerator::ctLinks;
             i++;
             continue;
         }
@@ -380,13 +378,13 @@ CUploadEngineData* getServerByName(const std::string& name) {
 
 void OnUploadSessionFinished(UploadSession* session) {
     int taskCount = session->taskCount();
-    std::vector<ZUploadObject> uploadedList;
+    std::vector<UploadObject> uploadedList;
     for (int i = 0; i < taskCount; i++) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
         auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
-            ZUploadObject uo;
+            UploadObject uo;
             uo.directUrl = res->directUrl;
             uo.thumbUrl = res->thumbUrl;
             uo.viewUrl = res->downloadUrl;
@@ -399,7 +397,7 @@ void OnUploadSessionFinished(UploadSession* session) {
             uploadedList.push_back(uo);
         }
     }
-    ZOutputCodeGenerator generator;
+    OutputCodeGenerator generator;
     generator.setLang(codeLang);
     generator.setType(codeType);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
@@ -480,6 +478,9 @@ void OnQueueFinished(CFileQueueUploader*) {
     finishSignal.notify_one();
 }
 int func() {
+#ifdef _WIN32
+    GdiPlusInitializer gdiPlusInitializer;
+#endif
 	int res = 0;
     auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
@@ -515,7 +516,7 @@ int func() {
         }
     }
 
-    CUploadEngineData* uploadEngineData = 0;
+    CUploadEngineData* uploadEngineData = nullptr;
     if(!serverName.empty()) {
         uploadEngineData = getServerByName(serverName);
         if(!uploadEngineData) {
@@ -560,14 +561,14 @@ int func() {
             continue;
         }
 
-        std::shared_ptr<FileUploadTask> task(new FileUploadTask(filesToUpload[i], IuCoreUtils::ExtractFileName(filesToUpload[i])));
+        std::shared_ptr<FileUploadTask> task = std::make_shared<FileUploadTask>(filesToUpload[i], IuCoreUtils::ExtractFileName(filesToUpload[i]));
         task->setServerProfile(serverProfile);
         task->setOnUploadProgressCallback(UploadTaskProgress);
         task->setOnStatusChangedCallback(OnUploadTaskStatusChanged);
         TaskUserData *userData = new TaskUserData;
         userData->index = i;
         task->setUserData(userData);
-        userDataArray.push_back(std::unique_ptr<TaskUserData>(userData));
+        userDataArray.emplace_back(userData);
         session->addTask(task);
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));

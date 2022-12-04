@@ -13,7 +13,7 @@ class CWizardDlg;
 class CSettingsDlg;
 
 
-class ValidationException : public std::runtime_error {
+class ValidationException : public std::exception {
 public:
     struct ValidationError {
         CString Message;
@@ -25,13 +25,13 @@ public:
         ValidationError(CString message, HWND control) : Message(message), Control(control) {
         }
     };
-    ValidationException(CString Message, HWND Control = nullptr) : std::runtime_error("Form validation error") {
-        errors_.push_back(ValidationError(Message, Control));
+    ValidationException(CString Message, HWND Control = nullptr) : std::exception("Form validation error") {
+        errors_.emplace_back(Message, Control);
     }
-    ValidationException(std::vector<ValidationError> errors) : std::runtime_error("Form validation error") {
-        errors_ = errors;
+    ValidationException(std::vector<ValidationError> errors) : std::exception("Form validation error") {
+        errors_ = std::move(errors);
     }
-    ValidationException(const ValidationException& ex) : std::runtime_error(ex), errors_(ex.errors_) {}
+    ValidationException(const ValidationException& ex) : std::exception(ex), errors_(ex.errors_) {}
     ValidationException& operator=(const ValidationException& ex) {
         this->errors_ = ex.errors_;
         return *this;

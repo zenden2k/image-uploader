@@ -21,24 +21,24 @@
 #include "OutputCodeGenerator.h"
 #include "Utils/CoreUtils.h"
 
-ZOutputCodeGenerator::ZOutputCodeGenerator()
+OutputCodeGenerator::OutputCodeGenerator()
 {
 	m_PreferDirectLinks = true;
 	m_lang = clPlain;
 	m_CodeType = ctLinks;
 }
 
-void ZOutputCodeGenerator::setLang(CodeLang lang)
+void OutputCodeGenerator::setLang(CodeLang lang)
 {
 	m_lang = lang;
 }
 
-void ZOutputCodeGenerator::setType(CodeType type)
+void OutputCodeGenerator::setType(CodeType type)
 {
 	m_CodeType = type;
 }
 
-std::string ZOutputCodeGenerator::generate(const std::vector<ZUploadObject>& items)
+std::string OutputCodeGenerator::generate(const std::vector<UploadObject>& items)
 {
     std::string result;
 	for(size_t i=0; i < items.size(); i++)
@@ -49,7 +49,7 @@ std::string ZOutputCodeGenerator::generate(const std::vector<ZUploadObject>& ite
 	return result;
 }
 
-std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item, int index)
+std::string OutputCodeGenerator::generateCodeForItem(const UploadObject& item, int index)
 {
 	if(m_lang == clPlain)
       return item.directUrl.empty()?item.viewUrl:item.directUrl;
@@ -66,21 +66,21 @@ std::string ZOutputCodeGenerator::generateCodeForItem(const ZUploadObject& item,
    return "";
 }
 
-std::string ZOutputCodeGenerator::image(const std::string& url)
+std::string OutputCodeGenerator::image(const std::string& url)
 {
 	if (m_lang == clBBCode)
 		return "[img]" + url +"[/img]";
 	else  return "<img border='0' src='" + url+ "'/>";
 }
 
-std::string ZOutputCodeGenerator::link(const std::string &url, const std::string &body)
+std::string OutputCodeGenerator::link(const std::string &url, const std::string &body)
 {
 	if (m_lang == clBBCode)
 		return "[url=" + url +"]"+body+"[/url]";
 	else  return "<a href='"+url+"'>"+body+"</a>";
 }
 
-void ZOutputCodeGenerator::setPreferDirectLinks(bool prefer)
+void OutputCodeGenerator::setPreferDirectLinks(bool prefer)
 {
 	m_PreferDirectLinks = prefer;
 }

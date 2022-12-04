@@ -1,5 +1,8 @@
 #include "ImageLoader.h"
 
+
+
+#include <Shlwapi.h>
 #include <boost/format.hpp>
 
 #include "Core/Upload/CommonTypes.h"
@@ -44,17 +47,11 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance,
     HGLOBAL hg1 = LoadResource(hInstance, hrsrc);
     DWORD sz = SizeofResource(hInstance, hrsrc);
     void* ptr1 = LockResource(hg1);
-    HGLOBAL hg2 = GlobalAlloc(GMEM_FIXED, sz);
 
-    ImageFormat format = getImageFormatFromData(reinterpret_cast<uint8_t*>(ptr1), sz);
+    ImageFormat format = getImageFormatFromData(static_cast<uint8_t*>(ptr1), sz);
 
-    // Copy raster data
-    CopyMemory(LPVOID(hg2), ptr1, sz);
-    IStream* pStream;
-
-    // TRUE means free memory at Release
-    HRESULT hr = CreateStreamOnHGlobal(hg2, TRUE, &pStream);
-    if (FAILED(hr)) {
+    IStream* pStream = ::SHCreateMemStream(static_cast<LPBYTE>(ptr1), sz);
+    if (!pStream) {
         return nullptr;
     }
 
@@ -65,7 +62,6 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance,
         lastError_ = reader->getLastError();
     }
     pStream->Release();
-    // GlobalFree(hg2);
     return result;
 }
 
