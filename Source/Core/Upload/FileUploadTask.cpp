@@ -30,7 +30,7 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
     tempFileDeleter_ = nullptr;
     originalFileName_ = fileName;
     isImage_ = false;
-    cachedFileSize_ = -1;
+    cachedFileSize_ = IuCoreUtils::getFileSize(fileName);
     if ( displayName.empty() ) {
         displayName_ = IuCoreUtils::ExtractFileName(fileName);
     } else {
@@ -66,7 +66,7 @@ std::string FileUploadTask::getFileName() const {
 void FileUploadTask::setFileName(const std::string& fileName)
 {
     fileName_ = fileName;
-    cachedFileSize_ = -1;
+    cachedFileSize_ = IuCoreUtils::getFileSize(fileName_);
 }
 
 std::string FileUploadTask::getDisplayName() const {

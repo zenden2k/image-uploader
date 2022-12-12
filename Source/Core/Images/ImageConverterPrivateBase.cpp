@@ -76,7 +76,7 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
                 std::string vv = reg[1];
                 unsigned int res = strtoul(vv.c_str(), 0, 16);
 
-                Result = IuStringUtils::Replace(Result, std::string("#") + vv, IuCoreUtils::toString(res));
+                Result = IuStringUtils::Replace(Result, std::string("#") + vv, std::to_string(res));
             }
             else
                 break;

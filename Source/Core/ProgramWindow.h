@@ -3,6 +3,10 @@
 
 #pragma once
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #ifdef IU_WTL
     typedef HWND WindowHandle;
 #elif defined(IU_QT)

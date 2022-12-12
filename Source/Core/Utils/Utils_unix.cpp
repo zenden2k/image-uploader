@@ -39,7 +39,7 @@ typedef struct stat Stat;
 
 namespace IuCoreUtils {
 
-const std::wstring Utf8ToWstring(const std::string &str) {
+std::wstring Utf8ToWstring(const std::string &str) {
     using namespace utf8;
     std::wstring res;
     try {
@@ -52,7 +52,7 @@ const std::wstring Utf8ToWstring(const std::string &str) {
     return res;
 }
 
-const std::string WstringToUtf8(const std::wstring &str) {
+std::string WstringToUtf8(const std::wstring &str) {
     using namespace utf8;
     std::string res;
     try {
@@ -178,7 +178,7 @@ int mkpath(const char *path, mode_t mode)
     return (status);
 }
 
-bool createDirectory(const std::string& path,unsigned int mode)
+bool createDirectory(const std::string& path, unsigned int mode)
 {
     return mkpath(path.c_str(), (mode_t)mode) == 0;
 }
@@ -187,7 +187,7 @@ bool RemoveFile(const std::string& utf8Filename) {
     return remove(utf8Filename.c_str())==0;
 }
 
-bool MoveFileOrFolder(const std::string& from ,const std::string& to) {
+bool MoveFileOrFolder(const std::string& from, const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
 }
 

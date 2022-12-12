@@ -696,3 +696,4 @@ ea6f0050 = Test failed
 585f17b3 = Test connection
 3a43d87c = Thumbnail's size:
 e15864fc = Skip animated
+c4d1283c = Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?

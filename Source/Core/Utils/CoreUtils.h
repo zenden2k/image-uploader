@@ -64,8 +64,6 @@ namespace IuCoreUtils
     std::string ExtractFileNameNoExt(const std::string& fileName);
     std::string ExtractFileNameFromUrl(const std::string& url);
     std::string incrementFileName(const std::string& originalFileName, int counter);
-    std::string toString(int value);
-    std::string toString(unsigned int value);
     std::string toString(double value, int precision);
     std::string Utf8ToSystemLocale(const std::string& str);
     std::string SystemLocaleToUtf8(const std::string& str);
@@ -77,13 +75,13 @@ namespace IuCoreUtils
     std::string ConvertToUtf8(const std::string &text, const std::string& codePage);
     bool ReadUtf8TextFile(std::string utf8Filename, std::string& data);
     bool PutFileContents(const std::string& utf8Filename, const std::string& content);
-    const std::string GetFileContents(const std::string& filename);
+    std::string GetFileContents(const std::string& filename);
 
     // getFileSize retrieves the size of the specified file, in bytes.
     // It supports large files; filename must be utf8 encoded
     int64_t getFileSize(const std::string& utf8Filename);
-    const std::wstring Utf8ToWstring(const std::string &str);
-    const std::string WstringToUtf8(const std::wstring &str);
+    std::wstring Utf8ToWstring(const std::string &str);
+    std::string WstringToUtf8(const std::wstring &str);
 
     // Convert UTF16-LE encoded string to Utf-8
     std::string Utf16ToUtf8(const std::u16string& src);
@@ -92,7 +90,7 @@ namespace IuCoreUtils
     std::string fileSizeToString(int64_t nBytes);
     bool createDirectory(const std::string& path, unsigned int mode=0);
     bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
-    const std::string Utf8ToAnsi(const std::string &str, int codepage);
+    std::string Utf8ToAnsi(const std::string &str, int codepage);
     bool RemoveFile(const std::string& utf8Filename);
     bool MoveFileOrFolder(const std::string& from ,const std::string& to);
     std::string ThreadIdToString(const std::thread::id& id);

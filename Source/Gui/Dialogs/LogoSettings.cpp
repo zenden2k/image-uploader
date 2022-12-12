@@ -80,7 +80,8 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     img.LoadImage(nullptr);
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"));
+    // Items order should be the same as ImageUtils::SaveImageFormat
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 6, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"), _T("WebP"), _T("WebP (lossless)"));
 
     SendDlgItemMessage(IDC_TRANSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)0));
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1));

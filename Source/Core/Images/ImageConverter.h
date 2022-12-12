@@ -37,7 +37,7 @@ struct ImageConvertingParams
 
 struct ThumbCreatingParams
 {
-    enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF };
+    enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF, tfWebP, tfWebPLossless };
     enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBoth };
 
     unsigned int Quality;

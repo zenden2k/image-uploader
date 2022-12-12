@@ -87,20 +87,6 @@ TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 
 }
 
-TEST_F(CoreUtilsTest, toString) 
-{
-   // std::string result = toString(100);
-
-    EXPECT_EQ(toString(100), "100");
-    EXPECT_EQ(toString(2147483647), "2147483647");
-    EXPECT_EQ(toString(-2147483646), "-2147483646");
-    EXPECT_EQ(toString(0), "0");
-    EXPECT_EQ(toString((unsigned int)0xffffffff), "4294967295");
-    EXPECT_EQ(toString(100.5, 2), "100.50");
-    EXPECT_EQ(toString(100.54534, 0), "101");
-}
-
-
 TEST_F(CoreUtilsTest, int64_tToString) 
 {
     EXPECT_EQ("-2147483648", int64_tToString(std::numeric_limits<int>::min()));

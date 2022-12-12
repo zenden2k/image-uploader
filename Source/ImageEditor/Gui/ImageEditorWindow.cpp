@@ -28,13 +28,8 @@ ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bo
 
 ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
 {
-    if (!imageFileName.IsEmpty()) {
-        CString ext = WinUtils::GetFileExt(imageFileName);
-        if (ext == "webp") {
-            GuiTools::LocalizedMessageBox(nullptr, _T("Webp format is not supported by image editor"), TR("Image Editor"), MB_ICONERROR);
-        }
-    }
     currentDoc_ = std::make_unique<ImageEditor::Document>(imageFileName);
+    
     sourceFileName_ = imageFileName;
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
@@ -42,7 +37,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     suggestedFileName_ = WinUtils::myExtractFileName(sourceFileName_);
     CString fileExt = WinUtils::GetFileExt(suggestedFileName_);
     fileExt.MakeLower();
-    if (fileExt != _T("png") && fileExt != _T("jpg") && fileExt != _T("jpeg")) {
+    if (fileExt != _T("png") && fileExt != _T("jpg") && fileExt != _T("jpeg") && fileExt != _T("webp")) {
         suggestedFileName_ = WinUtils::GetOnlyFileName(suggestedFileName_) + _T(".png");
     }
     init();
@@ -167,12 +162,12 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
     }
     if (clipboardFormat == ClipboardFormat::None) {
         if ( !outFileName_.IsEmpty() ) {
-            ImageUtils::SaveImage(resultingBitmap_.get(), outFileName_, ImageUtils::sifDetectByExtension, imageQuality_);
+            ImageUtils::SaveImageToFile(resultingBitmap_.get(), outFileName_, nullptr, ImageUtils::sifDetectByExtension, imageQuality_);
             canvas_->updateView();
             return true;
         } else {
             CString outFileName;
-            if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, 0, 95)) {
+            if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, ImageUtils::sifJPEG, 95)) {
                 outFileName_ = outFileName;
                 canvas_->updateView();
                 return true;
@@ -184,7 +179,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
         ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
-        ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), 1, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), ImageUtils::sifPNG, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
         return true;
     }
     return false;
@@ -193,7 +188,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
 CString ImageEditorWindow::saveToTempFile() {
     const std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
     CString result;
-    if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, 1, 95)) {
+    if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, ImageUtils::sifPNG, 95)) {
         return result;
     }
     return CString();
@@ -314,6 +309,13 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     if (currentDoc_->isNull()) {
         GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APPNAME, MB_ICONERROR);
         return drCancel;
+    }
+
+    if (currentDoc_ && currentDoc_->isSrcAnimated()) {
+        if (GuiTools::LocalizedMessageBox(nullptr, TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?"),
+            TR("Image Editor"), MB_ICONWARNING | MB_YESNO) != IDYES) {
+            return drCancel;
+        }
     }
     //int screenWidth = GetSystemMetrics(SM_CXSCREEN);
     //int screenHeight = GetSystemMetrics(SM_CYSCREEN);
@@ -1289,6 +1291,7 @@ bool ImageEditorWindow::OnSaveAs()
     IMyFileDialog::FileFilterArray filters = {
         { _T("PNG"), CString(_T("*.png")) },
         { _T("JPEG"), CString(_T("*.jpg;*.jpeg")) },
+        { _T("WEBP"), CString(_T("*.webp")) },
         { TR("All files"), _T("*.*") }
     };
 
@@ -1297,7 +1300,13 @@ bool ImageEditorWindow::OnSaveAs()
     CString ext = WinUtils::GetFileExt(suggestedFileName_);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
-    dlg->setFileTypeIndex(ext == "jpg" ? 2 : 1);
+    int index = 1; // png
+    if (ext == "jpg") {
+        index = 2;
+    } else if (ext == "webp") {
+        index = 3;
+    }
+    dlg->setFileTypeIndex(index);
     enableToolbarsIfNecessary(false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         enableToolbarsIfNecessary(true);
@@ -1351,12 +1360,8 @@ bool ImageEditorWindow::OnClickedSave() {
     }
     if (!sourceFileName_.IsEmpty()) {
         CString ext = WinUtils::GetFileExt(sourceFileName_);
-        if (ext.MakeLower() == "webp") {
-            return OnSaveAs();
-        } else {
-            outFileName_ = sourceFileName_;
-            saveDocument();
-        }
+        outFileName_ = sourceFileName_;
+        saveDocument();
     } else {
         return OnSaveAs();
     }

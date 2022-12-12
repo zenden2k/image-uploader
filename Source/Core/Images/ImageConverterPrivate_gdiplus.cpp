@@ -20,7 +20,7 @@ using namespace Gdiplus;
 bool ImageConverterPrivate::convert(const std::string& sourceFile)
 {
     sourceFile_ = sourceFile;
-    int fileformat;
+    ImageUtils::SaveImageFormat fileformat;
     double width, height, imgwidth, imgheight, newwidth, newheight;
     CString sourceFileW = U2W(sourceFile);
     CString imageFile = sourceFileW;
@@ -50,9 +50,9 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     height = float(NewHeight);
 
     if (m_imageConvertingParams.Format < 1 || !processingEnabled_)
-        fileformat = GetSavingFormat(sourceFileW);
+        fileformat = ImageUtils::GetFormatByFileName(sourceFileW);
     else
-        fileformat = m_imageConvertingParams.Format - 1;
+        fileformat = static_cast<ImageUtils::SaveImageFormat>(m_imageConvertingParams.Format - 1);
 
     if (m_imageConvertingParams.SmartConverting && fileformat == GetSavingFormat(sourceFileW) && imgwidth < width && imgheight < height) {
         processingEnabled_ = false;
@@ -76,7 +76,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         if (m_imageConvertingParams.PreserveExifInformation) {
             bm->GetPropertySize(&propertyItemsSize, &propertyItemsCount);
             if (propertyItemsSize) {
-                pPropBuffer = reinterpret_cast<PropertyItem*>(malloc(propertyItemsSize));
+                pPropBuffer = static_cast<PropertyItem*>(malloc(propertyItemsSize));
                 bm->GetAllPropertyItems(propertyItemsSize, propertyItemsCount, pPropBuffer);
             }
         }
@@ -250,28 +250,31 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     {
         CString Ext = WinUtils::GetFileExt(sourceFileW);
         if (Ext == _T("png"))
-            fileformat = 1;
+            fileformat = ImageUtils::sifPNG;
         else
-            fileformat = 0;
+            fileformat = ImageUtils::sifJPEG;
     }
     if (generateThumb_)
     {
         // Генерирование превьюшки с шаблоном в отдельной функции
-        int thumbFormat = fileformat;
-        if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfJPEG)
-            thumbFormat = 0;
-        else
-            if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfPNG)
-                thumbFormat = 1;
-            else
-                if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfGIF)
-                    thumbFormat = 2;
+        ImageUtils::SaveImageFormat thumbFormat = fileformat;
+        if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfJPEG) {
+            thumbFormat = ImageUtils::sifJPEG;
+        } else if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfPNG) {
+            thumbFormat = ImageUtils::sifPNG;
+        } else if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfGIF) {
+            thumbFormat = ImageUtils::sifGIF;
+        } else if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfWebP) {
+            thumbFormat = ImageUtils::sifWebp;
+        } else if (m_thumbCreatingParams.Format == ThumbCreatingParams::tfWebPLossless) {
+            thumbFormat = ImageUtils::sifWebpLossless;
+        }
         createThumb(thumbSource, imageFile, thumbFormat);
     }
     return true;
 }
 
-bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, int fileformat)
+bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, ImageUtils::SaveImageFormat fileformat)
 {
     bool result = false;
     int64_t FileSize = IuCoreUtils::getFileSize(W2U(imageFile));
@@ -337,8 +340,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     g1.SetPageUnit(UnitWorld);
     g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &format, &TextRect);
     //        delete f;
-    m_Vars["TextWidth"] = IuCoreUtils::toString(static_cast<int>(TextRect.Width));
-    m_Vars["TextHeight"] = IuCoreUtils::toString(static_cast<int>(TextRect.Height));
+    m_Vars["TextWidth"] = std::to_string(static_cast<int>(TextRect.Width));
+    m_Vars["TextHeight"] = std::to_string(static_cast<int>(TextRect.Height));
     m_Vars["UserText"] = W2U(ThumbnailText);
     std::string textTempl = thumbnailTemplate_->getParamString("Text");
     if (textTempl.empty())
@@ -350,7 +353,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
         m_Vars[it->first] = it->second;
     }
 
-    m_Vars["DrawText"] = IuCoreUtils::toString(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.AddImageSize);
+    m_Vars["DrawText"] = std::to_string(m_Vars["DrawText"] == "1" && m_thumbCreatingParams.AddImageSize);
 
     if (m_thumbCreatingParams.ResizeMode == ThumbCreatingParams::trByWidth)
     {
@@ -373,8 +376,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     int RealThumbWidth = thumbwidth + EvaluateExpression(thumbnailTemplate_->getWidthAddition());
     int RealThumbHeight = thumbheight + EvaluateExpression(thumbnailTemplate_->getHeightAddition());
 
-    m_Vars["Width"] = IuCoreUtils::toString(RealThumbWidth);
-    m_Vars["Height"] = IuCoreUtils::toString(RealThumbHeight);
+    m_Vars["Width"] = std::to_string(RealThumbWidth);
+    m_Vars["Height"] = std::to_string(RealThumbHeight);
     Bitmap* ThumbBuffer = new Bitmap(RealThumbWidth, RealThumbHeight, &g1);
     Graphics thumbgr(ThumbBuffer);
     thumbgr.SetPageUnit(UnitPixel);

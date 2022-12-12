@@ -1,8 +1,6 @@
 #ifndef IU_CORE_SERVICELOCATOR_H
 #define IU_CORE_SERVICELOCATOR_H
 
-#include "Utils/Singleton.h"
-
 #include <memory>
 
 #include "ProgramWindow.h"

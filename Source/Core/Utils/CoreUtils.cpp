@@ -184,8 +184,8 @@ std::codecvt_base::result toWstring (const std::string & str,
 std::string SystemLocaleToUtf8(const std::string& str)
 {
     std::locale const oloc = std::locale ("");
-   std::wstring out;
-   std::wstring wideStr;
+    std::wstring out;
+    std::wstring wideStr;
     toWstring (str, oloc, wideStr);
     return WstringToUtf8(wideStr);
 }
@@ -270,19 +270,6 @@ std::string incrementFileName(const std::string& originalFileName, int counter) 
     return name;
 }
 
-
-std::string toString(int value)
-{
-    return std::to_string(value);
-}
-
-std::string toString(unsigned int value)
-{
-    char buffer[256];
-    sprintf(buffer, "%u", value);
-    return buffer;
-}
-
 std::string StrReplace(std::string text, std::string s, std::string d)
 {
     for(size_t index=0; index=text.find(s, index), index!=std::string::npos;)
@@ -356,7 +343,7 @@ bool PutFileContents(const std::string& utf8Filename, const std::string& content
     return true;
 }
 
-const std::string GetFileContents(const std::string& filename) {
+std::string GetFileContents(const std::string& filename) {
     std::string data;
     FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
     if (!stream) return std::string();

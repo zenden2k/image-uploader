@@ -1153,7 +1153,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
     CString fileNameBuffer;
     Bitmap bm(Bmp, nullptr);
     if (bm.GetLastStatus() == Ok) {
-        if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, 1, 100)) {
+        if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, ImageUtils::sifPNG, 100)) {
             CreatePage(wpMainPage);
             CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
             MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
@@ -1950,9 +1950,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
                 CopyToClipboard = true;
             }
-            int savingFormat = Settings.ScreenshotSettings.Format;
-            if(savingFormat == 0) // jpeg
-                ImageUtils::Gdip_RemoveAlpha(*result,Color(255,255,255,255));
+            ImageUtils::SaveImageFormat savingFormat = static_cast<ImageUtils::SaveImageFormat>(Settings.ScreenshotSettings.Format);
+            if (savingFormat == ImageUtils::sifJPEG) {
+                ImageUtils::Gdip_RemoveAlpha(*result, Color(255, 255, 255, 255));
+            }
 
             CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
             ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);

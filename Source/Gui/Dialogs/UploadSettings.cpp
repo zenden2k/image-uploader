@@ -208,7 +208,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 4, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 6, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
     
     ShowParams();
     CString profileName = U2W(sessionImageServer_.getImageUploadParams().ImageProfileName);

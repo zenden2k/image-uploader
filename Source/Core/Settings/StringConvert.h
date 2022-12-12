@@ -19,7 +19,7 @@ inline void myFromString(const std::string& text, CString& value)
 
 template<class T> std::string myToString(const EnumWrapper<T>& value)
 {
-    return IuCoreUtils::toString(value.value_);
+    return std::to_string(value.value_);
 }
 
 template<class T> void myFromString(const std::string& text, EnumWrapper<T>& value)

@@ -35,7 +35,7 @@ Document::Document(int width, int height) {
 }
 
 Document::Document(const wchar_t* fileName) {
-    currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName);
+    currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcAnimated_);
     init();
     if ( currentImage_ ) {
         checkTransparentPixels();
@@ -293,6 +293,10 @@ void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     Gdiplus::Graphics gr(newBitmap.get());
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
     currentImage_ = newBitmap;
+}
+
+bool Document::isSrcAnimated() const {
+    return isSrcAnimated_;
 }
 
 }

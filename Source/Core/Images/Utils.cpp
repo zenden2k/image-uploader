@@ -28,6 +28,7 @@
 #include <boost/format.hpp>
 #include <libbase64.h>
 #include <webp/demux.h>
+#include <webp/encode.h>
 #include "3rdpart/GdiplusH.h"
 #include "Core/Logging.h"
 #include "Func/WinUtils.h"
@@ -56,7 +57,7 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     if (size == 0)
         return -1;  // Failure
 
-    pImageCodecInfo = reinterpret_cast<ImageCodecInfo*>(malloc(size));
+    pImageCodecInfo = static_cast<ImageCodecInfo*>(malloc(size));
     if (pImageCodecInfo == NULL)
         return -1;  // Failure
 
@@ -142,80 +143,6 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 
 }
 
-bool SaveImage(Image* img, const CString& filename, SaveImageFormat format, int Quality)
-{
-    if (format == sifDetectByExtension ) {
-        CString ext = WinUtils::GetFileExt(filename);
-        ext.MakeLower();
-        if ( ext == L"jpg" || ext == L"jpeg") {
-            format = sifJPEG;
-        } else if ( ext == L"gif" ) {
-            format = sifGIF;
-        } else  {
-            format = sifPNG;
-        }
-    }
-
-    std::unique_ptr<Bitmap> quantizedImage;
-    //TCHAR szImgTypes[3][4] = {_T("jpg"), _T("png"), _T("gif")};
-    TCHAR szMimeTypes[3][12] = {_T("image/jpeg"), _T("image/png"), _T("image/gif")};
-
-    
-//    IU_CreateFilePath(filename);
-
-    CLSID clsidEncoder;
-    EncoderParameters eps;
-    eps.Count = 1;
-
-    if (format == sifJPEG) // JPEG
-    {
-        eps.Parameter[0].Guid = EncoderQuality;
-        eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-        eps.Parameter[0].NumberOfValues = 1;
-        eps.Parameter[0].Value = &Quality;
-    }
-    else if (format == sifPNG)      // PNG
-    {
-        eps.Parameter[0].Guid = EncoderCompression;
-        eps.Parameter[0].Type = EncoderParameterValueTypeLong;
-        eps.Parameter[0].NumberOfValues = 1;
-        eps.Parameter[0].Value = &Quality;
-    } else if (format == sifGIF) {
-        QColorQuantizer quantizer;
-        quantizedImage.reset ( quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256) );
-        if (quantizedImage.get() != 0) {
-            img = quantizedImage.get();
-        }
-    }
-
-    Gdiplus::Status result;
-
-    if (GetEncoderClsid(szMimeTypes[format], &clsidEncoder) != -1) {
-        if (format == sifJPEG) {
-            result = img->Save(filename, &clsidEncoder, &eps);
-        } else {
-            result = img->Save(filename, &clsidEncoder);
-        }
-    } else {
-        return false;
-    }
-    
-    if (result != Ok) {
-        if (result == Gdiplus::Win32Error) {
-            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\n" << WinUtils::GetLastErrorAsString();
-        } else {
-            LOG(ERROR) << _T("Could not save image at path \r\n") + filename << "\r\nGdiPlus error:" << GdiplusStatusToString(result);
-        }
-        return false;
-    }
-    uint64_t fileSize = IuCoreUtils::getFileSize(W2U(filename));
-    if (!fileSize) {
-        LOG(ERROR) << _T("Could not save image at path \r\n") + filename + "\r\nOutput file's size is zero.";
-        return false;
-    }
-    return true;
-}
-
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
 {
     ICONINFO ii; 
@@ -236,7 +163,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
 
     std::unique_ptr<Gdiplus::Bitmap> image = std::make_unique<Gdiplus::Bitmap>(
         lockedBitmapData.Width, lockedBitmapData.Height, lockedBitmapData.Stride,
-        PixelFormat32bppARGB, reinterpret_cast<BYTE *>(lockedBitmapData.Scan0));
+        PixelFormat32bppARGB, static_cast<BYTE *>(lockedBitmapData.Scan0));
 
     temp.UnlockBits(&lockedBitmapData);
     return image;
@@ -467,7 +394,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
 }
 
-std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName) {
+std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isAnimated) {
     using namespace Gdiplus;
     auto img = LoadImageFromFileExtended(fileName);
     if (!img) {
@@ -476,6 +403,9 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
     std::unique_ptr<Bitmap> src(img->releaseBitmap());
     if ( !src || src->GetLastStatus() != Ok ) {
         return nullptr;
+    }
+    if (isAnimated) {
+        *isAnimated = img->isSrcAnimated();
     }
     std::unique_ptr<Gdiplus::Bitmap> dst = std::make_unique<Bitmap>(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
 
@@ -486,8 +416,8 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
     if (src->LockBits(& rc, ImageLockModeRead, PixelFormat32bppARGB, & srcData) == Ok)
     {
         if ( dst->LockBits(& rc, ImageLockModeWrite, PixelFormat32bppARGB, & dstData) == Ok ) {
-            uint8_t * srcBits = reinterpret_cast<uint8_t *>(srcData.Scan0);
-            uint8_t * dstBits = reinterpret_cast<uint8_t *>(dstData.Scan0);
+            uint8_t * srcBits = static_cast<uint8_t *>(srcData.Scan0);
+            uint8_t * dstBits = static_cast<uint8_t *>(dstData.Scan0);
             unsigned int stride;
             if (srcData.Stride > 0) { 
                 stride = srcData.Stride;
@@ -561,7 +491,7 @@ void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color )
     BitmapData  bdSrc;
     source.LockBits( &r,  ImageLockModeRead , PixelFormat32bppARGB,&bdSrc);
 
-    BYTE* bpSrc = reinterpret_cast<BYTE*>(bdSrc.Scan0);
+    BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
 
     //bpSrc += (int)sourceChannel;
 
@@ -723,24 +653,30 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
     return rc;
 }
 
-bool MySaveImage(Image* img, const CString& szFilename, CString& szBuffer, int Format, int Quality, LPCTSTR Folder)
+bool MySaveImage(Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
 {
-    if (Format == -1)
-        Format = 0;
+    if (Format == -1) {
+        Format = sifJPEG;
+    } else if (Format == sifDetectByExtension) {
+        Format = GetFormatByFileName(szFilename);
+    }
     
-    TCHAR szImgTypes[3][4] = { _T("jpg"), _T("png"), _T("gif") };
+    TCHAR* szImgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
     
     CString szNameBuffer, buffer2;
  
-    if (IuCommonFunctions::IsImage(szFilename))
+    if (IuCommonFunctions::IsImage(szFilename)) {
         szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
-    else
+    } else {
         szNameBuffer = szFilename;
+    }
     CString userFolder;
-    if (Folder)
+    if (Folder) {
         userFolder = Folder;
-    if (userFolder.Right(1) != _T('\\'))
+    }
+    if (userFolder.Right(1) != _T('\\')) {
         userFolder += _T('\\');
+    }
     buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
                     szImgTypes[Format]);
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
@@ -779,41 +715,51 @@ CString GdiplusStatusToString(Gdiplus::Status statusID) {
 
     }
 }
-bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stream, int Format, int Quality, CString* mimeType) {
+bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType) {
     std::unique_ptr<Bitmap> quantizedImage;
-    
+
+    if (Format == sifDetectByExtension) {
+        Format = GetFormatByFileName(fileName);
+    }
+
     Gdiplus::Status result;
-    TCHAR szMimeTypes[3][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif") };
+    TCHAR szMimeTypes[5][12] = { _T("image/jpeg"), _T("image/png"), _T("image/gif"), _T("image/webp"), _T("image/webp") };
     CLSID clsidEncoder;
     EncoderParameters eps;
     eps.Count = 1;
 
-    if (Format == 0) // JPEG
+    if (mimeType) {
+        *mimeType = szMimeTypes[Format];
+    }
+    if (Format == sifJPEG) // JPEG
     {
         eps.Parameter[0].Guid = EncoderQuality;
         eps.Parameter[0].Type = EncoderParameterValueTypeLong;
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
-    } else if (Format == 1) // PNG
+    } else if (Format == sifPNG) // PNG
     {
         eps.Parameter[0].Guid = EncoderCompression;
         eps.Parameter[0].Type = EncoderParameterValueTypeLong;
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
-    } else if (Format == 2) { // GIF
+    } else if (Format == sifGIF) { // GIF
         QColorQuantizer quantizer;
         quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
-        if (quantizedImage.get() != 0)
+        if (quantizedImage) {
             img = quantizedImage.get();
+        }
+    } else if (Format == sifWebp) {
+       return SaveBitmapAsWebp(img, fileName, stream, false, Quality);
+    } else if (Format == sifWebpLossless) {
+        return SaveBitmapAsWebp(img, fileName, stream, true, Quality);
     }
     if (GetEncoderClsid(szMimeTypes[Format], &clsidEncoder) != -1) {
         if (Format == 0)
             result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder, &eps);
         else
             result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder);
-        if (mimeType) {
-            *mimeType = szMimeTypes[Format];
-        }
+       
     } else {
         ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Could not find suitable converter"));
         return false;
@@ -831,6 +777,22 @@ bool SaveImageToFile(Gdiplus::Image* img, const CString& fileName, IStream* stre
     }
 
     return true;
+}
+
+
+SaveImageFormat GetFormatByFileName(CString filename) {
+    CString ext = WinUtils::GetFileExt(filename);
+    ext.MakeLower();
+    if (ext == _T("jpg") || ext == _T("jpeg")) {
+        return sifJPEG;
+    } else if (ext == _T("gif")) {
+        return sifGIF;
+    } else if (ext == _T("png")) {
+        return sifPNG;
+    } else if (ext == _T("webp")) {
+        return sifWebpLossless;
+    }
+    return sifJPEG;
 }
 
 CRect CenterRect(CRect r1, const CRect& intoR2)
@@ -1242,7 +1204,7 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
 
     base64_state state;
     base64_stream_encode_init(&state, 0);
-    char* encodedData = reinterpret_cast<char*>(GlobalLock(hglbCopy));
+    char* encodedData = static_cast<char*>(GlobalLock(hglbCopy));
     char* encodedDataCur = encodedData;
 
     if (html) {
@@ -1286,7 +1248,7 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
         unsigned htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
         size_t clipboardHtmlSize = clipboardHtml.size();
         HGLOBAL hglbHtml = GlobalAlloc(GMEM_MOVEABLE, clipboardHtmlSize + 1);
-        char* htmlData = reinterpret_cast<char*>(GlobalLock(hglbHtml));
+        char* htmlData = static_cast<char*>(GlobalLock(hglbHtml));
 
         strncpy(htmlData, clipboardHtml.c_str(), clipboardHtmlSize);
         htmlData[clipboardHtmlSize] = 0;
@@ -1321,7 +1283,7 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
     return res;
 }
 
-bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, int Format, int Quality, bool html) {
+bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, SaveImageFormat Format, int Quality, bool html) {
     CComPtr<IStream> stream = CreateMemStream(nullptr, 0);
     CString mimeType;
     bool res = SaveImageToFile(bm, CString(), stream, Format, Quality, &mimeType);
@@ -1474,6 +1436,58 @@ bool IsImageAnimated(Gdiplus::Image* img) {
     // Get the number of frames in the first dimension.
     int frameCount = img->GetFrameCount(&pDimensionIDs[0]);
     return frameCount > 1;
+}
+
+bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, bool lossless, int quality) {
+    BitmapData  bdSrc;
+    Rect r(0, 0, img->GetWidth(), img->GetHeight());
+    if (img->LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
+
+        defer<void> t([img, &bdSrc] {
+            img->UnlockBits(&bdSrc);
+        });
+
+        BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
+        uint8_t* outData;
+        size_t outDataSize;
+
+        if (lossless) {
+            outDataSize = WebPEncodeLosslessBGRA(bpSrc, img->GetWidth(), img->GetHeight(), img->GetWidth() * 4, &outData);
+        } else {
+            outDataSize = WebPEncodeBGRA(bpSrc, img->GetWidth(), img->GetHeight(), img->GetWidth() * 4, static_cast<float>(quality), &outData);
+        }
+        if (!outDataSize || !outData) {
+            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("WebPEncodeRGBA failed"));
+            return false;
+        }
+
+        bool result = true;
+        if (stream) {
+            ULONG pcbWritten;
+            if (FAILED(stream->Write(outData, outDataSize, &pcbWritten))) {
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to write file to the stream"));
+                result = false;
+            }
+        }
+        else {
+            FILE* f = IuCoreUtils::fopen_utf8(W2U(fileName).c_str(), "wb");
+            if (!f) {
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to create output file ") + fileName);
+                result = false;
+            }
+            size_t written = fwrite(outData, 1, outDataSize, f);
+            if (written != outDataSize) {
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to write data to file ") + fileName);
+                result = false;
+            }
+            fclose(f);
+        }
+        WebPFree(outData);
+        return result;
+    } else {
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("LockBits call failed"));
+    }
+    return false;
 }
 
 }

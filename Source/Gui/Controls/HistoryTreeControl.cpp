@@ -205,7 +205,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     if (serverName.empty()) {
         serverName = "unknown server";
     }
-    std::string lowText = serverName+ " (" + IuCoreUtils::toString(ses->entriesCount())+" files)"; 
+    std::string lowText = serverName+ " (" + std::to_string(ses->entriesCount())+" files)";
     CString text = Utf8ToWCstring(label);
 
     CRect rc = invRC;

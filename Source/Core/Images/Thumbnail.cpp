@@ -172,7 +172,7 @@ void Thumbnail::setColor(const std::string& name, unsigned int value)
 
 void Thumbnail::setParam(const std::string& name, unsigned int value)
 {
-    data_.colors_[name] = IuCoreUtils::toString(value);
+    data_.colors_[name] = std::to_string(value);
 }
 
 void Thumbnail::setParamString(const std::string& name, const std::string& value)

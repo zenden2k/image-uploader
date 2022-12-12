@@ -73,8 +73,8 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
-        _T("JPEG"), _T("PNG"), _T("GIF"));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 6, TR("Same format as image"),
+        _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
 
     std::vector<CString> files;
     CString folder = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\");

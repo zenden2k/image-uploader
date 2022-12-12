@@ -117,7 +117,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
 	
     onProgress(this, -1, -1, W2U(TR("Saving image...")));
 	
-    ImageUtils::MySaveImage(&BackBuffer, _T("grab_custom"), outFileName_, 1, 100);
+    ImageUtils::MySaveImage(&BackBuffer, _T("grab_custom"), outFileName_, ImageUtils::sifPNG, 100);
 
     return BackgroundTaskResult::Success;
 }

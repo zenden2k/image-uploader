@@ -229,7 +229,7 @@ void CHistoryWindow::FillList(CHistoryReader* mgr)
         std::string serverName = ses->serverName();
         if(serverName.empty()) serverName = "n/a";
 
-        std::string label = IuCoreUtils::timeStampToString(ses->timeStamp())+ "\r\n Server: "+ serverName+ " Files: " + IuCoreUtils::toString(ses->entriesCount()); 
+        std::string label = IuCoreUtils::timeStampToString(ses->timeStamp())+ "\r\n Server: "+ serverName+ " Files: " + std::to_string(ses->entriesCount());
         res = m_treeView.addEntry(ses, Utf8ToWCstring(label));
         int nCount = ses->entriesCount();
         for(int j=0; j<nCount; j++)
