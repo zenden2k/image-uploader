@@ -184,7 +184,7 @@ begin
      then
   begin
 
-    ITD_AddFile('http://dl.bintray.com/zenden/zenden-image-uploader/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
+    ITD_AddFile('https://svistunov.dev/files/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
     //http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip
   
   end;
