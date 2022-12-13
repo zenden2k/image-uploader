@@ -45,6 +45,7 @@ class CAboutDlg : public CCustomDialogIndirectImpl<CAboutDlg>
         CHyperLink m_ReportBugLink;
         CHyperLink m_EmailLink;
         CHyperLink m_CommitHashLink;
+        CHyperLink iconsByIcons8Link;
         CFont thanksToLabelFont_;
         // Handler prototypes (uncomment arguments if needed):
         //    LRESULT MessageHandler(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)

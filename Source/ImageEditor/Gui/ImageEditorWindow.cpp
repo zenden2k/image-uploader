@@ -836,9 +836,9 @@ void ImageEditorWindow::createToolbars()
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
-    horizontalToolbar_.addButton(Toolbar::Item(itemText, std::shared_ptr<Gdiplus::Bitmap>(), ID_SEARCHBYIMAGE, CString(_T("(Ctrl+F)")), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, CString(_T("(Ctrl+F)")), Toolbar::itComboButton));
     
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), std::shared_ptr<Gdiplus::Bitmap>(), ID_PRINTIMAGE, CString(_T("(Ctrl+P)")), Toolbar::itButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, CString(_T("(Ctrl+P)")), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {

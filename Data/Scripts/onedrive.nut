@@ -21,9 +21,11 @@ function _ClearAuthData() {
 }
 
 function _CheckResponse(except = true) {
-    if ( nm.responseCode() == 403 ) {
-        if ( nm.responseBody().find("Invalid token",0)!= null) {
-            WriteLog("warning", nm.responseBody());
+    local t = ParseJSON(nm.responseBody());
+    
+    if ( nm.responseCode() == 403 || nm.responseCode() == 400  ) { 
+        if ( nm.responseBody().find("Invalid token",0)!= null 
+                || (("error" in t) && t.error == "invalid_grant")) {
             _ClearAuthData();
             if (except) {
                 throw "unauthorized_exception";

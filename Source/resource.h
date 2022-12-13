@@ -164,6 +164,8 @@
 #define IDB_ICONTOOLPIXELATE            315
 #define IDI_ICON11                      316
 #define IDI_ICONLASTREGION              316
+#define IDB_ICONSEARCH                  323
+#define IDB_ICONPRINT                   324
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -706,6 +708,7 @@
 #define IDC_UPLOADSPEEDLIMITKBPSLABEL   1333
 #define IDC_CONNECTIONSTATUSLABEL       1334
 #define IDC_ANIMATION                   1335
+#define IDC_ICONSBYLABEL                1336
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -751,9 +754,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        322
+#define _APS_NEXT_RESOURCE_VALUE        325
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1336
+#define _APS_NEXT_CONTROL_VALUE         1337
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

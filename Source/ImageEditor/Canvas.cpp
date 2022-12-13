@@ -37,7 +37,7 @@ Canvas::Canvas( HWND parent ) {
     parentWindow_            = parent;
     oldPoint_.x           = -1;
     oldPoint_.y           = -1;
-    callback_             = 0;
+    callback_             = nullptr;
     drawingToolType_      = DrawingToolType::dtNone;
     previousDrawingTool_ = DrawingToolType::dtNone; 
     leftMouseDownPoint_.x = -1;
@@ -48,7 +48,7 @@ Canvas::Canvas( HWND parent ) {
     currentCursor_    = CursorType::ctDefault;
     scrollOffset_.x = 0;
     scrollOffset_.y = 0;
-    overlay_ = 0;
+    overlay_ = nullptr;
     showOverlay_ = false;
     zoomFactor_ = 1;
     currentlyEditedTextElement_ = nullptr;
@@ -950,6 +950,9 @@ void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
 
 std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
 {
+    if (currentlyEditedTextElement_) {
+        unselectAllElements();
+    }
     using namespace Gdiplus;
     Rect rc(0,0, getWidth(), getHeigth());
     fullRender_ = true;

@@ -54,6 +54,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_ReportBugLink.SetLabel(TR("Found a bug? Send it to the author"));
     m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
+    iconsByIcons8Link.SubclassWindow(GetDlgItem(IDC_ICONSBYLABEL));
+    iconsByIcons8Link.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+    iconsByIcons8Link.SetHyperLink(_T("https://icons8.com"));
+
     m_CommitHashLink.SubclassWindow(GetDlgItem(IDC_COMMITHASH));
     m_CommitHashLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_CommitHashLink.SetLabel(CString(ver->CommitHashShort.c_str()));
@@ -64,6 +68,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     m_EmailLink.SetLabel((translator->getCurrentLanguage() == "Russian" ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
         : _T("Sergey Svistunov")) + CString(_T(" (")) + authorEmail + CString(_T(")")));
     m_EmailLink.SetHyperLink(CString(_T("mailto:")) + authorEmail);
+
 
     CString memoText;
     

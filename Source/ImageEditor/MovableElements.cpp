@@ -333,6 +333,7 @@ void TextElement::beginEdit()
 
 void TextElement::endEdit(bool save)
 {
+    canvas_->setCurrentlyEditedTextElement(nullptr);
     if ( isEditing_ ) {
         firstEdit_ = false;
         isEditing_ = false;

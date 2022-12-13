@@ -282,9 +282,10 @@ BEGIN
     LTEXT           "#Author:",IDC_AUTHORLABEL,31,93,58,8
     LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
-    EDITTEXT        IDC_MEMO,5,155,263,132,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_MEMO,5,163,263,124,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
     LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
     LTEXT           "#",IDC_COMMITHASH,158,46,75,8
+    LTEXT           "Icons by Icons8",IDC_ICONSBYLABEL,97,150,51,8
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -1582,6 +1583,10 @@ IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_ste
 IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
 
 IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
+
+IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
+
+IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
 
 
 /////////////////////////////////////////////////////////////////////////////
