@@ -129,12 +129,16 @@ int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int
     }
 
     // Saving image in JPEG format to memory stream
-    if (ImageUtils::SaveImageToFile(resultBmp.get(), CString(), istream_, ImageUtils::sifJPEG, 85)) {
-        hr = GetHGlobalFromStream(istream_, &hGlobal_);
-        if (FAILED(hr)) {
-            return 0;
+    try {
+        if (ImageUtils::SaveImageToFile(resultBmp.get(), CString(), istream_, ImageUtils::sifJPEG, 85)) {
+            hr = GetHGlobalFromStream(istream_, &hGlobal_);
+            if (FAILED(hr)) {
+                return 0;
+            }
+            return GlobalSize(hGlobal_);
         }
-        return GlobalSize(hGlobal_);
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << "Failed to save image: " << ex.what();
     }
     return 0;
 }

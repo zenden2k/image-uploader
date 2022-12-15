@@ -91,6 +91,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/SimpleXml.h
     Utils/StringUtils.h
     Utils/ConsoleUtils.h
+    Utils/IOException.h
     3rdpart/base64.h
     3rdpart/pcreplusplus.h
     3rdpart/tinystr.h

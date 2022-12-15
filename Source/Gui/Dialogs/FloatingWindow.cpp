@@ -288,9 +288,14 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
             GetBitmapDimensionEx(bmp, &dim);
             Gdiplus::Bitmap bm(bmp, nullptr);
             if (bm.GetLastStatus() == Gdiplus::Ok) {
-                if (ImageUtils::MySaveImage(&bm, _T("clipboard"), filePath, ImageUtils::sifPNG, 100)) {
-                    CString fileName = WinUtils::myExtractFileName(filePath);
-                    UploadScreenshot(filePath, fileName);
+                try {
+                    if (ImageUtils::MySaveImage(&bm, _T("clipboard"), filePath, ImageUtils::sifPNG, 100)) {
+                        CString fileName = WinUtils::myExtractFileName(filePath);
+                        UploadScreenshot(filePath, fileName);
+                    }
+                }
+                catch (const std::exception& ex) {
+                    LOG(ERROR) << "Unable to save image: " << ex.what();
                 }
             }
         }

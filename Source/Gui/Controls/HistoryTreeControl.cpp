@@ -522,7 +522,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     const int THUMBNAIL_HEIGHT = 54;
     using namespace Gdiplus;
     std::unique_ptr<Bitmap> ImgBuffer;
-    Image* bm;
+    Image* bm = nullptr;
     std::unique_ptr<GdiPlusImage> srcImg;
 
     CString filename ;

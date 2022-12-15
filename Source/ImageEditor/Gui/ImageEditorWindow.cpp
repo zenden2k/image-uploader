@@ -162,15 +162,23 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
     }
     if (clipboardFormat == ClipboardFormat::None) {
         if ( !outFileName_.IsEmpty() ) {
-            ImageUtils::SaveImageToFile(resultingBitmap_.get(), outFileName_, nullptr, ImageUtils::sifDetectByExtension, imageQuality_);
+            try {
+                ImageUtils::SaveImageToFile(resultingBitmap_.get(), outFileName_, nullptr, ImageUtils::sifDetectByExtension, imageQuality_);
+            } catch (const std::exception& ex) {
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
+            }
             canvas_->updateView();
             return true;
         } else {
             CString outFileName;
-            if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, ImageUtils::sifJPEG, 95)) {
-                outFileName_ = outFileName;
-                canvas_->updateView();
-                return true;
+            try {
+                if (ImageUtils::MySaveImage(resultingBitmap_.get(), "screeenshot001.png", outFileName, ImageUtils::sifJPEG, 95)) {
+                    outFileName_ = outFileName;
+                    canvas_->updateView();
+                    return true;
+                }
+            } catch (const std::exception& ex) {
+                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
             }
             return false;
         }
@@ -179,7 +187,11 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
         ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
-        ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), ImageUtils::sifPNG, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        try {
+            ImageUtils::CopyBitmapToClipboardInDataUriFormat(resultingBitmap_.get(), ImageUtils::sifPNG, 85, clipboardFormat == ClipboardFormat::DataUriHtml);
+        } catch (const std::exception& ex) {
+            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Editor"), U2W(ex.what()));
+        }
         return true;
     }
     return false;
@@ -188,8 +200,12 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
 CString ImageEditorWindow::saveToTempFile() {
     const std::shared_ptr<Gdiplus::Bitmap> bitmap = canvas_->getBitmapForExport();
     CString result;
-    if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, ImageUtils::sifPNG, 95)) {
-        return result;
+    try {
+        if (ImageUtils::MySaveImage(bitmap.get(), "image.png", result, ImageUtils::sifPNG, 95)) {
+            return result;
+        }
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
     }
     return CString();
 }

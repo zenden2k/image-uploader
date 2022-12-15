@@ -277,10 +277,15 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
     CString fileNameNoExt = Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(fullOutFileName)));*/
 
-    if (ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, ImageUtils::sifPNG, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL)) {
-        ThumbsView.AddImage(fileNameBuffer, title, false, bm);
-        grabbedFramesCount++;
+    try {
+        if (ImageUtils::MySaveImage(bm, outFilename, fileNameBuffer, ImageUtils::sifPNG, 100, !wOutDir.IsEmpty() ? static_cast<LPCTSTR>(wOutDir) : NULL)) {
+            ThumbsView.AddImage(fileNameBuffer, title, false, bm);
+            grabbedFramesCount++;
+        }
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << "Failed to save image " << outFilename << ex.what();
     }
+
     return true;
 }
 

@@ -31,7 +31,6 @@ add_executable(ServersChecker WIN32
     ../Gui/Controls/LogListBox.cpp
     ../Func/DefaultLogger.cpp
     ../Func/DefaultUploadErrorHandler.cpp
-    ../Core/Images/Utils.cpp
     ../3rdpart/QColorQuantizer.cpp
     ../Core/Video/VideoUtils.cpp
     ../Core/FileDownloader.cpp

@@ -34,8 +34,17 @@ Gdiplus::Color StringToColor(const std::string& str);
 CComPtr<IStream> CreateMemStream(const BYTE *pInit, UINT cbInit);
 bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha = true);
 void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color);
+
+
+/**
+ * @throws IOException, runtime_error
+ */
 bool MySaveImage(Gdiplus::Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality,
     LPCTSTR Folder = 0);
+
+/**
+ * @throws IOException, runtime_error
+ */
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType = nullptr);
 SaveImageFormat GetFormatByFileName(CString filename);
 void DrawGradient(Gdiplus::Graphics& gr, Gdiplus::Rect rect, Gdiplus::Color& Color1, Gdiplus::Color& Color2);
@@ -49,6 +58,10 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
+
+/**
+ * @throws IOException, runtime_error
+ */
 bool CopyBitmapToClipboardInDataUriFormat(Gdiplus::Bitmap* bm, SaveImageFormat Format, int Quality, bool html = false);
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html);
 bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& fileName);
@@ -62,6 +75,10 @@ ImageInfo GetImageInfo(const wchar_t* fileName);
 
 CString GdiplusStatusToString(Gdiplus::Status statusID);
 bool IsImageAnimated(Gdiplus::Image* img);
+
+/**
+ * @throws IOException
+ */
 bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, bool lossless, int quality);
 }
 

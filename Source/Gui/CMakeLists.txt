@@ -24,7 +24,6 @@ set(SRC_LIST
     ../Core/ServerListManager.cpp
     ../Core/Images/ImageConverter.cpp
     ../Core/Images/Thumbnail.cpp
-    ../Core/Images/Utils.cpp
     ../Core/3rdpart/dxerr.cpp
     ../Core/3rdpart/parser.cpp
     ../Core/Video/AbstractFrameGrabber.cpp

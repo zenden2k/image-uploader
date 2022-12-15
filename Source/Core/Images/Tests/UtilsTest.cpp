@@ -1,9 +1,14 @@
 #include <gtest/gtest.h>
 
+
+
+#include "Core/TempFileDeleter.h"
+#include "Core/Images/ImageLoader.h"
 #include "Core/Images/Utils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Core/Utils/CryptoUtils.h"
+#include "Core/Utils/IOException.h"
 #include "Tests/TestHelpers.h"
 
 using namespace ImageUtils;
@@ -68,7 +73,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     EXPECT_EQ(100, thumb->GetHeight());
     EXPECT_EQ(251, size.Width);
     EXPECT_EQ(366, size.Height);
-    thumb = 0;
+    thumb = nullptr;
 
     auto thumb2 = GetThumbnail(bm.get(), 251, 366, &size);
     ASSERT_TRUE(thumb2 != nullptr);
@@ -76,7 +81,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     EXPECT_EQ(251, thumb2->GetWidth());
     EXPECT_EQ(366, thumb2->GetHeight());
 
-    delete data;
+    delete[] data;
 
     {
         auto thumb3 = GetThumbnail(U2W(TestHelpers::resolvePath("Images/exif-rgb-thumbnail.jpg")), 150, 120, &size);
@@ -280,5 +285,202 @@ TEST_F(UtilsTest, StringToColor) {
         EXPECT_EQ(0, clr.GetG());
         EXPECT_EQ(0, clr.GetB());
         EXPECT_EQ(255, clr.GetA());
+    }
+}
+
+TEST_F(UtilsTest, SaveImageToFile) {
+    TempFileDeleter deleter;
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file1.png");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(640, 480);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, wideDestFile, nullptr, sifPNG, 95, &mimeType));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_EQ(640, img->getWidth());
+        EXPECT_EQ(480, img->getHeight());
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ("image/png", mimeType);
+        EXPECT_EQ("image/png", IuCoreUtils::GetFileMimeType(destFile));
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file2.jpg");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, wideDestFile, nullptr, sifJPEG, 95, &mimeType));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ("image/jpeg", mimeType);
+        EXPECT_EQ("image/jpeg", IuCoreUtils::GetFileMimeType(destFile));
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file3.webp");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, wideDestFile, nullptr, sifWebp, 50, &mimeType));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ("image/webp", mimeType);
+        EXPECT_EQ("image/webp", IuCoreUtils::GetFileMimeType(destFile));
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file4.webp");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, wideDestFile, nullptr, sifWebpLossless, 20, &mimeType));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ("image/webp", mimeType);
+        EXPECT_EQ("image/webp", IuCoreUtils::GetFileMimeType(destFile));
+    }
+
+}
+
+TEST_F(UtilsTest, SaveImageToStream) {
+    {
+        IStream* stream = SHCreateMemStream(nullptr, 0);
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifPNG, 95, &mimeType));
+        ULARGE_INTEGER size = {};
+        ASSERT_HRESULT_SUCCEEDED(IStream_Size(stream, &size));
+        EXPECT_LT(10, size.QuadPart);
+        stream->Release();
+    }
+    {
+        IStream* stream = SHCreateMemStream(nullptr, 0);
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifWebp, 95, &mimeType));
+        ULARGE_INTEGER size = {};
+        ASSERT_HRESULT_SUCCEEDED(IStream_Size(stream, &size));
+        EXPECT_LT(10, size.QuadPart);
+        stream->Release();
+    }
+    {
+        IStream* stream = SHCreateMemStream(nullptr, 0);
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifWebpLossless, 95, &mimeType));
+        ULARGE_INTEGER size = {};
+        ASSERT_HRESULT_SUCCEEDED(IStream_Size(stream, &size));
+        EXPECT_LT(10, size.QuadPart);
+        stream->Release();
+    }
+}
+
+TEST_F(UtilsTest, SaveImageToFileStream) {
+    TempFileDeleter deleter;
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file1.png");
+        
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        IStream* stream{};
+        ASSERT_HRESULT_SUCCEEDED(SHCreateStreamOnFileW(wideDestFile, STGM_CREATE|STGM_WRITE, &stream));
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifPNG, 95, &mimeType));
+        stream->Release();
+
+        EXPECT_EQ("image/png", IuCoreUtils::GetFileMimeType(destFile));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file2.webp");
+
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        IStream* stream{};
+        ASSERT_HRESULT_SUCCEEDED(SHCreateStreamOnFileW(wideDestFile, STGM_CREATE | STGM_WRITE, &stream));
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifWebp, 95, &mimeType));
+        stream->Release();
+
+        EXPECT_EQ("image/webp", IuCoreUtils::GetFileMimeType(destFile));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file3.webp");
+
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        IStream* stream{};
+        ASSERT_HRESULT_SUCCEEDED(SHCreateStreamOnFileW(wideDestFile, STGM_CREATE | STGM_WRITE, &stream));
+        ASSERT_TRUE(stream != nullptr);
+        Gdiplus::Bitmap bm(200, 150);
+        CString mimeType;
+        EXPECT_TRUE(SaveImageToFile(&bm, CString(), stream, sifWebpLossless, 95, &mimeType));
+        stream->Release();
+
+        EXPECT_EQ("image/webp", IuCoreUtils::GetFileMimeType(destFile));
+        ImageLoader loader;
+        auto img = loader.loadFromFile(wideDestFile);
+        EXPECT_TRUE(!!img->getBitmap());
+        EXPECT_EQ(200, img->getWidth());
+        EXPECT_EQ(150, img->getHeight());
+    }
+}
+
+TEST_F(UtilsTest, SaveImageToFileExceptions) {
+    TempFileDeleter deleter;
+    {
+        std::string destFile = TestHelpers::resolvePath("not_existing_directory/test_file1.png");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(200, 100);
+        EXPECT_THROW(SaveImageToFile(&bm, wideDestFile, nullptr, sifPNG, 95, nullptr), IOException);
+    }
+    {
+        std::string destFile = TestHelpers::resolvePath("not_existing_directory/test_file2.webp");
+        deleter.addFile(destFile);
+        CString wideDestFile = U2W(destFile);
+        Gdiplus::Bitmap bm(200, 100);
+        EXPECT_THROW(SaveImageToFile(&bm, wideDestFile, nullptr, sifWebp, 95, nullptr), IOException);
+    }
+}
+
+TEST_F(UtilsTest, IsImageAnimated) {
+    {
+        Gdiplus::Image img(U2W(TestHelpers::resolvePath("Images/animation.gif")));
+        ASSERT_EQ(Gdiplus::Ok, img.GetLastStatus());
+        EXPECT_TRUE(IsImageAnimated(&img));
+    }
+    {
+
+        Gdiplus::Image img(U2W(TestHelpers::resolvePath("file_with_const_size.png")));
+        ASSERT_EQ(Gdiplus::Ok, img.GetLastStatus());
+        EXPECT_FALSE(IsImageAnimated(&img));
     }
 }

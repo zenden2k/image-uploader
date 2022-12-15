@@ -24,6 +24,8 @@
 #include <cmath>
 #include <cassert>
 #include <memory>
+#include <filesystem>
+#include <fstream>
 
 #include <boost/format.hpp>
 #include <libbase64.h>
@@ -41,6 +43,7 @@
 #include "Func/Library.h"
 #include "Core/AppParams.h"
 #include "ImageLoader.h"
+#include "Core/Utils/IOException.h"
 
 namespace ImageUtils {
 
@@ -755,16 +758,14 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
         return SaveBitmapAsWebp(img, fileName, stream, true, Quality);
     }
     if (GetEncoderClsid(szMimeTypes[Format], &clsidEncoder) != -1) {
-        if (Format == 0)
-            result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder, &eps);
-        else
-            result = stream ? img->Save(stream, &clsidEncoder, &eps)  : img->Save(fileName, &clsidEncoder);
-       
+        if (Format == 0) {
+            result = stream ? img->Save(stream, &clsidEncoder, &eps) : img->Save(fileName, &clsidEncoder, &eps);
+        } else {
+            result = stream ? img->Save(stream, &clsidEncoder, &eps) : img->Save(fileName, &clsidEncoder);
+        }
     } else {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Could not find suitable converter"));
-        return false;
+        throw std::runtime_error("Could not find suitable converter");
     }
-    
 
     if (result != Ok) {
         int lastError = GetLastError();
@@ -772,8 +773,8 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
         if (result == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError) + L"";
         }
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Could not save image at path \r\n") + fileName + L"\r\nGdiplus status=" + error);
-        return false;
+
+        throw IOException("Could not save image, Gdiplus status=" + W2U(error), W2U(fileName));
     }
 
     return true;
@@ -880,13 +881,13 @@ PropertyItemPtr GetPropertyItemFromImage(Gdiplus::Image* bm, PROPID propId) {
 UINT VoidToInt(void* data, unsigned int size) {
     switch (size) {
         case 8:
-            return *reinterpret_cast<UINT*>(data);
+            return *static_cast<UINT*>(data);
         case 4:
-            return *reinterpret_cast<DWORD*>(data);
+            return *static_cast<DWORD*>(data);
         case 2:
-            return *reinterpret_cast<WORD*>(data);
+            return *static_cast<WORD*>(data);
         default:
-            return *reinterpret_cast<BYTE*>(data);
+            return *static_cast<BYTE*>(data);
     }
 }
 
@@ -949,7 +950,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
         } else {
             auto compressionItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailCompression);
             if (compressionItem) {
-                WORD compressionTag = *reinterpret_cast<WORD*>(compressionItem->value);
+                WORD compressionTag = *static_cast<WORD*>(compressionItem->value);
                 if (compressionTag == 1) {
                     compression = ThumbCompressionRGB;
                     auto photometricInterpretationItem = GetPropertyItemFromImage(bm, PropertyTagPhotometricInterp);
@@ -971,7 +972,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
             auto thumbDataItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailData);
             if (thumbDataItem) {
                 if (compression == ThumbCompressionJPEG) {
-                    std::unique_ptr<Bitmap> src(BitmapFromMemory(reinterpret_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length));
+                    std::unique_ptr<Bitmap> src(BitmapFromMemory(static_cast<BYTE*>(thumbDataItem->value), thumbDataItem->length));
                     if (src) {
                         RotateAccordingToOrientation(orient, src.get());
 
@@ -1002,7 +1003,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
                         memset(&bi, 0, sizeof(bi));
                         bi.bmiHeader = bih;
 
-                        BYTE* data = reinterpret_cast<BYTE*>(thumbDataItem->value);
+                        BYTE* data = static_cast<BYTE*>(thumbDataItem->value);
                         BYTE temp;
                         // Convert RGB to BGR
                         for (unsigned int offset = 0; offset < thumbDataItem->length; offset += 3) {
@@ -1435,14 +1436,14 @@ bool IsImageAnimated(Gdiplus::Image* img) {
 
     // Get the number of frames in the first dimension.
     int frameCount = img->GetFrameCount(&pDimensionIDs[0]);
+    delete[] pDimensionIDs;
     return frameCount > 1;
 }
 
 bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, bool lossless, int quality) {
-    BitmapData  bdSrc;
+    BitmapData bdSrc;
     Rect r(0, 0, img->GetWidth(), img->GetHeight());
     if (img->LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
-
         defer<void> t([img, &bdSrc] {
             img->UnlockBits(&bdSrc);
         });
@@ -1457,35 +1458,34 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
             outDataSize = WebPEncodeBGRA(bpSrc, img->GetWidth(), img->GetHeight(), img->GetWidth() * 4, static_cast<float>(quality), &outData);
         }
         if (!outDataSize || !outData) {
-            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("WebPEncodeRGBA failed"));
-            return false;
+            throw IOException("WebPEncodeRGBA failed");
         }
-
+        defer<void> d([outData] {
+            WebPFree(outData);
+        });
         bool result = true;
         if (stream) {
             ULONG pcbWritten;
             if (FAILED(stream->Write(outData, outDataSize, &pcbWritten))) {
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to write file to the stream"));
-                result = false;
+                throw IOException("Failed to write file to the stream");
             }
         }
         else {
-            FILE* f = IuCoreUtils::fopen_utf8(W2U(fileName).c_str(), "wb");
+            std::string filenameUtf8 = W2U(fileName);
+            std::ofstream f(std::filesystem::u8path(filenameUtf8), std::ios::out | std::ios::binary);
+
             if (!f) {
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to create output file ") + fileName);
-                result = false;
+                throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);
             }
-            size_t written = fwrite(outData, 1, outDataSize, f);
-            if (written != outDataSize) {
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("Failed to write data to file ") + fileName);
-                result = false;
+            f.write(reinterpret_cast<char*>(outData), outDataSize);
+
+            if (!f.good()) {
+                throw IOException("Error occurred at writing time!", filenameUtf8);
             }
-            fclose(f);
         }
-        WebPFree(outData);
         return result;
     } else {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Converter"), _T("LockBits call failed"));
+        throw IOException("LockBits call failed");
     }
     return false;
 }

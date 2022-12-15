@@ -1153,11 +1153,15 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
     CString fileNameBuffer;
     Bitmap bm(Bmp, nullptr);
     if (bm.GetLastStatus() == Ok) {
-        if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, ImageUtils::sifPNG, 100)) {
-            CreatePage(wpMainPage);
-            CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
-            MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
-            ShowPage(wpMainPage);
+        try {
+            if (ImageUtils::MySaveImage(&bm, _T("clipboard"), fileNameBuffer, ImageUtils::sifPNG, 100)) {
+                CreatePage(wpMainPage);
+                CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+                MainDlg->AddToFileList(fileNameBuffer, L"", true, nullptr, true);
+                ShowPage(wpMainPage);
+            }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << "Failed to save image: " << ex.what();
         }
     }
 }
@@ -1956,8 +1960,12 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             }
 
             CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
-            ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
-            screenshotIndex++;
+            try {
+                ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << ex.what();
+            }
+                screenshotIndex++;
             if ( CopyToClipboard )
             {
                 CWindowDC dc(m_hWnd);

@@ -239,11 +239,15 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         }
         free(pPropBuffer);
         CString resultFileName;
-        ImageUtils::MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
-            CPoint()), resultFileName, fileformat,
-            m_imageConvertingParams.Quality);
+        try {
+            ImageUtils::MySaveImage(BackBuffer.get(), IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1,
+                CPoint()), resultFileName, fileformat, m_imageConvertingParams.Quality);
+            resultFileName_ = W2U(resultFileName);
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
      //   imageFile = resultFileName;
-        resultFileName_ = W2U(resultFileName);
+
     }
 
     if (!processingEnabled_)
@@ -284,9 +288,13 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
     std::shared_ptr<GdiPlusImage> res = std::static_pointer_cast<GdiPlusImage>(createThumbnail(&src, FileSize, fileformat));
     if (res) {
         CString thumbFileName;
-        result = ImageUtils::MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
-            CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
-        thumbFileName_ = W2U(thumbFileName);
+        try {
+            result = ImageUtils::MySaveImage(res->getBitmap(), IuCommonFunctions::GenerateFileName(L"thumb_%md5.jpg", 1,
+                CPoint()), thumbFileName, fileformat, m_thumbCreatingParams.Quality);
+            thumbFileName_ = W2U(thumbFileName);
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
     }
 
     return result;
