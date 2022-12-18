@@ -1342,7 +1342,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
             }
         }
     } else {
-        return 0;
+        return false;
     }
     
     
@@ -2145,7 +2145,6 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
         return;
     }
 
-    
     CLogWindow* wnd = new CLogWindow;
     wnd->Create(nullptr);
     wnd->setFileNameFilter(fileName);

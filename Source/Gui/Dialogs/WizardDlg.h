@@ -61,9 +61,6 @@ class Win7JumpList;
 class WtlGuiSettings;
 class CFloatingWindow;
 
-
-extern TCHAR MediaInfoDllPath[MAX_PATH];
-
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
@@ -88,7 +85,7 @@ public:
     CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
         UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
         ScriptsManager* scriptsManager, WtlGuiSettings* settings);
-    virtual ~CWizardDlg();
+    ~CWizardDlg() override;
 
     void setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd);
 

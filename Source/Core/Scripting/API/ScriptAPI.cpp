@@ -358,7 +358,7 @@ void ClearVmData(Sqrat::SqratVM& vm)
     }
 }
 
-const std::string GetScriptName(HSQUIRRELVM vm)
+std::string GetScriptName(HSQUIRRELVM vm)
 {
     std::lock_guard<std::mutex> lock(scriptNamesMutex);
     return scriptNames[vm];

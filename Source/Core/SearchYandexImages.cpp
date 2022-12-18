@@ -15,7 +15,7 @@ SearchYandexImages::SearchYandexImages(std::shared_ptr<INetworkClientFactory> ne
     uploadOk_ = false;
 }
 
-void SearchYandexImages::run() {
+BackgroundTaskResult SearchYandexImages::doJob() {
     int width = 500;
     int height = 500;
 #ifdef _WIN32
@@ -42,32 +42,33 @@ void SearchYandexImages::run() {
         //nc->setUserAgent("Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 YaBrowser/18.9.0.3409 Yowser/2.5 Safari/537.36");
         nc->doUploadMultipartData();
 
-        if (stopSignal_) {
-            finish(false, "Aborted by user.");
-            return;
+        if (isCanceled_) {
+            finish("Aborted by user.");
+            return BackgroundTaskResult::Canceled;
         }
         if (nc->responseCode() < 301 || nc->responseCode() > 303) {
-            finish(false, "Server sent unexpected result.");
-            return;
+            finish("Server sent unexpected result.");
+            return BackgroundTaskResult::Failed;
         }
 
         std::string url = nc->responseHeaderByName("Location");
 
         if (url.empty()) {
-            finish(false, "Server sent unexpected result.");
-            return;
+            finish("Server sent unexpected result.");
+            return BackgroundTaskResult::Failed;
         }
 
         if (!DesktopUtils::ShellOpenUrl(url)) {
-            finish(false, "Unable to launch default web browser.");
-            return;
+            finish("Unable to launch default web browser.");
+            return BackgroundTaskResult::Failed;
         }
     } catch (NetworkClient::AbortedException&){
-        finish(false, "Aborted by user.");
-        return;
+        finish("Aborted by user.");
+        return BackgroundTaskResult::Canceled;
     }
     
-    finish(true);
+    finish();
+    return BackgroundTaskResult::Success;
 }
 
 

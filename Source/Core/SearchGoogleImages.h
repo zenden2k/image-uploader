@@ -12,7 +12,7 @@ class SearchGoogleImages: public SearchByImageTask  {
     public:
         explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:
-    void run() override;
+    BackgroundTaskResult doJob() override;
     static bool base64EncodeCompat(const std::string& file, std::string& output);
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
 };

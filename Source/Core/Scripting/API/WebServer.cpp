@@ -18,7 +18,7 @@ public:
     WebServerPrivate() {
         AddServiceToVM(GetCurrentThreadVM(), this);
     }
-    virtual ~WebServerPrivate() {
+    ~WebServerPrivate() override {
         RemoveServiceFromVM(GetCurrentThreadVM(), this);
     }
     void stop() override {

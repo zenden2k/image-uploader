@@ -26,7 +26,7 @@ typedef std::function<void(const std::string&)> PrintCallback;
 void SetPrintCallback(Sqrat::SqratVM& vm, const PrintCallback& callback);
 void SetScriptName(Sqrat::SqratVM& vm, const std::string& fileName);
 void ClearVmData(Sqrat::SqratVM& vm);
-const std::string GetScriptName(HSQUIRRELVM);
+std::string GetScriptName(HSQUIRRELVM);
 void SetCurrentTopLevelFileName(Sqrat::SqratVM& vm, const std::string& fileName);
 std::string GetCurrentTopLevelFileName();
 void FlushSquirrelOutput(HSQUIRRELVM vm);

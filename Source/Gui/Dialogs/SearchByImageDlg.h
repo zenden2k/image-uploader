@@ -56,7 +56,7 @@ private:
     CProgressRingControl wndAnimation_;
     SearchByImage::SearchEngine searchEngine_;
     UploadManager* uploadManager_;
-    void onSeekerFinished(SearchByImageTask* task, bool success, const std::string& msg);
+    void onSeekerFinished(bool success, const std::string& msg);
 };
 
 #endif // STATUSDLG_H

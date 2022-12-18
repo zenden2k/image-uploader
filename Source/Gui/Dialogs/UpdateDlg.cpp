@@ -262,7 +262,7 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
     }
     m_Modal = true;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    settings->LastUpdateTime = static_cast<int>(time(0));
+    settings->LastUpdateTime = static_cast<unsigned int>(time(0));
     if (!m_hWnd)
         Create(parent);
     m_bClose = false;

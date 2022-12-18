@@ -13,11 +13,11 @@ class UploadTask;
 class NetworkClient;
 class UploadManager;
 
-class SearchYandexImages: public SearchByImageTask  {
+class SearchYandexImages: public SearchByImageTask {
 public:
     explicit SearchYandexImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
 protected:
-    void run() override;
+    BackgroundTaskResult doJob() override;
     bool uploadOk_;
     std::string uploadErrorMessage_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;

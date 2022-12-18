@@ -7,24 +7,24 @@
 
 #include <boost/signals2.hpp>
 
+
+#include "BackgroundTask.h"
 #include "Core/Utils/CoreTypes.h"
 #include "Core/TaskDispatcher.h"
 
 class INetworkClient;
 
-class SearchByImageTask: public CancellableTask {
+class SearchByImageTask: public BackgroundTask {
     public:
         explicit SearchByImageTask(std::string fileName);
-        void cancel() override;
-        bool isCanceled() override;
-        bool isInProgress() override;
-        boost::signals2::signal<void(SearchByImageTask*, bool, const std::string&)> onTaskFinished;
+        std::string message() const;
     protected:
-        std::string fileName_;
-        std::atomic<bool> isRunning_;
-        std::atomic<bool> stopSignal_;
+        std::string fileName_, message_;
 
-        void finish(bool success, const std::string& msg = std::string());
+        /*std::atomic<bool> isRunning_;
+        std::atomic<bool> stopSignal_;*/
+
+        void finish(const std::string& msg = {});
         int progressCallback(INetworkClient* clientp, double dltotal, double dlnow, double ultotal, double ulnow);
         
         DISALLOW_COPY_AND_ASSIGN(SearchByImageTask);

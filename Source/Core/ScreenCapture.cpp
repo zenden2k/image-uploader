@@ -230,7 +230,7 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
 
     if (!::BitBlt(tempDC, 0, 0, bmWidth,
                   bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY | CAPTUREBLT)) {
-        return false;
+        return {};
     }
 
     auto resultBm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);

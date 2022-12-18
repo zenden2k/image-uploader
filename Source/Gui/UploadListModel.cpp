@@ -100,7 +100,6 @@ void UploadListModel::onTaskUploadProgress(UploadTask* task) {
         progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->uploaded)),
             (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, uploadSpeed.GetString());
 
-        int columnIndex = isThumb ? 2 : 1;
         if (isThumb) {
             fps->setThumbStatusText(progressText);
         } else {

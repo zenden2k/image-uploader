@@ -58,7 +58,9 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     using namespace std::placeholders;
     seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer, W2U(fileName_));
-    seeker_->onTaskFinished.connect([this](SearchByImageTask* task, bool success, const std::string& msg) { onSeekerFinished(task, success, msg); });
+    seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
+        onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
+    });
     SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
     ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
     return 1;  // Let the system set the focus
@@ -76,7 +78,7 @@ LRESULT CSearchByImageDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 }
 
 
-void CSearchByImageDlg::onSeekerFinished(SearchByImageTask* task, bool success, const std::string& msg) {
+void CSearchByImageDlg::onSeekerFinished(bool success, const std::string& msg) {
     finished_ = true;
     wndAnimation_.ShowWindow(SW_HIDE);
     if (success) {

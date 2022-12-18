@@ -28,7 +28,7 @@ protected:
     mutable std::mutex dataMutex;
 public:
     UploadListItem() {
-        color = RGB(0,0,0);
+        color = GetSysColor(COLOR_WINDOWTEXT); 
         finished = false;
         tableRow = -1;
     }
