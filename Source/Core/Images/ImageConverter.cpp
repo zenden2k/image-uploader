@@ -59,7 +59,7 @@ ImageConverter::~ImageConverter()
     delete d_ptr;
 }
 
-bool ImageConverter::Convert(const std::string& sourceFile)
+bool ImageConverter::convert(const std::string& sourceFile)
 {
     MY_D(ImageConverter);
     return d->convert(sourceFile);

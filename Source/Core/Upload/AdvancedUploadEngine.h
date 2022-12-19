@@ -34,9 +34,9 @@
 class CAdvancedUploadEngine : public CAbstractUploadEngine
 {
     public:
-        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) final override;
         CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
-        ~CAdvancedUploadEngine();
+        ~CAdvancedUploadEngine() override;
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         virtual int getFolderList(CFolderList &FolderList)=0;
@@ -58,6 +58,8 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         virtual bool supportsBeforehandAuthorization();
     protected:
         void log(ErrorInfo::MessageType mt, const std::string& error);
+        virtual int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params);
+        int processFolderTask(std::shared_ptr<UploadTask> task);
         CFolderList folderList_;
         std::string name_;
         std::string m_ErrorReason;

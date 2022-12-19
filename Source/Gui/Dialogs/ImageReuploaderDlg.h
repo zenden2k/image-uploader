@@ -129,8 +129,8 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         void processFinished();
         bool pasteHtml();
         bool OnClose();
-        bool tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage);
-        bool addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName );
+        bool tryGetFileFromCache(const CFileDownloader::DownloadFileListItem& it, CString& logMessage);
+        bool addUploadTask(const CFileDownloader::DownloadFileListItem &it, const std::string& localFileName );
         void clipboardUpdated();
         //bool OnConfigureNetworkClient(NetworkClient* nm);
         // bool OnUploadProgress(UploadProgress progress, UploadTask* task, NetworkClient* nm){return true;}

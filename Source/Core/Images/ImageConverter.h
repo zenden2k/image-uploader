@@ -74,7 +74,7 @@ class ImageConverter
     public:
         ImageConverter();
         ~ImageConverter();
-        bool Convert(const std::string& sourceFile);
+        bool convert(const std::string& sourceFile);
         std::string getThumbFileName();
         std::string getImageFileName();
         void setDestinationFolder(const std::string& folder);

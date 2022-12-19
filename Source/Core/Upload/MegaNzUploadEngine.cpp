@@ -266,7 +266,7 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
         delete root;
     }
     
-    return fetchNodesSuccess_ ? 1 : 0;;
+    return fetchNodesSuccess_ ? 1 : 0;
 }
 
 int CMegaNzUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& folder) {
@@ -365,11 +365,12 @@ bool CMegaNzUploadEngine::supportsLogout() {
     return false;
 };
 
-int CMegaNzUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
+int CMegaNzUploadEngine::doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
     if (task->type() == UploadTask::TypeAuth) {
         return doLogin();
-    }
-    else {
+    } if (task->type() == UploadTask::TypeFolder) {
+        return processFolderTask(task);
+    } else {
         return doUpload(task, params);
     }
 }

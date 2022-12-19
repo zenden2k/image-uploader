@@ -25,16 +25,20 @@
 #include "Core/Upload/AdvancedUploadEngine.h"
 #include "Func/WinUtils.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Upload/FolderTask.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Upload/UploadManager.h"
+#include "Core/TaskDispatcher.h"
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
     m_UploadEngine = serverProfile_.uploadEngineData();
     uploadEngineManager_ = uploadEngineManager;
     m_FolderOperationType = FolderOperationType::foGetFolders;
-    runningScript_ = nullptr;
     NetworkClientFactory factory;
     m_NetworkClient = factory.create();
     stopSignal = false;
+    isRunning_ = false;
 }
 
 CServerFolderSelect::~CServerFolderSelect()
@@ -87,10 +91,11 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     uploadScript->setNetworkClient(m_NetworkClient.get());
     uploadScript->getAccessTypeList(m_accessTypeList);
-    CreateLoadingThread();
+
+    refreshList();
 
     m_FolderTree.SetFocus();
-    return 0;  
+    return FALSE;
 }
 
 LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -117,8 +122,9 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
 {
     {
         std::lock_guard<std::mutex> guard(runningScriptMutex_);
-        if (runningScript_) {
-            runningScript_->stop();
+        if (isRunning_ && uploadSession_) {
+            auto* uploadManager = ServiceLocator::instance()->uploadManager();
+            uploadManager->stopSession(uploadSession_.get());
             stopSignal = true;
         } else {
             EndDialog(wID);
@@ -127,77 +133,50 @@ LRESULT CServerFolderSelect::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     return 0;
 }
 
-DWORD CServerFolderSelect::Run()
+void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
 {
-    CAdvancedUploadEngine * script = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
+    auto* folderTask = dynamic_cast<FolderTask*>(task);
+    if (!folderTask) {
+        return;
+    }
+    
+    isRunning_ = false;
 
-    if (!script)
-        return 0;
-
-    runningScriptMutex_.lock();
-    runningScript_ = script;
-    runningScriptMutex_.unlock();
-
-    script->setNetworkClient(m_NetworkClient.get());
-    using namespace std::placeholders;
-    m_NetworkClient->setProgressCallback(std::bind(&CServerFolderSelect::progressCallback, this, _1, _2, _3, _4, _5));
-
-
-    if (m_FolderOperationType == FolderOperationType::foGetFolders)
-    {
-        m_FolderList.Clear();
+    if (folderTask->operationType() == FolderOperationType::foGetFolders) {
         m_FolderMap.clear();
-        NetworkClientFactory factory;
-        auto networkClient = factory.create();
-        script->setNetworkClient(networkClient.get());
-        networkClient->setProgressCallback(std::bind(&CServerFolderSelect::progressCallback, this, _1, _2, _3, _4, _5));
 
-        int retCode = script->getFolderList(m_FolderList);
-        if (retCode < 1)
-        {
-            if (retCode == -1)
-                TRC(IDC_FOLDERLISTLABEL, "This server doesn't support folders listing.");
-            else
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, success, folderTask]() {
+            if (!success) {
                 TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
-        
-            OnLoadFinished();
-            return 0;
-        }
-
-        m_FolderTree.DeleteAllItems();
-        BuildFolderTree(m_FolderList.m_folderItems, "");
-        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
-    }
-
-    else if (m_FolderOperationType == FolderOperationType::foCreateFolder)
-    {
-        script->createFolder(CFolderItem(), m_newFolder);
+            }
+            m_FolderList = folderTask->folderList();
+            m_FolderTree.DeleteAllItems();
+            BuildFolderTree(m_FolderList.m_folderItems, "");
+            m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
+        });
+    } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
         m_FolderOperationType = FolderOperationType::foGetFolders;
-        Run();
-        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
-    }
-
-    else if (m_FolderOperationType == FolderOperationType::foModifyFolder) // Modifying an existing folder
-    {
-        script->modifyFolder(m_newFolder);
-        m_FolderOperationType = FolderOperationType::foGetFolders;
-        Run();
-        m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_newFolder.id)]);
+        m_SelectedFolder = folderTask->folder();
+        refreshList();
+        return;
+    } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) { 
+        // Modifying an existing folder
+        m_FolderOperationType = FolderOperationType::foModifyFolder;
+        m_SelectedFolder = m_newFolder;
+        refreshList();
+        return;
     }
 
     OnLoadFinished();
-    return 0;
 }
 
 void CServerFolderSelect::OnLoadFinished()
 {
-    {
-        std::lock_guard<std::mutex> guard(runningScriptMutex_);
-        runningScript_ = nullptr;
-        stopSignal = false;
-        uploadEngineManager_->clearThreadData();
-    }
-    BlockWindow(false);
+    stopSignal = false;
+    isRunning_ = false;
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this]() {
+        BlockWindow(false);
+    });
 }
 
 void CServerFolderSelect::NewFolder(const CString& parentFolderId)
@@ -209,18 +188,20 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
         m_newFolder = newFolder;
         m_newFolder.parentid = WCstringToUtf8(parentFolderId);
         m_FolderOperationType = FolderOperationType::foCreateFolder;
-        if (!IsRunning())
-        {
-            CreateLoadingThread();
+        if (!isRunning_){
+            auto task = std::make_shared<FolderTask>(FolderOperationType::foCreateFolder);
+            task->setServerProfile(serverProfile_);
+            task->setFolder(m_newFolder);
+            using namespace std::placeholders;
+            task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+            isRunning_ = true;
+            UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
+            currentTask_ = task;
+            uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addTask(task);
+            uploadManager->addSession(uploadSession_);
         }
     }
-}
-
-int CServerFolderSelect::progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow) {
-    if (stopSignal) {
-        return -1; // abort operation
-    }
-    return 0;
 }
 
 LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -316,9 +297,20 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
     {
         m_FolderOperationType = FolderOperationType::foModifyFolder;  // Editing an existing folder
         m_newFolder = folder;
-        if (!IsRunning())
+        if (!isRunning_)
         {
-            CreateLoadingThread();
+            auto task = std::make_shared<FolderTask>(FolderOperationType::foModifyFolder);
+            task->setServerProfile(serverProfile_);
+            task->setFolder(folder);
+            using namespace std::placeholders;
+            task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+            isRunning_ = true;
+            UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
+            currentTask_ = task;
+            uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addTask(task);
+            uploadManager->addSession(uploadSession_);
+            //BlockWindow(true);
         }
     }
     return 0;
@@ -331,6 +323,7 @@ void CServerFolderSelect::BlockWindow(bool Block)
     //::EnableWindow(GetDlgItem(IDCANCEL), !Block);
     ::EnableWindow(GetDlgItem(IDC_NEWFOLDERBUTTON), !Block);
     m_FolderTree.EnableWindow(!Block);
+    m_FolderTree.SetFocus();
 }
 
 LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -349,12 +342,6 @@ LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hW
         WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
     }
     return 0;
-}
-
-void CServerFolderSelect::CreateLoadingThread()
-{
-    BlockWindow(true);
-    Start();
 }
 
 LRESULT CServerFolderSelect::OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -392,4 +379,23 @@ void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const 
             }
         }
     }
+}
+
+
+void CServerFolderSelect::refreshList() {
+    if (isRunning_) {
+        return;
+    }
+    auto task = std::make_shared<FolderTask>(FolderOperationType::foGetFolders);
+    task->setServerProfile(serverProfile_);
+    currentTask_ = task;
+    using namespace std::placeholders;
+    task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+
+    isRunning_ = true;
+    uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->addTask(task);
+    BlockWindow(true);
+    UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
+    uploadManager->addSession(uploadSession_);
 }

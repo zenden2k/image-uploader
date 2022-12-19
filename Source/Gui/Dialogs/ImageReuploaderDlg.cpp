@@ -190,7 +190,7 @@ bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
     return true;
 }
 
-bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListItem it, CString& logMessage) {
+bool CImageReuploaderDlg::tryGetFileFromCache(const CFileDownloader::DownloadFileListItem& it, CString& logMessage) {
     auto* dit = static_cast<DownloadItemData*>(it.id);
     LocalFileCache* localFileCache = LocalFileCache::instance();
     bool success = false;
@@ -223,7 +223,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
                     ((!serverProfile_.getImageUploadParams().UseServerThumbs) || (!ue->SupportThumbnails));*/
                 imageConverter.setThumbnail(&thumb);
                 imageConverter.setGenerateThumb(true);
-                imageConverter.Convert(localFile);
+                imageConverter.convert(localFile);
 
                 CString thumbFileName = U2W(imageConverter.getThumbFileName());
                 if (!thumbFileName.IsEmpty()) {
@@ -240,7 +240,7 @@ bool CImageReuploaderDlg::tryGetFileFromCache(CFileDownloader::DownloadFileListI
     return success;
 }
 
-bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it, const std::string& localFileName ) {
+bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListItem& it, const std::string& localFileName ) {
     std::string mimeType = IuCoreUtils::GetFileMimeType(localFileName);
     if (mimeType.find("image/") == std::string::npos) {
         ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, _T("File '") + U2W(it.url) +
@@ -251,9 +251,10 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     auto* dit = static_cast<DownloadItemData*>(it.id);
     
     auto* uploadItemData = new UploadItemData;
-    uploadItemsMutex_.lock();
-    uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
-    uploadItemsMutex_.unlock();
+    {
+        std::lock_guard<std::mutex> lk(uploadItemsMutex_);
+        uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
+    }
     uploadItemData->sourceUrl = it.url;
 
     uploadItemData->sourceIndex = dit->sourceIndex;
@@ -265,7 +266,7 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
         std::string fileNameWithoutExt = IuCoreUtils::ExtractFileNameNoExt(it.fileName);
         displayName = fileNameWithoutExt + "." + defaultExtension;
     }
-    std::shared_ptr<FileUploadTask> fileUploadTask(new FileUploadTask(localFileName, displayName));
+    std::shared_ptr<FileUploadTask> fileUploadTask = std::make_shared<FileUploadTask>(localFileName, displayName);
     fileUploadTask->setServerProfile(serverProfile_);
     fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
@@ -273,10 +274,11 @@ bool CImageReuploaderDlg::addUploadTask(CFileDownloader::DownloadFileListItem it
     fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
     using namespace std::placeholders;
     fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
-    uploadSessionMutex_.lock();
-    uploadSession_->addTask(fileUploadTask);
-    uploadManager_->addTaskToQueue(fileUploadTask);
-    uploadSessionMutex_.unlock();
+    {
+        std::lock_guard<std::mutex> lk(uploadSessionMutex_);
+        uploadSession_->addTask(fileUploadTask);
+        uploadManager_->addTaskToQueue(fileUploadTask);
+    }
     return true;
 }
 
@@ -489,23 +491,24 @@ bool CImageReuploaderDlg::LinksAvailableInText(const CString &text)
 
 
 void CImageReuploaderDlg::OnFileFinished(UploadTask* task, bool ok) {
-    if ( ok ) {
+    if (ok) {
         FileUploadTask* fileUploadTask = dynamic_cast<FileUploadTask*>(task);
         if (!fileUploadTask) {
             return;
         }
         auto* uploadItemData = static_cast<UploadItemData*>(fileUploadTask->userData());
         UploadedItem item;
-        item.sourceUrl   = uploadItemData->sourceUrl;
+        item.sourceUrl = uploadItemData->sourceUrl;
         item.originalUrl = uploadItemData->originalUrl;
-        UploadResult * result = task->uploadResult();
+        UploadResult* result = task->uploadResult();
         item.newUrl = result->directUrl;
-        mutex_.lock();
-        uploadedItems_[uploadItemData->sourceIndex] = item ;
 
-        generateOutputText();
-        m_nFilesUploaded++;
-        mutex_.unlock();
+        {
+            std::lock_guard<std::mutex> lk(mutex_);
+            uploadedItems_[uploadItemData->sourceIndex] = item;
+            generateOutputText();
+            m_nFilesUploaded++;
+        }
         updateStats();
     }
 }

@@ -29,11 +29,12 @@
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 #include "AuthTask.h"
+#include "FolderTask.h"
 
 CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
-    std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
-    CAdvancedUploadEngine(serverSync, settings, errorCallback),
-    Script(fileName, serverSync, factory, false)
+                                         std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
+    CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback)),
+    Script(fileName, serverSync, std::move(factory), false)
 {
     setServerSettings(settings);
     newAuthMode = false;
@@ -51,23 +52,18 @@ void CScriptUploadEngine::PrintCallback(const std::string& output)
     Log(ErrorInfo::mtInformation, output);
 }
 
-int CScriptUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
+int CScriptUploadEngine::doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
     if (task->type() == UploadTask::TypeAuth) {
         return processAuthTask(task);
     } if (task->type() == UploadTask::TypeTest) {
         return processTestTask(task);
+    } if (task->type() == UploadTask::TypeFolder) {
+        return processFolderTask(task);
     } else {
-    	int res = doUpload(task, params);
-    	if (res == -2) {
-            serverSync_->resetAuthorization();
-    		res = doUpload(task, params);
-    		if (res == -2) {
-                return -1;
-    		}
-    	}
-        return res;
+        return doUpload(task, params);
     }
 }
+
 
 int CScriptUploadEngine::processAuthTask(std::shared_ptr<UploadTask> task) {
     SetStatus(stAuthorization);
@@ -96,7 +92,7 @@ int CScriptUploadEngine::processTestTask(std::shared_ptr<UploadTask> task) {
 
         auto tbl = func.Evaluate<Sqrat::Table>();
 
-        int res = ScriptAPI::GetValue(tbl->GetValue<SQInteger>("status"));
+        int res = static_cast<int>(ScriptAPI::GetValue(tbl->GetValue<SQInteger>("status")));
         auto msg = ScriptAPI::GetValue(tbl->GetValue<Sqrat::string>("message"));
         task->uploadResult()->message = msg;
 
@@ -273,11 +269,10 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
         }*/
 
         list.clear();
-        auto count =  arr->GetSize();
+        auto count = arr->GetSize();
         for (auto i = 0; i < count; i++)
         {
-            std::string title;
-            title = arr->GetSlot(i).Cast<std::string>();
+            std::string title = arr->GetSlot(i).Cast<std::string>();
             list.push_back(title);
         }
     }

@@ -269,7 +269,6 @@ function CreateFolder(parentFolder, folder) {
         local responseData = nm.responseBody();
         local item = ParseJSON(responseData);
         if ( item != null ) {
-            local folder = CFolderItem();
             folder.setId(item.id);
             folder.setTitle(item.name);
             return 1;

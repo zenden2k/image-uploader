@@ -41,9 +41,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
     public:
         CScriptUploadEngine(const std::string& pluginName, ServerSync* serverSync, ServerSettingsStruct* settings, 
             std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
-        ~CScriptUploadEngine();
-        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
-
+        ~CScriptUploadEngine() override;
      
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
@@ -70,9 +68,10 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
     protected:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         void Log(ErrorInfo::MessageType mt, const std::string& error);
-        virtual void PrintCallback(const std::string& output) override;
+        void PrintCallback(const std::string& output) override;
         int processAuthTask(std::shared_ptr<UploadTask> task);
         int processTestTask(std::shared_ptr<UploadTask> task);
+        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params);
         int refreshToken();
         bool preLoad() override;
         bool postLoad() override;

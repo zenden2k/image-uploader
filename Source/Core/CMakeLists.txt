@@ -11,6 +11,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/AuthTask.cpp
     Upload/UrlShorteningTask.cpp
     Upload/TestConnectionTask.cpp
+    Upload/FolderTask.cpp
     Utils/CoreUtils.cpp
     Utils/CryptoUtils.cpp
     Utils/SimpleXml.cpp
@@ -86,6 +87,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/AuthTask.h
     Upload/TestConnectionTask.h
     Upload/UrlShorteningTask.h
+    Upload/FolderTask.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h
     Utils/SimpleXml.h

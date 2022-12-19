@@ -20,10 +20,12 @@
 
 #include "AdvancedUploadEngine.h"
 
+
+#include "FolderTask.h"
 #include "Core/Upload/ServerSync.h"
 
 CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
-                        CAbstractUploadEngine(serverSync, errorCallback),
+                        CAbstractUploadEngine(serverSync, std::move(errorCallback)),
                             m_CurrentActionIndex(0), 
                             m_nThumbWidth(0)
 {
@@ -34,8 +36,37 @@ CAdvancedUploadEngine::~CAdvancedUploadEngine()
 {
 }
 
+int CAdvancedUploadEngine::processFolderTask(std::shared_ptr<UploadTask> task) {
+    auto folderTask = std::dynamic_pointer_cast<FolderTask>(task);
+    assert(folderTask != nullptr);
+    if (folderTask->operationType() == FolderOperationType::foGetFolders) {
+        return getFolderList(folderTask->folderList());
+    } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
+        return createFolder(CFolderItem(), folderTask->folder());
+    } else if (folderTask->operationType() == FolderOperationType::foModifyFolder) {
+        return modifyFolder(folderTask->folder());
+    } else {
+        LOG(ERROR) << "Not implemented";
+    }
+
+    return 0;
+}
+
 int CAdvancedUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadParams& params)
 {
+    int res = doProcessTask(task, params);
+    if (res == -2) {
+        // Clear authorization flag and try again
+        serverSync_->resetAuthorization();
+        res = doProcessTask(task, params);
+        if (res == -2) {
+            return -1;
+        }
+    }
+    return res;
+}
+
+int CAdvancedUploadEngine::doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) {
     return 0;
 }
 

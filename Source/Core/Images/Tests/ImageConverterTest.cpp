@@ -21,7 +21,7 @@ TEST_F(ImageConverterTest, Convert)
         ImageConvertingParams params;
         params.strNewWidth = "100";
         converter.setImageConvertingParams(params);
-        bool res = converter.Convert(fileName);
+        bool res = converter.convert(fileName);
         EXPECT_TRUE(res);
 
         std::string outFileName = converter.getImageFileName();
@@ -53,7 +53,7 @@ TEST_F(ImageConverterTest, Convert)
         ImageConvertingParams params;
         converter.setEnableProcessing(false);
         converter.setImageConvertingParams(params);
-        bool res = converter.Convert(fileName);
+        bool res = converter.convert(fileName);
         EXPECT_TRUE(res);
 
         std::string outFileName = converter.getImageFileName();
@@ -89,7 +89,7 @@ TEST_F(ImageConverterTest, Convert)
         params.strNewWidth = "320";
         converter.setEnableProcessing(true);
         converter.setImageConvertingParams(params);
-        bool res = converter.Convert(fileName);
+        bool res = converter.convert(fileName);
         EXPECT_TRUE(res);
 
         std::string outFileName = converter.getImageFileName();

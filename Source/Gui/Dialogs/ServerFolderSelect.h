@@ -31,6 +31,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/FolderList.h"
 #include "Core/Upload/AdvancedUploadEngine.h"
+#include "Core/Upload/FolderTask.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Controls/ProgressRingControl.h"
 
@@ -88,22 +89,18 @@ class CServerFolderSelect :
     LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-    DWORD Run();
+    void onTaskFinished(UploadTask* task, bool success);
     void OnLoadFinished();
     CImageList m_PlaceSelectorImageList;
     CFolderItem m_SelectedFolder;
 protected:
-    enum class FolderOperationType
-    {
-        foGetFolders, foCreateFolder, foModifyFolder 
-    };
     CProgressRingControl m_wndAnimation;
-    CAdvancedUploadEngine *runningScript_;
     std::mutex runningScriptMutex_;
     UploadEngineManager * uploadEngineManager_;
     CUploadEngineData *m_UploadEngine;
     CFolderList m_FolderList;
     CFolderItem m_newFolder;
+    std::shared_ptr<UploadSession> uploadSession_;
     std::vector<std::string> m_accessTypeList;
     std::map<std::wstring,HTREEITEM> m_FolderMap;
     std::atomic_bool stopSignal;
@@ -112,14 +109,14 @@ protected:
     //IU_PLUGIN_FolderItem * m_folderItems;
     FolderOperationType m_FolderOperationType;
     std::unique_ptr<INetworkClient> m_NetworkClient;
+    std::shared_ptr<FolderTask> currentTask_;
     void BlockWindow(bool Block);
     void NewFolder(const CString& parentFolderId);
-    int progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
+    void refreshList();
     //CString m_sNewFolderName, m_sNewFolderDescription;
-public:
-    
-   
-    void CreateLoadingThread();
+    bool isRunning_;
+public:   
+
     void BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId);
 };
 

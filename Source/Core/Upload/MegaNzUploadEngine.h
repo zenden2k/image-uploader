@@ -43,7 +43,7 @@ class MegaProxy;
 
 class CMegaNzUploadEngine : public CAdvancedUploadEngine {
     public:
-        int processTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
+        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback);
         ~CMegaNzUploadEngine();

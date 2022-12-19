@@ -46,7 +46,7 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
         ((!imageUploadParams.UseServerThumbs) || (!task->serverProfile().uploadEngineData()->SupportThumbnails));
     imageConverter.setThumbnail(&thumb);
     imageConverter.setGenerateThumb(genThumbs);
-    if (imageConverter.Convert(fileTask->getFileName())) {
+    if (imageConverter.convert(fileTask->getFileName())) {
         
         std::string convertedImageFileName = imageConverter.getImageFileName();
         if (!convertedImageFileName.empty()) {
