@@ -77,7 +77,7 @@ std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) {
     MD5_CTX context;
 
     MD5_Init(&context);
-    FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
+    FILE* f = IuCoreUtils::FopenUtf8( filename.c_str(), "rb" );
     if (f) {
         unsigned char buf[4096];
         while ( !feof(f) ) {
@@ -155,7 +155,7 @@ std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filen
     SHA_CTX context;
 
     SHA1_Init(&context);
-    FILE* f = IuCoreUtils::fopen_utf8( filename.c_str(), "rb" );
+    FILE* f = IuCoreUtils::FopenUtf8( filename.c_str(), "rb" );
 
     if (f) {
         if (!prefix.empty()) {
