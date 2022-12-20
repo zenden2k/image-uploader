@@ -54,7 +54,7 @@ TEST_F(CryptoUtilsTest, CalcSHA1HashFromFile)
 TEST_F(CryptoUtilsTest, CalcSHA1HashFromFileWithPrefix)
 {
     std::string fileName = constSizeFileName;
-    int fileSize = IuCoreUtils::getFileSize(fileName);
+    int fileSize = IuCoreUtils::GetFileSize(fileName);
     std::string result = CalcSHA1HashFromFileWithPrefix(fileName, "mrCloud", std::to_string(fileSize));
     EXPECT_EQ("be933e5fa7236218736be5a538e559da15f5ab00", result);
 }

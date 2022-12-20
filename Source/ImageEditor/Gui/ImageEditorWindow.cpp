@@ -327,9 +327,23 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         return drCancel;
     }
 
-    if (currentDoc_ && currentDoc_->isSrcAnimated()) {
-        if (GuiTools::LocalizedMessageBox(nullptr, TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?"),
-            TR("Image Editor"), MB_ICONWARNING | MB_YESNO) != IDYES) {
+    static BOOL verificationFlagChecked = FALSE;
+    if (currentDoc_ && currentDoc_->isSrcAnimated() && !verificationFlagChecked) {
+        int buttonPressed;
+        CTaskDialog dlg;
+        dlg.SetVerificationText(TR("Do not ask again"));
+        dlg.SetContentText(TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?"));
+        dlg.SetWindowTitle(TR("Image Editor"));
+        dlg.SetCommonButtons(TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
+        dlg.SetMainIcon(TD_WARNING_ICON);
+        DWORD flags = TDF_POSITION_RELATIVE_TO_WINDOW | TDF_ALLOW_DIALOG_CANCELLATION;
+        if (ServiceLocator::instance()->translator()->isRTL()) {
+            flags |= TDF_RTL_LAYOUT;
+        }
+        dlg.ModifyFlags(0, flags);
+        
+        int res = dlg.DoModal(parent, &buttonPressed, nullptr, &verificationFlagChecked);
+        if (SUCCEEDED(res) && buttonPressed != IDYES) {
             return drCancel;
         }
     }

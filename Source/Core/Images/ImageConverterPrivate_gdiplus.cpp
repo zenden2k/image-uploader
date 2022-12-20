@@ -281,7 +281,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
 bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imageFile, ImageUtils::SaveImageFormat fileformat)
 {
     bool result = false;
-    int64_t FileSize = IuCoreUtils::getFileSize(W2U(imageFile));
+    int64_t FileSize = IuCoreUtils::GetFileSize(W2U(imageFile));
 
     // Saving thumbnail (without template)
     GdiPlusImage src(bm, false);
@@ -314,7 +314,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     if(FileSize>0)
     NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
 
-    CString sizeString = U2W(IuCoreUtils::fileSizeToString(fileSize));
+    CString sizeString = U2W(IuCoreUtils::FileSizeToString(fileSize));
     CString ThumbnailText = U2W(m_thumbCreatingParams.Text); // Text that will be drawn on thumbnail
 
     ThumbnailText.Replace(_T("%width%"), WinUtils::IntToStr(newwidth)); // Replacing variables names with their values

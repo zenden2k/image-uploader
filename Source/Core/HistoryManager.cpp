@@ -61,7 +61,7 @@ void CHistoryManager::setHistoryDirectory(const std::string& directory) {
     m_historyFilePath = directory; 
 }
 bool CHistoryManager::openDatabase() {
-    IuCoreUtils::createDirectory(m_historyFilePath);
+    IuCoreUtils::CreateDir(m_historyFilePath);
     if (!db_ && sqlite3_open((m_historyFilePath + "history.db").c_str(), &db_) != SQLITE_OK) {
         LOG(ERROR) << "unable to open database: ";
         return false;
@@ -172,7 +172,7 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
 void CHistoryManager::setHistoryFileName(const std::string& filepath, const std::string& nameprefix)
 {
     m_historyFilePath = filepath;
-    IuCoreUtils::createDirectory(m_historyFilePath);
+    IuCoreUtils::CreateDir(m_historyFilePath);
     m_historyFileNamePrefix = nameprefix;
 }
 
@@ -222,7 +222,7 @@ void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
         ht->displayName = item.Attribute("DisplayName");
         ht->uploadFileSize = item.AttributeInt64("UploadFileSize");
         std::string sortIndex = item.Attribute("Index");
-        ht->sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::stringToInt64(sortIndex));
+        ht->sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::StringToInt64(sortIndex));
         // Fix invalid file size
         if (ht->uploadFileSize > 1000000000000 || ht->uploadFileSize < 0) {
             ht->uploadFileSize = 0;
@@ -501,7 +501,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
     for (int i = 0; i < argc; i++) {
         const char* val = argv[i] ? argv[i] : "";
         if (!strcmp(azColName[i], "created_at")) {
-            session->setTimeStamp(IuCoreUtils::stringToInt64(val));
+            session->setTimeStamp(IuCoreUtils::StringToInt64(val));
             break;
         } else if (!strcmp(azColName[i], "server_name")) {
             session->setServerName(val);
@@ -537,7 +537,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
     for (int i = 0; i < argc; i++) {
         const char *val = argv[i] ? argv[i] : "";
         if (!strcmp(azColName[i], "id")) {
-            item->id = static_cast<int>(IuCoreUtils::stringToInt64(val));
+            item->id = static_cast<int>(IuCoreUtils::StringToInt64(val));
         } else if (!strcmp(azColName[i], "direct_url")) {
             item->directUrl = val;
         } else if (!strcmp(azColName[i], "view_url")) {
@@ -557,11 +557,11 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
         } else if (!strcmp(azColName[i], "local_file_path")) {
             item->localFilePath = val;
         } else if (!strcmp(azColName[i], "created_at")) {
-            item->timeStamp = IuCoreUtils::stringToInt64(val);
+            item->timeStamp = IuCoreUtils::StringToInt64(val);
         } else if (!strcmp(azColName[i], "sort_index")) {
-            item->sortIndex = static_cast<int>(IuCoreUtils::stringToInt64(val));
+            item->sortIndex = static_cast<int>(IuCoreUtils::StringToInt64(val));
         } else if (!strcmp(azColName[i], "size")) {
-            item->uploadFileSize = IuCoreUtils::stringToInt64(val);
+            item->uploadFileSize = IuCoreUtils::StringToInt64(val);
         } else if (!strcmp(azColName[i], "server_name")) {
             item->serverName = val;
         }

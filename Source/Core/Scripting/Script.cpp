@@ -44,8 +44,8 @@ Script::~Script()
 }
 
 void Script::CompilerErrorHandler(HSQUIRRELVM vm, const SQChar * desc, const SQChar * source, SQInteger line, SQInteger column) {
-    sq_getprintfunc(vm)(vm, ("Script compilation failed\r\nFile:  " + std::string(source) + "\r\nLine: " + IuCoreUtils::int64_tToString(line)
-        + "   Column: " + IuCoreUtils::int64_tToString(column) + "\r\n\r\n" + desc).c_str() );
+    sq_getprintfunc(vm)(vm, ("Script compilation failed\r\nFile:  " + std::string(source) + "\r\nLine: " + IuCoreUtils::Int64ToString(line)
+        + "   Column: " + IuCoreUtils::Int64ToString(column) + "\r\n\r\n" + desc).c_str() );
 }
 
 void Script::InitScriptEngine()

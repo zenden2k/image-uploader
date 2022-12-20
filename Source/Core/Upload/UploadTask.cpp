@@ -434,7 +434,7 @@ void UploadTask::uploadProgress(InfoProgress progress)
         }
         if (speed > 0)
         {
-            progress_.speed = IuCoreUtils::fileSizeToString(speed) + "/s";
+            progress_.speed = IuCoreUtils::FileSizeToString(speed) + "/s";
         }
         else
         {

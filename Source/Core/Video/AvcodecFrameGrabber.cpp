@@ -183,7 +183,7 @@ public:
             throw FrameGrabberException("Could not find a video stream.");
         }
 
-        fileSize_ = IuCoreUtils::getFileSize(fileName);
+        fileSize_ = IuCoreUtils::GetFileSize(fileName);
 
         // Dump information about file onto standard error
         //av_dump_format(pFormatCtx, 0, fileName.c_str(), false);

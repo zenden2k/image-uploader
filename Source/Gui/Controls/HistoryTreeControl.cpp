@@ -126,7 +126,7 @@ void CHistoryTreeControl::Clear()
 void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand)
 {
     auto* it2 = new HistoryTreeItem();
-    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::timeStampToString(it->timeStamp)+ " "+ it->localFilePath), res, it2, autoExpand);
+    TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::TimeStampToString(it->timeStamp)+ " "+ it->localFilePath), res, it2, autoExpand);
     item->setCallback(this);
     it2->hi = it;
     it2->thumbnail = nullptr;
@@ -196,7 +196,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     GetClientRect(clientRect);
     //HistoryItem * it2 = new HistoryItem(it);
     auto* ses = static_cast<CHistorySession*>(item->userData());
-    std::string label = "["+ IuCoreUtils::timeStampToString(ses->timeStamp()) +"]";
+    std::string label = "["+ W2U(WinUtils::TimestampToString(ses->timeStamp())) + "]";
     std::string serverName = ses->serverName();
     if(ses->entriesCount())
     {
@@ -629,7 +629,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             Font font(L"Tahoma", 8, FontStyleRegular );
             LPCTSTR Filename = filename;
             CString Buffer;
-            int64_t fileSize = IuCoreUtils::getFileSize(W2U(filename));
+            int64_t fileSize = IuCoreUtils::GetFileSize(W2U(filename));
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
             WCHAR FileExt[25];

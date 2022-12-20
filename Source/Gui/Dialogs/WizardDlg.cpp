@@ -148,8 +148,8 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     m_lRef(0), 
     FolderAdd(this), 
     Settings(*settings),
-    logger_(std::move(logger)),
     uploadManager_(uploadManager),
+    logger_(std::move(logger)),
     uploadEngineManager_(uploadEngineManager),
     scriptsManager_(scriptsManager),
     enginelist_(enginelist)

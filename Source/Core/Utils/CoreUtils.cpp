@@ -23,6 +23,7 @@
 #include <ctime>
 #include <locale>
 #include <cstdio>
+#include <filesystem>
 #include <map>
 #include <string>
 
@@ -83,7 +84,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 namespace IuCoreUtils {
 
-FILE * fopen_utf8(const char * filename, const char * mode)
+FILE * FopenUtf8(const char * filename, const char * mode)
 {
 #ifdef _MSC_VER
     return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
@@ -92,7 +93,7 @@ FILE * fopen_utf8(const char * filename, const char * mode)
 #endif
 }
 
-int fseek_64(FILE* stream, int64_t offset, int origin)
+int Fseek64(FILE* stream, int64_t offset, int origin)
 {
 #ifdef _MSC_VER
     return _fseeki64(stream, offset, origin);
@@ -101,7 +102,7 @@ int fseek_64(FILE* stream, int64_t offset, int origin)
 #endif
 }
 
-int64_t ftell_64(FILE *a)
+int64_t Ftell64(FILE *a)
 {
 #ifdef __CYGWIN__
     return ftell(a);
@@ -260,7 +261,7 @@ std::string ExtractFileNameFromUrl(const std::string& url)
     return ExtractFileName(uri.path());
 }
 
-std::string incrementFileName(const std::string& originalFileName, int counter) {
+std::string IncrementFileName(const std::string& originalFileName, int counter) {
     const std::string ext = ExtractFileExt(originalFileName);
     std::string name = ExtractFileNameNoExt(originalFileName);
     name += "(" + std::to_string(counter) + ")";
@@ -280,9 +281,9 @@ std::string StrReplace(std::string text, std::string s, std::string d)
     return text;
 }
 
-bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
+bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
 {
-    FILE *stream = fopen_utf8(utf8Filename.c_str(), "rb");
+    FILE *stream = FopenUtf8(utf8Filename.c_str(), "rb");
     if (!stream) {
         return false;
     }
@@ -334,7 +335,7 @@ bool ReadUtf8TextFile(std::string utf8Filename, std::string& data)
 
 bool PutFileContents(const std::string& utf8Filename, const std::string& content)
 {
-    FILE *stream = fopen_utf8(utf8Filename.c_str(), "wb");
+    FILE *stream = FopenUtf8(utf8Filename.c_str(), "wb");
     if (!stream) {
         return false;
     }
@@ -345,7 +346,7 @@ bool PutFileContents(const std::string& utf8Filename, const std::string& content
 
 std::string GetFileContents(const std::string& filename) {
     std::string data;
-    FILE *stream = IuCoreUtils::fopen_utf8(filename.c_str(), "rb");
+    FILE *stream = IuCoreUtils::FopenUtf8(filename.c_str(), "rb");
     if (!stream) return std::string();
     fseek(stream, 0L, SEEK_END);
     size_t size = ftell(stream);
@@ -369,9 +370,9 @@ std::string GetFileContents(const std::string& filename) {
     return data;
 }
 
-std::string timeStampToString(time_t t)
+std::string TimeStampToString(time_t t)
 {
-    char buf[50]{0};
+    char buf[256]{0};
     // TODO: add system locale support
     tm * timeinfo = localtime ( &t );
     if (timeinfo) {
@@ -380,17 +381,17 @@ std::string timeStampToString(time_t t)
     return buf;
 }
 
-std::string int64_tToString(int64_t value)
+std::string Int64ToString(int64_t value)
 {
     return std::to_string(value);
 }
 
-int64_t stringToInt64(const std::string& str)
+int64_t StringToInt64(const std::string& str)
 {
     return strtoll(str.c_str(), nullptr, 10);
 }
 
-int64_t getFileSize(const std::string& utf8Filename)
+int64_t GetFileSize(const std::string& utf8Filename)
 {
 #ifdef _WIN32
    #ifdef _MSC_VER
@@ -441,7 +442,7 @@ int64_t getFileSize(const std::string& utf8Filename)
      return stats.st_size;
 }
 
-std::string fileSizeToString(int64_t nBytes)
+std::string FileSizeToString(int64_t nBytes)
 {
     double number = 0;
     std::string postfix;
@@ -473,10 +474,10 @@ std::string fileSizeToString(int64_t nBytes)
         precision = 1;
         number = (double)nBytes / 1073741824.0;
     }
-    return toString(number, precision) + " " + postfix;
+    return ToString(number, precision) + " " + postfix;
 }
 
-std::string toString(double value, int precision)
+std::string ToString(double value, int precision)
 {
     char buffer[100];
     sprintf(buffer, ("%0." + std::to_string(precision) + "f").c_str(), value);
@@ -517,6 +518,25 @@ void DatePlusDays(struct tm* date, int days){
     *date = *localtime(&date_seconds);
 }
 
+bool CopyFileToDest(const std::string& src, const std::string& dest, bool overwrite)
+{
+    try {
+        std::filesystem::copy(std::filesystem::u8path(src), std::filesystem::u8path(dest),
+            overwrite ? std::filesystem::copy_options::overwrite_existing : std::filesystem::copy_options::none
+        );
+        return true;
+    } catch (const std::filesystem::filesystem_error& ex) {
+    }
+    return false;
+}
 
+bool RemoveFile(const std::string& utf8Filename) {
+    try {
+        std::filesystem::remove(std::filesystem::u8path(utf8Filename));
+        return true;
+    } catch (const std::filesystem::filesystem_error& ex) {
+    }
+    return false;
+}
 
 } // end of namespace IuCoreUtils

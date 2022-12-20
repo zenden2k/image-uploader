@@ -98,34 +98,6 @@ std::string GetFileMimeType(const std::string& name)
     return result;
 }
 
-bool copyFile(const std::string& from, const std::string & to, bool overwrite)
-{
-    const int BUFSIZE = 64 * 1024;
-    char buf[BUFSIZE];
-    size_t size;
-
-    FILE* source = fopen_utf8(from.c_str(), "rb");
-    if ( !source ) {
-        return false;
-    }
-    if ( !overwrite && FileExists(to)) {
-        return false;
-    }
-    FILE* dest = fopen_utf8(to.c_str(), "wb");
-    if ( !dest ) {
-        return false;
-    }
-
-    while (size = fread(buf, 1, BUFSIZE, source)) {
-        fwrite(buf, 1, size, dest);
-    }
-
-    fclose(source);
-    fclose(dest);
-    return true;
-}
-
-
 static int do_mkdir(const char *path, mode_t mode)
 {
     Stat            st;
@@ -178,19 +150,14 @@ int mkpath(const char *path, mode_t mode)
     return (status);
 }
 
-bool createDirectory(const std::string& path, unsigned int mode)
+bool CreateDir(const std::string& path, unsigned int mode)
 {
     return mkpath(path.c_str(), (mode_t)mode) == 0;
-}
-
-bool RemoveFile(const std::string& utf8Filename) {
-    return remove(utf8Filename.c_str())==0;
 }
 
 bool MoveFileOrFolder(const std::string& from, const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
 }
-
 
 bool DirectoryExists(const std::string& path)
 {

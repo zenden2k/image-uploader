@@ -35,7 +35,7 @@ namespace IuTextUtils
     }
 
     bool FileSaveContents(const std::string& fileName, const std::string& contents) {
-        FILE * f = IuCoreUtils::fopen_utf8(fileName.c_str(), "wb");
+        FILE * f = IuCoreUtils::FopenUtf8(fileName.c_str(), "wb");
         if ( !f ) {
             return false;
         }

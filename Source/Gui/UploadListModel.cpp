@@ -97,8 +97,8 @@ void UploadListModel::onTaskUploadProgress(UploadTask* task) {
         }
         CString uploadSpeed = U2W(progress->speed);
         CString progressText;
-        progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->uploaded)),
-            (LPCTSTR)U2W(IuCoreUtils::fileSizeToString(progress->totalUpload)), percent, uploadSpeed.GetString());
+        progressText.Format(TR("%s of %s (%d%%) %s"), (LPCTSTR)U2W(IuCoreUtils::FileSizeToString(progress->uploaded)),
+            (LPCTSTR)U2W(IuCoreUtils::FileSizeToString(progress->totalUpload)), percent, uploadSpeed.GetString());
 
         if (isThumb) {
             fps->setThumbStatusText(progressText);

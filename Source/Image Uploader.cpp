@@ -323,7 +323,7 @@ public:
 
 
 int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lpstrCmdLine, int nCmdShow)
-{    
+{
     // Create and install global locale
     std::locale::global(boost::locale::generator().generate(""));
     // Make boost.filesystem use it

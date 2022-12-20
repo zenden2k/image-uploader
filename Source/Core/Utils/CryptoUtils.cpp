@@ -44,7 +44,7 @@ std::string Base64Decode(const std::string& data)
 }
 
 bool Base64EncodeFile(const std::string& fileName, std::string& result) {
-    FILE* f = fopen_utf8(fileName.c_str(), "rb");
+    FILE* f = FopenUtf8(fileName.c_str(), "rb");
     if (!f) {
         return false;
     }

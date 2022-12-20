@@ -500,7 +500,7 @@ const std::string ToJSON(const Sqrat::Object&  obj) {
 }
 
 int64_t ScriptGetFileSize(const std::string& filename) {
-    return IuCoreUtils::getFileSize(filename);
+    return IuCoreUtils::GetFileSize(filename);
 }
 
 const std::string GetAppLanguage() {
@@ -627,8 +627,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetTempDirectory", GetTempDirectory)
         .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
         .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)
-        .Func("CopyFile", IuCoreUtils::copyFile)
-        .Func("CreateDirectory", IuCoreUtils::createDirectory)
+        .Func("CopyFile", IuCoreUtils::CopyFileToDest)
+        .Func("CreateDirectory", IuCoreUtils::CreateDir)
         .Func("FileExists", IuCoreUtils::FileExists)
         .Func("MoveFileOrFolder", IuCoreUtils::MoveFileOrFolder)
         .Func("PutFileContents", IuCoreUtils::PutFileContents)

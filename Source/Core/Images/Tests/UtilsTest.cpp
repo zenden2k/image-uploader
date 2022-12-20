@@ -35,10 +35,10 @@ public:
 TEST_F(UtilsTest, BitmapFromMemory)
 {
     std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
-    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(fileName));
+    int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(fileName));
     ASSERT_GT(fileSize, 0);
     uint8_t* data = new uint8_t[fileSize];
-    FILE *f = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb");
+    FILE *f = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb");
     size_t bytesRead = fread(data, 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);
@@ -57,10 +57,10 @@ TEST_F(UtilsTest, BitmapFromMemory)
 TEST_F(UtilsTest, GetThumbnail) {
     std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
     ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
-    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(fileName));
+    int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(fileName));
     ASSERT_GT(fileSize, 0);
     uint8_t* data = new uint8_t[fileSize];
-    FILE *f = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb");
+    FILE *f = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb");
     size_t bytesRead = fread(data, 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);

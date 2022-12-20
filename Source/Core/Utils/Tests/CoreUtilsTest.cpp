@@ -3,11 +3,10 @@
 #define NOMINMAX
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 //#include <limits.h>
 
-#include <inttypes.h>
 #include <gtest/gtest.h>
 #include "Core/Utils/CoreUtils.h"
 #ifdef _WIN32
@@ -89,20 +88,20 @@ TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 
 TEST_F(CoreUtilsTest, int64_tToString) 
 {
-    EXPECT_EQ("-2147483648", int64_tToString(std::numeric_limits<int>::min()));
-    EXPECT_EQ(int64_tToString(INT64_MAX), "9223372036854775807");
-    EXPECT_EQ("-9223372036854775808", int64_tToString(INT64_MIN));
-    EXPECT_EQ("-9223372036854775807", int64_tToString(INT64_MIN + 1) );
+    EXPECT_EQ("-2147483648", Int64ToString(std::numeric_limits<int>::min()));
+    EXPECT_EQ(Int64ToString(INT64_MAX), "9223372036854775807");
+    EXPECT_EQ("-9223372036854775808", Int64ToString(INT64_MIN));
+    EXPECT_EQ("-9223372036854775807", Int64ToString(INT64_MIN + 1) );
    
-    EXPECT_EQ(int64_tToString(0), "0");
+    EXPECT_EQ(Int64ToString(0), "0");
 }
 
 
 TEST_F(CoreUtilsTest, stringToint64_t) 
 {
-    EXPECT_TRUE(stringToInt64("9223372036854775807")== 9223372036854775807);
-    EXPECT_TRUE(stringToInt64("-9223372036854775807") == INT64_C(-9223372036854775807));
-    EXPECT_TRUE(stringToInt64("0")== 0);
+    EXPECT_TRUE(StringToInt64("9223372036854775807")== 9223372036854775807);
+    EXPECT_TRUE(StringToInt64("-9223372036854775807") == INT64_C(-9223372036854775807));
+    EXPECT_TRUE(StringToInt64("0")== 0);
 }
 
 TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType) 
@@ -116,9 +115,9 @@ TEST_F(CoreUtilsTest, GetDefaultExtensionForMimeType)
 
 TEST_F(CoreUtilsTest, fileSizeToString) 
 {
-    EXPECT_EQ(fileSizeToString(140*1024*1024), "140.0 MB");
-    EXPECT_EQ(fileSizeToString(static_cast<int64_t>(25.5*1024)), "26 KB");
-    EXPECT_EQ(fileSizeToString(0), "0 bytes");
+    EXPECT_EQ(FileSizeToString(140*1024*1024), "140.0 MB");
+    EXPECT_EQ(FileSizeToString(static_cast<int64_t>(25.5*1024)), "26 KB");
+    EXPECT_EQ(FileSizeToString(0), "0 bytes");
 }
 
 
@@ -134,10 +133,10 @@ TEST_F(CoreUtilsTest, Utf8ToWstring)
 
 TEST_F(CoreUtilsTest, getFileSize)
 {
-    int64_t size = IuCoreUtils::getFileSize("not_existing_file22342343");
+    int64_t size = IuCoreUtils::GetFileSize("not_existing_file22342343");
     EXPECT_EQ(size, -1);
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
-    size = IuCoreUtils::getFileSize(constSizeFileName);
+    size = IuCoreUtils::GetFileSize(constSizeFileName);
     EXPECT_EQ(size, contSizeFileSize);
 }
 
@@ -146,10 +145,10 @@ TEST_F(CoreUtilsTest, copyFile)
 {
     std::string destFile = TestHelpers::resolvePath("AnotherFolder/new_file.png");
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
-    bool res = IuCoreUtils::copyFile(constSizeFileName, destFile, true);
+    bool res = IuCoreUtils::CopyFileToDest(constSizeFileName, destFile, true);
     EXPECT_EQ(res, true);
     EXPECT_EQ(IuCoreUtils::FileExists(destFile), true);
-    int64_t size = IuCoreUtils::getFileSize(destFile);
+    int64_t size = IuCoreUtils::GetFileSize(destFile);
     EXPECT_EQ(size, contSizeFileSize);
 }
 

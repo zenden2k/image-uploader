@@ -55,10 +55,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     {
         SimpleXmlNode &cur = childs[i];
         auto uploadEngineData = std::make_unique<CUploadEngineData>();
-        CUploadEngineData &UE = *uploadEngineData.get();
+        CUploadEngineData &UE = *uploadEngineData;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
-        UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::stringToInt64(needPassword)!=0);
+        UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::StringToInt64(needPassword)!=0);
         UE.LoginLabel = cur.Attribute("LoginLabel");
         UE.PasswordLabel = cur.Attribute("PasswordLabel");
         std::string RetryLimit = cur.Attribute("RetryLimit");
@@ -77,9 +77,9 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                 std::vector<std::string> tokens;
                 IuStringUtils::Split(serverMinVersion,".", tokens, 4);
                 if ( tokens.size() >= 3 ) {
-                    int serverMajorVersion = (int)IuCoreUtils::stringToInt64(tokens[0]);
-                    int serverMinorVersion = (int)IuCoreUtils::stringToInt64(tokens[1]) * 100 + IuCoreUtils::stringToInt64(tokens[2]);
-                    int serverBuild = static_cast<int>(tokens.size() > 3 ? IuCoreUtils::stringToInt64(tokens[3]) : 0);
+                    int serverMajorVersion = (int)IuCoreUtils::StringToInt64(tokens[0]);
+                    int serverMinorVersion = (int)IuCoreUtils::StringToInt64(tokens[1]) * 100 + IuCoreUtils::StringToInt64(tokens[2]);
+                    int serverBuild = static_cast<int>(tokens.size() > 3 ? IuCoreUtils::StringToInt64(tokens[3]) : 0);
                     if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
                         || ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))
                         ) ) {

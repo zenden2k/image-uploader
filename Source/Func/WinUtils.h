@@ -10,7 +10,7 @@ namespace Gdiplus {
     class Bitmap;
 }
 
-const std::wstring Utf8ToWstring(const std::string &str);
+std::wstring Utf8ToWstring(const std::string &str);
 #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
 #define WstrToUtf8(str) IuCoreUtils::WstringToUtf8(str)
 //wstostr(str, CP_UTF8)
@@ -109,6 +109,7 @@ namespace WinUtils {
     time_t SystemTimeToTime(const SYSTEMTIME &s);
     bool CheckFileName(const CString& fileName);
     HRESULT IsElevated(/*__out_opt */ BOOL * pbElevated);
+    CString TimestampToString(time_t t);
 //#endif
 };
 

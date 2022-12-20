@@ -106,7 +106,7 @@ std::string ConvertToUtf8(const std::string &text, const std::string& codePage)
 std::string GetFileMimeType(const std::string& fileName)
 {
     std::string DefaultMimeType = "application/octet-stream";
-    FILE* InputFile = fopen_utf8(fileName.c_str(), "rb");
+    FILE* InputFile = FopenUtf8(fileName.c_str(), "rb");
     if (!InputFile) {
         return DefaultMimeType;
     }
@@ -150,7 +150,7 @@ bool DirectoryExists(const std::string& path)
     return false;
 }
 
-bool createDirectory(const std::string& path_, unsigned int mode)
+bool CreateDir(const std::string& path_, unsigned int mode)
 {
     std::string path = path_;
     if (path.empty()) return false;
@@ -179,7 +179,7 @@ bool createDirectory(const std::string& path_, unsigned int mode)
         *p = '\0';
 
         // if can't create parent
-        if (!createDirectory(szPath)) {
+        if (!CreateDir(szPath)) {
             free(szPath);
             return false;
         }
@@ -192,16 +192,6 @@ bool createDirectory(const std::string& path_, unsigned int mode)
     }
 
     return TRUE;
-}
-
-
-bool copyFile(const std::string& src, const std::string & dest, bool overwrite)
-{
-    return ::CopyFile(Utf8ToWstring(src).c_str(), Utf8ToWstring(dest).c_str(), !overwrite) != FALSE;
-}
-
-bool RemoveFile(const std::string& utf8Filename) {
-    return DeleteFile(IuCoreUtils::Utf8ToWstring(utf8Filename).c_str()) != FALSE;
 }
 
 bool MoveFileOrFolder(const std::string& from, const std::string& to) {

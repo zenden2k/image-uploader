@@ -194,7 +194,7 @@ int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
     if(!m_OutFileName.empty())
     {
         if(!m_hOutFile)
-            if ((m_hOutFile = IuCoreUtils::fopen_utf8(m_OutFileName.c_str(), "wb")) == nullptr) {
+            if ((m_hOutFile = IuCoreUtils::FopenUtf8(m_OutFileName.c_str(), "wb")) == nullptr) {
                 LOG(ERROR) << "Unable to create output file:" << std::endl << m_OutFileName;
                 throw NetworkClient::AbortedException("Unable to create output file");
             }
@@ -374,7 +374,7 @@ bool NetworkClient::doUploadMultipartData()
                     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, NetworkClientInternal::simple_read_callback);
                     //curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, NetworkClientInternal::simple_seek_callback);
                                         std::string fileName = it->value;
-                    FILE * curFile = IuCoreUtils::fopen_utf8(it->value.c_str(), "rb"); /* open file to upload */
+                    FILE * curFile = IuCoreUtils::FopenUtf8(it->value.c_str(), "rb"); /* open file to upload */
                     if(!curFile) 
                     {
                         closeFileList(openedFiles);
@@ -382,7 +382,7 @@ bool NetworkClient::doUploadMultipartData()
                     }
                     openedFiles.push_back(curFile);
                     // FIXME: > 2gb  file size & unicode filenames support on Windows
-                    uint64_t  curFileSize = IuCoreUtils::getFileSize(fileName);
+                    uint64_t  curFileSize = IuCoreUtils::GetFileSize(fileName);
 
                     // Known bug in curl: https://github.com/curl/curl/issues/768
                     if (/*curFileSize > LONG_MAX*/  true ) { 
@@ -759,7 +759,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
     size_t retcode;
    
     if (m_uploadingFile) {
-        int64_t pos = IuCoreUtils::ftell_64(m_uploadingFile);
+        int64_t pos = IuCoreUtils::Ftell64(m_uploadingFile);
         if (pos >= chunkOffset_ + m_currentUploadDataSize) {
             return 0;
         }
@@ -792,7 +792,7 @@ int NetworkClient::private_seek_callback(void *userp, curl_off_t offset, int ori
             // not implemented
             return CURL_SEEKFUNC_CANTSEEK;
         }
-        return IuCoreUtils::fseek_64(nc->m_uploadingFile, newOffset, newOrigin);
+        return IuCoreUtils::Fseek64(nc->m_uploadingFile, newOffset, newOrigin);
     } else {
         if (origin == SEEK_SET) {
             if (offset < 0 || offset>= nc->m_uploadData.size()) {
@@ -814,13 +814,13 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
 {
     if(!fileName.empty())
     {
-        m_uploadingFile = IuCoreUtils::fopen_utf8(fileName.c_str(), "rb"); /* open file to upload */
+        m_uploadingFile = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb"); /* open file to upload */
         if(!m_uploadingFile) 
         {
             LOG(ERROR)<< "Failed to open file '" << fileName << "'";
             return false; /* can't continue */
         }
-        m_CurrentFileSize = IuCoreUtils::getFileSize(fileName);
+        m_CurrentFileSize = IuCoreUtils::GetFileSize(fileName);
         m_currentUploadDataSize = m_CurrentFileSize;
         if(m_CurrentFileSize < 0) {
             fclose(m_uploadingFile);
@@ -829,7 +829,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
             
         if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
             m_currentUploadDataSize = chunkSize_;
-            if ( IuCoreUtils::fseek_64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
+            if ( IuCoreUtils::Fseek64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
             }
         }
         m_uploadingFileReadBytes = 0;
@@ -853,7 +853,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
     
     if ( m_method != "PUT" ) {
-        addQueryHeader("Content-Length", IuCoreUtils::int64_tToString(m_currentUploadDataSize));
+        addQueryHeader("Content-Length", IuCoreUtils::Int64ToString(m_currentUploadDataSize));
     }
     private_initTransfer();
 

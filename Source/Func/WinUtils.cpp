@@ -618,7 +618,7 @@ CString IntToStr(int n)
 
 bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize)
 {
-    std::string res = IuCoreUtils::fileSizeToString(nBytes);
+    std::string res = IuCoreUtils::FileSizeToString(nBytes);
     lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
     return TRUE;
 }
@@ -1505,11 +1505,43 @@ HRESULT IsElevated(/*__out_opt*/ BOOL* pbElevated) {
     return hResult;
 }
 
+SYSTEMTIME TimeToSystemTime(std::time_t timestamp)
+{
+    ULARGE_INTEGER time_value;
+    time_value.QuadPart = (timestamp * 10000000LL) + 116444736000000000LL;
+
+    FILETIME ft;
+    ft.dwLowDateTime = time_value.LowPart;
+    ft.dwHighDateTime = time_value.HighPart;
+
+    SYSTEMTIME st;
+    FileTimeToSystemTime(&ft, &st);
+    return st;
 }
 
+CString TimestampToString(time_t t)
+{
+    SYSTEMTIME systime = TimeToSystemTime(t);
+    WCHAR pFmt[MAX_PATH] = { 0 },
+    pFmtTime[MAX_PATH] = { 0 };
 
-const std::wstring Utf8ToWstring(const std::string &str)
+    if (!SystemTimeToTzSpecificLocalTime(nullptr, &systime, &systime)) {
+        return {};
+    }
+    GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, DATE_SHORTDATE, &systime, nullptr, pFmt, MAX_PATH, nullptr);
+
+    GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &systime, nullptr, pFmtTime, MAX_PATH);
+
+    CString result;
+    result.Format(_T("%s %s"), pFmt, pFmtTime);
+    return result;
+}
+
+}
+
+std::wstring Utf8ToWstring(const std::string &str)
 {
     return WinUtils::strtows(str, CP_UTF8);
 }
+
 

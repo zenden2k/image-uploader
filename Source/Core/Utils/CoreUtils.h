@@ -52,9 +52,9 @@ public:
 namespace IuCoreUtils
 {
     // A version of fopen() function which supports utf8 file names
-    FILE * fopen_utf8(const char * filename, const char * mode);
-    int fseek_64(FILE *stream, int64_t offset, int origin);
-    int64_t ftell_64(FILE *a);
+    FILE * FopenUtf8(const char * filename, const char * mode);
+    int Fseek64(FILE *stream, int64_t offset, int origin);
+    int64_t Ftell64(FILE *a);
 
     bool FileExists(const std::string& fileName);
     bool DirectoryExists(const std::string& path);
@@ -63,33 +63,33 @@ namespace IuCoreUtils
     std::string ExtractFileExt(const std::string& fileName);
     std::string ExtractFileNameNoExt(const std::string& fileName);
     std::string ExtractFileNameFromUrl(const std::string& url);
-    std::string incrementFileName(const std::string& originalFileName, int counter);
-    std::string toString(double value, int precision);
+    std::string IncrementFileName(const std::string& originalFileName, int counter);
+    std::string ToString(double value, int precision);
     std::string Utf8ToSystemLocale(const std::string& str);
     std::string SystemLocaleToUtf8(const std::string& str);
-    std::string int64_tToString(int64_t value);
-    int64_t stringToInt64(const std::string& str);
+    std::string Int64ToString(int64_t value);
+    int64_t StringToInt64(const std::string& str);
     std::string GetFileMimeType(const std::string&);
     std::string GetDefaultExtensionForMimeType(const std::string&);
     std::string StrReplace(std::string text, std::string s, std::string d);
     std::string ConvertToUtf8(const std::string &text, const std::string& codePage);
-    bool ReadUtf8TextFile(std::string utf8Filename, std::string& data);
+    bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data);
     bool PutFileContents(const std::string& utf8Filename, const std::string& content);
     std::string GetFileContents(const std::string& filename);
 
-    // getFileSize retrieves the size of the specified file, in bytes.
+    // This function retrieves the size of the specified file, in bytes.
     // It supports large files; filename must be utf8 encoded
-    int64_t getFileSize(const std::string& utf8Filename);
+    int64_t GetFileSize(const std::string& utf8Filename);
     std::wstring Utf8ToWstring(const std::string &str);
     std::string WstringToUtf8(const std::wstring &str);
 
     // Convert UTF16-LE encoded string to Utf-8
     std::string Utf16ToUtf8(const std::u16string& src);
 
-    std::string timeStampToString(time_t t);
-    std::string fileSizeToString(int64_t nBytes);
-    bool createDirectory(const std::string& path, unsigned int mode=0);
-    bool copyFile(const std::string& src, const std::string & dest, bool overwrite = true);
+    std::string TimeStampToString(time_t t);
+    std::string FileSizeToString(int64_t nBytes);
+    bool CreateDir(const std::string& path, unsigned int mode=0);
+    bool CopyFileToDest(const std::string& src, const std::string & dest, bool overwrite = true);
     std::string Utf8ToAnsi(const std::string &str, int codepage);
     bool RemoveFile(const std::string& utf8Filename);
     bool MoveFileOrFolder(const std::string& from ,const std::string& to);

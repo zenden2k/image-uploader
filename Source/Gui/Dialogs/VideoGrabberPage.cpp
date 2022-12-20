@@ -250,7 +250,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
             std::string snapshotsFolderUtf8 = WCstringToUtf8(snapshotsFolder);
 
             if ( !IuCoreUtils::DirectoryExists(snapshotsFolderUtf8) ) {
-                if ( !IuCoreUtils::createDirectory(snapshotsFolderUtf8) ) {
+                if ( !IuCoreUtils::CreateDir(snapshotsFolderUtf8) ) {
                     CString logMessage;
                     CString lastError = WinUtils::GetLastErrorAsString();
                     logMessage.Format(_T("Could not create folder '%s'.\r\n%s"), (LPCTSTR)snapshotsFolder, (LPCTSTR)lastError);

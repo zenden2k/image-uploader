@@ -81,7 +81,7 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
 
         outFile = serversDirectory_ + name + ".xml";
         if (!IuCoreUtils::DirectoryExists(serversDirectory_)) {
-            if (!IuCoreUtils::createDirectory(serversDirectory_)) {
+            if (!IuCoreUtils::CreateDir(serversDirectory_)) {
                 throw std::runtime_error("Cannot create directory " + serversDirectory_);
             }
         }
@@ -137,7 +137,7 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     filename = IuStringUtils::Replace(filename,"/","_");
     const std::string outFile = serversDirectory_ + filename + ".xml";
     if (!IuCoreUtils::DirectoryExists(serversDirectory_)) {
-        if (!IuCoreUtils::createDirectory(serversDirectory_)) {
+        if (!IuCoreUtils::CreateDir(serversDirectory_)) {
             throw std::runtime_error("Cannot create directory " + serversDirectory_);
         }
     }

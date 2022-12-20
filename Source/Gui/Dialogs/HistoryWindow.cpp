@@ -229,7 +229,7 @@ void CHistoryWindow::FillList(CHistoryReader* mgr)
         std::string serverName = ses->serverName();
         if(serverName.empty()) serverName = "n/a";
 
-        std::string label = IuCoreUtils::timeStampToString(ses->timeStamp())+ "\r\n Server: "+ serverName+ " Files: " + std::to_string(ses->entriesCount());
+        std::string label = W2U(WinUtils::TimestampToString(ses->timeStamp())) + "\r\n Server: "+ serverName+ " Files: " + std::to_string(ses->entriesCount());
         res = m_treeView.addEntry(ses, Utf8ToWCstring(label));
         int nCount = ses->entriesCount();
         for(int j=0; j<nCount; j++)
@@ -252,7 +252,7 @@ void CHistoryWindow::FillList(CHistoryReader* mgr)
 
     SetDlgItemInt(IDC_FILESCOUNTLABEL, nFilesCount, false);
     SetDlgItemInt(IDC_SESSIONSCOUNTLABEL, nSessionsCount, false);
-    SetDlgItemText(IDC_UPLOADTRAFFICLABEL, Utf8ToWCstring(IuCoreUtils::fileSizeToString(totalFileSize)));
+    SetDlgItemText(IDC_UPLOADTRAFFICLABEL, Utf8ToWCstring(IuCoreUtils::FileSizeToString(totalFileSize)));
 }
 
 LRESULT CHistoryWindow::OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
@@ -364,7 +364,7 @@ void CHistoryWindow::LoadHistory()
     {   
         m_treeView.ResetContent();
 
-        m_historyReader.reset(new CHistoryReader(ServiceLocator::instance()->historyManager()));
+        m_historyReader = std::make_unique<CHistoryReader>(ServiceLocator::instance()->historyManager());
 
         SYSTEMTIME dateFrom, dateTo;
         time_t timeFrom = 0, timeTo = 0;
@@ -503,12 +503,15 @@ void CHistoryWindow::initSearchForm() {
     date today = day_clock::local_day();
     date start = today - days(30);
 
-    SYSTEMTIME dateFrom = GregorianDateToSystemTime(start);
-    SYSTEMTIME dateTo = GregorianDateToSystemTime(today);
+    try {
+        SYSTEMTIME dateFrom = GregorianDateToSystemTime(start);
+        SYSTEMTIME dateTo = GregorianDateToSystemTime(today);
 
-    dateFromPicker_.SetSystemTime(GDT_VALID, &dateFrom);
-    dateToPicker_.SetSystemTime(GDT_VALID, &dateTo);
-
+        dateFromPicker_.SetSystemTime(GDT_VALID, &dateFrom);
+        dateToPicker_.SetSystemTime(GDT_VALID, &dateTo);
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
     SetDlgItemText(IDC_FILENAMEEDIT, _T(""));
     SetDlgItemText(IDC_URLEDIT, _T(""));
 

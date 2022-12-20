@@ -8,12 +8,12 @@ namespace ServersListTool::Helpers {
 
 CString MyBytesToString(int64_t nBytes)
 {
-    return IuCoreUtils::fileSizeToString(nBytes).c_str();
+    return IuCoreUtils::FileSizeToString(nBytes).c_str();
 }
 
 CString GetFileInfo(CString fileName, MyFileInfo* mfi)
 {
-    int fileSize = static_cast<int>(IuCoreUtils::getFileSize(W2U(fileName)));
+    int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(W2U(fileName)));
     CString result = MyBytesToString(fileSize) + _T("(") + WinUtils::IntToStr(fileSize) + _T(" bytes);");
     CString mimeType = IuCoreUtils::GetFileMimeType(W2U(fileName)).c_str();
     result += mimeType + _T(";");

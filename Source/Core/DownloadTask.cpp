@@ -54,7 +54,7 @@ void DownloadTask::run() {
         //if (createFileBeforeDownloading_) {
             // Creating file
         std::string fullFilePath = tempDirectory_ + filePath;
-        FILE* f = IuCoreUtils::fopen_utf8(fullFilePath.c_str(), "wb");
+        FILE* f = IuCoreUtils::FopenUtf8(fullFilePath.c_str(), "wb");
         if (f) {
             fclose(f);
         }

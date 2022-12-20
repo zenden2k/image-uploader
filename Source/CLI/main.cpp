@@ -453,8 +453,8 @@ void UploadTaskProgress(UploadTask* task) {
     }
     // and back to line begin - do not forget the fflush to avoid output buffering problems!
     fprintf(stderr,"]");
-    fprintf(stderr," %s/%s", IuCoreUtils::fileSizeToString(progress->uploaded).c_str(),
-            IuCoreUtils::fileSizeToString(progress->totalUpload).c_str());
+    fprintf(stderr," %s/%s", IuCoreUtils::FileSizeToString(progress->uploaded).c_str(),
+            IuCoreUtils::FileSizeToString(progress->totalUpload).c_str());
     fprintf(stderr,"\r");
     fflush(stderr);
 }

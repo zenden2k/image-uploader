@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.9.0)
 
 project(qimageuploader)
 
-if (WIN32)
-    set (CMAKE_PREFIX_PATH "d:\\Qt\\5.15.0\\msvc2019\\")
-endif()
+#if (WIN32)
+#   set (CMAKE_PREFIX_PATH "d:\\Qt\\5.15.0\\msvc2019\\")
+#endif()*/
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

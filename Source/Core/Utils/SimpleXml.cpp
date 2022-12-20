@@ -183,7 +183,7 @@ bool SimpleXmlNode::AttributeBool(const std::string& name) const
 
 int64_t SimpleXmlNode::AttributeInt64(const std::string& name) const
 {
-    return IuCoreUtils::stringToInt64(Attribute(name).c_str());
+    return IuCoreUtils::StringToInt64(Attribute(name).c_str());
 }
 
 void SimpleXmlNode::SetAttribute(const std::string& name, const std::string& value)
@@ -202,7 +202,7 @@ void SimpleXmlNode::SetAttribute(const std::string& name, int value)
 
 void SimpleXmlNode::SetAttribute(const std::string& name, int64_t value)
 {
-    std::string str = IuCoreUtils::int64_tToString(value);
+    std::string str = IuCoreUtils::Int64ToString(value);
     if (!impl_->m_el)
         return;
     impl_->m_el->SetAttribute(name, str);
@@ -337,7 +337,7 @@ const std::string SimpleXml::ToString()
 
 bool SimpleXml::SaveToFile(const std::string& fileName) const
 {
-    FILE* f = IuCoreUtils::fopen_utf8(fileName.c_str(), "wb");
+    FILE* f = IuCoreUtils::FopenUtf8(fileName.c_str(), "wb");
     if (!f) {
         LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
         return false;

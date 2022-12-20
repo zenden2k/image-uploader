@@ -408,7 +408,7 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         std::unique_ptr<MegaNode> node(megaApi_->getChildNode(root.get(), origFileName.c_str()));
         int i = 2;
         while (node) {
-            newFileName = IuCoreUtils::incrementFileName(origFileName, i++);
+            newFileName = IuCoreUtils::IncrementFileName(origFileName, i++);
             node.reset(megaApi_->getChildNode(root.get(), newFileName.c_str()));
         } 
 

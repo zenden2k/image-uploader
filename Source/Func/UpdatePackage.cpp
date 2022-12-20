@@ -327,7 +327,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     if (nm->responseCode() != 200 || tokens.empty() || tokens[0] != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
@@ -384,7 +384,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     
     if(nm_->responseCode() != 200)
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
         return false;
     }
 
@@ -516,14 +516,14 @@ bool CUpdatePackage::doUpdate()
         copyTo.Replace(_T("%apppath%"), appFolder);
         std::string dir = IuCoreUtils::ExtractFilePath(IuCoreUtils::WstringToUtf8((LPCTSTR)copyTo));
         if ( !IuCoreUtils::DirectoryExists(dir)) {
-            if ( !IuCoreUtils::createDirectory(dir) ) {
+            if ( !IuCoreUtils::CreateDir(dir) ) {
                 CString logMessage;
                 logMessage.Format(_T("Could not create folder '%s'."), (LPCTSTR)IuCoreUtils::Utf8ToWstring(dir).c_str());
                 ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), logMessage);
 
             }
         }
-        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::int64_tToString(rand()%10000)).c_str()+ _T(".old");
+        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(rand()%10000)).c_str()+ _T(".old");
 
         CString buffer = U2W(IuCoreUtils::ExtractFilePath(W2U(copyTo)));
         std::vector<std::string> tokens;
@@ -651,8 +651,8 @@ int CUpdateManager::progressCallback(INetworkClient *clientp, double dltotal, do
     CUpdateManager * um = this;
     CString text;
     CString buf1, buf2;
-    buf1 = U2W(IuCoreUtils::fileSizeToString(int64_t(dlnow)));
-    buf2 = U2W(IuCoreUtils::fileSizeToString(int64_t(dltotal)));
+    buf1 = U2W(IuCoreUtils::FileSizeToString(int64_t(dlnow)));
+    buf2 = U2W(IuCoreUtils::FileSizeToString(int64_t(dltotal)));
     int percent = 0;
     if(dltotal != 0 )
     percent = int((dlnow/ dltotal) * 100);

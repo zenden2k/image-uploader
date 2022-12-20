@@ -1263,12 +1263,12 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
 bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int Quality, bool html) {
     std::string fileNameUtf8 = W2U(fileName);
     std::string mimeType = IuCoreUtils::GetFileMimeType(fileNameUtf8);
-    FILE* f = IuCoreUtils::fopen_utf8(fileNameUtf8.c_str(), "rb");
+    FILE* f = IuCoreUtils::FopenUtf8(fileNameUtf8.c_str(), "rb");
     if (!f) {
         LOG(ERROR) << boost::format("Could not save xml to file '%s'.") % fileName << std::endl << "Reason: " << strerror(errno);
         return false;
     }
-    int64_t fileSize = IuCoreUtils::getFileSize(fileNameUtf8);
+    int64_t fileSize = IuCoreUtils::GetFileSize(fileNameUtf8);
     if (fileSize > 10 * 1024 * 1024) {
         LOG(ERROR) << fileNameUtf8 << std::endl << "File is too big";
         return false;
@@ -1370,7 +1370,7 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
             extension = _T("dat");
         }
         CString outFilename = WinUtils::GetUniqFileName(tempDirectory + _T("clipboard.") + extension);
-        FILE* outFile = IuCoreUtils::fopen_utf8(W2U(outFilename).c_str(), "wb");
+        FILE* outFile = IuCoreUtils::FopenUtf8(W2U(outFilename).c_str(), "wb");
         if (!outFile) {
             delete[] decodedImg;
             return false;

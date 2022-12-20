@@ -300,13 +300,13 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
     if (!sprite.empty()) {
         std::string newSpriteName = srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite); 
-        if (!IuCoreUtils::copyFile(sprite, newSpriteName)) {
+        if (!IuCoreUtils::CopyFileToDest(sprite, newSpriteName)) {
             LOG(ERROR) << "Unable to copy file: " << std::endl << std::endl << "Source: " << sprite << std::endl << "Destination: " << newSpriteName;
             return false;
         }
     }
 
-    if (!IuCoreUtils::copyFile(fileName, destination) ) {
+    if (!IuCoreUtils::CopyFileToDest(fileName, destination) ) {
         LOG(ERROR) << "Unable to copy file: " << std::endl << std::endl << "Source: " << fileName << std::endl << "Destination: " << destination;
         return false;
     }
