@@ -133,7 +133,7 @@ void ServerSelectorWidget::updateServerList() {
 
             std::string displayName = ue->Name;
             if (showFileSizeLimits && ue->MaxFileSize > 0) {
-                displayName += " (" + IuCoreUtils::fileSizeToString(ue->MaxFileSize) + ")";
+                displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
             }
             serverListComboBox->addItem(ico, U2Q(displayName), U2Q(ue->Name));
             /*if (ue->Name == selectedServerName) {

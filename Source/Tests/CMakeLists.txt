@@ -1,11 +1,6 @@
 
 add_definitions(-DSQTEST_STATIC -DIU_NOWEBBROWSER -DIU_TESTS)
 
-if (MSVC)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-endif()
-
 set(SRC_LIST 
     Tests.cpp
     TestHelpers.cpp

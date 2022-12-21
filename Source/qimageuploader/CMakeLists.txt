@@ -24,6 +24,10 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS "Gui/ui/")
 
 add_definitions(-DIU_QT)
 
+if (WIN32)
+    set(RESOURCE_LIST "../res/qimageuploader.exe.manifest")
+endif()
+
 set(SOURCE_FILES 
     main.cpp
     Gui/mainwindow.cpp
@@ -75,7 +79,7 @@ if(WIN32)
         ../Core/3rdpart/dxerr.cpp)
 endif()
 
-add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES})
+add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
  
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)

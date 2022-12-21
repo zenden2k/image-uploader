@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1.0)							
+cmake_minimum_required(VERSION 3.15.0)							
 
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
@@ -32,11 +32,34 @@ if (MSVC)
     add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
 endif()
 
-if (MSVC AND IU_STATIC_RUNTIME) 
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT")
+if (MSVC) 
+	if(IU_STATIC_RUNTIME)
+		if(POLICY CMP0091)
+			cmake_policy(SET CMP0091 NEW)
+ 		endif()
+		set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+		# Replace `/MD` with `/MT` flag to use MultiThreaded VS runtime, 
+		# otherwise conan_cmake_autodetect() will fail to detect the runtime.
+		# Maybe it will be fixed in future and conan-cmake will respect
+		# `CMAKE_MSVC_RUNTIME_LIBRARY` option.
+		# https://github.com/conan-io/cmake-conan/issues/174
+		set(CompilerFlags
+			CMAKE_CXX_FLAGS
+			CMAKE_CXX_FLAGS_DEBUG
+			CMAKE_CXX_FLAGS_RELEASE
+			CMAKE_CXX_FLAGS_MINSIZEREL
+			CMAKE_CXX_FLAGS_RELWITHDEBINFO 
+			CMAKE_C_FLAGS
+			CMAKE_C_FLAGS_DEBUG
+			CMAKE_C_FLAGS_RELEASE
+			CMAKE_C_FLAGS_MINSIZEREL
+			CMAKE_C_FLAGS_RELWITHDEBINFO 
+		)
+		foreach(CompilerFlag ${CompilerFlags})
+			string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+		endforeach()
+	endif()
 endif()
 
 if (IU_ENABLE_FFMPEG)
@@ -123,8 +146,6 @@ conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 # ffmpeg package supports Windows x64 only as target system, so we have to build ffmpeg separately
 SET(msvc_link_setting "")
 
-SET(msvc_link_setting "")
-
 #if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
 #   SET(CONFIGURATION_TYPES "Release")
 #else()
@@ -132,18 +153,10 @@ SET(msvc_link_setting "")
 #endif()	
 
 foreach(TYPE ${CONFIGURATION_TYPES})
-	if (MSVC)
-		if (${TYPE} STREQUAL "Debug")
-			SET(msvc_link_setting compiler.runtime=MTd)
-		else()
-			SET(msvc_link_setting compiler.runtime=MT)
-		endif()	
-	endif()	
     conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
-                        SETTINGS ${settings}
-						SETTINGS ${msvc_link_setting})
+                        SETTINGS ${settings})
 endforeach()
 
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})

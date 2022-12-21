@@ -213,7 +213,7 @@ void MainWindow::itemDoubleClicked(const QModelIndex& index) {
     showCodeForIndex(index);
 }
 
-void MainWindow::uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj) {
+void MainWindow::uploadTaskToUploadObject(UploadTask* task, UploadObject& obj) {
 
     /*HistoryItem hi;
     hi.localFilePath = fileTask->originalFileName();
@@ -237,21 +237,21 @@ void MainWindow::uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj) 
 }
 
 void MainWindow::showCodeForIndex(const QModelIndex& index) {
-    std::vector<ZUploadObject> uploadObjects;
+    std::vector<UploadObject> uploadObjects;
     auto item = uploadTreeModel_->getInternalItem(index);
     if (item->session) {
         int count = item->session->taskCount();
         for (int i = 0; i < count; i++) {
             auto task = item->session->getTask(i);
             if (task && task->uploadSuccess(false)) {
-                ZUploadObject obj;
+                UploadObject obj;
                 uploadTaskToUploadObject(task.get(), obj);
                 uploadObjects.push_back(obj);
             }
         }
     }
     else if (item->task && item->task->uploadSuccess(false)) {
-        ZUploadObject obj;
+        UploadObject obj;
         uploadTaskToUploadObject(item->task.get(), obj);
         uploadObjects.push_back(obj);
     }

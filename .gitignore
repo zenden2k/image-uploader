@@ -26,3 +26,4 @@ Lang/*.new
 Dist/debian/imgupload
 Dist/serverchecker
 BuildVS2022/
+BuildQt/

@@ -8,7 +8,7 @@ class UploadManager;
 class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
-struct ZUploadObject;
+struct UploadObject;
 class ServerSelectorWidget;
 class LogWindow;
 class QSystemTrayIcon;
@@ -39,7 +39,7 @@ private slots:
 protected:
 	bool addFileToList(QString fileName);
 	bool addMultipleFilesToList(QStringList fileNames);
-	void uploadTaskToUploadObject(UploadTask* task, ZUploadObject& obj);
+	void uploadTaskToUploadObject(UploadTask* task, UploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
 	void quitApp();
 private:

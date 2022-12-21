@@ -4,7 +4,7 @@
 
 #include "ui_ResultsWindow.h"
 
-ResultsWindow::ResultsWindow(std::vector<ZUploadObject> objects, QWidget* parent) :
+ResultsWindow::ResultsWindow(std::vector<UploadObject> objects, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::ResultsWindow),
     uploadObjects_(objects) {
@@ -27,36 +27,36 @@ ResultsWindow::~ResultsWindow() {
 }
 
 void ResultsWindow::generateCode() {
-    ZOutputCodeGenerator generator;
-    ZOutputCodeGenerator::CodeLang lang;
-    ZOutputCodeGenerator::CodeType codeType;
+    OutputCodeGenerator generator;
+    OutputCodeGenerator::CodeLang lang;
+    OutputCodeGenerator::CodeType codeType;
     int tabIndex = ui->tabBar->currentIndex();
     if (tabIndex == 0) {
-        lang = ZOutputCodeGenerator::clBBCode;
+        lang = OutputCodeGenerator::clBBCode;
     }
     else if (tabIndex == 1) {
-        lang = ZOutputCodeGenerator::clHTML;
+        lang = OutputCodeGenerator::clHTML;
     }
     else if (tabIndex == 2) {
-        lang = ZOutputCodeGenerator::clHTML;
+        lang = OutputCodeGenerator::clHTML;
     }
     else {
-        lang = ZOutputCodeGenerator::clPlain;
+        lang = OutputCodeGenerator::clPlain;
     }
     int codeTypeIndex = ui->codeTypeCombo->currentIndex();
     if (codeTypeIndex == 0) {
-        codeType = ZOutputCodeGenerator::ctTableOfThumbnails;
+        codeType = OutputCodeGenerator::ctTableOfThumbnails;
     }
     else if (codeTypeIndex == 1) {
-        codeType = ZOutputCodeGenerator::ctClickableThumbnails;
+        codeType = OutputCodeGenerator::ctClickableThumbnails;
     }
     else if (codeTypeIndex == 2) {
-        codeType = ZOutputCodeGenerator::ctImages;
+        codeType = OutputCodeGenerator::ctImages;
     }
     else if (codeTypeIndex == 3) {
-        codeType = ZOutputCodeGenerator::ctLinks;
+        codeType = OutputCodeGenerator::ctLinks;
     } else {
-        codeType = ZOutputCodeGenerator::ctTableOfThumbnails;
+        codeType = OutputCodeGenerator::ctTableOfThumbnails;
     }
     generator.setLang(lang);
     generator.setType(codeType);

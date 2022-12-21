@@ -47,7 +47,7 @@ class MegaioConan(ConanFile):
         "UsePdfium": False,
         "libcurl:with_libssh2": True
     }
-    generators = "cmake_find_package", "cmake_paths"
+    generators = "cmake", "cmake_find_package", "cmake_paths"
     exports_sources = "src/*"
     requires = [
                     "zlib/1.2.11",
