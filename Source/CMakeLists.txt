@@ -39,7 +39,7 @@ if (MSVC)
  		endif()
 		set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-		# Replace `/MD` with `/MT` flag to use MultiThreaded VS runtime, 
+		# Replace `/MD` with `/MT` flag to use static VS runtime, 
 		# otherwise conan_cmake_autodetect() will fail to detect the runtime.
 		# Maybe it will be fixed in future and conan-cmake will respect
 		# `CMAKE_MSVC_RUNTIME_LIBRARY` option.
@@ -87,8 +87,8 @@ SET(COMMON_DEPS boost/1.78.0
 				libcurl/7.84.0
 				pcre/8.45
 				uriparser/0.9.5
-				zlib/1.2.11
-				minizip/1.2.11	
+				zlib/1.2.13
+				minizip/1.2.13	
 				jsoncpp/1.9.5
 				libssh2/1.9.0 
 				sqlite3/3.36.0
