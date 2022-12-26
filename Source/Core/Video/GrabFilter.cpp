@@ -6,28 +6,44 @@
 #include <strsafe.h>
 #include "Core/Logging.h"
 
+CGrab::CGrab(): m_inputPin(nullptr), m_grabFilter(new CGrabFilter(nullptr, this)){
+}
+
+CGrab::~CGrab() {
+    delete m_inputPin;
+}
+
+CGrabFilter* CGrab::filter() const {
+    return m_grabFilter;
+}
 // {32EEE835-6141-4214-A452-B29A0D5C6638}
 DEFINE_GUID(CLSID_GrabFilter,
     0x32eee835, 0x6141, 0x4214, 0xa4, 0x52, 0xb2, 0x9a, 0xd, 0x5c, 0x66, 0x38);
 
-CGrabFilter::CGrabFilter(LPUNKNOWN pUnk) :
-    CBaseFilter(NAME("CGrabFilter"), pUnk, &m_Lock, CLSID_GrabFilter),
-    m_inputPin(nullptr),
-    m_grab(false),
+CGrabFilter::CGrabFilter(LPUNKNOWN pUnk, CGrab* grab) :
+    CBaseFilter(NAME("CGrabFilter"), pUnk, &grab->m_Lock, CLSID_GrabFilter),
+
+    m_doGrab(false),
+    m_callback(nullptr),
     m_pPosition(nullptr),
-    m_segmentStart(0)
+    m_segmentStart(0),
+    m_grab(grab)
+
 {
+}
+
+CGrabFilter::~CGrabFilter() {
 }
 
 CBasePin * CGrabFilter::GetPin(int n){
     if (n == 0) {
-        CAutoLock lock(&m_Lock);
+        CAutoLock lock(&m_grab->m_Lock);
         
-        if (!m_inputPin) {
+        if (!m_grab->m_inputPin) {
             HRESULT hr = S_OK;
-            m_inputPin = new CGrabInputPin(this, &m_Lock, &m_ReceiveLock, &hr);
+            m_grab->m_inputPin = new CGrabInputPin(this, &m_grab->m_Lock, &m_ReceiveLock, &hr);
         }
-        return m_inputPin;
+        return m_grab->m_inputPin;
     } 
     return nullptr;
 }
@@ -38,9 +54,9 @@ int CGrabFilter::GetPinCount(){
 
 HRESULT CGrabFilter::Receive(IMediaSample* pSample) {
     CheckPointer(pSample, E_POINTER);
-    if (m_callback && m_grab) {
+    if (m_callback && m_doGrab) {
         BYTE* data;
-        m_grab = false;
+        m_doGrab = false;
         if (SUCCEEDED(pSample->GetPointer(&data))) {
             BITMAPINFOHEADER* bih = nullptr;
             if ((m_mediaType.formattype == FORMAT_VideoInfo) &&
@@ -76,7 +92,7 @@ HRESULT CGrabFilter::SetMediaType(const CMediaType* pmt) {
 }
 
 void CGrabFilter::SetGrab(bool grab) {
-    m_grab = grab;
+    m_doGrab = grab;
 }
 
 void CGrabFilter::SetCallback(CGrabCallback* cb) {
@@ -89,7 +105,7 @@ HRESULT CGrabFilter::NonDelegatingQueryInterface(const IID& riid, void** ppv) {
             HRESULT hr = S_OK;
             m_pPosition = new CPosPassThru(NAME("Dump Pass Through"),
                 (IUnknown *)GetOwner(),
-                (HRESULT *)&hr, m_inputPin);
+                (HRESULT *)&hr, m_grab->m_inputPin);
             if (m_pPosition == nullptr)
                 return E_OUTOFMEMORY;
 
@@ -114,7 +130,7 @@ HRESULT CGrabFilter::NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, dou
 //  Definition of CGrabInputPin
 //
 CGrabInputPin::CGrabInputPin(CGrabFilter *pFilter, CCritSec *pLock, CCritSec *pReceiveLock, HRESULT *phr) :
-    CRenderedInputPin(NAME("CDumpInputPin"),
+    CRenderedInputPin(NAME("CGrabInputPin"),
                   pFilter,                   // Filter
                   pLock,                     // Locking
                   phr,                       // Return code

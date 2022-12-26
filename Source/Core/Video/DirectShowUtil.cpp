@@ -35,21 +35,23 @@ HRESULT GetPin( IBaseFilter* pFilter, PIN_DIRECTION dirrequired, int iNum, IPin*
         pPin->Release();
     }
 
+    pEnum->Release();
+
     return hr;
 }
 
-IPin* GetInPin( IBaseFilter* pFilter, int nPin )
+CComPtr<IPin> GetInPin( IBaseFilter* pFilter, int nPin )
 {
-    IPin* pComPin = 0;
-    //CComPtr<IPin> pComPin = 0;
+    //IPin* pComPin = 0;
+    CComPtr<IPin> pComPin;
     GetPin(pFilter, PINDIR_INPUT, nPin, &pComPin);
     return pComPin;
 }
 
-IPin* GetOutPin( IBaseFilter* pFilter, int nPin )
+CComPtr<IPin> GetOutPin( IBaseFilter* pFilter, int nPin )
 {
-    IPin* pComPin = 0;
-    //CComPtr<IPin> pComPin = 0;
+    //IPin* pComPin = 0;
+    CComPtr<IPin> pComPin;
     GetPin(pFilter, PINDIR_OUTPUT, nPin, &pComPin);
     return pComPin;
 }

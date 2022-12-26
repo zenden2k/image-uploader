@@ -90,7 +90,7 @@ function RefreshToken() {
 
 function Authenticate() {
     local login = ServerParams.getParam("Login");
-    local scope = "https://www.googleapis.com/auth/drive";
+    local scope = "https://www.googleapis.com/auth/drive.file";
 
     if (login == "") {
         WriteLog("error", "E-mail should not be empty!");

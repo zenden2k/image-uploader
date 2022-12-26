@@ -185,14 +185,14 @@ std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
 #ifdef _WIN32
     #ifdef IU_ENABLE_FFMPEG
     if ( videoEngine_ == veAvcodec ) {
-        grabber.reset(new AvcodecFrameGrabber());
+        grabber = std::make_unique<AvcodecFrameGrabber>();
     } else
     #endif
     if (videoEngine_ == veDirectShow2) {
-        grabber.reset(new DirectshowFrameGrabber2());
+        grabber = std::make_unique<DirectshowFrameGrabber2>();
     }
     else {
-        grabber.reset(new DirectshowFrameGrabber());
+        grabber = std::make_unique<DirectshowFrameGrabber>();
     }
 #elif defined(IU_ENABLE_FFMPEG)
     grabber.reset(new AvcodecFrameGrabber());

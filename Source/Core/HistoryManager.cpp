@@ -112,7 +112,13 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     }*/
     int retCode = sqlite3_step(stmt);
     if (retCode  != SQLITE_DONE) {
-        LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
+        int i = 3;
+        while(retCode == SQLITE_BUSY && i-- > 0) {
+            retCode = sqlite3_step(stmt);
+        }
+        if (retCode != SQLITE_DONE) {
+            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
+        }
     }
     /*sqlite3_reset(stmt);
     sqlite3_clear_bindings(stmt);*/
@@ -158,8 +164,16 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
         LOG(ERROR) << "SQL error: Could not bind value.";
         return false;
     }
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        LOG(ERROR) << "SQL error: Could not execute statement";
+    int retCode = sqlite3_step(stmt);
+    if (retCode != SQLITE_DONE) {
+        int i = 3;
+        
+        while (retCode == SQLITE_BUSY && i-- > 0) {
+            retCode = sqlite3_step(stmt);
+        }
+        if (retCode != SQLITE_DONE) {
+            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
+        }
         return false;
     }
     /*sqlite3_reset(stmt);
@@ -259,7 +273,7 @@ bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index,const std::string
         strcpy(str, val.c_str());
         if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s)
         {
-            delete[] reinterpret_cast<char*>(s);
+            delete[] static_cast<char*>(s);
         }) != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
@@ -347,7 +361,7 @@ bool CHistoryManager::convertHistory() {
     IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
     std::string historyFolder = m_historyFilePath;
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
-
+    std::uniform_int_distribution<int> dist(1000000);
     pcrepp::Pcre regexp("^history_(\\d+)_(\\d+)\\.xml$");
     try {
 
@@ -378,7 +392,8 @@ bool CHistoryManager::convertHistory() {
                     saveHistoryItem(item);
                 }
             }
-            std::string newName = historyFolder + i->path().filename().string() + ".bak";
+            
+            std::string newName = historyFolder + i->path().filename().string() + std::to_string(dist(mt_)) + ".bak";
             if (!IuCoreUtils::MoveFileOrFolder(i->path().string(), newName)) {
                 LOG(ERROR) << "Unable to rename file " << i->path();
             }

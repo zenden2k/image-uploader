@@ -78,7 +78,7 @@ public :
         width_ = width;
         height_ = height;
     }
-    ~DirectshowVideoFrame2() {
+    ~DirectshowVideoFrame2() override {
         delete[] data_;
     }
 
@@ -159,7 +159,7 @@ public:
         currentFrame_ = frame;
     }
 
-    std::unique_ptr<CGrabFilter> grabFilter;
+    std::unique_ptr<CGrab> grab;
     CComPtr<IBaseFilter> pSource;
     CComPtr<IGraphBuilder> pGraph;
     CComPtr<IVideoWindow> pVideoWindow;
@@ -202,10 +202,10 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     CString fileNameW = U2W(fileName);
 
     HRESULT hr;
-
-    d_ptr->grabFilter.reset(new CGrabFilter(nullptr));
-    CGrabFilter* grabFilter = d_ptr->grabFilter.get();
-    grabFilter->AddRef();
+    d_ptr->grab = std::make_unique<CGrab>();
+    //d_ptr->grabFilter.reset(new CGrabFilter(nullptr));
+    CGrabFilter* grabFilter = d_ptr->grab->filter();
+    //grabFilter->AddRef();
     
     d_ptr->pGrabberBase = grabFilter;
 
@@ -262,19 +262,26 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     }
 
     // Get the output pin and the input pin
-    d_ptr->pSourcePin = DirectShowUtil::GetOutPin( d_ptr->pSource, 0 );
-    d_ptr->pGrabPin   = DirectShowUtil::GetInPin( d_ptr->pGrabberBase, 0 );
+    //IPin* sourcePin = 
+    d_ptr->pSourcePin = DirectShowUtil::GetOutPin(d_ptr->pSource, 0);;
+    //sourcePin->Release();
+    //CComPtr<IPin> grabPin 
+    d_ptr->pGrabPin = DirectShowUtil::GetInPin(d_ptr->pGrabberBase, 0);
+    //grabPin->Release();
 
     // ... and connect them
     if (!Error)
         GrabInfo( tr("Connecting codecs") );
     else
         GrabInfo( tr("Trying again to connect filters...") );
-    
+    //return false;
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
     {
+        /*d_ptr->pGraph->RemoveFilter(pDumpFilter);
+        d_ptr->pGraph->RemoveFilter(d_ptr->pSource);*/
+        
         LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
         GrabInfo(  tr("Cannot connect filters (format probably is not supported).") );
         return false;
@@ -320,7 +327,7 @@ bool DirectshowFrameGrabber2::seek(int64_t time) {
     if (FAILED(hr)) {
         LOG(WARNING) << "pSeeking->SetPositions failed." << GetMessageForHresult(hr);
     }
-    d_ptr->grabFilter->SetGrab(true);
+    d_ptr->grab->filter()->SetGrab(true);
     hr = d_ptr->pControl->Run();
     if (FAILED(hr)) {
         LOG(WARNING) << "pControl->Run() failed." << GetMessageForHresult(hr);

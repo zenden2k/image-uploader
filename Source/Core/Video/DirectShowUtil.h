@@ -16,8 +16,8 @@ namespace DirectShowUtil {
     // Вспомогательные функции
     // для нахождения входных и выходных пинов DirectShow фильтров
     HRESULT GetPin(IBaseFilter* pFilter, PIN_DIRECTION dirrequired,  int iNum, IPin** ppPin);
-    IPin*  GetInPin ( IBaseFilter* pFilter, int Num );
-    IPin*  GetOutPin( IBaseFilter* pFilter, int Num );
+    CComPtr<IPin>  GetInPin ( IBaseFilter* pFilter, int Num );
+    CComPtr<IPin>  GetOutPin( IBaseFilter* pFilter, int Num );
     GUID GuidFromString(const CString& guidStr);
     CComPtr<IBaseFilter> FindFilterByClassID(CComPtr<IGraphBuilder> graphBuilder, GUID classID);
     HRESULT SaveGraphFile(IGraphBuilder *pGraph, WCHAR *wszPath);

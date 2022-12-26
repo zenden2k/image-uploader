@@ -25,7 +25,7 @@ The last command will generate project files for your default compiler (it shoul
 The more convenient way to achieve the same is to use `cmake-gui`.
 In cmake-gui you can see all compiling options and change them easily.
 
-If you want to build Image Uploader with FFmpeg libraries (`IU_ENABLE_FFMPEG=On`), you have to built them separately amd put them (avcodec.lib, avformat.lib, avutil.lib, swscale.lib) into `Contrib\Lib` directory.
+If you want to build Image Uploader with FFmpeg libraries (`IU_ENABLE_FFMPEG=On`), you have to built them separately and put them (avcodec.lib, avformat.lib, avutil.lib, swscale.lib) into `Contrib\Lib` directory.
 
 If you need Microsoft Edge Webview2 (`IU_ENABLE_WEBVIEW2=On`), you should install it using NuGet package manager (https://docs.microsoft.com/en-us/microsoft-edge/webview2/get-started/win32),
 then copy header files `(*.h)` to the "Contrib\Include" directory, and copy `*.lib` files to Contrib\Lib directory.
