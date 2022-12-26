@@ -83,7 +83,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow(SW_SHOW);
     urlShortenerServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
+    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer.getByIndex(0));
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
 
     if(!m_InitialBuffer.IsEmpty())

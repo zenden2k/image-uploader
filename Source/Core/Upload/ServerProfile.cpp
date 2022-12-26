@@ -114,8 +114,8 @@ ImageUploadParams ServerProfile::getImageUploadParams()
 {
 #ifdef _WIN32
     CommonGuiSettings* Settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
-    if (UseDefaultSettings && Settings &&  &Settings->imageServer != this) {
-        return Settings->imageServer.imageUploadParams;
+    if (UseDefaultSettings && Settings && !Settings->imageServer.isEmpty() && &Settings->imageServer.getByIndex(0) != this) {
+        return Settings->imageServer.getByIndex(0).imageUploadParams;
     }
 #endif
     return imageUploadParams;

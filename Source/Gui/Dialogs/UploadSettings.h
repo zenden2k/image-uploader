@@ -104,6 +104,8 @@ class CUploadSettings:
         COMMAND_HANDLER(IDC_ADD_ACCOUNT, BN_CLICKED, OnAddAccountClicked)
         COMMAND_HANDLER(IDC_ADD_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnAddAccountClicked)
         COMMAND_HANDLER(IDC_NO_ACCOUNT, BN_CLICKED, OnNoAccountClicked)
+        COMMAND_HANDLER(IDC_CHOOSEMOREIMAGESERVERSLABEL, BN_CLICKED, OnChooseMoreImageServerClicked);
+        
         COMMAND_HANDLER(IDC_NO_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnNoAccountClicked)
         NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown)
         NOTIFY_HANDLER(IDC_FILETOOLBAR, TBN_DROPDOWN, OnServerDropDown)
@@ -161,6 +163,7 @@ class CUploadSettings:
     LRESULT OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnChooseMoreImageServerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //int m_nImageServer, m_nFileServer;
     void ShowParams();
     CToolBarCtrl Toolbar;
@@ -187,7 +190,10 @@ protected:
     CToolBarCtrl m_ProfileEditToolbar;
     //CPercentEdit m_ThumbSizeEdit;
     void UpdateProfileList();
-    ServerProfile sessionImageServer_, sessionFileServer_;
+    ServerProfileGroup sessionImageServer_, sessionFileServer_;
+    ServerProfile& getSessionImageServerItem();
+    ServerProfile& getSessionFileServerItem();
+    void updateMoreImageServersLink();
     bool menuOpenedIsImageServer_;
     std::vector<CString> menuOpenedUserNames_;
     void selectServer(ServerProfile& sp, int serverIndex);
@@ -199,6 +205,7 @@ protected:
     UploadEngineManager * uploadEngineManager_;
     CIcon iconEdit_, iconDropdown_;
     boost::signals2::connection settingsChangedConnection_;
+    CHyperLink moreImageServersLink_, moreFileServersLink_;
 public:
     
     LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -215,6 +222,7 @@ public:
     LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+
 };
 
 

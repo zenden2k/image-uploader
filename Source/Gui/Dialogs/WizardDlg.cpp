@@ -174,8 +174,13 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
     if (settings) {
-        const std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
-        sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+        if (!settings->imageServer.isEmpty()) {
+            const std::string templateName = settings->imageServer.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName;
+            if (sessionImageServer_.isEmpty()) {
+                sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+            }
+          
+        }
     }
 }
 
@@ -735,22 +740,22 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
     return true;
 }
 
-void CWizardDlg::setSessionImageServer(const ServerProfile& server)
+void CWizardDlg::setSessionImageServer(const ServerProfileGroup& server)
 {
     sessionImageServer_ = server;
 }
 
-void CWizardDlg::setSessionFileServer(const ServerProfile& server)
+void CWizardDlg::setSessionFileServer(const ServerProfileGroup& server)
 {
     sessionFileServer_ = server;
 }
 
-ServerProfile CWizardDlg::getSessionImageServer() const
+ServerProfileGroup CWizardDlg::getSessionImageServer() const
 {
     return sessionImageServer_;
 }
 
-ServerProfile CWizardDlg::getSessionFileServer() const
+ServerProfileGroup CWizardDlg::getSessionFileServer() const
 {
     return sessionFileServer_;
 }
@@ -1923,7 +1928,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(m_bScreenshotFromTray!=0);
         if ( m_bScreenshotFromTray ) {
-            imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
+            imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.getByIndex(0).serverName()));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);

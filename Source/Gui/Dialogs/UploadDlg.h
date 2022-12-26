@@ -30,6 +30,7 @@
 #include "Gui/Dialogs/MainDlg.h"
 #include "Gui/Dialogs/ResultsWindow.h"
 #include "Core/Upload/FileQueueUploader.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Controls/ResultsListView.h"
 #include "Func/MyEngineList.h"
 
@@ -111,7 +112,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         std::shared_ptr<UploadSession> uploadSession_;
         std::unique_ptr<UploadListModel> uploadListModel_;
         bool alreadyShortened_;
-        ServerProfile sessionImageServer_, sessionFileServer_;
+        ServerProfileGroup sessionImageServer_, sessionFileServer_;
         bool backgroundThreadStarted_;
         std::mutex backgroundThreadStartedMutex_;
         

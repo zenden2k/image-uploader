@@ -28,7 +28,7 @@
 #include "Gui/IconBitmapUtils.h"
 #include "Gui/Dialogs/LoginDlg.h"
 #include "Gui/Dialogs/AddFtpServerDialog.h"
-#include "Gui/Dialogs/AddDirectoryServerDIalog.h"
+#include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 

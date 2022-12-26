@@ -146,11 +146,11 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     if ( serverComboElementIndex > 0 ) {
         std::string serverNameA = reinterpret_cast<char*>(serverComboBox_.GetItemData(serverComboElementIndex));
         CUploadEngineData * uploadEngineData = myEngineList->byName(serverNameA);
-        Settings.imageServer.setServerName(uploadEngineData->Name) ;
+        Settings.imageServer.getByIndex(0).setServerName(uploadEngineData->Name) ;
         bool needAuth = GuiTools::GetCheck( m_hWnd, IDC_DOAUTHCHECKBOX );
         if ( needAuth ) {
             CString login = GuiTools::GetDlgItemText( m_hWnd, IDC_LOGINEDIT );
-            Settings.imageServer.setProfileName(WCstringToUtf8(login));
+            Settings.imageServer.getByIndex(0).setProfileName(WCstringToUtf8(login));
             CString password = GuiTools::GetDlgItemText( m_hWnd, IDC_PASSWORDEDIT );
             if ( login.IsEmpty() ) {
                 LocalizedMessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);

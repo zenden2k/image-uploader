@@ -38,6 +38,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/FileQueueUploaderPrivate.cpp
     Upload/FolderList.cpp
     Upload/ServerProfile.cpp
+    Upload/ServerProfileGroup.cpp
     Upload/ServerSync.cpp
     Upload/UploadEngineManager.cpp
     Upload/UploadManager.cpp
@@ -114,6 +115,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/FileQueueUploaderPrivate.h
     Upload/FolderList.h
     Upload/ServerProfile.h
+    Upload/ServerProfileGroup.h
     Upload/ServerSync.h
     Upload/UploadEngineManager.h
     Upload/UploadManager.h

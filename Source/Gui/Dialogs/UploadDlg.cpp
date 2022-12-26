@@ -35,6 +35,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/UploadListModel.h"
 
 // CUploadDlg
@@ -125,28 +126,38 @@ bool CUploadDlg::startUpload() {
     uploadListView_.DeleteAllItems();
 
     urlList_.clear();
-    urlList_.resize(n);
+   
     
     uploadSession_ = std::make_shared<UploadSession>();
+
+    //serverProfileGroup.addItem(settings->quickScreenshotServer);
+
+    int rowIndex = 0;
     for (int i = 0; i < n; i++) {
         CString FileName = MainDlg->FileList[i].FileName;
         std::string fileNameUtf8 = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
         bool isImage = IuCommonFunctions::IsImage(FileName);
-        auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
-    
-        task->setIndex(i);
-        task->setIsImage(isImage);
-        task->setServerProfile(isImage ? sessionImageServer_ : sessionFileServer_);
-        task->setUrlShorteningServer(settings->urlShorteningServer);
-        using namespace std::placeholders;
-        task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
-        task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
+        ServerProfileGroup& serverProfileGroup = isImage ? sessionImageServer_ : sessionFileServer_;
+        //serverProfileGroup.addItem();
+        for (const auto& item: serverProfileGroup.getItems()) {
+            
+            auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
 
-        task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
-        uploadSession_->addTask(task);
+            task->setIndex(rowIndex++);
+            task->setIsImage(isImage);
+            task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
+            task->setUrlShorteningServer(settings->urlShorteningServer.getByIndex(0));
+            using namespace std::placeholders;
+            task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+            task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
+
+            task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
+            uploadSession_->addTask(task);
+        }
     }
+    urlList_.resize(rowIndex);
     uploadSession_->addSessionFinishedCallback(std::bind(&CUploadDlg::onSessionFinished, this, std::placeholders::_1));
 
     uploadListModel_ = std::make_unique<UploadListModel>(uploadSession_);
@@ -276,11 +287,11 @@ bool CUploadDlg::OnShow()
     //Toolbar.CheckButton(IDC_USETEMPLATE,Settings.UseTxtTemplate);
     urlList_.clear();
     resultsWindow_->Clear();
-    resultsWindow_->setShortenUrls(sessionImageServer_.shortenLinks());
+    resultsWindow_->setShortenUrls(sessionImageServer_.getByIndex(0).shortenLinks());
 
     int code = resultsWindow_->GetCodeType();
     int newcode = code;
-    bool Thumbs = sessionImageServer_.getImageUploadParams().CreateThumbs!=0;
+    bool Thumbs = sessionImageServer_.getByIndex(0).getImageUploadParams().CreateThumbs!=0;
 
     if(Thumbs)
     {

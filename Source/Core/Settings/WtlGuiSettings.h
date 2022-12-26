@@ -129,9 +129,9 @@ public:
     bool SendToContextMenu;
     bool SendToContextMenu_changed;
 
-    CString getServerName() const;
-    CString getQuickServerName() const;
-    CString getFileServerName() const;
+    CString getServerName();
+    CString getQuickServerName();
+    CString getFileServerName();
     CString getSettingsFileName() const;
 
     static CString getShellExtensionFileName();
@@ -153,11 +153,16 @@ protected:
     void BindConvertProfile(SettingsNode& mgr, ImageConvertingParams &params);
     bool LoadServerProfiles(SimpleXmlNode root);
     bool SaveServerProfiles(SimpleXmlNode root);
+
+    void LoadServerProfile(SimpleXmlNode root, ServerProfile& profile);
+    bool LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
+    bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
     bool PostLoadSettings(SimpleXml &xml) override;
     bool PostSaveSettings(SimpleXml &xml) override;
     void RegisterShellExtension(bool Register);
 
     void PostLoadServerProfile(ServerProfile& profile);
+    void PostLoadServerProfileGroup(ServerProfileGroup& profile);
 
     void BindToManager();
 private:

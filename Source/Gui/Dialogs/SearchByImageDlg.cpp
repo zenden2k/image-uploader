@@ -57,7 +57,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
-    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer, W2U(fileName_));
+    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer.getByIndex(0), W2U(fileName_));
     seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
         onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
     });

@@ -114,6 +114,7 @@ set(SRC_LIST
     Dialogs/WebViewWindow.cpp
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
+    Dialogs/ServerProfileGroupSelectDialog.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
@@ -289,6 +290,7 @@ set(HEADER_LIST
     Dialogs/WebViewWindow.h
     Dialogs/WelcomeDlg.h
     Dialogs/WizardDlg.h
+    Dialogs/ServerProfileGroupSelectDialog.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h

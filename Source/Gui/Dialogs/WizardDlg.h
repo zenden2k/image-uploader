@@ -35,6 +35,7 @@
 #include "Core/ProgramWindow.h"
 #include "Core/TaskDispatcher.h"
 #include "FolderAddDlg.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/HwndScopedWrapper.h"
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
@@ -144,10 +145,10 @@ public:
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
-    void setSessionImageServer(const ServerProfile& server);
-    void setSessionFileServer(const ServerProfile& server);
-    ServerProfile getSessionImageServer() const;
-    ServerProfile getSessionFileServer() const;
+    void setSessionImageServer(const ServerProfileGroup& server);
+    void setSessionFileServer(const ServerProfileGroup& server);
+    ServerProfileGroup getSessionImageServer() const;
+    ServerProfileGroup getSessionFileServer() const;
 
     // IProgramWindow methods
     void setServersChanged(bool changed) override;
@@ -294,7 +295,7 @@ protected:
     INT m_bScreenshotFromTray;
     bool m_bShowWindow;
     bool m_bHandleCmdLineFunc;
-    ServerProfile sessionImageServer_, sessionFileServer_;
+    ServerProfileGroup sessionImageServer_, sessionFileServer_;
     bool serversChanged_;
     int CurPage;
     int PrevPage, NextPage;

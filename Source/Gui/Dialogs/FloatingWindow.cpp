@@ -379,7 +379,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     using namespace std::placeholders;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     lastUrlShorteningTask_ = std::make_shared<UrlShorteningTask>(W2U(url));
-    lastUrlShorteningTask_->setServerProfile(settings->urlShorteningServer);
+    lastUrlShorteningTask_->setServerProfile(settings->urlShorteningServer.getByIndex(0));
     lastUrlShorteningTask_->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(lastUrlShorteningTask_);
@@ -388,7 +388,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 
     CString msg;
     msg.Format(TR("Shortening URL \"%s\" using %s"), static_cast<LPCTSTR>(url),
-        static_cast<LPCTSTR>(Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str()));
+        static_cast<LPCTSTR>(Utf8ToWstring(settings->urlShorteningServer.getByIndex(0).serverName()).c_str()));
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {
@@ -762,9 +762,9 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
-    task->setServerProfile(Settings.quickScreenshotServer);
+    task->setServerProfile(Settings.quickScreenshotServer.getByIndex(0));
     task->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
-    task->setUrlShorteningServer(Settings.urlShorteningServer);
+    task->setUrlShorteningServer(Settings.urlShorteningServer.getByIndex(0));
 
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(task);
@@ -774,7 +774,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
     msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
-        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
+        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName()).c_str()));
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {

@@ -97,7 +97,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(settings->imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer.getByIndex(0));
 
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
     GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, settings->ImageReuploaderSettings.PasteHtmlOnCtrlV);
@@ -271,7 +271,7 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
     fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
+    fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer.getByIndex(0));
     using namespace std::placeholders;
     fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     {

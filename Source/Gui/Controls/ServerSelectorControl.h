@@ -31,6 +31,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/SettingsPage.h"
 #include "Core/Settings/BasicSettings.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CServerSelectorControl

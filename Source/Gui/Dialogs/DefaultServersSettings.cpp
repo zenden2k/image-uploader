@@ -56,7 +56,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     imageServerSelector_->setTitle(TR("Default server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos(GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    imageServerSelector_->setServerProfile(Settings.imageServer);
+    imageServerSelector_->setServerProfile(Settings.imageServer.getByIndex(0));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
 
@@ -66,7 +66,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
     fileServerSelector_->ShowWindow( SW_SHOW );
     fileServerSelector_->SetWindowPos(GetDlgItem(IDC_FILESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    fileServerSelector_->setServerProfile(Settings.fileServer);
+    fileServerSelector_->setServerProfile(Settings.fileServer.getByIndex(0));
     fileServerSelector_->setTitle(TR("Default server for other file types"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
@@ -76,7 +76,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     trayServerSelector_->ShowWindow( SW_SHOW );
     trayServerSelector_->SetWindowPos(GetDlgItem(IDC_TRAYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    trayServerSelector_->setServerProfile(Settings.quickScreenshotServer);
+    trayServerSelector_->setServerProfile(Settings.quickScreenshotServer.getByIndex(0));
     trayServerSelector_->setTitle(TR("Server for quick screenshot uploading"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
@@ -87,7 +87,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     contextMenuServerSelector_->ShowWindow( SW_SHOW );
     contextMenuServerSelector_->SetWindowPos(GetDlgItem(IDC_CONTEXTMENUSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer);
+    contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer.getByIndex(0));
     contextMenuServerSelector_->setTitle(TR("Server for uploading from Explorer's context menu"));
 
 
@@ -99,7 +99,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     temporaryServerSelector_->ShowWindow(SW_SHOW);
     temporaryServerSelector_->SetWindowPos(GetDlgItem(IDC_TEMPORARYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    temporaryServerSelector_->setServerProfile(Settings.temporaryServer);
+    temporaryServerSelector_->setServerProfile(Settings.temporaryServer.getByIndex(0));
     temporaryServerSelector_->setTitle(TR("Server for temporary images"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
@@ -111,7 +111,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow( SW_SHOW );
     urlShortenerServerSelector_->SetWindowPos(GetDlgItem(IDC_URLSHORTENERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
+    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer.getByIndex(0));
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
 
 

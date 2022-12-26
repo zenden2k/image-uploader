@@ -129,7 +129,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
     m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 
-    CString profileName = U2W(settings->imageServer.getImageUploadParams().ImageProfileName);
+    CString profileName = U2W(settings->imageServer.getByIndex(0).getImageUploadParams().ImageProfileName);
 
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
         profileName = _T("Default");

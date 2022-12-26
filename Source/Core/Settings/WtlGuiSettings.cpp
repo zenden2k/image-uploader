@@ -341,60 +341,83 @@ void WtlGuiSettings::fixInvalidServers() {
             defaultImageServer = defaultImageUED->Name;
         }
     }
+    CUploadEngineData* ue = {};
 
-    CUploadEngineData* ue = imageServer.uploadEngineData();
-    if (!ue) {
-        imageServer.setServerName(defaultImageServer);
-        imageServer.setProfileName(defaultImageServerProfileName);
+    if (!imageServer.isEmpty()) {
+        auto& imageServerItem = imageServer.getItems()[0];
+        ue  = imageServerItem.uploadEngineData();
+        if (!ue) {
+            imageServerItem.setServerName(defaultImageServer);
+            imageServerItem.setProfileName(defaultImageServerProfileName);
+        }
     }
-
-    ue = contextMenuServer.uploadEngineData();
-    if (!ue) {
-        contextMenuServer.setServerName(defaultImageServer);
-        contextMenuServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = quickScreenshotServer.uploadEngineData();
-    if (!ue) {
-        quickScreenshotServer.setServerName(defaultImageServer);
-        quickScreenshotServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = temporaryServer.uploadEngineData();
-    if (!ue) {
-        temporaryServer.setServerName(defaultImageServer);
-        temporaryServer.setProfileName(defaultImageServerProfileName);
-    }
-
-    ue = fileServer.uploadEngineData();
-    if (!ue) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
-        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
-        if (uploadEngineData) {
-            fileServer.setServerName(defaultServerName);
-            fileServer.setProfileName("");
-        } else {
-            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
-            if (uploadEngineData) {
-                fileServer.setServerName(uploadEngineData->Name);
-                fileServer.setProfileName("");
-            } else {
-                LOG(ERROR) << "Unable to find any file servers in the server list";
-            }
+    
+    if (!contextMenuServer.isEmpty()) {
+        auto& contextMenuServerItem = contextMenuServer.getItems()[0];
+        ue = contextMenuServerItem.uploadEngineData();
+        if (!ue) {
+            contextMenuServerItem.setServerName(defaultImageServer);
+            contextMenuServerItem.setProfileName(defaultImageServerProfileName);
         }
     }
 
-    if (urlShorteningServer.serverName().empty()) {
-        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
-        CUploadEngineData * uploadEngineData = engineList_->byName(defaultServerName);
-        if (uploadEngineData) {
-            urlShorteningServer.setServerName(defaultServerName);
-        } else {
-            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+    if (!quickScreenshotServer.isEmpty()) {
+        auto& quickScreenshotServerItem = quickScreenshotServer.getItems()[0];
+        ue = quickScreenshotServerItem.uploadEngineData();
+        if (!ue) {
+            quickScreenshotServerItem.setServerName(defaultImageServer);
+            quickScreenshotServerItem.setProfileName(defaultImageServerProfileName);
+        }
+    }
+
+    if (!temporaryServer.isEmpty()) {
+        auto& temporaryServerItem = temporaryServer.getItems()[0];
+        ue = temporaryServerItem.uploadEngineData();
+        if (!ue) {
+            temporaryServerItem.setServerName(defaultImageServer);
+            temporaryServerItem.setProfileName(defaultImageServerProfileName);
+        }
+    }
+
+    if (!fileServer.isEmpty()) {
+        auto& fileServerItem = fileServer.getItems()[0];
+        ue = fileServerItem.uploadEngineData();
+        if (!ue) {
+            std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
+            CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
             if (uploadEngineData) {
-                urlShorteningServer.setServerName(uploadEngineData->Name);
-            } else {
-                LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
+                fileServerItem.setServerName(defaultServerName);
+                fileServerItem.setProfileName("");
+            }
+            else {
+                uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
+                if (uploadEngineData) {
+                    fileServerItem.setServerName(uploadEngineData->Name);
+                    fileServerItem.setProfileName("");
+                }
+                else {
+                    LOG(ERROR) << "Unable to find any file servers in the server list";
+                }
+            }
+        }
+    }
+    
+    if (!urlShorteningServer.isEmpty()) {
+        auto& urlShorteningServerItem = urlShorteningServer.getItems()[0];
+        if (urlShorteningServerItem.serverName().empty()) {
+            std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
+            CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+            if (uploadEngineData) {
+                urlShorteningServerItem.setServerName(defaultServerName);
+            }
+            else {
+                uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
+                if (uploadEngineData) {
+                    urlShorteningServerItem.setServerName(uploadEngineData->Name);
+                }
+                else {
+                    LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
+                }
             }
         }
     }
@@ -522,7 +545,9 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     CommonGuiSettings::PostLoadSettings(xml);
     SimpleXmlNode settingsNode = xml.getRoot(rootName_).GetChild("Settings");
 
-    imageServer.getImageUploadParamsRef().UseDefaultThumbSettings = false;
+    if (!imageServer.isEmpty()) {
+        imageServer.getByIndex(0).getImageUploadParamsRef().UseDefaultThumbSettings = false;
+    }
     if (Language == L"T\u00FCrk\u00E7e") {  //fixes
         Language = _T("Turkish");
     } else if (Language == L"\u0423\u043A\u0440\u0430\u0457\u043D\u0441\u044C\u043A\u0430") {
@@ -585,12 +610,44 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
     LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
 
-    PostLoadServerProfile(imageServer);
-    PostLoadServerProfile(fileServer);
-    PostLoadServerProfile(contextMenuServer);
-    PostLoadServerProfile(quickScreenshotServer);
-    PostLoadServerProfile(urlShorteningServer);
-    PostLoadServerProfile(temporaryServer);
+    auto uploading = settingsNode.GetChild("Uploading");
+
+    ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldUrlShorteningServer, oldTemporaryServer;
+    // Load the old format of chosen servers (just reading)
+    LoadServerProfile(uploading.GetChild("Server"), oldImageServer);
+    LoadServerProfile(uploading.GetChild("FileServer"), oldFileServer);
+    LoadServerProfile(uploading.GetChild("QuickScreenshotServer"), oldQuickScreenshotServer);
+    LoadServerProfile(uploading.GetChild("UrlShorteningServer"), oldUrlShorteningServer);
+    LoadServerProfile(uploading.GetChild("TemporaryServer"), oldTemporaryServer);
+
+    imageServer = oldImageServer;
+    fileServer = oldFileServer;
+    quickScreenshotServer = oldQuickScreenshotServer;
+    urlShorteningServer = oldUrlShorteningServer;
+    temporaryServer = oldTemporaryServer;
+
+    // Load the new format of chosen servers
+    LoadServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
+    LoadServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
+    LoadServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
+    LoadServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
+    LoadServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);
+
+    /*
+    imageServer.bind(upload["Server"]);
+    fileServer.bind(upload["FileServer"]);
+    quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
+    contextMenuServer.bind(upload["ContextMenuServer"]);
+    urlShorteningServer.bind(upload["UrlShorteningServer"]);
+    temporaryServer.bind(upload["TemporaryServer"]);*/
+
+
+    PostLoadServerProfileGroup(imageServer);
+    PostLoadServerProfileGroup(fileServer);
+    PostLoadServerProfileGroup(contextMenuServer);
+    PostLoadServerProfileGroup(quickScreenshotServer);
+    PostLoadServerProfileGroup(urlShorteningServer);
+    PostLoadServerProfileGroup(temporaryServer);
 
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
@@ -644,6 +701,15 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 
     SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
     SaveServerProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
+
+    SimpleXmlNode uploading = xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading");
+    SaveServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
+    SaveServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
+    SaveServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
+    SaveServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
+    SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
+    SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);
+    
 
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
     CRegistry Reg;
@@ -837,12 +903,7 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
 
-    imageServer.bind(upload["Server"]);
-    fileServer.bind(upload["FileServer"]);
-    quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
-    contextMenuServer.bind(upload["ContextMenuServer"]);
-    urlShorteningServer.bind(upload["UrlShorteningServer"]);
-    temporaryServer.bind(upload["TemporaryServer"]);
+
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";
@@ -858,7 +919,7 @@ void WtlGuiSettings::BindToManager() {
     proxy.nm_bind(ConnectionSettings, ProxyPort);
     proxy.nm_bind(ConnectionSettings, ProxyType);
     proxy.nm_bind(ConnectionSettings, ProxyUser);
-    proxy.nm_bind(ConnectionSettings, ProxyPassword);;
+    proxy.nm_bind(ConnectionSettings, ProxyPassword);
 }
 
 // The following code should  be deleted in next releases
@@ -949,6 +1010,42 @@ bool WtlGuiSettings::SaveServerProfiles(SimpleXmlNode root)
         SettingsManager mgr;
         it->second.bind(mgr.root());
         mgr["@ServerProfileId"].bind(profileName);
+
+        mgr.saveToXmlNode(serverProfileNode);
+    }
+    return true;
+}
+
+void WtlGuiSettings::LoadServerProfile(SimpleXmlNode root, ServerProfile& profile) {
+    SettingsManager mgr;
+    profile.bind(mgr.root());
+    mgr.loadFromXmlNode(root);
+}
+
+bool WtlGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
+    std::vector<SimpleXmlNode> servers;
+    root.GetChilds("ServerProfileItem", servers);
+    if (!servers.empty()) {
+        group.getItems().clear();
+        for (size_t i = 0; i < servers.size(); i++) {
+            SimpleXmlNode serverProfileNode = servers[i];
+            /*std::string profileName = serverProfileNode.Attribute("ServerProfileId");*/
+            ServerProfile sp;
+            SettingsManager mgr;
+            sp.bind(mgr.root());
+
+            mgr.loadFromXmlNode(serverProfileNode);
+            group.addItem(sp);
+        }
+    }
+    return true;
+}
+bool WtlGuiSettings::SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
+    for (auto& item: group.getItems()) {
+        SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfileItem");
+        SettingsManager mgr;
+        SettingsNode& image = mgr.root();
+        item.bind(image);
 
         mgr.saveToXmlNode(serverProfileNode);
     }
@@ -1075,6 +1172,12 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     }
 }
 
+void WtlGuiSettings::PostLoadServerProfileGroup(ServerProfileGroup& profileGroup) {
+    for(auto& item: profileGroup.getItems()) {
+        PostLoadServerProfile(item);
+    }
+}
+
 void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
     if (!profile.profileName().empty() && ServersSettings[profile.serverName()].find(profile.profileName()) == ServersSettings[profile.serverName()].end()) {
         profile.setProfileName("");
@@ -1102,14 +1205,14 @@ CString WtlGuiSettings::prepareVideoDialogFilters() {
     return result;
 }
 
-CString WtlGuiSettings::getServerName() const {
-    return Utf8ToWCstring(imageServer.serverName());
+CString WtlGuiSettings::getServerName()  {
+    return imageServer.isEmpty()? _T("") : Utf8ToWCstring(imageServer.getByIndex(0).serverName());
 }
-CString WtlGuiSettings::getQuickServerName() const {
-    return Utf8ToWCstring(contextMenuServer.serverName());
+CString WtlGuiSettings::getQuickServerName()  {
+    return contextMenuServer.isEmpty() ? _T("") : Utf8ToWCstring(contextMenuServer.getByIndex(0).serverName());
 }
-CString WtlGuiSettings::getFileServerName() const {
-    return Utf8ToWCstring(fileServer.serverName());
+CString WtlGuiSettings::getFileServerName()  {
+    return fileServer.isEmpty() ? _T("") : Utf8ToWCstring(fileServer.getByIndex(0).serverName());
 }
 
 CString WtlGuiSettings::getSettingsFileName() const
@@ -1151,8 +1254,8 @@ void ImageUploadParams::bind(SettingsNode& n){
 ThumbCreatingParams ImageUploadParams::getThumb()
 {
     WtlGuiSettings* Settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (UseDefaultThumbSettings && &Settings->imageServer.imageUploadParams != this) {
-        return Settings->imageServer.imageUploadParams.Thumb;
+    if (UseDefaultThumbSettings && !Settings->imageServer.isEmpty() &&  &Settings->imageServer.getByIndex(0).imageUploadParams != this) {
+        return Settings->imageServer.getByIndex(0).imageUploadParams.Thumb;
     }
     return Thumb;
 }

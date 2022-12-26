@@ -72,7 +72,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     imageServerSelector_->ShowWindow(SW_SHOW);
     imageServerSelector_->SetWindowPos(nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
                                         serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(settings->imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer.getByIndex(0));
     
     //CString serverName = U2W(fileTask_->serverProfile().serverName());
 

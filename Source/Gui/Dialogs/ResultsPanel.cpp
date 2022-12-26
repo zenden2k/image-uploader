@@ -743,7 +743,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         mi.wID = IDC_SHORTENURLITEM;
         CString menuItemTitle;
         if (onShortenUrlChanged_) {
-            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str());
+            menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.getByIndex(0).serverName()).c_str());
         } else {
             menuItemTitle.Format(TR("Shorten URL"));
         }

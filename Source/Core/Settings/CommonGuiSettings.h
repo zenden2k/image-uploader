@@ -9,6 +9,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ServerProfile.h"
 #include "BasicSettings.h"
+#include "Core/Upload/ServerProfileGroup.h"
 
 #ifdef IU_QT
     #include <QString>
@@ -87,7 +88,8 @@ class CommonGuiSettings : public BasicSettings {
         TCHAR m_szLang[64];
         VideoSettingsStruct VideoSettings;
         MediaInfoSettingsStruct MediaInfoSettings;
-        ServerProfile imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer, temporaryServer;
+
+        ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer, temporaryServer;
         HistorySettingsStruct HistorySettings;
 
         int CodeLang;
