@@ -230,6 +230,7 @@ void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
     CRect rcButton(dpiScaleX * (SELECTOR_WIDTH + 5), buttonTop,
         dpiScaleX * (SELECTOR_WIDTH + 5 + BUTTON_WIDTH), buttonTop + dpiScaleY * BUTTON_HEIGHT);
     deleteButton->SetWindowPos(nullptr, rcButton, SWP_NOZORDER);
+    deleteButton->SetDlgCtrlID(IDC_DELETESERVER_FIRST_ID + index);
 }
 
 LRESULT CServerProfileGroupSelectDialog::OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
