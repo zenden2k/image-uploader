@@ -5,7 +5,7 @@
 #include <string>
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Core/Images/GdiPlusImage.h"
 
 namespace ImageUtils {
 

@@ -16,6 +16,7 @@ Data/settings*.xml
 Data/EBWebView
 Source/.idea
 Source/versioninfo.h
+Source/ShellExt/Generated
 Utils/Localize/.idea
 Utils/Web/.idea
 Sandbox/
@@ -27,3 +28,4 @@ Dist/debian/imgupload
 Dist/serverchecker
 BuildVS2022/
 BuildQt/
+.vs/

@@ -27,7 +27,37 @@
 #include "resource.h"       // main symbols
 #include "Gui/Controls/MyImage.h"
 #include "Core/Upload/ServerProfileGroup.h"
+#include "atlscrl.h"
 
+constexpr unsigned int IDC_DELETESERVER_FIRST_ID = 14000;
+constexpr unsigned int IDC_DELETESERVER_LAST_ID = 15000;
+constexpr unsigned int IDC_SCROLLCONTAINER_ID = 15001;
+
+class CMyPanel : public CScrollWindowImpl<CMyPanel>
+{
+public:
+    typedef CScrollWindowImpl<CMyPanel> TBase;
+    DECLARE_WND_CLASS(L"CMyPanel")
+
+    BEGIN_MSG_MAP(CMyPanel)
+        MESSAGE_HANDLER(WM_CREATE, OnCreate)
+        MESSAGE_HANDLER(WM_VSCROLL, OnVScroll)
+        MESSAGE_HANDLER(WM_PAINT, OnPaint)
+        COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
+        //MESSAGE_HANDLER( WM_SIZE, OnSize )
+        REFLECT_NOTIFICATIONS()
+        //CHAIN_MSG_MAP(TBase);
+    END_MSG_MAP()
+    void setScrollHeight(int height);
+private:
+    LRESULT OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+    int g_scrollY;
+    int scrollSize_;
+};
 class CIconButton;
 class UploadEngineManager;
 // CServerProfileGroupSelectDialog
@@ -38,6 +68,8 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         explicit CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group);
         ~CServerProfileGroupSelectDialog();
         enum { IDD = IDD_SERVERPROFILESELECT };
+
+        
         const ServerProfileGroup& serverProfileGroup() const;
     protected:
         BEGIN_MSG_MAP(CServerProfileGroupSelectDialog)
@@ -45,27 +77,37 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_ADDBUTTON, BN_CLICKED, OnClickedAdd)
+            COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
+
             CHAIN_MSG_MAP(CDialogResize<CServerProfileGroupSelectDialog>)
         END_MSG_MAP()
 
-        BEGIN_DLGRESIZE_MAP(CMediaInfoDlg)
+        BEGIN_DLGRESIZE_MAP(CServerProfileGroupSelectDialog)
             DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_Y)  
+            DLGRESIZE_CONTROL(IDC_ADDBUTTON, DLSZ_MOVE_X)
+            //DLGRESIZE_CONTROL(IDC_SCROLLCONTAINER_ID, DLSZ_SIZE_X | DLSZ_SIZE_Y)
         END_DLGRESIZE_MAP()
 
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    
     private:
         ServerProfileGroup profileGroup_;
         std::vector<CServerSelectorControl*> serverSelectors_;
-        std::vector<CIconButton*> deleteButtons_;
+        std::vector<CButton*> deleteButtons_;
         UploadEngineManager* uploadEngineManager_;
         CIcon icon_, iconSmall_;
         CIcon hIconSmall;
+        CIcon deleteIcon_;
+        CScrollContainer scrollContainer_;
+        CMyPanel panel_;
         void addSelector(const ServerProfile& profile, HDC dc);
+        void updateSelectorPos(size_t index, HDC dc);
+        void updateScroll();
 };
 
 

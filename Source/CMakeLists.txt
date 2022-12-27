@@ -15,6 +15,8 @@ if(WIN32)
 endif()
 set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
+set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
+
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -27,13 +29,13 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
 if (MSVC)
-    set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
+    
     add_definitions("/MP")
     add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
 endif()
 
-if (MSVC) 
-	if(IU_STATIC_RUNTIME)
+if (IU_STATIC_RUNTIME) 
+	if(MSVC)
 		if(POLICY CMP0091)
 			cmake_policy(SET CMP0091 NEW)
  		endif()
@@ -69,13 +71,14 @@ if (MSVC)
 		foreach(CompilerFlag ${CompilerFlags})
 			string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
 		endforeach()
+	else()
+		SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 	endif()
 endif()
 
 if (IU_ENABLE_FFMPEG)
 	add_definitions(-DIU_ENABLE_FFMPEG)
 endif()
-
 
 if (WIN32)
 # -DPCRE_STATIC 
@@ -112,7 +115,6 @@ SET(COMMON_DEPS boost/1.78.0
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
-
 )
 
 if (IU_ENABLE_MEGANZ)
@@ -120,10 +122,15 @@ if (IU_ENABLE_MEGANZ)
 endif()
 
 if (WIN32)
-	list(APPEND COMMON_DEPS wtl/10.0.9163 
-			base-classes/1.0.0@zenden2k/stable
-	)
+	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
 endif()	
+
+#if (IU_ENABLE_FFMPEG)
+#  list(APPEND COMMON_DEPS ffmpeg/5.0)
+#  Error occurs while building this package:
+#		msys2/cci.latest: Invalid ID: Only Windows x64 supported
+#  So we have to build ffmpeg separately.
+#endif()
 		
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
@@ -153,7 +160,6 @@ conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						libcurl:with_libssh2=True
 						)
 
-# ffmpeg package supports Windows x64 only as target system, so we have to build ffmpeg separately
 SET(msvc_link_setting "")
 
 #if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
@@ -212,11 +218,13 @@ include_directories(${CMAKE_SOURCE_DIR}/)
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/win32/)
+	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
+	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
  
-add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DURI_STATIC_BUILD -DNOMINMAX)
+add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DNOMINMAX)
 
 if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)
@@ -234,26 +242,26 @@ if (IU_ENABLE_MEGANZ)
     list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
 endif()
 
-if (IU_ENABLE_MEGANZ)
-	list(APPEND COMMON_LIBS_LIST libuv::libuv)
-endif()
+#if (IU_ENABLE_MEGANZ)
+#	list(APPEND COMMON_LIBS_LIST libuv::libuv)
+#endif()
     
 if (IU_USE_OPENSSL)
 	list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
 endif()
 
 if(WIN32)
-	list(APPEND COMMON_LIBS_LIST wtl::wtl Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
+	list(APPEND COMMON_LIBS_LIST Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
 	
 	if (IU_ENABLE_WEBVIEW2)
 		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
 	endif()	
 else()
     list(APPEND COMMON_LIBS_LIST dl base64::base64  OpenSSL::OpenSSL pthread rt gflags)
-    SET(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 endif()
 
 add_subdirectory(Core)	
+add_subdirectory(Video)	
 
 if(WIN32)
     add_subdirectory(Gui)

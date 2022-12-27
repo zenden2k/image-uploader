@@ -5,7 +5,7 @@
 
 #include <QDialog>
 #include <QIcon>
-#include "Core/Video/AbstractImage.h"
+#include "Core/Images/AbstractImage.h"
 class VideoGrabber;
 
 namespace Ui {

@@ -18,6 +18,8 @@
 
 #include <Core/Settings/QtGuiSettings.h>
 #include <QMessageBox>
+#include <Video/QtImage.h>
+
 #include "Core/i18n/Translator.h"
 #include "versioninfo.h"
 
@@ -89,6 +91,9 @@ int main(int argc, char *argv[])
 	ServiceLocator::instance()->setUploadErrorHandler(errorHandler);
 	ServiceLocator::instance()->setLogger(logger);
 	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
+
+    AbstractImage::autoRegisterFactory<void>();
+
     QString appDirectory = QCoreApplication::applicationDirPath();
     QString settingsFolder;
     setlocale(LC_ALL, "");

@@ -75,7 +75,9 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/GlobalMutex.cpp
     Utils/TextUtils.cpp
     Scripting/UploadFilterScript.cpp
-    3rdpart/htmlentities.cpp)
+    3rdpart/htmlentities.cpp
+    Video/VideoUtils.cpp
+)
 
 set(HEADER_LIST Network/NetworkClient.h
 	Network/NetworkClientFactory.h
@@ -154,6 +156,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Scripting/UploadFilterScript.h
     3rdpart/htmlentities.h
     BackgroundTask.h
+    Video/VideoUtils.h
 )
     
 if(WIN32)
@@ -183,8 +186,8 @@ if(WIN32)
         Images/WebpImageReader.cpp
         Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
-        Video/AbstractImage.cpp
-        Video/GdiPlusImage.cpp
+        Images/AbstractImage.cpp
+        Images/GdiPlusImage.cpp
         ../Func/GdiPlusInitializer.cpp
     )
     

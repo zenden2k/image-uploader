@@ -27,33 +27,15 @@ if(WIN32)
         ../Core/Images/ImageConverter.cpp
         ../Core/Images/Thumbnail.cpp
         ../Core/3rdpart/parser.cpp
-        ../Core/Video/VideoUtils.cpp
-        ../Func/GdiPlusInitializer.cpp
         ../Func/MyUtils.cpp
-        ../3rdpart/QColorQuantizer.cpp
         ../3rdpart/QColorQuantizer.cpp
 		../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
-        ../Core/Video/AbstractFrameGrabber.cpp
-        ../Core/Video/DirectshowFrameGrabber.cpp
-        ../Core/Video/DirectshowFrameGrabber2.cpp
-        ../Core/Video/DirectshowVideoFrame.cpp
-        ../Core/Video/NoDirectVobSub.cpp
-        ../Core/Video/GrabFilter.cpp
-        ../Core/Video/AbstractVideoFrame.cpp
-        ../Core/Video/DirectShowUtil.cpp
-        ../Core/Video/AbstractImage.cpp
-        ../Core/Video/GdiPlusImage.cpp
-        ../Core/Video/Tests/VideoGrabberTest.cpp
-        ../Core/3rdpart/dxerr.cpp
+        ../Video/Tests/VideoGrabberTest.cpp
         ../Core/Settings/CliSettings.cpp
     )
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
-
-if (IU_ENABLE_FFMPEG)
-	list(APPEND SRC_LIST ../Core/Video/AvcodecFrameGrabber.cpp)
-endif()	
 
 add_executable(Tests ${SRC_LIST})
 
@@ -74,7 +56,7 @@ else()
     #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
-target_link_libraries(Tests iucore ${COMMON_LIBS_LIST} ${LIBS_LIST} )
+target_link_libraries(Tests iucore iuvideo ${COMMON_LIBS_LIST} ${LIBS_LIST} )
 
 target_link_libraries(Tests GTest::GTest)
 

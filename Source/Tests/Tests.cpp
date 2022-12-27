@@ -7,6 +7,8 @@
 #endif
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
+#include <Core/Images/AbstractImage.h>
+
 #include "sqtest.h"
 #include "TestHelpers.h"
 #include "Core/Scripting/Squirrelnc.h"
@@ -186,6 +188,8 @@ int main(int argc, char *argv[]){
     serviceLocator->setTranslator(&translator);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
+
+    AbstractImage::autoRegisterFactory<void>();
 
     Sqrat::SqratVM vm;
     vm.SetPrintFunc(&printHandler, &errorHandler);

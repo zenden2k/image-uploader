@@ -64,6 +64,8 @@
     #include <sys/stat.h>
     #include <sys/time.h>
 #endif
+#include <Core/Images/GdiPlusImage.h>
+
 #include "versioninfo.h"
 
 #ifdef _WIN32
@@ -682,6 +684,8 @@ int main(int argc, char *argv[]){
     serviceLocator->setLogger(defaultLogger);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
+
+    AbstractImage::autoRegisterFactory<void>();
 
     int res  = 0;
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);

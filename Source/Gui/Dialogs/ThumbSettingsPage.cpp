@@ -30,7 +30,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
 #include "Core/Images/Utils.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Core/Images/GdiPlusImage.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 

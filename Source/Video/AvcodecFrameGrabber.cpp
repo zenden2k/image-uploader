@@ -22,7 +22,7 @@
 
 #include <boost/format.hpp>
 
-#include "AbstractImage.h"
+#include "Core/Images/AbstractImage.h"
 #include "Core/Utils/CoreUtils.h"
 #include "FrameGrabberException.h"
 
@@ -368,12 +368,9 @@ public:
         }
 
         avcodec_flush_buffers(pCodecCtx);
-        AVPixelFormat pixelFormat =
-#ifdef IU_QT
-            AV_PIX_FMT_RGB24;
-#else
-            AV_PIX_FMT_BGR24;
-#endif
+        // FIXME: 
+        bool isQt = AbstractImage::factoryName() == "QtImage";
+        AVPixelFormat pixelFormat = isQt ? AV_PIX_FMT_RGB24 : AV_PIX_FMT_BGR24;
 
         int ret = 0;
         while (av_read_frame(pFormatCtx, &packet) >= 0) {

@@ -1,7 +1,7 @@
 #ifndef QTIMAGE_H
 #define QTIMAGE_H
 
-#include "AbstractImage.h"
+#include "Core/Images/AbstractImage.h"
 #include <QImage>
 
 class QtImage : public AbstractImage

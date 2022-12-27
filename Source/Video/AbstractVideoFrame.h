@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 
-#include "AbstractImage.h"
+#include "Core/Images/AbstractImage.h"
 
 class AbstractVideoFrame
 {

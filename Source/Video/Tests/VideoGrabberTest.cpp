@@ -3,10 +3,11 @@
 #include "Core/UploadEngineList.h"
 #include "Tests/TestHelpers.h"
 #ifdef IU_ENABLE_FFMPEG
-    #include "Core/Video/AvcodecFrameGrabber.h"
+    #include "Video/AvcodecFrameGrabber.h"
 #endif
-#include "Core/Video/DirectshowFrameGrabber.h"
-
+#ifdef _WIN32
+#include "Video/DirectshowFrameGrabber.h"
+#endif
 class VideoGrabberTest : public ::testing::Test {
 public:
     VideoGrabberTest() : fileName(TestHelpers::resolvePath("videofiles.txt")) {
@@ -41,6 +42,7 @@ TEST_F(VideoGrabberTest, avcodecVideoGrabber)
 }
 #endif
 
+#ifdef _WIN32
 TEST_F(VideoGrabberTest, directShowFrameGrabber)
 {
     for (const auto& videoFile : videoFiles_) {
@@ -60,3 +62,4 @@ TEST_F(VideoGrabberTest, directShowFrameGrabber)
     }
 
 }
+#endif

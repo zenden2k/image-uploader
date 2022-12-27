@@ -26,14 +26,12 @@ add_definitions(-DIU_QT)
 
 if (WIN32)
     set(RESOURCE_LIST "../res/qimageuploader.exe.manifest")
+    SET(OPTIONS WIN32)
 endif()
 
 set(SOURCE_FILES 
     main.cpp
     Gui/mainwindow.cpp
-    ../Core/Video/AbstractFrameGrabber.cpp
-    ../Core/Video/AbstractVideoFrame.cpp
-    ../Core/Video/VideoGrabber.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -43,14 +41,13 @@ set(SOURCE_FILES
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
     Gui/controls/MyListWidget.cpp
-    ../Core/Video/AbstractImage.cpp 
-    ../Core/Video/QtImage.cpp
     QtUploadErrorHandler.cpp
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
     Gui/controls/ServerSelectorWidget.cpp
     Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
+    ../Video/QtImage.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
@@ -59,25 +56,6 @@ set(SOURCE_FILES
 	Gui/ui/AboutDialog.ui
     qimageuploader.qrc
 )
-
-if (IU_ENABLE_FFMPEG)
-	list(APPEND SOURCE_FILES ../Core/Video/AvcodecFrameGrabber.cpp)
-endif()	
-
-
-if(WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
-    SET(OPTIONS WIN32)
-    list(APPEND SOURCE_FILES 
-        qimageuploader.rc 
-        ../Core/Video/DirectshowFrameGrabber.cpp
-        ../Core/Video/DirectshowFrameGrabber2.cpp
-        ../Core/Video/DirectshowVideoFrame.cpp
-        ../Core/Video/NoDirectVobSub.cpp
-        ../Core/Video/GrabFilter.cpp
-        ../Core/Video/DirectShowUtil.cpp
-        ../Core/3rdpart/dxerr.cpp)
-endif()
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
  
@@ -92,4 +70,4 @@ if(WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 winmm dwmapi base-classes::base-classes urlmon)
 endif()
 
-target_link_libraries(qimageuploader iucore ${COMMON_LIBS_LIST})
+target_link_libraries(qimageuploader iucore iuvideo ${COMMON_LIBS_LIST})

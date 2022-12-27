@@ -6,7 +6,7 @@
 #include <boost/format.hpp>
 
 #include "Core/Logging.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Core/Images/GdiPlusImage.h"
 #include "Utils.h"
 
 struct WebPPic {

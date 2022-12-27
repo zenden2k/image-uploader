@@ -1445,6 +1445,12 @@ LRESULT CUploadSettings::OnChooseMoreImageServerClicked(WORD wNotifyCode, WORD w
 }
 
 void CUploadSettings::updateMoreImageServersLink() {
-    std::wstring text = str(boost::wformat(TR("Selected servers: %d")) % sessionImageServer_.getCount());
+    std::wstring text;
+    if (sessionImageServer_.getCount() == 1) {
+        text = TR("Choose more servers...");
+    } else {
+        text = str(boost::wformat(TR("Selected servers: %d"))% sessionImageServer_.getCount());
+    }
+        
     moreImageServersLink_.SetLabel(text.c_str());
 }

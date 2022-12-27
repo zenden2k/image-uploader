@@ -1,8 +1,5 @@
 add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL -DGDIPVER=0x0100 -D_WTL_NO_CSTRING -D_ATL_NO_OLD_NAMES)
 
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/BaseClasses/)   
-
 set(SRC_LIST 
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
@@ -26,19 +23,6 @@ set(SRC_LIST
     ../Core/Images/Thumbnail.cpp
     ../Core/3rdpart/dxerr.cpp
     ../Core/3rdpart/parser.cpp
-    ../Core/Video/AbstractFrameGrabber.cpp
-    ../Core/Video/AbstractImage.cpp
-    ../Core/Video/AbstractVideoFrame.cpp
-    ../Core/Video/DirectshowFrameGrabber.cpp
-    ../Core/Video/DirectshowFrameGrabber2.cpp
-    ../Core/Video/DirectshowVideoFrame.cpp
-    ../Core/Video/NoDirectVobSub.cpp
-    ../Core/Video/GrabFilter.cpp
-    ../Core/Video/DirectShowUtil.cpp
-    ../Core/Video/GdiPlusImage.cpp
-    ../Core/Video/VideoGrabber.cpp
-    ../Core/Video/VideoUtils.cpp
-	../Core/Video/FrameGrabberException.cpp
     ../Core/Upload/Filters/ImageConverterFilter.cpp
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
@@ -173,10 +157,6 @@ set(SRC_LIST
     
 )
 
-if (IU_ENABLE_FFMPEG)
-	list(APPEND SRC_LIST ../Core/Video/AvcodecFrameGrabber.cpp)
-endif()	
-
 set(RESOURCE_LIST  "../Image Uploader.rc"
     "../res/image uploader.exe.manifest")
     
@@ -203,19 +183,6 @@ set(HEADER_LIST
     ../Core/Images/Utils.h
     ../Core/3rdpart/dxerr.h
     ../Core/3rdpart/parser.h
-    ../Core/Video/AbstractFrameGrabber.h
-    ../Core/Video/AbstractImage.h
-    ../Core/Video/AbstractVideoFrame.h
-    ../Core/Video/DirectshowFrameGrabber.h
-    ../Core/Video/DirectshowFrameGrabber2.h
-    ../Core/Video/DirectshowVideoFrame.h
-    ../Core/Video/NoDirectVobSub.h
-    ../Core/Video/GrabFilter.h
-    ../Core/Video/DirectShowUtil.h
-    ../Core/Video/GdiPlusImage.h
-    ../Core/Video/VideoGrabber.h
-    ../Core/Video/VideoUtils.h
-	../Core/Video/FrameGrabberException.cpp
     ../Core/Upload/Filters/ImageConverterFilter.h
     ../Core/Upload/Filters/SizeExceedFilter.h
     ../Core/Upload/Filters/UrlShorteningFilter.h
@@ -348,10 +315,6 @@ set(HEADER_LIST
     UploadListModel.h
     ../resource.h
 )
-
-if (IU_ENABLE_FFMPEG)
-	list(APPEND HEADER_LIST ../Core/Video/AvcodecFrameGrabber.h)
-endif()
 	
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 source_group("Resource Files" FILES ${RESOURCE_LIST})
@@ -362,7 +325,7 @@ add_executable(GUI WIN32
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
-set(LIBS_LIST wtl::wtl base64::base64 WebP::webpdemux WebP::webpdecoder MediaInfoLib::MediaInfoLib
+set(LIBS_LIST base64::base64 WebP::webpdemux WebP::webpdecoder MediaInfoLib::MediaInfoLib
     gdiplus Ws2_32 dwmapi winmm wininet IPHLPAPI
     Secur32 Netapi32 Oleacc Winhttp Userenv Psapi uxtheme Urlmon
 )
@@ -373,7 +336,7 @@ endif()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(GUI iucore 
+target_link_libraries(GUI iucore iuvideo
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
     base-classes::base-classes

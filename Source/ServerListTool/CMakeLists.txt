@@ -24,7 +24,6 @@ add_executable(ServersChecker WIN32
     ../Func/DefaultLogger.cpp
     ../Func/DefaultUploadErrorHandler.cpp
     ../3rdpart/QColorQuantizer.cpp
-    ../Core/Video/VideoUtils.cpp
     ../Core/FileDownloader.cpp
     ../Core/Settings/CliSettings.cpp
     res/ServersChecker.exe.manifest
