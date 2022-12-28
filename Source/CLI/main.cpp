@@ -48,6 +48,7 @@
 #include "ConsoleScriptDialogProvider.h"
 #include "Core/Utils/ConsoleUtils.h"
 #include "Core/Scripting/ScriptsManager.h"
+#include "Core/Images/AbstractImage.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -64,7 +65,6 @@
     #include <sys/stat.h>
     #include <sys/time.h>
 #endif
-#include <Core/Images/GdiPlusImage.h>
 
 #include "versioninfo.h"
 
