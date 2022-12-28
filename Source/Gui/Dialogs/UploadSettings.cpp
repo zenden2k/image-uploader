@@ -128,6 +128,12 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     moreImageServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     moreImageServersLink_.SetLabel(TR("Choose more servers..."));
 
+    moreFileServersLink_.SubclassWindow(GetDlgItem(IDC_CHOOSEMOREFILESERVERS));
+    moreFileServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
+    moreFileServersLink_.SetLabel(TR("Choose more servers..."));
+    
+    
+
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
@@ -396,7 +402,7 @@ bool CUploadSettings::OnNext()
     }
 
     WizardDlg->setSessionImageServer(sessionImageServer_);
-    WizardDlg->setSessionFileServer(sessionFileServer);
+    WizardDlg->setSessionFileServer(sessionFileServer_);
     if ( settings->RememberImageServer ) {
         settings->imageServer = sessionImageServer_;
     }
@@ -560,6 +566,14 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
 
+    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()) : TR("Choose server");
+
+    ZeroMemory(&bi, sizeof(bi));
+    bi.cbSize = sizeof(bi);
+    bi.dwMask = TBIF_TEXT;
+    bi.pszText = (LPWSTR)(LPCTSTR)serverTitle;
+    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
+
     if(serverProfile.isNull())
     { 
         CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
@@ -575,13 +589,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 		return;
 	}
 
-    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()): TR("Choose server");
 
-    ZeroMemory(&bi, sizeof(bi));
-    bi.cbSize = sizeof(bi);
-    bi.dwMask = TBIF_TEXT;
-    bi.pszText = (LPWSTR)(LPCTSTR) serverTitle ;
-    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* res = Settings->getServerSettings(serverProfile);
@@ -625,6 +633,7 @@ void CUploadSettings::UpdateAllPlaceSelectors()
     UpdatePlaceSelector(true); // Update server selector (file hosting)
     UpdateToolbarIcons();
     updateMoreImageServersLink();
+    updateMoreFileServersLink();
 }
 
 LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -1125,7 +1134,7 @@ LRESULT CUploadSettings::OnShorteningUrlServerButtonClicked(WORD wNotifyCode, WO
     serverSelectorControl.setServersMask(CServerSelectorControl::smUrlShorteners);
     serverSelectorControl.setShowImageProcessingParams(false);
     serverSelectorControl.setTitle(TR("URL shortening server"));
-    serverSelectorControl.setServerProfile(Settings.urlShorteningServer.getByIndex(0));
+    serverSelectorControl.setServerProfile(Settings.urlShorteningServer);
     RECT clientRect;
     m_ShorteningServerButton.GetClientRect(&clientRect);
     m_ShorteningServerButton.ClientToScreen(&clientRect);
@@ -1209,7 +1218,7 @@ void CUploadSettings::updateUrlShorteningCheckboxLabel()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString text;
-    CString serverName = Settings.urlShorteningServer.isEmpty() ? _T("") : Utf8ToWCstring(Settings.urlShorteningServer.getByIndex(0).serverName());
+    CString serverName = Utf8ToWCstring(Settings.urlShorteningServer.serverName());
     text.Format(TR("Shorten URL using %s"), static_cast<LPCTSTR>(serverName));
     SetDlgItemText(IDC_SHORTENLINKSCHECKBOX, text);
 }
@@ -1434,11 +1443,21 @@ ServerProfile& CUploadSettings::getSessionFileServerItem() {
     return sessionFileServer_.getByIndex(0);
 }
 
-LRESULT CUploadSettings::OnChooseMoreImageServerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionImageServer_);
+LRESULT CUploadSettings::OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionImageServer_, CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         sessionImageServer_ = dlg.serverProfileGroup();
         
+        UpdateAllPlaceSelectors();
+    }
+    return 0;
+}
+
+LRESULT CUploadSettings::OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionFileServer_, CServerSelectorControl::smFileServers);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        sessionFileServer_ = dlg.serverProfileGroup();
+
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -1453,4 +1472,17 @@ void CUploadSettings::updateMoreImageServersLink() {
     }
         
     moreImageServersLink_.SetLabel(text.c_str());
+}
+
+
+void CUploadSettings::updateMoreFileServersLink() {
+    std::wstring text;
+    if (sessionFileServer_.getCount() == 1) {
+        text = TR("Choose more servers...");
+    }
+    else {
+        text = str(boost::wformat(TR("Selected servers: %d")) % sessionFileServer_.getCount());
+    }
+
+    moreFileServersLink_.SetLabel(text.c_str());
 }

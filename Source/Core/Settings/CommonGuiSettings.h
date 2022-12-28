@@ -88,8 +88,8 @@ class CommonGuiSettings : public BasicSettings {
         TCHAR m_szLang[64];
         VideoSettingsStruct VideoSettings;
         MediaInfoSettingsStruct MediaInfoSettings;
-
-        ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer, urlShorteningServer, temporaryServer;
+        ServerProfile urlShorteningServer, temporaryServer;
+        ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
         HistorySettingsStruct HistorySettings;
 
         int CodeLang;

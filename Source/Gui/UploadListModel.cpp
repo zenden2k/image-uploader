@@ -21,6 +21,7 @@ UploadListModel::UploadListModel(std::shared_ptr<UploadSession> session) {
         sd->setStatusText(TR("In queue"));
         sd->setFileName(U2W(fileTask->getFileName()));
         sd->setDisplayName(U2W(fileTask->getDisplayName()));
+        sd->setServerName(U2W(fileTask->serverProfile().serverName()));
         task->setUserData(sd);
         items_.push_back(sd);
     }
@@ -38,7 +39,7 @@ CString UploadListModel::getItemText(int row, int column) const {
     }
     UploadListItem* serverData = items_[row];
     if (column == 0) {
-        return serverData->displayName();
+        return serverData->displayName() + _T(" [") + serverData->serverName() + _T("]");
     } 
     if (column == 1) {
         return serverData->statusText();

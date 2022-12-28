@@ -271,7 +271,7 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
     fileUploadTask->setIsImage(true);
     fileUploadTask->setUserData(uploadItemData);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer.getByIndex(0));
+    fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
     using namespace std::placeholders;
     fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     {

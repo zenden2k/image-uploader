@@ -101,6 +101,7 @@ virtual ~CServerSelectorControl();
     void setShowImageProcessingParams(bool show);
     void setShowParamsLink(bool show);
     void setOnChangeCallback(std::function<void(CServerSelectorControl*)> cb);
+    void setShowEmptyItem(bool show);
 
 private:
     CComboBoxEx serverComboBox_;
@@ -132,6 +133,7 @@ private:
     CFont serverGroupboxFont_;
     HGLOBAL hMyDlgTemplate_;
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
+    bool showEmptyItem_;
 };
 
 #endif

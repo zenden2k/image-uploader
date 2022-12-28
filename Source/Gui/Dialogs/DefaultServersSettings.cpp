@@ -99,7 +99,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     temporaryServerSelector_->ShowWindow(SW_SHOW);
     temporaryServerSelector_->SetWindowPos(GetDlgItem(IDC_TEMPORARYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    temporaryServerSelector_->setServerProfile(Settings.temporaryServer.getByIndex(0));
+    temporaryServerSelector_->setServerProfile(Settings.temporaryServer);
     temporaryServerSelector_->setTitle(TR("Server for temporary images"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_URLSHORTENERPLACEHOLDER);
@@ -111,7 +111,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow( SW_SHOW );
     urlShortenerServerSelector_->SetWindowPos(GetDlgItem(IDC_URLSHORTENERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer.getByIndex(0));
+    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
 
 

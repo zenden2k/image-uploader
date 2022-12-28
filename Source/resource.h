@@ -713,6 +713,8 @@
 #define IDC_ANIMATION                   1335
 #define IDC_ICONSBYLABEL                1336
 #define IDC_CHOOSEMOREIMAGESERVERSLABEL 1337
+#define IDC_CHOOSEMOREIMAGESERVERSLABEL2 1338
+#define IDC_CHOOSEMOREFILESERVERS       1338
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -760,7 +762,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        326
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1338
+#define _APS_NEXT_CONTROL_VALUE         1339
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

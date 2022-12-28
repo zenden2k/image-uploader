@@ -148,7 +148,7 @@ bool CUploadDlg::startUpload() {
             task->setIndex(rowIndex++);
             task->setIsImage(isImage);
             task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
-            task->setUrlShorteningServer(settings->urlShorteningServer.getByIndex(0));
+            task->setUrlShorteningServer(settings->urlShorteningServer);
             using namespace std::placeholders;
             task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
             task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));

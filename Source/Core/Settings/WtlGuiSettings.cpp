@@ -370,14 +370,13 @@ void WtlGuiSettings::fixInvalidServers() {
         }
     }
 
-    if (!temporaryServer.isEmpty()) {
-        auto& temporaryServerItem = temporaryServer.getItems()[0];
-        ue = temporaryServerItem.uploadEngineData();
-        if (!ue) {
-            temporaryServerItem.setServerName(defaultImageServer);
-            temporaryServerItem.setProfileName(defaultImageServerProfileName);
-        }
+
+    ue = temporaryServer.uploadEngineData();
+    if (!ue) {
+        temporaryServer.setServerName(defaultImageServer);
+        temporaryServer.setProfileName(defaultImageServerProfileName);
     }
+    
 
     if (!fileServer.isEmpty()) {
         auto& fileServerItem = fileServer.getItems()[0];
@@ -401,26 +400,24 @@ void WtlGuiSettings::fixInvalidServers() {
             }
         }
     }
-    
-    if (!urlShorteningServer.isEmpty()) {
-        auto& urlShorteningServerItem = urlShorteningServer.getItems()[0];
-        if (urlShorteningServerItem.serverName().empty()) {
-            std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer);
-            CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+
+
+    if (urlShorteningServer.serverName().empty()) {
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(
+            CUploadEngineData::TypeUrlShorteningServer);
+        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+        if (uploadEngineData) {
+            urlShorteningServer.setServerName(defaultServerName);
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
             if (uploadEngineData) {
-                urlShorteningServerItem.setServerName(defaultServerName);
-            }
-            else {
-                uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
-                if (uploadEngineData) {
-                    urlShorteningServerItem.setServerName(uploadEngineData->Name);
-                }
-                else {
-                    LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
-                }
+                urlShorteningServer.setServerName(uploadEngineData->Name);
+            } else {
+                LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
             }
         }
     }
+    
 
 }
 
@@ -612,42 +609,34 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 
     auto uploading = settingsNode.GetChild("Uploading");
 
-    ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldUrlShorteningServer, oldTemporaryServer;
+    ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldContextMenuServer;
     // Load the old format of chosen servers (just reading)
     LoadServerProfile(uploading.GetChild("Server"), oldImageServer);
     LoadServerProfile(uploading.GetChild("FileServer"), oldFileServer);
     LoadServerProfile(uploading.GetChild("QuickScreenshotServer"), oldQuickScreenshotServer);
-    LoadServerProfile(uploading.GetChild("UrlShorteningServer"), oldUrlShorteningServer);
-    LoadServerProfile(uploading.GetChild("TemporaryServer"), oldTemporaryServer);
+    LoadServerProfile(uploading.GetChild("ContextMenuServer"), oldContextMenuServer);
+    /*LoadServerProfile(uploading.GetChild("UrlShorteningServer"), oldUrlShorteningServer);
+    LoadServerProfile(uploading.GetChild("TemporaryServer"), oldTemporaryServer);*/
 
     imageServer = oldImageServer;
     fileServer = oldFileServer;
     quickScreenshotServer = oldQuickScreenshotServer;
-    urlShorteningServer = oldUrlShorteningServer;
-    temporaryServer = oldTemporaryServer;
+    /*urlShorteningServer = oldUrlShorteningServer;
+    temporaryServer = oldTemporaryServer;*/
 
     // Load the new format of chosen servers
     LoadServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
     LoadServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
     LoadServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
-    LoadServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
-    LoadServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);
-
-    /*
-    imageServer.bind(upload["Server"]);
-    fileServer.bind(upload["FileServer"]);
-    quickScreenshotServer.bind(upload["QuickScreenshotServer"]);
-    contextMenuServer.bind(upload["ContextMenuServer"]);
-    urlShorteningServer.bind(upload["UrlShorteningServer"]);
-    temporaryServer.bind(upload["TemporaryServer"]);*/
+    LoadServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
 
 
     PostLoadServerProfileGroup(imageServer);
     PostLoadServerProfileGroup(fileServer);
     PostLoadServerProfileGroup(contextMenuServer);
     PostLoadServerProfileGroup(quickScreenshotServer);
-    PostLoadServerProfileGroup(urlShorteningServer);
-    PostLoadServerProfileGroup(temporaryServer);
+    PostLoadServerProfile(urlShorteningServer);
+    PostLoadServerProfile(temporaryServer);
 
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
@@ -707,8 +696,8 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     SaveServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
     SaveServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
     SaveServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
-    SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
-    SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);
+    /*SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
+    SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);*/
     
 
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
@@ -903,7 +892,8 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
 
-
+    urlShorteningServer.bind(upload["UrlShorteningServer"]);
+    temporaryServer.bind(upload["TemporaryServer"]);
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";

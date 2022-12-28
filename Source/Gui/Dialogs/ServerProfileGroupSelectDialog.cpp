@@ -26,7 +26,7 @@
 #include "Gui/Controls/ServerSelectorControl.h"
 
 LRESULT CMyPanel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    g_scrollY = 0;
+    scrollY_ = 0;
     RECT rc = { 0 };
     GetClientRect(&rc);
     SCROLLINFO si = { 0 };
@@ -66,10 +66,10 @@ LRESULT CMyPanel::OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         pos = HIWORD(wParam);
     }
     else if (action == SB_LINEDOWN) {
-        pos = g_scrollY + 30;
+        pos = scrollY_ + 30;
     }
     else if (action == SB_LINEUP) {
-        pos = g_scrollY - 30;
+        pos = scrollY_ - 30;
     }
     if (pos == -1) {
         return 0;
@@ -85,12 +85,12 @@ LRESULT CMyPanel::OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     pos = si.nPos;
     POINT pt;
     pt.x = 0;
-    pt.y = pos - g_scrollY;
+    pt.y = pos - scrollY_;
     auto hdc = GetDC();
     LPtoDP(hdc, &pt, 1);
     ReleaseDC( hdc);
     ScrollWindow(0, -pt.y, NULL, NULL);
-    g_scrollY = pos;
+    scrollY_ = pos;
     return 0;
 }
 
@@ -112,9 +112,11 @@ constexpr int SELECTOR_WIDTH = 380;
 constexpr int BUTTON_WIDTH = 30;
 constexpr int BUTTON_HEIGHT = 30;
 
-CServerProfileGroupSelectDialog::CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group):
+CServerProfileGroupSelectDialog::CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group, int serverMask):
     profileGroup_(std::move(group)),
-    uploadEngineManager_(uploadEngineManager) {
+    uploadEngineManager_(uploadEngineManager),
+    serverMask_(serverMask)
+{
 }
 
 CServerProfileGroupSelectDialog::~CServerProfileGroupSelectDialog() {
@@ -142,6 +144,7 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
     SetWindowText(TR("Choose servers"));
     TRC(IDC_ADDBUTTON, "Add");
     TRC(IDCANCEL, "Cancel");
+    TRC(IDOK, "OK");
 
     //DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
@@ -154,7 +157,7 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
     deleteIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETE), IMAGE_ICON, static_cast<int>(16 * dpiScaleX),
         static_cast<int>(16 * dpiScaleY), 0));
 
-    rect.bottom -= 70 * dpiScaleY;
+    rect.bottom -= 50 * dpiScaleY;
     rect.right -= 130 * dpiScaleX;
     panel_.Create(m_hWnd, rect, nullptr, WS_VISIBLE | WS_CHILD |WS_CLIPCHILDREN, WS_EX_CONTROLPARENT);
     //panel_.SetDlgCtrlID(IDC_SCROLLCONTAINER_ID);
@@ -167,9 +170,27 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
 
 LRESULT CServerProfileGroupSelectDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    for (auto item: serverSelectors_) {
+        if (item->serverProfile().serverName().empty()) {
+            continue;
+            /*CString message;
+            message.Format(TR("You have not selected \"%s\""), item->getTitle().GetString());
+            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
+            return false;*/
+        }
+        if (!item->isAccountChosen()) {
+            CString message;
+            message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(item->serverProfile().serverName()).c_str());
+            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
+            return false;
+        }
+    }
+
     profileGroup_ = {};
     for (auto& it : serverSelectors_) {
-        profileGroup_.addItem(it->serverProfile());
+        if (!it->serverProfile().isNull()) {
+            profileGroup_.addItem(it->serverProfile());
+        }
     }
 
     return EndDialog(wID);
@@ -189,7 +210,8 @@ void CServerProfileGroupSelectDialog::addSelector(const ServerProfile& profile, 
     
 
     CServerSelectorControl* control = new CServerSelectorControl(uploadEngineManager_);
-    control->setServersMask(CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers);
+    control->setShowEmptyItem(true);
+    control->setServersMask(serverMask_);
     //control->setShowImageProcessingParams(false);
 
     
@@ -256,6 +278,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
     for(size_t i = buttonIndex; i < serverSelectors_.size(); i++) {
         updateSelectorPos(i, dc);
     }
+    updateScroll();
     return 0;
 }
 

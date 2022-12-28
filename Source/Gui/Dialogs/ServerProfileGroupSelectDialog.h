@@ -55,7 +55,7 @@ private:
     LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
-    int g_scrollY;
+    int scrollY_;
     int scrollSize_;
 };
 class CIconButton;
@@ -65,7 +65,7 @@ class CServerSelectorControl;
 class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSelectDialog>, public CDialogResize<CServerProfileGroupSelectDialog>
 {
     public:
-        explicit CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group);
+        explicit CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group, int serverMask);
         ~CServerProfileGroupSelectDialog();
         enum { IDD = IDD_SERVERPROFILESELECT };
 
@@ -105,6 +105,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         CIcon deleteIcon_;
         CScrollContainer scrollContainer_;
         CMyPanel panel_;
+        int serverMask_;
         void addSelector(const ServerProfile& profile, HDC dc);
         void updateSelectorPos(size_t index, HDC dc);
         void updateScroll();
