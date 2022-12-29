@@ -35,6 +35,7 @@
 #define IDC_SHORTENURLITEM 10004
 #define IDC_PREVIEWBUTTON 1006
 #define IDC_OPENLINKSINNEWTAB 1007
+#define IDC_GROUPBYFILENAME 1008
 
 #define IDC_COPYFOLDERURL 10040
 
@@ -68,6 +69,7 @@ class CResultsPanel :
             COMMAND_HANDLER(IDC_USETEMPLATE, BN_CLICKED, OnUseTemplateClicked)
             COMMAND_HANDLER(IDC_SHORTENURLITEM, BN_CLICKED, OnShortenUrlClicked)
             COMMAND_HANDLER(IDC_PREVIEWBUTTON, BN_CLICKED, OnPreviewButtonClicked)
+            COMMAND_HANDLER(IDC_GROUPBYFILENAME, BN_CLICKED, OnGroupByFilenameClicked)
             
             //COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
             COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
@@ -98,6 +100,7 @@ class CResultsPanel :
     LRESULT OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnResulttoolbarNMCustomDraw(LPNMHDR pnmh);
+    LRESULT OnGroupByFilenameClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     void SetPage(TabPage Index);
     void setEngineList(CMyEngineList* EngineList);
@@ -130,6 +133,7 @@ class CResultsPanel :
     void setRectNeeded(const RECT& rc);
     void setShortenUrls(bool shorten);
     void setOnShortenUrlChanged(ShortenUrlChangedCallback callback);
+    void setGroupByFilename(bool enable);
 protected:
     CToolBarCtrl Toolbar;
     CComboBox codeTypeComboBox;
@@ -145,10 +149,10 @@ protected:
     CAtlArray<IU_Result_Template> Templates;
     CString ReplaceVars(const CString& Text);
     bool outputChanged_;
-   
     RECT rectNeeded;
     bool shortenUrl_;
     bool openedFromHistory_;
+    bool groupByFileName_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
     
     void BBCode_Link(CString &Buffer, CUrlListItem &item);

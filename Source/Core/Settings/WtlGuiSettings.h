@@ -125,6 +125,7 @@ public:
     static COLORREF DefaultLinkColor;
     bool QuickUpload;
     bool UseTxtTemplate;
+    bool GroupByFilename;
 
     bool SendToContextMenu;
     bool SendToContextMenu_changed;

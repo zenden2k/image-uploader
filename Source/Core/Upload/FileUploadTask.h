@@ -22,12 +22,15 @@ class FileUploadTask: public UploadTask {
         std::string title() const override;
         bool isImage() const;
         void setIsImage(bool image);
+        void setFileIndex(size_t index);
+        size_t fileIndex() const;
 protected:
         std::string fileName_;
         std::string originalFileName_;
         std::string displayName_;
         mutable int64_t cachedFileSize_;
         bool isImage_;
+        size_t fileIndex_;
 };    
 
 #endif

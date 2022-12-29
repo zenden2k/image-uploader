@@ -42,7 +42,7 @@ constexpr int WM_SERVERSELECTCONTROL_CHANGE = WM_USER + 156;
 constexpr int WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED = WM_USER + 157;
 
 class CServerSelectorControl : 
-    public CDialogIndirectImpl<CServerSelectorControl>, public CSettingsPage
+    public CDialogIndirectImpl<CServerSelectorControl>
 {
 public:
     explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);

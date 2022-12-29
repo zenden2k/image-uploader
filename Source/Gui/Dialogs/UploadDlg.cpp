@@ -145,7 +145,8 @@ bool CUploadDlg::startUpload() {
             
             auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
 
-            task->setIndex(rowIndex++);
+            task->setIndex(/*rowIndex++*/i);
+            //task->setFileIndex(i);
             task->setIsImage(isImage);
             task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
             task->setUrlShorteningServer(settings->urlShorteningServer);
@@ -155,6 +156,7 @@ bool CUploadDlg::startUpload() {
 
             task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
             uploadSession_->addTask(task);
+            rowIndex++;
         }
     }
     urlList_.resize(rowIndex);
@@ -588,11 +590,14 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         CUrlListItem item;
         UploadResult* uploadResult = task->uploadResult();
         item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
+        //item.FileIndex = fileTask->fileIndex();
         item.ImageUrlShortened = Utf8ToWCstring(uploadResult->directUrlShortened);
         item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
         item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
         item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
         item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
+        item.FileIndex = task->index();
+        item.ServerName = U2W(task->serverName());
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
             urlList_[fps->tableRow] = item;

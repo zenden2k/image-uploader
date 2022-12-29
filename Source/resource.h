@@ -118,6 +118,8 @@
 #define IDD_LANGSELECT1                 274
 #define IDD_SERVERPROFILESELECT         274
 #define IDB_TOOLCROPPING                275
+#define IDD_SERVERSELECTORCONTROL1      275
+#define IDD_MULTISERVERSELECTORCONTROL  275
 #define IDB_ICONTOOLPENCIL              276
 #define IDB_ICONTOOLBRUSHPNG            277
 #define IDB_ICONTOOLTEXTPNG             278
@@ -580,6 +582,7 @@
 #define IDC_COPYHEXBUTTON               1263
 #define IDC_TESTCONNECTIONBTN           1263
 #define IDC_ADDBUTTON                   1263
+#define IDC_CHOOSESERVERS               1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -715,6 +718,7 @@
 #define IDC_CHOOSEMOREIMAGESERVERSLABEL 1337
 #define IDC_CHOOSEMOREIMAGESERVERSLABEL2 1338
 #define IDC_CHOOSEMOREFILESERVERS       1338
+#define IDC_LABEL                       1339
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -762,7 +766,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        326
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1339
+#define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

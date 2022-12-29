@@ -34,6 +34,10 @@ struct CUrlListItem
     CString ThumbUrlShortened;
     CString DownloadUrl;
     CString DownloadUrlShortened;
+    CString ServerName;
+
+    // Index in original file list
+    int FileIndex = -1;
 
     CString getDownloadUrl(bool shortened = false) const {
         return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 

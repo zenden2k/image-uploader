@@ -29,3 +29,4 @@ Dist/serverchecker
 BuildVS2022/
 BuildQt/
 .vs/
+.vscode/

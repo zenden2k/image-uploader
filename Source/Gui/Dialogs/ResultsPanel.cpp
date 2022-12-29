@@ -51,6 +51,7 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>& urlList
     outputChanged_ = false;
     m_Page = kBbCode;
     m_EngineList = nullptr;
+    groupByFileName_ = false;
     if(!LoadTemplates(TemplateLoadError)) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), TemplateLoadError);
     }
@@ -246,7 +247,12 @@ void CResultsPanel::BBCode_Link(CString &Buffer, CUrlListItem &item)
     else 
         Buffer += item.getDownloadUrl(shortenUrl_);
     Buffer += _T("]");
-    Buffer += WinUtils::myExtractFileName(item.FileName);
+    if (groupByFileName_) {
+        Buffer += item.ServerName;
+    } else {
+        Buffer += WinUtils::myExtractFileName(item.FileName);
+    }
+
     Buffer += _T("[/url]");
 
 }
@@ -260,7 +266,12 @@ void CResultsPanel::HTML_Link(CString &Buffer, CUrlListItem &item)
     else 
         Buffer += item.getDownloadUrl(shortenUrl_);
     Buffer += _T("\">");
-    Buffer += WinUtils::myExtractFileName(item.FileName);
+    if (groupByFileName_) {
+        Buffer += item.ServerName;
+    } else {
+        Buffer += WinUtils::myExtractFileName(item.FileName);
+    }
+
     Buffer += _T("</a>");
 }
 
@@ -268,7 +279,12 @@ void CResultsPanel::Markdown_Link(CString &Buffer, CUrlListItem &item)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     Buffer += _T("[");
-    Buffer += WinUtils::myExtractFileName(item.FileName);
+    if (groupByFileName_) {
+        Buffer += item.ServerName;
+    } else {
+        Buffer += WinUtils::myExtractFileName(item.FileName);
+    }
+
     Buffer += _T("](");
     if (*item.getImageUrl(shortenUrl_) && (settings->UseDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
         Buffer += item.getImageUrl(shortenUrl_);
@@ -300,7 +316,7 @@ CString CResultsPanel::GenerateOutput()
 
     bool UseTemplate = settings->UseTxtTemplate;
     bool preferDirectLinks = settings->UseDirectLinks;
-
+    groupByFileName_ = settings->GroupByFilename;
     settings->UseTxtTemplate = UseTemplate;
     if (UseTemplate && TemplateHead && m_Page != kPlainText) {
         Buffer += TemplateHead;
@@ -359,17 +375,31 @@ CString CResultsPanel::GenerateOutput()
         GenerateMarkdownCode(Buffer, codeType, p, preferDirectLinks);
     } else if (m_Page == kPlainText) {
         // Plaintext, just links
+        std::vector<CString> groups;
+
         for (int i = 0; i < n; i++) {
             CUrlListItem& item = UrlList[i];
             if (item.isNull()) {
                 continue;
             }
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+            }
+            CString& cur = groups[index];
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
-                Buffer += item.getImageUrl(shortenUrl_);
+                cur += item.getImageUrl(shortenUrl_);
             else
-                Buffer += item.getDownloadUrl(shortenUrl_);
+                cur += item.getDownloadUrl(shortenUrl_);
             if (i != n - 1)
-                Buffer += _T("\r\n");
+                cur += _T("\r\n");
+        }
+
+        for (size_t i = 0; i < groups.size(); i++) {
+            if (groupByFileName_ && !groups[i].IsEmpty() && i) {
+                Buffer += _T("\r\n");   
+            }
+            Buffer += groups[i];
         }
     }
 
@@ -381,6 +411,8 @@ CString CResultsPanel::GenerateOutput()
 
 void CResultsPanel::GenerateBBCode(CString& Buffer, CodeType codeType, int p /*thumbsPerLine*/, bool preferDirectLinks) {
     int n = UrlList.size();
+    std::vector<CString> groups;
+    std::vector<CString> fileNames;
     // Lang:BBCode, Type: "Table of clickable thumbnails" or "Clickable thumbnails"
     if (codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails) {
         for (int i = 0; i < n; i++) {
@@ -388,27 +420,35 @@ void CResultsPanel::GenerateBBCode(CString& Buffer, CodeType codeType, int p /*t
             if (item.isNull()) {
                 continue;
             }
-            Buffer += _T("[url=");
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+            cur += _T("[url=");
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
-                Buffer += item.getImageUrl(shortenUrl_);
+                cur += item.getImageUrl(shortenUrl_);
             else
-                Buffer += item.getDownloadUrl(shortenUrl_);
-            Buffer += _T("]");
+                cur += item.getDownloadUrl(shortenUrl_);
+            cur += _T("]");
 
             if (!item.getThumbUrl(shortenUrl_).IsEmpty()) {
-                Buffer += _T("[img]");
-                Buffer += item.getThumbUrl(shortenUrl_);
-                Buffer += _T("[/img]");
+                cur += _T("[img]");
+                cur += item.getThumbUrl(shortenUrl_);
+                cur += _T("[/img]");
             } else {
-                Buffer += WinUtils::myExtractFileName(item.FileName);
+                cur += fileNameWithoutPath;
             }
 
-            Buffer += _T("[/url]");
+            cur += _T("[/url]");
 
             if (codeType == ctTableOfThumbnails && ((i + 1) % p))
-                Buffer += _T("  ");
+                cur += _T("  ");
             if (!((i + 1) % p) && codeType == 0 || codeType == 1)
-                Buffer += _T("\r\n\r\n");
+                cur += _T("\r\n\r\n");
         }
     }
 
@@ -419,12 +459,21 @@ void CResultsPanel::GenerateBBCode(CString& Buffer, CodeType codeType, int p /*t
             if (item.isNull()) {
                 continue;
             }
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
-                Buffer += _T("[img]");
-                Buffer += item.getImageUrl(shortenUrl_);
-                Buffer += _T("[/img]");
-            } else BBCode_Link(Buffer, item);
-            Buffer += _T("\r\n\r\n");
+                cur += _T("[img]");
+                cur += item.getImageUrl(shortenUrl_);
+                cur += _T("[/img]");
+            } else BBCode_Link(cur, item);
+            cur += _T("\r\n\r\n");
         }
     }
 
@@ -434,15 +483,38 @@ void CResultsPanel::GenerateBBCode(CString& Buffer, CodeType codeType, int p /*t
             if (UrlList[i].isNull()) {
                 continue;
             }
-            BBCode_Link(Buffer, UrlList[i]);
+            CUrlListItem& item = UrlList[i];
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
 
-            Buffer += _T("\r\n");
+            BBCode_Link(cur, UrlList[i]);
+
+            cur += _T("\r\n");
         }
+    }
+
+    for (size_t i = 0; i < groups.size(); i++) {
+        if (groupByFileName_ && !groups[i].IsEmpty()) {
+            if (i) {
+                Buffer += _T("\r\n");
+            }
+            Buffer += fileNames[i] + _T("\r\n\r\n");
+        }
+        Buffer += groups[i];
     }
 }
 
 void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /*thumbsPerLine*/, bool preferDirectLinks) {
     int n = UrlList.size();
+    std::vector<CString> groups;
+    std::vector<CString> fileNames;
+
     // Lang: HTML, Type: "Table of clickable thumbnails" or "Clickable thumbnails"
     if (codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails) {
         for (int i = 0; i<n; i++) {
@@ -450,23 +522,32 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
             if (item.isNull()) {
                 continue;
             }
-            Buffer += _T("<a href=\"");
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+
+            cur += _T("<a href=\"");
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
-                Buffer += item.getImageUrl(shortenUrl_);
+                cur += item.getImageUrl(shortenUrl_);
             else
-                Buffer += item.getDownloadUrl(shortenUrl_);
-            Buffer += _T("\">");
+                cur += item.getDownloadUrl(shortenUrl_);
+            cur += _T("\">");
             if (!item.getThumbUrl(shortenUrl_).IsEmpty()) {
-                Buffer += _T("<img src=\"");
-                Buffer += item.getThumbUrl(shortenUrl_);
-                Buffer += _T("\" alt=\"\">");
+                cur += _T("<img src=\"");
+                cur += item.getThumbUrl(shortenUrl_);
+                cur += _T("\" alt=\"\">");
             } else
-                Buffer += WinUtils::myExtractFileName(item.FileName);
-            Buffer += _T("</a>");
+                cur += fileNameWithoutPath;
+            cur += _T("</a>");
             if (((i + 1) % p) && codeType == ctTableOfThumbnails)
-                Buffer += _T("&nbsp;&nbsp;");
+                cur += _T("&nbsp;&nbsp;");
             if (!((i + 1) % p) && codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails)
-                Buffer += _T("<br/>&nbsp;<br/>\r\n");
+                cur += _T("<br/>&nbsp;<br/>\r\n");
         }  
     }
 
@@ -477,33 +558,67 @@ void CResultsPanel::GenerateHTMLCode(CString& Buffer, CodeType codeType, int p /
             if (item.isNull()) {
                 continue;
             }
-            if (!item.getImageUrl(shortenUrl_).IsEmpty() && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
-                Buffer += _T("<img src=\"");
-                Buffer += item.getImageUrl(shortenUrl_);
-                Buffer += _T("\" alt=\"\">");
-            } else {
-                HTML_Link(Buffer, UrlList[i]);
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
             }
-            Buffer += _T("<br/>&nbsp;<br/>");
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+            if (!item.getImageUrl(shortenUrl_).IsEmpty() && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
+                cur += _T("<img src=\"");
+                cur += item.getImageUrl(shortenUrl_);
+                cur += _T("\" alt=\"\">");
+            } else {
+                HTML_Link(cur, UrlList[i]);
+            }
+            cur += _T("<br/>&nbsp;<br/>");
         }
     }
 
     // Lang: HTML, Type: Links to Images/Files
     if (codeType == ctLinks) {
         for (int i = 0; i<n; i++) {
+            CUrlListItem& item = UrlList[i];
+            if (item.isNull()) {
+                continue;
+            }
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            //if (i) {
+                
+            //}
+            
+            fileNames[index] = fileNameWithoutPath;
+            HTML_Link(cur, UrlList[i]);
+            if (i != n - 1) {
+                cur += _T("<br/>");
+            }
+        }
+    }
+
+    for (size_t i = 0; i < groups.size(); i++) {
+        if (groupByFileName_ && !groups[i].IsEmpty()) {
             if (i) {
                 Buffer += _T("<br/>");
             }
-            if (UrlList[i].isNull()) {
-                continue;
-            }
-            HTML_Link(Buffer, UrlList[i]);
+            Buffer += fileNames[i] + _T("<br/>");
         }
+        Buffer += groups[i];
     }
 }
 
 void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int p /*thumbsPerLine*/, bool preferDirectLinks) {
     int n = UrlList.size();
+    std::vector<CString> groups;
+    std::vector<CString> fileNames;
+
     // Lang:Markdown, Type: "Table of clickable thumbnails" or "Clickable thumbnails"
     if (codeType == ctTableOfThumbnails || codeType == ctClickableThumbnails) {
         for (int i = 0; i < n; i++) {
@@ -511,6 +626,14 @@ void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int
             if (item.isNull()) {
                 continue;
             }
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
 
             CString linkUrl, linkText;
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty()))
@@ -523,16 +646,16 @@ void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int
                 linkText += item.getThumbUrl(shortenUrl_);
                 linkText += _T(")");
             } else {
-                linkText = WinUtils::myExtractFileName(item.FileName);
+                linkText = fileNameWithoutPath;
             }
             CString line;
             line.Format(_T("[%s](%s)"), static_cast<LPCTSTR>(linkText), static_cast<LPCTSTR>(linkUrl));
-            Buffer += line;
+            cur += line;
 
             if (codeType == ctTableOfThumbnails && ((i + 1) % p))
-                Buffer += _T("  ");
+                cur += _T("  ");
             if (!((i + 1) % p) && codeType == 0 || codeType == 1)
-                Buffer += _T("\r\n\r\n");
+                cur += _T("\r\n\r\n");
         }
     }
 
@@ -543,27 +666,55 @@ void CResultsPanel::GenerateMarkdownCode(CString& Buffer, CodeType codeType, int
             if (item.isNull()) {
                 continue;
             }
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+
             if (*item.getImageUrl(shortenUrl_) && (preferDirectLinks || item.getDownloadUrl(shortenUrl_).IsEmpty())) {
-                Buffer += _T("![");
-                Buffer += WinUtils::myExtractFileName(item.FileName);
-                Buffer += _T("](");
-                Buffer += item.getImageUrl(shortenUrl_);
-                Buffer += _T(")");
-            } else Markdown_Link(Buffer, item);
-            Buffer += _T("\r\n\r\n");
+                cur += _T("![");
+                cur += WinUtils::myExtractFileName(item.FileName);
+                cur += _T("](");
+                cur += item.getImageUrl(shortenUrl_);
+                cur += _T(")");
+            } else Markdown_Link(cur, item);
+            cur += _T("\r\n\r\n");
         }
     }
 
     // Lang: Markdown, Type: Links to Images/Files
     if (codeType == ctLinks) {
         for (int i = 0; i < n; i++) {
-            if (UrlList[i].isNull()) {
+            CUrlListItem& item = UrlList[i];
+            if (item.isNull()) {
                 continue;
             }
-            Markdown_Link(Buffer, UrlList[i]);
+            CString fileNameWithoutPath = WinUtils::myExtractFileName(item.FileName);
+            size_t index = item.FileIndex;
+            if (groups.size() <= index) {
+                groups.resize(index + 1);
+                fileNames.resize(index + 1);
+            }
+            CString& cur = groups[index];
+            fileNames[index] = fileNameWithoutPath;
+            Markdown_Link(cur, UrlList[i]);
 
-            Buffer += _T("\r\n");
+            cur += _T("\r\n");
         }
+    }
+
+    for (size_t i = 0; i < groups.size(); i++) {
+        if (groupByFileName_ && !groups[i].IsEmpty()) {
+            if (i) {
+                Buffer += _T("\r\n");
+            }
+            Buffer += fileNames[i] + _T("\r\n\r\n");
+        }
+        Buffer += groups[i];
     }
 }
 
@@ -753,14 +904,13 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData = TR_CONST("Use direct links");//TR("Autorization parameters");
+    mi.dwTypeData = TR_CONST("Use direct links");
     sub.InsertMenuItem(count++, true, &mi);
 
-/*    mi.fType = MFT_STRING;
-    mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData  = TR("Open links in new tab (HTML only)");//TR("Autorization parameters");
-    sub.InsertMenuItem(count++, true, &mi);*/
-
+    mi.fType = MFT_STRING;
+    mi.wID = IDC_GROUPBYFILENAME;
+    mi.dwTypeData = TR_CONST("Group by filename");
+    sub.InsertMenuItem(count++, true, &mi);
 
     mi.wID = IDC_USETEMPLATE;
     mi.dwTypeData = TR_CONST("Use template");
@@ -795,6 +945,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (settings->UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (settings->UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );    
+    sub.CheckMenuItem(IDC_GROUPBYFILENAME, MF_BYCOMMAND    | (groupByFileName_? MF_CHECKED    : MF_UNCHECKED)    );
     
     ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
     Toolbar.ClientToScreen(&rc);
@@ -987,4 +1138,16 @@ void CResultsPanel::setShortenUrls(bool shorten) {
 
 void CResultsPanel::setOnShortenUrlChanged(ShortenUrlChangedCallback callback) {
     onShortenUrlChanged_ = std::move(callback);
+}
+
+void CResultsPanel::setGroupByFilename(bool enable) {
+    groupByFileName_ = enable;
+}
+
+LRESULT CResultsPanel::OnGroupByFilenameClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    groupByFileName_ = !groupByFileName_;
+    settings->GroupByFilename = groupByFileName_;
+    UpdateOutput(true);
+    return 0;
 }

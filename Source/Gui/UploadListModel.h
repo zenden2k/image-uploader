@@ -19,6 +19,7 @@ public:
     COLORREF color;
     bool finished;
     int tableRow;
+    int fileIndex;
 protected:
     CString fileName_;
     CString displayName_;
@@ -32,6 +33,7 @@ public:
         color = GetSysColor(COLOR_WINDOWTEXT); 
         finished = false;
         tableRow = -1;
+        fileIndex = -1;
     }
 
     void clearInfo() {

@@ -288,6 +288,8 @@ CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
     it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
     it.DownloadUrlShortened = Utf8ToWstring(historyItem.viewUrlShortened).c_str();
     it.FileName = Utf8ToWstring(historyItem.displayName).c_str();
+    it.ServerName = U2W(historyItem.serverName);
+    it.FileIndex = historyItem.sortIndex;
     return it;
 }
 

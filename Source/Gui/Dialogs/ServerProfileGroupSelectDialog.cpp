@@ -107,10 +107,14 @@ LRESULT CMyPanel::OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
     return 0;
 }
 
-constexpr int SELECTOR_HEIGHT = 70;
-constexpr int SELECTOR_WIDTH = 380;
+// Dimensions in pixels
 constexpr int BUTTON_WIDTH = 30;
 constexpr int BUTTON_HEIGHT = 30;
+constexpr int BUTTON_MARGIN = 10;
+
+// Size of the dialog IDD_SERVERSELECTORCONTROL in dialog units 
+const int CHILD_DIALOG_WIDTH = 260;
+const int CHILD_DIALOG_HEIGHT = 46;
 
 CServerProfileGroupSelectDialog::CServerProfileGroupSelectDialog(UploadEngineManager* uploadEngineManager, ServerProfileGroup group, int serverMask):
     profileGroup_(std::move(group)),
@@ -156,9 +160,10 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
 
     deleteIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETE), IMAGE_ICON, static_cast<int>(16 * dpiScaleX),
         static_cast<int>(16 * dpiScaleY), 0));
-
+    CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
+    MapDialogRect(&dlgRect);
     rect.bottom -= 50 * dpiScaleY;
-    rect.right -= 130 * dpiScaleX;
+    rect.right = dlgRect.Width() + (40 + BUTTON_WIDTH + BUTTON_MARGIN) * dpiScaleX;
     panel_.Create(m_hWnd, rect, nullptr, WS_VISIBLE | WS_CHILD |WS_CLIPCHILDREN, WS_EX_CONTROLPARENT);
     //panel_.SetDlgCtrlID(IDC_SCROLLCONTAINER_ID);
     for (auto& server: profileGroup_.getItems()) {
@@ -243,14 +248,20 @@ void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
     auto* deleteButton = deleteButtons_[index];
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
-    int selectorTop = index * dpiScaleY * (SELECTOR_HEIGHT);
-    CRect rc(dpiScaleX * 5, selectorTop, dpiScaleX * SELECTOR_WIDTH, selectorTop + dpiScaleY * SELECTOR_HEIGHT);
+
+    
+    CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
+    MapDialogRect(&dlgRect);
+    int selectorTop = index * dlgRect.Height();
+
+
+    CRect rc(dpiScaleX * 5, selectorTop, dlgRect.Width() + dpiScaleX * 5, selectorTop + dlgRect.Height());
 
     int buttonTop = selectorTop + dpiScaleY * 10;
 
     selector->SetWindowPos(nullptr, rc, SWP_NOZORDER);
-    CRect rcButton(dpiScaleX * (SELECTOR_WIDTH + 5), buttonTop,
-        dpiScaleX * (SELECTOR_WIDTH + 5 + BUTTON_WIDTH), buttonTop + dpiScaleY * BUTTON_HEIGHT);
+    CRect rcButton(dlgRect.Width() + dpiScaleX *  BUTTON_MARGIN, buttonTop,
+        dlgRect.Width() + dpiScaleX * ( BUTTON_MARGIN + BUTTON_WIDTH), buttonTop + dpiScaleY * BUTTON_HEIGHT);
     deleteButton->SetWindowPos(nullptr, rcButton, SWP_NOZORDER);
     deleteButton->SetDlgCtrlID(IDC_DELETESERVER_FIRST_ID + index);
 }
@@ -283,10 +294,12 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
 }
 
 void CServerProfileGroupSelectDialog::updateScroll() {
-    CWindowDC dc(m_hWnd);
+    /*CWindowDC dc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
-    float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
+    float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;*/
+    CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
+    MapDialogRect(&dlgRect);
 
-    int selectorTop = serverSelectors_.size() * dpiScaleY * (SELECTOR_HEIGHT);
+    int selectorTop = serverSelectors_.size() * dlgRect.Height();
     panel_.setScrollHeight(selectorTop);
 }

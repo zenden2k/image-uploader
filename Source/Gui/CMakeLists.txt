@@ -107,6 +107,7 @@ set(SRC_LIST
     Controls/MyImage.cpp
     Controls/PictureExWnd.cpp
     Controls/ServerSelectorControl.cpp
+    Controls/MultiServerSelectorControl.cpp
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
@@ -266,6 +267,7 @@ set(HEADER_LIST
     Controls/MyImage.h
     Controls/PictureExWnd.h
     Controls/ServerSelectorControl.h
+    Controls/MultiServerSelectorControl.h
     Controls/TabListBox.h
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h

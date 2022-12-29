@@ -454,6 +454,7 @@ WtlGuiSettings::WtlGuiSettings() :
 
     *m_Directory = 0;
     UseTxtTemplate = false;
+    GroupByFilename = false;
     UseDirectLinks = true;
     DropVideoFilesToTheList = false;
     CodeLang = 0;
@@ -884,6 +885,7 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(ThumbsPerLine);
     upload.n_bind(UseDirectLinks);
     upload.n_bind(UseTxtTemplate);
+    upload.n_bind(GroupByFilename);
     upload.n_bind(DropVideoFilesToTheList);
     upload.n_bind(CodeType);
     upload.n_bind(MaxThreads);
