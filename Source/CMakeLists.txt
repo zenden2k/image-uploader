@@ -79,7 +79,7 @@ endif()
 
 if (WIN32)
 # -DPCRE_STATIC 
-    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DGOOGLE_GLOG_DLL_DECL=)
+    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DGOOGLE_GLOG_DLL_DECL= -DCURL_WIN32_UTF8_FILENAMES)
     if (IU_USE_OPENSSL)
         add_definitions(-DUSE_OPENSSL)
     endif()
@@ -94,7 +94,7 @@ endif(MSVC)
 
 SET(COMMON_DEPS boost/1.78.0
 				openssl/1.1.1l
-				libcurl/7.84.0
+				libcurl/7.86.0@zenden2k/stable
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.13
