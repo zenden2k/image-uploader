@@ -1,0 +1,4 @@
+sources:
+  7.86.0:
+    sha256: 3dfdd39ba95e18847965cd3051ea6d22586609d9011d91df7bc5521288987a82
+    url: https://curl.se/download/curl-7.86.0.tar.gz
