@@ -25,81 +25,17 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Controls/ServerSelectorControl.h"
 
-LRESULT CMyPanel::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    scrollY_ = 0;
-    RECT rc = { 0 };
-    GetClientRect(&rc);
-    SCROLLINFO si = { 0 };
-    si.cbSize = sizeof(SCROLLINFO);
-    si.fMask = SIF_ALL;
-    si.nMin = 0;
-    si.nMax = scrollSize_;
-    si.nPage = (rc.bottom - rc.top);
-    si.nPos = 0;
-    si.nTrackPos = 0;
-    SetScrollInfo(SB_VERT, &si, true);
-    return 0;
-}
-
-void CMyPanel::setScrollHeight(int height) {
-    scrollSize_ = height;
+void CMyPanel::setScrollDimensions(int width, int height) {
     if (m_hWnd) {
-        RECT rc = { 0 };
-        GetClientRect(&rc);
-        SCROLLINFO si = { 0 };
-        si.cbSize = sizeof(SCROLLINFO);
-        si.fMask = SIF_ALL;
-        si.nMin = 0;
-        si.nMax = scrollSize_;
-        si.nPage = (rc.bottom - rc.top);
-        si.nPos = 0;
-        si.nTrackPos = 0;
-        SetScrollInfo(SB_VERT, &si, true);
+        SIZE sz = { width, height };
+        SetScrollSize(sz, TRUE, false);
     }
 }
 
-LRESULT CMyPanel::OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    auto action = LOWORD(wParam);
-    HWND hScroll = reinterpret_cast<HWND>(lParam);
-    int pos = -1;
-    if (action == SB_THUMBPOSITION || action == SB_THUMBTRACK) {
-        pos = HIWORD(wParam);
-    }
-    else if (action == SB_LINEDOWN) {
-        pos = scrollY_ + 30;
-    }
-    else if (action == SB_LINEUP) {
-        pos = scrollY_ - 30;
-    }
-    if (pos == -1) {
-        return 0;
-    }
-
-    SCROLLINFO si = { 0 };
-    si.cbSize = sizeof(SCROLLINFO);
-    si.fMask = SIF_POS;
-    si.nPos = pos;
-    si.nTrackPos = 0;
-    SetScrollInfo( SB_VERT, &si, true);
-    GetScrollInfo( SB_VERT, &si);
-    pos = si.nPos;
-    POINT pt;
-    pt.x = 0;
-    pt.y = pos - scrollY_;
-    auto hdc = GetDC();
-    LPtoDP(hdc, &pt, 1);
-    ReleaseDC( hdc);
-    ScrollWindow(0, -pt.y, NULL, NULL);
-    scrollY_ = pos;
-    return 0;
-}
-
-LRESULT CMyPanel::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+void CMyPanel::DoPaint(CDCHandle dc) {
     CRect rc;
     GetClientRect(rc);
-    CPaintDC dc(m_hWnd);
     dc.FillRect(rc, COLOR_BTNFACE);
-    return 0;
 }
 
 LRESULT CMyPanel::OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -178,10 +114,6 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedOK(WORD wNotifyCode, WORD wID,
     for (auto item: serverSelectors_) {
         if (item->serverProfile().serverName().empty()) {
             continue;
-            /*CString message;
-            message.Format(TR("You have not selected \"%s\""), item->getTitle().GetString());
-            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
-            return false;*/
         }
         if (!item->isAccountChosen()) {
             CString message;
@@ -240,7 +172,6 @@ void CServerProfileGroupSelectDialog::addSelector(const ServerProfile& profile, 
     deleteButton->SetDlgCtrlID(IDC_DELETESERVER_FIRST_ID + index);
     deleteButtons_.push_back(deleteButton);
     updateSelectorPos(index, dc);
-
 }
 
 void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
@@ -249,11 +180,11 @@ void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
 
-    
     CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
     MapDialogRect(&dlgRect);
-    int selectorTop = index * dlgRect.Height();
-
+    POINT pt;
+    panel_.GetScrollOffset(pt);
+    int selectorTop = index * dlgRect.Height() - pt.y;
 
     CRect rc(dpiScaleX * 5, selectorTop, dlgRect.Width() + dpiScaleX * 5, selectorTop + dlgRect.Height());
 
@@ -286,7 +217,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
     deleteButtons_[buttonIndex]->DestroyWindow();
     deleteButtons_.erase(deleteButtons_.begin() + buttonIndex);
     CWindowDC dc(m_hWnd);
-    for(size_t i = buttonIndex; i < serverSelectors_.size(); i++) {
+    for(size_t i = 0 /*buttonIndex*/; i < serverSelectors_.size(); i++) {
         updateSelectorPos(i, dc);
     }
     updateScroll();
@@ -294,12 +225,15 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
 }
 
 void CServerProfileGroupSelectDialog::updateScroll() {
-    /*CWindowDC dc(m_hWnd);
+    CWindowDC dc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
-    float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;*/
+    float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
     CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
     MapDialogRect(&dlgRect);
 
-    int selectorTop = serverSelectors_.size() * dlgRect.Height();
-    panel_.setScrollHeight(selectorTop);
+    int scrollHeight = serverSelectors_.size() * dlgRect.Height();
+    
+    int scrollWidth = dlgRect.Width() + (BUTTON_WIDTH + BUTTON_MARGIN) * dpiScaleX;
+
+    panel_.setScrollDimensions(1+scrollWidth, 1+scrollHeight);
 }

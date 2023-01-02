@@ -35,29 +35,20 @@ constexpr unsigned int IDC_SCROLLCONTAINER_ID = 15001;
 
 class CMyPanel : public CScrollWindowImpl<CMyPanel>
 {
-public:
+public:    
     typedef CScrollWindowImpl<CMyPanel> TBase;
-    DECLARE_WND_CLASS(L"CMyPanel")
+    DECLARE_WND_CLASS_EX(NULL, 0, COLOR_BTNFACE)
 
     BEGIN_MSG_MAP(CMyPanel)
-        MESSAGE_HANDLER(WM_CREATE, OnCreate)
-        MESSAGE_HANDLER(WM_VSCROLL, OnVScroll)
-        MESSAGE_HANDLER(WM_PAINT, OnPaint)
         COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
-        //MESSAGE_HANDLER( WM_SIZE, OnSize )
-        REFLECT_NOTIFICATIONS()
-        //CHAIN_MSG_MAP(TBase);
+        CHAIN_MSG_MAP(CScrollWindowImpl<CMyPanel>)
     END_MSG_MAP()
-    void setScrollHeight(int height);
+    void setScrollDimensions(int width, int height);
+    void DoPaint(CDCHandle dc);
 private:
-    LRESULT OnVScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
-    int scrollY_;
-    int scrollSize_;
 };
+
 class CIconButton;
 class UploadEngineManager;
 // CServerProfileGroupSelectDialog
@@ -103,7 +94,6 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         CIcon icon_, iconSmall_;
         CIcon hIconSmall;
         CIcon deleteIcon_;
-        CScrollContainer scrollContainer_;
         CMyPanel panel_;
         int serverMask_;
         void addSelector(const ServerProfile& profile, HDC dc);
