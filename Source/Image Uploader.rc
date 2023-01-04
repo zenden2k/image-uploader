@@ -1535,6 +1535,8 @@ IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
 
 IDI_ICONLASTREGION      ICON                    "res\\icon-lastregion.ico"
 
+IDI_ICONDELETEBIG       ICON                    "res\\icon_delete_big.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

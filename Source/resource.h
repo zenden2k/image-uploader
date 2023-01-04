@@ -170,6 +170,8 @@
 #define IDI_ICONLASTREGION              316
 #define IDB_ICONSEARCH                  323
 #define IDB_ICONPRINT                   324
+#define IDI_ICON12                      326
+#define IDI_ICONDELETEBIG               326
 #define IDC_ADDIMAGES                   1000
 #define IDC_ADDVIDEO                    1001
 #define IDC_LIST1                       1002
@@ -764,7 +766,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        326
+#define _APS_NEXT_RESOURCE_VALUE        327
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           128

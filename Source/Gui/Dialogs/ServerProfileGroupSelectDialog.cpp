@@ -43,6 +43,11 @@ LRESULT CMyPanel::OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
     return 0;
 }
 
+LRESULT CMyPanel::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    ::SendMessage(GetParent(), uMsg, wParam, lParam);
+    return 0;
+}
+
 // Dimensions in pixels
 constexpr int BUTTON_WIDTH = 30;
 constexpr int BUTTON_HEIGHT = 30;
@@ -94,13 +99,19 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
 
-    deleteIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETE), IMAGE_ICON, static_cast<int>(16 * dpiScaleX),
-        static_cast<int>(16 * dpiScaleY), 0));
+    //LoadIconWithScaleDown(GetModuleHandle(0))
+    HICON ico = {};
+    int iconWidth = ::GetSystemMetrics(SM_CXICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYICON);
+    LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight, &ico);
+
+    deleteIcon_ = ico;
+
     CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
     MapDialogRect(&dlgRect);
     rect.bottom -= 50 * dpiScaleY;
     rect.right = dlgRect.Width() + (40 + BUTTON_WIDTH + BUTTON_MARGIN) * dpiScaleX;
-    panel_.Create(m_hWnd, rect, nullptr, WS_VISIBLE | WS_CHILD |WS_CLIPCHILDREN, WS_EX_CONTROLPARENT);
+    panel_.Create(m_hWnd, rect, nullptr, WS_VISIBLE | WS_CHILD, WS_EX_CONTROLPARENT);
     //panel_.SetDlgCtrlID(IDC_SCROLLCONTAINER_ID);
     for (auto& server: profileGroup_.getItems()) {
         addSelector(server, dc);
@@ -235,5 +246,13 @@ void CServerProfileGroupSelectDialog::updateScroll() {
     
     int scrollWidth = dlgRect.Width() + (BUTTON_WIDTH + BUTTON_MARGIN) * dpiScaleX;
 
+    // Add 1 pixel to avoid debug assertion in WTL
     panel_.setScrollDimensions(1+scrollWidth, 1+scrollHeight);
+}
+
+LRESULT CServerProfileGroupSelectDialog::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    for (auto& it : serverSelectors_) {
+        it->updateServerList();
+    }
+    return 0;
 }

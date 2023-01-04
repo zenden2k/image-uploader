@@ -28,6 +28,7 @@
 #include "Gui/Controls/MyImage.h"
 #include "Core/Upload/ServerProfileGroup.h"
 #include "atlscrl.h"
+#include "Gui/Controls/ServerSelectorControl.h"
 
 constexpr unsigned int IDC_DELETESERVER_FIRST_ID = 14000;
 constexpr unsigned int IDC_DELETESERVER_LAST_ID = 15000;
@@ -41,12 +42,14 @@ public:
 
     BEGIN_MSG_MAP(CMyPanel)
         COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
+        MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
         CHAIN_MSG_MAP(CScrollWindowImpl<CMyPanel>)
     END_MSG_MAP()
     void setScrollDimensions(int width, int height);
     void DoPaint(CDCHandle dc);
 private:
     LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 };
 
 class CIconButton;
@@ -69,7 +72,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_ADDBUTTON, BN_CLICKED, OnClickedAdd)
             COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
-
+            MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
             CHAIN_MSG_MAP(CDialogResize<CServerProfileGroupSelectDialog>)
         END_MSG_MAP()
 
@@ -85,7 +88,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedDelete(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-   
+        LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     private:
         ServerProfileGroup profileGroup_;
         std::vector<CServerSelectorControl*> serverSelectors_;

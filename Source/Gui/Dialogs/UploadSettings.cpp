@@ -79,7 +79,11 @@ CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager
 }
 
 CUploadSettings::~CUploadSettings() {
-    settingsChangedConnection_.disconnect();
+    try {
+        settingsChangedConnection_.disconnect();
+    } catch ( const std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
 }
 
 void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
@@ -344,6 +348,11 @@ bool CUploadSettings::OnNext()
 {    
     auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto& sessionImageServer = getSessionImageServerItem();
+    if (sessionImageServer.isNull()) {
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("You have not selected an image server"), TR("Error"), MB_ICONERROR);
+        return false;
+    }
+
     if(!sessionImageServer.serverName().empty())
     {
         CUploadEngineData *ue = sessionImageServer.uploadEngineData();
@@ -355,7 +364,13 @@ bool CUploadSettings::OnNext()
             return false;
         }
     }
+
     auto& sessionFileServer = getSessionFileServerItem();
+
+    if (sessionFileServer.isNull()) {
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("You have not selected an file server"), TR("Error"), MB_ICONERROR);
+        return false;
+    }
     if(!sessionFileServer.serverName().empty())
     {
         CUploadEngineData *ue2 = sessionFileServer.uploadEngineData();

@@ -29,7 +29,7 @@ bool LocalFileCache::parseHistory() {
     boost::filesystem::directory_iterator end_itr; // Default ctor yields past-the-end
 
     pcrepp::Pcre regexp("^history.+\\.xml$");
-    for (boost::filesystem::directory_iterator i(historyFolder); i != end_itr; ++i) {
+    for (boost::filesystem::directory_iterator i(historyFolder, boost::filesystem::directory_options::skip_permission_denied); i != end_itr; ++i) {
         // Skip if not a file
         if (!boost::filesystem::is_regular_file(i->status())) {
             continue;
