@@ -34,6 +34,7 @@
  day1; дн.
  day2; дн.
  day3; дн.
+ dB0;
  dB1; дБ
  dB2; дБ
  dB3; дБ
@@ -117,6 +118,9 @@
  month1; міс.
  month2; міс.
  month3; міс.
+ object1;
+ object2;
+ object3;
  pixel1; пікс.
  pixel2; пікс.
  pixel3; пікс.
@@ -146,6 +150,12 @@
 : ;: 
 3D;
 3DType;
+5.1.2ch;
+5.1.4ch;
+5.1ch;
+608_Mode;
+7.1.2ch;
+7.1ch;
 About;Про програму
 About_Hint;Контакти та пошук нової версії
 Accompaniment;Супровід
@@ -153,8 +163,14 @@ ActiveFormatDescription;Чинний опис формату
 ActiveFormatDescription_MuxingMode;Чинний опис формату, Режим мультиплексування
 Actor;Актор
 Actor_Character;У ролі
+Add creation date to text output;
+Add version to text output;
 Added_Date;Дата додавання
 Address;Адреса
+AdID;
+ADM: Show ChannelFormats;
+ADM: Show TrackUIDs;
+AdmProfile;
 Advanced;Додаткові
 Advanced mode;Розширений режим
 Album;Альбом
@@ -170,6 +186,7 @@ Arranger;Розміщено
 ArtDirector;Режисер
 AspectRatio;Співвідношення сторін
 AssistantDirector;Помічник режисера
+AssociatedVideo_FrameRate;
 at;@
 At least one file;Як мінімум один файл
 Audio;Аудіо
@@ -180,14 +197,23 @@ Audio1;Перший аудіопотік
 Audio2;Другий аудіопотік
 AudioComments;
 AudioCount;Кількість аудіопотоків
+AudioDescription;
 AudioDescriptionPresent;
 AudioDescriptionType;
 AudioLoudnessStandard;
+AudioRenderingIndication;
+AudioSceneInfoID;
 AudioTrackLayout;
 Author;Автор
+Back4ToBack2;
+Balance_FrontBackListener;
+Balance_FrontBackOverheadFloor;
 BarCode;Штрихкод
 Basic;Стисло
 Basic_Note;Примітка: Для додаткової інформації оберіть інший вигляд (Таблиця, Дерево,...)
+BedChannelConfiguration;
+BedChannelCount;
+BinauralRenderMode;
 BitDepth;Бітова глибина
 BitDepth_Detected;
 BitDepth_Stored;
@@ -202,7 +228,13 @@ BitRate_Nominal;Номінальний бітрейт
 Bits-(Pixel*Frame);Біт/(Пікселі*Кадри)
 BufferSize;Розмір буфера
 Cancel;Відміна
+CaptionServiceName;
 Channel(s);Кількість каналів
+ChannelCoded;
+ChannelConfiguration;
+ChannelFormat;
+ChannelLayout;
+ChannelMode;
 ChannelPositions;Позиції каналів
 Chapter(s);Розділ(-и)
 Chapters;Розділи
@@ -218,9 +250,11 @@ Choose export format;Оберіть формат для експорту інф�
 Choose file(s);Оберіть файл(-и)
 Choose filename;Оберіть ім'я файлу
 Choose language;Оберіть мову
-Choregrapher;Хореограф
+Choreographer;Хореограф
 Chroma;Хроматичність
 ChromaSubsampling;Субдискретизація хроматичності
+Classifier;
+ClearList;
 Close;Закрити
 Close all before open;Закривати все перед відкриттям
 ClosedCaptionsLanguage;
@@ -244,6 +278,7 @@ Codec_Settings_PacketBitStream;Налаштування кодеку, Packet bit
 Codec_Settings_QPel;Налаштування кодеку, QPel
 Codec_Settings_Sign;Налаштування кодеку, Sign
 Codec_Url;Інтернет-адреса кодеку
+CodecConfigurationBox;
 CodecID;Ідентифікатор кодеку
 CodecID_Description;Опис кодеку
 CoDirector;
@@ -255,17 +290,24 @@ colour_range;
 Comment;Примітка
 CommissionedBy;Поручитель
 Compilation;Компіляція
+ComplementaryObject;
 CompleteName;Повна назва
 CompletionDate;
+ComplexityIndex;
 Composer;Композитор
 Compression_Mode;Тип стиснення
 Compression_Mode_Lossless;Без втрат
 Compression_Mode_Lossy;Із втратами
 Compression_Ratio;Ступінь стиснення
 Conductor;Диригент
+ConformanceCheck;
+ConformanceErrors;
+ConformanceInfos;
+ConformanceWarnings;
 ContactEmail;
 ContactTelephoneNumber;
 Container and general information;Контейнер і загальна інформація
+Content;
 ContentType;Тип вмісту
 CoProducer;Співпродюсер
 Copyright;Авторське право
@@ -280,16 +322,24 @@ Cover_Mime;MIME-тип обкладинки
 Cover_Type;Тип обкладинки
 Cropped;Розміри обрізки
 Custom;Користувацький
+CustomDownmixTargets;
 Customize;Формат виведення
+DarkMode;
 Date;Дата
 Debug;Відлагодження
 Decimal point;Десятковий роздільник
+Default_Setting;
+DefaultTargetDeviceConfig;
 Delay;Затримка
 Delay_Source;Затримка, початкова
 Delay_Source_Container;Контейнер
 Delay_Source_Stream;Сирий потік
 Delete;Видалити
 Description;Опис
+dialnorm;
+DialogueCorrected;
+DialogueEnhancement;
+DialogueNormalization;
 Digitized_Date;Дата оцифровування
 Dimensions;Розміри
 Director;Режисер
@@ -300,13 +350,28 @@ DisplayAspectRatio_CleanAperture;
 DisplayAspectRatio_Original;Оригінальне співвідношення сторін екрану
 DistributedBy;Розповсюджувач
 Distributor;
+Dolby_Atmos_Metadata;
+DolbyAtmos;
 Donate;Пожертвування
 DotsPerInch;Точок на дюйм
+Downmix;
+Downmix_5.1.x;
+Downmix_5to2;
+DrcSets_Count;
+DrcSets_Effects;
 Duration;Тривалість
 Duration_End;Кінець
+Duration_End_Command;
 Duration_Start;Початок
+Duration_Start_Command;
+Duration_Start2End;
+DynamicObject;
+DynamicRangeControl;
+Eac3DrcProfile;
 Edit;Редагувати
 EditedBy;Змінено
+EditorialClassification;
+ElementaryStream;
 ElementCount;
 EMail;Е-mail
 Encoded_Application;Програма кодування
@@ -318,12 +383,18 @@ EncodedBy;Закодовано
 EPG_Positions;EPG положення (внутрішні)
 EpisodeTitleNumber;
 Error_File;Помилка при читанні файлу
+Error_File_Write;
+Events_PaintOn;
+Events_PopOn;
+Events_RollUp;
+Events_Total;
 ExecutiveProducer;Виконавчий продюсер
 Exit;Вихід
 Exit_Hint;Вихід з програми
 Export;Експорт
 Export_Hint;Експорт у обраний формат
 Extensions;Розширення, що використ.
+External_Media_NotMounted;
 Family;Родина
 Fax;Факс
 File;Файл
@@ -336,7 +407,13 @@ File_Modified_Date;Дата останньої зміни файлу
 File_Modified_Date_Local;Остання зміна файлу (локально)
 FileExtension;Розширення файлу
 FileName;Назва файлу
+FileNameExtension;
 FileSize;Розмір файлу
+FirstDisplay_Delay_Frames;
+FirstDisplay_Type;
+FirstFrameOfAction;
+FlatPanelTv;
+FlowID;
 Folder;Каталог
 Folder (R);Каталог (R)
 Folder (R)_Hint;Вибір каталогу (рекурсивно з усіма підкаталогами)
@@ -346,11 +423,11 @@ FolderName;Назва каталогу
 Format;Формат
 Format_Commercial;Комерційна назва
 Format_Commercial_IfAny;Комерційна назва
+Format_Compression;
 Format_Description;Опис формату
 Format_Info;Деталі формату
-Format_Profile;Профіль формату
 Format_Level;
-Format_Tier;
+Format_Profile;Профіль формату
 Format_Settings;Налаштування формату
 Format_Settings_BVOP;Налаштування формату, BVOP
 Format_Settings_CABAC;Налаштування формату, CABAC
@@ -377,8 +454,10 @@ Format_Settings_RefFrames;Налаштування формату, RefFrames
 Format_Settings_SBR;Налаштування формату, SBR
 Format_Settings_Sign;Налаштування формату, Sign
 Format_Settings_Wrapping;
+Format_Tier;
 Format_Url;Інтернет-адреса формату
 Format_Version;Версія формату
+FormatDefinition;
 FpaManufacturer;
 FpaPass;
 FpaVersion;
@@ -391,6 +470,7 @@ FrameRate_Mode_CFR;Постійний
 FrameRate_Mode_VFR;Змінний
 FrameRate_Nominal;Номінальна частота кадрів
 FrameRate_Original;Оригінальна частота кадрів
+FrameRate_Real;
 General;Загальна інформація
 Genre;Жанр
 Genre_000;Blues
@@ -587,17 +667,22 @@ Genre_190;
 Genre_191;
 Go to WebSite;Перейти до сайту
 Gop_OpenClosed;
-Gop_OpenClosed_Open;
 Gop_OpenClosed_Closed;
 Gop_OpenClosed_FirstFrame;
+Gop_OpenClosed_Open;
+Graph;
+Group;
 Grouping;
+GroupPreset;
 h; год.
+HDR_Format;
 Header file;Створити файл заголовку
 Height;Висота кадру
 Height_CleanAperture;
 Height_Original;Оригінальна висота кадру
 Help;Допомога
 Hint;Підказка
+HomeTheaterAvr;
 How many audio streams?;Скільки аудіопотоків?
 How many chapters streams?;Скільки потоків з розділами?
 How many text streams?;Скільки текстових потоків?
@@ -605,12 +690,18 @@ How many video streams?;Скільки відеопотоків?
 HTML;HTML
 ID;Ідентифікатор
 IdentClockStart;
+IFrameInterval;
 Image;Зображення
 Image stream(s);Потік(-оки) зображень
 Image_Codec_List;Кодеки зображень
 ImageCount;Кількість зображень
+ImmersiveStereo;
 Info;Відомості
 Instruments;Інструменти
+IntegratedLoudness;
+IntegratedLoudness_Level;
+IntegratedLoudness_Speech;
+InteractivityEnabled;
 Interlaced_BFF;Парні - перші
 Interlaced_Interlaced;Черезрядковий
 Interlaced_PPF;Прогресивний
@@ -697,6 +788,7 @@ Language_hr;Croatian
 Language_ht;Haitian
 Language_hu;Hungarian
 Language_hy;Armenian
+Language_hy-az;
 Language_hz;Herero
 Language_ia;Auxiliary Language Association
 Language_id;Indonesian
@@ -741,10 +833,12 @@ Language_mi;Maori
 Language_mk;Macedonian
 Language_ml;Malayalam
 Language_mn;Mongolian
+Language_mn-cn;
 Language_mo;Moldavian
 Language_More;Більше інформації про мову
 Language_mr;Marathi
 Language_ms;Malay
+Language_ms-bn;
 Language_mt;Maltese
 Language_mul;Багатомовний
 Language_my;Burmese
@@ -754,6 +848,7 @@ Language_nd;Ndebele
 Language_ne;Nepali
 Language_ng;Ndonga
 Language_nl;Dutch
+Language_nl-be;
 Language_nn;Norwegian Nynorsk
 Language_no;Norwegian
 Language_nr;Ndebele
@@ -785,6 +880,7 @@ Language_si;Sinhala
 Language_sk;Slovak
 Language_sl;Slovenian
 Language_sm;Samoan
+Language_smi;
 Language_sn;Shona
 Language_so;Somali
 Language_sq;Albanian
@@ -827,10 +923,49 @@ Language_zh-tw;Chinese (Taiwan)
 Language_zu;Zulu
 LawRating;Легальний статус
 LCCN;LCCN
+LfeAttenuationKnown;
+LfeMixGain;
 Library;Бібліотека мультиплексування
+Lifetime_Subscribe_Button;
 Lightness;Яскравість
+Lines_Count;
+Lines_MaxCountPerEvent;
 LineUpStart;
+LinkedTo_Bed_Pos;
+LinkedTo_ChannelFormat_Pos;
+LinkedTo_ComplementaryObject_Pos;
+LinkedTo_Content_Pos;
+LinkedTo_Group_Pos;
+LinkedTo_Object_Pos;
+LinkedTo_PackFormat_Pos;
+LinkedTo_SignalGroup_Pos;
+LinkedTo_StreamFormat_Pos;
+LinkedTo_Substream_Pos;
+LinkedTo_TrackFormat_Pos;
+LinkedTo_TrackUID_Pos;
 List;Список
+LoRoCenterMixGain;
+LoRoSurroundMixGain;
+Loudness_Anchor;
+Loudness_Anchor_Album;
+Loudness_Count;
+Loudness_Count_Album;
+Loudness_MaximumMomentary;
+Loudness_MaximumMomentary_Album;
+Loudness_MaximumOfRange;
+Loudness_MaximumOfRange_Album;
+Loudness_MaximumShortTerm;
+Loudness_MaximumShortTerm_Album;
+Loudness_ProductionMixingLevel;
+Loudness_ProductionMixingLevel_Album;
+Loudness_Program;
+Loudness_Program_Album;
+Loudness_Range;
+Loudness_Range_Album;
+Loudness_RoomType;
+Loudness_RoomType_Album;
+LtRtCenterMixGain;
+LtRtSurroundMixGain;
 Lyricist;Автор тексту
 Lyrics;Текст
 Mastered_Date;Дата мастерингу
@@ -843,7 +978,11 @@ matrix_coefficients;Матричні коефіцієнти
 Matrix_Format;
 MaxCLL;
 MaxFALL;
+MaxGain;
+MaximumMomentaryLoudness;
+MaxTruePeak;
 MediaInfo_About;Відображає докладну інформацію \r\nпро медіафайли:\r\nMatroska, OGG (включаючи OGM)\r\nMPEG1 (включаючи VCD)\r\nMPEG2 (включаючи DVD and SVCD)\r\nMPEG4 (включаючи Itunes M4A)\r\nQuicktime\r\nRealMedia\r\nWindowsMedia (включаючи WMV, WMA)\r\nMicrosoft RIFF (включаючи AVI, WAV)\r\nАудіоформати (AC3, DTS, AAC, AU, AIFF...)
+MediaInfo_About_About;
 Menu;Меню
 Menu stream(s);Меню потоків
 Menu_Codec_List;Меню кодеків
@@ -851,12 +990,17 @@ Menu_Hint;Більше можливостей
 Menu_No;Меню відсутнє
 MenuCount;Підрахунок меню потоків
 MenuID;Ідентифікатор меню
+Metadata_Format;
+Metadata_Format_Type;
+Metadata_MuxingMode;
+MixType;
 mn; хв.
 Mood;Тональність
 More;Більше
 Movie;Назва фільму
 ms; мс
 MSDI;MSDI
+MultipleStream;
 MusicBy;Створено
 MuxingMode;Режим мультиплексування
 MuxingMode_MoreInfo;Режим мультиплексування, додаткова інформація
@@ -871,7 +1015,21 @@ NewVersion_Question_Content;Наявна нова версія (v%Version%) пр
 NewVersion_Question_Title;Випущено нову версію програми!
 No;Ні
 Not yet;Поки що ні
+NumberOfChannelFormats;
+NumberOfContents;
+NumberOfDynamicObjects;
+NumberOfElementaryStreams;
+NumberOfObjects;
+NumberOfPackFormats;
+NumberOfPresentations;
+NumberOfProgrammes;
+NumberOfStreamFormats;
+NumberOfSubstreams;
+NumberOfTrackFormats;
+NumberOfTrackUIDs;
 NumColors;Число кольорів
+Object;
+ObjectCount;
 OK;OK
 One output file per input file;Один вхідний на кожний вихідний файл
 Open;Відкрити
@@ -933,13 +1091,15 @@ OverallBitRate_Minimum;Мінімальний загальний бітрейт
 OverallBitRate_Mode;Режим загального бітрейту
 OverallBitRate_Nominal;Номінальний загальний бітрейт
 PackageName;
+PackFormat;
 Part;Частина
 Part_Count;Кількість частин
 PartNumber;
 PartTotal;
 Performer;Виконавець
 Period;Період
-PodcastCategory;
+Phase90FilterInfo;
+Phase90FilterInfo2ch;
 Phone;Телефон
 PictureRatio;
 PixelAspectRatio;Співвідношення сторін пікселя
@@ -950,15 +1110,31 @@ Played_Count;Кількість відтворень
 Played_First_Date;Вперше відтворено
 Played_Last_Date;Востаннє відтворено
 PlayTime;Тривалість програвання
+PodcastCategory;
+PortableHeadphones;
+PortableSpeakers;
 Position;Положення
+Position_Cartesian;
+Position_Polar;
 Position_Total;Загальне
 Preferences;Налаштування
+PreferredDownmix;
+Premium;
+Premium_Summary;
+PreselectionLabel;
+Presentation;
+PresentationConfig;
+PresentationConfig_ContentClassifier;
+PresentationID;
+PreviousDownmixType5ch;
+PreviousMixType2ch;
 PrimaryAudioLanguage;
 Producer;Продюсер
 ProductionDesigner;Виконавчий дизайнер
 ProductionNumber;
 ProductionStudio;Студія
 ProductPlacement;
+Programme;
 ProgrammeHasText;
 ProgrammeTextLanguage;
 ProgrammeTitle;
@@ -967,14 +1143,21 @@ Purchased_Date;Дата придбання
 Quote character;Символ лапок
 RadioStation;Радіостанція
 Rating;Рейтинг
+RealtimeLoudnessCorrected;
 Recorded_Date;Дата запису
 Recorded_Location;Місце запису
 Released_Date;Дата випуску
 RemixedBy;Ремікс створено
+RenderMode;
+Renew;
 ReplayGain_Gain;Вирівнювання гучності
 ReplayGain_Peak;Пік вирівнювання гучності
+Report;
 Resolution;Роздільна здатність
+RestoreLifetimeSubscription;
 s; сек.
+SamplePeakLevel;
+SamplePeakLevel_Album;
 SamplesPerFrame;
 SamplingCount;Кількість семплів
 SamplingRate;Частота дискретизації
@@ -988,6 +1171,8 @@ ScanType;Тип сканування
 ScanType_Original;
 ScanType_StoreMethod;
 ScreenplayBy;Сценарій
+ScreenToCenter;
+ScreenToFront;
 Season;Сезон
 SecondaryAudioLanguage;
 see below;див. нижче
@@ -1013,9 +1198,11 @@ ShimName;
 ShimVersion;
 Show menu;Відображати меню
 Show toolbar;Відображати панель
+SignalGroup;
 SigningPresent;
 SignLanguage;
 Sort;Сортування
+SoundCategory;
 SoundEngineer;Звукорежисер
 Source;Вихідний матеріал
 Source_Duration;Тривалість вихідного матеріалу
@@ -1023,6 +1210,7 @@ Source_FrameCount;Кількість кадрів вихідного матер�
 Source_SamplingCount;Кількість семплів вихідного матеріалу
 Source_StreamSize;Розмір потоку вихідного матеріалу
 Source_StreamSize_Encoded;Розмір кодованого потоку вихідного матеріалу
+SpokenSubtitles;
 Standard;Стандарт
 StoreMethod_InterleavedFields;
 StoreMethod_SeparatedFields;
@@ -1031,7 +1219,9 @@ StoreMethod_SeparatedFields_2;
 Stream;Потік
 Stream_MoreInfo;Більше інформації про потік
 StreamCount;Кількість потоків
+StreamFormat;
 StreamID;ID потоку
+streamIdentifier;
 StreamKind;Вид потоку
 StreamKindID;Ідентифікатор потоку
 StreamKindPos;Ідентифікатор потоку
@@ -1040,14 +1230,34 @@ StreamSize_Demuxed;
 StreamSize_Encoded;Розмір кодованого потоку
 StreamSize_Proportion;Відносний розмір потоку
 Subject;Тема
+Subscribe;
+Subscribe_Button;
+Subscribe_Failed;
+Subscribe_Manage;
+Subscribe_Renew;
+Subscribe_Renew_Price;
+Subscribe_Unaviable;
+Subscribe_Waiting;
+Subscription_Active;
+Subscription_Android;
+Subscription_Ended;
+Subscription_Expired;
+Subscription_Lifetime;
+Subscription_Thanks;
+Substream;
 SubTrack;Підпотік
+SubtstreamIdChannel;
 Summary;Підсумок
 Supported formats;Формати, що підтримуються
 Supported?;Підтримується?
+SupportUs;
+SurroundAttenuationKnown;
+SwitchGroup;
 Synopsis;Короткий огляд
 SystemId;ID
 Tagged_Application;Додаток редагув. тегів
 Tagged_Date;Дата запису тегів
+TargetDeviceConfig;
 Technician;Технік
 TermsOfUse;Умови використання
 TertiaryAudioLanguage;
@@ -1067,24 +1277,57 @@ ThanksTo;Подяка
 Thousands separator;Роздільник розрядів
 TimeCode;
 TimeCode_FirstFrame;
+TimeCode_LastFrame;
+TimeCode_MaxFrameNumber;
+TimeCode_MaxFrameNumber_Theory;
 TimeCode_Settings;
 TimeCode_Source;
-TimeCode_Striped;
+TimeCode_Stripped;
 TimeStamp;
 TimeZone;Часовий пояс
 Title;Заголовок
 Title_More;Більше інформації про заголовок
+Top4ToTop2;
+TopBackToFront;
+TopBackToSide;
+TopFrontToBack;
+TopFrontToFront;
+TopFrontToSide;
 Total;Сумарно
 TotalNumberOfParts;
 TotalProgrammeDuration;
 Track;Назва доріжки
 Track_Count;Кількість доріжок
+TrackFormat;
+TrackIndex;
+TrackUID;
 transfer_characteristics;Характеристики трансферу
+Translate_Reports;
 Translator;Перекладач
+Transport;
 Tree;Дерево
 Tree & Text;Дерево і текст
+Trim_Center;
+Trim_Height;
+Trim_Surround;
+TrimMode;
+TrimMode0i;
+TrimMode1i;
+TrimMode2i;
+TrimMode3i;
+TrimMode4i;
+TrimMode5i;
+TrimMode6i;
+TrimMode7i;
+TrimMode8i;
+TruePeakLevel;
+TruePeakLevel_Album;
 Type;
+TypeDefinition;
 UniqueID;Унікальний ID
+UniversalAdID;
+UniversalAdID_Registry;
+UniversalAdID_Value;
 Unknown;Невідомо
 Url;Посилання
 Video;Відео
@@ -1098,8 +1341,10 @@ VideoComments;
 VideoCount;Кількість відеопотоків
 View;Вигляд
 View_Hint;Змінити спосіб перегляду інформації
+Views;
 Warning : more streams in the files;Увага: файл має ще потоки
 Web;Веб-сторінка
+WebSite;
 WebSite_Audio;Перейти на сайт цього аудіокодеку
 WebSite_Audio_More;Перейти на сайт (%Url%) цього аудіокодеку
 WebSite_General;Перейти на сайт плеєра для цього файлу
@@ -1119,5 +1364,5 @@ Written_Location;Місце запису
 WrittenBy;Записано
 Yes;Так
 Your system;Ваша система
-ZZ_Automatic_Percent;84
-ZZ_AutomaticLanguage_Percent;91
+ZZ_Automatic_Percent;69
+ZZ_AutomaticLanguage_Percent;75
