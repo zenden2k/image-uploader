@@ -532,7 +532,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             monitorMenuItem.fType = MFT_STRING;
             monitorMenuItem.hSubMenu = MonitorsSubMenu;
             monitorMenuItem.wID = 10001;
-            monitorMenuItem.dwTypeData = TR_CONST("Choose monitor");
+            CString title = TR("Choose monitor");
+            monitorMenuItem.dwTypeData = const_cast<LPWSTR>(title.GetString());
             TrayMenu.InsertMenuItem(i++, true, &monitorMenuItem);
             MonitorsSubMenu.Detach();
         }
@@ -566,7 +567,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
-        mi.dwTypeData  = TR_CONST("Screenshot Action");
+        CString title = TR("Screenshot Action");
+        mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         TrayMenu.InsertMenuItem(i++, true, &mi);
 
         SubMenu.Detach();
@@ -667,7 +669,7 @@ void CFloatingWindow::RegisterHotkeys()
             if (!RegisterHotKey(m_hWnd, i, m_hotkeys[i].globalKey.keyModifier, m_hotkeys[i].globalKey.keyCode))
             {
                 CString msg;
-                msg.Format(TR("Cannot register global hotkey:\r\n%s.\r\n Maybe it is being used by another process."),
+                msg.Format(TR("Cannot register global hotkey:\n%s.\n Maybe it is being used by another process."),
                            static_cast<LPCTSTR>(m_hotkeys[i].globalKey.toString()));
                 ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Hotkeys"), msg);
             }

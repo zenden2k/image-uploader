@@ -1,0 +1,1565 @@
+#. extracted from Swedish.lng.csv
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-07 21:52+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.5.0\n"
+
+msgid "translator_name"
+msgstr ""
+"Åke Engelbrektson\n"
+"E-mail:eson@svenskasprakfiler.se\n"
+"Website: https://www.svenskasprakfiler.se"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Autorization parameters"
+msgstr "Auktoriseringsparametrar"
+
+msgid "Login:"
+msgstr "Inloggningsnamn:"
+
+msgid "Password:"
+msgstr "Lösenord:"
+
+msgid "Additional params"
+msgstr "Ytterligare parametrar"
+
+msgid "Top left corner"
+msgstr "Övre vänstra hörnet"
+
+msgid "Top center"
+msgstr "Centrum överkant"
+
+msgid "Top right corner"
+msgstr "Övre högra hörnet"
+
+msgid "Bottom left corner"
+msgstr "Nedre vänstra hörnet"
+
+msgid "Bottom center"
+msgstr "Centrum underkant"
+
+msgid "Bottom right corner"
+msgstr "Nedre högra hörnet"
+
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr "Vill du verkligen placera text och logotyp på samma position, i bilden?"
+
+msgid "Image settings"
+msgstr "Bildinställningar"
+
+msgid "Filename:"
+msgstr "Filnamn:"
+
+msgid "Watermark position:"
+msgstr "Vattenstämpelposition:"
+
+msgid "Text on image"
+msgstr "Text på bild"
+
+msgid "Enter your text:"
+msgstr "Text:"
+
+msgid "Text color:"
+msgstr "Textfärg:"
+
+msgid "Stroke color:"
+msgstr "Linjefärg:"
+
+msgid "Gradient color 1:"
+msgstr "Toningsfärg 1:"
+
+msgid "Gradient color 2:"
+msgstr "Toningsfärg 2:"
+
+msgid "View"
+msgstr "Visa"
+
+msgid "Remove"
+msgstr "Ta bort"
+
+msgid "Properties"
+msgstr "Egenskaper"
+
+msgid "Edit"
+msgstr "Redigera"
+
+msgid "Add Images"
+msgstr "Lägg till bilder"
+
+msgid "Import Video File"
+msgstr "Importera filmfil"
+
+msgid "Remove from list"
+msgstr "Ta bort från listan"
+
+msgid "Loading..."
+msgstr "Läser in..."
+
+msgid "Information about file"
+msgstr "Information om fil"
+
+msgid "Copy to clipboard"
+msgstr "Kopiera till Urklipp"
+
+msgid "Quality:"
+msgstr "Kvalitet:"
+
+msgid "sec"
+msgstr "sek"
+
+msgid "Settings"
+msgstr "Inställningar"
+
+msgid "General"
+msgstr "Allmänt"
+
+msgid "Apply"
+msgstr "Verkställ"
+
+msgid "File"
+msgstr "Fil"
+
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "Filen översteg filstorleksgränsen för \"%s\" (%s)."
+
+msgid "Table of clickable thumbnails"
+msgstr "Lista med klickbara miniatyrer"
+
+msgid "Clickable thumbnails"
+msgstr "Klickbara miniatyrer"
+
+msgid "Autorization on server..."
+msgstr "Auktorisering på server..."
+
+msgid "Stop"
+msgstr "Stopp"
+
+msgid "File uploading was cancelled by user."
+msgstr "Uppladdning avbröts av användaren."
+
+msgid "Finish >"
+msgstr "Slutför >"
+
+msgid "Images per string:"
+msgstr "Bilder per sträng:"
+
+msgid "Code type:"
+msgstr "Kodtyp:"
+
+msgid "&Upload"
+msgstr "&Ladda upp"
+
+msgid "Change width:"
+msgstr "Ändra bredd:"
+
+msgid "Constrain proportions"
+msgstr "Bevara proportioner"
+
+msgid "and/or height:"
+msgstr "och/eller höjd:"
+
+msgid "Add text to image"
+msgstr "Lägg till text på bild"
+
+msgid "Draw frame"
+msgstr "Rita ram"
+
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "Tryck på \"Ladda upp\" för att starta uppladdningsprocessen."
+
+msgid "Use template"
+msgstr "Använd mall"
+
+msgid "Extracting frames from video"
+msgstr "Extraherar bildrutor från video"
+
+msgid "Browse..."
+msgstr "Bläddra..."
+
+msgid "Deinterlace"
+msgstr "Avfläta"
+
+msgid "Number of frames:"
+msgstr "Antal bildrutor:"
+
+msgid "Multiple files"
+msgstr "Flera filer"
+
+msgid "Single file"
+msgstr "Enskild fil"
+
+msgid "Save as:"
+msgstr "Spara som:"
+
+msgid "Grab"
+msgstr "Hämta"
+
+msgid "Settings..."
+msgstr "Inställningar..."
+
+msgid "Appearance options"
+msgstr "Utseendealternativ"
+
+msgid "Number of columns:"
+msgstr "Antal kolumner:"
+
+msgid "Thumbnail width:"
+msgstr "Miniatyrbredd:"
+
+msgid "Horizontal interval:"
+msgstr "Horisontell intervall:"
+
+msgid "Vertical interval:"
+msgstr "Vertikal intervall:"
+
+msgid "Add Folder..."
+msgstr "Lägg till mapp..."
+
+msgid "From Clipboard"
+msgstr "Från Urklipp"
+
+msgid "View Media File Information"
+msgstr "Visa mediafilinformation"
+
+msgid "Shot of Selected Region..."
+msgstr "Klipp från markerat område..."
+
+msgid "a tool for advanced users"
+msgstr "ett verktyg för avancerade användare"
+
+msgid "Select action:"
+msgstr "Välj åtgärd:"
+
+msgid "Advice:"
+msgstr "Tips:"
+
+msgid ""
+"Just drag-n-drop your files on Image Uploader's window and it will process "
+"them."
+msgstr ""
+"Bara dra och släpp dina filer på Image Uploaders fönster så kommer de att "
+"bearbetas."
+
+msgid ""
+"Welcome to pictures Publishing Wizard, that will help you to upload your "
+"images, photos, video frames on Internet!"
+msgstr ""
+"Välkommen till bildpubliceringsguiden, som hjälper dig att ladda upp foton "
+"och andra bilder på nätet!"
+
+msgid "Are you sure to quit?"
+msgstr "Vill du verkligen avsluta?"
+
+msgid "Next >"
+msgstr "Nästa >"
+
+msgid "Images settings and choosing server"
+msgstr "Bildinställning och serverval"
+
+msgid "Uploading file on server"
+msgstr "Ladda upp fil till server"
+
+msgid "Including subdirectories"
+msgstr "Inklusive undermappar"
+
+msgid "About..."
+msgstr "Om..."
+
+msgid "Exit"
+msgstr "Avsluta"
+
+msgid "< Back"
+msgstr "< Tillbaka"
+
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr ""
+"Ändra bildbehandlingsinställningar eller välj en annan server, för att ladda "
+"upp bilden."
+
+msgid "To all"
+msgstr "Till alla"
+
+msgid "Ignore"
+msgstr "Hoppa över"
+
+msgid "File size exceeding"
+msgstr "Filstorlek överstiger"
+
+msgid "Windows Explorer integration"
+msgstr "Windows utforskarintegration"
+
+msgid "Add item to pictures' context menu"
+msgstr "Lägg till post i bilders kontextmeny"
+
+msgid "Add item to video files' context menu"
+msgstr "Lägg till post i videofilers kontextmeny"
+
+msgid "Connection settings"
+msgstr "Anslutningsinställningar"
+
+msgid "Address:"
+msgstr "Adress:"
+
+msgid "Proxy type:"
+msgstr "Proxytyp:"
+
+msgid "Authorization on proxy"
+msgstr "Auktorisering på proxyn"
+
+msgid "Watermark"
+msgstr "Vattenstämpel"
+
+msgid "Add watermark"
+msgstr "Lägg till vattenstämpel"
+
+msgid "Add folder"
+msgstr "Lägg till mapp"
+
+msgid "Paste"
+msgstr "Klistra in"
+
+msgid "Remove all"
+msgstr "Ta bort alla"
+
+msgid "Unable to load picture"
+msgstr "Kunde inte läsa in bild"
+
+msgid "Screenshot"
+msgstr "Skärmklipp"
+
+msgid "About Image Uploader"
+msgstr "Om Image Uploader"
+
+msgid "Beta-testers:"
+msgstr "Beta-testare:"
+
+msgid "Filename: "
+msgstr "Filnamn:"
+
+msgid "Filesize: "
+msgstr "Filstorlek:"
+
+msgid "Duration: "
+msgstr "Varaktighet:"
+
+msgid "Audio"
+msgstr "Ljud"
+
+msgid "Subtitles: "
+msgstr "Undertexter:"
+
+msgid "Interface language:"
+msgstr "Språk:"
+
+msgid "Video files"
+msgstr "Videofiler"
+
+msgid "All files"
+msgstr "Alla filer"
+
+msgid "Images"
+msgstr "Bilder"
+
+msgid "Error:"
+msgstr "Fel:"
+
+msgid "Upload images"
+msgstr "Ladda upp bilder"
+
+msgid "Open by Image Uploader"
+msgstr "Öppna med Image Uploader"
+
+msgid "Info about last video"
+msgstr "Info om senaste videon"
+
+msgid "Extracting video frames was stopped by user."
+msgstr "Extarahering av videobildrutor avbröts av användaren."
+
+msgid "Extracting video frames was finished."
+msgstr "Bildextrahering slutfördes."
+
+msgid "Audio files"
+msgstr "Ljudfiler"
+
+msgid "Extracting frame "
+msgstr "Extraherar bildruta"
+
+msgid "Overall bitrate: "
+msgstr "Övergripande bithastighet:"
+
+msgid "Translators:"
+msgstr "Översättare:"
+
+msgid "Executables"
+msgstr "Exekverbara"
+
+msgid "Images editor:"
+msgstr "Bildredigerare:"
+
+msgid "Searching for picture files..."
+msgstr "Söker efter bildfiler..."
+
+msgid "Processing folder:"
+msgstr "Bearbetar mappen:"
+
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr ""
+"Notera att programmet måste startas om för att nya språkinställningar skall "
+"få effekt."
+
+msgid "Copy automatically results to clipboard"
+msgstr "Kopiera automatiskt resultat till Urklipp"
+
+msgid "Frames layout"
+msgstr "Bildlayout"
+
+msgid "Show Error Log"
+msgstr "Visa fellogg"
+
+msgid "Error control"
+msgstr "Felkontroll"
+
+msgid "Show automatically log window in case of error"
+msgstr "Visa felloggen automatiskt vid fel"
+
+msgid "Error log"
+msgstr "Fellogg"
+
+msgid "Hide"
+msgstr "Dölj"
+
+msgid "List of Images"
+msgstr "Bildlista"
+
+msgid "Cannot load thumbnail for image."
+msgstr "Kan inte läsa in miniatyr för bilden."
+
+msgid "Uploading module"
+msgstr "Laddar upp modul"
+
+msgid "File:"
+msgstr "Fil:"
+
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr ""
+"MediaInfo.dll kunde inte hittas! \n"
+"Teknisk information om mediafiler kommer inte att vara tillgängligt."
+
+msgid "Clear list"
+msgstr "Rensa listan"
+
+msgid "Integration in menu \"Send to\""
+msgstr "Integration i menyn \"Skicka till\""
+
+msgid "Font..."
+msgstr "Teckensnitt..."
+
+msgid "Unable to load library MediaInfo.dll!"
+msgstr "Kunde inte läsa in MediaInfo.dll!"
+
+msgid "Ask confirmation on exit"
+msgstr "Bekräfta vid avslut"
+
+msgid "Capture the Entire Screen"
+msgstr "Klipp ut hela skärmen"
+
+msgid "Capture the Active Window"
+msgstr "Klipp ut aktivt fönster"
+
+msgid "Close"
+msgstr "Stäng"
+
+msgid "Upload failed. Another retry (%d)..."
+msgstr "Uppladdning misslyckades. försöker igen (%d)..."
+
+msgid "Upload failed! (retry limit reached)"
+msgstr "Uppladdning misslyckades! (gränsen för återförsök nådd)"
+
+msgid "Waiting response from server..."
+msgstr "Väntar på svar från servern..."
+
+msgid "Sending file to server..."
+msgstr "Skickar fil til servern..."
+
+msgid "Uploading errors"
+msgstr "Uppladdningsfel"
+
+msgid " Num of retries per file:"
+msgstr "Antal återförsök per fil:"
+
+msgid "Num of retries per action:"
+msgstr "Antal återförsök per åtgärd:"
+
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"Kunde inte läsa in serverfillistan \"servers.xml\"!\n"
+"\n"
+"Anledningen är:  %s\n"
+"\n"
+"Vill du fortsätta?"
+
+msgid "File not found."
+msgstr "Filen kunde inte hittas."
+
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "JPEG, PNG, GIF, BMP eller vilken annan fil som helst"
+
+msgid "Any file"
+msgstr "Alla filer"
+
+msgid "Add Files"
+msgstr "Lägg till filer"
+
+msgid "Links to Images/Files"
+msgstr "Länkar till bilder/filer"
+
+msgid "Open in folder"
+msgstr "Öppna målmappen"
+
+msgid ""
+"Would you like to grab frames from this video?\n"
+"(otherwise file just  will be added to list)"
+msgstr ""
+"Vill du klippa ut bildrutor från denna video?\n"
+"(annars läggs filen bara till i listan)"
+
+msgid "Shell context menu integration"
+msgstr "Kontextmenyintegrering"
+
+msgid "Cascaded context menu"
+msgstr "Utfällbar kontextmeny"
+
+msgid "Upload files"
+msgstr "Ladda upp filer"
+
+msgid "Upload images only"
+msgstr "Ladda endast upp bilder"
+
+msgid "Collecting files..."
+msgstr "Samlar in filer..."
+
+msgid "No pictures were found."
+msgstr "Inga bilder hittades."
+
+msgid "No files were found."
+msgstr "Inga filer hittades."
+
+msgid "Upload folder"
+msgstr "Uppladdningsmapp"
+
+msgid "Show program's window"
+msgstr "Visa programmfönstret"
+
+msgid "Tray icon context menu"
+msgstr "Programikonens kontextmeny"
+
+msgid "Do nothing"
+msgstr "Gör ingenting"
+
+msgid "Edit hotkey..."
+msgstr "Redigera..."
+
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr ""
+"OBS! Globala snabbtangenter är aktiva endast när programikonen visas i "
+"meddelandefältet."
+
+msgid "Uploading"
+msgstr "Uppladdning"
+
+msgid "Tray icon"
+msgstr "Programikon"
+
+msgid "Hotkeys"
+msgstr "Snabbtangent"
+
+msgid "Show tray icon"
+msgstr "Vis programikon i meddelandefältet"
+
+msgid "Mouse clicks handlers"
+msgstr "Musklickshanterare"
+
+msgid "Left button double-click"
+msgstr "Vänster dubbelklick"
+
+msgid "Left button single click:"
+msgstr "Vänster enkelklick:"
+
+msgid "Middle button click:"
+msgstr "Mittenklick:"
+
+msgid "Right button click:"
+msgstr "Högerklick:"
+
+msgid "Do not launch new program's instance from tray"
+msgstr "Starta inte ny programinstans från meddelandefältet"
+
+msgid "Action"
+msgstr "Åtgärd"
+
+msgid "Local"
+msgstr "Lokal"
+
+msgid "Local hotkey:"
+msgstr "Lokal snabbtangent:"
+
+msgid "Global hotkey:"
+msgstr "Global snabbtangent:"
+
+msgid "Clear all"
+msgstr "Rensa alla"
+
+msgid "Authorize"
+msgstr "Auktorisera"
+
+msgid "Create folder (album)"
+msgstr "Skapa mapp (album)"
+
+msgid "Edit folder"
+msgstr "Redigera mapp"
+
+msgid "Folder name:"
+msgstr "Mappnamn:"
+
+msgid "Summary:"
+msgstr "Översikt:"
+
+msgid "Access:"
+msgstr "Åtkomst:"
+
+msgid "Options"
+msgstr "Alternativ"
+
+msgid "Copy URL  "
+msgstr "Kopiera URL"
+
+msgid "Use direct links"
+msgstr "Använd direktlänkar"
+
+msgid "Folder list"
+msgstr "Mapplista"
+
+msgid "Folder list on server %s for account '%s':"
+msgstr "Mapplista på server %s för konto '%s':"
+
+msgid "Open in Web Browser"
+msgstr "Öppna i webbläsaren"
+
+msgid "Create nested folder"
+msgstr "Skapa undermapp"
+
+msgid "Create folder"
+msgstr "Skapa mapp"
+
+msgid "Failed to load folder list."
+msgstr "Kunde inte läsa in mapplista."
+
+msgid "%s server settings"
+msgstr "%s serverinställningar"
+
+msgid "Image Uploader Updates"
+msgstr "Image Uploader uppdateringar"
+
+msgid "Component name"
+msgstr "Komponentnamn"
+
+msgid "Checking for updates..."
+msgstr "Söker uppdateringar..."
+
+msgid "An error occured while receiving update information from server."
+msgstr "Ett fel uppstod vid hämtning av uppdateringsinformation från servern."
+
+msgid "Queued"
+msgstr "Köad"
+
+msgid "Finish"
+msgstr "Slutför"
+
+msgid "Forum code (BBCode)"
+msgstr "Forumkod (BBCode)"
+
+msgid "HTML code"
+msgstr "HTML-kod"
+
+msgid "Links (URL)"
+msgstr "Länkar (URL)"
+
+msgid "Creating folder \""
+msgstr "Skapar mapp \""
+
+msgid "Choose server..."
+msgstr "Välj server..."
+
+msgid "Choose folder..."
+msgstr "Väl mapp..."
+
+msgid "Choose server"
+msgstr "Välj server"
+
+msgid "Specify account..."
+msgstr "Specificera konto..."
+
+msgid "Account is not enabled"
+msgstr "Kontot är inte aktivt"
+
+msgid "No Folder Selected"
+msgstr "Ingen mapp vald"
+
+msgid "New folder"
+msgstr "Ny mapp"
+
+msgid "Go to signup page"
+msgstr "Gå till registreringssidan"
+
+msgid "Server to host your images"
+msgstr "Server för lagring av bilder"
+
+msgid "Server to host other file formats"
+msgstr "Server för lagring av andra filtyper"
+
+msgid "Display video file information on resulting picture"
+msgstr "Visa videofilinformation på bilden"
+
+msgid "Select folder"
+msgstr "Välj mapp"
+
+msgid "Check for Updates"
+msgstr "Sök efter uppdateringar"
+
+msgid "Updates are available"
+msgstr "Det finns uppdateringar"
+
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "Ange autentiseringsuppgifter för server '%s'!"
+
+msgid "Server settings"
+msgstr "Serverinställningar"
+
+msgid "Capture Selected Area"
+msgstr "Klipp ut markerat område"
+
+msgid "Capture Selected Object"
+msgstr "Klipp ut markerat objekt"
+
+msgid "Freehand Capture"
+msgstr "Frihandsklipp"
+
+msgid "Add"
+msgstr "Lägg till"
+
+msgid "Watch Clipboard for URLs"
+msgstr "Övervaka Urklipp efter URL:er"
+
+msgid "Enter URLs (one http:// or ftp:// link per line)"
+msgstr "Ange URL:er (en http:// eller ftp:// per rad)"
+
+msgid "Capture Rectangular Region"
+msgstr "Klipp ut rektangulärt område"
+
+msgid "Screen Capture"
+msgstr "Skärmklipp"
+
+msgid "Additional settings"
+msgstr "Fler inställningar"
+
+msgid "Saving parameters"
+msgstr "Sparar parametrar"
+
+msgid "Bring window to foreground when selected by mouse"
+msgstr "Sätt fönstret i förgrunden vid markering med mus"
+
+msgid ""
+"%y - year, %m - month, %d - day\n"
+"%h - hour, %n - minute, %s - seconds\n"
+" %i - image index,\n"
+"%width% - width of image,  %height% - height of image"
+msgstr ""
+"%y - År, %m - Månad, %d - Dag\n"
+"%h - Timma, %n - Minut, %s - Sekund\n"
+" %i - Bildindex,\n"
+"%width% - Bildbredd,  %height% - Bildhöjd"
+
+msgid "Uploading has been finished."
+msgstr "Uppladdning slutförd."
+
+msgid ""
+"Upload to server '%s' is impossible without account.\n"
+"You should sign Up on this server and specify your account details in "
+"program settings."
+msgstr ""
+"Uppladdning till servern '%s' är inte möjlig utan konto.\n"
+"Du behöver registrera ett konto på servern och ange kontouppgifterna i "
+"programinställningarna."
+
+msgid "Upload Buffer Size:"
+msgstr "Uppladdningsbuffert:"
+
+msgid "Add Files..."
+msgstr "Lägg till filer..."
+
+msgid "From Web"
+msgstr "Från webben"
+
+msgid "a pic of the whole screen or selected region"
+msgstr "Ett helskärmsklipp eller ett klipp från markerat område"
+
+msgid "Upload to Web"
+msgstr "Ladda upp på webben"
+
+msgid "Copy to Clipboard"
+msgstr "Kopiera till Urklipp"
+
+msgid "Screenshot Action"
+msgstr "Skärmklippsåtgärd"
+
+msgid "Stop uploading"
+msgstr "Stoppa uppladdning"
+
+msgid "File \"%s\" is beeing uploaded to server %s.."
+msgstr "Filen \"%s\" laddas upp till %s.."
+
+msgid "Uploading screenshot"
+msgstr "Laddar upp skärmklipp"
+
+msgid "Click on this message to view details..."
+msgstr "Klicka på detta meddelande för detaljerad vy..."
+
+msgid "Screenshot was uploaded"
+msgstr "Skärmklipp uppladdat"
+
+msgid "Upload results"
+msgstr "Uppladdningsresultat"
+
+msgid "Always copy captured image to clipboard"
+msgstr "Kopiera alltid skärmklipp till Urklipp"
+
+msgid "Screenshot was saved to clipboard."
+msgstr "Skärmklippet sparades i Urklipp."
+
+msgid "Delay when hiding window:"
+msgstr "Fördröjning när fönstret döljs:"
+
+msgid "Directory to save screenshots:"
+msgstr "Mapp för att spara skärmklipp:"
+
+msgid "Filename format:"
+msgstr "Filnamsformat:"
+
+msgid ""
+"Cannot register global hotkey:\n"
+"%s.\n"
+" Maybe it is being used by another process."
+msgstr ""
+"Kan inte registrera global snabbtangent:\n"
+"%s.\n"
+"Den kanske används av en annan process?"
+
+msgid "Could not upload screenshot :("
+msgstr "Kunde inte ladda upp skärmklippet :("
+
+msgid "Images from web"
+msgstr "Bilder från webben"
+
+msgid "msec"
+msgstr "ms"
+
+msgid "Open in Wizard"
+msgstr "Öppna i guiden"
+
+msgid "Add to Wizard"
+msgstr "Lägg till i guiden"
+
+msgid "Couldn't load thumbnail preset!"
+msgstr "Kunde inte läsa in miniatyrinställningar!"
+
+msgid "Thumbnails"
+msgstr "Miniatyrer"
+
+msgid "Upload History"
+msgstr "Uppladdningshistorik"
+
+msgid "Copy URL"
+msgstr "Kopiera URL"
+
+msgid "View BBCode/HTML codes"
+msgstr "Visa BBCode/HTML-koder"
+
+msgid "Session total:"
+msgstr "Antal sessioner:"
+
+msgid "Files total:"
+msgstr "Antal filer:"
+
+msgid "Total size:"
+msgstr "Total storlek:"
+
+msgid "Retrieve thumbnails from the Internet"
+msgstr "Hämta miniatyrer från Internet"
+
+msgid "Thumbnail Preset Editor"
+msgstr "Miniatyrinställningar"
+
+msgid "Colors"
+msgstr "Färger"
+
+msgid "Frame color:"
+msgstr "Ramfärg:"
+
+msgid "Width:"
+msgstr "Bredd:"
+
+msgid "Text Settings:"
+msgstr "Textinställningar:"
+
+msgid "Add text"
+msgstr "Lägg till text"
+
+msgid "Same format as image"
+msgstr "Samma format som bilden"
+
+msgid "Enter new thumbnail preset name:"
+msgstr "Ange nytt miniatyrnamn:"
+
+msgid "Profile with such name already exists!"
+msgstr "En profil med samma namn finns redan!"
+
+msgid "Height:"
+msgstr "Höjd:"
+
+msgid "Thumbnail Preset:"
+msgstr "Miniatyrinställning:"
+
+msgid "Create a Copy"
+msgstr "Skapa en kopia"
+
+msgid "Fit"
+msgstr "Anpassa"
+
+msgid "Center"
+msgstr "Centrera"
+
+msgid "Stretch"
+msgstr "Sträck ut"
+
+msgid "Save Profile"
+msgstr "Spara profil"
+
+msgid "New Profile Name"
+msgstr "Nytt profilnamn"
+
+msgid "Enter new profile name:"
+msgstr "Ange nytt profilnamn:"
+
+msgid "Current profile's changes weren't saved. Do you want to continue?"
+msgstr "Aktuella profiländringar har inte sparats. Vill du fortsätta?"
+
+msgid "(edited)"
+msgstr "(redigerad)"
+
+msgid "Skip image processing step if the image has right parameters"
+msgstr "Hoppa över bildbehandling om bilden redan har rätt parametrar"
+
+msgid "Resize mode:"
+msgstr "Storleksändring:"
+
+msgid "File: "
+msgstr "Fil:"
+
+msgid "File name cannot contains forbidden characters!"
+msgstr "Filnamnet kan inte innehålla förbjudna tecken!"
+
+msgid "Capture with shadow"
+msgstr "Klipp med skugga"
+
+msgid "Clear window transparent corners"
+msgstr "Rensa transparenta fönsterhörn"
+
+msgid "Clear window's background"
+msgstr "Rensa fönsterbakgrund"
+
+msgid "Edit Profile"
+msgstr "Redigera profil"
+
+msgid "Don't resize"
+msgstr "Ändra inte storlek"
+
+msgid "Profile:"
+msgstr "Profil:"
+
+msgid "Process images before upload"
+msgstr "Bearbeta bilder före uppladdning"
+
+msgid "Add text on thumbnail"
+msgstr "Lägg till miniatyrtext"
+
+msgid "History"
+msgstr "Historik"
+
+msgid "Thumbnail text:"
+msgstr "Miniatyrtext:"
+
+msgid "Background color:"
+msgstr "Bakgrundsfärg:"
+
+msgid "Delete Profile"
+msgstr "Ta bort profil"
+
+msgid "Are you sure you want to delete profile '%s'?"
+msgstr "Vill du verkligen ta bort profilen '%s'?"
+
+msgid "Create thumbnails"
+msgstr "Skapa miniatyrer"
+
+msgid "Use server-side thumbnails"
+msgstr "Använd serversidans miniatyrer"
+
+msgid "Text position:"
+msgstr "Textposition:"
+
+msgid "Launch program on Windows startup"
+msgstr "Starta programmet automatiskt, vid systemstart"
+
+msgid "(the link has been copied to the clipboard)"
+msgstr "(länken har kopierats till Urklipp)"
+
+msgid "Preserve EXIF data"
+msgstr "Bevara EXIF-data"
+
+msgid "Found a bug? Send it to the author"
+msgstr "Hittat ett fel? Rapportera till utvecklaren."
+
+msgid "Save as..."
+msgstr "Spara som..."
+
+msgid "Copy image"
+msgstr "Kopiera bild"
+
+msgid "Copy"
+msgstr "Kopiera"
+
+msgid "Files"
+msgstr "Filer"
+
+msgid "Re-upload images"
+msgstr "Ladda upp bilderna igen"
+
+msgid "Could not find links in the given text!"
+msgstr "Kan inte hitta länkar i texten!"
+
+msgid "Uploaded images: "
+msgstr "Uppladdade bilder:"
+
+msgid "Downloaded: "
+msgstr "Nerladdat:"
+
+msgid "Reupload"
+msgstr "Ladda upp igen"
+
+msgid "Source code"
+msgstr "Källkod"
+
+msgid "List of URLs"
+msgstr "URL-lista"
+
+msgid ""
+"Enter the text containing links to images (HTML, BBcode, or just plain text):"
+msgstr ""
+"Ange text innehållandes länkar till bilder (HTML, BBcode eller vanlig text):"
+
+msgid "Reupload images"
+msgstr "Ladda upp bilder igen"
+
+msgid ""
+"Invalid source URL: '%s'. Absolute URL is needed, including schema "
+"(http,https,etc)"
+msgstr ""
+"Ogiltig käll-URL: '%s'. Absolut sökväg krävs, inklusive protokoll "
+"(http,https,etc)"
+
+msgid "Paste HTML from clipboard"
+msgstr "Klistra in HTML från Urklipp"
+
+msgid "Source URL (optional):"
+msgstr "Käll-URL (valfritt):"
+
+msgid "Paste HTML on Ctrl+V"
+msgstr "Klistra in HTML med Ctrl+V"
+
+msgid ""
+"%f% - name of videofile without extension, \n"
+"%fe% -  name of videofile, \n"
+"%ext% - extension, \n"
+"%y% - year, %m% - month, %d% - day\n"
+"%h% - hour, %n% - minute, %s% - second\n"
+" %i% - file counter,\n"
+"%cx% - width,  %cy% - height"
+msgstr ""
+"%f% - Namn på videofilen utan filtillägg, \n"
+"%fe% -  Namn på videofilen, \n"
+"%ext% - Filtillägg, \n"
+"%y% - År, %m% - Månad, %d% - Dag\n"
+"%h% - Timma, %n% - Minut, %s% - Sekund\n"
+" %i% - Filräknare,\n"
+"%cx% - Bredd,  %cy% - Höjd"
+
+msgid "Folder for snapshots:"
+msgstr "Mapp för skärmklipp:"
+
+msgid "Select..."
+msgstr "Välj..."
+
+msgid "Open containing folder"
+msgstr "Öppna målmappen"
+
+msgid "Shortening URL \"%s\" using %s"
+msgstr "Korta av URL \"%s\" med hjälp av %s"
+
+msgid "Short URL"
+msgstr "Korta av URL"
+
+msgid "View log for details."
+msgstr "Visa loggen för detaljerad info."
+
+msgid "Unable to shorten the link..."
+msgstr "Kunde inte korta av länken..."
+
+msgid "Shorten URL using %s"
+msgstr "Korta av URL med hjälp av %s"
+
+msgid "Shorten URL"
+msgstr "Korta av URL"
+
+msgid "Url Shortener"
+msgstr "URL-avkortare"
+
+msgid "The short link has been copied to the clipboard!"
+msgstr "Kortlänken har kopierats till Urklipp!"
+
+msgid "Shorten"
+msgstr "Korta av"
+
+msgid "Paste a link to shorten it:"
+msgstr "Klistra in en länk för att korta av den:"
+
+msgid "Shorten a link"
+msgstr "Korta av en länk"
+
+msgid "Shorten a link from the clipboard"
+msgstr "Korta av en länk från Urklipp"
+
+msgid "Downloading file "
+msgstr "Laddar ner fil"
+
+msgid "Error while updating component "
+msgstr "Fel vid komponentuppdatering"
+
+msgid "MD5 check of the update package failed "
+msgstr "MD5-kontroll av uppdateringspaketet misslyckades"
+
+msgid "Update finished. Updated %d of %d files "
+msgstr "Uppdatering slutförd. %d av %d filer uppdaterade"
+
+msgid "MD5 check failed for file "
+msgstr "MD5-kontroll misslyckades"
+
+msgid "Downloaded %s of %s (%d %%)"
+msgstr "%s av %s (%d %%) nerladdat"
+
+msgid "Documentation"
+msgstr "Dokumentation"
+
+msgid "Thanks to:"
+msgstr "Tack till:"
+
+msgid "Adding directory as server"
+msgstr "Lägger till mapp som server"
+
+msgid "Connection name cannot be empty"
+msgstr "Anslutningsnamnet kan inte lämnas tomt"
+
+msgid "Error"
+msgstr "Fel"
+
+msgid "Download URL cannot be empty."
+msgstr "Nedladdningslänk kan inte lämnas tom."
+
+msgid "Could not add server."
+msgstr "Kunde inte lägga till server."
+
+msgid "Reason:"
+msgstr "Anledning:"
+
+msgid "Folder "
+msgstr "Mapp"
+
+msgid "Server name:"
+msgstr "Servernamn:"
+
+msgid "Folder:"
+msgstr "Mapp:"
+
+msgid "URL for downloading:"
+msgstr "URL för nerladdning:"
+
+msgid "URL for downloading will look like:"
+msgstr "URL för nerladdning skall se ut som:"
+
+msgid "Server's name cannot be empty"
+msgstr "Servernamn kan inte lämnas tomt"
+
+msgid "Connection  name:"
+msgstr "Anslutningsnamn:"
+
+msgid "Authenticaton:"
+msgstr "Autentisering:"
+
+msgid "Preview"
+msgstr "Förhandsgranskning"
+
+msgid "Add FTP server..."
+msgstr "Lägg till FTP-server..."
+
+msgid "Add local folder as new server..."
+msgstr "Lägg till lokal mapp som server..."
+
+msgid "Image processing settings..."
+msgstr "Bildbehandlingsinställningar..."
+
+msgid "User name"
+msgstr "Användarnamn"
+
+msgid "Account..."
+msgstr "Konto..."
+
+msgid "Enter account information"
+msgstr "Ange kontouppgifter"
+
+msgid "Folder/album:"
+msgstr "Mapp/Album:"
+
+msgid "not set"
+msgstr "ej angivet"
+
+msgid "By default"
+msgstr "Som standard"
+
+msgid "Change account settings"
+msgstr "Ändra kontoinställningar"
+
+msgid "<no authentication>"
+msgstr "<ingen autentisering>"
+
+msgid "New account..."
+msgstr "Nytt konto..."
+
+msgid "Server and authentication settings"
+msgstr "Server och autentiseringsinställningar"
+
+msgid "Add Menu Item"
+msgstr "Lägg till menypost"
+
+msgid "Name cannot be empty"
+msgstr "Namn kan inte lämnas tomt"
+
+msgid "You have not selected server"
+msgstr "Du har inte valt server"
+
+msgid "Upload to %s"
+msgstr "Ladda upp till %s"
+
+msgid "folder \"%s\""
+msgstr "Mapp \"%s\""
+
+msgid "Default server for uploading images"
+msgstr "Standardserver för bilduppladdning"
+
+msgid "Default server for other file types"
+msgstr "Standardserver för andra filtyper"
+
+msgid "Server for quick screenshot uploading"
+msgstr "Server för snabb uppladdning av skärmklipp"
+
+msgid "Server for uploading from Explorer's context menu"
+msgstr "Server för uppladdning från Utforskarens kontextmeny"
+
+msgid "URL shortening server"
+msgstr "URL-förkortningsserver"
+
+msgid "Remember image server's settings in wizard"
+msgstr "Kom ihåg bildserverinställningar i guiden"
+
+msgid "Remember file server's settings in wizard"
+msgstr "Kom ihåg filserverinställningar i guiden"
+
+msgid "Server for uploading images"
+msgstr "Server för bilduppladdning"
+
+msgid "Immediately begin uploading to the server"
+msgstr "Börja ladda upp till servern utan fördröjning"
+
+msgid "Context menu custom items:"
+msgstr "Anpassade kontextmenyposter:"
+
+msgid "Sign in..."
+msgstr "Logga in..."
+
+msgid "Account with such name already exists."
+msgstr "Det finns redan ett konto med det namnet."
+
+msgid "Authenticated succesfully."
+msgstr "Autentisering genomförd."
+
+msgid "Could not authenticate. Please try again."
+msgstr "Kunde inte autentisera. Försök igen."
+
+msgid "Login cannot be empty"
+msgstr "Inloggning kan inte lämnas tomt"
+
+msgid "Delete account"
+msgstr "Ta bort konto"
+
+msgid "%s - Quick Setup"
+msgstr "%s - Snabbinställning"
+
+msgid "Random server"
+msgstr "Slumpmässig server"
+
+msgid "Enter your account information"
+msgstr "Ange dina kontouppgifter"
+
+msgid "I have an account on this server"
+msgstr "Jag har ett konto på den här servern"
+
+msgid " (optional)"
+msgstr "(valfritt)"
+
+msgid "Continue"
+msgstr "Fortsätt"
+
+msgid "Choose server for uploading images"
+msgstr "Välj server för bilduppladdning"
+
+msgid "Add an item to the context menu of Windows Explorer"
+msgstr "Lägg till en post i Utforskarens kontextmeny"
+
+msgid "not selected"
+msgstr "ej vald"
+
+msgid "Parameters:"
+msgstr "Parametrar:"
+
+msgid "Servers"
+msgstr "Servrar"
+
+msgid "Integration"
+msgstr "Integrering"
+
+msgid "Image processing"
+msgstr "Bildbehandling"
+
+msgid "By width"
+msgstr "Efter bredd"
+
+msgid "By height"
+msgstr "Efter höjd"
+
+msgid "By larger side"
+msgstr "Efter största måttet"
+
+msgid "Default settings"
+msgstr "Standardnställningar"
+
+msgid "Thumbnail settings"
+msgstr "Miniatyrinställningar"
+
+msgid "Scaling:"
+msgstr "Skalning"
+
+msgid "Server settings..."
+msgstr "Serverinställningar..."
+
+msgid "Name:"
+msgstr "Namn:"
+
+msgid "Use default thumbnail settings"
+msgstr "Standardinställningar för miniatyrer"
+
+msgid "Add local folder..."
+msgstr "Lägg till lokal mapp..."
+
+msgid "You have not selected account for server \"%s\""
+msgstr "du har inte valt konto för servern \"%s\""
+
+msgid "Unable to start process '%s'"
+msgstr "Kunde inte starta process '%s'"
+
+msgid "Remote directory:"
+msgstr "Fjärrmapp:"
+
+msgid "Contributors:"
+msgstr "Bidragsgivare:"
+
+msgid "%s translation:"
+msgstr "%s översättning:"
+
+msgid "Thanks to the authors of the following open-source libraries:"
+msgstr "Tack till utvecklarna va följande öppen källkodsbibliotek:"
+
+msgid "FFmpeg version:"
+msgstr "FFmpeg-version:"
+
+msgid "Author:"
+msgstr "Utvecklare:"
+
+msgid "Website:"
+msgstr "Webbplats:"
+
+msgid "Convert UNC path \"\\\\ to \"\"file://///\"\"\""
+msgstr "Konvertera UNC-sökväg \"\\\\ to \"\"file://///\"\"\""
+
+msgid "More colors..."
+msgstr "Fler färger..."
+
+msgid "Undo"
+msgstr "Ångra"
+
+msgid "Brush"
+msgstr "Pensel"
+
+msgid "Line"
+msgstr "Linje"
+
+msgid "Rectangle"
+msgstr "Rektangel"
+
+msgid "Crop"
+msgstr "Beskär"
+
+msgid "Rounded rectangle"
+msgstr "Rundad rektangel"
+
+msgid "Ellipse"
+msgstr "Ellips"
+
+msgid "Filled rectangle"
+msgstr "Fylld rektangel"
+
+msgid "Filled ellipse"
+msgstr "Fylld ellips"
+
+msgid "Image Editor"
+msgstr "Bildredigerare"
+
+msgid "Save as"
+msgstr "Spara som"
+
+msgid "Add to the list"
+msgstr "Lägg till i listan"
+
+msgid "Share"
+msgstr "Dela"
+
+msgid "Save"
+msgstr "Spara"
+
+msgid "Move"
+msgstr "Flytta"
+
+msgid "Highlight"
+msgstr "Markör"
+
+msgid "Arrow"
+msgstr "Pil"
+
+msgid "Blurring rectangle"
+msgstr "Oskärperektangel"
+
+msgid "Blur"
+msgstr "Oskärpa"
+
+msgid "Color chooser"
+msgstr "Färgväljare"
+
+msgid "Select region"
+msgstr "Välj område"
+
+msgid "Line thickness"
+msgstr "Linjebredd"
+
+msgid "Open in the editor"
+msgstr "Öppna i redigerare"
+
+msgid "Open in external editor"
+msgstr "Öppna i extern redigerare"
+
+msgid "Open screenshot in the editor"
+msgstr "Öppna skärmklippet i redigeraren"
+
+msgid "Aero only (Windows Vista or later)"
+msgstr "Endast Aero (Windows Vista eller senare)"
+
+msgid "This means that the thumbnail will be created by site, not the program."
+msgstr "Innebär att miniatyr skapas av sidan, inte programmet."
+
+msgid "Save changes?"
+msgstr "Vill du spara ändringarna?"
+
+msgid "Redo"
+msgstr "Upprepa"
+
+msgid "Cut"
+msgstr "Klipp ut"
+
+msgid "Text Options"
+msgstr "Textalternativ"
+
+msgid "Rounding radius"
+msgstr "Rundningsradie"
+
+msgid "SCRIPT"
+msgstr "SKRIPT"
+
+msgid "Preview Window"
+msgstr "Förhandsgranskningsfönster"
+
+msgid "Please enter the text you see in the image:"
+msgstr "Ange texten du ser i bilden:"
+
+msgid "Use old method of rectangular area selection"
+msgstr "Använd gamla metoden för rektangulär områdesmarkering"
+
+msgid "Settings file path:"
+msgstr "Inställningsfilens sökväg:"
+
+msgid "Add video files to the list after Drag'n'Drop"
+msgstr "Lägg till videofiler i listan efter Dra och Släpp"
+
+msgid "Allow Alt+Tab in fullscreen editor"
+msgstr "Tillåt Alt+Tab i helskärmsredigerare"
+
+msgid "%s of %s (%d%%) %s"
+msgstr "%s из %s (%d%%) %s"
+
+msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
+msgstr "Känn av PrintScreen и Alt+PrintScreen som snabbtangenter"

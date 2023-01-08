@@ -331,9 +331,12 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     if (currentDoc_ && currentDoc_->isSrcAnimated() && !verificationFlagChecked) {
         int buttonPressed;
         CTaskDialog dlg;
-        dlg.SetVerificationText(TR("Do not ask again"));
-        dlg.SetContentText(TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?"));
-        dlg.SetWindowTitle(TR("Image Editor"));
+        CString verText = TR("Do not ask again");
+        dlg.SetVerificationText(verText);
+        CString contentText = TR("Image Editor cannot deal with animated images. If you edit this file, animation will be lost. Do you wish to continue?");
+        dlg.SetContentText(contentText);
+        CString windowTitle = TR("Image Editor");
+        dlg.SetWindowTitle(windowTitle);
         dlg.SetCommonButtons(TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
         dlg.SetMainIcon(TD_WARNING_ICON);
         DWORD flags = TDF_POSITION_RELATIVE_TO_WINDOW | TDF_ALLOW_DIALOG_CANCELLATION;
@@ -1298,11 +1301,12 @@ bool ImageEditorWindow::createTooltip() {
 
 
     TOOLINFO ti = { 0 };
+    CString title = TR("Select region");
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = m_view.m_hWnd;
     ti.hinst    = _Module.GetModuleInstance();
-    ti.lpszText = TR_CONST("Select region");;
+    ti.lpszText = const_cast<LPWSTR>(title.GetString());
     m_view.GetClientRect(&ti.rect);
 
     // Associate the tooltip with the "tool" window.

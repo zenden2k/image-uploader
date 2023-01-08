@@ -48,7 +48,8 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         language_ = _T("English");
         return 0;
     }
-
+    TCHAR buffer[LOCALE_NAME_MAX_LENGTH];
+    GetUserDefaultLocaleName(buffer, LOCALE_NAME_MAX_LENGTH);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     // FIXME: detect system language and select corresponding language file
     if ( !settings->Language.IsEmpty() ) {

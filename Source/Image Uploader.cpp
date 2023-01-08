@@ -283,6 +283,18 @@ public:
         else {
             lang_.LoadLanguage(settings_.Language);
         }
+        boost::locale::generator gen;
+        std::string path = /*IuCoreUtils::Utf8ToAnsi*/ W2U(WinUtils::GetAppFolder() + _T("Lang\\locale\\"));/* CP_ACP);*/
+        gen.add_messages_path(path);
+        gen.add_messages_domain("imageuploader");
+        //std::locale::global(gen("ru_RU.UTF-8"));
+
+        try {
+            std::locale::global(gen("uk_UA.UTF-8"));
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
+
         AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
 
         if (lang_.isRTL()) {

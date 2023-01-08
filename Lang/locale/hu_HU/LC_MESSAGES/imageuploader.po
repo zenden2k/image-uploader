@@ -1,0 +1,1753 @@
+#. extracted from Hungarian.lng.csv
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-07 21:51+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.5.0\n"
+
+msgid "Clear"
+msgstr "Ürítés"
+
+msgid "Settings"
+msgstr "Beállítások"
+
+msgid "Upload images"
+msgstr "Képek feltöltése"
+
+msgid "Open by Image Uploader"
+msgstr "Megnyitás az Image Uploader-el"
+
+msgid "Couldn't load thumbnail preset!"
+msgstr "Nem sikerült betölteni a bélyegkép-készletet!"
+
+msgid "Waiting response from server..."
+msgstr "Várakozó válasz a szervertől..."
+
+msgid "Creating folder \""
+msgstr "Mappa létrehozása \""
+
+msgid "Sending file to server..."
+msgstr "Fájl küldése a szerverre..."
+
+msgid "Autorization on server..."
+msgstr "Engedélyeztetés a szerveren..."
+
+msgid "File: "
+msgstr "Fájl:"
+
+msgid "Server: "
+msgstr "Szerver:"
+
+msgid "Upload failed. Another retry (%d)..."
+msgstr "Feltöltés sikertelen. Egy másik próbálkozás (%d)..."
+
+msgid "Upload failed! (retry limit reached)"
+msgstr "Feltöltés sikertelen! (újra próbálkozási korlát)"
+
+msgid "Uploading module"
+msgstr "Feltöltési modul"
+
+msgid "Unable to load library MediaInfo.dll!"
+msgstr "Nem sikerült betölteni a MediaInfo.dll könyvtárat!"
+
+msgid "Filename: "
+msgstr "Fájl név:"
+
+msgid "Filesize: "
+msgstr "Fájl méret:"
+
+msgid "Duration: "
+msgstr "Időtartam:"
+
+msgid "Overall bitrate: "
+msgstr "Teljes bitráta:"
+
+msgid "Video: "
+msgstr "Videó:"
+
+msgid "Audio"
+msgstr "Audió:"
+
+msgid "Subtitles: "
+msgstr "Feliratok:"
+
+msgid "Downloading file "
+msgstr "Fájl letöltése"
+
+msgid "Error while updating component "
+msgstr "Hiba az összetevő frissítése közben"
+
+msgid "MD5 check of the update package failed "
+msgstr "MD5 frissítési csomag ellenőrzése sikertelen"
+
+msgid "Update finished. Updated %d of %d files "
+msgstr "A frissítés befejeződött. %d frissítve a %d fájlból"
+
+msgid "MD5 check failed for file "
+msgstr "MD5 fájl ellenőrzés sikertelen"
+
+msgid "Downloaded %s of %s (%d %%)"
+msgstr "%s letöltve a %s fájlból (%d %%)"
+
+msgid "Please enter the text you see in the image:"
+msgstr "Adja meg a képen látható szöveget:"
+
+msgid "SCRIPT"
+msgstr "Parancs"
+
+msgid "Unable to load picture"
+msgstr "Nem tölthető be a kép"
+
+msgid "Image processing settings..."
+msgstr "Képfeldolgozási beállítások..."
+
+msgid "Settings..."
+msgstr "Beállítások..."
+
+msgid "User name"
+msgstr "Felhasználó"
+
+msgid "Account..."
+msgstr "Fiók..."
+
+msgid "Enter account information"
+msgstr "Írja be a fiókadatokat"
+
+msgid "Folder/album:"
+msgstr "Mappa / Album:"
+
+msgid "not set"
+msgstr "nincs beállítva"
+
+msgid "By default"
+msgstr "Alapértelmezés szerint"
+
+msgid "Add FTP server..."
+msgstr "FTP-kiszolgáló hozzáadása..."
+
+msgid "Add local folder..."
+msgstr "Helyi mappa hozzáadása..."
+
+msgid "Change account settings"
+msgstr "Fiókbeállítások módosítása"
+
+msgid "<no authentication>"
+msgstr "<Nem hitelesített>"
+
+msgid "New account..."
+msgstr "Új fiók..."
+
+msgid "Server and authentication settings"
+msgstr "Kiszolgáló és hitelesítési beállítások"
+
+msgid "List of Images"
+msgstr "Képek listája"
+
+msgid "Cannot load thumbnail for image."
+msgstr "A kép miniatűrje nem tölthető be."
+
+msgid "File:"
+msgstr "Fájl:"
+
+msgid "Found a bug? Send it to the author"
+msgstr "Hibát talált? Küldje el a fejlesztőnek"
+
+msgid "Documentation"
+msgstr "Dokumentáció"
+
+msgid "Settings file path:"
+msgstr "Beállítás fájl elérési útja:"
+
+msgid "Thanks to:"
+msgstr "Köszönjük az itt felsoroltak munkáit:"
+
+msgid "Contributors:"
+msgstr "- Közreműködők:"
+
+msgid "translator_name"
+msgstr "LaMoLa"
+
+msgid "Translators:"
+msgstr "- Fordítók:"
+
+msgid "%s translation:"
+msgstr "%s fordítás:"
+
+msgid "Beta-testers:"
+msgstr "- Béta-tesztelők:"
+
+msgid "Thanks to the authors of the following open-source libraries:"
+msgstr "Köszönet a nyílt forráskódú könyvtárak szerzőinek:"
+
+msgid "FFmpeg version:"
+msgstr "FFmpeg változat:"
+
+msgid "About Image Uploader"
+msgstr "Image Uploader Névjegye"
+
+msgid "Author:"
+msgstr "Szerző:"
+
+msgid "Website:"
+msgstr "Weboldal:"
+
+msgid "Adding directory as server"
+msgstr "Könyvtár hozzáadása kiszolgálóként"
+
+msgid "Connection name cannot be empty"
+msgstr "A kapcsolat neve nem lehet üres"
+
+msgid "Error"
+msgstr "Hiba"
+
+msgid "Download URL cannot be empty."
+msgstr "Letöltési URL nem lehet üres."
+
+msgid "Could not add server."
+msgstr "Nem sikerült hozzáadni a kiszolgálót."
+
+msgid "Reason:"
+msgstr "Ok:"
+
+msgid "Folder "
+msgstr "Mappa"
+
+msgid "Select folder"
+msgstr "Mappa választás"
+
+msgid "Server name:"
+msgstr "Szerver név:"
+
+msgid "Folder:"
+msgstr "Mappa:"
+
+msgid "URL for downloading:"
+msgstr "URL letöltésre:"
+
+msgid "Cancel"
+msgstr "Mégse"
+
+msgid "URL for downloading will look like:"
+msgstr "A letöltési URL így fog kinézni:"
+
+msgid "Convert UNC path \"\\\\ to \"\"file://///\"\"\""
+msgstr "UNC elérési út konvertálása \"\\\\ to \"\"file://///\"\"\""
+
+msgid "Server's name cannot be empty"
+msgstr "A szerver neve nem lehet üres"
+
+msgid "Connection  name:"
+msgstr "Kapcsolat neve:"
+
+msgid "Server [:port]:"
+msgstr "Szerver [:port]:"
+
+msgid "Authenticaton:"
+msgstr "Hitelesítés:"
+
+msgid "Login:"
+msgstr "Kapcsolat:"
+
+msgid "Password:"
+msgstr "Jelszó:"
+
+msgid "Remote directory:"
+msgstr "Távoli könyvtár:"
+
+msgid "Clear History"
+msgstr "Előzmények törlése"
+
+msgid "All the time"
+msgstr "Mindig"
+
+msgid "Please choose period:"
+msgstr "Válasszon periódust:"
+
+msgid "Choose server"
+msgstr "Válasszon szervert"
+
+msgid "Add Menu Item"
+msgstr "Adjon hozzá a menüpontot"
+
+msgid "Name cannot be empty"
+msgstr "A név nem lehet üres"
+
+msgid "You have not selected server"
+msgstr "Nem választotta ki a kiszolgálót"
+
+msgid "You have not selected account for server \"%s\""
+msgstr "Nem választotta ki a kiszolgáló fiókját \"%s\""
+
+msgid "Upload to %s"
+msgstr "Feltöltés ide %s"
+
+msgid "folder \"%s\""
+msgstr "mappa \"%s\""
+
+msgid "Name:"
+msgstr "Név:"
+
+msgid "Images"
+msgstr "Képek"
+
+msgid "Thumbnails"
+msgstr "Miniatűrök"
+
+msgid "Apply"
+msgstr "Alkalmaz"
+
+msgid "Default server for uploading images"
+msgstr "Alapértelmezett kiszolgáló a képek feltöltéséhez"
+
+msgid "Default server for other file types"
+msgstr "Alapértelmezett kiszolgáló más fájltípusokhoz"
+
+msgid "Server for quick screenshot uploading"
+msgstr "Szerver gyors képernyőfelvétel feltöltéshez"
+
+msgid "Server for uploading from Explorer's context menu"
+msgstr "Szerver az Intéző helyi menüjéből való feltöltéshez"
+
+msgid "URL shortening server"
+msgstr "URL-t rövidítő szerver"
+
+msgid "Remember image server's settings in wizard"
+msgstr "Ne felejtse el a képszerver beállításait a varázslóban"
+
+msgid "Remember file server's settings in wizard"
+msgstr "Ne felejtse el a fájlszerver beállításait a varázslóban"
+
+msgid "Exit"
+msgstr "Kilépés"
+
+msgid "Shortening URL \"%s\" using %s"
+msgstr "URL rövidítése \"%s\" a %s használatával"
+
+msgid "Upload files"
+msgstr "Fájlok feltöltése"
+
+msgid "Upload folder"
+msgstr "Mappa feltöltése"
+
+msgid "Paste"
+msgstr "Beillesztés"
+
+msgid "Import Video File"
+msgstr "Videófájl importálása"
+
+msgid "Screenshot"
+msgstr "Pillanatfelvétel"
+
+msgid "Capture Selected Area"
+msgstr "Kijelölt terület mentése"
+
+msgid "Capture the Entire Screen"
+msgstr "Teljes képernyő mentése"
+
+msgid "Capture the Active Window"
+msgstr "Aktív ablak mentése"
+
+msgid "Capture Selected Object"
+msgstr "Kijelölt objektum mentése"
+
+msgid "Freehand Capture"
+msgstr "Szabadon kijelölt rész mentése"
+
+msgid "Open in the editor"
+msgstr "Megnyitás a szerkesztőben"
+
+msgid "Upload to Web"
+msgstr "Feltöltés a Webre"
+
+msgid "Copy to Clipboard"
+msgstr "Másolás a vágólapra"
+
+msgid "Open in Wizard"
+msgstr "Megnyitás a varázslóval"
+
+msgid "Add to Wizard"
+msgstr "Hozzáadás a varázslóhoz"
+
+msgid "Shorten a link"
+msgstr "Link nevének rövidítése"
+
+msgid "Show program's window"
+msgstr "Főablak megnyitása"
+
+msgid "Open screenshots folder"
+msgstr "Tároló mappa megnyitása..."
+
+msgid "Show results of last upload"
+msgstr "Utolsó feltöltési eredmények megjelenítése"
+
+msgid "Stop uploading"
+msgstr "Feltöltés leállítása"
+
+msgid "File \"%s\" is beeing uploaded to server %s.."
+msgstr "A \"%s\" fájl fel lett töltve, a %s szerverre..."
+
+msgid "Uploading screenshot"
+msgstr "Képernyőfelvétel feltöltése"
+
+msgid "Could not upload screenshot :("
+msgstr "Nem sikerült feltölteni a képernyőfelvételt :("
+
+msgid "(the link has been copied to the clipboard)"
+msgstr "(link a vágólapra másolva)"
+
+msgid "Short URL"
+msgstr "Rövid URL"
+
+msgid "Unable to shorten the link..."
+msgstr "Nem sikerült lerövidíteni a linket..."
+
+msgid "View log for details."
+msgstr "Részletek megtekintése a naplófájlból."
+
+msgid "Click on this message to view details..."
+msgstr "A részletek megtekintéséhez kattintson erre az üzenetre..."
+
+msgid "Screenshot was uploaded"
+msgstr "A képernyőfelvétel fel lett töltve"
+
+msgid "Screenshot was saved to clipboard."
+msgstr "A képernyőfelvétel mentve lett a vágólapra."
+
+msgid "Screenshot Action"
+msgstr "Képernyőfelvétel"
+
+msgid "Searching for picture files..."
+msgstr "Képfájlok keresése ..."
+
+msgid "Collecting files..."
+msgstr "Fájlok gyűjtése ..."
+
+msgid "Processing folder:"
+msgstr "Feldolgozó mappa:"
+
+msgid "No pictures were found."
+msgstr "Nincsenek képek."
+
+msgid "No files were found."
+msgstr "Nem található fájl."
+
+msgid "Executables"
+msgstr "Futtathatók"
+
+msgid "All files"
+msgstr "Minden fájl"
+
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr ""
+"Vegye figyelembe, hogy a programot újra kell indítani az új nyelvi "
+"beállítások, aktíválásához."
+
+msgid "Interface language:"
+msgstr "Nyelv:"
+
+msgid "Show Error Log"
+msgstr "Hibák megtekintése"
+
+msgid "Error control"
+msgstr "Hibakezelő"
+
+msgid "Images editor:"
+msgstr "Képszerkesztő:"
+
+msgid "Show automatically log window in case of error"
+msgstr "Automatikusan megjeleníti a naplóablakot hiba esetén"
+
+msgid "Ask confirmation on exit"
+msgstr "A kilépéshez kérjen megerősítést"
+
+msgid "Add video files to the list after Drag'n'Drop"
+msgstr "Videófájlok hozzáadása a listához a 'Húzd és Ejtsd' után"
+
+msgid "Developer mode"
+msgstr "Fejlesztői mód"
+
+msgid "Automatically check for updates"
+msgstr "Frissítések automatikus ellenőrzése"
+
+msgid "Upload History"
+msgstr "Előznények feltöltése"
+
+msgid "Open in Web Browser"
+msgstr "Megnyitás a Böngészőben"
+
+msgid "Copy URL"
+msgstr "URL másolása"
+
+msgid "View BBCode/HTML codes"
+msgstr "BB/HTML kódok megtekintése"
+
+msgid "Open in folder"
+msgstr "Megnyitás mappában"
+
+msgid "Edit file on server"
+msgstr "Fájl szerkesztése a szerveren"
+
+msgid "Delete file from server"
+msgstr "Fájl törlése a szerverről"
+
+msgid "Close"
+msgstr "Bezár"
+
+msgid "Session total:"
+msgstr "Összes munkamenet:"
+
+msgid "Files total:"
+msgstr "Összes fájl:"
+
+msgid "Total size:"
+msgstr "Teljes méret:"
+
+msgid "Retrieve thumbnails from the Internet"
+msgstr "Bélyegképek lekérése az internetről"
+
+msgid "Clear History..."
+msgstr "Előzmények törlése..."
+
+msgid "Local hotkey:"
+msgstr "Helyi gyorsbillentyű:"
+
+msgid "Global hotkey:"
+msgstr "Globális gyorsbillentyű:"
+
+msgid "Action"
+msgstr "Művelet"
+
+msgid "Local"
+msgstr "Helyi"
+
+msgid "Global"
+msgstr "Globális"
+
+msgid "Clear all"
+msgstr "Mind törli"
+
+msgid "Do nothing"
+msgstr "Ne csinálj semmit"
+
+msgid "Tray icon context menu"
+msgstr "Tálca ikon kontextus menü"
+
+msgid "Capture Rectangular Region"
+msgstr "Négyszögletes terület rögzítése"
+
+msgid "Images from web"
+msgstr "Képek a webről"
+
+msgid "View Media File Information"
+msgstr "Médiafájl információk..."
+
+msgid "Shorten a link from the clipboard"
+msgstr "Rövidítse le a hivatkozást..."
+
+msgid "Reupload images"
+msgstr "Képek újratöltése"
+
+msgid "Edit hotkey..."
+msgstr "Gyorsbillentyű szerk."
+
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr ""
+"Figyelem! - A globális gyorsbillentyűk csak akkor aktívak, ha a tálca ikon "
+"látható."
+
+msgid "Image Downloader"
+msgstr "Kép letöltő"
+
+msgid "Add"
+msgstr "Hozzáad"
+
+msgid "Watch Clipboard for URLs"
+msgstr "URL-ekhez tartozó vágólap figyelése"
+
+msgid "Enter URLs (one http:// or ftp:// link per line)"
+msgstr "Adja meg az URL-eket (egy http:// vagy ftp:// link lehet soronként)"
+
+msgid "Re-upload images"
+msgstr "Képek újbóli feltöltése"
+
+msgid "Server for uploading images"
+msgstr "Szerver a képek feltöltésére"
+
+msgid "Server"
+msgstr "Szerver"
+
+msgid ""
+"Invalid source URL: '%s'. Absolute URL is needed, including schema "
+"(http,https,etc)"
+msgstr ""
+"Érvénytelen forrás URL: '%s'. Abszolút URL szükséges, beleértve a sémát "
+"(http,https,stb.)"
+
+msgid "Could not find links in the given text!"
+msgstr "Nem található link az adott szövegben!"
+
+msgid "Uploaded images: "
+msgstr "Feltöltött képek:"
+
+msgid "Downloaded: "
+msgstr "Letöltve:"
+
+msgid "Reupload"
+msgstr "Feltöltés újra"
+
+msgid "Copy to clipboard"
+msgstr "Másolás a vágólapra"
+
+msgid "Source code"
+msgstr "Forráskód"
+
+msgid "List of URLs"
+msgstr "URL-címek listája"
+
+msgid ""
+"Enter the text containing links to images (HTML, BBcode, or just plain text):"
+msgstr ""
+"Adja meg a képekre mutató linkeket tartalmazó szöveget (HTML, BBcode vagy "
+"egyszerű szöveg):"
+
+msgid "Paste HTML from clipboard"
+msgstr "HTML-beillesztés a vágólapból"
+
+msgid "Source URL (optional):"
+msgstr "Forrás URL (opcionális):"
+
+msgid "Paste HTML on Ctrl+V"
+msgstr "Illessze be a HTML-t a Ctrl + V-vel"
+
+msgid "Reuploading images in the text with preserving it's original markup"
+msgstr "Képek áttöltése a szövegbe az eredeti jelölés megőrzésével"
+
+msgid "Add Item"
+msgstr "Elem hozzáadása"
+
+msgid "Remove Item"
+msgstr "Elem eltávolítása"
+
+msgid "Move Up"
+msgstr "Feljebb"
+
+msgid "Move Down"
+msgstr "Lejjebb"
+
+msgid "Windows Explorer integration"
+msgstr "Windows Intéző-integráció"
+
+msgid "Shell context menu integration"
+msgstr "Rendszerhéj helyi menüjének integrációja"
+
+msgid "Add item to pictures' context menu"
+msgstr "Elem hozzáadása a képek helyi menühöz"
+
+msgid "Immediately begin uploading to the server"
+msgstr "Azonnal kezdje el feltölteni a szerverre"
+
+msgid "Add item to video files' context menu"
+msgstr "Elem hozzáadása a videófájlok helyi menühöz"
+
+msgid "Cascaded context menu"
+msgstr "Lépcsőzetes helyi menü"
+
+msgid "Integration in menu \"Send to\""
+msgstr "Integrálás a \"Küldés\" menübe"
+
+msgid "Context menu custom items:"
+msgstr "Helyi menü Egyéni elemek:"
+
+msgid "Autorization parameters"
+msgstr "Engedélyezési paraméterek"
+
+msgid "Sign in..."
+msgstr "Bejelentkezés..."
+
+msgid "Don't have an account? Sign up on %s right now"
+msgstr "Nincs fiókja? Jelentkezzen be a %s webhelyre"
+
+msgid "Remove this account from the list (not from the remote server)"
+msgstr "Távolítsa el ezt a fiókot a listáról (nem a távoli kiszolgálóról)"
+
+msgid "Account with such name already exists."
+msgstr "Az ilyen névvel rendelkező fiók már létezik."
+
+msgid "Authenticated succesfully."
+msgstr "Sikeresen hitelesítve."
+
+msgid "Could not authenticate. Please try again."
+msgstr "Nem sikerült hitelesíteni. Próbálja újra."
+
+msgid "Login cannot be empty"
+msgstr "A bejelentkezés nem lehet üres"
+
+msgid "Authorize"
+msgstr "Engedélyezés"
+
+msgid "Delete account"
+msgstr "Fiók törlése"
+
+msgid "Additional params"
+msgstr "További paraméterek"
+
+msgid "Fit"
+msgstr "Illesztés"
+
+msgid "Center"
+msgstr "Középre"
+
+msgid "Stretch"
+msgstr "Nyújtás"
+
+msgid "Auto"
+msgstr "Auto."
+
+msgid "Top left corner"
+msgstr "Bal felső sarokban"
+
+msgid "Top center"
+msgstr "Felül középen"
+
+msgid "Top right corner"
+msgstr "Jobb felső sarokban"
+
+msgid "Bottom left corner"
+msgstr "Bal alsó sarokban"
+
+msgid "Bottom center"
+msgstr "Alul középen"
+
+msgid "Bottom right corner"
+msgstr "Jobb alsó sarokban"
+
+msgid "Create Profile"
+msgstr "Profil létrehozása"
+
+msgid "Save Profile"
+msgstr "Profil mentése"
+
+msgid "Delete Profile"
+msgstr "Profil törlése"
+
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr ""
+"Biztos abban, hogy a képet és a logót ugyanabban a pozícióban helyezi el a "
+"képen?"
+
+msgid "Image settings"
+msgstr "Képbeállítások"
+
+msgid "New Profile Name"
+msgstr "Új profilnév"
+
+msgid "Enter new profile name:"
+msgstr "Új profilnév megadása:"
+
+msgid "Current profile's changes weren't saved. Do you want to continue?"
+msgstr "A jelenlegi profil módosításai nem lettek elmentve. Folytatja?"
+
+msgid "(edited)"
+msgstr "(szerkesztett)"
+
+msgid "New profile"
+msgstr "Új profil"
+
+msgid "Are you sure you want to delete profile '%s'?"
+msgstr "Valóban törli a '%s' profilt?"
+
+msgid "Profile:"
+msgstr "Profil:"
+
+msgid "Format:"
+msgstr "Formátum:"
+
+msgid "Quality:"
+msgstr "Minőség:"
+
+msgid "Change width:"
+msgstr "Szélesség módosítása:"
+
+msgid "Add watermark"
+msgstr "Vízjel hozzáadása a képhez"
+
+msgid "Skip image processing step if the image has right parameters"
+msgstr "Hagyja ki ezt a lépést, ha megfelelők a kép paraméterek."
+
+msgid "Constrain proportions"
+msgstr "Arányok korlátozása"
+
+msgid "Add text to image"
+msgstr "Szöveg hozzáadása a képhez"
+
+msgid "and/or height:"
+msgstr "és/vagy magasság:"
+
+msgid "Resize mode:"
+msgstr "Átméretezés:"
+
+msgid "Filename:"
+msgstr "Fájlnév:"
+
+msgid "Watermark position:"
+msgstr "Vízjel pozíció:"
+
+msgid "Watermark"
+msgstr "Vízjel a képen"
+
+msgid "Text on image"
+msgstr "Szöveg a képen"
+
+msgid "Enter your text:"
+msgstr "A szöveg:"
+
+msgid "Text color:"
+msgstr "Szövegszín:"
+
+msgid "Stroke color:"
+msgstr "Körvonal színe:"
+
+msgid "Font..."
+msgstr "Betűtípus..."
+
+msgid "Text position:"
+msgstr "Szöveg pozíció:"
+
+msgid "Preserve EXIF data"
+msgstr "EXIF ​​adatok megőrzése"
+
+msgid "Copy"
+msgstr "Másolás"
+
+msgid "Clear list"
+msgstr "Lista törlése"
+
+msgid "Error log"
+msgstr "Hibaüzenet"
+
+msgid "Hide"
+msgstr "Elrejt"
+
+msgid "Add Images"
+msgstr "Képek hozzáadása"
+
+msgid "Add Files"
+msgstr "Fájlok hozzáadása"
+
+msgid "Add folder"
+msgstr "Mappa hozzáadása"
+
+msgid "Remove all"
+msgstr "Összes eltávolítása"
+
+msgid "View"
+msgstr "Nézet"
+
+msgid "Show in default viewer"
+msgstr "Megjelenítés az alapértelmezett nézőkében"
+
+msgid "Print..."
+msgstr "Nyomtatás..."
+
+msgid "Save as..."
+msgstr "Mentés másként..."
+
+msgid "Extract frames"
+msgstr "Képkockák kibontása"
+
+msgid "Copy image"
+msgstr "Kép másolása"
+
+msgid "Copy full path"
+msgstr "Teljes elérési út másolása"
+
+msgid "Remove"
+msgstr "Eltávolítás"
+
+msgid "Properties"
+msgstr "Tulajdonságok"
+
+msgid "Edit"
+msgstr "Szerkesztés"
+
+msgid "Open in external editor"
+msgstr "Megnyitás külső szerkesztőben"
+
+msgid "Search by image"
+msgstr "Kép szerinti keresés"
+
+msgid "Files"
+msgstr "Fájlok"
+
+msgid "Cannot copy file: "
+msgstr "Nem lehet másolni a fájlt:"
+
+msgid "Cannot copy file "
+msgstr "Nem lehet másolni a fájlt"
+
+msgid "data:URI"
+msgstr "adatként: URI"
+
+msgid "data:URI (HTML)"
+msgstr "adatként: URI (HTML)"
+
+msgid "Copy &as..."
+msgstr "Másolás &másként..."
+
+msgid "Remove from list"
+msgstr "Törlés a listáról"
+
+msgid "Information about file"
+msgstr "Fájl információ"
+
+msgid "Loading..."
+msgstr "Betöltés..."
+
+msgid "Error:"
+msgstr "Hiba:"
+
+msgid "Create folder (album)"
+msgstr "Mappa létrehozása (album)"
+
+msgid "Edit folder"
+msgstr "Mappa szerkesztése"
+
+msgid "Folder name:"
+msgstr "Mappa neve:"
+
+msgid "Summary:"
+msgstr "Összefoglaló:"
+
+msgid "Access:"
+msgstr "Hozzáférés:"
+
+msgid "%s - Quick Setup"
+msgstr "%s - Gyors beállítás"
+
+msgid "Random server"
+msgstr "Véletlen szerver"
+
+msgid "Enter your account information"
+msgstr "Adja meg fiókadatait"
+
+msgid "I have an account on this server"
+msgstr "Van egy fiókom ezen a szerveren"
+
+msgid " (optional)"
+msgstr "(választható)"
+
+msgid "Continue"
+msgstr "Tovább"
+
+msgid "Choose server for uploading images"
+msgstr "Válasszon szervert a képek feltöltéséhez"
+
+msgid "Launch program on Windows startup"
+msgstr "Indítsa el a programot a rendszer indításakor"
+
+msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
+msgstr "A PrintScreen és az Alt + PrintScreen gyorsbillentyűk átugrása"
+
+msgid "Add an item to the context menu of Windows Explorer"
+msgstr "Elem felvétele a Windows Intéző helyi menüjébe"
+
+msgid "Info about last video"
+msgstr "Információ az utolsó videóról"
+
+msgid "Options"
+msgstr "Beállítások"
+
+msgid "Preview"
+msgstr "Előnézet"
+
+msgid "Table of clickable thumbnails"
+msgstr "Kattintható miniatűrök táblázata"
+
+msgid "Clickable thumbnails"
+msgstr "Kattintható miniatűrök"
+
+msgid "Links to Images/Files"
+msgstr "Hivatkozások képekhez/fájlokhoz"
+
+msgid "File not found."
+msgstr "Fájl nem található."
+
+msgid "Shorten URL using %s"
+msgstr "Rövidítse le az URL-t %s használatával"
+
+msgid "Shorten URL"
+msgstr "Rövidítse az URL-t"
+
+msgid "Copy URL  "
+msgstr "URL másolása"
+
+msgid "Preview Window"
+msgstr "Előnézeti ablak"
+
+msgid "Use direct links"
+msgstr "Használjon közvetlen linkeket"
+
+msgid "Use template"
+msgstr "Használjon sablont"
+
+msgid "Images per string:"
+msgstr "Képek soronként:"
+
+msgid "Code type:"
+msgstr "Kód típusa:"
+
+msgid "Upload results"
+msgstr "Eredmények feltöltése"
+
+msgid "Forum code (BBCode)"
+msgstr "Fórum kód (BBkód)"
+
+msgid "HTML code"
+msgstr "HTML kód"
+
+msgid "Links (URL)"
+msgstr "Linkek (URL)"
+
+msgid "Screen Capture"
+msgstr "Képernyőfelvétel"
+
+msgid "Timeout:"
+msgstr "Időtúllépés:"
+
+msgid "sec"
+msgstr "mp."
+
+msgid "Open screenshot in the editor"
+msgstr "Képernyőfelvétel megnyitása a szerkesztőben"
+
+msgid "Clear window transparent corners"
+msgstr "Átlátszó sarkok ablak törlése"
+
+msgid "File name cannot contains forbidden characters!"
+msgstr "A fájlnév nem tartalmazhat tiltott karaktereket!"
+
+msgid "Additional settings"
+msgstr "További beállítások"
+
+msgid "msec"
+msgstr "msec."
+
+msgid "Browse..."
+msgstr "Tallózás..."
+
+msgid "Directory to save screenshots:"
+msgstr "A képernyőfelvételekek mentése mappa:"
+
+msgid "Filename format:"
+msgstr "Fájlnév formátum:"
+
+msgid "Delay when hiding window:"
+msgstr "Az ablak elrejtésének késleltetése:"
+
+msgid "Always copy captured image to clipboard"
+msgstr "Mindig másolja a rögzített képet a vágólapra"
+
+msgid "Saving parameters"
+msgstr "Paraméterek mentése"
+
+msgid "Bring window to foreground when selected by mouse"
+msgstr "Húzza az ablakot az előtérbe, ha az egérrel van kijelölve"
+
+msgid "Capture with shadow"
+msgstr "Rögzítés árnyékkal"
+
+msgid "Allow Alt+Tab in fullscreen editor"
+msgstr "Alt+Tab engedélyezése a teljes képernyős szerkesztőben"
+
+msgid "Clear window's background"
+msgstr "Törölje az ablak hátterét"
+
+msgid "Aero only (Windows Vista or later)"
+msgstr "Csak Aero (Windows Vista vagy újabb)"
+
+msgid "Use old method of rectangular area selection"
+msgstr "Használja a régi négyszögletes területkiválasztási módszert"
+
+msgid "Uploading image..."
+msgstr "Kép feltöltésee..."
+
+msgid "Folder list"
+msgstr "Mappalista"
+
+msgid "Folder list on server %s for account '%s':"
+msgstr "Mappalista a %s kiszolgálón a '%s' fiókhoz:"
+
+msgid "Create nested folder"
+msgstr "Beágyazott mappa létrehozása"
+
+msgid "Create folder"
+msgstr "Mappa létrehozása"
+
+msgid "Failed to load folder list."
+msgstr "Nem sikerült betölteni a mappalistát."
+
+msgid "%s server settings"
+msgstr "%s szerver beállítások"
+
+msgid "not selected"
+msgstr "nincs kiválasztva"
+
+msgid "Select..."
+msgstr "Tallózás"
+
+msgid "Parameters:"
+msgstr "Paraméterek:"
+
+msgid "General"
+msgstr "Általános"
+
+msgid "Servers"
+msgstr "Szerverek"
+
+msgid "Video"
+msgstr "Videó"
+
+msgid "Uploading"
+msgstr "Feltöltés"
+
+msgid "Integration"
+msgstr "Beillesztés"
+
+msgid "Tray icon"
+msgstr "Tálca ikon"
+
+msgid "Hotkeys"
+msgstr "Gyorsbillentyűk"
+
+msgid "Settings have been saved."
+msgstr "A beállítások elmentve."
+
+msgid "Url Shortener"
+msgstr "URL Rövidítő"
+
+msgid "The short link has been copied to the clipboard!"
+msgstr "A rövid link át lett másolva a vágólapra!"
+
+msgid "Shorten"
+msgstr "Rövidítés"
+
+msgid "Paste a link to shorten it:"
+msgstr "Illesszen be egy linket, hogy lerövidítse:"
+
+msgid "File size exceeding"
+msgstr "A fájl mérete meghaladja a..."
+
+msgid "Server for other file types"
+msgstr "Szerver más fájltípusokhoz"
+
+msgid "File"
+msgstr "Fájl"
+
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "A fájl meghaladja a \"%s\" határt a szerveren (%s)."
+
+msgid "You have not selected server!"
+msgstr "Nem választotta ki a kiszolgálót (szervert)!"
+
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr ""
+"Módosítsa a képfeldolgozási beállításokat, vagy válasszon másik kiszolgálót, "
+"így a kép feltölthető."
+
+msgid "To all"
+msgstr "Az összesre"
+
+msgid "Ignore"
+msgstr "Figyelmen kívül hagy"
+
+msgid "Thumbnail Preset Editor"
+msgstr "Miniatűr készlet szerkesztő"
+
+msgid "Colors"
+msgstr "Színek"
+
+msgid "Frame color:"
+msgstr "Keret színe:"
+
+msgid "Gradient color 1:"
+msgstr "Színátmenet 1:"
+
+msgid "Gradient color 2:"
+msgstr "Színátmenet 2:"
+
+msgid "Draw frame"
+msgstr "Keret rajzolás"
+
+msgid "Width:"
+msgstr "Szélesség:"
+
+msgid "Text Settings:"
+msgstr "Szöveg beállítások:"
+
+msgid "Text:"
+msgstr "Szöveg:"
+
+msgid "Add text"
+msgstr "Szöveg hozzáadása"
+
+msgid "Same format as image"
+msgstr "Képpel azonos formátum"
+
+msgid "Creating new thumbnail preset"
+msgstr "Új miniatűr-beállításkészlet létrehozása"
+
+msgid "Enter new thumbnail preset name:"
+msgstr "Adja meg az új miniatűr beállításkészlet nevét:"
+
+msgid "Profile with such name already exists!"
+msgstr "Ilyen nevű profil már létezik!"
+
+msgid "Thumbnail text:"
+msgstr "Bélyegkép felirat:"
+
+msgid "Background color:"
+msgstr "Háttérszín:"
+
+msgid "Height:"
+msgstr "Magasság:"
+
+msgid "Thumbnail Preset:"
+msgstr "Bélyegkép beállítása:"
+
+msgid "Create a Copy"
+msgstr "Másolat létrehozása"
+
+msgid "Show tray icon"
+msgstr "Mutassa a tálca ikont"
+
+msgid "Mouse clicks handlers"
+msgstr "Egérklikk kezelés"
+
+msgid "Left button double-click"
+msgstr "Bal egér dupla klikk"
+
+msgid "Left button single click:"
+msgstr "Bal egér klikk:"
+
+msgid "Middle button click:"
+msgstr "Középső gomb, klikk:"
+
+msgid "Right button click:"
+msgstr "Jobb klikk:"
+
+msgid "Do not launch new program's instance from tray"
+msgstr "Ne indítson új program példányt a tálcából"
+
+msgid "Image Uploader Updates"
+msgstr "Image Updater - Frissítés keresése"
+
+msgid "Component name"
+msgstr "Összetevő neve"
+
+msgid "Status"
+msgstr "Állapota"
+
+msgid "Checking for updates..."
+msgstr "Frissítések keresése..."
+
+msgid "An error occured while receiving update information from server."
+msgstr "Hiba történt,  a frissítési információk fogadásakor a szerverről."
+
+msgid "Queued"
+msgstr "Ütemezve"
+
+msgid "Finish"
+msgstr "Kész"
+
+msgid "Thumbnail"
+msgstr "Miniatűr"
+
+msgid "Finish >"
+msgstr "Kész >"
+
+msgid "Links (%d)"
+msgstr "Linkek (%d)"
+
+msgid "Upload progress"
+msgstr "Feltöltés folyamata"
+
+msgid "Links"
+msgstr "Linkek"
+
+msgid "Log"
+msgstr "Napló"
+
+msgid "All files have been successfully uploaded."
+msgstr "Az összes fájl sikeresen feltöltve."
+
+msgid "File uploading was cancelled by user."
+msgstr "Felhasználói megszakítás."
+
+msgid "Errors: %d"
+msgstr "Hibák száma: %d"
+
+msgid "Uploading has been finished."
+msgstr "A feltöltés befejeződött."
+
+msgid "%s of %s (%d%%) %s"
+msgstr "%s a %s-ból (%d%%) %s"
+
+msgid "Progress:"
+msgstr "Folyamat:"
+
+msgid "Image processing"
+msgstr "Képfeldolgozás"
+
+msgid "By width"
+msgstr "szélesség szerint"
+
+msgid "By height"
+msgstr "magasság szerint"
+
+msgid "By larger side"
+msgstr "hosszabb oldal alapján"
+
+msgid "Default settings"
+msgstr "Alapértelmezett beállítások"
+
+msgid "Process images before upload"
+msgstr "Képek feldolgozása feltöltés előtt"
+
+msgid "Thumbnail settings"
+msgstr "Miniatűr beállítások"
+
+msgid "Create thumbnails"
+msgstr "Bélyegképek létrehozása"
+
+msgid "Use server-side thumbnails"
+msgstr "Kiszolgálóoldali bélyegképek használata"
+
+msgid "Scaling:"
+msgstr "Méretezés:"
+
+msgid "Use default thumbnail settings"
+msgstr "Alapértelmezett bélyegkép-beállítások használata"
+
+msgid "Shorten URLs"
+msgstr "URL-ek rövidítése"
+
+msgid "This means that the thumbnail will be created by site, not the program."
+msgstr ""
+"Ez azt jelenti, hogy a miniatűr jön létre a helyszínen, nem pedig a program."
+
+msgid "Edit Profile"
+msgstr "Profil szerkesztése"
+
+msgid "Choose server..."
+msgstr "Szerver kiválasztása..."
+
+msgid "Choose folder..."
+msgstr "Mappa kiválasztása..."
+
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "Adja meg a hitelesítési beállításokat a '%s' szervernek!"
+
+msgid "&Upload"
+msgstr "&Feltöltés"
+
+msgid "Specify account..."
+msgstr "Adja meg a fiókot..."
+
+msgid "Account is not enabled"
+msgstr "A fiók nem engedélyezett"
+
+msgid "No Folder Selected"
+msgstr "Nincs mappa kijelölve"
+
+msgid "Don't resize"
+msgstr "Ne méretezze át"
+
+msgid "Add local folder as new server..."
+msgstr "Helyi mappa hozzáadása új szerverként..."
+
+msgid "Server settings..."
+msgstr "Szerver beállítások..."
+
+msgid "New folder"
+msgstr "Új mappa"
+
+msgid "Server settings"
+msgstr "Szerver beállítások"
+
+msgid "Go to signup page"
+msgstr "Ugrás a feliratkozási oldalra"
+
+msgid "Server to host your images"
+msgstr "Szerver a képek tárolására"
+
+msgid "Thumbnail width:"
+msgstr "Miniatűr szélessége:"
+
+msgid "Add text on thumbnail"
+msgstr "Szöveg hozzáadása a miniatűrökhöz"
+
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "Klikk a \"Feltöltés\" gombra a feltöltés megkezdéséhez."
+
+msgid "Server to host other file formats"
+msgstr "Szerver más fájlformátumok tárolására"
+
+msgid "File %s doesn't exist"
+msgstr "A %s fájl nem létezik"
+
+msgid "Connection settings"
+msgstr "Kapcsolat beállítása"
+
+msgid "Address:"
+msgstr "Cím:"
+
+msgid "Proxy type:"
+msgstr "Proxy Típus:"
+
+msgid "Authorization on proxy"
+msgstr "Meghatalmazás a proxyn"
+
+msgid "Copy automatically results to clipboard"
+msgstr "Automatikus másolás a vágólapra"
+
+msgid "Uploading errors"
+msgstr "Feltöltési hibák"
+
+msgid " Num of retries per file:"
+msgstr "Egy fájlhoz tartozó újrapróbálkozások száma:"
+
+msgid "Num of retries per action:"
+msgstr "Egy művelethez tartozó újrapróbálkozások száma:"
+
+msgid "Upload Buffer Size:"
+msgstr "Feltöltési puffer mérete:"
+
+msgid "Threads number:"
+msgstr "Szálak száma:"
+
+msgid "Execute Squirrel script for each task (file)"
+msgstr "Futtassa a Squirrel parancsfájlt minden feladathoz (fájl)"
+
+msgid "Open containing folder"
+msgstr "Konténer mappa megnyitása"
+
+msgid "Video engine which is used to extract frames from a video file."
+msgstr "Videómotor, amely a képkockák kiemelésére szolgál videofájlból."
+
+msgid "Next >"
+msgstr "Tovább >"
+
+msgid "Extracting frame "
+msgstr "Képkivágás"
+
+msgid "Extracting video frames was stopped by user."
+msgstr "A videó képkockák kibontását a felhasználó leállította."
+
+msgid "Video files"
+msgstr "Videó fájlok"
+
+msgid "Grab"
+msgstr "Kiemelés"
+
+msgid "Extracting video frames was finished."
+msgstr "A videóképkocka kibontása befejeződött."
+
+msgid "Extracting frames from video"
+msgstr "Képkocka kivágása videóból..."
+
+msgid "Deinterlace"
+msgstr "Átalakítás"
+
+msgid "Number of frames:"
+msgstr "Kockák száma:"
+
+msgid "Multiple files"
+msgstr "Több fájl"
+
+msgid "Single file"
+msgstr "Egyetlen fájl"
+
+msgid "Save as:"
+msgstr "Mentés másként:"
+
+msgid "Appearance options"
+msgstr "Megjelenítési lehetőségek"
+
+msgid "Number of columns:"
+msgstr "Oszlopok száma:"
+
+msgid "Horizontal interval:"
+msgstr "Vízszintes cella:"
+
+msgid "Vertical interval:"
+msgstr "Függőleges cella:"
+
+msgid "Frames layout"
+msgstr "Keretek elrendezése"
+
+msgid "Display video file information on resulting picture"
+msgstr "A képen megjelenő videofájl információinak megjelenítése"
+
+msgid "Folder for snapshots:"
+msgstr "Pillanatfelvételek mappája:"
+
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "JPEG, PNG, GIF, BMP vagy bármely más fájl"
+
+msgid "Add Files..."
+msgstr "Fájlok hozzáadása..."
+
+msgid "From Web"
+msgstr "Webről"
+
+msgid "Add Folder..."
+msgstr "Mappa hozzáadása..."
+
+msgid "From Clipboard"
+msgstr "Vágólapról"
+
+msgid "a pic of the whole screen or selected region"
+msgstr "Teljes képernyő vagy kijelölt terület mentése"
+
+msgid "Shot of Selected Region..."
+msgstr "A kijelölt terület felvétele..."
+
+msgid "a tool for advanced users"
+msgstr "Részletes beállítások hozzáértők számára"
+
+msgid "History"
+msgstr "Előzmények"
+
+msgid "Select action:"
+msgstr "Válasszon műveletet:"
+
+msgid "Advice:"
+msgstr "Tipp:"
+
+msgid ""
+"Just drag-n-drop your files on Image Uploader's window and it will process "
+"them."
+msgstr ""
+"<- Húzza át ide balra, a Képfeltöltő ablakba a fájlokat, feldolgozásra..."
+
+msgid ""
+"Welcome to pictures Publishing Wizard, that will help you to upload your "
+"images, photos, video frames on Internet!"
+msgstr ""
+"Üdvözli a Képmegosztó Varázsló, amely segíti feltölteni  fényképeit, videóit "
+"az Internetre!"
+
+msgid "Help"
+msgstr "Súgó"
+
+msgid "%s - Updates available"
+msgstr "%s - Frissítés érhető el"
+
+msgid "Images settings and choosing server"
+msgstr "A képek beállításai és a szerver kiválasztása"
+
+msgid "Uploading file on server"
+msgstr "Fájl feltöltése a szerverre"
+
+msgid "Could not save settings file. See error log for details."
+msgstr ""
+"A beállítási fájl mentése nem sikerült. Lásd a hibajelentést a részletekért."
+
+msgid "Including subdirectories"
+msgstr "Almappákkal együtt."
+
+msgid "Any file"
+msgstr "Bármely fájl"
+
+msgid "Are you sure to quit?"
+msgstr "Valóban kilép?"
+
+msgid "Audio files"
+msgstr "Hangfájlok"
+
+msgid "About..."
+msgstr "Névjegy..."
+
+msgid "Check for Updates"
+msgstr "Frissítések keresése"
+
+msgid "< Back"
+msgstr "< Vissza"
+
+msgid "Updates are available"
+msgstr "Frissítések állnak rendelkezésre"
+
+msgid "Upload Images"
+msgstr "Képek feltöltése"
+
+msgid "Screenshot..."
+msgstr "Pillanatfelvétel..."
+
+msgid "More colors..."
+msgstr "További színek..."
+
+msgid "Image Editor"
+msgstr "Képszerkesztő"
+
+msgid "Rectangle"
+msgstr "Téglalap"
+
+msgid "Rounded rectangle"
+msgstr "Kerekített téglalap"
+
+msgid "Ellipse"
+msgstr "Ellipszis"
+
+msgid "Filled rectangle"
+msgstr "Kitöltött téglalap"
+
+msgid "Filled ellipse"
+msgstr "Kitöltött ellipszis"
+
+msgid "Save as"
+msgstr "Mentés másként"
+
+msgid "Copy in data:URI format"
+msgstr "Másolás adatként: URI-formátum"
+
+msgid "Copy in data:URI format (html)"
+msgstr "Másolás adatként: URI-formátum (html)"
+
+msgid "Add to the list"
+msgstr "Hozzáadás a listához"
+
+msgid "Share"
+msgstr "Megosztás"
+
+msgid "Save"
+msgstr "Mentés"
+
+msgid "Move"
+msgstr "Áthelyezés"
+
+msgid "Selection"
+msgstr "Kijelölés"
+
+msgid "Crop"
+msgstr "Vágás"
+
+msgid "Brush"
+msgstr "Ecset"
+
+msgid "Highlight"
+msgstr "Kiemelő"
+
+msgid "Line"
+msgstr "Vonal"
+
+msgid "Arrow"
+msgstr "Nyíl"
+
+msgid "Text"
+msgstr "Szöveg - Felirat"
+
+msgid "Blurring rectangle"
+msgstr "Elkenő - szögletes rész"
+
+msgid "Blur"
+msgstr "Elkenés"
+
+msgid "Color chooser"
+msgstr "Színmintavétel"
+
+msgid "Undo"
+msgstr "Visszavonás - mégse..."
+
+msgid "Save changes?"
+msgstr "Elmenti a változtatásokat?"
+
+msgid "Select region"
+msgstr "Terület kijelölése"
+
+msgid "Redo"
+msgstr "Újból"
+
+msgid "Cut"
+msgstr "Vágás"
+
+msgid "Text Options"
+msgstr "Szöveg beállításai"
+
+msgid "Line thickness"
+msgstr "Vonalvastagság"
+
+msgid "Rounding radius"
+msgstr "Kerekítés sugara"
+
+msgid "Upload images only"
+msgstr "Csak képeket töltsön fel"
+
+msgid "Unable to start process '%s'"
+msgstr "Nem sikerült elindítani a '%s' folyamatot"
+
+msgid ""
+"%y - year, %m - month, %d - day\n"
+"%h - hour, %n - minute, %s - seconds\n"
+" %i - image index,\n"
+"%width% - width of image,  %height% - height of image"
+msgstr ""
+"%y - év, %m - hónap, %d - nap\n"
+"%h - óra, %n - perc, %s - np.\n"
+" %i - kép index,\n"
+"%width% - kép szélessége,  %height% - kép magassága"
+
+msgid ""
+"Upload to server '%s' is impossible without account.\n"
+"You should sign Up on this server and specify your account details in "
+"program settings."
+msgstr ""
+"A '%s' szerverre való feltöltéshez, fiók megléte szükséges.\n"
+"Fel kell iratkozni a szerverre megadni az adatait és a program beállításait."
+
+msgid ""
+"%f% - name of videofile without extension, \n"
+"%fe% -  name of videofile, \n"
+"%ext% - extension, \n"
+"%y% - year, %m% - month, %d% - day\n"
+"%h% - hour, %n% - minute, %s% - second\n"
+" %i% - file counter,\n"
+"%cx% - width,  %cy% - height"
+msgstr ""
+"%f% - videófájl neve kiterjesztés nélkül, \n"
+"%fe% -  Videófájl neve, \n"
+"%ext% - Kiterjesztése, \n"
+"%y% - Év, %m% - Hó, %d% - Nap\n"
+"%h% - Óra, %n% - Perc, %s% - mp.\n"
+" %i% - fájlszámláló,\n"
+"%cx% - szélesség,  %cy% - magasság"
+
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"Nem lehet betölteni a \"servers.xml\"-t, a kiszolgálók listáját!\n"
+"\n"
+"Ennek oka:  %s\n"
+"\n"
+"Folytatja?"
+
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr ""
+"MediaInfo.dll nem található! \n"
+"A médiafájlok adatai nem lesz elérhető."

@@ -904,16 +904,19 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
-    mi.dwTypeData = TR_CONST("Use direct links");
+    CString useDirectLinks = TR("Use direct links");
+    mi.dwTypeData = const_cast<LPWSTR>(useDirectLinks.GetString());
     sub.InsertMenuItem(count++, true, &mi);
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_GROUPBYFILENAME;
-    mi.dwTypeData = TR_CONST("Group by filename");
+    CString groupByFilename = TR("Group by filename");
+    mi.dwTypeData = const_cast<LPWSTR>(groupByFilename.GetString());
     sub.InsertMenuItem(count++, true, &mi);
 
     mi.wID = IDC_USETEMPLATE;
-    mi.dwTypeData = TR_CONST("Use template");
+    CString useTemplate = TR("Use template");
+    mi.dwTypeData = const_cast<LPWSTR>(useTemplate.GetString());
     sub.InsertMenuItem(count++, true, &mi);
 
     int insertedServersCount = 0;

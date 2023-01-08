@@ -210,10 +210,10 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
         
         CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR(""), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
         
         CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, _T(""), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR(""), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
         
         CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
         CurrentToolbar.AutoSize();
@@ -359,7 +359,7 @@ bool CUploadSettings::OnNext()
         if (ue->NeedAuthorization == CUploadEngineData::naObligatory && sessionImageServer.profileName().empty())
         { 
             CString errorMsg;
-            errorMsg.Format(TR("Upload to server '%s' is impossible without account.\r\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
+            errorMsg.Format(TR("Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
             GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
             return false;
         }
@@ -806,16 +806,16 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fType |= MFT_MENUBARBREAK;
             lastMenuBreakIndex = menuItemCount;
         }
-        
-        mi.dwTypeData = TR_CONST("Add FTP/SFTP server...");
+        CString addFtpServerStr = TR("Add FTP/SFTP server...");
+        mi.dwTypeData = const_cast<LPWSTR>(addFtpServerStr.GetString());
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
         mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
         mi.fType = MFT_STRING;
         mi.wID = isImageServer ? IDC_ADD_DIRECTORY_AS_SERVER : IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST;
-
-        mi.dwTypeData = TR_CONST("Add local folder as new server...");
+        CString addLocalFolderStr = TR("Add local folder as new server...");
+        mi.dwTypeData = const_cast<LPWSTR>(addLocalFolderStr.GetString());
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
@@ -838,7 +838,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             int i =0;
             if ( serverUsers.size() && !serverProfile.profileName().empty() ) {
                 mi.wID = IDC_LOGINTOOLBUTTON + static_cast<int>(isImageServer);
-                mi.dwTypeData = TR_CONST("Change account settings");
+                CString changeAccountSettingsStr = TR("Change account settings");
+                mi.dwTypeData = const_cast<LPWSTR>(changeAccountSettingsStr.GetString());
                 sub.InsertMenuItem(i++, true, &mi);
             } else {
                 addedSeparator = true;
@@ -849,7 +850,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
             if(plug && plug->supportsSettings()) {
                 mi.wID = IDC_SERVERPARAMS + static_cast<int>(isImageServer);
-                mi.dwTypeData = TR_CONST("Server settings...");
+                CString serverSettingsStr = TR("Server settings...");
+                mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());
                 sub.InsertMenuItem(i++, true, &mi);
             }
             int command = IDC_USERNAME_FIRST_ID;
@@ -898,8 +900,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
                 mi.fType = MFT_STRING;
                 mi.wID = IDC_NO_ACCOUNT + !isImageServer;
-
-                mi.dwTypeData  = TR_CONST("<no authentication>");
+                CString noAthenticationStr = TR("<no authentication>");
+                mi.dwTypeData  = const_cast<LPWSTR>(noAthenticationStr.GetString());
                 sub.InsertMenuItem(i++, true, &mi);
             }
   
@@ -915,8 +917,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
             mi.fType = MFT_STRING;
             mi.wID = IDC_ADD_ACCOUNT + !isImageServer;
-
-            mi.dwTypeData  = TR_CONST("New account...");
+            CString newAccountStr = TR("New account...");
+            mi.dwTypeData  = const_cast<LPWSTR>(newAccountStr.GetString());
 
             sub.InsertMenuItem(i++, true, &mi);
             sub.SetMenuDefaultItem(0,TRUE);
@@ -990,7 +992,8 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
 
     sub.CreatePopupMenu();
     mi.wID = IDC_NEWFOLDER + static_cast<int>(isImageServerToolbar);
-    mi.dwTypeData = TR_CONST("New folder");
+    CString newFolderStr = TR("New folder");
+    mi.dwTypeData = const_cast<LPWSTR>(newFolderStr.GetString());
     sub.InsertMenuItem(0, true, &mi);
 
     if (!serverProfile.folderUrl().empty()) {
@@ -1061,12 +1064,14 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
-    mi.dwTypeData = TR_CONST("Server settings");
+    CString serverSettingsStr = TR("Server settings");
+    mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());
     sub.InsertMenuItem(0, true, &mi);
     if(!serverProfile.uploadEngineData()->RegistrationUrl.empty())
     {
         mi.wID = IDC_OPENREGISTERURL + (int)isImageServerToolbar;
-        mi.dwTypeData = TR_CONST("Go to signup page");
+        CString goToSignupPageStr = TR("Go to signup page");
+        mi.dwTypeData = const_cast<LPWSTR>(goToSignupPageStr.GetString());
         sub.InsertMenuItem(1, true, &mi);
     }
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);

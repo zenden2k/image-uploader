@@ -206,10 +206,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
             CMenu subMenu;
             subMenu.CreatePopupMenu();
-            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, TR_CONST("data:URI"));
-            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, TR_CONST("data:URI (HTML)"));
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, TR("data:URI"));
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, TR("data:URI (HTML)"));
 
-            contextMenu.AppendMenu(0, subMenu.Detach(), TR_CONST("Copy &as..."));
+            contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as..."));
 
             CString itemText;
             itemText.Format(TR("Search by image (%s)"), _T("Google"));

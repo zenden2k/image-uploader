@@ -1,0 +1,1068 @@
+#. extracted from Hrvatski.lng.csv
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-07 21:50+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.5.0\n"
+
+msgid "OK"
+msgstr "U redu"
+
+msgid "Cancel"
+msgstr "Poništi"
+
+msgid "Autorization parameters"
+msgstr "Parametri dozvole"
+
+msgid "Login:"
+msgstr "Pristup:"
+
+msgid "Password:"
+msgstr "Zaporka:"
+
+msgid "Additional params"
+msgstr "Dodatni parametri"
+
+msgid "Top left corner"
+msgstr "Gore lijevo"
+
+msgid "Top center"
+msgstr "Gore sredina"
+
+msgid "Top right corner"
+msgstr "Gore desno"
+
+msgid "Bottom left corner"
+msgstr "Dolje lijevo"
+
+msgid "Bottom center"
+msgstr "Dolje sredina"
+
+msgid "Bottom right corner"
+msgstr "Dolje desno"
+
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr "Postavljanje teksta i logotipa na isto mjesto?"
+
+msgid "Image settings"
+msgstr "Postavke slike"
+
+msgid "Filename:"
+msgstr "Datoteka:"
+
+msgid "Watermark position:"
+msgstr "Smještaj vodenog žiga:"
+
+msgid "Text on image"
+msgstr "Tekst na slici"
+
+msgid "Enter your text:"
+msgstr "Unos proizvoljnog teksta:"
+
+msgid "Text color:"
+msgstr "Boja teksta:"
+
+msgid "Stroke color:"
+msgstr "Boja ruba:"
+
+msgid "Gradient color 1:"
+msgstr "Boja prijelaza 1:"
+
+msgid "Gradient color 2:"
+msgstr "Boja prijelaza 2:"
+
+msgid "View"
+msgstr "Pogled"
+
+msgid "Remove"
+msgstr "Ukloni"
+
+msgid "Properties"
+msgstr "Postavke"
+
+msgid "Edit"
+msgstr "Uredi"
+
+msgid "Add Images"
+msgstr "Dodaj slike"
+
+msgid "Import Video File"
+msgstr "Uvezi video datoteku"
+
+msgid "Remove from list"
+msgstr "Ukloni sa popisa"
+
+msgid "Loading..."
+msgstr "Učitavanje..."
+
+msgid "Information about file"
+msgstr "Podaci o datoteci"
+
+msgid "Copy to clipboard"
+msgstr "Kopiraj u međuspremnik"
+
+msgid "Quality:"
+msgstr "Kvaliteta:"
+
+msgid "Timeout:"
+msgstr "Prekoračenje vremena:"
+
+msgid "Format:"
+msgstr "Oblik:"
+
+msgid "sec"
+msgstr "sek"
+
+msgid "Settings"
+msgstr "Podešavanje"
+
+msgid "General"
+msgstr "Općenito"
+
+msgid "Apply"
+msgstr "Primjeni"
+
+msgid "Auto"
+msgstr "Automatski"
+
+msgid "File"
+msgstr "Datoteka"
+
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "Datoteka prijelazi dozvoljenu veličinu \"%s\" na poslužitelju (%s)."
+
+msgid "Table of clickable thumbnails"
+msgstr "Popis klikabilnih sličica"
+
+msgid "Clickable thumbnails"
+msgstr "Klikabilne sličice"
+
+msgid "Autorization on server..."
+msgstr "Dozvole na poslužitelju..."
+
+msgid "Stop"
+msgstr "Zaustavi"
+
+msgid "File uploading was cancelled by user."
+msgstr "Korisnik je prekinuo slanje."
+
+msgid "Finish >"
+msgstr "Završi >"
+
+msgid "Images per string:"
+msgstr "Slike u nizu:"
+
+msgid "Code type:"
+msgstr "Tip koda:"
+
+msgid "&Upload"
+msgstr "&Pošalji"
+
+msgid "Change width:"
+msgstr "Promjeni širinu:"
+
+msgid "Constrain proportions"
+msgstr "Zadrži proporcije"
+
+msgid "and/or height:"
+msgstr "i/ili visinu:"
+
+msgid "Add text to image"
+msgstr "Dodaj tekst slici"
+
+msgid "Draw frame"
+msgstr "Nacrtaj okvir"
+
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "Kliknite \"Pošalji\" za početak slanja."
+
+msgid "Use template"
+msgstr "Koristi predložak"
+
+msgid "Extracting frames from video"
+msgstr "Izdvajanje kadrova iz videa"
+
+msgid "Browse..."
+msgstr "Traži..."
+
+msgid "Deinterlace"
+msgstr "Bez preplitanja"
+
+msgid "Number of frames:"
+msgstr "Broj kadrova:"
+
+msgid "Multiple files"
+msgstr "Više datoteka"
+
+msgid "Single file"
+msgstr "Jedna datoteka"
+
+msgid "Save as:"
+msgstr "Spremi kao:"
+
+msgid "Grab"
+msgstr "Hvatanje"
+
+msgid "Settings..."
+msgstr "Postavke..."
+
+msgid "Appearance options"
+msgstr "Opcije izgleda"
+
+msgid "Number of columns:"
+msgstr "Broj stupaca:"
+
+msgid "Thumbnail width:"
+msgstr "Širina sličice:"
+
+msgid "Horizontal interval:"
+msgstr "Vodoravni razmak:"
+
+msgid "Vertical interval:"
+msgstr "Okomiti razmak:"
+
+msgid "Add Folder..."
+msgstr "Dodaj mapu..."
+
+msgid "From Clipboard"
+msgstr "Iz međuspremnika"
+
+msgid "View Media File Information"
+msgstr "Vidi informacije o datoteci"
+
+msgid "Shot of Selected Region..."
+msgstr "Snimak odabranog dijela..."
+
+msgid "a tool for advanced users"
+msgstr "alati za napredne korisnike"
+
+msgid "Select action:"
+msgstr "Odaberi akciju:"
+
+msgid "Advice:"
+msgstr "Savjet:"
+
+msgid ""
+"Just drag-n-drop your files on Image Uploader's window and it will process "
+"them."
+msgstr ""
+"Odabranu video datoteku možete jednostavno dovući i ispustiti \n"
+"u prozor 'Image Uploader' aplikacije."
+
+msgid ""
+"Welcome to pictures Publishing Wizard, that will help you to upload your "
+"images, photos, video frames on Internet!"
+msgstr "Dobrodošli u čarobnog pomoćnika za objavu slika na internetu!"
+
+msgid "Are you sure to quit?"
+msgstr "Sigurni ste da želite prekinuti rad?"
+
+msgid "Next >"
+msgstr "Dalje >"
+
+msgid "Images settings and choosing server"
+msgstr "Postavke slika i odabir poslužitelja"
+
+msgid "Uploading file on server"
+msgstr "Slanje na poslužitelj"
+
+msgid "Including subdirectories"
+msgstr "Ubaci i podmape"
+
+msgid "About..."
+msgstr "O programu"
+
+msgid "Exit"
+msgstr "Izlaz"
+
+msgid "< Back"
+msgstr "< Nazad"
+
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr ""
+"Promijeni postavke rada ili odaberi drugi poslužitelj tako da slika može "
+"biti poslana."
+
+msgid "To all"
+msgstr "Za sve"
+
+msgid "Ignore"
+msgstr "Zanemari"
+
+msgid "File size exceeding"
+msgstr "Datoteka prijelazi dozvoljenu veličinu"
+
+msgid "Windows Explorer integration"
+msgstr "Udruživanje sa 'Windows Explorer'-om"
+
+msgid "Add item to pictures' context menu"
+msgstr "Dodaj stavku u izbornik slika"
+
+msgid "Add item to video files' context menu"
+msgstr "Dodaj stavku u izbornik videa"
+
+msgid "Connection settings"
+msgstr "Postavke veze"
+
+msgid "Address:"
+msgstr "Adresa:"
+
+msgid "Proxy type:"
+msgstr "Tip proksija:"
+
+msgid "Authorization on proxy"
+msgstr "Dozvole proksija"
+
+msgid "Watermark"
+msgstr "Vodeni žig"
+
+msgid "Add watermark"
+msgstr "Dodaj vodeni pečat"
+
+msgid "Add folder"
+msgstr "Dodaj mapu"
+
+msgid "Paste"
+msgstr "Zalijepi"
+
+msgid "Remove all"
+msgstr "Ukloni sve"
+
+msgid "Unable to load picture"
+msgstr "Ne mogu poslati sliku"
+
+msgid "Screenshot"
+msgstr "Snimak ekrana"
+
+msgid "About Image Uploader"
+msgstr "O 'Image Uploader'"
+
+msgid "Beta-testers:"
+msgstr "Beta-testeri:"
+
+msgid "Filename: "
+msgstr "Ime:"
+
+msgid "Filesize: "
+msgstr "Veličina:"
+
+msgid "Duration: "
+msgstr "Trajanje:"
+
+msgid "Subtitles: "
+msgstr "Natpisi:"
+
+msgid "Interface language:"
+msgstr "Jezik sučelja:"
+
+msgid "Video files"
+msgstr "Video datoteke"
+
+msgid "All files"
+msgstr "Sve datoteke"
+
+msgid "Images"
+msgstr "Slike"
+
+msgid "Error:"
+msgstr "Greška:"
+
+msgid "Upload images"
+msgstr "Pošalji slike"
+
+msgid "Open by Image Uploader"
+msgstr "Otvori sa Image Uploader"
+
+msgid "Info about last video"
+msgstr "Informacije o nedavno otvaranom videu"
+
+msgid "Extracting video frames was stopped by user."
+msgstr "Korisnik zaustavio izdvajanje sličica."
+
+msgid "Extracting video frames was finished."
+msgstr "Izdvajanje završeno."
+
+msgid "Audio files"
+msgstr "Zvučne datoteke"
+
+msgid "Extracting frame "
+msgstr "Izdvajanje ..."
+
+msgid "Overall bitrate: "
+msgstr "Ukupna brzina prijenosa:"
+
+msgid "Translators:"
+msgstr "Prevoditelji:"
+
+msgid "Executables"
+msgstr "Izvršne"
+
+msgid "Images editor:"
+msgstr "Uređivač slika:"
+
+msgid "Searching for picture files..."
+msgstr "Traženje slika..."
+
+msgid "Processing folder:"
+msgstr "Obrada mape:"
+
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr "Ponovo pokrenite aplikaciju kako bi primjenili novi jezik."
+
+msgid "Copy automatically results to clipboard"
+msgstr "Automatski kopiraj rezultat u međuspremnik"
+
+msgid "Frames layout"
+msgstr "Izgled okvira"
+
+msgid "Show Error Log"
+msgstr "Pokaži zapis pogreške"
+
+msgid "Error control"
+msgstr "Kontrola greške"
+
+msgid "Show automatically log window in case of error"
+msgstr "Automatski prikaži izvještaj ako ima greški"
+
+msgid "Error log"
+msgstr "Izvještaj o greški"
+
+msgid "Hide"
+msgstr "Sakrij"
+
+msgid "List of Images"
+msgstr "Popis slika"
+
+msgid "Cannot load thumbnail for image."
+msgstr "Ne mogu učitati minijaturu za sliku."
+
+msgid "Uploading module"
+msgstr "Način slanja"
+
+msgid "File:"
+msgstr "Datoteka:"
+
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr ""
+"MediaInfo.dll nije nađena! \n"
+"Preuzimanje informacije medijske datoteke nije dostupno."
+
+msgid "Clear list"
+msgstr "Obriši popis"
+
+msgid "Integration in menu \"Send to\""
+msgstr "Udruživanje sa \"Send to\" izbornikom"
+
+msgid "Unable to load library MediaInfo.dll!"
+msgstr "Neuspješno učitavanje MediaInfo.dll!"
+
+msgid "Ask confirmation on exit"
+msgstr "Potvrdi izlaz"
+
+msgid "Capture the Entire Screen"
+msgstr "Snimi cijeli ekran"
+
+msgid "Capture the Active Window"
+msgstr "Snimi aktivni prozor"
+
+msgid "Close"
+msgstr "Zatvori"
+
+msgid "Upload failed. Another retry (%d)..."
+msgstr "Pogreška u slanju. Drugi pokušaj (%d)..."
+
+msgid "Upload failed! (retry limit reached)"
+msgstr "Pogrešno slanje! (dosegnuta granica pokušaja)"
+
+msgid "Waiting response from server..."
+msgstr "Čekam na odgovor poslužitelja..."
+
+msgid "Sending file to server..."
+msgstr "Slanje datoteke na poslužitelj..."
+
+msgid "Uploading errors"
+msgstr "Greška slanja"
+
+msgid " Num of retries per file:"
+msgstr "Ponavljanje po datoteci:"
+
+msgid "Num of retries per action:"
+msgstr "Broj ponavljanja po akciji:"
+
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"Ne mogu učitasti spisak poslužitelja \"servers.xml\"!\n"
+"\n"
+"Razlog:  %s\n"
+"\n"
+"Nastaviti?"
+
+msgid "File not found."
+msgstr "Datoteka nije pronađena."
+
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "JPEG, PNG, GIF, BMP ili drugu datoteku"
+
+msgid "Any file"
+msgstr "Neka datoteka"
+
+msgid "Add Files"
+msgstr "Dodaj datoteke"
+
+msgid "Links to Images/Files"
+msgstr "Linkovi za slike/datoteke"
+
+msgid "Open in folder"
+msgstr "Otvori u mapi"
+
+msgid ""
+"Would you like to grab frames from this video?\n"
+"(otherwise file just  will be added to list)"
+msgstr ""
+"Hoćete li uzeti okvire iz ovog videa?\n"
+"(inače će datoteka biti dodana u popis)"
+
+msgid "Shell context menu integration"
+msgstr "Integracija školjke kontekstualnog izbornika"
+
+msgid "Cascaded context menu"
+msgstr "Padajući izbornik"
+
+msgid "Upload files"
+msgstr "Slanje datoteka"
+
+msgid "Upload images only"
+msgstr "Slanje samo slike"
+
+msgid "Collecting files..."
+msgstr "Prikupljanje datoteka..."
+
+msgid "No pictures were found."
+msgstr "Nijedna slika nije pronađena."
+
+msgid "No files were found."
+msgstr "Nijedna dototeka nije nije pronađena."
+
+msgid "Upload folder"
+msgstr "Šalji mapu"
+
+msgid "Show program's window"
+msgstr "Prikaži prozor programa"
+
+msgid "Tray icon context menu"
+msgstr "Kontekstni izbornik statusne ikone"
+
+msgid "Do nothing"
+msgstr "Ne radi ništa"
+
+msgid "Edit hotkey..."
+msgstr "Uredi prečac..."
+
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr "Pozor! Opći prečaci su aktivni samo ako je vidljiva statusna ikona."
+
+msgid "Uploading"
+msgstr "Slanje"
+
+msgid "Tray icon"
+msgstr "Statusna ikona"
+
+msgid "Hotkeys"
+msgstr "Prečaci"
+
+msgid "Show tray icon"
+msgstr "Pokaži statusnu ikonu"
+
+msgid "Mouse clicks handlers"
+msgstr "Rukovanje klikovima miša"
+
+msgid "Left button double-click"
+msgstr "Lijevi gumb dvo-klik:"
+
+msgid "Left button single click:"
+msgstr "Lijevi gumb jedno-klik:"
+
+msgid "Middle button click:"
+msgstr "Srednji gumb klik:"
+
+msgid "Right button click:"
+msgstr "Desni gumb klik:"
+
+msgid "Do not launch new program's instance from tray"
+msgstr "Ne pokreći novu instancu programa iz statusnog retka"
+
+msgid "Action"
+msgstr "Akcija"
+
+msgid "Local"
+msgstr "Lokalno"
+
+msgid "Global"
+msgstr "Opće"
+
+msgid "Local hotkey:"
+msgstr "Lokalni prečac:"
+
+msgid "Global hotkey:"
+msgstr "Opći prečac:"
+
+msgid "Clear all"
+msgstr "Očisti sve"
+
+msgid "Authorize"
+msgstr "Dozvoli"
+
+msgid "Create folder (album)"
+msgstr "Kreiraj mapu (album)"
+
+msgid "Edit folder"
+msgstr "Uredi mapu"
+
+msgid "Folder name:"
+msgstr "Naziv mape:"
+
+msgid "Summary:"
+msgstr "Sažetak:"
+
+msgid "Access:"
+msgstr "Pristup:"
+
+msgid "Options"
+msgstr "Opcije"
+
+msgid "Copy URL  "
+msgstr "Kopiraj poveznicu"
+
+msgid "Use direct links"
+msgstr "Koristi izravno povezivanje"
+
+msgid "Folder list"
+msgstr "Popis mape"
+
+msgid "Folder list on server %s for account '%s':"
+msgstr "Popis mapa na poslužitelju %s za račun '%s':"
+
+msgid "Open in Web Browser"
+msgstr "Otvori u Web pretraživaču"
+
+msgid "Create nested folder"
+msgstr "Kreiraj ugniježđenu mapu"
+
+msgid "Create folder"
+msgstr "Kreiraj mapu"
+
+msgid "Failed to load folder list."
+msgstr "Neuspješno učitavanje popisa mape."
+
+msgid "%s server settings"
+msgstr "Postavke poslužitelja %s"
+
+msgid "Image Uploader Updates"
+msgstr "Image Uploader ažuriranje"
+
+msgid "Component name"
+msgstr "Ime komponente"
+
+msgid "Status"
+msgstr "Stanje"
+
+msgid "Checking for updates..."
+msgstr "Provjera dostupnih ažuriranja..."
+
+msgid "An error occured while receiving update information from server."
+msgstr "Greška pri preuzimanju obnove sa poslužitelja."
+
+msgid "Queued"
+msgstr "U nizu"
+
+msgid "Finish"
+msgstr "Završi"
+
+msgid "Forum code (BBCode)"
+msgstr "Kôd za forum (BBCode)"
+
+msgid "HTML code"
+msgstr "HTML kôd"
+
+msgid "Links (URL)"
+msgstr "Poveznica (URL)"
+
+msgid "Creating folder \""
+msgstr "Kreiranje mape \""
+
+msgid "Choose server..."
+msgstr "Odabir poslužitelja..."
+
+msgid "Choose folder..."
+msgstr "Odabir mape..."
+
+msgid "Choose server"
+msgstr "Odabir poslužitelja"
+
+msgid "Specify account..."
+msgstr "Odredite račun..."
+
+msgid "Account is not enabled"
+msgstr "Račun nije omogućen"
+
+msgid "No Folder Selected"
+msgstr "Mapa nije odabrana"
+
+msgid "New folder"
+msgstr "Nova mapa"
+
+msgid "Go to signup page"
+msgstr "Idi na stranicu za prijavu"
+
+msgid "Server to host your images"
+msgstr "Server za spremanje vaših slika"
+
+msgid "Server to host other file formats"
+msgstr "Server za spremanje drugih datoteka"
+
+msgid "Display video file information on resulting picture"
+msgstr "Pokaži info o videu na završnoj slici"
+
+msgid "Select folder"
+msgstr "Odabir mape"
+
+msgid "Check for Updates"
+msgstr "Provjera ažuriranja"
+
+msgid "Updates are available"
+msgstr "Ažuriranja su dostupna"
+
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "Odrediti dozvole za poslužitelj '%s'!"
+
+msgid "Server settings"
+msgstr "Postavke poslužitelja"
+
+msgid "Capture Selected Area"
+msgstr "Uhvati odabrano područje"
+
+msgid "Capture Selected Object"
+msgstr "Uhvati odabrani objekt"
+
+msgid "Freehand Capture"
+msgstr "Slobodnoručno odabrano hvatanje"
+
+msgid "Image Downloader"
+msgstr "Skidanje slike"
+
+msgid "Add"
+msgstr "Dodaj"
+
+msgid "Watch Clipboard for URLs"
+msgstr "Nadgledaj međuspremnik za poveznice"
+
+msgid "Enter URLs (one http:// or ftp:// link per line)"
+msgstr "Unos linka (jedan http:// ili ftp:// link po liniji)"
+
+msgid "Capture Rectangular Region"
+msgstr "Uhvati pravokutnik"
+
+msgid "Screen Capture"
+msgstr "Uslikavanje ekrana"
+
+msgid "Additional settings"
+msgstr "Dodatne postavke"
+
+msgid "Saving parameters"
+msgstr "Spremanje parametara"
+
+msgid "Bring window to foreground when selected by mouse"
+msgstr "Postavi prozor u prvi plan ako je odabran mišem"
+
+msgid ""
+"%y - year, %m - month, %d - day\n"
+"%h - hour, %n - minute, %s - seconds\n"
+" %i - image index,\n"
+"%width% - width of image,  %height% - height of image"
+msgstr ""
+"%y - godina, %m - mjesec, %d - dan\n"
+"%h - sat, %n - minuti, %s - sekunde\n"
+" %i - indeks slike,\n"
+"%width% - širina slike,  %height% - visina slike"
+
+msgid "Uploading has been finished."
+msgstr "Slanje je završeno."
+
+msgid ""
+"Upload to server '%s' is impossible without account.\n"
+"You should sign Up on this server and specify your account details in "
+"program settings."
+msgstr ""
+"Slanje na poslužitelj '%s' nije dostupno bez računa.\n"
+"Trebate se prijaviti na poslužitelj i odrediti detalje računa u postavkama "
+"programa."
+
+msgid "Upload Buffer Size:"
+msgstr "Veličina spremnika slanja:"
+
+msgid "Add Files..."
+msgstr "Dodaj datoteke..."
+
+msgid "From Web"
+msgstr "Sa interneta"
+
+msgid "a pic of the whole screen or selected region"
+msgstr "slika cijelog ekrana ili odabranog područja"
+
+msgid "Upload to Web"
+msgstr "Pošalji na internet"
+
+msgid "Copy to Clipboard"
+msgstr "Kopiraj u međuspremnik"
+
+msgid "Screenshot Action"
+msgstr "Akcija uslikavanja"
+
+msgid "Stop uploading"
+msgstr "Zaustavi slanje"
+
+msgid "File \"%s\" is beeing uploaded to server %s.."
+msgstr "Datoteka \"%s\" je slana na poslužitelj %s.."
+
+msgid "Uploading screenshot"
+msgstr "Slanje snimke ekrana"
+
+msgid "Click on this message to view details..."
+msgstr "Klikni ovdje za detalje..."
+
+msgid "Screenshot was uploaded"
+msgstr "Snimka ekrana je poslana"
+
+msgid "Upload results"
+msgstr "Izvještaj slanja"
+
+msgid "Always copy captured image to clipboard"
+msgstr "Uvjek kopiraj uhvaćenu sliku u međuspremnik"
+
+msgid "Screenshot was saved to clipboard."
+msgstr "Snimka ekrana je spremljena u međuspremnik."
+
+msgid "Delay when hiding window:"
+msgstr "Čekanje na skrivanje prozora:"
+
+msgid "Directory to save screenshots:"
+msgstr "Mapa za spremanje snimaka ekrana:"
+
+msgid "Filename format:"
+msgstr "Format imena:"
+
+msgid ""
+"Cannot register global hotkey:\n"
+"%s.\n"
+" Maybe it is being used by another process."
+msgstr ""
+"Pogrešno registriranje općeg prečaca:\n"
+"%s.\n"
+" Možda ga rabi drugi proces."
+
+msgid "Could not upload screenshot :("
+msgstr "Ne mogu poslati snimku ekrana:("
+
+msgid "Images from web"
+msgstr "Slike sa interneta"
+
+msgid "msec"
+msgstr "msek"
+
+msgid "Open in Wizard"
+msgstr "Otvori u čarobnjaku"
+
+msgid "Add to Wizard"
+msgstr "Dodaj u čarobnjaka"
+
+msgid "Couldn't load thumbnail preset!"
+msgstr "Ne mogu učitati postavke sličice!"
+
+msgid "Thumbnails"
+msgstr "Sličice"
+
+msgid "Upload History"
+msgstr "Povijest slanja"
+
+msgid "Copy URL"
+msgstr "Kopija URL"
+
+msgid "View BBCode/HTML codes"
+msgstr "Pregled BBCode/HTML koda"
+
+msgid "Session total:"
+msgstr "Ukupno sesija:"
+
+msgid "Files total:"
+msgstr "Ukupno datoteka:"
+
+msgid "Total size:"
+msgstr "Ukupna veličina:"
+
+msgid "Retrieve thumbnails from the Internet"
+msgstr "Vrati sličice sa interneta"
+
+msgid "Thumbnail Preset Editor"
+msgstr "Urednik postavki minijatura"
+
+msgid "Colors"
+msgstr "Boje"
+
+msgid "Frame color:"
+msgstr "Boja okvira:"
+
+msgid "Width:"
+msgstr "Širina:"
+
+msgid "Text Settings:"
+msgstr "Postavke teksta:"
+
+msgid "Text:"
+msgstr "Tekst:"
+
+msgid "Add text"
+msgstr "Dodaj tekst"
+
+msgid "Same format as image"
+msgstr "Odredi format slike"
+
+msgid "Enter new thumbnail preset name:"
+msgstr "Unesite novo ime minijature:"
+
+msgid "Profile with such name already exists!"
+msgstr "Profil s tim imenom već postoji!"
+
+msgid "Height:"
+msgstr "Visina:"
+
+msgid "Thumbnail Preset:"
+msgstr "Postavke sličice:"
+
+msgid "Create a Copy"
+msgstr "Napravi preslik"
+
+msgid "Fit"
+msgstr "Po mjeri"
+
+msgid "Center"
+msgstr "Centriraj"
+
+msgid "Stretch"
+msgstr "Rastegni"
+
+msgid "Save Profile"
+msgstr "Spremi profil"
+
+msgid "New Profile Name"
+msgstr "Novi profil ime"
+
+msgid "Enter new profile name:"
+msgstr "Unesi ime novog profila:"
+
+msgid "Current profile's changes weren't saved. Do you want to continue?"
+msgstr "Promjene trenutnog profila spremljene. Želite li nastaviti?"
+
+msgid "(edited)"
+msgstr "(uređen)"
+
+msgid "Skip image processing step if the image has right parameters"
+msgstr "Preskoči obradu ako je slika ispravna"
+
+msgid "Resize mode:"
+msgstr "Promjena veličine:"
+
+msgid "File: "
+msgstr "Datoteka:"
+
+msgid "Server: "
+msgstr "Poslužitelj:"
+
+msgid "File name cannot contains forbidden characters!"
+msgstr "Ime datoteke ne smije sadržavati nedozvoljene znakove!"
+
+msgid "Capture with shadow"
+msgstr "Uhvati sa sjenom"
+
+msgid "Clear window transparent corners"
+msgstr "Obriši prozirne kuteve prozora"
+
+msgid "Clear window's background"
+msgstr "Očisti pozadinu prozora"
+
+msgid "Edit Profile"
+msgstr "Uredi profil"
+
+msgid "Don't resize"
+msgstr "Ne mijenjaj veličinu"
+
+msgid "Profile:"
+msgstr "Profil:"
+
+msgid "Process images before upload"
+msgstr "Obradi slike prije slanja"
+
+msgid "Add text on thumbnail"
+msgstr "Dodaj tekst na minijaturu"
+
+msgid "History"
+msgstr "Povijest"
+
+msgid "Thumbnail text:"
+msgstr "Tekst sličice:"
+
+msgid "Background color:"
+msgstr "Boja pozadine:"
+
+msgid "Delete Profile"
+msgstr "Obriši profil"
+
+msgid "Are you sure you want to delete profile '%s'?"
+msgstr "Jeste li sigurni da želite obrisati profil '%s' ?"
+
+msgid "Create thumbnails"
+msgstr "Kreiraj sličice"
+
+msgid "Use server-side thumbnails"
+msgstr "Koristi sličice na strani poslužitelja"
+
+msgid "Text position:"
+msgstr "Pozicija teksta:"
+
+msgid "Launch program on Windows startup"
+msgstr "Pokreni aplikaciju zajedno sa pokretanjem Windowsa"
+
+msgid "Could not find links in the given text!"
+msgstr "Could not find links in given text!"
+
+msgid "Could not authenticate. Please try again."
+msgstr "Could not authenticate. PLease try again."
+
+msgid "Scaling:"
+msgstr "Scaling"
+
+msgid "Highlight"
+msgstr "Marker"
+
+msgid "Line thickness"
+msgstr "Line width"
+
+msgid "%s of %s (%d%%) %s"
+msgstr "%s из %s (%d%%) %s"

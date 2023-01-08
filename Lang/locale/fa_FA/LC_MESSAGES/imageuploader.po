@@ -1,0 +1,795 @@
+#. extracted from Farsi.lng.csv
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-01-07 21:50+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Translate Toolkit 2.5.0\n"
+
+msgid "OK"
+msgstr "تایید"
+
+msgid "Cancel"
+msgstr "انصراف"
+
+msgid "Autorization parameters"
+msgstr "پارامتر اجازه"
+
+msgid "Login:"
+msgstr "ورود:"
+
+msgid "Password:"
+msgstr "رمزعبور:"
+
+msgid "Additional params"
+msgstr "پارامتر اضافی"
+
+msgid "Top left corner"
+msgstr "بالا گوشه چپ"
+
+msgid "Top center"
+msgstr "بالا در مرکز"
+
+msgid "Top right corner"
+msgstr "بالا گوشه راست"
+
+msgid "Bottom left corner"
+msgstr "پایین گوشه چپ"
+
+msgid "Bottom center"
+msgstr "پایین در مرکز"
+
+msgid "Bottom right corner"
+msgstr "پایین گوشه راست"
+
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr "ایا شما مطمئن به قرار دادن متن و لوگو در عکس در موقعیت مشابه هستید؟"
+
+msgid "Image settings"
+msgstr "تنظیمات تصویر"
+
+msgid "Filename:"
+msgstr "نام فایل:"
+
+msgid "Watermark position:"
+msgstr "موقعیت واترمارک:"
+
+msgid "Text on image"
+msgstr "متن در تصویر"
+
+msgid "Enter your text:"
+msgstr "متن را وارد کنید:"
+
+msgid "Text color:"
+msgstr "رنگ متن:"
+
+msgid "Stroke color:"
+msgstr "ضخامت رنگ:"
+
+msgid "Gradient color 1:"
+msgstr "رنگ گرادیانت 1:"
+
+msgid "Gradient color 2:"
+msgstr "رنگ گرادیانت 2:"
+
+msgid "View"
+msgstr "مشاهده"
+
+msgid "Remove"
+msgstr "رفع کردن"
+
+msgid "Properties"
+msgstr "مشخصات"
+
+msgid "Edit"
+msgstr "ویرایش"
+
+msgid "Add Images"
+msgstr "افزودن تصاویر"
+
+msgid "Import Video File"
+msgstr "افزودن فایل ویدیو"
+
+msgid "Remove from list"
+msgstr "رفع از لیست"
+
+msgid "Loading..."
+msgstr "...بارگیری"
+
+msgid "Information about file"
+msgstr "اطلاعات درباره فایل"
+
+msgid "Copy to clipboard"
+msgstr "کپی به کلیپ برد"
+
+msgid "Quality:"
+msgstr "کیفیت:"
+
+msgid "Timeout:"
+msgstr "تاخیر:"
+
+msgid "Format:"
+msgstr "فرمت:"
+
+msgid "sec"
+msgstr "ثانیه"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "General"
+msgstr "عمومی"
+
+msgid "Apply"
+msgstr "اعمال"
+
+msgid "Auto"
+msgstr "خودکار"
+
+msgid "File"
+msgstr "فایل"
+
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "فایل تجاوز کرده از اندازه فایل  محدود \"%s\" سرور (%s)."
+
+msgid "Table of clickable thumbnails"
+msgstr "جدول تصویر کوچک قابل کلیک"
+
+msgid "Clickable thumbnails"
+msgstr "تصویر کوچک قابل کلیک"
+
+msgid "Autorization on server..."
+msgstr "...اجازه در سرور"
+
+msgid "Stop"
+msgstr "توقف"
+
+msgid "File uploading was cancelled by user."
+msgstr "اپلود فایل توسط کاربر لغو شده است"
+
+msgid "Finish >"
+msgstr "پایان >"
+
+msgid "Images per string:"
+msgstr "تصاویر در هر استرینگ:"
+
+msgid "Code type:"
+msgstr "نوع کد:"
+
+msgid "&Upload"
+msgstr "اپلود"
+
+msgid "Change width:"
+msgstr "تغییر عرض:"
+
+msgid "Constrain proportions"
+msgstr "وادارکردن به تناسب"
+
+msgid "and/or height:"
+msgstr "و/یا ارتفاع:"
+
+msgid "Add text to image"
+msgstr "افزودن متن به عکس"
+
+msgid "Draw frame"
+msgstr "رسم فریم"
+
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "کلیک روی دکمه \"اپلود\"برای شروع فرایند اپلود"
+
+msgid "Use template"
+msgstr "استفاده از قالب"
+
+msgid "Extracting frames from video"
+msgstr "استخراج فریم از ویدیو"
+
+msgid "Browse..."
+msgstr "...جستجو"
+
+msgid "Number of frames:"
+msgstr "تعداد فریم ها:"
+
+msgid "Multiple files"
+msgstr "چندین فایل"
+
+msgid "Single file"
+msgstr "فایل تکی"
+
+msgid "Save as:"
+msgstr "ذخیره به عنوان:"
+
+msgid "Grab"
+msgstr "ربودن"
+
+msgid "Settings..."
+msgstr "...تنظیمات"
+
+msgid "Appearance options"
+msgstr "گزینه های پیدایش"
+
+msgid "Number of columns:"
+msgstr "تعداد ستونها:"
+
+msgid "Thumbnail width:"
+msgstr "عرض تصویر کوچک:"
+
+msgid "Horizontal interval:"
+msgstr "فاصله افقی"
+
+msgid "Vertical interval:"
+msgstr "فاصله عمودی:"
+
+msgid "Add Folder..."
+msgstr "...افزودن پوشه"
+
+msgid "From Clipboard"
+msgstr "از کلیپ برد"
+
+msgid "View Media File Information"
+msgstr "مشاهده اطلاعات درباره فایل مدیا"
+
+msgid "Shot of Selected Region..."
+msgstr "..عکس از ناحیه انتخاب شده"
+
+msgid "a tool for advanced users"
+msgstr "یک ابزار برای کاربران حرفه ای"
+
+msgid "Select action:"
+msgstr "انتخاب اقدام:"
+
+msgid "Advice:"
+msgstr "توجه:"
+
+msgid ""
+"Just drag-n-drop your files on Image Uploader's window and it will process "
+"them."
+msgstr "فقط کشیدن و رها کردن عکس در پنجره برنامه,انها را پردازش میکند"
+
+msgid ""
+"Welcome to pictures Publishing Wizard, that will help you to upload your "
+"images, photos, video frames on Internet!"
+msgstr ""
+"به ویزارد انتشار تصاویر خوش امدید,این برنامه به شما در اپلود تصویر,عکس,فریم "
+"ویدیو در اینترنت کمک خواهد کرد"
+
+msgid "Are you sure to quit?"
+msgstr "آیا شما میخواهید خارج شوید؟"
+
+msgid "Next >"
+msgstr "بعدی >"
+
+msgid "Images settings and choosing server"
+msgstr "تنظیمات تصاویر و انتخاب سرور"
+
+msgid "Uploading file on server"
+msgstr "اپلود فایل به سرور"
+
+msgid "Including subdirectories"
+msgstr "شامل زیر پوشه"
+
+msgid "About..."
+msgstr "...درباره"
+
+msgid "Exit"
+msgstr "خروج"
+
+msgid "< Back"
+msgstr "< قبلی"
+
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr ""
+"تغییر تنظیمات پردازش عکس یا انتخاب سرور دیگر,بنابراین تصویر شما میتواند "
+"اپلود شود"
+
+msgid "To all"
+msgstr "به همه"
+
+msgid "Ignore"
+msgstr "نادیده گرفتن"
+
+msgid "File size exceeding"
+msgstr "تجاوز از اندازه فایل"
+
+msgid "Windows Explorer integration"
+msgstr "یکپارچگی با ویندوز اکسپلورر"
+
+msgid "Add item to pictures' context menu"
+msgstr "افزودن ایتم تصاویر به کلیک راست"
+
+msgid "Add item to video files' context menu"
+msgstr "افزودن ایتم فایل های ویدیو به کلیک راست"
+
+msgid "Connection settings"
+msgstr "تنظیمات ارتباط"
+
+msgid "Address:"
+msgstr "ادرس:"
+
+msgid "Port:"
+msgstr "پورت:"
+
+msgid "Proxy type:"
+msgstr "نوع پراکسی:"
+
+msgid "Authorization on proxy"
+msgstr "اجازه با پراکسی"
+
+msgid "Watermark"
+msgstr "واترمارک"
+
+msgid "Add watermark"
+msgstr "افزودن واترمارک"
+
+msgid "Add folder"
+msgstr "افزودن پوشه"
+
+msgid "Paste"
+msgstr "چسباندن"
+
+msgid "Remove all"
+msgstr "رفع همه"
+
+msgid "Unable to load picture"
+msgstr "قادر به بارگیری تصویر نیست"
+
+msgid "Screenshot"
+msgstr "اسکرین شات"
+
+msgid "About Image Uploader"
+msgstr "درباره برنامه"
+
+msgid "Beta-testers:"
+msgstr "ازمایش کننده بتا"
+
+msgid "Filename: "
+msgstr "نام فایل:"
+
+msgid "Filesize: "
+msgstr "اندازه فایل:"
+
+msgid "Duration: "
+msgstr "مدت زمان:"
+
+msgid "Audio"
+msgstr "صوت"
+
+msgid "Subtitles: "
+msgstr "زیرنویس:"
+
+msgid "Interface language:"
+msgstr "رابط زبان:"
+
+msgid "Video files"
+msgstr "فایل های ویدیو"
+
+msgid "All files"
+msgstr "همه فایلها"
+
+msgid "Images"
+msgstr "تصاویر"
+
+msgid "Error:"
+msgstr "خطا:"
+
+msgid "Upload images"
+msgstr "اپلود تصاویر"
+
+msgid "Open by Image Uploader"
+msgstr "بازکردن با نرم افزار"
+
+msgid "Info about last video"
+msgstr "اطلاعات درباره اخرین ویدیو"
+
+msgid "Extracting video frames was stopped by user."
+msgstr "استخراج فریم ویدیوها توسط کاربر متوقف شده"
+
+msgid "Extracting video frames was finished."
+msgstr "استخراج فریم ویدیو به پایان رسید"
+
+msgid "Audio files"
+msgstr "فایل صوتی"
+
+msgid "Extracting frame "
+msgstr "استخراج فریم"
+
+msgid "Overall bitrate: "
+msgstr "مجموع سرعت ذره ای:"
+
+msgid "Video: "
+msgstr "ویدیو:"
+
+msgid "Translators:"
+msgstr "مترجم:"
+
+msgid "Executables"
+msgstr "اجراپذیر"
+
+msgid "Images editor:"
+msgstr "ویرایشگر تصاویر:"
+
+msgid "Searching for picture files..."
+msgstr "...جستجو برای فایلهای تصویری"
+
+msgid "Processing folder:"
+msgstr "پردازش پوشه:"
+
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr "لطفا توجه داشته باشید برای اثر گذاشتن تغییر زبان به ریستارت نیاز دارید"
+
+msgid "Copy automatically results to clipboard"
+msgstr "کپی خودکار نتایج به کلیپ برد"
+
+msgid "Frames layout"
+msgstr "طرح بندی فریم ها"
+
+msgid "Show Error Log"
+msgstr "نمایش ثبت خطا"
+
+msgid "Error control"
+msgstr "کنترل خطا"
+
+msgid "Show automatically log window in case of error"
+msgstr "نمایش خودکار پنجره ثبت در مورد خطا"
+
+msgid "Error log"
+msgstr "ثبت خطا"
+
+msgid "Hide"
+msgstr "مخفی"
+
+msgid "List of Images"
+msgstr "لیست تصاویر"
+
+msgid "Cannot load thumbnail for image."
+msgstr "نمیتوان تصویر کوچک را برای عکس بارگیری کرد"
+
+msgid "Uploading module"
+msgstr "مدل اپلود"
+
+msgid "File:"
+msgstr "فایل:"
+
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr ""
+"!یافت نشد MediaInfo.dll \n"
+"گرفتن اطلاعات فنی درباره فایل مدیا دستیابی پذیر نیست"
+
+msgid "Clear list"
+msgstr "پاک کردن لیست"
+
+msgid "Integration in menu \"Send to\""
+msgstr "\"Send to\" یکپارچگی در منوی"
+
+msgid "Font..."
+msgstr "...فونت"
+
+msgid "Unable to load library MediaInfo.dll!"
+msgstr "!نیست MediaInfo.dll قادر به بارگیری کتابخانه"
+
+msgid "Ask confirmation on exit"
+msgstr "پرسش تصدیق در خروج"
+
+msgid "Capture the Entire Screen"
+msgstr "ضبط کل صفحه"
+
+msgid "Capture the Active Window"
+msgstr "ضبط پنجره فعال"
+
+msgid "Close"
+msgstr "بستن"
+
+msgid "Upload failed. Another retry (%d)..."
+msgstr "... (%d) اپلود موفق نشد.تجدید نظر دوباره"
+
+msgid "Upload failed! (retry limit reached)"
+msgstr "(موفق به اپلود نشد (محدوده تجدیدنظر به پایان رسید"
+
+msgid "Waiting response from server..."
+msgstr "...منتظر بمانید برای پاسخ سرور"
+
+msgid "Sending file to server..."
+msgstr "...ارسال فایل به سرور"
+
+msgid "Uploading errors"
+msgstr "خطاهای اپلود"
+
+msgid " Num of retries per file:"
+msgstr "تعداد تجدیدنظر درهر فایل:"
+
+msgid "Num of retries per action:"
+msgstr "تعداد تجدیدنظر درهر اقدام:"
+
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+"بارگیری کرد \"servers.xml\"نمیتوان فایل لیست سرور را\n"
+"\n"
+"علت هست:  %s\n"
+"\n"
+"ایا میخواهید ادامه دهید؟"
+
+msgid "File not found."
+msgstr "فایل پیدا نشد"
+
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "یا هر فایل دیگر ,JPEG, PNG, GIF, BMP"
+
+msgid "Any file"
+msgstr "هر فایلی"
+
+msgid "Add Files"
+msgstr "افزودن فایل ها"
+
+msgid "Links to Images/Files"
+msgstr "لینک به تصاویر/فایل ها"
+
+msgid "Open in folder"
+msgstr "بازکردن در پوشه"
+
+msgid ""
+"Would you like to grab frames from this video?\n"
+"(otherwise file just  will be added to list)"
+msgstr ""
+"ایا شما میخواهید فریم از این ویدیو بربایید؟\n"
+"(درغیراینصورت فایل فقط به لیست افزوده میشود)"
+
+msgid "Shell context menu integration"
+msgstr "یکپارچگی با کلیک راست"
+
+msgid "Cascaded context menu"
+msgstr "کلیک راست ابشاری"
+
+msgid "Upload files"
+msgstr "اپلود فایل ها"
+
+msgid "Upload images only"
+msgstr "فقط اپلود تصاویر"
+
+msgid "Collecting files..."
+msgstr "...گرداوری فایل ها"
+
+msgid "No pictures were found."
+msgstr "تصویری یافت نشد"
+
+msgid "No files were found."
+msgstr "فایلی یافت نشد"
+
+msgid "Upload folder"
+msgstr "پوشه اپلود"
+
+msgid "Show program's window"
+msgstr "نمایش پنجره برنامه"
+
+msgid "Tray icon context menu"
+msgstr "کلیک راست ایکون کنار ساعت"
+
+msgid "Do nothing"
+msgstr "هیچیک"
+
+msgid "Edit hotkey..."
+msgstr "...ویرایش کلید میانبر"
+
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr ""
+"توجه! کلید میانبرهای سراسری فقط زمانی فعال هستد که ایکون کنار ساعت نمایش "
+"داده شود"
+
+msgid "Video"
+msgstr "ویدیو"
+
+msgid "Uploading"
+msgstr "اپلود"
+
+msgid "Tray icon"
+msgstr "ایکون کنار ساعت"
+
+msgid "Hotkeys"
+msgstr "کلید میانبر"
+
+msgid "Show tray icon"
+msgstr "نمایش ایکون کنار ساعت"
+
+msgid "Mouse clicks handlers"
+msgstr "دسته گذار کلیک ماوس"
+
+msgid "Left button double-click"
+msgstr "دکمه چپ دابل کلیک"
+
+msgid "Left button single click:"
+msgstr "دکمه چپ کلیک تکی:"
+
+msgid "Middle button click:"
+msgstr "دکمه کلیک وسط:"
+
+msgid "Right button click:"
+msgstr "دکمه کلیک راست:"
+
+msgid "Do not launch new program's instance from tray"
+msgstr "اجرا نکن برنامه جدید بعنوان مثال از کنار ساعت"
+
+msgid "Action"
+msgstr "اقدام"
+
+msgid "Local"
+msgstr "محلی"
+
+msgid "Global"
+msgstr "سراسری"
+
+msgid "Local hotkey:"
+msgstr "کلید میانبر محلی:"
+
+msgid "Global hotkey:"
+msgstr "کلید میانبر سراسری:"
+
+msgid "Clear all"
+msgstr "پاک کردن همه"
+
+msgid "Authorize"
+msgstr "اجازه"
+
+msgid "Create folder (album)"
+msgstr "(ایجاد پوشه (آلبوم"
+
+msgid "Edit folder"
+msgstr "ویرایش پوشه"
+
+msgid "Folder name:"
+msgstr "نام پوشه:"
+
+msgid "Summary:"
+msgstr "خلاصه:"
+
+msgid "Access:"
+msgstr "دستیابی:"
+
+msgid "Options"
+msgstr "گزینه ها"
+
+msgid "Copy URL  "
+msgstr "کپی ادرس"
+
+msgid "Use direct links"
+msgstr "استفاده از لینک مستقیم"
+
+msgid "Folder list"
+msgstr "لیست پوشه"
+
+msgid "Folder list on server %s for account '%s':"
+msgstr "لیست پوشه در سرور %s برای اکانت '%s':"
+
+msgid "Open in Web Browser"
+msgstr "بازکردن در مرورگر وب"
+
+msgid "Create nested folder"
+msgstr "ایجاد پوشه تودرتو"
+
+msgid "Create folder"
+msgstr "ایجاد پوشه"
+
+msgid "Failed to load folder list."
+msgstr "موفق به بارگیری لیست پوشه نشد"
+
+msgid "%s server settings"
+msgstr "%s تنظیمات سرور"
+
+msgid "Image Uploader Updates"
+msgstr "بروزرسانی برنامه"
+
+msgid "Component name"
+msgstr "نام مولفه یا جزء"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Checking for updates..."
+msgstr "...درحال بررسی برای بروزرسانی"
+
+msgid "An error occured while receiving update information from server."
+msgstr "یک خطا حین دریافت اطلاعات بروزرسانی از سرور رخ داده است"
+
+msgid "Queued"
+msgstr "صف بندی شده"
+
+msgid "Finish"
+msgstr "پایان"
+
+msgid "Forum code (BBCode)"
+msgstr "کد انجمن (BBCode)"
+
+msgid "HTML code"
+msgstr "HTML کد"
+
+msgid "Links (URL)"
+msgstr "لینک ها (URL)"
+
+msgid "Creating folder \""
+msgstr "ایجاد پوشه \""
+
+msgid "Choose server..."
+msgstr "...انتخاب سرور"
+
+msgid "Choose folder..."
+msgstr "...انتخاب پوشه"
+
+msgid "Choose server"
+msgstr "انتخاب سرور"
+
+msgid "Specify account..."
+msgstr "...اکانت را مشخص کنید"
+
+msgid "Account is not enabled"
+msgstr "اکانت فعال نیست"
+
+msgid "No Folder Selected"
+msgstr "پوشه ای انتخاب نشده است"
+
+msgid "New folder"
+msgstr "پوشه جدید"
+
+msgid "Go to signup page"
+msgstr "بروبه صفحه ثبت نام"
+
+msgid "Server to host your images"
+msgstr "سرور به هاست تصاویر"
+
+msgid "Server to host other file formats"
+msgstr "سرور به هاست دیگر فایل فرمت ها"
+
+msgid "Display video file information on resulting picture"
+msgstr "نمایش اطلاعات فایل ویدیو در نتیجه عکس"
+
+msgid "Select folder"
+msgstr "انتخاب پوشه"
+
+msgid "Check for Updates"
+msgstr "بررسی برای بروزرسانی"
+
+msgid "Updates are available"
+msgstr "بروزرسانی دردسترس هست"
+
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "لطفا تایید تنظیمات را برای '%s' سرور مشخص کنید"
+
+msgid "Server settings"
+msgstr "تنظیمات سرور"
+
+msgid "Could not find links in the given text!"
+msgstr "Could not find links in given text!"
+
+msgid "<no authentication>"
+msgstr "<no athentication>"
+
+msgid "Could not authenticate. Please try again."
+msgstr "Could not authenticate. PLease try again."
+
+msgid "Scaling:"
+msgstr "Scaling"
+
+msgid "translator_name"
+msgstr "Hessam Mohamadi"
+
+msgid "Highlight"
+msgstr "Marker"
+
+msgid "Line thickness"
+msgstr "Line width"
+
+msgid "%s of %s (%d%%) %s"
+msgstr "%s из %s (%d%%) %s"

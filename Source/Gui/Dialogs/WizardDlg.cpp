@@ -290,7 +290,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))
     {
         CString ErrBuf;
-        ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
+        ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\n\nThe reason is:  %s\n\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
     
         if (LocalizedMessageBox(ErrBuf, APPNAME, MB_ICONERROR | MB_YESNO) == IDNO)
         {
@@ -367,7 +367,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionFileServer_ = Settings.fileServer;
 
 	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
 	}
 
     if (!CmdLine.IsOption(_T("tray"))) {
@@ -469,7 +469,7 @@ bool CWizardDlg::ParseCmdLine()
             
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
+                msg.Format(TR("Profile \"%s\" not found.\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
                     serverProfileName.GetString());
                 LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
@@ -863,7 +863,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         {
             if(CurPage == wpMainPage)
             {
-                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
+                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
                     goto filehost;
             }
             ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
