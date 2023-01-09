@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR Sergey Svistunov <zenden2k@gmail.com>
+# This file is distributed under the same license as the imageuploader package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-08 15:10+0300\n"
+"POT-Creation-Date: 2023-01-09 21:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,7 +61,7 @@ msgstr ""
 msgid "%s server settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:88
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:91
 #, c-format
 msgid "%s translation:"
 msgstr ""
@@ -80,13 +80,13 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:368
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:369
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1309
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1310
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1314
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1315
 msgid "(edited)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:855
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:902
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:857
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
@@ -95,7 +95,7 @@ msgid "< Back"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:525
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:902
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:903
 msgid "<no authentication>"
 msgstr ""
 
@@ -103,7 +103,7 @@ msgstr ""
 msgid "A new version is available:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:204
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:209
 msgid "About Image Uploader"
 msgstr ""
 
@@ -149,7 +149,7 @@ msgstr ""
 msgid "Add FTP/SFTP server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:810
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:809
 msgid "Add FTP/SFTP server..."
 msgstr ""
 
@@ -190,7 +190,7 @@ msgstr ""
 msgid "Add item to video files' context menu"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:818
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:817
 msgid "Add local folder as new server..."
 msgstr ""
 
@@ -210,7 +210,7 @@ msgstr ""
 msgid "Add text to image"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:561
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:562
 msgid "Add to Wizard"
 msgstr ""
 
@@ -258,7 +258,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:415
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1456
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1656
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1328
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1329
 msgid "All files"
 msgstr ""
 
@@ -370,7 +370,7 @@ msgstr ""
 msgid "Authenticaton:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:201
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:206
 msgid "Author:"
 msgstr ""
 
@@ -405,7 +405,7 @@ msgstr ""
 msgid "Begin upload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:92
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:96
 msgid "Beta-testers:"
 msgstr ""
 
@@ -503,7 +503,7 @@ msgstr ""
 msgid "Cannot load thumbnail for image."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:672
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -615,8 +615,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:133
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:137
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1484
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1496
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1489
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1501
 msgid "Choose more servers..."
 msgstr ""
 
@@ -685,7 +685,7 @@ msgstr ""
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:902
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
 msgid "Click on this message to view details..."
 msgstr ""
 
@@ -762,7 +762,7 @@ msgstr ""
 msgid "Continue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:77
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:78
 msgid "Contributors:"
 msgstr ""
 
@@ -791,7 +791,7 @@ msgstr ""
 msgid "Copy URL"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:930
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:933
 msgid "Copy URL  "
 msgstr ""
 
@@ -799,7 +799,7 @@ msgstr ""
 msgid "Copy automatically results to clipboard"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:241
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
 msgid "Copy e-mail"
 msgstr ""
 
@@ -819,7 +819,7 @@ msgstr ""
 msgid "Copy in data:URI format (html)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:553
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:554
 msgid "Copy to Clipboard"
 msgstr ""
 
@@ -856,7 +856,7 @@ msgstr ""
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:880
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:882
 msgid "Could not upload screenshot :("
 msgstr ""
 
@@ -894,7 +894,7 @@ msgstr ""
 msgid "Create folder (album)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:278
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:280
 msgid "Create nested folder"
 msgstr ""
 
@@ -1005,7 +1005,7 @@ msgstr ""
 msgid "Don't have an account? Sign up on %s right now"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1125
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1130
 msgid "Don't resize"
 msgstr ""
 
@@ -1119,7 +1119,6 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:352
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:371
-#: ../Source/ShellExt/IShellContextMenu.cpp:395
 msgid "Error"
 msgstr ""
 
@@ -1169,7 +1168,7 @@ msgid "Execute Squirrel script for each task (file)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:213
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:586
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:374
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1569
@@ -1218,7 +1217,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:776
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:778
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr ""
@@ -1395,7 +1394,7 @@ msgstr ""
 msgid "Forum code (BBCode)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:54
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:55
 msgid "Found a bug? Send it to the author"
 msgstr ""
 
@@ -1451,7 +1450,7 @@ msgstr ""
 msgid "Global hotkey:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1069
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1073
 msgid "Go to signup page"
 msgstr ""
 
@@ -1468,7 +1467,7 @@ msgstr ""
 msgid "Gradient color 2:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:912
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:913
 msgid "Group by filename"
 msgstr ""
 
@@ -1527,11 +1526,11 @@ msgstr ""
 msgid "Image Editor"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1512
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1513
 msgid "Image Editor  (%1%x%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1518
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1519
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr ""
 
@@ -1588,11 +1587,11 @@ msgstr ""
 msgid "Immediately begin uploading to the server"
 msgstr ""
 
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:251
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:496
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:186
 #: ../Source/Gui/Dialogs/MainDlg.cpp:63 ../Source/Gui/Dialogs/WelcomeDlg.cpp:76
 #: ../Source/Gui/Win7JumpList.cpp:259
-#: ../Source/ShellExt/IShellContextMenu.cpp:314
 msgid "Import Video File"
 msgstr ""
 
@@ -1609,9 +1608,9 @@ msgstr ""
 msgid "Info about last video"
 msgstr ""
 
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:252
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:89
-#: ../Source/ShellExt/IShellContextMenu.cpp:316
 msgid "Information about file"
 msgstr ""
 
@@ -1657,6 +1656,10 @@ msgid ""
 "them."
 msgstr ""
 
+#: ../Source/Func/LangClass.cpp:237
+msgid "LAYOUT_DIRECTION"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:74
 msgid "Last Region"
 msgstr ""
@@ -1674,7 +1677,7 @@ msgstr ""
 msgid "Left button single click:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:147
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:152
 msgid "Libraries:"
 msgstr ""
 
@@ -1819,11 +1822,11 @@ msgid "New Profile Name"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:545
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:919
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:920
 msgid "New account..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:993
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:995
 msgid "New folder"
 msgstr ""
 
@@ -1897,12 +1900,12 @@ msgid "Open download page"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:190
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:273
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:997
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:274
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1000
 msgid "Open in Web Browser"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:557
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:558
 msgid "Open in Wizard"
 msgstr ""
 
@@ -1915,7 +1918,7 @@ msgstr ""
 msgid "Open in folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:545
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:546
 msgid "Open in the editor"
 msgstr ""
 
@@ -1923,7 +1926,7 @@ msgstr ""
 msgid "Open screenshot in the editor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:577
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2112
 msgid "Open screenshots folder"
@@ -2021,7 +2024,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:1116
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:1119
 msgid "Preview Window"
 msgstr ""
 
@@ -2243,16 +2246,16 @@ msgstr ""
 msgid "Screenshot"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:569
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 msgid "Screenshot Action"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:909
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:911
 msgid "Screenshot was saved to clipboard."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:903
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:905
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:906
 msgid "Screenshot was uploaded"
 msgstr ""
 
@@ -2303,7 +2306,7 @@ msgstr ""
 msgid "Select folder"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1308
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1304
 msgid "Select region"
 msgstr ""
 
@@ -2318,8 +2321,8 @@ msgid "Selected server: %s"
 msgstr ""
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:107
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1486
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1499
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1491
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1504
 #, c-format
 msgid "Selected servers: %d"
 msgstr ""
@@ -2366,11 +2369,11 @@ msgstr ""
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1064
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1067
 msgid "Server settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:852
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:853
 msgid "Server settings..."
 msgstr ""
 
@@ -2403,14 +2406,14 @@ msgid "Session total:"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:183
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:78
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:81
 msgid "Settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:75
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:148
 msgid "Settings file path:"
 msgstr ""
 
@@ -2427,7 +2430,7 @@ msgstr ""
 msgid "Shell context menu integration"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:856
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:858
 msgid "Short URL"
 msgstr ""
 
@@ -2440,7 +2443,7 @@ msgid "Shorten URL"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:897
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1237
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1242
 #, c-format
 msgid "Shorten URL using %s"
 msgstr ""
@@ -2449,7 +2452,7 @@ msgstr ""
 msgid "Shorten URLs"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:70
 msgid "Shorten a link"
@@ -2490,12 +2493,12 @@ msgstr ""
 msgid "Show log for this file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:578
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 msgid "Show program's window"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:581
 msgid "Show results of last upload"
 msgstr ""
 
@@ -2554,7 +2557,7 @@ msgstr ""
 msgid "Stop"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:594
 msgid "Stop uploading"
 msgstr ""
 
@@ -2634,11 +2637,11 @@ msgstr ""
 msgid "Text:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:96
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:100
 msgid "Thanks to the authors of the following open-source libraries:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:76
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:77
 msgid "Thanks to:"
 msgstr ""
 
@@ -2650,7 +2653,7 @@ msgstr ""
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1083
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1088
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -2721,7 +2724,7 @@ msgstr ""
 msgid "Total size:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:85
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:87
 msgid "Translators:"
 msgstr ""
 
@@ -2750,7 +2753,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:87
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1151
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1156
 msgid "URL shortening server"
 msgstr ""
 
@@ -2767,13 +2770,8 @@ msgstr ""
 msgid "Unable to make screenshot!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:859
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:861
 msgid "Unable to shorten the link..."
-msgstr ""
-
-#: ../Source/ShellExt/IShellContextMenu.cpp:394
-#, c-format
-msgid "Unable to start process '%s'"
 msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:403
@@ -2820,9 +2818,9 @@ msgstr ""
 msgid "Upload failed. Another retry (%d)..."
 msgstr ""
 
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:249
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:472
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:184
-#: ../Source/ShellExt/IShellContextMenu.cpp:281
 msgid "Upload files"
 msgstr ""
 
@@ -2831,12 +2829,12 @@ msgstr ""
 msgid "Upload folder"
 msgstr ""
 
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:248
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:183
-#: ../Source/ShellExt/IShellContextMenu.cpp:278
 msgid "Upload images"
 msgstr ""
 
-#: ../Source/ShellExt/IShellContextMenu.cpp:282
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:250
 msgid "Upload images only"
 msgstr ""
 
@@ -2858,7 +2856,7 @@ msgstr ""
 msgid "Upload to %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:549
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:856
 msgid "Upload to Web"
 msgstr ""
@@ -2899,7 +2897,7 @@ msgstr ""
 msgid "Uploading module"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:781
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:783
 msgid "Uploading screenshot"
 msgstr ""
 
@@ -2932,7 +2930,7 @@ msgstr ""
 msgid "Use system proxy settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:916
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:918
 msgid "Use template"
 msgstr ""
 
@@ -2977,8 +2975,8 @@ msgstr ""
 msgid "View Media File Information"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:860
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:881
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:862
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:883
 msgid "View log for details."
 msgstr ""
 
@@ -2998,7 +2996,7 @@ msgstr ""
 msgid "Watermark position:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:202
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:207
 msgid "Website:"
 msgstr ""
 
@@ -3103,6 +3101,6 @@ msgstr ""
 msgid "to:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:80
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:81
 msgid "translator_name"
 msgstr ""
