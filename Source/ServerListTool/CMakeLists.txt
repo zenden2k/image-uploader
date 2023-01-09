@@ -26,6 +26,7 @@ add_executable(ServersChecker WIN32
     ../3rdpart/QColorQuantizer.cpp
     ../Core/FileDownloader.cpp
     ../Core/Settings/CliSettings.cpp
+	../Gui/Helpers/LangHelper.cpp
     res/ServersChecker.exe.manifest
 )
 

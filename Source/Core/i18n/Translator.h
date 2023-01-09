@@ -39,10 +39,11 @@ public:
     virtual std::string getCurrentLocale() = 0;
     virtual std::string translate(const char* str) = 0;
 #ifdef _WIN32
-    virtual const wchar_t* translateW(const wchar_t* str) = 0;
+    virtual std::wstring translateW(const char* str) = 0;
 #endif
     virtual bool isRTL() const {
         return false;
     };
+    virtual std::string getLanguageDisplayName() const { return {}; }
 };
 #endif

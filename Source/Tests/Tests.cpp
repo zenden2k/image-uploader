@@ -67,8 +67,8 @@ public:
         return str;
     }
 #ifdef _WIN32
-    virtual const wchar_t* translateW(const wchar_t* str) override {
-        return str;
+    virtual std::wstring translateW(const char* str) override {
+        return L"NOT_IMPLEMENTED";
     }
 #endif
 };

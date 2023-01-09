@@ -56,10 +56,14 @@ for %%x in (
 rem call signcode.bat
 Copy "..\Build\Gui\Release\Image Uploader.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Lang\*.lng" %temp_dir%\Lang\
+xcopy "..\Lang\locale" %temp_dir%\Lang\locale /i /e /y
 if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Lang\English.lng.src" %temp_dir%\Lang\
-if ERRORLEVEL 1 goto CopyFailed
+pushd .
+cd %temp_dir%\Lang\locale
+del /S *.po
+popd
+
+if NOT EXIST  %temp_dir%\Lang\locale\ru\LC_MESSAGES\imageuploader.mo goto CopyFailed
 Copy "..\Modules\MediaInfoLang\*.csv" %temp_dir%\Modules\MediaInfoLang\
 if ERRORLEVEL 1 goto CopyFailed
 xcopy "..\Docs" %temp_dir%\Docs\ /s /e /y /i

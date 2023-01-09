@@ -119,18 +119,18 @@ void PrintWelcomeMessage() {
 
 class Translator : public ITranslator {
 public:
-    virtual std::string getCurrentLanguage() override {
+    std::string getCurrentLanguage() override {
         return "English";
     }
-    virtual std::string getCurrentLocale() override {
+    std::string getCurrentLocale() override {
         return "en_US";
     }
-    virtual std::string translate(const char* str) override{
+    std::string translate(const char* str) override{
         return str;
     }
 #ifdef _WIN32
-    virtual const wchar_t* translateW(const wchar_t* str) override {
-        return str;
+    std::wstring translateW(const char* str) override {
+        return L"NOT_IMPLEMENTED";
     }
 #endif
 };
