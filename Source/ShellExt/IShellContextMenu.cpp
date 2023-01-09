@@ -24,11 +24,10 @@
 #include <shlobj.h>
 #include "IShellContextMenu.h"
 #include "../3rdpart/Registry.h"
-#include "../Func/LangClass.h"
 #include "Helpers.h"
 
 HINSTANCE hDllInstance;
-extern CLang Lang;
+
 CString GetStartMenuPath() 
 {
 	CString result;
@@ -58,28 +57,6 @@ CString GetDllFolder()
 	GetModuleFileName(hDllInstance, szFileName, 1023);
 	Helpers::ExtractFilePath(szFileName, szPath, 256);
 	return szPath;
-}
-
-bool IsMediaInfoInstalled()
-{
-	CString MediaInfoDllPath;
-	TCHAR Buffer[MAX_PATH];
-	HKEY ExtKey;
-	Buffer[0]=0;
-	RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\KLCodecPack"), 0,/* REG_OPTION_NON_VOLATILE, */KEY_QUERY_VALUE,  &ExtKey/* NULL*/);
-	TCHAR ClassName[MAX_PATH]=_T("\0");
-	DWORD BufSize = sizeof(ClassName)/sizeof(TCHAR);
-	DWORD Type = REG_SZ;
-   RegQueryValueEx(ExtKey,	 _T("installdir"), 0, &Type, (LPBYTE)&ClassName, &BufSize);
-	RegCloseKey(ExtKey);
-	CString MediaDll = GetDllFolder()+_T("\\Modules\\MediaInfo.dll");
-	if(Helpers::FileExists( MediaDll)) MediaInfoDllPath  = MediaDll;
-	else
-	{
-		CString MediaDll2 =CString(ClassName)+_T("\\Tools\\MediaInfo.dll");
-		if(Helpers::FileExists( MediaDll2)) MediaInfoDllPath = MediaDll2;
-	}
-	return !MediaInfoDllPath.IsEmpty();
 }
 
 bool AreOnlyImages(const CAtlArray<CString> & files)
@@ -229,12 +206,12 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
 	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
 		ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
-		CString lang = Reg.ReadString(_T("Language"));
+		/*CString lang = Reg.ReadString(_T("Language"));
 		//MessageBox(0, lang,0,0);
 		if(lang != Lang.GetLanguageName())
 		{
 			Lang.LoadLanguage(lang);
-		}
+		}*/
 	}
 	#ifdef _WIN64
 		else 
@@ -247,10 +224,10 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 				ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
 				CString lang = Reg.ReadString(_T("Language"));
 				//MessageBox(0, lang,0,0);
-				if(lang != Lang.GetLanguageName())
+				/*if (lang != Lang.GetLanguageName())
 				{
 					Lang.LoadLanguage(lang);
-				}
+				}*/
 			}
 		}
 	#endif
@@ -260,7 +237,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
 
 	m_nCommands.clear(); // Clearing internal map of commands
-
+	
 	HMENU PopupMenu;
 	bool UseBitmaps = true;
 	CString StartMenuFolder = GetStartMenuPath();
@@ -275,11 +252,11 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 	}
 	if(AreOnlyImages(m_FileList))
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, TR("Upload images"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, stringsReader_.getString(_T("UploadImages"), _T("Upload images")), idCmdFirst, CString(), UseBitmaps, 0, IDI_ICONUPLOAD);
 	else
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, TR("Upload files"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES,TR("Upload images only"),idCmdFirst,CString(),UseBitmaps,0,IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADFILES, stringsReader_.getString(_T("UploadFiles"), _T("Upload files")), idCmdFirst, CString(), UseBitmaps, 0, IDI_ICONUPLOAD);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_UPLOADONLYIMAGES, stringsReader_.getString(_T("UploadImagesOnly"), _T("Upload images only")), idCmdFirst, CString(), UseBitmaps, 0, IDI_ICONUPLOAD);
 	}
 	bool separatorInserted = false;
 
@@ -311,9 +288,9 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 
 	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 && Helpers::IsVideoFile( m_FileList[0]))
 	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO,  TR("Import Video File"),idCmdFirst,CString(),UseBitmaps,0,ExplorerCascadedMenu?0:IDI_ICONMOVIE);
+		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO, stringsReader_.getString(_T("ImportVideoFile"), _T("Import Video File")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, TR("Information about file"),idCmdFirst,CString(),UseBitmaps,0 ,ExplorerCascadedMenu?0:IDI_ICONINFO);
+			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, stringsReader_.getString(_T("InformationAboutFile"), _T("Information about file")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONINFO);
 	}
 	if ( !ExplorerCascadedMenu ) {
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
@@ -391,8 +368,8 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
 		) {
 			CString errorMessage;
-			errorMessage.Format(TR("Unable to start process '%s'"),(LPCTSTR)TempCmdLine);
-		MessageBox(0, errorMessage, TR("Error"),0);
+			errorMessage.Format(_T("Unable to start process '%s'"),(LPCTSTR)TempCmdLine);
+		MessageBox(0, errorMessage, _T("Error"),0);
         return false;
 	}
 
@@ -461,7 +438,7 @@ HRESULT CIShellContextMenu::GetCommandString(UINT_PTR idCmd, UINT uType, UINT *p
 
 CIShellContextMenu::CIShellContextMenu()
 {
-	m_bMediaInfoInstalled = IsMediaInfoInstalled();
+	m_bMediaInfoInstalled = true;
 }
 
 CIShellContextMenu::~CIShellContextMenu() {

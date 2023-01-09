@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 15:10+0300\n"
-"PO-Revision-Date: 2023-01-08 15:14+0300\n"
+"PO-Revision-Date: 2023-01-09 13:50+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ar\n"
@@ -21,10 +21,9 @@ msgid "%1% files selected/%2% files total"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:768
-#, fuzzy, c-format
-#| msgid "Video files"
+#, c-format
 msgid "%d files"
-msgstr "ملفات الفيديو"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:61
 msgid ""
@@ -140,10 +139,8 @@ msgid "Action"
 msgstr "عمل"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:58
-#, fuzzy
-#| msgid "Action"
 msgid "Action:"
-msgstr "عمل"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:84
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:90
@@ -155,16 +152,12 @@ msgid "Add FTP server..."
 msgstr "اضافة خادم ناقل اللملفات"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
-#, fuzzy
-#| msgid "Add FTP server..."
 msgid "Add FTP/SFTP server"
-msgstr "اضافة خادم ناقل اللملفات"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:810
-#, fuzzy
-#| msgid "Add FTP server..."
 msgid "Add FTP/SFTP server..."
-msgstr "اضافة خادم ناقل اللملفات"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:62 ../Source/Gui/Dialogs/MainDlg.cpp:153
 msgid "Add Files"
@@ -293,20 +286,16 @@ msgid "Allow Alt+Tab in fullscreen editor"
 msgstr "تسمح Alt + Tab في ملء الشاشة محرر"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
-#, fuzzy
-#| msgid "Allow Alt+Tab in fullscreen editor"
 msgid "Allow editing images in fullscreen mode"
-msgstr "تسمح Alt + Tab في ملء الشاشة محرر"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Always copy captured image to clipboard"
 msgstr "دائما نسخ الصورة التي تم التقاطها للحافظة"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:84
-#, fuzzy
-#| msgid "An error occured while receiving update information from server."
 msgid "An error occured while loading script."
-msgstr "حدث خطا اثناء الحصول على معلومات التحديث من الالخادم."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:163
 msgid "An error occured while receiving update information from server."
@@ -341,34 +330,26 @@ msgid "Are you sure you want to delete profile '%s'?"
 msgstr "هل تريد حذف الصورة '%s'؟"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:144
-#, fuzzy
-#| msgid "Are you sure you want to delete profile '%s'?"
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
-msgstr "هل تريد حذف الصورة '%s'؟"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:354
-#, fuzzy
-#| msgid "Are you sure to quit?"
 msgid "Are you sure?"
-msgstr "هل انت متاكد من الهروب؟"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:896
 msgid "Arrow"
 msgstr "سهم"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:248
-#, fuzzy
-#| msgid "Arrow"
 msgid "Arrow 1"
-msgstr "سهم"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:249
-#, fuzzy
-#| msgid "Arrow"
 msgid "Arrow 2"
-msgstr "سهم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:41
 msgid "Ask confirmation on exit"
@@ -415,10 +396,8 @@ msgid "Auto"
 msgstr "تلقائي"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:44
-#, fuzzy
-#| msgid "Check for Updates"
 msgid "Automatically check for updates"
-msgstr "التحقق من وجود تحديثات"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:70
 msgid "Autorization parameters"
@@ -430,10 +409,8 @@ msgid "Background color:"
 msgstr "لون الخلفية:"
 
 #: ../Source/Core/Upload/UploadTask.cpp:370
-#, fuzzy
-#| msgid "Reupload"
 msgid "Begin upload"
-msgstr "اعادة الرفع"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:92
 msgid "Beta-testers:"
@@ -543,10 +520,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:501
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
-#, fuzzy
-#| msgid "Capture Rectangular Region"
 msgid "Capture Last Region"
-msgstr "التقاط منطقة مستطيلة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:188
 msgid "Capture Rectangular Region"
@@ -590,10 +565,8 @@ msgid "Center"
 msgstr "مركز"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:144
-#, fuzzy
-#| msgid "Change width:"
 msgid "Change"
-msgstr "تغيير العرض:"
+msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:474
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:841
@@ -620,58 +593,44 @@ msgid "Checking for updates..."
 msgstr "التحقق من وجود تحديثات..."
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:42
-#, fuzzy
-#| msgid "Choose server"
 msgid "Choose"
-msgstr "اختر الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:55
 msgid "Choose executable file"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1686
-#, fuzzy
-#| msgid "Choose folder..."
 msgid "Choose files"
-msgstr "اختر المجلد..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1556
-#, fuzzy
-#| msgid "Choose folder..."
 msgid "Choose folder"
-msgstr "اختر المجلد..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:218
 msgid "Choose folder..."
 msgstr "اختر المجلد..."
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1659
-#, fuzzy
-#| msgid "Choose folder..."
 msgid "Choose media file"
-msgstr "اختر المجلد..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:535
-#, fuzzy
-#| msgid "Choose folder..."
 msgid "Choose monitor"
-msgstr "اختر المجلد..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:133
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:137
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1484
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1496
-#, fuzzy
-#| msgid "Choose server..."
 msgid "Choose more servers..."
-msgstr "اختر الخادم..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:191
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
-#, fuzzy
-#| msgid "Choose server"
 msgid "Choose program"
-msgstr "اختر الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:584
@@ -687,17 +646,13 @@ msgid "Choose server..."
 msgstr "اختر الخادم..."
 
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:89
-#, fuzzy
-#| msgid "Choose server"
 msgid "Choose servers"
-msgstr "اختر الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:418
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1459
-#, fuzzy
-#| msgid "Video files"
 msgid "Choose video file"
-msgstr "ملفات الفيديو"
+msgstr ""
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:146
@@ -718,10 +673,8 @@ msgid "Clear all"
 msgstr "مسح الكل"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:87
-#, fuzzy
-#| msgid "Clear list"
 msgid "Clear filters"
-msgstr "مسح القائمة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:121
 msgid "Clear list"
@@ -775,10 +728,8 @@ msgid "Color chooser"
 msgstr "منتقي الالوان"
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:38
-#, fuzzy
-#| msgid "Color chooser"
 msgid "Color codes"
-msgstr "منتقي الالوان"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:42
 msgid "Colors"
@@ -789,17 +740,13 @@ msgid "Component name"
 msgstr "اسم المكون"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:83
-#, fuzzy
-#| msgid "Component name"
 msgid "Components:"
-msgstr "اسم المكون"
+msgstr ""
 
 #: ../Source/Video/DirectshowFrameGrabber.cpp:363
 #: ../Source/Video/DirectshowFrameGrabber2.cpp:274
-#, fuzzy
-#| msgid "Connection settings"
 msgid "Connecting codecs"
-msgstr "اعدادات الاتصال"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:29
 msgid "Connection  name:"
@@ -827,16 +774,12 @@ msgid "Contributors:"
 msgstr "المساهمين:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
-#, fuzzy
-#| msgid "Convert UNC path \"\\\\ to \"\"file://///\"\"\""
 msgid "Convert UNC path \"\\\\\" to \"file://///\""
-msgstr "مسار UNC تحويل\"\\\\ الى \"\"‎file:‎/‎/‎/‎/‎/‎\"\"\""
+msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:351
-#, fuzzy
-#| msgid "Clear History"
 msgid "Converting history"
-msgstr "مسح التاريخ"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:41
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:42
@@ -864,10 +807,8 @@ msgid "Copy automatically results to clipboard"
 msgstr "نسخ النتائج تلقائيا الى الحافظة"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:241
-#, fuzzy
-#| msgid "Copy image"
 msgid "Copy e-mail"
-msgstr "نسخ الصورة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:203
 msgid "Copy full path"
@@ -896,10 +837,9 @@ msgid "Copy to clipboard"
 msgstr "نسخ الى الحافظة"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
-#, fuzzy, c-format
-#| msgid "Copy to clipboard"
+#, c-format
 msgid "Copy to clipboard and close (%s)"
-msgstr "نسخ الى الحافظة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:113
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
@@ -915,10 +855,9 @@ msgid "Could not find links in the given text!"
 msgstr "تعذر العثور على الارتباطات في نص معين!"
 
 #: ../Source/Func/UpdatePackage.cpp:412
-#, fuzzy, c-format
-#| msgid "Could not add server."
+#, c-format
 msgid "Could not read package %s"
-msgstr "تعذر اضافة الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:842
 msgid "Could not save settings file. See error log for details."
@@ -952,10 +891,8 @@ msgid "Couldn't load thumbnail preset!"
 msgstr "تعذر رفع الصور المصغرة مسبقا!"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:128
-#, fuzzy
-#| msgid "Delete Profile"
 msgid "Create Profile"
-msgstr "حذف السيرة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:62
 msgid "Create a Copy"
@@ -1020,20 +957,16 @@ msgid "Deinterlace"
 msgstr "تشابك"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:123
-#, fuzzy
-#| msgid "Deinterlace"
 msgid "Deinterlace video"
-msgstr "تشابك"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Delay when hiding window:"
 msgstr "تاخير عند اخفاء النافذة:"
 
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:181
-#, fuzzy
-#| msgid "Delete account"
 msgid "Delete"
-msgstr "حذف الحساب"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:130
 msgid "Delete Profile"
@@ -1064,10 +997,8 @@ msgid "Display video file information on resulting picture"
 msgstr "عرض معلومات ملف الفيديو على الصورة الناتجة"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:334
-#, fuzzy
-#| msgid "Do nothing"
 msgid "Do not ask again"
-msgstr "لا تفعل شيئا"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:34
 msgid "Do not launch new program's instance from tray"
@@ -1287,16 +1218,12 @@ msgid "Failed to load folder list."
 msgstr "فشل في رفع قائمة المجلدات."
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:309
-#, fuzzy
-#| msgid "Failed to load folder list."
 msgid "Failed to logout."
-msgstr "فشل في رفع قائمة المجلدات."
+msgstr ""
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:454
-#, fuzzy
-#| msgid "Collecting files..."
 msgid "Fetching filesystem..."
-msgstr "جمع الملفات..."
+msgstr ""
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:19
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:94
@@ -1309,10 +1236,9 @@ msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "الملف \"%s\" بيينغ رفعها الى الخادم %s..."
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:96
-#, fuzzy, c-format
-#| msgid "File not found."
+#, c-format
 msgid "File \"%s\" not found!"
-msgstr "ملف غير موجود."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:215
 #, c-format
@@ -1320,12 +1246,11 @@ msgid "File %s doesn't exist"
 msgstr "الملف %s غير موجود"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:161
-#, fuzzy, c-format
-#| msgid "File %s doesn't exist"
+#, c-format
 msgid ""
 "File doesn't exist:\n"
 "%s"
-msgstr "الملف %s غير موجود"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:100
 #, c-format
@@ -1392,10 +1317,8 @@ msgid "Filesize: "
 msgstr "حجم الملف:"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:241
-#, fuzzy
-#| msgid "Clear window's background"
 msgid "Fill background"
-msgstr "مسح خلفية النافذة"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:115
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:775
@@ -1422,10 +1345,8 @@ msgstr "انهاء >"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
 #: ../Source/Gui/UploadListModel.cpp:155
-#, fuzzy
-#| msgid "Finish"
 msgid "Finished"
-msgstr "انهاء"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:115
 msgid "First you have to select an item in the list."
@@ -1465,10 +1386,8 @@ msgid "Folder:"
 msgstr "مجلد:"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:216
-#, fuzzy
-#| msgid "Total size:"
 msgid "Font size:"
-msgstr "الحجم الاجمالي:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:58
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
@@ -1515,10 +1434,8 @@ msgid "From Web"
 msgstr "من ويب"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:55
-#, fuzzy
-#| msgid "Enter account information"
 msgid "Full information"
-msgstr "ادخل معلومات الحساب"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:56
 msgid "General"
@@ -1531,16 +1448,12 @@ msgstr ""
 #: ../Source/3rdpart/ColorButton.cpp:227
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:24
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:31
-#, fuzzy
-#| msgid "More colors..."
 msgid "Get color's code..."
-msgstr "مزيد من الالوان..."
+msgstr ""
 
 #: ../Source/Func/ImageGenerator.cpp:29
-#, fuzzy
-#| msgid "Searching for picture files..."
 msgid "Getting info about file..."
-msgstr "البحث عن ملفات الصورة..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:47
 msgid "Global"
@@ -1598,10 +1511,8 @@ msgid "History"
 msgstr "التاريخ"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:462
-#, fuzzy
-#| msgid "Authenticated succesfully."
 msgid "History has been cleared successfully."
-msgstr "المصادقة بنجاح."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:55
 msgid "Horizontal interval:"
@@ -1629,16 +1540,12 @@ msgid "Image Editor"
 msgstr "محرر الصور"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1512
-#, fuzzy
-#| msgid "Image Editor"
 msgid "Image Editor  (%1%x%2%)"
-msgstr "محرر الصور"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1518
-#, fuzzy
-#| msgid "Image Editor"
 msgid "Image Editor - %1% (%2%x%3%)"
-msgstr "محرر الصور"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:336
 msgid ""
@@ -1721,10 +1628,9 @@ msgid "Information about file"
 msgstr "معلومات حول الملف"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:107
-#, fuzzy, c-format
-#| msgid "Information about file"
+#, c-format
 msgid "Information about file \"%s\" :"
-msgstr "معلومات حول الملف"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:231
 msgid "Initial value:"
@@ -1821,10 +1727,8 @@ msgstr "روابط من القائمة"
 
 #: ../Source/Video/DirectshowFrameGrabber.cpp:328
 #: ../Source/Video/DirectshowFrameGrabber2.cpp:254
-#, fuzzy
-#| msgid "Loading..."
 msgid "Loading file..."
-msgstr "تحميل..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:58
 msgid "Loading..."
@@ -1843,10 +1747,8 @@ msgid "Log"
 msgstr "سجل"
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:349
-#, fuzzy
-#| msgid "Sign in..."
 msgid "Logging in..."
-msgstr "تسجيل الدخول..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:240
 msgid "Login cannot be empty"
@@ -1866,10 +1768,8 @@ msgid "Logout"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:309
-#, fuzzy
-#| msgid "Authenticated succesfully."
 msgid "Logout succesfully."
-msgstr "المصادقة بنجاح."
+msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:499
 msgid "MD5 check failed for file "
@@ -1944,10 +1844,8 @@ msgid "New folder"
 msgstr "مجلد جديد"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:383
-#, fuzzy
-#| msgid "New Profile Name"
 msgid "New profile"
-msgstr "اسم السيرة الجديد"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:188
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:630
@@ -2089,10 +1987,8 @@ msgstr "لصق ارتباط مقصر:"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:128
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:788
-#, fuzzy
-#| msgid "Selection"
 msgid "Pixelation"
-msgstr "التحديد"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:40
 msgid "Please choose period:"
@@ -2153,10 +2049,8 @@ msgid "Print..."
 msgstr "طباعة..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:259
-#, fuzzy
-#| msgid "File %s doesn't exist"
 msgid "Private key file doesn't exist."
-msgstr "الملف %s غير موجود"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
 msgid "Private key file:"
@@ -2215,10 +2109,8 @@ msgstr "في قائمة الانتظار"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:493
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
-#, fuzzy
-#| msgid "Always copy captured image to clipboard"
 msgid "Quick upload image from clipboard"
-msgstr "دائما نسخ الصورة التي تم التقاطها للحافظة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:74
 msgid "Re-upload images"
@@ -2412,20 +2304,16 @@ msgid "Searching for picture files..."
 msgstr "البحث عن ملفات الصورة..."
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:73
-#, fuzzy
-#| msgid "Select region"
 msgid "Select Region..."
-msgstr "حدد المنطقة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:52
 msgid "Select action:"
 msgstr "حدد الاجراء:"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:120
-#, fuzzy
-#| msgid "Select folder"
 msgid "Select all"
-msgstr "حدد المجلد"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:374
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:153
@@ -2476,10 +2364,8 @@ msgid "Server for quick screenshot uploading"
 msgstr "الخادم لرفع لقطة سريعة"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:104
-#, fuzzy
-#| msgid "Server for uploading images"
 msgid "Server for temporary images"
-msgstr "الخادم لرفع الصور"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:92
 msgid "Server for uploading from Explorer's context menu"
@@ -2495,10 +2381,8 @@ msgid "Server name:"
 msgstr "اسم الخادم:"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:102
-#, fuzzy
-#| msgid "Server settings"
 msgid "Server not chosen"
-msgstr "اعدادات الالخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1064
 msgid "Server settings"
@@ -2517,10 +2401,8 @@ msgid "Server to host your images"
 msgstr "خادم لاستضافة صورك"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:38
-#, fuzzy
-#| msgid "Server name:"
 msgid "Server type:"
-msgstr "اسم الخادم:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:224
 msgid "Server's name cannot be empty"
@@ -2601,10 +2483,8 @@ msgid "Shortening URL \"%s\" using %s"
 msgstr "تقصير الرابط \"%s\" باستخدام %s"
 
 #: ../Source/Gui/UploadListModel.cpp:163
-#, fuzzy
-#| msgid "Shorten a link"
 msgid "Shortening link..."
-msgstr "اختصار الرابط"
+msgstr ""
 
 #: ../Source/Gui/Win7JumpList.cpp:227
 msgid "Shot of Selected Region..."
@@ -2625,10 +2505,8 @@ msgid "Show in default viewer"
 msgstr "اظهار الافتراضي في العارض"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:242
-#, fuzzy
-#| msgid "View log for details."
 msgid "Show log for this file"
-msgstr "عرض السجل للتفاصيل."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
@@ -2673,10 +2551,8 @@ msgid "Specify account..."
 msgstr "تحديد حساب..."
 
 #: ../Source/Core/Upload/FileQueueUploaderPrivate.cpp:390
-#, fuzzy
-#| msgid "Stop uploading"
 msgid "Starting upload"
-msgstr "ايقاف الرفع"
+msgstr ""
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:20
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:73
@@ -2701,10 +2577,8 @@ msgid "Stop uploading"
 msgstr "ايقاف الرفع"
 
 #: ../Source/Core/Upload/UploadTask.cpp:373
-#, fuzzy
-#| msgid "Stop"
 msgid "Stopped"
-msgstr "وقف"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:82
 msgid "Stretch"
@@ -2721,16 +2595,12 @@ msgid "Subtitles: "
 msgstr "العناوين الثانوية:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:282
-#, fuzzy
-#| msgid "Access:"
 msgid "Success"
-msgstr "امكانية الوصول:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:54
-#, fuzzy
-#| msgid "Summary:"
 msgid "Summary"
-msgstr "موجز:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
 msgid "Summary:"
@@ -2741,10 +2611,8 @@ msgid "Table of clickable thumbnails"
 msgstr "جدول المصغرات قابلة للنقر"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:40
-#, fuzzy
-#| msgid "Text position:"
 msgid "Test connection"
-msgstr "موقع النص:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:282
 msgid "Test failed"
@@ -2769,10 +2637,8 @@ msgid "Text color:"
 msgstr "لون النص:"
 
 #: ../Source/Gui/Dialogs/InputDialog.cpp:79
-#, fuzzy
-#| msgid "File name cannot contains forbidden characters!"
 msgid "Text contains forbidden characters!"
-msgstr "لا يمكن ان يحتوي اسم الملف على احرف محرمة!"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 msgid "Text on image"
@@ -2803,10 +2669,8 @@ msgid "This means that the thumbnail will be created by site, not the program."
 msgstr "وهذا يعني انه سيتم انشاء صورة مصغرة من الموقع، وليس برنامج."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1083
-#, fuzzy
-#| msgid "%s server settings"
 msgid "This server doesn't have any settings."
-msgstr "اعدادات خادم %s"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:57
 msgid "Threads number:"
@@ -2839,10 +2703,8 @@ msgid "Thumbnail width:"
 msgstr "عرض الصور المصغرة:"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:116
-#, fuzzy
-#| msgid "Thumbnail Preset:"
 msgid "Thumbnail's size:"
-msgstr "الاعداد المسبق للصورة المصغرة:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:112
@@ -2920,10 +2782,8 @@ msgid "Unable to load picture"
 msgstr "غير قادر على  رفع الصورة"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2004
-#, fuzzy
-#| msgid "Uploading screenshot"
 msgid "Unable to make screenshot!"
-msgstr "رفع الصورة"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:859
 msgid "Unable to shorten the link..."
@@ -2935,10 +2795,9 @@ msgid "Unable to start process '%s'"
 msgstr "غير قادر على بدء عملية '%s'"
 
 #: ../Source/Func/UpdatePackage.cpp:403
-#, fuzzy, c-format
-#| msgid "Unable to start process '%s'"
+#, c-format
 msgid "Unable to unpack archive %s"
-msgstr "غير قادر على بدء عملية '%s'"
+msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:907
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:236
@@ -3008,10 +2867,8 @@ msgid "Upload results"
 msgstr "نتائج الرفع"
 
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:59
-#, fuzzy
-#| msgid "Upload failed! (retry limit reached)"
 msgid "Upload speed limit per thread:"
-msgstr "فشلت عملية النقل! (تم الوصول الى حد اعادة المحاولة)"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:124
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:858
@@ -3055,10 +2912,8 @@ msgid "Uploading has been finished."
 msgstr "وقد تم الانتهاء من الرفع"
 
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:64
-#, fuzzy
-#| msgid "Upload images"
 msgid "Uploading image..."
-msgstr "رفع الصور"
+msgstr ""
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:72
 msgid "Uploading module"
@@ -3094,10 +2949,8 @@ msgid "Use server-side thumbnails"
 msgstr "استخدام خادم المصغرات"
 
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:44
-#, fuzzy
-#| msgid "%s server settings"
 msgid "Use system proxy settings"
-msgstr "اعدادات خادم %s"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:916
 msgid "Use template"
@@ -3200,10 +3053,9 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:133
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:142
-#, fuzzy, c-format
-#| msgid "You have not selected server"
+#, c-format
 msgid "You have not selected \"%s\""
-msgstr "لم تحدد الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:148
@@ -3215,16 +3067,12 @@ msgid "You have not selected account for server \"%s\""
 msgstr "لم تحدد الحساب لخادم \"%s\""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:371
-#, fuzzy
-#| msgid "You have not selected server"
 msgid "You have not selected an file server"
-msgstr "لم تحدد الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:352
-#, fuzzy
-#| msgid "You have not selected server"
 msgid "You have not selected an image server"
-msgstr "لم تحدد الخادم"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:114
@@ -3276,10 +3124,8 @@ msgid "sec"
 msgstr "ثانية"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
-#, fuzzy
-#| msgid "Author:"
 msgid "to:"
-msgstr "المؤلف:"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:80
 msgid "translator_name"
@@ -3309,6 +3155,9 @@ msgstr "مترجم _ اسم"
 #~ msgid "not set"
 #~ msgstr "عدم وضع"
 
+#~ msgid "Convert UNC path \"\\\\ to \"\"file://///\"\"\""
+#~ msgstr "مسار UNC تحويل\"\\\\ الى \"\"‎file:‎/‎/‎/‎/‎/‎\"\"\""
+
 #~ msgid "Add item to pictures' context menu"
 #~ msgstr "اضافة مادة الى قائمة السياق للصور"
 
@@ -3326,6 +3175,9 @@ msgstr "مترجم _ اسم"
 
 #~ msgid "Share"
 #~ msgstr "حصة"
+
+#~ msgid "Selection"
+#~ msgstr "التحديد"
 
 #~ msgid "Blur"
 #~ msgstr "تمويه"

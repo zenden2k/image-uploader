@@ -17,9 +17,6 @@
       <UniqueIdentifier>{c0767ff4-cca4-4b46-a5d1-6966813c324d}</UniqueIdentifier>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
-    <Filter Include="Source Files\Func">
-      <UniqueIdentifier>{62e9a912-77ac-4cd2-8fef-a5f8bdf95cbc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\3rdpart">
       <UniqueIdentifier>{64f21170-9bd1-432d-ac2b-fe43646fb78c}</UniqueIdentifier>
     </Filter>
@@ -39,9 +36,6 @@
     </ClCompile>
     <ClCompile Include="Generated\ExplorerIntegration_i.c">
       <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Func\LangClass.cpp">
-      <Filter>Source Files\Func</Filter>
     </ClCompile>
     <ClCompile Include="..\3rdpart\Registry.cpp">
       <Filter>Source Files\3rdpart</Filter>

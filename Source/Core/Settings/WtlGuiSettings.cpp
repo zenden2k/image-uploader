@@ -241,6 +241,15 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
 
     if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
         Reg.WriteBool("ExplorerContextMenu", Register);
+        CRegistry Reg2;
+        Reg2.SetWOW64Flag(KEY_WOW64_64KEY); // Indicates that an application on 64-bit Windows should operate on the 64-bit registry view.
+        Reg2.SetRootKey(HKEY_LOCAL_MACHINE);
+        Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\Strings", true);
+        Reg2.WriteString(_T("UploadImages"), TR("Upload images"));
+        Reg2.WriteString(_T("UploadFiles"), TR("Upload files"));
+        Reg2.WriteString(_T("UploadImagesOnly"), TR("Upload images only"));
+        Reg2.WriteString(_T("ImportVideoFile"), TR("Import Video File"));
+        Reg2.WriteString(_T("InformationAboutFile"), TR("Information about file"));
     }
 
     SHELLEXECUTEINFO TempInfo = { 0 };
@@ -1122,10 +1131,17 @@ void WtlGuiSettings::Uninstall() {
     Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
     Reg.DeleteKey("Software\\Zenden.ws"); // Will not delete if contains subkeys
     Reg.SetRootKey(HKEY_LOCAL_MACHINE);
+
     Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
     Reg.DeleteKey("Software\\Zenden.ws"); // Will not delete if contains subkeys
     WinUtils::RemoveBrowserKey();
 
+    CRegistry reg3;
+    reg3.SetRootKey(HKEY_CURRENT_USER);
+    reg3.SetWOW64Flag(KEY_WOW64_64KEY);
+    reg3.DeleteKey("Software\\Zenden.ws\\Image Uploader\\Strings");
+    reg3.DeleteKey("Software\\Zenden.ws\\Image Uploader");
+    reg3.DeleteKey("Software\\Zenden.ws");
     CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
     DeleteFile(ShortcutName);
 }

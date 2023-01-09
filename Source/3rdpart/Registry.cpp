@@ -94,7 +94,7 @@ BOOL CRegistry::DeleteKey(CString strKey)
     ATLASSERT(strKey[0] != '\\');
 
     if (!KeyExists(strKey)) return TRUE;
-    if (::RegDeleteKey(m_hRootKey, strKey) != ERROR_SUCCESS) return FALSE;
+    if (::RegDeleteKeyEx(m_hRootKey, strKey, m_wow64Flag, 0) != ERROR_SUCCESS) return FALSE;
     return TRUE;
 }
 
@@ -388,7 +388,7 @@ BOOL CRegistry::KeyExists(CString strKey, HKEY hRootKey)
     if (hRootKey == NULL) hRootKey = m_hRootKey;
     
     LONG lResult = ::RegOpenKeyEx(hRootKey, LPCTSTR(strKey), 0,
-        KEY_ALL_ACCESS, &hKey);
+        KEY_ALL_ACCESS | m_wow64Flag, &hKey);
     ::RegCloseKey(hKey);
     if (lResult == ERROR_SUCCESS) return TRUE;
     return FALSE;
@@ -728,7 +728,7 @@ BOOL CRegistry::WriteString(CString strName, CString strValue)
 #endif
 
     if (::RegOpenKeyEx(m_hRootKey, LPCTSTR(m_strCurrentPath), 0,
-        KEY_WRITE, &hKey) != ERROR_SUCCESS) return FALSE;
+        KEY_WRITE | m_wow64Flag, &hKey) != ERROR_SUCCESS) return FALSE;
     
 #ifdef _UNICODE
     if (::RegSetValueEx(hKey, LPCTSTR(strName), 0,

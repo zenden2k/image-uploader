@@ -540,7 +540,6 @@
     <ClCompile Include="IShellContextMenu.cpp">
       <TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">false</TreatWarningAsError>
     </ClCompile>
-    <ClCompile Include="..\Func\LangClass.cpp" />
     <ClCompile Include="..\3rdpart\Registry.cpp">
       <TreatWarningAsError Condition="'$(Configuration)|$(Platform)'=='Release optimized|Win32'">false</TreatWarningAsError>
     </ClCompile>

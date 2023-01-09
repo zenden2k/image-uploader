@@ -617,6 +617,22 @@ std::wstring StringToWideString(const std::string &str, UINT codePage)
     return ws;
 }
 
+std::string WideStringToString(const std::wstring& ws, UINT codePage)
+{
+    // prior to C++11 std::string and std::wstring were not guaranteed to have their memory be contiguous,
+    // although all real-world implementations make them contiguous
+    std::string str;
+    int srcLen = static_cast<int>(ws.size());
+    int n = WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen + 1, NULL, 0, /*defchr*/0, NULL);
+    if (n) {
+        str.reserve(n);
+        str.resize(n - 1);
+        if (WideCharToMultiByte(codePage, 0, ws.c_str(), srcLen + 1, &str[0], n, /*defchr*/0, NULL) == 0)
+            str.clear();
+    }
+    return str;
+}
+
 }
 
 CLang::CLang()

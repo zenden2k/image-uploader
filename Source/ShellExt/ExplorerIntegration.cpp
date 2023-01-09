@@ -25,7 +25,7 @@
 #include <atlapp.h>
 #include "Generated/ExplorerIntegration.h"
 #include "ishellcontextmenu.h"
-#include "../Func/LangClass.h"
+//#include "../Func/LangClass.h"
 #include "../3rdpart/Registry.h"
 #include "Helpers.h"
 
@@ -47,7 +47,7 @@ CExplorerIntegrationModule _AtlModule;
 #pragma managed(push, off)
 #endif
 
-CLang Lang;
+//CLang Lang;
 // DLL Entry Point
 extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
     {
@@ -56,7 +56,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
         if(dwReason == DLL_PROCESS_ATTACH)
         {
             OleInitialize(NULL);
-            TCHAR szFileName[1024], szPath[256];
+            /*TCHAR szFileName[1024], szPath[256];
             GetModuleFileName(hInstance, szFileName, 1023);
             Helpers::ExtractFilePath(szFileName, szPath, 256);
             Lang.SetDirectory(CString(szPath) + _T("Lang\\"));
@@ -81,7 +81,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
             }
             
 
-            Lang.LoadLanguage(lang);
+            Lang.LoadLanguage(lang);*/
         }
 
         return _AtlModule.DllMain(dwReason, lpReserved); 

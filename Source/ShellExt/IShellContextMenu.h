@@ -26,6 +26,8 @@
 #include "IconBitmapUtils.h"
 #include <shobjidl.h>
 #include <map>
+#include <unordered_map>
+#include <3rdpart/Registry.h>
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
@@ -51,6 +53,27 @@ struct Shell_ContextMenuItem
 
 CString GetDllFolder();
 
+class StringsReader
+{
+    CRegistry reg;
+    std::map<CString, CString> map_;
+public:
+    StringsReader() {
+        reg.SetRootKey(HKEY_LOCAL_MACHINE);
+        reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader\\Strings"), false);
+    }
+
+    CString getString(CString name, CString defaultValue) {
+        auto it = map_.find(name);
+        if (it != map_.end()) {
+            return it->second;
+        }
+        CString res =  reg.ReadString(name, defaultValue);
+        map_[name] = res;
+        return res;
+    }
+};
+
 class ATL_NO_VTABLE CIShellContextMenu :
     public CComObjectRootEx<CComSingleThreadModel>,
     public CComCoClass<CIShellContextMenu, &CLSID_IShellContextMenu>,
@@ -68,6 +91,7 @@ class ATL_NO_VTABLE CIShellContextMenu :
         std::map<UINT, HBITMAP> cachedBitmaps_;
         std::map<HICON, HBITMAP> cachedIconBitmaps_;
         std::map<CString, IconCacheItem> cachedServerIcons_;
+        StringsReader stringsReader_;
         CIShellContextMenu();
         ~CIShellContextMenu();
 
