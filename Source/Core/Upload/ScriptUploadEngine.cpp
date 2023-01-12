@@ -334,12 +334,16 @@ int CScriptUploadEngine::doLogin()
             return 0;
         }
     }
+    
     defer<void> d([&] { // Run at function exit
         if (newAuthMode) {
             serverSync_->endAuth();
         }
     });
-	
+
+    if (serverSync_->isAuthPerformed()) {
+        return 1;
+    }
     try
     {
         checkCallingThread();

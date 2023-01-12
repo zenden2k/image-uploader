@@ -307,4 +307,9 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server Name="mediafire.com" Authorize="2" FileHost="1" Plugin="mediafire" SupportsFolders="1" MinVersion="1.4.0"> 
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub" />
+	</Server>
 </Servers>

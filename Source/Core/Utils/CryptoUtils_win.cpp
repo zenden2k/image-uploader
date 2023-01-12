@@ -95,7 +95,7 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
     return oss.str();
 }
 
-std::string GetHashTextFromFile(const std::string& filename, HashType hashType, const std::string& prefix = "", const std::string& postfix = "")
+std::string GetHashTextFromFile(const std::string& filename, HashType hashType, const std::string& prefix = "", const std::string& postfix = "", int64_t offset = 0, size_t chunkSize = 0)
 {
     HCRYPTPROV hProv = NULL;
     DWORD dwStatus = 0;
@@ -153,15 +153,24 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
             return std::string();
         }
     }
+
+    size_t totalRead = 0;
+    if (offset) {
+        LARGE_INTEGER liSize;
+        liSize.QuadPart = offset;
+        SetFilePointerEx(hFile, liSize, nullptr, FILE_BEGIN);
+
+        //SetFilePointer(hFile, offset, nullptr, FILE_BEGIN);
+    }
  
-    while ((bResult = ReadFile(hFile, rgbFile, BUFSIZE,
+    while ((bResult = ReadFile(hFile, rgbFile, chunkSize ? std::min<size_t>(chunkSize - totalRead, BUFSIZE): BUFSIZE,
         &cbRead, NULL)) != 0)
     {
         if (0 == cbRead)
         {
             break;
         }
-
+        totalRead += cbRead;
         if (!CryptHashData(hHash, rgbFile, cbRead, 0))
         {
             dwStatus = GetLastError();
@@ -170,6 +179,9 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
             CryptDestroyHash(hHash);
             CloseHandle(hFile);
             return std::string();
+        }
+        if (chunkSize && totalRead >= chunkSize) {
+            break;
         }
     }
 
@@ -255,7 +267,7 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
     my_blob * kb = NULL;
     DWORD kbSize = static_cast<DWORD>(sizeof(my_blob) + password.length());
 
-    kb = reinterpret_cast<my_blob*>(malloc(kbSize));
+    kb = static_cast<my_blob*>(malloc(kbSize));
     kb->header.bType = PLAINTEXTKEYBLOB;
     kb->header.bVersion = CUR_BLOB_VERSION;
     kb->header.reserved = 0;
@@ -379,5 +391,16 @@ std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filen
     return GetHashTextFromFile(filename, HashSha1, prefix, postfix);
 }
 
+std::string CryptoUtils::CalcSHA256Hash(const void* data, size_t size) {
+    return GetHashText(data, size, HashSha256);
+}
 
-}; // end of namespace IuCoreUtils
+std::string CryptoUtils::CalcSHA256HashFromString(const std::string& data) {
+    return CalcSHA256Hash(data.c_str(), data.size());
+}
+
+std::string CryptoUtils::CalcSHA256HashFromFile(const std::string& filename, int64_t offset, size_t chunkSize) {
+    return GetHashTextFromFile(filename, HashSha256, {}, {}, offset, chunkSize);
+}
+
+} // end of namespace IuCoreUtils

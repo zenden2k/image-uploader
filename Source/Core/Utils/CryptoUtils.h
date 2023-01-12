@@ -35,6 +35,10 @@ namespace CryptoUtils {
     std::string CalcSHA1HashFromFile(const std::string& filename);
     std::string CalcSHA1HashFromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix);
 
+    std::string CalcSHA256Hash(const void* data, size_t size);
+    std::string CalcSHA256HashFromString(const std::string& data);
+    std::string CalcSHA256HashFromFile(const std::string& filename, int64_t offset = 0, size_t chunkSize = 0);
+
     std::string CalcHMACSHA1Hash(const std::string& key, const void* data, size_t size, bool base64);
     std::string CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64);
     std::string Base64Encode(const std::string& data);

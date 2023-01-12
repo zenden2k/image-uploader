@@ -188,4 +188,66 @@ std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
     return CalcSHA1HashFromFileWithPrefix(filename, "", "");
 }
 
+std::string CryptoUtils::CalcSHA256Hash(const void* data, size_t size) {
+    const int HashSize = 32;
+    std::string result;
+    SHA256_CTX context;
+
+    SHA256_Init(&context);
+    SHA256_Update(&context, data, size);
+
+    unsigned char buff[HashSize] = "";
+
+    SHA256_Final(buff, &context);
+
+    for (int i = 0; i < HashSize; i++) {
+        char temp[5];
+        sprintf(temp, "%02x", buff[i]);
+        result += temp;
+    }
+    return result;
+}
+
+std::string CryptoUtils::CalcSHA256HashFromFile(const std::string& filename, int64_t offset, size_t chunkSize) {
+    const int HashSize = 32;
+    std::string result;
+    SHA256_CTX context;
+
+    SHA256_Init(&context);
+    FILE* f = IuCoreUtils::FopenUtf8(filename.c_str(), "rb");
+
+    if (f) {
+        if (offset) {
+            IuCoreUtils::Fseek64(f, offset, SEEK_SET);
+        }
+
+        unsigned char buf[4096];
+        int64_t totalRead = 0;
+        while (!feof(f)) {
+            size_t bytesRead = fread(buf, 1, std::min(totalRead - chunkSize, sizeof(buf)), f);
+
+            SHA256_Update(&context, (unsigned char*)buf, bytesRead);
+            totalRead += bytesRead;
+            if (chunkSize && totalRead >= chunkSize) {
+                break;
+            }
+        }
+        unsigned char buff[HashSize] = "";
+        SHA256_Final(buff, &context);
+
+        fclose(f);
+
+        for (int i = 0; i < HashSize; i++) {
+            char temp[5];
+            sprintf(temp, "%02x", buff[i]);
+            result += temp;
+        }
+    }
+    return result;
+}
+
+std::string CryptoUtils::CalcSHA256HashFromString(const std::string& data) {
+    return CalcSHA256Hash(data.c_str(), data.size());
+}
+
 }; // end of namespace IuCoreUtils
