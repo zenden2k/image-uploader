@@ -96,8 +96,8 @@ if(MSVC)
 endif(MSVC)
 
 SET(COMMON_DEPS boost/1.78.0
-				openssl/1.1.1l
-				libcurl/7.86.0@zenden2k/stable
+				openssl/1.1.1s
+				libcurl/7.87.0
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.13
