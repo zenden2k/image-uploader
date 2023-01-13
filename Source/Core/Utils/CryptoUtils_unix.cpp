@@ -224,7 +224,7 @@ std::string CryptoUtils::CalcSHA256HashFromFile(const std::string& filename, int
         unsigned char buf[4096];
         int64_t totalRead = 0;
         while (!feof(f)) {
-            size_t bytesRead = fread(buf, 1, std::min(totalRead - chunkSize, sizeof(buf)), f);
+            size_t bytesRead = fread(buf, 1, chunkSize ? std::min(chunkSize - totalRead, sizeof(buf)): sizeof(buf), f);
 
             SHA256_Update(&context, (unsigned char*)buf, bytesRead);
             totalRead += bytesRead;
