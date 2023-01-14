@@ -342,7 +342,7 @@ int CScriptUploadEngine::doLogin()
     });
 
     if (serverSync_->isAuthPerformed()) {
-        return 1;
+        return serverSync_->isAuthPerformedSuccess() ? 1 : 0;
     }
     try
     {

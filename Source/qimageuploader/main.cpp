@@ -43,8 +43,8 @@ public:
 		return str;
 	}
 #ifdef _WIN32
-	const wchar_t* translateW(const wchar_t* str) override {
-		return str;
+    std::wstring translateW(const char* str) override {
+		return IuCoreUtils::Utf8ToWstring(str);
 	}
 #endif
 };

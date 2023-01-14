@@ -234,7 +234,8 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("beginAuth", &ServerSync::beginAuth).
         Func("endAuth", &ServerSync::endAuth).
         Func("isAuthPerformed", &ServerSync::isAuthPerformed).
-        Func("setAuthPerformed", &ServerSync::setAuthPerformed)
+        Func("setAuthPerformed", &ServerSync::setAuthPerformed).
+        Func("isAuthPerformedSuccess", &ServerSync::isAuthPerformedSuccess)
     );
 }
 

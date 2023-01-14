@@ -32,7 +32,8 @@ class ServerSync: public ThreadSync
         bool endAuth();
         void setAuthPerformed(bool success);
         bool isAuthPerformed();
-        
+        bool isAuthPerformedSuccess();
+
         /*! @cond PRIVATE */
         void resetAuthorization();
         void resetFailedAuthorization();
