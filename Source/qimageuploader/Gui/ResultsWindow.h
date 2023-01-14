@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <vector>
-
+#include <memory>
 #include "Core/OutputCodeGenerator.h"
 
 namespace Ui {

@@ -125,13 +125,18 @@ if (WIN32)
 	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
 endif()	
 
-#if (IU_ENABLE_FFMPEG)
-#  list(APPEND COMMON_DEPS ffmpeg/5.0)
+if (IU_ENABLE_FFMPEG AND NOT(WIN32))
+  list(APPEND COMMON_DEPS ffmpeg/4.4.3)
 #  Error occurs while building this package:
 #		msys2/cci.latest: Invalid ID: Only Windows x64 supported
 #  So we have to build ffmpeg separately.
-#endif()
-		
+endif()
+
+SET(ADDITIONAL_OPTIONS "")
+if (IU_ENABLE_FFMPEG AND NOT(WIN32))
+	list(APPEND ADDITIONAL_OPTIONS ffmpeg:shared=False)	
+endif()
+	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						GENERATORS cmake_find_package_multi 
 						OPTIONS 
@@ -158,6 +163,7 @@ conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						boost:without_type_erasure=True
 						boost:without_wave=True
 						libcurl:with_libssh2=True
+						${ADDITIONAL_OPTIONS}
 						)
 
 SET(msvc_link_setting "")
@@ -204,6 +210,10 @@ find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED)
 if(WIN32)
 	find_package(base-classes CONFIG REQUIRED)
 endif()	
+
+if (IU_ENABLE_FFMPEG AND NOT(WIN32))
+	find_package(ffmpeg CONFIG REQUIRED)
+endif()
   
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")

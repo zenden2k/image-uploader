@@ -10,7 +10,9 @@
 
 // Begin: translation macros
 //#define tr(s) ServiceLocator::instance()->translator()->translate(s)
+#ifndef IU_QT
 #define tr(s) boost::locale::translate(s)
+#endif
 #define _(s) boost::locale::translate(s)
 
 #ifdef _WIN32

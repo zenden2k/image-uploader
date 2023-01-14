@@ -6,6 +6,13 @@
 
 #include "Core/Utils/CoreTypes.h"
 #include <typeinfo> 
+
+#ifdef IU_QT
+    class QtImage;
+#elif defined(_WIN32)
+    class GdiplusImage;
+#endif
+
 class AbstractImage
 {
 public:
