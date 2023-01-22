@@ -25,6 +25,7 @@ public:
     int timeElapsed;
     bool finished;
     CUploadEngineData* ued;
+    int serverType;
 protected:
     std::string directUrl_;
     std::string directUrlInfo_;
@@ -50,6 +51,7 @@ public:
         finished = false;
         skip = false;
         ued = nullptr;
+        serverType = 0;
     }
 
     void setLinkInfo(int columnId, const std::string& info) {

@@ -27,6 +27,9 @@ add_executable(ServersChecker WIN32
     ../Core/FileDownloader.cpp
     ../Core/Settings/CliSettings.cpp
 	../Gui/Helpers/LangHelper.cpp
+	../Gui/Components/MyFileDialog.cpp
+	../Gui/Components/NewStyleFileDialog.cpp
+	../Gui/Components/NewStyleFileSaveDialog.cpp
     res/ServersChecker.exe.manifest
 )
 

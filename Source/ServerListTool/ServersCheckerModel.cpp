@@ -9,7 +9,20 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
         ServerData *sd = new ServerData();
         CUploadEngineData* ued = engineList_->byIndex(i);
         sd->ued = ued;
-        items_.push_back(sd);
+        if (ued->hasType(CUploadEngineData::TypeFileServer)) {
+            sd->serverType = CUploadEngineData::TypeFileServer;
+            items_.push_back(sd);
+        } else if (ued->hasType(CUploadEngineData::TypeImageServer)) {
+            sd->serverType = CUploadEngineData::TypeImageServer;
+            items_.push_back(sd);
+        }
+
+        if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
+            ServerData* sd2 = new ServerData();
+            sd2->ued = ued;
+            sd2->serverType = CUploadEngineData::TypeUrlShorteningServer;
+            items_.push_back(sd2);
+        }  
     }
 }
 
@@ -25,7 +38,7 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
         return std::to_string(row + 1);
     } else if (column == 1) {
         std::string name = serverData.ued->Name;
-        if (serverData.ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
+        if (serverData.serverType == CUploadEngineData::TypeUrlShorteningServer) {
             name += "  [URL Shortener]";
         }
         return name;

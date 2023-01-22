@@ -15,6 +15,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
 #include "ServersCheckerSettingsDlg.h"
+#include "Gui/Components/MyFileDialog.h"
 
 namespace ServersListTool
 {
@@ -229,11 +230,16 @@ LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
 
 LRESULT CMainDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    CFileDialog fd(true, 0, 0, 4 | 2, 0, m_hWnd);
+    IMyFileDialog::FileFilterArray filters = {
+        {_T("All files"), _T("*.*")}
+    };
 
-    if (fd.DoModal() != IDOK || !fd.m_szFileName[0]) return 0;
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, _T(""), _T(""), filters, false);
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
 
-    SetDlgItemText(IDC_TOOLFILEEDIT, fd.m_szFileName);
+    SetDlgItemText(IDC_TOOLFILEEDIT, dlg->getFile());
     return 0;
 }
 

@@ -1,10 +1,12 @@
 #include "NewStyleFileDialog.h"
 
+#include <vector>
+
 CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters, bool multiselect, bool openDialog){
-    COMDLG_FILTERSPEC* fileTypes = nullptr;
+    std::vector<COMDLG_FILTERSPEC> fileTypes;
     
     if (!filters.empty()) {
-        fileTypes = new COMDLG_FILTERSPEC[filters.size()];
+        fileTypes.resize(filters.size());
         for (size_t i = 0; i < filters.size(); i++) {
             fileTypes[i].pszName = filters[i].first;
             fileTypes[i].pszSpec = filters[i].second;
@@ -17,15 +19,12 @@ CNewStyleFileDialog::CNewStyleFileDialog(HWND parent, const CString& initialFold
     HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileOpenDialog);
 
     if (FAILED(hr)) {
-        delete[] fileTypes;
         return;
     }
 
-    if (fileTypes) {
-        newStyleDialog_->SetFileTypes(filters.size(), fileTypes);
+    if (!filters.empty()) {
+        newStyleDialog_->SetFileTypes(filters.size(), fileTypes.data());
     }
-
-    delete[] fileTypes;
 
     if (!title.IsEmpty()) {
         newStyleDialog_->SetTitle(title);
