@@ -7,10 +7,8 @@ set(SRC_LIST
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
     ../Core/ScreenCapture/MonitorEnumerator.cpp
     ../Core/ScreenCapture/ScreenshotHelper.cpp
-    ../Core/Scripting/Script.cpp
-    ../Core/Scripting/ScriptsManager.cpp
     ../Core/SearchByImage.cpp
-	../Core/SearchByImageTask.cpp
+    ../Core/SearchByImageTask.cpp
     ../Core/SearchGoogleImages.cpp
     ../Core/SearchYandexImages.cpp
     ../Core/Settings/CommonGuiSettings.cpp
@@ -27,11 +25,10 @@ set(SRC_LIST
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
     ../Core/Upload/Filters/UserFilter.cpp
-	../Core/BackgroundTask.cpp
+    ../Core/BackgroundTask.cpp
     ../Func/CmdLine.cpp
     ../Func/DefaultLogger.cpp
     ../Func/DefaultUploadErrorHandler.cpp
-    ../Func/GdiPlusInitializer.cpp
     ../Func/MediaInfoHelper.cpp
     ../Func/WtlScriptDialogProvider.cpp
     ../Func/ImageGenerator.cpp
@@ -111,12 +108,9 @@ set(SRC_LIST
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
-	Helpers/LangHelper.cpp
+    Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
-    ../3rdpart/QColorQuantizer.cpp
-    ../3rdpart/Registry.cpp
-    ../3rdpart/Unzipper.cpp
     ../3rdpart/vkCodes.cpp
     ../3rdpart/WinHotkeyCtrl.cpp
     ../Func/Common.cpp
@@ -154,8 +148,7 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/TextTool.cpp
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
-    UploadListModel.cpp
-    
+    UploadListModel.cpp  
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
@@ -170,7 +163,7 @@ set(HEADER_LIST
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
     ../Core/SearchByImage.h
-	../Core/SearchByImageTask.h
+    ../Core/SearchByImageTask.h
     ../Core/SearchGoogleImages.h
     ../Core/SearchYandexImages.h
     ../Core/Settings/CommonGuiSettings.h
@@ -194,7 +187,7 @@ set(HEADER_LIST
     ../Func/GdiPlusInitializer.h
     ../Func/MediaInfoHelper.h
     ../Func/WtlScriptDialogProvider.h
-	../Func/ImageGenerator.h
+    ../Func/ImageGenerator.h
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h
@@ -271,7 +264,7 @@ set(HEADER_LIST
     Controls/TabListBox.h
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
-	Helpers/LangHelper.h
+    Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
     ../3rdpart/QColorQuantizer.h

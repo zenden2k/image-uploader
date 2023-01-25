@@ -79,7 +79,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         bool functionExists(const std::string& name);
         int checkAuth();
         bool needStop() override;
-        bool newAuthMode;
+        bool newAuthMode_;
         bool hasRefreshTokenFunc_;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };

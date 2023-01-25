@@ -156,7 +156,6 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/TextUtils.h
     Scripting/UploadFilterScript.h
     3rdpart/htmlentities.h
-    BackgroundTask.h
     Video/VideoUtils.h
 )
     
