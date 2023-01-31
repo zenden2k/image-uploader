@@ -1,8 +1,8 @@
-// MainDlg.cpp : implementation of the CMainDlg class
+// MainDlg.cpp : implementation of the CServersCheckerDlg class
 //
 /////////////////////////////////////////////////////////////////////////////
 
-#include "MainDlg.h"
+#include "ServersCheckerDlg.h"
 
 #include "Gui/Dialogs/LogWindow.h"
 #include "3rdpart/GdiplusH.h"
@@ -14,8 +14,8 @@
 #include "ServersChecker.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/BasicSettings.h"
-#include "ServersCheckerSettingsDlg.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 namespace ServersListTool
 {
@@ -25,7 +25,7 @@ struct TaskDispatcherMessageStruct {
     bool async;
 };
 
-CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
+CServersCheckerDlg::CServersCheckerDlg(WtlGuiSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
                     std::shared_ptr<INetworkClientFactory> factory) :
                     model_(engineList), listView_(&model_), networkClientFactory_(std::move(factory)), settings_(settings)
 {
@@ -36,22 +36,22 @@ CMainDlg::CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* upload
     m_NeedStop = false;
 }
 
-LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     auto basicSettings = ServiceLocator::instance()->settings<BasicSettings>();
-    ServiceLocator::instance()->setTaskRunner(this);
+    //ServiceLocator::instance()->setTaskRunner(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
 
     // set icons
-    icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
+    /*icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
     SetIcon(icon_, TRUE);
     iconSmall_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
-
+    */
     listView_.Init();
 
     withAccountsRadioButton_.SetCheck(BST_CHECKED);
@@ -71,28 +71,19 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
             testURL = Utf8ToWstring(url).c_str();
         }
     }*/
-    basicSettings->MaxThreads = 10;
+    //basicSettings->MaxThreads = 10;
 
     SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_->testFileName));
     SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
-    serversChecker_->setOnFinishedCallback(std::bind(&CMainDlg::processFinished, this));
+    serversChecker_->setOnFinishedCallback(std::bind(&CServersCheckerDlg::processFinished, this));
     imageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
     listView_.SetImageList(imageList_, LVSIL_NORMAL);
     return TRUE;
 }
 
-LRESULT CMainDlg::OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
-    TaskDispatcherMessageStruct* msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
-    msg->callback();
-    if (msg->async) {
-        delete msg;
-    }
-    return 0;
-}
-
-LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     HWND hwnd = reinterpret_cast<HWND>(wParam);
     POINT ClientPoint, ScreenPoint;
     if (hwnd != GetDlgItem(IDC_TOOLSERVERLIST)) return 0;
@@ -144,14 +135,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     return 0;
 }
 
-LRESULT CMainDlg::OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    CSimpleDialog<IDD_ABOUTBOX, TRUE> dlg;
-    dlg.DoModal(m_hWnd);
-    return 0;
-}
-
-LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
     if (!WinUtils::FileExists(fileName)) {
@@ -197,21 +181,17 @@ LRESULT CMainDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /
     return 0;
 }
 
-LRESULT CMainDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     if (isRunning()) {
         stop();
     } else {
-        settings_->testFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT)));
-        settings_->testUrl = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT)));
-        settings_->SaveSettings();
-        
         EndDialog(wID);
     }
     return 0;
 }
 
-LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int nIndex = -1;
     do {
@@ -228,7 +208,7 @@ LRESULT CMainDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL&
     return 0;
 }
 
-LRESULT CMainDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     IMyFileDialog::FileFilterArray filters = {
         {_T("All files"), _T("*.*")}
@@ -243,37 +223,37 @@ LRESULT CMainDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
     return 0;
 }
 
-void CMainDlg::stop()
+void CServersCheckerDlg::stop()
 {
     m_NeedStop = true;
     serversChecker_->stop();
 }
 
-bool CMainDlg::isRunning() const
+bool CServersCheckerDlg::isRunning() const
 {
     return serversChecker_->isRunning();
 }
 
-bool CMainDlg::OnNeedStop() const
+bool CServersCheckerDlg::OnNeedStop() const
 {
     return m_NeedStop;
 }
 
-void CMainDlg::processFinished() {
+void CServersCheckerDlg::processFinished() {
     ::EnableWindow(GetDlgItem(IDOK), true);
     ::EnableWindow(GetDlgItem(IDCANCEL), true);
     GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);
 }
 
 
-LRESULT CMainDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     CLogWindow* logWindow = ServiceLocator::instance()->logWindow();
     logWindow->Show();
     return 0;
 }
 
-LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     for (int i = 0; i < engineList_->count(); i++) {
         ServerData* sd = model_.getDataByIndex(i);
@@ -285,7 +265,7 @@ LRESULT CMainDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BO
     return 0;
 }
 
-LRESULT CMainDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
+LRESULT CServersCheckerDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
     if (sd) {
         std::string directUrl = sd->directUrl();
@@ -297,7 +277,7 @@ LRESULT CMainDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
     return 0;
 }
 
-LRESULT CMainDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
+LRESULT CServersCheckerDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
     if (sd) {
         std::string thumbUrl = sd->thumbUrl();
@@ -309,7 +289,7 @@ LRESULT CMainDlg::OnCopyThumbUrl(WORD, WORD, HWND, BOOL&) {
     return 0;
 }
 
-LRESULT CMainDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
+LRESULT CServersCheckerDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);
     if (sd) {
         std::string viewUrl = sd->viewurl();
@@ -321,32 +301,10 @@ LRESULT CMainDlg::OnCopyViewUrl(WORD, WORD, HWND, BOOL&) {
     return 0;
 }
 
-LRESULT CMainDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+LRESULT CServersCheckerDlg::OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     serversChecker_->stop();
 
-    return 0;
-}
-
-void CMainDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
-    if (async) {
-        TaskDispatcherMessageStruct* msg = new TaskDispatcherMessageStruct();
-        msg->callback = std::move(task);
-        msg->async = true;
-        PostMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(msg), 0);
-    } else {
-        TaskDispatcherMessageStruct msg;
-        msg.callback = std::move(task);
-        msg.async = false;
-        SendMessage(WM_TASKDISPATCHERMSG, reinterpret_cast<WPARAM>(&msg), 0);
-    }
-
-}
-
-LRESULT CMainDlg::OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    CSettingsDlg dlg(settings_, ServiceLocator::instance()->settings<BasicSettings>());
-    dlg.DoModal(m_hWnd);
     return 0;
 }
 

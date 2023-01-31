@@ -148,7 +148,12 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/TextTool.cpp
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
-    UploadListModel.cpp  
+    UploadListModel.cpp
+    ../ServerListTool/ServersCheckerDlg.cpp 
+    ../ServerListTool/ServersChecker.cpp
+    ../ServerListTool/ServersCheckerModel.cpp
+    ../ServerListTool/Helpers.cpp
+    ../ServerListTool/ServerListView.cpp
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
@@ -308,6 +313,10 @@ set(HEADER_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.h
     ../ImageEditor/Helpers/FontEnumerator.h
     UploadListModel.h
+    ../ServerListTool/ServersChecker.h
+    ../ServerListTool/ServersCheckerModel.h
+    ../ServerListTool/Helpers.h
+    ../ServerListTool/ServerListView.h
     ../resource.h
 )
 	

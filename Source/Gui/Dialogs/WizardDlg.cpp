@@ -62,6 +62,7 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "statusdlg.h"
+#include "ServerListTool/ServersCheckerDlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -444,6 +445,11 @@ bool CWizardDlg::ParseCmdLine()
             }
             return true;
         }
+    }
+
+    if (CmdLine.IsOption(_T("serverschecker"))) {
+        ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
+        dlg.DoModal(m_hWnd);
     }
 
     for(size_t i=0; i<CmdLine.GetCount(); i++)
@@ -2111,6 +2117,9 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+#ifndef NDEBUG
+    popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
+#endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log"));
 
     TPMPARAMS excludeArea;
@@ -2168,5 +2177,11 @@ LRESULT CWizardDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         }
         newImages_.clear();
     }
+    return 0;
+}
+
+LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
+    dlg.DoModal(m_hWnd);
     return 0;
 }

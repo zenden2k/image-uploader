@@ -545,6 +545,9 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageReuploaderSettings.PasteHtmlOnCtrlV = true;
     Hotkeys_changed = false;
 
+    testFileName = W2U(WinUtils::GetAppFolder()) + "testfile.jpg";
+    testUrl = "https://github.com/zenden2k/image-uploader/issues";
+
     BindToManager();
 }
 
@@ -921,6 +924,10 @@ void WtlGuiSettings::BindToManager() {
     proxy.nm_bind(ConnectionSettings, ProxyType);
     proxy.nm_bind(ConnectionSettings, ProxyUser);
     proxy.nm_bind(ConnectionSettings, ProxyPassword);
+
+    SettingsNode& serversChecker = mgr_["ServersChecker"];
+    serversChecker.n_bind(testFileName);
+    serversChecker.n_bind(testUrl);
 }
 
 // The following code should  be deleted in next releases

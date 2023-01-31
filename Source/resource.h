@@ -172,8 +172,11 @@
 #define IDB_ICONPRINT                   324
 #define IDI_ICON12                      326
 #define IDI_ICONDELETEBIG               326
+#define IDD_SERVERSCHECKERDLG           327
 #define IDC_ADDIMAGES                   1000
+#define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
+#define IDC_TOOLFILEEDIT                1001
 #define IDC_LIST1                       1002
 #define IDC_FILELIST                    1002
 #define IDC_LISTBOX                     1002
@@ -186,21 +189,35 @@
 #define IDC_CONTEXTMENUITEMS            1002
 #define IDC_CONTEXTMENUITEMSLIST        1002
 #define IDC_UPLOADTABLE                 1002
+#define IDC_TOOLBROWSEBUTTON            1002
 #define IDC_KEEPASIS                    1003
+#define IDC_TOOLSOURCEFILE              1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
+#define IDC_CHECKIMAGESERVERS           1005
 #define IDC_IMAGEHEIGHT                 1006
+#define IDC_CHECKFILESERVERS            1006
 #define IDC_YOURLOGO                    1007
+#define IDC_RADIONOACCS                 1007
 #define IDC_YOURTEXT                    1008
+#define IDC_RADIOWITHACCS               1008
 #define IDC_RESIZE                      1009
 #define IDC_RESIZEBYWIDTH               1009
+#define IDC_RADIOALWAYSACCS             1009
 #define IDC_XLABEL                      1010
+#define IDC_BUTTONSKIP                  1010
 #define IDC_FORMATLIST                  1011
+#define IDC_ERRORLOGBUTTON              1011
 #define IDC_QUALITYSPIN                 1012
+#define IDC_BUTTONSKIPALL               1012
 #define IDC_FORMATLABEL                 1013
+#define IDC_CHECKURLSHORTENERS          1013
 #define IDC_QUALITYLABEL                1014
+#define IDC_STOPBUTTON                  1014
 #define IDC_QUALITYEDIT                 1015
+#define IDC_TESTURLEDIT                 1015
 #define IDC_PERCENTLABEL                1016
+#define IDC_SETTINGSBTN                 1016
 #define IDC_APPLY                       1017
 #define IDC_THUMBFORMATLABEL            1017
 #define IDC_LOGOOPTIONS                 1018
@@ -766,7 +783,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        327
+#define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           128

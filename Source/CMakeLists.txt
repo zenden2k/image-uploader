@@ -103,7 +103,6 @@ SET(COMMON_DEPS boost/1.78.0
 				zlib/1.2.13
 				minizip/1.2.13	
 				jsoncpp/1.9.5
-				libssh2/1.9.0 
 				sqlite3/3.36.0
 				base64/0.4.0
 				glog/0.5.0
@@ -272,7 +271,6 @@ add_subdirectory(Video)
 
 if(WIN32)
     add_subdirectory(Gui)
-    add_subdirectory(ServerListTool)
 endif()
 
 add_subdirectory(CLI)

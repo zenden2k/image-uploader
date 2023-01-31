@@ -130,6 +130,8 @@ public:
     bool SendToContextMenu;
     bool SendToContextMenu_changed;
 
+    std::string testFileName, testUrl;
+
     CString getServerName();
     CString getQuickServerName();
     CString getFileServerName();

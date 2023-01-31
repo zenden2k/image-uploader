@@ -31,29 +31,30 @@
 #include "Helpers.h"
 #include "ServerListView.h"
 #include "Core/TaskDispatcher.h"
-#include "ServersCheckerSettings.h"
+//#include "Gui/Dialogs/WizardDlg.h"
 
 class UploadManager;
 class UploadEngineManager;
 class NetworkClient;
+class WtlGuiSettings;
 
 namespace ServersListTool {
 
 class ServersChecker;
 
-class CMainDlg :
-    public CDialogImpl<CMainDlg>, public CDialogResize<CMainDlg>, public CWinDataExchange<CMainDlg>, public ITaskRunner {
+
+class CServersCheckerDlg :
+    public CDialogImpl<CServersCheckerDlg>, public CDialogResize<CServersCheckerDlg>, public CWinDataExchange<CServersCheckerDlg> {
 public:
-    enum { IDD = IDD_MAINDLG };
+    enum { IDD = IDD_SERVERSCHECKERDLG };
     enum {
-        ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL, WM_TASKDISPATCHERMSG = WM_USER + 100
+        ID_COPYDIRECTURL = 13000, ID_COPYTHUMBURL, ID_COPYVIEWURL /*WM_TASKDISPATCHERMSG = WM_USER + 100*/
     };
-    CMainDlg(ServersCheckerSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
-    BEGIN_MSG_MAP(CMainDlg)
+    CServersCheckerDlg(WtlGuiSettings *settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList, std::shared_ptr<INetworkClientFactory> factory);
+    BEGIN_MSG_MAP(CServersCheckerDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
-        MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
-        COMMAND_ID_HANDLER(ID_APP_ABOUT, OnAppAbout)
+        //MESSAGE_HANDLER(WM_TASKDISPATCHERMSG, OnTaskDispatcherMsg)
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_ID_HANDLER(IDC_BUTTONSKIP, OnSkip)
         COMMAND_ID_HANDLER(IDC_BUTTONSKIPALL, OnSkipAll)
@@ -64,15 +65,14 @@ public:
         COMMAND_ID_HANDLER(ID_COPYTHUMBURL, OnCopyThumbUrl)
         COMMAND_ID_HANDLER(ID_COPYVIEWURL, OnCopyViewUrl)
         COMMAND_HANDLER(IDC_STOPBUTTON, BN_CLICKED, OnBnClickedStopbutton)
-        COMMAND_HANDLER(IDC_SETTINGSBTN, BN_CLICKED, OnBnClickedSettingsButton)
+        //COMMAND_HANDLER(IDC_SETTINGSBTN, BN_CLICKED, OnBnClickedSettingsButton)
         //NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
-        CHAIN_MSG_MAP(CDialogResize<CMainDlg>)
+        CHAIN_MSG_MAP(CDialogResize<CServersCheckerDlg>)
         REFLECT_NOTIFICATIONS()   
     END_MSG_MAP()
 
-    BEGIN_DLGRESIZE_MAP(CMainDlg)
+    BEGIN_DLGRESIZE_MAP(CServersCheckerDlg)
         DLGRESIZE_CONTROL(IDC_TOOLSERVERLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
-        DLGRESIZE_CONTROL(ID_APP_ABOUT, DLSZ_MOVE_X)
         DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIP, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIPALL, DLSZ_MOVE_Y)
@@ -81,7 +81,7 @@ public:
         DLGRESIZE_CONTROL(IDC_STOPBUTTON, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
-    BEGIN_DDX_MAP(CMainDlg)
+    BEGIN_DDX_MAP(CServersCheckerDlg)
         DDX_CONTROL_HANDLE(IDC_RADIOWITHACCS, withAccountsRadioButton_)
         DDX_CONTROL_HANDLE(IDC_RADIOALWAYSACCS, alwaysWithAccountsRadioButton_)
         DDX_CONTROL_HANDLE(IDC_CHECKIMAGESERVERS, checkImageServersCheckBox_)
@@ -96,9 +96,8 @@ public:
     //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    //LRESULT OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnAppAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -109,9 +108,9 @@ public:
     LRESULT OnCopyThumbUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCopyViewUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedStopbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    //LRESULT OnBnClickedSettingsButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-    void runInGuiThread(TaskRunnerTask&& task, bool async = false) override;
+    //void runInGuiThread(TaskRunnerTask&& task, bool async = false) override;
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     int contextMenuItemId;
@@ -131,7 +130,7 @@ public:
 
     std::unique_ptr<ServersChecker> serversChecker_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
-    ServersCheckerSettings* settings_;
+    WtlGuiSettings* settings_;
     bool OnNeedStop() const;
     void processFinished();
     void stop();
