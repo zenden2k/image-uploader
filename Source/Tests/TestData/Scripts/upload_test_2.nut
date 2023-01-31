@@ -10,6 +10,12 @@ function Authenticate() {
     return 0;
 }
 
+function RefreshToken() {
+    nm.setUrl("https://example.com/refresh_token");
+    nm.doPost("");
+    return 1;
+}
+
 function IsAuthenticated() {
     if (ServerParams.getParam("token") != "") {
         return 1;

@@ -140,7 +140,7 @@ int CUploadEngineListBase::getUploadEngineIndex(const std::string& Name) const
 std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator CUploadEngineListBase::begin() const {
     return m_list.begin();
 }
-std::vector< std::unique_ptr<CUploadEngineData>>::const_iterator CUploadEngineListBase::end() const {
+std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator CUploadEngineListBase::end() const {
     return m_list.end();
 }
 

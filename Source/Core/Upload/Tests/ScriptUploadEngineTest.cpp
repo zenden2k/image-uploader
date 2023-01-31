@@ -38,7 +38,7 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
     ued.Name = "test server";
@@ -100,7 +100,7 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     engine.setServerSettings(&serverSettings);
 
     // Prepare CUploadEngineData instance
@@ -163,7 +163,7 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, 
         &serverSettings, std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
     ued.Name = "test server";
@@ -253,12 +253,18 @@ TEST_F(ScriptUploadEngineTest, authenticateTest)
         EXPECT_CALL(networkClient, addQueryParam("password", "testpassword"));
         EXPECT_CALL(networkClient, doPost(""));
 
+        EXPECT_CALL(networkClient, setUrl("https://example.com/refresh_token"));
+        EXPECT_CALL(networkClient, doPost(""));
+
         //EXPECT_CALL(networkClient, setReferer(action1.Referer));
         //EXPECT_CALL(networkClient, responseBody()).Times(AnyNumber());
         EXPECT_CALL(networkClient, setUrl("https://example.com/upload"));
         EXPECT_CALL(networkClient, addQueryParamFile("source", constSizeFileName, _, _));
 
         EXPECT_CALL(networkClient, doUploadMultipartData());
+
+        EXPECT_CALL(networkClient, setUrl("https://example.com/refresh_token"));
+        EXPECT_CALL(networkClient, doPost(""));
 
         EXPECT_CALL(networkClient, setUrl("https://example.com/upload"));
         EXPECT_CALL(networkClient, addQueryParamFile("source", constSizeFileName, _, _));
