@@ -23,7 +23,7 @@ set(Boost_USE_MULTITHREADED ON)
 include(conan.cmake)
 
 conan_add_remote(NAME zenden2k INDEX 1
-            URL http://conan.zenden2k.com)
+            URL https://conan.svistunov.dev)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
