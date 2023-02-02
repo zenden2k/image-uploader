@@ -1,5 +1,6 @@
 #include <curl/curl.h>
 #include <gtest/gtest.h>
+#include <string.h>
 
 #include <Tests/TestHelpers.h>
 
@@ -12,7 +13,7 @@ public:
         size_t i = 0;
         const char* protocol;
         while ((protocol = protocols[i++]) != nullptr) {
-            if (!_stricmp(protocol, str)) {
+            if (!strcmp(protocol, str)) {
                 return true;
             }
             //protocol = data->protocols[i];
