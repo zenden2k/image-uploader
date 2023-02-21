@@ -1,11 +1,7 @@
-TODO before 1.3.2 release:
-
 - Synchronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
-- Write unit tests for Scripting API (see examples in sqrat)
 - Reload server list after update
 - [HIGH] Preserve photo order for some servers (like Picasa)
-- Convert korean.lng and farsi.lng!
+- Convert korean.lng and farsi.lng ?
 - Proxy provided by DefaultProxyProvider not being changed on redirects
 - [LOW] Fix memory leaks in gumbo-query (when exception is thrown, e.g. invalid selector)
 - Fix log window buttons moving when RTL is on
-- Ctrl+A not working in upload results standalone window

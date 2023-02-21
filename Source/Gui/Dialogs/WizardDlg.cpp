@@ -187,7 +187,9 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
 
 bool CWizardDlg::pasteFromClipboard() {
     if (IsClipboardFormatAvailable(CF_BITMAP)) {
-        if (!OpenClipboard()) return 0;
+        if (!OpenClipboard()) {
+            return false;
+        }
         HBITMAP bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (!bmp) {

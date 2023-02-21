@@ -5,12 +5,8 @@
 #include <atomic>
 #include <functional>
 
-#include <boost/signals2.hpp>
-
-
 #include "BackgroundTask.h"
 #include "Core/Utils/CoreTypes.h"
-#include "Core/TaskDispatcher.h"
 
 class INetworkClient;
 

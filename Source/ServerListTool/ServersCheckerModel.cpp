@@ -27,7 +27,7 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
 }
 
 ServersCheckerModel::~ServersCheckerModel() {
-    for (auto it : items_) {
+    for (auto* it : items_) {
         delete it;
     }
 }

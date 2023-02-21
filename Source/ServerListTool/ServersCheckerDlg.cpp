@@ -1,7 +1,3 @@
-// MainDlg.cpp : implementation of the CServersCheckerDlg class
-//
-/////////////////////////////////////////////////////////////////////////////
-
 #include "ServersCheckerDlg.h"
 
 #include "Gui/Dialogs/LogWindow.h"

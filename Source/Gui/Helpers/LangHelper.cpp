@@ -466,7 +466,7 @@ std::map<std::string, std::string> getLanguageList(const std::wstring& languages
                 result[nameA] = localeIt == locales.end() ? nameA : localeIt->second;
             }            
         }
-    } catch (const fs::filesystem_error &e) {
+    } catch (const fs::filesystem_error &) {
         //LOG(ERROR) << e.what();
     }
 

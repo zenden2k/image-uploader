@@ -86,7 +86,7 @@ public:
     std::string directUrl() const {
         std::lock_guard<std::mutex> lk(dataMutex);
         return directUrl_;
-    };
+    }
 
     void setDirectUrl(const std::string& url) {
         std::lock_guard<std::mutex> lk(dataMutex);

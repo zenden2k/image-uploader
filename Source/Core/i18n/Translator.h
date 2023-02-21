@@ -6,7 +6,6 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/CoreUtils.h"
 #include <boost/locale.hpp>
-//#include <libintl.h>
 
 // Begin: translation macros
 //#define tr(s) ServiceLocator::instance()->translator()->translate(s)

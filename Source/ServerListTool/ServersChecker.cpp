@@ -22,7 +22,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     checkImageServers_(true),
     checkFileServers_(true),
     checkURLShorteners_(true),
-    networkClientFactory_(networkClientFactory)
+    networkClientFactory_(std::move(networkClientFactory))
 
 {
     needStop_ = false;
@@ -156,7 +156,7 @@ void ServersChecker::setCheckUrlShorteners(bool value) {
 }
 
 void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
-    onFinishedCallback_ = callback;
+    onFinishedCallback_ = std::move(callback);
 }
 
 
@@ -210,7 +210,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
     if (!urlTask) {
         return;
     }
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     ServerData& data = *model_->getDataByIndex(userData->rowIndex);
 
     client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
@@ -243,7 +243,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     int i = userData->rowIndex;
     ServerData& data = *model_->getDataByIndex(i);
     if (task->status() == UploadTask::StatusStopped) {
@@ -332,7 +332,7 @@ void ServersChecker::onSessionFinished(UploadSession* session) {
 
 void ServersChecker::onTaskStatusChanged(UploadTask* task) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     int i = userData->rowIndex;
     if (task->status() == UploadTask::StatusRunning) {
         userData->startTime = GetTickCount();
@@ -389,6 +389,5 @@ void ServersChecker::processFinished() {
         onFinishedCallback_();
     }
 }
-
 
 }

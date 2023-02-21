@@ -161,8 +161,6 @@ public:
 
     int Run(LPTSTR lpstrCmdLine, int nCmdShow)
     {
-
-
         for (const auto& CurrentParam : CmdLine) {
             if (CurrentParam.Left(12) == _T("/waitforpid=")) {
                 CString pidStr = CurrentParam.Right(CurrentParam.GetLength() - 12);
