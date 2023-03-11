@@ -312,4 +312,9 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub" />
 	</Server>
+	<Server Name="file.coffee" Authorize="0" FileHost="1" Plugin="file.coffee">
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub" />
+	</Server>
 </Servers>
