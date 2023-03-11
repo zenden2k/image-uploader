@@ -80,7 +80,9 @@ jobs:
       working-directory: ${{github.workspace}}/Source
       run: cp versioninfo.h.dist versioninfo.h
     - name: Get Conan
-      uses: turtlebrowser/get-conan@v1.0
+      uses: turtlebrowser/get-conan@main
+      with:
+        version: 1.57.0
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
