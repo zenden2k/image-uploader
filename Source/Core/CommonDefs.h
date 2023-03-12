@@ -9,7 +9,7 @@
 // QString <-> std::string (utf-8) conversion macroses
 #define Q2U(str) str.toUtf8().data()
 #define U2Q(str) QString::fromUtf8(str.c_str())
-#define _(str) str
+//#define _(str) str
 
 // CString <-> std::string(utf-8) conversion macroses
 #define W2U(str) IuCoreUtils::WstringToUtf8((static_cast<LPCTSTR>(str)))

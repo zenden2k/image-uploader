@@ -58,7 +58,7 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_MEDIAINFOONIMAGE, "Display video file information on resulting picture");
     TRC(IDC_MEDIAINFOFONT, "Font...");
     TRC(IDC_TEXTCOLORLABEL, "Text color:");
-    TRC(IDC_PARAMETERSHINTLABEL, "%f% - name of videofile without extension, \r\n%fe% -  name of videofile, \r\n%ext% - extension, \r\n%y% - year, %m% - month, %d% - day\r\n%h% - hour, %n% - minute, %s% - second\r\n %i% - file counter,\r\n%cx% - width,  %cy% - height");
+    TRC(IDC_PARAMETERSHINTLABEL, "%f% - name of videofile without extension, \n%fe% -  name of videofile, \n%ext% - extension, \n%y% - year, %m% - month, %d% - day\n%h% - hour, %n% - minute, %s% - second\n %i% - file counter,\n%cx% - width,  %cy% - height");
     TRC(IDC_SNAPSHOTFILENAMELABEL, "Filename format:");
 
     TRC(IDC_VIDEOSNAPSHOTSFOLDERLABEL, "Folder for snapshots:");

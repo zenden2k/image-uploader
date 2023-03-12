@@ -16,20 +16,20 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
 
     QString infoText;
     if (!errorInfo.FileName.empty())
-        infoText += tr("File: ").c_str() + U2Q(errorInfo.FileName) + "\n";
+        infoText += QString::fromUtf8(_("File: ").str().c_str()) + U2Q(errorInfo.FileName) + "\n";
 
     if (!errorInfo.ServerName.empty()) {
         QString serverName = U2Q(errorInfo.ServerName);
         if (!errorInfo.sender.empty())
             serverName += "(" + U2Q(errorInfo.sender) + ")";
-        infoText += tr("Server: ").c_str() + serverName + "\n";
+        infoText += QString::fromUtf8(_("Server: ").str().c_str()) + serverName + "\n";
     }
 
     if (!errorInfo.Url.empty())
-        infoText += QString::fromUtf8(tr("URL: ").c_str()) + U2Q(errorInfo.Url) + "\n";
+        infoText += QString::fromUtf8(_("URL: ").str().c_str()) + U2Q(errorInfo.Url) + "\n";
 
     if (errorInfo.ActionIndex != -1)
-        infoText += QString::fromUtf8(tr("Action:").c_str()) + " #" + QString::number(errorInfo.ActionIndex);
+        infoText += QString::fromUtf8(_("Action:").str().c_str()) + " #" + QString::number(errorInfo.ActionIndex);
 
     /*if (infoText.Right(1) == _T("\n"))
         infoText.Delete(infoText.GetLength() - 1);*/
@@ -44,7 +44,7 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
         }*/
     }
 
-    QString sender = QString::fromUtf8(tr("Uploading module").c_str());
+    QString sender = QString::fromUtf8(_("Uploading module").str().c_str());
     if (!errorMsg.isEmpty()) {
         logger_->write(type, Q2U(sender), Q2U(errorMsg), Q2U(infoText));
     }

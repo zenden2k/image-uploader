@@ -96,8 +96,8 @@ function sendOauthRequest(method, url, params, token, tokenSecret) {
 }
 
 function Authenticate() {
-    oauth_token_secret = ServerParams.getParam("oauth_token_secret");
-    oauth_token = ServerParams.getParam("oauth_token");
+    local oauth_token_secret = ServerParams.getParam("oauth_token_secret");
+    local oauth_token = ServerParams.getParam("oauth_token");
 
     if ( oauth_token_secret != ""  &&  oauth_token != ""){
         return 1;

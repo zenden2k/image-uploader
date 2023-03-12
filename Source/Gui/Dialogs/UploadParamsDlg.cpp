@@ -46,7 +46,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     CenterWindow(GetParent());
 
     ThumbBackground_.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
-    ThumbBackground_.SetColor(Settings.imageServer.getImageUploadParams().getThumb().BackgroundColor);
+    ThumbBackground_.SetColor(Settings.imageServer.getByIndex(0).getImageUploadParams().getThumb().BackgroundColor);
 
     SetWindowText(TR("Image processing"));
     TRC(IDC_DEFAULTSETTINGSCHECKBOX, "Default settings");

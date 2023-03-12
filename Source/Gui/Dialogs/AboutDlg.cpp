@@ -31,6 +31,7 @@
 #include "Core/AppParams.h"
 #include "Func/MediaInfoHelper.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Func/LangClass.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
@@ -72,7 +73,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     CString memoText;
     
-    memoText += TR("Settings file path:") + CString(_T("\r\n"))+ settings->getSettingsFileName() + _T("\r\n\r\n");
+    
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
@@ -82,10 +83,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         translatorName.Empty();
     }
     if ( !translatorName.IsEmpty() ) {
+        
         memoText += TR("Translators:") + CString("\r\n");
 
         CString trans;
-        trans.Format(TR("%s translation:"), (LPCTSTR)U2W(translator->getCurrentLanguage()));
+        CLang lang;
+        trans.Format(TR("%s translation:"), (LPCTSTR)U2W(translator->getLanguageDisplayName()));
+        translatorName.Replace(_T("\n"), _T("\r\n"));
         memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
     } 
 
@@ -141,6 +145,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
             
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
+    memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n\r\n");

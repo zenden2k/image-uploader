@@ -1,5 +1,8 @@
 #include "Webview2BrowserView.h"
 
+#include <ComDef.h>
+
+
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 
@@ -15,9 +18,18 @@ bool Webview2BrowserView::createBrowserView(HWND parentWnd, const RECT& bounds) 
                     [parentWnd, this](HRESULT result, ICoreWebView2Controller* controller) -> HRESULT {
                         if (controller != nullptr) {
                             webviewController_ = controller;
-                            webviewController_->get_CoreWebView2(&webviewWindow_);
+                            HRESULT hr2 = webviewController_->get_CoreWebView2(&webviewWindow_);
+                            if (FAILED(hr2)) {
+                                _com_error err(hr2);
+                                LOG(ERROR) << err.ErrorMessage();
+                                return E_FAIL;
+                            }
                         }
 
+                        if (!webviewWindow_) {
+                            return E_FAIL;
+                        }
+                        //LOG(ERROR) << webviewWindow_;
                         // Add a few settings for the webview
                         // The demo step is redundant since the values are the default settings
                         /*ICoreWebView2Settings* Settings;

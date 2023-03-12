@@ -23,8 +23,8 @@
 #include <boost/format.hpp>
 
 #include "Core/CommonDefs.h"
-#include "Core/Video/VideoGrabber.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Video/VideoGrabber.h"
+#include "Core/Images/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
 #include "Func/MediaInfoHelper.h"
 #include "Func/WinUtils.h"

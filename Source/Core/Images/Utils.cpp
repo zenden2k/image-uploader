@@ -356,7 +356,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
     if (bm->LockBits(&rc, ImageLockModeRead | ImageLockModeWrite, PixelFormat32bppARGB, &dataSource) == Ok)
     {
-        uint8_t * source = reinterpret_cast<uint8_t *>(dataSource.Scan0);
+        uint8_t * source = static_cast<uint8_t *>(dataSource.Scan0);
         assert(static_cast<UINT>(h) == dataSource.Height);
         UINT stride;
         if (dataSource.Stride > 0) {

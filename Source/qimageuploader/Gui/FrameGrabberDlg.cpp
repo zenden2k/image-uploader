@@ -3,9 +3,9 @@
 #include <QFileDialog>
 #include <QTemporaryFile>
 #include "ui_FrameGrabberDlg.h"
-#include "Core/Video/VideoGrabber.h"
+#include "Video/VideoGrabber.h"
 #include "Core/CommonDefs.h"
-#include "Core/Video/QtImage.h"
+#include "Video/QtImage.h"
 #include "Core/AppParams.h"
 #include <QDesktopServices>
 #include <QDebug>

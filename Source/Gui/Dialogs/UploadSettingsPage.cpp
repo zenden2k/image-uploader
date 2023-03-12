@@ -211,7 +211,7 @@ bool CUploadSettingsPage::Apply()
     if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile)){
         CString message1, message2;
         CString fieldTitle = GuiTools::GetDlgItemText(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX);
-        message1.Format(TR("Error in the field '%s':\r\n"), static_cast<LPCTSTR>(fieldTitle));
+        message1.Format(TR("Error in the field '%s':\n"), static_cast<LPCTSTR>(fieldTitle));
         message2.Format(TR("File %s doesn't exist"), static_cast<LPCTSTR>(scriptFile));
         throw ValidationException(message1+message2, GetDlgItem(IDC_SCRIPTFILENAMEEDIT));
     }

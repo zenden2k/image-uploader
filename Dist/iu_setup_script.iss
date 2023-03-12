@@ -77,8 +77,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Build\Gui\Release\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Lang\*.lng"; Excludes: "default.*"; DestDir: "{app}\Lang"; Flags: ignoreversion
-Source: "..\Lang\English.lng.src"; DestDir: "{app}\Lang"; Flags: ignoreversion
+Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion

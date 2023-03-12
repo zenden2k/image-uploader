@@ -33,6 +33,7 @@
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
+#include "Core/3rdpart/UriParser.h"
 
 namespace {
 
@@ -260,18 +261,40 @@ bool CImageDownloaderDlg::BeginDownloading()
     return false;
 }
 
-bool CImageDownloaderDlg::LinksAvailableInText(const CString &text)
+bool CImageDownloaderDlg::LinksAvailableInText(CString text)
 {
+    text.Trim();
+    if (WebUtils::IsValidUrl(text)) {
+        return true;
+    }
     std::vector<CString> links;
     ExtractLinks(text,links);
     return !links.empty();
 }
 
-void CImageDownloaderDlg::ParseBuffer(const CString& buffer,bool OnlyImages)
+void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
 {
+    CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
+
+    buffer.Trim();
+    if (buffer.Find(_T("\n")) == -1) {
+        // Text contains just one link
+        uriparser::Uri uri(IuCoreUtils::WstringToUtf8(buffer.GetString()));
+        if (uri.isValid()) {
+            std::string ext = IuCoreUtils::ExtractFileExt(uri.path());
+            if (ext.empty() || IuCommonFunctions::IsImage(U2W(uri.path()))) {
+                if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
+                    text += "\r\n";
+                }
+                text += buffer + _T("\r\n");
+                SetDlgItemText(IDC_FILEINFOEDIT, text);
+                return;
+            }
+        }
+    }
     std::vector<CString> links;
     ExtractLinks(buffer,links);
-    CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
+    
     for(size_t i=0; i<links.size(); i++)
     {
         CString fileName = WinUtils::myExtractFileName(links[i]);

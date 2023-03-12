@@ -1,4 +1,5 @@
 <?php 
+
 error_reporting(E_ALL & ~E_NOTICE);
 if (PHP_INT_SIZE !== 8) {
     die('This script should be executed by 64-bit PHP engine');
@@ -14,10 +15,10 @@ if (PHP_INT_SIZE !== 8) {
     if ( !$dir ) {
         die ( '<form action=iu-localize.php method=post>
 	Image Uploader sources directory (e.g. <b><a href=# onclick="document.forms[0].dir.value=this.innerHTML">d:\Develop\imageuploader\Source\</a></b>):<br>
-	<input type=edit size=50 name=dir value="d:\Develop\imageuploader\Source\"><p>
+	<input type="text" size=50 name=dir value="/mnt/d/Develop/image-uploader/Source/"><p>
 	
 	Image Uploader languages directory (e.g. <b><a href=# onclick="document.forms[0].lang_dir.value=this.innerHTML">d:\Develop\imageuploader\Lang\</a></b>):<br> 
-	<input type=edit size=50 name=lang_dir value="d:\Develop\imageuploader\Lang\"><p>
+	<input type="text" size=50 name=lang_dir value="/mnt/d/Develop/image-uploader/Lang/"><p>
 	<input type=submit value=Localize name=btn_submit>
 	</form>' );
     }
@@ -43,10 +44,10 @@ if (PHP_INT_SIZE !== 8) {
 
 	$hashes = array( );
 
-	function int2hex( $intega ) {
+	/*function int2hex( $intega ) {
         $Ziffer = "0123456789ABCDEF";
         return $Ziffer[( $intega % 256 ) / 16] . $Ziffer[$intega % 16];
-    }
+    }*/
 
     function overflow32($in) {
         return unpack('l', pack('i', $in & 0xFFFFFFFF))[1];
@@ -82,7 +83,12 @@ if (PHP_INT_SIZE !== 8) {
         $item_u = mb_convert_encoding( $str, "UTF-16LE", "UTF-8" );
         $str = str_ireplace( "\r\n", "\\n", $str );
         $str = str_ireplace( "\n", "\\n", $str );
-        $hashes[dump_dword( myhash( $item_u ) )] = $str;
+        $key = dump_dword( myhash( $item_u ) );
+        if (array_key_exists($key, $hashes) && $hashes[$key] !== $str) {
+            // in case of collision
+            echo "<br>warning: $key =".$str;
+        }
+        $hashes[$key] = $str;
 
         //$strings[] = ;
     }
@@ -119,6 +125,7 @@ if (PHP_INT_SIZE !== 8) {
         $data = file_get_contents( $filename );
         $strings = explode( "\r\n", $data );
 
+        $csv = fopen($filename . ".csv", "w" );
 
         if ( $filename != "default" && $filename != "English" ) {
             $english_strings = read_language_file( $path . "/English.lng.src" );
@@ -127,15 +134,22 @@ if (PHP_INT_SIZE !== 8) {
 
         foreach ( $strings as $key => $item )
         {
-
             $dd = explode( "=", $item );
             $hash = $dd[0];
-
+            $val = trim($dd[1]);
             $hash = trim( $hash );
-
+            $english = isset($english_strings[$hash])?$english_strings[$hash]:null;
             $k = isset($hashes[$hash]) ? $hashes[$hash] : false;
             if ( $hash === 'language' || $hash === 'RTL' || !( $k === false ) ) {
                 fwrite( $file, $item . "\r\n" );
+                if ($english !== $val && trim($english) !== $val && $english !== null) {
+                    $english = str_ireplace("\\r\\n", "\r\n", $english);
+                    $english = str_ireplace("\\n", "\n", $english);
+
+                    $val = str_ireplace("\\r\\n", "\n", $val);
+                    $val = str_ireplace("\\n", "\n", $val);
+                    fputcsv($csv, ['',$english, $val]);
+                }
                 unset( $hashes[$hash] );
             }
         }
@@ -153,6 +167,7 @@ if (PHP_INT_SIZE !== 8) {
         }
 
         fclose( $file );
+        fclose($csv);
     }
 
 	function parse_source_file( $filename ) {
@@ -235,12 +250,12 @@ $count = 0;
 echo "<p>Saving to file...</p>";
 foreach ( $hashes as $key => $item ) {
 
-    $item_u = mb_convert_encoding( $item, "UTF-16LE", "UTF-8" );
+    //$item_u = mb_convert_encoding( $item, "UTF-16LE", "UTF-8" );
     //var_dump($item_u);
     //echo "<br>";
-    $hass = myhash( $item_u );
+    //$hass = myhash( $item_u );
 
-    $str = dump_dword( $hass ) . " = $item\r\n";
+    $str = $key . " = $item\r\n";
     //echo "$item, $hass, $rrr<br>";
 
     fwrite( $f, $str );

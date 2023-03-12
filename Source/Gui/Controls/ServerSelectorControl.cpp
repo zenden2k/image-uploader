@@ -28,7 +28,7 @@
 #include "Gui/IconBitmapUtils.h"
 #include "Gui/Dialogs/LoginDlg.h"
 #include "Gui/Dialogs/AddFtpServerDialog.h"
-#include "Gui/Dialogs/AddDirectoryServerDIalog.h"
+#include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
@@ -50,6 +50,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     showFileSizeLimits_ = false;
     hMyDlgTemplate_ = nullptr;
     isPopingUp_ = false;
+    showEmptyItem_ = false;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -145,6 +146,9 @@ ServerProfile CServerSelectorControl::serverProfile() const {
 }
 
 LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (serverProfile_.isNull()) {
+        return 0;
+    }
     CServerParamsDlg serverParamsDlg(serverProfile_, uploadEngineManager_);
     if (serverParamsDlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
         serverProfile_ = serverParamsDlg.serverProfile();
@@ -366,6 +370,9 @@ void CServerSelectorControl::updateServerList()
     comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
+    if (showEmptyItem_) {
+        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(strdup("")));
+    }
     if ( showDefaultServerItem_ ) {
         serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
     }
@@ -439,6 +446,9 @@ bool CServerSelectorControl::isAccountChosen() const
 }
 
 LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (serverProfile_.isNull()) {
+        return 0;
+    }
     CMenu sub;
     MENUITEMINFO mi;
     ZeroMemory(&mi,sizeof(mi));
@@ -447,6 +457,10 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     CUploadEngineData* uploadEngine = serverProfile_.uploadEngineData();
+
+    if (!uploadEngine) {
+        return 0;
+    }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = settings->ServersSettings[serverProfile_.serverName()];
@@ -866,4 +880,8 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
         pMyDlgTemplate->exStyle |= WS_EX_LAYOUTRTL | WS_EX_RTLREADING;
     }
     return reinterpret_cast<DLGTEMPLATE*>(pMyDlgTemplate);
+}
+
+void CServerSelectorControl::setShowEmptyItem(bool show) {
+    showEmptyItem_ = show;
 }

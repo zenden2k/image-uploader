@@ -45,6 +45,7 @@
 #include "Core/Upload/Filters/SizeExceedFilter.h"
 #include "Core/Upload/Filters/UrlShorteningFilter.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include "Gui/Helpers/LangHelper.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -111,6 +112,7 @@ public:
     }
 
     void initBasicServices() {
+        AbstractImage::autoRegisterFactory<void>();
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         logger_ = std::make_shared<DefaultLogger>();
         myLogSink_ = std::make_unique<MyLogSink>(logger_.get());
@@ -193,10 +195,11 @@ public:
                 logWindow_.Show();
             }
         }
-        
+
         // for Windows Vista and later versions
         if (CmdLine.IsOption(_T("integration"))) {
             settings_.LoadSettings("", "", false);
+            lang_.LoadLanguage(settings_.Language);
             settings_.ApplyRegSettingsRightNow();
             CScriptUploadEngine::DestroyScriptEngine();
             return 0;
@@ -263,12 +266,34 @@ public:
             CString CurrentParam = CmdLine[i];
             if (CurrentParam.Left(10) == _T("/language=")) {
                 CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
-                CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
+                auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+
+                auto it = languageList.find(W2U(shortLanguageName));
+
+                if (it != languageList.end()) {
+                    settings_.Language = U2W(it->first);
+                }
+                
+                
+                /*CString foundName = lang_.getLanguageFileNameForLocale(shortLanguageName);
                 if (!foundName.IsEmpty()) {
                     settings_.Language = foundName;
-                }
+                }*/
             }
         }
+
+        std::map<CString, CString> oldLangs = {
+            {_T("Arabic"), _T("ar")},
+            {_T("Farsi"), _T("fa")},
+            {_T("Hrvatski"), _T("hr")},
+            {_T("Hungarian"), _T("hu")},
+            {_T("Romanian"), _T("ro")},
+            {_T("Russian"), _T("ru")},
+            {_T("Serbian"), _T("sr")},
+            {_T("Swedish"), _T("sv")},
+            {_T("Turkish"), _T("tr")},
+            {_T("Ukrainian"), _T("uk")},
+        };
         if (isFirstRun) {
             CLangSelect LS;
             if (LS.DoModal(nullptr) == IDCANCEL) {
@@ -276,13 +301,19 @@ public:
                 return 0;
             }
             settings_.Language = LS.getLanguage();
+            
             lang_.LoadLanguage(settings_.Language);
             settings_.SaveSettings();
         }
         else {
+            auto it = oldLangs.find(settings_.Language);
+            if (it != oldLangs.end()) {
+                settings_.Language = it->second;
+            }
             lang_.LoadLanguage(settings_.Language);
         }
-        AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
+
+        //AppParams::instance()->setLanguageFile(W2U(lang_.getCurrentLanguageFile()));
 
         if (lang_.isRTL()) {
             SetProcessDefaultLayout(LAYOUT_RTL);

@@ -1,6 +1,6 @@
 /** 
 @mainpage Image Uploader Scripting API
-@version 1.3.3
+@version 1.4.0
 \n 
 <hr/> 
 @section Contents Contents 

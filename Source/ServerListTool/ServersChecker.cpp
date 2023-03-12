@@ -22,7 +22,7 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     checkImageServers_(true),
     checkFileServers_(true),
     checkURLShorteners_(true),
-    networkClientFactory_(networkClientFactory)
+    networkClientFactory_(std::move(networkClientFactory))
 
 {
     needStop_ = false;
@@ -49,9 +49,9 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
 
         //uploader.ShouldStop = &m_NeedStop;
         CUploadEngineData *ue = item->ued;
-        if (!(ue->hasType(CUploadEngineData::TypeImageServer) && checkImageServers_) &&
-            !(ue->hasType(CUploadEngineData::TypeFileServer) && checkFileServers_) &&
-            !(ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && checkURLShorteners_)) {
+        if (!(item->serverType == CUploadEngineData::TypeImageServer && checkImageServers_) &&
+            !(item->serverType == CUploadEngineData::TypeFileServer && checkFileServers_) &&
+            !(item->serverType == CUploadEngineData::TypeUrlShorteningServer && checkURLShorteners_)) {
             continue;
         }
 
@@ -92,11 +92,11 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
         serverProfile.setShortenLinks(false);
         serverProfile.setProfileName(ss.authData.Login);
 
-        std::shared_ptr<UploadTask>  task;
-        if (ue->hasType(CUploadEngineData::TypeImageServer) || ue->hasType(CUploadEngineData::TypeFileServer)) {
+        std::shared_ptr<UploadTask> task;
+        if (item->serverType == CUploadEngineData::TypeImageServer || item->serverType == CUploadEngineData::TypeFileServer) {
             task = std::make_shared<FileUploadTask>(testFileName, IuCoreUtils::ExtractFileName(testFileName));
 
-        } else if (ue->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
+        } else if (item->serverType == CUploadEngineData::TypeUrlShorteningServer) {
             task = std::make_shared<UrlShorteningTask>(testUrl);
         }
 
@@ -156,7 +156,7 @@ void ServersChecker::setCheckUrlShorteners(bool value) {
 }
 
 void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
-    onFinishedCallback_ = callback;
+    onFinishedCallback_ = std::move(callback);
 }
 
 
@@ -210,7 +210,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
     if (!urlTask) {
         return;
     }
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     ServerData& data = *model_->getDataByIndex(userData->rowIndex);
 
     client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
@@ -243,7 +243,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     int i = userData->rowIndex;
     ServerData& data = *model_->getDataByIndex(i);
     if (task->status() == UploadTask::StatusStopped) {
@@ -332,7 +332,7 @@ void ServersChecker::onSessionFinished(UploadSession* session) {
 
 void ServersChecker::onTaskStatusChanged(UploadTask* task) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
-    UploadTaskUserData* userData = reinterpret_cast<UploadTaskUserData*>(task->userData());
+    UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     int i = userData->rowIndex;
     if (task->status() == UploadTask::StatusRunning) {
         userData->startTime = GetTickCount();
@@ -389,6 +389,5 @@ void ServersChecker::processFinished() {
         onFinishedCallback_();
     }
 }
-
 
 }

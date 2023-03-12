@@ -1,9 +1,17 @@
 #include "WebUtils.h"
 
+#include "Core/Utils/CoreUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Func/WinUtils.h"
+#include "Core/3rdpart/UriParser.h"
 
 namespace WebUtils {
+
+    bool IsValidUrl(CString text) {
+        uriparser::Uri uri(IuCoreUtils::WstringToUtf8(text.GetString()));
+        return uri.isValid();
+    }
+
     bool DoesTextLookLikeUrl(CString& text) {
         if ( text.Left(4) == _T("www.") ) {
             text = _T("http://") + text;

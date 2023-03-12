@@ -59,6 +59,21 @@ TEST_F(CryptoUtilsTest, CalcSHA1HashFromFileWithPrefix)
     EXPECT_EQ("be933e5fa7236218736be5a538e559da15f5ab00", result);
 }
 
+TEST_F(CryptoUtilsTest, CalcSHA256HashFromString)
+{
+    std::string result = CalcSHA256HashFromString("zenden");
+    EXPECT_EQ("f8b1f55e96be17bd326d178a472a00918d30f68604ce5ce2d5faf6cc3790eee6", result);
+}
+
+TEST_F(CryptoUtilsTest, CalcSHA256HashFromFile)
+{
+    std::string result = CalcSHA256HashFromFile(constSizeFileName);
+    EXPECT_EQ("4a4c3b5200abfdcc89d67f0b8dbbe2da1ee91b49895e855256061222b41c8458", result);
+
+    std::string result2 = CalcSHA256HashFromFile(constSizeFileName, 1000, 2000);
+    EXPECT_EQ("e21595586706b01f90a3f78d1b49af9c7d2a58ed5613120c8a60fe109c14ff72", result2);
+}
+
 TEST_F(CryptoUtilsTest, Base64Encode)
 {
     EXPECT_EQ("QmFzZTY0IGlzIGEgZ2VuZXJpYyB0ZXJtIGZvciBhIG51bWJlciBvZiBzaW1pbGFyIGVuY29kaW5nIHNjaGVtZXMgdGhhdCBlbmNvZGU=", Base64Encode("Base64 is a generic term for a number of similar encoding schemes that encode"));

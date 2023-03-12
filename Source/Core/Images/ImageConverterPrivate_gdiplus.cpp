@@ -10,7 +10,7 @@
 #include "Core/CommonDefs.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/WinUtils.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Core/Images/GdiPlusImage.h"
 
 #ifndef MYRGB
     #define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))

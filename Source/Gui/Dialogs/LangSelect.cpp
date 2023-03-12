@@ -23,6 +23,7 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Func/LangClass.h"
 #include "Gui/Helpers/LangHelper.h"
 
 LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -34,33 +35,38 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
-    // English language is always in language list
-    langListCombo_.AddString(_T("English"));
+    auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
-    std::vector<std::wstring> languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    std::string selectedLocale = W2U(settings->Language);
 
-    for (const auto& language : languageList) {
-        langListCombo_.AddString(language.c_str());
+    if (settings->Language.IsEmpty()) {
+        TCHAR buffer[LOCALE_NAME_MAX_LENGTH];
+        GetUserDefaultLocaleName(buffer, LOCALE_NAME_MAX_LENGTH);
+        CString locale = buffer;
+        locale.Replace(_T('-'), _T('_'));
+        selectedLocale = W2U(locale);
+        if (languageList.find(selectedLocale) == languageList.end()) {
+            selectedLocale = selectedLocale.substr(0, selectedLocale.find("_"));
+        }
     }
+
+    int selectedIndex = -1;
+    for (const auto& [key,title] : languageList) {
+        int index = langListCombo_.AddString(U2W(title));
+        langListCombo_.SetItemDataPtr(index, _strdup(key.c_str()));
+        if (key == selectedLocale) {
+            selectedIndex = index;
+        }
+    }
+    langListCombo_.SetCurSel(selectedIndex);
 
     if (languageList.empty()) {
         EndDialog(IDOK);
-        language_ = _T("English");
+        language_ = _T("en");
         return 0;
     }
-
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    // FIXME: detect system language and select corresponding language file
-    if ( !settings->Language.IsEmpty() ) {
-        SelectLang(settings->Language);
-    } else  if (GetUserDefaultLangID() == 0x419) {
-        SelectLang(_T("Russian"));
-    } else if (GetUserDefaultLangID() == 0x0418) {
-        SelectLang(_T("Romanian"));
-    } else {
-        SelectLang(_T("English"));
-    }
-
+    
     return 1;
 }
 
@@ -70,7 +76,10 @@ LRESULT CLangSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&
     if (Index < 0) {
         return 0;
     }
-    langListCombo_.GetLBText(Index, language_);
+    char* key = static_cast<char*>(langListCombo_.GetItemDataPtr(Index));
+    if (key) {
+        language_ = U2W(key);
+    }
     return EndDialog(wID);
 }
 
@@ -91,4 +100,12 @@ void CLangSelect::SelectLang(LPCTSTR Lang)
 
 CString CLangSelect::getLanguage() const {
     return language_;
+}
+
+LRESULT CLangSelect::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    for (int i = 0; i < langListCombo_.GetCount(); i++) {
+        free(static_cast<char*>(langListCombo_.GetItemDataPtr(i)));
+    }
+    langListCombo_.ResetContent();
+    return 0;
 }

@@ -24,6 +24,7 @@
 
 #include "atlheaders.h"
 
+
 #include <string>
 #include <unordered_map>
 #ifndef IU_SHELLEXT
@@ -31,7 +32,7 @@
     #define ITRANLATOR_OVERRIDE override
 #else
     #define ITRANLATOR_OVERRIDE 
-    #define TR(str) Lang.GetString(_T(str))
+    #define TR(str) _T(str)
 #endif
 
 class CLang
@@ -42,13 +43,11 @@ class CLang
     public:
         CLang();
         ~CLang() ITRANLATOR_OVERRIDE;
-        LPCTSTR GetString(LPCTSTR Name) const;
         void SetDirectory(LPCTSTR Directory);
         bool LoadLanguage(LPCTSTR Lang);
         CString GetLanguageName() const;
         CString getLanguage() const;
         CString getLocale() const;
-        CString getLanguageFileNameForLocale(const CString& locale);
         CString getCurrentLanguageFile() const;
         /**
             The RTL option is not being changed during program lifetime
@@ -58,7 +57,8 @@ class CLang
         std::string getCurrentLanguage() ITRANLATOR_OVERRIDE;
         std::string getCurrentLocale() ITRANLATOR_OVERRIDE;
         std::string translate(const char* str) ITRANLATOR_OVERRIDE;
-        const wchar_t* translateW(const wchar_t* str) ITRANLATOR_OVERRIDE;
+        std::wstring translateW(const char* str) ITRANLATOR_OVERRIDE;
+        std::string getLanguageDisplayName() const ITRANLATOR_OVERRIDE;
 #endif
         CLang(const CLang&) = delete;
         CLang& operator=(const CLang&) = delete;
@@ -70,7 +70,6 @@ class CLang
         };
         CString m_Directory;
         CString m_sLang;
-        std::unordered_map<int, TranslateListItem> StringList;
         std::vector<CString> LanguagesList;
         CString locale_;
         CString language_;

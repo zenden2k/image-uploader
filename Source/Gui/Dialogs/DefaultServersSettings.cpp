@@ -23,6 +23,7 @@
 #include "Func/Common.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Gui/Controls/MultiServerSelectorControl.h"
 #include "WizardDlg.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -35,10 +36,10 @@ CDefaultServersSettings::CDefaultServersSettings(UploadEngineManager* uploadEngi
 
 LRESULT CDefaultServersSettings::OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    imageServerSelector_->updateServerList();
-    fileServerSelector_->updateServerList();
+    /*imageServerSelector_->updateServerList();
+    fileServerSelector_->updateServerList();*/
     trayServerSelector_->updateServerList();
-    contextMenuServerSelector_->updateServerList();
+    //contextMenuServerSelector_->updateServerList();
     temporaryServerSelector_->updateServerList();
     return 0;
 }
@@ -49,24 +50,24 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     TRC(IDC_REMEMBERIMAGESERVERSETTINGS, "Remember image server's settings in wizard");
     TRC(IDC_REMEMBERFILESERVERSETTINGS, "Remember file server's settings in wizard");
     RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_, true);
+    imageServerSelector_ = std::make_unique<CMultiServerSelectorControl>(uploadEngineManager_, true);
     if ( !imageServerSelector_->Create(m_hWnd, serverSelectorRect) ) {
         return 0;
     }
     imageServerSelector_->setTitle(TR("Default server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos(GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    imageServerSelector_->setServerProfile(Settings.imageServer);
+    imageServerSelector_->setServerProfileGroup(Settings.imageServer);
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_FILESERVERPLACEHOLDER);
 
-    fileServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
+    fileServerSelector_ = std::make_unique<CMultiServerSelectorControl>(uploadEngineManager_);
     fileServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
-    fileServerSelector_->setShowImageProcessingParams(false);
+    //fileServerSelector_->setShowImageProcessingParams(false);
     fileServerSelector_->Create(m_hWnd, serverSelectorRect);
     fileServerSelector_->ShowWindow( SW_SHOW );
     fileServerSelector_->SetWindowPos(GetDlgItem(IDC_FILESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    fileServerSelector_->setServerProfile(Settings.fileServer);
+    fileServerSelector_->setServerProfileGroup(Settings.fileServer);
     fileServerSelector_->setTitle(TR("Default server for other file types"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_TRAYSERVERPLACEHOLDER);
@@ -76,18 +77,18 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     trayServerSelector_->ShowWindow( SW_SHOW );
     trayServerSelector_->SetWindowPos(GetDlgItem(IDC_TRAYSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    trayServerSelector_->setServerProfile(Settings.quickScreenshotServer);
+    trayServerSelector_->setServerProfile(Settings.quickScreenshotServer.getByIndex(0));
     trayServerSelector_->setTitle(TR("Server for quick screenshot uploading"));
 
     serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_CONTEXTMENUSERVERPLACEHOLDER);
 
-    contextMenuServerSelector_  = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
+    contextMenuServerSelector_  = std::make_unique<CMultiServerSelectorControl>(uploadEngineManager_);
     //contextMenuServerSelector_->setShowDefaultServerItem(true);
     contextMenuServerSelector_->Create(m_hWnd, serverSelectorRect);
     contextMenuServerSelector_->ShowWindow( SW_SHOW );
     contextMenuServerSelector_->SetWindowPos(GetDlgItem(IDC_CONTEXTMENUSERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
 
-    contextMenuServerSelector_->setServerProfile(Settings.contextMenuServer);
+    contextMenuServerSelector_->setServerProfileGroup(Settings.contextMenuServer);
     contextMenuServerSelector_->setTitle(TR("Server for uploading from Explorer's context menu"));
 
 
@@ -125,8 +126,16 @@ bool CDefaultServersSettings::Apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    CServerSelectorControl* controls[] = { fileServerSelector_.get(), imageServerSelector_.get(), trayServerSelector_.get(),
-        contextMenuServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
+    CMultiServerSelectorControl* multiControls[] = { fileServerSelector_.get(), imageServerSelector_.get(), contextMenuServerSelector_.get() };
+    for (auto* control : multiControls) {
+        if (control->serverProfileGroup().isEmpty()) {
+            CString message;
+            message.Format(TR("You have not selected \"%s\""), control->getTitle().GetString());
+            GuiTools::LocalizedMessageBox(m_hWnd, message, TR("Error"), MB_ICONERROR);
+            return false;
+        }
+    }
+    CServerSelectorControl* controls[] = { trayServerSelector_.get(), urlShortenerServerSelector_.get(), temporaryServerSelector_.get() };
     for(int i = 0; i< ARRAY_SIZE(controls); i++ ) {
         if (controls[i]->serverProfile().serverName().empty()) {
             CString message;
@@ -141,10 +150,10 @@ bool CDefaultServersSettings::Apply()
             return false;
         }
     }
-    settings->fileServer = fileServerSelector_->serverProfile();
-    settings->imageServer = imageServerSelector_->serverProfile();
+    settings->fileServer = fileServerSelector_->serverProfileGroup();
+    settings->imageServer = imageServerSelector_->serverProfileGroup();
     settings->quickScreenshotServer = trayServerSelector_->serverProfile();
-    settings->contextMenuServer = contextMenuServerSelector_->serverProfile();
+    settings->contextMenuServer = contextMenuServerSelector_->serverProfileGroup();
     settings->urlShorteningServer = urlShortenerServerSelector_->serverProfile();
     settings->temporaryServer = temporaryServerSelector_->serverProfile();
     settings->RememberImageServer = GuiTools::GetCheck(m_hWnd, IDC_REMEMBERIMAGESERVERSETTINGS);

@@ -4,6 +4,7 @@
 #include "atlheaders.h"
 
 namespace WebUtils {
+    bool IsValidUrl(CString text);
     bool DoesTextLookLikeUrl(CString& text);
 }
 

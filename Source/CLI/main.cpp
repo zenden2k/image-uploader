@@ -48,6 +48,7 @@
 #include "ConsoleScriptDialogProvider.h"
 #include "Core/Utils/ConsoleUtils.h"
 #include "Core/Scripting/ScriptsManager.h"
+#include "Core/Images/AbstractImage.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -64,6 +65,7 @@
     #include <sys/stat.h>
     #include <sys/time.h>
 #endif
+
 #include "versioninfo.h"
 
 #ifdef _WIN32
@@ -117,18 +119,18 @@ void PrintWelcomeMessage() {
 
 class Translator : public ITranslator {
 public:
-    virtual std::string getCurrentLanguage() override {
+    std::string getCurrentLanguage() override {
         return "English";
     }
-    virtual std::string getCurrentLocale() override {
+    std::string getCurrentLocale() override {
         return "en_US";
     }
-    virtual std::string translate(const char* str) override{
+    std::string translate(const char* str) override{
         return str;
     }
 #ifdef _WIN32
-    virtual const wchar_t* translateW(const wchar_t* str) override {
-        return str;
+    std::wstring translateW(const char* str) override {
+        return L"NOT_IMPLEMENTED";
     }
 #endif
 };
@@ -682,6 +684,8 @@ int main(int argc, char *argv[]){
     serviceLocator->setLogger(defaultLogger);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
+
+    AbstractImage::autoRegisterFactory<void>();
 
     int res  = 0;
     std::string appDirectory = IuCoreUtils::ExtractFilePath(argv[0]);

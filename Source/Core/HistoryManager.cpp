@@ -91,6 +91,9 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
         return true;
     }
     IuCoreUtils::ZGlobalMutex mutex(CHistoryManager::globalMutexName);
+    if (session->dbEntryCreated_) {
+        return true;
+    }
     const char* sql = "INSERT INTO upload_sessions(id,created_at) VALUES(?,?)";
     sqlite3_stmt *stmt;
 
@@ -117,7 +120,7 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
             retCode = sqlite3_step(stmt);
         }
         if (retCode != SQLITE_DONE) {
-            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
+            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode << std::endl << sqlite3_errmsg(db_);
         }
     }
     /*sqlite3_reset(stmt);
@@ -502,7 +505,7 @@ bool CHistoryReader::loadFromDB(time_t from, time_t to, const std::string& filen
 }
 
 int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char **azColName){
-    auto pthis = reinterpret_cast<CHistoryReader*>(userData);
+    auto pthis = static_cast<CHistoryReader*>(userData);
 
     std::string sessionId;
     for (int i = 0; i < argc; i++) {
@@ -532,7 +535,7 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
 
 int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char **azColName){
    
-    auto pthis = reinterpret_cast<CHistoryReader*>(userData);
+    auto pthis = static_cast<CHistoryReader*>(userData);
 
     std::string sessionId;
     for (int i = 0; i < argc; i++) {

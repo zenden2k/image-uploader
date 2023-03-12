@@ -525,16 +525,15 @@ bool CopyFileToDest(const std::string& src, const std::string& dest, bool overwr
             overwrite ? std::filesystem::copy_options::overwrite_existing : std::filesystem::copy_options::none
         );
         return true;
-    } catch (const std::filesystem::filesystem_error& ex) {
+    } catch (const std::filesystem::filesystem_error&) {
     }
     return false;
 }
 
 bool RemoveFile(const std::string& utf8Filename) {
     try {
-        std::filesystem::remove(std::filesystem::u8path(utf8Filename));
-        return true;
-    } catch (const std::filesystem::filesystem_error& ex) {
+        return std::filesystem::remove(std::filesystem::u8path(utf8Filename));
+    } catch (const std::filesystem::filesystem_error&) {
     }
     return false;
 }

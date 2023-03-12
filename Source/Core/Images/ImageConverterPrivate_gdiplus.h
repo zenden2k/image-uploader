@@ -6,7 +6,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "ImageConverterPrivateBase.h"
 #include "Utils.h"
-#include "Core/Video/AbstractImage.h"
+#include "Core/Images/AbstractImage.h"
 
 class ImageConverterPrivate: public ImageConverterPrivateBase {
 public:

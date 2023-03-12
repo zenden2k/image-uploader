@@ -51,7 +51,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_ALWAYSCOPYTOCLIPBOARD, "Always copy captured image to clipboard");
     TRC(IDC_SCREENSHOTSAVINGPARAMS, "Saving parameters");
     TRC(IDC_FOREGROUNDWHENSHOOTING, "Bring window to foreground when selected by mouse");
-    TRC(IDC_PARAMETERSHINTLABEL, "%y - year, %m - month, %d - day\r\n%h - hour, %n - minute, %s - seconds\r\n %i - image index,\r\n%width% - width of image,  %height% - height of image");
+    TRC(IDC_PARAMETERSHINTLABEL, "%y - year, %m - month, %d - day\n%h - hour, %n - minute, %s - seconds\n %i - image index,\n%width% - width of image,  %height% - height of image");
     TRC(IDC_ADDSHADOW, "Capture with shadow");
     TRC(IDC_ALLOWALTTABINIMAGEEDITOR, "Allow Alt+Tab in fullscreen editor");
     CString removeCornersText = TR("Clear window transparent corners")+CString(_T(" (Windows Vista/7)"));

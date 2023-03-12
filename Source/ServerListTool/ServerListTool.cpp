@@ -5,6 +5,8 @@
 
 #include <boost/locale/generator.hpp>
 #include <boost/filesystem/path.hpp>
+#include <Core/Images/GdiPlusImage.h>
+
 
 #include "atlheaders.h"
 #include "3rdpart/GdiplusH.h"
@@ -98,6 +100,7 @@ public:
         serviceLocator->setLogWindow(&logWindow_);
         serviceLocator->setLogger(logger_);
         serviceLocator->setTranslator(&lang_);
+        AbstractImage::autoRegisterFactory<void>();
     }
 
     void initServices() {

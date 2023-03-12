@@ -1,7 +1,7 @@
 function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
-    nm.setUrl("https://geekpic.net/client.php");
+    nm.setUrl("https://pic4net.com/client.php");
     nm.addQueryHeader("MIME-Version", "1.0");
     nm.addQueryHeader("Accept-Language", "ru-RU,en,*");
     nm.setUserAgent("Mozilla/5.0 (Windows NT 6.3) Qt/4.8.6 Screenpic/0.14.3");

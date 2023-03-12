@@ -37,11 +37,13 @@ class CLangSelect : public CDialogImpl<CLangSelect>
     protected:
         BEGIN_MSG_MAP(CLangSelect)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         END_MSG_MAP()
 
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
    

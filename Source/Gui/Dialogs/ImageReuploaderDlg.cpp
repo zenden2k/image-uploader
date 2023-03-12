@@ -97,7 +97,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );
     imageServerSelector_->SetWindowPos( GetDlgItem(IDC_IMAGESERVERPLACEHOLDER), serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right-serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
-    imageServerSelector_->setServerProfile(settings->imageServer);
+    imageServerSelector_->setServerProfile(settings->imageServer.getByIndex(0));
 
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
     GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, settings->ImageReuploaderSettings.PasteHtmlOnCtrlV);

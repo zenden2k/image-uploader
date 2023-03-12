@@ -38,6 +38,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/FileQueueUploaderPrivate.cpp
     Upload/FolderList.cpp
     Upload/ServerProfile.cpp
+    Upload/ServerProfileGroup.cpp
     Upload/ServerSync.cpp
     Upload/UploadEngineManager.cpp
     Upload/UploadManager.cpp
@@ -74,7 +75,10 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/GlobalMutex.cpp
     Utils/TextUtils.cpp
     Scripting/UploadFilterScript.cpp
-    3rdpart/htmlentities.cpp)
+    3rdpart/htmlentities.cpp
+    Video/VideoUtils.cpp
+    Images/AbstractImage.cpp
+)
 
 set(HEADER_LIST Network/NetworkClient.h
 	Network/NetworkClientFactory.h
@@ -114,6 +118,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/FileQueueUploaderPrivate.h
     Upload/FolderList.h
     Upload/ServerProfile.h
+    Upload/ServerProfileGroup.h
     Upload/ServerSync.h
     Upload/UploadEngineManager.h
     Upload/UploadManager.h
@@ -151,7 +156,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/TextUtils.h
     Scripting/UploadFilterScript.h
     3rdpart/htmlentities.h
-    BackgroundTask.h
+    Video/VideoUtils.h
 )
     
 if(WIN32)
@@ -181,8 +186,7 @@ if(WIN32)
         Images/WebpImageReader.cpp
         Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
-        Video/AbstractImage.cpp
-        Video/GdiPlusImage.cpp
+        Images/GdiPlusImage.cpp
         ../Func/GdiPlusInitializer.cpp
     )
     

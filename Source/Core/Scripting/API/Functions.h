@@ -245,6 +245,17 @@ namespace ScriptAPI {
     const std::string sha1_file_prefix(const std::string& filename, const std::string& prefix, const std::string& postfix);
 
     /**
+     *  Calculates the sha256-hash of a given string
+     *  @since 1.4.0
+     */
+    std::string Sha256(const std::string& data);
+
+    /**
+     *  Calculates the sha256-hash of a given file
+     *  @since 1.4.0
+     */
+    std::string Sha256FromFile(const std::string& filename, int64_t offset, size_t chunkSize);
+    /**
      * Generate a keyed hash value using the HMAC method and sha1 hashing algorythm
      * 
      * @param data Message to be hashed.

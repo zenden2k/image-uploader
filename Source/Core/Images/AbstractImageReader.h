@@ -7,7 +7,7 @@
 #include <string>
 
 #include "3rdpart/GdiplusH.h"
-#include "Core/Video/GdiPlusImage.h"
+#include "Core/Images/GdiPlusImage.h"
 
 
 class AbstractImageReader {

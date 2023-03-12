@@ -115,7 +115,11 @@
 #define IDD_COLORCODEDIALOG             273
 #define IDB_TOO                         274
 #define IDB_TOOLMOVEICONPNG             274
+#define IDD_LANGSELECT1                 274
+#define IDD_SERVERPROFILESELECT         274
 #define IDB_TOOLCROPPING                275
+#define IDD_SERVERSELECTORCONTROL1      275
+#define IDD_MULTISERVERSELECTORCONTROL  275
 #define IDB_ICONTOOLPENCIL              276
 #define IDB_ICONTOOLBRUSHPNG            277
 #define IDB_ICONTOOLTEXTPNG             278
@@ -166,8 +170,13 @@
 #define IDI_ICONLASTREGION              316
 #define IDB_ICONSEARCH                  323
 #define IDB_ICONPRINT                   324
+#define IDI_ICON12                      326
+#define IDI_ICONDELETEBIG               326
+#define IDD_SERVERSCHECKERDLG           327
 #define IDC_ADDIMAGES                   1000
+#define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
+#define IDC_TOOLFILEEDIT                1001
 #define IDC_LIST1                       1002
 #define IDC_FILELIST                    1002
 #define IDC_LISTBOX                     1002
@@ -180,21 +189,35 @@
 #define IDC_CONTEXTMENUITEMS            1002
 #define IDC_CONTEXTMENUITEMSLIST        1002
 #define IDC_UPLOADTABLE                 1002
+#define IDC_TOOLBROWSEBUTTON            1002
 #define IDC_KEEPASIS                    1003
+#define IDC_TOOLSOURCEFILE              1003
 #define IDC_KEEPPROPORTIONS             1004
 #define IDC_IMAGEWIDTH                  1005
+#define IDC_CHECKIMAGESERVERS           1005
 #define IDC_IMAGEHEIGHT                 1006
+#define IDC_CHECKFILESERVERS            1006
 #define IDC_YOURLOGO                    1007
+#define IDC_RADIONOACCS                 1007
 #define IDC_YOURTEXT                    1008
+#define IDC_RADIOWITHACCS               1008
 #define IDC_RESIZE                      1009
 #define IDC_RESIZEBYWIDTH               1009
+#define IDC_RADIOALWAYSACCS             1009
 #define IDC_XLABEL                      1010
+#define IDC_BUTTONSKIP                  1010
 #define IDC_FORMATLIST                  1011
+#define IDC_ERRORLOGBUTTON              1011
 #define IDC_QUALITYSPIN                 1012
+#define IDC_BUTTONSKIPALL               1012
 #define IDC_FORMATLABEL                 1013
+#define IDC_CHECKURLSHORTENERS          1013
 #define IDC_QUALITYLABEL                1014
+#define IDC_STOPBUTTON                  1014
 #define IDC_QUALITYEDIT                 1015
+#define IDC_TESTURLEDIT                 1015
 #define IDC_PERCENTLABEL                1016
+#define IDC_SETTINGSBTN                 1016
 #define IDC_APPLY                       1017
 #define IDC_THUMBFORMATLABEL            1017
 #define IDC_LOGOOPTIONS                 1018
@@ -577,6 +600,8 @@
 #define IDC_DOWNLOADBUTTON              1263
 #define IDC_COPYHEXBUTTON               1263
 #define IDC_TESTCONNECTIONBTN           1263
+#define IDC_ADDBUTTON                   1263
+#define IDC_CHOOSESERVERS               1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -709,6 +734,10 @@
 #define IDC_CONNECTIONSTATUSLABEL       1334
 #define IDC_ANIMATION                   1335
 #define IDC_ICONSBYLABEL                1336
+#define IDC_CHOOSEMOREIMAGESERVERSLABEL 1337
+#define IDC_CHOOSEMOREIMAGESERVERSLABEL2 1338
+#define IDC_CHOOSEMOREFILESERVERS       1338
+#define IDC_LABEL                       1339
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -754,9 +783,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        325
+#define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1337
+#define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

@@ -54,19 +54,19 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
 
-    langListCombo_.AddString(_T("English"));
+    auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
-    std::vector<std::wstring> languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
-
-    for (const auto& language: languageList) {
-        langListCombo_.AddString(language.c_str());
+    std::string selectedLocale = W2U(settings->Language);
+ 
+    int selectedIndex = -1;
+    for (const auto& [key, title] : languageList) {
+        int index = langListCombo_.AddString(U2W(title));
+        langListCombo_.SetItemDataPtr(index, _strdup(key.c_str()));
+        if (key == selectedLocale) {
+            selectedIndex = index;
+        }
     }
-
-    int index = langListCombo_.FindString(0, settings->Language);
-    if (index == -1) {
-        index = 0;
-    }
-    langListCombo_.SetCurSel(index);
+    langListCombo_.SetCurSel(selectedIndex);
 
     SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_SETCHECK, settings->ConfirmOnExit);
     SendDlgItemMessage(IDC_AUTOSHOWLOG, BM_SETCHECK, settings->AutoShowLog);
@@ -109,9 +109,12 @@ bool CGeneralSettings::Apply()
     }
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString buf;
-    langListCombo_.GetLBText(index, buf);
-    settings->Language = buf;
+    if (index != -1) {
+        char* key = static_cast<char*>(langListCombo_.GetItemDataPtr(index));
+        if (key) {
+            settings->Language = U2W(key);
+        }
+    }
 
     settings->ImageEditorPath = GuiTools::GetWindowText(GetDlgItem(IDC_IMAGEEDITORPATH));
     
@@ -128,5 +131,13 @@ bool CGeneralSettings::Apply()
 LRESULT CGeneralSettings::OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     ServiceLocator::instance()->logWindow()->Show();
+    return 0;
+}
+
+LRESULT CGeneralSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    for (int i = 0; i < langListCombo_.GetCount(); i++) {
+        free(static_cast<char*>(langListCombo_.GetItemDataPtr(i)));
+    }
+    langListCombo_.ResetContent();
     return 0;
 }

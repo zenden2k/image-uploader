@@ -532,7 +532,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             monitorMenuItem.fType = MFT_STRING;
             monitorMenuItem.hSubMenu = MonitorsSubMenu;
             monitorMenuItem.wID = 10001;
-            monitorMenuItem.dwTypeData = TR_CONST("Choose monitor");
+            CString title = TR("Choose monitor");
+            monitorMenuItem.dwTypeData = const_cast<LPWSTR>(title.GetString());
             TrayMenu.InsertMenuItem(i++, true, &monitorMenuItem);
             MonitorsSubMenu.Detach();
         }
@@ -566,7 +567,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
-        mi.dwTypeData  = TR_CONST("Screenshot Action");
+        CString title = TR("Screenshot Action");
+        mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         TrayMenu.InsertMenuItem(i++, true, &mi);
 
         SubMenu.Detach();
@@ -667,7 +669,7 @@ void CFloatingWindow::RegisterHotkeys()
             if (!RegisterHotKey(m_hWnd, i, m_hotkeys[i].globalKey.keyModifier, m_hotkeys[i].globalKey.keyCode))
             {
                 CString msg;
-                msg.Format(TR("Cannot register global hotkey:\r\n%s.\r\n Maybe it is being used by another process."),
+                msg.Format(TR("Cannot register global hotkey:\n%s.\n Maybe it is being used by another process."),
                            static_cast<LPCTSTR>(m_hotkeys[i].globalKey.toString()));
                 ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Hotkeys"), msg);
             }
@@ -762,7 +764,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
-    task->setServerProfile(Settings.quickScreenshotServer);
+    task->setServerProfile(Settings.quickScreenshotServer.getByIndex(0));
     task->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
@@ -774,7 +776,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     CString msg;
     CString onlyFileName = WinUtils::GetOnlyFileName(displayName);
     msg.Format(TR("File \"%s\" is beeing uploaded to server %s.."), static_cast<LPCTSTR>(onlyFileName),
-        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.serverName()).c_str()));
+        static_cast<LPCTSTR>(Utf8ToWstring(Settings.quickScreenshotServer.getByIndex(0).serverName()).c_str()));
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {
@@ -833,8 +835,10 @@ void CFloatingWindow::showLastUploadedCode() {
         it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
         auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
         if (fileTask) {
-            it.FileName = U2W(fileTask->getDisplayName());
+            it.FileName = U2W(fileTask->getDisplayName());          
         }
+        it.FileIndex = fileTask->index();
+        it.ServerName = U2W(lastUploadedItem_->serverName());
         items.push_back(it);
         if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
             return ;

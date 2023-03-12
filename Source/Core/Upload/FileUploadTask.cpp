@@ -35,7 +35,8 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
         displayName_ = IuCoreUtils::ExtractFileName(fileName);
     } else {
         displayName_ = displayName;
-    }    
+    }
+    fileIndex_ = 0;
 }
 
 FileUploadTask::~FileUploadTask()
@@ -119,4 +120,11 @@ void FileUploadTask::setIsImage(bool image) {
 int64_t FileUploadTask::getFileSize() const
 {
     return getDataLength();
+}
+
+void FileUploadTask::setFileIndex(size_t index) {
+    fileIndex_ = index;
+}
+size_t FileUploadTask::fileIndex() const {
+    return fileIndex_;
 }

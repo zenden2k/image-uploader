@@ -62,6 +62,7 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "statusdlg.h"
+#include "ServerListTool/ServersCheckerDlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -174,14 +175,21 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
     auto* settings = dynamic_cast<CommonGuiSettings*>(settingsBase);
     if (settings) {
-        const std::string templateName = settings->imageServer.getImageUploadParamsRef().getThumbRef().TemplateName;
-        sessionImageServer_.getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+        if (!settings->imageServer.isEmpty()) {
+            const std::string templateName = settings->imageServer.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName;
+            if (sessionImageServer_.isEmpty()) {
+                sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
+            }
+          
+        }
     }
 }
 
 bool CWizardDlg::pasteFromClipboard() {
     if (IsClipboardFormatAvailable(CF_BITMAP)) {
-        if (!OpenClipboard()) return 0;
+        if (!OpenClipboard()) {
+            return false;
+        }
         HBITMAP bmp = static_cast<HBITMAP>(GetClipboardData(CF_BITMAP));
 
         if (!bmp) {
@@ -285,7 +293,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))
     {
         CString ErrBuf;
-        ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\r\n\r\nThe reason is:  %s\r\n\r\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
+        ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\n\nThe reason is:  %s\n\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
     
         if (LocalizedMessageBox(ErrBuf, APPNAME, MB_ICONERROR | MB_YESNO) == IDNO)
         {
@@ -362,7 +370,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionFileServer_ = Settings.fileServer;
 
 	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \r\nGetting technical information of media files will not be accessible."));
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
 	}
 
     if (!CmdLine.IsOption(_T("tray"))) {
@@ -441,6 +449,11 @@ bool CWizardDlg::ParseCmdLine()
         }
     }
 
+    if (CmdLine.IsOption(_T("serverschecker"))) {
+        ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
+        dlg.DoModal(m_hWnd);
+    }
+
     for(size_t i=0; i<CmdLine.GetCount(); i++)
     {
         CString CurrentParam = CmdLine[i];
@@ -464,7 +477,7 @@ bool CWizardDlg::ParseCmdLine()
             
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Profile \"%s\" not found.\r\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
+                msg.Format(TR("Profile \"%s\" not found.\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
                     serverProfileName.GetString());
                 LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
@@ -735,22 +748,22 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
     return true;
 }
 
-void CWizardDlg::setSessionImageServer(const ServerProfile& server)
+void CWizardDlg::setSessionImageServer(const ServerProfileGroup& server)
 {
     sessionImageServer_ = server;
 }
 
-void CWizardDlg::setSessionFileServer(const ServerProfile& server)
+void CWizardDlg::setSessionFileServer(const ServerProfileGroup& server)
 {
     sessionFileServer_ = server;
 }
 
-ServerProfile CWizardDlg::getSessionImageServer() const
+ServerProfileGroup CWizardDlg::getSessionImageServer() const
 {
     return sessionImageServer_;
 }
 
-ServerProfile CWizardDlg::getSessionFileServer() const
+ServerProfileGroup CWizardDlg::getSessionFileServer() const
 {
     return sessionFileServer_;
 }
@@ -858,7 +871,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
         {
             if(CurPage == wpMainPage)
             {
-                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\r\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
+                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
                     goto filehost;
             }
             ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
@@ -1923,7 +1936,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(m_bScreenshotFromTray!=0);
         if ( m_bScreenshotFromTray ) {
-            imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.serverName()));
+            imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.getByIndex(0).serverName()));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
@@ -2106,6 +2119,9 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+#ifndef NDEBUG
+    popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
+#endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log"));
 
     TPMPARAMS excludeArea;
@@ -2163,5 +2179,11 @@ LRESULT CWizardDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         }
         newImages_.clear();
     }
+    return 0;
+}
+
+LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
+    dlg.DoModal(m_hWnd);
     return 0;
 }

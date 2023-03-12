@@ -38,7 +38,7 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
     ued.Name = "test server";
@@ -100,7 +100,7 @@ TEST_F(ScriptUploadEngineTest, getFolderList)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings, 
         std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     engine.setServerSettings(&serverSettings);
 
     // Prepare CUploadEngineData instance
@@ -163,7 +163,7 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     ServerSettingsStruct serverSettings;
     CScriptUploadEngine engine(scriptFileName, &sync, 
         &serverSettings, std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
-
+    ASSERT_TRUE(engine.isLoaded());
     // Prepare CUploadEngineData instance
     CUploadEngineData ued;
     ued.Name = "test server";
@@ -201,5 +201,93 @@ TEST_F(ScriptUploadEngineTest, shortenUrl)
     int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("https://ex.am/plecom", uploadParams.getDirectUrl());
+}
 
+TEST_F(ScriptUploadEngineTest, authenticateTest)
+{
+    using ::testing::_;
+    // NiceMock is used to ignore uninterested calls
+    NiceMock<MockINetworkClient> networkClient;
+    ServerSync sync;
+    std::string scriptFileName = TestHelpers::resolvePath("Scripts/upload_test_2.nut");
+    ASSERT_TRUE(IuCoreUtils::FileExists(scriptFileName));
+
+    ServerSettingsStruct serverSettings;
+    serverSettings.authData.DoAuth = true;
+    serverSettings.authData.Login = "testuser";
+    serverSettings.authData.Password = "testpassword";
+    CScriptUploadEngine engine(scriptFileName, &sync, &serverSettings,
+        std::make_shared<NetworkClientFactory>(), CAbstractUploadEngine::ErrorMessageCallback());
+
+    ASSERT_TRUE(engine.isLoaded());
+    // Prepare CUploadEngineData instance
+    CUploadEngineData ued;
+    ued.Name = "test server";
+    ued.TypeMask = CUploadEngineData::TypeImageServer;
+
+    ued.ImageUrlTemplate = "stub";
+    ued.DownloadUrlTemplate = "stub";
+    ued.ThumbUrlTemplate = "stub";
+    ued.NeedAuthorization = CUploadEngineData::naAvailable;
+    engine.setUploadData(&ued);
+    engine.setNetworkClient(&networkClient);
+
+    std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
+    std::string fileNameNoExt = IuCoreUtils::ExtractFileNameNoExt(constSizeFileName);
+    std::string fileExt = IuCoreUtils::ExtractFileExt(constSizeFileName);
+
+    ON_CALL(networkClient, doUploadMultipartData()).WillByDefault(Return(true));
+    ON_CALL(networkClient, doPost(_)).WillByDefault(Return(true));
+    ON_CALL(networkClient, responseCode()).WillByDefault(Return(200));
+    const char jsonData[] =
+        "{ \"image\" : { "
+        " \"url_viewer\": \"https://serv3.example.com/view/file_with_const_size.png\","
+        " \"thumb\": {\"url\" : \"https://serv4.example.com/thumb/file_with_const_size.png\"},"
+        " \"url\": \"https://serv2.example.com/file_with_const_size.png\""
+        "}, \"status_code\": 200}";
+    ON_CALL(networkClient, responseBody()).WillByDefault(Return(jsonData));
+    {
+        testing::InSequence dummy;
+        EXPECT_CALL(networkClient, setUrl("https://example.com/login"));
+        EXPECT_CALL(networkClient, addQueryParam("login", "testuser"));
+        EXPECT_CALL(networkClient, addQueryParam("password", "testpassword"));
+        EXPECT_CALL(networkClient, doPost(""));
+
+        EXPECT_CALL(networkClient, setUrl("https://example.com/refresh_token"));
+        EXPECT_CALL(networkClient, doPost(""));
+
+        //EXPECT_CALL(networkClient, setReferer(action1.Referer));
+        //EXPECT_CALL(networkClient, responseBody()).Times(AnyNumber());
+        EXPECT_CALL(networkClient, setUrl("https://example.com/upload"));
+        EXPECT_CALL(networkClient, addQueryParamFile("source", constSizeFileName, _, _));
+
+        EXPECT_CALL(networkClient, doUploadMultipartData());
+
+        EXPECT_CALL(networkClient, setUrl("https://example.com/refresh_token"));
+        EXPECT_CALL(networkClient, doPost(""));
+
+        EXPECT_CALL(networkClient, setUrl("https://example.com/upload"));
+        EXPECT_CALL(networkClient, addQueryParamFile("source", constSizeFileName, _, _));
+        EXPECT_CALL(networkClient, doUploadMultipartData());
+    }
+
+    // Upload a file twice to ensure that authentication is performed just once
+    auto fileTask = std::make_shared<FileUploadTask>(constSizeFileName, displayName);
+
+    engine.setServerSettings(&serverSettings);
+    UploadParams uploadParams;
+    uploadParams.thumbWidth = 160;
+    uploadParams.thumbHeight = 120;
+    int res = engine.processTask(fileTask, uploadParams);
+    EXPECT_EQ(1, res);
+    EXPECT_EQ("https://serv2.example.com/file_with_const_size.png", uploadParams.getDirectUrl());
+    EXPECT_EQ("https://serv4.example.com/thumb/file_with_const_size.png", uploadParams.getThumbUrl());
+    EXPECT_EQ("https://serv3.example.com/view/file_with_const_size.png", uploadParams.getViewUrl());
+
+    auto fileTask2 = std::make_shared<FileUploadTask>(constSizeFileName, displayName);
+    int res2 = engine.processTask(fileTask, uploadParams);
+    EXPECT_EQ(1, res2);
+    EXPECT_EQ("https://serv2.example.com/file_with_const_size.png", uploadParams.getDirectUrl());
+    EXPECT_EQ("https://serv4.example.com/thumb/file_with_const_size.png", uploadParams.getThumbUrl());
+    EXPECT_EQ("https://serv3.example.com/view/file_with_const_size.png", uploadParams.getViewUrl());
 }

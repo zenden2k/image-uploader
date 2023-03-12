@@ -7,6 +7,8 @@
 #endif
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
+#include <Core/Images/AbstractImage.h>
+
 #include "sqtest.h"
 #include "TestHelpers.h"
 #include "Core/Scripting/Squirrelnc.h"
@@ -65,8 +67,8 @@ public:
         return str;
     }
 #ifdef _WIN32
-    virtual const wchar_t* translateW(const wchar_t* str) override {
-        return str;
+    virtual std::wstring translateW(const char* str) override {
+        return L"NOT_IMPLEMENTED";
     }
 #endif
 };
@@ -186,6 +188,8 @@ int main(int argc, char *argv[]){
     serviceLocator->setTranslator(&translator);
     MyLogSink logSink(defaultLogger.get());
     google::AddLogSink(&logSink);
+
+    AbstractImage::autoRegisterFactory<void>();
 
     Sqrat::SqratVM vm;
     vm.SetPrintFunc(&printHandler, &errorHandler);

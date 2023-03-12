@@ -29,7 +29,7 @@
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
 {
     m_WizardDlg = wizardDlg;
-    ResultsPanel.reset(new CResultsPanel(wizardDlg, urlList, !ChildWindow));
+    ResultsPanel = std::make_unique<CResultsPanel>(wizardDlg, urlList, !ChildWindow);
     m_childWindow = ChildWindow;
     tabPageToCodeLang[0] = CResultsPanel::kBbCode;
     tabPageToCodeLang[1] = CResultsPanel::kHtml;

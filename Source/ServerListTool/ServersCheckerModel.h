@@ -25,6 +25,7 @@ public:
     int timeElapsed;
     bool finished;
     CUploadEngineData* ued;
+    int serverType;
 protected:
     std::string directUrl_;
     std::string directUrlInfo_;
@@ -50,6 +51,7 @@ public:
         finished = false;
         skip = false;
         ued = nullptr;
+        serverType = 0;
     }
 
     void setLinkInfo(int columnId, const std::string& info) {
@@ -84,7 +86,7 @@ public:
     std::string directUrl() const {
         std::lock_guard<std::mutex> lk(dataMutex);
         return directUrl_;
-    };
+    }
 
     void setDirectUrl(const std::string& url) {
         std::lock_guard<std::mutex> lk(dataMutex);

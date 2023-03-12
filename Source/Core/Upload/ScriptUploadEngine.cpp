@@ -37,7 +37,7 @@ CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync
     Script(fileName, serverSync, std::move(factory), false)
 {
     setServerSettings(settings);
-    newAuthMode = false;
+    newAuthMode_ = false;
     name_ = IuCoreUtils::ExtractFileNameNoExt(fileName);
     load(fileName);
 }
@@ -238,7 +238,7 @@ bool CScriptUploadEngine::postLoad()
 {
     ScriptAPI::RegisterShortTranslateFunctions(vm_);
 	if (functionExists("Authenticate")) {
-        newAuthMode = true;
+        newAuthMode_ = true;
 	}
     hasRefreshTokenFunc_ = functionExists("RefreshToken");
     return true;
@@ -327,24 +327,12 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
 int CScriptUploadEngine::doLogin()
 {
     using namespace Sqrat;
-    if (newAuthMode) {
-        try {
-            serverSync_->beginAuth();
-        } catch (const ServerSyncException&) {
-            return 0;
-        }
-    }
-    defer<void> d([&] { // Run at function exit
-        if (newAuthMode) {
-            serverSync_->endAuth();
-        }
-    });
-	
+
     try
     {
         checkCallingThread();
 
-        Function func(vm_.GetRootTable(), newAuthMode ? "Authenticate" : "DoLogin");
+        Function func(vm_.GetRootTable(), newAuthMode_ ? "Authenticate" : "DoLogin");
         if (func.IsNull()) {
             return 0;
         }
@@ -513,7 +501,7 @@ bool CScriptUploadEngine::supportsSettings()
 
 bool CScriptUploadEngine::supportsBeforehandAuthorization()
 {
-    return newAuthMode || functionExists("DoLogin");
+    return newAuthMode_ || functionExists("DoLogin");
 }
 
 bool CScriptUploadEngine::functionExists(const std::string& name){
@@ -605,23 +593,36 @@ bool CScriptUploadEngine::supportsLogout() {
 int CScriptUploadEngine::checkAuth() {
     using namespace Sqrat;
     int res = 1, res2 = 1;
-	if (newAuthMode && m_UploadData->NeedAuthorization && m_ServersSettings->authData.DoAuth) {
-		if(!serverSync_->isAuthPerformed()) {
-            try {
-                checkCallingThread();
-                
-                if (!isAuthenticated()) {
-                	try {
-                        res = doLogin();
-                	} catch (const std::exception& e) {
-                        Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
-                	}
+    
+    if (newAuthMode_) {
+        try {
+            serverSync_->beginAuth();
+        }
+        catch (const ServerSyncException&) {
+            return 0;
+        }
+    }
+
+    defer<void> d([&] { // Run at function exit
+        if (newAuthMode_) {
+            serverSync_->endAuth();
+        }
+    });
+
+	if (newAuthMode_ && m_UploadData->NeedAuthorization && m_ServersSettings->authData.DoAuth && !serverSync_->isAuthPerformed()) {
+        try {
+            checkCallingThread();
+
+            if (!isAuthenticated()) {
+                try {
+                    res = doLogin();
+                } catch (const std::exception& e) {
+                    Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
                 }
-            	
-            } catch (const std::exception& e) {
-                Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
-            }  
-		}
+            }
+        } catch (const std::exception& e) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
+        }  
 	}
 	 
     if (hasRefreshTokenFunc_) {

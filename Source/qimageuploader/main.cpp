@@ -18,6 +18,8 @@
 
 #include <Core/Settings/QtGuiSettings.h>
 #include <QMessageBox>
+#include <Video/QtImage.h>
+
 #include "Core/i18n/Translator.h"
 #include "versioninfo.h"
 
@@ -41,8 +43,8 @@ public:
 		return str;
 	}
 #ifdef _WIN32
-	const wchar_t* translateW(const wchar_t* str) override {
-		return str;
+    std::wstring translateW(const char* str) override {
+		return IuCoreUtils::Utf8ToWstring(str);
 	}
 #endif
 };
@@ -89,6 +91,9 @@ int main(int argc, char *argv[])
 	ServiceLocator::instance()->setUploadErrorHandler(errorHandler);
 	ServiceLocator::instance()->setLogger(logger);
 	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
+
+    AbstractImage::autoRegisterFactory<void>();
+
     QString appDirectory = QCoreApplication::applicationDirPath();
     QString settingsFolder;
     setlocale(LC_ALL, "");

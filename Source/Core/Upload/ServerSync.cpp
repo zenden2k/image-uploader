@@ -118,3 +118,8 @@ std::mutex& ServerSync::loginMutex() {
     MY_D(ServerSync);
     return d->loginMutex_;
 }
+
+bool ServerSync::isAuthPerformedSuccess() {
+    MY_D(ServerSync);
+    return d->authPerformedSuccess_;
+}

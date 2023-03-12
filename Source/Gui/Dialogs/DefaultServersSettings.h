@@ -29,6 +29,7 @@
 #include "Gui/Dialogs/settingspage.h"
 #include "Gui/COntrols/ServerSelectorControl.h"
 class CServerSelectorControl;
+class CMultiServerSelectorControl;
 class UploadEngineManager;
 class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>, 
                           public CSettingsPage    
@@ -52,8 +53,8 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
         LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 protected:
-    std::unique_ptr<CServerSelectorControl> imageServerSelector_, fileServerSelector_, trayServerSelector_, contextMenuServerSelector_,
-                    urlShortenerServerSelector_, temporaryServerSelector_;
+    std::unique_ptr<CMultiServerSelectorControl> imageServerSelector_, fileServerSelector_, contextMenuServerSelector_;
+    std::unique_ptr<CServerSelectorControl> trayServerSelector_, urlShortenerServerSelector_, temporaryServerSelector_;
     UploadEngineManager* uploadEngineManager_;
 
 };

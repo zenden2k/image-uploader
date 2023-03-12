@@ -35,6 +35,7 @@
 #include "Core/ProgramWindow.h"
 #include "Core/TaskDispatcher.h"
 #include "FolderAddDlg.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/HwndScopedWrapper.h"
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
@@ -70,7 +71,7 @@ class CWizardDlg :
 {
 public:
     enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889 };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER };
     enum { kNewFilesTimer = 1 };
     static const WPARAM kWmMyExitParam = 5;
 
@@ -109,6 +110,7 @@ public:
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
+        COMMAND_HANDLER(IDM_OPENSERVERSCHECKER, BN_CLICKED, OnServersCheckerClicked)
         
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
         COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
@@ -139,15 +141,16 @@ public:
     LRESULT OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
-    void setSessionImageServer(const ServerProfile& server);
-    void setSessionFileServer(const ServerProfile& server);
-    ServerProfile getSessionImageServer() const;
-    ServerProfile getSessionFileServer() const;
+    void setSessionImageServer(const ServerProfileGroup& server);
+    void setSessionFileServer(const ServerProfileGroup& server);
+    ServerProfileGroup getSessionImageServer() const;
+    ServerProfileGroup getSessionFileServer() const;
 
     // IProgramWindow methods
     void setServersChanged(bool changed) override;
@@ -294,7 +297,7 @@ protected:
     INT m_bScreenshotFromTray;
     bool m_bShowWindow;
     bool m_bHandleCmdLineFunc;
-    ServerProfile sessionImageServer_, sessionFileServer_;
+    ServerProfileGroup sessionImageServer_, sessionFileServer_;
     bool serversChanged_;
     int CurPage;
     int PrevPage, NextPage;

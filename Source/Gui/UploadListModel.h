@@ -19,11 +19,13 @@ public:
     COLORREF color;
     bool finished;
     int tableRow;
+    int fileIndex;
 protected:
     CString fileName_;
     CString displayName_;
     CString statusText_;
     CString thumbStatusText_;
+    CString serverName_;
   
     mutable std::mutex dataMutex;
 public:
@@ -31,6 +33,7 @@ public:
         color = GetSysColor(COLOR_WINDOWTEXT); 
         finished = false;
         tableRow = -1;
+        fileIndex = -1;
     }
 
     void clearInfo() {
@@ -67,6 +70,10 @@ public:
         return statusText_;
     }
 
+    CString serverName() const {
+        std::lock_guard<std::mutex> lk(dataMutex);
+        return serverName_;
+    }
     void setStatusText(CString text) {
         std::lock_guard<std::mutex> lk(dataMutex);
         statusText_ = text;
@@ -80,6 +87,11 @@ public:
     void setThumbStatusText(CString text) {
         std::lock_guard<std::mutex> lk(dataMutex);
         thumbStatusText_ = text;
+    }
+
+    void setServerName(CString text) {
+        std::lock_guard<std::mutex> lk(dataMutex);
+        serverName_ = text;
     }
 };
 

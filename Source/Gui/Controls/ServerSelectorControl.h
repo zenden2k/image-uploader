@@ -31,6 +31,7 @@
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/SettingsPage.h"
 #include "Core/Settings/BasicSettings.h"
+#include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Controls/DialogIndirect.h"
 
 // CServerSelectorControl
@@ -41,7 +42,7 @@ constexpr int WM_SERVERSELECTCONTROL_CHANGE = WM_USER + 156;
 constexpr int WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED = WM_USER + 157;
 
 class CServerSelectorControl : 
-    public CDialogIndirectImpl<CServerSelectorControl>, public CSettingsPage
+    public CDialogIndirectImpl<CServerSelectorControl>
 {
 public:
     explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
@@ -100,6 +101,7 @@ virtual ~CServerSelectorControl();
     void setShowImageProcessingParams(bool show);
     void setShowParamsLink(bool show);
     void setOnChangeCallback(std::function<void(CServerSelectorControl*)> cb);
+    void setShowEmptyItem(bool show);
 
 private:
     CComboBoxEx serverComboBox_;
@@ -131,6 +133,7 @@ private:
     CFont serverGroupboxFont_;
     HGLOBAL hMyDlgTemplate_;
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
+    bool showEmptyItem_;
 };
 
 #endif
