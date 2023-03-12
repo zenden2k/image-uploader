@@ -315,6 +315,6 @@
 	<Server Name="file.coffee" Authorize="0" FileHost="1" Plugin="file.coffee">
 		<Actions>
 		</Actions>
-		<Result DownloadUrlTemplate="stub" />
+		<Result ImageUrlTemplate="stub" />
 	</Server>
 </Servers>

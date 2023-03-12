@@ -1,6 +1,8 @@
 #ifndef IMAGEEDITOR_REGION_H
 #define IMAGEEDITOR_REGION_H
 
+#include <memory>
+
 #include "3rdpart/GdiplusH.h"
 
 #include "atlheaders.h"

@@ -1,6 +1,7 @@
 #ifndef IMAGEEDITOR_DOCUMENT_H
 #define IMAGEEDITOR_DOCUMENT_H
 
+#include <memory>
 #include <vector>
 
 #include <Windows.h>
