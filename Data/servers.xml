@@ -317,4 +317,9 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" />
 	</Server>
+	<Server Name="upload.ee" Authorize="0" FileHost="1" Plugin="upload.ee" MaxFileSize="104857600">
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
+	</Server>
 </Servers>
