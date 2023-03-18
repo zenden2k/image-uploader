@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-01-08 15:06+0300\n"
-"PO-Revision-Date: 2023-01-08 15:07+0300\n"
+"PO-Revision-Date: 2023-03-18 17:34+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -1062,7 +1062,7 @@ msgstr "Обводить в рамку"
 
 #: ../Source/Func/MediaInfoHelper.cpp:152
 msgid "Duration: "
-msgstr "Длительность:"
+msgstr "Длительность: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:188
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:268
@@ -1326,7 +1326,7 @@ msgstr "Имя файла:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:137
 msgid "Filename: "
-msgstr "Имя файла:"
+msgstr "Имя файла: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:651
 msgid "Files"
@@ -1338,7 +1338,7 @@ msgstr "Всего файлов:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:141
 msgid "Filesize: "
-msgstr "Размер файла:"
+msgstr "Размер файла: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:241
 msgid "Fill background"
@@ -1979,7 +1979,7 @@ msgstr "Опции"
 
 #: ../Source/Func/MediaInfoHelper.cpp:157
 msgid "Overall bitrate: "
-msgstr "Общий битрейт:"
+msgstr "Общий битрейт: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 msgid "Parameters:"
@@ -3020,7 +3020,7 @@ msgstr "Видео файлы"
 
 #: ../Source/Func/MediaInfoHelper.cpp:164
 msgid "Video: "
-msgstr "Видео:"
+msgstr "Видео: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:182
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:239

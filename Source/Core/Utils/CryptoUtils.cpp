@@ -20,27 +20,37 @@
 
 #include "CryptoUtils.h"
 
-#include "Core/3rdpart/base64.h"
 #include <libbase64.h>
 #include <Core/Upload/CommonTypes.h>
 
-namespace IuCoreUtils {
-namespace CryptoUtils {
+namespace IuCoreUtils::CryptoUtils {
 
 std::string Base64Encode(const std::string& data)
 {
-    /*std::string res;
-    size_t outlen = (data.length() * 4 )/ 3+10;
+    std::string res;
+    size_t outlen = ((4 * data.length() / 3) + 3) & ~3;
     res.resize(outlen);
-    base64_encode(data.data(), data.length(), &res[0], &outlen, BASE64_FORCE_PLAIN );
+    base64_encode(data.data(), data.length(), &res[0], &outlen, 0);
     res.resize(outlen);
-    return res;*/
-    return base64_encode((unsigned char const*)data.data(), data.length());
+    return res;
 }
 
+std::string Base64EncodeRaw(const char* bytes, unsigned int len) {
+    std::string res;
+    size_t outlen = ((4 * len / 3) + 3) & ~3;
+    res.resize(outlen);
+    base64_encode(bytes, len, &res[0], &outlen, 0);
+    res.resize(outlen);
+    return res;
+}
 std::string Base64Decode(const std::string& data)
 {
-    return base64_decode(data);
+    std::string res;
+    auto outlen = static_cast<size_t>(ceil(data.length() * 3 / 4.0));
+    res.resize(outlen);
+    base64_decode(data.data(), data.length(), &res[0], &outlen, 0);
+    res.resize(outlen);
+    return res;
 }
 
 bool Base64EncodeFile(const std::string& fileName, std::string& result) {
@@ -83,5 +93,4 @@ bool Base64EncodeFile(const std::string& fileName, std::string& result) {
     return true;
 }
 
-}
 }

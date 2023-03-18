@@ -20,13 +20,12 @@
 
 #include "CryptoUtils.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <windows.h>
 #include <Wincrypt.h>
 
 #include "CoreUtils.h"
-#include "Core/3rdpart/base64.h"
 
 namespace IuCoreUtils {
 
@@ -331,7 +330,7 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
         }
     } else
     {
-        res =  base64_encode(pbHash, dwDataLen);
+        res = CryptoUtils::Base64EncodeRaw(reinterpret_cast<const char*>(pbHash), dwDataLen);
     }
 
 Exit:

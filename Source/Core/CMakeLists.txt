@@ -17,7 +17,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/SimpleXml.cpp
     Utils/StringUtils.cpp
     Utils/ConsoleUtils.cpp
-    3rdpart/base64.cpp
     3rdpart/pcreplusplus.cpp
     3rdpart/tinystr.cpp
     3rdpart/tinyxml.cpp
@@ -98,7 +97,6 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/StringUtils.h
     Utils/ConsoleUtils.h
     Utils/IOException.h
-    3rdpart/base64.h
     3rdpart/pcreplusplus.h
     3rdpart/tinystr.h
     3rdpart/tinyxml.h
