@@ -26,7 +26,6 @@
 #include <openssl/md5.h>
 #include <openssl/sha.h>
 #include <openssl/hmac.h>
-#include "Core/3rdpart/base64.h"
 
 namespace IuCoreUtils {
 
@@ -135,7 +134,7 @@ std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* da
         sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
     }
     if ( base64 ) {
-        return  base64_encode(digest,20);
+        return CryptoUtils::Base64EncodeRaw(reinterpret_cast<const char*>(digest), 20);
     }
 
     return mdString;

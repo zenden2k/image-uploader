@@ -20,6 +20,7 @@
 
 #include "CryptoUtils.h"
 
+#include <cmath>
 #include <libbase64.h>
 #include <Core/Upload/CommonTypes.h>
 
@@ -46,7 +47,7 @@ std::string Base64EncodeRaw(const char* bytes, unsigned int len) {
 std::string Base64Decode(const std::string& data)
 {
     std::string res;
-    auto outlen = static_cast<size_t>(ceil(data.length() * 3 / 4.0));
+    auto outlen = static_cast<size_t>(std::ceil(data.length() * 3 / 4.0));
     res.resize(outlen);
     base64_decode(data.data(), data.length(), &res[0], &outlen, 0);
     res.resize(outlen);
