@@ -43,23 +43,34 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
     SimpleXmlNode root = xml.getRoot("Servers");
     std::string newName;
     std::string outFile;
+    std::string plugin;
+
+    if (serverType == ServerType::stSFTP) {
+        plugin = "sftp";
+    } else if (serverType == ServerType::stFTP) {
+        plugin = "ftp";
+    } else if (serverType == ServerType::stWebDAV) {
+        plugin = "webdav";
+    } else {
+        throw std::runtime_error("Unknown server type");
+    }
 
     if (temporary) {
         boost::uuids::uuid uuid = boost::uuids::random_generator()();
         newName = boost::uuids::to_string(uuid); 
     } else {
-        newName = name + (serverType == ServerType::stSFTP ? " (sftp)" : " (ftp)");
+        newName = name + " (" + plugin + ")";
     }
     
-
     if ( uploadEngineList_->byName(newName) ) {
         throw std::runtime_error("Server with such name already exists.");
     }
+
     if (temporary) {
         CUploadEngineData data;
         data.Name = newName;
         data.UsingPlugin = true;
-        data.PluginName = serverType == ServerType::stSFTP ? "sftp" : "ftp";
+        data.PluginName = plugin;
         data.TypeMask = CUploadEngineData::TypeFileServer;
         data.NeedAuthorization = 2;
         data.ImageUrlTemplate = "stub";
@@ -70,7 +81,8 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
     } else {
         SimpleXmlNode serverNode = root.GetChild("Server");
         serverNode.SetAttribute("Name", newName);
-        serverNode.SetAttribute("Plugin", serverType == ServerType::stSFTP ? "sftp" : "ftp");
+
+        serverNode.SetAttribute("Plugin", plugin);
         serverNode.SetAttribute("FileHost", 1);
         serverNode.SetAttribute("Authorize", 1);
 
@@ -90,7 +102,6 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
             throw std::runtime_error("Unable to save file " + outFile);
         }
     }
-
    
     ServerSettingsStruct &ss = serversSettings_[newName][login];
     ss.setParam("hostname",serverName);
@@ -148,12 +159,11 @@ std::string ServerListManager::addDirectoryAsServer(const std::string &name, con
     }
 
     ServerSettingsStruct &ss = serversSettings_[name][""];
-    ss.setParam("directory",directory);
-    ss.setParam("downloadUrl",downloadUrl);
-    ss.setParam("convertUncPath",std::to_string(static_cast<int>(convertUncPath)));
+    ss.setParam("directory", directory);
+    ss.setParam("downloadUrl", downloadUrl);
+    ss.setParam("convertUncPath", std::to_string(static_cast<int>(convertUncPath)));
     ss.authData.DoAuth = false;
-
-   
+  
     if (!uploadEngineList_->loadFromFile(outFile,serversSettings_)) {
         throw std::runtime_error("Unable to load file " + outFile);
     }

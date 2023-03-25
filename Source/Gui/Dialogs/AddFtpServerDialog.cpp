@@ -42,6 +42,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     serverTypeComboBox_ = GetDlgItem(IDC_SERVERTYPECOMBO);
     serverTypeComboBox_.AddString(TR("FTP"));
     serverTypeComboBox_.AddString(TR("SFTP"));
+    serverTypeComboBox_.AddString(TR("WebDAV"));
 
     serverTypeComboBox_.SetCurSel(static_cast<int>(ServerListManager::ServerType::stFTP));
     connectionStatusLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_CONNECTIONSTATUSLABEL));
@@ -119,6 +120,11 @@ LRESULT CAddFtpServerDialog::OnServerEditChange(WORD wNotifyCode, WORD wID, HWND
     }
     if ( !connectionNameEdited ) {
         CString serverName = GuiTools::GetDlgItemText(m_hWnd, IDC_SERVEREDIT);
+        int delimPos = serverName.Find(_T("://"));
+
+        if (delimPos != -1) {
+            serverName = serverName.Mid(delimPos + 3);
+        }
         SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
     }
     GenerateDownloadLink();
@@ -153,6 +159,11 @@ void CAddFtpServerDialog::GenerateDownloadLink()
 {
     if ( !downloadUrlEdited ) {
         CString serverName = GuiTools::GetDlgItemText(m_hWnd, IDC_SERVEREDIT);
+        int delimPos = serverName.Find(_T("://"));
+
+        if (delimPos != -1) {
+            serverName = serverName.Mid(delimPos + 3);
+        }
         int pos = serverName.ReverseFind(L':');
         if ( pos != -1 ) {
             serverName = serverName.Left(pos);

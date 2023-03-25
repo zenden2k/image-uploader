@@ -127,21 +127,18 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     sessionFileServer_ = WizardDlg->getSessionFileServer();
 
-
     moreImageServersLink_.SubclassWindow(GetDlgItem(IDC_CHOOSEMOREIMAGESERVERSLABEL));
     moreImageServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     moreImageServersLink_.SetLabel(TR("Choose more servers..."));
+    moreImageServersLink_.SetToolTipText(TR("Choose more servers..."));
 
     moreFileServersLink_.SubclassWindow(GetDlgItem(IDC_CHOOSEMOREFILESERVERS));
     moreFileServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     moreFileServersLink_.SetLabel(TR("Choose more servers..."));
+    moreFileServersLink_.SetToolTipText(TR("Choose more servers..."));
     
-    
-
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
-
-
 
     CBitmap hBitmap;
     HDC dc = ::GetDC(HWND_DESKTOP);

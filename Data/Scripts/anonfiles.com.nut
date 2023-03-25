@@ -3,7 +3,7 @@ function UploadFile(FileName, options) {
     local apiKey = ServerParams.getParam("apiKey");
     local login = ServerParams.getParam("Login");
     if ( login != "" && apiKey == "") {
-        WriteLog("error", "myfile.is: You must set API Key in server settings for uploading into account.");
+        WriteLog("error", "anonfiles.com: You must set API Key in server settings for uploading into account.");
         return 0;
     }
     local name = ExtractFileName(FileName);
@@ -28,21 +28,20 @@ function UploadFile(FileName, options) {
                 if ( "error" in t) {
                     msg = t.error.message;
                 }
-                WriteLog("error", "myfile.is: Upload failed. Error: " + msg);
+                WriteLog("error", "anonfiles.com: Upload failed. Error: " + msg);
             }
             
         } else {
-            WriteLog("error", "myfile.is: Failed to parse server's answer aj json.");
+            WriteLog("error", "anonfiles.com: Failed to parse server's answer aj json.");
         }
 
     } else {
-        WriteLog("error", "myfile.is: Failed to upload. Server status code: " + nm.responseCode());
+        WriteLog("error", "anonfiles.com: Failed to upload. Server status code: " + nm.responseCode());
     }
     return 0;
 }
 
-function GetServerParamList()
-{	
+function GetServerParamList() {	
 	return {
         apiKey = "API Key",
 	};

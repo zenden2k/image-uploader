@@ -160,7 +160,7 @@ LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotif
 LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
     if ( !connectionNameEdited ) {   
-        const CString serverName = TR("Folder ") + WinUtils::TrimString(directory, 30);
+        const CString serverName = TR("Folder ") + CString(_T(" ")) + WinUtils::TrimString(directory, 30);
         SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
     }
     GenerateDownloadLink();
