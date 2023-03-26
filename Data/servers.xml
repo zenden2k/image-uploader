@@ -322,4 +322,9 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
 	</Server>
+	<Server Name="postimages.org" Authorize="1" Type="image" Plugin="postimages.org" NeedPassword="0">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
 </Servers>
