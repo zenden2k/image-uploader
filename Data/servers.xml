@@ -90,13 +90,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
 	</Server>
-	<Server Name="zippyshare.com"  Authorize="1" Debug="0" FileHost="1" DefaultForTypes="file">
-		<Actions>
-			<Action Type="get" Url="http://www.zippyshare.com/" RegExp="uploadId\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)([\s\S]+)server\s*=\s*[&apos;&quot;]([^&apos;&quot;]+)" AssignVars="UploadId:0;ServerId:2"/>
-			<Action Type="upload" Url="http://$(ServerId).zippyshare.com/upload?uploadId=$(UploadId)" PostParams="uploadId=$(UploadId);username=$(_LOGIN);password=$(_PASSWORD);$(_FILENAME)=%filename%;private=ON;" RegExp="\[url=(.+?)\]" AssignVars="DownloadUrl:0;"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(DownloadUrl)" />
-	</Server>
 	<Server Name="sendfile.su" FileHost="1">
 		<Actions>
 			<Action Type="get" Url="http://sendfile.su/" RegExp="http://s(\d+).sendfile.su/upload.php" AssignVars="_ServerId:0;" OnlyOnce="1"/>
@@ -326,5 +319,10 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
+	<Server Name="pixeldrain.com" Authorize="1" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0" DefaultForTypes="file">
+		<Actions>
+		</Actions>
+		<Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
 </Servers>
