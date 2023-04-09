@@ -209,14 +209,11 @@
 	<Server Name="mirrorcreator.com" Plugin="mirrorcreator.com" FileHost="1" MaxFileSize="419430400">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<!--<Server Name="imagebam.com">
-        <Actions>
-            <Action Type="upload" Url="http://www.imagebam.com/sys/upload/save" PostParams="file[]=%filename%;content_type=1;thumb_size=180;thumb_aspect_ratio=resize;thumb_file_type=jpg;" RegExp="\[URL=(.*?)\]([\s\S]*?)\[IMG\](.*?)\[" AssignVars="Image:0;Thumb:2;">
-                <RegExp Pattern="(http:\/\/www\.imagebam\.com\/remove\/[0-9a-z]+\/[0-9a-z]+)" AssignVars="DeleteUrl:0"/>
-            </Action>
-        </Actions>
-    <Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DeleteUrl="$(DeleteUrl)"/>
-    </Server>-->
+	<Server Name="imagebam.com" Plugin="imagebam.com">
+		<Actions>
+		</Actions>
+		<Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
     <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000">
         <Actions>
             <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
