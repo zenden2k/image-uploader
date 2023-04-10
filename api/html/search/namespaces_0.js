@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['scriptapi',['ScriptAPI',['../namespace_script_a_p_i.html',1,'']]]
+  ['scriptapi_0',['ScriptAPI',['../namespace_script_a_p_i.html',1,'']]]
 ];
