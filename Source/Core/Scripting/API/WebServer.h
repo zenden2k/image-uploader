@@ -11,12 +11,31 @@ namespace ScriptAPI {
 		
 class WebServerPrivate;
 
+/*!
+* @brief Start a web server listening a port on 127.0.0.1
+* @since version 1.3.3
+*/
 class WebServer {
 	public:
 		WebServer();
 		~WebServer();
+		/**
+		 * @brief Bind a port. Pass 0 as argument to use random port.
+		 * 
+		 * @param port 
+		 * @return int Binded port 
+		 */
 		int bind(int port);
 		void start();
+
+		/**
+		 * @brief Register route handler
+		 * 
+		 * @param path regular expression
+		 * @param method GET, POST, etc.
+		 * @param callBack 
+		 * @param context 
+		 */
 		void resource(const std::string& path, const std::string& method, Sqrat::Function callBack, Sqrat::Object context);
 		int port() const;
 		void stop();
