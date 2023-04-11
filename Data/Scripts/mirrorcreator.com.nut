@@ -59,7 +59,7 @@ function  UploadFile(FileName, options)
 	local fid = format("%c%c%c%c%c%c", rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A', rand()%26+'A');
 	local fsize = GetFileSize(FileName);
 	local fn = ExtractFileName(FileName);
-	local url = "https://www.mirrored.to/fnvalidator.php?fn=" + fn + "%20(" + fsize + ");&fid=" + fid + ";"
+	local url = "https://www.mirrored.to/fnvalidator.php?fn=" + nm.urlEncode(fn) + "%20(" + fsize + ");&fid=" + fid + ";"
 	nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
 	nm.doGet(url);
 

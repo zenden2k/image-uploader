@@ -6,8 +6,12 @@ namespace ServersListTool {
 
 ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList_(engineList) {
     for (int i = 0; i < engineList_->count(); i++) {
-        ServerData *sd = new ServerData();
         CUploadEngineData* ued = engineList_->byIndex(i);
+        if (ued->PluginName == "ftp" || ued->PluginName == "sftp" || ued->PluginName == "webdav" 
+            || ued->PluginName == "directory") {
+            continue;
+        }
+        ServerData* sd = new ServerData();
         sd->ued = ued;
         if (ued->hasType(CUploadEngineData::TypeFileServer)) {
             sd->serverType = CUploadEngineData::TypeFileServer;

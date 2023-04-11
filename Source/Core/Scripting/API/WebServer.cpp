@@ -64,7 +64,7 @@ void WebServer::resource(const std::string& path, const std::string& method, Sqr
                         using namespace std::chrono_literals;
             			try {
 							std::this_thread::sleep_for(std::chrono::milliseconds(stopDelay));
-                        } catch (const std::exception& ex) {
+                        } catch (const std::exception&) {
                            // ex.what();
                         }
 							d_->server_.stop();
