@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stack>
+#include <utility>
 
 #include <boost/signals2.hpp>
 
@@ -169,6 +170,9 @@ class Canvas {
         bool hasElementOfType(ElementType type) const;
 
         void setCropOnExport(bool crop);
+
+        void setDpi(float dpiX, float dpiY);
+        std::pair<float, float> getDpi() const;
         boost::signals2::signal<void(int,int,int,int)> onCropChanged;
         boost::signals2::signal<void(int,int,int,int)> onCropFinished;
         boost::signals2::signal<void(DrawingToolType)> onDrawingToolChanged;
@@ -242,6 +246,8 @@ private:
         InputBoxControl* inputBox_;
         Gdiplus::Rect lastAppliedCrop_;
         bool cropOnExport_;
+        float dpiX_;
+        float dpiY_;
 };
 
 }

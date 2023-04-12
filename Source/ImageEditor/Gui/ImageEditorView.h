@@ -70,6 +70,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         CBrush backgroundBrush_;
         HCURSOR getCachedCursor(CursorType cursorType);
         bool mouseDown_;
+        float dpiScaleX_, dpiScaleY_;
         HICON createBrushCursor(int size);
 };
 

@@ -288,15 +288,17 @@ void WtlGuiSettings::FindDataFolder()
         DataFolder = WinUtils::GetAppFolder() + _T("Data\\");
         SettingsFolder = W2U(DataFolder);
 
-        params->setDataDirectory(IuStringUtils::Replace(W2U(DataFolder), "\\", "/"));
-        params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
+        /*params->setDataDirectory(IuStringUtils::Replace(W2U(DataFolder), "\\", "/"));
+        params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));*/
+        params->setDataDirectory(W2U(DataFolder));
+        params->setSettingsDirectory(SettingsFolder);
         IsPortable = true;
         return;
     }
 
     SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Image Uploader\\")));
 
-    params->setSettingsDirectory(IuStringUtils::Replace(SettingsFolder, "\\", "/"));
+    params->setSettingsDirectory(SettingsFolder);
     {
         CRegistry Reg;
 
@@ -306,7 +308,7 @@ void WtlGuiSettings::FindDataFolder()
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
-                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+                params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
                 return;
             }
         }
@@ -319,7 +321,7 @@ void WtlGuiSettings::FindDataFolder()
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
                 DataFolder = dir;
-                params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+                params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
                 return;
             }
         }
@@ -327,12 +329,12 @@ void WtlGuiSettings::FindDataFolder()
 
     if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
         DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+        params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
     } else
 
     {
         DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
-        params->setDataDirectory(IuStringUtils::Replace(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder), "\\", "/"));
+        params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
     }
 }
 

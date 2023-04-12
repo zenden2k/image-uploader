@@ -55,6 +55,7 @@ class MovableElement: public DrawingElement {
         virtual bool isResizable() const;
         virtual bool isEmpty() const;
 
+        bool isMoving() const;
     protected:
         bool isSelected_;
         bool drawDashedRectangle_;

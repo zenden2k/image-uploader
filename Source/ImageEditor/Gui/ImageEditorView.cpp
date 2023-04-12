@@ -53,6 +53,9 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     backgroundBrush_.CreateSolidBrush(GetSysColor(COLOR_APPWORKSPACE));
+    CWindowDC hdc(m_hWnd);
+    dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+    dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     return 0;
 }
 
@@ -62,6 +65,8 @@ void CImageEditorView::setCanvas(ImageEditor::Canvas *canvas) {
         SIZE sz = {canvas_->getWidth(), canvas_->getHeigth()};
         SetScrollOffset(0, 0);
         SetScrollSize(sz);
+
+        canvas->setDpi(dpiScaleX_, dpiScaleY_);
         canvas_->setCallback( this );
         canvas_->setDrawingToolType(DrawingToolType::dtRectangle);
     }

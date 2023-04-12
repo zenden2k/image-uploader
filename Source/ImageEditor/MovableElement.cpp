@@ -273,6 +273,10 @@ void MovableElement::endMove()
     isMoving_ = false;
 }
 
+bool MovableElement::isMoving() const {
+    return isMoving_;
+}
+
 bool MovableElement::isPenSizeUsed() const
 {
     return isPenSizeUsed_;

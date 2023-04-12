@@ -217,13 +217,13 @@ BEGIN
     CONTROL         "текст на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,47,113,152,10
     CONTROL         " Использовать серверные эскизы",IDC_USESERVERTHUMBNAILS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,113,147,10
-    GROUPBOX        "Сервер для изображений",IDC_IMAGESERVERGROUPBOX,19,134,348,27
-    GROUPBOX        "Сервер для других типов файлов",IDC_FILESERVERGROUPBOX,19,176,348,29
+    GROUPBOX        "Сервер для изображений",IDC_IMAGESERVERGROUPBOX,19,133,348,30
+    GROUPBOX        "Сервер для других типов файлов",IDC_FILESERVERGROUPBOX,19,177,348,29
     LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,29,307,339,20
     CONTROL         "#Shorten links with",IDC_SHORTENLINKSCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,219,161,10
     PUSHBUTTON      "",IDC_SHORTENINGURLSERVERBUTTON,189,217,14,13,BS_ICON | BS_NOTIFY
-    LTEXT           "#Choose more servers",IDC_CHOOSEMOREIMAGESERVERSLABEL,27,163,205,8,WS_TABSTOP
-    LTEXT           "#Choose more servers",IDC_CHOOSEMOREFILESERVERS,26,206,200,8,WS_TABSTOP
+    LTEXT           "#Choose more servers",IDC_CHOOSEMOREIMAGESERVERSLABEL,27,165,205,8,WS_TABSTOP
+    LTEXT           "#Choose more servers",IDC_CHOOSEMOREFILESERVERS,26,207,200,8,WS_TABSTOP
 END
 
 IDD_IMAGEVIEW DIALOGEX 0, 0, 186, 95

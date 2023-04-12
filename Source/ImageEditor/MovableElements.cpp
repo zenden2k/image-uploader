@@ -24,6 +24,7 @@
 #include "Region.h"
 #include "Canvas.h"
 #include "Core/Images/Utils.h" 
+#include "Gui/GuiTools.h"
 
 namespace ImageEditor {
 
@@ -444,6 +445,15 @@ void Crop::resize(int width, int height) {
     return MovableElement::resize(width, height);
 }
 
+RECT Crop::getPaintBoundingRect() {
+    RECT rc = MovableElement::getPaintBoundingRect();
+    auto [dpiX, dpiY] = canvas_->getDpi();
+    // Offset for text with crop dimensions 
+    rc.left -= static_cast<LONG>(80 * dpiX);
+    rc.top -= static_cast<LONG>(80 * dpiY);
+    return rc;
+}
+
 CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY):MovableElement(canvas)
 {
     startPoint_.x = startX;
@@ -453,6 +463,9 @@ CropOverlay::CropOverlay(Canvas* canvas, int startX, int startY, int endX,int en
     isColorUsed_ = false;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
+    using namespace Gdiplus;
+    FontFamily ff(L"Arial");
+    font_ = std::make_unique<Font>(&ff, static_cast<REAL>(12), FontStyleBold);
 }
 
 void CropOverlay::render(Painter* gr)
@@ -465,8 +478,15 @@ void CropOverlay::render(Painter* gr)
     Rect rc (0,0, canvas_->getWidth(), canvas_->getHeigth());
     rc.Intersect(canvas_->currentRenderingRect());
     Region rgn(rc.X,rc.Y, rc.Width, rc.Height);
+    RectF cropRect;
+    bool isCropElementMoving = false;
     for (auto& crop : crops) {
         rgn = rgn.subtracted(Region(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight()));
+
+        isCropElementMoving = crop->isMoving();
+        
+        cropRect = RectF(static_cast<REAL>(crop->getX()), static_cast<REAL>(crop->getY()),
+            static_cast<REAL>(crop->getWidth()), static_cast<REAL>(crop->getHeight()));
     }
 
     Gdiplus::Region oldRegion;
@@ -481,8 +501,37 @@ void CropOverlay::render(Painter* gr)
     gr->SetClip(&oldRegion);
     gr->SetSmoothingMode(prevSmoothingMode);
     gr->SetPixelOffsetMode(oldPOM);
-}
 
+    // Draw crop dimensions
+
+    if (!cropRect.IsEmptyArea()) {
+        SolidBrush textBrush(Color(200, 255, 255, 255));
+        SolidBrush textRectBrush(Color(210, 120, 120, 120));
+
+        auto oldTextHint = gr->GetTextRenderingHint();
+        gr->SetTextRenderingHint(TextRenderingHintAntiAlias);
+
+        /*StringFormat format;
+        format.SetLineAlignment(StringAlignmentCenter);
+        format.SetAlignment(StringAlignmentCenter);*/
+        CString text;
+        text.Format(_T("%dx%d"), static_cast<int>(cropRect.Width), static_cast<int>(cropRect.Height));
+        RectF textBoundingBox;
+        gr->MeasureString(text, -1, font_.get(), PointF(0, 0), &textBoundingBox);
+
+        if (isCropElementMoving || (cropRect.X - textBoundingBox.Width >= 0 && cropRect.Y - textBoundingBox.Height >= 0)) {
+            REAL x = cropRect.X - textBoundingBox.Width < 0 ? cropRect.X : cropRect.X - textBoundingBox.Width;
+            REAL y = cropRect.Y - textBoundingBox.Height < 0 ? cropRect.Y : cropRect.Y - textBoundingBox.Height;
+            PointF point(x, y);
+            RectF textRect = RectF(x, /*cropRect.Y*/y, textBoundingBox.Width, textBoundingBox.Height);
+
+            gr->FillRectangle(&textRectBrush, textRect);
+            gr->DrawString(text, -1, font_.get(), point, /*&format,*/ &textBrush);
+        }
+        
+        gr->SetTextRenderingHint(oldTextHint);
+    }
+}
 
 // Rectangle
 //
@@ -514,9 +563,7 @@ void Rectangle::render(Painter* gr) {
     }
     gr->DrawRectangle( &pen, x, y, width, height );
     gr->SetSmoothingMode(prevSmoothingMode);
-    
 }
-
 
 void Rectangle::getAffectedSegments( AffectedSegments* segments ) {
     int x = getX();

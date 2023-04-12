@@ -287,7 +287,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
 
     RectF bounds(1, 1, float(width), float(height));
 
-    if ( (isImage &&  ItemID >= 0 ) && (!bm || !bm->GetWidth() ) ) {
+    if ( (isImage &&  ItemID >= 0 ) && (!bm /* || !bm->GetWidth()*/)) {
         LinearGradientBrush 
             brush(bounds, Color(130, 255, 0, 0), Color(255, 0, 0, 0), 
             LinearGradientModeBackwardDiagonal); 

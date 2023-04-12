@@ -1,6 +1,8 @@
 #ifndef IMAGEEDITOR_MOVABLEELEMENTS_H
 #define IMAGEEDITOR_MOVABLEELEMENTS_H
 
+#include <memory>
+
 #include "3rdpart/GdiplusH.h"
 #include "DrawingElement.h"
 #include "MovableElement.h"
@@ -66,6 +68,7 @@ public:
     void setPos(int  x, int y) override;
     bool move(int  offsetX, int offsetY, bool checkBounds) override;
     void resize(int width, int height) override;
+    RECT getPaintBoundingRect() override;
     DISALLOW_COPY_AND_ASSIGN(Crop);
 };
 
@@ -74,6 +77,8 @@ public:
     CropOverlay(Canvas* canvas, int startX, int startY, int endX,int endY);
     void render(Painter* gr) override;
     DISALLOW_COPY_AND_ASSIGN(CropOverlay);
+private:
+    std::unique_ptr<Gdiplus::Font> font_;
 };
 
 class BlurringRectangle: public MovableElement {

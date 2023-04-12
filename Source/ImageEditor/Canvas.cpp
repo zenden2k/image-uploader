@@ -77,6 +77,8 @@ Canvas::Canvas( HWND parent ) {
     stepInitialValue_ = 1;
     fillTextBackground_ = false;
     cropOnExport_ = true;
+    dpiX_ = 1.0f;
+    dpiY_ = 1.0f;
     createDoubleBuffer();
 }
 
@@ -1352,6 +1354,15 @@ bool Canvas::hasElementOfType(ElementType type) const {
 
 void Canvas::setCropOnExport(bool crop) {
     cropOnExport_ = crop;
+}
+
+void Canvas::setDpi(float dpiX, float dpiY) {
+    dpiX_ = dpiX;
+    dpiY_ = dpiY;
+}
+
+std::pair<float, float> Canvas::getDpi() const {
+    return { dpiX_, dpiY_ };
 }
 
 }

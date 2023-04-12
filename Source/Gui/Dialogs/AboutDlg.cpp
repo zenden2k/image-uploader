@@ -169,11 +169,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
 
-    /*if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n")/* +
-            CString(L"MediaInfo.DLL path:\r\n") + MediaInfoHelper::GetLibraryPath() + 
-             + _T("\r\n");
-    }*/
+    memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n");
 
     SYSTEMTIME systime;
     memset(&systime, 0, sizeof(systime));
