@@ -229,7 +229,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
                 item->icon = submenuIter->second.icon;
                 item->command = submenuIter->second.command;
                 item->hint = submenuIter->second.hint;
-                verticalToolbar_.CreateToolTipForItem(buttonIndex);
+                verticalToolbar_.updateTooltipForItem(buttonIndex);
                 selectedSubMenuItems_[submenuIter->second.parentCommand] = item->command;
             }
             

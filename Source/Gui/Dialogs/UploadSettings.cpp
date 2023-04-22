@@ -601,8 +601,6 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 		return;
 	}
 
-
-
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* res = Settings->getServerSettings(serverProfile);
     ServerSettingsStruct serverSettings;

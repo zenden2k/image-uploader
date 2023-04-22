@@ -90,7 +90,6 @@ bool Toolbar::Create(HWND parent, bool child )
         return false;
     }
 
-    
     return true;
 }
 
@@ -185,6 +184,9 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         textRenderingHint_ = Gdiplus::TextRenderingHintAntiAliasGridFit;
     }
 
+    tooltip_.Create(m_hWnd, rcDefault, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
+    tooltip_.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    
     enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
     itemMargin_ = static_cast<int>(kItemMargin *dpiScaleX_);
     itemHorPadding_ = static_cast<int>(kItemHorPadding * dpiScaleX_);
@@ -758,70 +760,46 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 }
 
 
-void Toolbar::createHintForSliders(HWND slider, CString hint)
-{
-    // Create a tooltip.
-    HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
-        WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
-        slider, NULL, _Module.GetModuleInstance(),NULL);
-
-    ::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
-        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-
-    // Set up "tool" information. In this case, the "tool" is the entire parent window.
-
-    TOOLINFO ti = { 0 };
+void Toolbar::createHintForSliders(HWND slider, CString hint) {
+    TOOLINFO ti = {};
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = slider;
     ti.hinst    = _Module.GetModuleInstance();
-    TCHAR* textBuffer = new TCHAR[hint.GetLength()+1];
-    lstrcpy(textBuffer, hint);
-    ti.lpszText = textBuffer;
+    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[hint.GetLength() + 1]);
+    lstrcpy(textBuffer.get(), hint);
+    ti.lpszText = textBuffer.get();
     ::GetClientRect(slider, &ti.rect);
 
-    // Associate the tooltip with the "tool" window.
-    SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);    
-
-    delete[] textBuffer;
+    tooltip_.AddTool(&ti);
 }
 
 void Toolbar::CreateToolTipForItem(size_t index)
 {
     Item& item = buttons_[index];
-    if ( item.tooltipWnd ) {
-        ::DestroyWindow(item.tooltipWnd);
-        item.tooltipWnd = 0;
-    }
+
     if ( item.hint.IsEmpty() ) {
         return;
     }
-    // Create a tooltip.
-    HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
-        WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
-        m_hWnd, NULL, _Module.GetModuleInstance(),NULL);
-
-    ::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
-        SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-
-    // Set up "tool" information. In this case, the "tool" is the entire parent window.
-
-    TOOLINFO ti = { 0 };
+    
+    TOOLINFO ti = {};
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = m_hWnd;
     ti.hinst    = _Module.GetModuleInstance();
-    TCHAR* textBuffer = new TCHAR[item.hint.GetLength()+1];
-    lstrcpy(textBuffer, item.hint);
-    ti.lpszText = textBuffer;
+    //CString textBuffer = item.hint;
+    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[item.hint.GetLength()+1]);
+    lstrcpy(textBuffer.get(), item.hint);
+    ti.lpszText = textBuffer.get();
     ti.rect  = item.rect;
+    ti.uId = static_cast<UINT_PTR>(index);
+    tooltip_.AddTool(&ti);
+}
 
-    // Associate the tooltip with the "tool" window.
-    SendMessage(hwndTT, TTM_ADDTOOL, 0, (LPARAM) (LPTOOLINFO) &ti);    
-    item.tooltipWnd = hwndTT;
-    delete[] textBuffer;
+void Toolbar::updateTooltipForItem(size_t index) {
+    Item& item = buttons_[index];
+
+    tooltip_.UpdateTipText(item.hint.GetString(), m_hWnd, static_cast<UINT_PTR>(index));
 }
 
 LRESULT Toolbar::OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

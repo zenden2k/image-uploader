@@ -129,7 +129,6 @@ void CServerSelectorControl::setServerProfile(const ServerProfile& serverProfile
             comboboxItemIndex = i; 
             break;
         }
-
     }
 
     if ( comboboxItemIndex == CB_ERR) {
@@ -471,7 +470,8 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         int i = 0;
         if (!serverUsers.empty() && !serverProfile_.profileName().empty()) {
             mi.wID = IDC_LOGINMENUITEM;
-            mi.dwTypeData = const_cast<LPWSTR>(TR("Change account settings"));
+            CString name = TR("Change account settings");
+            mi.dwTypeData = const_cast<LPWSTR>(name.GetString());
             sub.InsertMenuItem(i++, true, &mi);
         }
         else {

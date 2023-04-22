@@ -37,7 +37,6 @@ public:
         ItemType type;
         int group;
         bool isChecked;
-        HWND tooltipWnd;
         ToolbarItemDelegate* itemDelegate;
         Item(CString title, std::shared_ptr<Gdiplus::Bitmap> icon, int command, CString hint = CString(), ItemType type = itButton, bool checkable = false, int group = -1) {
             this->title = title;
@@ -50,7 +49,6 @@ public:
             this->checkable = checkable;
             isChecked = false;
             this->group = group;
-            tooltipWnd = 0;
             itemDelegate = 0;
         }
     };
@@ -142,6 +140,7 @@ public:
     SIZE CalcItemSize(int index);
     int AutoSize();
     void CreateToolTipForItem(size_t index);
+    void updateTooltipForItem(size_t index);
     CTrackBarCtrl  penSizeSlider_;
     CTrackBarCtrl  roundRadiusSlider_;
     CStatic pixelLabel_;
@@ -156,6 +155,7 @@ public:
     CComboBox arrowTypeCombobox_;
     CButton applyButton_;
     CButton cancelOperationButton_;
+    CToolTipCtrl tooltip_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;

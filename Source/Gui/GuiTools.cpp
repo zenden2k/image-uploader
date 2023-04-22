@@ -461,7 +461,6 @@ HRGN CloneRegion(HRGN source)
 }
 
 HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
-    // Create a tooltip.
     HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
         WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
         CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
@@ -470,22 +469,22 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
     ::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-    // Set up "tool" information. In this case, the "tool" is the entire parent window.
     RECT clientRect;
     ::GetClientRect(hwnd, &clientRect);
-    TOOLINFO ti = { 0 };
+
+    TOOLINFO ti = {};
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = hwnd;
     ti.hinst    = _Module.GetModuleInstance();
-    TCHAR* textBuffer = new TCHAR[text.GetLength()+1];
-    lstrcpy(textBuffer, text);
-    ti.lpszText = textBuffer;
+    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[text.GetLength() + 1]);
+    lstrcpy(textBuffer.get(), text);
+    ti.lpszText = textBuffer.get();
     ti.rect  = clientRect;
 
     // Associate the tooltip with the "tool" window.
-    SendMessage(hwndTT, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));    
-    delete[] textBuffer;
+    SendMessage(hwndTT, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));
+
     return hwndTT;
 }
 

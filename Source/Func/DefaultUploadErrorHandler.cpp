@@ -81,11 +81,14 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         GuiTools::LocalizedMessageBox(nullptr, Utf8ToWCstring(msg), _T("Uploader"), MB_ICONINFORMATION);
     else {
 #ifdef IU_WTL_APP
+        IProgramWindow* appWindow = ServiceLocator::instance()->programWindow();
+        HWND hwndParent = appWindow ? appWindow->getNativeHandle() : GetActiveWindow();
+
         CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
             _T("Save to file?"));
 
-        if (TextViewDlg.DoModal(GetActiveWindow()) == IDOK) {
-            CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), GetActiveWindow());
+        if (TextViewDlg.DoModal(hwndParent) == IDOK) {
+            CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), hwndParent);
             CString fileName;
             fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
             lstrcpy(fd.m_szFileName, fileName);

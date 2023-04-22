@@ -79,7 +79,7 @@ Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: igno
 Source: "..\Build\Gui\Release\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "..\Docs\*"; DestDir: "{app}\Docs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\Docs\*"; DestDir: "{app}\Docs"; Excludes: ".gitignore"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion

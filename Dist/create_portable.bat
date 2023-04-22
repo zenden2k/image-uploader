@@ -117,8 +117,15 @@ if exist "%temp_dir%\Data\Scripts\test.nut" (
     del "%temp_dir%\Data\Scripts\test.nut"
 )
 
-rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
+if exist "%temp_dir%\Docs\api\.gitignore" (
+    del "%temp_dir%\Docs\api\.gitignore"
+)
 
+if exist "%temp_dir%\Docs\en_US\.gitignore" (
+    del "%temp_dir%\Docs\en_US\.gitignore"
+)
+
+rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
 
 cd %temp_dir%
 %zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
