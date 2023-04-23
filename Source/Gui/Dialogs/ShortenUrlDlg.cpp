@@ -180,7 +180,7 @@ bool CShortenUrlDlg::StartProcess() {
     wndAnimation_.ShowWindow(SW_SHOW);
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
 
-    std::shared_ptr<UrlShorteningTask> task(new UrlShorteningTask(WCstringToUtf8(url)));
+    std::shared_ptr<UrlShorteningTask> task = std::make_unique<UrlShorteningTask>(WCstringToUtf8(url));
     
     task->setServerProfile(profile);
     using namespace std::placeholders;

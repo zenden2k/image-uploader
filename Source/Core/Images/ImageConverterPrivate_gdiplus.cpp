@@ -404,8 +404,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     // thumbgr.SetPixelOffsetMode(PixelOffsetModeHighQuality );
     // thumbgr.SetCompositingQuality(CompositingQualityHighQuality);
 
-    Bitmap* MaskBuffer = new Bitmap(RealThumbWidth, RealThumbHeight, PixelFormat32bppARGB);
-    Graphics maskgr(MaskBuffer);
+    Bitmap MaskBuffer(RealThumbWidth, RealThumbHeight, PixelFormat32bppARGB);
+    Graphics maskgr(&MaskBuffer);
 
     for (size_t i = 0; i < data->drawing_operations_.size(); i++)
     {
@@ -510,7 +510,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                             }
 
 
-                            ImageUtils::ChangeAlphaChannel(*MaskBuffer, tempImage, 3, 3);
+                            ImageUtils::ChangeAlphaChannel(MaskBuffer, tempImage, 3, 3);
                             gr->DrawImage(&tempImage, 0, 0);
                             tempGr.SetSmoothingMode(SmoothingModeNone);
                         }
@@ -527,8 +527,6 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                         }
                     }
     }
-
-    delete MaskBuffer;
 
     return std::make_shared<GdiPlusImage>(ThumbBuffer);
 }

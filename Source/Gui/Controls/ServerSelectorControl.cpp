@@ -149,10 +149,10 @@ LRESULT CServerSelectorControl::OnClickedEdit(WORD wNotifyCode, WORD wID, HWND h
         return 0;
     }
     CServerParamsDlg serverParamsDlg(serverProfile_, uploadEngineManager_);
-    if (serverParamsDlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
+
+    if (serverParamsDlg.DoModal(m_hWnd) == IDOK) {
         serverProfile_ = serverParamsDlg.serverProfile();
-        notifyChange();
-        
+        notifyChange();     
     }
 
     updateInfoLabel();
@@ -170,7 +170,7 @@ void CServerSelectorControl::addAccount()
     serverProfileCopy.setProfileName("");
     CLoginDlg dlg(serverProfileCopy, uploadEngineManager_, true);
 
-    if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) != IDCANCEL)
+    if (dlg.DoModal(m_hWnd) != IDCANCEL)
     {
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
         serverProfileCopy.setFolderId("");
@@ -582,9 +582,7 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
     std::string UserName = serverSettings ? serverSettings->authData.Login: std::string();
     ServerProfile copy = serverProfile_;
     CLoginDlg dlg(copy, uploadEngineManager_);
-    
-    if( dlg.DoModal(m_hWnd) != IDCANCEL)
-    {
+    if (dlg.DoModal(m_hWnd) != IDCANCEL) {
         copy.setProfileName(WCstringToUtf8(dlg.accountName()));
         if(Utf8ToWCstring(UserName) != dlg.accountName())
         {
@@ -648,10 +646,8 @@ void CServerSelectorControl::setOnChangeCallback(std::function<void(CServerSelec
 }
 
 LRESULT CServerSelectorControl::OnImageProcessingParamsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    //int serverComboElementIndex = serverComboBox_.GetCurSel();
-    //std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
     CUploadParamsDlg dlg(serverProfile_, showImageProcessingParams_, defaultServer_);
-    if (dlg.DoModal(isChildWindow_ ? m_hWnd : GetParent()) == IDOK) {
+    if (dlg.DoModal(m_hWnd) == IDOK) {
         serverProfile_.setImageUploadParams(dlg.imageUploadParams());
     }
     return 0;
@@ -884,4 +880,13 @@ DLGTEMPLATE* CServerSelectorControl::GetTemplate()
 
 void CServerSelectorControl::setShowEmptyItem(bool show) {
     showEmptyItem_ = show;
+}
+
+LRESULT CServerSelectorControl::OnEnable(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (!isChildWindow_) {
+        // Disable wizard window when a modal window is shown
+        ::EnableWindow(GetParent(), wParam);
+    }
+    
+    return 0;
 }

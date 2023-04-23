@@ -7,13 +7,13 @@
 
 namespace {
 
-bool compareLogFont(LOGFONT font1, LOGFONT font2) {
+bool compareLogFont(const LOGFONT& font1, const LOGFONT& font2) {
     return lstrcmp(font1.lfFaceName, font2.lfFaceName) == 0;
-};
+}
 
-bool sortCompareLogFont(LOGFONT font1, LOGFONT font2) {
+bool sortCompareLogFont(const LOGFONT& font1, const LOGFONT& font2) {
     return lstrcmp(font1.lfFaceName, font2.lfFaceName) <0;
-};
+}
 
 }
 

@@ -561,7 +561,6 @@ void CThumbsView::SelectLastItem()
     } while (nItem != -1);
     SetItemState(GetItemCount() - 1, LVIS_SELECTED, LVIS_SELECTED);
     EnsureVisible(GetItemCount() - 1, FALSE);
-
 }
 
 LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)

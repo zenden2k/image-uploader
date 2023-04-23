@@ -282,18 +282,6 @@ public:
             }
         }
 
-        std::map<CString, CString> oldLangs = {
-            {_T("Arabic"), _T("ar")},
-            {_T("Farsi"), _T("fa")},
-            {_T("Hrvatski"), _T("hr")},
-            {_T("Hungarian"), _T("hu")},
-            {_T("Romanian"), _T("ro")},
-            {_T("Russian"), _T("ru")},
-            {_T("Serbian"), _T("sr")},
-            {_T("Swedish"), _T("sv")},
-            {_T("Turkish"), _T("tr")},
-            {_T("Ukrainian"), _T("uk")},
-        };
         if (isFirstRun) {
             CLangSelect LS;
             if (LS.DoModal(nullptr) == IDCANCEL) {
@@ -306,6 +294,18 @@ public:
             settings_.SaveSettings();
         }
         else {
+            std::map<CString, CString> oldLangs = {
+            {_T("Arabic"), _T("ar")},
+            {_T("Farsi"), _T("fa")},
+            {_T("Hrvatski"), _T("hr")},
+            {_T("Hungarian"), _T("hu")},
+            {_T("Romanian"), _T("ro")},
+            {_T("Russian"), _T("ru")},
+            {_T("Serbian"), _T("sr")},
+            {_T("Swedish"), _T("sv")},
+            {_T("Turkish"), _T("tr")},
+            {_T("Ukrainian"), _T("uk")},
+            };
             auto it = oldLangs.find(settings_.Language);
             if (it != oldLangs.end()) {
                 settings_.Language = it->second;

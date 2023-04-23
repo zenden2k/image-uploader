@@ -86,7 +86,7 @@ DWORD CFolderAdd::Run()
             if (!m_bImagesOnly || IuCommonFunctions::IsImage(CurPath)) {
                 CWizardDlg::AddImageStruct ais;
                 ais.show = !m_pWizardDlg->getQuickUploadMarker();
-                CString name = CurPath;
+                //CString name = CurPath;
                 ais.RealFileName = CurPath;
                 if (SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE, (WPARAM)&ais, 0))
 

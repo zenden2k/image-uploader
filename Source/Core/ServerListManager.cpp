@@ -29,10 +29,10 @@ limitations under the License.
 #include "Core/Utils/StringUtils.h"
 
 ServerListManager::ServerListManager(const std::string &serversDirectory, CUploadEngineList* uel, ServerSettingsMap& serversSettings): 
-    serversSettings_(serversSettings)
+    serversSettings_(serversSettings),
+    serversDirectory_(serversDirectory),
+    uploadEngineList_(uel)
 {
-    uploadEngineList_ = uel;
-    serversDirectory_ = serversDirectory;
 }
 
 

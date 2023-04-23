@@ -360,7 +360,6 @@ void ServersChecker::MarkServer(int id)
         timeLabel.Format(_T("%02d:%02d"), (int)(endTime / 60000), (int)(endTime / 1000 % 60));
         serverData.setTimeStr(W2U(timeLabel));
 
-        CString strMark;
         if (mark == 5) {
             serverData.setStrMark("EXCELLENT");
             serverData.color = RGB(0, 255, 50);

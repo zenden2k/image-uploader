@@ -24,11 +24,12 @@ limitations under the License.
 
 #include "Core/Utils/CoreUtils.h"
 
-
-FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) : UploadTask(parentTask) {
-    fileName_ = fileName;
+FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& displayName, UploadTask* parentTask) :
+    UploadTask(parentTask),
+    originalFileName_(fileName),
+    fileName_(fileName)
+{
     tempFileDeleter_ = nullptr;
-    originalFileName_ = fileName;
     isImage_ = false;
     cachedFileSize_ = IuCoreUtils::GetFileSize(fileName);
     if ( displayName.empty() ) {

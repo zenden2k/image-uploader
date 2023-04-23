@@ -30,9 +30,9 @@
 // CSearchByImageDlg
 
 CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName):
-    uploadManager_(uploadManager)
+    uploadManager_(uploadManager),
+    fileName_(fileName)
 {
-    fileName_ = fileName;
     cancelPressed_ = false;
     searchEngine_ = searchEngine;
     finished_ = false;

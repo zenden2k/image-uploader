@@ -1308,7 +1308,7 @@ CString ExpandEnvironmentStrings(const CString& s)
     if (len == 0)
         return s;
 
-    std::unique_ptr<TCHAR[]> buf(new TCHAR[len + 1]);
+    std::unique_ptr<TCHAR[]> buf = std::make_unique<TCHAR[]>(len + 1);
     if (::ExpandEnvironmentStrings(s, buf.get(), len) == 0)
         return s;
 

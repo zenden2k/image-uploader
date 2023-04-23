@@ -253,7 +253,6 @@ void Process::init()
 {
     d_.reset(new ProcessPrivate());
     d_->readProcessOutput_ = false;
-    d_->readProcessOutput_ = false;
     d_->hidden_ = false;
 }
 

@@ -193,7 +193,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
                 return false;
             }
         }
-        item.fileName = filePath;
+        item.fileName = std::move(filePath);
         result = true;
     }
 

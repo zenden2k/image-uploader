@@ -53,7 +53,6 @@ namespace LangHelper {
         {"be_BY", "Belarusian (Belarus)"},
         {"be", "Belarusian"},
         {"bem_ZM", "Bemba (Zambia)"},
-        {"bem_ZM", "(Zambia)"},
         {"bem", "Bemba"},
         {"bez_TZ", "Bena (Tanzania)"},
         {"bez", "Bena"},
@@ -457,7 +456,6 @@ std::map<std::string, std::string> getLanguageList(const std::wstring& languages
 
         for (const auto& p : fs::directory_iterator(languagesDirectory + L"/locale/", fs::directory_options::skip_permission_denied)) {
             fs::path path = p.path();
-            std::wstring basename = path.stem();
 
             if (is_directory(path)) {
                 std::wstring name = path.filename();

@@ -477,7 +477,7 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = hwnd;
     ti.hinst    = _Module.GetModuleInstance();
-    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[text.GetLength() + 1]);
+    auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
     lstrcpy(textBuffer.get(), text);
     ti.lpszText = textBuffer.get();
     ti.rect  = clientRect;

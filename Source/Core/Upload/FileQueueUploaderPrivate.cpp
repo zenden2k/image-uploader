@@ -202,7 +202,7 @@ bool FileQueueUploaderPrivate::removeTaskFromQueue(UploadTask* task) {
 }
 
 void FileQueueUploaderPrivate::AddSingleTask(std::shared_ptr<UploadTask> task) {
-    std::shared_ptr<UploadSession> uploadSession(new UploadSession());
+    std::shared_ptr<UploadSession> uploadSession = std::make_shared<UploadSession>();
     uploadSession->addTask(task);
     AddSession(uploadSession);
 }

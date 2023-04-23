@@ -51,8 +51,6 @@ TEST_F(ScriptUploadEngineTest, doUpload)
     engine.setNetworkClient(&networkClient);
 
     std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
-    std::string fileNameNoExt = IuCoreUtils::ExtractFileNameNoExt(constSizeFileName);
-    std::string fileExt = IuCoreUtils::ExtractFileExt(constSizeFileName);
 
     ON_CALL(networkClient, doUploadMultipartData()).WillByDefault(Return(true));
     ON_CALL(networkClient, responseCode()).WillByDefault(Return(200));
@@ -233,8 +231,6 @@ TEST_F(ScriptUploadEngineTest, authenticateTest)
     engine.setNetworkClient(&networkClient);
 
     std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
-    std::string fileNameNoExt = IuCoreUtils::ExtractFileNameNoExt(constSizeFileName);
-    std::string fileExt = IuCoreUtils::ExtractFileExt(constSizeFileName);
 
     ON_CALL(networkClient, doUploadMultipartData()).WillByDefault(Return(true));
     ON_CALL(networkClient, doPost(_)).WillByDefault(Return(true));

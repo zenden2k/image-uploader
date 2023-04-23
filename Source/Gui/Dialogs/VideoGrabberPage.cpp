@@ -41,8 +41,6 @@
 #include "Core/AppParams.h"
 #include "Func/ImageGenerator.h"
 
-#define MYRGB(a,color) Color(a,GetRValue(color),GetGValue(color),GetBValue(color))
-
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
 {
 	Terminated = true;
@@ -50,9 +48,7 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
     originalGrabInfoLabelWidth_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     ThumbsView.SetDeletePhysicalFiles(true);
-    IsStopTimer = false;
     NumOfFrames = 0;
-    TimerCounter = 0;
     CanceledByUser = false;
     MainDlg = nullptr;
 }
@@ -132,18 +128,8 @@ LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
             videoGrabber_->abort();
         }
 
-        if (!IsStopTimer)
-        {
-            TimerCounter = 8;           
-            SetTimer(1, 1000, nullptr);
-            IsStopTimer = true;
-        }
-        else
-        {
-            CanceledByUser = true;
-            //Terminate();  
-            //ThreadTerminated();
-        }
+        
+        CanceledByUser = true;  
     }
 
     return 0;
@@ -165,7 +151,6 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     WizardDlg->setLastVideoFile(fileName);
     grabbedFramesCount = 0;
     Terminated = false;
-    IsStopTimer = false;
 
     ::ShowWindow(GetDlgItem(IDC_FRAMELABEL), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_HIDE);
@@ -283,7 +268,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
             grabbedFramesCount++;
         }
     } catch (const std::exception& ex) {
-        LOG(ERROR) << "Failed to save image " << outFilename << ex.what();
+        LOG(ERROR) << "Failed to save image " << outFilename << std::endl << ex.what();
     }
 
     return true;
@@ -313,8 +298,6 @@ int CVideoGrabberPage::ThreadTerminated()
     }
 
     Terminated = true;
-    KillTimer(1);
-    IsStopTimer = false;
 
     ::EnableWindow(GetDlgItem(IDC_GRAB), 1);
 
@@ -334,23 +317,6 @@ int CVideoGrabberPage::ThreadTerminated()
 
     EnablePrev();
     EnableExit();
-    return 0;
-}
-
-LRESULT CVideoGrabberPage::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    TimerCounter--;
-    if (TimerCounter > 0)
-    {
-        CString buffer;
-        buffer.Format(CString(TR("Stop")) + _T(" (%d)"), TimerCounter);
-        SetDlgItemText(IDC_STOP, buffer);
-    }
-    else
-    {
-        //Terminate();
-        //ThreadTerminated();
-    }
     return 0;
 }
 
@@ -395,7 +361,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 	
 	task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
 		if (taskResult == BackgroundTaskResult::Success && !task->outFileName().IsEmpty()) {
-			mainDlg->AddToFileList(task->outFileName());
+			mainDlg->AddToFileList(task->outFileName(), L"", true, nullptr, true);
 		}
 
 	});
@@ -471,7 +437,7 @@ bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(fileName_);
-    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), (MediaInfoHelper::IsMediaInfoAvailable()) ? SW_SHOW : SW_HIDE);
+    ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), MediaInfoHelper::IsMediaInfoAvailable() ? SW_SHOW : SW_HIDE);
     SetGrabbingStatusText(_T(""));
     EnableNext(true);
     ShowPrev();
@@ -521,7 +487,6 @@ bool CVideoGrabberPage::OnNext()
         return false;
     }
     
-
     WizardDlg->CreatePage(CWizardDlg::wpMainPage);
     CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
@@ -543,8 +508,10 @@ bool CVideoGrabberPage::OnNext()
         if (!GenPicture(outFileName)) {
             return false;
         }
-
     }
+
+    // Reset selection in the thumbs view
+    mainDlg->ThumbsView.SelectItem(-1);
 
     ThumbsView.MyDeleteAllItems();
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();

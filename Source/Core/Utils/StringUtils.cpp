@@ -76,12 +76,12 @@ void Split(const std::string& str, const std::string& delimiters, std::vector<st
         counter++;
         if (counter == maxCount)
         {
-            tokens.push_back(str.substr(lastPos, str.length()));
+            tokens.emplace_back(str.substr(lastPos, str.length()));
             break;
         }
         else
             // Found a token, add it to the vector.
-            tokens.push_back(str.substr(lastPos, pos - lastPos));
+            tokens.emplace_back(str.substr(lastPos, pos - lastPos));
         // Skip delimiters.  Note the "not_of"
         lastPos = str.find_first_not_of(delimiters, pos);
         // Find next "non-delimiter"
@@ -98,7 +98,7 @@ std::vector<std::string_view> SplitSV(std::string_view strv, std::string_view de
         counter++;
         if (counter == maxCount)
         {
-            output.push_back(strv.substr(first));
+            output.emplace_back(strv.substr(first));
             break;
         } else {
             const auto second = strv.find_first_of(delims, first);

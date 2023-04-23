@@ -203,7 +203,7 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
         EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true)); 
     }
-    std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
+
     auto fileTask = std::make_shared<UrlShorteningTask>(urlToShorten);
     ServerSettingsStruct serverSettings;
     engine.setServerSettings(&serverSettings);

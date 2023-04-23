@@ -809,7 +809,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     RectF bounds(0.0,0.0, float(width), float(50));
    
     Graphics g(m_hWnd,true);
-    std::unique_ptr<Bitmap> BackBuffer(new Bitmap(width, 50, &g));
+    std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, 50, &g);
     Graphics gr(BackBuffer.get());
     
     LinearGradientBrush 

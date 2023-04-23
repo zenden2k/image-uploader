@@ -1393,7 +1393,7 @@ bool ImageEditorWindow::OnClickedSave() {
         ::SetFocus(m_view.m_hWnd);
     }
     if (!sourceFileName_.IsEmpty()) {
-        CString ext = WinUtils::GetFileExt(sourceFileName_);
+        //CString ext = WinUtils::GetFileExt(sourceFileName_);
         outFileName_ = sourceFileName_;
         saveDocument();
     } else {

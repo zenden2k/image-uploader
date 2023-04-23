@@ -31,7 +31,8 @@ typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, 
 class CNewStyleFolderDialog {
 public:
     
-    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true) 
+    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true):
+        ParseDisplayName_(nullptr)
     {
         isVista_ = WinUtils::IsVistaOrLater();
  

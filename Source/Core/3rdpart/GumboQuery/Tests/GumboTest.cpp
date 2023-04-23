@@ -27,7 +27,7 @@ TEST_F(GumboTest, Simple2)
     bool readResult = IuCoreUtils::ReadUtf8TextFile(TestHelpers::resolvePath("test.html"), page);
     //EXPECT_EQ(true, readResult);
     CDocument doc;
-    doc.parse(page.c_str());
+    doc.parse(page);
     CSelection c = doc.find("#logo");
     if (c.nodeAt(0).valid()) {
         

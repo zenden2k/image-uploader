@@ -47,7 +47,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         locale.Replace(_T('-'), _T('_'));
         selectedLocale = W2U(locale);
         if (languageList.find(selectedLocale) == languageList.end()) {
-            selectedLocale = selectedLocale.substr(0, selectedLocale.find("_"));
+            selectedLocale = selectedLocale.substr(0, selectedLocale.find('_'));
         }
     }
 

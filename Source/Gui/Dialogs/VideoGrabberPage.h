@@ -27,7 +27,6 @@
 #include "Gui/Controls/ThumbsView.h"
 
 class AbstractImage;
-#define WM_MYADDIMAGE (WM_USER + 22)
 
 class VideoGrabber;
 class CVideoGrabberPage;
@@ -52,7 +51,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 	protected:
 		BEGIN_MSG_MAP(CVideoGrabberPage)
 			MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-			MESSAGE_HANDLER(WM_TIMER, OnTimer)
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_GRAB, BN_CLICKED, OnBnClickedGrab)
@@ -78,7 +76,6 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		//  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 		LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 		LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-		LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 		LRESULT OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/);
@@ -109,11 +106,10 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 //		CImgSavingThread SavingThread;
 		CString ErrorStr;
 		CString snapshotsFolder;
-		bool Terminated, IsStopTimer;
+		bool Terminated;
 		int originalGrabInfoLabelWidth_;
 		int grabbedFramesCount;
 		int NumOfFrames;
-		int TimerCounter;
 		bool SetFileName(LPCTSTR FileName);
 		CString fileName_;
 		bool CanceledByUser;

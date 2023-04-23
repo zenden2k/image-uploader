@@ -311,8 +311,8 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
         {
             std::string t = Sqrat::Object(it.getValue(), vm_.GetVM()).Cast<std::string>();
             /*if ( t ) */{
-                std::string title = t;
-                list[it.getName()] =  title;
+                //std::string title = t;
+                list[it.getName()] =  std::move(t);
             }
         }
     }

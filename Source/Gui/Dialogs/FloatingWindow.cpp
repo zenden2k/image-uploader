@@ -118,9 +118,7 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 LRESULT CFloatingWindow::OnExit(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if (!wizardDlg_->IsWindowEnabled()) {
-        if (!wizardDlg_->IsWindowEnabled()) {
-            wizardDlg_->SetActiveWindow();
-        }
+        wizardDlg_->SetActiveWindow();
         wizardDlg_->FlashWindow(true);
         return 0;
     }
@@ -835,15 +833,15 @@ void CFloatingWindow::showLastUploadedCode() {
         it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
         auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
         if (fileTask) {
-            it.FileName = U2W(fileTask->getDisplayName());          
-        }
-        it.FileIndex = fileTask->index();
-        it.ServerName = U2W(lastUploadedItem_->serverName());
-        items.push_back(it);
-        if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
-            return ;
-        CResultsWindow rp(wizardDlg_, items, false);
-        rp.DoModal(m_hWnd);
+            it.FileName = U2W(fileTask->getDisplayName());
+            it.FileIndex = fileTask->index();
+            it.ServerName = U2W(lastUploadedItem_->serverName());
+            items.push_back(it);
+            if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
+                return;
+            CResultsWindow rp(wizardDlg_, items, false);
+            rp.DoModal(m_hWnd);
+        } 
     }
 }
 

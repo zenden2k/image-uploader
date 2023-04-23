@@ -103,12 +103,9 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
     
 bool CGeneralSettings::Apply()
 {
-    int index = langListCombo_.GetCurSel();
-    if (index < 0) {
-        return false;
-    }
-
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    int index = langListCombo_.GetCurSel();
+
     if (index != -1) {
         char* key = static_cast<char*>(langListCombo_.GetItemDataPtr(index));
         if (key) {

@@ -27,7 +27,7 @@
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
 #include "Func/WinUtils.h"
-#include "Func/Myutils.h"
+#include "Func/MyUtils.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
@@ -141,7 +141,6 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         ::ScreenToClient(hwnd, &ClientPoint);
     }
 
-    CMenu menu;
     LV_HITTESTINFO hti;
     hti.pt = ClientPoint;
     ThumbsView.HitTest(&hti);
@@ -174,7 +173,6 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         CString fileName = FileList[hti.iItem].FileName;
         bool isImageFile = IuCommonFunctions::IsImage(fileName);
         bool isVideoFile = IsVideoFile(fileName);
-
 
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
@@ -209,7 +207,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, TR("data:URI"));
             subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, TR("data:URI (HTML)"));
 
-            contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as..."));
+            contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as"));
 
             CString itemText;
             itemText.Format(TR("Search by image (%s)"), _T("Google"));
@@ -217,7 +215,6 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
             itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
             contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGYANDEX, itemText);
-
         }
 
         contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove"));
@@ -311,7 +308,7 @@ bool CMainDlg::OnShow()
 
 LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
-    NM_LISTVIEW * pnmv = reinterpret_cast <NM_LISTVIEW *>  (pNMHDR);  
+    NM_LISTVIEW * pnmv = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);  
     if(!pnmv) return 0;
 
     FileList.RemoveAt(pnmv->iItem);
@@ -540,7 +537,7 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
-        SHELLEXECUTEINFO TempInfo = { 0 };
+        SHELLEXECUTEINFO TempInfo = {};
         TCHAR filePath[1024];
         WinUtils::ExtractFilePath(fileName, filePath, ARRAY_SIZE(filePath));
         TempInfo.cbSize = sizeof(SHELLEXECUTEINFOA);
@@ -597,7 +594,7 @@ int CMainDlg::getSelectedFiles(std::vector<CString>& selectedFiles) {
         if (!FileName) {
             continue;
         }
-        selectedFiles.push_back(FileName);
+        selectedFiles.emplace_back(FileName);
 
     }
     return selectedFiles.size();
@@ -612,7 +609,7 @@ LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
         if ( !FileName ) {
             continue;
         }
-        selectedFiles.push_back(FileName);
+        selectedFiles.emplace_back(FileName);
 
     }
     if ( selectedFiles.empty() ) {
@@ -632,13 +629,13 @@ LRESULT CMainDlg::OnCopyFileToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
 LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     int nCurItem = -1;
 
-    std::deque<CString> selectedFiles;
+    std::vector<CString> selectedFiles;
     while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL|LVNI_SELECTED)) >= 0 ) {
         LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
         if ( !FileName ) {
             continue;
         }
-        selectedFiles.push_back( FileName );
+        selectedFiles.emplace_back(FileName );
     }
     if ( selectedFiles.empty() ) {
         return FALSE;

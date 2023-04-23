@@ -341,7 +341,7 @@ CString CResultsPanel::GenerateOutput()
             m_Vars[_T("FileName")]=fname;
             m_Vars[_T("FullFileName")]=UrlList[i].FileName;
             m_Vars[_T("Index")]= WinUtils::IntToStr(i);
-            CString buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
+            //CString buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
             m_Vars[_T("FileNameWithoutExt")]=UrlList[i].FileName;
             if(p!=0  && !((i)%p))
 
@@ -896,7 +896,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         if (onShortenUrlChanged_) {
             menuItemTitle.Format(TR("Shorten URL using %s"), IuCoreUtils::Utf8ToWstring(settings->urlShorteningServer.serverName()).c_str());
         } else {
-            menuItemTitle.Format(TR("Shorten URL"));
+            menuItemTitle = TR("Shorten URL");
         }
         mi.dwTypeData  = const_cast<LPWSTR>(menuItemTitle.GetString());
         sub.InsertMenuItem(count++, true, &mi);

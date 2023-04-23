@@ -375,13 +375,15 @@ bool CHistoryManager::convertHistory() {
             }
 
             // Skip if no match
-            if (!regexp.search(i->path().filename().string())) {
+
+            const boost::filesystem::path& path = i->path();
+            if (!regexp.search(path.filename().string())) {
                 continue;
             }
             int year = atoi(regexp[1].c_str());
             int month = atoi(regexp[2].c_str());
 
-            std::string fileName = i->path().string();
+            std::string fileName = path.string();
 
             CHistoryReader reader(this);
             if (!reader.loadFromFile(fileName)) {

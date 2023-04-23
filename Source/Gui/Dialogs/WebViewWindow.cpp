@@ -1,7 +1,5 @@
 #include "WebViewWindow.h"
 
-
-
 #include "Core/AppParams.h"
 
 #include "Gui/GuiTools.h"

@@ -28,6 +28,7 @@
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
 {
+    bmpOld_ = {};
     MouseSel = false;
     Track = false;
     BottomY = 1;

@@ -447,7 +447,7 @@ bool CDefaultUploadEngine::ReadServerResponse(UploadAction& Action)
         if (reg_single_match("url=(\\S+)", Refresh, redirectUrl))
         {
             UploadAction Redirect = Action;
-            Redirect.Url = redirectUrl;
+            Redirect.Url = std::move(redirectUrl);
             Redirect.Referer = Action.Url;
             Redirect.Type = "get";
             Result = DoGetAction(Redirect);

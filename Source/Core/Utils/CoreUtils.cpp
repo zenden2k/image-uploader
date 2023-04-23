@@ -185,7 +185,6 @@ std::codecvt_base::result toWstring (const std::string & str,
 std::string SystemLocaleToUtf8(const std::string& str)
 {
     std::locale const oloc = std::locale ("");
-    std::wstring out;
     std::wstring wideStr;
     toWstring (str, oloc, wideStr);
     return WstringToUtf8(wideStr);

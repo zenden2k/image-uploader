@@ -204,12 +204,12 @@ class HtmlElementPrivate {
 
         void insertHTML(const std::string& html, bool atEnd /*= false */)
         {
-            elem_->insertAdjacentHTML(atEnd ? L"afterBegin" : L"beforeEnd", CComBSTR(IuCoreUtils::Utf8ToWstring(html).c_str()));
+            elem_->insertAdjacentHTML(CComBSTR(atEnd ? L"afterBegin" : L"beforeEnd"), CComBSTR(IuCoreUtils::Utf8ToWstring(html).c_str()));
         }
 
         void insertText(const std::string& text, bool atEnd /*= false */)
         {
-            elem_->insertAdjacentText(atEnd ? L"afterBegin" : L"beforeEnd", CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
+            elem_->insertAdjacentText(CComBSTR(atEnd ? L"afterBegin" : L"beforeEnd"), CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
         }
 
         Sqrat::Array getChildren() {

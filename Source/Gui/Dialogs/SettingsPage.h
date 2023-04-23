@@ -26,7 +26,11 @@ public:
         }
     };
     ValidationException(CString Message, HWND Control = nullptr) : std::exception("Form validation error") {
-        errors_.emplace_back(Message, Control);
+        try {
+            errors_.emplace_back(Message, Control);
+        } catch (const std::exception&) {
+            
+        }
     }
     ValidationException(std::vector<ValidationError> errors) : std::exception("Form validation error") {
         errors_ = std::move(errors);

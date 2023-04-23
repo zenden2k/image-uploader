@@ -6,13 +6,14 @@
 
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
-#include "Core/Logging.h"
 #include "../MovableElements.h"
 #include "resource.h"
 
 namespace ImageEditor {
 
-CImageEditorView::CImageEditorView()  {
+CImageEditorView::CImageEditorView():
+        dpiScaleX_(1.0f),
+        dpiScaleY_(1.0f)  {
     oldPoint.x = -1;
     oldPoint.y = -1;
     mouseDown_ = false;
