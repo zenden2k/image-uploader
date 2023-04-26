@@ -23,39 +23,22 @@ limitations under the License.
 
 #include <memory>
 #include "atlheaders.h"
-#include "Func/WinUtils.h"
-#include "Func/Library.h"
-
-typedef HRESULT(__stdcall *SHCreateItemFromParsingNameFunc)(PCWSTR, IBindCtx *, REFIID, void**);
 
 class CNewStyleFolderDialog {
 public:
     
-    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true):
-        ParseDisplayName_(nullptr)
+    CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true)
     {
-        isVista_ = WinUtils::IsVistaOrLater();
- 
-        if (!isVista_ )
-        {
-            oldStyleDialog_ = std::make_unique<CFolderDialog>(parent, title.IsEmpty() ? nullptr : static_cast<LPCTSTR>(title), BIF_NEWDIALOGSTYLE | (onlyFsDirs ? BIF_RETURNONLYFSDIRS : 0));
-            oldStyleDialog_->SetInitialFolder(initialFolder, true);
-        } else {
-            newStyleDialog_= std::make_unique<CShellFileOpenDialog>(/*WinUtils::myExtractFileName(initialFolder)*/nullptr, FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_PICKFOLDERS | (onlyFsDirs ? FOS_FORCEFILESYSTEM : 0));
-            
-            ParseDisplayName_ = shellDll_.GetProcAddress<SHCreateItemFromParsingNameFunc>("SHCreateItemFromParsingName");
+        newStyleDialog_= std::make_unique<CShellFileOpenDialog>(/*WinUtils::myExtractFileName(initialFolder)*/nullptr, FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_PICKFOLDERS | (onlyFsDirs ? FOS_FORCEFILESYSTEM : 0));
 
-            if (!initialFolder.IsEmpty()) {
-                // SHCreateItemFromParsingName function not available on Windows XP
-                IShellItem *psi;
+        if (!initialFolder.IsEmpty()) {
+            IShellItem *psi;
                 
-                HRESULT hresult = ParseDisplayName_(initialFolder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
-                if (SUCCEEDED(hresult)) {
-                    newStyleDialog_->GetPtr()->SetDefaultFolder(psi);
-                    psi->Release();
-                }
+            HRESULT hresult = SHCreateItemFromParsingName(initialFolder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
+            if (SUCCEEDED(hresult)) {
+                newStyleDialog_->GetPtr()->SetDefaultFolder(psi);
+                psi->Release();
             }
-
         }
     }
 
@@ -66,27 +49,21 @@ public:
        This function uses IFileDialog::SetFolder (not SetDefaultFolder) to force initial folder
     */
     void SetFolder(const CString& folder) {
-        if (!isVista_) {
-            oldStyleDialog_->SetInitialFolder(folder, true);
-        } else {
-            if (!folder.IsEmpty()) {
-                // SHCreateItemFromParsingName function not available on Windows XP
-                IShellItem *psi;
-                HRESULT hresult = ParseDisplayName_(folder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
-                if (SUCCEEDED(hresult)) {
-                    newStyleDialog_->GetPtr()->SetFolder(psi);
-                    psi->Release();
-                }
+        if (!folder.IsEmpty()) {
+            // SHCreateItemFromParsingName function not available on Windows XP
+            IShellItem *psi;
+            HRESULT hresult = SHCreateItemFromParsingName(folder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
+            if (SUCCEEDED(hresult)) {
+                newStyleDialog_->GetPtr()->SetFolder(psi);
+                psi->Release();
             }
-        }
+        } 
     }
+
     INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
     {
-        if (!isVista_) {
-            return oldStyleDialog_->DoModal(hWndParent);
-        } else {
-            return newStyleDialog_->DoModal(hWndParent);
-        }
+        return newStyleDialog_->DoModal(hWndParent);
+        
     }
 
     bool AddCheckbox(DWORD controlId, CString title, bool isChecked) {
@@ -114,14 +91,9 @@ public:
 
     CString GetFolderPath()
     {
-        if (!isVista_)
-        {
-            return oldStyleDialog_->GetFolderPath();
-        } else {
-            CString fileName;
-            newStyleDialog_->GetFilePath(fileName);
-            return fileName;
-        }
+        CString fileName;
+        newStyleDialog_->GetFilePath(fileName);
+        return fileName;
     }
 
     void SetOkButtonLabel(const CString& label) {
@@ -130,11 +102,6 @@ public:
         }
     }
 protected:
-    std::unique_ptr<CFolderDialog> oldStyleDialog_;
     std::unique_ptr<CShellFileOpenDialog> newStyleDialog_;
-    bool isVista_;
-    Library shellDll_{ L"shell32.dll" };
-    SHCreateItemFromParsingNameFunc ParseDisplayName_;
-
 };
 #endif

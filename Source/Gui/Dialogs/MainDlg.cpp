@@ -758,13 +758,22 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
 void CMainDlg::UpdateStatusLabel() {
     int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
-    std::wstring statusText;
-    if (selectedItemsCount) {
-        statusText = str(boost::wformat(TR("%1% files selected/%2% files total")) % selectedItemsCount % totalCount);
-    } else {
-        statusText = str(boost::wformat(TR("%d files")) % totalCount);
+    CString statusText;
+
+    try {
+        if (selectedItemsCount) {
+            std::string first = str(boost::format(boost::locale::ngettext("%d file selected", "%d files selected", selectedItemsCount)) % selectedItemsCount);
+            std::string second = str(boost::format(boost::locale::ngettext("%d file total", "%d files total", totalCount)) % totalCount);
+
+            statusText = U2W(str(boost::format("%1%/%2%") % first % second));
+        }
+        else {
+            statusText = U2W(str(boost::format(boost::locale::ngettext("%d file", "%d files", totalCount)) % totalCount));
+        }
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
     }
-    SetDlgItemText(IDC_STATUSLABEL, statusText.c_str());
+    SetDlgItemText(IDC_STATUSLABEL, statusText);
     listChanged_ = false;
 }
 

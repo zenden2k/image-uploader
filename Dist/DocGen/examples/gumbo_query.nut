@@ -4,7 +4,7 @@ print(doc.find("h1 a").text()+"\r\n");
 print(doc.find("h1 a").length()+"\r\n");
 print(doc.find("#logo").attr("class")+"\r\n");
     
-nm.doGet("http://zenden2k.com");
+nm.doGet("https://svistunov.dev");
 doc = Document(nm.responseBody());
 doc.find("a").each( function(index,elem) {
     print(elem.text()+"-\r\n"); 

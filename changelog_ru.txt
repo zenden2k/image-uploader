@@ -1,6 +1,6 @@
 ﻿# Image Uploader changelog 
 #
-# http://zenden2k.atwebpages.com/imageuploader
+# https://svistunov.dev/imageuploader
 
 1.3.3.4964 (01.01.2023)
 [~] Исправлена поддержка юникодных путей к файлам

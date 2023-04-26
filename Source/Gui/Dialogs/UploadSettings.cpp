@@ -131,12 +131,14 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     moreImageServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     moreImageServersLink_.SetLabel(TR("Choose more servers..."));
     moreImageServersLink_.SetToolTipText(TR("Choose more servers..."));
+    moreImageServersLink_.m_clrLink = GetSysColor(COLOR_WINDOWTEXT);
 
     moreFileServersLink_.SubclassWindow(GetDlgItem(IDC_CHOOSEMOREFILESERVERS));
     moreFileServersLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
     moreFileServersLink_.SetLabel(TR("Choose more servers..."));
     moreFileServersLink_.SetToolTipText(TR("Choose more servers..."));
-    
+    moreFileServersLink_.m_clrLink = GetSysColor(COLOR_WINDOWTEXT);
+
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
