@@ -40,6 +40,7 @@
 #include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Components/DragndropOverlay.h"
 
 #define ID_PASTE 9888
 #define ID_HOTKEY_BASE 10000
@@ -308,6 +309,9 @@ protected:
     CString m_bCurrentFunc;
     CMyEngineList* enginelist_;
     boost::signals2::connection settingsChangedConnection_;
+    CDragndropOverlay dragndropOverlay_;
+    bool enableDragndropOverlay = false;
+    CDragndropOverlay::ITEM_ID dragndropOverlaySelectedItem_ = CDragndropOverlay::kInvalid;
 };
 
 

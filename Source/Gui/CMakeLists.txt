@@ -35,6 +35,7 @@ set(SRC_LIST
     Components/MyFileDialog.cpp
     Components/NewStyleFileDialog.cpp
     Components/NewStyleFileSaveDialog.cpp
+    Components/DragndropOverlay.cpp
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
@@ -196,6 +197,7 @@ set(HEADER_LIST
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h
+    Components/DragndropOverlay.cpp
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h

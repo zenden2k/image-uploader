@@ -248,6 +248,8 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    RECT clientRect;
+    GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();
     ATLASSERT(translator != nullptr);
 
@@ -381,6 +383,12 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     //TRC(IDC_UPDATESLABEL, "Check for Updates");
     TRC(IDC_PREV, "< Back");
 
+    bool layeredChildAvailable = IsWindows8OrGreater();
+    dragndropOverlay_.Create(m_hWnd, clientRect, 0, WS_CHILD | WS_CLIPSIBLINGS, layeredChildAvailable ? WS_EX_LAYERED : 0);
+    if (layeredChildAvailable) {
+        SetLayeredWindowAttributes(dragndropOverlay_, 0, 200, LWA_ALPHA);
+    }
+    dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
     SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;
@@ -867,13 +875,13 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
     {
         
         DragQueryFile(hDrop,    i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
+
         if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
         {
-            if(CurPage == wpMainPage)
-            {
-                if (Settings.DropVideoFilesToTheList || LocalizedMessageBox(TR("Would you like to grab frames from this video?\n(otherwise file just  will be added to list)"), APPNAME, MB_YESNO) == IDNO)
-                    goto filehost;
+            if (enableDragndropOverlay && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList) {
+                goto filehost;
             }
+
             ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
             CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
             dlg->SetFileName(szBuffer);
@@ -945,6 +953,38 @@ STDMETHODIMP CWizardDlg::QueryInterface( REFIID riid, void** ppv )
 //    IDropTarget methods
 STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
 {
+    enableDragndropOverlay = false;
+
+    if (!Settings.DropVideoFilesToTheList && (CurPage == wpMainPage || CurPage == wpWelcomePage)) {
+        FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+        if (pDataObj->QueryGetData(&tc) == S_OK)
+        {
+            STGMEDIUM ddd;
+            if (pDataObj->GetData(&tc, &ddd) == S_OK)
+            {
+                PVOID pDrop = (PVOID)GlobalLock(ddd.hGlobal);
+                HDROP hDrop = static_cast<HDROP>(pDrop);
+                int n = DragQueryFile(hDrop, 0xFFFFFFFF, 0, 0);
+                TCHAR szBuffer[256] = _T("\0");
+
+                if (n == 1) {
+                    DragQueryFile(hDrop, 0, szBuffer, ARRAY_SIZE(szBuffer));
+                    if (IsVideoFile(szBuffer)) {
+                        enableDragndropOverlay = true;
+                    }
+                }
+                //DragFinish(hDrop);
+                GlobalUnlock(pDrop);
+                ReleaseStgMedium(&ddd);
+            }
+        }
+    }
+    
+    if (enableDragndropOverlay) {
+        dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        dragndropOverlay_.ShowWindow(SW_SHOW);
+    }
+
     return S_OK;
 }
     
@@ -965,11 +1005,20 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
         return S_FALSE;
     }
     *pdwEffect = DROPEFFECT_COPY;
+
+    if (enableDragndropOverlay && !dragndropOverlay_.IsWindowVisible()) {
+        dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        dragndropOverlay_.ShowWindow(SW_SHOW);
+    }
+    POINT clientPt{ pt.x, pt.y };
+    ScreenToClient(&clientPt);
+    dragndropOverlay_.dragMove(clientPt.x, clientPt.y);
     return S_OK;
 }
     
 STDMETHODIMP CWizardDlg::DragLeave( void)
 {
+    dragndropOverlay_.ShowWindow(SW_HIDE);
     return S_OK;
 }
 
@@ -1009,8 +1058,10 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 
                         if(FileWasSaved) // Additing received file to program
                         {
-                            if(IsVideoFile(OutFileName))
+                            if(IsVideoFile(OutFileName) && !(enableDragndropOverlay 
+                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList))
                             {
+
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
                                 CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
                                 dlg->SetFileName(OutFileName);
@@ -1092,7 +1143,15 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
         *pdwEffect = DROPEFFECT_NONE; 
         return S_FALSE;
     }
-    
+
+    dragndropOverlay_.ShowWindow(SW_HIDE);
+
+    if (enableDragndropOverlay) {
+        POINT clientPt{ pt.x, pt.y };
+        ScreenToClient(&clientPt);
+
+        dragndropOverlaySelectedItem_ = dragndropOverlay_.itemAtPos(clientPt.x, clientPt.y);
+    }
 
     // This should be called first 
     // otherwise dragndrop from Firefox will not work
