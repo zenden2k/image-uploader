@@ -415,7 +415,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     videoGrabber_->setFrameCount(NumOfFrames);
     using namespace std::placeholders;
     videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
-    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this));
+    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
 #ifdef IU_ENABLE_FFMPEG
     if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
@@ -464,12 +464,12 @@ void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, std:
 
 }
 
-void CVideoGrabberPage::OnFrameGrabbingFinished()
+void CVideoGrabberPage::OnFrameGrabbingFinished(bool success)
 {
     ThreadTerminated();
-    if (!CanceledByUser)
-    {
-        SetGrabbingStatusText(TR("Extracting video frames was finished."));
+
+    if (!CanceledByUser) {
+        SetGrabbingStatusText(success ? TR("Extracting video frames was finished."): TR("An error occured while extracting video frames."));
     }
 }
 

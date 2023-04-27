@@ -20,9 +20,9 @@ public:
     bool isRunning() const;
     void setFrameCount(int frameCount);
     using FrameGrabbedCallback = std::function<void(const std::string&, int64_t, std::shared_ptr<AbstractImage>)>;
-    using VoidCallback = std::function<void()>;
+    using FinishCallback = std::function<void(bool)>;
     void setOnFrameGrabbed(FrameGrabbedCallback cb);
-    void setOnFinished(VoidCallback cb);
+    void setOnFinished(FinishCallback cb);
 private:
     std::string fileName_;
     std::unique_ptr<AbstractFrameGrabber> createGrabber();
@@ -31,7 +31,7 @@ private:
     friend class VideoGrabberRunnable;
     std::unique_ptr<VideoGrabberRunnable> worker_;
     FrameGrabbedCallback onFrameGrabbed_;
-    VoidCallback onFinished_;
+    FinishCallback onFinished_;
     DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 

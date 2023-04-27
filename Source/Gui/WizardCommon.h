@@ -24,17 +24,17 @@
 #pragma once
 #include <windows.h>
 
-#define IU_IDC_CONST 12255
-#define IDC_SETTINGS    (IU_IDC_CONST + 1)
-#define IDC_REGIONPRINT (IU_IDC_CONST + 2)
-#define IDC_MEDIAFILEINFO (IU_IDC_CONST + 3)
-#define IDC_CLIPBOARD (IU_IDC_CONST + 4)
-#define IDC_ADDFOLDER (IU_IDC_CONST + 5)
-#define IDC_ADDFILES (IU_IDC_CONST + 6)
-#define IDC_DOWNLOADIMAGES (IU_IDC_CONST + 7)
-#define IDC_REUPLOADIMAGES (IU_IDC_CONST + 8)
-#define IDC_SHORTENURL (IU_IDC_CONST + 9)
-#define IDC_LASTREGIONSCREENSHOT (IU_IDC_CONST + 10)
+constexpr int IU_IDC_CONST = 12255;
+constexpr int IDC_SETTINGS = IU_IDC_CONST + 1;
+constexpr int IDC_REGIONPRINT = IU_IDC_CONST + 2;
+constexpr int IDC_MEDIAFILEINFO = IU_IDC_CONST + 3;
+constexpr int IDC_CLIPBOARD = IU_IDC_CONST + 4;
+constexpr int IDC_ADDFOLDER = IU_IDC_CONST + 5;
+constexpr int IDC_ADDFILES = IU_IDC_CONST + 6;
+constexpr int IDC_DOWNLOADIMAGES = IU_IDC_CONST + 7;
+constexpr int IDC_REUPLOADIMAGES = IU_IDC_CONST + 8;
+constexpr int IDC_SHORTENURL = IU_IDC_CONST + 9;
+constexpr int IDC_LASTREGIONSCREENSHOT = IU_IDC_CONST + 10;
 
 class CWizardDlg;
 class CWizardPage

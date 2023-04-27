@@ -98,7 +98,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		bool OnNext() override; // Reimplemented function of CWizardPage
 		bool OnShow() override; // Reimplemented function of CWizardPage
 		void OnFrameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
-		void OnFrameGrabbingFinished();
+		void OnFrameGrabbingFinished(bool success);
 
 		CHyperLink openInFolderLink_;
 		std::unique_ptr<VideoGrabber> videoGrabber_ ;

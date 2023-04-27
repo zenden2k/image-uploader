@@ -106,7 +106,7 @@ protected:
     bool NeedStop;
     bool SeekToKeyFrame;
     bool seekByBytes;
-    AvcodecVideoFrame* currentFrame_;
+    std::unique_ptr<AvcodecVideoFrame> currentFrame_;
     int64_t duration_;
     static bool initialized_;
 public:
@@ -155,8 +155,10 @@ public:
         // Open video file
         int result = avformat_open_input(&pFormatCtx, fileName.c_str(), nullptr, nullptr);
         if (result != 0) {
+            char strBuf[256] = "\0";
+            av_strerror(result, strBuf, sizeof(strBuf));
             throw FrameGrabberException(
-                str(boost::format("Cannot open input file '%s', error code=%d") % fileName % result));
+                str(boost::format("Cannot open input file '%s', error code=%d\n%s") % fileName % result % strBuf));
         }
 
         //AVInputFormat *inputFormat = av_find_input_format( fileName.c_str() );
@@ -253,6 +255,13 @@ public:
         }*/
 
         duration_ = ic->duration;
+
+        /*
+        if (duration_ < 0) {
+            LOG(WARNING) << "Invalid duration";
+            duration_ = 0;
+        }*/
+
         int64_t my_start_time = static_cast<uint64_t>(static_cast<double>(ic->duration) / numOfFrames * 1.6);
 
         AVRational rat = {1, AV_TIME_BASE};
@@ -279,22 +288,23 @@ public:
                 if (ret < 0) {
                     LOG(WARNING) << "Error sending a packet for decoding";
                 } else {
-
                     ret = avcodec_receive_frame(pCodecCtx, pFrame);
+                    av_packet_unref(&packet);
 
                     if (ret == AVERROR(EAGAIN)) {
                         continue;
                         //return false;
                     } else if (ret == AVERROR_EOF) {
+
                         return false;
                     } else if (ret < 0) {
+                        
                         throw FrameGrabberException("Error during decoding");
                     }
                     frameFinished = true;
-                    av_packet_unref(&packet);
+
                     break;
-                }
-                
+                }  
             }
 
             // Free the packet that was allocated by av_read_frame
@@ -321,7 +331,7 @@ public:
 
         if (pCodecCtx) {
             // Close the codec
-            avcodec_close(pCodecCtx);
+            avcodec_free_context(&pCodecCtx);
         }
 
         if (pFormatCtx) {
@@ -381,18 +391,22 @@ public:
 
                 ret = avcodec_send_packet(pCodecCtx, &packet);
                 if (ret < 0) {
+                    av_packet_unref(&packet);
                     throw FrameGrabberException("Error sending a packet for decoding");
                 }
 
                 ret = avcodec_receive_frame(pCodecCtx, pFrame);
 
                 if (ret == AVERROR(EAGAIN)) {
+                    av_packet_unref(&packet);
                     continue;
                 }
                 if (ret == AVERROR_EOF) {
+                    av_packet_unref(&packet);
                     return false;
                 }
                 if (ret < 0) {
+                    av_packet_unref(&packet);
                     throw FrameGrabberException("Error during decoding");
                 }
                 frameFinished = true;
@@ -430,7 +444,7 @@ public:
                     }
 
 
-                    currentFrame_ = new AvcodecVideoFrame(pFrameRGB, pFrameRGB->data[0], numBytes, display_time,
+                    currentFrame_ = std::make_unique<AvcodecVideoFrame>(pFrameRGB, pFrameRGB->data[0], numBytes, display_time,
                                                           pCodecCtx->width, pCodecCtx->height);
                     av_packet_unref(&packet);
                     break;
@@ -446,7 +460,7 @@ public:
     }
 
     AbstractVideoFrame* grabCurrentFrame() const {
-        return currentFrame_;
+        return currentFrame_.get();
     }
 };
 

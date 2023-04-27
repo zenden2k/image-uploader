@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-24 17:11+0300\n"
+"POT-Creation-Date: 2023-04-27 15:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -22,21 +22,21 @@ msgstr ""
 msgid " Num of retries per file:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:768
+#: ../Source/Gui/Dialogs/MainDlg.cpp:771
 #, c-format
 msgid "%d file"
 msgid_plural "%d files"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:763
+#: ../Source/Gui/Dialogs/MainDlg.cpp:765
 #, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:764
+#: ../Source/Gui/Dialogs/MainDlg.cpp:766
 #, c-format
 msgid "%d file total"
 msgid_plural "%d files total"
@@ -59,7 +59,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:791
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:798
 #, c-format
 msgid "%s - Updates available"
 msgstr ""
@@ -87,14 +87,14 @@ msgid ""
 "%width% - width of image,  %height% - height of image"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:450
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:452
 msgid "&Upload"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:368
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:369
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1309
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1310
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1311
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1312
 msgid "(edited)"
 msgstr ""
 
@@ -103,16 +103,16 @@ msgstr ""
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:382
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:383
 msgid "< Back"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:525
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:898
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:900
 msgid "<no authentication>"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:174
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:159
 msgid "A new version is available:"
 msgstr ""
 
@@ -120,7 +120,7 @@ msgstr ""
 msgid "About Image Uploader"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2116
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2177
 msgid "About..."
 msgstr ""
 
@@ -128,7 +128,7 @@ msgstr ""
 msgid "Access:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:623
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:625
 msgid "Account is not enabled"
 msgstr ""
 
@@ -162,7 +162,7 @@ msgstr ""
 msgid "Add FTP/SFTP server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:804
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:806
 msgid "Add FTP/SFTP server..."
 msgstr ""
 
@@ -203,7 +203,7 @@ msgstr ""
 msgid "Add item to video files' context menu"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:812
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:814
 msgid "Add local folder as new server..."
 msgstr ""
 
@@ -227,6 +227,7 @@ msgstr ""
 msgid "Add to Wizard"
 msgstr ""
 
+#: ../Source/Gui/Components/DragndropOverlay.cpp:30
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:851
 msgid "Add to the list"
 msgstr ""
@@ -269,8 +270,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:649
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:381
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1464
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1664
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1525
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1725
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1329
 msgid "All files"
 msgstr ""
@@ -300,16 +301,20 @@ msgstr ""
 msgid "Always copy captured image to clipboard"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:472
+msgid "An error occured while extracting video frames."
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:84
 msgid "An error occured while loading script."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:163
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:148
 msgid "An error occured while receiving update information from server."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1255
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1692
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1316
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1753
 msgid "Any file"
 msgstr ""
 
@@ -327,7 +332,7 @@ msgstr ""
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1592
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1653
 msgid "Are you sure to quit?"
 msgstr ""
 
@@ -371,7 +376,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1663
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1724
 msgid "Audio files"
 msgstr ""
 
@@ -397,7 +402,7 @@ msgid "Authorize"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:84
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:233
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:235
 msgid "Auto"
 msgstr ""
 
@@ -489,7 +494,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:75
 #: ../Source/Gui/Dialogs/TextViewDlg.h:36
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:81
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:63
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:258
 msgid "Cancel"
@@ -575,7 +580,7 @@ msgid "Change"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:473
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:836
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:838
 msgid "Change account settings"
 msgstr ""
 
@@ -590,11 +595,11 @@ msgstr ""
 msgid "Change width:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2118
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2179
 msgid "Check for Updates"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:159
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:144
 msgid "Checking for updates..."
 msgstr ""
 
@@ -606,19 +611,19 @@ msgstr ""
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1694
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1755
 msgid "Choose files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1564
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1625
 msgid "Choose folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:215
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:217
 msgid "Choose folder..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1667
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1728
 msgid "Choose media file"
 msgstr ""
 
@@ -628,10 +633,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:132
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:133
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:137
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:138
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1484
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1496
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:139
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1486
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1498
 msgid "Choose more servers..."
 msgstr ""
 
@@ -641,7 +646,7 @@ msgid "Choose program"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:581
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:583
 msgid "Choose server"
 msgstr ""
 
@@ -649,7 +654,7 @@ msgstr ""
 msgid "Choose server for uploading images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:209
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:211
 msgid "Choose server..."
 msgstr ""
 
@@ -658,7 +663,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:384
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1467
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1528
 msgid "Choose video file"
 msgstr ""
 
@@ -716,9 +721,9 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:562
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:75
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:58
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:161
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:207
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:238
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:146
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:192
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:222
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:875
 msgid "Close"
 msgstr ""
@@ -743,11 +748,11 @@ msgstr ""
 msgid "Colors"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:72
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:57
 msgid "Component name"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:83
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 msgid "Components:"
 msgstr ""
 
@@ -785,7 +790,7 @@ msgstr ""
 msgid "Convert UNC path \"\\\\\" to \"file://///\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:354
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:355
 msgid "Converting history"
 msgstr ""
 
@@ -867,7 +872,7 @@ msgstr ""
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:850
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:857
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
@@ -875,7 +880,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:296
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:297
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1011,7 +1016,7 @@ msgstr ""
 msgid "Do nothing"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2117
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2178
 msgid "Documentation"
 msgstr ""
 
@@ -1020,7 +1025,7 @@ msgstr ""
 msgid "Don't have an account? Sign up on %s right now"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1125
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1127
 msgid "Don't resize"
 msgstr ""
 
@@ -1056,7 +1061,7 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:181
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:183
 msgid "Edit Profile"
 msgstr ""
 
@@ -1132,8 +1137,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:119
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:349
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:368
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:351
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:370
 msgid "Error"
 msgstr ""
 
@@ -1185,8 +1190,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:211
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:377
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1577
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:378
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1638
 msgid "Exit"
 msgstr ""
 
@@ -1337,7 +1342,7 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:231
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:215
 msgid "Finish"
 msgstr ""
 
@@ -1465,7 +1470,7 @@ msgstr ""
 msgid "Global hotkey:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1068
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1070
 msgid "Go to signup page"
 msgstr ""
 
@@ -1494,13 +1499,13 @@ msgstr ""
 msgid "Height:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:290
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:291
 msgid "Help"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:161
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:379
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1579
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:380
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1640
 msgid "Hide"
 msgstr ""
 
@@ -1555,7 +1560,7 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:70
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
 msgid "Image Uploader Updates"
 msgstr ""
 
@@ -1577,8 +1582,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:157
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:192
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1252
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1690
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1313
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1751
 msgid "Images"
 msgstr ""
 
@@ -1594,7 +1599,7 @@ msgstr ""
 msgid "Images per string:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:831
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:838
 msgid "Images settings and choosing server"
 msgstr ""
 
@@ -1603,6 +1608,7 @@ msgid "Immediately begin uploading to the server"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:251
+#: ../Source/Gui/Components/DragndropOverlay.cpp:33
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:494
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:186
 #: ../Source/Gui/Dialogs/MainDlg.cpp:63 ../Source/Gui/Dialogs/WelcomeDlg.cpp:76
@@ -1615,7 +1621,7 @@ msgstr ""
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1565
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1626
 msgid "Including subdirectories"
 msgstr ""
 
@@ -1783,7 +1789,7 @@ msgstr ""
 msgid "MD5 check of the update package failed "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:373
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:374
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -1837,11 +1843,11 @@ msgid "New Profile Name"
 msgstr ""
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:545
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:915
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:917
 msgid "New account..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:990
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:992
 msgid "New folder"
 msgstr ""
 
@@ -1850,11 +1856,11 @@ msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:173
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:638
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:645
 msgid "Next >"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:635
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:637
 msgid "No Folder Selected"
 msgstr ""
 
@@ -1870,7 +1876,7 @@ msgstr ""
 msgid "No proxy (direct connection)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:208
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:193
 msgid "No updates for Image Uploader's components are available"
 msgstr ""
 
@@ -1910,13 +1916,13 @@ msgstr ""
 msgid "Open containing folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:82
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:67
 msgid "Open download page"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:190
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:274
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:995
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:997
 msgid "Open in Web Browser"
 msgstr ""
 
@@ -1943,7 +1949,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:577
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2120
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2181
 msgid "Open screenshots folder"
 msgstr ""
 
@@ -2010,12 +2016,12 @@ msgid ""
 "take affect."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:377
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:379
 #, c-format
 msgid "Please specify authentication settings for '%s' server!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:354
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:355
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
@@ -2065,7 +2071,7 @@ msgstr ""
 msgid "Processing folder:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:480
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:487
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2103,7 +2109,7 @@ msgstr ""
 msgid "Quality:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:222
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:206
 msgid "Queued"
 msgstr ""
 
@@ -2336,8 +2342,8 @@ msgid "Selected server: %s"
 msgstr ""
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:107
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1486
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1499
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1488
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1501
 #, c-format
 msgid "Selected servers: %d"
 msgstr ""
@@ -2384,11 +2390,11 @@ msgstr ""
 msgid "Server not chosen"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1062
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1064
 msgid "Server settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:848
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:850
 msgid "Server settings..."
 msgstr ""
 
@@ -2458,7 +2464,7 @@ msgid "Shorten URL"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:897
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1237
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1239
 #, c-format
 msgid "Shorten URL using %s"
 msgstr ""
@@ -2492,7 +2498,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:85
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2125
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2186
 msgid "Show Error Log"
 msgstr ""
 
@@ -2546,7 +2552,7 @@ msgstr ""
 msgid "Source code"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:621
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:623
 msgid "Specify account..."
 msgstr ""
 
@@ -2555,7 +2561,7 @@ msgid "Starting upload"
 msgstr ""
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:20
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:73
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:58
 msgid "Status"
 msgstr ""
 
@@ -2667,7 +2673,7 @@ msgstr ""
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1083
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1085
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -2767,7 +2773,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:87
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1151
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1153
 msgid "URL shortening server"
 msgstr ""
 
@@ -2780,7 +2786,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2012
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2073
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -2802,7 +2808,7 @@ msgstr ""
 msgid "Unknown status"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:193
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:178
 msgid "Update components"
 msgstr ""
 
@@ -2875,7 +2881,7 @@ msgstr ""
 msgid "Upload to Web"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:359
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:361
 #, c-format
 msgid ""
 "Upload to server '%s' is impossible without account.\n"
@@ -2895,7 +2901,7 @@ msgstr ""
 msgid "Uploading errors"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:833
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:840
 msgid "Uploading file on server"
 msgstr ""
 
@@ -2965,9 +2971,9 @@ msgid "Video engine which is used to extract frames from a video file."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:380
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1463
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1662
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1691
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1524
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1723
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1752
 msgid "Video files"
 msgstr ""
 
@@ -3033,13 +3039,7 @@ msgstr ""
 msgid "Windows Explorer integration"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:874
-msgid ""
-"Would you like to grab frames from this video?\n"
-"(otherwise file just  will be added to list)"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/UpdateDlg.cpp:179
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:164
 msgid "You are using the latest Image Uploader version."
 msgstr ""
 
@@ -3058,11 +3058,11 @@ msgstr ""
 msgid "You have not selected account for server \"%s\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:368
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:370
 msgid "You have not selected an file server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:349
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:351
 msgid "You have not selected an image server"
 msgstr ""
 

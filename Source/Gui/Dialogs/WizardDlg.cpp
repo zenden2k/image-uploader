@@ -146,13 +146,12 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
     UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
     ScriptsManager* scriptsManager, WtlGuiSettings* settings):
-    m_lRef(0), 
     FolderAdd(this), 
-    Settings(*settings),
     uploadManager_(uploadManager),
-    logger_(std::move(logger)),
-    uploadEngineManager_(uploadEngineManager),
+    uploadEngineManager_(uploadEngineManager), 
     scriptsManager_(scriptsManager),
+    Settings(*settings),
+    logger_(std::move(logger)),
     enginelist_(enginelist)
 { 
     mainThreadId_ = GetCurrentThreadId();
@@ -215,7 +214,7 @@ bool CWizardDlg::pasteFromClipboard() {
             }
         } 
         if (CImageDownloaderDlg::LinksAvailableInText(text)) {
-            CImageDownloaderDlg dlg(this, CString(text));
+            CImageDownloaderDlg dlg(this, text);
             dlg.EmulateModal(m_hWnd);
             if (dlg.successfullDownloadsCount()) {
                 return true;
@@ -389,6 +388,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         SetLayeredWindowAttributes(dragndropOverlay_, 0, 200, LWA_ALPHA);
     }
     dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+    HWND exitBtn = GetDlgItem(IDCANCEL);
+    ::SetWindowLong(exitBtn, GWL_STYLE, ::GetWindowLong(exitBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
+
     SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;
@@ -830,7 +833,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
             LinearGradientModeBackwardDiagonal); 
 
 
-         StringFormat format;
+    StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
     format.SetLineAlignment(StringAlignmentCenter);
     Gdiplus::Font font(L"Arial", 12, FontStyleBold);
@@ -878,7 +881,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
         if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
         {
-            if (enableDragndropOverlay && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList) {
+            if (enableDragndropOverlay_ && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList) {
                 goto filehost;
             }
 
@@ -953,7 +956,7 @@ STDMETHODIMP CWizardDlg::QueryInterface( REFIID riid, void** ppv )
 //    IDropTarget methods
 STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
 {
-    enableDragndropOverlay = false;
+    enableDragndropOverlay_ = false;
 
     if (!Settings.DropVideoFilesToTheList && (CurPage == wpMainPage || CurPage == wpWelcomePage)) {
         FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -962,15 +965,18 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
             STGMEDIUM ddd;
             if (pDataObj->GetData(&tc, &ddd) == S_OK)
             {
-                PVOID pDrop = (PVOID)GlobalLock(ddd.hGlobal);
+                PVOID pDrop = GlobalLock(ddd.hGlobal);
                 HDROP hDrop = static_cast<HDROP>(pDrop);
-                int n = DragQueryFile(hDrop, 0xFFFFFFFF, 0, 0);
-                TCHAR szBuffer[256] = _T("\0");
+                int n = DragQueryFile(hDrop, 0xFFFFFFFF, nullptr, 0);
 
                 if (n == 1) {
-                    DragQueryFile(hDrop, 0, szBuffer, ARRAY_SIZE(szBuffer));
-                    if (IsVideoFile(szBuffer)) {
-                        enableDragndropOverlay = true;
+                    int len = DragQueryFile(hDrop, 0, nullptr, 0) + 1;
+                    CString buffer;
+                    
+                    DragQueryFile(hDrop, 0, buffer.GetBuffer(len), len);
+                    buffer.ReleaseBuffer();
+                    if (IsVideoFile(buffer)) {
+                        enableDragndropOverlay_ = true;
                     }
                 }
                 //DragFinish(hDrop);
@@ -980,7 +986,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
         }
     }
     
-    if (enableDragndropOverlay) {
+    if (enableDragndropOverlay_) {
         dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         dragndropOverlay_.ShowWindow(SW_SHOW);
     }
@@ -1006,12 +1012,12 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
     }
     *pdwEffect = DROPEFFECT_COPY;
 
-    if (enableDragndropOverlay && !dragndropOverlay_.IsWindowVisible()) {
+    if (enableDragndropOverlay_ && !dragndropOverlay_.IsWindowVisible()) {
         dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         dragndropOverlay_.ShowWindow(SW_SHOW);
     }
     POINT clientPt{ pt.x, pt.y };
-    ScreenToClient(&clientPt);
+    dragndropOverlay_.ScreenToClient(&clientPt);
     dragndropOverlay_.dragMove(clientPt.x, clientPt.y);
     return S_OK;
 }
@@ -1058,7 +1064,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 
                         if(FileWasSaved) // Additing received file to program
                         {
-                            if(IsVideoFile(OutFileName) && !(enableDragndropOverlay 
+                            if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_ 
                                 && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList))
                             {
 
@@ -1144,14 +1150,14 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
         return S_FALSE;
     }
 
-    dragndropOverlay_.ShowWindow(SW_HIDE);
-
-    if (enableDragndropOverlay) {
+    if (enableDragndropOverlay_) {
         POINT clientPt{ pt.x, pt.y };
-        ScreenToClient(&clientPt);
+        dragndropOverlay_.ScreenToClient(&clientPt);
 
         dragndropOverlaySelectedItem_ = dragndropOverlay_.itemAtPos(clientPt.x, clientPt.y);
     }
+
+    dragndropOverlay_.ShowWindow(SW_HIDE);
 
     // This should be called first 
     // otherwise dragndrop from Firefox will not work

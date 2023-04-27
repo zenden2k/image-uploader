@@ -147,16 +147,16 @@ typedef struct tagVIDEOINFOHEADER2
 
 class DirectshowFrameGrabber2Private: public CGrabCallback {
 public:
-    DirectshowFrameGrabber2Private() : currentFrame_(nullptr){
+    DirectshowFrameGrabber2Private() {
         memset(&vih, 0, sizeof(vih));
     }
 
-    DirectshowVideoFrame2* currentFrame() {
-        return currentFrame_;
+    DirectshowVideoFrame2* currentFrame() const {
+        return currentFrame_.get();
     }
 
     void setCurrentFrame(DirectshowVideoFrame2* frame) {
-        currentFrame_ = frame;
+        currentFrame_.reset(frame);
     }
 
     std::unique_ptr<CGrab> grab;
@@ -185,7 +185,7 @@ public:
         //Grab = false;
     }
 protected:
-     DirectshowVideoFrame2 * currentFrame_; 
+     std::unique_ptr<DirectshowVideoFrame2> currentFrame_; 
 };
 
 

@@ -116,11 +116,11 @@ public:
     }
 
     DirectshowVideoFrame* currentFrame() {
-        return currentFrame_;
+        return currentFrame_.get();
     }
 
     void setCurrentFrame(DirectshowVideoFrame* frame) {
-        currentFrame_ = frame;
+        currentFrame_.reset(frame);
     }
     CComPtr<ISampleGrabber> pGrabber;
      CComPtr<IBaseFilter>    pSource;
@@ -141,7 +141,7 @@ public:
      NoDirectVobSub graphBuilderCallback;
      VIDEOINFOHEADER vih;
 protected:
-     DirectshowVideoFrame * currentFrame_; 
+     std::unique_ptr<DirectshowVideoFrame> currentFrame_; 
 };
 
 
@@ -473,7 +473,7 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
     int step = 0;
     long EvCode = 0;
     int i = 0;
-    d_ptr->setCurrentFrame(0);
+    d_ptr->setCurrentFrame(nullptr);
     
     //for ( int i = 0; i < NumOfFrames; i++ )
     {

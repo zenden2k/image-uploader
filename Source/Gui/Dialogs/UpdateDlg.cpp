@@ -28,21 +28,6 @@
 #include "Core/AppParams.h"
 #include "Core/Network/NetworkClientFactory.h"
 
-// CUpdateDlg
-namespace {
-    /* This function doesn't work as intended */
-    bool CanWriteToFolder(const CString& folder)
-    {
-        HANDLE hFile = ::CreateFile(folder, GENERIC_WRITE, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-
-        if (hFile == INVALID_HANDLE_VALUE) {
-            return false;
-        }
-        ::CloseHandle(hFile);
-        return true;
-    }
-}
-
 CUpdateDlg::CUpdateDlg() :m_UpdateManager(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectoryW())
 {
     m_UpdateCallback = nullptr;
@@ -198,7 +183,7 @@ void CUpdateDlg::CheckUpdates()
             return;
 
         if (!IsWindowVisible())
-            SetTimer(2, 2000, 0); // Show update dialog after 2 seconds
+            SetTimer(kTimer, 2000, 0); // Show update dialog after 2 seconds
 
         CString text = m_UpdateManager.generateReport();
         SetDlgItemText(IDC_UPDATEINFO, text);
@@ -208,7 +193,6 @@ void CUpdateDlg::CheckUpdates()
         CString text = TR("No updates for Image Uploader's components are available");
         SetDlgItemText(IDC_UPDATEINFO, text);
     }
-
 }
 
 void CUpdateDlg::DoUpdates()
@@ -267,7 +251,7 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
         Create(parent);
     m_bClose = false;
 
-    KillTimer(2);
+    KillTimer(kTimer);
     CenterWindow(GetParent());
     ShowWindow(SW_SHOW);
     ::EnableWindow(GetParent(), false);
@@ -302,13 +286,13 @@ LRESULT CUpdateDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 {
     UINT wTimerID = wParam;
 
-    if (wTimerID == 2)
+    if (wTimerID == kTimer)
     {
         //HWND parent = GetParent();
         if ((m_UpdateCallback && m_UpdateCallback->CanShowWindow()) || !m_UpdateCallback)
         {
             ShowModal(m_hWnd);
-            KillTimer(2);
+            KillTimer(kTimer);
         } else if (m_UpdateCallback){
             m_UpdateCallback->ShowUpdateMessage(m_UpdateManager.generateUpdateMessage());
         }

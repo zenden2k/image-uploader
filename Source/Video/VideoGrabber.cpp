@@ -57,7 +57,7 @@ public:
         if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
             LOG(ERROR) << "File "<<videoGrabber_->fileName_<< "not found";
             if ( videoGrabber_->onFinished_ ) {
-                videoGrabber_->onFinished_();
+                videoGrabber_->onFinished_(false);
             }
             isRunning_ = false;
             return;
@@ -74,7 +74,7 @@ public:
             LOG(ERROR) << ex.what();
 
             if ( videoGrabber_->onFinished_ ) {
-                videoGrabber_->onFinished_();
+                videoGrabber_->onFinished_(false);
             }
             isRunning_ = false;
             return;
@@ -82,6 +82,7 @@ public:
 
         int64_t duration = grabber->duration();
         int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
+        int successFrameCount = 0;
         for( int i = 0; i < videoGrabber_->frameCount_; i++ ) {
             if ( canceled_) {
                 break;
@@ -98,7 +99,7 @@ public:
             } catch (const std::exception& ex) {
                 LOG(WARNING) << ex.what();
             }
-            if ( ! frame ) {
+            if (!frame) {
                 LOG(WARNING) <<"grabber->grabCurrentFrame returned NULL";
                 continue;
             }
@@ -110,12 +111,12 @@ public:
 
             if ( /*frame && */videoGrabber_->onFrameGrabbed_ ) {
                 videoGrabber_->onFrameGrabbed_(s, sampleTime, frame->toImage());
+                successFrameCount++;
             }
-            delete frame;
         }
         grabber.reset();
         if ( videoGrabber_->onFinished_ ) {
-            videoGrabber_->onFinished_();
+            videoGrabber_->onFinished_(successFrameCount != 0);
         }
         isRunning_ = false;
     }
@@ -176,7 +177,7 @@ void VideoGrabber::setOnFrameGrabbed(FrameGrabbedCallback cb) {
     onFrameGrabbed_ = std::move(cb);
 }
 
-void VideoGrabber::setOnFinished(VoidCallback cb) {
+void VideoGrabber::setOnFinished(FinishCallback cb) {
     onFinished_ = std::move(cb);
 }
 

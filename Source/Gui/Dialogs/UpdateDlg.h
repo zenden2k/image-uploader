@@ -40,7 +40,7 @@ class CUpdateDlg :
         CUpdateDlg();
         ~CUpdateDlg();
         enum { IDD = IDD_UPDATEDLG };
-
+        enum { kTimer = 2};
         class CUpdateDlgCallback
         {
             public:

@@ -274,7 +274,7 @@ protected:
     HwndScopedWrapper aboutButtonToolTip_;
     CIconButton helpButton_;
     CIcon helpButtonIcon_;
-    long m_lRef;
+    long m_lRef = 0;
     bool QuickUploadMarker;
     CString LastVideoFile;
     bool m_bShowAfter;
@@ -310,7 +310,7 @@ protected:
     CMyEngineList* enginelist_;
     boost::signals2::connection settingsChangedConnection_;
     CDragndropOverlay dragndropOverlay_;
-    bool enableDragndropOverlay = false;
+    bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ITEM_ID dragndropOverlaySelectedItem_ = CDragndropOverlay::kInvalid;
 };
 
