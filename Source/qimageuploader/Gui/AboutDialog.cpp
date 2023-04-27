@@ -7,7 +7,7 @@ AboutDialog::AboutDialog(QWidget *parent):
     ui(new Ui::AboutDialog) {
     ui->setupUi(this);
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
-    ui->versionLabel->setText("v0.1.1");
+    ui->versionLabel->setText("v0.1.2");
 }
 
 AboutDialog::~AboutDialog() {

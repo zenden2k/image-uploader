@@ -133,7 +133,12 @@ endif()
 
 SET(ADDITIONAL_OPTIONS "")
 if (IU_ENABLE_FFMPEG AND NOT(WIN32))
-	list(APPEND ADDITIONAL_OPTIONS ffmpeg:shared=False)	
+	list(APPEND ADDITIONAL_OPTIONS 
+		ffmpeg:shared=False
+		ffmpeg:with_vaapi=False
+        ffmpeg:with_vdpau=False
+        ffmpeg:with_vulkan=False
+	)	
 endif()
 	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
@@ -178,6 +183,9 @@ foreach(TYPE ${CONFIGURATION_TYPES})
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
                         SETTINGS ${settings})
+						
+	# Linux dirty fix:  
+	# BUILD openjpeg libx264 libx265
 endforeach()
 
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})

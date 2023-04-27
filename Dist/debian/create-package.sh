@@ -1,4 +1,4 @@
-AppVersion="0.2.9"
+AppVersion="1.3.3.4957"
 
 # Get the machine Architecture
 Architecture=$(uname -m)

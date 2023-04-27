@@ -1,11 +1,11 @@
 Package: zenden2k-image-uploader-qt
-Version: 0.1.1
+Version: 0.1.2
 Section: net
 Architecture: YOUR_ARCHITECTURE
-Installed-Size: 15000
+Installed-Size: 55000
 Maintainer: Sergey Svistunov <zenden2k@gmail.com>
 Description: Zenden2k Image Uploader (Qt GUI)
  Program that allows you to upload files to image/file 
  hosting servers without necessity to visit their websites.
-Depends:libc6 (>= 2.27),libpcre3,libc-ares2,libsqlite3-0,libfreeimage3,libqt5core5a (>= 5.9.5),libqt5gui5 (>= 5.9.5),libavcodec57 (>= 7:3.4.2) | libavcodec-extra57 (>= 7:3.4.2), libavformat57 (>= 7:3.4.2), libavutil55 (>= 7:3.4.2), libswscale4 (>= 7:3.4.2)
+Depends:libc6 (>= 2.27),libqt5core5a (>= 5.9.5),libqt5gui5 (>= 5.9.5)
 Priority: optional
