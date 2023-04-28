@@ -46,10 +46,11 @@ void CDragndropOverlay::updateBackBuffer() {
     GetClientRect(&clientRect);
     
     CBrush br;
-    br.CreateSolidBrush(RGB(128, 128, 128));
+    // We use layered extended style on Windows 8+
+    bool isLayered = GetExStyle() & WS_EX_LAYERED;
+    br.CreateSolidBrush(isLayered ? RGB(128, 128, 128): RGB(170, 170, 170));
 
     backBufferDc_.SetDCPenColor(RGB(255, 255, 255));
-    backBufferDc_.SetBkColor(RGB(120, 120, 120));
     backBufferDc_.FillRect(&clientRect, br);
 
     HFONT oldFont = backBufferDc_.SelectFont(font_);
@@ -60,7 +61,7 @@ void CDragndropOverlay::updateBackBuffer() {
 
         if (activeItemIndex_ == index) {
             CBrush br2;
-            br2.CreateSolidBrush(RGB(100, 100, 100));
+            br2.CreateSolidBrush(isLayered? RGB(100, 100, 100): RGB(130, 130, 130));
 
             HBRUSH oldBr = backBufferDc_.SelectBrush(br2);
             backBufferDc_.Rectangle(&item.rc);

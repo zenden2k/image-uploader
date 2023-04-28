@@ -26,7 +26,7 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"
-#include "Gui/Controls/hyperlinkcontrol.h"
+#include "Gui/Controls/HyperLinkControl.h"
 #include "Gui/Controls/MyImage.h"
 #include <atlcrack.h>
 
@@ -38,7 +38,7 @@ class CWelcomeDlg :
 {
 public:
      CWelcomeDlg();
-    virtual ~CWelcomeDlg() = default;
+     ~CWelcomeDlg() override = default;
     enum { IDD = IDD_WELCOMEDLG };
 
     BEGIN_MSG_MAP(CWelcomeDlg)

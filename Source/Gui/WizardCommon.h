@@ -22,7 +22,8 @@
 #define IU_GUI_WIZARDCOMMON_H
 
 #pragma once
-#include <windows.h>
+
+#include "atlheaders.h"
 
 constexpr int IU_IDC_CONST = 12255;
 constexpr int IDC_SETTINGS = IU_IDC_CONST + 1;
@@ -42,7 +43,7 @@ class CWizardPage
     public:
         CWizardDlg* WizardDlg;
         virtual ~CWizardPage();
-        HBITMAP HeadBitmap;
+        CBitmap HeadBitmap;
         virtual bool OnShow();
         virtual bool OnHide();
         virtual bool OnNext();

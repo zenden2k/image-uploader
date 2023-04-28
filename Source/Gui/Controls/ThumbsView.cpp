@@ -313,44 +313,35 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
 
         if(ItemID>=0 && !Img && !IuCommonFunctions::IsImage(filename))
         {
-
-
             WORD id;
-            HICON ggg =//GetAssociatedIcon (filename,false);
-                ExtractAssociatedIcon(
-                GetModuleHandle(0),
-                (LPWSTR)(LPCTSTR)filename,
-                &id);
-            if(ggg)
-            {
-                GuiTools::IconInfo ii = GuiTools::GetIconInfo(ggg);
+            // ExtractAssociatedIcon has memory leaks
+            HICON associatedIcon = ExtractAssociatedIcon(GetModuleHandle(0), const_cast<LPWSTR>(filename.GetString()), &id);
+
+            if(associatedIcon) {
+                GuiTools::IconInfo ii = GuiTools::GetIconInfo(associatedIcon);
                 int iconWidth = ii.nWidth;
                 int iconHeight = ii.nHeight;
-                if ( iconWidth ) {
-                    HDC dc=GetDC();
-                    
-                    
+                if (iconWidth) {
+                    HDC dc = GetDC();
+                     
                     HDC memDC = CreateCompatibleDC(dc);
                     HBITMAP memBm = CreateCompatibleBitmap(dc,iconWidth,iconHeight);
-                    SelectObject(memDC, memBm);
+                    HGDIOBJ oldBm = SelectObject(memDC, memBm);
                     RECT r={0,0,iconWidth,iconHeight};
-                    FillRect(memDC,    // handle to device context 
-                        &r,    // pointer to structure with rectangle  
-                        GetSysColorBrush(COLOR_WINDOW)    // handle to brush 
-                        );
+                    FillRect(memDC, &r, GetSysColorBrush(COLOR_WINDOW));
 
-
-                    DrawIcon(memDC, 0,0,ggg);
-                    Bitmap *bitmap=Bitmap::FromHBITMAP(memBm,0);
-                    ;
-                    gr.DrawImage(/*backBuffer*/bitmap, (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
-                    delete bitmap;
+                    DrawIcon(memDC, 0,0,associatedIcon);
+                    std::unique_ptr<Bitmap>bitmap (Bitmap::FromHBITMAP(memBm,0));
                     
-                    DeleteObject(memDC);
+                    gr.DrawImage(/*backBuffer*/bitmap.get(), (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
+
+                    SelectObject(memDC, oldBm);
                     DeleteObject(memBm);
+                    DeleteDC(memDC);
+
                     ReleaseDC(dc);
                 }
-                DestroyIcon(ggg);
+                DestroyIcon(associatedIcon);
             }
         }
 
@@ -416,11 +407,12 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
             int imageIndex = ImageList.Add(bmp, (COLORREF)0);
             SetItem(ItemID, 0, LVIF_IMAGE, 0, imageIndex, 0, 0, 0);
         }
-
+        DeleteObject(bmp);
     } else {
         defaultImage_ = bmp;
         ImageList.Add(bmp, (COLORREF)0);
     }
+
 
     return true;
 }

@@ -140,6 +140,8 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
     }
 
+    toolbarImageList_ = m_hToolBarImageList;
+
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         HWND codeEditHwnd = GetDlgItem(IDC_CODEEDIT);

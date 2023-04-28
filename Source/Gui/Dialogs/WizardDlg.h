@@ -42,12 +42,12 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Components/DragndropOverlay.h"
 
-#define ID_PASTE 9888
-#define ID_HOTKEY_BASE 10000
-#define WM_MY_ADDIMAGE (WM_USER + 222)
-#define WM_MY_SHOWPAGE (WM_USER + 223)
-#define WM_MY_EXIT (WM_USER + 224)
-#define WM_TASKDISPATCHERMSG (WM_USER + 225)
+constexpr int ID_PASTE = 9888;
+constexpr int ID_HOTKEY_BASE = 10000;
+constexpr int WM_MY_ADDIMAGE = WM_USER + 222;
+constexpr int WM_MY_SHOWPAGE = WM_USER + 223;
+constexpr int WM_MY_EXIT = WM_USER + 224;
+constexpr int WM_TASKDISPATCHERMSG = WM_USER + 225;
 
 // Forward declarations
 class CFolderAdd;

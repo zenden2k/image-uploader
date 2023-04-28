@@ -389,8 +389,15 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     }
     dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
+    // Set WS_CLIPSIBLINGS style for correct display of CDragndropOverlay on Windows 7
     HWND exitBtn = GetDlgItem(IDCANCEL);
     ::SetWindowLong(exitBtn, GWL_STYLE, ::GetWindowLong(exitBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
+    HWND nextBtn = GetDlgItem(IDC_NEXT);
+    ::SetWindowLong(nextBtn, GWL_STYLE, ::GetWindowLong(nextBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
+    HWND prevBtn = GetDlgItem(IDC_PREV);
+    ::SetWindowLong(prevBtn, GWL_STYLE, ::GetWindowLong(prevBtn, GWL_STYLE) | WS_CLIPSIBLINGS);
+
+    helpButton_.SetWindowLong(GWL_STYLE, helpButton_.GetWindowLong(GWL_STYLE) | WS_CLIPSIBLINGS);
 
     SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();

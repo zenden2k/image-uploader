@@ -38,10 +38,13 @@ CMyImage::CMyImage() : bm_(nullptr), BackBufferWidth(0), BackBufferHeight(0)
 
 CMyImage::~CMyImage()
 {
-    if (BackBufferDc)
+    if (BackBufferDc) {
+        SelectObject(BackBufferDc, oldBm_);
         DeleteDC(BackBufferDc);
-    if (BackBufferBm)
+    }
+    if (BackBufferBm) {
         DeleteObject(BackBufferBm);
+    }
 }
 
 LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
@@ -87,12 +90,18 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 {
     RECT rc;
     GetClientRect(&rc);
-    if (BackBufferDc)
+
+    if (BackBufferDc) {
+        SelectObject(BackBufferDc, oldBm_);
         DeleteDC(BackBufferDc);
-    BackBufferDc = 0;
-    if (BackBufferBm)
+    }
+    BackBufferDc = nullptr;
+    if (BackBufferBm) {
         DeleteObject(BackBufferBm);
-    BackBufferBm = 0;
+    }
+    BackBufferBm = nullptr;
+    oldBm_ = nullptr;
+
     Graphics g(m_hWnd, true);
 
     BackBufferWidth = rc.right;
@@ -108,12 +117,12 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         height -=  2;
     }
 
-    HDC dc = GetDC();
+    CWindowDC dc(m_hWnd);
 
     BackBufferDc = ::CreateCompatibleDC(dc);
     BackBufferBm = ::CreateCompatibleBitmap(dc, BackBufferWidth, BackBufferHeight);
 
-    ::SelectObject(BackBufferDc, BackBufferBm);
+    oldBm_ = ::SelectObject(BackBufferDc, BackBufferBm);
 
     Graphics gr(BackBufferDc);
 
@@ -225,8 +234,6 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
             gr.DrawImage(bm, (int)((ResourceID) ? 0 : 1 + (width - newwidth) / 2),
                          (int)((ResourceID) ? 0 : 1 + (height - newheight) / 2), (int)newwidth, (int)newheight);
     }
-
-    ReleaseDC(dc);
 
     IsImage = true;
     Invalidate();

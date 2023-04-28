@@ -112,6 +112,7 @@ public:
     ~CCustomDialogIndirectImpl()
     {
         if (m_hDlgTemplate) {
+            GlobalUnlock(m_hDlgTemplate);
             GlobalFree(m_hDlgTemplate);
         }
     }

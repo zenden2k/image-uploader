@@ -154,7 +154,7 @@ protected:
     bool openedFromHistory_;
     bool groupByFileName_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
-    
+    CImageListManaged toolbarImageList_;
     void BBCode_Link(CString &Buffer, CUrlListItem &item);
     void Markdown_Link(CString &Buffer, CUrlListItem &item);
     void HTML_Link(CString &Buffer, CUrlListItem &item);

@@ -60,6 +60,7 @@ public:
     LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
     int ImageWidth, ImageHeight;
     HBITMAP BackBufferBm;
+    HGDIOBJ oldBm_ = nullptr;
     HDC BackBufferDc;
     int BackBufferWidth, BackBufferHeight;
 };
