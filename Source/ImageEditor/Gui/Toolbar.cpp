@@ -711,7 +711,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
             roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
 
             if ( item.type == itComboButton ) {
-                gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3 ,  bounds.Y+1 , bounds.X + bounds.Width - dropDownIcon_->GetWidth()-3, bounds.Y + bounds.Height -1 );
+                gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
             }
         
     } /*else if ( item.state == isChecked ) {

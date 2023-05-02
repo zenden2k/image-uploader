@@ -44,9 +44,13 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
     DoDataExchange(FALSE);
     using namespace std::placeholders;
+    CWindowDC dc(m_hWnd);
+    float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE );
+    LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255));
 
     TRC(IDC_SELECTOPTION, "Select action:");

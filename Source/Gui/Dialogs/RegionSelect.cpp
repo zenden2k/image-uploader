@@ -184,10 +184,11 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
             WindowRgn.GetRgnBox(&SelWndRect);
             CRect DrawingRect = SelWndRect;
             DrawingRect.DeflateRect(2, 2);
-            SelectObject(doubleDC, pen);
+            HGDIOBJ oldPen = SelectObject(doubleDC, pen);
             SetROP2(doubleDC, R2_NOTXORPEN);
             SelectClipRgn(doubleDC, 0);
             Rectangle(doubleDC, DrawingRect.left, DrawingRect.top, DrawingRect.right, DrawingRect.bottom);
+            SelectObject(doubleDC, oldPen);
         }
         m_bPictureChanged = false;
     }
@@ -313,10 +314,11 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 SetROP2(doubleDC, R2_COPYPEN);
                 POINT p = m_curvePoints.back();
                 MoveToEx(doubleDC, p.x, p.y,0);
-                SelectObject(doubleDC, pen);
+                HGDIOBJ oldPen = SelectObject(doubleDC, pen);
                 POINT newPoint  = {LOWORD(lParam), HIWORD(lParam)};
                 LineTo(doubleDC, newPoint.x, newPoint.y);
                 m_curvePoints.push_back(newPoint);
+                SelectObject(doubleDC, oldPen);
 
                 RECT RectToRepaint;
                 RectToRepaint.left = std::min(p.x, newPoint.x) - m_brushSize;

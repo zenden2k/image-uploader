@@ -69,6 +69,8 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
     if (!item) return FALSE;
 
     CDCHandle dc = dis->hDC;
+    float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
     if (dis->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)) {
         dc.SetBkColor(GetSysColor(COLOR_WINDOW));
@@ -90,36 +92,38 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
         {
             CPen pen;
             pen.CreatePen(PS_SOLID, 1, RGB(190,190,190));
-            SelectObject(dc.m_hDC, pen);
+            auto oldPen = SelectObject(dc.m_hDC, pen);
             dc.MoveTo(rct.left, r.bottom - 1);
             dc.LineTo(rct.right, r.bottom - 1);
+            SelectObject(dc.m_hDC, oldPen);
         }
 
         SetBkMode(dc.m_hDC,TRANSPARENT);
 
         SIZE TimeLabelDimensions;
-        SelectObject(dc.m_hDC, NormalFont);
+        auto oldFont = SelectObject(dc.m_hDC, NormalFont);
         GetTextExtentPoint32(dc, item->Time, item->Time.GetLength(), &TimeLabelDimensions);
 
         // Writing error time
-
+        int iconSizeW = GetSystemMetrics(SM_CXICON);
+        int leftOffset = iconSizeW + static_cast<int>(roundf(dpiScaleX_ * 5));
         ExtTextOutW(dc.m_hDC, rct.right - 5 - TimeLabelDimensions.cx, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->Time, item->Time.GetLength(), 0);
         // Writing error title
         SelectObject(dc.m_hDC, UnderlineFont);
-        ExtTextOutW(dc.m_hDC, r.left + 56, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->strTitle, item->strTitle.GetLength(), 0);
+        ExtTextOutW(dc.m_hDC, r.left + leftOffset, r.top + LLB_VertMargin, ETO_CLIPPED, r, item->strTitle, item->strTitle.GetLength(), 0);
 
         // Writing some info
         SelectObject(dc.m_hDC, NormalFont);
-        RECT ItemRect = {r.left + 56, r.top + LLB_VertMargin + LLB_VertDivider + item->TitleHeight,
+        RECT ItemRect = {r.left + leftOffset, r.top + LLB_VertMargin + LLB_VertDivider + item->TitleHeight,
             r.right - 10, r.bottom - LLB_VertMargin};
         dc.DrawText(item->Info, item->Info.GetLength(), &ItemRect, DT_NOPREFIX);
 
         // Writing error text with bold (explication of error)
         SelectObject(dc.m_hDC, BoldFont);
-        RECT TextRect = {r.left + 56, LLB_VertMargin + r.top + item->TitleHeight + LLB_VertDivider + ((item->Info.GetLength()) ? (item->InfoHeight + LLB_VertDivider) : 0), r.right - 10, r.bottom - LLB_VertMargin};
+        RECT TextRect = {r.left + leftOffset, LLB_VertMargin + r.top + item->TitleHeight + LLB_VertDivider + ((item->Info.GetLength()) ? (item->InfoHeight + LLB_VertDivider) : 0), r.right - 10, r.bottom - LLB_VertMargin};
         dc.DrawText(item->strText, item->strText.GetLength(), &TextRect, DT_NOPREFIX);
 
-        POINT iconPos{ 12, r.top + 8 };
+        POINT iconPos{ static_cast<int>(roundf(dpiScaleX_ * 5)), r.top + static_cast<int>(roundf(dpiScaleY_ * 5)) };
 
         CIcon* ico = nullptr;
         switch (item->Type) {
@@ -136,6 +140,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
         if (ico) {
             dc.DrawIcon(iconPos.x, iconPos.y, *ico);
         }
+        SelectObject(dc.m_hDC, oldFont);
     }
 
     bHandled = true;
@@ -153,7 +158,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     HDC dc = GetDC();
     //float dpiScaleX_ = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
-    SelectObject(dc, NormalFont);
+    HGDIOBJ oldFont = SelectObject(dc, NormalFont);
 
 
     RECT ClientRect;
@@ -179,7 +184,7 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     lpmis->itemHeight = LLB_VertMargin + item->TitleHeight + LLB_VertDivider + item->TextHeight + (item->InfoHeight?(LLB_VertDivider + item->InfoHeight):0) + LLB_VertMargin+2;
     lpmis->itemHeight = std::max(lpmis->itemHeight, static_cast<UINT>(dpiScaleY_ * 70) );
     lpmis->itemHeight = std::min(254u , lpmis->itemHeight);
-
+    SelectObject(dc, oldFont);
     ReleaseDC(dc);
     return 0;
 }

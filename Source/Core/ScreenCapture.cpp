@@ -772,7 +772,9 @@ std::shared_ptr<Bitmap> CWindowHandlesRegion::CaptureWithTransparencyUsingDWM()
 // TODO : fix vista maximized window capturing
 std::shared_ptr<Gdiplus::Bitmap> CWindowHandlesRegion::GetImage(HDC src)
 {
-    if (m_hWnds.empty()) return false;
+    if (m_hWnds.empty()) {
+        return {};
+    }
     RECT captureRect = {0, 0, 0, 0};
     if (!m_ScreenRegion.IsNull())
         m_ScreenRegion.DeleteObject();

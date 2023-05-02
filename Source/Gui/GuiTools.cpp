@@ -352,7 +352,7 @@ void ShowDialogItem(HWND dlg, int itemId, bool show) {
 
 RECT AutoSizeStaticControl(HWND control) {
     CString text = GuiTools::GetWindowText(control);
-    HDC dc = ::GetDC(control);
+    CWindowDC dc(control);
     HFONT font = reinterpret_cast<HFONT>(SendMessage(control, WM_GETFONT, 0, 0));
 
     SIZE textSize;
@@ -363,7 +363,6 @@ RECT AutoSizeStaticControl(HWND control) {
     GetWindowRect(control, &controlRect);
     MapWindowPoints(0 /*means desktop*/, GetParent(control), reinterpret_cast<LPPOINT>(&controlRect), 2);
     SelectObject(dc, oldFont);
-    ReleaseDC(control, dc);
     ::InvalidateRect(control, 0, FALSE);
     return controlRect;
 }

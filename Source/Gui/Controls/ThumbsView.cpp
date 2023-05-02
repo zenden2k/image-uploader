@@ -33,8 +33,7 @@
 #include "Gui/CommonDefines.h"
 #include "Gui/Dialogs/MainDlg.h"
 
-#define THUMBNAIL_WIDTH 170   // constants
-#define THUMBNAIL_HEIGHT 120
+
 
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
@@ -54,16 +53,24 @@ CThumbsView::~CThumbsView()
 
 void CThumbsView::Init(bool Extended)
 {
+    const int THUMBNAIL_WIDTH = 150;
+    const int THUMBNAIL_HEIGHT = 120;
+    CWindowDC dc(m_hWnd);
+    float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+    thumbnailWidth_ = static_cast<int>(roundf(THUMBNAIL_WIDTH * dpiScaleX_));
+    thumbnailHeight_ = static_cast<int>(roundf(THUMBNAIL_HEIGHT * dpiScaleY_));
+    fullThumbHeight_ = thumbnailHeight_ + (Extended ? static_cast<int>(roundf(20 * dpiScaleY_)) : 0);
     Start(THREAD_PRIORITY_BELOW_NORMAL);
     ExtendedView = Extended;
     ImageView.Create(m_hWnd);
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    ImageList.Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT + (ExtendedView ? 20 : 0), ILC_COLOR24 | rtlStyle, 0, 3);
+    ImageList.Create(thumbnailWidth_, fullThumbHeight_, ILC_COLOR24 | rtlStyle, 0, 3);
     SetImageList(ImageList, LVSIL_NORMAL);
     DWORD style = GetExtendedListViewStyle();
     style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;
     SetExtendedListViewStyle(style);
-    SetIconSpacing(THUMBNAIL_WIDTH + 5, THUMBNAIL_HEIGHT + 25 + (ExtendedView ? 20 : 0));
+    SetIconSpacing(thumbnailWidth_ + static_cast<int>(roundf(5 * dpiScaleX_)), fullThumbHeight_ + static_cast<int>(roundf(25 * dpiScaleY_)));
 }
 
 int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, Gdiplus::Image* Img)
@@ -234,7 +241,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
     {
         return false;
     }
-    std::unique_ptr<Bitmap> ImgBuffer;
     std::unique_ptr<Image> bm;
     CString filename;
     if(ItemID>=0) 
@@ -242,19 +248,17 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
         filename = /*GetFileName(ItemID);*/tvi->FileName; 
     }
     int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
-    width = THUMBNAIL_WIDTH/*rc.right-2*/;
-    height = THUMBNAIL_HEIGHT/*rc.bottom-16*/;
-    int thumbwidth = THUMBNAIL_WIDTH;
-    int  thumbheight = THUMBNAIL_HEIGHT;
+    width = thumbnailWidth_/*rc.right-2*/;
+    height = thumbnailHeight_/*rc.bottom-16*/;
+    int thumbwidth = thumbnailWidth_;
+    int  thumbheight = thumbnailHeight_;
     bool isImage = Img || IuCommonFunctions::IsImage(filename);
     if ( isImage)
     {
         if (Img) {
-            //bm = Img;
-
             imgwidth = Img->GetWidth();
             imgheight = Img->GetHeight();
-            bm = ImageUtils::GetThumbnail(Img, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 0);
+            bm = ImageUtils::GetThumbnail(Img, thumbnailWidth_, thumbnailHeight_, 0);
             if (bm) {
                 newwidth = bm->GetWidth();
                 newheight = bm->GetHeight();
@@ -265,7 +269,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
             if(ItemID>=0) 
             {
                 Gdiplus::Size originalImageSize;
-                bm = ImageUtils::GetThumbnail(filename, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, &originalImageSize);
+                bm = ImageUtils::GetThumbnail(filename, thumbnailWidth_, thumbnailHeight_, &originalImageSize);
                 if (bm) {
                     imgwidth = originalImageSize.Width;
                     imgheight = originalImageSize.Height;
@@ -278,10 +282,10 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
     if (imgwidth>maxwidth) maxwidth = imgwidth;
     if (imgheight>maxheight) maxheight = imgheight;
     Graphics g(m_hWnd,true);
-    ImgBuffer = std::make_unique<Bitmap>(thumbwidth, thumbheight+30, &g);
+    Bitmap ImgBuffer(thumbwidth, fullThumbHeight_, &g);
 
 
-    Graphics gr(ImgBuffer.get());
+    Graphics gr(&ImgBuffer);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
 
@@ -353,46 +357,47 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
         {
         }
 
-        RectF bounds(0, float(height), float(width), float(20));
+        RectF bounds(0, float(height), float(width), float(fullThumbHeight_ - thumbnailHeight_));
 
         if (ExtendedView)
         {
-            LinearGradientBrush 
-                br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210), 
-                LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/); 
-            gr.FillRectangle(&br2,(float)1, (float)height+1, (float)width-2, (float)height+20-1);
-        }
+            LinearGradientBrush
+                br2(bounds, Color(240, 255, 255, 255), Color(200, 210, 210, 210),
+                    LinearGradientModeBackwardDiagonal /*LinearGradientModeVertical*/);
+            gr.FillRectangle(&br2, (float)1, (float)height + 1, (float)width - 2, (float)height + 20 - 1);
 
-        if(ItemID>=0)
-        {
-            SolidBrush brush(Color(255,0,0,0));
-            StringFormat format;
-            format.SetAlignment(StringAlignmentCenter);
-            format.SetLineAlignment(StringAlignmentCenter);
-            Font font(L"Tahoma", 8, FontStyleRegular );
-            CString Filename = /*GetFileName(ItemID);*/filename;
-            CString Buffer;
-            //int f = MyGetFileSize(GetFileName(ItemID));
-            WCHAR buf2[25];
-            std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
-            lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
-            //NewBytesToString(f, buf2, 25);
-            WCHAR FileExt[25];
-            lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
-            if(!lstrcmpi(FileExt, _T("jpg"))) 
-                lstrcpy(FileExt,_T("JPEG"));
-            if(IuCommonFunctions::IsImage(filename) && bm) {
-                Buffer.Format(_T("%s %dx%d (%s)"), (LPCTSTR)FileExt, imgwidth, imgheight, (LPCTSTR)buf2);
+
+            if (ItemID >= 0)
+            {
+                SolidBrush brush(Color(255, 0, 0, 0));
+                StringFormat format;
+                format.SetAlignment(StringAlignmentCenter);
+                format.SetLineAlignment(StringAlignmentCenter);
+                Font font(L"Tahoma", 8, FontStyleRegular);
+                CString Filename = /*GetFileName(ItemID);*/filename;
+                CString Buffer;
+                //int f = MyGetFileSize(GetFileName(ItemID));
+                WCHAR buf2[25];
+                std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
+                lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
+                //NewBytesToString(f, buf2, 25);
+                WCHAR FileExt[25];
+                lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
+                if (!lstrcmpi(FileExt, _T("jpg")))
+                    lstrcpy(FileExt, _T("JPEG"));
+                if (IuCommonFunctions::IsImage(filename) && bm) {
+                    Buffer.Format(_T("%s %dx%d (%s)"), (LPCTSTR)FileExt, imgwidth, imgheight, (LPCTSTR)buf2);
+                }
+                else {
+                    Buffer = buf2;
+                }
+                gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);
             }
-            else {
-                Buffer = buf2;
-            }
-            gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);
         }
     }
 
     HBITMAP bmp = nullptr;
-    ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
+    ImgBuffer.GetHBITMAP(Color(255,255,255), &bmp);
 
     if (tvi) {
         tvi->ThumbLoaded = true;
@@ -412,7 +417,6 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
         defaultImage_ = bmp;
         ImageList.Add(bmp, (COLORREF)0);
     }
-
 
     return true;
 }

@@ -1490,4 +1490,52 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
     return false;
 }
 
+std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer) {
+    TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
+
+    TCHAR szFontSize[MAX_PATH] = _T("");
+    TCHAR szFormat[MAX_PATH] = _T("");
+    TCHAR szCharset[MAX_PATH] = _T("");
+    bool bBold = false;
+    bool bItalic = false;
+    bool bUnderline = false;
+    bool bStrikeOut = false;
+    int nFontSize = 10;
+    int nCharSet = ANSI_CHARSET;
+
+    WinUtils::ExtractStrFromList(szBuffer, 0, szFontName, sizeof(szFontName) / sizeof(TCHAR));
+    if (WinUtils::ExtractStrFromList(szBuffer, 1, szFontSize, sizeof(szFontSize) / sizeof(TCHAR)))
+    {
+        _stscanf(szFontSize, _T("%d"), &nFontSize);
+    }
+
+    WinUtils::ExtractStrFromList(szBuffer, 2, szFormat, sizeof(szFontSize) / sizeof(TCHAR));
+
+    if (_tcschr(szFormat, 'b')) bBold = true;
+    if (_tcschr(szFormat, 'u')) bUnderline = true;
+    if (_tcschr(szFormat, 'i')) bItalic = true;
+    if (_tcschr(szFormat, 's')) bStrikeOut = true;
+
+    if (WinUtils::ExtractStrFromList(szBuffer, 3, szCharset, sizeof(szCharset) / sizeof(TCHAR))) {
+        _stscanf(szCharset, _T("%d"), &nCharSet);
+    }
+
+    //lFont->lfCharSet = static_cast<BYTE>(nCharSet);
+    int style = Gdiplus::FontStyleRegular;
+    if (bItalic) {
+        style |= Gdiplus::FontStyleItalic;
+    }
+    if (bStrikeOut) {
+        style |= Gdiplus::FontStyleStrikeout;
+    }
+    if (bBold) {
+        style |= Gdiplus::FontStyleBold;
+    }
+    if (bUnderline) {
+        style |= Gdiplus::FontStyleUnderline;
+    }
+    FontFamily fontFamily(szFontName);
+    return std::make_unique<Font>(&fontFamily, static_cast<REAL>(nFontSize), style, Gdiplus::UnitPixel);
+}
+
 }

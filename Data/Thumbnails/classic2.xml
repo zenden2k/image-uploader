@@ -5,7 +5,7 @@
         <Params>
             <Param Name="DrawFrame" Value="1" />
             <Param Name="DrawText" Value="1" />
-            <Param Name="Font" Value="Tahoma, 7, b, 204" />
+            <Param Name="Font" Value="Tahoma, 12, b, 204" />
             <Param Name="FrameColor" Value="#004a6f" />
             <Param Name="FrameWidth" Value="1" />
             <Param Name="GradientColor" Value="0" />

@@ -120,6 +120,8 @@ protected:
     std::deque<int> thumbQueue_;
     std::mutex thumbQueueMutex_;
     std::condition_variable thumbQueueCondition_;
+    int thumbnailWidth_ = 0, thumbnailHeight_ = 0; // height without label
+    int fullThumbHeight_ = 0;
 };
 
 

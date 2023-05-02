@@ -80,6 +80,8 @@ bool IsImageAnimated(Gdiplus::Image* img);
  * @throws IOException
  */
 bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, bool lossless, int quality);
+
+std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer);
 }
 
 #endif

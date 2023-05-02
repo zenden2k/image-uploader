@@ -25,6 +25,20 @@
 #include "Gui/GuiTools.h"
 #include "HyperLinkControlAccessible.h"
 
+namespace {
+
+static SIZE GetTextDimensions(HDC dc, LPCTSTR Text, HFONT Font) {
+    SIZE sz = {};
+    if (!Text) {
+        return sz;
+    }
+    HGDIOBJ  OldFont = SelectObject(dc, Font);
+    GetTextExtentPoint32(dc, Text, lstrlen(Text), &sz);
+    SelectObject(dc, OldFont);
+    return sz;
+}
+
+}
 // CHyperLinkControl
 CHyperLinkControl::CHyperLinkControl()
 {
@@ -112,7 +126,7 @@ int CHyperLinkControl::ItemFromPoint(POINT pt) const {
             continue;
         }
         CRect rc(Items[i].ItemRect);
-        if (!m_bHyperLinks && *Items[i].szTip) {
+        if (!m_bHyperLinks && !Items[i].szTip.IsEmpty()) {
             rc.right = ClientRect.right - 6;
             rc.InflateRect(3, 6);
         }
@@ -133,81 +147,72 @@ int CHyperLinkControl::GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
     return sz.cx;
 }
 
-int CHyperLinkControl::AddString(LPCTSTR szTitle,LPCTSTR szTip,int idCommand,HICON hIcon,bool Visible,int Align,  bool LineBreak)
-{
+int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, HICON hIcon, bool Visible, int Align,
+                                 bool LineBreak) {
     // TODO: This shit should be rewritten from scratch
     RECT ClientRect;
     GetClientRect(&ClientRect);
 
-    auto* item = new  HyperLinkControlItem;
-    if(szTip)
-        lstrcpy(item->szTip,szTip);
-    else 
-        *(item->szTip)=0;
-    lstrcpy(item->szTitle, szTitle);
-    item->hIcon = hIcon;
-    if ( hIcon ) {
+    HyperLinkControlItem item{};
+    if (szTip) {
+        item.szTip =szTip;
+    } 
+    item.szTitle = szTitle;
+    item.hIcon = hIcon;
+    if (hIcon) {
         GuiTools::IconInfo iconInfo = GuiTools::GetIconInfo(hIcon);
-        item->iconWidth = iconInfo.nWidth;
-        item->iconHeight = iconInfo.nHeight;
+        item.iconWidth = iconInfo.nWidth;
+        item.iconHeight = iconInfo.nHeight;
     }
-    item->idCommand=idCommand;
-    item->Hover=false;
-    item->Visible=Visible;
+    item.idCommand = idCommand;
+    item.Hover = false;
+    item.Visible = Visible;
     CWindowDC dc(m_hWnd);
 
-    int szTipWidth = szTip ? GetTextWidth(dc, szTip, NormalFont) : 0;
-    int TitleWidth = std::max(GetTextWidth(dc, szTitle, BoldFont), szTipWidth);
+    SIZE tipDimensions = GetTextDimensions(dc, szTip, NormalFont);
+    int szTipWidth = szTip ? tipDimensions.cx : 0;
+    SIZE titleDimensions = GetTextDimensions(dc, szTitle, BoldFont);
+    int TitleWidth = std::max<int>(titleDimensions.cx, szTipWidth);
 
-    if(szTip)
-    {
-        if(SubItemRightY!= -1)
-            BottomY+= 16;
-        item->ItemRect.left = 5;
-        item->ItemRect.top = BottomY +(m_bHyperLinks?ScaleY(15):ScaleY(10));
-        item->ItemRect.right=ScaleX(10)+item->ItemRect.left+ item->iconWidth + TitleWidth+1/*ClientRect.right*/;
-        item->ItemRect.bottom = item->ItemRect.top+ScaleY(33);
-        BottomY+= ScaleY(10+38);
-        SubItemRightY= -1;
-    }
-    else
-    {    
+    if (szTip) {
+        if (SubItemRightY != -1) {
+            BottomY += ScaleY(12);
+        }
+        item.ItemRect.left = 5;
+        item.ItemRect.top = BottomY + (m_bHyperLinks ? ScaleY(15) : ScaleY(10));
+        item.ItemRect.right = ScaleX(10) + item.ItemRect.left + item.iconWidth + TitleWidth + 1/*ClientRect.right*/;
+        int height = std::max<int>(tipDimensions.cy + titleDimensions.cy + ScaleY(3), item.iconHeight);
+        item.ItemRect.bottom = item.ItemRect.top + height;
 
+        BottomY = item.ItemRect.bottom;
+        SubItemRightY = -1;
+    } else {
         int TextWidth = GetTextWidth(dc, szTitle, NormalFont);
-        if(Align==2) // right aligned text
-        {
-            SubItemRightY = ClientRect.right - TextWidth - 3 -35;
+        if (Align == 2) { // right aligned text
+            SubItemRightY = ClientRect.right - TextWidth - 3 - 35;
+        } else {
+            if (SubItemRightY == -1) {
+                SubItemRightY = 35;
+            } else {
+                SubItemRightY += ScaleY(20);
+            }
         }
-        else 
-        {
-            if(SubItemRightY== -1)
-                SubItemRightY=35;
-            else 
-                SubItemRightY+=ScaleY(20);
+        if (LineBreak) {
+            SubItemRightY = 35;
+            BottomY += ScaleY(20);
         }
-        if(  LineBreak)
         {
-            //item->ItemRect.left = 35;
-            SubItemRightY =35;
-            BottomY+=ScaleY(20);
-            //item->ItemRect.top = BottomY;
-            
+            item.ItemRect.left = SubItemRightY;
+            item.ItemRect.top = BottomY + ((BottomY > 1) ? ScaleY(6) : 0);
         }
-        //else
-        {
-
-        
-        item->ItemRect.left = SubItemRightY;
-        item->ItemRect.top = BottomY + ((BottomY>1)?6:0);
+        if (!m_bHyperLinks) {
+            item.ItemRect.top += ScaleY(5);
         }
-        if(!m_bHyperLinks) 
-            item->ItemRect.top+=ScaleY(5);
-        item->ItemRect.right = 1+GetTextWidth(dc, szTitle, NormalFont)+ScaleX(23)+item->ItemRect.left;
-        item->ItemRect.bottom = item->ItemRect.top+ScaleY(20);
-        SubItemRightY+=item->ItemRect.right-item->ItemRect.left;
+        item.ItemRect.right = 1 + GetTextWidth(dc, szTitle, NormalFont) + ScaleX(23) + item.ItemRect.left;
+        item.ItemRect.bottom = item.ItemRect.top + ScaleY(20);
+        SubItemRightY += item.ItemRect.right - item.ItemRect.left;
     }
-    Items.Add(*item);
-    delete item;
+    Items.Add(item);
     return TRUE;
 }
 
@@ -230,7 +235,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
     {
         if(!Items[i].Visible) continue;
         CRect rc(Items[i].ItemRect);
-        if(!m_bHyperLinks && *Items[i].szTip)
+        if(!m_bHyperLinks && !Items[i].szTip.IsEmpty())
         {
             rc.right= ClientRect.right - 6;
             rc.InflateRect(3,6);
@@ -238,7 +243,7 @@ LRESULT CHyperLinkControl::OnMouseMove(UINT Flags, CPoint Pt)
 
         if(rc.PtInRect(Pt))
         {
-            if(m_bHyperLinks  || !*Items[i].szTip)
+            if(m_bHyperLinks  || Items[i].szTip.IsEmpty())
             {
                 if(!CursorHand)
                     SetCursor(handCursor_);  // we need this because system doesn't send WM_CURSOR message immediately
@@ -414,7 +419,6 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     GetClientRect(&rc);
     CRect r(rc);
     CBrush br;
-    //br.CreateSolidBrush(RGB(0,0,0));
     br.CreateSolidBrush(m_BkColor);
     CDC& dc = dcMem_;
     dc.FillRect(r,br);
@@ -455,13 +459,14 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 oldFont = dc.SelectFont(BoldFont);
             }
 
+            SIZE TextDims;
+            GetTextExtentPoint32(dc, item.szTitle, lstrlen(item.szTitle), &TextDims);
+
             int textY = item.ItemRect.top;
             if(*item.szTip == _T(' '))
             {
-                SIZE TextDims;
-                GetTextExtentPoint32(dc, item.szTitle, lstrlen(item.szTitle),    &TextDims);
+                
                 textY += (33-TextDims.cy)/2;
-
             }
 
             ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
@@ -474,7 +479,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             }
             dc.SetTextColor(RGB(100,100,100));
 
-            ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top+18, ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
+            ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top + TextDims.cy + ScaleY(3), ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 
             dc.SetBkMode(TRANSPARENT);
             if(m_bHyperLinks){

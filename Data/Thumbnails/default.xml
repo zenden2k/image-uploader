@@ -4,7 +4,7 @@
         <Sprite Source="default.png" />
         <Params>
             <Param Name="DrawText" Value="1" />
-            <Param Name="Font" Value="Tahoma, 7, b, 204" />
+            <Param Name="Font" Value="Tahoma, 12, b, 204" />
             <Param Name="StrokeColor" Value="#000000" />
             <Param Name="Text" Value="" />
             <Param Name="TextColor" Value="#ffffff" />

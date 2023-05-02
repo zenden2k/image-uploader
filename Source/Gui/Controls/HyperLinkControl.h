@@ -27,12 +27,12 @@ struct HyperLinkControlItem
     ~HyperLinkControlItem() {
         DeleteObject(hIcon);
     }
-    TCHAR szTitle[256];
-    TCHAR szTip[256];
+    CString szTitle;
+    CString szTip;
     HICON hIcon;
-    int iconWidth;
-    int iconHeight;
-    int idCommand;
+    int iconWidth = 0;
+    int iconHeight = 0;
+    int idCommand = 0;
     RECT ItemRect;
     bool Hover;
     bool Visible;

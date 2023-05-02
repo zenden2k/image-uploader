@@ -309,10 +309,6 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     CWindowDC dc(nullptr);
     int newwidth = image->getWidth();
     int newheight = image->getHeight();
-    //int64_t FileSize = IuCoreUtils::getFileSize(sourceFile_);
-    /*TCHAR SizeBuffer[100]=_T("\0");
-    if(FileSize>0)
-    NewBytesToString(FileSize,SizeBuffer,sizeof(SizeBuffer));*/
 
     CString sizeString = U2W(IuCoreUtils::FileSizeToString(fileSize));
     CString ThumbnailText = U2W(m_thumbCreatingParams.Text); // Text that will be drawn on thumbnail
@@ -323,19 +319,23 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
 
     int thumbwidth = m_thumbCreatingParams.Width;
     int thumbheight = m_thumbCreatingParams.Height;
+
     Graphics g1(dc);
     CString filePath = U2W(thumbnailTemplate_->getSpriteFileName());
     Image templ(filePath);
 
-    LOGFONT lf;
-    WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
-    if (thumbnailTemplate_->existsParam("Font"))
-    {
-        std::string font = thumbnailTemplate_->getParamString("Font");
-        CString wide_text = U2W(font);
-        WinUtils::StringToFont(wide_text, &lf);
+    std::unique_ptr<Gdiplus::Font> font;
+    
+    if (thumbnailTemplate_->existsParam("Font")) {
+        std::string fontStr = thumbnailTemplate_->getParamString("Font");
+        CString wide_text = U2W(fontStr);
+        font = ImageUtils::StringToGdiplusFont(wide_text);
+        //WinUtils::StringToFont(wide_text, &lf);
+    } else {
+        //WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
+        font = ImageUtils::StringToGdiplusFont(_T("Tahoma,12,b,204"));
     }
-    Font font(dc, &lf);
+
     RectF TextRect;
 
     /*StringFormat * f = StringFormat::GenericTypographic()->Clone();
@@ -344,9 +344,9 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
 
     StringFormat format;
     FontFamily ff;
-    font.GetFamily(&ff);
+    font->GetFamily(&ff);
     g1.SetPageUnit(UnitWorld);
-    g1.MeasureString(_T("test"), -1, &font, PointF(0, 0), &format, &TextRect);
+    g1.MeasureString(_T("test"), -1, font.get(), PointF(0, 0), &format, &TextRect);
     //        delete f;
     m_Vars["TextWidth"] = std::to_string(static_cast<int>(TextRect.Width));
     m_Vars["TextHeight"] = std::to_string(static_cast<int>(TextRect.Height));
@@ -437,7 +437,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                 strokeColor = EvaluateColor(tokens[1]);
             RectF TextBounds((float)rc.left, (float)rc.top, (float)rc.right, (float)rc.bottom);
             thumbgr.SetPixelOffsetMode(PixelOffsetModeDefault);
-            ImageUtils::DrawStrokedText(*gr, /* Buffer*/ textToDraw, TextBounds, font, Color(color1), Color(
+            ImageUtils::DrawStrokedText(*gr, /* Buffer*/ textToDraw, TextBounds, *font.get(), Color(color1), Color(
                 strokeColor) /*params.StrokeColor*/, 1, 1, 1);
             thumbgr.SetPixelOffsetMode(PixelOffsetModeNone);
         }
