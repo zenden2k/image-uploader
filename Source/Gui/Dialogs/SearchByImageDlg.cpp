@@ -30,8 +30,8 @@
 // CSearchByImageDlg
 
 CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName):
-    uploadManager_(uploadManager),
-    fileName_(fileName)
+    fileName_(fileName),
+    uploadManager_(uploadManager)
 {
     cancelPressed_ = false;
     searchEngine_ = searchEngine;
@@ -58,11 +58,13 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     using namespace std::placeholders;
     seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer, W2U(fileName_));
-    seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
-        onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
-    });
-    SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
-    ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
+    if (seeker_) {
+        seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
+            onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
+            });
+        SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
+        ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
+    }
     return 1;  // Let the system set the focus
 }
 

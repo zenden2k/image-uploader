@@ -175,7 +175,7 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
             retCode = sqlite3_step(stmt);
         }
         if (retCode != SQLITE_DONE) {
-            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode;
+            LOG(ERROR) << "SQL error: Could not execute statement, return code=" << retCode << std::endl << sqlite3_errmsg(db_);
         }
         return false;
     }

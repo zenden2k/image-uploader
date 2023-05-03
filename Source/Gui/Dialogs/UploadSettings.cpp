@@ -164,14 +164,13 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
     LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight, &ico);
     iconDropdown_ = ico;
-    SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
-    m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
+    m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
+    m_ResizePresetIconButton.SetIcon(iconDropdown_);
 
-    SendDlgItemMessage(IDC_SHORTENINGURLSERVERBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
-    m_ShorteningServerButton.SubclassWindow(GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON));
+    m_ShorteningServerButton.m_hWnd = GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON);
+    m_ShorteningServerButton.SetIcon(iconDropdown_);
 
-
-    iconEdit_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
+    iconEdit_ = static_cast<HICON>(LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);

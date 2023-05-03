@@ -32,7 +32,7 @@ struct ImageEditorSettingsStruct {
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
     SearchByImage::SearchEngine SearchEngine;
-    bool FillTextBackground;
+    bool FillTextBackground = false;
     int ArrowType;
 };
 

@@ -186,9 +186,8 @@ protected:
     CMyEngineList * m_EngineList;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     void TranslateUI();
-    CIconButton m_ResizePresetIconButton;
-    CIconButton m_ProfileEditButton;
-    CIconButton m_ShorteningServerButton;
+    CButton m_ResizePresetIconButton;
+    CButton m_ShorteningServerButton;
     CToolBarCtrl m_ProfileEditToolbar;
     //CPercentEdit m_ThumbSizeEdit;
     void UpdateProfileList();
