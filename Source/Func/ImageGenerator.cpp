@@ -32,13 +32,12 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
 
         Graphics g1(wnd_);
 
-        CWindowDC dc(nullptr);
-        Font font(dc, &Settings.VideoSettings.Font);
+        auto font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
 
         FontFamily ff;
-        font.GetFamily(&ff);
+        font->GetFamily(&ff);
         g1.SetPageUnit(UnitPixel);
-        g1.MeasureString(Report, -1, &font, PointF(0, 0), &TextRect);
+        g1.MeasureString(Report, -1, font.get(), PointF(0, 0), &TextRect);
         infoHeight = int(TextRect.Height);
     }
 
@@ -102,13 +101,11 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         StringFormat format;
         format.SetAlignment(StringAlignmentNear);
         format.SetLineAlignment(StringAlignmentNear);
-        CWindowDC dc(nullptr);
-        Font font(dc, &Settings.VideoSettings.Font);
-        // Font font(L"Arial", 12, FontStyleBold);
+        auto font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
 
         SolidBrush br(/*Settings.ThumbSettings.ThumbTextColor*/ MYRGB(255, Settings.VideoSettings.TextColor));
         RectF textBounds(float(gapwidth), float(gapheight), float(needwidth - gapwidth), float(infoHeight - gapheight));
-        gr.DrawString(Report, -1, &font, textBounds, &format, &br);
+        gr.DrawString(Report, -1, font.get(), textBounds, &format, &br);
         // /DrawStrokedText(gr, Report,textBounds,font,ColorText,ColorStroke,3,3);
     }
     if (isCanceled()) {

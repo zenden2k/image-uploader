@@ -717,6 +717,13 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
     if (Pages[PageID] != nullptr) {
         return true;
     }
+
+    CWindowDC dc(m_hWnd);
+    //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+    int height = static_cast<int>(roundf(45 * dpiScaleY_));
+
+
     switch(PageID)
     {
         case wpWelcomePage:
@@ -749,7 +756,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             Pages[PageID]=tmp3;
             Pages[PageID]->WizardDlg=this;
             tmp3->Create(m_hWnd,rc2);
-            tmp3->SetWindowPos(0,0,50,0,0,SWP_NOSIZE);
+            tmp3->SetWindowPos(0,0, height,0,0,SWP_NOSIZE);
             break;
         case wpUploadPage:
             CUploadDlg *tmp4;
@@ -757,7 +764,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             Pages[PageID]=tmp4;
             Pages[PageID]->WizardDlg=this;
             tmp4->Create(m_hWnd, rc);
-            tmp4->SetWindowPos(0, 0, 50, 0, 0,SWP_NOSIZE);
+            tmp4->SetWindowPos(0, 0, height, 0, 0,SWP_NOSIZE);
             break;
         default:
             return false;
@@ -824,10 +831,14 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     RECT rc;
     GetClientRect(&rc);
     int width=rc.right-rc.left;
-    RectF bounds(0.0,0.0, float(width), float(50));
+    CWindowDC dc(m_hWnd);
+    //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+    int height = static_cast<int>(roundf(45 * dpiScaleY_));
+    RectF bounds(0.0,0.0, float(width), height);
    
     Graphics g(m_hWnd,true);
-    std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, 50, &g);
+    std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, height, &g);
     Graphics gr(BackBuffer.get());
     
     LinearGradientBrush 

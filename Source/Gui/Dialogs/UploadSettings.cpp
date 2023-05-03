@@ -157,8 +157,13 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         m_PlaceSelectorImageList.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
         m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
-    ::ReleaseDC(HWND_DESKTOP, dc) ;
-    iconDropdown_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    ::ReleaseDC(HWND_DESKTOP, dc);
+
+    HICON ico = {};
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight, &ico);
+    iconDropdown_ = ico;
     SendDlgItemMessage(IDC_RESIZEPRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)iconDropdown_);
     m_ResizePresetIconButton.SubclassWindow(GetDlgItem(IDC_RESIZEPRESETSBUTTON));
 

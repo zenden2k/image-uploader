@@ -19,9 +19,7 @@ struct ImageConvertingParams
     int Format;
     int Quality;
     bool SaveProportions;
-#ifdef _WIN32
-    LOGFONT Font;
-#endif
+    std::string Font;
     bool AddLogo;
     int LogoPosition;
     int LogoBlend;

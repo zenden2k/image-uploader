@@ -489,7 +489,7 @@ WtlGuiSettings::WtlGuiSettings() :
     AutoShowLog = true;
 
     //    StringToFont(_T("Tahoma,7,b,204"), &ThumbSettings.ThumbFont);
-    WinUtils::StringToFont(_T("Tahoma,8,,204"), &VideoSettings.Font);
+    VideoSettings.Font = _T("Tahoma,12,,204");
 
     VideoSettings.Columns = 3;
     VideoSettings.TileWidth = 200;

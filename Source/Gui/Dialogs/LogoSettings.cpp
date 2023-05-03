@@ -120,7 +120,9 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
     CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
 
-    profileEditToolbarImagelist_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = GetSystemMetrics(SM_CYSMICON);
+    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
     profileEditToolbarImagelist_.AddIcon(ico);
     profileEditToolbarImagelist_.AddIcon(saveIcon);
     profileEditToolbarImagelist_.AddIcon(deleteIcon);
@@ -239,7 +241,7 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
     SendDlgItemMessage(IDC_TEXTPOSITION, CB_SETCURSEL, params.TextPosition);
     TextColor.SetColor(params.TextColor);
     StrokeColor.SetColor(params.StrokeColor);
-    lf = params.Font;
+    WinUtils::StringToFont(U2W(params.Font), &lf);
     if (params.Quality)
         SetDlgItemInt(IDC_QUALITYEDIT, params.Quality);
     else
@@ -279,7 +281,9 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     params.TextPosition = TextPos;
     params.LogoFileName = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_LOGOEDIT)));
     params.Text = W2U(GuiTools::GetWindowText(GetDlgItem(IDC_EDITYOURTEXT)));
-    params.Font = lf;
+    CString fontString;
+    WinUtils::FontToString(&lf, fontString);
+    params.Font = W2U(fontString);
     params.AddLogo = addLogo;
     params.AddText = addText;
 

@@ -193,13 +193,12 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
             int HAlign[6] = { 0, 1, 2, 0, 1, 2 };
             int VAlign[6] = { 0, 0, 0, 2, 2, 2 };
 
-            m_imageConvertingParams.Font.lfQuality = m_imageConvertingParams.Font.lfQuality | ANTIALIASED_QUALITY;
-            HDC dc = ::GetDC(0);
-            Font font(/*L"Tahoma", 10, FontStyleBold*/ dc, &m_imageConvertingParams.Font);
+            //m_imageConvertingParams.Font.lfQuality = m_imageConvertingParams.Font.lfQuality | ANTIALIASED_QUALITY;
+            auto font = ImageUtils::StringToGdiplusFont(U2W(m_imageConvertingParams.Font));
+
             SolidBrush brush2(Color(70, 0, 0, 0));
             RectF bounds2(1, 1, float(newwidth), float(newheight) + 1);
-            ReleaseDC(0, dc);
-            ImageUtils::DrawStrokedText(gr, U2W(m_imageConvertingParams.Text), bounds2, font, MYRGB(255,
+            ImageUtils::DrawStrokedText(gr, U2W(m_imageConvertingParams.Text), bounds2, *font.get(), MYRGB(255,
                 m_imageConvertingParams.TextColor),
                 MYRGB(180,
                 m_imageConvertingParams.StrokeColor), HAlign[m_imageConvertingParams.TextPosition],

@@ -51,7 +51,7 @@ struct VideoSettingsStruct {
     int JPEGQuality;
     BOOL UseAviInfo;
     BOOL ShowMediaInfo;
-    LOGFONT Font;
+    CString Font;
     COLORREF TextColor;
     CString Engine;
     CString SnapshotsFolder;

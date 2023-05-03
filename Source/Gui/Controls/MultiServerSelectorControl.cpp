@@ -39,7 +39,7 @@ CMultiServerSelectorControl::~CMultiServerSelectorControl() {
 }
 
 void CMultiServerSelectorControl::TranslateUI() {
-    TRC(IDC_CHOOSESERVERS, "Choose");
+    TRC(IDC_CHOOSESERVERS, "Choose...");
 }
     
 LRESULT CMultiServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
