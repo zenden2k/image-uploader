@@ -16,7 +16,7 @@ Finally, run:
 For MSVC:
 ./configure --enable-asm --enable-yasm --arch=i386 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc
 
-./configure --enable-asm --enable-yasm --arch=i386 --disable-doc  --disable-ffplay --disable-ffprobe --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg    --disable-network  --disable-muxers  --disable-encoders --enable-encoder=h264,mp3*,aac,pcm*,mpeg4 --enable-muxer=h264,mp4,mp3,avi,mov,aac  --toolchain=msvc
+./configure --enable-asm --enable-yasm --arch=i386 --disable-doc  --disable-ffplay --disable-ffprobe --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg    --enable-libx264 --enable-gpl  --disable-network  --disable-muxers  --disable-encoders --enable-encoder=bmp --enable-encoder=libx264 --enable-encoder=aac --enable-encoder=libx264rgb --enable-muxer=h264 --enable-muxer=mp4 --enable-muxer=matroska  --toolchain=msvc --extra-ldflags="-LIBPATH:./deps/lib/" --extra-cflags="-I./deps/include/"
 
 make
 make install
