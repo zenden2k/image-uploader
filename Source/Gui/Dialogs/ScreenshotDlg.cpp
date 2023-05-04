@@ -24,6 +24,7 @@
 #include "Func/MyUtils.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Video/ScreenRecorder/ScreenRecorder.h"
 
 using namespace ScreenCapture;
 
@@ -107,6 +108,16 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     } else {
         m_monitorCombobox.SetCurSel(selectedIndex);
     }
+
+    ScreenRecorder screenRecorder;
+
+    if (screenRecorder.openCamera() != 0) {
+        return 0;
+    }
+    if (screenRecorder.init_outputfile()!=0) {
+        return 0;
+    }
+    screenRecorder.CaptureVideoFrames();
     
     return 0; 
 }

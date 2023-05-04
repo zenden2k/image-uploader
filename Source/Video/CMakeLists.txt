@@ -24,6 +24,7 @@ if(WIN32)
         GrabFilter.cpp
         DirectShowUtil.cpp
         ../Core/3rdpart/dxerr.cpp
+		ScreenRecorder/ScreenRecorder.cpp
     )
     list(APPEND HEADER_LIST 
         DirectshowFrameGrabber.h
@@ -33,6 +34,7 @@ if(WIN32)
         GrabFilter.h
         DirectShowUtil.h
         ../Core/3rdpart/dxerr.h
+		ScreenRecorder/ScreenRecorder.h
     )
 endif()
 

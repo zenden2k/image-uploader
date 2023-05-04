@@ -337,7 +337,7 @@ set(LIBS_LIST base64::base64 WebP::webpdemux WebP::webpdecoder MediaInfoLib::Med
 )
 
 if (IU_ENABLE_FFMPEG)
-	list(APPEND LIBS_LIST avcodec avformat avutil swscale)
+	list(APPEND LIBS_LIST avcodec avformat avutil swscale avdevice)
 endif()	
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
