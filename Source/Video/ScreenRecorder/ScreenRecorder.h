@@ -51,6 +51,7 @@ extern "C"
 class ScreenRecorder
 {
 private:
+	int offsetX, offsetY, width, height;
 	AVInputFormat *pAVInputFormat;
 	AVOutputFormat *output_format;
 
@@ -66,7 +67,7 @@ private:
 
 	AVPacket *pAVPacket;
 
-	AVDictionary *options;
+	AVDictionary *options = nullptr;
 
 	AVOutputFormat *outAVOutputFormat;
 	AVFormatContext *outAVFormatContext;

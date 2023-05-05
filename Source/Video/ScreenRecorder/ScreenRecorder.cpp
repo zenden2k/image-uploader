@@ -1,5 +1,8 @@
 #include "ScreenRecorder.h"
 
+#include <boost/format.hpp>
+
+
 #include "Core/Logging.h"
 
 //using namespace std;
@@ -51,8 +54,8 @@ int ScreenRecorder::CaptureVideoFrames()
 	int frame_index = 0;
 	value = 0;
 
-	pAVPacket = (AVPacket *)av_malloc(sizeof(AVPacket));
-	av_init_packet(pAVPacket);
+	AVPacket pAVPacket;// = (AVPacket*)av_malloc(sizeof(AVPacket));
+	av_init_packet(&pAVPacket);
 
 	pAVFrame = av_frame_alloc();
 	if( !pAVFrame )
@@ -89,6 +92,7 @@ int ScreenRecorder::CaptureVideoFrames()
 	// Allocate and return swsContext.
 	// a pointer to an allocated context, or NULL in case of error
 	// Deprecated : Use sws_getCachedContext() instead.
+
 	swsCtx_ = sws_getContext(pAVCodecContext->width,
 		                pAVCodecContext->height,
 		                pAVCodecContext->pix_fmt,
@@ -98,64 +102,110 @@ int ScreenRecorder::CaptureVideoFrames()
 		                SWS_BICUBIC, NULL, NULL, NULL);
 
 
-int ii = 0;
-int no_frames = 1000;
-LOG(ERROR) <<"\nenter No. of frames to capture : ";
-//cin>>no_frames;
-
+    int ii = 0;
+    int no_frames = 200;
+    LOG(ERROR) <<"\nenter No. of frames to capture : ";
+    //cin>>no_frames;
+    int64_t startTime = av_gettime();
 	AVPacket outPacket;
 	int j = 0;
 	char strBuf[256] = "\0";
 
 	int got_picture;
+	int ret;
 
-	while( av_read_frame( pAVFormatContext , pAVPacket ) >= 0 )
-	{
-	if( ii++ == no_frames )break;
-		if(pAVPacket->stream_index == VideoStreamIndx)
-		{
-			value = avcodec_decode_video2( pAVCodecContext , pAVFrame , &frameFinished , pAVPacket );
+	while( av_read_frame( pAVFormatContext , &pAVPacket ) >= 0 ) {
+		//LOG(ERROR) << "av_read_frame success";
+		if (pAVPacket.stream_index == VideoStreamIndx) {
+			frameFinished = false;
+			ret = avcodec_send_packet(pAVCodecContext, &pAVPacket);
+			if (ret < 0) {
+				LOG(WARNING) << "Error sending a packet for decoding";
+			}
+			else {
+				
+				ret = avcodec_receive_frame(pAVCodecContext, pAVFrame);
+				av_packet_unref(&pAVPacket);
+
+				if (ret == AVERROR(EAGAIN)) {
+					//LOG(ERROR) << "EAGAIN";
+					continue;
+					//return false;
+				}
+				else if (ret == AVERROR_EOF) {
+					//LOG(ERROR) << "AVERROR_EOF";
+					break;
+				}
+				else if (ret < 0) {
+					break;
+					//throw FrameGrabberException("Error during decoding");
+				}
+				frameFinished = true;
+				if (frameFinished)// Frame successfully decoded :)
+				{
+					if (ii++ == no_frames) {
+						break;
+					}
+					//LOG(ERROR) << "frameFinished";
+					outFrame->format = /*AV_PIX_FMT_YUV420P*/ outAVCodecContext->pix_fmt;
+					outFrame->width = pAVFrame->width;
+					outFrame->height = pAVFrame->height;
+					int64_t now = av_gettime() - startTime;
+					outFrame->pts =  /*(1.0 / 60) * 90 * ii*/av_rescale_q(now, AVRational( { 1, 1000000 }), pAVCodecContext->time_base);
+					//outFrame->pts = av_frame_get_best_effort_timestamp(outFrame);
+					//outFrame->pkt_pts = pAVFrame->pkt_pts;
+					//outFrame->dts = pAVFrame->dts;
+					int res2 = sws_scale(swsCtx_, pAVFrame->data, pAVFrame->linesize, 0, pAVCodecContext->height, outFrame->data, outFrame->linesize);
+					/*if (res2 < 0) {
+						av_strerror(res2, strBuf, sizeof(strBuf));
+						LOG(ERROR) << "\navcodec_encode_video2 failed " << res2 << std::endl << strBuf;
+					}*/
+					av_init_packet(&outPacket);
+					outPacket.data = NULL;    // packet data will be allocated by the encoder
+					outPacket.size = 0;
+
+					int res = avcodec_encode_video2(outAVCodecContext, &outPacket, outFrame, &got_picture);
+					if (res < 0) {
+						av_strerror(res, strBuf, sizeof(strBuf));
+						LOG(ERROR) << "\navcodec_encode_video2 failed " << res << std::endl << strBuf;
+					}
+
+
+					if (got_picture)
+					{
+						LOG(ERROR) << "got_picture";
+						
+						av_packet_rescale_ts(&outPacket, video_st->codec->time_base, video_st->time_base);
+						/*if (outPacket.pts != AV_NOPTS_VALUE)
+							outPacket.pts = av_rescale_q(outPacket.pts, video_st->codec->time_base, video_st->time_base);
+						if (outPacket.dts != AV_NOPTS_VALUE)
+							outPacket.dts = av_rescale_q(outPacket.dts, video_st->codec->time_base, video_st->time_base);*/
+
+						LOG(WARNING) << boost::format("Write frame %3d (size= %2d)\n") % (j++) % (outPacket.size / 1000);
+						if (av_write_frame(outAVFormatContext, &outPacket) != 0)
+						{
+							LOG(ERROR) << "\nerror in writing video frame";
+						}
+
+						av_packet_unref(&outPacket);
+					} // got_picture
+
+					av_packet_unref(&outPacket);
+				}
+				else {
+					LOG(ERROR) << "frame NOT finished";
+					// frameFinished
+				}
+				//break;
+			}
+
+			/*value = avcodec_decode_video2(pAVCodecContext, pAVFrame, &frameFinished, &pAVPacket);
 			if( value < 0)
 			{
 				LOG(ERROR) <<"unable to decode video";
-			}
+			}*/
 
-			if(frameFinished)// Frame successfully decoded :)
-			{
-				int res2 = sws_scale(swsCtx_, pAVFrame->data, pAVFrame->linesize,0, pAVCodecContext->height, outFrame->data,outFrame->linesize);
-				if (res2 < 0) {
-					av_strerror(res2, strBuf, sizeof(strBuf));
-					LOG(ERROR) << "\navcodec_encode_video2 failed " << res2 << std::endl << strBuf;
-				}
-			    av_init_packet(&outPacket);
-				outPacket.data = NULL;    // packet data will be allocated by the encoder
-				outPacket.size = 0;
-
-				int res = avcodec_encode_video2(outAVCodecContext , &outPacket ,outFrame, &got_picture);
-				if (res < 0 ) {
-					av_strerror(res, strBuf, sizeof(strBuf));
-					LOG(ERROR) << "\navcodec_encode_video2 failed " << res << std::endl << strBuf;
-				}
-
-
-				if(got_picture)
-				{
-					if(outPacket.pts != AV_NOPTS_VALUE)
-						outPacket.pts = av_rescale_q(outPacket.pts, video_st->codec->time_base, video_st->time_base);
-					if(outPacket.dts != AV_NOPTS_VALUE)
-						outPacket.dts = av_rescale_q(outPacket.dts, video_st->codec->time_base, video_st->time_base);
-				
-					printf("Write frame %3d (size= %2d)\n", j++, outPacket.size/1000);
-					if(av_write_frame(outAVFormatContext , &outPacket) != 0)
-					{
-						LOG(ERROR) <<"\nerror in writing video frame";
-					}
-
-				av_packet_unref(&outPacket);
-				} // got_picture
-
-			av_packet_unref(&outPacket);
-			} // frameFinished
+			
 
 		}
 	}// End of while-loop
@@ -176,7 +226,11 @@ av_free(video_outbuf);
 /* establishing the connection between camera or screen through its respective folder */
 int ScreenRecorder::openCamera()
 {
-
+	offsetX = 300;
+	offsetY = 200;
+	width = 640;
+	height = 480;
+	std::string video_size = std::to_string(width) + "x" + std::to_string(height);
 	value = 0;
 	options = NULL;
 	pAVFormatContext = NULL;
@@ -191,15 +245,21 @@ refer : https://www.ffmpeg.org/ffmpeg-devices.html#x11grab
 */
 	/* current below is for screen recording. to connect with camera use v4l2 as a input parameter for av_find_input_format */ 
 	pAVInputFormat = av_find_input_format("gdigrab");
+	// ddagrab available since ffmpeg 6.0
+	//pAVInputFormat = av_find_input_format("ddagrab=0,hwdownload,format=bgra");
+
+	//AVDictionary* options = nullptr;
+	//av_dict_set(&options, "framerate", "30", 0);
+	//av_dict_set(&options, "video_size", "300x200", 0);
+
   	//value = avformat_open_input(&pAVFormatContext, ":0.0+300,200", pAVInputFormat, NULL);
-  	value = avformat_open_input(&pAVFormatContext, "desktop", pAVInputFormat, NULL);
-	if(value != 0)
-	{
-	   LOG(ERROR) <<"\nerror in opening input device";
-	   return 1;
-	}
 
-
+	value = av_dict_set(&options, "offset_x", std::to_string(offsetX).c_str(), 0);
+	value = av_dict_set(&options, "offset_y", std::to_string(offsetY).c_str(), 0);
+	value = av_dict_set(&options, "video_size", video_size.c_str(), 0);
+	
+	/*value = av_dict_set(&options, "width", "600", 0);
+	value = av_dict_set(&options, "height", "500", 0);*/
 	/* set frame per second */
 	value = av_dict_set( &options,"framerate","30",0 );
 	if(value < 0)
@@ -208,11 +268,18 @@ refer : https://www.ffmpeg.org/ffmpeg-devices.html#x11grab
 	  return 1;
 	}
 
-	value = av_dict_set( &options, "preset", "medium", 0 );
+	value = av_dict_set( &options, "preset", "ultrafast", 0 );
 	if(value < 0)
 	{
 	  LOG(ERROR) <<"\nerror in setting preset values";
 	  return 1;
+	}
+
+	value = avformat_open_input(&pAVFormatContext, "desktop", pAVInputFormat, &options);
+	if (value != 0)
+	{
+		LOG(ERROR) << "\nerror in opening input device";
+		return 1;
 	}
 
 	value = avformat_find_stream_info(pAVFormatContext,NULL);
@@ -310,9 +377,9 @@ int ScreenRecorder::init_outputfile()
 	//outAVCodecContext->codec_id = AV_CODEC_ID_MPEG4;// AV_CODEC_ID_MPEG4; // AV_CODEC_ID_H264 // AV_CODEC_ID_MPEG1VIDEO
 	outAVCodecContext->codec_type = AVMEDIA_TYPE_VIDEO;
 	outAVCodecContext->pix_fmt  = AV_PIX_FMT_YUV420P;
-	outAVCodecContext->bit_rate = 400000; // 2500000
-	outAVCodecContext->width = 2560;
-	outAVCodecContext->height = 1440;
+	outAVCodecContext->bit_rate = 4000000; // 2500000
+	outAVCodecContext->width = width;
+	outAVCodecContext->height = height;
 	outAVCodecContext->gop_size = 3;
 	outAVCodecContext->max_b_frames = 2;
 	outAVCodecContext->time_base.num = 1;
