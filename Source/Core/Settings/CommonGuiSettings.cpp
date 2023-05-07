@@ -44,6 +44,7 @@ CommonGuiSettings::~CommonGuiSettings() {
 }
 
 bool CommonGuiSettings::IsFFmpegAvailable() {
+    return true; // FIXME: 
 #ifndef IU_ENABLE_FFMPEG
     return false;
 #else 

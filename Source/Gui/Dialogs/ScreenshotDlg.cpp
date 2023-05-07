@@ -114,7 +114,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     if (screenRecorder.openCamera() != 0) {
         return 0;
     }
-    if (screenRecorder.init_outputfile()!=0) {
+    if (screenRecorder.initOutputFile()!=0) {
         return 0;
     }
     screenRecorder.CaptureVideoFrames();

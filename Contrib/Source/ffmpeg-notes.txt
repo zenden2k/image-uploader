@@ -26,3 +26,5 @@ Configure may fail to detect headers, so you must edit config.h and set
 
 #define HAVE_DIRECT_H 1
 #define HAVE_IO_H 1
+
+./configure --enable-asm --enable-yasm --arch=i386 --disable-doc  --disable-ffplay --disable-ffprobe --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg    --enable-libx264 --enable-gpl  --disable-network    --toolchain=msvc --extra-ldflags="-LIBPATH:./deps/lib/" --extra-cflags="-I./deps/include/"

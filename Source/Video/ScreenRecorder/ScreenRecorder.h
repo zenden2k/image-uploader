@@ -51,30 +51,30 @@ extern "C"
 class ScreenRecorder
 {
 private:
-	int offsetX, offsetY, width, height;
-	AVInputFormat *pAVInputFormat;
-	AVOutputFormat *output_format;
+	int offsetX=0, offsetY=0, width=0, height=0;
+	 AVInputFormat *pAVInputFormat = nullptr;
+	const AVOutputFormat *output_format = nullptr;
 
-	AVCodecContext *pAVCodecContext;
+	AVCodecContext *pAVCodecInputContext = nullptr;
 
-	AVFormatContext *pAVFormatContext;
+	AVFormatContext *pAVFormatContext = nullptr;
 
-	AVFrame *pAVFrame;
-	AVFrame *outFrame;
+	AVFrame *pAVFrame = nullptr;
+	AVFrame *outFrame = nullptr;
 
-	AVCodec *pAVCodec;
-	AVCodec *outAVCodec = nullptr;
+	const AVCodec *pAVCodec = nullptr;
+	const AVCodec *outAVCodec = nullptr;
 
-	AVPacket *pAVPacket;
+	AVPacket *pAVPacket = nullptr;
 
 	AVDictionary *options = nullptr;
 
-	AVOutputFormat *outAVOutputFormat;
-	AVFormatContext *outAVFormatContext;
-	AVCodecContext *outAVCodecContext;
+	AVOutputFormat *outAVOutputFormat = nullptr;
+	AVFormatContext *outAVFormatContext = nullptr;
+	AVCodecContext *outAVCodecContext = nullptr;
 
-	AVStream *video_st;
-	AVFrame *outAVFrame;
+	AVStream *outVideoStream = nullptr;
+	AVFrame *outAVFrame = nullptr;
 
 	const char *dev_name;
 	const char *output_file;
@@ -93,7 +93,7 @@ public:
 
 	/* function to initiate communication with display library */
 	int openCamera();
-	int init_outputfile();
+	int initOutputFile();
 	int CaptureVideoFrames();
 
 };
