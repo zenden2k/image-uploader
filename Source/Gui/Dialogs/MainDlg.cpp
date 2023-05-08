@@ -230,27 +230,27 @@ LRESULT CMainDlg::OnEnableDropTarget(UINT, WPARAM wParam, LPARAM lParam, BOOL&) 
     return 0;
 }
 
-bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, bool ensureVisible, Gdiplus::Image *Img, bool selectItem)
-{
+bool CMainDlg::AddToFileList(LPCTSTR FileName, const CString& virtualFileName, bool ensureVisible, Gdiplus::Image* Img,
+                             bool selectItem) {
     CFileListItem fl; //internal list item
-    
-    if(!FileName) return FALSE;
 
-    if(!WinUtils::FileExists(FileName)) return FALSE;
+    if (!FileName) return FALSE;
+
+    //if(!WinUtils::FileExists(FileName)) return FALSE;
     fl.selected = false;
 
     fl.FileName = FileName;
 
-    if(virtualFileName.IsEmpty())
-    fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
+    if (virtualFileName.IsEmpty())
+        fl.VirtualFileName = WinUtils::myExtractFileName(FileName);
     else
-    fl.VirtualFileName = virtualFileName;
+        fl.VirtualFileName = virtualFileName;
 
     FileList.Add(fl);
 
     int itemIndex = ThumbsView.AddImage(fl.FileName, fl.VirtualFileName, ensureVisible, Img);
-        
-    EnableNext(FileList.GetCount()>0);
+
+    EnableNext(FileList.GetCount() > 0);
     if (selectItem && itemIndex != -1) {
         ThumbsView.SelectItem(itemIndex);
     }

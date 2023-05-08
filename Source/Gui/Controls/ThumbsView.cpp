@@ -46,9 +46,8 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 
 CThumbsView::~CThumbsView()
 {
-    ImageList.Destroy();
     //ImageView.DestroyWindow();
-    StopBackgroundThread(true);
+    //StopBackgroundThread(true);
 }
 
 void CThumbsView::Init(bool Extended)
@@ -100,13 +99,15 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
         LoadThumbnail(n, TVI, Img);
     }
 
-    Arrange(LVA_ALIGNTOP);
+    if (!batchAdd_) {
+        Arrange(LVA_ALIGNTOP);
      
-    if (ensureVisible) {
-        EnsureVisible(n, FALSE);
-    }
+        if (ensureVisible) {
+            EnsureVisible(n, FALSE);
+        }
 
-    RedrawItems(n, n);
+        RedrawItems(n, n);
+    }
     return n;
 }
 
@@ -458,6 +459,9 @@ DWORD CThumbsView::Run()
         if (!item) {
             continue;
         }
+        if (ShouldStop()) {
+            break; // Exiting thread
+        }
         LoadThumbnail(itemIndex, item, nullptr);
     }
     return 0;
@@ -511,6 +515,7 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 
 LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    StopBackgroundThread(true);
     int count = GetItemCount();
     for (int i = 0; i < count; i++) {
         auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
@@ -729,4 +734,16 @@ void CThumbsView::getThumbnail(int itemIndex) {
 void CThumbsView::clearImageList() {
     // Default thumbnail (index=0) will be regenerated in AddImage()
     ImageList.RemoveAll();
+}
+
+void CThumbsView::beginAdd() {
+    batchAdd_ = true;
+    SetRedraw(FALSE);
+}
+
+void CThumbsView::endAdd() {
+    batchAdd_ = false;
+    Arrange(LVA_ALIGNTOP);
+    SetRedraw(TRUE);
+    InvalidateRect(nullptr);
 }

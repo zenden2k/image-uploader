@@ -261,7 +261,10 @@ public:
     CString getLastVideoFile() const;
     void setLastVideoFile(CString fileName);
     bool isShowWindowSet() const;
+    void beginAddFiles();
+    void endAddFiles();
 protected:
+    bool acceptsDragnDrop() const;
     CIcon hIcon;
     CIcon hIconSmall;
     CHotkeyList m_hotkeys;

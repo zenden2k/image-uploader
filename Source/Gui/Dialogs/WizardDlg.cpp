@@ -972,8 +972,12 @@ STDMETHODIMP CWizardDlg::QueryInterface( REFIID riid, void** ppv )
 }
 
 //    IDropTarget methods
-STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
-{
+STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) {
+    if (!acceptsDragnDrop()) {
+        *pdwEffect = DROPEFFECT_NONE;
+        return S_FALSE;
+    }
+
     enableDragndropOverlay_ = false;
 
     if (!Settings.DropVideoFilesToTheList && (CurPage == wpMainPage || CurPage == wpWelcomePage)) {
@@ -1012,19 +1016,8 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
     return S_OK;
 }
     
-STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
-{
-    bool AcceptFile = true;
-    if(!IsWindowEnabled() || !DragndropEnabled ) {
-        AcceptFile = false;
-    }
-
-    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != wpVideoGrabberPage) {
-        AcceptFile = false;
-    }
-
-    if(!AcceptFile) 
-    {
+STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) {
+    if(!acceptsDragnDrop()) {
         *pdwEffect = DROPEFFECT_NONE;
         return S_FALSE;
     }
@@ -2269,4 +2262,33 @@ LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWn
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
     dlg.DoModal(m_hWnd);
     return 0;
+}
+
+bool CWizardDlg::acceptsDragnDrop() const {
+    if (!IsWindowEnabled() || !DragndropEnabled) {
+        return false;
+    }
+
+    if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != wpVideoGrabberPage) {
+        return false;
+    }
+    return true;
+}
+
+void CWizardDlg::beginAddFiles() {
+    CreatePage(wpMainPage);
+    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    if (!MainDlg) {
+        return;
+    }
+
+    MainDlg->ThumbsView.beginAdd();
+}
+
+void  CWizardDlg::endAddFiles() {
+    CMainDlg* MainDlg = getPage<CMainDlg>(wpMainPage);
+    if (!MainDlg) {
+        return;
+    }
+    MainDlg->ThumbsView.endAdd();
 }

@@ -55,7 +55,7 @@ public:
                LPVOID pParam = NULL, 
                int iPriority = THREAD_PRIORITY_NORMAL)
    {
-     // _ASSERTE(m_hThread==NULL);
+      _ASSERTE(m_hThread==NULL);
       _ASSERTE(pThreadProc);
       DWORD dwThreadID;
 #if defined(_MT) || defined(_DLL)

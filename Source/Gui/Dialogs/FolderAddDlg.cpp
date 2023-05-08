@@ -34,6 +34,9 @@ void CFolderAdd::Do(CStringList &Paths, bool ImagesOnly, bool SubDirs)
     findfile = 0;
     ZeroMemory(&wfd, sizeof(wfd));
 
+    // Release thread handle to avoid leak
+    Release();
+    
     Start(THREAD_PRIORITY_BELOW_NORMAL);
 }
 
@@ -60,6 +63,10 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
                 ais.show = !m_pWizardDlg->getQuickUploadMarker();
                 CString name = CString(currentDir) + CString(_T("\\")) + CString(s_Dir.name);
                 ais.RealFileName = name;
+                //CString name = CurPath;
+                /*if (SendMessage(m_pWizardDlg->m_hWnd, WM_MY_ADDIMAGE, (WPARAM)&ais, 0))
+
+                    count++;*/
                 ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
                     if (m_pWizardDlg->AddImage(ais.RealFileName, ais.VirtualFileName, ais.show)) {
                         count++;
@@ -78,6 +85,9 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
 DWORD CFolderAdd::Run()
 {
     EnableWindow(m_pWizardDlg->m_hWnd, false);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+        m_pWizardDlg->beginAddFiles();
+    });
     for (size_t i = 0; i<m_Paths.GetCount(); i++) {
         CString CurPath = m_Paths[i];
         if (WinUtils::IsDirectory(CurPath))
@@ -115,7 +125,9 @@ DWORD CFolderAdd::Run()
             //m_pWizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage)->ThumbsView.LoadThumbnails();
         }
     }
-    
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+        m_pWizardDlg->endAddFiles();
+    });
     dlg.DestroyWindow();
     dlg.m_hWnd = NULL;
 

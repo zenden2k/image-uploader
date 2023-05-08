@@ -55,7 +55,7 @@ class CThumbsView :
 {
 public:
     
-    CImageList ImageList;
+    CImageListManaged ImageList;
     CThumbsView();
     ~CThumbsView();
     DECLARE_WND_SUPERCLASS(_T("CThumbsView"), CListViewCtrl::GetWndClassName())
@@ -111,6 +111,8 @@ public:
     CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem) override;
     void getThumbnail(int itemIndex);
     void clearImageList();
+    void beginAdd();
+    void endAdd();
 protected:
     ItemCountChangedCallback callback_;
     DWORD callbackLastCallTime_;
@@ -122,6 +124,7 @@ protected:
     std::condition_variable thumbQueueCondition_;
     int thumbnailWidth_ = 0, thumbnailHeight_ = 0; // height without label
     int fullThumbHeight_ = 0;
+    bool batchAdd_ = false;
 };
 
 

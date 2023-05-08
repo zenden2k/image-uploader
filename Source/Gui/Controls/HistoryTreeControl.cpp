@@ -686,9 +686,11 @@ HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 
     if(IuCoreUtils::FileExists(stdLocalFileName))
     {
-        m_thumbLoadingQueueMutex.lock();
-        m_thumbLoadingQueue.push_back(item);
-        m_thumbLoadingQueueMutex.unlock();
+        {
+            std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
+            m_thumbLoadingQueue.push_back(item);
+        }
+
         StartLoadingThumbnails();
     }
     else
@@ -757,6 +759,10 @@ void CHistoryTreeControl::StartLoadingThumbnails()
         if(onThreadsStarted_)    
             onThreadsStarted_();
         m_bIsRunning = true;
+
+        // Release thread handle if ran before
+        Release();
+
         this->Start();
     }
 }
