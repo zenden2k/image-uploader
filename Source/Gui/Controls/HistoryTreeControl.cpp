@@ -185,107 +185,108 @@ TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString
     return item;
 }
 
-void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int *outHeight)
-{
-    int curY = 0;
+void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight) {
+    const int kPaddingX = 2;
+    const int kPaddingY = 2;
+
+    CDCHandle dc(hdc);
+    HFONT listboxFont = GetFont();
+
+    HFONT oldFont = dc.SelectFont(listboxFont);
+
     // If outHeight parameter is set, do not actually draw, just calculate item's dimensions
     bool draw = !outHeight;
 
     //bool isSelected = (itemState & CDIS_SELECTED) || (itemState&CDIS_FOCUS);
     CRect clientRect;
     GetClientRect(clientRect);
-    //HistoryItem * it2 = new HistoryItem(it);
+
     auto* ses = static_cast<CHistorySession*>(item->userData());
-    std::string label = "["+ W2U(WinUtils::TimestampToString(ses->timeStamp())) + "]";
+    std::string label = "[" + W2U(WinUtils::TimestampToString(ses->timeStamp())) + "]";
     std::string serverName = ses->serverName();
-    if(ses->entriesCount())
-    {
-        serverName  = ses->entry(0).serverName;
+    if (ses->entriesCount()) {
+        serverName = ses->entry(0).serverName;
     }
     if (serverName.empty()) {
         serverName = "unknown server";
     }
-    std::string lowText = serverName+ " (" + std::to_string(ses->entriesCount())+" files)";
+    std::string lowText = serverName + " (" + std::to_string(ses->entriesCount()) + " files)";
     CString text = Utf8ToWCstring(label);
 
     CRect rc = invRC;
     CRect calcRect;
 
-    CDC dc (hdc);
-    
     dc.SetBkMode(TRANSPARENT);
-    dc.SetTextColor(RGB(0,0,0));
+    dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
     CBrush backgroundBrush;
 
-    DWORD color=RGB(255,255,255);
-    if(itemState & CDIS_SELECTED)
-        color=0x9fd5ff;
+    DWORD color = RGB(255, 255, 255);
+    if (itemState & CDIS_SELECTED)
+        color = RGB(159, 213, 255);
     backgroundBrush.CreateSolidBrush(color);
-    if(draw)
+    if (draw)
         dc.FillRect(&invRC, backgroundBrush);
-    DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_CALCRECT);
-    calcRect.OffsetRect(rc.left, rc.top);    
+    dc.DrawText(text, text.GetLength(), &calcRect, DT_CALCRECT);
+    calcRect.OffsetRect(rc.left, rc.top);
 
-    curY += 1;
-
-    if(draw)
-    {
+    if (draw) {
         CRect dateRect = rc;
         dateRect.right -= 20;
+        dateRect.top += kPaddingY;
+        dateRect.bottom -= kPaddingY;
         //dateRect.OffsetRect(400,0);        
-        dc.SetTextColor(0x909090);
-        DrawText(dc.m_hDC, text, text.GetLength(), &dateRect, DT_RIGHT);
-        dc.SetTextColor(0);
+        dc.SetTextColor(RGB(144, 144, 144));
+        dc.DrawText(text, text.GetLength(), &dateRect, DT_RIGHT | DT_VCENTER);
+        dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
     }
 
-    int curX= 0;
+    int curX = 0;
 
     RECT gradientLineRect = invRC;
     gradientLineRect.bottom--;
     gradientLineRect.top = gradientLineRect.bottom;
-    if(draw) GuiTools::FillRectGradient(hdc, gradientLineRect,0xc8c8c8, 0xFFFFFF, true);
-    
+    if (draw) {
+        GuiTools::FillRectGradient(hdc, gradientLineRect, RGB(200, 200, 200), RGB(255, 255, 255), true);
+    }
+
     calcRect = rc;
-    DrawText(dc.m_hDC, Utf8ToWCstring(lowText), lowText.length(), &calcRect, DT_CALCRECT);
-    
-    if(draw)
-    {
+
+    CString lowTextW = Utf8ToWCstring(lowText);
+    dc.DrawText(lowTextW, lowTextW.GetLength(), &calcRect, DT_CALCRECT);
+
+    if (draw) {
         bool isItemExpanded = item->IsExpanded();
-            //(GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);    
+        //(GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);    
         CRect plusIconRect;
-        SIZE plusIconSize = {9,9};
+        SIZE plusIconSize = {9, 9};
         HTHEME theme = OpenThemeData(_T("treeview"));
-        if(theme)
-        {    
-            GetThemePartSize(dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED, 0, TS_DRAW, &plusIconSize);
+        if (theme) {
+            GetThemePartSize(dc.m_hDC, TVP_GLYPH, isItemExpanded ? GLPS_OPENED : GLPS_CLOSED, 0, TS_DRAW,
+                             &plusIconSize);
         }
 
         int iconOffsetX = 3;
-        int iconOffsetY = (rc.Height() - plusIconSize.cy)/2;
+        int iconOffsetY = (rc.Height() - plusIconSize.cy) / 2;
         plusIconRect.left = rc.left + iconOffsetX;
         plusIconRect.top = rc.top + iconOffsetY;
         plusIconRect.right = plusIconRect.left + plusIconSize.cx;
         plusIconRect.bottom = plusIconRect.top + plusIconSize.cy;
-        curX  += iconOffsetX + plusIconSize.cx;
-        if(theme)
-        {
-            DrawThemeBackground( dc.m_hDC, TVP_GLYPH, isItemExpanded?GLPS_OPENED: GLPS_CLOSED,&plusIconRect);
+        curX += iconOffsetX + plusIconSize.cx;
+        if (theme) {
+            DrawThemeBackground(dc.m_hDC, TVP_GLYPH, isItemExpanded ? GLPS_OPENED : GLPS_CLOSED, &plusIconRect);
             CloseThemeData();
-        }
-        else
-        {
+        } else {
             CRect FrameRect(plusIconRect);
             dc.FillSolidRect(FrameRect, 0x808080);
             FrameRect.DeflateRect(1, 1, 1, 1);
             dc.FillSolidRect(FrameRect, 0xFFFFFF);
 
-                CRect  MinusRect(2,4,7,5);
-                MinusRect.OffsetRect(plusIconRect.TopLeft());
+            CRect MinusRect(2, 4, 7, 5);
+            MinusRect.OffsetRect(plusIconRect.TopLeft());
             dc.FillSolidRect(MinusRect, 0x000000);
-            
-            if (! isItemExpanded)
-            {
-                CRect PlusRect(4,2,5, 7);
+
+            if (! isItemExpanded) {
+                CRect PlusRect(4, 2, 5, 7);
                 PlusRect.OffsetRect(plusIconRect.TopLeft());
                 dc.FillSolidRect(PlusRect, 0x000000);
             }
@@ -293,26 +294,30 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     }
 
     CRect drawRect;
-    int serverIconOffsetY = (rc.Height()-1 - 16)/2;
+    int serverIconOffsetY = (rc.Height() - 1 - 16) / 2;
     drawRect.top = rc.top + serverIconOffsetY;
     drawRect.bottom = drawRect.top + calcRect.Height();
-    drawRect.left = rc.left + curX+4;
+    drawRect.left = rc.left + curX + 4;
     drawRect.right = drawRect.left + calcRect.Width();
     HICON ico = getIconForServer(Utf8ToWCstring(ses->serverName()));
-    if(ico)
-    {
+    if (ico && draw) {
         dc.DrawIconEx(drawRect.left, drawRect.top, ico, 16, 16);
     }
-    drawRect.OffsetRect(16 +3 , 0);;
-    CString lowTextW = Utf8ToWCstring(lowText);
-    if(draw)
-        DrawText(dc.m_hDC,  lowTextW, lowTextW.GetLength(), &drawRect, DT_LEFT|DT_VCENTER);
+    drawRect.OffsetRect(19, 0);
 
-    curY += std::max(calcRect.Height(), /* server icon height */16);
-    dc.Detach();
-    curY += 3;
-    if(outHeight)
-        *outHeight = curY;
+    CRect textRect(drawRect.left, rc.top + kPaddingY, drawRect.left + kPaddingX  + 19 + calcRect.Width(),
+        rc.top + kPaddingY + calcRect.Height());
+    if (draw) {
+        dc.DrawText(lowTextW, lowTextW.GetLength(), &textRect, DT_LEFT | DT_VCENTER);
+    }
+
+    dc.SelectFont(oldFont);
+
+    int itemHeight = std::max<int>(textRect.Height() + kPaddingY * 2, 16);
+
+    if (outHeight) {
+        *outHeight = itemHeight;
+    }
 }
 
 int CHistoryTreeControl::CalcItemHeight(TreeItem* item)
@@ -334,12 +339,12 @@ int CHistoryTreeControl::CalcItemHeight(TreeItem* item)
     if( !isRootItem)
     {
         DrawSubItem(item,  dc, 0, rc, &res);
-        m_SubItemHeight = res;
+        //m_SubItemHeight = res;
     }
     else 
     {
         _DrawItem(item,  dc, 0, rc, &res);
-        m_SessionItemHeight = res;
+        //m_SessionItemHeight = res;
     }
 
     ReleaseDC(dc);
@@ -356,96 +361,95 @@ void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
     SelectObject(hdcMem, hbmOld);
     DeleteDC(hdcMem);
 }
-void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight)
-{
-        RECT rc = invRC;
-        bool draw = !outHeight;
-        CDC dc (hdc);
-        CBrush br;
-        if(draw)
-        {
-            dc.SetBkMode(TRANSPARENT);
-            dc.SetTextColor(RGB(0,0,0));
+
+void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight) {
+    RECT rc = invRC;
+    bool draw = !outHeight;
+    CDCHandle dc(hdc);
+
+    HFONT listboxFont = GetFont();
+
+    HFONT oldFont = dc.SelectFont(listboxFont);
+
+    CBrush br;
+    if (draw) {
+        dc.SetBkMode(TRANSPARENT);
+        dc.SetTextColor(RGB(0, 0, 0));
+    }
+
+    CBrush backgroundBrush;
+    backgroundBrush.CreateSolidBrush(RGB(255, 255, 255));
+
+    CBrush selectedBrush;
+    selectedBrush.CreateSolidBrush(0x9fd5ff);
+
+    if (draw) {
+        CRect rc2 = rc;
+
+        if (!(itemState & CDIS_SELECTED)) {
+
+            rc2.left -= CATEGORY_INDENT;
+            dc.FillRect(&rc2, backgroundBrush);
+        } else {
+            CRect rc3 = rc2;
+            dc.FillRect(&rc3, selectedBrush);
+            rc3.left -= CATEGORY_INDENT;
+            rc3.right = rc3.left + CATEGORY_INDENT;
+            dc.FillRect(&rc3, backgroundBrush);
         }
+        //dc.FillRect(&rc2, backgroundBrush);
+    }
 
-        CBrush backgroundBrush;
-        backgroundBrush.CreateSolidBrush(RGB(255, 255, 255));
-        
-        CBrush selectedBrush;
-        selectedBrush.CreateSolidBrush(0x9fd5ff);
-        
-        if(draw)
-        {
-            CRect rc2 = rc;
-            
-            if(!(itemState & CDIS_SELECTED))
-            {
-                
-                rc2.left-= CATEGORY_INDENT;
-                dc.FillRect(&rc2, backgroundBrush);    
-            }
-            else
-            {
-                CRect rc3 = rc2;
-                dc.FillRect(&rc3, selectedBrush);    
-                rc3.left -= CATEGORY_INDENT;
-                rc3.right = rc3.left + CATEGORY_INDENT;
-                dc.FillRect(&rc3, backgroundBrush);    
-            }
-            //dc.FillRect(&rc2, backgroundBrush);
-        }
-        
-        br.CreateSolidBrush(0x9fd5ff);
-        RECT thumbRect;
-        thumbRect.left = rc.left+10;
-        thumbRect.top = rc.top+2;
-        thumbRect.bottom = thumbRect.top + kThumbWidth;
-        thumbRect.right = thumbRect.left + kThumbWidth;
+    br.CreateSolidBrush(RGB(159, 213, 255));
+    RECT thumbRect;
+    thumbRect.left = rc.left + 10;
+    thumbRect.top = rc.top + 2;
+    thumbRect.bottom = thumbRect.top + kThumbWidth;
+    thumbRect.right = thumbRect.left + kThumbWidth;
 
-        if(draw)
-            dc.FrameRect(&thumbRect, br);
-        HistoryItem * it2 = getItemData(item);
-        std::string fileName = it2 ? IuCoreUtils::ExtractFileName(it2->localFilePath) : "";
+    if (draw)
+        dc.FrameRect(&thumbRect, br);
+    HistoryItem* it2 = getItemData(item);
+    std::string fileName = it2 ? IuCoreUtils::ExtractFileName(it2->localFilePath) : "";
 
-        CString iconSourceFileName = it2 ? Utf8ToWCstring(it2->localFilePath) : "";
-        if (iconSourceFileName.IsEmpty() && it2)
-            iconSourceFileName = Utf8ToWCstring(it2->directUrl);
-        HICON ico = getIconForExtension(iconSourceFileName);
-        CString text = Utf8ToWstring(fileName).c_str();
-        GuiTools::IconInfo info = GuiTools::GetIconInfo(ico);
-        int iconWidth= info.nWidth;
-        int iconHeight = info.nHeight;
-        auto * hti  = static_cast<HistoryTreeItem*>(item->userData());
-        
-        if(draw)
-        {
-            /*HBITMAP bm = */GetItemThumbnail(hti);
-            if(hti->thumbnail)
-            {
-                DrawBitmap(dc, hti->thumbnail,  thumbRect.left+1,thumbRect.top+1);
-            }
-            else if(ico!=0)
-                dc.DrawIcon(thumbRect.left+1 + (kThumbWidth -iconWidth)/2 , thumbRect.top+1+(kThumbWidth -iconHeight)/2, ico);
-        }
+    CString iconSourceFileName = it2 ? Utf8ToWCstring(it2->localFilePath) : "";
+    if (iconSourceFileName.IsEmpty() && it2)
+        iconSourceFileName = Utf8ToWCstring(it2->directUrl);
+    HICON ico = getIconForExtension(iconSourceFileName);
+    CString text = Utf8ToWstring(fileName).c_str();
+    GuiTools::IconInfo info = GuiTools::GetIconInfo(ico);
+    int iconWidth = info.nWidth;
+    int iconHeight = info.nHeight;
+    auto* hti = static_cast<HistoryTreeItem*>(item->userData());
 
-        CRect calcRect = invRC;
-        calcRect.left = thumbRect.right+5;
-        DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_CALCRECT);
-        int filenameHeight = calcRect.Height();
-        if(draw)
+    if (draw) {
+        /*HBITMAP bm = */
+        GetItemThumbnail(hti);
+        if (hti->thumbnail) {
+            DrawBitmap(dc, hti->thumbnail, thumbRect.left + 1, thumbRect.top + 1);
+        } else if (ico != 0)
+            dc.DrawIcon(thumbRect.left + 1 + (kThumbWidth - iconWidth) / 2,
+                        thumbRect.top + 1 + (kThumbWidth - iconHeight) / 2, ico);
+    }
+
+    CRect calcRect = invRC;
+    calcRect.left = thumbRect.right + 5;
+    DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_CALCRECT);
+    int filenameHeight = calcRect.Height();
+    if (draw)
         DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_LEFT);
-        
-        CRect urlRect = invRC;
-        urlRect.left = calcRect.left;
-        urlRect.top += filenameHeight +3;
 
-        CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
-        dc.SetTextColor(0xa6a6a6);
-        if(draw)
+    CRect urlRect = invRC;
+    urlRect.left = calcRect.left;
+    urlRect.top += filenameHeight + 3;
+
+    CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
+    dc.SetTextColor(RGB(166, 166, 166));
+    if (draw)
         DrawText(dc.m_hDC, url, url.GetLength(), &urlRect, DT_LEFT);
-        
-        dc.Detach();
-        if(outHeight) *outHeight = kThumbWidth + 3;
+    dc.SelectFont(oldFont);
+
+    if (outHeight) *outHeight = kThumbWidth + 3;
 }
 
 HICON CHistoryTreeControl::getIconForServer(const CString& serverName)

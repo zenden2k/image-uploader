@@ -629,10 +629,10 @@ public:
       // Fonts
       if( !m_TextFont.IsNull() ) m_TextFont.DeleteObject();
       if( !m_CategoryFont.IsNull() ) m_CategoryFont.DeleteObject();*/
-      LOGFONT lf;
+      /*LOGFONT lf;
       HFONT hFont = (HFONT)::SendMessage(GetParent(), WM_GETFONT, 0, 0);
       if( hFont == NULL ) hFont = AtlGetDefaultGuiFont();
-      ::GetObject(hFont, sizeof(lf), &lf);
+      ::GetObject(hFont, sizeof(lf), &lf);*/
      // m_di.TextFont = m_TextFont.CreateFontIndirect(&lf);
 //      SetFont(m_di.TextFont);
      /* if( (m_dwExtStyle & PLS_EX_XPLOOK) == 0 ) 
