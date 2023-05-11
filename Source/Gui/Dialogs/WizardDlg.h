@@ -275,7 +275,7 @@ protected:
     ScriptsManager* scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
     HwndScopedWrapper aboutButtonToolTip_;
-    CIconButton helpButton_;
+    CButton helpButton_;
     CIcon helpButtonIcon_;
     long m_lRef = 0;
     bool QuickUploadMarker;

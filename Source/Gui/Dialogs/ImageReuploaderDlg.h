@@ -120,7 +120,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         bool BeginDownloading();
         static bool LinksAvailableInText(const CString &text);
         void OnDownloaderQueueFinished();
-        bool OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
+        void OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it);
         void OnFileFinished(UploadTask* task, bool ok);
         void OnQueueFinished(UploadSession* uploadSession) ;
         bool OnEditControlPaste(CCustomEditControl*);

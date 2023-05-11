@@ -370,7 +370,7 @@ HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
     if (Small)
         Flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
     else
-        Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES | SHGFI_ADDOVERLAYS;
+        Flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES /* | SHGFI_ADDOVERLAYS*/;
     SHGetFileInfo (filename, FILE_ATTRIBUTE_NORMAL, &Info, sizeof(Info), Flags);
     return Info.hIcon;
 }
@@ -378,7 +378,7 @@ HICON GetAssociatedIcon (LPCTSTR filename, bool Small)
 bool IsDirectory(LPCTSTR szFileName)
 {
     DWORD res = GetFileAttributes(szFileName);
-    return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != -1);    
+    return (res&FILE_ATTRIBUTE_DIRECTORY) && (res != INVALID_FILE_ATTRIBUTES);
 }
 
 bool IsVistaOrLater() {

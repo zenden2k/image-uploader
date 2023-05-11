@@ -155,7 +155,7 @@ LRESULT CImageReuploaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 0;
 }
 
-bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
+void CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it)
 {
     bool success = false;
 
@@ -186,8 +186,6 @@ bool CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
             WriteLog(logWarning, LogTitle, cacheLogMessage);
         }*/
     } 
-
-    return true;
 }
 
 bool CImageReuploaderDlg::tryGetFileFromCache(const CFileDownloader::DownloadFileListItem& it, CString& logMessage) {

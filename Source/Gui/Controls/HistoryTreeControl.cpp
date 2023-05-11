@@ -45,7 +45,6 @@ CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> 
 
 CHistoryTreeControl::~CHistoryTreeControl()
 {
-    //CWindow::Detach();
     for (const auto& it : m_fileIconCache) {
         if (it.second) {
             DestroyIcon(it.second);
@@ -61,10 +60,16 @@ void CHistoryTreeControl::CreateDownloader()
         m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
         m_FileDownloader->setOnConfigureNetworkClientCallback([this](auto* nm) { OnConfigureNetworkClient(nm); });
         m_FileDownloader->setOnFileFinishedCallback([this](bool ok, int statusCode, const CFileDownloader::DownloadFileListItem& it) {
-            return OnFileFinished(ok, statusCode, it);
+            OnFileFinished(ok, statusCode, it);
         });
         m_FileDownloader->setOnQueueFinishedCallback([this] { QueueFinishedEvent(); });
     }
+}
+
+
+LRESULT CHistoryTreeControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    Init();
+    return 0;
 }
 
 LRESULT CHistoryTreeControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
@@ -75,37 +80,21 @@ LRESULT CHistoryTreeControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,B
 
 void CHistoryTreeControl::abortLoadingThreads()
 {
-    m_thumbLoadingQueueMutex.lock();
-    m_thumbLoadingQueue.clear();
-    m_thumbLoadingQueueMutex.unlock();
-    if(IsRunning())
     {
+        std::lock_guard<std::mutex> lk(m_thumbLoadingQueueMutex);
+        m_thumbLoadingQueue.clear();
+    }
+
+    if(IsRunning()) {
         SignalStop();
     }
-    if(m_FileDownloader && m_FileDownloader->isRunning())
-    {
-        
+
+    if (m_FileDownloader && m_FileDownloader->isRunning()) { 
         m_FileDownloader->stop();
-        //m_FileDownloader->onFileFinished.clear();
-        //m_FileDownloader->onQueueFinished.clear();
-        /*if(!m_FileDownloader->waitForFinished(4000))
-        {
-            m_FileDownloader->kill();
-            m_FileDownloader->waitForFinished(-1);
-            delete m_FileDownloader;
-            m_FileDownloader = 0;
-        }*/
     }
     
-    if(IsRunning())
-    {
+    if(IsRunning()) {
         SignalStop();
-        // deadlocks
-        /*if(!WaitForThread(2100))
-        {
-            Terminate();
-            WaitForThread();
-        }*/
     }
 }
 
@@ -142,6 +131,7 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
 {
     return CDRF_DODEFAULT;
 }
+
 HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
     auto* item = static_cast<HistoryTreeItem*> (res->userData());
@@ -363,6 +353,7 @@ void CHistoryTreeControl::DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y)
 }
 
 void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight) {
+    const int kPaddingX = 10, kPaddingY = 2;
     RECT rc = invRC;
     bool draw = !outHeight;
     CDCHandle dc(hdc);
@@ -402,10 +393,10 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
     br.CreateSolidBrush(RGB(159, 213, 255));
     RECT thumbRect;
-    thumbRect.left = rc.left + 10;
-    thumbRect.top = rc.top + 2;
-    thumbRect.bottom = thumbRect.top + kThumbWidth;
-    thumbRect.right = thumbRect.left + kThumbWidth;
+    thumbRect.left = rc.left + kPaddingX;
+    thumbRect.top = rc.top + kPaddingY;
+    thumbRect.bottom = thumbRect.top + thumbHeight_+ 2;
+    thumbRect.right = thumbRect.left + thumbWidth_ + 2;
 
     if (draw)
         dc.FrameRect(&thumbRect, br);
@@ -428,16 +419,17 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         if (hti->thumbnail) {
             DrawBitmap(dc, hti->thumbnail, thumbRect.left + 1, thumbRect.top + 1);
         } else if (ico != 0)
-            dc.DrawIcon(thumbRect.left + 1 + (kThumbWidth - iconWidth) / 2,
-                        thumbRect.top + 1 + (kThumbWidth - iconHeight) / 2, ico);
+            dc.DrawIcon(thumbRect.left + 1 + (thumbHeight_ - iconWidth) / 2,
+                        thumbRect.top + 1 + (thumbWidth_ - iconHeight) / 2, ico);
     }
 
     CRect calcRect = invRC;
     calcRect.left = thumbRect.right + 5;
-    DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_CALCRECT);
+    dc.DrawText(text, text.GetLength(), &calcRect, DT_CALCRECT);
     int filenameHeight = calcRect.Height();
-    if (draw)
-        DrawText(dc.m_hDC, text, text.GetLength(), &calcRect, DT_LEFT);
+    if (draw) {
+        dc.DrawText(text, text.GetLength(), &calcRect, DT_LEFT);
+    }
 
     CRect urlRect = invRC;
     urlRect.left = calcRect.left;
@@ -445,36 +437,20 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
     CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
     dc.SetTextColor(RGB(166, 166, 166));
-    if (draw)
-        DrawText(dc.m_hDC, url, url.GetLength(), &urlRect, DT_LEFT);
+    if (draw) {
+        dc.DrawText(url, url.GetLength(), &urlRect, DT_LEFT);
+    }
     dc.SelectFont(oldFont);
 
-    if (outHeight) *outHeight = kThumbWidth + 3;
+    if (outHeight) {
+        *outHeight = thumbHeight_ + kPaddingY * 2 + 2;
+    }
 }
 
 HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
 {
     auto* engineList = ServiceLocator::instance()->myEngineList();
     return engineList->getIconForServer(W2U(serverName));
-}
-
-LRESULT CHistoryTreeControl::OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    return 0;
-}
-
-LRESULT CHistoryTreeControl::OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    int xPos = LOWORD(lParam);  // horizontal position of cursor 
-    //int yPos = HIWORD(lParam);
-    if(xPos >50) xPos = 50;
-    bHandled = false;
-    return 0;
-}
-
-LRESULT CHistoryTreeControl::ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    return 0;
 }
 
 bool CHistoryTreeControl::IsItemAtPos(int x, int y, bool &isRoot)
@@ -522,19 +498,17 @@ TreeItem * CHistoryTreeControl::selectedItem()
 
 bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
 {
-    const int THUMBNAIL_WIDTH = 54;
-    const int THUMBNAIL_HEIGHT = 54;
     using namespace Gdiplus;
-    std::unique_ptr<Bitmap> ImgBuffer;
+
     Image* bm = nullptr;
     std::unique_ptr<GdiPlusImage> srcImg;
 
     CString filename ;
-    if(!item->thumbnailSource.empty())
-        filename = Utf8ToWCstring(item->thumbnailSource); 
-        
-    else  
+    if (!item->thumbnailSource.empty()) {
+        filename = Utf8ToWCstring(item->thumbnailSource);
+    } else {
         filename = Utf8ToWCstring(item->hi->localFilePath);
+    }
     bool error = false;
     if(IuCommonFunctions::IsImage(filename))
     {
@@ -549,10 +523,10 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     }
 
     int width,height,imgwidth,imgheight,newwidth,newheight;
-    width=THUMBNAIL_WIDTH/*rc.right-2*/;
-    height=THUMBNAIL_HEIGHT/*rc.bottom-16*/;
-    int thumbwidth=THUMBNAIL_WIDTH;
-    int  thumbheight=THUMBNAIL_HEIGHT;
+    width= thumbWidth_/*rc.right-2*/;
+    height= thumbHeight_/*rc.bottom-16*/;
+    int thumbwidth= thumbWidth_;
+    int  thumbheight= thumbHeight_;
 
     if(bm)
     {
@@ -589,12 +563,15 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     }
 
     Graphics g(m_hWnd,true);
-    ImgBuffer.reset(new Bitmap(thumbwidth, thumbheight, &g));
-    Graphics gr(ImgBuffer.get());
+    Bitmap imgBuffer(thumbwidth, thumbheight, &g);
+    Graphics gr(&imgBuffer);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    ImageAttributes attr;
+    attr.SetWrapMode(WrapModeTileFlipXY);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
     gr.Clear(Color(255,255,255,255));
 
-    RectF bounds(1, 1, float(width), float(height));
+    RectF bounds(0, 0, float(width), float(height));
 
     if(bm && !bm->GetWidth() && item) 
     {
@@ -602,16 +579,14 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     }
     else 
     {
-        LinearGradientBrush 
-            br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), 
-            LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/); 
+        LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal); 
 
         if(IuCommonFunctions::IsImage(filename))
-            gr.FillRectangle(&br,1, 1, width-1,height-1);
+            gr.FillRectangle(&br,0, 0, width, height);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
         if(bm)
-                gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
+                gr.DrawImage(/*backBuffer*/bm, (int)((width-newwidth)/2), (int)((height-newheight)/2), (int)newwidth,(int)newheight);
     
 
         RectF bounds(0, float(height), float(width), float(20));
@@ -653,7 +628,7 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
     }
 
     HBITMAP bmp = nullptr;
-    ImgBuffer->GetHBITMAP(Color(255,255,255), &bmp);
+    imgBuffer.GetHBITMAP(Color(255,255,255), &bmp);
     item->thumbnail = error?0:bmp;
     return !error;
 }
@@ -852,4 +827,21 @@ void CHistoryTreeControl::ResetContent()
 
 void CHistoryTreeControl::OnConfigureNetworkClient(INetworkClient* nm) {
     nm->setTreatErrorsAsWarnings(true); // no need to bother user with download errors
+}
+
+BOOL CHistoryTreeControl::SubclassWindow(HWND hWnd) {
+    BOOL bRet = CCustomTreeControlImpl<CHistoryTreeControl>::SubclassWindow(hWnd);
+    if (bRet) {
+        Init();
+    }
+    return bRet;
+}
+
+void CHistoryTreeControl::Init() {
+    CWindowDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    thumbWidth_ = MulDiv(kThumbSize, dpiX, USER_DEFAULT_SCREEN_DPI);
+    thumbHeight_ = MulDiv(kThumbSize, dpiY, USER_DEFAULT_SCREEN_DPI);
 }

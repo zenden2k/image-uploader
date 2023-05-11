@@ -22,7 +22,8 @@
 
 #include "IconButton.h"
 
-#include "Core/Scripting/API/HtmlDocumentPrivate_win.h"
+#include "Func/WinUtils.h"
+
 // local functions
 static int image_left (int cx, const CRect& Rect, DWORD style);
 static int image_top (int cy, const CRect& Rect, DWORD style);

@@ -43,7 +43,7 @@ class CFileDownloader
             void* id; // pointer to user data
         };
     protected:
-        std::function<bool(bool, int, const DownloadFileListItem&)> onFileFinished_;
+        std::function<void(bool, int, const DownloadFileListItem&)> onFileFinished_;
         std::function<void()> onQueueFinished_;
         std::function<void(INetworkClient*)> onConfigureNetworkClient_;
     public:

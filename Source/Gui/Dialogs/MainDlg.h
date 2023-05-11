@@ -153,7 +153,6 @@ protected:
     bool callbackLastCallType_; // selected or unselected
     HACCEL hotkeys_;
     BOOL PreTranslateMessage(MSG* pMsg) override;
-    static void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force = false);
 };
 
 #endif // IU_GUI_MAINDLG_H

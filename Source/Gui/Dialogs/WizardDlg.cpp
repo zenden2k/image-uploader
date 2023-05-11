@@ -284,9 +284,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     helpButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), IMAGE_ICON, static_cast<int>(16 * dpiScaleX), 
         static_cast<int>(16 * dpiScaleY), 0));
-    SendDlgItemMessage(IDC_HELPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)helpButtonIcon_);
-    helpButton_.SubclassWindow(GetDlgItem(IDC_HELPBUTTON));
 
+    helpButton_.m_hWnd = GetDlgItem(IDC_HELPBUTTON);
+    helpButton_.SetIcon(helpButtonIcon_);
     ServiceLocator::instance()->logWindow()->TranslateUI();
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
 
@@ -590,14 +590,14 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
                 return FALSE;
         }
         
-        if (VK_BACK == pMsg->wParam && Pages[CurPage] && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer, _T("Edit")))
+        /*if (VK_BACK == pMsg->wParam && Pages[CurPage] && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer, _T("Edit")))
         {
             if (pMsg->message == WM_KEYDOWN && ::IsWindowEnabled(GetDlgItem(IDC_PREV))) {
                 OnPrevBnClicked(0, 0, 0);
                 return TRUE;
             }
             
-        }
+        }*/
     }
 
     if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
@@ -1664,37 +1664,35 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 void CWizardDlg::CloseWizard()
 {
-    if(CurPage!=0 && CurPage!=4 && Settings.ConfirmOnExit)
+    if(CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit)
         if(LocalizedMessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
     
     CloseDialog(0);
 }
 
-bool CWizardDlg::RegisterLocalHotkeys()
-{
-    ACCEL *Accels;
+bool CWizardDlg::RegisterLocalHotkeys() {
     m_hotkeys = Settings.Hotkeys;
-    int n=m_hotkeys.size();
-    Accels = new ACCEL [n+1];
-    Accels[0] = { FVIRTKEY, VK_F1, IDC_DOCUMENTATION };
+    int n = m_hotkeys.size();
+    auto accels = std::make_unique<ACCEL[]>(n + 1);
+    accels[0] = {FVIRTKEY, VK_F1, IDC_DOCUMENTATION};
     int j = 1;
-    for(int i =0; i<n; i++)
-    {
-        if(!m_hotkeys[i].localKey.keyCode) continue;
-        Accels[j]= m_hotkeys[i].localKey.toAccel();
-        Accels[j].cmd = static_cast<WORD>(10000+i);
-        j++;   
+    for (int i = 0; i < n; i++) {
+        if (!m_hotkeys[i].localKey.keyCode) {
+            continue;
+        }
+        accels[j] = m_hotkeys[i].localKey.toAccel();
+        accels[j].cmd = static_cast<WORD>(10000 + i);
+        j++;
     }
 
-    hLocalHotkeys = CreateAcceleratorTable(Accels,j);
-    delete[] Accels;
+    hLocalHotkeys = CreateAcceleratorTable(accels.get(), j);
     return true;
 }
 
 LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(CurPage==3) ShowPage(wpMainPage);
-    if(!IsWindowEnabled() || (CurPage!=0 && CurPage!=2))
+    if(CurPage== wpUploadSettingsPage) ShowPage(wpMainPage);
+    if(!IsWindowEnabled() || (CurPage!= wpWelcomePage && CurPage!= wpMainPage))
         return 0;
     int hotkeyId = wID-ID_HOTKEY_BASE;
     executeFunc(m_hotkeys[hotkeyId].func);

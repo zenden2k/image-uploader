@@ -777,49 +777,6 @@ void CMainDlg::UpdateStatusLabel() {
     listChanged_ = false;
 }
 
-void CMainDlg::ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force){
-    if (Force == false &&
-        Argument.empty() == false &&
-        Argument.find_first_of(L" \t\n\v\"") == Argument.npos) {
-        CommandLine.append(Argument);
-    } else {
-        CommandLine.push_back(L'"');
-
-        for (auto It = Argument.begin();; ++It) {
-            unsigned NumberBackslashes = 0;
-
-            while (It != Argument.end() && *It == L'\\') {
-                ++It;
-                ++NumberBackslashes;
-            }
-
-            if (It == Argument.end()) {
-                // Escape all backslashes, but let the terminating
-                // double quotation mark we add below be interpreted
-                // as a metacharacter.
-                CommandLine.append(NumberBackslashes * 2, L'\\');
-                break;
-            } else if (*It == L'"') {
-                //
-                // Escape all backslashes and the following
-                // double quotation mark.
-                //
-                CommandLine.append(NumberBackslashes * 2 + 1, L'\\');
-                CommandLine.push_back(*It);
-            } else {
-                //
-                // Backslashes aren't special here.
-                //
-                CommandLine.append(NumberBackslashes, L'\\');
-                CommandLine.push_back(*It);
-            }
-        }
-
-        CommandLine.push_back(L'"');
-    }
-    CommandLine.push_back(L' ');
-}
-
 LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     std::vector<CString> selectedFiles;
     if (getSelectedFiles(selectedFiles)) {

@@ -332,7 +332,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
         //WinUtils::StringToFont(wide_text, &lf);
     } else {
         //WinUtils::StringToFont(_T("Tahoma,7,b,204"), &lf);
-        font = ImageUtils::StringToGdiplusFont(_T("Tahoma,12,b,204"));
+        font = ImageUtils::StringToGdiplusFont(_T("Tahoma,11,b,204"));
     }
 
     RectF TextRect;

@@ -23,13 +23,18 @@ void CServerListView::Init() {
     AddColumn(_T("Thumb URL"), 4);
     AddColumn(_T("View URL"), 5);
     AddColumn(_T("Time"), 6);
-    SetColumnWidth(0, 30);
-    SetColumnWidth(1, 150);
-    SetColumnWidth(2, 100);
-    SetColumnWidth(3, 205);
-    SetColumnWidth(4, 205);
-    SetColumnWidth(5, 205);
-    SetColumnWidth(6, 50);
+
+    CWindowDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    //int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    SetColumnWidth(0, MulDiv(25, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(1, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(2, MulDiv(80, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(3, MulDiv(170, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(4, MulDiv(170, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(5, MulDiv(170, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(6, MulDiv(40, dpiX, USER_DEFAULT_SCREEN_DPI));
 }
 
 LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {

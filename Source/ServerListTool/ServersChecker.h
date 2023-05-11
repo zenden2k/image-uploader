@@ -37,11 +37,10 @@ public:
     void setOnFinishedCallback(std::function<void()> callback);
 
 protected:
-    void run();
     void onTaskStatusChanged(UploadTask* task);
     void onTaskFinished(UploadTask* task, bool ok);
     void onSessionFinished(UploadSession* session);
-    bool OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
+    void OnFileFinished(bool ok, int statusCode, CFileDownloader::DownloadFileListItem it);
     void checkShortUrl(UploadTask* task);
     void MarkServer(int id);
     void processFinished();

@@ -33,8 +33,6 @@
 #include "Gui/CommonDefines.h"
 #include "Gui/Dialogs/MainDlg.h"
 
-
-
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
 {
@@ -79,9 +77,6 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     }
     
     int n = GetItemCount();
-
-    RECT rc;
-    GetClientRect(&rc);
 
     if(ImageList.GetImageCount() < 1)
         LoadThumbnail(-1, nullptr, nullptr);
@@ -516,11 +511,8 @@ LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandl
 LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     StopBackgroundThread(true);
-    int count = GetItemCount();
-    for (int i = 0; i < count; i++) {
-        auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
-        delete tvi;
-    }
+    // Call DeleteAllItems to avoid memory leaks in list view control
+    DeleteAllItems();
     return 0;
 }
 
@@ -571,6 +563,15 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     auto* TVI = reinterpret_cast<ThumbsViewItem*>(pNotificationInfo->lParam);
     delete TVI;
     return 0;
+}
+
+LRESULT CThumbsView::OnDeleteAllItems(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    int count = GetItemCount();
+    for (int i = 0; i < count; i++) {
+        auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
+        delete tvi;
+    }
+    return TRUE; // Suppress subsequent LVN_DELETEITEM notification codes
 }
 
 void CThumbsView::SetDeletePhysicalFiles(bool doDelete) {

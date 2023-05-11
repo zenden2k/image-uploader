@@ -160,7 +160,7 @@ void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
 }
 
 
-bool ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
+void ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
 {
     int serverId = reinterpret_cast<int>(it.id) / 10;
     int fileId = reinterpret_cast<int>(it.id) % 10;
@@ -201,7 +201,6 @@ bool ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
         serverData.finished = true;
     }
     MarkServer(serverId);
-    return 0;
 }
 
 void ServersChecker::checkShortUrl(UploadTask* task) {

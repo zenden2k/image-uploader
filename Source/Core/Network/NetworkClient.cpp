@@ -489,7 +489,6 @@ bool NetworkClient::doGet(const std::string & url)
     m_currentActionType = ActionType::atGet;
     curl_result = curl_easy_perform(curl_handle);
     return private_on_finish_request();
-
 }
 
 bool NetworkClient::doPost(const std::string& data)
@@ -568,7 +567,6 @@ void NetworkClient::private_initTransfer()
         } else {
             chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
         } 
-        
     }
 
     curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
@@ -589,7 +587,6 @@ void NetworkClient::private_checkResponse()
         if (!errorLogIdString_.empty()) {
             errorDescr = errorLogIdString_ + "\r\n";
         }
-
 
         errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
 
@@ -676,15 +673,15 @@ void NetworkClient::private_parse_headers()
 
 std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
+    std::string lowerName = IuStringUtils::toLower(name);
     std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
     
-    for(it = m_ResponseHeaders.begin(); it!=end; ++it)
-    {
-        if(it->name == name)
+    for(it = m_ResponseHeaders.begin(); it!=end; ++it) {
+        if (IuStringUtils::toLower(it->name) == lowerName) {
             return it->value;
+        }
     }
     return std::string();
-
 }
 
 int NetworkClient::responseHeaderCount()

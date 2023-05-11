@@ -49,18 +49,23 @@ class CHistoryTreeControl :
             CHAIN_MSG_MAP(CCustomTreeControlImpl<CHistoryTreeControl>)
         END_MSG_MAP()
 
-        const int kThumbWidth = 56;
+        const int kThumbSize = 48;
+
+        BOOL SubclassWindow(HWND hWnd);
+        void Init();
 
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeItem* item) override;
         DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
         LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
+
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
         bool downloading_enabled_;
@@ -76,23 +81,21 @@ class CHistoryTreeControl :
         void OnTreeItemDelete(TreeItem* item) override;
         void CreateDownloader();
         void abortLoadingThreads();
-        LRESULT ReflectContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void ResetContent();
         static HistoryItem* getItemData(const TreeItem* res);
         void setOnThreadsFinishedCallback(std::function<void()> cb);
         void setOnThreadsStartedCallback(std::function<void()> cb);
         void setOnItemDblClickCallback(std::function<void(TreeItem*)> cb);
+
     private:
         std::map<CString, HICON> m_fileIconCache;
         HICON getIconForExtension(const CString& fileName);
         static HICON getIconForServer(const CString& serverName);
         int CalcItemHeight(TreeItem* item);
-        LRESULT OnLButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
         // If outHeight parameter is set, do not actually draw, just calculate item's dimensions
         void _DrawItem(TreeItem* res, HDC dc, DWORD itemState, RECT invRC, int* outHeight);
         void DrawSubItem(TreeItem* res, HDC dc, DWORD itemState, RECT invRC,  int* outHeight);
-        LRESULT OnLButtonDoubleClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         HBITMAP GetItemThumbnail(HistoryTreeItem* item);
         std::deque<HistoryTreeItem*> m_thumbLoadingQueue;
         std::mutex m_thumbLoadingQueueMutex;
@@ -107,5 +110,7 @@ class CHistoryTreeControl :
         void QueueFinishedEvent();
         void threadsFinished();
         void OnConfigureNetworkClient(INetworkClient* nm);
+        int thumbWidth_ = 0;
+        int thumbHeight_ = 0;
         static void DrawBitmap(HDC hdc, HBITMAP bmp, int x, int y);
 };
