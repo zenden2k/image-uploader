@@ -195,12 +195,6 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
     return 0;
 }
 
-
-void GrabInfo(std::string text){
-    OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
-    //LOG(ERROR) << text;
-}
-
 DirectshowFrameGrabber::DirectshowFrameGrabber() : 
     duration_(0),
     d_ptr(new DirectshowFrameGrabberPrivate())
@@ -324,9 +318,6 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     else if (!IsOther)
     {
         d_ptr->pLoad = ( /*pASF*/ d_ptr->pSource);
-        if (!Error) {
-            GrabInfo( tr("Loading file...") );
-        }
         hr = d_ptr->pLoad->Load(fileNameW, NULL );
     }
     if ( FAILED( hr ) )
@@ -359,17 +350,13 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
 
     // ... and connect them
     //
-    if (!Error)
-        GrabInfo( tr("Connecting codecs") );
-    else
-        GrabInfo( tr("Trying again to connect filters...") );
     
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
     {
-        LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
-        GrabInfo(  tr("Cannot connect filters (format probably is not supported).") );
+        LOG(ERROR) << _("Cannot connect filters (format probably is not supported).\nMake sure you have the required codecs installed on your system.")
+            << std::endl << GetMessageForHresult(hr);
         return false;
     }
 

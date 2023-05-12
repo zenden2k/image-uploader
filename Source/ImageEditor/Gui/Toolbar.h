@@ -85,6 +85,7 @@ public:
     int getArrowType() const;
     void setArrowType(int type);
     void setMovable(bool value);
+    void setShowButtonText(bool show);
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -184,6 +185,7 @@ protected:
     HBITMAP oldSelectedBm_;
     Gdiplus::TextRenderingHint textRenderingHint_;
     bool movable_;
+    bool showButtonText_;
     void createHintForSliders(HWND slider, CString hint);
 };
 

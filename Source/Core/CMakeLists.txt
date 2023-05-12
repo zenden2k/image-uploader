@@ -155,6 +155,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Scripting/UploadFilterScript.h
     3rdpart/htmlentities.h
     Video/VideoUtils.h
+    i18n/Translator.h
 )
     
 if(WIN32)

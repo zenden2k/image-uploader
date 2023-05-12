@@ -22,6 +22,8 @@
 
 #include <utility>
 
+#include <boost/format.hpp>
+
 #include "Core/Utils/CoreUtils.h"
 #include "Func/Common.h"
 #include "Core/ServiceLocator.h"
@@ -32,6 +34,7 @@
 #include "Core/Images/Utils.h"
 #include "Core/AppParams.h"
 #include "Func/MyEngineList.h"
+#include "Core/i18n/Translator.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
@@ -198,9 +201,10 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         serverName = ses->entry(0).serverName;
     }
     if (serverName.empty()) {
-        serverName = "unknown server";
+        serverName = tr("unknown server");
     }
-    std::string lowText = serverName + " (" + std::to_string(ses->entriesCount()) + " files)";
+    std::string filesText = str(boost::format(boost::locale::ngettext("%d file", "%d files", ses->entriesCount())) % ses->entriesCount());
+    std::string lowText = serverName + " (" + filesText + ")";
     CString text = Utf8ToWCstring(label);
 
     CRect rc = invRC;

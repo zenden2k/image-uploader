@@ -538,7 +538,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.PenSize = 12;
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
-    ImageEditorSettings.AllowAltTab = false;
+    ImageEditorSettings.AllowAltTab = true;
     ImageEditorSettings.AllowEditingInFullscreen = false;
     ImageEditorSettings.SearchEngine = SearchByImage::SearchEngine::seYandex;
     WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
@@ -1211,15 +1211,6 @@ void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
             th.Size = 0;
         }
     }
-}
-
-CString WtlGuiSettings::prepareVideoDialogFilters() {
-    CString result;
-    std::vector<std::string>& extensions = VideoUtils::instance().videoFilesExtensions;
-    for (size_t i = 0; i < extensions.size(); i++) {
-        result += CString("*.") + CString(extensions[i].c_str()) + _T(";");
-    }
-    return result;
 }
 
 CString WtlGuiSettings::getServerName()  {

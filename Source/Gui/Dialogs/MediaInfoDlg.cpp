@@ -120,6 +120,7 @@ DWORD CMediaInfoDlg::Run()
 void CMediaInfoDlg::GenerateInfo() {
     if (!IsRunning()) {
         generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
+        Release();
         Start(); // Starting thread which will load in background information about file m_FileName
     }
 }

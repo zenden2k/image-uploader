@@ -42,6 +42,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     subpanelHeight_ = 0;
     subpanelLeftOffset_ = 0;
     movable_ = true;
+    showButtonText_ = true;
 }
 
 Toolbar::~Toolbar()
@@ -540,7 +541,7 @@ SIZE Toolbar::CalcItemSize(int index)
         return item.itemDelegate->CalcItemSize(item,dpiScaleX_, dpiScaleY_);
     }
 
-    if (  item.title.GetLength()) {
+    if (showButtonText_ && item.title.GetLength()) {
         CWindowDC dc(m_hWnd);
         Gdiplus::Graphics gr(dc);
         PointF origin(0,0);
@@ -744,19 +745,21 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
     }
 
-    StringFormat format;
-    format.SetAlignment(StringAlignmentCenter);
-    format.SetLineAlignment(StringAlignmentCenter);
-    //gr->SetTextRenderingHint(textRenderingHint_);
-    
-    int iconWidth = (item.icon ? iconSizeX_/*+ itemHorPadding_*/:0 ) ;
-    int textOffsetX =  iconWidth+ itemHorPadding_;
-    RectF textBounds( textOffsetX + bounds.X + (item.state == isDown ? 1 : 0), bounds.Y+ (item.state == isDown ? 1 : 0), bounds.Width - textOffsetX - (item.type == itComboButton ? 16*dpiScaleX_ : 0), bounds.Height);
-    if ( orientation_ == orVertical ) {
-        //LOG(INFO) << "textBounds x="<<textBounds.X << " y = " << textBounds.Y << "   "<<item.title;
-    }
+    if (showButtonText_) {
+        StringFormat format;
+        format.SetAlignment(StringAlignmentCenter);
+        format.SetLineAlignment(StringAlignmentCenter);
+        //gr->SetTextRenderingHint(textRenderingHint_);
 
-    gr->DrawString(item.title, -1, font_, textBounds, &format, &brush);
+        int iconWidth = (item.icon ? iconSizeX_/*+ itemHorPadding_*/ : 0);
+        int textOffsetX = iconWidth + itemHorPadding_;
+        RectF textBounds(textOffsetX + bounds.X + (item.state == isDown ? 1 : 0), bounds.Y + (item.state == isDown ? 1 : 0), bounds.Width - textOffsetX - (item.type == itComboButton ? 16 * dpiScaleX_ : 0), bounds.Height);
+        if (orientation_ == orVertical) {
+            //LOG(INFO) << "textBounds x="<<textBounds.X << " y = " << textBounds.Y << "   "<<item.title;
+        }
+
+        gr->DrawString(item.title, -1, font_, textBounds, &format, &brush);
+    }
 }
 
 
@@ -902,4 +905,7 @@ void Toolbar::setFillBackgroundCheckbox(bool fill) {
     fillBackgroundCheckbox_.SetCheck(fill ? BST_CHECKED : BST_UNCHECKED);
 }
 
+void Toolbar::setShowButtonText(bool show) {
+    showButtonText_ = show;
+}
 }

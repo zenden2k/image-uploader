@@ -258,6 +258,7 @@ bool CUpdateDlg::ShowModal(HWND parent, bool forceCheck)
 
     if (!m_Checked  && !IsRunning())
     {
+        Release();
         Start();
     }
 

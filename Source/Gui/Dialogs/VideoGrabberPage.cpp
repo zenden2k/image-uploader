@@ -39,6 +39,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/AppParams.h"
+#include "Core/Video/VideoUtils.h"
 #include "Func/ImageGenerator.h"
 
 CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
@@ -377,7 +378,7 @@ LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), settings->prepareVideoDialogFilters(), },
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), VideoUtils::instance().prepareVideoDialogFilters(), },
         { TR("All files"), _T("*.*") }
     };
 

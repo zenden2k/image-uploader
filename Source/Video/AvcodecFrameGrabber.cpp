@@ -25,6 +25,7 @@
 #include "Core/Images/AbstractImage.h"
 #include "Core/Utils/CoreUtils.h"
 #include "FrameGrabberException.h"
+#include "Core/i18n/Translator.h"
 
 extern "C" {
 
@@ -182,7 +183,7 @@ public:
         }
 
         if (videoStream == -1) {
-            throw FrameGrabberException("Could not find a video stream.");
+            throw FrameGrabberException(_("Could not find a video stream."));
         }
 
         fileSize_ = IuCoreUtils::GetFileSize(fileName);

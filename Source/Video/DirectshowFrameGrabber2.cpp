@@ -111,10 +111,6 @@ public :
 };
 
 namespace {
-    void GrabInfo(std::string text) {
-        OutputDebugString(IuCoreUtils::Utf8ToWstring(text).c_str());
-    }
-
     std::string GetMessageForHresult(HRESULT hr) {
         //_com_error error(hr); 
         CString cs;
@@ -250,9 +246,6 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     
     // Load the source
     d_ptr->pLoad = (d_ptr->pSource);
-    if (!Error) {
-        GrabInfo(tr("Loading file..."));
-    }
     hr = d_ptr->pLoad->Load(fileNameW, NULL);
    
     if ( FAILED( hr ) )
@@ -270,10 +263,6 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     //grabPin->Release();
 
     // ... and connect them
-    if (!Error)
-        GrabInfo( tr("Connecting codecs") );
-    else
-        GrabInfo( tr("Trying again to connect filters...") );
     //return false;
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
@@ -282,8 +271,9 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
         /*d_ptr->pGraph->RemoveFilter(pDumpFilter);
         d_ptr->pGraph->RemoveFilter(d_ptr->pSource);*/
         
-        LOG(ERROR) << "Cannot connect filters (format probably is not supported)"<<GetMessageForHresult(hr);
-        GrabInfo(  tr("Cannot connect filters (format probably is not supported).") );
+        LOG(ERROR) << _("Cannot connect filters (format probably is not supported).\nMake sure you have the required codecs installed on your system.")
+            << std::endl << GetMessageForHresult(hr);
+
         return false;
     }
 

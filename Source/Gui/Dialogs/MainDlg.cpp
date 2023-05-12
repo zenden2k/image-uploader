@@ -20,6 +20,8 @@
 
 #include "MainDlg.h"
 
+
+#include <ComDef.h>
 #include <boost/format.hpp>
 #include <shlobj.h>
 
@@ -181,6 +183,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
         }
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Show in default viewer"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
 
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_EDIT, TR("Edit"));
@@ -556,6 +559,24 @@ LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
             return 0;
         }
     }
+    return 0;
+}
+
+LRESULT CMainDlg::OnOpenWith(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        OPENASINFO info = {};
+        info.pcszFile = fileName;
+        info.oaifInFlags = OAIF_HIDE_REGISTRATION | OAIF_EXEC;
+        info.pcszClass = nullptr;
+        HRESULT hr = SHOpenWithDialog(m_hWnd, &info);
+        if (FAILED(hr) && hr != HRESULT_FROM_WIN32(ERROR_CANCELLED)) {
+            _com_error err(hr);
+
+            LOG(ERROR) << "SHOpenWithDialog failed. 0x" << std::hex << hr <<  std::endl << err.ErrorMessage();
+        }
+    }
+   
     return 0;
 }
 

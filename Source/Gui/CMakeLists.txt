@@ -202,6 +202,7 @@ set(HEADER_LIST
     Controls/ImageView.h
     Controls/ResultsListView.h
     Controls/ProgressRingControl.h
+	Controls/CustomTreeControl.h
     Dialogs/ClearHistoryDlg.h
     Dialogs/FolderAddDlg.h
     Dialogs/SearchByImageDlg.h

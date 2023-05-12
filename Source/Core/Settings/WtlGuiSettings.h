@@ -142,8 +142,6 @@ public:
     void ApplyRegSettingsRightNow();
     void Uninstall();
 
-    CString prepareVideoDialogFilters();
-
     ServerSettingsStruct& ServerByName(CString name);
     ServerSettingsStruct& ServerByUtf8Name(const std::string& name);
     void FindDataFolder();

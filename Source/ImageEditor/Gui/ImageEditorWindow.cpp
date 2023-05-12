@@ -842,12 +842,23 @@ LRESULT ImageEditorWindow::OnFileExit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 void ImageEditorWindow::createToolbars()
 {
+    CRect rc;
+    GetClientRect(&rc);
     if ( !horizontalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
         LOG(ERROR) << "Failed to create horizontal toolbar";
         return;
     }
+    int dpiX;
+    {
+        CWindowDC dc(m_hWnd);
+        dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    }
+    
+    if (displayMode_ ==  wdmFullscreen && rc.Width() < MulDiv(800, dpiX, USER_DEFAULT_SCREEN_DPI)) {
+        horizontalToolbar_.setShowButtonText(false);
+    }
     if ( showAddToWizardButton_ ) {
-        CString buttonHint=  (showUploadButton_ ? _T("") : _T(" (Enter)"));
+        CString buttonHint= CString(TR("Add to the list")) + (showUploadButton_ ? _T("") : _T(" (Enter)"));
         horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
     }
     if ( showUploadButton_ ) {
@@ -861,7 +872,7 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, CString(_T("(Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
     std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
     
@@ -869,10 +880,10 @@ void ImageEditorWindow::createToolbars()
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
-    horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, CString(_T("(Ctrl+F)")), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
     
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, CString(_T("(Ctrl+P)")), Toolbar::itButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, CString(_T("(Esc)"))));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
         horizontalToolbar_.ShowWindow(SW_SHOW);
@@ -1248,9 +1259,9 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
     if (res) {
         const std::vector<CString> files = { outFileName_ };
         WinUtils::DisplaySystemPrintDialogForImage(files, m_hWnd);
-        if (displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
+        /*if (displayMode_ == wdmFullscreen && !(GetKeyState(VK_SHIFT) & 0x8000)) {
             EndDialog(drPrintRequested);
-        }
+        }*/
     }
     return res;
 }

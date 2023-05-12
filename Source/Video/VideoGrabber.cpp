@@ -34,6 +34,7 @@
 #endif
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Logging.h"
+#include "Core/i18n/Translator.h"
 
 class VideoGrabberRunnable {
 public:
@@ -55,7 +56,7 @@ public:
     {
         isRunning_ = true;
         if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
-            LOG(ERROR) << "File "<<videoGrabber_->fileName_<< "not found";
+            LOG(ERROR) << (boost::format(_("File \"%s\" not found!")) % videoGrabber_->fileName_) << "not found";
             if ( videoGrabber_->onFinished_ ) {
                 videoGrabber_->onFinished_(false);
             }
@@ -68,7 +69,8 @@ public:
         }
         try {
             if (!grabber->open(videoGrabber_->fileName_)) {
-                throw std::runtime_error("Failed to open video file "+ videoGrabber_->fileName_);
+
+                throw std::runtime_error(str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
             }
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
