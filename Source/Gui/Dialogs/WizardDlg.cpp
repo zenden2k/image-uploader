@@ -1537,7 +1537,7 @@ bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
 bool CWizardDlg::funcImportVideo()
 {
     IMyFileDialog::FileFilterArray filters = {
-        {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), VideoUtils::instance().prepareVideoDialogFilters(),},
+        {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(),},
         {TR("All files"), _T("*.*")}
     };
 
@@ -1734,7 +1734,7 @@ bool CWizardDlg::funcDownloadImages()
 bool CWizardDlg::funcMediaInfo()
 {
     IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), VideoUtils::instance().prepareVideoDialogFilters(), },
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
         { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), _T("*.mp3;*.wav;*.wma;*.mid;*.asx") },
         { TR("All files"), _T("*.*") }
     };
@@ -1763,7 +1763,7 @@ bool CWizardDlg::funcAddFiles()
 {
     IMyFileDialog::FileFilterArray filters = { 
         { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp") },
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), VideoUtils::instance().prepareVideoDialogFilters(), },
+        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };
     auto fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));

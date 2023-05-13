@@ -34,6 +34,9 @@ int GetFontSizeInTwips(int nFontSize);
 
 
 bool IsVideoFile(LPCTSTR szFileName);
+
+CString PrepareVideoDialogFilters();
+
 int GetSavingFormat(LPCTSTR szFileName);
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f);

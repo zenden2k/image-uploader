@@ -41,6 +41,16 @@ bool IsVideoFile(LPCTSTR szFileName)
     return std::find(extensions.begin(), extensions.end(), ext) != extensions.end();
 }
 
+CString PrepareVideoDialogFilters() {
+    CString result;
+    for (const auto& ex : VideoUtils::instance().videoFilesExtensions) {
+        result += _T("*.");
+        result += ex.c_str();
+        result += _T(";");
+    }
+    return result;
+}
+
 int GetSavingFormat(LPCTSTR szFileName)
 {
     if(!szFileName) return -1;
