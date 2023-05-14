@@ -57,7 +57,8 @@ else()
     #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
-target_link_libraries(Tests iucore iuvideo ${COMMON_LIBS_LIST} ${LIBS_LIST} )
+target_link_libraries(Tests iucore iuvideo GTest::GTest ${COMMON_LIBS_LIST} ${LIBS_LIST} )
 
-target_link_libraries(Tests GTest::GTest)
-
+include(GoogleTest)
+#gtest_discover_tests(Tests WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/TestData") 
+gtest_discover_tests(Tests EXTRA_ARGS --dir "${CMAKE_SOURCE_DIR}/Tests/TestData" --sqdir "${CMAKE_SOURCE_DIR}/Core/Scripting/API/Tests/")

@@ -1358,10 +1358,9 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
         if (!bufferLen) {
             return false;
         }
-        char* decodedImg = new char[bufferLen];
-        base64_decode(encodedImg.data(), encodedImg.length(), decodedImg, &outLen, 0);
+        auto decodedImg = std::make_unique<char[]>(bufferLen);
+        base64_decode(encodedImg.data(), encodedImg.length(), decodedImg.get(), &outLen, 0);
         if (!outLen) {
-            delete[] decodedImg;
             return false;
         }
         CString tempDirectory = AppParams::instance()->tempDirectoryW();
@@ -1372,12 +1371,10 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
         CString outFilename = WinUtils::GetUniqFileName(tempDirectory + _T("clipboard.") + extension);
         FILE* outFile = IuCoreUtils::FopenUtf8(W2U(outFilename).c_str(), "wb");
         if (!outFile) {
-            delete[] decodedImg;
             return false;
         }
-        size_t bytesWritten = fwrite(decodedImg, 1, outLen, outFile);
+        size_t bytesWritten = fwrite(decodedImg.get(), 1, outLen, outFile);
         fclose(outFile);
-        delete[] decodedImg;
         if (bytesWritten == outLen) {
             fileName = outFilename;
             return true;
@@ -1391,7 +1388,7 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
 // Allocates storage for entire file 'file_name' and returns contents and size
 bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
 
-    uint8_t* file_data;
+    std::unique_ptr<uint8_t[]> file_data;
 
     if (data == nullptr || data_size == nullptr) return 0;
     *data = nullptr;
@@ -1399,30 +1396,27 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
 
     FILE* in = _wfopen(file_name, L"rb");
     if (in == nullptr) {
-        LOG(ERROR) << "cannot open input file " << file_name;
-        return false;
+        throw IOException("Cannot open input file", IuCoreUtils::WstringToUtf8(file_name));
     }
     fseek(in, 0, SEEK_END);
     size_t file_size = ftell(in);
     fseek(in, 0, SEEK_SET);
     try {
-        file_data = new uint8_t[file_size];
+        file_data = std::make_unique<uint8_t[]>(file_size);
     }
     catch (std::exception &) {
         LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
         fclose(in);
         return false;
     }
-    if (file_data == nullptr) return 0;
-    int ok = (fread(file_data, 1, file_size, in) == file_size);
+    if (file_data == nullptr) return false;
+    int ok = (fread(file_data.get(), 1, file_size, in) == file_size);
     fclose(in);
 
     if (!ok) {
-        LOG(ERROR) << boost::format("Could not read %d bytes of data from file ") % file_size << file_name;
-        delete[] file_data;
-        return false;
+        throw IOException(str(boost::format("Could not read %d bytes of data from file") % file_size), IuCoreUtils::WstringToUtf8(file_name));
     }
-    *data = file_data;
+    *data = file_data.release();
     *data_size = file_size;
     return true;
 }

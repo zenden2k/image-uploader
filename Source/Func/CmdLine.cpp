@@ -59,13 +59,13 @@ void CCmdLine::Parse(LPCTSTR szCmdLine)
 
         LocalFree(szArgList);
     } else {
-        params_.push_back(_T(""));
+        params_.emplace_back(_T(""));
     }
 }
 
 size_t CCmdLine::AddParam(LPCTSTR szParam)
 {
-    params_.push_back(szParam);
+    params_.emplace_back(szParam);
     return params_.size() - 1;
 }
 

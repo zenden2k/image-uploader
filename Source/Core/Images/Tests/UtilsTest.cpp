@@ -200,11 +200,6 @@ TEST_F(UtilsTest, ExUtilReadFile) {
     EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
 
     delete[] data;
-    data = nullptr; 
-    size = 0;
-    EXPECT_FALSE(ExUtilReadFile(U2W(TestHelpers::resolvePath("notexistingfile5734533345.png")), &data, &size));
-    EXPECT_EQ(nullptr, data);
-    EXPECT_EQ(0, size);
 
     data = nullptr;
     size = 0;
@@ -213,6 +208,12 @@ TEST_F(UtilsTest, ExUtilReadFile) {
     EXPECT_EQ(0, size);
     EXPECT_TRUE(data != nullptr);
     delete[] data;
+}
+
+TEST_F(UtilsTest, ExUtilReadFileExceptions) {
+    uint8_t* data = nullptr;
+    size_t size = 0;
+    EXPECT_THROW(ExUtilReadFile(U2W(TestHelpers::resolvePath("notexistingfile5734533345.png")), &data, &size), IOException);
 }
 
 TEST_F(UtilsTest, StringToColor) {
@@ -291,7 +292,7 @@ TEST_F(UtilsTest, StringToColor) {
 TEST_F(UtilsTest, SaveImageToFile) {
     TempFileDeleter deleter;
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file1.png");
+        std::string destFile = "out_test_file1.png";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(640, 480);
@@ -306,7 +307,7 @@ TEST_F(UtilsTest, SaveImageToFile) {
         EXPECT_EQ("image/png", IuCoreUtils::GetFileMimeType(destFile));
     }
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file2.jpg");
+        std::string destFile = "out_test_file2.jpg";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(200, 150);
@@ -321,7 +322,7 @@ TEST_F(UtilsTest, SaveImageToFile) {
         EXPECT_EQ("image/jpeg", IuCoreUtils::GetFileMimeType(destFile));
     }
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file3.webp");
+        std::string destFile = "out_test_file3.webp";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(200, 150);
@@ -336,7 +337,7 @@ TEST_F(UtilsTest, SaveImageToFile) {
         EXPECT_EQ("image/webp", IuCoreUtils::GetFileMimeType(destFile));
     }
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file4.webp");
+        std::string destFile = "out_test_file4.webp";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(200, 150);
@@ -392,7 +393,7 @@ TEST_F(UtilsTest, SaveImageToStream) {
 TEST_F(UtilsTest, SaveImageToFileStream) {
     TempFileDeleter deleter;
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file1.png");
+        std::string destFile = "out_test_file1.png";
         
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
@@ -412,7 +413,7 @@ TEST_F(UtilsTest, SaveImageToFileStream) {
         EXPECT_EQ(150, img->getHeight());
     }
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file2.webp");
+        std::string destFile = "out_test_file2.webp";
 
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
@@ -432,7 +433,7 @@ TEST_F(UtilsTest, SaveImageToFileStream) {
         EXPECT_EQ(150, img->getHeight());
     }
     {
-        std::string destFile = TestHelpers::resolvePath("AnotherFolder/test_file3.webp");
+        std::string destFile = "out_test_file3.webp";
 
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
@@ -456,14 +457,14 @@ TEST_F(UtilsTest, SaveImageToFileStream) {
 TEST_F(UtilsTest, SaveImageToFileExceptions) {
     TempFileDeleter deleter;
     {
-        std::string destFile = TestHelpers::resolvePath("not_existing_directory/test_file1.png");
+        std::string destFile = "not_existing_directory/out_test_file1.png";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(200, 100);
         EXPECT_THROW(SaveImageToFile(&bm, wideDestFile, nullptr, sifPNG, 95, nullptr), IOException);
     }
     {
-        std::string destFile = TestHelpers::resolvePath("not_existing_directory/test_file2.webp");
+        std::string destFile = "not_existing_directory/out_test_file2.webp";
         deleter.addFile(destFile);
         CString wideDestFile = U2W(destFile);
         Gdiplus::Bitmap bm(200, 100);

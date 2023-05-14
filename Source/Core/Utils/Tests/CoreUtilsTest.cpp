@@ -143,7 +143,7 @@ TEST_F(CoreUtilsTest, getFileSize)
 
 TEST_F(CoreUtilsTest, copyFile)
 {
-    std::string destFile = TestHelpers::resolvePath("AnotherFolder/new_file.png");
+    std::string destFile = "out_new_file.png";
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     bool res = IuCoreUtils::CopyFileToDest(constSizeFileName, destFile, true);
     EXPECT_EQ(res, true);

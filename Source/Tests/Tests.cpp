@@ -126,8 +126,8 @@ int main(int argc, char *argv[]){
         
         desc.add_options()
             ("help,h", "Show help")
-            ("dir,d", po::value<std::string>(&testDataDir)->required(), "Test data directory")
-            ("sqdir,s", po::value<std::string>(&testScriptsDir)->required(), "Squirrel tests directory (containing .nut files) ")
+            ("dir,d", po::value<std::string>(&testDataDir), "Test data directory")
+            ("sqdir,s", po::value<std::string>(&testScriptsDir), "Squirrel tests directory (containing .nut files) ")
             ;
 
         po::variables_map vm;
@@ -139,10 +139,23 @@ int main(int argc, char *argv[]){
             return 0;
         }
         po::notify(vm);
+
+
+        boost::filesystem::path p(__FILE__);
+
+        if (testDataDir.empty()) {
+            testDataDir = (p.parent_path() / "TestData").string();
+        }
+
+        if (testScriptsDir.empty()) {
+            testScriptsDir = (p.parent_path() / "../Core/Scripting/API/Tests/").string();
+        }
+
     } catch (std::exception& ex) {
         std::cout << ex.what() << std::endl;
         return 1;
     }
+
 
     if (!IuCoreUtils::DirectoryExists(testDataDir)) {
         std::cout << "Directory '" << testDataDir << "' does not exist." << std::endl;
@@ -204,8 +217,7 @@ int main(int argc, char *argv[]){
     }
     sq_pop(vm.GetVM(), 1);
     ScriptAPI::RegisterAPI(vm);
-    sqtest_addtest(vm.GetVM(), (testScriptsDir + "globals.nut").c_str());
-
+    sqtest_addtest(vm.GetVM(), (testScriptsDir + "/globals.nut").c_str());
 
     int res = RUN_ALL_TESTS();
 

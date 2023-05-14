@@ -22,8 +22,12 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileN
     uint8_t* dataRaw = nullptr;
     std::unique_ptr<uint8_t> data;
     size_t dataSize = 0;
-    if (!ImageUtils::ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
-        return nullptr;
+    try {
+        if (!ImageUtils::ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
+            return nullptr;
+        }
+    }catch (const std::exception& e) {
+        return {};
     }
     data.reset(dataRaw);
     return readFromMemory(dataRaw, dataSize);
@@ -87,7 +91,6 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
     }
 
     return readFromMemory(pBuffer.get(), sSize);
-
 }
 
 bool WebpImageReader::readWebP(const uint8_t* const data, size_t data_size, WebPPic* pic) {
