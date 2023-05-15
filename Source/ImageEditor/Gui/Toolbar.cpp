@@ -908,4 +908,8 @@ void Toolbar::setFillBackgroundCheckbox(bool fill) {
 void Toolbar::setShowButtonText(bool show) {
     showButtonText_ = show;
 }
+
+Toolbar::Orientation Toolbar::orientation() const {
+    return orientation_;
+}
 }

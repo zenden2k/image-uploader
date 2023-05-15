@@ -138,19 +138,14 @@ LRESULT CRegionSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     return 0;  // Let the system set the focus
 }
 
-LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
-{
-    PAINTSTRUCT ps;
-    BeginPaint(&ps);
+LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled) {
+    CPaintDC dc(m_hWnd);
 
-    HDC dc = ps.hdc;
-
-    int w = ps.rcPaint.right - ps.rcPaint.left;
-    int h = ps.rcPaint.bottom - ps.rcPaint.top;
+    int w = dc.m_ps.rcPaint.right - dc.m_ps.rcPaint.left;
+    int h = dc.m_ps.rcPaint.bottom - dc.m_ps.rcPaint.top;
 
     if (m_bPictureChanged) {
         if (Down) {
-            EndPaint(&ps);
             return 0;
         }
         RECT rc;
@@ -158,7 +153,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         CRgn newRegion;
         newRegion.CreateRectRgn(0, 0, rc.right, rc.bottom);
         SelectClipRgn(doubleDC, newRegion);
-        BitBlt(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w, h, memDC2, ps.rcPaint.left, ps.rcPaint.top,SRCCOPY);
+        BitBlt(doubleDC, dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, w, h, memDC2, dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top,SRCCOPY);
         newRegion.CombineRgn(m_SelectionRegion,RGN_DIFF);
         CBrush br;
         SelectClipRgn(doubleDC, newRegion);
@@ -171,7 +166,7 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         bf.AlphaFormat = 0; ///*0 */ /*AC_SRC_ALPHA*/0;
 
         if (RectCount)
-            if (AlphaBlend(doubleDC, ps.rcPaint.left, ps.rcPaint.top, w, h, alphaDC, ps.rcPaint.left, ps.rcPaint.top, w,
+            if (AlphaBlend(doubleDC, dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, w, h, alphaDC, dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, w,
                            h, bf) == FALSE) {
             }
         newRegion.DeleteObject();
@@ -192,9 +187,9 @@ LRESULT CRegionSelect::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, 
         }
         m_bPictureChanged = false;
     }
-    BitBlt(dc, ps.rcPaint.left, ps.rcPaint.top, w, h, doubleDC, ps.rcPaint.left, ps.rcPaint.top, SRCCOPY);
+    dc.BitBlt(dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, w, h, doubleDC, dc.m_ps.rcPaint.left, dc.m_ps.rcPaint.top, SRCCOPY);
 
-    EndPaint(&ps);
+
     m_bPainted = true;
     return 0;
 }
@@ -463,7 +458,7 @@ LRESULT CRegionSelect::OnRButtonDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     return 1;
 }
 
-bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
+bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR monitor)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_bPictureChanged = false;
@@ -486,15 +481,6 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
     if (!m_hWnd) {
         Create(nullptr, r, _T("ImageUploader_RegionWnd"), WS_POPUP, WS_EX_TOPMOST);
     }
-
-    BITMAPINFOHEADER    bmi;
-    memset(&bmi, 0, sizeof(bmi));
-    bmi.biSize        = sizeof(bmi);
-    bmi.biWidth        = m_Width;
-    bmi.biHeight        = m_Height;
-    bmi.biPlanes        = 1;
-    bmi.biBitCount        = 4 * 8;
-    bmi.biCompression    = BI_RGB;
 
     HDC dstDC = ::GetDC(m_hWnd);
      //doubleBm.
@@ -531,11 +517,27 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
     alphaDC.FillRect(&r, br2);    
     m_bPictureChanged = true;
-    
+
+    ::ReleaseDC(m_hWnd, dstDC);
+
+    CRect windowRc;
+    GuiTools::GetScreenBounds(m_screenBounds);
+    if (monitor) {
+        MONITORINFO mi;
+        memset(&mi, 0, sizeof(mi));
+        mi.cbSize = sizeof(mi);
+        if (!GetMonitorInfo(monitor, &mi)) {
+            LOG(ERROR) << "Unable get info about monitor";
+            return false;
+        }
+
+        windowRc = mi.rcMonitor;
+    } else {
+        windowRc = m_screenBounds;
+    }
 
     //RECT screenBounds;
-    GuiTools::GetScreenBounds(m_screenBounds);
-    MoveWindow(m_screenBounds.left, m_screenBounds.top,m_screenBounds.Width(), m_screenBounds.Height());
+    MoveWindow(windowRc.left, windowRc.top, windowRc.Width(), windowRc.Height());
     topLeft.x = 0;
     topLeft.y = 0;
     ScreenToClient(&topLeft);
@@ -561,7 +563,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height)
 
     alphaBm.DeleteObject();
 
-    ::ReleaseDC(m_hWnd, dstDC);
+    
     ShowWindow(SW_HIDE);
     return m_bResult;
 }

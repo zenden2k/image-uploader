@@ -86,6 +86,7 @@ public:
     void setArrowType(int type);
     void setMovable(bool value);
     void setShowButtonText(bool show);
+    Orientation orientation() const;
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )

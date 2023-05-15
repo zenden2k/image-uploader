@@ -24,7 +24,6 @@
 #include "atlheaders.h"
 #include <atlcrack.h>
 #include "resource.h"       // main symbols
-#include "Gui/Controls/myimage.h"
 #include "Core/ScreenCapture.h"
 
 class CRegionSelectCallback
@@ -44,7 +43,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 
         bool wasImageEdited() const;
         std::shared_ptr<ScreenCapture::CScreenshotRegion> region() const;
-        bool Execute(HBITMAP screenshot, int width, int height);
+        bool Execute(HBITMAP screenshot, int width, int height, HMONITOR monitor = nullptr);
 
         DECLARE_WND_CLASS(_T("CRegionSelect"))
 

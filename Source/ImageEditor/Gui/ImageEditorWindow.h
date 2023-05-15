@@ -236,6 +236,11 @@ public:
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
         void showApplyButtons();
+
+        /**
+         * Reposition toolbar in full screen mode so it becomes fully visible
+         */
+        void repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect);
 };
 
 class ConfigurationProvider {

@@ -1968,7 +1968,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             {
                 HBITMAP gdiBitmap=0;
                 res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
-                if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight()))
+                if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor))
                 {
                     if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
                     engine.setSource(gdiBitmap);

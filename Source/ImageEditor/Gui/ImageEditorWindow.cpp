@@ -12,7 +12,7 @@
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
-
+#include "Core/ScreenCapture/MonitorEnumerator.h"
 
 namespace ImageEditor {
     
@@ -482,6 +482,9 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     if (displayMode_ == wdmWindowed) {
         horizontalToolbar_.SetWindowPos(0, rc.left, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    } else {
+        repositionToolbar(horizontalToolbar_, vertToolbarRect);
+        repositionToolbar(verticalToolbar_, horToolbarRect);
     }
 
     m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
@@ -1311,7 +1314,7 @@ bool ImageEditorWindow::createTooltip() {
     // Set up "tool" information. In this case, the "tool" is the entire parent window.
 
 
-    TOOLINFO ti = { 0 };
+    TOOLINFO ti = {};
     CString title = TR("Select region");
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
@@ -1553,6 +1556,46 @@ LRESULT ImageEditorWindow::OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, L
 
 void ImageEditorWindow::showApplyButtons() {
     horizontalToolbar_.showApplyButtons(currentDrawingTool_ == DrawingToolType::dtCrop && displayMode_ == wdmWindowed && canvas_->hasElementOfType(ElementType::etCrop));
+}
+
+void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect) {
+    if (displayMode_ != wdmFullscreen) {
+        return;
+    }
+    MONITORINFO mi = {};
+    mi.cbSize = sizeof(mi);
+    ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
+    CRect workArea = mi.rcWork;
+
+    MonitorEnumerator enumerator;
+    CRect toolbarRc;
+    toolbar.GetClientRect(toolbarRc);
+    toolbar.ClientToScreen(toolbarRc);
+
+    bool needRepos = false;
+
+    if (enumerator.enumDisplayMonitors(nullptr, nullptr)) {
+        needRepos = true;
+        for (const auto& mon : enumerator) {
+            CRect r = mon.rect;
+            CRect intersected;
+            intersected.IntersectRect(r, toolbarRc);
+            if (intersected == toolbarRc) {
+                needRepos = false;
+                break;
+            }
+        }
+    }
+
+    if (needRepos) {
+        CPoint newPos;
+        if (toolbar.orientation() == Toolbar::orHorizontal) {
+            newPos = CPoint(workArea.left + otherToolbarRect.Width() + kCanvasMargin, workArea.top);
+        } else {
+            newPos = CPoint(workArea.left, workArea.top + otherToolbarRect.Height() + kCanvasMargin);
+        }
+        toolbar.SetWindowPos(nullptr, newPos.x, newPos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+    }
 }
 
 }
