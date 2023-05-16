@@ -565,14 +565,14 @@ LRESULT CThumbsView::OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     return 0;
 }
 
-LRESULT CThumbsView::OnDeleteAllItems(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+/*LRESULT CThumbsView::OnDeleteAllItems(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     int count = GetItemCount();
     for (int i = 0; i < count; i++) {
         auto *tvi = reinterpret_cast<ThumbsViewItem *>(GetItemData(i));
         delete tvi;
     }
     return TRUE; // Suppress subsequent LVN_DELETEITEM notification codes
-}
+}*/
 
 void CThumbsView::SetDeletePhysicalFiles(bool doDelete) {
     deletePhysicalFiles_ = doDelete;

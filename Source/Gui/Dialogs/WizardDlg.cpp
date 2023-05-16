@@ -169,7 +169,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     m_bScreenshotFromTray = false;
     serversChanged_ = false;
     using namespace std::placeholders;
-    settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
+    settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1)); 
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -1327,8 +1327,9 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     TCHAR filterBuffer[256];
 
     lstrcpy(filterBuffer, CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"));
+    CString imageFilter = IuCommonFunctions::PrepareFileDialogImageFilter();
     COMDLG_FILTERSPEC aFileTypes[] = {
-        {filterBuffer, _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp")},
+        {filterBuffer, imageFilter},
         {TR("Any file"), _T("*.*")}
     };
     DWORD dwFlags = 0;
@@ -1762,7 +1763,7 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
     IMyFileDialog::FileFilterArray filters = { 
-        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), _T("*.jpg;*.jpeg;*.gif;*.png;*.bmp;*.tiff;*.webp") },
+        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), IuCommonFunctions::PrepareFileDialogImageFilter() },
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };

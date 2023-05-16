@@ -67,7 +67,7 @@ public:
         MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
-        REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteAllItems)
+        //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteAllItems)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
         REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
     END_MSG_MAP()
@@ -106,7 +106,7 @@ public:
     void SelectLastItem();
     bool CopySelectedItemsToClipboard() const;
     LRESULT OnDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    LRESULT OnDeleteAllItems(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    //LRESULT OnDeleteAllItems(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void SetDeletePhysicalFiles(bool doDelete);
     CImageViewItem getNextImgViewItem(const CImageViewItem& currentItem) override;
     CImageViewItem getPrevImgViewItem(const CImageViewItem& currentItem) override;
