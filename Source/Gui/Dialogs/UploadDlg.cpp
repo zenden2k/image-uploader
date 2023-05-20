@@ -151,8 +151,8 @@ bool CUploadDlg::startUpload() {
             task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
             task->setUrlShorteningServer(settings->urlShorteningServer);
             using namespace std::placeholders;
-            task->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
-            task->onChildTaskAdded.connect(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
+            task->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+            task->addChildTaskAddedCallback(std::bind(&CUploadDlg::onChildTaskAdded, this, _1));
 
             task->setOnFolderUsedCallback(std::bind(&CUploadDlg::OnFolderUsed, this, _1));
             uploadSession_->addTask(task);
@@ -637,7 +637,7 @@ void CUploadDlg::onChildTaskAdded(UploadTask* child)
         });
     }
     using namespace std::placeholders;
-    child->onTaskFinished.connect(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+    child->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
 }
 
 void CUploadDlg::backgroundThreadStarted()

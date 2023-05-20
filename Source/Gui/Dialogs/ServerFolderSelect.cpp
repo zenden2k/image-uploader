@@ -193,7 +193,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
             task->setServerProfile(serverProfile_);
             task->setFolder(m_newFolder);
             using namespace std::placeholders;
-            task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+            task->addTaskFinishedCallback(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
             isRunning_ = true;
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
@@ -306,7 +306,7 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
             task->setServerProfile(serverProfile_);
             task->setFolder(folder);
             using namespace std::placeholders;
-            task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+            task->addTaskFinishedCallback(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
             isRunning_ = true;
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
@@ -393,7 +393,7 @@ void CServerFolderSelect::refreshList() {
     task->setServerProfile(serverProfile_);
     currentTask_ = task;
     using namespace std::placeholders;
-    task->onTaskFinished.connect(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+    task->addTaskFinishedCallback(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
 
     isRunning_ = true;
     uploadSession_ = std::make_shared<UploadSession>();

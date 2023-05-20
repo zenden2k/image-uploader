@@ -286,7 +286,7 @@ void CAddFtpServerDialog::addServer(bool test) {
             ServerProfile serverProfile(servName);
             serverProfile.setProfileName(W2U(login));
             authTask->setServerProfile(serverProfile);
-            authTask->onTaskFinished.connect([this](UploadTask* task, bool success) {
+            authTask->addTaskFinishedCallback([this](UploadTask* task, bool success) {
                 testSuccess_ = success;
                 CString msg = U2W(task->uploadResult()->message);
                 if (msg.IsEmpty()) {

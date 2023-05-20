@@ -200,7 +200,7 @@ private:
 
         std::shared_ptr<Gdiplus::Bitmap> buffer_;
         Document* doc_;
-        Gdiplus::Graphics* bufferedGr_;
+        std::unique_ptr<Gdiplus::Graphics> bufferedGr_;
         float blurRadius_;
         int pixelateBlockSize_;
         int canvasWidth_, canvasHeight_;

@@ -784,7 +784,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
 SaveImageFormat GetFormatByFileName(CString filename) {
     CString ext = WinUtils::GetFileExt(filename);
     ext.MakeLower();
-    if (ext == _T("jpg") || ext == _T("jpeg")) {
+    if (ext == _T("jpg") || ext == _T("jpeg") || ext == _T("jpe") || ext == _T("jif") || ext == _T("jfif")) {
         return sifJPEG;
     } else if (ext == _T("gif")) {
         return sifGIF;

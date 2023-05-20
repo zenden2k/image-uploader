@@ -66,7 +66,6 @@ Canvas::Canvas( HWND parent ) {
     pixelateBlockSize_ = 12;
     blurRectanglesCount_ = 0;
     currentDrawingTool_ = nullptr;
-    bufferedGr_ = nullptr;
     isDocumentModified_ = false;
     memset(&font_, 0, sizeof(font_));
     doc_ = nullptr;
@@ -84,7 +83,6 @@ Canvas::Canvas( HWND parent ) {
 
 Canvas::~Canvas() {
 //    delete buffer_;
-    delete bufferedGr_;
     delete currentDrawingTool_;
     delete overlay_;
     for (size_t i = 0; i < elementsToDelete_.size(); i++) {
@@ -824,9 +822,8 @@ POINT Canvas::GetScrollOffset() const {
 
 void Canvas::createDoubleBuffer() {
 //    delete buffer_;
-    delete bufferedGr_;
     buffer_ = std::make_shared<Gdiplus::Bitmap>(canvasWidth_, canvasHeight_, PixelFormat32bppARGB);
-    bufferedGr_ = new Gdiplus::Graphics( buffer_.get() );
+    bufferedGr_ = std::make_unique<Gdiplus::Graphics>( buffer_.get() );
 }
 
 void Canvas::setCursor(CursorType cursorType)
@@ -880,10 +877,10 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
         }
     }
 
-    doc_->render( bufferedGr_, rc );
+    doc_->render( bufferedGr_.get(), rc );
 
     if ( currentDrawingTool_ != NULL ) {
-        currentDrawingTool_->render( bufferedGr_ );
+        currentDrawingTool_->render( bufferedGr_.get() );
     }
 
     /*if ( !fullRender_ ) {
@@ -908,15 +905,15 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
         if ( !fullRender_ && intersection.left == 0 && intersection.right ==0 && intersection.top == 0 && intersection.bottom == 0 ) {
             continue;
         }
-        elementsOnCanvas_[i]->render(bufferedGr_);
+        elementsOnCanvas_[i]->render(bufferedGr_.get());
     }
     if ( !forExport ) {
         if ( overlay_ && showOverlay_ ) {
-            overlay_->render(bufferedGr_);
+            overlay_->render(bufferedGr_.get());
         }
 
         for (auto& el : elementsOnCanvas_) {
-            el->renderGrips(bufferedGr_);
+            el->renderGrips(bufferedGr_.get());
         }
     }
     canvasChanged_ = false;
@@ -1236,7 +1233,7 @@ void Canvas::setStepInitialValue(int value) {
 }
 
 Gdiplus::Graphics* Canvas::getGraphicsDevice() const {
-    return bufferedGr_;
+    return bufferedGr_.get();
 }
 
 Gdiplus::Rect Canvas::lastAppliedCrop() const {

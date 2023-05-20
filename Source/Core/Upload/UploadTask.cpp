@@ -65,7 +65,7 @@ void UploadTask::taskFinished()
    
     bool success = uploadSuccess();
 
-    onTaskFinished(this, success);
+    onTaskFinished_(this, success);
 
     /*for (size_t i = 0; i < taskFinishedCallbacks_.size(); i++)
     {
@@ -197,7 +197,7 @@ void UploadTask::addChildTask(std::shared_ptr<UploadTask> child)
     if (session_) {
         session_->childTaskAdded(child.get());
     }
-    onChildTaskAdded(child.get());
+    onChildTaskAdded_(child.get());
     /*for (const auto& cb : childTaskAddedCallbacks_) {
         cb(child.get());
     }*/

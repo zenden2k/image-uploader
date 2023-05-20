@@ -212,7 +212,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
         using namespace std::placeholders;
         auto authTask = std::make_shared<AuthTask>(actionType);
         authTask->setServerProfile(serverProfile_);
-        authTask->onTaskFinished.connect(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
+        authTask->addTaskFinishedCallback(std::bind(&CLoginDlg::authTaskFinishedCallback, this, _1, _2));
         auto* uploadManager = ServiceLocator::instance()->uploadManager();
         enableControls(false);
         currentTask_ = authTask;

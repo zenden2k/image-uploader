@@ -14,8 +14,8 @@ UploadListModel::UploadListModel(std::shared_ptr<UploadSession> session) {
         using namespace std::placeholders;
         task->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
         task->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
-        task->onTaskFinished.connect(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
-        task->onChildTaskAdded.connect(std::bind(&UploadListModel::onChildTaskAdded, this, _1));
+        task->addTaskFinishedCallback(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
+        task->addChildTaskAddedCallback(std::bind(&UploadListModel::onChildTaskAdded, this, _1));
         UploadListItem *sd = new UploadListItem();
         sd->tableRow = i;
         sd->setStatusText(TR("In queue"));
@@ -164,7 +164,7 @@ void UploadListModel::onChildTaskAdded(UploadTask* child) {
         notifyRowChanged(fps->tableRow);
     }
     using namespace std::placeholders;
-    child->onTaskFinished.connect(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
+    child->addTaskFinishedCallback(std::bind(&UploadListModel::onTaskFinished, this, _1, _2));
     child->setOnUploadProgressCallback(std::bind(&UploadListModel::onTaskUploadProgress, this, _1));
     child->setOnStatusChangedCallback(std::bind(&UploadListModel::onTaskStatusChanged, this, _1));
 }

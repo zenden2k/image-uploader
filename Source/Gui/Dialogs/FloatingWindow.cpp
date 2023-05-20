@@ -378,7 +378,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     lastUrlShorteningTask_ = std::make_shared<UrlShorteningTask>(W2U(url));
     lastUrlShorteningTask_->setServerProfile(settings->urlShorteningServer);
-    lastUrlShorteningTask_->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
+    lastUrlShorteningTask_->addTaskFinishedCallback(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(lastUrlShorteningTask_);
     currentUploadSession_->addSessionFinishedCallback(std::bind(&CFloatingWindow::onUploadSessionFinished, this, _1));
@@ -763,7 +763,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     auto task = std::make_shared<FileUploadTask>(W2U(realName), W2U(displayName));
     task->setIsImage(true);
     task->setServerProfile(Settings.quickScreenshotServer.getByIndex(0));
-    task->onTaskFinished.connect(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
+    task->addTaskFinishedCallback(std::bind(&CFloatingWindow::OnFileFinished, this, _1, _2));
     task->setUrlShorteningServer(Settings.urlShorteningServer);
 
     currentUploadSession_ = std::make_shared<UploadSession>();

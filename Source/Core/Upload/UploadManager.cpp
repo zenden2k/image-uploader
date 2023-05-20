@@ -120,7 +120,7 @@ void UploadManager::taskAdded(UploadTask* task)
     if (task->parentTask()){
         return;
     }
-    task->onTaskFinished.connect(std::bind(&UploadManager::onTaskFinished, this, std::placeholders::_1, std::placeholders::_2));
+    task->addTaskFinishedCallback(std::bind(&UploadManager::onTaskFinished, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void UploadManager::settingsChanged(BasicSettings* settings)

@@ -42,11 +42,15 @@ void ColorPickerTool::continueDraw(int x, int y, DWORD flags)
 
 void ColorPickerTool::endDraw(int x, int y)
 {
-    Gdiplus::Color color;
-    canvas_->getBufferBitmap()->GetPixel(x,y, &color);
-    canvas_->setForegroundColor(color);
-    canvas_->onForegroundColorChanged(color);
-    canvas_->setPreviousDrawingTool();
+    auto bmp = canvas_->getBitmapForExport();
+    if (bmp) {
+        Gdiplus::Color color;
+        if (bmp->GetPixel(x, y, &color) == Gdiplus::Ok) {
+            canvas_->setForegroundColor(color);
+            canvas_->onForegroundColorChanged(color);
+            canvas_->setPreviousDrawingTool();
+        }
+    }
 }
 
 void ColorPickerTool::render(Painter* gr)
@@ -61,12 +65,16 @@ ImageEditor::CursorType ColorPickerTool::getCursor(int x, int y)
 
 void ColorPickerTool::rightButtonClick(int x, int y)
 {
-    Gdiplus::Color color;
-    canvas_->getBufferBitmap()->GetPixel(x,y, &color);
-    canvas_->setBackgroundColor(color);
+    auto bmp = canvas_->getBitmapForExport();
+    if (bmp) {
+        Gdiplus::Color color;
+        if (bmp->GetPixel(x, y, &color) == Gdiplus::Ok) {
+            canvas_->setBackgroundColor(color);
 
-    canvas_->onBackgroundColorChanged(color);
-    canvas_->setPreviousDrawingTool();
+            canvas_->onBackgroundColorChanged(color);
+            canvas_->setPreviousDrawingTool();
+        }
+    }
 }
 
 }

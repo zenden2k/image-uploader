@@ -17,8 +17,6 @@ public:
     void endDraw( int x, int y ) override;
     void applyOperation() override;
     void cancelOperation() override;
-private:
-    MovableElement* lastCropElement_ = nullptr;
 };
 
 }

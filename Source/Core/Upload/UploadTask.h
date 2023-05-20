@@ -88,8 +88,15 @@ class UploadTask {
         UploadResult* uploadResult();
         UploadProgress* progress();
 
-        boost::signals2::signal<void(UploadTask*, bool)> onTaskFinished;
-        boost::signals2::signal<void(UploadTask*)> onChildTaskAdded;
+        template<typename F>
+        boost::signals2::connection addTaskFinishedCallback(F&& f) {
+            return onTaskFinished_.connect(std::forward<F>(f));
+        }
+
+        template<typename F>
+        boost::signals2::connection addChildTaskAddedCallback(F&& f) {
+            return onChildTaskAdded_.connect(std::forward<F>(f));
+        }
 
         void setOnUploadProgressCallback(std::function<void(UploadTask*)> cb);
         void setOnStatusChangedCallback(std::function<void(UploadTask*)> cb);
@@ -159,6 +166,8 @@ class UploadTask {
         CFileQueueUploader* uploadManager_;
         std::function<void(UploadTask*)> onUploadProgress_;
         std::function<void(UploadTask*)> onStatusChanged_;
+        boost::signals2::signal<void(UploadTask*, bool)> onTaskFinished_;
+        boost::signals2::signal<void(UploadTask*)> onChildTaskAdded_;
 
 };    
 

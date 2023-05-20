@@ -271,7 +271,7 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
     using namespace std::placeholders;
-    fileUploadTask->onTaskFinished.connect(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
+    fileUploadTask->addTaskFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     {
         std::lock_guard<std::mutex> lk(uploadSessionMutex_);
         uploadSession_->addTask(fileUploadTask);

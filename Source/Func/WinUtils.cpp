@@ -476,7 +476,7 @@ CString FormatWindowsErrorMessage(int idCode)
 
 bool FileExists(LPCTSTR FileName)
 {
-    return (FileName && GetFileAttributes(FileName)!=-1);
+    return FileName && GetFileAttributes(FileName) != INVALID_FILE_ATTRIBUTES;
 }
 
 CString TrimString(const CString& source, int nMaxLen)

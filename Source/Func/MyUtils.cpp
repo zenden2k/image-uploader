@@ -22,17 +22,9 @@
 
 #include <string>
 
-#include "atlheaders.h"
-
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
-#include "Func/WinUtils.h"
-
-int GetFontSizeInTwips(int nFontSize)
-{
-   return MulDiv(nFontSize, 1440, 72);
-}
 
 bool IsVideoFile(LPCTSTR szFileName)
 {
@@ -49,19 +41,6 @@ CString PrepareVideoDialogFilters() {
         result += _T(";");
     }
     return result;
-}
-
-int GetSavingFormat(LPCTSTR szFileName)
-{
-    if(!szFileName) return -1;
-    LPCTSTR FileType = WinUtils::GetFileExt(szFileName);
-    if(WinUtils::IsStrInList(FileType,_T("jpg\0jpeg\0\0")))
-        return 0;
-    else if(WinUtils::IsStrInList(FileType,_T("png\0\0")))
-        return 1;
-    else if(WinUtils::IsStrInList(FileType,_T("gif\0\0")))
-        return 2;
-    else return 0;
 }
 
 LPTSTR fgetline(LPTSTR buf,int num,FILE *f)

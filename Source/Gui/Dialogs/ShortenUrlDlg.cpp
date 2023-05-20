@@ -184,7 +184,7 @@ bool CShortenUrlDlg::StartProcess() {
     
     task->setServerProfile(profile);
     using namespace std::placeholders;
-    task->onTaskFinished.connect(std::bind(&CShortenUrlDlg::OnFileFinished, this, _1, _2));
+    task->addTaskFinishedCallback(std::bind(&CShortenUrlDlg::OnFileFinished, this, _1, _2));
     uploadSession_ = std::make_shared<UploadSession>();
     uploadSession_->addTask(task);
     uploadSession_->addSessionFinishedCallback(std::bind(&CShortenUrlDlg::OnQueueFinished, this, std::placeholders::_1));

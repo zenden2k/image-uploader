@@ -54,7 +54,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     else
         fileformat = static_cast<ImageUtils::SaveImageFormat>(m_imageConvertingParams.Format - 1);
 
-    if (m_imageConvertingParams.SmartConverting && fileformat == GetSavingFormat(sourceFileW) && imgwidth < width && imgheight < height) {
+    if (m_imageConvertingParams.SmartConverting && fileformat == ImageUtils::GetFormatByFileName(sourceFileW) && imgwidth < width && imgheight < height) {
         processingEnabled_ = false;
     }
 
