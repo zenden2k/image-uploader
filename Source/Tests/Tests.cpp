@@ -37,6 +37,18 @@
 
 #endif
 
+void setAppVersion() {
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+    appVersion.Build = atoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
+}
+
 void printHandler(HSQUIRRELVM vm, const SQChar *s, ...)
 {
     va_list vl;
@@ -111,18 +123,6 @@ protected:
     int argc_;
     char **argv_;
 };
-
-void setAppVersion() {
-    AppParams::AppVersionInfo appVersion;
-    appVersion.FullVersion = IU_APP_VER;
-    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
-    appVersion.Build = atoi(IU_BUILD_NUMBER);
-    appVersion.BuildDate = IU_BUILD_DATE;
-    appVersion.CommitHash = IU_COMMIT_HASH;
-    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
-    appVersion.BranchName = IU_BRANCH_NAME;
-    AppParams::instance()->setVersionInfo(appVersion);
-}
 
 int _tmain(int argc, _TCHAR* argvW[]) {
     char **argv = convertArgv(argc, argvW);
