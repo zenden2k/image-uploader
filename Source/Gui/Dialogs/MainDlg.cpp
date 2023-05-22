@@ -440,6 +440,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         }
         ThumbsView.OutDateThumb(nCurItem);
         m_EditorProcess = Sei.hProcess;
+        Release();
         Start();
     }
     return 0;

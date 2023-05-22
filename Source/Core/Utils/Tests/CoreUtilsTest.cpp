@@ -38,7 +38,6 @@ TEST_F(CoreUtilsTest, ExtractFilePath)
     EXPECT_EQ("", result);
 }
 
-
 TEST_F(CoreUtilsTest, ExtractFileName) 
 {
     std::string fileName = "c:\\Program Files (x86)\\Image Uploader\\Image Uploader.exe";
@@ -48,6 +47,10 @@ TEST_F(CoreUtilsTest, ExtractFileName)
     EXPECT_EQ(result, "ExplorerIntegration64.dll");
     result = ExtractFileName("avcodec-56.dll");
     EXPECT_EQ(result, "avcodec-56.dll");
+    result = ExtractFileName("/usr/bin/imgupload");
+    EXPECT_EQ(result, "imgupload");
+    result = ExtractFileName(R"(\\?\e:\Video\test.mp4)");
+    EXPECT_EQ(result, "test.mp4");
 }
     
 TEST_F(CoreUtilsTest, ExtractFileExt) 
@@ -61,6 +64,10 @@ TEST_F(CoreUtilsTest, ExtractFileExt)
     EXPECT_EQ(result, "");
     result = ExtractFileExt("archive.tar.gz");
     EXPECT_EQ(result, "gz");
+    result = ExtractFileExt("/usr/share/imgupload.png");
+    EXPECT_EQ(result, "png");
+    result = ExtractFileExt(R"(\\?\e:\Video\test.mp4)");
+    EXPECT_EQ(result, "mp4");
 }
 
 TEST_F(CoreUtilsTest, ExtractFileNameNoExt) 
@@ -75,7 +82,6 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
     result = ExtractFileNameNoExt("archive.tar.gz");
     EXPECT_EQ(result, "archive.tar");
 }
-
 
 TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 {
@@ -95,7 +101,6 @@ TEST_F(CoreUtilsTest, int64_tToString)
    
     EXPECT_EQ(Int64ToString(0), "0");
 }
-
 
 TEST_F(CoreUtilsTest, stringToint64_t) 
 {
@@ -119,7 +124,6 @@ TEST_F(CoreUtilsTest, fileSizeToString)
     EXPECT_EQ(FileSizeToString(static_cast<int64_t>(25.5*1024)), "26 KB");
     EXPECT_EQ(FileSizeToString(0), "0 bytes");
 }
-
 
 TEST_F(CoreUtilsTest, Utf8ToWstring)
 {

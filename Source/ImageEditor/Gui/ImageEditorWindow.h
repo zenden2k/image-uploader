@@ -66,7 +66,7 @@ public:
 
     ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
-    ~ImageEditorWindow();
+    ~ImageEditorWindow() override;
     void setInitialDrawingTool(DrawingToolType dt);
     void showUploadButton(bool show);
     void showAddToWizardButton(bool show);
@@ -175,7 +175,7 @@ public:
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
-        ImageEditor::Canvas* canvas_;
+        std::unique_ptr<ImageEditor::Canvas> canvas_;
         std::map<int, DrawingToolType> menuItems_;
         std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;

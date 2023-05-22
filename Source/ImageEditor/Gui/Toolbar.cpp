@@ -18,7 +18,6 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     orientation_ = orientation;
     selectedItemIndex_ = -1;
     trackMouse_ = false;
-    m_hWnd = 0;
     dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); 
     dpiScaleX_ = 1.0f;
     dpiScaleY_ = 1.0f;
@@ -31,7 +30,6 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
     
     subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
     memset(&buttonsRect_, 0, sizeof(buttonsRect_));
-    font_ = 0;
     textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
     oldSelectedBm_ = nullptr;
     itemMargin_ = 0;
@@ -47,7 +45,6 @@ Toolbar::Toolbar(Toolbar::Orientation orientation)
 
 Toolbar::~Toolbar()
 {
-    delete font_;
     if (!backBufferDc_.IsNull()) {
         backBufferDc_.SelectBitmap(oldSelectedBm_);
     }
@@ -56,7 +53,7 @@ Toolbar::~Toolbar()
     }
 }
 
-bool Toolbar::Create(HWND parent, bool child )
+bool Toolbar::Create(HWND parent, bool topMost, bool child)
 {
     RECT rc = {0, 0, 1,1};
 
@@ -80,7 +77,10 @@ bool Toolbar::Create(HWND parent, bool child )
         exStyle = 0;
     } else {
         style = WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
-        exStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
+        exStyle = WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW;
+        if (topMost) {
+            exStyle |= WS_EX_TOPMOST;
+        }
     }
 	
     movable_ = !child;
@@ -194,7 +194,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     itemVertPadding_ = static_cast<int>(kItemVertPadding * dpiScaleY_);
     iconSizeX_ = static_cast<int>(kIconSize * dpiScaleX_);
     iconSizeY_ = static_cast<int>(kIconSize * dpiScaleY_);
-    font_ = new Gdiplus::Font(hdc, systemFont_);
+    font_ = std::make_unique<Gdiplus::Font>(hdc, systemFont_);
     subpanelHeight_ = static_cast<int>(27 * dpiScaleY_);
     subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
     RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
@@ -425,8 +425,7 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
             item.state = isDown;
         }
         
-        InvalidateRect(&item.rect, false);
-        
+        InvalidateRect(&item.rect, false);   
     }
     
     return 0;
@@ -483,11 +482,10 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
                 ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
             } else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_  ) {
                 ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
-            }else {
+            } else {
                 ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
             }
 
-            
             selectedItemIndex_ = -1;
             OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
         }
@@ -546,7 +544,7 @@ SIZE Toolbar::CalcItemSize(int index)
         Gdiplus::Graphics gr(dc);
         PointF origin(0,0);
         RectF textBoundingBox;
-        if (  gr.MeasureString(item.title, item.title.GetLength(), font_, origin, &textBoundingBox) == Ok ) {
+        if (  gr.MeasureString(item.title, item.title.GetLength(), font_.get(), origin, &textBoundingBox) == Ok ) {
             res.cx = static_cast<LONG>(textBoundingBox.Width);
             res.cy = static_cast<LONG>(textBoundingBox.Height);
         }
@@ -660,9 +658,7 @@ int Toolbar::AutoSize()
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(10 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-
-        
+        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER); 
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -742,7 +738,6 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
     if (  item.icon ) {
         gr->DrawImage(item.icon.get(),(int) (itemHorPadding_ + bounds.X+ (item.state == isDown ? 1 : 0)), (int)(bounds.Y+ (item.state == isDown ? 1 : 0)+(bounds.Height -iconSizeY_)/2),iconSizeX_, iconSizeY_);
-
     }
 
     if (showButtonText_) {
@@ -758,10 +753,9 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
             //LOG(INFO) << "textBounds x="<<textBounds.X << " y = " << textBounds.Y << "   "<<item.title;
         }
 
-        gr->DrawString(item.title, -1, font_, textBounds, &format, &brush);
+        gr->DrawString(item.title, -1, font_.get(), textBounds, &format, &brush);
     }
 }
-
 
 void Toolbar::createHintForSliders(HWND slider, CString hint) {
     TOOLINFO ti = {};
@@ -781,7 +775,7 @@ void Toolbar::CreateToolTipForItem(size_t index)
 {
     Item& item = buttons_[index];
 
-    if ( item.hint.IsEmpty() ) {
+    if (item.hint.IsEmpty()) {
         return;
     }
     
@@ -791,7 +785,7 @@ void Toolbar::CreateToolTipForItem(size_t index)
     ti.hwnd     = m_hWnd;
     ti.hinst    = _Module.GetModuleInstance();
     //CString textBuffer = item.hint;
-    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[item.hint.GetLength()+1]);
+    auto textBuffer = std::make_unique<TCHAR[]>(item.hint.GetLength() + 1);
     lstrcpy(textBuffer.get(), item.hint);
     ti.lpszText = textBuffer.get();
     ti.rect  = item.rect;

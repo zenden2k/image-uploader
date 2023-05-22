@@ -47,7 +47,6 @@ void ImageEditorWindow::init()
 {
     richeditLib_ = LoadLibrary(CRichEditCtrl::GetLibraryName());
 //    resultingBitmap_ = 0;
-    canvas_ = nullptr;
     cropToolTip_ = 0;
     showUploadButton_ = true;
     showAddToWizardButton_ = true;
@@ -103,12 +102,10 @@ void ImageEditorWindow::init()
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE);
     subMenuItems_[DrawingToolType::dtFilledRectangle] = item;
 
-
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDROUNDEDRECTANGLE);
     item.command = ID_FILLEDROUNDEDRECTANGLE;
     item.hint = TR("Rounded rectangle");
     subMenuItems_[DrawingToolType::dtFilledRoundedRectangle] = item;
-
 
     item.icon = loadToolbarIcon(IDB_ICONTOOLFILLEDELLIPSE);
     item.command = ID_FILLEDELLIPSE;
@@ -127,7 +124,6 @@ void ImageEditorWindow::init()
     item2.command = ID_PIXELATERECTANGLE;
     item2.hint = TR("Pixelation");
     subMenuItems_[DrawingToolType::dtPixelateRectangle] = item2;
-
 
     selectedSubMenuItems_[ID_RECTANGLE] = ID_RECTANGLE;
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
@@ -254,8 +250,7 @@ void ImageEditorWindow::updateToolbarDrawingTool(DrawingToolType dt)
     } else if ( cropToolTip_ ) {
         ::DestroyWindow(cropToolTip_);
         cropToolTip_ = nullptr;
-    }
-    
+    }  
 }
 
 void ImageEditorWindow::OnForegroundColorChanged(Gdiplus::Color color)
@@ -278,7 +273,6 @@ void ImageEditorWindow::onFontChanged(LOGFONT font)
 ImageEditorWindow::~ImageEditorWindow()
 {
     FreeLibrary(richeditLib_);
-    delete canvas_;
 }
 
 void ImageEditorWindow::setInitialDrawingTool(DrawingToolType dt)
@@ -357,7 +351,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     CRect displayBounds;
     GuiTools::GetScreenBounds(displayBounds);
 
-
     CWindowDC hdc(nullptr);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
@@ -413,10 +406,12 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         DWORD windowStyle = WS_POPUP | WS_CLIPCHILDREN;
         SetWindowLong(GWL_STYLE, windowStyle);
         HWND insertAfter = nullptr;
-#ifndef _DEBUG
-        SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+//#ifndef _DEBUG
+        if (!allowAltTab_) {
+            SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+        }
         insertAfter = HWND_TOPMOST;
-#endif
+//#endif
         if (screenshotsMonitor) {
             SetWindowPos(insertAfter, screenshotMonitorBounds.left, screenshotMonitorBounds.top, screenshotMonitorBounds.right - screenshotMonitorBounds.left, screenshotMonitorBounds.bottom - screenshotMonitorBounds.top, 0);
         } else {
@@ -448,7 +443,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     GetClientRect(&rc);
     /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0);
 
-    canvas_ = new ImageEditor::Canvas(m_view);
+    canvas_ = std::make_unique<ImageEditor::Canvas>(m_view);
     canvas_->setSize(currentDoc_->getWidth(), currentDoc_->getHeight());
     canvas_->setDocument(currentDoc_.get());
     canvas_->setCropOnExport(displayMode_ == wdmFullscreen);
@@ -470,7 +465,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         textParamsWindow_.setFont(configurationProvider_->font());
         searchEngine_ = configurationProvider_->searchEngine();
     }
-    m_view.setCanvas(canvas_);
+    m_view.setCanvas(canvas_.get());
     createToolbars();
     RECT horToolbarRect;
     RECT vertToolbarRect;
@@ -847,7 +842,7 @@ void ImageEditorWindow::createToolbars()
 {
     CRect rc;
     GetClientRect(&rc);
-    if ( !horizontalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
+    if ( !horizontalToolbar_.Create(m_hWnd, !allowAltTab_, displayMode_ == wdmWindowed) ) {
         LOG(ERROR) << "Failed to create horizontal toolbar";
         return;
     }
@@ -892,7 +887,7 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
 
-    if ( !verticalToolbar_.Create(m_hWnd, displayMode_ == wdmWindowed) ) {
+    if ( !verticalToolbar_.Create(m_hWnd, !allowAltTab_, displayMode_ == wdmWindowed) ) {
         LOG(ERROR) << "Failed to create vertical toolbar";
 
     }
@@ -921,7 +916,7 @@ void ImageEditorWindow::createToolbars()
     int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
     Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,CString(), Toolbar::itButton, false);
-    colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index+1, canvas_);
+    colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index+1, canvas_.get());
     colorsButton.itemDelegate = colorsDelegate_.get();
     colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
     colorsDelegate_->setForegroundColor(canvas_->getForegroundColor());
@@ -1126,10 +1121,9 @@ void ImageEditorWindow::updateSearchButton() {
         horizontalToolbar_.AutoSize();
         //horizontalToolbar_.Invalidate(FALSE);
     }
-
 }
 
-std::shared_ptr<Gdiplus::Bitmap>  ImageEditorWindow::loadToolbarIcon(int resource)
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource)
 {
     return std::shared_ptr<Gdiplus::Bitmap>(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
 }
@@ -1147,7 +1141,7 @@ LRESULT ImageEditorWindow::OnMenuItemClick(WORD /*wNotifyCode*/, WORD wID, HWND 
         ::SetFocus(m_view.m_hWnd);
     }
     DrawingToolType toolId =  static_cast<DrawingToolType>(menuItems_[wID]);
-    canvas_->setDrawingToolType( toolId  );
+    canvas_->setDrawingToolType(toolId);
     updateToolbarDrawingTool(toolId);
     return 0;
 }
@@ -1157,9 +1151,7 @@ LRESULT ImageEditorWindow::OnUndoClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     return 0;
 }
 
-
 LRESULT ImageEditorWindow::OnTextClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-
     canvas_->setDrawingToolType(DrawingToolType::dtText );
     updateToolbarDrawingTool(DrawingToolType::dtText);
     return 0;

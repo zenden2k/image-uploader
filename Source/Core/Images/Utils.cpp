@@ -345,7 +345,6 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
         //memcpy(source, buf, stride * (h-1)+w * 4 /*PixelFormat32bppARGB*/);
         bm->UnlockBits(&dataSource);
     }
-
 }
 
 void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize) {
@@ -367,22 +366,23 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
         }
 
         int maxX, maxY;
-        unsigned int red = 0, green = 0, blue = 0, numPixels = 0;
+        unsigned int red = 0, green = 0, blue = 0, alpha = 0, numPixels = 0;
         for (int y = 0; y < h; y += blockSize) {
             for (int x = 0; x < w; x += blockSize) {
-                numPixels = red = green = blue = 0;
+                numPixels = red = green = blue = alpha = 0;
                 maxX = (min)(x + blockSize, w);
                 maxY = (min)(y + blockSize, h);
                 for (int i = x; i < maxX; i++) {
                     for (int j = y; j < maxY; j++) {
                         size_t offset = j * stride + i*4;
+                        alpha += source[offset + 3];
                         red += source[offset+2];
                         green += source[offset + 1];
                         blue += source[offset + 0];
                         numPixels++;
                     }
                 }
-                uint32_t pixel = (255 << 24) + (red / numPixels << 16) +  (green / numPixels << 8) + blue / numPixels;
+                uint32_t pixel = (alpha / numPixels << 24) + (red / numPixels << 16) +  (green / numPixels << 8) + blue / numPixels;
 
                 for (int i = x; i < maxX; i++) {
                     for (int j = y; j < maxY; j++) {

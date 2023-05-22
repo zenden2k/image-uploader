@@ -753,25 +753,26 @@ void BlurringRectangle::render(Painter* gr)
         return;
     }
     if ( !isMoving_ ) { // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
-        #if GDIPVER >= 0x0110 
-
-        Blur blur;
-        BlurParams blurParams;
-        blurParams.radius = blurRadius_;
-        blur.SetParameters(&blurParams);
-        Matrix matrix;
-        Status st ;
-        RectF sourceRect(elRect.X, elRect.Y, elRect.Width, elRect.Height);
-
-        st = gr->DrawImage(background,  &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
-        #else
+        
         if(pixelate_) {
             ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
         }
         else {
+#if GDIPVER >= 0x0110 
+            Blur blur;
+            BlurParams blurParams;
+            blurParams.radius = blurRadius_*3;
+            blur.SetParameters(&blurParams);
+            Matrix matrix;
+            Status st;
+            RectF sourceRect(elRect.X, elRect.Y, elRect.Width, elRect.Height);
+
+            st = gr->DrawImage(background, &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
+#else
             ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
+#endif
         }
-        #endif
+
     }
 }
 

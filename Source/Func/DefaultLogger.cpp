@@ -44,14 +44,12 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
 
     entry.Time = str(boost::wformat(L"%02d:%02d:%02d") % static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
 
-
     int itemIndex;
     {
         std::lock_guard<std::mutex> lk(entriesMutex_);
         entries_.push_back(entry);
         itemIndex = entries_.size() - 1;
     }
-
 
     for (auto* listener : listeners_) {
         listener->onItemAdded(itemIndex, entry);

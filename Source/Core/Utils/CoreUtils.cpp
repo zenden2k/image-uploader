@@ -43,13 +43,6 @@
 
 #include "Core/3rdpart/UriParser.h"
 
-
-#if defined(_MSC_VER) && _MSC_VER < 1800 
-long round(float number){
-    return number < 0.0 ? ceil(number - 0.5) : floor(number + 0.5);
-}
-#endif
-
 #ifdef _WIN32
 
 /* FILETIME of Jan 1 1970 00:00:00. */
@@ -113,25 +106,12 @@ int64_t Ftell64(FILE *a)
 #endif
 }
 
-bool FileExists(const std::string& fileName)
-{
-    #ifdef WIN32
-    DWORD res = GetFileAttributes(Utf8ToWstring(fileName).c_str());
-    if (res == static_cast<DWORD>(-1)) {
-        switch (GetLastError()) {
-        case ERROR_FILE_NOT_FOUND:
-        case ERROR_PATH_NOT_FOUND:
-            return false;
-        case ERROR_ACCESS_DENIED:
-            return true;
-        default:
-            return false;
-        }
+bool FileExists(const std::string& fileName) {
+    try {
+        return std::filesystem::exists(std::filesystem::u8path(fileName));
+    } catch (const std::exception&) {
+        return false;
     }
-    #else
-        return boost::filesystem::exists(fileName);
-    #endif
-    return true;
 }
 
 typedef std::codecvt_base::result res;
@@ -199,18 +179,17 @@ std::string Utf8ToSystemLocale(const std::string& str)
    return out;
 }
 
-std::string ExtractFileName(const std::string& fileName)
-{
-        std::string temp = fileName;
-        int Qpos = temp.find_last_of('?'); //FIXME
-        if(Qpos>=0) temp = temp.substr(0, Qpos-1);
-        int i,len = temp.length();
-        for(i=len-1; i>=0; i--)
-        {
-            if(temp[i] == '\\' || temp[i]=='/')
-                break;
+std::string ExtractFileName(const std::string& fileName) {
+    /*std::string temp = fileName;
+    /*int Qpos = temp.find_last_of('?'); 
+    if(Qpos>=0) temp = temp.substr(0, Qpos-1);*/
+    int i, len = fileName.length();
+    for (i = len - 1; i >= 0; i--) {
+        if (fileName[i] == '\\' || fileName[i] == '/') {
+            break;
         }
-        return temp.substr(i+1);
+    }
+    return fileName.substr(i + 1);
 }
 
 std::string ExtractFileExt(const std::string& fileName)
@@ -392,53 +371,11 @@ int64_t StringToInt64(const std::string& str)
 
 int64_t GetFileSize(const std::string& utf8Filename)
 {
-#ifdef _WIN32
-   #ifdef _MSC_VER
-	struct _stat64  stats;
-   #else
-      _stati64 stats;
-   #endif
-    memset(&stats, 0, sizeof(stats));
-    stats.st_size = -1;
-    std::wstring wideFileName = Utf8ToWstring(utf8Filename);
-    if(_wstati64(wideFileName.c_str(), &stats)!=0) {
-        int err = errno;
-        switch (err) {
-            case ENOENT: 
-                LOG(WARNING) << "Call to _wstati64 failed. File not found." << std::endl <<  utf8Filename; 
-            break;
-            case EINVAL: 
-                LOG(WARNING) << "Call to _wstati64 failed. Invalid parameter.";
-            break;
-            default: /* Should never be reached. */
-                LOG(ERROR) << "Call to _wstati64 failed. Unexpected error in _wstati64.";
-        }
-
-        if (err != ENOENT) {
-            WIN32_FILE_ATTRIBUTE_DATA fad;
-            memset(&fad, 0, sizeof(fad));
-
-            if (!GetFileAttributesEx(wideFileName.c_str(), GetFileExInfoStandard, &fad)) {
-                DWORD lastError = GetLastError();
-                LOG(ERROR) << WinUtils::FormatWindowsErrorMessage(lastError);
-                return -1;
-            }
-            LARGE_INTEGER size;
-            size.HighPart = fad.nFileSizeHigh;
-            size.LowPart = fad.nFileSizeLow;
-            return size.QuadPart;
-        }
+    try {
+        return std::filesystem::file_size(std::filesystem::u8path(utf8Filename));
+    } catch (const std::filesystem::filesystem_error&) {
         return -1;
-   }
-#else
-   struct stat64 stats;
-   std::string path = Utf8ToSystemLocale(utf8Filename);
-   if(-1 == stat64(path.c_str(), &stats))
-   {
-      return -1;
-   }
-#endif
-     return stats.st_size;
+    }
 }
 
 std::string FileSizeToString(int64_t nBytes)

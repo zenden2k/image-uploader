@@ -18,14 +18,11 @@
 
 #include "BrushTool.h"
 
+#include <cmath>
+
 #include "../Canvas.h"
 #include "../Document.h"
-
 #include "Core/Utils/CoreUtils.h"
-
-#include <cmath>
-#include <cassert>
-#include "3rdpart/GdiplusH.h"
 
 namespace ImageEditor {
 
@@ -57,8 +54,6 @@ void BrushTool::continueDraw( int x, int y, DWORD flags ) {
 
     oldPoint_.x = x;
     oldPoint_.y = y;
-
-
 }
 
 void BrushTool::endDraw( int x, int y ) {
@@ -77,8 +72,6 @@ void BrushTool::endDraw( int x, int y ) {
 void BrushTool::render( Painter* gr ) {
 
 }
-
-
 
 ImageEditor::CursorType BrushTool::getCursor(int x, int y)
 {
@@ -110,10 +103,6 @@ void BrushTool::drawLine(int x0, int y0, int x1, int y1) {
 
     int yStart = min( y0, y1 );
     int yEnd   = max( y0, y1 );
-
-
-
-
 
     float len = sqrt(  pow((float)x1-x0, 2) + pow ((float) y1- y0, 2 ) );
     if ( ((int)len) == 0 ) {

@@ -100,7 +100,6 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
     CString directory = GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
     if ( directory.Right(1) != _T("\\") ) {
         directory += _T("\\");
-
     }
 
     const bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
@@ -116,7 +115,6 @@ LRESULT CAddDirectoryServerDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND 
             errorMessage += CString(L"\r\n") + TR("Reason:") + L"\r\n" + reason;
         }
         LocalizedMessageBox(errorMessage, TR("Error"), MB_ICONERROR);
-
     }    
     return 0;
 }
@@ -236,8 +234,7 @@ void CAddDirectoryServerDialog::GenerateDownloadLink()
         CString generatedDownloadUrl;
         
         if ( !serverName.IsEmpty() ) {
-            SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl);
-            
+            SetDlgItemText(IDC_DOWNLOADURLEDIT, generatedDownloadUrl); 
         }
     }
     GenerateExampleUrl();

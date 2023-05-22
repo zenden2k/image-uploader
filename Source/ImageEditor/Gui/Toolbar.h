@@ -3,7 +3,9 @@
 
 #include "atlheaders.h"
 
+#include <memory>
 #include <vector>
+
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
 
@@ -63,7 +65,7 @@ public:
 
     explicit Toolbar(Orientation orientation); 
     ~Toolbar();
-    bool Create(HWND parent, bool child = false);
+    bool Create(HWND parent, bool topMost = false, bool child = false);
     int addButton(const Item& item);
     DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
     int getItemAtPos(int clientX, int clientY) const;
@@ -173,7 +175,7 @@ protected:
     int itemVertPadding_;
     int iconSizeX_;
     int iconSizeY_;
-    Gdiplus::Font* font_;
+    std::unique_ptr<Gdiplus::Font> font_;
     Gdiplus::Color transparentColor_;
     CFont systemFont_;
     RECT buttonsRect_;
