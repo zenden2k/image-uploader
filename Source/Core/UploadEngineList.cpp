@@ -33,12 +33,11 @@ CUploadEngineList::CUploadEngineList()
     m_ActionNumOfRetries = 2;
 }
 
-bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings)
-{
+bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings) {
     SimpleXml xml;
-    if(!xml.LoadFromFile(filename))
+    if (!xml.LoadFromFile(filename))
         return false;
-        
+
     SimpleXmlNode root = xml.getRoot("ServerListTool");
 
     std::vector<SimpleXmlNode> childs;
@@ -48,224 +47,208 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
     auto versionInfo = AppParams::instance()->GetAppVersion();
     int majorVersion = versionInfo->Major;
-    int minorVersion = versionInfo->Minor*100 + versionInfo->Release;
+    int minorVersion = versionInfo->Minor * 100 + versionInfo->Release;
     int build = versionInfo->Build;
 
-    for(size_t i=0; i<childs.size(); i++)
-    {
-        SimpleXmlNode &cur = childs[i];
+    for (size_t i = 0; i < childs.size(); i++) {
+        SimpleXmlNode& cur = childs[i];
         auto uploadEngineData = std::make_unique<CUploadEngineData>();
-        CUploadEngineData &UE = *uploadEngineData;
+        CUploadEngineData& UE = *uploadEngineData;
         UE.NeedAuthorization = cur.AttributeInt("Authorize");
         std::string needPassword = cur.Attribute("NeedPassword");
-        UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::StringToInt64(needPassword)!=0);
+        UE.NeedPassword = needPassword.empty() ? true : (IuCoreUtils::StringToInt64(needPassword) != 0);
         UE.LoginLabel = cur.Attribute("LoginLabel");
         UE.PasswordLabel = cur.Attribute("PasswordLabel");
         std::string RetryLimit = cur.Attribute("RetryLimit");
-        if(RetryLimit.empty())
-        {
-            // load from settings ;;;
-            UE.RetryLimit = m_EngineNumOfRetries;//Settings.FileRetryLimit;
+
+        if (RetryLimit.empty()) {
+            UE.RetryLimit = m_EngineNumOfRetries;
+        } else {
+            UE.RetryLimit = atoi(RetryLimit.c_str());
         }
-            else
-                UE.RetryLimit = atoi(RetryLimit.c_str());
 
-            UE.Name =  cur.Attribute("Name");
+        UE.Name = cur.Attribute("Name");
 
-            std::string serverMinVersion = cur.Attribute("MinVersion");
-            if ( !serverMinVersion.empty() ) {
-                std::vector<std::string> tokens;
-                IuStringUtils::Split(serverMinVersion,".", tokens, 4);
-                if ( tokens.size() >= 3 ) {
-                    int serverMajorVersion = (int)IuCoreUtils::StringToInt64(tokens[0]);
-                    int serverMinorVersion = (int)IuCoreUtils::StringToInt64(tokens[1]) * 100 + IuCoreUtils::StringToInt64(tokens[2]);
-                    int serverBuild = static_cast<int>(tokens.size() > 3 ? IuCoreUtils::StringToInt64(tokens[3]) : 0);
-                    if ( !( majorVersion > serverMajorVersion || ( majorVersion == serverMajorVersion && minorVersion > serverMinorVersion) 
-                        || ( majorVersion == serverMajorVersion && minorVersion ==  serverMinorVersion && ( !serverBuild || build >= serverBuild ))
-                        ) ) {
-                            continue;
-                    }
-                }
-            }
-
-            UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
-            UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
-            UE.UserAgent = cur.Attribute("UserAgent");
-            UE.PluginName = cur.Attribute("Plugin");
-            UE.Engine = cur.Attribute("Engine");
-            std::string MaxThreadsStr = cur.Attribute("MaxThreads");
-            UE.MaxThreads = atoi(MaxThreadsStr.c_str());
-            
-            if ( UE.PluginName == "ftp" ) {
-                if ( serversSettings[UE.Name].size() ) {
-                    std::string hostname = serversSettings[UE.Name].begin()->second.getParam("hostname");
-                    if ( hostname.empty() || hostname == "ftp.example.com" ) {
-                        //LOG(WARNING) << "Skipping server  "<< UE.Name;
-                        continue;
-                    }
-                } else {
+        std::string serverMinVersion = cur.Attribute("MinVersion");
+        if (!serverMinVersion.empty()) {
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(serverMinVersion, ".", tokens, 4);
+            if (tokens.size() >= 3) {
+                int serverMajorVersion = atoi(tokens[0].c_str());
+                int serverMinorVersion = atoi(tokens[1].c_str()) * 100 + atoi(
+                    tokens[2].c_str());
+                int serverBuild = static_cast<int>(tokens.size() > 3 ? atoi(tokens[3].c_str()) : 0);
+                if (!(majorVersion > serverMajorVersion || (majorVersion == serverMajorVersion && minorVersion >
+                        serverMinorVersion)
+                    || (majorVersion == serverMajorVersion && minorVersion == serverMinorVersion && (!serverBuild ||
+                        build >= serverBuild))
+                )) {
                     continue;
                 }
-                if (MaxThreadsStr.empty())
-                {
-                    UE.MaxThreads = 1;
-                }
             }
-            if (UE.PluginName == "directory" && MaxThreadsStr.empty() ) {
-                UE.MaxThreads = 1;
-            }
-        
-            UE.UsingPlugin = !UE.PluginName.empty();
-            UE.Debug =   cur.AttributeBool("Debug");
-            if (UE.Debug)
-            {
-                UE.MaxThreads = 1;
-            }
-            bool fileHost =  cur.AttributeBool("FileHost");
-            UE.MaxFileSize =   cur.AttributeInt("MaxFileSize");
-
-            std::string typeString =  cur.Attribute("Type");
-
-            UE.TypeMask = 0;
-            
-            std::vector<std::string> types;
-            
-            std::string typesListString = cur.Attribute("Types");
-            if (!typesListString.empty())
-            {
-                IuStringUtils::Split(typesListString, " ", types, 10);
-            }
-            if (!typeString.empty()) {
-                types.push_back(typeString);
-            }
-            if (types.empty())
-            {
-                types.emplace_back(fileHost ? "file" : "image");
-            }
-            for (auto& it : types)
-            {
-                UE.TypeMask |= CUploadEngineData::ServerTypeFromString(it);
-            }
-
-            std::string defaultForTypes = cur.Attribute("DefaultForTypes");
-
-            if (!defaultForTypes.empty())
-            {
-                std::vector<std::string> serverTypes;
-                IuStringUtils::Split(defaultForTypes, " ", serverTypes, 10);
-                for( const auto& typeStr: serverTypes) {
-                    auto serverType = CUploadEngineData::ServerTypeFromString(typeStr);
-                    if (serverType != CUploadEngineData::TypeInvalid) {
-                        m_defaultServersForType[serverType] = UE.Name;
-                    }
-                }
-            }
-//            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
-
-            std::vector<SimpleXmlNode> actions;
-            cur["Actions"].GetChilds("Action", actions);
-
-            for(size_t j=0; j<actions.size(); j++)
-            {
-                SimpleXmlNode &actionNode = actions[j];
-                UploadAction UA;
-                UA.Index = j;
-
-                std::string RetryLimit = actionNode.Attribute("RetryLimit");
-                if(RetryLimit.empty())
-                {
-                    UA.RetryLimit = m_ActionNumOfRetries;//Settings.ActionRetryLimit;
-                }
-                else UA.RetryLimit = atoi(RetryLimit.c_str());
-                 
-                UA.IgnoreErrors = actionNode.AttributeBool("IgnoreErrors");
-                UA.Description= actionNode.Attribute("Description");
-
-                UA.Type = actionNode.Attribute("Type");
-                UA.Url = actionNode.Attribute("Url");
-                UA.Referer = actionNode.Attribute("Referer");
-
-                UA.PostParams = actionNode.Attribute("PostParams");
-                UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
-                UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
-
-                ActionRegExp regexp;
-                regexp.Pattern = actionNode.Attribute("RegExp");
-                regexp.AssignVars = actionNode.Attribute("AssignVars");
-                regexp.Required = true;
-                UA.Regexes.push_back(regexp);
-
-                std::vector<SimpleXmlNode> regexpNodes;
-                actionNode.GetChilds("RegExp", regexpNodes);
-
-                for (auto& regexpNode : regexpNodes)
-                {
-                    ActionRegExp newRegexp;
-                    newRegexp.Pattern = regexpNode.Attribute("Pattern");
-                    newRegexp.AssignVars = regexpNode.Attribute("AssignVars");
-                    newRegexp.Required = regexpNode.AttributeBool("Required");
-                    newRegexp.Data = regexpNode.Attribute("Data");
-                    UA.Regexes.push_back(newRegexp);
-                }
-
-                for (auto& reg : UA.Regexes)
-                {
-                    std::vector<std::string> Vars;
-                    IuStringUtils::Split(reg.AssignVars, ";", Vars);
-
-                    for (auto it = Vars.begin(); it != Vars.end(); ++it)
-                    {
-                        std::vector<std::string> NameAndValue;
-                        IuStringUtils::Split(*it, ":", NameAndValue);
-                        if (NameAndValue.size() == 2)
-                        {
-                            ActionVariable AV;
-                            AV.Name = NameAndValue[0];
-                            AV.nIndex = atoi(NameAndValue[1].c_str());
-                            reg.Variables.push_back(AV);
-                        }
-                    }
-                }
-                
-                UE.Actions.push_back(UA);
-            }
-
-            SimpleXmlNode resultNode = cur["Result"];
-            {
-
-                UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrlTemplate");
-                if (UE.DownloadUrlTemplate.empty())
-                {
-                    UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrl");
-                }
-                UE.ImageUrlTemplate = resultNode.Attribute("ImageUrlTemplate");
-                if (UE.ImageUrlTemplate.empty())
-                {
-                    UE.ImageUrlTemplate = resultNode.Attribute("ImageUrl");
-                }
-                UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrlTemplate");
-                if (UE.ThumbUrlTemplate.empty())
-                {
-                    UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrl");
-                }
-                UE.EditUrlTemplate = resultNode.Attribute("EditUrl");
-                UE.DeleteUrlTemplate = resultNode.Attribute("DeleteUrl");
-                std::string directUrlTemplate = resultNode.Attribute("DirectUrlTemplate"); 
-                if (directUrlTemplate.empty())
-                {
-                    directUrlTemplate = resultNode.Attribute("DirectUrl");
-                }
-                if ( !directUrlTemplate.empty() ) {
-
-                    UE.ImageUrlTemplate = directUrlTemplate;
-                }
-
-            }
-            UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
-            m_list.push_back(std::move(uploadEngineData));
         }
 
-    std::sort(m_list.begin(), m_list.end(), compareEngines );
+        UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
+        UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
+        UE.UserAgent = cur.Attribute("UserAgent");
+        UE.PluginName = cur.Attribute("Plugin");
+        UE.Engine = cur.Attribute("Engine");
+        std::string MaxThreadsStr = cur.Attribute("MaxThreads");
+        UE.MaxThreads = atoi(MaxThreadsStr.c_str());
+
+        if (UE.PluginName == "ftp") {
+            auto it = serversSettings.find(UE.Name);
+            if (it != serversSettings.end() && !it->second.empty()) {
+
+                std::string hostname = it->second.begin()->second.getParam("hostname");
+                if (hostname.empty() || hostname == "ftp.example.com") {
+                    //LOG(WARNING) << "Skipping server  "<< UE.Name;
+                    continue;
+                }
+            } else {
+                continue;
+            }
+            if (MaxThreadsStr.empty()) {
+                UE.MaxThreads = 1;
+            }
+        }
+        if (UE.PluginName == "directory" && MaxThreadsStr.empty()) {
+            UE.MaxThreads = 1;
+        }
+
+        UE.UsingPlugin = !UE.PluginName.empty();
+        UE.Debug = cur.AttributeBool("Debug");
+        if (UE.Debug) {
+            UE.MaxThreads = 1;
+        }
+        bool fileHost = cur.AttributeBool("FileHost");
+        UE.MaxFileSize = cur.AttributeInt("MaxFileSize");
+
+        std::string typeString = cur.Attribute("Type");
+
+        UE.TypeMask = 0;
+
+        std::vector<std::string> types;
+
+        std::string typesListString = cur.Attribute("Types");
+        if (!typesListString.empty()) {
+            IuStringUtils::Split(typesListString, " ", types, 10);
+        }
+        if (!typeString.empty()) {
+            types.push_back(typeString);
+        }
+        if (types.empty()) {
+            types.emplace_back(fileHost ? "file" : "image");
+        }
+        for (auto& it : types) {
+            UE.TypeMask |= CUploadEngineData::ServerTypeFromString(it);
+        }
+
+        std::string defaultForTypes = cur.Attribute("DefaultForTypes");
+
+        if (!defaultForTypes.empty()) {
+            std::vector<std::string> serverTypes;
+            IuStringUtils::Split(defaultForTypes, " ", serverTypes, 10);
+            for (const auto& typeStr : serverTypes) {
+                auto serverType = CUploadEngineData::ServerTypeFromString(typeStr);
+                if (serverType != CUploadEngineData::TypeInvalid) {
+                    m_defaultServersForType[serverType] = UE.Name;
+                }
+            }
+        }
+        //            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
+
+        std::vector<SimpleXmlNode> actions;
+        cur["Actions"].GetChilds("Action", actions);
+
+        for (size_t j = 0; j < actions.size(); j++) {
+            SimpleXmlNode& actionNode = actions[j];
+            UploadAction UA;
+            UA.Index = j;
+
+            std::string RetryLimit = actionNode.Attribute("RetryLimit");
+            if (RetryLimit.empty()) {
+                UA.RetryLimit = m_ActionNumOfRetries; //Settings.ActionRetryLimit;
+            } else UA.RetryLimit = atoi(RetryLimit.c_str());
+
+            UA.IgnoreErrors = actionNode.AttributeBool("IgnoreErrors");
+            UA.Description = actionNode.Attribute("Description");
+
+            UA.Type = actionNode.Attribute("Type");
+            UA.Url = actionNode.Attribute("Url");
+            UA.Referer = actionNode.Attribute("Referer");
+
+            UA.PostParams = actionNode.Attribute("PostParams");
+            UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
+            UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
+
+            ActionRegExp regexp;
+            regexp.Pattern = actionNode.Attribute("RegExp");
+            regexp.AssignVars = actionNode.Attribute("AssignVars");
+            regexp.Required = true;
+            UA.Regexes.push_back(regexp);
+
+            std::vector<SimpleXmlNode> regexpNodes;
+            actionNode.GetChilds("RegExp", regexpNodes);
+
+            for (auto& regexpNode : regexpNodes) {
+                ActionRegExp newRegexp;
+                newRegexp.Pattern = regexpNode.Attribute("Pattern");
+                newRegexp.AssignVars = regexpNode.Attribute("AssignVars");
+                newRegexp.Required = regexpNode.AttributeBool("Required");
+                newRegexp.Data = regexpNode.Attribute("Data");
+                UA.Regexes.push_back(newRegexp);
+            }
+
+            for (auto& reg : UA.Regexes) {
+                std::vector<std::string> Vars;
+                IuStringUtils::Split(reg.AssignVars, ";", Vars);
+
+                for (auto it = Vars.begin(); it != Vars.end(); ++it) {
+                    std::vector<std::string> NameAndValue;
+                    IuStringUtils::Split(*it, ":", NameAndValue);
+                    if (NameAndValue.size() == 2) {
+                        ActionVariable AV;
+                        AV.Name = NameAndValue[0];
+                        AV.nIndex = atoi(NameAndValue[1].c_str());
+                        reg.Variables.push_back(AV);
+                    }
+                }
+            }
+
+            UE.Actions.push_back(UA);
+        }
+
+        SimpleXmlNode resultNode = cur["Result"];
+        {
+            UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrlTemplate");
+            if (UE.DownloadUrlTemplate.empty()) {
+                UE.DownloadUrlTemplate = resultNode.Attribute("DownloadUrl");
+            }
+            UE.ImageUrlTemplate = resultNode.Attribute("ImageUrlTemplate");
+            if (UE.ImageUrlTemplate.empty()) {
+                UE.ImageUrlTemplate = resultNode.Attribute("ImageUrl");
+            }
+            UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrlTemplate");
+            if (UE.ThumbUrlTemplate.empty()) {
+                UE.ThumbUrlTemplate = resultNode.Attribute("ThumbUrl");
+            }
+            UE.EditUrlTemplate = resultNode.Attribute("EditUrl");
+            UE.DeleteUrlTemplate = resultNode.Attribute("DeleteUrl");
+            std::string directUrlTemplate = resultNode.Attribute("DirectUrlTemplate");
+            if (directUrlTemplate.empty()) {
+                directUrlTemplate = resultNode.Attribute("DirectUrl");
+            }
+            if (!directUrlTemplate.empty()) {
+
+                UE.ImageUrlTemplate = directUrlTemplate;
+            }
+        }
+        UE.SupportThumbnails = !UE.ThumbUrlTemplate.empty();
+        m_list.push_back(std::move(uploadEngineData));
+    }
+
+    std::sort(m_list.begin(), m_list.end(), compareEngines);
     return true;
 }
 
@@ -282,9 +265,8 @@ void CUploadEngineList::setNumOfRetries(int Engine, int Action)
 
 bool CUploadEngineList::addServer(const CUploadEngineData& data)
 {
-    auto uploadEngineData = std::make_unique<CUploadEngineData>();
-    *uploadEngineData = data;
+    auto uploadEngineData = std::make_unique<CUploadEngineData>(data);
     m_list.push_back(std::move(uploadEngineData));
-    std::sort(m_list.begin(), m_list.end(), compareEngines );
+    std::sort(m_list.begin(), m_list.end(), compareEngines);
     return true;
 }

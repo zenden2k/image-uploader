@@ -5,12 +5,14 @@
 #ifdef _MSC_VER
    // #include <vld.h> //Check for memory leaks
 #endif
+#include "versioninfo.h"
 #include <boost/locale.hpp>
 #include <boost/filesystem.hpp>
 #include <Core/Images/AbstractImage.h>
 
 #include "sqtest.h"
 #include "TestHelpers.h"
+#include "Core/AppParams.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Logging.h"
@@ -110,6 +112,18 @@ protected:
     char **argv_;
 };
 
+void setAppVersion() {
+    AppParams::AppVersionInfo appVersion;
+    appVersion.FullVersion = IU_APP_VER;
+    appVersion.FullVersionClean = IU_APP_VER_CLEAN;
+    appVersion.Build = atoi(IU_BUILD_NUMBER);
+    appVersion.BuildDate = IU_BUILD_DATE;
+    appVersion.CommitHash = IU_COMMIT_HASH;
+    appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
+    appVersion.BranchName = IU_BRANCH_NAME;
+    AppParams::instance()->setVersionInfo(appVersion);
+}
+
 int _tmain(int argc, _TCHAR* argvW[]) {
     char **argv = convertArgv(argc, argvW);
     //ArgDeleter deleter(argc, argv);
@@ -117,6 +131,7 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 #else
 int main(int argc, char *argv[]){
 #endif
+    setAppVersion();
     ::testing::InitGoogleTest(&argc, argv);
 
     std::string testDataDir, testScriptsDir;

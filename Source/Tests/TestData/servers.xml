@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <Servers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="servers.xsd">
-		<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
+	<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
 		<Actions>
 			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
 			<Action Type="upload" Url="http://radikal.ru/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;Upload=Submit Query" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0" Referer="http://radikal.ru/Content/Clients/FotoFlashApplet3.swf?v=13"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="1" DefaultForTypes="image">
+	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="1" DefaultForTypes="image" MinVersion="1.3.3">
 		<Actions>
 			<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2">
 				<RegExp Pattern="&lt;viewurl&gt;(.*?)&lt;\/viewurl&gt;" AssignVars="DownloadUrl:0;"/>
@@ -16,7 +16,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrl="$(DownloadUrl)" />
 	</Server>
-	<Server2 Name="8b.kz" Authorize="0" Type="urlshortening" DefaultForTypes="urlshortening" >
+	<Server2 Name="8b.kz" Authorize="0" Types="image urlshortening" DefaultForTypes="urlshortening" RetryLimit="3">
 		<Actions>
 			<Action 
 				Type="post"
@@ -25,8 +25,38 @@
 				Referer="http://8b.kz/"
 				RegExp='"key":"((\\"|[^"])*)"'
 				AssignVars="surl:0"
+				
 			/>
 		</Actions>
 		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
 	</Server2>
+	<Server2 Name="test.com" Authorize="0" Type="image">
+		<Actions>
+			<Action 
+				Type="post"
+				Url="http://8b.kz/ajax/new_url"
+				PostParams="custom=;url=$(_ORIGINALURL|urlencode)"
+				Referer="http://8b.kz/"
+				RegExp='"key":"((\\"|[^"])*)"'
+				AssignVars="surl:0"
+				RetryLimit="3"
+			/>
+		</Actions>
+		<Result DirectUrlTemplate="http://8b.kz/$(surl)" />
+	</Server2>
+	<Server2 Name="Test directory" Plugin="directory">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>
+	<Server2 Name="Test Hidden" MinVersion="9999999.0.0">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>
+	<!--<Server2 Name="Test Ftp" Plugin="ftp" FileHost="1">
+		<Actions>
+		</Actions>
+		<Result DirectUrlTemplate="stub" />
+	</Server2>-->
 </Servers>

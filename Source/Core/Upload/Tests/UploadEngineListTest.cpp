@@ -19,7 +19,7 @@ TEST_F(UploadEngineListTest, loadFromFile)
     bool res = list.loadFromFile(fileName, settings);
     // List is sorted alphabetically
     EXPECT_TRUE(res);
-    EXPECT_EQ(3, list.count());
+    EXPECT_EQ(5, list.count());
     CUploadEngineData* engineData = list.byIndex(2);
     ASSERT_TRUE(engineData != nullptr);
     EXPECT_EQ("radikal.ru", engineData->Name);
@@ -63,7 +63,7 @@ TEST_F(UploadEngineListTest, loadFromFile)
     EXPECT_EQ("8b.kz", engineData->Name);
     EXPECT_EQ(false, engineData->Debug);
     EXPECT_EQ(0, engineData->NeedAuthorization);
-    EXPECT_EQ(CUploadEngineData::TypeUrlShorteningServer, engineData->TypeMask);
+    EXPECT_EQ(CUploadEngineData::TypeUrlShorteningServer | CUploadEngineData::TypeImageServer, engineData->TypeMask);
     EXPECT_EQ("http://8b.kz/$(surl)", engineData->ImageUrlTemplate);
     {
         EXPECT_EQ(1, engineData->Actions.size());
@@ -85,6 +85,14 @@ TEST_F(UploadEngineListTest, loadFromFile)
     // Checking default servers
     EXPECT_EQ("fastpic.ru", list.getDefaultServerNameForType(CUploadEngineData::TypeImageServer));
     EXPECT_EQ("8b.kz", list.getDefaultServerNameForType(CUploadEngineData::TypeUrlShorteningServer));
+
+    engineData = list.byName("Test directory");
+    ASSERT_TRUE(engineData != nullptr);
+    EXPECT_EQ("Test directory", engineData->Name);
+    EXPECT_EQ(1, engineData->MaxThreads);
+
+    engineData = list.byName("Test Hidden");
+    ASSERT_TRUE(engineData == nullptr);
 }
 
 TEST_F(UploadEngineListTest, getByIndex)
@@ -94,13 +102,13 @@ TEST_F(UploadEngineListTest, getByIndex)
     bool res = list.loadFromFile(fileName, settings);
     // List is sorted alphabetically
     EXPECT_TRUE(res);
-    EXPECT_EQ(3, list.count());
+    EXPECT_EQ(5, list.count());
     CUploadEngineData* ued = list.byName("fastpic.ru");
     ASSERT_TRUE(ued != nullptr);
     EXPECT_EQ("fastpic.ru", ued->Name);
     CUploadEngineData* ued2 = list.firstEngineOfType(CUploadEngineData::TypeImageServer);
     ASSERT_TRUE(ued2 != nullptr);
-    EXPECT_EQ("fastpic.ru", ued2->Name);
+    EXPECT_EQ("8b.kz", ued2->Name);
 
     CUploadEngineData* ued3 = list.firstEngineOfType(CUploadEngineData::TypeFileServer);
     EXPECT_TRUE(ued3 == nullptr);
@@ -116,4 +124,14 @@ TEST_F(UploadEngineListTest, getByIndex)
 
     int index3 = list.getUploadEngineIndex("fastpic.ru");
     EXPECT_TRUE(index3 >= 0 && index3 < list.count());
+}
+
+TEST_F(UploadEngineListTest, addServer)
+{
+    CUploadEngineList list;
+    CUploadEngineData uploadEngineData;
+    uploadEngineData.Name = "test";
+    list.addServer(uploadEngineData);
+
+    EXPECT_EQ(1, list.count());
 }

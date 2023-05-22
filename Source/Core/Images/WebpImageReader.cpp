@@ -26,7 +26,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileN
         if (!ImageUtils::ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
             return nullptr;
         }
-    }catch (const std::exception& e) {
+    } catch (const std::exception&) {
         return {};
     }
     data.reset(dataRaw);
@@ -78,7 +78,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromStream(IStream* stream) {
     ULONG bytesRead;
     std::unique_ptr<uint8_t[]> pBuffer;
     try {
-        pBuffer.reset(new uint8_t[sSize]);
+        pBuffer = std::make_unique<uint8_t[]>(sSize);
     }
     catch (std::exception &) {
         lastError_ = str(boost::wformat(L"Unable to allocate %d bytes") % sSize);
@@ -128,6 +128,7 @@ bool WebpImageReader::readWebP(const uint8_t* const data, size_t data_size, WebP
         }
 
         if (!WebPAnimDecoderGetInfo(dec, &anim_info)) {
+            WebPAnimDecoderDelete(dec);
             LOG(WARNING) << "Error getting global info about the animation";
             return false;
         }
@@ -141,6 +142,7 @@ bool WebpImageReader::readWebP(const uint8_t* const data, size_t data_size, WebP
             int timestamp;
 
             if (!WebPAnimDecoderGetNext(dec, &frame_rgba, &timestamp)) {
+                WebPAnimDecoderDelete(dec);
                 return false;
             }
             unsigned int frameSize = anim_info.canvas_width*anim_info.canvas_height * 4;

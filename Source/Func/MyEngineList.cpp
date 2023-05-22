@@ -92,7 +92,6 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
             serverIcons_[name] = nullptr;
             return nullptr;
         }
-        
     }
 
     const int w = GetSystemMetrics(SM_CXSMICON);
@@ -100,7 +99,6 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 
     LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
     
-
     if (!icon) {
         icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
     }
@@ -114,10 +112,10 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
 
 CString CMyEngineList::getIconNameForServer(const std::string& name) {
     CUploadEngineData *ued = CUploadEngineList::byName(name);
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name)+_T(".ico");
+    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name).MakeLower()+_T(".ico");
 
     if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
-        iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName) +_T(".ico");
+        iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName).MakeLower() +_T(".ico");
         if(!WinUtils::FileExists(iconFileName)) {
             return CString();
         }

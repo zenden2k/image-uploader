@@ -1,7 +1,5 @@
 #include "ImageLoader.h"
 
-
-
 #include <Shlwapi.h>
 #include <boost/format.hpp>
 
@@ -62,6 +60,8 @@ std::unique_ptr<GdiPlusImage> ImageLoader::loadFromResource(HINSTANCE hInstance,
         lastError_ = reader->getLastError();
     }
     pStream->Release();
+    // MSDN: It is not necessary to unlock resources because the system automatically deletes
+    // them when the process that created them terminates.
     return result;
 }
 
