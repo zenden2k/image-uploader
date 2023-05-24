@@ -56,7 +56,7 @@ public:
     {
         isRunning_ = true;
         if ( !IuCoreUtils::FileExists(videoGrabber_->fileName_) ) {
-            LOG(ERROR) << (boost::format(_("File \"%s\" not found!")) % videoGrabber_->fileName_) << "not found";
+            LOG(ERROR) << (boost::format(_("File \"%s\" not found!")) % videoGrabber_->fileName_);
             if ( videoGrabber_->onFinished_ ) {
                 videoGrabber_->onFinished_(false);
             }

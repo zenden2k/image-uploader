@@ -31,6 +31,26 @@
 #include "AuthTask.h"
 #include "FolderTask.h"
 
+namespace {
+
+std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> obj) {
+    int res = 0;
+
+    Sqrat::Table t;
+
+    if (obj->GetType() == OT_INTEGER) {
+        res = obj->Cast<int>();
+    } else if (obj->GetType() == OT_TABLE) {
+        t = obj->Cast<Sqrat::Table>();
+        res = ScriptAPI::GetValue(t.GetValue<int>("status"));
+    } else {
+        LOG(WARNING) << "Invalid result type";
+    }
+    return {res, t};
+}
+
+}
+
 CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
                                          std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
     CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback)),
@@ -171,7 +191,9 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
                  currentTask_ = nullptr;
                  return -1;
             }
-            ival = ScriptAPI::GetValue(func.Evaluate<int>(FileName.c_str(), &params));
+
+            auto [status, table] = GetOperationResult(func.Evaluate<Object>(FileName.c_str(), &params));
+            ival = status /*ScriptAPI::GetValue(func.Evaluate<int>(FileName.c_str(), &params)) */ ;
         } else if (task->type() == UploadTask::TypeUrl ) {
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
@@ -181,7 +203,8 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
                  return -1;
             }
             std::string url = urlShorteningTask->getUrl();
-            /*SharedPtr<int> ivalPtr*/ival = ScriptAPI::GetValue(func.Evaluate<int>(url.c_str(), &params));
+            auto [status, table] = GetOperationResult(func.Evaluate<Object>(url.c_str(), &params));
+            /*SharedPtr<int> ivalPtr*/ival = status;
             if ( ival > 0 ) {
                 ival = !params.DirectUrl.empty();
             }
@@ -336,7 +359,8 @@ int CScriptUploadEngine::doLogin()
         if (func.IsNull()) {
             return 0;
         }
-        int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        auto [res, table] = GetOperationResult(func.Evaluate<Object>());
+
         serverSync_->setAuthPerformed(res == 1);
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
@@ -364,7 +388,7 @@ int CScriptUploadEngine::doLogout() {
         if (func.IsNull()) {
             return 0;
         }
-        int res = ScriptAPI::GetValue(func.Evaluate<int>());
+        auto [res, table] = GetOperationResult(func.Evaluate<Object>());
         return res;
     }
     catch (std::exception& e)
@@ -389,7 +413,8 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
         if (func.IsNull()) {
             return 0;
         }
-        res = ScriptAPI::GetValue(func.Evaluate<int>(&folder));
+        auto [status, table] = GetOperationResult(func.Evaluate<Object>(&folder));
+        res = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return 0;
@@ -417,7 +442,8 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
         if (func.IsNull()) {
             return -1;
         }
-        ival = ScriptAPI::GetValue(func.Evaluate<int>(&FolderList));
+        auto [status, table] = GetOperationResult(func.Evaluate<Object>(&FolderList));
+        ival = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
         }*/
@@ -453,8 +479,10 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
         if (func.IsNull()) {
             return -1;
         }
-            
-        ival = ScriptAPI::GetValue(func.Evaluate<int>(&parent, &folder));
+
+        auto [res, table] = GetOperationResult(func.Evaluate<Object>(&parent, &folder));
+
+        ival = res;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + std::string(Error::Message(vm_.GetVM()))); 
             return false;
@@ -644,8 +672,7 @@ int CScriptUploadEngine::refreshToken()
         if (func.IsNull()) {
             return 0;
         }
-        int res = ScriptAPI::GetValue(func.Evaluate<int>());
-        
+        auto [res, table] = GetOperationResult(func.Evaluate<Object>());
 
         return res;
     }

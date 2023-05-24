@@ -1,10 +1,13 @@
+
 #include <gtest/gtest.h>
 
 #include "Core/Images/ImageConverter.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/GdiPlusInitializer.h"
 #include "Tests/TestHelpers.h"
-#include "Core/Images/ImageConverterPrivate_gdiplus.h"
+#include "3rdpart/GdiplusH.h"
+#include "Core/CommonDefs.h"
+#include "atlheaders.h"
 
 class ImageConverterTest : public ::testing::Test {
 private:

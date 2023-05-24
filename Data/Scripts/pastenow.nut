@@ -1,5 +1,5 @@
-function UploadFile(FileName, options) {	
-    nm.setUrl("https://pastenow.ru/");
+function UploadFile(FileName, options) {
+    nm.setUrl("https://ru.paste.pics");
     nm.addQueryParamFile("file", FileName, ExtractFileName(FileName), "");
     nm.doUploadMultipartData();
     

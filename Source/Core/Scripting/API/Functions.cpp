@@ -58,12 +58,12 @@ using namespace Sqrat;
 
 namespace ScriptAPI {
 
-const std::string GetScriptsDirectory()
+std::string GetScriptsDirectory()
 {
     return AppParams::instance()->settingsDirectory() + "Scripts/";
 }
 
-const std::string GetAppLanguageFile()
+std::string GetAppLanguageFile()
 {
     std::string languageFile = AppParams::instance()->languageFile();
     if ( languageFile.empty() ) {
@@ -146,7 +146,7 @@ bool LoadScriptTranslation() {
     }
 }
 
-const std::string Translate(const std::string& key, const std::string& originalText) {
+std::string Translate(const std::string& key, const std::string& originalText) {
     if ( LoadScriptTranslation() ) {
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
@@ -174,22 +174,22 @@ const std::string Translate(const std::string& key, const std::string& originalT
     return originalText;
 }
 
-const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
+std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 {
     return ServiceLocator::instance()->dialogProvider()->askUserCaptcha(nm, url);
 }
 
-const std::string InputDialog(const std::string& text, const std::string& defaultValue) {
+std::string InputDialog(const std::string& text, const std::string& defaultValue) {
     return ServiceLocator::instance()->dialogProvider()->inputDialog(text, defaultValue);
 }
 
 
-const std::string GetFileMimeType(const std::string& filename)
+std::string GetFileMimeType(const std::string& filename)
 {
     return IuCoreUtils::GetFileMimeType(filename);
 }
 
-const std::string AnsiToUtf8(const std::string& str, int codepage)
+std::string AnsiToUtf8(const std::string& str, int codepage)
 {
 #ifdef _WIN32
     return IuCoreUtils::ConvertToUtf8(str, NameByCodepage(codepage));
@@ -199,7 +199,7 @@ const std::string AnsiToUtf8(const std::string& str, int codepage)
 #endif
 }
 
-const std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
+std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 {
 #ifdef _WIN32
     return IuCoreUtils::Utf8ToAnsi(str, codepage);
@@ -219,7 +219,7 @@ void WriteLog(const std::string& type, const std::string& message) {
     ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message, "Script: " + IuCoreUtils::ExtractFileName(GetCurrentScriptFileName()), GetCurrentTopLevelFileName());
 }
 
-const std::string md5(const std::string& data)
+std::string md5(const std::string& data)
 {
     return IuCoreUtils::CryptoUtils::CalcMD5HashFromString(data);
 }
@@ -232,15 +232,15 @@ void sleep(int msec) {
 #endif
 }
 
-const std::string JsonEscapeString( const std::string& src) {
+std::string JsonEscapeString( const std::string& src) {
     return Json::valueToQuotedString(src.data());
 }
 
-const std::string GetTempDirectory() {
+std::string GetTempDirectory() {
     return AppParams::instance()->tempDirectory();
 }
 
-const std::string url_encode(const std::string &value) {
+std::string url_encode(const std::string &value) {
     std::ostringstream escaped;
     escaped.fill('0');
     escaped << std::hex << std::uppercase;
@@ -491,7 +491,7 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
     return Json::Value(Json::nullValue);
 }
 
-const std::string ToJSON(const Sqrat::Object&  obj) {
+std::string ToJSON(const Sqrat::Object&  obj) {
     Json::Value root = sqObjToJson(obj);
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
@@ -503,7 +503,7 @@ int64_t ScriptGetFileSize(const std::string& filename) {
     return IuCoreUtils::GetFileSize(filename);
 }
 
-const std::string GetAppLanguage() {
+std::string GetAppLanguage() {
 #ifndef IU_CLI
     ITranslator* translator = ServiceLocator::instance()->translator();
     if ( !translator ) {
@@ -515,7 +515,7 @@ const std::string GetAppLanguage() {
     return "en";
 }
 
-const std::string GetAppLocale() {
+std::string GetAppLocale() {
 #ifndef IU_CLI
     ITranslator* translator = ServiceLocator::instance()->translator();
     if (!translator) {
@@ -540,13 +540,13 @@ int random()
     return dist(generator);
 }
 
-const std::string ExtractFileName(const std::string& path)
+std::string ExtractFileName(const std::string& path)
 {
     std::string res = IuCoreUtils::ExtractFileName(path);
     return res;
 }
 
-const std::string GetFileExtension(const std::string& path)
+std::string GetFileExtension(const std::string& path)
 {
     std::string res = IuCoreUtils::ExtractFileExt(path);
     return res;
@@ -608,10 +608,12 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("include", IncludeScript)
         .Func("Translate", Translate)
         .Func("GetAppVersion", GetAppVersion)
-
         .Func("random", random)
+        .Func("Random", random)
         .Func("sleep", sleep)
+        .Func("Sleep", sleep)
         .Func("md5", md5)
+        .Func("Md5", md5)
         .Func("AnsiToUtf8", AnsiToUtf8)
         .Func("Utf8ToAnsi", scriptUtf8ToAnsi)
         .Func("ExtractFileName", ExtractFileName)
@@ -650,15 +652,21 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
     using namespace IuCoreUtils;
     root
         .Func("md5_file", &CryptoUtils::CalcMD5HashFromFile)
+        .Func("Md5FromFile", &CryptoUtils::CalcMD5HashFromFile)
         .Func("sha1", &CryptoUtils::CalcSHA1HashFromString)
+        .Func("Sha1", &CryptoUtils::CalcSHA1HashFromString)
         .Func("sha1_file", &CryptoUtils::CalcSHA1HashFromFile)
+        .Func("Sha1FromFile", &CryptoUtils::CalcSHA1HashFromFile)
         .Func("sha1_file_prefix", &CryptoUtils::CalcSHA1HashFromFileWithPrefix)
+        .Func("Sha1FromFileWithPrefix", &CryptoUtils::CalcSHA1HashFromFileWithPrefix)
         .Func("hmac_sha1", &CryptoUtils::CalcHMACSHA1HashFromString)
+        .Func("HmacSha1", &CryptoUtils::CalcHMACSHA1HashFromString)
         .Func("Sha256", &CryptoUtils::CalcSHA256HashFromString)
         .Func("Sha256FromFile", &CryptoUtils::CalcSHA256HashFromFile)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)
+        .Func("UrlEncode", url_encode)
         .Func("DebugMessage", DebugMessage);    
 }
 //    atexit(&CleanUpFunctions);

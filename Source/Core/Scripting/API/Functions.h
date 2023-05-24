@@ -34,18 +34,18 @@ namespace ScriptAPI {
      * Returns path to squirrel scripts directory.
      * @since 1.3.1
      */
-    const std::string GetScriptsDirectory();
+    std::string GetScriptsDirectory();
 
     /**
     Returns name of the application's current language file (without .lng extension). For example: "English", "Russian".
     @since 1.3.1
     */
-    const std::string GetAppLanguageFile();
+    std::string GetAppLanguageFile();
 
     /**
     Returns application's current language. For example : "en", "ru".
     */
-    const std::string GetAppLanguage();
+    std::string GetAppLanguage();
 
     /**
      * Returns a table containing information about application's version. For example:
@@ -65,34 +65,34 @@ namespace ScriptAPI {
     /**
     Returns application's current locale. For example : "en_US", "ru_RU".
     */
-    const std::string GetAppLocale();
+    std::string GetAppLocale();
 
     /**
      * Retrieves the thread identifier of the calling thread.
      */
     std::string GetCurrentThreadId();
-    const std::string ExtractFileName(const std::string& path);
-    const std::string GetFileExtension(const std::string& path);
+    std::string ExtractFileName(const std::string& path);
+    std::string GetFileExtension(const std::string& path);
 
     /**
      * Returns the directory for temporary files
      * @since 1.3.0
      */
-    const std::string GetTempDirectory();
+    std::string GetTempDirectory();
 
     /**
      * Displays a prompt in a dialog box, waits for the user to input text or click a button, 
      * and returns a String containing the contents of the text box.
      * @param defaultValue Default text displayed in text box
      */
-    const std::string InputDialog(const std::string& text, const std::string& defaultValue);
+    std::string InputDialog(const std::string& text, const std::string& defaultValue);
 
     /**
      * Returns the MIME file type (for example, "text / html"), analyzing the contents of the file.
      * File must exist. 
      * (in Windows, the FindMimeFromData function is used. In unix, the command 'file -b --mime-type' is used.).
      */
-    const std::string GetFileMimeType(const std::string& filename);
+    std::string GetFileMimeType(const std::string& filename);
 
     /**
      * Opens a URL/file in a standard browser/associated application.
@@ -121,7 +121,7 @@ namespace ScriptAPI {
      * Every user-visible string in the script must be wrapped into this function.
      * @ref Internalization
      */
-    const std::string Translate(const std::string& key, const std::string& originalText);
+    std::string Translate(const std::string& key, const std::string& originalText);
 
     /**
      * @brief Shows the captcha input dialog. 
@@ -130,7 +130,7 @@ namespace ScriptAPI {
      * url - address of the image with captcha. 
      * The return value is the text entered by the user.
      */
-    const std::string AskUserCaptcha(NetworkClient* nm, const std::string& url);
+    std::string AskUserCaptcha(NetworkClient* nm, const std::string& url);
 
     /**
      * Converts a string from ANSI encoding to UTF-8. 
@@ -141,7 +141,7 @@ namespace ScriptAPI {
      *  
      * Available only in Windows.
      */
-    const std::string AnsiToUtf8(const std::string& str, int codepage);
+    std::string AnsiToUtf8(const std::string& str, int codepage);
 
     /**
      * Converts a string from ANSI encoding to UTF-8.
@@ -152,10 +152,18 @@ namespace ScriptAPI {
      *  
      * Available only in Windows.
      */
-    const std::string Utf8ToAnsi(const std::string& str, int codepage);
+    std::string Utf8ToAnsi(const std::string& str, int codepage);
 
     /**
      * The script falls asleep for the specified number of milliseconds. 
+     * @since 1.4.0
+     */
+    void Sleep(int msec);
+
+    /**
+     * The script falls asleep for the specified number of milliseconds.
+     * @deprecated since 1.4.0 
+     * @see Sleep
      */
     void sleep(int msec);
 
@@ -163,8 +171,8 @@ namespace ScriptAPI {
      * Escapes a string for use in JSON. Returns a string with quotes. 
      * @deprecated Instead, use the ToJSON function.
      */
-    const std::string JsonEscapeString(const std::string& src);
-    const std::string ToJSON(const Sqrat::Object&  obj);
+    std::string JsonEscapeString(const std::string& src);
+    std::string ToJSON(const Sqrat::Object&  obj);
 
     /**
      * Converts text containing a JSON document, into a table 
@@ -197,50 +205,108 @@ namespace ScriptAPI {
 
     /**
      * Returns a random number.
+     * @since 1.4.0
+     */
+    int Random();
+
+    /**
+     * Returns a random number.
+     * @deprecated since 1.4.0 
+     * @see Random
      */
     int random();
+
     std::string HtmlEntitiesDecode(const std::string& src);
 
     /**
      * @since 1.3.0
      */
-    const std::string GetFileContents(const std::string& filename);
+    std::string GetFileContents(const std::string& filename);
 
     /**
      *  URL-encodes string. This function is convenient when encoding a string to be used in a query part of a URL.
      *
      *  Use NetworkClient's nm.urlEncode() when possible instead.
+     * @since 1.4.0
      */
-    const std::string url_encode(const std::string &value);
+    std::string UrlEncode(const std::string& value);
+
+    /**
+     *  URL-encodes string. This function is convenient when encoding a string to be used in a query part of a URL.
+     *
+     *  Use NetworkClient's nm.urlEncode() when possible instead.
+     *  @deprecated since 1.4.0 
+     *  @see UrlEncode
+     */
+    std::string url_encode(const std::string &value);
 
     /**
      * @brief Calculates the md5 hash of a string
+     * @since 1.4.0
      */
-    const std::string md5(const std::string& data);
+    std::string Md5(const std::string& data);
 
-    // fake functions, just for docs (not implemented)
+    /**
+     * @brief Calculates the md5 hash of a string
+     * @deprecated since 1.4.0 
+     */
+    std::string md5(const std::string& data);
+
+    /**
+     * @brief Calculates the md5 hash of a given file
+     * @since 1.4.0
+     */
+    std::string Md5FromFile(const std::string& filename);
+
     /**
      * @brief Calculates the md5 hash of a given file
      * @since 1.2.7.4176
+     * @deprecated since 1.4.0
+     * @see Md5FromFile
      */
-    const std::string md5_file(const std::string& filename);
+    std::string md5_file(const std::string& filename);
+
+    /**
+     *  Calculates the sha1-hash of a given string
+     *  @since 1.4.0
+     */
+    std::string Sha1(const std::string& data);
 
     /**
      *  Calculates the sha1-hash of a given string
      *  @since 1.2.7.4176
+     *  @deprecated since 1.4.0
+     *  @see Sha1
      */
-    const std::string sha1(const std::string& data);
+    std::string sha1(const std::string& data);
+
+    /**
+     *  Calculates the sha1-hash of a given file
+     *  @since 1.4.0
+     */
+    std::string Sha1FromFile(const std::string& filename);
 
     /**
      *  Calculates the sha1-hash of a given file
      *  @since 1.2.7.4176
+     *  @deprecated since 1.4.0
+     *  @see Sha1FromFile
      */
-    const std::string sha1_file(const std::string& filename);
+    std::string sha1_file(const std::string& filename);
+
+    /**
+     *  Calculates the sha1-hash of a given file,
+     *  prepeding file with prefix and adding postfix at the end while calculating hash
+     *  @since 1.4.0
+     */
+    std::string Sha1FromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix);
 
     /**
      *  Calculates the sha1-hash of a given file, 
      *  prepeding file with prefix and adding postfix at the end while calculating hash
      *  @since 1.3.3
+     *  @deprecated since 1.4.0
+     *  @see Sha1FromFileWithPrefix
      */
     const std::string sha1_file_prefix(const std::string& filename, const std::string& prefix, const std::string& postfix);
 
@@ -255,12 +321,26 @@ namespace ScriptAPI {
      *  @since 1.4.0
      */
     std::string Sha256FromFile(const std::string& filename, int64_t offset, size_t chunkSize);
+
+
+    /**
+     * Generate a keyed hash value using the HMAC method and sha1 hashing algorythm
+     *
+     * @param data Message to be hashed.
+     * @param key Shared secret key used for generating the HMAC variant of the message digest.
+     * @param base64 Generate in base64 format
+     * @since 1.4.0
+     */
+    const std::string HmacSha1(const std::string& key, const std::string& data, bool base64);
+
     /**
      * Generate a keyed hash value using the HMAC method and sha1 hashing algorythm
      * 
      * @param data Message to be hashed.
      * @param key Shared secret key used for generating the HMAC variant of the message digest.
      * @param base64 Generate in base64 format
+     * @deprecated since 1.4.0
+     * @see HmacSha1
      */
     const std::string hmac_sha1(const std::string& key, const std::string& data, bool base64);
 
@@ -304,21 +384,13 @@ namespace ScriptAPI {
     /**
      * Includes and runs the script from file. 
      * <b>filename</b> should be relative to the scripts root directory.
+     * @deprecated since 1.4.0
+     * Use IO library's dofile() instead.
      */
     Sqrat::Object include(const std::string& filename);
 
-    /**
-     * Standard squirrel function for writing text to standard output. It's results can be seen in the log window.
-     */
-    void print(std::string arg);
     std::string Base64Encode(const std::string& data);
     std::string Base64Decode(const std::string& data);
-
-    /** 
-    Execute shell command. Parameter cmd is using default operating system locale (so it won't work with utf-8 strings on windows).
-    Use Process class instead
-    */
-    int system(std::string cmd);
 
     /**
      * Returns the size of the file in bytes.
@@ -332,6 +404,7 @@ namespace ScriptAPI {
     * @deprecated
     */
     double GetFileSizeDouble(const std::string& filename);
+
     /**
      * Returns a table containing information about image. For example:
     @code

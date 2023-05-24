@@ -10,8 +10,17 @@ class AbstractFrameGrabber
 public:
     AbstractFrameGrabber() = default;
     virtual ~AbstractFrameGrabber();
+
+    /**
+     * @throws FrameGrabberException
+     */
     virtual bool open(const std::string& fileName)=0;
+
+    /**
+     * @throws FrameGrabberException
+     */
     virtual bool seek(int64_t time)=0;
+
     virtual AbstractVideoFrame* grabCurrentFrame()=0;
     virtual int64_t duration()=0;
     std::string error() const;

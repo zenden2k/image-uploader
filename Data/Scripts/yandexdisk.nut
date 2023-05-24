@@ -388,10 +388,6 @@ function UploadFile(FileName, options) {
         if (nm.responseCode() == 401) { // not authorized
             ServerParams.setParam("token", "");
             throw "unauthorized_exception";
-            //try again
-            /*nm.addQueryHeader("Accept", "application/json");
-            nm.addQueryHeader("Authorization", _GetAuthorizationString());
-            nm.doGet(url);*/
         }
 
         while ( nm.responseCode() == 409 ) {
@@ -438,7 +434,7 @@ function UploadFile(FileName, options) {
             }
             nm.setUrl(href);
             nm.setMethod(method);
-            nm.addQueryHeader("Transfer-Encoding", "");
+            //nm.addQueryHeader("Transfer-Encoding", "");
             nm.addQueryHeader("Authorization", _GetAuthorizationString());
             nm.doUpload(FileName, "");
             if (nm.responseCode() != 201) {

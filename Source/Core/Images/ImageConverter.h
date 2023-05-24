@@ -1,6 +1,7 @@
 #ifndef IU_IMAGECONVERTER_H
 #define IU_IMAGECONVERTER_H
 
+#include <memory>
 #include <string>
 
 #include "Thumbnail.h"
@@ -81,7 +82,7 @@ class ImageConverter
         void setImageConvertingParams(const ImageConvertingParams& params);
         void setThumbCreatingParams(const ThumbCreatingParams& params);
         void setThumbnail(Thumbnail* thumb);
-        std::shared_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
+        std::unique_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
     protected:
         ImageConverterPrivate* d_ptr;
         MY_DECLARE_PRIVATE(ImageConverter);

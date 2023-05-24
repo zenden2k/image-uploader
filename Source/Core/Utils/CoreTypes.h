@@ -72,7 +72,7 @@ char (&ArraySizeHelper(const T (&array)[N]))[N];
 
 template <class T> struct EnumWrapper
 {
-    T value_;
+    T value_ = {};
     operator T&() {
         return value_;
     }

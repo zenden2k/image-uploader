@@ -1,8 +1,9 @@
+#include <cstring>
+
 #include <curl/curl.h>
 #include <gtest/gtest.h>
-#include <string.h>
 
-#include <Tests/TestHelpers.h>
+#include "Tests/TestHelpers.h"
 
 class NetworkClientTest : public ::testing::Test {
 public:
@@ -34,4 +35,5 @@ TEST_F(NetworkClientTest, curlTest) {
     EXPECT_TRUE(arrayContains(data->feature_names, "Unicode"));
 #endif
     EXPECT_TRUE(arrayContains(data->feature_names, "HTTPS-proxy"));
+    EXPECT_TRUE(data->ssl_version != nullptr);
 }

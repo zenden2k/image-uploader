@@ -255,7 +255,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     
     Bitmap *toUse = bm->Clone(0,/*300*/50, bm->GetWidth(), /*bm->GetHeight() / 2*/100, PixelFormatDontCare);
     GdiPlusImage source(toUse);
-    std::shared_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
+    std::unique_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
     if (result) {
         auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
         if (resultImg) {

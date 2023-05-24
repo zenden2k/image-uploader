@@ -284,7 +284,8 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
 
     // Saving thumbnail (without template)
     GdiPlusImage src(bm, false);
-    std::shared_ptr<GdiPlusImage> res = std::static_pointer_cast<GdiPlusImage>(createThumbnail(&src, FileSize, fileformat));
+    std::unique_ptr<AbstractImage> thumb = createThumbnail(&src, FileSize, fileformat);
+    auto res = static_cast<GdiPlusImage*>(thumb.get());
     if (res) {
         CString thumbFileName;
         try {
@@ -299,7 +300,7 @@ bool ImageConverterPrivate::createThumb(Gdiplus::Bitmap* bm, const CString& imag
     return result;
 }
 
-std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, int64_t fileSize, int fileformat)
+std::unique_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractImage* abstractImg, int64_t fileSize, int fileformat)
 {
     GdiPlusImage* image = dynamic_cast<GdiPlusImage*>(abstractImg);
     assert(image);
@@ -385,8 +386,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
 
     m_Vars["Width"] = std::to_string(RealThumbWidth);
     m_Vars["Height"] = std::to_string(RealThumbHeight);
-    Bitmap* ThumbBuffer = new Bitmap(RealThumbWidth, RealThumbHeight, &g1);
-    Graphics thumbgr(ThumbBuffer);
+    auto ThumbBuffer = std::make_unique<Bitmap>(RealThumbWidth, RealThumbHeight, &g1);
+    Graphics thumbgr(ThumbBuffer.get());
     thumbgr.SetPageUnit(UnitPixel);
 
     if (fileformat == 0 || fileformat == 2)
@@ -443,9 +444,8 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
         else
             if (type == "fillrect")
             {
-                Brush* fillBr = CreateBrushFromString(data->drawing_operations_[i].brush, rc);
-                gr->FillRectangle(fillBr, rc.left, rc.top, rc.right, rc.bottom);
-                delete fillBr;
+                std::unique_ptr<Gdiplus::Brush> fillBr = CreateBrushFromString(data->drawing_operations_[i].brush, rc);
+                gr->FillRectangle(fillBr.get(), rc.left, rc.top, rc.right, rc.bottom);
             }
             else
                 if (type == "drawrect")
@@ -527,7 +527,7 @@ std::shared_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
                     }
     }
 
-    return std::make_shared<GdiPlusImage>(ThumbBuffer);
+    return std::make_unique<GdiPlusImage>(ThumbBuffer.release());
 }
 
 bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)
@@ -546,7 +546,7 @@ bool ImageConverterPrivate::EvaluateRect(const std::string& rectStr, RECT* out)
     return true;
 }
 
-Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, const RECT& rect) {
+std::unique_ptr<Gdiplus::Brush> ImageConverterPrivate::CreateBrushFromString(const std::string& brStr, const RECT& rect) {
     std::vector<std::string> tokens;
     IuStringUtils::Split(brStr, ":", tokens, 10);
     if (tokens[0] == "solid") {
@@ -554,8 +554,7 @@ Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& 
         if (tokens.size() >= 2) {
             color = EvaluateColor(tokens[1]);
         }
-        SolidBrush* br = new SolidBrush(Color(color));
-        return br;
+        return std::make_unique<SolidBrush>(Color(color));
     }
     else if (tokens[0] == "gradient" && tokens.size() > 1) {
         std::vector<std::string> params;
@@ -578,13 +577,12 @@ Gdiplus::Brush* ImageConverterPrivate::CreateBrushFromString(const std::string& 
                 type = LinearGradientModeBackwardDiagonal;
             }
             // return new LinearGradientBrush(Rect(0,0, /*rect.left+*/rect.right , /*rect.top+*/rect.bottom ), Color(color1), Color(color2), LinearGradientMode(type));
-            return new LinearGradientBrush(RectF(float(rect.left), float(-0.5 + rect.top), float(rect.right),
+            return std::make_unique<LinearGradientBrush>(RectF(float(rect.left), float(-0.5 + rect.top), float(rect.right),
                                                  /*rect.top+*/ float(rect.bottom)), Color(color1), Color(
                                                color2), LinearGradientMode(type));
         }
     }
-    SolidBrush* br = new SolidBrush(0);
-    return br;
+    return std::make_unique<SolidBrush>(0);
 }
 
 void ImageConverterPrivate::calcCropSize(int srcWidth, int srcHeight, CRect targetRect, CRect& destRect, CRect& srcRect) {

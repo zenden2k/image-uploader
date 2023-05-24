@@ -22,7 +22,7 @@ public:
     }
 protected:    
     const std::string constSizeFileName;
-    const int64_t contSizeFileSize = 14830;
+    const int64_t constSizeFileSize = 14830;
 };
 
 using namespace IuCoreUtils;
@@ -81,6 +81,8 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
     EXPECT_EQ(result, "Image Uploader");
     result = ExtractFileNameNoExt("archive.tar.gz");
     EXPECT_EQ(result, "archive.tar");
+    result = ExtractFileNameNoExt(R"(\\?\e:\Video\test.mp4)");
+    EXPECT_EQ(result, "test");
 }
 
 TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
@@ -143,9 +145,8 @@ TEST_F(CoreUtilsTest, getFileSize)
     EXPECT_EQ(size, -1);
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     size = IuCoreUtils::GetFileSize(constSizeFileName);
-    EXPECT_EQ(size, contSizeFileSize);
+    EXPECT_EQ(size, constSizeFileSize);
 }
-
 
 TEST_F(CoreUtilsTest, copyFile)
 {
@@ -155,7 +156,7 @@ TEST_F(CoreUtilsTest, copyFile)
     EXPECT_EQ(res, true);
     EXPECT_EQ(IuCoreUtils::FileExists(destFile), true);
     int64_t size = IuCoreUtils::GetFileSize(destFile);
-    EXPECT_EQ(size, contSizeFileSize);
+    EXPECT_EQ(size, constSizeFileSize);
 }
 
 #ifdef _WIN32
@@ -202,7 +203,7 @@ TEST_F(CoreUtilsTest, GetFileContents)
 {
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     std::string data = GetFileContents(constSizeFileName);
-    EXPECT_EQ(contSizeFileSize, data.size());
+    EXPECT_EQ(constSizeFileSize, data.size());
     std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(&data[0], data.size());
     EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
 }
@@ -210,10 +211,10 @@ TEST_F(CoreUtilsTest, GetFileContents)
 TEST_F(CoreUtilsTest, GetFileMimeType) {
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     std::string type = GetFileMimeType(constSizeFileName);
-    ASSERT_EQ("image/png", type);
+    EXPECT_EQ("image/png", type);
 
     std::string webpFilePath = TestHelpers::resolvePath("Images/poroshok.webp");
     ASSERT_TRUE(IuCoreUtils::FileExists(webpFilePath));
     std::string type2 = GetFileMimeType(webpFilePath);
-    ASSERT_EQ("image/webp", type2);
+    EXPECT_EQ("image/webp", type2);
 }

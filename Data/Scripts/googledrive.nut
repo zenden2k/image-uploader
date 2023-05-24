@@ -301,6 +301,12 @@ function UploadFile(FileName, options) {
                     nm.setMethod("POST");
                     nm.doUpload("", ToJSON(postData));
                     options.setViewUrl(item.alternateLink);
+
+                    if (item.mimeType.find("image/", 0) == 0) {
+                        // There is not such URL in API response. It may break in the future.
+                        options.setDirectUrl("https://drive.google.com/uc?export=view&id=" + item.id);
+                    }
+                    
                     if ("thumbnailLink" in item) {
                         options.setThumbUrl(item.thumbnailLink);
                     }
