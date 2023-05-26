@@ -60,6 +60,11 @@ struct ScreenshotSettingsStruct {
     int MonitorMode;
 };
 
+struct ScreenRecordingStruct {
+    CString FFmpegCLIPath;
+    CString Preset;
+};
+
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
@@ -105,6 +110,7 @@ public:
     bool RememberImageServer;
     bool RememberFileServer;
     ScreenshotSettingsStruct ScreenshotSettings;
+    ScreenRecordingStruct ScreenRecordingSettings;
     ImageReuploaderSettingsStruct ImageReuploaderSettings;
     TrayIconSettingsStruct TrayIconSettings;
     CString ImageEditorPath;

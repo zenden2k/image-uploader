@@ -36,6 +36,7 @@
 #include "FloatingWindow.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
+#include "ScreenRecorderWindow.h"
 #include "Func/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #ifdef IU_ENABLE_MEDIAINFO
@@ -160,17 +161,17 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
 }
 
 // CWizardDlg
-CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
-    UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
+CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist,
+    UploadEngineManager* uploadEngineManager, UploadManager* uploadManager,
     ScriptsManager* scriptsManager, WtlGuiSettings* settings):
-    FolderAdd(this), 
+    FolderAdd(this),
     uploadManager_(uploadManager),
-    uploadEngineManager_(uploadEngineManager), 
+    uploadEngineManager_(uploadEngineManager),
     scriptsManager_(scriptsManager),
     Settings(*settings),
     logger_(std::move(logger)),
     enginelist_(enginelist)
-{ 
+{
     mainThreadId_ = GetCurrentThreadId();
     CurPage = -1;
     PrevPage = -1;
@@ -194,7 +195,7 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
             if (sessionImageServer_.isEmpty()) {
                 sessionImageServer_.getByIndex(0).getImageUploadParamsRef().getThumbRef().TemplateName = templateName;
             }
-          
+
         }
     }
 
@@ -234,7 +235,7 @@ bool CWizardDlg::pasteFromClipboard() {
                 MainDlg->AddToFileList(outFileName, L"", true, nullptr, true);
                 return true;
             }
-        } 
+        }
         if (CImageDownloaderDlg::LinksAvailableInText(text)) {
             CImageDownloaderDlg dlg(this, text);
             dlg.EmulateModal(m_hWnd);
@@ -318,7 +319,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         toast->setAppName(APPNAME);
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
-        
+
         const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);
 
@@ -332,7 +333,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     {
         CString ErrBuf;
         ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\n\nThe reason is:  %s\n\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
-    
+
         if (LocalizedMessageBox(ErrBuf, APPNAME, MB_ICONERROR | MB_YESNO) == IDNO)
         {
             *DlgCreationResult = 2;
@@ -354,7 +355,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     CString userServersFolder = Utf8ToWCstring(Settings.SettingsFolder + "Servers\\");
     boost::filesystem::path userServersFolderPath(userServersFolder);
-    
+
     try {
         if (boost::filesystem::exists(userServersFolderPath) && boost::filesystem::canonical(userServersFolderPath) != boost::filesystem::canonical(serversFolderPath)) {
             WinUtils::GetFolderFileList(list, userServersFolder, _T("*.xml"));
@@ -367,8 +368,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-    
-    LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
+
+    LoadUploadEngines(_T("userservers.xml"), ErrorStr);
 
 	Settings.fixInvalidServers();
     std::string iconsDir = W2U(IuCommonFunctions::GetDataFolder() + _T("Favicons\\"));
@@ -390,12 +391,12 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (isFirstRun_) {
         Settings.HistorySettings.HistoryConverted = true;
     }
-    
+
     if (!isFirstRun_ && !Settings.HistorySettings.HistoryConverted) {
         statusDlg_.reset(new CStatusDlg(false));
         statusDlg_->SetAppWindow(true);
         statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
-        
+
         std::thread t([&]() {
             historyManager->convertHistory();
             Settings.HistorySettings.HistoryConverted = true;
@@ -444,8 +445,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     SetTimer(kNewFilesTimer, 500);
     RegisterLocalHotkeys();
     if(ParseCmdLine()) return 0;
- 
-    CreatePage(wpWelcomePage); 
+
+    CreatePage(wpWelcomePage);
     ShowPage(wpWelcomePage);
     Pages[wpWelcomePage]->SetInitialFocus();
 
@@ -463,7 +464,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         }
     }
 
-    return 0;  
+    return 0;
 }
 
 bool CWizardDlg::ParseCmdLine()
@@ -497,7 +498,7 @@ bool CWizardDlg::ParseCmdLine()
             m_bShowWindow=false;
             ImageEditorWindow::DialogResult dr = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmWindowed);
             if (dr == ImageEditorWindow::drCancel) {
-                PostQuitMessage(0);    
+                PostQuitMessage(0);
             } else if (dr != ImageEditorWindow::drCopiedToClipboard){
                 this->AddImage(imageFileName, WinUtils::myExtractFileName(imageFileName), true);
                 //ShowPage(1);
@@ -534,10 +535,10 @@ bool CWizardDlg::ParseCmdLine()
             return true;
         } else if(CurrentParam .Left(15)==_T("/serverprofile=")) {
             CString serverProfileName = CurrentParam.Right(CurrentParam.GetLength()-15);
-            
+
             if ( Settings.ServerProfiles.find(serverProfileName) == Settings.ServerProfiles.end()) {
                 CString msg;
-                msg.Format(TR("Profile \"%s\" not found.\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."), 
+                msg.Format(TR("Profile \"%s\" not found.\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."),
                     serverProfileName.GetString());
                 LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
@@ -549,17 +550,17 @@ bool CWizardDlg::ParseCmdLine()
                         sessionImageServer_ = sp;
                         sessionFileServer_ = sp;
                         serversChanged_ = true;
-                        
+
                     } else if ( ued ->hasType(CUploadEngineData::TypeImageServer) ) {
                         sessionImageServer_ = sp;
-                        serversChanged_ = true; 
+                        serversChanged_ = true;
                     }
                 } else {
                     //MessageBox(_T("Server not found"));
                 }
-                
+
             }
-            
+
         } else if (CurrentParam ==_T("/fromcontextmenu")) {
             sessionImageServer_ = Settings.contextMenuServer;
             fromContextMenu = true;
@@ -567,16 +568,16 @@ bool CWizardDlg::ParseCmdLine()
     }
 
 	CString FileName;
-	
+
 	if(CmdLine.GetNextFile(FileName, nIndex))
 	{
 		if(IsVideoFile(FileName) && !CmdLine.IsOption(_T("upload")) && !CmdLine.IsOption(_T("quick")))
 		{
 			ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
             CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
-			dlg->SetFileName(FileName);			
+			dlg->SetFileName(FileName);
 			return true;
-		}	
+		}
 	}
 	nIndex = 0;
 	CStringList Paths;
@@ -588,7 +589,7 @@ bool CWizardDlg::ParseCmdLine()
 	}
 	if(!Paths.IsEmpty())
 	{
-		QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));	
+		QuickUploadMarker = (fromContextMenu && Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
 		FolderAdd.Do(Paths, CmdLine.IsOption(_T("imagesonly")), true);
 	}
     return false;
@@ -597,12 +598,12 @@ bool CWizardDlg::ParseCmdLine()
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     if(floatWnd_->m_hWnd)
-    { 
+    {
         ShowWindow(SW_HIDE);
         if (Pages[wpMainPage] && CurPage == wpUploadPage) {
             getPage<CMainDlg>(wpMainPage)->ThumbsView.MyDeleteAllItems();
         }
-        ShowPage(wpWelcomePage); 
+        ShowPage(wpWelcomePage);
     } else {
         CloseWizard();
     }
@@ -610,14 +611,14 @@ LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
 }
 
 BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
-{    
+{
     if( pMsg->message == WM_KEYDOWN)
     {
         TCHAR Buffer[MAX_PATH];
         GetClassName(pMsg->hwnd, Buffer, sizeof(Buffer)/sizeof(TCHAR));
         if( pMsg->wParam == 'A' && !lstrcmpi(Buffer,_T("Edit") ) && GetKeyState(VK_CONTROL)<0)
         {
-            ::SendMessage(pMsg->hwnd, EM_SETSEL, 0, -1);    
+            ::SendMessage(pMsg->hwnd, EM_SETSEL, 0, -1);
             return TRUE;
         }
         if( pMsg->wParam == 'V' && !lstrcmpi(Buffer,_T("Edit")) ) {
@@ -631,22 +632,22 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
             else if (Pages[wpWelcomePage] && pMsg->hwnd==::GetDlgItem(Pages[wpWelcomePage]->PageWnd,IDC_LISTBOX))
                 return FALSE;
         }
-        
+
         /*if (VK_BACK == pMsg->wParam && Pages[CurPage] && GetForegroundWindow() == m_hWnd && lstrcmpi(Buffer, _T("Edit")))
         {
             if (pMsg->message == WM_KEYDOWN && ::IsWindowEnabled(GetDlgItem(IDC_PREV))) {
                 OnPrevBnClicked(0, 0, 0);
                 return TRUE;
             }
-            
+
         }*/
     }
 
-    if(localHotkeys_ &&TranslateAccelerator(m_hWnd, localHotkeys_, pMsg)) 
+    if(localHotkeys_ &&TranslateAccelerator(m_hWnd, localHotkeys_, pMsg))
     {
         return TRUE;
     }
-    
+
     return CWindow::IsDialogMessage(pMsg);
 }
 
@@ -690,7 +691,7 @@ void CWizardDlg::CloseDialog(int nVal)
     ShowWindow(SW_HIDE);
     if(CurPage >= 0)
         Pages[CurPage]->OnHide();
-    
+
     Exit();
     DestroyWindow();
     ::PostQuitMessage(nVal);
@@ -730,7 +731,7 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
     CurPage = idPage;
     ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
     Pages[idPage]->SetInitialFocus();
-    
+
     Pages[idPage]->OnShow();
 
     //::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == wpWelcomePage);
@@ -747,7 +748,7 @@ LRESULT CWizardDlg::OnPrevBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     {
         PrevPage = CurPage-1;
         if(PrevPage<0 || PrevPage==1)  PrevPage = 0;
-    }    
+    }
 
     ShowPage(static_cast<WizardPageId>(PrevPage));
     PrevPage=-1;
@@ -767,7 +768,7 @@ LRESULT CWizardDlg::OnNextBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         NextPage = CurPage+1;
         if(NextPage>4 ) NextPage=0;
         if(NextPage==1) NextPage=2;
-    }    
+    }
     ShowPage(static_cast<WizardPageId>(NextPage));
     NextPage = -1;
     return 0;
@@ -900,19 +901,19 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
     int height = static_cast<int>(roundf(45 * dpiScaleY_));
     RectF bounds(0.0,0.0, float(width), height);
-   
+
     Graphics g(m_hWnd,true);
     std::unique_ptr<Bitmap> BackBuffer = std::make_unique<Bitmap>(width, height, &g);
     Graphics gr(BackBuffer.get());
-    
-    LinearGradientBrush 
-        brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235), 
+
+    LinearGradientBrush
+        brush(bounds, Color(255, 255, 255, 255), Color(255, 235,235,235),
             LinearGradientModeVertical);
     gr.FillRectangle(&brush,bounds);
 
-    LinearGradientBrush 
-        br2(bounds, Color(130, 190, 190, 190), Color(255, 70, 70, 70), 
-            LinearGradientModeBackwardDiagonal); 
+    LinearGradientBrush
+        br2(bounds, Color(130, 190, 190, 190), Color(255, 70, 70, 70),
+            LinearGradientModeBackwardDiagonal);
 
     StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
@@ -954,10 +955,10 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
     CMainDlg* MainDlg = nullptr;
     CStringList Paths;
-    
+
     for (int i=0; i<n; i++)
     {
-        
+
         DragQueryFile(hDrop,    i, szBuffer, sizeof(szBuffer)/sizeof(TCHAR));
 
         if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
@@ -969,16 +970,16 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
             ShowPage(wpVideoGrabberPage, CurPage, (Pages[wpMainPage]) ? wpMainPage : wpUploadSettingsPage);
             CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
             dlg->SetFileName(szBuffer);
-            
+
             break;
         }
         else if(CurPage == wpWelcomePage || CurPage == wpMainPage)
         {
             filehost:
             if(WinUtils::FileExists(szBuffer) || WinUtils::IsDirectory(szBuffer))
-                                     Paths.Add(szBuffer);            
+                                     Paths.Add(szBuffer);
         }
- 
+
     }
     if(!Paths.IsEmpty())
     {
@@ -990,9 +991,9 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 //            MainDlg->ThumbsView.LoadThumbnails();
         }
     }
-    
+
     DragFinish(hDrop);
-    return 0;  
+    return 0;
 }
 
 bool CWizardDlg::LoadUploadEngines(const CString &filename, CString &Error)
@@ -1043,7 +1044,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
 
     enableDragndropOverlay_ = false;
 
-  
+
     FORMATETC formatHdrop = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     FORMATETC formatFileDescriptor = { static_cast<WORD>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     FORMATETC formatBitmap = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -1098,7 +1099,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
     *pdwEffect = DROPEFFECT_COPY;
     return S_OK;
 }
-    
+
 STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) {
     if(!acceptsDragnDrop()) {
         *pdwEffect = DROPEFFECT_NONE;
@@ -1115,7 +1116,7 @@ STDMETHODIMP CWizardDlg::DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect
     dragndropOverlay_.dragMove(clientPt.x, clientPt.y);
     return S_OK;
 }
-    
+
 STDMETHODIMP CWizardDlg::DragLeave( void)
 {
     dragndropOverlay_.ShowWindow(SW_HIDE);
@@ -1154,7 +1155,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 
             PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
             FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
-            
+
             CStringList Paths;
             for(size_t i=0; i<fgd->cItems; i++)
             {
@@ -1169,7 +1170,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                     {
                         CString OutFileName;
                         bool FileWasSaved = false;
-                        
+
                         if(ddd2.tymed == TYMED_HGLOBAL)
                         {
                             LARGE_INTEGER size{};
@@ -1179,13 +1180,13 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         }
 
                         if(ddd2.tymed == TYMED_ISTREAM)
-                        {    
-                            FileWasSaved = SaveFromIStream(ddd2.pstm, fgd->fgd[i].cFileName, OutFileName); 
+                        {
+                            FileWasSaved = SaveFromIStream(ddd2.pstm, fgd->fgd[i].cFileName, OutFileName);
                         }
 
                         if(FileWasSaved) // Additing received file to program
                         {
-                            if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_ 
+                            if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_
                                 && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList))
                             {
 
@@ -1197,9 +1198,9 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                             }
                             else if((CurPage==0||CurPage==2))
                             {
-                                
+
                                 if(WinUtils::FileExists(OutFileName) || WinUtils::IsDirectory(OutFileName))
-                                     Paths.Add(OutFileName);        
+                                     Paths.Add(OutFileName);
                             }
                         }
                         ReleaseStgMedium(&ddd2);
@@ -1208,7 +1209,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                     LOG(WARNING) << _com_error(res).ErrorMessage();
                 }*/
 
-               
+
             }
             GlobalUnlock(hdrop);
             ReleaseStgMedium(&ddd);
@@ -1229,7 +1230,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 bool CWizardDlg::HandleDropHDROP(IDataObject *pDataObj)
 {
     FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
-    if(pDataObj->QueryGetData(&tc) == S_OK ) 
+    if(pDataObj->QueryGetData(&tc) == S_OK )
     {
         STGMEDIUM ddd;
         if(pDataObj->GetData(&tc, &ddd) == S_OK)
@@ -1253,7 +1254,7 @@ bool CWizardDlg::HandleDropBitmap(IDataObject *pDataObj)
     FtcBitmap.lindex = DVASPECT_CONTENT;
     FtcBitmap.tymed =  TYMED_HGLOBAL;
 
-    if(pDataObj->QueryGetData(&FtcBitmap) == S_OK ) 
+    if(pDataObj->QueryGetData(&FtcBitmap) == S_OK )
     {
         STGMEDIUM ddd;
         if(pDataObj->GetData(&FtcBitmap, &ddd) == S_OK)
@@ -1271,9 +1272,9 @@ void CWizardDlg::setIsFirstRun(bool isFirstRun) {
 
 STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect)
 {
-    if(!IsWindowEnabled() || !DragndropEnabled) 
+    if(!IsWindowEnabled() || !DragndropEnabled)
     {
-        *pdwEffect = DROPEFFECT_NONE; 
+        *pdwEffect = DROPEFFECT_NONE;
         return S_FALSE;
     }
 
@@ -1370,7 +1371,7 @@ void CWizardDlg::PasteBitmap(HBITMAP Bmp)
     if (CurPage != wpWelcomePage && CurPage != wpMainPage && CurPage != -1) {
         return;
     }
-   
+
     CString fileNameBuffer;
     Bitmap bm(Bmp, nullptr);
     if (bm.GetLastStatus() == Ok) {
@@ -1419,12 +1420,12 @@ bool CWizardDlg::AddImageAsync(const CString &FileName, const CString &VirtualFi
 }
 
 LRESULT CWizardDlg::OnAddImages(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{    
+{
     auto* ais = reinterpret_cast<AddImageStruct*>(wParam);
     if(!ais) return 0;
     return  AddImage(ais->RealFileName, ais->VirtualFileName, ais->show);
 }
-    
+
 LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     int PageIndex = wParam;
@@ -1435,7 +1436,7 @@ LRESULT CWizardDlg::OnWmShowPage(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
 LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
     if (wParam) {
         auto msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
-        msg->callback(); 
+        msg->callback();
     } else {
         // Async task
         std::vector<TaskRunnerTask> tasks;
@@ -1570,8 +1571,8 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     } else {
         return false;
     }
-    
-    
+
+
     if (nCount) {
         ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
         CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
@@ -1703,8 +1704,8 @@ bool CWizardDlg::funcScreenshotDlg()
 {
     CScreenshotDlg dlg(hasLastScreenshotRegion());
     if(dlg.DoModal(m_hWnd) != IDOK) return false;
-    
-    CommonScreenshot(dlg.captureMode()); 
+
+    CommonScreenshot(dlg.captureMode());
     m_bShowWindow = true;
     return true;
 }
@@ -1738,7 +1739,7 @@ void CWizardDlg::OnScreenshotFinished(int Result)
     }
     else if (m_bHandleCmdLineFunc)
     {
-        
+
         PostQuitMessage(0);
     }
     m_bHandleCmdLineFunc = false;
@@ -1794,7 +1795,7 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 {
     if(!floatWnd_->m_hWnd)
       TRC(IDCANCEL, "Exit");
-    else 
+    else
         TRC(IDCANCEL, "Hide");
 
     return 0;
@@ -1903,7 +1904,7 @@ bool CWizardDlg::funcMediaInfo()
     };
 
     auto fileDlg = MyFileDialogFactory::createFileDialog(m_hWnd, Settings.VideoFolder, TR("Choose media file"), filters, false);
-    
+
     if (fileDlg->DoModal(m_hWnd) != IDOK) {
         return false;
     }
@@ -1924,13 +1925,13 @@ bool CWizardDlg::funcMediaInfo()
 #endif
 bool CWizardDlg::funcAddFiles()
 {
-    IMyFileDialog::FileFilterArray filters { 
+    IMyFileDialog::FileFilterArray filters {
         { TR("Images"), IuCommonFunctions::PrepareFileDialogImageFilter() },
         { TR("Video files"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };
     auto fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
-    
+
     fileDialog->setFileTypeIndex(3);
 
     if (fileDialog->DoModal(m_hWnd) != IDOK) {
@@ -1958,7 +1959,7 @@ bool CWizardDlg::funcAddFiles()
         ShowWindow(SW_SHOW);
         m_bShowWindow = true;
     }
-    
+
     return true;
 }
 
@@ -2018,9 +2019,9 @@ bool CWizardDlg::isShowWindowSet() const {
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
 }
-    
+
 LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     CreateUpdateDlg();
     updateDlg->ShowModal(m_hWnd, true);
     return 0;
@@ -2038,7 +2039,7 @@ void CWizardDlg::CreateUpdateDlg()
 bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 {
     using namespace ScreenCapture;
-    // TODO: this method is too complicated and long. 
+    // TODO: this method is too complicated and long.
     bool needToShow = IsWindowVisible()!=FALSE;
     bool fromTray = screenshotInitiator_ == siFromTray || screenshotInitiator_ == siFromHotkey;
     if(fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd_->m_hWnd)
@@ -2052,7 +2053,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         ShowWindow(SW_HIDE);
     EnableWindow(false);
     CScreenCaptureEngine engine;
-    
+
     CString buf; // file name buffer
     std::shared_ptr<Gdiplus::Bitmap> result;
     CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
@@ -2087,7 +2088,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
     engine.setMonitorMode(monitorMode, monitor);
     if(mode == cmFullScreen)
-    {  
+    {
         engine.captureScreen(Settings.ScreenshotSettings.CaptureCursor);
         result = engine.capturedBitmap();
     }
@@ -2184,19 +2185,23 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
+
             if (!lastCrop.IsEmptyArea()) {
+                screenRecordRect_ = CRect(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
+        } else if (dialogResult == ImageEditorWindow::drRecordScreen) {
+            funcRecordScreen();
         } else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard ) {
                 showScreenshotCopiedToClipboardMessage(imageEditor.getResultingBitmap());
             }
             CanceledByUser = true;
         }
-    } 
+    }
 
     if(!CanceledByUser)
     {
@@ -2225,7 +2230,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             {
                 CClientDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
-                    if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
+                    if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
                         && dialogResult == ImageEditorWindow::drCancel) {
                         showScreenshotCopiedToClipboardMessage(result);
                         Result = false;
@@ -2262,7 +2267,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         {
             m_bShowAfter = true;
         }
-    } 
+    }
     else m_bShowAfter = false;
     fromTray = false;
     OnScreenshotFinished(Result);
@@ -2292,6 +2297,12 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
     }
 }
 
+bool CWizardDlg::funcRecordScreen() {
+    ScreenRecorderWindow screenRecorderWindow;
+    screenRecorderWindow.doModal(m_hWnd, screenRecordRect_);
+    return true;
+}
+
 bool CWizardDlg::funcWindowHandleScreenshot()
 {
     return CommonScreenshot(ScreenCapture::cmWindowHandles);
@@ -2313,7 +2324,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
 
     if(!IsClipboard)
     {
-        if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
+        if(IsClipboardFormatAvailable(CF_UNICODETEXT))
         {
             CString text;
             WinUtils::GetClipboardText(text, m_hWnd);
@@ -2417,7 +2428,7 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
     wnd->setFileNameFilter(fileName);
     wnd->setLogger(logger_.get());
     wnd->TranslateUI();
-    
+
     wnd->reloadList();
     wnd->Show();
     logWindowsByFileName_[fileName] = std::move(wnd);
@@ -2455,7 +2466,7 @@ LRESULT CWizardDlg::OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 }
 
 LRESULT CWizardDlg::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    if (lParam == 0) {      
+    if (lParam == 0) {
         // Computer is shutting down
         HWND exitBtn = GetDlgItem(IDCANCEL);
         if (!::IsWindowEnabled(exitBtn)) {

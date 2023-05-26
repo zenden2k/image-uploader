@@ -72,9 +72,9 @@ public:
         virtual std::vector<std::pair<RECT, CString>> getSubItemsHints() { return {}; };
     };
 
-    explicit Toolbar(Orientation orientation); 
+    explicit Toolbar(Orientation orientation, bool createSubPanel = true);
     ~Toolbar() override;
-    bool Create(HWND parent, bool topMost = false, bool child = false);
+    bool Create(HWND parent, bool topMost = false, bool child = false, COLORREF backgroundColor = RGB(255, 50, 56), bool roundedBorder = true);
     int addButton(const Item& item);
     DECLARE_WND_CLASS_EX(L"ImageEditor_Toolbar", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE);
     int getItemAtPos(int clientX, int clientY) const;
@@ -106,7 +106,7 @@ public:
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
         MESSAGE_HANDLER( WM_PAINT, OnPaint )
         MESSAGE_HANDLER( WM_MOUSEMOVE, OnMouseMove )
-        MESSAGE_HANDLER( WM_MOUSELEAVE, OnMouseLeave ) 
+        MESSAGE_HANDLER( WM_MOUSELEAVE, OnMouseLeave )
         MESSAGE_HANDLER( WM_NCHITTEST, OnNcHitTest )
         MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
         MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
@@ -175,12 +175,13 @@ public:
     CButton applyButton_;
     CButton cancelOperationButton_;
     CToolTipCtrl tooltip_;
+    bool roundedBorder_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;
     int selectedItemIndex_;
     void drawItem(int itemIndex, Gdiplus::Graphics* gr, int, int y);
-    
+
     bool trackMouse_;
     float dpiScaleX_;
     float dpiScaleY_;
@@ -208,6 +209,7 @@ protected:
     void createHintForControl(HWND slider, CString hint);
     SIZE getArrowComboBoxBitmapSize(HDC dc);
     void setArrowComboboxMode(int itemIndex, int arrowType);
+    bool createSubPanel_;
 };
 
 }

@@ -14,22 +14,22 @@
 
 namespace ImageEditor {
 
-Toolbar::Toolbar(Toolbar::Orientation orientation)
+Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
 {
     using namespace Gdiplus;
     orientation_ = orientation;
+    createSubPanel_ = createSubPanel;
     selectedItemIndex_ = -1;
     trackMouse_ = false;
-    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG")); 
+    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG"));
     dpiScaleX_ = 1.0f;
     dpiScaleY_ = 1.0f;
-    transparentColor_ = Color(255,50,56);
     if ( !WinUtils::IsWine() ) {
         subpanelColor_ = Color(252,252,252);
     } else {
         subpanelColor_.SetFromCOLORREF(GetSysColor(COLOR_BTNFACE));
     }
-    
+
     subpanelBrush_.CreateSolidBrush(subpanelColor_.ToCOLORREF());
     memset(&buttonsRect_, 0, sizeof(buttonsRect_));
     textRenderingHint_ = Gdiplus::TextRenderingHintAntiAlias;
@@ -55,7 +55,7 @@ Toolbar::~Toolbar()
     }
 }
 
-bool Toolbar::Create(HWND parent, bool topMost, bool child)
+bool Toolbar::Create(HWND parent, bool topMost, bool child, COLORREF backgroundColor, bool roundedBorder)
 {
     RECT rc = {0, 0, 1,1};
 
@@ -73,6 +73,9 @@ bool Toolbar::Create(HWND parent, bool topMost, bool child)
         ::GetWindowRect(parent, parentRect);
         OffsetRect(&rc, parentRect.left, parentRect.top);
     }
+
+    transparentColor_.SetFromCOLORREF(backgroundColor);
+    roundedBorder_ = roundedBorder;
     DWORD style, exStyle;
     if (child) {
         style = WS_CHILD;
@@ -84,9 +87,9 @@ bool Toolbar::Create(HWND parent, bool topMost, bool child)
             exStyle |= WS_EX_TOPMOST;
         }
     }
-	
+
     movable_ = !child;
-	
+
     HWND wnd = TParent::Create(parent, rc, _T("ImageEditor Toolbar"), style, exStyle);
     if ( !wnd ) {
         LOG(ERROR) << WinUtils::GetLastErrorAsString();
@@ -167,7 +170,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 {
     LONG lStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
     if ( lStyle & WS_CHILD ) {
-        transparentColor_.SetFromCOLORREF(GetSysColor(COLOR_APPWORKSPACE));
+        //transparentColor_.SetFromCOLORREF(GetSysColor(COLOR_APPWORKSPACE));
     } else {
         SetLayeredWindowAttributes(m_hWnd, RGB(transparentColor_.GetR(),transparentColor_.GetG(),transparentColor_.GetB()),225,LWA_COLORKEY/*| LWA_ALPHA*/);
     }
@@ -189,7 +192,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
     tooltip_.Create(m_hWnd, rcDefault, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
     tooltip_.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-    
+
     enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
     itemMargin_ = static_cast<int>(kItemMargin *dpiScaleX_);
     itemHorPadding_ = static_cast<int>(kItemHorPadding * dpiScaleX_);
@@ -220,40 +223,40 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
         createHintForControl(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        
+
         blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
         blurRadiusLabel_.SetFont(systemFont_);
         createHintForControl(blurRadiusLabel_, TR("Blur radius"));
 
-        RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+            RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
-        fontSizeLabel_.Create(m_hWnd, fontSizeLabelRect, TR("Font size:"), WS_CHILD);
-        fontSizeLabel_.SetFont(systemFont_);
+            fontSizeLabel_.Create(m_hWnd, fontSizeLabelRect, TR("Font size:"), WS_CHILD);
+            fontSizeLabel_.SetFont(systemFont_);
 
-        RECT fontSizeEditRect = { 0, 0, static_cast<LONG>(63 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT fontSizeEditRect = { 0, 0, static_cast<LONG>(63 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        fontSizeEdit_.Create(m_hWnd, fontSizeEditRect, nullptr, WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, (HMENU)ID_FONTSIZEEDITCONTROL);
-        fontSizeEdit_.SetFont(systemFont_);
+            fontSizeEdit_.Create(m_hWnd, fontSizeEditRect, nullptr, WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, (HMENU)ID_FONTSIZEEDITCONTROL);
+            fontSizeEdit_.SetFont(systemFont_);
 
-        RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
+            RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
         fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
         fontSizeUpDownCtrl_.SetRange(1, 100);
 
-        RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
+            RECT initialValueLabelRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-        initialValueLabel_.Create(m_hWnd, initialValueLabelRect, TR("Initial value:"), WS_CHILD);
-        initialValueLabel_.SetFont(systemFont_);
+            initialValueLabel_.Create(m_hWnd, initialValueLabelRect, TR("Initial value:"), WS_CHILD);
+            initialValueLabel_.SetFont(systemFont_);
 
-        RECT initialValueEditRect{ 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT initialValueEditRect{ 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        initialValueEdit_.Create(m_hWnd, initialValueEditRect, _T(""), WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
-        initialValueEdit_.SetFont(systemFont_);
+            initialValueEdit_.Create(m_hWnd, initialValueEditRect, _T(""), WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
+            initialValueEdit_.SetFont(systemFont_);
 
-        RECT fillBackgroundCheckboxRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT fillBackgroundCheckboxRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
-        fillBackgroundCheckbox_.SetFont(systemFont_);
+            fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
+            fillBackgroundCheckbox_.SetFont(systemFont_);
 
         RECT invertSelectionCheckboxRect{ 0, 0, static_cast<LONG>(200 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
@@ -271,13 +274,14 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         itemIndex = arrowTypeCombobox_.AddString(_T(""));
         setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
-        RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
-        applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
-        applyButton_.SetFont(systemFont_);
+            RECT applyButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
+            applyButton_.SetFont(systemFont_);
 
-        RECT cancelButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
-        cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
-        cancelOperationButton_.SetFont(systemFont_);
+            RECT cancelButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
+            cancelOperationButton_.SetFont(systemFont_);
+        }
     }
     return 0;
 }
@@ -315,7 +319,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 {
     using namespace Gdiplus;
     CDC &dc = backBufferDc_;
-   
+
     CRect clientRect;
     bHandled = true;
     GetClientRect(&clientRect);
@@ -343,11 +347,18 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     rect = Rect( 0, 0, buttonsRect_.right, buttonsRect_.bottom);
     rect.Width--;
     rect.Height --;
-    
+
     //Gdiplus::SolidBrush br(Color(200,2,146,209));
 
     gr.SetSmoothingMode(GetStyle()&WS_CHILD ? SmoothingModeAntiAlias : SmoothingModeDefault);
-    ImageUtils::DrawRoundedRectangle(&gr,rect,7,&p, &br);
+    if (roundedBorder_) {
+        ImageUtils::DrawRoundedRectangle(&gr, rect, 7, &p, &br);
+    } else {
+        gr.FillRectangle(&br, rect);
+        gr.DrawRectangle(&p, rect);
+    }
+
+    //
 
     gr.SetSmoothingMode(SmoothingModeAntiAlias);
 
@@ -369,7 +380,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     if ( !(GetStyle()&WS_CHILD)  ) { // fix artefacts
         SolidBrush br(transparentColor_);
         gr.SetPixelOffsetMode(PixelOffsetModeHighQuality);
-        gr.FillRectangle(&br, Rect(buttonsRect_.right-1, buttonsRect_.bottom-1, 1,1)); 
+        gr.FillRectangle(&br, Rect(buttonsRect_.right-1, buttonsRect_.bottom-1, 1,1));
     }
 
     CPaintDC realDc(m_hWnd);
@@ -380,9 +391,9 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
 
 LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    int xPos = GET_X_LPARAM(lParam); 
-    int yPos = GET_Y_LPARAM(lParam); 
-    
+    int xPos = GET_X_LPARAM(lParam);
+    int yPos = GET_Y_LPARAM(lParam);
+
     if(!trackMouse_) // Capturing mouse
     {
         TRACKMOUSEEVENT tme;
@@ -394,30 +405,30 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
     }
 
     int oldSelectedIndex  = selectedItemIndex_;
-    
+
     selectedItemIndex_ = getItemAtPos(xPos, yPos);
 
     if (  oldSelectedIndex != selectedItemIndex_  ) {
         if ( selectedItemIndex_ != -1 ) {
             buttons_[selectedItemIndex_].state = isHover;
-            InvalidateRect(&buttons_[selectedItemIndex_].rect, false);  
+            InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
         }
         if ( oldSelectedIndex != -1 ) {
             buttons_[oldSelectedIndex].state = isNormal;
             InvalidateRect(&buttons_[oldSelectedIndex].rect, false);
         }
-    } 
+    }
     return 0;
 }
 
 LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    /*int xPos = GET_X_LPARAM(lParam); 
+    /*int xPos = GET_X_LPARAM(lParam);
     int yPos = GET_Y_LPARAM(lParam); */
     trackMouse_ = false;
     if ( selectedItemIndex_ != -1 ) {
         buttons_[selectedItemIndex_].state = isNormal;
-        
+
         InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
         selectedItemIndex_ = -1;
         trackMouse_ = false;
@@ -428,8 +439,8 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
 
 LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int xPos = GET_X_LPARAM(lParam); 
-    int yPos = GET_Y_LPARAM(lParam); 
+    int xPos = GET_X_LPARAM(lParam);
+    int yPos = GET_Y_LPARAM(lParam);
     if ( selectedItemIndex_ != -1 ) {
         Item& item = buttons_[selectedItemIndex_];
         if ( item.type == Toolbar::itComboButton && xPos >  static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)  ) {
@@ -445,10 +456,10 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
         else {
             item.state = isDown;
         }
-        
-        InvalidateRect(&item.rect, false);   
+
+        InvalidateRect(&item.rect, false);
     }
-    
+
     return 0;
 }
 
@@ -466,8 +477,8 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
 
 LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int xPos = GET_X_LPARAM(lParam); 
-    int yPos = GET_Y_LPARAM(lParam); 
+    int xPos = GET_X_LPARAM(lParam);
+    int yPos = GET_Y_LPARAM(lParam);
     RECT clientRect;
     KillTimer(kTinyComboDropdownTimer);
     GetClientRect(&clientRect);
@@ -476,7 +487,7 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
         return 0;
     }
     if ( selectedItemIndex_ != -1 ) {
-        
+
         selectedItemIndex_ = getItemAtPos(xPos, yPos);
         Item& item = buttons_[selectedItemIndex_];
 
@@ -498,14 +509,14 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
             OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
         }
     }
-    
+
     return 0;
 }
 
 LRESULT Toolbar::OnRButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int xPos = GET_X_LPARAM(lParam); 
-    int yPos = GET_Y_LPARAM(lParam); 
+    int xPos = GET_X_LPARAM(lParam);
+    int yPos = GET_Y_LPARAM(lParam);
     if ( selectedItemIndex_ != -1 ) {
 
         selectedItemIndex_ = getItemAtPos(xPos, yPos);
@@ -542,7 +553,7 @@ SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y)
     using namespace Gdiplus;
     SIZE res={0,0};
     Item &item = buttons_[index];
-    
+
     if ( item.itemDelegate ) {
         return item.itemDelegate->CalcItemSize(item, x, y, dpiScaleX_, dpiScaleY_);
     }
@@ -609,10 +620,10 @@ int Toolbar::AutoSize()
     }
 
     SetWindowPos(0, 0, 0, width, height,SWP_NOMOVE | SWP_NOZORDER);
-        
+
     GetClientRect(&buttonsRect_);
 
-    if ( orientation_ == orHorizontal ) {
+    if ( orientation_ == orHorizontal && createSubPanel_) {
         SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE|SWP_NOZORDER);
         penSizeSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE|SWP_NOZORDER);
         penSizeSlider_.SetRange(1,Canvas::kMaxPenSize);
@@ -676,7 +687,7 @@ int Toolbar::AutoSize()
         ScreenToClient(&rect);
 
         initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(38 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        
+
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
@@ -690,7 +701,7 @@ int Toolbar::AutoSize()
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         applyButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(10 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_*2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER); 
+        cancelOperationButton_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(100 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_ * 2), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
 
     for (size_t i = 0; i < buttons_.size(); i++) {
@@ -714,7 +725,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 {
     using namespace Gdiplus;
     SIZE size = CalcItemSize(gr, itemIndex, x, y);
-    
+
     Item& item = buttons_[itemIndex];
 
     if ( item.itemDelegate ) {
@@ -728,7 +739,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
     item.rect.right = size.cx + x;
     item.rect.bottom = size.cy + y;
     SolidBrush brush(Color(0,0,0));
-    
+
     if ( item.state == isHover ||  item.state == isDown ||  item.state == isDropDown || item.isChecked) {
             Pen p(Color(198,196,197));
             Color gradientColor1 = item.isChecked ?  Color(170,170,170) : Color(232,232,232);
@@ -742,7 +753,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
             if ( item.type == itComboButton ) {
                 gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
             }
-        
+
     } /*else if ( item.state == isChecked ) {
         Pen p(Color(198,196,197));
         Color gradientColor1 = Color(200,200,200);
@@ -929,7 +940,7 @@ LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
         int y;
         HRESULT hr;
         size_t itemLength, cch;
-   
+
         if (lpdis->itemID == -1) { // Empty item
             return FALSE;
         }
@@ -969,9 +980,9 @@ LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
             gr.SetSmoothingMode(SmoothingModeAntiAlias);
             Color clr;
             clr.SetFromCOLORREF(GetSysColor((lpdis->itemState & ODS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT));
-            
+
             int bitmapY = (lpdis->rcItem.bottom + lpdis->rcItem.top) / 2;
-            Arrow::render(&gr, clr, 3, { 1, bitmapY }, { bitmapSize.cx + 1, bitmapY }, arrowMode);    
+            Arrow::render(&gr, clr, 3, { 1, bitmapY }, { bitmapSize.cx + 1, bitmapY }, arrowMode);
         }
 
         // Restore the previous colors.

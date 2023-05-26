@@ -1381,6 +1381,17 @@ Gdiplus::Rect Canvas::lastAppliedCrop() const {
     return lastAppliedCrop_;
 }
 
+Gdiplus::Rect Canvas::lastCrop() const {
+    for (const auto& el: elementsOnCanvas_) {
+        if (el->getType() == ElementType::etCrop) {
+            auto crop = dynamic_cast<Crop*>(el);
+
+            return Gdiplus::Rect(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight());
+        }
+    }
+    return lastAppliedCrop();
+}
+
 void Canvas::setStepFontSize(int fontSize) {
     stepFontSize_ = fontSize;
     for ( const auto& el: elementsOnCanvas_) {

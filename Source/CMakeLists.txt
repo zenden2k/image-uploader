@@ -303,6 +303,7 @@ add_subdirectory(Video)
 
 if(WIN32)
     add_subdirectory(Gui)
+	add_subdirectory(ScreenCapture)
 endif()
 
 add_subdirectory(CLI)
