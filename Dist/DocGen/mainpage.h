@@ -26,7 +26,7 @@ Squirrel is a high level imperative, object-oriented programming language, desig
 <p>
 You have to implement at least one function — <code>UploadFile</code>.<br>
 If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, 
-<code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
+<code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code>.</p>
 
 <code>nm</code> - global object - is an instance of NetworkClient<br>
 <code>ServerParams</code> - global object - is an instance of ServerSettingsStruct 
