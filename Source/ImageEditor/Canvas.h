@@ -164,6 +164,8 @@ class Canvas {
 
         Gdiplus::Rect lastAppliedCrop() const;
 
+        Gdiplus::Rect lastCrop() const;
+
         void applyCurrentOperation();
         void cancelCurrentOperation();
 

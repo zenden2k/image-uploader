@@ -95,6 +95,7 @@ set(SRC_LIST
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
+    Dialogs/ScreenRecorderWindow.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
@@ -256,6 +257,7 @@ set(HEADER_LIST
     Dialogs/WelcomeDlg.h
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
+    Dialogs/ScreenRecorderWindow.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -320,7 +322,7 @@ set(HEADER_LIST
     ../resource.h
 )
 	
-if (IU_ENABLE_MEDIAINFO) 
+if (IU_ENABLE_MEDIAINFO)
 	list (APPEND SRC_LIST ../Func/MediaInfoHelper.cpp  Dialogs/MediaInfoDlg.cpp)
 	list (APPEND HEADER_LIST ../Func/MediaInfoHelper.h  Dialogs/MediaInfoDlg.h)
 endif()
@@ -334,7 +336,7 @@ add_executable(GUI WIN32
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
-set(LIBS_LIST 
+set(LIBS_LIST
     gdiplus Ws2_32 dwmapi wininet IPHLPAPI
     Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon
     minizip::minizip
@@ -346,7 +348,7 @@ endif()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(GUI PRIVATE iucore iuvideo
+target_link_libraries(GUI PRIVATE iucore iuvideo iucapture
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
 )

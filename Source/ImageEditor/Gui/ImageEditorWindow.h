@@ -29,7 +29,7 @@ public:
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
         ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_SEARCHBYIMAGEINGOOGLE,
-        ID_SEARCHBYIMAGEINYANDEX,
+        ID_SEARCHBYIMAGEINYANDEX, ID_RECORDSCREEN,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
@@ -55,7 +55,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -121,6 +121,7 @@ public:
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_RECORDSCREEN, OnRecordScreen)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         
@@ -172,6 +173,7 @@ public:
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;

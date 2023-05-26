@@ -36,6 +36,7 @@
 #include "FloatingWindow.h"
 #include "ImageDownloaderDlg.h"
 #include "LogWindow.h"
+#include "ScreenRecorderWindow.h"
 #include "Func/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #ifdef IU_ENABLE_MEDIAINFO
@@ -2096,13 +2097,18 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);
         if (dialogResult != ImageEditorWindow::drCancel && mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
+
             if (!lastCrop.IsEmptyArea()) {
+                screenRecordRect_ = CRect(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
-        } else {
+        } else if (dialogResult == ImageEditorWindow::drRecordScreen) {
+            funcRecordScreen();
+        }
+        else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd_->m_hWnd) {
                 floatWnd_->ShowScreenshotCopiedToClipboardMessage();
             }
@@ -2180,6 +2186,12 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     OnScreenshotFinished(Result);
 
     return Result;
+}
+
+bool CWizardDlg::funcRecordScreen() {
+    ScreenRecorderWindow screenRecorderWindow;
+    screenRecorderWindow.doModal(m_hWnd, screenRecordRect_);
+    return true;
 }
 
 bool CWizardDlg::funcWindowHandleScreenshot()

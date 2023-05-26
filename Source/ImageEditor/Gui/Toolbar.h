@@ -63,9 +63,9 @@ public:
         virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
     };
 
-    explicit Toolbar(Orientation orientation); 
+    explicit Toolbar(Orientation orientation, bool createSubPanel = true);
     ~Toolbar() override;
-    bool Create(HWND parent, bool topMost = false, bool child = false);
+    bool Create(HWND parent, bool topMost = false, bool child = false, COLORREF backgroundColor = RGB(255, 50, 56), bool roundedBorder = true);
     int addButton(const Item& item);
     DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
     int getItemAtPos(int clientX, int clientY) const;
@@ -160,6 +160,7 @@ public:
     CButton applyButton_;
     CButton cancelOperationButton_;
     CToolTipCtrl tooltip_;
+    bool roundedBorder_;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;
@@ -189,6 +190,7 @@ protected:
     Gdiplus::TextRenderingHint textRenderingHint_;
     bool movable_;
     bool showButtonText_;
+    bool createSubPanel_;
     void createHintForSliders(HWND slider, CString hint);
 };
 

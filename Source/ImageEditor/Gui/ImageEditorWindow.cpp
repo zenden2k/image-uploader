@@ -16,7 +16,7 @@
 
 namespace ImageEditor {
     
-ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal),verticalToolbar_(Toolbar::orVertical) 
+ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal, true),verticalToolbar_(Toolbar::orVertical)
 {
     currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
@@ -301,7 +301,7 @@ std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
 }
 
 Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
-    return canvas_ ? canvas_->lastAppliedCrop() : Gdiplus::Rect();
+    return canvas_ ? canvas_->lastCrop() : Gdiplus::Rect();
 }
 
 void ImageEditorWindow::setServerName(const CString & serverName)
@@ -435,6 +435,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
         { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
+        { FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN },
     };
 
     accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
@@ -842,7 +843,8 @@ void ImageEditorWindow::createToolbars()
 {
     CRect rc;
     GetClientRect(&rc);
-    if ( !horizontalToolbar_.Create(m_hWnd, !allowAltTab_, displayMode_ == wdmWindowed) ) {
+    bool child = displayMode_ == wdmWindowed;
+    if ( !horizontalToolbar_.Create(m_hWnd, !allowAltTab_, child, child ? GetSysColor(COLOR_APPWORKSPACE): RGB(255, 50, 56)) ) {
         LOG(ERROR) << "Failed to create horizontal toolbar";
         return;
     }
@@ -871,9 +873,12 @@ void ImageEditorWindow::createToolbars()
     }
     //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+
     std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
-    
+
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_RECORDSCREEN, TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
+
     CString itemText;
     CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
@@ -887,7 +892,7 @@ void ImageEditorWindow::createToolbars()
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
 
-    if ( !verticalToolbar_.Create(m_hWnd, !allowAltTab_, displayMode_ == wdmWindowed) ) {
+    if ( !verticalToolbar_.Create(m_hWnd, !allowAltTab_, child, child ? GetSysColor(COLOR_APPWORKSPACE) : RGB(255, 50, 56)) ) {
         LOG(ERROR) << "Failed to create vertical toolbar";
 
     }
@@ -1557,7 +1562,7 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
     MONITORINFO mi = {};
     mi.cbSize = sizeof(mi);
     ::GetMonitorInfo(::MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST), &mi);
-    CRect workArea = mi.rcWork;
+    CRect workArea = mi.rcMonitor;
 
     MonitorEnumerator enumerator;
     CRect toolbarRc;
@@ -1588,6 +1593,14 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
         }
         toolbar.SetWindowPos(nullptr, newPos.x, newPos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
+}
+
+
+LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    EndDialog(drRecordScreen);
+
+    return 0;
 }
 
 }

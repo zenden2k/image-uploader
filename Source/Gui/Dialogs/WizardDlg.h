@@ -208,6 +208,7 @@ public:
     bool funcOpenScreenshotFolder();
     bool funcFromClipboard(bool fromCmdLine = false);
     bool funcExit();
+    bool funcRecordScreen();
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
 
@@ -317,6 +318,7 @@ protected:
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ITEM_ID dragndropOverlaySelectedItem_ = CDragndropOverlay::kInvalid;
+    CRect screenRecordRect_;
 };
 
 

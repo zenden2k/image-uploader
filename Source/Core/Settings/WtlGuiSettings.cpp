@@ -510,6 +510,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.UseOldRegionScreenshotMethod = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
+    ScreenRecordingSettings.FFmpegCLIPath = LR"(d:\ffmpeg-6.0-essentials_build\bin\ffmpeg.exe)";
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 
@@ -810,6 +811,10 @@ void WtlGuiSettings::BindToManager() {
     screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
     screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
     screenshot.nm_bind(ScreenshotSettings, MonitorMode);
+
+    SettingsNode& screenRecording = mgr_["ScreenRecording"];
+    screenRecording.nm_bind(ScreenRecordingSettings, FFmpegCLIPath);
+    screenRecording.nm_bind(ScreenRecordingSettings, Preset);
 
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
