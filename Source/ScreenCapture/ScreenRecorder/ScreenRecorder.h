@@ -32,7 +32,7 @@ private:
     std::vector<std::string> parts_;
     std::future<int> future_;
     void sendStopSignal();
-    void launchFfmpeg(const std::vector<std::string> args);
+    void launchFFmpeg(const std::vector<std::string> args);
 };
 
 
