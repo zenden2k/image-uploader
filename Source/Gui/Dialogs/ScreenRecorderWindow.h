@@ -33,12 +33,19 @@ public:
     ScreenRecorderWindow();
     ~ScreenRecorderWindow() override;
 
+    enum
+    {
+        ID_STOP = 1000, ID_PAUSE
+    };
+
     BEGIN_MSG_MAP(ScreenRecorderWindow)
         MESSAGE_HANDLER(WM_CREATE, onCreate)
         MESSAGE_HANDLER(WM_PAINT, onPaint)
         MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
         MESSAGE_HANDLER(WM_TIMER, onTimer)
         COMMAND_ID_HANDLER(IDCANCEL, onCancel)
+        COMMAND_ID_HANDLER(ID_STOP, onStop)
+        COMMAND_ID_HANDLER(ID_PAUSE, onPause)
         //REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -64,6 +71,8 @@ private:
     LRESULT onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
     DialogResult dialogResult_;
     void endDialog(DialogResult dr);
