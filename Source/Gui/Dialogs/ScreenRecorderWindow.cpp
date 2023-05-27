@@ -36,8 +36,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         {
             return std::shared_ptr<Gdiplus::Bitmap>(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
         };
-        toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Stop")), loadToolbarIcon(IDB_ICONADDPNG), 0, TR("Stop")));
-        toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Pause")), loadToolbarIcon(IDB_ICONADDPNG), 0, TR("Pause")));
+        toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Stop")), loadToolbarIcon(IDB_ICONADDPNG), ID_STOP, TR("Stop")));
+        toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Pause")), loadToolbarIcon(IDB_ICONADDPNG), ID_PAUSE, TR("Pause")));
         int index = toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Cancel")), loadToolbarIcon(IDB_ICONADDPNG), IDCANCEL, TR("Cancel")));
 
         ImageEditor::Toolbar::Item timeLabel(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), IDCANCEL, CString(), ImageEditor::Toolbar::itButton, false);
@@ -169,11 +169,20 @@ LRESULT ScreenRecorderWindow::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
     return 0;
 }
 
+LRESULT ScreenRecorderWindow::onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    screenRecorder_->pause();
+    return 0;
+}
 
 void ScreenRecorderWindow::updateTimeLabel() {
     CString timeLabel;
     timeLabel.Format(_T("%02d:%02d:%02d.%d"), (int)(elapsedTime_ / 36000), (int)(elapsedTime_ / 600 % 60), elapsedTime_ / 10 % 60, elapsedTime_ % 10);
     timeDelegate_->setText(timeLabel);
+}
+
+LRESULT ScreenRecorderWindow::onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    screenRecorder_->stop();
+    return 0;
 }
 
 TimeDelegate::TimeDelegate(ImageEditor::Toolbar* toolbar, int itemIndex):  toolbarItemIndex_(itemIndex),
