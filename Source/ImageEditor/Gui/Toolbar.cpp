@@ -41,6 +41,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
     subpanelLeftOffset_ = 0;
     movable_ = true;
     showButtonText_ = true;
+    moveParent_ = false;
 }
 
 Toolbar::~Toolbar()
@@ -422,23 +423,33 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 {
     int xPos = GET_X_LPARAM(lParam); 
     int yPos = GET_Y_LPARAM(lParam); 
-    if ( selectedItemIndex_ != -1 ) {
+    if (selectedItemIndex_ != -1) {
         Item& item = buttons_[selectedItemIndex_];
-        if ( item.type == Toolbar::itComboButton && xPos >  static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)  ) {
-            item.state = isDropDown;
-        } else if ( item.type == Toolbar::itTinyCombo ) {
-            if ( xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_ ) {
+        if (item.type != itLabel) {
+            if (item.type == Toolbar::itComboButton && xPos > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)) {
                 item.state = isDropDown;
-            } else {
-                SetTimer(kTinyComboDropdownTimer, 600);
+            }
+            else if (item.type == Toolbar::itTinyCombo) {
+                if (xPos > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && yPos > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_) {
+                    item.state = isDropDown;
+                }
+                else {
+                    SetTimer(kTinyComboDropdownTimer, 600);
+                    item.state = isDown;
+                }
+            }
+            else {
                 item.state = isDown;
             }
+
+            InvalidateRect(&item.rect, false);
+            return 0;
         }
-        else {
-            item.state = isDown;
-        }
-        
-        InvalidateRect(&item.rect, false);   
+            
+    }
+    if (moveParent_) {
+        ReleaseCapture();
+        SendMessage(GetParent(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
     }
     
     return 0;
@@ -920,4 +931,9 @@ void Toolbar::setShowButtonText(bool show) {
 Toolbar::Orientation Toolbar::orientation() const {
     return orientation_;
 }
+
+void Toolbar::setMoveParent(bool move) {
+    moveParent_ = move;
+}
+
 }

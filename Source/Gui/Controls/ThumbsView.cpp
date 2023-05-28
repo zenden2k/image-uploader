@@ -427,7 +427,14 @@ int CThumbsView::GetImageIndex(int ItemIndex) const
 
 LRESULT CThumbsView::OnLButtonDblClk(UINT Flags, CPoint Pt)
 {
-    ViewSelectedImage();
+    if (!ViewSelectedImage() && doubleClickCallback_) {
+        int nCurItem;
+        if ((nCurItem = GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) < 0) {
+            return 0;
+        }
+
+        doubleClickCallback_(this, nCurItem);
+    }
     return 0;
 }
 
@@ -459,20 +466,29 @@ DWORD CThumbsView::Run()
     return 0;
 }
 
-void CThumbsView::ViewSelectedImage()
+bool CThumbsView::ViewSelectedImage()
 {
     int nCurItem;
-    if ((nCurItem = GetNextItem(-1, LVNI_ALL|LVNI_SELECTED)) < 0) return;
+    if ((nCurItem = GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) < 0) {
+        return false;
+    }
 
     LPCTSTR FileName = GetFileName(nCurItem);
 
-    if(!FileName || !IuCommonFunctions::IsImage(FileName)) return;
-    CImageViewItem imgViewItem;
-    imgViewItem.index = nCurItem;
-    imgViewItem.fileName = FileName;
-    HWND wizardDlg = ::GetParent(GetParent());
-    ImageView.ViewImage(imgViewItem, wizardDlg);
-    ImageView.setCallback(this);
+    if (!FileName) {
+        return false;
+    }
+
+    if (IuCommonFunctions::IsImage(FileName)) {
+        CImageViewItem imgViewItem;
+        imgViewItem.index = nCurItem;
+        imgViewItem.fileName = FileName;
+        HWND wizardDlg = ::GetParent(GetParent());
+        ImageView.ViewImage(imgViewItem, wizardDlg);
+        ImageView.setCallback(this);
+        return true;
+    }
+    return false;
 }
 
 LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
@@ -646,6 +662,10 @@ LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
 
 void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {  
     callback_ = std::move(callback);
+}
+
+void CThumbsView::setDoubleClickCallback(DoubleClickCallback&& callback) {
+    doubleClickCallback_ = std::move(callback);
 }
 
 LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {

@@ -609,7 +609,7 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
         }*/
     }
 
-    if(localHotkeys_ &&TranslateAccelerator(m_hWnd, localHotkeys_, pMsg)) 
+    if(localHotkeys_ &&TranslateAccelerator(m_hWnd, localHotkeys_, pMsg))
     {
         return TRUE;
     }
@@ -989,7 +989,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
 
     enableDragndropOverlay_ = false;
 
-  
+
     FORMATETC formatHdrop = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     FORMATETC formatFileDescriptor = { static_cast<WORD>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     FORMATETC formatBitmap = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -1100,7 +1100,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 
             PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
             FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
-            
+
             CStringList Paths;
             for(size_t i=0; i<fgd->cItems; i++)
             {
@@ -1154,7 +1154,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                     LOG(WARNING) << _com_error(res).ErrorMessage();
                 }*/
 
-               
+
             }
             GlobalUnlock(hdrop);
             ReleaseStgMedium(&ddd);
@@ -1534,6 +1534,13 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
 bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 {
+    defer<void> f([this]{
+        CString func = funcToExecuteLater_;
+        funcToExecuteLater_.Empty();
+        if (!func.IsEmpty()) {
+            executeFunc(func);
+        }
+    });
     bool LaunchCopy = false;
 
     if (CurPage == wpUploadPage || CurPage == wpVideoGrabberPage) {
@@ -1589,6 +1596,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcWindowScreenshot();
     else if (funcName == _T("windowscreenshot_delayed"))
         return funcWindowScreenshot(true);
+    else if (funcName == _T("recordscreen"))
+        return funcWindowScreenshot(true);
     else if (funcName == _T("addfolder"))
         return funcAddFolder();
     else if (funcName == _T("fromclipboard") || funcName == _T("paste"))
@@ -1608,6 +1617,10 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
     else if (funcName == _T("exit"))
         return funcExit();
     return false;
+}
+
+void CWizardDlg::executeFuncLater(CString funcName) {
+    funcToExecuteLater_ = funcName;
 }
 
 bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
@@ -2106,7 +2119,12 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else if (dialogResult == ImageEditorWindow::drRecordScreen) {
-            funcRecordScreen();
+            result.reset();
+            CanceledByUser = true;
+            //needToShow = false;
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+                funcRecordScreen();
+            }, true);
         }
         else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd_->m_hWnd) {
@@ -2174,14 +2192,15 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
 
     m_bShowAfter  = false;
-    if(Result || needToShow )
+    if(Result || needToShow)
     {
         if(needToShow || (!m_bScreenshotFromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
         {
             m_bShowAfter = true;
         }
-    } 
-    else m_bShowAfter = false;
+    } else {
+        m_bShowAfter = false;
+    }
     m_bScreenshotFromTray = false;
     OnScreenshotFinished(Result);
 
@@ -2190,7 +2209,21 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
 bool CWizardDlg::funcRecordScreen() {
     ScreenRecorderWindow screenRecorderWindow;
-    screenRecorderWindow.doModal(m_hWnd, screenRecordRect_);
+    bool isVisible = IsWindowVisible();
+    ShowWindow(SW_HIDE);
+    if (screenRecorderWindow.doModal(m_hWnd, screenRecordRect_) == ScreenRecorderWindow::drSuccess) {
+        CreatePage(wpMainPage);
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        mainDlg->AddToFileList(screenRecorderWindow.outFileName());
+        mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
+        mainDlg->ThumbsView.SelectLastItem();
+        mainDlg->ThumbsView.SetFocus();
+
+        ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
+    }
+    /*if (isVisible)*/ {
+        ShowWindow(SW_SHOW);
+    }
     return true;
 }
 
@@ -2332,7 +2365,7 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
     wnd->setFileNameFilter(fileName);
     wnd->setLogger(logger_.get());
     wnd->TranslateUI();
-    
+
     wnd->reloadList();
     wnd->Show();
     logWindowsByFileName_[fileName] = std::move(wnd);

@@ -1629,6 +1629,8 @@ IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.p
 
 IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
 
+IDB_ICONRECORD          PNG                     "res\\ImageEditor\\icon_record.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

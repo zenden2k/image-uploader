@@ -81,7 +81,10 @@ public:
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
+    using DoubleClickCallback = std::function<void(CThumbsView*, int index)>;
+
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
+    void setDoubleClickCallback(DoubleClickCallback&& callback);
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     int maxwidth,maxheight;
@@ -99,7 +102,7 @@ public:
     CImageViewWindow ImageView;
     LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);
     DWORD Run();
-    void ViewSelectedImage();
+    bool ViewSelectedImage();
     bool ExtendedView;
     void OutDateThumb(int nIndex);
     bool StopBackgroundThread(bool wait = false);
@@ -126,6 +129,7 @@ protected:
     int thumbnailWidth_ = 0, thumbnailHeight_ = 0; // height without label
     int fullThumbHeight_ = 0;
     bool batchAdd_ = false;
+    DoubleClickCallback doubleClickCallback_;
 };
 
 

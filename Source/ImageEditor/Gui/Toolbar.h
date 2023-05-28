@@ -24,7 +24,7 @@ public:
     typedef CWindowImpl<Toolbar> TParent;
     enum Orientation { orHorizontal, orVertical };
     enum ItemState { isNormal, isHover, isDown, isDropDown };
-    enum ItemType { itButton, itComboButton, itTinyCombo };
+    enum ItemType { itButton, itComboButton, itTinyCombo, itLabel };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
     enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON, ID_CANCELOPERATIONBUTTON};
     class ToolbarItemDelegate;
@@ -89,6 +89,7 @@ public:
     void setMovable(bool value);
     void setShowButtonText(bool show);
     Orientation orientation() const;
+    void setMoveParent(bool move);
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )
@@ -191,6 +192,7 @@ protected:
     bool movable_;
     bool showButtonText_;
     bool createSubPanel_;
+    bool moveParent_;
     void createHintForSliders(HWND slider, CString hint);
 };
 

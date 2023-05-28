@@ -43,6 +43,7 @@ public:
         MESSAGE_HANDLER(WM_PAINT, onPaint)
         MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
         MESSAGE_HANDLER(WM_TIMER, onTimer)
+        //MESSAGE_HANDLER(WM_NCHITTEST, onNcHitTest)
         COMMAND_ID_HANDLER(IDCANCEL, onCancel)
         COMMAND_ID_HANDLER(ID_STOP, onStop)
         COMMAND_ID_HANDLER(ID_PAUSE, onPause)
@@ -51,13 +52,14 @@ public:
 
     enum DialogResult
     {
-        drCancel
+        drCancel, drSuccess
     };
 
     const int kTimer = 1;
 
     DialogResult doModal(HWND parent, CRect captureRect);
     BOOL PreTranslateMessage(MSG* pMsg) override;
+    CString outFileName() const;
 private:
 
     // Handler prototypes (uncomment arguments if needed):
@@ -73,6 +75,7 @@ private:
     LRESULT onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT onNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
     DialogResult dialogResult_;
     void endDialog(DialogResult dr);
@@ -82,10 +85,12 @@ private:
     CIcon icon_, iconSmall_;
     CRect captureRect_;
     COLORREF transparentColor_;
+    CString outFileName_;
     ImageEditor::Toolbar toolbar_;
     std::unique_ptr<TimeDelegate> timeDelegate_;
     std::unique_ptr<ScreenRecorder> screenRecorder_;
-
+    void statusChangeCallback(ScreenRecorder::Status status);
+    ScreenRecorder::Status previousStatus_ = ScreenRecorder::Status::Invalid;
     unsigned int elapsedTime_ = 0;
 }; 
 

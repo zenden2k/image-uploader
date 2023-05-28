@@ -70,8 +70,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     ThumbsView.SubclassWindow(GetDlgItem(IDC_FILELIST));
     ThumbsView.Init(true);
     callbackLastCallTime_ = 0;
-    ThumbsView.SetOnItemCountChanged([&](CThumbsView*, bool selected)
-    {
+    ThumbsView.SetOnItemCountChanged([&](CThumbsView*, bool selected) {
         DWORD curTime = ::GetTickCount();
 
         listChanged_ = true;
@@ -82,6 +81,14 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         callbackLastCallType_ = selected;
         UpdateStatusLabel();
     });
+
+    ThumbsView.setDoubleClickCallback([this](CThumbsView*, int itemIndex) {
+        LPCTSTR fileName = ThumbsView.GetFileName(itemIndex);
+        if (IsVideoFile(fileName)) {
+            openInDefaultProgram(fileName);
+        }
+    });
+
     UpdateStatusLabel();
 
     ACCEL accels[]{
@@ -179,13 +186,18 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
-        if (isImageFile && !singleSelectedItem.IsEmpty()) {
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_VIEW, TR("View"));
-            contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
+        if (!singleSelectedItem.IsEmpty()) {
+            if (isImageFile) {
+                contextMenu.AppendMenu(MF_STRING, MENUITEM_VIEW, TR("View"));
+                contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
+            }
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Open in default program"));
+            if (isVideoFile) {
+                contextMenu.SetMenuDefaultItem(MENUITEM_OPENINDEFAULTVIEWER, FALSE);
+            }
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
         }
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Show in default viewer"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
-
+        
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_EDIT, TR("Edit"));
             contextMenu.AppendMenu(MF_STRING, MENUITEM_EDITINEXTERNALEDITOR, TR("Open in external editor"));
@@ -539,8 +551,7 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     return 0;
 }
 
-LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    CString fileName = getSelectedFileName();
+void CMainDlg::openInDefaultProgram(CString fileName) {
     if (!fileName.IsEmpty()) {
         SHELLEXECUTEINFO TempInfo = {};
         TCHAR filePath[1024];
@@ -557,10 +568,13 @@ LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
             if (lastError != ERROR_CANCELLED) { // The operation was canceled by the user.
                 LOG(ERROR) << "Opening default application failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(lastError);
             }
-                    
-            return 0;
         }
     }
+}
+
+LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    openInDefaultProgram(fileName);
     return 0;
 }
 

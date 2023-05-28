@@ -175,6 +175,8 @@
 #define IDI_ICONUPLOAD                  331
 #define IDI_ICON14                      332
 #define IDI_ICONSEPARATOR               332
+#define IDB_PNG13                       328
+#define IDB_ICONRECORD                  328
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
