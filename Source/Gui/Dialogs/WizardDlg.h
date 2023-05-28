@@ -234,7 +234,7 @@ public:
     bool funcRecordScreen();
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
-
+    void executeFuncLater(CString funcName);
     bool importVideoFile(const CString& fileName, int prevPage = 0);
     bool queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
@@ -305,6 +305,7 @@ protected:
     ScriptsManager* scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
     HwndScopedWrapper aboutButtonToolTip_;
+    CString funcToExecuteLater_;
     CButton helpButton_;
     CIcon helpButtonIcon_;
     CStatic headBitmap_;

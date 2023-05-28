@@ -43,6 +43,7 @@ Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
     subpanelLeftOffset_ = 0;
     movable_ = true;
     showButtonText_ = true;
+    moveParent_ = false;
 }
 
 Toolbar::~Toolbar()
@@ -458,6 +459,11 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
         }
 
         InvalidateRect(&item.rect, false);
+    }
+
+    if (moveParent_) {
+        ReleaseCapture();
+        SendMessage(GetParent(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
     }
 
     return 0;
@@ -1077,6 +1083,10 @@ void Toolbar::setShowButtonText(bool show) {
 
 Toolbar::Orientation Toolbar::orientation() const {
     return orientation_;
+}
+
+void Toolbar::setMoveParent(bool move) {
+    moveParent_ = move;
 }
 
 }

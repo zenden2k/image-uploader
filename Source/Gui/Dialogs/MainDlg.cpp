@@ -71,12 +71,11 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     TRC(IDC_SCREENSHOT, "Screenshot");
     TRC(IDC_PROPERTIES, "Properties");
     TRC(IDC_DELETE, "Remove from list");
-    
+
     ThumbsView.SubclassWindow(GetDlgItem(IDC_FILELIST));
     ThumbsView.Init(true);
     callbackLastCallTime_ = 0;
-    ThumbsView.SetOnItemCountChanged([&](CThumbsView*, bool selected)
-    {
+    ThumbsView.SetOnItemCountChanged([&](CThumbsView*, bool selected) {
         DWORD curTime = ::GetTickCount();
 
         listChanged_ = true;
@@ -87,6 +86,14 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         callbackLastCallType_ = selected;
         UpdateStatusLabel();
     });
+
+    ThumbsView.setDoubleClickCallback([this](CThumbsView*, int itemIndex) {
+        LPCTSTR fileName = ThumbsView.GetFileName(itemIndex);
+        if (IsVideoFile(fileName)) {
+            openInDefaultProgram(fileName);
+        }
+    });
+
     UpdateStatusLabel();
 
     ACCEL accels[] = {
@@ -125,11 +132,11 @@ LRESULT CMainDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    HWND hwnd = reinterpret_cast<HWND>(wParam);  
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
     POINT ClientPoint, ScreenPoint;
     if(hwnd != GetDlgItem(IDC_FILELIST)) return 0;
 
-    if(lParam == -1) 
+    if(lParam == -1)
     {
         int nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
         if (nCurItem >= 0) {
@@ -315,13 +322,13 @@ LRESULT CMainDlg::OnEdit(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, B
     ImageEditor::ImageEditorWindow imageEditor(FileName, &configProvider);
     imageEditor.showUploadButton(false);
     imageEditor.showAddToWizardButton(false);
-    
+
     /*ImageEditorWindow::DialogResult dr = */
     auto settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     imageEditor.DoModal(WizardDlg->m_hWnd, nullptr, settings->ImageEditorSettings.AllowEditingInFullscreen ? ImageEditorWindow::wdmAuto :ImageEditorWindow::wdmWindowed);
-    
+
     ThumbsView.OutDateThumb(nCurItem);
-    
+
     return 0;
 }
 
@@ -345,7 +352,7 @@ bool CMainDlg::OnShow()
 
 LRESULT CMainDlg::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
-    NM_LISTVIEW * pnmv = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);  
+    NM_LISTVIEW * pnmv = reinterpret_cast<NM_LISTVIEW*>(pNMHDR);
     if(!pnmv) return 0;
 
     FileList.RemoveAt(pnmv->iItem);
@@ -377,7 +384,7 @@ bool CMainDlg::OnHide()
 BOOL CMainDlg::FileProp(){
     CComPtr<IShellFolder> desktop; // namespace root for parsing the path
     HRESULT hr = SHGetDesktopFolder(&desktop);
-   
+
     if (!SUCCEEDED(hr)) {
         return false;
     }
@@ -390,7 +397,7 @@ BOOL CMainDlg::FileProp(){
         if (!FileName) {
             continue;
         }
-       
+
         PIDLIST_RELATIVE newPIdL;
         hr = desktop->ParseDisplayName(m_hWnd, 0, const_cast<LPWSTR>(FileName), 0, &newPIdL, 0);
         if (SUCCEEDED(hr)) {
@@ -405,7 +412,7 @@ BOOL CMainDlg::FileProp(){
                 CString onlyFileName = WinUtils::myExtractFileName(FileName);
                 hr = folder->ParseDisplayName(m_hWnd, 0, (LPWSTR)(LPCTSTR)onlyFileName, 0, &newPIdL,0);
                 if (SUCCEEDED(hr)) {
-                    
+
 
                 }
             }*/
@@ -434,16 +441,16 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     if ((nCurItem=ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
             return FALSE;
-    
+
     LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
     if(!FileName) return FALSE;
-    
+
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     CString EditorCmd = settings->ImageEditorPath;
     EditorCmd.Replace(_T("%1"), FileName);
     CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
-    
+
     CCmdLine EditorLine(EditorCmdLine);
     CString moduleName = EditorLine.ModuleName();
     CString params = EditorLine.OnlyParams();
@@ -497,7 +504,7 @@ LRESULT CMainDlg::OnAddFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl
     WizardDlg->executeFunc(_T("addfolder"));
     return 0;
 }
-    
+
 LRESULT CMainDlg::OnBnClickedDeleteAll(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     ThumbsView.MyDeleteAllItems();
@@ -570,19 +577,18 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
             LOG(ERROR) << "Unable to open folder in shell, error code=" << hr << std::endl << err.ErrorMessage();
         }
 
-        // SHBindToParent does not allocate a new PIDL; 
+        // SHBindToParent does not allocate a new PIDL;
         // it simply receives a pointer through this parameter.
         // Therefore, we are not responsible for freeing this resource.
         /*for (auto& pidl : list) {
             SHFree(const_cast<LPITEMIDLIST>(pidl));
         }*/
     }
-    
+
     return 0;
 }
 
-LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    CString fileName = getSelectedFileName();
+void CMainDlg::openInDefaultProgram(CString fileName) {
     if (!fileName.IsEmpty()) {
         SHELLEXECUTEINFO TempInfo = {};
         TCHAR filePath[1024];
@@ -599,10 +605,15 @@ LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
             if (lastError != ERROR_CANCELLED) { // The operation was canceled by the user.
                 LOG(ERROR) << "Opening default application failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(lastError);
             }
-                    
+
             return 0;
         }
     }
+}
+
+LRESULT CMainDlg::OnOpenInDefaultViewer(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    openInDefaultProgram(fileName);
     return 0;
 }
 
@@ -620,7 +631,7 @@ LRESULT CMainDlg::OnOpenWith(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*
             LOG(ERROR) << "SHOpenWithDialog failed. 0x" << std::hex << hr <<  std::endl << err.ErrorMessage();
         }
     }
-   
+
     return 0;
 }
 
@@ -740,7 +751,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
                     }
                 }
             }
-        }    
+        }
     }
 
     return 0;
@@ -769,7 +780,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int nCurItem = -1;
-    CString result; 
+    CString result;
     while ((nCurItem = ThumbsView.GetNextItem(nCurItem, LVNI_ALL | LVNI_SELECTED)) >= 0) {
         LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
         if (!FileName) {
@@ -809,7 +820,7 @@ LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
             i++;
         }
     }
-    
+
     return 0;
 }
 
@@ -845,7 +856,7 @@ LRESULT CMainDlg::OnListViewEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
         if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {
             FileList[di->item.iItem].VirtualFileName = di->item.pszText;
             return TRUE;
-        }    
+        }
     }
     return 0;
 }
@@ -860,7 +871,7 @@ LRESULT CMainDlg::OnListViewBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /
         int endPos = fileName.ReverseFind(_T('.'));
 
         editControl.SetSel(0, endPos);
-    }    
+    }
 
     return 0;
 }

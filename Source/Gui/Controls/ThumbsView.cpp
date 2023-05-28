@@ -79,7 +79,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     if (!FileName) {
         return -1;
     }
-    
+
     int n = GetItemCount();
 
     if(imageList_.GetImageCount() < 1)
@@ -100,7 +100,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
 
     if (!batchAdd_) {
         Arrange(LVA_ALIGNTOP);
-     
+
         if (ensureVisible) {
             EnsureVisible(n, FALSE);
         }
@@ -115,7 +115,7 @@ bool CThumbsView::MyDeleteItem(int ItemIndex)
     if( ItemIndex < 0 || ItemIndex > GetItemCount()-1) return false;
 
     SimpleDelete(ItemIndex, true, deletePhysicalFiles_);
-    DeleteItem(ItemIndex);   
+    DeleteItem(ItemIndex);
 
     Arrange(LVA_ALIGNTOP);
 
@@ -206,7 +206,7 @@ LPCTSTR CThumbsView::GetFileName(int ItemIndex)
     auto *TVI = reinterpret_cast<ThumbsViewItem *>(GetItemData(ItemIndex));
     if(!TVI) {
         return _T("");
-    } 
+    }
     return TVI->FileName;
 }
 
@@ -237,7 +237,7 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
 bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image *img)
 {
     using namespace Gdiplus;
-    if(itemId>GetItemCount()-1) 
+    if(itemId>GetItemCount()-1)
     {
         return false;
     }
@@ -245,9 +245,9 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
 
     std::unique_ptr<Image> bm;
     CString filename;
-    if(itemId>=0) 
+    if(itemId>=0)
     {
-        filename = /*GetFileName(ItemID);*/tvi->FileName; 
+        filename = /*GetFileName(ItemID);*/tvi->FileName;
     }
     int width, height, imgwidth = 0, imgheight = 0, newwidth=0, newheight=0;
     width = thumbnailWidth_/*rc.right-2*/;
@@ -268,7 +268,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
             if (!grabbedFrame) {
                 LOG(WARNING) << "Frame is not an instance of GdiPlusImage";
                 return;
-            } 
+            }
             img = grabbedFrame->releaseBitmap();
         });
 
@@ -279,7 +279,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         }
         videoInfo = grabber.getInfo();
     }
-  
+
     CString srcImageFormat;
 
     if (isImage || (isVideo && img))
@@ -293,9 +293,9 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 newheight = bm->GetHeight();
             }
         }
-           
-        else 
-            if(isImage && itemId>=0) 
+
+        else
+            if(isImage && itemId>=0)
             {
                 Gdiplus::Size originalImageSize;
                 bm = ImageUtils::GetThumbnail(filename, thumbnailWidth_, thumbnailHeight_, &originalImageSize, &srcImageFormat);
@@ -305,7 +305,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                     newwidth = bm->GetWidth();
                     newheight = bm->GetHeight();
                 }
-          
+
             }
     }
     if (imgwidth>maxwidth) maxwidth = imgwidth;
@@ -321,9 +321,9 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     RectF bounds(1, 1, float(width), float(height));
 
     if ( (isImage &&  itemId >= 0 ) && (!bm /* || !bm->GetWidth()*/)) {
-        LinearGradientBrush 
-            brush(bounds, Color(130, 255, 0, 0), Color(255, 0, 0, 0), 
-            LinearGradientModeBackwardDiagonal); 
+        LinearGradientBrush
+            brush(bounds, Color(130, 255, 0, 0), Color(255, 0, 0, 0),
+            LinearGradientModeBackwardDiagonal);
 
         StringFormat format;
         format.SetAlignment(StringAlignmentCenter);
@@ -331,14 +331,14 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         Font font(L"Arial", 12, FontStyleBold);
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + filename);
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
-    } 
+    }
 
-    // 
+    //
 
     else {
-        LinearGradientBrush 
-            br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), 
-            LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/); 
+        LinearGradientBrush
+            br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
+            LinearGradientModeBackwardDiagonal/* LinearGradientModeVertical*/);
 
         if(IuCommonFunctions::IsImage(filename))
             gr.FillRectangle(&br,1, 1, width-1,height-1);
@@ -356,7 +356,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 int iconHeight = ii.nHeight;
                 if (iconWidth) {
                     HDC dc = GetDC();
-                     
+
                     HDC memDC = CreateCompatibleDC(dc);
                     HBITMAP memBm = CreateCompatibleBitmap(dc,iconWidth,iconHeight);
                     HGDIOBJ oldBm = SelectObject(memDC, memBm);
@@ -365,7 +365,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
 
                     DrawIcon(memDC, 0,0,associatedIcon);
                     std::unique_ptr<Bitmap>bitmap (Bitmap::FromHBITMAP(memBm,0));
-                    
+
                     gr.DrawImage(/*backBuffer*/bitmap.get(), (int)((width-bitmap->GetWidth())/2)+1, (int)((height-bitmap->GetHeight())/2), (int)bitmap->GetWidth(),(int)bitmap->GetHeight());
 
                     SelectObject(memDC, oldBm);
@@ -430,7 +430,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     if (tvi) {
         tvi->ThumbLoaded = true;
         tvi->ThumbnailRequested = false;
-        
+
         int oldImageIndex = GetImageIndex(itemId);
         if (oldImageIndex != 0) {
             imageList_.Replace(oldImageIndex, bmp, nullptr);
@@ -488,27 +488,36 @@ DWORD CThumbsView::Run()
     return 0;
 }
 
-void CThumbsView::ViewSelectedImage()
+bool CThumbsView::ViewSelectedImage()
 {
     int nCurItem;
-    if ((nCurItem = GetNextItem(-1, LVNI_ALL|LVNI_SELECTED)) < 0) return;
+    if ((nCurItem = GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) < 0) {
+        return false;
+    }
 
     LPCTSTR FileName = GetFileName(nCurItem);
 
-    if(!FileName || !IuCommonFunctions::IsImage(FileName)) return;
-    CImageViewItem imgViewItem;
-    imgViewItem.index = nCurItem;
-    imgViewItem.fileName = FileName;
-    HWND wizardDlg = ::GetParent(GetParent());
-    ImageView.ViewImage(imgViewItem, wizardDlg);
-    ImageView.setCallback(this);
+    if (!FileName) {
+        return false;
+    }
+
+    if (IuCommonFunctions::IsImage(FileName)) {
+        CImageViewItem imgViewItem;
+        imgViewItem.index = nCurItem;
+        imgViewItem.fileName = FileName;
+        HWND wizardDlg = ::GetParent(GetParent());
+        ImageView.ViewImage(imgViewItem, wizardDlg);
+        ImageView.setCallback(this);
+        return true;
+    }
+    return false;
 }
 
 LRESULT CThumbsView::OnLvnBeginDrag(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/)
 {
     if(GetItemCount() < 1) return 0;
 
-    //NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;  
+    //NM_LISTVIEW *pnmv = (NM_LISTVIEW FAR *) pnmh;
     DWORD dwEffect = 0;
 
     CMyDropSource* pDropSource = new CMyDropSource();
@@ -611,7 +620,7 @@ CImageViewItem CThumbsView::getNextImgViewItem(const CImageViewItem& currentItem
     CImageViewItem result;
     result.index = -1;
 
-    int index; 
+    int index;
     for (index = currentItem.index + 1; index < GetItemCount(); index++) {
         LPCTSTR FileName = GetFileName(index);
         if (FileName && IuCommonFunctions::IsImage(FileName)){
@@ -658,7 +667,7 @@ CImageViewItem CThumbsView::getPrevImgViewItem(const CImageViewItem& currentItem
     return result;
 }
 
-void CThumbsView::NotifyItemCountChanged(bool selected) {  
+void CThumbsView::NotifyItemCountChanged(bool selected) {
     if (callback_) {
         callback_(this, selected);
     }
@@ -676,8 +685,12 @@ LRESULT CThumbsView::OnItemChanged(int, LPNMHDR hdr, BOOL&) {
     return 0;
 }
 
-void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {  
+void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {
     callback_ = std::move(callback);
+}
+
+void CThumbsView::setDoubleClickCallback(DoubleClickCallback&& callback) {
+    doubleClickCallback_ = std::move(callback);
 }
 
 LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {

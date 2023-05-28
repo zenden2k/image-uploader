@@ -156,6 +156,7 @@ public:
     CFont dialogFont_;
     LRESULT OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    void openInDefaultProgram(CString fileName);
 protected:
     bool listChanged_;
     DWORD callbackLastCallTime_;

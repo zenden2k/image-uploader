@@ -40,13 +40,11 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Pause")), loadToolbarIcon(IDB_ICONADDPNG), ID_PAUSE, TR("Pause")));
         int index = toolbar_.addButton(ImageEditor::Toolbar::Item(CString(TR("Cancel")), loadToolbarIcon(IDB_ICONADDPNG), IDCANCEL, TR("Cancel")));
 
-        ImageEditor::Toolbar::Item timeLabel(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), IDCANCEL, CString(), ImageEditor::Toolbar::itButton, false);
+        ImageEditor::Toolbar::Item timeLabel(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), IDCANCEL, CString(), ImageEditor::Toolbar::itLabel, false);
 
         timeDelegate_ = std::make_unique<TimeDelegate>(&toolbar_, index + 1);
         timeLabel.itemDelegate = timeDelegate_.get();
         toolbar_.addButton(timeLabel);
-        timeDelegate_->setText(_T("Test"));
-
         toolbar_.SetWindowPos(nullptr, clientRect.left, clientRect.bottom - toolbarHeight, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         toolbar_.AutoSize();
         toolbar_.ShowWindow(SW_SHOW);
@@ -54,6 +52,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     screenRecorder_ = std::make_unique<ScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, captureRect_);
     screenRecorder_->start();
+    screenRecorder_->addStatusChangeCallback([this](auto status) { statusChangeCallback(status); });
     updateTimeLabel();
     SetTimer(kTimer, 100);
     return 0;
@@ -69,7 +68,6 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, CR
     int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
 
     captureRect_ = captureRect;
-
 
     DWORD initialWindowStyle = WS_POPUP | WS_CLIPCHILDREN;
     CRect windowRect = captureRect;
@@ -159,7 +157,15 @@ LRESULT ScreenRecorderWindow::onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 }
 
 LRESULT ScreenRecorderWindow::onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    endDialog(drCancel);
+    if (screenRecorder_->status() == ScreenRecorder::Status::Canceled 
+        || screenRecorder_->status() == ScreenRecorder::Status::Invalid
+        || screenRecorder_->status() == ScreenRecorder::Status::Finished
+        ) {
+        endDialog(drCancel);
+    } else {
+        screenRecorder_->cancel();
+    }
+
     return 0;
 }
 
@@ -170,7 +176,18 @@ LRESULT ScreenRecorderWindow::onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
 }
 
 LRESULT ScreenRecorderWindow::onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    screenRecorder_->pause();
+    CRect clientRect;
+    GetClientRect(&clientRect);
+    ClientToScreen(&clientRect);
+
+    screenRecorder_->setOffset(clientRect.left + 1, clientRect.top + 1);
+
+    if (screenRecorder_->isRunning()) {
+        screenRecorder_->pause();
+    } else {
+        screenRecorder_->start();
+    }
+
     return 0;
 }
 
@@ -183,6 +200,36 @@ void ScreenRecorderWindow::updateTimeLabel() {
 LRESULT ScreenRecorderWindow::onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     screenRecorder_->stop();
     return 0;
+}
+
+LRESULT ScreenRecorderWindow::onNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled) {
+    bHandled = true;
+    return HTCAPTION;
+}
+
+void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this, status] {
+        if (status == ScreenRecorder::Status::Recording) {
+            //toolbar_.setMoveParent(false);
+            SetTimer(kTimer, 100);
+        } else {
+            KillTimer(kTimer);
+        }
+
+        toolbar_.setMoveParent(status == ScreenRecorder::Status::Paused);
+
+        if (status == ScreenRecorder::Status::Finished) {
+            outFileName_ = U2W(screenRecorder_->outFileName());
+            endDialog(drSuccess);
+        } else if (status == ScreenRecorder::Status::Canceled) {
+            endDialog(drCancel);
+        }
+    }, true);
+    previousStatus_ = status;
+}
+
+CString ScreenRecorderWindow::outFileName() const {
+    return outFileName_;
 }
 
 TimeDelegate::TimeDelegate(ImageEditor::Toolbar* toolbar, int itemIndex):  toolbarItemIndex_(itemIndex),

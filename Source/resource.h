@@ -169,6 +169,8 @@
 #define IDI_ICONDELETEBIG               326
 #define IDD_SERVERSCHECKERDLG           327
 #define IDI_ICONSETTINGSGEAR            328
+#define IDB_PNG13                       328
+#define IDB_ICONRECORD                  328
 #define IDI_ICONPREVIEW                 329
 #define IDI_ICONLOG                     330
 #define IDI_ICON13                      331
@@ -189,6 +191,7 @@
 #define IDB_ICONFLIPHORIZONTAL          345
 #define IDB_PNG13                       346
 #define IDB_ICONFLIPVERTICAL            346
+#define IDI_ICONSEPARATOR               332
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -830,7 +833,7 @@
 #define ID_0_32819                      32819
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        347
