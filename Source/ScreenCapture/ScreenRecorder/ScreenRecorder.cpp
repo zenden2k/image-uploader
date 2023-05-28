@@ -10,10 +10,19 @@
 #include <boost/process/windows.hpp>
 #include <boost/format.hpp>
 
+
+#include "ArgsBuilder/FFmpegArgsBuilder.h"
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Sources/DDAGrabSource.h"
+#include "Sources/GDIGrabSource.h"
+#include "VideoCodecs/NvencVideoCodec.h"
+#include "VideoCodecs/X264VideoCodec.h"
 
-ScreenRecorder::ScreenRecorder(CString ffmpegPath, CRect rect): ffmpegPath_(ffmpegPath), captureRect_(rect){
+ScreenRecorder::ScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect):
+                                    ffmpegPath_(std::move(ffmpegPath)),
+                                    outDirectory_(std::move(outDirectory)),
+                                    captureRect_(rect){
     
 }
 
@@ -28,29 +37,76 @@ void ScreenRecorder::start() {
         return;
     }
     if (fileNoExt_.empty()) {
-        fileNoExt_ = "d:\\screenrecorder_" + std::to_string(time(nullptr));
+        std::filesystem::path outDirPath(outDirectory_);
+        std::filesystem::path fileNoExtPath = outDirPath / ("screenrecorder_" + std::to_string(time(nullptr)));
+        fileNoExt_ = fileNoExtPath.make_preferred().string();
         fileFull_ = fileNoExt_ + ".mp4";
     }
-
+     
     outFilePath_ = str(boost::format("%s_part%02d.mp4") % fileNoExt_ % parts_.size());
 
-    std::string filterComplex = str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d") % captureRect_.Width() % captureRect_.Height()
-        % captureRect_.left % captureRect_.top);
+    //LOG(ERROR) << outFilePath_;
+    //return;
+    /*std::string filterComplex = str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d") % captureRect_.Width() % captureRect_.Height()
+        % captureRect_.left % captureRect_.top);*/
 
-    std::vector<std::string> args = {
+    FFMpegArgsBuilder argsBuilder;
+
+    FFmpegSettings settings;
+
+    settings.source = "ddagrab";
+    settings.codec = "h264_nvenc";//
+    settings.width = captureRect_.Width() & ~1;
+    settings.height = captureRect_.Height() & ~1;
+    settings.offsetX = captureRect_.left;
+    settings.offsetY = captureRect_.top;
+
+    argsBuilder.globalArgs()
+        .addArg("-hide_banner")
+        .addArg("thread_queue_size", 1024)
+        .addArg("rtbufsize", "256M");
+
+    auto& input = argsBuilder.addInputFile(settings.source == "gdigrab" ? "desktop" : "");
+    auto& output = argsBuilder.addOutputFile(outFilePath_);
+    //auto outputArgs = argsBuilder.
+
+    /*GDIGrabSource gdigrab;
+    gdigrab.apply(settings, input, argsBuilder.globalArgs());*/
+
+    auto ddagrabSource = std::make_unique<DDAGrabSource>();
+    ddagrabSource->apply(settings, input, argsBuilder.globalArgs());
+   
+    auto nvenc = NvencVideoCodec::createH264();
+    nvenc->apply(settings, output);
+        
+   // auto x264 = std::make_unique<X264VideoCodec>();
+   // x264->apply(settings, output);
+
+    std::vector<std::string> args = argsBuilder.getArgs();
+
+    std::string s;
+    for (const auto& piece : args) {
+        s += piece;
+        s += " ";
+    }
+    LOG(ERROR) << s;
+
+   /*-{
             "-hide_banner",
             "-init_hw_device", "d3d11va",
-            "-framerate","60",
+            //"-framerate","60",
             /*"-offset_x",std::to_string(captureRect_.left),
             "-offset_y",std::to_string(captureRect_.top),
-            "-video_size",std::to_string(captureRect_.Width())+"x" + std::to_string(captureRect_.Height()),*/
+            "-video_size",std::to_string(captureRect_.Width())+"x" + std::to_string(captureRect_.Height()),*
             "-filter_complex", filterComplex,
             /*,video_size = "+ std::to_string(captureRect_.Width()) + "x" + std::to_string(captureRect_.Height())
             + ",offset_x=" + std::to_string(captureRect_.left),
-            + ",offset_y=" + std::to_string(captureRect_.top),**/
+            + ",offset_y=" + std::to_string(captureRect_.top),**
             "-c:v", "h264_nvenc",
             "-cq:v", "20", outFilePath_
-    };
+    };*/
+
+
     changeStatus(Status::Recording);
     future_ = launchFFmpeg(args, [this](int res) {
         if (res == 0) {
@@ -58,12 +114,11 @@ void ScreenRecorder::start() {
         }
         changeStatus(Status::Paused);
     });
-    //thread_ = std::thread();
 }
 
-std::future<int> ScreenRecorder::launchFFmpeg(const std::vector<std::string> args, std::function<void(int)> onFinish) {
+std::future<int> ScreenRecorder::launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish) {
     namespace bp = boost::process;
-    std::string command = IuCoreUtils::WstringToUtf8(ffmpegPath_.GetString());
+    std::string command = ffmpegPath_;
 
     return std::async(std::launch::async, [&, command, args, onFinish] { 
         try {

@@ -428,17 +428,20 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
-    ACCEL accels[] = {
+    std::vector<ACCEL> accels = {
         { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
         { FVIRTKEY | FCONTROL, 'S', ID_SAVE },
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
         { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
-        { FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN },
     };
 
-    accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
+    if (displayMode_ == wdmFullscreen) {
+        accels.push_back({ FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN });
+    }
+
+    accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
 
     //RECT rc;
     GetClientRect(&rc);

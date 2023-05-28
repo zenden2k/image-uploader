@@ -1,9 +1,21 @@
 set(SRC_LIST    
     ScreenRecorder/ScreenRecorder.cpp
+    ScreenRecorder/ArgsBuilder/FFmpegInputArgs.cpp
 )
 
 set(HEADER_LIST 
     ScreenRecorder/ScreenRecorder.h
+    ScreenRecorder/ArgsBuilder/FFmpegArgsBuilder.h
+    ScreenRecorder/ArgsBuilder/FFmpegArgs.h
+    ScreenRecorder/ArgsBuilder/FFmpegInputArgs.h
+    ScreenRecorder/ArgsBuilder/FFmpegOutputArgs.h
+    ScreenRecorder/VideoCodecs/FFmpegVideoCodec.h
+    ScreenRecorder/VideoCodecs/NvencVideoCodec.h
+    ScreenRecorder/VideoCodecs/X264VideoCodec.h
+    ScreenRecorder/FFmpegSettings.h
+    ScreenRecorder/Sources/FFmpegSource.h
+    ScreenRecorder/Sources/DDAGrabSource.h
+    ScreenRecorder/Sources/GDIGrabSource.h
 )
     
 if(WIN32)

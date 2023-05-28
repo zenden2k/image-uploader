@@ -62,6 +62,7 @@ struct ScreenshotSettingsStruct {
 struct ScreenRecordingStruct {
     CString FFmpegCLIPath;
     CString Preset;
+    CString OutDirectory;
 };
 
 inline std::string myToString(const CHotkeyList& value) {
