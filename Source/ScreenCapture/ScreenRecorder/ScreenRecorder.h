@@ -3,8 +3,8 @@
 
 #pragma once
 
+#include <atomic>
 #include <string>
-#include <thread>
 #include <future>
 #include <functional>
 
@@ -20,7 +20,7 @@ public:
     {
         Invalid, Recording, Paused, RunningConcatenation, Finished, Canceled
     };
-    ScreenRecorder(CString ffmpegPath, CRect rect);
+    ScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect);
     ~ScreenRecorder();
     void start();
     void stop();
@@ -37,7 +37,7 @@ public:
     }
 
 private:
-    CString ffmpegPath_;
+    std::string ffmpegPath_, outDirectory_;
     CRect captureRect_;
     //std::thread thread_;
     bool isRunning_ = false;
@@ -48,10 +48,10 @@ private:
     std::string outFilePath_;
     std::vector<std::string> parts_;
     std::future<int> future_;
-    Status status_;
+    std::atomic<Status> status_{ Status::Invalid };
     boost::signals2::signal<void(Status)> onStatusChange_;
     void sendStopSignal();
-    std::future<int> launchFFmpeg(const std::vector<std::string> args, std::function<void(int)> onFinish);
+    std::future<int> launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish);
     void changeStatus(Status status);
     void cleanupAfter();
 

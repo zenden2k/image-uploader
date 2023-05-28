@@ -525,6 +525,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
     ScreenRecordingSettings.FFmpegCLIPath = LR"(d:\ffmpeg-6.0-essentials_build\bin\ffmpeg.exe)";
+    ScreenRecordingSettings.OutDirectory = LR"(d:\)";
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 

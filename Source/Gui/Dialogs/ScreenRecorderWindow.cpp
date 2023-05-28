@@ -50,7 +50,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         toolbar_.ShowWindow(SW_SHOW);
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    screenRecorder_ = std::make_unique<ScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, captureRect_);
+    screenRecorder_ = std::make_unique<ScreenRecorder>(W2U(settings->ScreenRecordingSettings.FFmpegCLIPath), W2U(settings->ScreenRecordingSettings.OutDirectory), captureRect_);
     screenRecorder_->start();
     screenRecorder_->addStatusChangeCallback([this](auto status) { statusChangeCallback(status); });
     updateTimeLabel();

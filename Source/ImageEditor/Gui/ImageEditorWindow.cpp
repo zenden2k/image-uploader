@@ -451,14 +451,20 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         { FVIRTKEY, VK_ESCAPE, ID_CLOSE },
         { FVIRTKEY, VK_RETURN, IDOK },
         { FVIRTKEY, VK_DELETE, ID_DELETESELECTED },
-        { FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN },
     };
+
+    if (displayMode_ == wdmFullscreen) {
+        accels.push_back({ FVIRTKEY | FCONTROL, 'R', ID_RECORDSCREEN });
+    }
 
     for(const auto& [k,v]: drawingToolsHotkeys_) {
         accels.push_back(
             { FVIRTKEY, static_cast<WORD>(k), static_cast<WORD>(v) }
         );
     }
+
+    accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
+
 
     accelerators_ = CreateAcceleratorTable(&accels[0], accels.size());
 
