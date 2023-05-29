@@ -85,5 +85,7 @@ namespace GuiTools
     HICON LoadBigIcon(int resourceId);
     int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption = _T(""), UINT uType = MB_OK);
     BOOL SetClientRect(HWND hWnd, int x, int y);
+    void SetControlAccessibleName(HWND hwnd, const WCHAR* name);
+    void ClearControlAccessibleName(HWND hwnd);
 };
 #endif

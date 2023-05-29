@@ -29,21 +29,21 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    GROUPBOX        "Извлечение кадров",IDC_EXTRACTFRAMES,5,3,375,50
-    CTEXT           "Путь к файлу:",IDC_PATHTOFILELABEL,11,16,60,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_EXTRACTFRAMES,5,3,375,50
+    CTEXT           "пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_PATHTOFILELABEL,11,16,60,8
     EDITTEXT        IDC_FILEEDIT,78,14,234,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Выбор...",IDC_SELECTVIDEO,317,14,55,14
-    DEFPUSHBUTTON   "Извлечь",IDC_GRAB,12,34,60,15
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅ...",IDC_SELECTVIDEO,317,14,55,14
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_GRAB,12,34,60,15
     EDITTEXT        IDC_NUMOFFRAMESEDIT,158,35,40,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_UPDOWN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_HOTTRACK,190,34,11,14
-    CONTROL         "Деинтерлейс",IDC_DEINTERLACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,208,37,69,10
-    PUSHBUTTON      "Остановить",IDCANCEL,317,34,55,14
-    RTEXT           "Кол-во кадров:",IDC_FRAMELABEL,74,37,79,8
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DEINTERLACE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,208,37,69,10
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDCANCEL,317,34,55,14
+    RTEXT           "пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FRAMELABEL,74,37,79,8
     CONTROL         "",IDC_THUMBLIST,"SysListView32",LVS_NOCOLUMNHEADER | WS_BORDER | WS_TABSTOP,5,67,375,180
-    CTEXT           "Сохранить как:",IDC_SAVEAS,93,252,59,8
-    CONTROL         " множество файлов",IDC_MULTIPLEFILES,"Button",BS_AUTORADIOBUTTON,155,252,82,10
-    CONTROL         " один файл",IDC_SAVEASONE,"Button",BS_AUTORADIOBUTTON,245,252,66,10
-    PUSHBUTTON      "Параметры",IDC_GRABBERPARAMS,316,250,64,14
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ:",IDC_SAVEAS,93,252,59,8
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_MULTIPLEFILES,"Button",BS_AUTORADIOBUTTON,155,252,82,10
+    CONTROL         " пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ",IDC_SAVEASONE,"Button",BS_AUTORADIOBUTTON,245,252,66,10
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_GRABBERPARAMS,316,250,64,14
     CTEXT           "",IDC_GRABINFOLABEL,13,56,357,8
     CONTROL         "",IDC_PROGRESSBAR,"msctls_progress32",0x0,78,36,234,11
     PUSHBUTTON      "View File Info",IDC_FILEINFOBUTTON,7,249,84,14
@@ -68,14 +68,14 @@ END
 
 IDD_SCREENSHOTDLG DIALOGEX 0, 0, 195, 212
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Скриншот"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     LISTBOX         IDC_COMMANDBOX,-2,-1,198,151,LBS_SORT | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "#Задержка:",IDC_DELAYLABEL,12,160,47,8
+    LTEXT           "#пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_DELAYLABEL,12,160,47,8
     EDITTEXT        IDC_DELAYEDIT,79,158,27,13,ES_AUTOHSCROLL
     CONTROL         "",IDC_DELAYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_HOTTRACK,97,157,11,14
-    LTEXT           "#с",IDC_SECLABEL,114,161,26,8
+    LTEXT           "#пїЅ",IDC_SECLABEL,114,161,26,8
     CONTROL         "#Open screenshot in editor",IDC_OPENSCREENSHOTINEDITORCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,11,175,164,10
     GROUPBOX        "",IDC_STATIC,-4,149,241,61
@@ -87,27 +87,27 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Параметры компоновки",IDC_APPEARANCEGROUP,10,10,246,121
-    RTEXT           "Колонок:",IDC_COLUMNSEDITLABEL,25,26,106,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_APPEARANCEGROUP,10,10,246,121
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_COLUMNSEDITLABEL,25,26,106,8
     EDITTEXT        IDC_COLUMNSEDIT,143,23,31,13,ES_AUTOHSCROLL | ES_NUMBER
-    RTEXT           "Ширина эскиза:",IDC_PREVIEWWIDTHLABEL,26,43,104,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PREVIEWWIDTHLABEL,26,43,104,8
     EDITTEXT        IDC_TILEWIDTH,143,41,31,13,ES_AUTOHSCROLL | ES_NUMBER
-    RTEXT           "Горизонтальный промежуток:",IDC_INTERVALHORLABEL,26,60,105,12
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_INTERVALHORLABEL,26,60,105,12
     EDITTEXT        IDC_GAPWIDTH,143,60,31,13,ES_AUTOHSCROLL | ES_NUMBER
-    RTEXT           "Вертикальный промежуток:",IDC_INTERVALVERTLABEL,23,80,107,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_INTERVALVERTLABEL,23,80,107,8
     EDITTEXT        IDC_GAPHEIGHT,143,78,31,13,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Информация о файле на картинке",IDC_MEDIAINFOONIMAGE,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_MEDIAINFOONIMAGE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,98,221,10
-    LTEXT           "Цвет текста:",IDC_TEXTCOLORLABEL,38,113,67,8
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_TEXTCOLORLABEL,38,113,67,8
     CONTROL         "C",IDC_TEXTCOLOR,"Button",BS_OWNERDRAW | WS_TABSTOP,109,110,25,14
     PUSHBUTTON      "Font...",IDC_MEDIAINFOFONT,161,110,50,14
-    LTEXT           "Папка для сохранения кадров:",IDC_VIDEOSNAPSHOTSFOLDERLABEL,10,157,187,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_VIDEOSNAPSHOTSFOLDERLABEL,10,157,187,8
     EDITTEXT        IDC_VIDEOSNAPSHOTSFOLDEREDIT,10,167,191,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Выбрать...",IDC_VIDEOSNAPSHOTSFOLDERBUTTON,203,167,53,14
-    GROUPBOX        "Получение информации о  файле",IDC_GETINFOABOUTFILELABEL,10,130,246,24,NOT WS_VISIBLE
-    CONTROL         "Использовать AviInfo для файлов AVI (если установлен)",IDC_USEAVIINFO,
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ...",IDC_VIDEOSNAPSHOTSFOLDERBUTTON,203,167,53,14
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ  пїЅпїЅпїЅпїЅпїЅ",IDC_GETINFOABOUTFILELABEL,10,130,246,24,NOT WS_VISIBLE
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ AviInfo пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ AVI (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)",IDC_USEAVIINFO,
                     "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,21,140,208,10
-    LTEXT           "Формат имени файла:",IDC_SNAPSHOTFILENAMELABEL,11,182,213,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_SNAPSHOTFILENAMELABEL,11,182,213,8
     EDITTEXT        IDC_SNAPSHOTFILENAMEEDIT,10,195,218,14,ES_AUTOHSCROLL
     LTEXT           "00",IDC_PARAMETERSHINTLABEL,15,211,225,61
 END
@@ -117,45 +117,45 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "Текущий профиль:",IDC_CURRENTPROFILELABEL,8,7,85,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_CURRENTPROFILELABEL,8,7,85,8
     COMBOBOX        IDC_PROFILECOMBO,96,4,109,92,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Button1",IDC_PROFILETOOBLARPLACEBUTTON,209,4,68,14,NOT WS_VISIBLE
     GROUPBOX        "",IDC_STATIC,4,21,255,91
-    LTEXT           "Формат:",IDC_FORMATLABEL,13,36,43,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FORMATLABEL,13,36,43,8
     COMBOBOX        IDC_FORMATLIST,70,33,71,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "Качество:",IDC_QUALITYLABEL,152,36,46,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_QUALITYLABEL,152,36,46,8
     EDITTEXT        IDC_QUALITYEDIT,202,33,30,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_QUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,221,33,11,14
     LTEXT           "%",IDC_PERCENTLABEL,235,36,11,8
-    LTEXT           "Масштабировать по ширине:",IDC_RESIZEBYWIDTH,13,55,105,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_RESIZEBYWIDTH,13,55,105,8
     EDITTEXT        IDC_IMAGEWIDTH,121,53,31,12,ES_AUTOHSCROLL
-    CTEXT           "и/или высоте:",IDC_XLABEL,156,55,64,8
+    CTEXT           "пїЅ/пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_XLABEL,156,55,64,8
     EDITTEXT        IDC_IMAGEHEIGHT,221,53,32,12,ES_AUTOHSCROLL
-    LTEXT           "Режим:",IDC_RESIZEMODELABEL,13,73,59,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_RESIZEMODELABEL,13,73,59,8
     COMBOBOX        IDC_RESIZEMODECOMBO,78,71,68,94,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Не обрабатывать изображение, если оно уже в нужном формате",IDC_SMARTCONVERTING,
+    CONTROL         "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_SMARTCONVERTING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,87,237,10
     CONTROL         "#skip_animated",IDC_SKIPANIMATEDCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,99,237,10
-    GROUPBOX        "Логотип на картинке",IDC_LOGOGROUP,4,115,255,63
-    CONTROL         "Добавить логотип",IDC_YOURLOGO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,128,104,10,WS_EX_TRANSPARENT
-    LTEXT           "Имя файла:",IDC_FILENAMELABEL,13,142,40,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_LOGOGROUP,4,115,255,63
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_YOURLOGO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,128,104,10,WS_EX_TRANSPARENT
+    LTEXT           "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_FILENAMELABEL,13,142,40,8
     EDITTEXT        IDC_LOGOEDIT,57,140,173,13,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_LOGOBROWSE,233,139,17,14
-    LTEXT           "Позиция логотипа:",IDC_LOGOPOSITIONLABEL,13,159,110,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_LOGOPOSITIONLABEL,13,159,110,8
     COMBOBOX        IDC_LOGOPOSITION,125,157,105,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "Текст на картинке",IDC_TEXTONIMAGEGROUP,4,185,256,80
-    CONTROL         " Добавить текст на картинку",IDC_YOURTEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,196,165,10
-    LTEXT           "Введите текст:",IDC_ENTERYOURTEXTLABEL,13,212,60,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_TEXTONIMAGEGROUP,4,185,256,80
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_YOURTEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,196,165,10
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_ENTERYOURTEXTLABEL,13,212,60,8
     EDITTEXT        IDC_EDITYOURTEXT,92,210,158,13,ES_AUTOHSCROLL
-    LTEXT           "Позиция текста:",IDC_TEXTPOSITIONLABEL,10,229,80,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_TEXTPOSITIONLABEL,10,229,80,8
     COMBOBOX        IDC_TEXTPOSITION,92,227,105,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Шрифт",IDC_SELECTFONT,200,226,50,14
-    LTEXT           "Цвет надписи:",IDC_TEXTCOLORLABEL,10,248,68,8
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅ",IDC_SELECTFONT,200,226,50,14
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_TEXTCOLORLABEL,10,248,68,8
     PUSHBUTTON      "Button2",IDC_SELECTCOLOR,92,245,23,14
-    RTEXT           "Цвет обводки:",IDC_TEXTSTROKECOLOR,124,248,75,8
+    RTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_TEXTSTROKECOLOR,124,248,75,8
     PUSHBUTTON      "Button2",IDC_STROKECOLOR,208,245,23,14
-    CONTROL         " Сохранять пропорции",IDC_SAVEPROPORTIONS2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,74,345,134,10
-    CONTROL         "Сохранять EXIF информацию",IDC_PRESERVE_EXIF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,267,264,10
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_SAVEPROPORTIONS2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,74,345,134,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ EXIF пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_PRESERVE_EXIF,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,267,264,10
 END
 
 IDD_WIZARDDLG DIALOGEX 0, 0, 385, 291
@@ -165,8 +165,8 @@ CAPTION "Image Uploader"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CONTROL         "",IDC_HEADBITMAP,"Static",SS_BITMAP | SS_REALSIZEIMAGE | NOT WS_VISIBLE,0,0,15,13
-    PUSHBUTTON      "< Назад",IDC_PREV,159,273,65,15
-    DEFPUSHBUTTON   "Далее >",IDC_NEXT,235,273,62,15
+    PUSHBUTTON      "< пїЅпїЅпїЅпїЅпїЅ",IDC_PREV,159,273,65,15
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅ >",IDC_NEXT,235,273,62,15
     PUSHBUTTON      "EXIT",IDCANCEL,323,273,57,15
     PUSHBUTTON      "?",IDC_HELPBUTTON,6,273,20,15,BS_ICON
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,269,423,1
@@ -176,11 +176,11 @@ IDD_WELCOMEDLG DIALOGEX 0, 0, 397, 269
 STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
+    CONTROL         "",1167,"Static",SS_BITMAP,160,1,13,11,WS_EX_TRANSPARENT
+    LTEXT           "Image Uploader",IDC_TITLE,206,6,184,22
     LTEXT           "00",IDC_WELCOMEMSG,122,29,259,26
-    LTEXT           "Выберите действие:",IDC_SELECTOPTION,149,334,144,8
     LISTBOX         IDC_LISTBOX,147,54,243,187,LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Просто перетащите изображения или видео-файл в окно программы и программа обработает их.",IDC_SOVET2,172,244,209,24
-    CTEXT           "Совет:",IDC_SOVET,115,244,50,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_SOVET,115,244,50,8
     LTEXT           "Image Uploader",IDC_TITLE,206,6,184,22
     CONTROL         "",1167,"Static",SS_BITMAP,160,2,13,11,WS_EX_TRANSPARENT
     LISTBOX         IDC_LEFTBITMAP,0,0,113,269,LBS_SORT | LBS_NOREDRAW | LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER
@@ -191,35 +191,35 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Параметры изображения",IDC_IMAGEPARAMETERS,19,3,346,79
-    CONTROL         " Оставить без изменений",IDC_KEEPASIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,16,158,10
-    CTEXT           "Профиль:",IDC_PROFILELABEL,197,17,52,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_IMAGEPARAMETERS,19,3,346,79
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_KEEPASIS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,16,158,10
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PROFILELABEL,197,17,52,8
     COMBOBOX        IDC_PROFILECOMBO,251,15,86,81,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "",IDC_EDITPROFILE,341,14,20,15,BS_ICON | NOT WS_VISIBLE
-    RTEXT           "Масштабировать по ширине:",IDC_RESIZEBYWIDTH,45,34,113,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_RESIZEBYWIDTH,45,34,113,8
     EDITTEXT        IDC_IMAGEWIDTH,166,31,34,12,ES_AUTOHSCROLL
-    CTEXT           "и/или высоте:",IDC_XLABEL,204,33,66,8
+    CTEXT           "пїЅ/пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_XLABEL,204,33,66,8
     EDITTEXT        IDC_IMAGEHEIGHT,272,31,34,12,ES_AUTOHSCROLL
     PUSHBUTTON      "",IDC_RESIZEPRESETSBUTTON,310,30,16,14,BS_ICON | BS_NOTIFY
-    LTEXT           "Формат:",IDC_FORMATLABEL,60,52,57,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FORMATLABEL,60,52,57,8
     COMBOBOX        IDC_FORMATLIST,126,51,74,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    RTEXT           "Качество:",IDC_QUALITYLABEL,213,53,46,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_QUALITYLABEL,213,53,46,8
     EDITTEXT        IDC_QUALITYEDIT,274,51,36,13,ES_AUTOHSCROLL
     CONTROL         "",IDC_QUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,297,51,11,14
     LTEXT           "%",IDC_STATIC,313,53,8,8
     CONTROL         "#skip_animated",IDC_SKIPANIMATEDCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,60,67,187,10
-    GROUPBOX        "Настройки эскизов",IDC_THUMBSETTINGS,19,84,347,46
-    CONTROL         " Создавать эскизы",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,97,150,10
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_THUMBSETTINGS,19,84,347,46
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,34,97,150,10
     RTEXT           "#thumb_size",IDC_WIDTHLABEL,192,98,66,8
     EDITTEXT        IDC_THUMBWIDTH,275,96,32,12,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "x",IDC_PXLABEL,312,97,9,8
     EDITTEXT        IDC_THUMBHEIGHT,321,96,34,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "текст на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,47,113,152,10
-    CONTROL         " Использовать серверные эскизы",IDC_USESERVERTHUMBNAILS,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,47,113,152,10
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_USESERVERTHUMBNAILS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,212,113,147,10
-    GROUPBOX        "Сервер для изображений",IDC_IMAGESERVERGROUPBOX,19,133,348,30
-    GROUPBOX        "Сервер для других типов файлов",IDC_FILESERVERGROUPBOX,19,177,348,29
-    LTEXT           "Нажмите кнопку ""Загрузить"" чтобы загрузить изображения на выбранный вами сервер.",IDC_PRESSUPLOADBUTTON,29,307,339,20
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_IMAGESERVERGROUPBOX,19,133,348,30
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_FILESERVERGROUPBOX,19,177,348,29
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ ""пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"" пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ.",IDC_PRESSUPLOADBUTTON,29,307,339,20
     CONTROL         "#Shorten links with",IDC_SHORTENLINKSCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,219,161,10
     PUSHBUTTON      "",IDC_SHORTENINGURLSERVERBUTTON,189,217,14,13,BS_ICON | BS_NOTIFY
     LTEXT           "#Choose more servers",IDC_CHOOSEMOREIMAGESERVERSLABEL,27,165,205,8,WS_TABSTOP
@@ -234,21 +234,21 @@ END
 
 IDD_LOGINDLG DIALOGEX 0, 0, 260, 141
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Параметры авторизации"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     GROUPBOX        "",IDC_LOGINFRAME,11,3,238,114
-    LTEXT           "Логин:",IDC_LOGINLABEL,24,35,65,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_LOGINLABEL,24,35,65,8
     EDITTEXT        IDC_LOGINEDIT,93,32,146,14,ES_AUTOHSCROLL
-    LTEXT           "Пароль:",IDC_PASSWORDLABEL,23,57,67,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PASSWORDLABEL,23,57,67,8
     EDITTEXT        IDC_PASSWORDEDIT,93,54,146,14,ES_PASSWORD | ES_AUTOHSCROLL
     PUSHBUTTON      "#Authorize right now",IDC_AUTHORIZEBUTTON,27,73,209,17
     PUSHBUTTON      "#Logout",IDC_LOGOUT,55,74,171,16
     CTEXT           "#signup",IDC_SIGNUPLINK,18,98,224,16,NOT WS_VISIBLE
-    LTEXT           "#Удалить учетную запись",IDC_DELETEACCOUNTLABEL,11,125,128,13
+    LTEXT           "#пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DELETEACCOUNTLABEL,11,125,128,13
     LTEXT           "#",IDC_ANIMATIONSTATIC,10,121,27,18
     DEFPUSHBUTTON   "OK",IDOK,144,123,50,15
-    PUSHBUTTON      "Отмена",IDCANCEL,200,123,50,15
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅ",IDCANCEL,200,123,50,15
 END
 
 IDD_LANGSELECT DIALOGEX 0, 0, 207, 94
@@ -269,25 +269,25 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
-    LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
-    CTEXT           "© 2007-2023 by Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,18,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
     RTEXT           "VERSION",IDC_CURLINFOLABEL,77,25,68,9
-    LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
-    LTEXT           "https://svistunov.dev/imageuploader",IDC_SITELINK,95,108,173,8
-    CTEXT           "image processing and uploading tool",IDC_STATIC,80,62,149,8
-    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,84,221,1
-    LTEXT           "https://github.com/zenden2k/image-uploader",IDC_GOOGLECODELINK,95,124,163,8
-    LTEXT           "Git:",IDC_STATIC,31,124,54,8
-    LTEXT           "#Author:",IDC_AUTHORLABEL,31,93,58,8
-    LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
-    CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
-    EDITTEXT        IDC_MEMO,5,163,263,124,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
     LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
     LTEXT           "#",IDC_COMMITHASH,158,46,75,8
+    CTEXT           "image processing and uploading tool",IDC_STATIC,80,62,149,8
+    CTEXT           "пїЅ 2007-2023 by Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
+    CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,15,84,221,1
+    LTEXT           "#Author:",IDC_AUTHORLABEL,31,93,58,8
+    LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
+    LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
+    LTEXT           "https://svistunov.dev/imageuploader",IDC_SITELINK,95,108,173,8
+    LTEXT           "Git:",IDC_STATIC,31,124,54,8
+    LTEXT           "https://github.com/zenden2k/image-uploader",IDC_GOOGLECODELINK,95,124,163,8
+    CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
     LTEXT           "Icons by Icons8",IDC_ICONSBYLABEL,97,150,51,8
+    EDITTEXT        IDC_MEMO,5,163,263,124,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
+    DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266
@@ -357,7 +357,7 @@ END
 
 IDD_SIZEEXCEED DIALOGEX 0, 0, 339, 169
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Превышение размера"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CTEXT           "filename",IDC_FILEEXCEEDNAME,8,4,293,9
@@ -371,7 +371,7 @@ END
 
 IDD_STATUSDLG DIALOGEX 0, 0, 227, 97
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Статус процесса"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,171,77,50,15
@@ -390,16 +390,16 @@ BEGIN
     CONTROL         "#No proxy",IDC_NOPROXY,"Button",BS_AUTORADIOBUTTON,21,39,226,10
     CONTROL         "#Use system proxy",IDC_USESYSTEMPROXY,"Button",BS_AUTORADIOBUTTON,21,51,222,10
     CONTROL         "#Use provided proxy:",IDC_USEPROXYSERVER,"Button",BS_AUTORADIOBUTTON,21,63,217,10
-    LTEXT           "Адрес:",IDC_ADDRESSLABEL,28,80,38,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_ADDRESSLABEL,28,80,38,8
     EDITTEXT        IDC_ADDRESSEDIT,67,78,81,13,ES_AUTOHSCROLL
-    LTEXT           "Порт:",IDC_PORTLABEL,159,80,30,8
+    LTEXT           "пїЅпїЅпїЅпїЅ:",IDC_PORTLABEL,159,80,30,8
     EDITTEXT        IDC_PORTEDIT,193,78,36,13,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Тип сервера:",IDC_SERVERTYPE,28,99,61,8
+    LTEXT           "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_SERVERTYPE,28,99,61,8
     COMBOBOX        IDC_SERVERTYPECOMBO,93,96,64,73,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Необходима авторизация",IDC_NEEDSAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,31,116,149,10
-    LTEXT           "Логин:",IDC_LOGINLABEL,30,132,32,8
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_NEEDSAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,31,116,149,10
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_LOGINLABEL,30,132,32,8
     EDITTEXT        IDC_PROXYLOGINEDIT,66,129,63,13,ES_AUTOHSCROLL
-    LTEXT           "Пароль:",IDC_PASSWORDLABEL,136,132,38,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PASSWORDLABEL,136,132,38,8
     EDITTEXT        IDC_PROXYPASSWORDEDIT,177,129,55,13,ES_PASSWORD | ES_AUTOHSCROLL
     LTEXT           "#Max threads:",IDC_MAXTHREADSLABEL,23,159,134,8
     EDITTEXT        IDC_MAXTHREADSEDIT,161,157,30,13,ES_AUTOHSCROLL | ES_NUMBER
@@ -413,7 +413,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,23,208,219,10
     EDITTEXT        IDC_SCRIPTFILENAMEEDIT,21,221,214,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BROWSESCRIPTBUTTON,239,221,18,14
-    GROUPBOX        "Ошибки",IDC_UPLOADERRORLABEL,8,239,250,52
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_UPLOADERRORLABEL,8,239,250,52
     CTEXT           "#",IDC_RETRIES1LABEL,24,255,184,8
     EDITTEXT        IDC_FILERETRYLIMIT,211,252,28,13,ES_AUTOHSCROLL | ES_NUMBER
     CTEXT           "#",IDC_RETRIES2LABEL,24,271,179,8
@@ -436,9 +436,9 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CTEXT           "Тип кода:",IDC_CODETYPELABEL,1,6,40,8
+    CTEXT           "пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:",IDC_CODETYPELABEL,1,6,40,8
     COMBOBOX        IDC_CODETYPE,45,4,210,99,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CTEXT           "Картинок в строке:",IDC_IMAGEUPLOADERLABEL,261,6,73,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_IMAGEUPLOADERLABEL,261,6,73,8
     EDITTEXT        IDC_THUMBSPERPAGE,337,4,28,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_THUMBPERLINESPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_HOTTRACK,354,5,11,14
     EDITTEXT        IDC_CODEEDIT,6,20,359,126,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
@@ -480,9 +480,9 @@ CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "",IDC_STATIC,7,6,245,63
-    CTEXT           "Локальная комбинация клавиш:",IDC_LOCALHOTKEYLABEL,16,23,121,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_LOCALHOTKEYLABEL,16,23,121,8
     EDITTEXT        IDC_LOCALHOTKEY,139,22,107,14,ES_AUTOHSCROLL
-    CTEXT           "Глобальная комбинация:",IDC_GLOBALHOTKEYLABEL,14,48,120,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_GLOBALHOTKEYLABEL,14,48,120,8
     EDITTEXT        IDC_GLOBALHOTKEY,139,44,107,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,142,73,50,15
     PUSHBUTTON      "Cancel",IDCANCEL,202,73,50,15
@@ -524,14 +524,14 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,244,201,50,15
     LISTBOX         IDC_PARAMLIST,7,91,287,105,LBS_SORT | LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "",IDC_LOGINFRAME,7,2,287,68,0,WS_EX_TRANSPARENT
-    CONTROL         "Выполнять авторизацию на сервере",IDC_DOAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,13,157,10
-    RTEXT           "Логин:",IDC_LOGINLABEL,22,29,39,8
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DOAUTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,13,157,10
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_LOGINLABEL,22,29,39,8
     EDITTEXT        IDC_LOGINEDIT,69,26,83,14,ES_AUTOHSCROLL
-    RTEXT           "Пароль:",IDC_PASSWORDLABEL,155,28,48,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PASSWORDLABEL,155,28,48,8
     EDITTEXT        IDC_PASSWORDEDIT,209,26,73,14,ES_PASSWORD | ES_AUTOHSCROLL
-    LTEXT           "Параметры:",IDC_PARAMETERSLABEL,7,75,42,8
-    LTEXT           "Папка/альбом:",IDC_FOLDERLABEL,18,52,51,8
-    PUSHBUTTON      "Выбрать...",IDC_BROWSESERVERFOLDERS,232,48,50,14
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PARAMETERSLABEL,7,75,42,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FOLDERLABEL,18,52,51,8
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ...",IDC_BROWSESERVERFOLDERS,232,48,50,14
     LTEXT           "Static",IDC_FOLDERNAMELABEL,92,51,109,8
     ICON            IDI_ICONFOLDER2,IDC_FOLDERICON,77,51,20,20,SS_REALSIZEIMAGE
 END
@@ -558,7 +558,7 @@ BEGIN
     EDITTEXT        IDC_UPDATEINFO,7,142,320,78,ES_MULTILINE | ES_AUTOVSCROLL | WS_VSCROLL
     CONTROL         "",IDC_UPDATELISTVIEW,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | NOT WS_VISIBLE | WS_BORDER | WS_TABSTOP,7,142,320,78
     DEFPUSHBUTTON   "OK",IDOK,120,225,128,15
-    PUSHBUTTON      "Прервать",IDCANCEL,272,225,55,15
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDCANCEL,272,225,55,15
     LTEXT           "#Components:",IDC_COMPONENTSLABEL,10,127,50,8
 END
 
@@ -567,29 +567,29 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Параметры сохранения снимков",IDC_SCREENSHOTSAVINGPARAMS,10,3,246,140
-    LTEXT           "Формат:",IDC_FORMATLABEL,19,18,37,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_SCREENSHOTSAVINGPARAMS,10,3,246,140
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FORMATLABEL,19,18,37,8
     COMBOBOX        IDC_FORMATLIST,60,15,71,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CTEXT           "Качество:",IDC_QUALITYLABEL,136,18,58,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_QUALITYLABEL,136,18,58,8
     EDITTEXT        IDC_QUALITYEDIT,199,15,30,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_QUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,219,15,11,14
     LTEXT           "%",IDC_PERCENTLABEL,233,17,12,8
-    CONTROL         "Всегда копировать в буфер",IDC_ALWAYSCOPYTOCLIPBOARD,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ",IDC_ALWAYSCOPYTOCLIPBOARD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,32,231,10
-    LTEXT           "Папка для сохранения скриншотов:",IDC_SCREENSHOTFOLDERLABEL,17,44,187,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_SCREENSHOTFOLDERLABEL,17,44,187,8
     EDITTEXT        IDC_SCREENSHOTFOLDEREDIT,17,57,180,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "Выбрать...",IDC_SCREENSHOTSFOLDERSELECT,201,57,50,14
-    LTEXT           "Формат имени файла:",IDC_SCREENSHOTFILENAMELABEL,18,78,213,8
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ...",IDC_SCREENSHOTSFOLDERSELECT,201,57,50,14
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_SCREENSHOTFILENAMELABEL,18,78,213,8
     EDITTEXT        IDC_SCREENSHOTFILENAMEEDIT,17,91,218,14,ES_AUTOHSCROLL
     LTEXT           "00",IDC_PARAMETERSHINTLABEL,22,107,225,33
-    GROUPBOX        "Дополнительные параметры",IDC_GROUPPARAMS,10,145,246,151
-    LTEXT           "Задержка:",IDC_DELAYLABEL,29,160,47,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_GROUPPARAMS,10,145,246,151
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_DELAYLABEL,29,160,47,8
     EDITTEXT        IDC_DELAYEDIT,79,158,27,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_DELAYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_HOTTRACK,97,157,11,14
-    LTEXT           "с",IDC_SECLABEL,112,160,26,8
-    LTEXT           "Задержка при скрытии  окон:",IDC_DELAYLABEL2,29,176,103,8
+    LTEXT           "пїЅ",IDC_SECLABEL,112,160,26,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅ:",IDC_DELAYLABEL2,29,176,103,8
     EDITTEXT        IDC_WINDOWHIDINGDELAY,139,173,29,13,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "мсек",IDC_MSECLABEL,174,174,44,8
+    LTEXT           "пїЅпїЅпїЅпїЅ",IDC_MSECLABEL,174,174,44,8
     CONTROL         "Foregound when shooting",IDC_FOREGROUNDWHENSHOOTING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,27,188,215,10
     GROUPBOX        "Aero only (Windows Vista or later)",IDC_AEROONLY,19,200,227,53
@@ -610,10 +610,10 @@ CAPTION "Image Downloader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     LTEXT           "Static",IDC_IMAGEDOWNLOADERTIP,5,7,268,10
-    CONTROL         "Следить за буфером обмена",IDC_WATCHCLIPBOARD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,21,234,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_WATCHCLIPBOARD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,5,21,234,10
     EDITTEXT        IDC_FILEINFOEDIT,5,33,268,100,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
     CONTROL         "",IDC_DOWNLOADFILESPROGRESS,"msctls_progress32",0x0,5,137,268,11
-    DEFPUSHBUTTON   "Скачать изображения",IDOK,118,152,97,15
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDOK,118,152,97,15
     PUSHBUTTON      "Close",IDCANCEL,223,152,50,14
 END
 
@@ -622,7 +622,7 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | DS_CENTER | WS_CHILD | WS_VISIBLE 
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
-    PUSHBUTTON      "Закрыть",IDCANCEL,328,189,50,15
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDCANCEL,328,189,50,15
     CONTROL         "",IDC_RESULTSTAB,"SysTabControl32",0x0,4,3,377,183
 END
 
@@ -645,20 +645,20 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "",IDC_STATIC,15,4,228,177
-    CTEXT           "Шаблон:",IDC_THUMBSCOMBOLABEL,22,16,88,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBSCOMBOLABEL,22,16,88,8
     COMBOBOX        IDC_THUMBSCOMBO,118,14,96,96,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Static",IDC_COMBOPREVIEW,33,35,186,123
-    PUSHBUTTON      "Редактировать",IDC_EDITTHUMBNAILPRESET,39,163,89,14
-    PUSHBUTTON      "Создать копию",IDC_NEWTHUMBNAIL,133,163,82,14
-    CONTROL         "Надпись на эскизе:",IDC_THUMBTEXTCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,187,96,10
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_EDITTHUMBNAILPRESET,39,163,89,14
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ",IDC_NEWTHUMBNAIL,133,163,82,14
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBTEXTCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,187,96,10
     EDITTEXT        IDC_THUMBTEXT,128,186,118,13,ES_AUTOHSCROLL
-    LTEXT           "Формат:",IDC_THUMBFORMATLABEL,22,207,57,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBFORMATLABEL,22,207,57,8
     COMBOBOX        IDC_THUMBFORMATLIST,88,204,109,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Качество:",IDC_THUMBQUALITYLABEL,22,223,46,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBQUALITYLABEL,22,223,46,8
     EDITTEXT        IDC_THUMBQUALITYEDIT,88,222,30,13,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_THUMBQUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,110,220,11,14
     LTEXT           "%",IDC_PERCENTLABEL2,122,223,11,8
-    LTEXT           "Цвет фона:",IDC_THUMBBACKGROUNDLABEL,157,224,63,8
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:",IDC_THUMBBACKGROUNDLABEL,157,224,63,8
     PUSHBUTTON      "Button1",IDC_THUMBBACKGROUND,222,221,25,15
     CONTROL         "#width",IDC_WIDTHCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,243,62,10
     EDITTEXT        IDC_WIDTHEDIT,86,241,40,14,ES_AUTOHSCROLL | ES_NUMBER
@@ -700,26 +700,26 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Edit thumbnail"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Цвета",IDC_COLORSGROUP,6,5,248,49
-    LTEXT           "Цвет рамки:",IDC_FRAMECOLORLABEL,12,17,76,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅ",IDC_COLORSGROUP,6,5,248,49
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ:",IDC_FRAMECOLORLABEL,12,17,76,8
     PUSHBUTTON      "Button6",IDC_FRAMECOLOR,93,13,25,14
-    LTEXT           "Цвет градиента 1:",IDC_GRADIENTCOLOR1LABEL,131,16,84,8
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1:",IDC_GRADIENTCOLOR1LABEL,131,16,84,8
     PUSHBUTTON      "Button8",IDC_COLOR1,221,14,25,14
-    LTEXT           "Цвет градиента 2:",IDC_GRADIENTCOLOR2LABEL,131,34,86,8
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 2:",IDC_GRADIENTCOLOR2LABEL,131,34,86,8
     PUSHBUTTON      "Button9",IDC_COLOR2,221,31,25,14
-    CONTROL         "Обводить в рамку",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,64,124,10
-    CTEXT           "Толщина:",IDC_FRAMEWIDTHLABEL,144,65,53,8
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ",IDC_DRAWFRAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,64,124,10
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_FRAMEWIDTHLABEL,144,65,53,8
     EDITTEXT        IDC_FRAMEWIDTH,202,62,25,14,ES_AUTOHSCROLL
     LTEXT           "px",IDC_STATIC,236,65,9,8
-    GROUPBOX        "Параметры текста",IDC_THUMBPARAMS,6,81,249,68
-    CONTROL         " Размер картинки на эскизе",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,94,158,10
-    LTEXT           "Цвет надписи:",IDC_THUMBTEXTCOLORLABEL,15,109,74,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_THUMBPARAMS,6,81,249,68
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_ADDFILESIZE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,94,158,10
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBTEXTCOLORLABEL,15,109,74,8
     PUSHBUTTON      "Button7",IDC_THUMBTEXTCOLOR,97,107,25,14
-    LTEXT           "Цвет 2:",IDC_THUMBSTROKECOLORLABEL,141,110,74,8
+    LTEXT           "пїЅпїЅпїЅпїЅ 2:",IDC_THUMBSTROKECOLORLABEL,141,110,74,8
     PUSHBUTTON      "Button7",IDC_THUMBTEXTCOLOR2,223,107,25,14
-    CTEXT           "Текст:",IDC_THUMBTEXTLABEL,11,131,62,8
+    CTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBTEXTLABEL,11,131,62,8
     EDITTEXT        IDC_THUMBTEXT,77,129,114,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "Шрифт...",IDC_THUMBFONT,198,129,50,14
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅ...",IDC_THUMBFONT,198,129,50,14
     PUSHBUTTON      "OK",IDOK,146,155,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,205,155,50,14
 END
@@ -747,17 +747,17 @@ BEGIN
     PUSHBUTTON      "Paste HTML from clipboard",IDC_PASTEHTML,6,132,111,14
     CONTROL         "Paste HTML on Ctrl+V",IDC_PASTEHTMLONCTRLVCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,132,134,182,10
-    LTEXT           "URL источника (опционально):",IDC_SOURCEURLLABEL,7,151,120,8
+    LTEXT           "URL пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ):",IDC_SOURCEURLLABEL,7,151,120,8
     EDITTEXT        IDC_SOURCEURLEDIT,131,148,229,14,ES_AUTOHSCROLL
     LTEXT           "Static",IDC_IMAGESERVERPLACEHOLDER,6,165,329,44,NOT WS_VISIBLE
-    DEFPUSHBUTTON   "Перезалить изображения",IDOK,5,215,97,15
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDOK,5,215,97,15
     LTEXT           "Static",IDC_ANIMATIONSTATIC,331,211,22,17,NOT WS_VISIBLE
     CTEXT           "Static",IDC_RESULTSLABEL,7,233,353,8
     EDITTEXT        IDC_OUTPUTTEXT,5,246,355,106,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
-    CONTROL         "Исходный код",IDC_SOURCECODERADIO,"Button",BS_AUTORADIOBUTTON,9,355,151,10
-    CONTROL         "Список ссылок",IDC_LINKSLISTRADIO,"Button",BS_AUTORADIOBUTTON,177,355,180,10
-    PUSHBUTTON      "Копировать в буфер",IDC_COPYTOCLIPBOARD,5,369,82,14
-    PUSHBUTTON      "Показать лог",IDC_SHOWLOG,132,369,96,14
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ",IDC_SOURCECODERADIO,"Button",BS_AUTORADIOBUTTON,9,355,151,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_LINKSLISTRADIO,"Button",BS_AUTORADIOBUTTON,177,355,180,10
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ",IDC_COPYTOCLIPBOARD,5,369,82,14
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ",IDC_SHOWLOG,132,369,96,14
     PUSHBUTTON      "Close",IDCANCEL,310,369,50,14
 END
 
@@ -768,7 +768,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     LTEXT           "Static",IDC_SHORTENURLTIP,4,51,149,10
     EDITTEXT        IDC_INPUTEDIT,4,61,270,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "Сократить!",IDOK,81,80,97,15
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!",IDOK,81,80,97,15
     LTEXT           "Static",IDC_ANIMATIONSTATIC,247,77,22,18,NOT WS_VISIBLE
     EDITTEXT        IDC_RESULTSEDIT,4,98,270,27,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "",IDC_RESULTSLABEL,7,133,211,8
@@ -831,25 +831,25 @@ END
 IDD_QUICKSETUPDLG DIALOGEX 0, 0, 285, 188
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_APPWINDOW
-CAPTION "Быстрая настройка при первом запуске"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BLACKFRAME,20,4,33,27
     LTEXT           "Image Uploader",IDC_TITLE,59,12,221,22
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,0,38,288,1
-    LTEXT           "На какой сервер будем заливать картинки?",IDC_SERVERLABEL,27,49,236,8
+    LTEXT           "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?",IDC_SERVERLABEL,27,49,236,8
     CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,29,61,146,197
-    CONTROL         "Авторизация на сервере",IDC_DOAUTHCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,29,83,200,10
-    RTEXT           "Логин:",IDC_LOGINLABEL,3,102,57,8
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DOAUTHCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,29,83,200,10
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅ:",IDC_LOGINLABEL,3,102,57,8
     EDITTEXT        IDC_LOGINEDIT,64,99,66,14,ES_AUTOHSCROLL
-    RTEXT           "Пароль:",IDC_PASSWORDLABEL,139,102,47,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PASSWORDLABEL,139,102,47,8
     EDITTEXT        IDC_PASSWORDEDIT,191,99,68,14,ES_PASSWORD | ES_AUTOHSCROLL
-    CONTROL         "Запуск программы при старте Windows",IDC_AUTOSTARTUPCHECKBOX,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Windows",IDC_AUTOSTARTUPCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,30,122,232,10
-    CONTROL         "Перехватывать нажатия PrintScreen и Alt+PrintScreen",IDC_CAPTUREPRINTSCREENCHECKBOX,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ PrintScreen пїЅ Alt+PrintScreen",IDC_CAPTUREPRINTSCREENCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,30,134,242,18
-    DEFPUSHBUTTON   "Продолжить",IDOK,209,169,67,15
-    CONTROL         "Добавить пункт в контекстное меню проводника Windows",IDC_EXPLORERINTEGRATION,
+    DEFPUSHBUTTON   "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDOK,209,169,67,15
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Windows",IDC_EXPLORERINTEGRATION,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,29,154,216,10
 END
 
@@ -864,7 +864,7 @@ BEGIN
     CONTROL         "Cascaded menu",IDC_CASCADEDCONTEXTMENU,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,35,44,215,10
     CONTROL         "#",IDC_SHELLSENDTOITEM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,57,222,10
     CONTROL         "#",IDC_STARTUPLOADINGFROMSHELL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,71,207,10
-    LTEXT           "Пользовательские элементы меню:",IDC_CONTEXTMENUITEMSLABEL,8,102,190,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:",IDC_CONTEXTMENUITEMSLABEL,8,102,190,8
     PUSHBUTTON      "",IDC_ADDITEM,236,115,22,14,BS_ICON
     PUSHBUTTON      "",IDC_DELETEITEM,236,131,22,14,BS_ICON
     PUSHBUTTON      "",IDC_UPBUTTON,236,148,22,14,BS_ICON
@@ -877,12 +877,12 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Сервер для хранения изображений:",IDC_SERVERGROUPBOX,0,1,259,41
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_SERVERGROUPBOX,0,1,259,41
     CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,5,13,121,172
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER2,131,13,18,15,NOT WS_VISIBLE,WS_EX_STATICEDGE
     ICON            "",IDC_USERICON,142,15,20,20,SS_REALSIZEIMAGE
     LTEXT           "",IDC_ACCOUNTINFO,155,14,101,9,SS_ENDELLIPSIS | WS_TABSTOP
-    LTEXT           "Настройки загрузки",IDC_IMAGEPROCESSINGPARAMS,7,30,131,8,WS_TABSTOP
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_IMAGEPROCESSINGPARAMS,7,30,131,8,WS_TABSTOP
     ICON            IDI_ICONFOLDER2,IDC_FOLDERICON,142,30,18,16,SS_REALSIZEIMAGE
     LTEXT           "",IDC_FOLDERLABEL,155,28,78,8,SS_ENDELLIPSIS
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER,241,26,16,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
@@ -899,9 +899,9 @@ BEGIN
     LTEXT           "Static",IDC_CONTEXTMENUSERVERPLACEHOLDER,4,134,261,40,NOT WS_VISIBLE
     LTEXT           "Static",IDC_TEMPORARYSERVERPLACEHOLDER,4,174,261,43,NOT WS_VISIBLE
     LTEXT           "Static",IDC_URLSHORTENERPLACEHOLDER,4,222,261,43,NOT WS_VISIBLE
-    CONTROL         "Запоминать в мастере настройки сервера для картинок",IDC_REMEMBERIMAGESERVERSETTINGS,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_REMEMBERIMAGESERVERSETTINGS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,273,255,10
-    CONTROL         "Запоминать в мастере настройки сервера для других типов файлов",IDC_REMEMBERFILESERVERSETTINGS,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_REMEMBERFILESERVERSETTINGS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,286,255,10
 END
 
@@ -909,39 +909,39 @@ IDD_UPLOADPARAMSDLG DIALOGEX 0, 0, 337, 258
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    CONTROL         "#Настройки по умолчанию",IDC_DEFAULTSETTINGSCHECKBOX,
+    CONTROL         "#пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DEFAULTSETTINGSCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,9,6,313,10
-    GROUPBOX        "Параметры изображения",IDC_IMAGEPARAMETERS,7,20,203,47
-    CONTROL         " Обрабатывать",IDC_PROCESSIMAGESCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,34,184,10
-    LTEXT           "Профиль:",IDC_PROFILELABEL,21,49,48,8
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_IMAGEPARAMETERS,7,20,203,47
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_PROCESSIMAGESCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,34,184,10
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_PROFILELABEL,21,49,48,8
     COMBOBOX        IDC_PROFILECOMBO,71,47,86,81,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "",IDC_EDITPROFILE,163,47,20,14,BS_ICON | NOT WS_VISIBLE
-    GROUPBOX        "Настройки эскизов",IDC_THUMBSETTINGS,7,73,324,149
-    CONTROL         " Создавать эскизы",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,85,150,10
-    CONTROL         " Использовать серверные эскизы",IDC_USESERVERTHUMBNAILS,
+    GROUPBOX        "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_THUMBSETTINGS,7,73,324,149
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_CREATETHUMBNAILS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,85,150,10
+    CONTROL         " пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ",IDC_USESERVERTHUMBNAILS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,30,98,243,10
-    CONTROL         "Настройки эскизов по-умолчанию",IDC_DEFAULTTHUMBSETTINGSCHECKBOX,
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ",IDC_DEFAULTTHUMBSETTINGSCHECKBOX,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,30,111,241,10
-    LTEXT           "Шаблон миниатюры:",IDC_THUMBTEMPLATECOMBOLABEL,48,124,121,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBTEMPLATECOMBOLABEL,48,124,121,8
     COMBOBOX        IDC_THUMBTEMPLATECOMBO,175,122,104,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Надпись на эскизе:",IDC_THUMBTEXTCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,139,120,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBTEXTCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,48,139,120,10
     EDITTEXT        IDC_THUMBTEXT,175,138,133,13,ES_AUTOHSCROLL
-    LTEXT           "Масштабирование:",IDC_THUMBRESIZELABEL,49,159,115,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBRESIZELABEL,49,159,115,8
     EDITTEXT        IDC_WIDTHEDIT,175,156,40,14,ES_AUTOHSCROLL
     LTEXT           "px",IDC_WIDTHEDITUNITS,219,159,9,8
     COMBOBOX        IDC_THUMBRESIZECOMBO,175,172,104,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Формат:",IDC_THUMBFORMATLABEL,49,192,57,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBFORMATLABEL,49,192,57,8
     COMBOBOX        IDC_THUMBFORMATLIST,175,190,104,75,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Цвет фона:",IDC_THUMBBACKGROUNDLABEL,49,207,68,8
+    LTEXT           "пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ:",IDC_THUMBBACKGROUNDLABEL,49,207,68,8
     PUSHBUTTON      "Button1",IDC_THUMBBACKGROUND,121,205,25,14
-    RTEXT           "Качество:",IDC_THUMBQUALITYLABEL,175,207,46,8
+    RTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_THUMBQUALITYLABEL,175,207,46,8
     EDITTEXT        IDC_THUMBQUALITYEDIT,225,205,30,13,ES_AUTOHSCROLL
     CONTROL         "",IDC_THUMBQUALITYSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,256,205,11,14
     LTEXT           "%",IDC_PERCENTLABEL2,260,208,11,8
     PUSHBUTTON      "OK",IDOK,224,239,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,279,239,50,14
-    CONTROL         "Ширина:",IDC_WIDTHRADIO,"Button",BS_AUTORADIOBUTTON,374,189,61,10
-    CONTROL         "Высота:",IDC_HEIGHTRADIO,"Button",BS_AUTORADIOBUTTON,497,189,52,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_WIDTHRADIO,"Button",BS_AUTORADIOBUTTON,374,189,61,10
+    CONTROL         "пїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_HEIGHTRADIO,"Button",BS_AUTORADIOBUTTON,497,189,52,10
     EDITTEXT        IDC_HEIGHTEDIT,550,188,40,14,ES_AUTOHSCROLL
     LTEXT           "%",IDC_PERCENTLABEL,408,307,11,8
     CONTROL         "#Shorten links",IDC_SHORTENLINKSCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,226,301,10
@@ -949,14 +949,14 @@ END
 
 IDD_CONTEXTMENUITEMDLG DIALOGEX 0, 0, 271, 87
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Параметры авторизации"
+CAPTION "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     LTEXT           "Static",IDC_IMAGESERVERPLACEHOLDER,4,1,263,45,NOT WS_VISIBLE
-    LTEXT           "Название:",IDC_MENUITEMLABEL,7,53,57,8
+    LTEXT           "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ:",IDC_MENUITEMLABEL,7,53,57,8
     EDITTEXT        IDC_MENUITEMTITLEEDIT,66,50,198,14,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "OK",IDOK,156,69,50,15
-    PUSHBUTTON      "Отмена",IDCANCEL,215,69,50,15
+    PUSHBUTTON      "пїЅпїЅпїЅпїЅпїЅпїЅ",IDCANCEL,215,69,50,15
 END
 
 IDD_TEXTPARAMSWINDOW DIALOGEX 0, 0, 266, 20

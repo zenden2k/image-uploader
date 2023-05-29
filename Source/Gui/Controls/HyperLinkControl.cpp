@@ -609,6 +609,13 @@ HyperLinkControlItem* CHyperLinkControl::getItemByCommand(int command) {
     return nullptr;
 }
 
+HyperLinkControlItem* CHyperLinkControl::getItem(int index) {
+    if (index >=0 && index < Items.GetCount()) {
+        return &Items[index];
+    }
+    return nullptr;
+}
+
 int CHyperLinkControl::selectedItemIndex() const {
     return selectedItemIndex_;
 }

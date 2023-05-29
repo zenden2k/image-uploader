@@ -52,11 +52,10 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     auto leftImage = createLeftImage();
     LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
-
+    GuiTools::SetControlAccessibleName(LeftImage.m_hWnd, _T(""));
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
 
-    TRC(IDC_SELECTOPTION, "Select action:");
     TRC(IDC_SOVET, "Advice:");
     TRC(IDC_SOVET2, "Just drag-n-drop your files on Image Uploader's window and it will process them.");
     TRC(IDC_WELCOMEMSG, "Welcome to pictures Publishing Wizard, that will help you to upload your images, photos, video frames on Internet!");
@@ -114,14 +113,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if(ok)
     {
         alf.lfWeight = FW_BOLD;
-
-        NewFont=CreateFontIndirect(&alf);
-
-        SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-        HDC dc = ::GetDC(nullptr);
-        alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ::ReleaseDC(nullptr, dc);
-        NewFont = CreateFontIndirect(&alf);
+        alf.lfHeight  =  -MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
+        NewFont.CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }
 
@@ -158,7 +151,7 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
     LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
             LinearGradientModeVertical);
 
-    gr.FillRectangle(&brush, bounds); 
+    gr.FillRectangle(&brush, bounds);
 
     auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
 
@@ -168,7 +161,7 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
         int w = static_cast<int>(logo->GetWidth());
         int h = static_cast<int>(logo->GetHeight());
         Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(controlRect.Width() - horMargin * 2, controlRect.Height()));
-        
+
         Rect dst((controlRect.Width() - sz.Width) / 2, topMargin, sz.Width, sz.Height);
         gr.DrawImage(logo.get(), dst, 0, 0, w, h, UnitPixel, &attr);
     }

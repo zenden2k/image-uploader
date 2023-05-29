@@ -54,8 +54,8 @@ void ScreenRecorder::start() {
 
     FFmpegSettings settings;
 
-    settings.source = "ddagrab";
-    settings.codec = "h264_nvenc";//
+    settings.source = "gdigrab";
+    settings.codec = "x264";//
     settings.width = captureRect_.Width() & ~1;
     settings.height = captureRect_.Height() & ~1;
     settings.offsetX = captureRect_.left;
@@ -70,17 +70,17 @@ void ScreenRecorder::start() {
     auto& output = argsBuilder.addOutputFile(outFilePath_);
     //auto outputArgs = argsBuilder.
 
-    /*GDIGrabSource gdigrab;
-    gdigrab.apply(settings, input, argsBuilder.globalArgs());*/
+    GDIGrabSource gdigrab;
+    gdigrab.apply(settings, input, argsBuilder.globalArgs());
 
-    auto ddagrabSource = std::make_unique<DDAGrabSource>();
-    ddagrabSource->apply(settings, input, argsBuilder.globalArgs());
+    /*auto ddagrabSource = std::make_unique<DDAGrabSource>();
+    ddagrabSource->apply(settings, input, argsBuilder.globalArgs());*/
    
-    auto nvenc = NvencVideoCodec::createH264();
-    nvenc->apply(settings, output);
+    /*auto nvenc = NvencVideoCodec::createH264();
+    nvenc->apply(settings, output);**/
         
-   // auto x264 = std::make_unique<X264VideoCodec>();
-   // x264->apply(settings, output);
+    auto x264 = std::make_unique<X264VideoCodec>();
+    x264->apply(settings, output);
 
     std::vector<std::string> args = argsBuilder.getArgs();
 
@@ -89,7 +89,7 @@ void ScreenRecorder::start() {
         s += piece;
         s += " ";
     }
-    LOG(ERROR) << s;
+    LOG(ERROR) << ffmpegPath_ << std::endl << s;
 
    /*-{
             "-hide_banner",

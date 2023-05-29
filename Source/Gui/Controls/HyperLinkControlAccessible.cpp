@@ -1,6 +1,7 @@
 #include "HyperLinkControlAccessible.h"
 
 #include "HyperLinkControl.h"
+#include "Core/i18n/Translator.h"
 
 CHyperLinkControlAccessible::CHyperLinkControlAccessible() : alive_(TRUE), control_(nullptr){
     
@@ -83,7 +84,11 @@ STDMETHODIMP CHyperLinkControlAccessible::get_accName(VARIANT varChild, BSTR* ps
     HRESULT hr = ValidateChildId(varChild);
     if (SUCCEEDED(hr)) {
         if (varChild.lVal == CHILDID_SELF) {
-            hr = pBase_->get_accName(varChild, pszName);
+            *pszName = SysAllocString(TR("Select action:"));
+            if (*pszName == NULL) {
+                hr = E_OUTOFMEMORY;
+            }
+            //hr = pBase_->get_accName(varChild, pszName);
         } else {
             *pszName = SysAllocString(control_->GetItemTitle(varChild.lVal - 1));
             if (*pszName == NULL) {
@@ -255,20 +260,16 @@ STDMETHODIMP CHyperLinkControlAccessible::accNavigate(long navDir, VARIANT varSt
             }
         } else {
             if (navDir == NAVDIR_DOWN || navDir == NAVDIR_NEXT) {
-                UINT cItems = control_->ItemCount();
+                /*UINT cItems = control_->ItemCount();
                 if (cItems > 1 && (UINT)varStart.lVal < cItems) {
                     pvarEndUpAt->vt = VT_I4;
                     pvarEndUpAt->lVal = varStart.lVal + 1;
                 } else {
                     hr = S_FALSE;
-                }
+                }*/
+                return GetNextItem(varStart, pvarEndUpAt);
             } else if (navDir == NAVDIR_PREVIOUS || navDir == NAVDIR_UP) {
-                if (varStart.lVal > 1) {
-                    pvarEndUpAt->vt = VT_I4;
-                    pvarEndUpAt->lVal = varStart.lVal - 1;
-                } else {
-                    hr = S_FALSE;
-                }
+                return GetPrevItem(varStart, pvarEndUpAt);
             } else if (navDir == NAVDIR_LEFT || navDir == NAVDIR_RIGHT) {
                 // Leave out param as VT_EMPTY from above.
                 hr = S_FALSE;
@@ -278,6 +279,37 @@ STDMETHODIMP CHyperLinkControlAccessible::accNavigate(long navDir, VARIANT varSt
         }
     }
     return hr;
+}
+
+HRESULT CHyperLinkControlAccessible::GetNextItem(VARIANT varStart, VARIANT* pvarEndUpAt) {
+    UINT cItems = control_->ItemCount();
+    if (cItems > 1 && (UINT)varStart.lVal < cItems) {
+        LONG itemIndex;
+        for (itemIndex = varStart.lVal - 1; itemIndex + 1 < cItems; itemIndex++) {
+            auto item = control_->getItem(itemIndex);
+            if (item->Visible) {
+                pvarEndUpAt->vt = VT_I4;
+                pvarEndUpAt->lVal = itemIndex + 1;
+                return S_OK;
+            }
+        }
+        
+    }
+    return S_FALSE;
+}
+HRESULT CHyperLinkControlAccessible::GetPrevItem(VARIANT varStart, VARIANT* pvarEndUpAt) {
+    if (varStart.lVal > 1) {
+        LONG itemIndex;
+        for (itemIndex = varStart.lVal - 1; itemIndex >= 0; itemIndex--) {
+            auto item = control_->getItem(itemIndex);
+            if (item->Visible) {
+                pvarEndUpAt->vt = VT_I4;
+                pvarEndUpAt->lVal = itemIndex + 1;
+                return S_OK;
+            }
+        }
+    }
+    return S_FALSE;
 }
 
 STDMETHODIMP CHyperLinkControlAccessible::accHitTest(long xLeft, long yTop, VARIANT* pvarChild) {
@@ -332,7 +364,14 @@ HRESULT CHyperLinkControlAccessible::ValidateChildId(VARIANT& varChildId) {
         } else if (varChildId.lVal != CHILDID_SELF) {
             if ((UINT)(varChildId.lVal - 1) >= control_->ItemCount()) {
                 hr = E_INVALIDARG;
+            } else {
+                auto item = control_->getItem(varChildId.lVal - 1);
+                if (!item->Visible) {
+                    hr = E_INVALIDARG;
+                }
             }
+
+
         }
     }
     return hr;
