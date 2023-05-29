@@ -97,6 +97,7 @@ public:
     void SelectItem(int Index);
     void HoverItem(int Index);
     HyperLinkControlItem* getItemByCommand(int command);
+    HyperLinkControlItem* getItem(int index);
     int selectedItemIndex() const;
     int desiredHeight() const;
 

@@ -524,8 +524,14 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.CaptureCursor = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
-    ScreenRecordingSettings.FFmpegCLIPath = LR"(d:\ffmpeg-6.0-essentials_build\bin\ffmpeg.exe)";
-    ScreenRecordingSettings.OutDirectory = LR"(d:\)";
+    ScreenRecordingSettings.FFmpegCLIPath = WinUtils::GetAppFolder() + LR"(ffmpeg.exe)";
+
+    CString videoRecordsDirectory;
+    PWSTR picturesPath;
+    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Pictures, 0, nullptr, &picturesPath))) {
+        videoRecordsDirectory = CString(picturesPath) + _T("\\");
+    }
+    ScreenRecordingSettings.OutDirectory = videoRecordsDirectory;
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 

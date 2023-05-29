@@ -41,7 +41,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     bHandled = true;
     return 1;
 }
-    
+
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     PageWnd = m_hWnd;
@@ -54,7 +54,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     auto leftImage = createLeftImage();
     LeftImage.loadImage(0, std::move(leftImage), 1, false, RGB(255,255,255), true);
-
+    GuiTools::SetControlAccessibleName(LeftImage.m_hWnd, _T(""));
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
 
@@ -83,22 +83,22 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     ListBox.Init(GetSysColor(COLOR_WINDOW));
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
-    
+
     ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
-    
+
     ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, loadSmallIcon(IDI_ICONWEB), true);
 
     ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, loadSmallIcon(IDI_ICONADDFOLDER),true,0,true);
 
     ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD),true);
-    
+
     ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
     ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
 
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
-    
+
     ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 #ifdef IU_ENABLE_MEDIAINFO
     if(MediaInfoHelper::IsMediaInfoAvailable())
@@ -106,7 +106,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 #endif
     ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
     ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
-    
+
     HFONT font = GetFont();
     LOGFONT alf;
 
@@ -119,14 +119,14 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         NewFont.CreateFontIndirect(&alf);
 
         SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-        
+
         alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
         font2_.CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)font2_,MAKELPARAM(false, 0));
     }
 
     ShowNext(false);
-    ShowPrev(false);    
+    ShowPrev(false);
 
     AddClipboardFormatListener(m_hWnd);
 
@@ -158,7 +158,7 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
     LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
             LinearGradientModeVertical);
 
-    gr.FillRectangle(&brush, bounds); 
+    gr.FillRectangle(&brush, bounds);
 
     auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
 
@@ -168,7 +168,7 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
         int w = static_cast<int>(logo->GetWidth());
         int h = static_cast<int>(logo->GetHeight());
         Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(controlRect.Width() - horMargin * 2, controlRect.Height()));
-        
+
         Rect dst((controlRect.Width() - sz.Width) / 2, topMargin, sz.Width, sz.Height);
         gr.DrawImage(logo.get(), dst, 0, 0, w, h, UnitPixel, &attr);
     }
@@ -196,8 +196,8 @@ LRESULT CWelcomeDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 {
-    SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT)); 
-    SetBkColor(hdc, GetSysColor(COLOR_WINDOW));    
+    SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT));
+    SetBkColor(hdc, GetSysColor(COLOR_WINDOW));
     return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(br)); // Returning brush solid filled with COLOR_WINDOW color
 }
 
@@ -208,7 +208,7 @@ bool CWelcomeDlg::OnShow()
     CMainDlg* mainPage = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
     ShowNext(mainPage && mainPage->FileList.GetCount() > 0);
     EnableExit();
-    
+
     return 0;
 }
 
@@ -222,7 +222,7 @@ LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, 
 {
     CString func;
     func.Format(_T("regionscreenshot,%d"), static_cast<int>(siFromWelcomeDialog));
-    WizardDlg->executeFunc(func);   
+    WizardDlg->executeFunc(func);
     return 0;
 }
 
@@ -230,13 +230,13 @@ LRESULT CWelcomeDlg::OnBnClickedLastRegionScreenshot(WORD /*wNotifyCode*/, WORD 
     WizardDlg->executeFunc(_T("lastregionscreenshot"));
     return 0;
 }
-    
+
 LRESULT CWelcomeDlg::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("mediainfo"));
     return 0;
 }
-    
+
 
 void CWelcomeDlg::clipboardUpdated()
 {
@@ -258,7 +258,7 @@ void CWelcomeDlg::lastRegionAvailabilityChanged(bool available) {
     if (item->Visible != available)
     {
         item->Visible = available;
-        ListBox.InvalidateRect(&item->ItemRect, false); 
+        ListBox.InvalidateRect(&item->ItemRect, false);
     }
 }
 
@@ -275,7 +275,7 @@ LRESULT CWelcomeDlg::OnClipboardClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     SendMessage(GetParent(), WM_COMMAND, MAKELONG(ID_PASTE,1), 0); // Sending "Ctrl+V" to parent window (WizardDlg)
     return 0;
 }
-    
+
 LRESULT CWelcomeDlg::OnAddFolderClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("addfolder"));
@@ -300,7 +300,7 @@ LRESULT CWelcomeDlg::OnViewHistoryClick(WORD /*wNotifyCode*/, WORD /*wID*/, HWND
     dlg.DoModal(m_hWnd);
     return 0;
 }
-    
+
 LRESULT CWelcomeDlg::OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     WizardDlg->executeFunc(_T("reuploadimages"));
     return 0;

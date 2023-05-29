@@ -797,6 +797,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             Pages[PageID] = tmp;
             Pages[PageID]->WizardDlg=this;
             tmp->Create(m_hWnd,rc);
+            tmp->SetWindowPos(0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             break;
 
         case wpVideoGrabberPage:
@@ -805,6 +806,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             Pages[PageID]=tmp1;
             Pages[PageID]->WizardDlg=this;
             tmp1->Create(m_hWnd,rc);
+            tmp1->SetWindowPos(0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             break;
 
         case wpMainPage:
@@ -813,6 +815,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
             Pages[PageID]=tmp2;
             Pages[PageID]->WizardDlg=this;
             tmp2->Create(m_hWnd,rc);
+            tmp2->SetWindowPos(0, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
             break;
 
         case wpUploadSettingsPage:
