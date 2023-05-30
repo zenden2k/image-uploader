@@ -14,7 +14,7 @@ baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
 clientId <- "a49c34035aa8418d9a77ff24e0660719";
 clientSecret <- "f9496665e3494022a00b7dbe9a5f0d9e";
 
-function regex_simple(data, regStr, start) {
+function _RegexSimple(data, regStr, start) {
     local ex = regexp(regStr);
     local res = ex.capture(data, start);
     local resultStr = "";
@@ -24,7 +24,7 @@ function regex_simple(data, regStr, start) {
         return resultStr;
 }
 
-function reg_replace(str, pattern, replace_with) {
+function _RegReplace(str, pattern, replace_with) {
     local resultStr = str;
     local res;
     local start = 0;
@@ -85,11 +85,11 @@ function _ParseAlbumList(data,list,parentid)
             res = ex.search(data, start);
             if (res != null){
                 response = data.slice(start, res.end);
-                local href = regex_simple(response,"<d:href>(.+)</d:href>",0);
+                local href = _RegexSimple(response,"<d:href>(.+)</d:href>",0);
 
-                local resourceType =  regex_simple(response,"<d:resourcetype>(.+)</d:resourcetype>",0);
-                if (regex_simple(response, "(d:collection)", 0) != "") {
-                    local displayName = regex_simple(response,"<d:displayname>(.+)</d:displayname>",0);
+                local resourceType =  _RegexSimple(response,"<d:resourcetype>(.+)</d:resourcetype>",0);
+                if (_RegexSimple(response, "(d:collection)", 0) != "") {
+                    local displayName = _RegexSimple(response,"<d:displayname>(.+)</d:displayname>",0);
                     album.setId(href);
                     if (href == "/" ) {
                         displayName += " (/)";
@@ -141,7 +141,7 @@ function _LoadAlbumList(list) {
                 }
                 local folder = CFolderItem();
                 local path = item.path;
-                path = reg_replace(path, "disk:", "") + "/";
+                path = _RegReplace(path, "disk:", "") + "/";
                 folder.setId(path);
                 folder.setTitle(item.name);
                 folder.setSummary("");
@@ -309,13 +309,6 @@ function Authenticate() {
     }
 
     login <- ServerParams.getParam("Login");
-    local pass = ServerParams.getParam("Password");
-
-    if(login == "" || pass=="")
-    {
-        WriteLog("error","E-mail and password should not be empty!");
-        return 0;
-    }
 
     return 0;
 }
@@ -457,7 +450,7 @@ function UploadFile(FileName, options) {
                     href = t.href;
                     method = t.method;
                 } catch ( ex ) {
-                    href = regex_simple(data, "href\":\"(.+)\"", 0);
+                    href = _RegexSimple(data, "href\":\"(.+)\"", 0);
                     method = "GET";
                 }
                 nm.setMethod(method);
@@ -469,7 +462,7 @@ function UploadFile(FileName, options) {
                         local t = ParseJSON(nm.responseBody());
                         viewUrl = t.public_url;
                     } catch ( ex ) {
-                        viewUrl = regex_simple(data, "public_url\":\"(.+)\"", 0);
+                        viewUrl = _RegexSimple(data, "public_url\":\"(.+)\"", 0);
                     }
                     options.setViewUrl(viewUrl);
                     return 1;
@@ -524,7 +517,7 @@ function UploadFile(FileName, options) {
         _CheckResponseCode();
         local data = nm.responseBody();
 
-        local viewUrl = regex_simple(data,"<public_url xmlns=\"urn:yandex:disk:meta\">(.+)</public_url>",0);
+        local viewUrl = _RegexSimple(data,"<public_url xmlns=\"urn:yandex:disk:meta\">(.+)</public_url>",0);
 
         options.setViewUrl(viewUrl);
     } catch ( ex ) {

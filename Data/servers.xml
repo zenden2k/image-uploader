@@ -248,9 +248,9 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub" />
 	</Server>
-    <!--<Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
+    <Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
+	</Server>
     <Server Name="2i.cz" Authorize="0" Type="image" Plugin="2i">
 		<Actions>
 		</Actions>

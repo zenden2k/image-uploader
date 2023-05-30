@@ -133,7 +133,7 @@ void CleanUpFunctions() {
 bool LoadScriptTranslation() {
     if ( !translationRoot ) {
         translationRoot = new Json::Value();
-        std::string absolutePath = GetScriptsDirectory() + "Lang/" + GetAppLanguageFile() + ".json";
+        std::string absolutePath = GetScriptsDirectory() + "Lang/" + GetAppLocale() + ".json";
         std::string jsonText;
         if ( !IuCoreUtils::ReadUtf8TextFile(absolutePath, jsonText) ) {
             return false;

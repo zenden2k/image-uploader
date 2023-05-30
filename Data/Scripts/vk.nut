@@ -40,7 +40,7 @@ function OnUrlChangedCallback(data) {
     local reg = CRegExp("^" +redirectUrlEscaped, "");
     if ( reg.match(data.url) ) {
         local br = data.browser;
-        //DebugMessage(br.getDocumentBody(), true);
+
         local regError = CRegExp("error=([^&]+)", "");
         if ( regError.match(data.url) ) {
             WriteLog("warning", regError.getMatch(regMatchOffset+0));
@@ -98,7 +98,7 @@ function Authenticate() {
         } catch ( ex ) {
         }
 
-        if ( time() < tokenTime + expiresIn ) {
+        if (time() + 10 < tokenTime + expiresIn) { 
             return 1;
         }
     }
@@ -139,12 +139,20 @@ function IsAuthenticated() {
         } catch ( ex ) {
         }
 
-        if ( time() > tokenTime + expiresIn ) {
+        if ( time() + 10 > tokenTime + expiresIn) {
             return 0;
         }
         return 1;
     }
     return 0;
+}
+
+function DoLogout() {
+    ServerParams.setParam("token", "");
+    ServerParams.setParam("userId", "");
+    ServerParams.setParam("tokenTime", "");
+    ServerParams.setParam("expiresIn", "");
+    return 1;
 }
 
 function GetFolderList(list) {
