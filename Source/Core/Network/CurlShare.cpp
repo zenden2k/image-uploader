@@ -1,4 +1,4 @@
-﻿#include "CurlShare.h"
+#include "CurlShare.h"
 #include "Core/Logging.h"
 
 CurlShare::CurlShare()
@@ -45,11 +45,11 @@ CURLSH* CurlShare::getHandle() const
 }
 
 void CurlShare::lockData(CURL *handle, curl_lock_data data, curl_lock_access, void *useptr){
-    auto pthis = reinterpret_cast<CurlShare*>(useptr);
+    auto pthis = static_cast<CurlShare*>(useptr);
     pthis->mutexes_[data].lock();
 }
 /* unlock callback */
 void CurlShare::unlockData(CURL *handle, curl_lock_data data, void *useptr){
-    auto pthis = reinterpret_cast<CurlShare*>(useptr);
+    auto pthis = static_cast<CurlShare*>(useptr);
     pthis->mutexes_[data].unlock();
 }

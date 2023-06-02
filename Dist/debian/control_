@@ -4,6 +4,7 @@ Section: misc
 Architecture: YOUR_ARCHITECTURE
 Installed-Size: 15000
 Maintainer: Sergey Svistunov <zenden2k@gmail.com>
+Homepage: https://svistunov.dev/imageuploader-cli
 Description: Zenden Image Uploader CLI
  Console utility that allows you to upload files to image/file 
  hosting servers without necessity to visit their websites.

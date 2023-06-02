@@ -1,4 +1,7 @@
-﻿function _RegReplace(str, pattern, replace_with) {
+﻿const CLIENT_ID = "327179857936-lcpkeaoidkl5cru001tpvv2mudi5ok7g.apps.googleusercontent.com";
+const CLIENT_SECRET = "49GuU_mFjyY-9zjCNB3E0FV7";
+
+function _RegReplace(str, pattern, replace_with) {
     local resultStr = str;	
     local res;
     local start = 0;
@@ -21,8 +24,6 @@ function Authenticate() {
     local login = ServerParams.getParam("Login");
     local scope = "https://www.googleapis.com/auth/photoslibrary https://www.googleapis.com/auth/photoslibrary.sharing";
     //local redirectUrl = "urn:ietf:wg:oauth:2.0:oob";
-    local clientSecret = "49GuU_mFjyY-9zjCNB3E0FV7";
-    local clientId = "327179857936-lcpkeaoidkl5cru001tpvv2mudi5ok7g.apps.googleusercontent.com";
 
     if(login == "" ) {
         WriteLog("error", "E-mail should not be empty!");
@@ -52,8 +53,8 @@ function Authenticate() {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
             nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", clientId); 
-            nm.addQueryParam("client_secret", clientSecret); 
+            nm.addQueryParam("client_id", CLIENT_ID); 
+            nm.addQueryParam("client_secret", CLIENT_SECRET); 
             nm.addQueryParam("grant_type", "refresh_token"); 
             nm.doPost("");
             if ( _CheckResponse() ) {
@@ -103,7 +104,7 @@ function Authenticate() {
 
     local redirectUrl = "http://127.0.0.1:" + port + "/";
 
-    local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+clientId;
+    local url = "https://accounts.google.com/o/oauth2/auth?scope="+ nm.urlEncode(scope) +"&redirect_uri="+redirectUrl+"&response_type=code&"+ "client_id="+CLIENT_ID;
     ShellOpenUrl(url);
     server.start();
 
@@ -114,8 +115,8 @@ function Authenticate() {
     
     nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
     nm.addQueryParam("code", confirmCode); 
-    nm.addQueryParam("client_id", clientId); 
-    nm.addQueryParam("client_secret", clientSecret); 
+    nm.addQueryParam("client_id", CLIENT_ID); 
+    nm.addQueryParam("client_secret", CLIENT_SECRET); 
     nm.addQueryParam("redirect_uri", redirectUrl); 
     nm.addQueryParam("grant_type", "authorization_code"); 
     nm.doPost("");
@@ -168,11 +169,11 @@ function RefreshToken() {
             // Refresh access token
             nm.setUrl("https://www.googleapis.com/oauth2/v3/token");
             nm.addQueryParam("refresh_token", refreshToken);
-            nm.addQueryParam("client_id", clientId);
-            nm.addQueryParam("client_secret", clientSecret);
+            nm.addQueryParam("client_id", CLIENT_ID);
+            nm.addQueryParam("client_secret", CLIENT_SECRET);
             nm.addQueryParam("grant_type", "refresh_token");
             nm.doPost("");
-            if (__CheckResponse()) {
+            if (_CheckResponse()) {
                 local data =  nm.responseBody();
                 local t = ParseJSON(data);
                 if ("access_token" in t) {

@@ -267,9 +267,9 @@ class NetworkClient: public INetworkClient
 
         static size_t read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
         static int ProgressFunc(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
-        static int private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in);
-        int private_writer(char *data, size_t size, size_t nmemb);
-        int private_header_writer(char *data, size_t size, size_t nmemb);
+        static size_t private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in);
+        size_t private_writer(char *data, size_t size, size_t nmemb);
+        size_t private_header_writer(char *data, size_t size, size_t nmemb);
         size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
         static int private_seek_callback(void *userp, curl_off_t offset, int origin);
         static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
@@ -278,7 +278,7 @@ class NetworkClient: public INetworkClient
         void private_cleanup_before();
         void private_cleanup_after();
         bool private_on_finish_request();
-        void private_initTransfer();
+        void private_init_transfer();
         void private_checkResponse();
         public:
         /*! @cond PRIVATE */
@@ -296,7 +296,7 @@ class NetworkClient: public INetworkClient
         int64_t m_uploadingFileReadBytes;
         std::string m_uploadData;
         ActionType m_currentActionType;
-        int m_nUploadDataOffset;
+        size_t m_nUploadDataOffset;
         CallBackData m_bodyFuncData;
         ProgressCallback m_progressCallbackFunc;
         CallBackData m_headerFuncData;

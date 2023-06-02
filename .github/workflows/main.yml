@@ -62,7 +62,6 @@ jobs:
           ${{github.workspace}}/Build/GUI/Release/ImageUploader.exe
           ${{github.workspace}}/Build/CLI/Release/CLI.exe
           ${{github.workspace}}/Build/Tests/Release/Tests.exe
-          ${{github.workspace}}/Build/ServersChecker/Release/ServersChecker.exe
   ubuntu:
     name: run on ubuntu
     runs-on: ubuntu-22.04

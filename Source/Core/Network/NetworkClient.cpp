@@ -44,14 +44,6 @@
 #include <openssl/engine.h>
 #endif
 
-/*#ifdef _MSC_VER
-    #if defined(USE_OPENSSL) 
-        #pragma comment(lib, "libcurl_openssl.lib")
-    #else
-        #pragma comment(lib, "libcurl.lib")
-    #endif
-#endif*/
-
 #if defined(_WIN32) && defined(CURL_WIN32_UTF8_FILENAMES)
     #define UTF8_FILENAME(name) name
 #else
@@ -77,7 +69,6 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 }*/
 
 #if defined(USE_OPENSSL) 
-char CertFileName[1024] = "";
 
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
@@ -103,6 +94,8 @@ unsigned long thread_id()
 }
 
 // TODO: remove this function
+// OpenSSL 1.1.0+ doesn't require these callbacks can be safely used in multi-threaded applications
+// provided that support for the underlying OS threading API is built-in.
 void init_locks()
 {
     int i;
@@ -130,6 +123,31 @@ void kill_locks()
 }
 #endif
 
+struct CurlInitializer {
+    std::string certFileName;
+
+    CurlInitializer() {
+        curl_global_init(CURL_GLOBAL_ALL);
+#ifdef _WIN32
+        wchar_t buffer[1024] = { 0 };
+        if (GetModuleFileNameW(nullptr, buffer, 1024) != 0) {
+            int len = lstrlenW(buffer);
+            for (int i = len; i >= 0; i--) {
+                if (buffer[i] == '\\') {
+                    buffer[i + 1] = 0;
+                    break;
+                }
+            }
+            certFileName = IuCoreUtils::WstringToUtf8(buffer) + "curl-ca-bundle.crt";
+        }
+#endif
+    }
+
+    ~CurlInitializer() {
+        curl_global_cleanup();
+    }
+};
+
 }
 
 int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
@@ -143,7 +161,7 @@ int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsockty
     return 0;
 }
 
-int NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
+size_t NetworkClient::private_static_writer(char *data, size_t size, size_t nmemb, void *buffer_in)
 {
     auto* cbd = static_cast<CallBackData*>(buffer_in);
     NetworkClient* nm = cbd->nmanager;
@@ -189,14 +207,14 @@ void NetworkClient::clearProxy() {
     curl_easy_setopt(curl_handle, CURLOPT_PROXYAUTH, NULL);
 }
 
-int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
+size_t NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
 {
     if(!m_OutFileName.empty())
     {
         if(!m_hOutFile)
             if ((m_hOutFile = IuCoreUtils::FopenUtf8(m_OutFileName.c_str(), "wb")) == nullptr) {
                 LOG(ERROR) << "Unable to create output file:" << std::endl << m_OutFileName;
-                throw NetworkClient::AbortedException("Unable to create output file");
+                throw AbortedException("Unable to create output file");
             }
                
         fwrite(data, size,nmemb, m_hOutFile);
@@ -206,7 +224,7 @@ int NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
     return size * nmemb;
 }
 
-int NetworkClient::private_header_writer(char *data, size_t size, size_t nmemb)
+size_t NetworkClient::private_header_writer(char *data, size_t size, size_t nmemb)
 {
     m_headerBuffer.append(data, size * nmemb);
     return size * nmemb;
@@ -239,6 +257,7 @@ std::mutex NetworkClient::_mutex;
 NetworkClient::NetworkClient()
 {
     curl_init();
+    static NetworkClientInternal::CurlInitializer initializer;
     enableResponseCodeChecking_ = true;
     m_hOutFile = nullptr;
     chunkOffset_ = -1;
@@ -250,7 +269,7 @@ NetworkClient::NetworkClient()
     m_uploadingFile = nullptr;
     *m_errorBuffer = 0;
     m_progressCallbackFunc = nullptr;
-    curl_handle = curl_easy_init(); // Initializing libcurl
+    curl_handle = curl_easy_init();
     m_bodyFuncData.funcType = CallBackFuncType::funcTypeBody;
     m_bodyFuncData.nmanager = this;
     m_UploadBufferSize = 1048576;
@@ -285,7 +304,7 @@ NetworkClient::NetworkClient()
 #endif
      */
 #if defined(_WIN32) && defined(USE_OPENSSL)
-    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, NetworkClientInternal::CertFileName);
+    curl_easy_setopt(curl_handle, CURLOPT_CAINFO, initializer.certFileName.c_str());
 #endif
     //if (_is_openssl || !WinUtils::IsWine())
     {
@@ -358,7 +377,11 @@ void NetworkClient::closeFileList(std::vector<FILE *>& files)
 
 bool NetworkClient::doUploadMultipartData()
 {
-    private_initTransfer();
+    if (m_method.empty()) {
+        setMethod("POST");
+    }
+    private_apply_method();
+    private_init_transfer();
     std::vector<FILE *> openedFiles;
 
     struct curl_httppost *formpost=nullptr;
@@ -371,23 +394,13 @@ bool NetworkClient::doUploadMultipartData()
         {
             if(it->isFile)
             {
-                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, NetworkClientInternal::simple_read_callback);
-                    //curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, NetworkClientInternal::simple_seek_callback);
+                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
+                    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
                                         std::string fileName = it->value;
-                    FILE * curFile = IuCoreUtils::FopenUtf8(it->value.c_str(), "rb"); /* open file to upload */
-                    if(!curFile) 
-                    {
-                        closeFileList(openedFiles);
-                        return false; /* can't continue */
-                    }
-                    openedFiles.push_back(curFile);
-                    // FIXME: > 2gb  file size & unicode filenames support on Windows
-                    uint64_t  curFileSize = IuCoreUtils::GetFileSize(fileName);
-
                     // Known bug in curl: https://github.com/curl/curl/issues/768
                     if (/*curFileSize > LONG_MAX*/  true ) { 
                         std::string ansiFileName = UTF8_FILENAME(fileName);
-                        ;
+                        
 #if defined(_WIN32) && !defined(CURL_WIN32_UTF8_FILENAMES)
                         //LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data with file names non representable in system locale is not supported";
 #endif
@@ -483,7 +496,7 @@ bool NetworkClient::doGet(const std::string & url)
     if(!url.empty())
         setUrl(url);
 
-    private_initTransfer();
+    private_init_transfer();
     if(!private_apply_method())
         curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1);
     m_currentActionType = ActionType::atGet;
@@ -493,7 +506,7 @@ bool NetworkClient::doGet(const std::string & url)
 
 bool NetworkClient::doPost(const std::string& data)
 {
-    private_initTransfer();
+    private_init_transfer();
     if(!private_apply_method())
    curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     std::string postData;
@@ -548,7 +561,7 @@ void NetworkClient::setUserAgent(const std::string& userAgentStr)
     m_userAgent = userAgentStr;
 }
  
-void NetworkClient::private_initTransfer()
+void NetworkClient::private_init_transfer()
 {
     private_cleanup_before();
     curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, m_userAgent.c_str());
@@ -614,24 +627,8 @@ void NetworkClient::curl_init() {
     if (!_curl_init) {
 #ifdef USE_OPENSSL
         NetworkClientInternal::init_locks(); // init locks should be called BEFORE curl_global_init
-#endif
-
-    curl_global_init(CURL_GLOBAL_ALL);
-
-#if defined(WIN32) && defined(USE_OPENSSL)
-            using namespace NetworkClientInternal;
-            GetModuleFileNameA(0, CertFileName, 1023);
-            int i, len = lstrlenA(CertFileName);
-            for (i = len; i >= 0; i--) {
-                if (CertFileName[i] == '\\') {
-                    CertFileName[i + 1] = 0;
-                    break;
-                }
-            }
-            strcat(CertFileName, "curl-ca-bundle.crt");
-#endif
-        atexit(&curl_cleanup);
         _curl_init = true;
+#endif
     }
 }
 
@@ -711,6 +708,8 @@ void NetworkClient::private_cleanup_before()
     m_ResponseHeaders.clear();
     internalBuffer.clear();
     m_headerBuffer.clear();
+    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 }
 
 void NetworkClient::private_cleanup_after()
@@ -762,14 +761,14 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
         }
         retcode = fread(ptr, size, nmemb, m_uploadingFile);
         if (chunkOffset_ != -1) {
-            retcode = std::min<>((int64_t)retcode, chunkOffset_ + m_currentUploadDataSize - pos);
+            retcode = std::min<int64_t>((int64_t)retcode, chunkOffset_ + m_currentUploadDataSize - pos);
         }
         m_uploadingFileReadBytes += retcode;
     } else
     {
-        int wantsToRead = size * nmemb;
+        size_t wantsToRead = size * nmemb;
         // dont even try to remove "<>" brackets!!
-        int canRead = std::min<>((int)m_uploadData.size()-m_nUploadDataOffset, (int)wantsToRead);
+        size_t canRead = std::min<>(m_uploadData.size() - m_nUploadDataOffset, wantsToRead);
         memcpy(ptr, m_uploadData.data(), canRead);
         m_nUploadDataOffset += canRead;
         retcode = canRead;
@@ -806,7 +805,6 @@ int NetworkClient::private_seek_callback(void *userp, curl_off_t offset, int ori
     }
 }
 
-
 bool NetworkClient::doUpload(const std::string& fileName, const std::string &data)
 {
     if(!fileName.empty())
@@ -840,6 +838,8 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
         m_currentUploadDataSize = m_CurrentFileSize;
         m_currentActionType = ActionType::atPost;
     }
+
+    private_init_transfer();
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
     curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
@@ -849,10 +849,9 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
     
-    if ( m_method != "PUT" ) {
+    /*if (m_method != "PUT") {
         addQueryHeader("Content-Length", IuCoreUtils::Int64ToString(m_currentUploadDataSize));
-    }
-    private_initTransfer();
+    }*/
 
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     
@@ -933,7 +932,6 @@ std::string NetworkClient::getCurlResultString()
     //curl_free(str);
     return res;
 }
-
 
 void NetworkClient::setCurlShare(CurlShare* share)
 {
