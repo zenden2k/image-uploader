@@ -708,6 +708,7 @@ void NetworkClient::private_cleanup_before()
     m_ResponseHeaders.clear();
     internalBuffer.clear();
     m_headerBuffer.clear();
+    curl_easy_setopt(curl_handle, CURLOPT_READDATA, stdin);
     curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 }

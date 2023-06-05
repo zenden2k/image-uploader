@@ -10,13 +10,16 @@ project(ImageUploader)
 
 set(IU_ENABLE_MEGANZ ON CACHE BOOL "Enable support of mega.nz")
 set(IU_USE_OPENSSL ON CACHE BOOL "Use OpenSSL library for secured connections")
+set(IU_ENABLE_SFTP ON CACHE BOOL "Use LibSSH2 for SFTP connections")
+set(IU_ENABLE_MEDIAINFO ON CACHE BOOL "Use MediaInfo")
+
 if(WIN32)
 	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
 endif()
 set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
-
+set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -28,13 +31,13 @@ conan_add_remote(NAME zenden2k INDEX 1
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
-if (MSVC)
-    
+if (MSVC)   
     add_definitions("/MP")
     add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
 endif()
 
 if (IU_STATIC_RUNTIME) 
+	add_definitions(-DIU_STATIC_RUNTIME)
 	if(MSVC)
 		if(POLICY CMP0091)
 			cmake_policy(SET CMP0091 NEW)
@@ -80,9 +83,12 @@ if (IU_ENABLE_FFMPEG)
 	add_definitions(-DIU_ENABLE_FFMPEG)
 endif()
 
+if(IU_ENABLE_MEDIAINFO)
+	add_definitions(-DIU_ENABLE_MEDIAINFO)
+endif()
+
 if (WIN32)
-# -DPCRE_STATIC 
-    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DGOOGLE_GLOG_DLL_DECL= -DCURL_WIN32_UTF8_FILENAMES)
+    add_definitions(-DUNICODE -D_UNICODE -DWIN32_LEAN_AND_MEAN -DGOOGLE_GLOG_DLL_DECL= -DCURL_WIN32_UTF8_FILENAMES -DGDIPVER=0x0100 -D_WTL_NO_CSTRING -D_ATL_NO_OLD_NAMES)
     if (IU_USE_OPENSSL)
         add_definitions(-DUSE_OPENSSL)
     endif()
@@ -95,8 +101,13 @@ if(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS -DWINVER=0x0601 -D_WIN32_WINNT=0x0601)
 endif(MSVC)
 
+add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DNOMINMAX)
+
+if(IU_ENABLE_MEGANZ)
+    add_definitions(-DIU_ENABLE_MEGANZ)
+endif()
+
 SET(COMMON_DEPS boost/1.78.0
-				openssl/1.1.1s
 				libcurl/7.87.0
 				pcre/8.45
 				uriparser/0.9.5
@@ -105,19 +116,27 @@ SET(COMMON_DEPS boost/1.78.0
 				jsoncpp/1.9.5
 				sqlite3/3.36.0
 				base64/0.4.0
-				glog/0.5.0
-				cryptopp/8.5.0
-				c-ares/1.17.2
-				libuv/1.42.0
+#				glog/0.6.0@zenden2k/stable
+				glog/0.6.0
 				libwebp/1.2.1
-				libmediainfo/22.03
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
 )
 
+if (IU_USE_OPENSSL)
+	list(APPEND COMMON_DEPS 
+		openssl/1.1.1s
+    )
+endif()
+	
 if (IU_ENABLE_MEGANZ)
-	list(APPEND COMMON_DEPS megaio/3.5.2@zenden2k/stable)
+	list(APPEND COMMON_DEPS 
+	    megaio/3.5.2@zenden2k/stable 
+	    cryptopp/8.5.0 
+	    c-ares/1.17.2
+		libuv/1.42.0
+    )
 endif()
 
 if (WIN32)
@@ -139,6 +158,29 @@ if (IU_ENABLE_FFMPEG AND NOT(WIN32))
         ffmpeg:with_vdpau=False
         ffmpeg:with_vulkan=False
 	)	
+endif()
+
+if (IU_ENABLE_SFTP) 
+	add_definitions(-DIU_ENABLE_SFTP)
+	list(APPEND ADDITIONAL_OPTIONS 
+		libcurl:with_libssh2=True
+	)						
+endif()
+
+if (IU_ENABLE_MEDIAINFO) 
+	list(APPEND COMMON_DEPS 
+		libmediainfo/22.03
+	)						
+endif()
+
+if(WIN32 AND NOT IU_USE_OPENSSL)
+	list(APPEND ADDITIONAL_OPTIONS 
+		libcurl:with_ssl=schannel
+	)	
+else()
+	list(APPEND ADDITIONAL_OPTIONS 
+		libcurl:with_ssl=openssl
+	)					
 endif()
 	
 conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
@@ -166,7 +208,7 @@ conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 						boost:without_timer=True 
 						boost:without_type_erasure=True
 						boost:without_wave=True
-						libcurl:with_libssh2=True
+#						glog:with_gflags=False
 						${ADDITIONAL_OPTIONS}
 						)
 
@@ -179,7 +221,7 @@ SET(msvc_link_setting "")
 #endif()	
 
 foreach(TYPE ${CONFIGURATION_TYPES})
-    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE})
+    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE} ARCH ${IU_ARCH} )
     conan_cmake_install(PATH_OR_REFERENCE .
                         BUILD missing
                         SETTINGS ${settings})
@@ -191,7 +233,9 @@ endforeach()
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
 find_package(Boost CONFIG COMPONENTS program_options REQUIRED)
-find_package(OpenSSL CONFIG REQUIRED)
+if (IU_USE_OPENSSL)
+    find_package(OpenSSL CONFIG REQUIRED)
+endif()	
 find_package(CURL CONFIG REQUIRED)
 find_package(PCRE CONFIG REQUIRED)
 find_package(uriparser CONFIG REQUIRED)
@@ -199,15 +243,19 @@ find_package(ZLIB CONFIG REQUIRED)
 find_package(uriparser CONFIG REQUIRED)
 find_package(base64 CONFIG REQUIRED)
 find_package(jsoncpp CONFIG REQUIRED)
-find_package(Libssh2 CONFIG REQUIRED)
+#find_package(Libssh2 CONFIG REQUIRED)
 find_package(SQLite3 CONFIG REQUIRED)
 find_package(minizip CONFIG REQUIRED)
 find_package(glog CONFIG REQUIRED)
-find_package(cryptopp CONFIG REQUIRED)
-find_package(c-ares CONFIG REQUIRED)
-find_package(libuv CONFIG REQUIRED)
+if (IU_ENABLE_MEGANZ)
+	find_package(cryptopp CONFIG REQUIRED)
+	#find_package(c-ares CONFIG REQUIRED)
+	#find_package(libuv CONFIG REQUIRED)
+endif()
 find_package(WebP CONFIG REQUIRED)
-find_package(MediaInfoLib CONFIG REQUIRED) 
+if (IU_ENABLE_MEDIAINFO)
+	find_package(MediaInfoLib CONFIG REQUIRED) 
+endif()	
 if(IU_ENABLE_MEGANZ)
 	find_package(megaio CONFIG REQUIRED) 
 endif()	
@@ -233,17 +281,10 @@ if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/win32/)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/WTL/)
-	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
 
 link_directories(${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
  
-add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DNOMINMAX)
-
-if(IU_ENABLE_MEGANZ)
-    add_definitions(-DIU_ENABLE_MEGANZ)
-endif()
-
 if(WIN32)
 	include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
     link_directories(${CMAKE_SOURCE_DIR}/../Contrib/Lib/)
@@ -251,27 +292,30 @@ else()
     include_directories(${CONAN_INCLUDE_DIRS} ${OPENSSL_INCLUDE_DIR})
 endif()
 
-set(COMMON_LIBS_LIST Boost::Boost CURL::libcurl uriparser::uriparser ZLIB::ZLIB minizip::minizip jsoncpp::jsoncpp Libssh2::Libssh2 glog::glog PCRE::PCRE SQLite::SQLite3 squirrel::squirrel squirrel::sqstdlib gumbo-parser::gumbo-parser base64::base64)
-if (IU_ENABLE_MEGANZ)
-    list(APPEND COMMON_LIBS_LIST megaio::megaio cryptopp::cryptopp-static c-ares::c-ares MediaInfoLib::MediaInfoLib)
-endif()
+set(COMMON_LIBS_LIST "")
+
+#if (IU_ENABLE_SFTP)
+#	list(APPEND COMMON_LIBS_LIST Libssh2::Libssh2)
+#endif()
 
 #if (IU_ENABLE_MEGANZ)
 #	list(APPEND COMMON_LIBS_LIST libuv::libuv)
 #endif()
     
-if (IU_USE_OPENSSL)
-	list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
-endif()
+#if (IU_USE_OPENSSL)
+#	list(APPEND COMMON_LIBS_LIST OpenSSL::OpenSSL)
+#endif()
 
 if(WIN32)
-	list(APPEND COMMON_LIBS_LIST Oleacc Userenv Psapi Iphlpapi Winhttp WebP::webpdemux WebP::webpdecoder Crypt32 Wldap32 Urlmon)
+	list(APPEND COMMON_LIBS_LIST Oleacc Userenv Psapi Iphlpapi Winhttp Crypt32 Wldap32 Urlmon)
 	
-	if (IU_ENABLE_WEBVIEW2)
-		list(APPEND COMMON_LIBS_LIST WebView2Guid.lib WebView2LoaderStatic.lib version.lib)
-	endif()	
+#	if (IU_ENABLE_WEBVIEW2)
+
+		#list(APPEND COMMON_LIBS_LIST WebView2Guid.lib)
+#		list(APPEND COMMON_LIBS_LIST WebView2LoaderStatic.lib version.lib)
+#	endif()	
 else()
-    list(APPEND COMMON_LIBS_LIST dl base64::base64  OpenSSL::OpenSSL pthread rt gflags)
+    list(APPEND COMMON_LIBS_LIST dl pthread rt gflags)
 endif()
 
 add_subdirectory(Core)	
@@ -288,3 +332,9 @@ if(IU_BUILD_QIMAGEUPLOADER)
 endif()	
 #enable_testing() 
 add_subdirectory(Tests)	
+
+#add_custom_target(graphviz ALL
+#    COMMAND ${CMAKE_COMMAND} "--graphviz=iu_graph.dot" .
+#    COMMAND dot -Tpng iu_graph.dot -o iu_graph.png
+ #   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+#)

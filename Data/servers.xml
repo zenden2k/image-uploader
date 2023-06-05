@@ -309,4 +309,12 @@
 		</Actions>
 		<Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
+	<!-- 429 Too Many Requests
+		<Server Name="pasteboard.co" MaxThreads="1">
+		<Actions>
+			<Action Type="upload" Url="https://pasteboard.co/upload" PostParams="file=%filename%;cb=124;" RegExp="url&quot;: *&quot;([^&quot;]+)" 
+				AssignVars="ViewUrl:0;" Referer="https://pasteboard.co/"/>
+		</Actions>
+		<Result DownloadUrlTemplate="$(ViewUrl)" />
+	</Server>-->
 </Servers>

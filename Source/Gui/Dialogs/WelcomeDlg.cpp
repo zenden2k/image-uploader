@@ -24,7 +24,9 @@
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
+#ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
+#endif
 #include "WizardDlg.h"
 
 // CWelcomeDlg
@@ -78,10 +80,10 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT,LOADICO(IDI_ICONLASTREGION));
     
     ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
-
+#ifdef IU_ENABLE_MEDIAINFO
     if(MediaInfoHelper::IsMediaInfoAvailable())
         ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, static_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
-
+#endif
     ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS));
     ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
     

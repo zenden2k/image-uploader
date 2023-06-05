@@ -26,9 +26,12 @@
 #include "Video/VideoGrabber.h"
 #include "Core/Images/GdiPlusImage.h"
 #include "Gui/Dialogs/SettingsDlg.h"
-#include "Func/MediaInfoHelper.h"
+
 #include "Func/WinUtils.h"
+#ifdef IU_ENABLE_MEDIAINFO
+#include "Func/MediaInfoHelper.h"
 #include "MediaInfoDlg.h"
+#endif
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CryptoUtils.h"
@@ -439,7 +442,9 @@ bool CVideoGrabberPage::OnShow()
 {
     SetNextCaption(TR("Grab"));
     fileEdit_.SetWindowText(fileName_);
+#ifdef IU_ENABLE_MEDIAINFO
     ::ShowWindow(GetDlgItem(IDC_FILEINFOBUTTON), MediaInfoHelper::IsMediaInfoAvailable() ? SW_SHOW : SW_HIDE);
+#endif
     SetGrabbingStatusText(_T(""));
     EnableNext(true);
     ShowPrev();
@@ -530,10 +535,12 @@ LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL&
 
 LRESULT CVideoGrabberPage::OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+#ifdef IU_ENABLE_MEDIAINFO
     CMediaInfoDlg dlg;
     CString fileName;
     fileEdit_.GetWindowText(fileName);
     dlg.ShowInfo(m_hWnd, fileName);
+#endif
     return 0;
 }
 

@@ -6,6 +6,12 @@
 #include "SystemUtils_unix.h"
 #endif
 
+
+#ifndef _M_ARM64
+#define ENABLE_CPU_FEATURES_TEST
+#endif
+
+#ifdef ENABLE_CPU_FEATURES_TEST
 // Useful link:
 // https://code.google.com/p/chromium/codesearch#chromium/src/base/cpu.cc&sq=package:chromium&type=cs
 #ifdef _WIN32
@@ -44,6 +50,8 @@ static inline unsigned long long __xgetbv(unsigned int index){
 #include <immintrin.h>
 #ifndef _XCR_XFEATURE_ENABLED_MASK
 #define _XCR_XFEATURE_ENABLED_MASK
+#endif
+
 #endif
 
 namespace IuCoreUtils
@@ -88,7 +96,9 @@ std::string GetCpuFeatures() {
     bool HW_AVX512DQ = false;   //  AVX512 Doubleword + Quadword
     bool HW_AVX512IFMA = false; //  AVX512 Integer 52-bit Fused Multiply-Add
     bool HW_AVX512VBMI = false; //  AVX512 Vector Byte Manipulation Instructions
+    bool avxSupported = false;
 
+#ifdef ENABLE_CPU_FEATURES_TEST
     int info[4];
     cpuid(info, 0);
     int nIds = info[0];
@@ -143,8 +153,6 @@ std::string GetCpuFeatures() {
         HW_XOP = (info[2] & ((int)1 << 11)) != 0;
     }
 
-    bool avxSupported = false;
-
     // Checking for AVX requires 3 things:
     // 1) CPUID indicates that the OS uses XSAVE and XRSTORE
     //     instructions (allowing saving YMM registers on context
@@ -166,7 +174,7 @@ std::string GetCpuFeatures() {
         unsigned long long xcrFeatureMask = __xgetbv(/*_XCR_XFEATURE_ENABLED_MASK*/0);
         avxSupported = (xcrFeatureMask & 0x6) || false;
     }
-
+#endif
     std::string res;
     if (HW_SSE2) {
         res += "sse2,";

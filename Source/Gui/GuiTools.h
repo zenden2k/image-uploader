@@ -27,7 +27,7 @@
 namespace GuiTools
 {
     int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
-    bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...);
+    bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, ...);
     void GetCheck(HWND dlg, int id, bool& check);
     bool GetCheck(HWND dlg, int id);
     void SetCheck(HWND dlg, int id, bool check);
@@ -35,7 +35,6 @@ namespace GuiTools
     void EnableNextN(HWND Control, int n, bool Enable);
     bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = 0);
     void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF finish, bool Horizontal);
-    bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...);
     RECT GetDialogItemRect(HWND dialog, int itemId);
     void ShowDialogItem(HWND dlg, int itemId, bool show);
     void EnableDialogItem(HWND dlg, int itemId, bool enable);
