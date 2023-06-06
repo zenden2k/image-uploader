@@ -19,7 +19,10 @@ endif()
 set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
-set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
+#set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
+set(IU_HOST_PROFILE "" CACHE STRING "Conan host profile")
+set(IU_BUILD_PROFILE "" CACHE STRING "Conan build profile")
+
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
@@ -36,7 +39,7 @@ if (MSVC)
     add_compile_options(/wd4091) # disable warning C4091: 'typedef ': ignored on left of '*' when no variable is declared
 endif()
 
-if (IU_STATIC_RUNTIME) 
+if (IU_STATIC_RUNTIME)#AND IU_PROFILE_HOST STREQUAL "" 
 	add_definitions(-DIU_STATIC_RUNTIME)
 	if(MSVC)
 		if(POLICY CMP0091)
@@ -103,6 +106,8 @@ endif(MSVC)
 
 add_definitions(-DTIXML_USE_STL -DSCRAT_USE_EXCEPTIONS -D_SQ64 -DBOOST_BIND_NO_PLACEHOLDERS -DBOOST_ALL_NO_LIB -DNOMINMAX)
 
+SET(ADDITIONAL_OPTIONS "")
+
 if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)
 endif()
@@ -116,8 +121,8 @@ SET(COMMON_DEPS boost/1.78.0
 				jsoncpp/1.9.5
 				sqlite3/3.36.0
 				base64/0.4.0
-#				glog/0.6.0@zenden2k/stable
-				glog/0.6.0
+				glog/0.6.0@zenden2k/stable
+#				glog/0.6.0
 				libwebp/1.2.1
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
@@ -126,17 +131,31 @@ SET(COMMON_DEPS boost/1.78.0
 
 if (IU_USE_OPENSSL)
 	list(APPEND COMMON_DEPS 
-		openssl/1.1.1s
+#		openssl/3.1.1
+		openssl/1.1.1u
     )
 endif()
 	
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS 
 	    megaio/3.5.2@zenden2k/stable 
-	    cryptopp/8.5.0 
+	    cryptopp/8.7.0 
 	    c-ares/1.17.2
 		libuv/1.42.0
     )
+	if (NOT IU_ENABLE_MEDIAINFO)
+		list(APPEND ADDITIONAL_OPTIONS 
+			megaio:UseMediainfo=False
+		)
+	endif()
+	#if (WIN32 AND IU_ARCH STREQUAL "armv8")
+	#	list(APPEND ADDITIONAL_OPTIONS 
+	#		megaio:UseOpenSsl=False
+	#		megaio:UseCurl=True
+	#		megaio:UseCurlSchannel=True
+	#		megaio:UseMediainfo=False
+	#	)
+	#endif()
 endif()
 
 if (WIN32)
@@ -151,10 +170,6 @@ if (IU_ENABLE_FFMPEG AND NOT(WIN32))
 #  Error occurs while building this package:
 #		msys2/cci.latest: Invalid ID: Only Windows x64 supported
 #  So we have to build ffmpeg separately.
-endif()
-
-SET(ADDITIONAL_OPTIONS "")
-if (IU_ENABLE_FFMPEG AND NOT(WIN32))
 	list(APPEND ADDITIONAL_OPTIONS 
 		ffmpeg:shared=False
 		ffmpeg:with_vaapi=False
@@ -180,10 +195,18 @@ if (IU_ENABLE_MEDIAINFO)
 	)						
 endif()
 
+if(IU_USE_OPENSSL)
+	list(APPEND ADDITIONAL_OPTIONS 
+		openssl:shared=False
+#		openssl:no_zlib=True
+	)	
+endif()
+
 if(WIN32 AND NOT IU_USE_OPENSSL)
 	list(APPEND ADDITIONAL_OPTIONS 
 		libcurl:with_ssl=schannel
 	)	
+
 else()
 	list(APPEND ADDITIONAL_OPTIONS 
 		libcurl:with_ssl=openssl
@@ -225,17 +248,28 @@ SET(msvc_link_setting "")
 #   SET(CONFIGURATION_TYPES "Release")
 #else()
 	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
-#endif()	
+#endif()
 
-foreach(TYPE ${CONFIGURATION_TYPES})
-    conan_cmake_autodetect(settings BUILD_TYPE ${TYPE} ARCH ${IU_ARCH} )
-    conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD missing
-                        SETTINGS ${settings})
-						
-	# Linux dirty fix:  
-	# BUILD openjpeg libx264 libx265
-endforeach()
+if (IU_HOST_PROFILE STREQUAL "") 
+	#message("Building with host profile '" ${IU_HOST_PROFILE} "', build profile '" ${IU_BUILD_PROFILE} "'" )
+	foreach(TYPE ${CONFIGURATION_TYPES})
+		conan_cmake_autodetect(settings BUILD_TYPE ${TYPE} ) #ARCH ${IU_ARCH}
+		conan_cmake_install(PATH_OR_REFERENCE .
+						BUILD missing
+						SETTINGS ${settings}
+		)
+				
+		# Linux dirty fix:  
+		# BUILD openjpeg libx264 libx265
+	endforeach()
+	
+else()
+	conan_cmake_install(PATH_OR_REFERENCE .
+                        BUILD missing                    
+						PROFILE_HOST ${IU_HOST_PROFILE} #"vs2022_arm64"
+						PROFILE_BUILD ${IU_BUILD_PROFILE} #vs2022_arm64
+	)
+endif()
 
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
@@ -255,7 +289,7 @@ find_package(SQLite3 CONFIG REQUIRED)
 find_package(minizip CONFIG REQUIRED)
 find_package(glog CONFIG REQUIRED)
 if (IU_ENABLE_MEGANZ)
-	find_package(cryptopp CONFIG REQUIRED)
+#	find_package(cryptopp CONFIG REQUIRED)
 	#find_package(c-ares CONFIG REQUIRED)
 	#find_package(libuv CONFIG REQUIRED)
 endif()

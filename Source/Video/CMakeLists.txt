@@ -51,7 +51,7 @@ target_include_directories(iuvideo PRIVATE ${CMAKE_SOURCE_DIR}/../Contrib/Includ
 
 if (IU_ENABLE_FFMPEG)
     if (WIN32)
-		target_link_libraries(iuvideo PRIVATE avcodec avformat avutil swscale)
+		target_link_libraries(iuvideo PUBLIC avcodec avformat avutil swscale)
 	else()
 		target_link_libraries(iuvideo PRIVATE ffmpeg::avcodec ffmpeg::avformat ffmpeg::avutil ffmpeg::swscale)
 	endif()	

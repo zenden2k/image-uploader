@@ -18,10 +18,23 @@ temporary files and call cmake:
 ```
 mkdir Build
 cd Build
-cmake <path_to_imageuploader_source>\Source
 ```
 
-The last command will generate project files for your default compiler (it should be Visual Studio). 
+```
+cmake <path_to_imageuploader_source>\Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONFIGURATION_TYPES:STRING=Release -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=Release
+```
+
+Another way is to pass conan profile name to cmake:
+
+```
+cmake <path_to_imageuploader_source>\Source -G "Visual Studio 17 2022" -DIU_HOST_PROFILE=default
+```
+
+Then open solution in Visual Studio **or** run command:
+```
+cmake --build . --config Release
+```
+
 The more convenient way to achieve the same is to use `cmake-gui`.
 In cmake-gui you can see all compiling options and change them easily.
 
@@ -54,14 +67,14 @@ cmake ../Source  -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CONF
 cmake --build . --config Release
 ```
 
+If you want to compile qimageuploader (GUI) you have to install Qt 5 dev libraries before compiling:
+```
+sudo apt install qt5-default
+```
+
 You may also need these packages for creating a .deb package:
 ```
 sudo apt-get install autoconf automake libtool fakeroot
-```
-
-If you want to compile qimageuploader (GUI) you have to install Qt 5 dev libraries before compiling:
-```
-sudo apt install qt5-default libavcodec-dev libavformat-dev libavutil-dev libswscale-dev
 ```
 
 and pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
@@ -70,13 +83,13 @@ and pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
 
 WTL             http://sourceforge.net/projects/wtl/
 
-libcurl         http://curl.haxx.se/libcurl/ (patched version)
+libcurl         http://curl.haxx.se/libcurl/ 
 
 openssl         https://www.openssl.org
 
 zlib            http://www.zlib.net
 
-Boost           http://www.boost.org (patched version)
+Boost           http://www.boost.org
 
 pcre            http://www.pcre.org
 
@@ -87,8 +100,6 @@ squirrel        http://squirrel-lang.org (patched version)
 sqrat		    http://scrat.sourceforge.net (patched version)
 
 ffmpeg          https://www.ffmpeg.org
-
-Boost.Process   https://github.com/zenden2k/boost-process-utf8 (patched version with utf-8 support)
 
 tinyxml         http://sourceforge.net/projects/tinyxml/
 

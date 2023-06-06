@@ -250,7 +250,8 @@ target_link_libraries(iucore PUBLIC
 )
 
 if (IU_ENABLE_MEGANZ)
-    target_link_libraries(iucore PUBLIC megaio::megaio cryptopp::cryptopp-static 
+    target_link_libraries(iucore PUBLIC megaio::megaio
+    #cryptopp::cryptopp-static 
     #c-ares::c-ares
     )
 endif()
