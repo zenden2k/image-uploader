@@ -144,7 +144,10 @@ if (WIN32)
 endif()	
 
 if (IU_ENABLE_FFMPEG AND NOT(WIN32))
-  list(APPEND COMMON_DEPS ffmpeg/4.4.3)
+    list(APPEND COMMON_DEPS 
+	    ffmpeg/4.4.3 
+	    xz_utils/5.4.0
+    )
 #  Error occurs while building this package:
 #		msys2/cci.latest: Invalid ID: Only Windows x64 supported
 #  So we have to build ffmpeg separately.
@@ -157,6 +160,10 @@ if (IU_ENABLE_FFMPEG AND NOT(WIN32))
 		ffmpeg:with_vaapi=False
         ffmpeg:with_vdpau=False
         ffmpeg:with_vulkan=False
+		ffmpeg:disable_encoders=ANY
+		ffmpeg:disable_all_muxers=True
+		ffmpeg:with_programs=False
+		ffmpeg:disable_protocols=True
 	)	
 endif()
 
