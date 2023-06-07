@@ -211,6 +211,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #ifdef IU_ENABLE_FFMPEG
     memoText += CString(L"IU_ENABLE_FFMPEG\r\n");
 #endif
+#ifdef IU_FFMPEG_STANDALONE
+    memoText += CString(L"IU_FFMPEG_STANDALONE\r\n");
+#endif
 #ifdef IU_STATIC_RUNTIME
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");
 #endif

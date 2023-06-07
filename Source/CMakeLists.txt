@@ -16,7 +16,8 @@ set(IU_ENABLE_MEDIAINFO ON CACHE BOOL "Use MediaInfo")
 if(WIN32)
 	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
 endif()
-set(IU_ENABLE_FFMPEG OFF CACHE BOOL "Use FFmpeg libraries")
+set(IU_ENABLE_FFMPEG ON CACHE BOOL "Use FFmpeg libraries")
+set(IU_FFMPEG_STANDALONE OFF CACHE BOOL "Don't Use FFmpeg Conan package")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
@@ -84,6 +85,9 @@ endif()
 
 if (IU_ENABLE_FFMPEG)
 	add_definitions(-DIU_ENABLE_FFMPEG)
+	if (IU_FFMPEG_STANDALONE)
+		add_definitions(-DIU_FFMPEG_STANDALONE)
+	endif()
 endif()
 
 if(IU_ENABLE_MEDIAINFO)
@@ -139,7 +143,7 @@ endif()
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS 
 	    megaio/3.5.2@zenden2k/stable 
-	    cryptopp/8.5.0  
+	    cryptopp/8.7.0  
 	    c-ares/1.17.2
 		libuv/1.42.0
     )
@@ -148,6 +152,10 @@ if (IU_ENABLE_MEGANZ)
 			megaio:UseMediainfo=False
 		)
 	endif()
+	#list(APPEND ADDITIONAL_OPTIONS 
+	#		megaio:UseCryptopp=False
+	#)
+	
 	#if (WIN32 AND IU_ARCH STREQUAL "armv8")
 	#	list(APPEND ADDITIONAL_OPTIONS 
 	#		megaio:UseOpenSsl=False
@@ -162,7 +170,7 @@ if (WIN32)
 	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
 endif()	
 
-if (IU_ENABLE_FFMPEG AND NOT(WIN32))
+if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
     list(APPEND COMMON_DEPS 
 	    ffmpeg/4.4.3 
 	    xz_utils/5.4.0
@@ -170,15 +178,32 @@ if (IU_ENABLE_FFMPEG AND NOT(WIN32))
 #  Error occurs while building this package:
 #		msys2/cci.latest: Invalid ID: Only Windows x64 supported
 #  So we have to build ffmpeg separately.
+	if(NOT WIN32)
+		list(APPEND ADDITIONAL_OPTIONS 
+			ffmpeg:with_vaapi=False
+			ffmpeg:with_vdpau=False
+			ffmpeg:with_vulkan=False
+		)
+	endif()
 	list(APPEND ADDITIONAL_OPTIONS 
 		ffmpeg:shared=False
-		ffmpeg:with_vaapi=False
-        ffmpeg:with_vdpau=False
-        ffmpeg:with_vulkan=False
-		ffmpeg:disable_encoders=ANY
+		ffmpeg:disable_all_encoders=True
 		ffmpeg:disable_all_muxers=True
 		ffmpeg:with_programs=False
 		ffmpeg:disable_protocols=True
+		ffmpeg:with_libmp3lame=False
+		ffmpeg:with_libfdk_aac=False
+		ffmpeg:avdevice=False
+		ffmpeg:avfilter=False
+		ffmpeg:with_freetype=False
+		ffmpeg:with_openjpeg=False
+		ffmpeg:with_vorbis=False
+		ffmpeg:with_opus=False
+		ffmpeg:with_libx264=False
+		ffmpeg:with_libvpx=False
+		ffmpeg:with_libiconv=False
+		ffmpeg:with_libx265=False
+		ffmpeg:with_openh264=False
 	)	
 endif()
 
@@ -307,7 +332,7 @@ if(WIN32)
 	find_package(base-classes CONFIG REQUIRED)
 endif()	
 
-if (IU_ENABLE_FFMPEG AND NOT(WIN32))
+if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE)
 	find_package(ffmpeg CONFIG REQUIRED)
 endif()
   
@@ -317,6 +342,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/bin")
 
 include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include)
 include_directories(${CMAKE_SOURCE_DIR}/)
+include_directories(${PROJECT_BINARY_DIR}/include)
 
 if(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/Libs/)
