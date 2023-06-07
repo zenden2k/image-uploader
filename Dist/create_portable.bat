@@ -12,7 +12,7 @@ if "%IU_APP_VER%" == "" (
 
 echo Creating distribution archive for Image Uploader version %IU_APP_VER% %IU_BUILD_NUMBER%
 
-set temp_dir=portable\temp
+set temp_dir=..\Build\portable\temp
 set filename=image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z
 
 if exist "%temp_dir%\*" (
@@ -97,21 +97,20 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
-Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\Gui\Release\av*.dll" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
-Copy "..\Build\Gui\Release\sw*.dll" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
-rem Copy "Dll\gdiplus.dll" %temp_dir%\
-Copy "..\Build\Gui\Release\curl-ca-bundle.crt" %temp_dir%\
-if ERRORLEVEL 1 goto CopyFailed
 
-if exist "%temp_dir%\Lang\default.lng" (
-    del "%temp_dir%\Lang\default.lng"
-)
+rem Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll" %temp_dir%\
+rem if ERRORLEVEL 1 goto CopyFailed
+rem Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
+rem if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Build\Gui\Release\av*.dll" %temp_dir%\
+#if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Build\Gui\Release\sw*.dll" %temp_dir%\
+#if ERRORLEVEL 1 goto CopyFailed
+
+
+rem Copy "Dll\gdiplus.dll" %temp_dir%\
+Copy "curl-ca-bundle.crt" %temp_dir%\
+if ERRORLEVEL 1 goto CopyFailed
 
 if exist "%temp_dir%\Data\Scripts\test.nut" (
     del "%temp_dir%\Data\Scripts\test.nut"
@@ -151,15 +150,15 @@ goto End
 
 :CreateDirFailed
 echo Directory creation failed.
-goto End
+exit 1
 
 :CopyFailed
 echo Copying files failed.
-goto End
+exit 2
 
 :ZipFailed
 echo Zip command failed.
-goto End
+exit 3
 
 :End
 echo Finished.
