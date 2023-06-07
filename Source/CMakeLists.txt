@@ -139,7 +139,7 @@ endif()
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS 
 	    megaio/3.5.2@zenden2k/stable 
-	    cryptopp/8.7.0 
+	    cryptopp/8.5.0  
 	    c-ares/1.17.2
 		libuv/1.42.0
     )
