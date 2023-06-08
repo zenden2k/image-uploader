@@ -76,7 +76,7 @@ Name: "{code:GetDataFolder}\Image Uploader\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Image Uploader\Update"; Permissions: users-modify
 [Files]
 Source: "..\Build\Gui\Release\Image Uploader.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\Build\Gui\Release\curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Docs\*"; DestDir: "{app}\Docs"; Excludes: ".gitignore"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -98,11 +98,11 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils";
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
 Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
 Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
-Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
-Source: "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
-Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
-Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+;Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+;Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
 
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files

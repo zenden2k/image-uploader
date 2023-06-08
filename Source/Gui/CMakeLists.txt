@@ -362,7 +362,7 @@ target_precompile_headers(GUI PRIVATE ../stdafx.h)
 #   PRE_BUILD
 #    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/versioninc.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<CONFIG>
 #)
-#add_custom_command(TARGET GUI
-#    POST_BUILD
-#    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:GUI> $<CONFIG>
-#)
+add_custom_command(TARGET GUI
+    POST_BUILD
+    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:GUI> $<CONFIG>
+)

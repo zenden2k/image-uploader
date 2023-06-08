@@ -98,14 +98,14 @@ Copy "..\Data\Utils\*" %temp_dir%\Data\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 rem Copy "..\Data\Servers\*.xml" %temp_dir%\Data\Servers\
 
-rem Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration.dll" %temp_dir%\
+Copy "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll" %temp_dir%\
 rem if ERRORLEVEL 1 goto CopyFailed
-rem Copy "..\Source\ShellExt\Build\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
+Copy "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll" %temp_dir%\
 rem if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Build\Gui\Release\av*.dll" %temp_dir%\
-#if ERRORLEVEL 1 goto CopyFailed
+rem if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Build\Gui\Release\sw*.dll" %temp_dir%\
-#if ERRORLEVEL 1 goto CopyFailed
+rem if ERRORLEVEL 1 goto CopyFailed
 
 
 rem Copy "Dll\gdiplus.dll" %temp_dir%\

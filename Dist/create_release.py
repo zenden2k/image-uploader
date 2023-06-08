@@ -19,7 +19,7 @@ NUGET_ARCH_MAPPING = {
 }
 
 BUILD_TARGETS = [
-    {
+     {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -30,8 +30,25 @@ BUILD_TARGETS = [
         'cmake_platform': "Win32",
        # "-DIU_FFMPEG_STANDALONE=On", 
         'cmake_args': ["-DIU_ENABLE_WEBVIEW2=On", "-DIU_ENABLE_FFMPEG=On"],
-        'enable_webview2': False
-    }
+        'enable_webview2': False,
+        'shell_ext_arch': 'Win32',
+        'shell_ext_64bit_arch': 'x64'
+    }, 
+    """ {
+        'os': "Windows",
+        'compiler': "VS2019",
+        'build_type': "Release",
+        'arch': 'x86_64',
+        'host_profile': '',
+        'build_profile': DEFAULT_BUILD_PROFILE,
+        'cmake_generator': CMAKE_GENERATOR_VS2019,
+        'cmake_platform': "x64",
+       # "-DIU_FFMPEG_STANDALONE=On", 
+        'cmake_args': ["-DIU_ENABLE_WEBVIEW2=On", "-DIU_ENABLE_FFMPEG=On"],
+        'enable_webview2': True,
+        'shell_ext_arch': 'Win32',
+        'shell_ext_64bit_arch': 'x64'
+    } """
 ]
 
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
@@ -39,6 +56,19 @@ COMMON_BUILD_FOLDER = "Build_Release_Temp"
 DEFAULT_GIT_BRANCH = "cmake_arm64"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
 VERSION_HEADER_FILE = "versioninfo.h"
+
+def check_program(args, message=''):
+    try:
+        proc = subprocess.run(args)
+        if proc.returncode == 0:
+            return
+    except Exception:
+        pass
+    print("Checking " + " ".join(args) + " failed")
+    if message:
+        print(message)
+    sys.exit(1)              
+
 
 def mkdir_if_not_exists(dir):
     if not os.path.exists(dir):
@@ -109,7 +139,7 @@ def generate_version_header(filename, inc_version):
                     print("New IU build: {}".format(build_number))
                 else:
                     build_number = int(res.group(2))
-                
+                result[define_name] = str(build_number)
                 out_text += "#define {} \"{}\"\n".format(define_name, str(build_number))
             elif define_name == "IU_BUILD_DATE":
                 now = datetime.datetime.now()
@@ -137,14 +167,22 @@ if len(sys.argv) > 1:
 else:
     git_branch = DEFAULT_GIT_BRANCH
 
-proc = subprocess.run(["git", "--version"])
-if proc.returncode != 0:
-    print("Checking git failed")
+check_program(["git", "--version"])
+
+check_program(["cmake", "--version"])
+
+conan_output = ""
+try:
+    conan_output = subprocess.check_output(["iscc", "/?"]).decode("utf-8").strip() 
+except subprocess.CalledProcessError as exception:
+    conan_output = str(exception.output)
+    pass
+except Exception:
+    print("!!!Please install Inno Setup and add it to PATH env variable")
     sys.exit(1)
 
-proc = subprocess.run(["cmake", "--version"])
-if proc.returncode != 0:
-    print("Checking cmake failed")
+if not "Inno Setup" in conan_output:
+    print("Please install Inno Setup and add it to PATH env variable")
     sys.exit(1)
 
 conan_output = subprocess.check_output(['conan', '--version']).decode("utf-8").strip() 
@@ -204,6 +242,10 @@ with cwd(repo_dir):
     proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
     if proc.returncode !=0:
         print("Cannot generate language files")
+    
+    proc = subprocess.run("wsl -e /bin/bash generate.sh", cwd=repo_dir_abs + "/Dist/DocGen/")
+    if proc.returncode !=0:
+        print("Cannot generate documentation")
 
 for target in BUILD_TARGETS:
     target_full_name = get_target_full_name(target)
@@ -214,7 +256,7 @@ for target in BUILD_TARGETS:
             os.mkdir(build_dir_path)
         except OSError as error: 
             print(error)
-            break
+            exit(1)
     build_dir_path_abs = os.path.abspath(build_dir_path)
     host_profile = try_conan_host_profile(target, CONAN_PROFILES_REL_PATH, target.get("host_profile"))
     build_profile = try_conan_build_profile(target, CONAN_PROFILES_REL_PATH, target.get("build_profile"), host_profile)
@@ -236,7 +278,7 @@ for target in BUILD_TARGETS:
             proc = subprocess.run(["nuget", "install", "Microsoft.Web.WebView2", "-Version", "1.0.1823.32", "-ExcludeVersion", "-NonInteractive","-OutputDirectory", "packages"])
             if proc.returncode !=0:
                 print("Nuget WebView2 install failed")
-                break
+                exit(1)
             nuget_package_path = "packages/Microsoft.Web.WebView2/build/native/";
             nuget_arch =  NUGET_ARCH_MAPPING[arch]
             shutil.copyfile(nuget_package_path + nuget_arch + "/WebView2LoaderStatic.lib", "lib/WebView2LoaderStatic.lib")    
@@ -246,7 +288,7 @@ for target in BUILD_TARGETS:
             proc = subprocess.run(["nuget", "install", "Microsoft.Windows.ImplementationLibrary", "-Version", "1.0.230411.1", "-ExcludeVersion", "-NonInteractive", "-OutputDirectory", "packages"])
             if proc.returncode !=0:
                 print("Nuget WIL install failed")
-                break
+                exit(1)
             nuget_package_path = "packages/Microsoft.Windows.ImplementationLibrary/include/";
             #shutil.copy2(nuget_package_path + "wil/", "include/wil/")
             files = os.listdir(nuget_package_path + "wil")
@@ -269,28 +311,59 @@ for target in BUILD_TARGETS:
         proc = subprocess.run(command)
         if proc.returncode !=0:
             print("Generate failed")
-            break
+            exit(1)
 
         command = ["cmake", "--build", ".", "--config", target.get("build_type")]
         print("Running command:", " ".join(command))
         proc = subprocess.run(command)
         if proc.returncode !=0:
             print("Build failed")
-            break
+            exit(1)
 
-        print("Running command:", repo_dir_abs + r"\Dist\create_portable.bat")
-        proc = subprocess.run(repo_dir_abs + r"\Dist\create_portable.bat", cwd=repo_dir_abs + r'\Dist\\')
-        if proc.returncode !=0:
-            print("Create archive failed")
-            break
+        if target["os"] == "Windows":
+            #ext_native_arch = 
+            if target["shell_ext_arch"]:
+                # /p:Configuration="Release optimized";Platform=Win32
+                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
+                print("Running command:", " ".join(command))
+                proc = subprocess.run(command)
+                if proc.returncode !=0:
+                    print("Shell extension build failed")
+                    exit(1)
+            
+            if target["shell_ext_64bit_arch"]:
+                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
+                print("Running command:", " ".join(command))
+                proc = subprocess.run(command)
+                if proc.returncode !=0:
+                    print("Shell extension 64 bit Build failed")
+                    exit(1)
 
-        file_from = r"output\image-uploader-" + app_ver+"-build-"+ build_number+ "-openssl-portable.7z"
-        dir_to = outdir_abs + "\\" + app_ver+ "-build-"+build_number
-        mkdir_if_not_exists(dir_to)
-        file_to = dir_to + "\\" + "image-uploader-" + app_ver + "-build-"+ build_number+ ".7z"
-        print("Copy file from:", file_from)
-        print("Copy file to:", file_to)
-        shutil.copyfile(file_from, file_to)
+            print("Running command:", repo_dir_abs + r"\Dist\create_portable.bat")
+            proc = subprocess.run(repo_dir_abs + r"\Dist\create_portable.bat", cwd=repo_dir_abs + r'\Dist\\')
+            if proc.returncode !=0:
+                print("Create archive failed")
+                exit(1)
+
+            file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
+            dir_to = outdir_abs + "\\" + app_ver+ "-build-" + build_number
+            mkdir_if_not_exists(dir_to)
+            file_to = dir_to + "\\" + "image-uploader-" + app_ver + "-build-" + build_number + ".7z"
+            print("Copy file from:", file_from)
+            print("Copy file to:", file_to)
+            shutil.copyfile(file_from, file_to)
+
+            print("Running command:", repo_dir_abs + r"\Dist\create_portable.bat")
+            proc = subprocess.run(["iscc.exe", "/cc", "/dWIN64FILES", "iu_setup_script.iss", "/O"+build_dir_path_abs + r"\Installer"], cwd=repo_dir_abs + r'\Dist\\')
+            if proc.returncode !=0:
+                print("Create archive failed")
+                exit(1)
+
+            file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
+            file_to = dir_to + "\\" + "image-uploader-" + app_ver + "-build-" + build_number + "-"+target["arch"]+"-setup.exe"
+            print("Copy file from:", file_from)
+            print("Copy file to:", file_to)
+            shutil.copyfile(file_from, file_to)
 
     print("Target finished successfully:", target_full_name)
 print("Finish.")
