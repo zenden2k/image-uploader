@@ -37,6 +37,10 @@ SolidCompression=yes
 ;SignTool=zenden2k
 CloseApplications=yes
 CloseApplicationsFilter=*.exe
+ArchitecturesInstallIn64BitMode=x64 arm64
+#ifdef IU_ARCH
+ArchitecturesAllowed={#IU_ARCH}
+#endif
 
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
@@ -63,8 +67,12 @@ Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; Valu
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
+
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
+
+#ifdef IU_FFMPEG_STANDALONE
 Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked 
+#endif
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
@@ -101,9 +109,10 @@ Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIn
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
-;Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
-;Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
-
+#ifdef IU_FFMPEG_STANDALONE
+Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
+#endif
 
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 

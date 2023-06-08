@@ -33,6 +33,7 @@
 #include "Func/MediaInfoHelper.h"
 #endif
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Func/IuCommonFunctions.h"
 #include "Func/LangClass.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -148,6 +149,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
     memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
+    memoText += TR("Data file path:") + CString(_T("\r\n")) + IuCommonFunctions::GetDataFolder() + _T("\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
     CString targetPlatform = BOOST_PLATFORM;

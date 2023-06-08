@@ -5,9 +5,15 @@ import subprocess
 import shutil
 import os
 import stat
+import json
+import hashlib
 from contextlib import contextmanager
 
+TEST_MODE=True
 OUTDIR = "BuiltPackages"
+APP_NAME = "Zenden2k Image Uploader"
+IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
+
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019";
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022";
 
@@ -19,7 +25,7 @@ NUGET_ARCH_MAPPING = {
 }
 
 BUILD_TARGETS = [
-     {
+    {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -27,14 +33,13 @@ BUILD_TARGETS = [
         'host_profile': '',
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
-        'cmake_platform': "Win32",
-       # "-DIU_FFMPEG_STANDALONE=On", 
-        'cmake_args': ["-DIU_ENABLE_WEBVIEW2=On", "-DIU_ENABLE_FFMPEG=On"],
-        'enable_webview2': False,
+        'cmake_platform': "Win32", 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
+        'enable_webview2': True,
         'shell_ext_arch': 'Win32',
-        'shell_ext_64bit_arch': 'x64'
-    }, 
-    """ {
+        'shell_ext_64bit_arch': 'x64',
+    },  
+    {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -44,14 +49,15 @@ BUILD_TARGETS = [
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "x64",
        # "-DIU_FFMPEG_STANDALONE=On", 
-        'cmake_args': ["-DIU_ENABLE_WEBVIEW2=On", "-DIU_ENABLE_FFMPEG=On"],
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
-        'shell_ext_64bit_arch': 'x64'
-    } """
+        'shell_ext_64bit_arch': 'x64',
+        #'ffmpeg_standalone' : True,
+        'installer_arch': 'x64'
+    } 
 ]
 
-IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 DEFAULT_GIT_BRANCH = "cmake_arm64"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
@@ -70,10 +76,69 @@ def check_program(args, message=''):
     sys.exit(1)              
 
 
+
+def write_json_header(jsonfile, version_header_defines):
+    now = datetime.datetime.now()
+
+    dictionary = {
+        "product": APP_NAME,
+        "build_number":  version_header_defines['IU_BUILD_NUMBER'],
+        "version":  version_header_defines['IU_APP_VER'],
+        "version_clean": version_header_defines['IU_APP_VER_CLEAN'],
+        "date": now.strftime('%Y-%m-%d'),
+        "branch_name": version_header_defines['IU_BRANCH_NAME'],
+        "commit_hash": version_header_defines['IU_COMMIT_HASH'],
+        "files": []
+    }
+ 
+    with open(jsonfile, "w") as outfile:
+        json.dump(dictionary, outfile, indent=4)
+    
+    return dictionary
+
+def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subproduct = ''):
+    if relativePath[0] == '/':
+        relativePath = relativePath[1:]
+    filename = os.path.basename(path)
+    hash = calc_sha256_from_file(path)
+    with open(path + ".sha256", "w") as hash_file:
+        hash_file.write(hash + " *" + filename)
+
+    file = {
+        "name": name,
+        "target_name": get_target_full_name(target),
+        "arch": target.get("arch"),
+        "compiler": target.get("compiler"),\
+        "os": target.get("os"),
+        "filename": filename,
+        "path": relativePath,
+        "subproduct": subproduct,
+        "sha256": hash
+    }
+    dictionary["files"] += [file]
+    with open(jsonfile, "w") as outfile:
+        json.dump(dictionary, outfile, indent=4)
+    return dictionary
+
+def calc_sha256_from_file(filepath):
+    BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
+
+    sha256 = hashlib.sha256()
+
+    with open(filepath, 'rb') as f:
+        while True:
+            data = f.read(BUF_SIZE)
+            if not data:
+                break
+            sha256.update(data)
+
+    return sha256.hexdigest()
+
 def mkdir_if_not_exists(dir):
     if not os.path.exists(dir):
         try:
-            os.mkdir(dir)
+            os.makedirs(dir)
+            #os.mkdir(dir)
         except OSError as error: 
             print(error)
             exit(1)
@@ -171,24 +236,24 @@ check_program(["git", "--version"])
 
 check_program(["cmake", "--version"])
 
-conan_output = ""
+innosetup_output = ""
 try:
-    conan_output = subprocess.check_output(["iscc", "/?"]).decode("utf-8").strip() 
+    innosetup_output = subprocess.check_output(["iscc", "/?"]).decode("utf-8").strip() 
 except subprocess.CalledProcessError as exception:
-    conan_output = str(exception.output)
+    innosetup_output = str(exception.output)
     pass
 except Exception:
-    print("!!!Please install Inno Setup and add it to PATH env variable")
+    print("Please install Inno Setup and add it to PATH env variable")
     sys.exit(1)
 
-if not "Inno Setup" in conan_output:
+if not "Inno Setup" in innosetup_output:
     print("Please install Inno Setup and add it to PATH env variable")
     sys.exit(1)
 
 conan_output = subprocess.check_output(['conan', '--version']).decode("utf-8").strip() 
 reg = re.compile(r"Conan version ([\d]+)\.[\d\.]+", flags=re.IGNORECASE) 
 res = reg.match(conan_output) 
-print(conan_output)
+
 if res:
     conan_major_version = int(res.group(1))
     if conan_major_version != 1:
@@ -206,6 +271,8 @@ if not os.path.exists:
 mkdir_if_not_exists(OUTDIR)
 outdir_abs = os.path.abspath(OUTDIR)
 repo_dir = COMMON_BUILD_FOLDER + "/Repo"
+
+
 
 #if os.path.exists(COMMON_BUILD_FOLDER): 
 #    print("Directory exists, clearing directory...")
@@ -236,16 +303,28 @@ repo_dir_abs = os.path.abspath(repo_dir)
 shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/" + VERSION_HEADER_FILE)
 app_ver = version_header_defines["IU_APP_VER"]
 build_number = version_header_defines["IU_BUILD_NUMBER"]
+dist_directory = os.path.dirname(os.path.realpath(__file__))
+#with cwd(repo_dir):
+generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
 
-with cwd(repo_dir):
-    generate_version_header("Source/" + VERSION_HEADER_FILE, False)
-    proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
-    if proc.returncode !=0:
-        print("Cannot generate language files")
+proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
+if proc.returncode !=0:
+    print("Cannot generate language files")
     
-    proc = subprocess.run("wsl -e /bin/bash generate.sh", cwd=repo_dir_abs + "/Dist/DocGen/")
-    if proc.returncode !=0:
-        print("Cannot generate documentation")
+proc = subprocess.run("wsl -e /bin/bash generate.sh", cwd=repo_dir_abs + "/Dist/DocGen/")
+if proc.returncode !=0:
+    print("Cannot generate documentation")
+
+new_build_dir = outdir_abs + "/" + app_ver+ "-build-" + build_number; 
+mkdir_if_not_exists(new_build_dir)
+json_file_path = new_build_dir + "/build_info.json"
+json_data = write_json_header(json_file_path, version_header_defines)
+used_dist_dir = "/Dist/";
+
+if TEST_MODE:
+    if not os.path.islink(repo_dir_abs + "/Dist_Test"):
+        os.symlink(dist_directory, repo_dir_abs + "/Dist_Test")
+    used_dist_dir = "/Dist_Test/"
 
 for target in BUILD_TARGETS:
     target_full_name = get_target_full_name(target)
@@ -304,6 +383,12 @@ for target in BUILD_TARGETS:
                     "-DIU_BUILD_PROFILE=" + build_profile
                 ]
         
+        if target.get('ffmpeg_standalone'):
+            command += ["-DIU_FFMPEG_STANDALONE=On"]
+        
+        if target.get("enable_webview2"):
+            command += ["-DIU_ENABLE_WEBVIEW2=On"]
+
         if target.get("cmake_args"):
             command += target.get("cmake_args")
         
@@ -338,34 +423,76 @@ for target in BUILD_TARGETS:
                 if proc.returncode !=0:
                     print("Shell extension 64 bit Build failed")
                     exit(1)
-
-            print("Running command:", repo_dir_abs + r"\Dist\create_portable.bat")
-            proc = subprocess.run(repo_dir_abs + r"\Dist\create_portable.bat", cwd=repo_dir_abs + r'\Dist\\')
+            relative_path = r"/Windows/" 
+            package_os_dir = new_build_dir + relative_path
+            mkdir_if_not_exists(package_os_dir)
+            # Creating archive
+            command =  repo_dir_abs + used_dist_dir + r"create_portable.bat"
+            print("Running command:", command)
+            proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
             if proc.returncode !=0:
                 print("Create archive failed")
                 exit(1)
 
             file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
-            dir_to = outdir_abs + "\\" + app_ver+ "-build-" + build_number
-            mkdir_if_not_exists(dir_to)
-            file_to = dir_to + "\\" + "image-uploader-" + app_ver + "-build-" + build_number + ".7z"
+          
+            filename =  "image-uploader-" + app_ver + "-build-" + build_number + "-" + target["arch"] + ".7z"
+            file_to = package_os_dir + "\\" +filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
+            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
 
-            print("Running command:", repo_dir_abs + r"\Dist\create_portable.bat")
-            proc = subprocess.run(["iscc.exe", "/cc", "/dWIN64FILES", "iu_setup_script.iss", "/O"+build_dir_path_abs + r"\Installer"], cwd=repo_dir_abs + r'\Dist\\')
+            # Creating CLI archive (imgupload)
+            command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
+            print("Running command:", command)
+            proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
             if proc.returncode !=0:
                 print("Create archive failed")
                 exit(1)
 
-            file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
-            file_to = dir_to + "\\" + "image-uploader-" + app_ver + "-build-" + build_number + "-"+target["arch"]+"-setup.exe"
+            file_from = r"output\imgupload-{version}-build-{build}-cli.7z".format(version=app_ver,build=build_number ); 
+            filename = "image-uploader-cli-{version}-build-{build}-{arch}.7z".format(version=app_ver,
+                                                                                    build=build_number,
+                                                                                    arch=target["arch"])
+            file_to = package_os_dir +"\\"+filename
+            print("Copy file from:", file_from)
+            print("Copy file to:", file_to)
+            shutil.copyfile(file_from, file_to)
+            json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
+
+            # Creating installer for Windows
+            print("Running command:", repo_dir_abs + used_dist_dir + r"create_portable.bat")
+            args = ["iscc.exe", "/dWIN64FILES", "/O"+build_dir_path_abs + r"\Installer"]
+            if target.get('ffmpeg_standalone'):
+                args += ["/dIU_FFMPEG_STANDALONE"]
+
+            if target.get('installer_arch'):
+                args += ["/dIU_ARCH=" + target.get('installer_arch')]   
+
+            args += [repo_dir_abs + used_dist_dir + "iu_setup_script.iss"]
+
+            print("Running command:", " ".join(args))    
+            proc = subprocess.run(args, cwd=repo_dir_abs + used_dist_dir)
+            if proc.returncode !=0:
+                print("Create installer failed")
+                exit(1)
+
+            # Copying installer
+            file_from = r"Installer\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
+            filename = "image-uploader-" + app_ver + "-build-" + build_number + "-" + target["arch"]+"-setup.exe"
+            file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
 
+            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
+
+
     print("Target finished successfully:", target_full_name)
+
+if TEST_MODE:
+    os.unlink(repo_dir_abs + "/Dist_Test")
 print("Finish.")
 
   
