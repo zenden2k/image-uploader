@@ -183,6 +183,9 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
 			ffmpeg:with_vaapi=False
 			ffmpeg:with_vdpau=False
 			ffmpeg:with_vulkan=False
+			ffmpeg:with_libalsa=False
+			ffmpeg:with_xcb=False
+			ffmpeg:with_pulse=False
 		)
 	endif()
 	list(APPEND ADDITIONAL_OPTIONS 

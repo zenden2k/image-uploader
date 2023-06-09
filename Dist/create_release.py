@@ -24,8 +24,7 @@ NUGET_ARCH_MAPPING = {
     'x86': 'x86'
 }
 
-BUILD_TARGETS = [
-    {
+""" {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -55,7 +54,36 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         #'ffmpeg_standalone' : True,
         'installer_arch': 'x64'
-    } 
+    }, 
+    
+     {
+        'os': "Windows",
+        'compiler': "VS2019",
+        'build_type': "Release",
+        'arch': 'armv8',
+        'host_profile': 'windows_vs2019_arm64_release',
+        'build_profile': DEFAULT_BUILD_PROFILE,
+        'cmake_generator': CMAKE_GENERATOR_VS2019,
+        'cmake_platform': "ARM64", 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off"],
+        'enable_webview2': True,
+        'shell_ext_64bit_arch': 'ARM64',
+        'ffmpeg_standalone' : True,
+        'installer_arch': 'arm64'
+    },
+    """
+
+BUILD_TARGETS = [
+        {
+        'os': "Linux",
+        'compiler': "gcc",
+        'build_type': "Release",
+        'arch': 'x86_64',
+        'host_profile': 'default',
+        'build_profile': 'default',
+        'cmake_generator': 'Ninja Multi-Config', 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
+    },
 ]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
@@ -272,8 +300,6 @@ mkdir_if_not_exists(OUTDIR)
 outdir_abs = os.path.abspath(OUTDIR)
 repo_dir = COMMON_BUILD_FOLDER + "/Repo"
 
-
-
 #if os.path.exists(COMMON_BUILD_FOLDER): 
 #    print("Directory exists, clearing directory...")
 #    shutil.rmtree(COMMON_BUILD_FOLDER, onerror=del_rw)
@@ -375,14 +401,30 @@ for target in BUILD_TARGETS:
             shutil.copytree(nuget_package_path + "wil", include_path + "/wil", dirs_exist_ok=True)
         #Microsoft.Windows.ImplementationLibrary
 
+        if target.get('ffmpeg_standalone'):
+            src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/lib/"
+            if not os.path.exists(src_dir):
+                print("You must put ffmpeg libraries into", src_dir)
+            files=os.listdir(src_dir)
+            for fname in files:
+                shutil.copy2(os.path.join(src_dir,fname), lib_path)
+            src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/include/"
+            shutil.copytree(src_dir, include_path, dirs_exist_ok=True) 
+            src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/bin/"
+            dest_dir = "GUI/Release/"
+            shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.lib')) 
+
         #cmake ..\Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DIU_HOST_PROFILE=vs2019_x86_debug -DIU_BUILD_PROFILE=vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On 
         build_type = target.get("build_type")
-        command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"),"-A", target.get("cmake_platform"), "-DCMAKE_BUILD_TYPE=" + build_type, 
+        command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
                     "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
                     "-DIU_HOST_PROFILE=" + host_profile,
                     "-DIU_BUILD_PROFILE=" + build_profile
                 ]
-        
+        if target.get("cmake_platform"):
+            command += ["-A", target.get("cmake_platform")]
+        if target.get("os") == "Linux":
+            command =  ['wsl', '-e'] + command
         if target.get('ffmpeg_standalone'):
             command += ["-DIU_FFMPEG_STANDALONE=On"]
         
@@ -399,6 +441,9 @@ for target in BUILD_TARGETS:
             exit(1)
 
         command = ["cmake", "--build", ".", "--config", target.get("build_type")]
+        if target.get("os") == "Linux":
+            command =  ['wsl', '-e'] + command
+            
         print("Running command:", " ".join(command))
         proc = subprocess.run(command)
         if proc.returncode !=0:
@@ -407,7 +452,7 @@ for target in BUILD_TARGETS:
 
         if target["os"] == "Windows":
             #ext_native_arch = 
-            if target["shell_ext_arch"]:
+            if target.get("shell_ext_arch"):
                 # /p:Configuration="Release optimized";Platform=Win32
                 command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
                 print("Running command:", " ".join(command))
@@ -416,7 +461,7 @@ for target in BUILD_TARGETS:
                     print("Shell extension build failed")
                     exit(1)
             
-            if target["shell_ext_64bit_arch"]:
+            if target.get("shell_ext_64bit_arch"):
                 command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
@@ -426,6 +471,7 @@ for target in BUILD_TARGETS:
             relative_path = r"/Windows/" 
             package_os_dir = new_build_dir + relative_path
             mkdir_if_not_exists(package_os_dir)
+
             # Creating archive
             command =  repo_dir_abs + used_dist_dir + r"create_portable.bat"
             print("Running command:", command)
@@ -487,7 +533,10 @@ for target in BUILD_TARGETS:
             shutil.copyfile(file_from, file_to)
 
             json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
-
+        elif target["os"] == "Linux":
+            proc = subprocess.run(["wsl", "-e", "/bin/bash", "create-package.sh"], cwd=repo_dir_abs + used_dist_dir + "debian/")
+            if proc.returncode !=0:
+                print("Cannot generate documentation")
 
     print("Target finished successfully:", target_full_name)
 

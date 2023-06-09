@@ -37,7 +37,9 @@ SolidCompression=yes
 ;SignTool=zenden2k
 CloseApplications=yes
 CloseApplicationsFilter=*.exe
-ArchitecturesInstallIn64BitMode=x64 arm64
+#ifdef IU_ARCH
+ArchitecturesInstallIn64BitMode={#IU_ARCH}
+#endif
 #ifdef IU_ARCH
 ArchitecturesAllowed={#IU_ARCH}
 #endif
@@ -104,8 +106,8 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils";
 
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
-Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.old"; Flags: external skipifsourcedoesntexist
-Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.old"; Flags: external skipifsourcedoesntexist
+Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
+Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}";
 
@@ -141,6 +143,11 @@ function GetDataFolder(Param: String): String;
 begin
        Result := ExpandConstant('{commonappdata}')
       
+end;
+
+function MyRand(Param: string): string;
+begin
+  Result := IntToStr(Random(100000));
 end;
 
 function GetIconFileName(Param: String): String;
