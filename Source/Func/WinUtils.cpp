@@ -239,18 +239,18 @@ DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
 }
 
 
-// Создание ярлыка
-// Входные параметры:
-//  pwzShortCutFileName - путь и имя ярлыка, например, "C:\\Блокнот.lnk"
-//  Если не указан путь, ярлык будет создан в папке, указанной в следующем параметре.
-//  Прим.: Windows сама НЕ добавляет к имени расширение .lnk
-//  pszPathAndFileName  - путь и имя exe-файла, например, "C:\\Windows\\NotePad.Exe"
-//  pszWorkingDirectory - рабочий каталог, например, "C:\\Windows"
-//  pszArguments        - аргументы командной строки, например, "C:\\Doc\\Text.Txt"
-//  wHotKey             - горячая клавиша, например, для Ctrl+Alt+A     HOTKEY(HOTKEYF_ALT|HOTKEYF_CONTROL,'A')
-//  iCmdShow            - начальный вид, например, SW_SHOWNORMAL
-//  pszIconFileName     - путь и имя файла, содержащего иконку, например, "C:\\Windows\\NotePad.Exe"
-//  int iIconIndex      - индекс иконки в файле, нумеруется с 0
+// РЎРѕР·РґР°РЅРёРµ СЏСЂР»С‹РєР°
+// Р’С…РѕРґРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹:
+//  pwzShortCutFileName - РїСѓС‚СЊ Рё РёРјСЏ СЏСЂР»С‹РєР°, РЅР°РїСЂРёРјРµСЂ, "C:\\Р‘Р»РѕРєРЅРѕС‚.lnk"
+//  Р•СЃР»Рё РЅРµ СѓРєР°Р·Р°РЅ РїСѓС‚СЊ, СЏСЂР»С‹Рє Р±СѓРґРµС‚ СЃРѕР·РґР°РЅ РІ РїР°РїРєРµ, СѓРєР°Р·Р°РЅРЅРѕР№ РІ СЃР»РµРґСѓСЋС‰РµРј РїР°СЂР°РјРµС‚СЂРµ.
+//  РџСЂРёРј.: Windows СЃР°РјР° РќР• РґРѕР±Р°РІР»СЏРµС‚ Рє РёРјРµРЅРё СЂР°СЃС€РёСЂРµРЅРёРµ .lnk
+//  pszPathAndFileName  - РїСѓС‚СЊ Рё РёРјСЏ exe-С„Р°Р№Р»Р°, РЅР°РїСЂРёРјРµСЂ, "C:\\Windows\\NotePad.Exe"
+//  pszWorkingDirectory - СЂР°Р±РѕС‡РёР№ РєР°С‚Р°Р»РѕРі, РЅР°РїСЂРёРјРµСЂ, "C:\\Windows"
+//  pszArguments        - Р°СЂРіСѓРјРµРЅС‚С‹ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё, РЅР°РїСЂРёРјРµСЂ, "C:\\Doc\\Text.Txt"
+//  wHotKey             - РіРѕСЂСЏС‡Р°СЏ РєР»Р°РІРёС€Р°, РЅР°РїСЂРёРјРµСЂ, РґР»СЏ Ctrl+Alt+A     HOTKEY(HOTKEYF_ALT|HOTKEYF_CONTROL,'A')
+//  iCmdShow            - РЅР°С‡Р°Р»СЊРЅС‹Р№ РІРёРґ, РЅР°РїСЂРёРјРµСЂ, SW_SHOWNORMAL
+//  pszIconFileName     - РїСѓС‚СЊ Рё РёРјСЏ С„Р°Р№Р»Р°, СЃРѕРґРµСЂР¶Р°С‰РµРіРѕ РёРєРѕРЅРєСѓ, РЅР°РїСЂРёРјРµСЂ, "C:\\Windows\\NotePad.Exe"
+//  int iIconIndex      - РёРЅРґРµРєСЃ РёРєРѕРЅРєРё РІ С„Р°Р№Р»Рµ, РЅСѓРјРµСЂСѓРµС‚СЃСЏ СЃ 0
 bool CreateShortCut(
                                          LPCWSTR pwzShortCutFileName,
                                          LPCTSTR pszPathAndFileName,
@@ -266,7 +266,7 @@ bool CreateShortCut(
     HRESULT hRes;
     CoInitialize(NULL);
 
-    // Получение экземпляра компонента "Ярлык"
+    // РџРѕР»СѓС‡РµРЅРёРµ СЌРєР·РµРјРїР»СЏСЂР° РєРѕРјРїРѕРЅРµРЅС‚Р° "РЇСЂР»С‹Рє"
     hRes = CoCreateInstance(CLSID_ShellLink, 0,  CLSCTX_INPROC_SERVER, IID_IShellLink, reinterpret_cast<LPVOID*>(&pSL));
 
     if ( SUCCEEDED(hRes) )
@@ -289,11 +289,11 @@ bool CreateShortCut(
                             hRes = pSL->SetShowCmd(iCmdShow);
                             if ( SUCCEEDED(hRes) )
                             {
-                                // Получение компонента хранилища параметров
+                                // РџРѕР»СѓС‡РµРЅРёРµ РєРѕРјРїРѕРЅРµРЅС‚Р° С…СЂР°РЅРёР»РёС‰Р° РїР°СЂР°РјРµС‚СЂРѕРІ
                                 hRes = pSL->QueryInterface(IID_IPersistFile, reinterpret_cast<LPVOID*>(&pPF));
                                 if ( SUCCEEDED(hRes) )
                                 {
-                                    // Сохранение созданного ярлыка
+                                    // РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРѕР·РґР°РЅРЅРѕРіРѕ СЏСЂР»С‹РєР°
                                     hRes = pPF->Save(pwzShortCutFileName, TRUE);
                                     pPF->Release();
                                 }
@@ -433,7 +433,10 @@ bool IsWindows64Bit()
     } else {
         GetSystemInfo(&si);
     }
-    return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;    
+    return si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64
+        || si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_ARM64
+           || si.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_IA64
+    ;
 }
 
 CString GetSystemSpecialPath(int csidl)
@@ -977,7 +980,7 @@ float GetMonitorScaleFactor()
     /*MONITORINFOEX LogicalMonitorInfo;
     LogicalMonitorInfo.cbSize = sizeof(MONITORINFOEX);       
     GetMonitorInfo(hMonitor, &LogicalMonitorInfo);
-    int LogicalMonitorWidth = LogicalMonitorInfo.rcMonitor.right – LogicalMonitorInfo.rcMonitor.left;
+    int LogicalMonitorWidth = LogicalMonitorInfo.rcMonitor.right вЂ“ LogicalMonitorInfo.rcMonitor.left;
     int LogicalDesktopWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN);
     typedef LONG (WINAPI * QueryDisplayConfig_FuncType)(UINT32,UINT32 *,DISPLAYCONFIG_PATH_INFO *,UINT32 *);
     typedef LONG (WINAPI * GetDisplayConfigBufferSizes_FuncType) (UINT32, UINT32*,UINT32 *);

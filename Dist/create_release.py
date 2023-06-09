@@ -10,7 +10,7 @@ import hashlib
 from contextlib import contextmanager
 
 TEST_MODE=False
-OUTDIR = "BuiltPackages"
+OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
 
@@ -30,8 +30,11 @@ RESULT_ARCH_MAPPING = {
     'x86': 'x86'
 }
 
-""" 
-    """
+ALTERNATIVE_ARCH_DISPLAY_NAME = {
+    'armv8': 'ARM 64-bit',
+    'x86_64': "x86 64-bit",
+    'x86': 'x86 32-bit'
+}
 
 BUILD_TARGETS = [
     {
@@ -142,12 +145,13 @@ def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subp
     hash = calc_sha256_from_file(path)
     with open(path + ".sha256", "w") as hash_file:
         hash_file.write(hash + " *" + filename)
-
+    arch_alt = str(ALTERNATIVE_ARCH_DISPLAY_NAME.get(target.get("arch")))
     file = {
         "name": name,
         "target_name": get_target_full_name(target),
         "arch": get_out_arch_name(target),
-        "compiler": target.get("compiler"),\
+        "arch_alt": arch_alt,
+        "compiler": target.get("compiler"),
         "os": target.get("os"),
         "filename": filename,
         "path": relativePath,
@@ -541,7 +545,7 @@ for target in BUILD_TARGETS:
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
 
             # Creating installer for Windows
             print("Running command:", repo_dir_abs + used_dist_dir + r"create_portable.bat")
@@ -549,8 +553,8 @@ for target in BUILD_TARGETS:
             if target.get('ffmpeg_standalone'):
                 args += ["/dIU_FFMPEG_STANDALONE"]
 
-            if target.get('installer_arch'):
-                args += ["/dIU_ARCH=" + target.get('installer_arch')]   
+            #if target.get('installer_arch'):
+            args += ["/dIU_ARCH=" + str(target.get('installer_arch') or '')]   
 
             args += [repo_dir_abs + used_dist_dir + "iu_setup_script.iss"]
 
@@ -568,7 +572,7 @@ for target in BUILD_TARGETS:
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
 
-            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
+            json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
         elif target["os"] == "Linux":
             args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch")]
             working_dir = repo_dir_abs + used_dist_dir + "debian/"
@@ -587,7 +591,7 @@ for target in BUILD_TARGETS:
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
-            filename = "zenden-image-uploader-cli-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) +".deb"
+            filename = "zenden-image-uploader-cli-" + app_ver + "-build-" + build_number + "-" + target.get("deb_package_arch") +".deb"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -609,7 +613,7 @@ for target in BUILD_TARGETS:
                                                                                                 build_number=build_number,
                                                                                                 arch=target.get("deb_package_arch")
                 )
-                filename = "zenden2k-image-uploader-qt-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) +".deb"
+                filename = "zenden2k-image-uploader-qt-" + app_ver + "-build-" + build_number + "-" + target.get("deb_package_arch") +".deb"
                 file_to = package_os_dir + filename
                 print("Copy file from:", file_from)
                 print("Copy file to:", file_to)
