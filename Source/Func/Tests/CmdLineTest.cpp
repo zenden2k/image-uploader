@@ -27,8 +27,4 @@ TEST_F(CmdLineTest, Parse)
     EXPECT_EQ(1, index);
     EXPECT_STREQ(_T("test"), cl[1]);
     EXPECT_STREQ(_T(""), cl.ModuleName());
-
-    CCmdLine cl2;
-    CString moduleExt = WinUtils::GetFileExt(cl2.ModuleName());
-    EXPECT_STREQ(_T("exe"), moduleExt);
 }

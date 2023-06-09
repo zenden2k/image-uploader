@@ -9,7 +9,7 @@ import json
 import hashlib
 from contextlib import contextmanager
 
-TEST_MODE=True
+TEST_MODE=False
 OUTDIR = "BuiltPackages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
@@ -24,7 +24,17 @@ NUGET_ARCH_MAPPING = {
     'x86': 'x86'
 }
 
-""" {
+RESULT_ARCH_MAPPING = {
+    'armv8': 'arm64',
+    'x86_64': "x64",
+    'x86': 'x86'
+}
+
+""" 
+    """
+
+BUILD_TARGETS = [
+    {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -37,6 +47,7 @@ NUGET_ARCH_MAPPING = {
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
+        'run_tests': True
     },  
     {
         'os': "Windows",
@@ -53,10 +64,10 @@ NUGET_ARCH_MAPPING = {
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
         #'ffmpeg_standalone' : True,
-        'installer_arch': 'x64'
+        'installer_arch': 'x64',
+        'run_tests': True
     }, 
-    
-     {
+    {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
@@ -71,10 +82,7 @@ NUGET_ARCH_MAPPING = {
         'ffmpeg_standalone' : True,
         'installer_arch': 'arm64'
     },
-    """
-
-BUILD_TARGETS = [
-        {
+    {
         'os': "Linux",
         'compiler': "gcc",
         'build_type': "Release",
@@ -82,7 +90,10 @@ BUILD_TARGETS = [
         'host_profile': 'default',
         'build_profile': 'default',
         'cmake_generator': 'Ninja Multi-Config', 
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On"],
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_BUILD_QIMAGEUPLOADER=On"],
+        'deb_package_arch': 'amd64',
+        'build_qt_gui': True,
+        'run_tests': True
     },
 ]
 
@@ -135,7 +146,7 @@ def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subp
     file = {
         "name": name,
         "target_name": get_target_full_name(target),
-        "arch": target.get("arch"),
+        "arch": get_out_arch_name(target),
         "compiler": target.get("compiler"),\
         "os": target.get("os"),
         "filename": filename,
@@ -209,6 +220,19 @@ def cwd(path):
         yield
     finally:
         os.chdir(oldpwd)
+        
+def check_conan_version(args):
+    conan_output = subprocess.check_output(args).decode("utf-8").strip() 
+    reg = re.compile(r"Conan version ([\d]+)\.[\d\.]+", flags=re.IGNORECASE) 
+    res = reg.match(conan_output) 
+
+    if res:
+        conan_major_version = int(res.group(1))
+        if conan_major_version != 1:
+            print("Only Conan 1.x is supported.")
+            sys.exit(1)
+    else:
+        print("Warning: Unknown Conan version")
 
 def generate_version_header(filename, inc_version):
     result = {}
@@ -255,6 +279,14 @@ def generate_version_header(filename, inc_version):
     text_file.close()
     return result
 
+def get_out_arch_name(target):
+    src_arch = target.get("arch")
+    if RESULT_ARCH_MAPPING.get(src_arch):
+        return RESULT_ARCH_MAPPING.get(src_arch)
+    return src_arch
+#
+# -------- PROGRAM START ---------------------------------------------------
+#
 if len(sys.argv) > 1:
     git_branch = sys.argv[1]
 else:
@@ -278,17 +310,10 @@ if not "Inno Setup" in innosetup_output:
     print("Please install Inno Setup and add it to PATH env variable")
     sys.exit(1)
 
-conan_output = subprocess.check_output(['conan', '--version']).decode("utf-8").strip() 
-reg = re.compile(r"Conan version ([\d]+)\.[\d\.]+", flags=re.IGNORECASE) 
-res = reg.match(conan_output) 
+check_conan_version(['conan', '--version'])
 
-if res:
-    conan_major_version = int(res.group(1))
-    if conan_major_version != 1:
-        print("Only Conan 1.x is supported.")
-        sys.exit(1)
-else:
-    print("Warning: Unknown Conan version")
+#check_conan_version(['wsl', '-e', 'conan', '--version'])
+check_program(["wsl", "-e", "cmake","--version"])
 
 curl_ca_bundle = os.path.abspath("curl-ca-bundle.crt")
 
@@ -450,6 +475,17 @@ for target in BUILD_TARGETS:
             print("Build failed")
             exit(1)
 
+        if target.get("run_tests"):
+            command = ["Tests/Release/Tests"]
+            if target.get("os") == "Linux":
+                command =  ['wsl', '-e'] + command
+                
+            print("Running command:", " ".join(command))
+            proc = subprocess.run(command)
+            if proc.returncode !=0:
+                print("Tests run failed")
+                exit(1)
+
         if target["os"] == "Windows":
             #ext_native_arch = 
             if target.get("shell_ext_arch"):
@@ -468,7 +504,7 @@ for target in BUILD_TARGETS:
                 if proc.returncode !=0:
                     print("Shell extension 64 bit Build failed")
                     exit(1)
-            relative_path = r"/Windows/" 
+            relative_path = r"/Windows/" + get_out_arch_name(target) + '/'
             package_os_dir = new_build_dir + relative_path
             mkdir_if_not_exists(package_os_dir)
 
@@ -482,7 +518,7 @@ for target in BUILD_TARGETS:
 
             file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
           
-            filename =  "image-uploader-" + app_ver + "-build-" + build_number + "-" + target["arch"] + ".7z"
+            filename =  "image-uploader-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) + ".7z"
             file_to = package_os_dir + "\\" +filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -500,7 +536,7 @@ for target in BUILD_TARGETS:
             file_from = r"output\imgupload-{version}-build-{build}-cli.7z".format(version=app_ver,build=build_number ); 
             filename = "image-uploader-cli-{version}-build-{build}-{arch}.7z".format(version=app_ver,
                                                                                     build=build_number,
-                                                                                    arch=target["arch"])
+                                                                                    arch=get_out_arch_name(target))
             file_to = package_os_dir +"\\"+filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -526,7 +562,7 @@ for target in BUILD_TARGETS:
 
             # Copying installer
             file_from = r"Installer\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
-            filename = "image-uploader-" + app_ver + "-build-" + build_number + "-" + target["arch"]+"-setup.exe"
+            filename = "image-uploader-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target)+"-setup.exe"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
@@ -534,14 +570,57 @@ for target in BUILD_TARGETS:
 
             json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
         elif target["os"] == "Linux":
-            proc = subprocess.run(["wsl", "-e", "/bin/bash", "create-package.sh"], cwd=repo_dir_abs + used_dist_dir + "debian/")
+            args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch")]
+            working_dir = repo_dir_abs + used_dist_dir + "debian/"
+            print("Running command:", " ".join(args), "; working_dir="+working_dir)
+            proc = subprocess.run(args, cwd=working_dir)
+
             if proc.returncode !=0:
-                print("Cannot generate documentation")
+                print("Failed to create debian package for CLI")
+                exit(1)
+            
+            relative_path = r"/Linux/" + get_out_arch_name(target) + "/"
+            package_os_dir = new_build_dir + relative_path
+            mkdir_if_not_exists(package_os_dir)
+
+            file_from = r"Debian\imgupload_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+                                                                                            build_number=build_number,
+                                                                                            arch=target.get("deb_package_arch")
+            )
+            filename = "zenden-image-uploader-cli-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) +".deb"
+            file_to = package_os_dir + filename
+            print("Copy file from:", file_from)
+            print("Copy file to:", file_to)
+            shutil.copyfile(file_from, file_to)
+            json_data = add_output_file(json_data, target, json_file_path, "Debian package", file_to, relative_path + filename, APP_NAME + " (CLI)")
+       
+            # Qt GUI
+            if target.get("build_qt_gui"):
+                args = ["wsl", "-e", "/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch")]
+                working_dir = repo_dir_abs + used_dist_dir + "debian/"
+                print("Running command:", " ".join(args), "; working_dir="+working_dir)
+                proc = subprocess.run(args, cwd=working_dir)
+
+                if proc.returncode !=0:
+                    print("Failed to create debian package for Qt GUI")
+                    exit(1)
+
+                file_from = r"Debian\zenden2k-imageuploader-qt_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+                                                                                                build_number=build_number,
+                                                                                                arch=target.get("deb_package_arch")
+                )
+                filename = "zenden2k-image-uploader-qt-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) +".deb"
+                file_to = package_os_dir + filename
+                print("Copy file from:", file_from)
+                print("Copy file to:", file_to)
+                shutil.copyfile(file_from, file_to)
+                json_data = add_output_file(json_data, target, json_file_path, "Debian package", file_to, relative_path + filename, APP_NAME + " (Qt GUI)")
+        
 
     print("Target finished successfully:", target_full_name)
 
-if TEST_MODE:
-    os.unlink(repo_dir_abs + "/Dist_Test")
+#if TEST_MODE:
+#    os.unlink(repo_dir_abs + "/Dist_Test")
 print("Finish.")
 
   

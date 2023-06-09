@@ -1,26 +1,42 @@
-AppVersion="0.1.2"
+#!/bin/bash
 
-# Get the machine Architecture
-Architecture=$(uname -m)
-case "$Architecture" in
-    x86)    Architecture="i386"                  ;;
-    ia64)   Architecture="ia64"                 ;;
-    i?86)   Architecture="i386"                  ;;
-    amd64)  Architecture="amd64"                    ;;
-    x86_64) Architecture="amd64"                   ;;
-    sparc64)    Architecture="sparc64"                  ;;
-* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
-exit
-;;
-esac
+source <(\
+    sed -r '{
+                s/#pragma once//g
+                s/\r//g
+                s/#define ([A-Za-z0-9_]+) "(.*)"/\1="\2"/
+            }' <(cat ../../Source/versioninfo.h)
+)
+AppVersion="${IU_APP_VER_CLEAN}.${IU_BUILD_NUMBER}"
+Architecture=$1
+
+if [ -z "$Architecture" ]
+then
+      # Get the machine Architecture
+	Architecture=$(uname -m)
+	case "$Architecture" in
+	    x86)    Architecture="i386"                  ;;
+	    ia64)   Architecture="ia64"                 ;;
+	    i?86)   Architecture="i386"                  ;;
+	    amd64)  Architecture="amd64"                    ;;
+	    x86_64) Architecture="amd64"                   ;;
+	    sparc64)    Architecture="sparc64"                  ;;
+	* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
+	exit
+	;;
+	esac
+fi
+
 
 echo "Detected Architecture : $Architecture"
-
+mkdir ../../Build/Debian/
+rm -rf ~/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/DEBIAN
 cp control_qimageuploader ~/zenden2k-imageuploader/DEBIAN/control
 cp dirs ~/zenden2k-imageuploader/DEBIAN/dirs
 mkdir -p ~/zenden2k-imageuploader/usr/bin
 sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" ~/zenden2k-imageuploader/DEBIAN/control
+sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" ~/zenden2k-imageuploader/DEBIAN/control 
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
@@ -37,5 +53,5 @@ fi
 chmod -R 0755 ~/zenden2k-imageuploader/
 chmod -x ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/*.nut
 chmod -x ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/servers.xml
-
-fakeroot dpkg-deb --build ~/zenden2k-imageuploader/ "zenden2k-imageuploader-qt_${AppVersion}_${Architecture}.deb"
+ 
+fakeroot dpkg-deb --build ~/zenden2k-imageuploader/ "../../Build/Debian/zenden2k-imageuploader-qt_${AppVersion}_${Architecture}.deb"
