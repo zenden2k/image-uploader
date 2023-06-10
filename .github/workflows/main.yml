@@ -40,7 +40,7 @@ jobs:
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DIU_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x86_release -DIU_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
     - name: Build
       working-directory: ${{github.workspace}}/Build
       shell: bash
