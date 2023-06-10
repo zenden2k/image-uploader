@@ -29,8 +29,11 @@
 #include <boost/version.hpp>
 #include <webp/decode.h>
 #include "Core/AppParams.h"
+#ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
+#endif
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Func/IuCommonFunctions.h"
 #include "Func/LangClass.h"
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -146,9 +149,18 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
     memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
+    memoText += TR("Data file path:") + CString(_T("\r\n")) + IuCommonFunctions::GetDataFolder() + _T("\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
     memoText +=  CString(L"Built with: \r\n") + CString(BOOST_COMPILER) +  _T("\r\n");
-    memoText +=  CString(L"Target platform: ") + BOOST_PLATFORM + _T(" (") + WinUtils::IntToStr(sizeof(void*) * CHAR_BIT) + _T(" bit)\r\n\r\n");
+    CString targetPlatform = BOOST_PLATFORM;
+    targetPlatform += _T(" ");
+#if defined(_M_ARM64) || defined(_M_ARM)
+    targetPlatform += "ARM";
+#endif
+    targetPlatform += _T(" (");
+    targetPlatform += WinUtils::IntToStr(sizeof(void*) * CHAR_BIT);
+    targetPlatform += _T(" bit)");
+    memoText +=  CString(L"Target platform: ") + targetPlatform + _T("\r\n\r\n");
     memoText += TR("Libraries:")+ CString("\r\n");
     memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
     CString boostVersion = CString(BOOST_LIB_VERSION);
@@ -168,9 +180,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += TR("FFmpeg version:")+ CString("\r\n");
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
-
+#ifdef IU_ENABLE_MEDIAINFO
     memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n");
-
+#endif
     SYSTEMTIME systime;
     memset(&systime, 0, sizeof(systime));
     int fieldNum = sscanf_s(ver->BuildDate.c_str(), "%hu.%hu.%hu", &systime.wDay, &systime.wMonth, &systime.wYear);
@@ -182,13 +194,39 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     } else {
         dateStr = ver->BuildDate.c_str();
     }
-
+    memoText += CString(L"Build options: \r\n");
+#ifdef USE_OPENSSL
+    memoText += CString(L"USE_OPENSSL\r\n");
+#endif
+#ifdef IU_ENABLE_MEGANZ
+    memoText += CString(L"IU_ENABLE_MEGANZ\r\n");
+#endif
+#ifdef IU_ENABLE_SFTP
+    memoText += CString(L"IU_ENABLE_SFTP\r\n");
+#endif
+#ifdef IU_ENABLE_MEDIAINFO
+    memoText += CString(L"IU_ENABLE_MEDIAINFO\r\n");
+#endif
+#ifdef IU_ENABLE_WEBVIEW2
+    memoText += CString(L"IU_ENABLE_WEBVIEW2\r\n");
+#endif
+#ifdef IU_ENABLE_FFMPEG
+    memoText += CString(L"IU_ENABLE_FFMPEG\r\n");
+#endif
+#ifdef IU_FFMPEG_STANDALONE
+    memoText += CString(L"IU_FFMPEG_STANDALONE\r\n");
+#endif
+#ifdef IU_STATIC_RUNTIME
+    memoText += CString(L"IU_STATIC_RUNTIME\r\n");
+#endif
+    
+    
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;
     buildInfo.Format(_T("Build %d"), ver->Build);
 #ifdef USE_OPENSSL
-    buildInfo += _T(" (with OpenSSL) ");
+    buildInfo += _T(" (with OpenSSL)");
 #endif
 
     buildInfo  +=  CString(_T("\r\n(")) + dateStr + _T(")");

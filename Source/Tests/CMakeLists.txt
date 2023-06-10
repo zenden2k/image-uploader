@@ -15,6 +15,7 @@ set(SRC_LIST
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
    ../Core/DownloadTaskTest.cpp
    ../Core/Network/Tests/NetworkClientTest.cpp
+   ../Core/Network/Tests/CurlTest.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 
@@ -35,30 +36,29 @@ if(WIN32)
         ../Video/Tests/VideoGrabberTest.cpp
         ../Core/Settings/CliSettings.cpp
     )
-    include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 endif()
 
 add_executable(Tests ${SRC_LIST})
 
-set_target_properties( Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
-if(WIN32 AND IU_ENABLE_FFMPEG)
+set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
+if(WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
     set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
 endif()
 
-set(LIBS_LIST "")
-
 if(WIN32)
-    list(APPEND LIBS_LIST gdiplus WebP::webpdemux WebP::webpdecoder winmm urlmon)
-	if (IU_ENABLE_FFMPEG)
-		list(APPEND LIBS_LIST avformat avutil swscale avcodec)
-	endif()
-    target_link_libraries(Tests base-classes::base-classes)
+    list(APPEND LIBS_LIST urlmon)
+	#if (IU_ENABLE_FFMPEG)
+	#	list(APPEND LIBS_LIST avformat avutil swscale avcodec)
+	#endif()
+ #   target_link_libraries(Tests)
 else()
     #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
-target_link_libraries(Tests iucore iuvideo GTest::GTest ${COMMON_LIBS_LIST} ${LIBS_LIST} )
+target_link_libraries(Tests iucore iuvideo GTest::GTest ${COMMON_LIBS_LIST})
 
-include(GoogleTest)
-#gtest_discover_tests(Tests WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/TestData") 
-gtest_discover_tests(Tests EXTRA_ARGS --dir "${CMAKE_SOURCE_DIR}/Tests/TestData" --sqdir "${CMAKE_SOURCE_DIR}/Core/Scripting/API/Tests/")
+if (NOT CMAKE_CROSSCOMPILING)
+	include(GoogleTest)
+    #gtest_discover_tests(Tests WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/Tests/TestData") 
+	#gtest_discover_tests(Tests EXTRA_ARGS --dir "${CMAKE_SOURCE_DIR}/Tests/TestData" --sqdir "${CMAKE_SOURCE_DIR}/Core/Scripting/API/Tests/")
+endif()

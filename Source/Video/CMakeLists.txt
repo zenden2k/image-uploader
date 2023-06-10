@@ -1,5 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
-
 set(SRC_LIST    
     VideoGrabber.cpp
     FrameGrabberException.cpp
@@ -45,12 +43,29 @@ source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEA
 
 add_library(iuvideo STATIC ${SRC_LIST} ${HEADER_LIST})
 
+target_include_directories(iuvideo PRIVATE ${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
+
+#if (WIN32)
+#    set(LIBS_LIST base-classes::base-classes)
+#endif()
+
+if (IU_ENABLE_FFMPEG)
+    if(NOT IU_FFMPEG_STANDALONE)
+        target_link_libraries(iuvideo PRIVATE ffmpeg::avcodec ffmpeg::avformat ffmpeg::avutil ffmpeg::swscale)
+    else()
+	    target_link_libraries(iuvideo PUBLIC avcodec avformat avutil swscale)
+    endif()	
+endif()	
+
 if (WIN32)
-    set(LIBS_LIST base-classes::base-classes)
+    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib)
 endif()
 
-target_link_libraries(iuvideo 
-    ${LIBS_LIST} 
+target_link_libraries(iuvideo PUBLIC
+    iucore
+)
+
+target_link_libraries(iuvideo PRIVATE
     ${COMMON_LIBS_LIST}
 )
 

@@ -6,19 +6,40 @@ Place yasm.exe somewhere in your PATH. If using MSVC 2012 or earlier, place c99w
 
 Next, make sure any other headers and libs you want to use, such as zlib, are located in a spot that the compiler can see. Do so by modifying the LIB and INCLUDE environment variables to include the Windows-style paths to these directories. Alternatively, you can try and use the --extra-cflags/--extra-ldflags configure options. If using MSVC 2012 or earlier, place inttypes.h somewhere the compiler can see too.
 
+
+Build zlib:
+
+Edit zconf.h and remove its inclusion of unistd.h. This gets erroneously included when building FFmpeg.
+
 pacman -s yasm diffutils
 
 Finally, run:
 
 
-
-
 For MSVC:
-./configure --enable-asm --enable-yasm --arch=i386 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc
+./configure --enable-asm --enable-yasm --arch=i386 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
+
+For Windows x64:
+./configure --enable-asm --enable-yasm --arch=amd64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
+
+For Windows ARM64:
+
+curl -L https://github.com/libav/gas-preprocessor/raw/master/gas-preprocessor.pl \
+			-o /usr/bin/gas-preprocessor.pl \
+			&& chmod +x /usr/bin/gas-preprocessor.pl
+
+./configure --enable-asm --enable-yasm --arch=aarch64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc --enable-cross-compile --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
+
+
 
 
 make
 make install
+
+
+
+
+
 
 Note:
 Configure may fail to detect headers, so you must edit config.h and set

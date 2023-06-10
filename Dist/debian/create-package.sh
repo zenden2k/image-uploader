@@ -1,26 +1,41 @@
-AppVersion="1.3.3.4957"
+#!/bin/bash
 
-# Get the machine Architecture
-Architecture=$(uname -m)
-case "$Architecture" in
-    x86)    Architecture="i386"                  ;;
-    ia64)   Architecture="ia64"                 ;;
-    i?86)   Architecture="i386"                  ;;
-    amd64)  Architecture="amd64"                    ;;
-    x86_64) Architecture="amd64"                   ;;
-    sparc64)    Architecture="sparc64"                  ;;
-* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
-exit
-;;
-esac
+source <(\
+    sed -r '{
+                s/#pragma once//g
+                s/\r//g
+                s/#define ([A-Za-z0-9_]+) "(.*)"/\1="\2"/
+            }' <(cat ../../Source/versioninfo.h)
+)
+AppVersion="${IU_APP_VER_CLEAN}.${IU_BUILD_NUMBER}"
+echo ${AppVersion}
 
-echo "Detected Architecture : $Architecture"
+Architecture=$1
 
+if [ -z "$Architecture" ]
+then
+      # Get the machine Architecture
+	Architecture=$(uname -m)
+	case "$Architecture" in
+	    x86)    Architecture="i386"                  ;;
+	    ia64)   Architecture="ia64"                 ;;
+	    i?86)   Architecture="i386"                  ;;
+	    amd64)  Architecture="amd64"                    ;;
+	    x86_64) Architecture="amd64"                   ;;
+	    sparc64)    Architecture="sparc64"                  ;;
+	* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
+	exit
+	;;
+	esac
+	echo "Detected Architecture : $Architecture"
+fi
+mkdir ../../Build/Debian/
+rm -rf ~/imgupload/
 mkdir -p ~/imgupload/DEBIAN
 cp control_ ~/imgupload/DEBIAN/control
 cp dirs ~/imgupload/DEBIAN/dirs
 mkdir -p ~/imgupload/usr/bin
-sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" ~/imgupload/DEBIAN/control
+sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" ~/imgupload/DEBIAN/control
 mkdir -p ~/imgupload/usr/share/imgupload/
 mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #rm ./imgupload/usr/share/imgupload/Scripts/*
@@ -41,4 +56,4 @@ chmod -R 0755 ~/imgupload/
 chmod -x ~/imgupload/usr/share/imgupload/Scripts/*.nut
 chmod -x ~/imgupload/usr/share/imgupload/servers.xml
 
-fakeroot dpkg-deb --build ~/imgupload/ "imgupload_${AppVersion}_${Architecture}.deb"
+fakeroot dpkg-deb --build ~/imgupload/ "../../Build/Debian/imgupload_${AppVersion}_${Architecture}.deb"

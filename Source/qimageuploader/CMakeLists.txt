@@ -25,7 +25,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS "Gui/ui/")
 add_definitions(-DIU_QT)
 
 if (WIN32)
-    set(RESOURCE_LIST "../res/qimageuploader.exe.manifest")
+    set(RESOURCE_LIST ../res/qimageuploader.exe.manifest qimageuploader.rc)
     SET(OPTIONS WIN32)
 endif()
 
@@ -62,16 +62,16 @@ add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
-if (IU_ENABLE_FFMPEG)
-	if (WIN32)
-		target_link_libraries(${PROJECT_NAME} avcodec avformat avutil swscale)
-	else()
-		target_link_libraries(${PROJECT_NAME} ffmpeg::avcodec ffmpeg::avformat ffmpeg::avutil ffmpeg::swscale)
-	endif()	
-endif()
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} gdi32 winmm dwmapi base-classes::base-classes urlmon)
+    target_link_libraries(${PROJECT_NAME} gdi32 dwmapi)
 endif()
 
 target_link_libraries(qimageuploader iucore iuvideo ${COMMON_LIBS_LIST})
+
+if(WIN32)
+    add_custom_command(TARGET qimageuploader
+        POST_BUILD
+        COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:qimageuploader> $<CONFIG>
+    )
+endif()

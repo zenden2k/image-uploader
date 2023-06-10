@@ -198,7 +198,9 @@ public:
     bool funcAddFolder();
     //bool funcPaste();
     bool funcSettings();
+#ifdef IU_ENABLE_MEDIAINFO
     bool funcMediaInfo();
+#endif
     bool funcAddFiles();
     bool funcDownloadImages();
     bool funcReuploadImages();

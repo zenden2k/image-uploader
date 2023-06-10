@@ -356,7 +356,7 @@ bool parseCommandLine(int argc, char *argv[])
 #endif
         if ( !IuCoreUtils::FileExists(fileName) ) {
             std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n") % fileName);
-            ConsoleUtils::instance()->PrintUnicode(stderr, errorMessage);
+            ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
             return false;
         }
         filesToUpload.push_back(fileName);
@@ -405,7 +405,7 @@ void OnUploadSessionFinished(UploadSession* session) {
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
     if ( !uploadedList.empty() ) {
         std::cerr<<std::endl<<"Result:"<<std::endl;
-        std::cout<<generator.generate(uploadedList);
+        std::cout<< generator.generate(uploadedList);
         std::cerr<<std::endl;
     }
     {
@@ -434,6 +434,7 @@ void UploadTaskProgress(UploadTask* task) {
     if (progress->totalUpload == 0) {
         return;
     }
+    ConsoleUtils::instance()->clearLine();
 
     //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
@@ -465,9 +466,17 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     auto* userData = static_cast<TaskUserData*>(task->userData());
+    ConsoleUtils::instance()->clearLine();
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
-    fputs(progress->statusText.c_str(), stderr);
-    fprintf(stderr, "\r");
+    std::string statusText = progress->statusText + "\r";
+    if (task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure) {
+        ConsoleUtils::instance()->printColoredText(stderr, statusText,
+            task->status() == UploadTask::StatusFinished ? ConsoleUtils::Color::Green: ConsoleUtils::Color::Red
+        );
+    } else {
+        ConsoleUtils::instance()->printUnicode(stderr, statusText);
+    }
+
 }
 
 void OnQueueFinished(CFileQueueUploader*) {
@@ -558,7 +567,7 @@ int func() {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
         {
             std::string errorMessage = str(boost::format("File '%s' doesn't exist!")%filesToUpload[i]);
-            ConsoleUtils::instance()->PrintUnicode(stderr, errorMessage);
+            ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
             res++;
             continue;
         }
@@ -623,7 +632,7 @@ public:
         }
 
     }
-    virtual void updateStatus(int packageIndex, const CString& status) override {
+    void updateStatus(int packageIndex, const CString& status) override {
         //std::wcout << (LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName() <<" : "<< (LPCTSTR)status<<std::endl;
         if ( m_UpdateManager.m_updateList.size() > packageIndex+1) {
             fprintf(stderr, "%s : %s", IuCoreUtils::WstringToUtf8((LPCTSTR)m_UpdateManager.m_updateList[packageIndex].displayName()).c_str(), IuCoreUtils::WstringToUtf8((LPCTSTR)status).c_str());
@@ -666,7 +675,7 @@ int _tmain(int argc, _TCHAR* argvW[]) {
 int main(int argc, char *argv[]){
 #endif
     google::InitGoogleLogging(argv[0]);
-
+    ConsoleUtils::instance();
     AppParams::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;

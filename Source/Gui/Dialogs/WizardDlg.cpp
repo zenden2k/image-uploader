@@ -37,7 +37,10 @@
 #include "LogWindow.h"
 #include "Func/CmdLine.h"
 #include "Gui/Dialogs/UpdateDlg.h"
+#ifdef IU_ENABLE_MEDIAINFO
 #include "Gui/Dialogs/MediaInfoDlg.h"
+#include "Func/MediaInfoHelper.h"
+#endif
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include "Gui/Dialogs/ShortenUrlDlg.h"
@@ -53,7 +56,6 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Func/MyUtils.h"
-#include "Func/MediaInfoHelper.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
@@ -276,7 +278,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     pLoop->AddIdleHandler(this);
 
     ::RegisterDragDrop(m_hWnd, this);
+#ifdef IU_ENABLE_MEDIAINFO
     MediaInfoHelper::FindMediaInfoDllPath();
+#endif
     SetWindowText(APPNAME);
 
     CWindowDC hdc(m_hWnd);
@@ -370,11 +374,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     sessionImageServer_ = Settings.imageServer;
     sessionFileServer_ = Settings.fileServer;
-
+#ifdef IU_ENABLE_MEDIAINFO
 	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
 	}
-
+#endif
     if (!CmdLine.IsOption(_T("tray"))) {
         TRC(IDCANCEL, "Exit");
     } else {
@@ -429,7 +433,7 @@ bool CWizardDlg::ParseCmdLine()
 {
     size_t nIndex = 0;
     bool fromContextMenu = false;
-
+#ifdef IU_ENABLE_MEDIAINFO
     if(CmdLine.IsOption(_T("mediainfo")))
     {
         size_t nIndex = 0;
@@ -442,7 +446,7 @@ bool CWizardDlg::ParseCmdLine()
             return true;
         }
     }
-
+#endif
     if(CmdLine.IsOption(_T("imageeditor")))
     {
         size_t nIndex = 0;
@@ -1518,8 +1522,10 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcReuploadImages();
     else if (funcName == _T("shortenurl"))
         return funcShortenUrl();
+#ifdef IU_ENABLE_MEDIAINFO
     else if (funcName == _T("mediainfo"))
         return funcMediaInfo();
+#endif
     else if (funcName == _T("open_screenshot_folder"))
         return funcOpenScreenshotFolder();
     else if (funcName == _T("exit"))
@@ -1731,7 +1737,7 @@ bool CWizardDlg::funcDownloadImages()
     dlg.EmulateModal(m_hWnd);
     return true;
 }
-
+#ifdef IU_ENABLE_MEDIAINFO
 bool CWizardDlg::funcMediaInfo()
 {
     IMyFileDialog::FileFilterArray filters = {
@@ -1759,7 +1765,7 @@ bool CWizardDlg::funcMediaInfo()
     dlg.ShowInfo(m_hWnd, fileName);
     return true;
 }
-
+#endif
 bool CWizardDlg::funcAddFiles()
 {
     IMyFileDialog::FileFilterArray filters = { 

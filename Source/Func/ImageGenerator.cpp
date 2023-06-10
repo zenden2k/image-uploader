@@ -1,6 +1,7 @@
 #include "ImageGenerator.h"
-
+#ifdef IU_ENABLE_MEDIAINFO
 #include "MediaInfoHelper.h"
+#endif
 #include "Core/ServiceLocator.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Images/Utils.h"
@@ -23,7 +24,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
     RectF TextRect;
     int infoHeight = 0;
     CString Report, fullInfo;
-
+#ifdef IU_ENABLE_MEDIAINFO
     if (Settings.VideoSettings.ShowMediaInfo)
     {
         onProgress(this, -1, -1, W2U(TR("Getting info about file...")));
@@ -40,7 +41,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         g1.MeasureString(Report, -1, font.get(), PointF(0, 0), &TextRect);
         infoHeight = int(TextRect.Height);
     }
-
+#endif
     int n = files_.size();
 
     onProgress(this, 0, n-1, W2U(TR("Generating image...")));

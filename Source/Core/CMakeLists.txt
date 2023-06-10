@@ -1,4 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 
 set(SRC_LIST Network/NetworkClient.cpp
 	Network/NetworkClientFactory.cpp
@@ -226,18 +225,66 @@ else()
 endif()
 
 if(IU_ENABLE_MEGANZ)
-       list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
-       list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
+    list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
+    list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
 endif() 
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
 add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
 
-target_link_libraries(iucore 
-    ${LIBS_LIST} 
+target_link_libraries(iucore PUBLIC
+    CURL::libcurl
+    Boost::Boost 
+    uriparser::uriparser 
+    ZLIB::ZLIB 
+    jsoncpp::jsoncpp 
+    glog::glog 
+    PCRE::PCRE
+    squirrel::squirrel 
+    squirrel::sqstdlib 
+    gumbo-parser::gumbo-parser 
+    base64::base64
+    SQLite::SQLite3
     ${COMMON_LIBS_LIST}
 )
+
+if (IU_ENABLE_MEGANZ)
+    target_link_libraries(iucore PUBLIC megaio::megaio
+    #cryptopp::cryptopp-static 
+    #c-ares::c-ares
+    )
+endif()
+
+if (IU_USE_OPENSSL)
+    target_link_libraries(iucore PUBLIC OpenSSL::OpenSSL)
+endif()
+
+if (IU_ENABLE_SFTP)
+    #target_link_libraries(iucore PUBLIC Libssh2::Libssh2)
+	#list(APPEND COMMON_LIBS_LIST )
+endif()
+
+if (WIN32)
+    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder gdiplus winmm urlmon)
+endif()
+
+if (IU_ENABLE_WEBVIEW2)
+#    SUPPORTS ONLY DYNAMIC LIBRARIES :(
+#    find_program(NUGET_EXE NAMES nuget)
+#    if(NOT NUGET_EXE)
+#        message("NUGET.EXE not found.")
+#        message(FATAL_ERROR "Please install this executable, and run CMake again.")
+#    endif()
+
+#    exec_program(${NUGET_EXE} ARGS install "Microsoft.Web.WebView2" -Version 1.0.1774.30 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages RETURN_VALUE varrr)
+#    message("Var")
+#    message(${varrr})
+#    exec_program(${NUGET_EXE} ARGS install "Microsoft.Windows.ImplementationLibrary" -Version 1.0.230411.1 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages) 
+#    target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
+#    target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
+    target_link_libraries(iucore PUBLIC WebView2LoaderStatic.lib version.lib)
+endif()
 
 if(MSVC)
     target_compile_options(iucore PRIVATE "/MP")

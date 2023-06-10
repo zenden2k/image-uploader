@@ -31,7 +31,9 @@
 #include "Core/Upload/UploadManager.h"
 #include "Func/WinUtils.h"
 #include "Gui/Dialogs/WizardDlg.h"
+#ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
+#endif
 #include "Func/IuCommonFunctions.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
@@ -82,13 +84,14 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     TRC(IDC_COMMONPROGRESS, "Progress:");
     bool IsLastVideo = false;
+#ifdef IU_ENABLE_MEDIAINFO
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
         CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
 
         if (vg && !vg->fileName_.IsEmpty())
             IsLastVideo = true;
     }
-
+#endif
 	resultsWindow_->EnableMediaInfo(IsLastVideo);
 
     SetDlgItemInt(IDC_THUMBSPERLINE, 4);
@@ -272,13 +275,14 @@ bool CUploadDlg::OnShow()
     sessionFileServer_ = WizardDlg->getSessionFileServer();
     sessionImageServer_ = WizardDlg->getSessionImageServer();
     bool IsLastVideo=false;
-
+#ifdef IU_ENABLE_MEDIAINFO
     if ( MediaInfoHelper::IsMediaInfoAvailable()) {
         CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
         
         if(vg && !vg->fileName_.IsEmpty())
             IsLastVideo=true;
     }
+#endif
     resultsWindow_->InitUpload();
     resultsWindow_->EnableMediaInfo(IsLastVideo);
     CancelByUser = false;

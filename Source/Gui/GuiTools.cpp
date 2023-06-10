@@ -21,6 +21,7 @@
 #include "Gui/GuiTools.h"
 
 #include <cmath>
+#include <cstdarg>
 
 #include <ShObjIdl.h>
 
@@ -34,12 +35,15 @@ int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item) {
     return ::SendDlgItemMessage(hDlg, itemId, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(item));
 }
 
-bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, LPCTSTR item, ...) {
+bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, ...) {
     bool result = true;
-    for (int i = 0; i < itemCount; i++) {
-        if (AddComboBoxItem(hDlg, itemId, *(&item + i)) < 0)
+    std::va_list args;
+    va_start(args, itemCount);
+    for (int i = 0; i < itemCount; ++i) {
+        if (AddComboBoxItem(hDlg, itemId, va_arg(args, LPCTSTR)) < 0)
             result = false;
     }
+    va_end(args);
     return result;
 }
 
@@ -170,7 +174,8 @@ void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF fi
             DeleteObject(hBrush);
         }
 }
-
+/*
+* Fails on armv8
 bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szName, LPCTSTR szFilter,...) {
     *szBuffer = 0;
     LPCTSTR *pszName, *pszFilter;
@@ -193,7 +198,7 @@ bool SelectDialogFilter(LPTSTR szBuffer, int nMaxSize, int nCount, LPCTSTR szNam
     *szBuffer = 0;
     return true;
 }
-
+*/
 // Converts pixels to Win32 dialog units
 int dlgX(int WidthInPixels) {
     LONG units = GetDialogBaseUnits();

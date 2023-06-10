@@ -1,4 +1,4 @@
-add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL -DGDIPVER=0x0100 -D_WTL_NO_CSTRING -D_ATL_NO_OLD_NAMES)
+add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL)
 
 set(SRC_LIST 
     "../Image Uploader.cpp"
@@ -29,7 +29,6 @@ set(SRC_LIST
     ../Func/CmdLine.cpp
     ../Func/DefaultLogger.cpp
     ../Func/DefaultUploadErrorHandler.cpp
-    ../Func/MediaInfoHelper.cpp
     ../Func/WtlScriptDialogProvider.cpp
     ../Func/ImageGenerator.cpp
     Components/MyFileDialog.cpp
@@ -67,7 +66,6 @@ set(SRC_LIST
     Dialogs/LogoSettings.cpp
     Dialogs/LogWindow.cpp
     Dialogs/MainDlg.cpp
-    Dialogs/MediaInfoDlg.cpp
     Dialogs/NewFolderDlg.cpp
     Dialogs/QuickSetupDlg.cpp
     Dialogs/RegionSelect.cpp
@@ -191,7 +189,6 @@ set(HEADER_LIST
     ../Func/DefaultLogger.h
     ../Func/DefaultUploadErrorHandler.h
     ../Func/GdiPlusInitializer.h
-    ../Func/MediaInfoHelper.h
     ../Func/WtlScriptDialogProvider.h
     ../Func/ImageGenerator.h
     Components/MyFileDialog.h
@@ -230,7 +227,6 @@ set(HEADER_LIST
     Dialogs/LogoSettings.h
     Dialogs/LogWindow.h
     Dialogs/MainDlg.h
-    Dialogs/MediaInfoDlg.h
     Dialogs/NewFolderDlg.h
     Dialogs/QuickSetupDlg.h
     Dialogs/RegionSelect.h
@@ -323,6 +319,11 @@ set(HEADER_LIST
     ../resource.h
 )
 	
+if (IU_ENABLE_MEDIAINFO) 
+	list (APPEND SRC_LIST ../Func/MediaInfoHelper.cpp  Dialogs/MediaInfoDlg.cpp)
+	list (APPEND HEADER_LIST ../Func/MediaInfoHelper.h  Dialogs/MediaInfoDlg.h)
+endif()
+
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 source_group("Resource Files" FILES ${RESOURCE_LIST})
 
@@ -332,13 +333,14 @@ add_executable(GUI WIN32
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
-set(LIBS_LIST base64::base64 WebP::webpdemux WebP::webpdecoder MediaInfoLib::MediaInfoLib
-    gdiplus Ws2_32 dwmapi winmm wininet IPHLPAPI
-    Secur32 Netapi32 Oleacc Winhttp Userenv Psapi uxtheme Urlmon
+set(LIBS_LIST 
+    gdiplus Ws2_32 dwmapi wininet IPHLPAPI
+    Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon
+    minizip::minizip
 )
 
-if (IU_ENABLE_FFMPEG)
-	list(APPEND LIBS_LIST avcodec avformat avutil swscale)
+if (IU_ENABLE_MEDIAINFO)
+	list(APPEND LIBS_LIST MediaInfoLib::MediaInfoLib)
 endif()	
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
@@ -346,16 +348,20 @@ message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 target_link_libraries(GUI iucore iuvideo
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
-    base-classes::base-classes
 )
   
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
-set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll /DELAYLOAD:Iphlpapi.dll /DELAYLOAD:Netapi32.dll")
 
-add_custom_command(TARGET GUI
-    PRE_BUILD
-    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/versioninc.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<CONFIG>
-)
+if (WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
+    set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+endif()
+
+target_precompile_headers(GUI PRIVATE ../stdafx.h)
+
+#add_custom_command(TARGET GUI
+#   PRE_BUILD
+#    COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/versioninc.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<CONFIG>
+#)
 add_custom_command(TARGET GUI
     POST_BUILD
     COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:GUI> $<CONFIG>

@@ -24,7 +24,9 @@
 
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UploadSettings.h"
+#ifdef IU_ENABLE_MEDIAINFO
 #include "MediaInfoDlg.h"
+#endif
 #include "LogWindow.h"
 #include "Gui/Dialogs/WebViewWindow.h"
 #include "Core/Utils/TextUtils.h"
@@ -764,14 +766,16 @@ LRESULT CResultsPanel::OnEditChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 
 LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+#ifdef IU_ENABLE_MEDIAINFO
     if (WizardDlg->getLastVideoFile().IsEmpty()) {
         return 0;
     }
     CMediaInfoDlg dlg;
     dlg.ShowInfo(m_hWnd, WizardDlg->getLastVideoFile());
+#endif
     return 0;
-    
 }
+
     
 int CResultsPanel::GetCodeType() const {
     return codeTypeComboBox.GetCurSel();

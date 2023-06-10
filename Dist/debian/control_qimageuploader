@@ -1,9 +1,10 @@
 Package: zenden2k-image-uploader-qt
-Version: 0.1.2
+Version: IU_APP_VER_CLEAN.IU_BUILD_NUMBER
 Section: net
 Architecture: YOUR_ARCHITECTURE
 Installed-Size: 55000
 Maintainer: Sergey Svistunov <zenden2k@gmail.com>
+Homepage: https://svistunov.dev/imageuploader-qt
 Description: Zenden2k Image Uploader (Qt GUI)
  Program that allows you to upload files to image/file 
  hosting servers without necessity to visit their websites.
