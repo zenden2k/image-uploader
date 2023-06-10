@@ -7,13 +7,33 @@ import os
 import stat
 import json
 import hashlib
+import time
+import xml.etree.ElementTree
+
 from contextlib import contextmanager
 
-TEST_MODE=False
-BUILD_DOCS=True
+IS_RELEASE = False
+TEST_MODE = False
+BUILD_DOCS = True
 OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
+DEFAULT_GIT_BRANCH = "master"
+
+# --- Script requirements ---
+# git
+# cmake
+# conan
+# msbuild (you should run this script from Visual Studio Developer Command Prompt)
+# WSL 2 & Ubuntu 20.04+
+# -- On WSL2 --
+# conan 
+# cmake
+# git
+# doxygen
+# msgfmt
+# ---------------------------
+# All programs must be added to the PATH environment variable
 
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019";
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022";
@@ -104,7 +124,6 @@ BUILD_TARGETS = [
 #BUILD_TARGETS = BUILD_TARGETS[0:1]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
-DEFAULT_GIT_BRANCH = "cmake_arm64"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
 VERSION_HEADER_FILE = "versioninfo.h"
 
@@ -290,6 +309,7 @@ def generate_version_header(filename, inc_version):
         if res:
             define_name = res.group(1) 
             result[define_name] = str(res.group(2))
+
             if define_name == "IU_BUILD_NUMBER":
                 if inc_version:
                     build_number = int(res.group(2))+1
@@ -298,6 +318,10 @@ def generate_version_header(filename, inc_version):
                     build_number = int(res.group(2))
                 result[define_name] = str(build_number)
                 out_text += "#define {} \"{}\"\n".format(define_name, str(build_number))
+            elif define_name == "IU_APP_VER":
+                if IS_RELEASE:
+                    result[define_name] = result[define_name].replace("-nightly", "")
+                out_text += "#define {} \"{}\"\n".format(define_name, str( result[define_name] ))
             elif define_name == "IU_BUILD_DATE":
                 now = datetime.datetime.now()
                 out_text += "#define {} \"{}\"\n".format(define_name, now.strftime("%d.%m.%Y"))   
@@ -324,6 +348,25 @@ def get_out_arch_name(target):
     if RESULT_ARCH_MAPPING.get(src_arch):
         return RESULT_ARCH_MAPPING.get(src_arch)
     return src_arch
+
+def modify_update_file(component_name, filepath, version_header_defines, json_data):
+    #print("filepath", filepath)
+    # Open original file
+    et = xml.etree.ElementTree.parse(filepath)
+
+    root = et.getroot()
+    now = datetime.datetime.now()
+
+    root.attrib['TimeStamp'] = str(int(now.timestamp()))
+    root.attrib['Date'] = now.strftime('%Y-%m-%d %H:%M:%S')
+    root.attrib['DisplayName'] = component_name + " " + version_header_defines['IU_APP_VER'] +  " build "  + version_header_defines['IU_BUILD_NUMBER']
+    root.attrib['DownloadPage'] = "https://svistunov.dev/imageuploader_downloads" if IS_RELEASE else "https://svistunov.dev/imageuploader_nightly"
+    text = '';
+    for commit in json_data['commits']:
+        text += "- " + commit['commit_message'] + "\n"
+    root.find('Info').text = text
+    et.write(filepath, encoding='utf-8', xml_declaration=True) 
+
 #
 # -------- PROGRAM START ---------------------------------------------------
 #
@@ -418,6 +461,13 @@ json_file_path = new_build_dir + "/build_info.json"
 json_builds_info_file = outdir_abs + "/builds.json"
 json_data = write_json_header(json_file_path, json_builds_info_file, repo_dir_abs, version_header_defines, git_commit_message)
 used_dist_dir = "/Dist/";
+
+src_xml_file = repo_dir_abs + "/Data/Update/iu_core.xml"
+modify_update_file(APP_NAME, src_xml_file, version_header_defines, json_data)
+shutil.copyfile(src_xml_file, new_build_dir + '/' + ("iu_core.xml" if IS_RELEASE else "iu_core_nightly.xml" ))
+src_xml_file = repo_dir_abs + "/Data/Update/iu_serversinfo.xml"
+modify_update_file("Servers update", src_xml_file, version_header_defines, json_data)
+shutil.copyfile(src_xml_file, new_build_dir + '/' + ("iu_serversinfo.xml" if IS_RELEASE else "iu_serversinfo_nightly.xml") )
 
 #if TEST_MODE:
 #    if not os.path.islink(repo_dir_abs + "/Dist_Test"):
