@@ -10,6 +10,7 @@ import hashlib
 from contextlib import contextmanager
 
 TEST_MODE=False
+BUILD_DOCS=True
 OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
@@ -68,7 +69,7 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         #'ffmpeg_standalone' : True,
         'installer_arch': 'x64',
-        'run_tests': True
+        'run_tests': True,
     }, 
     {
         'os': "Windows",
@@ -83,7 +84,7 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_64bit_arch': 'ARM64',
         'ffmpeg_standalone' : True,
-        'installer_arch': 'arm64'
+        'installer_arch': 'arm64',
     },
     {
         'os': "Linux",
@@ -96,9 +97,11 @@ BUILD_TARGETS = [
         'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_BUILD_QIMAGEUPLOADER=On"],
         'deb_package_arch': 'amd64',
         'build_qt_gui': True,
-        'run_tests': True
+        'run_tests': True,
     },
 ]
+
+#BUILD_TARGETS = BUILD_TARGETS[0:1]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 DEFAULT_GIT_BRANCH = "cmake_arm64"
@@ -119,7 +122,22 @@ def check_program(args, message=''):
 
 
 
-def write_json_header(jsonfile, version_header_defines):
+def write_json_header(jsonfile, json_builds_file_name, source_dir, version_header_defines, git_commit_message):
+
+    if os.path.exists(json_builds_file_name):
+        with open(json_builds_file_name) as json_builds_file:
+            json_builds_data = json.load(json_builds_file)
+    else:
+        json_builds_data = {
+
+        }
+    last_commit_hash = json_builds_data.get("last_commit_hash");
+
+    json_builds_data["last_commit_hash"] = version_header_defines['IU_COMMIT_HASH']
+    
+    with open(json_builds_file_name, "w") as outfile:
+        json.dump(json_builds_data, outfile, indent=4)
+
     now = datetime.datetime.now()
 
     dictionary = {
@@ -127,14 +145,31 @@ def write_json_header(jsonfile, version_header_defines):
         "build_number":  version_header_defines['IU_BUILD_NUMBER'],
         "version":  version_header_defines['IU_APP_VER'],
         "version_clean": version_header_defines['IU_APP_VER_CLEAN'],
-        "date": now.strftime('%Y-%m-%d'),
+        "date": now.strftime('%Y-%m-%d %H:%M:%S'),
         "branch_name": version_header_defines['IU_BRANCH_NAME'],
         "commit_hash": version_header_defines['IU_COMMIT_HASH'],
+        "commits": [
+        ],
         "files": []
     }
+
+    arg =  last_commit_hash
+    if not last_commit_hash: # or last_commit_hash== version_header_defines['IU_COMMIT_HASH']:
+        arg = 'HEAD~1'
+
+    git_output = subprocess.check_output(['wsl', '-e', '/bin/bash', "git_rev.sh", arg, "HEAD"],cwd=source_dir + "/Dist/").decode("utf-8").strip()
+    git_output = re.sub( r",\s*}", "}", git_output )
+    git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
+    print(git_output)
+    commits = json.loads(git_output)
+
+    dictionary['commits'] = commits
  
     with open(jsonfile, "w") as outfile:
         json.dump(dictionary, outfile, indent=4)
+
+    with open(json_builds_file_name, "w") as outfile:
+        json.dump(json_builds_data, outfile, indent=4)    
     
     return dictionary
 
@@ -156,7 +191,8 @@ def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subp
         "filename": filename,
         "path": relativePath,
         "subproduct": subproduct,
-        "sha256": hash
+        "sha256": hash,
+        "size": os.path.getsize(path)
     }
     dictionary["files"] += [file]
     with open(jsonfile, "w") as outfile:
@@ -299,7 +335,7 @@ else:
 check_program(["git", "--version"])
 
 check_program(["cmake", "--version"])
-
+check_program(["msbuild", "--version"], "You should run this script from Visual Studio Developer Command Prompt")
 innosetup_output = ""
 try:
     innosetup_output = subprocess.check_output(["iscc", "/?"]).decode("utf-8").strip() 
@@ -318,7 +354,7 @@ check_conan_version(['conan', '--version'])
 
 #check_conan_version(['wsl', '-e', 'conan', '--version'])
 check_program(["wsl", "-e", "cmake","--version"])
-
+check_program(["wsl", "-e", "git","--version"])
 curl_ca_bundle = os.path.abspath("curl-ca-bundle.crt")
 
 if not os.path.exists:
@@ -329,9 +365,10 @@ mkdir_if_not_exists(OUTDIR)
 outdir_abs = os.path.abspath(OUTDIR)
 repo_dir = COMMON_BUILD_FOLDER + "/Repo"
 
-#if os.path.exists(COMMON_BUILD_FOLDER): 
-#    print("Directory exists, clearing directory...")
-#    shutil.rmtree(COMMON_BUILD_FOLDER, onerror=del_rw)
+if not TEST_MODE:
+    if os.path.exists(COMMON_BUILD_FOLDER): 
+        print("Directory exists, cleaning directory...")
+        shutil.rmtree(COMMON_BUILD_FOLDER, onerror=del_rw)
 
 if not os.path.exists(COMMON_BUILD_FOLDER):
     try:
@@ -340,14 +377,18 @@ if not os.path.exists(COMMON_BUILD_FOLDER):
         print(error)
         exit(1)
 
-""" if os.path.exists(repo_dir): 
+
+if os.path.exists(repo_dir) and not TEST_MODE:
     print("Directory exists, clearing directory...")
     shutil.rmtree(repo_dir, onerror=del_rw)
 
-proc = subprocess.run(["git", "clone", "-b", git_branch, IU_GIT_REPOSITORY, repo_dir])
+if not os.path.exists(repo_dir):
+    proc = subprocess.run(["git", "clone", "-b", git_branch, IU_GIT_REPOSITORY, repo_dir])
 
-if proc.returncode != 0:
-    print("Git clone failed to directory " + COMMON_BUILD_FOLDER) """
+    if proc.returncode != 0:
+        print("Git clone failed to directory " + repo_dir)
+
+git_commit_message = subprocess.check_output("git log -1 --pretty=%B").decode("utf-8").strip() 
 
 if not os.path.exists(VERSION_HEADER_FILE):
     shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
@@ -365,21 +406,23 @@ generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
 proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
 if proc.returncode !=0:
     print("Cannot generate language files")
-    
-proc = subprocess.run("wsl -e /bin/bash generate.sh", cwd=repo_dir_abs + "/Dist/DocGen/")
-if proc.returncode !=0:
-    print("Cannot generate documentation")
+
+if BUILD_DOCS:   
+    proc = subprocess.run("wsl -e /bin/bash generate.sh", cwd=repo_dir_abs + "/Dist/DocGen/")
+    if proc.returncode !=0:
+        print("Cannot generate documentation")
 
 new_build_dir = outdir_abs + "/" + app_ver+ "-build-" + build_number; 
 mkdir_if_not_exists(new_build_dir)
 json_file_path = new_build_dir + "/build_info.json"
-json_data = write_json_header(json_file_path, version_header_defines)
+json_builds_info_file = outdir_abs + "/builds.json"
+json_data = write_json_header(json_file_path, json_builds_info_file, repo_dir_abs, version_header_defines, git_commit_message)
 used_dist_dir = "/Dist/";
 
-if TEST_MODE:
-    if not os.path.islink(repo_dir_abs + "/Dist_Test"):
-        os.symlink(dist_directory, repo_dir_abs + "/Dist_Test")
-    used_dist_dir = "/Dist_Test/"
+#if TEST_MODE:
+#    if not os.path.islink(repo_dir_abs + "/Dist_Test"):
+#        os.symlink(dist_directory, repo_dir_abs + "/Dist_Test")
+#    used_dist_dir = "/Dist_Test/"
 
 for target in BUILD_TARGETS:
     target_full_name = get_target_full_name(target)
