@@ -25,7 +25,7 @@ public:
     virtual int getHeight() const;
     virtual bool isNull() const = 0;
     virtual bool loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) = 0;
-
+    std::string getSrcFormat() const;
     template<class T> static void registerFactory(const char* name) {
         factory_ = [] () -> AbstractImage* {
             return new T();
@@ -42,11 +42,13 @@ public:
     }
     static const std::string& factoryName();
     static AbstractImage* createImage();
+    void setSrcFormat(const std::string& str);
 protected:
     static std::function<AbstractImage*()> factory_;
     static std::string factoryName_;
     int width_;
     int height_;
+    std::string srcFormat_;
     DISALLOW_COPY_AND_ASSIGN(AbstractImage);
 };
 

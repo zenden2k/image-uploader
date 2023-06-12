@@ -35,3 +35,11 @@ bool AbstractImage::loadFromFile(const std::string& fileName)
 const std::string& AbstractImage::factoryName() {
     return factoryName_;
 }
+
+void AbstractImage::setSrcFormat(const std::string& str) {
+    srcFormat_ = str;
+}
+
+std::string AbstractImage::getSrcFormat() const {
+    return srcFormat_;
+}

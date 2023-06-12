@@ -45,7 +45,7 @@ class Document {
         int getHeight() const;
         bool isNull() const;
         bool hasTransparentPixels() const;
-        bool isSrcAnimated() const;
+        bool isSrcMultiFrame() const;
     private:
         std::shared_ptr<Gdiplus::Bitmap> currentImage_;
         Gdiplus::Bitmap* originalImage_;
@@ -54,7 +54,7 @@ class Document {
         bool drawStarted_;
         AffectedSegments changedSegments_;
         bool hasTransparentPixels_;
-        bool isSrcAnimated_ = false;
+        bool isSrcMultiFrame_ = false;
         void init();
         void saveDocumentState(bool full = false);
         void checkTransparentPixels();

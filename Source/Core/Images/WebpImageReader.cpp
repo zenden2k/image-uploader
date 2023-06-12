@@ -24,7 +24,7 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileN
     size_t dataSize = 0;
     try {
         if (!ImageUtils::ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
-            return nullptr;
+            return {};
         }
     } catch (const std::exception&) {
         return {};
@@ -58,7 +58,8 @@ std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, siz
     else {
         WebPFree(pic.rgba);
     }
-    img->setSrcAnimated(pic.animated);
+    img->setSrcMultiFrame(pic.animated);
+    img->setSrcFormat("webp");
     return img;
 }
 

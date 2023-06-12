@@ -55,7 +55,7 @@ void ChangeAlphaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sour
 Gdiplus::Rect MeasureDisplayString(Gdiplus::Graphics& graphics, CString text, Gdiplus::RectF boundingRect, Gdiplus::Font& font);
 CRect CenterRect(CRect r1, const CRect& intoR2);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
-std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0);
+std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize = 0, CString* imageFormat = nullptr);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
 
@@ -74,7 +74,7 @@ bool RotateAccordingToOrientation(short orient, Gdiplus::Image* img, bool remove
 ImageInfo GetImageInfo(const wchar_t* fileName);
 
 CString GdiplusStatusToString(Gdiplus::Status statusID);
-bool IsImageAnimated(Gdiplus::Image* img);
+bool IsImageMultiFrame(Gdiplus::Image* img);
 
 /**
  * @throws IOException
@@ -82,6 +82,7 @@ bool IsImageAnimated(Gdiplus::Image* img);
 bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, bool lossless, int quality);
 
 std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer);
+CString ImageFormatGUIDToString(GUID guid);
 }
 
 #endif

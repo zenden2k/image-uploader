@@ -22,13 +22,13 @@ public:
 
     int getWidth() const override;
     int getHeight() const override;
-    void setSrcAnimated(bool animated);
-    bool isSrcAnimated() const;
+    void setSrcMultiFrame(bool animated);
+    bool isSrcMultiFrame() const;
 protected:
     Gdiplus::Bitmap* bm_;
     uint8_t* data_;
     bool takeOwnership_;
-    bool isSrcAnimated_;
+    bool isSrcMultiFrame_;
     void init();
     DISALLOW_COPY_AND_ASSIGN(GdiPlusImage);
 };

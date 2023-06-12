@@ -27,7 +27,7 @@ void GdiPlusImage::init()
     width_ = 0;
     height_ = 0;
     takeOwnership_ = true;
-    isSrcAnimated_ = false;
+    isSrcMultiFrame_ = false;
 }
 
 GdiPlusImage::~GdiPlusImage() {
@@ -170,10 +170,10 @@ Gdiplus::Bitmap* GdiPlusImage::releaseBitmap() {
     return bm_;
 }
 
-void GdiPlusImage::setSrcAnimated(bool animated) {
-    isSrcAnimated_ = animated;
+void GdiPlusImage::setSrcMultiFrame(bool animated) {
+    isSrcMultiFrame_ = animated;
 }
 
-bool GdiPlusImage::isSrcAnimated() const {
-    return isSrcAnimated_;
+bool GdiPlusImage::isSrcMultiFrame() const {
+    return isSrcMultiFrame_;
 }

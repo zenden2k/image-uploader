@@ -230,16 +230,16 @@ LRESULT CThumbsView::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
     return 0;
 }
 
-bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image *Img)
+bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image *img)
 {
     using namespace Gdiplus;
-    if(ItemID>GetItemCount()-1) 
+    if(itemId>GetItemCount()-1) 
     {
         return false;
     }
     std::unique_ptr<Image> bm;
     CString filename;
-    if(ItemID>=0) 
+    if(itemId>=0) 
     {
         filename = /*GetFileName(ItemID);*/tvi->FileName; 
     }
@@ -248,13 +248,14 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
     height = thumbnailHeight_/*rc.bottom-16*/;
     int thumbwidth = thumbnailWidth_;
     int  thumbheight = thumbnailHeight_;
-    bool isImage = Img || IuCommonFunctions::IsImage(filename);
+    bool isImage = img || IuCommonFunctions::IsImage(filename);
+    CString srcImageFormat;
     if ( isImage)
     {
-        if (Img) {
-            imgwidth = Img->GetWidth();
-            imgheight = Img->GetHeight();
-            bm = ImageUtils::GetThumbnail(Img, thumbnailWidth_, thumbnailHeight_, 0);
+        if (img) {
+            imgwidth = img->GetWidth();
+            imgheight = img->GetHeight();
+            bm = ImageUtils::GetThumbnail(img, thumbnailWidth_, thumbnailHeight_, 0);
             if (bm) {
                 newwidth = bm->GetWidth();
                 newheight = bm->GetHeight();
@@ -262,10 +263,10 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
         }
            
         else 
-            if(ItemID>=0) 
+            if(itemId>=0) 
             {
                 Gdiplus::Size originalImageSize;
-                bm = ImageUtils::GetThumbnail(filename, thumbnailWidth_, thumbnailHeight_, &originalImageSize);
+                bm = ImageUtils::GetThumbnail(filename, thumbnailWidth_, thumbnailHeight_, &originalImageSize, &srcImageFormat);
                 if (bm) {
                     imgwidth = originalImageSize.Width;
                     imgheight = originalImageSize.Height;
@@ -287,7 +288,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
 
     RectF bounds(1, 1, float(width), float(height));
 
-    if ( (isImage &&  ItemID >= 0 ) && (!bm /* || !bm->GetWidth()*/)) {
+    if ( (isImage &&  itemId >= 0 ) && (!bm /* || !bm->GetWidth()*/)) {
         LinearGradientBrush 
             brush(bounds, Color(130, 255, 0, 0), Color(255, 0, 0, 0), 
             LinearGradientModeBackwardDiagonal); 
@@ -311,7 +312,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
             gr.FillRectangle(&br,1, 1, width-1,height-1);
         gr.SetInterpolationMode(InterpolationModeHighQualityBicubic );
 
-        if(ItemID>=0 && !Img && !IuCommonFunctions::IsImage(filename))
+        if(itemId>=0 && !img && !IuCommonFunctions::IsImage(filename))
         {
             WORD id;
             // ExtractAssociatedIcon has memory leaks
@@ -345,13 +346,10 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
             }
         }
 
-        try{
-            if(bm)
+
+       if(bm)
                 gr.DrawImage(/*backBuffer*/bm.get(), (int)((width-newwidth)/2)+1, (int)((height-newheight)/2), (int)newwidth,(int)newheight);
-        }
-        catch(...)
-        {
-        }
+
 
         RectF bounds(0, float(height), float(width), float(fullThumbHeight_ - thumbnailHeight_));
 
@@ -363,7 +361,7 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
             gr.FillRectangle(&br2, (float)1, (float)height + 1, (float)width - 2, (float)height + 20 - 1);
 
 
-            if (ItemID >= 0)
+            if (itemId >= 0)
             {
                 SolidBrush brush(Color(255, 0, 0, 0));
                 StringFormat format;
@@ -381,8 +379,12 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
                 lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
                 if (!lstrcmpi(FileExt, _T("jpg")))
                     lstrcpy(FileExt, _T("JPEG"));
+
+                if (srcImageFormat.IsEmpty()) {
+                    
+                }
                 if (IuCommonFunctions::IsImage(filename) && bm) {
-                    Buffer.Format(_T("%s %dx%d (%s)"), (LPCTSTR)FileExt, imgwidth, imgheight, (LPCTSTR)buf2);
+                    Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, (LPCTSTR)buf2);
                 }
                 else {
                     Buffer = buf2;
@@ -399,14 +401,14 @@ bool CThumbsView::LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image 
         tvi->ThumbLoaded = true;
         tvi->ThumbnailRequested = false;
         
-        int oldImageIndex = GetImageIndex(ItemID);
+        int oldImageIndex = GetImageIndex(itemId);
         if (oldImageIndex != 0) {
             ImageList.Replace(oldImageIndex, bmp, nullptr);
-            RedrawItems(ItemID, ItemID);
+            RedrawItems(itemId, itemId);
            // SetItem(ItemID, 0, LVIF_IMAGE, 0, oldImageIndex, 0, 0, 0);
         } else {
             int imageIndex = ImageList.Add(bmp, (COLORREF)0);
-            SetItem(ItemID, 0, LVIF_IMAGE, 0, imageIndex, 0, 0, 0);
+            SetItem(itemId, 0, LVIF_IMAGE, 0, imageIndex, 0, 0, 0);
         }
         DeleteObject(bmp);
     } else {

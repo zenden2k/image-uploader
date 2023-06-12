@@ -397,7 +397,7 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
 
 }
 
-std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isAnimated) {
+std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isMultiFrame) {
     using namespace Gdiplus;
     auto img = LoadImageFromFileExtended(fileName);
     if (!img) {
@@ -407,8 +407,8 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
     if ( !src || src->GetLastStatus() != Ok ) {
         return nullptr;
     }
-    if (isAnimated) {
-        *isAnimated = img->isSrcAnimated();
+    if (isMultiFrame) {
+        *isMultiFrame = img->isSrcMultiFrame();
     }
     std::unique_ptr<Gdiplus::Bitmap> dst = std::make_unique<Bitmap>(src->GetWidth(), src->GetHeight(), PixelFormat32bppARGB);
 
@@ -1032,7 +1032,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
     return res;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize) {
+std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height, Gdiplus::Size* realSize, CString* imageFormat) {
     using namespace Gdiplus;
     std::unique_ptr<GdiPlusImage> img = LoadImageFromFileExtended(filename);
     if (!img) {
@@ -1044,7 +1044,11 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width
     if (!bm || bm->GetLastStatus() != Ok) {
         return {};
     }
-    return GetThumbnail(bm.get(), width, height, realSize);
+    std::unique_ptr<Gdiplus::Bitmap> res = GetThumbnail(bm.get(), width, height, realSize);
+    if (res && imageFormat) {
+        *imageFormat = U2W(img->getSrcFormat());
+    }
+    return res;
 }
 
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
@@ -1421,16 +1425,22 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     return true;
 }
 
-bool IsImageAnimated(Gdiplus::Image* img) {
+bool IsImageMultiFrame(Gdiplus::Image* img) {
+    /*GUID format;
+    if (img->GetRawFormat(&format) == Gdiplus::Ok) {
+        if (format == ImageFormatTIFF) {
+            return false;
+        }
+    }*/
+
     UINT count = img->GetFrameDimensionsCount();
-    GUID* pDimensionIDs = new GUID[count];
+    auto pDimensionIDs = std::make_unique<GUID[]>(count);
 
     // Get the list of frame dimensions from the Image object.
-    img->GetFrameDimensionsList(pDimensionIDs, count);
+    img->GetFrameDimensionsList(pDimensionIDs.get(), count);
 
     // Get the number of frames in the first dimension.
     int frameCount = img->GetFrameCount(&pDimensionIDs[0]);
-    delete[] pDimensionIDs;
     return frameCount > 1;
 }
 
@@ -1530,6 +1540,43 @@ std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer) {
     }
     FontFamily fontFamily(szFontName);
     return std::make_unique<Font>(&fontFamily, static_cast<REAL>(nFontSize), style, Gdiplus::UnitPixel);
+}
+
+CString ImageFormatGUIDToString(GUID guid) {
+    if (guid == ImageFormatBMP) {
+        return "bmp";
+    }
+    if (guid == ImageFormatEMF) {
+        return "emf";
+    }
+    if (guid == ImageFormatEXIF) {
+        return "exif";
+    }
+    if (guid == ImageFormatGIF) {
+        return "gif";
+    }
+    if (guid == ImageFormatIcon) {
+        return "ico";
+    }
+    if (guid == ImageFormatJPEG) {
+        return "jpeg";
+    }
+    if (guid == ImageFormatMemoryBMP) {
+        return "bmp";
+    }
+    if (guid == ImageFormatPNG) {
+        return "png";
+    }
+    if (guid == ImageFormatTIFF) {
+        return "tiff";
+    }
+    if (guid == ImageFormatWEBP) {
+        return "webp";
+    }
+    if (guid == ImageFormatWMF) {
+        return "wmf";
+    }
+    return "unknown";
 }
 
 }

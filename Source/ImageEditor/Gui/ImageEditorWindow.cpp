@@ -322,7 +322,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
 
     static BOOL verificationFlagChecked = FALSE;
-    if (currentDoc_ && currentDoc_->isSrcAnimated() && !verificationFlagChecked) {
+    if (currentDoc_ && currentDoc_->isSrcMultiFrame() && !verificationFlagChecked) {
         int buttonPressed;
         CTaskDialog dlg;
         CString verText = TR("Do not ask again");

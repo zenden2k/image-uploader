@@ -1,4 +1,4 @@
-﻿#include "ImageConverterPrivate_gdiplus.h"
+#include "ImageConverterPrivate_gdiplus.h"
 
 #include <cassert>
 #include <memory>
@@ -58,7 +58,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         processingEnabled_ = false;
     }
 
-    if (m_imageConvertingParams.SkipAnimated && srcImg->isSrcAnimated()) {
+    if (m_imageConvertingParams.SkipAnimated && srcImg->isSrcMultiFrame()) {
         processingEnabled_ = false;
     }
 

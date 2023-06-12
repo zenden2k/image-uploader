@@ -2,6 +2,7 @@
 
 #include "Utils.h"
 #include "Func/WinUtils.h"
+#include "Core/Utils/CoreUtils.h"
 
 typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
 
@@ -71,5 +72,10 @@ bool GdiplusImageReader::checkLastStatus(Gdiplus::Bitmap* bm) {
 void GdiplusImageReader::postLoad(GdiPlusImage* bm) {
     short orient = ImageUtils::GetImageOrientation(bm->getBitmap());
     ImageUtils::RotateAccordingToOrientation(orient, bm->getBitmap(), true);
-    bm->setSrcAnimated(ImageUtils::IsImageAnimated(bm->getBitmap()));
+    bm->setSrcMultiFrame(ImageUtils::IsImageMultiFrame(bm->getBitmap()));
+    GUID format;
+    if (bm->getBitmap()->GetRawFormat(&format) == Gdiplus::Ok) { 
+        bm->setSrcFormat(W2U(ImageUtils::ImageFormatGUIDToString(format)));
+    }
+    
 }

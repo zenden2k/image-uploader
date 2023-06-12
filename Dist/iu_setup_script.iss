@@ -155,8 +155,12 @@ begin
 end;
 
 procedure ShellExtBeforeInstall();
+var 
+  dest: String;
 begin
-  RenameFile(ExpandConstant(CurrentFileName), ExpandConstant(CurrentFileName) + '.' + IntToStr(Random(100000)) + '.old');
+  dest := ExpandConstant(CurrentFileName) + '.' + IntToStr(Random(100000)) + '.old';
+  RenameFile(ExpandConstant(CurrentFileName), dest);
+  DeleteFile(dest)
 end;
 
 function GetIconFileName(Param: String): String;

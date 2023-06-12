@@ -476,12 +476,12 @@ TEST_F(UtilsTest, IsImageAnimated) {
     {
         Gdiplus::Image img(U2W(TestHelpers::resolvePath("Images/animation.gif")));
         ASSERT_EQ(Gdiplus::Ok, img.GetLastStatus());
-        EXPECT_TRUE(IsImageAnimated(&img));
+        EXPECT_TRUE(IsImageMultiFrame(&img));
     }
     {
 
         Gdiplus::Image img(U2W(TestHelpers::resolvePath("file_with_const_size.png")));
         ASSERT_EQ(Gdiplus::Ok, img.GetLastStatus());
-        EXPECT_FALSE(IsImageAnimated(&img));
+        EXPECT_FALSE(IsImageMultiFrame(&img));
     }
 }

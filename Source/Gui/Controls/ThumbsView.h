@@ -94,7 +94,7 @@ public:
     bool SimpleDelete(int ItemIndex, bool DeleteThumb = true, bool deleteFile = false);
     LPCTSTR GetFileName(int ItemIndex);
     LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
-    bool LoadThumbnail(int ItemID, ThumbsViewItem* tvi, Gdiplus::Image *Img = NULL);
+    bool LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image *img = NULL);
     int GetImageIndex(int ItemIndex) const;
     CImageViewWindow ImageView;
     LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);

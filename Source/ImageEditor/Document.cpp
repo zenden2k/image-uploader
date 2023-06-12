@@ -35,7 +35,7 @@ Document::Document(int width, int height) {
 }
 
 Document::Document(const wchar_t* fileName) {
-    currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcAnimated_);
+    currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcMultiFrame_);
     init();
     if ( currentImage_ ) {
         checkTransparentPixels();
@@ -295,8 +295,8 @@ void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     currentImage_ = newBitmap;
 }
 
-bool Document::isSrcAnimated() const {
-    return isSrcAnimated_;
+bool Document::isSrcMultiFrame() const {
+    return isSrcMultiFrame_;
 }
 
 }

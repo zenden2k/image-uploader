@@ -674,7 +674,7 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
     ::SetFocus(Pages[idPage]->PageWnd);
     Pages[idPage]->OnShow();
 
-    ::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == wpWelcomePage);
+    //::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == wpWelcomePage);
 
     if (oldCurPage >= 0) {
         ::ShowWindow(Pages[oldCurPage]->PageWnd, SW_HIDE);
