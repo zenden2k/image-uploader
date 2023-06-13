@@ -168,12 +168,12 @@ endif()
 
 if (WIN32)
 	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
-endif()	
+endif()	 
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
     list(APPEND COMMON_DEPS 
-	    ffmpeg/4.4.3 
-	    xz_utils/5.4.0
+	    ffmpeg/5.1
+	    xz_utils/5.4.2
     )
 #  Error occurs while building this package:
 #		msys2/cci.latest: Invalid ID: Only Windows x64 supported
@@ -188,7 +188,7 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
 			ffmpeg:with_pulse=False
 		)
 	endif()
-	list(APPEND ADDITIONAL_OPTIONS 
+	list(APPEND ADDITIONAL_OPTIONS
 		ffmpeg:shared=False
 		ffmpeg:disable_all_encoders=True
 		ffmpeg:disable_all_muxers=True

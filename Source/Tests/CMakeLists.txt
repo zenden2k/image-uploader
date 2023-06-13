@@ -42,7 +42,7 @@ add_executable(Tests ${SRC_LIST})
 
 set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 if(WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
-    set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+   set_target_properties(Tests PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-59.dll /DELAYLOAD:avformat-59.dll /DELAYLOAD:avutil-57.dll /DELAYLOAD:swscale-6.dll")
 endif()
 
 if(WIN32)

@@ -71,7 +71,8 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        'run_tests': True
+        'run_tests': True,
+        'ffmpeg_standalone' : True,
     },  
     {
         'os': "Windows",
@@ -87,7 +88,7 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        #'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : True,
         'installer_arch': 'x64',
         'run_tests': True,
     }, 

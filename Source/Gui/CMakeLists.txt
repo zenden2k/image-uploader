@@ -353,7 +353,7 @@ target_link_libraries(GUI iucore iuvideo
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 
 if (WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
-    set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-58.dll /DELAYLOAD:avformat-58.dll /DELAYLOAD:avutil-56.dll /DELAYLOAD:swscale-5.dll")
+    set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-59.dll /DELAYLOAD:avformat-59.dll /DELAYLOAD:avutil-57.dll /DELAYLOAD:swscale-6.dll")
 endif()
 
 target_precompile_headers(GUI PRIVATE ../stdafx.h)
