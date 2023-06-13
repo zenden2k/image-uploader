@@ -18,7 +18,7 @@ BUILD_DOCS = True
 OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "master"
+DEFAULT_GIT_BRANCH = "ffmpeg5"
 
 # --- Script requirements ---
 # git
@@ -71,7 +71,8 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        'run_tests': True
+        'run_tests': True,
+        'ffmpeg_standalone' : True,
     },  
     {
         'os': "Windows",
@@ -87,7 +88,7 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        #'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : True,
         'installer_arch': 'x64',
         'run_tests': True,
     }, 
@@ -121,7 +122,7 @@ BUILD_TARGETS = [
     },
 ]
 
-#BUILD_TARGETS = BUILD_TARGETS[0:1]
+BUILD_TARGETS = BUILD_TARGETS[0:1]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"

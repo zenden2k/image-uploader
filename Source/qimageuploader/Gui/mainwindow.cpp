@@ -326,4 +326,5 @@ void MainWindow::on_actionAboutProgram_triggered() {
 
 void MainWindow::quitApp() {
     close();
+    QApplication::quit();
 }

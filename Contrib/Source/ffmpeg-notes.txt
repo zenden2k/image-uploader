@@ -22,23 +22,24 @@ For MSVC:
 For Windows x64:
 ./configure --enable-asm --enable-yasm --arch=amd64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
 
+with libaom x64:
+--enable-asm but --disable-x86asm
+
+ ./configure --enable-asm --disable-x86asm --enable-yasm --arch=amd64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/e/ffmpeg-5.1.3-x64 --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample  --enable-libaom  --disable-avfilter   --disable-network  --toolchain=msvc --extra-cflags=-I./deps_x64/include --extra-ldflags=-libpath:./deps_x64/lib
+
 For Windows ARM64:
 
 curl -L https://github.com/libav/gas-preprocessor/raw/master/gas-preprocessor.pl \
 			-o /usr/bin/gas-preprocessor.pl \
 			&& chmod +x /usr/bin/gas-preprocessor.pl
 
-./configure --enable-asm --enable-yasm --arch=aarch64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network  --toolchain=msvc --enable-cross-compile --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
+./configure --enable-asm  --disable-x86asm --enable-yasm --arch=aarch64 --disable-avdevice  --disable-doc --disable-ffmpeg --disable-ffplay --disable-ffprobe --disable-ffmpeg --enable-shared --disable-static --disable-bzlib --enable-zlib --disable-libopenjpeg --disable-iconv --prefix=/c/ffmpeg --disable-encoders --disable-muxers  --disable-filters --disable-devices  --disable-swresample    --disable-avfilter   --disable-network --enable-libaom  --toolchain=msvc --enable-cross-compile --extra-cflags=-I./deps/include --extra-ldflags=-libpath:./deps/lib
 
 
-
+Then run:
 
 make
 make install
-
-
-
-
 
 
 Note:

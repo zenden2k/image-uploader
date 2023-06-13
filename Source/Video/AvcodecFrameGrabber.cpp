@@ -90,7 +90,7 @@ protected:
     int videoStream;
     AVFormatContext* pFormatCtx;
     AVCodecContext* pCodecCtx;
-    AVCodec* pCodec;
+    const AVCodec* pCodec;
     AVFrame* pFrame;
     AVFrame* pFrameRGB;
     AVPacket packet;
@@ -448,7 +448,7 @@ public:
                     sws_scale(img_convert_ctx, pFrame->data, pFrame->linesize, 0, pCodecCtx->height,
                               pFrameRGB->data, pFrameRGB->linesize);
                     int64_t display_time = static_cast<int64_t>(static_cast<double>(av_rescale_q(
-                        pFrame->pkt_pts, pFormatCtx->streams[videoStream]->time_base, rat)) / static_cast<double>(AV_TIME_BASE));
+                        pFrame->pts, pFormatCtx->streams[videoStream]->time_base, rat)) / static_cast<double>(AV_TIME_BASE));
                     //pFrame->pkt_pts/ (double)AV_TIME_BASE;
                     if (display_time <= 0) {
                         display_time = static_cast<int64_t>(static_cast<double>(time) / static_cast<double>(AV_TIME_BASE));
