@@ -219,7 +219,9 @@ bool IsImage(LPCTSTR szFileName)
     if (!lstrlen(szExt)) {
         return false;
     }
-    return supportedImageExtensions.find(W2U(szExt)) != supportedImageExtensions.end();
+    CString find = szExt;
+    find.MakeLower();
+    return supportedImageExtensions.find(W2U(find)) != supportedImageExtensions.end();
 }
 
 const std::set<std::string>& GetSupportedImageExtensions() {

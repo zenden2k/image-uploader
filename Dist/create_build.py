@@ -18,7 +18,7 @@ BUILD_DOCS = True
 OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "ffmpeg5"
+DEFAULT_GIT_BRANCH = "master"
 
 # --- Script requirements ---
 # git
@@ -122,7 +122,7 @@ BUILD_TARGETS = [
     },
 ]
 
-BUILD_TARGETS = BUILD_TARGETS[0:1]
+#BUILD_TARGETS = BUILD_TARGETS[0:1]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
