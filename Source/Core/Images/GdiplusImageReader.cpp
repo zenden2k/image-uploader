@@ -70,12 +70,11 @@ bool GdiplusImageReader::checkLastStatus(Gdiplus::Bitmap* bm) {
 }
 
 void GdiplusImageReader::postLoad(GdiPlusImage* bm) {
-    short orient = ImageUtils::GetImageOrientation(bm->getBitmap());
-    ImageUtils::RotateAccordingToOrientation(orient, bm->getBitmap(), true);
-    bm->setSrcMultiFrame(ImageUtils::IsImageMultiFrame(bm->getBitmap()));
     GUID format;
-    if (bm->getBitmap()->GetRawFormat(&format) == Gdiplus::Ok) { 
+    if (bm->getBitmap()->GetRawFormat(&format) == Gdiplus::Ok) {
         bm->setSrcFormat(W2U(ImageUtils::ImageFormatGUIDToString(format)));
     }
-    
+    short orient = ImageUtils::GetImageOrientation(bm->getBitmap());
+    ImageUtils::RotateAccordingToOrientation(orient, bm->getBitmap(), true);
+    bm->setSrcMultiFrame(ImageUtils::IsImageMultiFrame(bm->getBitmap()));  
 }
