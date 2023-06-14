@@ -119,7 +119,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         BackBuffer.reset(new Bitmap(static_cast<int>(round(newwidth)), static_cast<int>(round(newheight))));
 
         Graphics gr(BackBuffer.get());
-        if (fileformat == ImageUtils::sifJPEG) {
+        if (fileformat == ImageUtils::sifJPEG || fileformat == ImageUtils::sifGIF) {
             gr.Clear(Color(255, 255, 255, 255));
         }
        
