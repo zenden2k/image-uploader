@@ -718,6 +718,21 @@ CString GdiplusStatusToString(Gdiplus::Status statusID) {
 
     }
 }
+
+std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
+    std::unique_ptr<Bitmap> res(new Bitmap(bm->GetWidth(), bm->GetHeight(), PixelFormat32bppARGB));
+
+    if (res->GetLastStatus() != Ok) {
+        return {};
+    }
+    Graphics gr(res.get());
+    SolidBrush br(color);
+    gr.FillRectangle(&br, 0, 0, bm->GetWidth(), bm->GetHeight());
+    gr.DrawImage(bm, 0, 0);
+
+    return res;
+}
+
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format, int Quality, CString* mimeType) {
     std::unique_ptr<Bitmap> quantizedImage;
 

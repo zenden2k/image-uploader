@@ -24,6 +24,7 @@ if(WIN32)
         ../Func/Tests/WinUtilsTest.cpp 
         ../Core/Images/Tests/UtilsTest.cpp
         ../Core/Images/Tests/ImageConverterTest.cpp
+        ../Core/Images/Tests/HeifImageReaderTest.cpp
         ../Core/Images/ImageConverterPrivate_gdiplus.cpp
         ../Core/Images/ImageConverterPrivateBase.cpp
         ../Core/Images/ImageConverter.cpp

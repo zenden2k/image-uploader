@@ -18,6 +18,7 @@ if(WIN32)
 endif()
 set(IU_ENABLE_FFMPEG ON CACHE BOOL "Use FFmpeg libraries")
 set(IU_FFMPEG_STANDALONE OFF CACHE BOOL "Don't Use FFmpeg Conan package")
+set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
@@ -127,7 +128,7 @@ SET(COMMON_DEPS boost/1.78.0
 				base64/0.4.0
 				glog/0.6.0@zenden2k/stable
 #				glog/0.6.0
-				libwebp/1.2.1
+				libwebp/1.2.1              
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
@@ -167,7 +168,16 @@ if (IU_ENABLE_MEGANZ)
 endif()
 
 if (WIN32)
-	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
+	list(APPEND COMMON_DEPS
+        base-classes/1.0.0@zenden2k/stable
+        libheif/1.13.0
+    )
+
+	if (IU_LIBHEIF_WITH_DAV1D)
+		list(APPEND ADDITIONAL_OPTIONS 
+			libheif:with_dav1d=True
+		)	
+	endif()	
 endif()	 
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
@@ -175,9 +185,7 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
 	    ffmpeg/5.1
 	    xz_utils/5.4.2
     )
-#  Error occurs while building this package:
-#		msys2/cci.latest: Invalid ID: Only Windows x64 supported
-#  So we have to build ffmpeg separately.
+
 	if(NOT WIN32)
 		list(APPEND ADDITIONAL_OPTIONS 
 			ffmpeg:with_vaapi=False
@@ -333,6 +341,7 @@ find_package(GTest CONFIG REQUIRED)
 find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
 if(WIN32)
 	find_package(base-classes CONFIG REQUIRED)
+    find_package(libheif CONFIG REQUIRED)
 endif()	
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE)

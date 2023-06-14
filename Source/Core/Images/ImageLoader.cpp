@@ -6,6 +6,7 @@
 #include "Core/Upload/CommonTypes.h"
 #include "WebpImageReader.h"
 #include "GdiplusImageReader.h"
+#include "HeifImageReader.h"
 
 std::unique_ptr<GdiPlusImage> ImageLoader::loadFromFile(const wchar_t* fileName) {
     FILE* f = _wfopen(fileName, L"rb");
@@ -73,6 +74,9 @@ ImageFormat ImageLoader::getImageFormatFromData(uint8_t* data, size_t size) {
     if (size < 12) {
         return ImageFormat::Unknown;
     }
+    if (HeifImageReader::canRead(data, size)) {
+        return ImageFormat::Heif;
+    }
     if (data[0] == 'R' && data[1] == 'I' &&data[2] == 'F' &&data[3] == 'F'
         && data[8] == 'W' && data[9] == 'E' && data[10] == 'B'&& data[11] == 'P'
         ) {
@@ -82,6 +86,9 @@ ImageFormat ImageLoader::getImageFormatFromData(uint8_t* data, size_t size) {
 }
 
 std::unique_ptr<AbstractImageReader> ImageLoader::createReaderForFormat(ImageFormat format) {
+    if (format == ImageFormat::Heif) {
+        return std::make_unique<HeifImageReader>();
+    }
     if (format == ImageFormat::WebP) {
         return std::make_unique<WebpImageReader>();
     }
