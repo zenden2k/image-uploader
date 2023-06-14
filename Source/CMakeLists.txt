@@ -127,7 +127,7 @@ SET(COMMON_DEPS boost/1.78.0
 				base64/0.4.0
 				glog/0.6.0@zenden2k/stable
 #				glog/0.6.0
-				libwebp/1.2.1
+				libwebp/1.2.1              
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
@@ -167,7 +167,15 @@ if (IU_ENABLE_MEGANZ)
 endif()
 
 if (WIN32)
-	list(APPEND COMMON_DEPS base-classes/1.0.0@zenden2k/stable)
+	list(APPEND COMMON_DEPS
+        base-classes/1.0.0@zenden2k/stable
+        libheif/1.13.0
+    )
+
+    list(APPEND ADDITIONAL_OPTIONS 
+		libheif:with_dav1d=True
+	)
+
 endif()	 
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
@@ -333,6 +341,7 @@ find_package(GTest CONFIG REQUIRED)
 find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
 if(WIN32)
 	find_package(base-classes CONFIG REQUIRED)
+    find_package(libheif CONFIG REQUIRED)
 endif()	
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE)

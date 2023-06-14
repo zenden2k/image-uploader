@@ -1754,9 +1754,12 @@ void CWizardDlg::CloseWizard()
 bool CWizardDlg::RegisterLocalHotkeys() {
     m_hotkeys = Settings.Hotkeys;
     int n = m_hotkeys.size();
-    auto accels = std::make_unique<ACCEL[]>(n + 1);
+    constexpr auto PRDEFINED_ACCEL_COUNT = 2;
+    auto accels = std::make_unique<ACCEL[]>(n + PRDEFINED_ACCEL_COUNT);
     accels[0] = {FVIRTKEY, VK_F1, IDC_DOCUMENTATION};
-    int j = 1;
+    accels[1] = {FVIRTKEY | FCONTROL | FSHIFT, 'L', IDC_SHOWLOG};
+
+    int j = PRDEFINED_ACCEL_COUNT;
     for (int i = 0; i < n; i++) {
         if (!m_hotkeys[i].localKey.keyCode) {
             continue;
@@ -2137,7 +2140,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             if ( CopyToClipboard )
             {
                 CWindowDC dc(m_hWnd);
-                if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) { // remove alpha if saving format is JPEG
+                if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {
                         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
@@ -2277,7 +2280,7 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 #ifndef NDEBUG
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
 #endif
-    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log"));
+    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
 
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));

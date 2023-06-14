@@ -182,6 +182,7 @@ if(WIN32)
         Images/Utils.cpp
         Images/GdiplusImageReader.cpp
         Images/WebpImageReader.cpp
+        Images/HeifImageReader.cpp
         Images/ImageLoader.cpp
         ../3rdpart/QColorQuantizer.cpp
         Images/GdiPlusImage.cpp
@@ -214,6 +215,7 @@ if(WIN32)
         Images/Utils.h
         Images/GdiplusImageReader.h
         Images/WebpImageReader.h
+        Images/HeifImageReader.h
         Images/AbstractImageReader.h
         Images/ImageLoader.h
         ../3rdpart/QColorQuantizer.h
@@ -266,7 +268,7 @@ if (IU_ENABLE_SFTP)
 endif()
 
 if (WIN32)
-    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder gdiplus winmm urlmon)
+    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)

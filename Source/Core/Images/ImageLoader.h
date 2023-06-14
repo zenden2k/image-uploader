@@ -11,7 +11,7 @@
 
 class AbstractImageReader;
 
-enum class ImageFormat { Unknown, WebP };
+enum class ImageFormat { Unknown, WebP, Heif };
 
 class ImageLoader {
 public:

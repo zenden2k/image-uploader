@@ -208,7 +208,7 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
     return result;
 }
 
-const std::set<std::string> supportedImageExtensions = { "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif","tif", "tiff", "webp" };
+const std::set<std::string> supportedImageExtensions = { "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif","tif", "tiff", "webp", "heic", "heif", "avif"};
 
 bool IsImage(LPCTSTR szFileName)
 {

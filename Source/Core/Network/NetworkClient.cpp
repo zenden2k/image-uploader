@@ -145,6 +145,13 @@ struct CurlInitializer {
 
     ~CurlInitializer() {
         curl_global_cleanup();
+
+        #ifdef USE_OPENSSL
+        #if defined(_WIN32) && !defined(OPENSSL_NO_COMP)
+                SSL_COMP_free_compression_methods(); // to avoid memory leaks
+        #endif
+                kill_locks();
+        #endif
     }
 };
 
@@ -634,13 +641,6 @@ void NetworkClient::curl_init() {
 
 void NetworkClient::curl_cleanup()
 {
-    curl_global_cleanup(); 
-#ifdef USE_OPENSSL
-    #if defined(_WIN32) && !defined(OPENSSL_NO_COMP)
-        SSL_COMP_free_compression_methods(); // to avoid memory leaks
-    #endif
-    NetworkClientInternal::kill_locks();
-#endif
 }
 
 std::string NetworkClient::responseHeaderText()
