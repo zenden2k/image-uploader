@@ -18,6 +18,7 @@ if(WIN32)
 endif()
 set(IU_ENABLE_FFMPEG ON CACHE BOOL "Use FFmpeg libraries")
 set(IU_FFMPEG_STANDALONE OFF CACHE BOOL "Don't Use FFmpeg Conan package")
+set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
@@ -172,10 +173,11 @@ if (WIN32)
         libheif/1.13.0
     )
 
-    list(APPEND ADDITIONAL_OPTIONS 
-		libheif:with_dav1d=True
-	)
-
+	if (IU_LIBHEIF_WITH_DAV1D)
+		list(APPEND ADDITIONAL_OPTIONS 
+			libheif:with_dav1d=True
+		)	
+	endif()	
 endif()	 
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
@@ -183,9 +185,7 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
 	    ffmpeg/5.1
 	    xz_utils/5.4.2
     )
-#  Error occurs while building this package:
-#		msys2/cci.latest: Invalid ID: Only Windows x64 supported
-#  So we have to build ffmpeg separately.
+
 	if(NOT WIN32)
 		list(APPEND ADDITIONAL_OPTIONS 
 			ffmpeg:with_vaapi=False
