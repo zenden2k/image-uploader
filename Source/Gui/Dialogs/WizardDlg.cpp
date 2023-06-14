@@ -20,6 +20,7 @@
 #include "WizardDlg.h"
 
 #include <ShObjIdl.h>
+#include <ComDef.h>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
@@ -90,14 +91,17 @@ CString MakeTempFileName(const CString& FileName)
     return FileNameBuf;
 }
 
-bool SaveFromHGlobal(HGLOBAL Data, const CString& FileName, CString& OutName)
+bool SaveFromHGlobal(HGLOBAL Data, const CString& FileName, LARGE_INTEGER* size, CString& OutName)
 {
     if (!Data) return false;
     CString FileNameBuf = MakeTempFileName(FileName);
 
-    DWORD filesize = GlobalSize(Data);
-    if (!filesize)
+    size_t filesize = size ? size->QuadPart : GlobalSize(Data);
+
+    if (!filesize) {
         return false;
+    }
+
     PVOID LockedData = (PVOID)GlobalLock(Data);
 
     HANDLE hFile = CreateFile(FileNameBuf, GENERIC_WRITE,
@@ -130,7 +134,7 @@ bool SaveFromIStream(IStream *pStream, const CString& FileName, CString &OutName
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
 
-    UCHAR bBuffer[4096];
+    UCHAR bBuffer[65536];
     ULONG cbRead;
 
     while (SUCCEEDED(pStream->Read(bBuffer, sizeof(bBuffer), &cbRead)) && cbRead > 0)
@@ -985,6 +989,21 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
 
     enableDragndropOverlay_ = false;
 
+  
+    FORMATETC formatHdrop = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    FORMATETC formatFileDescriptor = { static_cast<WORD>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    FORMATETC formatBitmap = { CF_HDROP, nullptr, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+
+    if (pDataObj->QueryGetData(&formatHdrop) != S_OK &&
+        pDataObj->QueryGetData(&formatFileDescriptor) != S_OK &&
+        pDataObj->QueryGetData(&formatBitmap) != S_OK
+        )
+    {
+        *pdwEffect = DROPEFFECT_NONE;
+        return DRAGDROP_S_CANCEL;
+
+    }
+
     if (!Settings.DropVideoFilesToTheList && (CurPage == wpMainPage || CurPage == wpWelcomePage)) {
         FORMATETC tc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
         if (pDataObj->QueryGetData(&tc) == S_OK)
@@ -999,7 +1018,7 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
                 if (n == 1) {
                     int len = DragQueryFile(hDrop, 0, nullptr, 0) + 1;
                     CString buffer;
-                    
+
                     DragQueryFile(hDrop, 0, buffer.GetBuffer(len), len);
                     buffer.ReleaseBuffer();
                     if (IsVideoFile(buffer)) {
@@ -1012,12 +1031,17 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
             }
         }
     }
-    
+
+    if (!enableDragndropOverlay_) {
+        queryDropFiledescriptors(pDataObj, &enableDragndropOverlay_);
+    }
+
     if (enableDragndropOverlay_) {
         dragndropOverlay_.SetWindowPos(HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         dragndropOverlay_.ShowWindow(SW_SHOW);
     }
 
+    *pdwEffect = DROPEFFECT_COPY;
     return S_OK;
 }
     
@@ -1044,6 +1068,27 @@ STDMETHODIMP CWizardDlg::DragLeave( void)
     return S_OK;
 }
 
+bool CWizardDlg::queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay) {
+    FORMATETC tc2 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
+    if (pDataObj->QueryGetData(&tc2) == S_OK)
+    {
+        STGMEDIUM ddd;
+
+        if (pDataObj->GetData(&tc2, &ddd) == S_OK) {
+
+            PVOID hdrop = (PVOID)GlobalLock(ddd.hGlobal);
+            FILEGROUPDESCRIPTOR* fgd = (FILEGROUPDESCRIPTOR*)hdrop;
+
+            if (fgd->cItems == 1 && enableOverlay && IsVideoFile(fgd->fgd[0].cFileName)) {
+                *enableOverlay = true;
+            }
+            ReleaseStgMedium(&ddd);
+            return true;
+        }
+    }
+    return false;
+}
+
 bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 {
     FORMATETC tc2 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILEDESCRIPTOR)), 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
@@ -1055,14 +1100,17 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
 
             PVOID hdrop = (PVOID) GlobalLock ( ddd.hGlobal );
             FILEGROUPDESCRIPTOR *fgd = (FILEGROUPDESCRIPTOR*) hdrop;
+            
             CStringList Paths;
             for(size_t i=0; i<fgd->cItems; i++)
             {
-                FORMATETC tc3 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILECONTENTS)), 0, DVASPECT_CONTENT, static_cast<LONG>(i), TYMED_HGLOBAL };
-                if(pDataObj->QueryGetData(&tc3) == S_OK )
+                FILEDESCRIPTOR& desc = fgd->fgd[i];
+                FORMATETC tc3 = { static_cast<CLIPFORMAT>(RegisterClipboardFormat(CFSTR_FILECONTENTS)), 0, DVASPECT_CONTENT, static_cast<LONG>(i), TYMED_HGLOBAL | TYMED_ISTREAM};
+                HRESULT res = pDataObj->QueryGetData(&tc3);
+                if(res == S_OK)
                 {
-                    STGMEDIUM ddd2;
-                    ddd2.tymed = TYMED_HGLOBAL;
+                    STGMEDIUM ddd2{};
+                    ddd2.tymed = TYMED_HGLOBAL   | TYMED_ISTREAM ;
                     if(pDataObj->GetData(&tc3, &ddd2) == S_OK )
                     {
                         CString OutFileName;
@@ -1070,7 +1118,10 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         
                         if(ddd2.tymed == TYMED_HGLOBAL)
                         {
-                            FileWasSaved = SaveFromHGlobal(ddd2.hGlobal, fgd->fgd[i].cFileName, OutFileName);
+                            LARGE_INTEGER size{};
+                            size.LowPart = desc.nFileSizeLow;
+                            size.HighPart = desc.nFileSizeHigh;
+                            FileWasSaved = SaveFromHGlobal(ddd2.hGlobal, fgd->fgd[i].cFileName, desc.dwFlags & FD_FILESIZE ? &size: nullptr, OutFileName);
                         }
 
                         if(ddd2.tymed == TYMED_ISTREAM)
@@ -1087,6 +1138,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
                                 CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
                                 dlg->SetFileName(OutFileName);
+                                ReleaseStgMedium(&ddd2);
                                 break;
                             }
                             else if((CurPage==0||CurPage==2))
@@ -1096,19 +1148,24 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                                      Paths.Add(OutFileName);        
                             }
                         }
+                        ReleaseStgMedium(&ddd2);
                     }
-                }
+                } /*else {
+                    LOG(WARNING) << _com_error(res).ErrorMessage();
+                }*/
 
-                GlobalUnlock ( hdrop );
-                
-                if(!Paths.IsEmpty())
-                {
-                    CreatePage(wpMainPage);
-                    //QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
-                    FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
-                    ShowPage(wpMainPage);
-                    return true;
-                }
+               
+            }
+            GlobalUnlock(hdrop);
+            ReleaseStgMedium(&ddd);
+
+            if (!Paths.IsEmpty())
+            {
+                CreatePage(wpMainPage);
+                //QuickUploadMarker = (Settings.QuickUpload && !CmdLine.IsOption(_T("noquick"))) || (CmdLine.IsOption(_T("quick")));
+                FolderAdd.Do(Paths, /*CmdLine.IsOption(_T("imagesonly"))*/false, true);
+                ShowPage(wpMainPage);
+                return true;
             }
         }
     }
@@ -1174,18 +1231,34 @@ STDMETHODIMP CWizardDlg::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL p
     }
 
     dragndropOverlay_.ShowWindow(SW_HIDE);
+    bool hasBitmap = false;
+    FORMATETC FtcBitmap;
+    FtcBitmap.cfFormat = CF_BITMAP;
+    FtcBitmap.ptd = 0;
+    FtcBitmap.dwAspect = 1;
+    FtcBitmap.lindex = DVASPECT_CONTENT;
+    FtcBitmap.tymed = TYMED_HGLOBAL;
 
-    // This should be called first 
-    // otherwise dragndrop from Firefox will not work
-    if(HandleDropFiledescriptors(pDataObj))
+    if (pDataObj->QueryGetData(&FtcBitmap) == S_OK)  {
+        hasBitmap = true;
+    }else {
+        FtcBitmap.cfFormat = CF_DIB;
+        if (pDataObj->QueryGetData(&FtcBitmap) == S_OK) {
+            hasBitmap = true;
+        }
+    }
+
+    *pdwEffect = DROPEFFECT_COPY;
+    if (!hasBitmap && HandleDropHDROP(pDataObj))
         return S_OK;
 
-    if(HandleDropHDROP(pDataObj))
+    if (HandleDropFiledescriptors(pDataObj))
         return S_OK;
 
     if(HandleDropBitmap(pDataObj))
         return S_OK;
 
+    *pdwEffect = DROPEFFECT_NONE;
     return S_OK;
 }
 

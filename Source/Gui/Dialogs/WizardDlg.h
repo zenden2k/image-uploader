@@ -212,7 +212,7 @@ public:
     bool executeFunc(CString funcName, bool fromCmdLine = false);
 
     bool importVideoFile(const CString& fileName, int prevPage = 0);
-
+    bool queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
     bool HandleDropHDROP(IDataObject *pDataObj);
     bool HandleDropBitmap(IDataObject *pDataObj);
