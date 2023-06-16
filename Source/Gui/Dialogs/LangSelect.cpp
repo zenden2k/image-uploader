@@ -51,15 +51,13 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         }
     }
 
-    int selectedIndex = -1;
     for (const auto& [key,title] : languageList) {
         int index = langListCombo_.AddString(U2W(title));
         langListCombo_.SetItemDataPtr(index, _strdup(key.c_str()));
         if (key == selectedLocale) {
-            selectedIndex = index;
+            langListCombo_.SetCurSel(index);
         }
     }
-    langListCombo_.SetCurSel(selectedIndex);
 
     if (languageList.empty()) {
         EndDialog(IDOK);

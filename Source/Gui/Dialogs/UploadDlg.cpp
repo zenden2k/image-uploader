@@ -395,19 +395,23 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 
 void CUploadDlg::createToolbar()
 {
-    CBitmap hBitmap;
-    
+   
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+    auto loadToolbarIcon = [&](int resourceId) -> int {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        return toolbarImageList_.AddIcon(icon);
+    };
+
 
     if (GuiTools::Is32BPP()) {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP32BIT));
-        toolbarImageList_.Create(16, 16, ILC_COLOR32 | rtlStyle, 0, 6);
-        toolbarImageList_.Add(hBitmap, nullptr);
+        toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 0, 6);
     }
     else {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDB_UPLOADTOOLBARBMP16BIT));
-        toolbarImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
-        toolbarImageList_.Add(hBitmap, RGB(255, 0, 255));
+        toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
     }
 
     RECT placeholderRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TOOLBARPLACEHOLDER);
@@ -422,9 +426,9 @@ void CUploadDlg::createToolbar()
     toolbar_.SetButtonStructSize();
     toolbar_.SetButtonSize(30, 18);
     toolbar_.SetImageList(toolbarImageList_);
-    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, 5, TR("Upload progress"), 0);
-    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Links"), 0);
-    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Log"), 0);
+    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, loadToolbarIcon(IDI_ICONUPLOAD), TR("Upload progress"), 0);
+    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONINFO), TR("Links"), 0);
+    toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONLOG), TR("Log"), 0);
 
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);

@@ -1537,6 +1537,14 @@ IDI_ICONLASTREGION      ICON                    "res\\icon-lastregion.ico"
 
 IDI_ICONDELETEBIG       ICON                    "res\\icon_delete_big.ico"
 
+IDI_ICONSETTINGSGEAR    ICON                    "res\\icon_settings_gear.ico"
+
+IDI_ICONPREVIEW         ICON                    "res\\icon_preview.ico"
+
+IDI_ICONLOG             ICON                    "res\\icon_log.ico"
+
+IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

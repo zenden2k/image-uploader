@@ -424,6 +424,8 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     dc.FillRect(r,br);
 
     dc.SetBkMode(TRANSPARENT);
+    const int iconSmallWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconSmallHeight = GetSystemMetrics(SM_CYSMICON);
 
     for(size_t i=0; i<Items.GetCount(); i++)
     {
@@ -483,7 +485,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
             dc.SetBkMode(TRANSPARENT);
             if(m_bHyperLinks){
-                //dc.DrawIconEx(item.ItemRect.left, item.ItemRect.top + 2, item.hIcon, 48, 48);
+                //dc.DrawIconEx(item.ItemRect.left+1, item.ItemRect.top + 2, item.hIcon, 20, 20);
                 dc.DrawIcon(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon);
             }
             else dc.DrawIcon(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon);
@@ -499,9 +501,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 oldFont = dc.SelectFont(GetFont());
             }
 
-            dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon,16,16);
+            dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon, iconSmallWidth, iconSmallHeight);
                 
-            dc.ExtTextOut(item.ItemRect.left+23, item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
+            dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + ScaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
         }
     }

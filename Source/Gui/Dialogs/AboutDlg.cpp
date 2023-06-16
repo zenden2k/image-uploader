@@ -69,8 +69,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-    m_EmailLink.SetLabel((translator->getCurrentLanguage() == "Russian" ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (")) + authorEmail + CString(_T(")")));
+    m_EmailLink.SetLabel(CString(_T("\u200E"))+(translator->getCurrentLanguage() == "Russian" ?
+        U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
+        : _T("Sergey Svistunov")) + CString(_T(" \u200E(")) + authorEmail + CString(_T(")\u200E")));
     m_EmailLink.SetHyperLink(CString(_T("mailto:")) + authorEmail);
 
 
@@ -157,9 +158,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #if defined(_M_ARM64) || defined(_M_ARM)
     targetPlatform += "ARM";
 #endif
-    targetPlatform += _T(" (");
+    targetPlatform += _T(" \u200E(");
     targetPlatform += WinUtils::IntToStr(sizeof(void*) * CHAR_BIT);
-    targetPlatform += _T(" bit)");
+    targetPlatform += _T(" bit)\u200E");
     memoText +=  CString(L"Target platform: ") + targetPlatform + _T("\r\n\r\n");
     memoText += TR("Libraries:")+ CString("\r\n");
     memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
@@ -224,10 +225,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;
-    buildInfo.Format(_T("Build %d"), ver->Build);
-#ifdef USE_OPENSSL
+    buildInfo.Format(_T("\u200EBuild %d"), ver->Build);
+/*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");
-#endif
+#endif*/
 
     buildInfo  +=  CString(_T("\r\n(")) + dateStr + _T(")");
 

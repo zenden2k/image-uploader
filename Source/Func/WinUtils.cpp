@@ -934,7 +934,7 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl) {
     UINT clipboardFormat = RegisterClipboardFormat(_T("HTML Format"));
     if ( OpenClipboard(NULL) ) {
         HGLOBAL hglb = GetClipboardData(clipboardFormat);
-        LPCSTR lpstr = reinterpret_cast<LPCSTR>(GlobalLock(hglb));
+        LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
         std::string ansiString = lpstr;
 
         std::istringstream f(ansiString);
@@ -1020,18 +1020,20 @@ CString GetLastErrorAsString()
     if(errorMessageID == 0)
         return _T("No error message has been recorded");
 
-    LPTSTR messageBuffer = 0;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&messageBuffer, 0, NULL);
+    LPTSTR messageBuffer = nullptr;
 
-    CString res = messageBuffer;
+    if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPTSTR>(&messageBuffer), 0, nullptr) != 0) {
 
-    //Free the buffer.
-    LocalFree(messageBuffer);
+        CString res = messageBuffer;
 
-    return res;
+        //Free the buffer.
+        LocalFree(messageBuffer);
+
+        return res;
+    }
+    return {};
 }
-
 
 bool MakeDirectoryWritable(LPCTSTR lpPath) {
     HANDLE hDir = CreateFile(lpPath,READ_CONTROL|WRITE_DAC,0,NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);

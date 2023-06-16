@@ -143,7 +143,11 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     TranslateUI();
 
     CBitmap hBitmap;
-    HDC dc = ::GetDC(HWND_DESKTOP);
+
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+
+    //CClientDC dc(HWND_DESKTOP);
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
     //int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
     /*if (iBitsPixel >= 32)
@@ -154,14 +158,13 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     }
     else*/ {
         hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-        m_PlaceSelectorImageList.Create(16, 16,ILC_COLOR32 | ILC_MASK, 0, 6);
+        m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
         m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
-    ::ReleaseDC(HWND_DESKTOP, dc);
+
 
     HICON ico = {};
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    
     LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight, &ico);
     iconDropdown_ = ico;
     m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
@@ -170,7 +173,8 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     m_ShorteningServerButton.m_hWnd = GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON);
     m_ShorteningServerButton.SetIcon(iconDropdown_);
 
-    iconEdit_ = static_cast<HICON>(LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONEDIT), IMAGE_ICON, 16, 16, 0));
+    iconEdit_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEDIT), iconWidth, iconHeight);
+
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
@@ -178,10 +182,9 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(17, 17);
+    m_ProfileEditToolbar.SetButtonSize(iconWidth + 2, iconHeight + 2);
 
-
-    m_profileEditToolbarImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    m_profileEditToolbarImageList.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_profileEditToolbarImageList.AddIcon(iconEdit_);
     m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
     m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
