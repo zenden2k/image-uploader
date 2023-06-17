@@ -174,6 +174,7 @@ if (WIN32)
     )
 
 	if (IU_LIBHEIF_WITH_DAV1D)
+		add_definitions(-DIU_LIBHEIF_WITH_DAV1D)
 		list(APPEND ADDITIONAL_OPTIONS 
 			libheif:with_dav1d=True
 		)	

@@ -27,12 +27,12 @@ using namespace Gdiplus;
 // CMyImage
 CMyImage::CMyImage() : bm_(nullptr), BackBufferWidth(0), BackBufferHeight(0)
 {
-    IsImage = false;
+    imageLoaded_ = false;
     BackBufferDc = NULL;
     BackBufferBm = 0;
     HideParent = false;
-    ImageWidth  = 0;
-    ImageHeight = 0;
+    imageWidth_  = 0;
+    imageHeight_ = 0;
 
 }
 
@@ -59,7 +59,7 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
         hdc = BeginPaint(&ps);
     }
 
-    if (IsImage)
+    if (imageLoaded_)
     {
         RECT rc;
         GetClientRect(&rc);
@@ -86,9 +86,9 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
     return TRUE;
 }
 
-bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp)
+bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge)
 {
-    RECT rc;
+    CRect rc;
     GetClientRect(&rc);
 
     if (BackBufferDc) {
@@ -107,9 +107,10 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     BackBufferWidth = rc.right;
     BackBufferHeight = rc.bottom;
 
-    float width, height, imgwidth, imgheight, newwidth = 0, newheight=0;
-    width = static_cast<float>(rc.right);
-    height = static_cast<float>(rc.bottom);
+    int imgwidth = 0, imgheight = 0;
+    int newwidth = 0, newheight = 0;
+    int width = rc.Width();
+    int height = rc.Height();
 
     if (!ResourceID)
     {
@@ -125,6 +126,10 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     oldBm_ = ::SelectObject(BackBufferDc, BackBufferBm);
 
     Graphics gr(BackBufferDc);
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    ImageAttributes attr;
+    attr.SetWrapMode(WrapModeTileFlipXY);
 
     std::unique_ptr<Image> newBm;
     Image* bm = nullptr;
@@ -134,18 +139,14 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     } else if (FileName) {
         std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(FileName);
         if (srcImg) {
-            newBm = std::unique_ptr<Image>(srcImg->releaseBitmap());
+            newBm.reset(srcImg->releaseBitmap());
         }
-    }
-    else if (ResourceID){
-        if (!Bmp)
-        {
-            newBm = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID), _T("PNG"));
+    } else if (ResourceID){
+        if (!Bmp) {
+            newBm = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(ResourceID), _T("PNG"));
             WhiteBg = true;
-        }
-        else
-        {
-            newBm = std::make_unique<Bitmap>(GetModuleHandle(0), MAKEINTRESOURCE(ResourceID));
+        } else {
+            newBm = std::make_unique<Bitmap>(_Module.GetResourceInstance(), MAKEINTRESOURCE(ResourceID));
         }
     }
 
@@ -153,62 +154,32 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         bm = newBm.get();
     }
 
-    if (bm)
-    {
-        imgwidth = static_cast<float>(bm->GetWidth());
-        imgheight = static_cast<float>(bm->GetHeight());
-        ImageWidth = static_cast<int>(imgwidth);
-        ImageHeight = static_cast<int>(imgheight);
-        if (imgwidth / imgheight > width / height)
-        {
-            if (imgwidth <= width)
-            {
-                newwidth = imgwidth;
-                newheight = imgheight;
-            }
-            else
-            {
-                newwidth = width;
-                newheight = newwidth / imgwidth * imgheight;
-            }
-        }
-        else
-        {
-            if (imgheight <= height)
-            {
-                newwidth = imgwidth;
-                newheight = imgheight;
-            }
-            else
-            {
-                newheight = height;
-                newwidth = (newheight / imgheight) * imgwidth;
-            }
-        }
+    if (bm){
+        imageWidth_ = imgwidth = static_cast<int>(bm->GetWidth());
+        imageHeight_ = imgheight = static_cast<int>(bm->GetHeight());
+
+        Size sz = allowEnlarge ? ImageUtils::ProportionalSize(Size(imgwidth, imgheight), Size(width, height)) :
+            ImageUtils::AdaptProportionalSize(Size(width, height), Size(imgwidth, imgheight));
+
+        newwidth = sz.Width;
+        newheight = sz.Height;
     }
 
-    if (ResourceID)
-    {
-        newwidth = static_cast<float>(BackBufferWidth);
-        newheight = static_cast<float>(BackBufferHeight);
-    }
-    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-    if (WhiteBg)
+    if (WhiteBg) {
         gr.Clear(Color(GetRValue(transp), GetGValue(transp), GetBValue(transp)));
-
-    else
+    } else {
         gr.Clear(Color(255, 145, 145, 145));
+    } 
 
     RectF bounds(1, 1, float(width), float(height));
-    if ((bm) && !bm->GetWidth() && (FileName || ResourceID) )
-    {
+    if ((bm) && !bm->GetWidth() && (FileName || ResourceID)) {
         LinearGradientBrush
-        br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal);
+            br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210), LinearGradientModeBackwardDiagonal);
         gr.FillRectangle(&br, (float)1, (float)1, (float)width, (float)height);
 
         LinearGradientBrush
-        brush(bounds, Color(255, 95, 95, 95), Color(255, 125, 125, 125),
-              LinearGradientModeBackwardDiagonal);
+            brush(bounds, Color(255, 95, 95, 95), Color(255, 125, 125, 125),
+                LinearGradientModeBackwardDiagonal);
 
         StringFormat format;
         format.SetAlignment(StringAlignmentCenter);
@@ -216,26 +187,22 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         Font font(L"Arial", 12, FontStyleBold);
 
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
-    }
-
-    else
-    {
-        SolidBrush bb(Color(255, 255, 255, 255));
-
-        LinearGradientBrush
-        br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
+    } else {
+        LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
            LinearGradientModeBackwardDiagonal);
 
-        if (!WhiteBg)
+        if (!WhiteBg) {
             gr.FillRectangle(&br, (float)1, (float)1, (float)width, (float)height);
+        }
 
-        IsImage = true;
-        if (bm)
-            gr.DrawImage(bm, (int)((ResourceID) ? 0 : 1 + (width - newwidth) / 2),
-                         (int)((ResourceID) ? 0 : 1 + (height - newheight) / 2), (int)newwidth, (int)newheight);
+        imageLoaded_ = true;
+        Rect destRect(ResourceID ? 0 : 1 + (width - newwidth) / 2, ResourceID ? 0 : 1 + (height - newheight) / 2, newwidth, newheight);
+        if (bm) {
+            gr.DrawImage(bm, destRect, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
+        }
     }
 
-    IsImage = true;
+    imageLoaded_ = true;
     Invalidate();
     return false;
 }

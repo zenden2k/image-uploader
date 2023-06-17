@@ -101,7 +101,7 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
 
         //MoveWindow(0, 0, realwidth, realheight);
         Img.MoveWindow(0, 0, realwidth, realheight);
-        Img.LoadImage(item.fileName, img);
+        Img.loadImage(item.fileName, img);
         
         currentParent_ = Parent;
         MyCenterWindow(Parent, realwidth, realheight);

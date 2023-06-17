@@ -71,6 +71,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height,
                                               Gdiplus::Size* realSize = 0, CString* imageFormat = nullptr);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
+Gdiplus::Size ProportionalSize(const Gdiplus::Size& originalSize, const Gdiplus::Size& newSize);
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
 
 /**

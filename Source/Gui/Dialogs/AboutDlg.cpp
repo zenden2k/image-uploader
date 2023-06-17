@@ -44,7 +44,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);
-    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
     auto* ver = AppParams::instance()->GetAppVersion();
     auto* translator = ServiceLocator::instance()->translator();
@@ -218,6 +218,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #endif
 #ifdef IU_FFMPEG_STANDALONE
     memoText += CString(L"IU_FFMPEG_STANDALONE\r\n");
+#endif
+#ifdef IU_LIBHEIF_WITH_DAV1D
+    memoText += CString(L"IU_LIBHEIF_WITH_DAV1D\r\n");
 #endif
 #ifdef IU_STATIC_RUNTIME
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");

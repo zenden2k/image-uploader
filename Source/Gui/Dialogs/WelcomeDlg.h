@@ -29,6 +29,7 @@
 #include "Gui/Controls/HyperLinkControl.h"
 #include "Gui/Controls/MyImage.h"
 #include <atlcrack.h>
+#include <memory>
 
 #define ID_VIEWHISTORY 36220
 class CWelcomeDlg : 
@@ -102,8 +103,11 @@ public:
     bool OnShow() override;
     void SetInitialFocus() override;
     bool QuickRegionPrint;
-    CMyImage LeftImage;CMyImage LogoImage;
+private:
+    CMyImage LeftImage;
+    CMyImage LogoImage;
     CFont NewFont;
+    std::unique_ptr<Gdiplus::Bitmap> createLeftImage();
 };
 
 

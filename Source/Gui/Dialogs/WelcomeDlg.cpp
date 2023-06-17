@@ -28,6 +28,7 @@
 #include "Func/MediaInfoHelper.h"
 #endif
 #include "WizardDlg.h"
+#include "Core/Images/Utils.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -51,9 +52,11 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
-    LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
+    auto leftImage = createLeftImage();
+    LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
+
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
-    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255));
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
 
     TRC(IDC_SELECTOPTION, "Select action:");
     TRC(IDC_SOVET, "Advice:");
@@ -135,6 +138,43 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     lastRegionAvailabilityChanged(WizardDlg->hasLastScreenshotRegion());
 
     return FALSE;  // Let the system set the focus
+}
+
+std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
+    CClientDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    CRect controlRect;
+    LeftImage.GetClientRect(controlRect);
+
+    using namespace Gdiplus;
+    auto bm = std::make_unique<Bitmap>(controlRect.Width(), controlRect.Height(), PixelFormat32bppARGB);
+    Graphics gr(bm.get());
+
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    ImageAttributes attr;
+    attr.SetWrapMode(WrapModeTileFlipXY);
+    Rect bounds(0, 0, controlRect.Width(), controlRect.Height());
+    LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
+            LinearGradientModeVertical);
+
+    gr.FillRectangle(&brush, bounds); 
+
+    auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
+
+    if (logo) {
+        int horMargin = MulDiv(5, dpiX, USER_DEFAULT_SCREEN_DPI);
+        int topMargin = MulDiv(80, dpiY, USER_DEFAULT_SCREEN_DPI);
+        int w = static_cast<int>(logo->GetWidth());
+        int h = static_cast<int>(logo->GetHeight());
+        Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(controlRect.Width() - horMargin * 2, controlRect.Height()));
+        
+        Rect dst((controlRect.Width() - sz.Width) / 2, topMargin, sz.Width, sz.Height);
+        gr.DrawImage(logo.get(), dst, 0, 0, w, h, UnitPixel, &attr);
+    }
+    return bm;
 }
 
 LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

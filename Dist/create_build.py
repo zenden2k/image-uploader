@@ -18,7 +18,7 @@ BUILD_DOCS = True
 OUTDIR = "Packages"
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "master"
+DEFAULT_GIT_BRANCH = "newicons"
 
 # --- Script requirements ---
 # git

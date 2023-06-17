@@ -32,28 +32,33 @@ CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
 	task_(std::move(task))
 {
     taskFinishedConnection_ = task_->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
-        ProcessFinished();
-        EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK: IDCANCEL);
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, taskResult] {
+            ProcessFinished();
+            EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK : IDCANCEL);
+        });
     });
 
     taskProgressConnection_ = task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
         CString statusW = U2W(status);
         SetInfo(statusW, L"");
-        SetDlgItemText(IDC_TITLE, statusW);
-    	if (pos < 0) {
-    		if ((progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
-                progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() | PBS_MARQUEE);
-    		}
-            progressBar_.SetMarquee(TRUE);
-    	} else {
-            if ((progressBar_.GetStyle() & PBS_MARQUEE )== PBS_MARQUEE) {
-                progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() & ~PBS_MARQUEE);
-                progressBar_.SetMarquee(FALSE);
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([=] {
+            SetDlgItemText(IDC_TITLE, statusW);
+            if (pos < 0) {
+                if ((progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
+                    progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() | PBS_MARQUEE);
+                }
+                progressBar_.SetMarquee(TRUE);
             }
+            else {
+                if ((progressBar_.GetStyle() & PBS_MARQUEE) == PBS_MARQUEE) {
+                    progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() & ~PBS_MARQUEE);
+                    progressBar_.SetMarquee(FALSE);
+                }
 
-            progressBar_.SetRange(0, max);
-            progressBar_.SetPos(pos);
-    	}
+                progressBar_.SetRange(0, max);
+                progressBar_.SetPos(pos);
+            }
+        });
         
     });
 }

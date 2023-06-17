@@ -1066,10 +1066,27 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width
     return res;
 }
 
+Gdiplus::Size ProportionalSize(const Gdiplus::Size& originalSize, const Gdiplus::Size& newSize) {
+    if (originalSize.Width < 1 || originalSize.Height < 1 || newSize.Width < 1 || newSize.Height < 1) {
+        return {};
+    }
+
+    double ratio = static_cast<double>(originalSize.Width) / originalSize.Height;
+
+    Size maximizedToWidth { newSize.Width, static_cast<int>(round(newSize.Width / ratio)) };
+    Size maximizedToHeight { static_cast<int>(round(newSize.Height* ratio)), newSize.Height };
+
+    if (maximizedToWidth.Width > newSize.Width) {
+        return maximizedToHeight;
+    } else {
+        return maximizedToWidth;
+    } 
+}
+
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
 {
     if (szMax.Width < 1 || szMax.Height < 1 || szReal.Width < 1 || szReal.Height < 1) {
-        return Size();
+        return {};
     }
 
     double sMaxRatio = szMax.Width / static_cast<double>(szMax.Height);
@@ -1086,7 +1103,7 @@ Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::S
         nWidth = static_cast<int>(round(nHeight * sRealRatio));
     }
 
-    return Size(nWidth, nHeight);
+    return {nWidth, nHeight};
 }
 
 /*
