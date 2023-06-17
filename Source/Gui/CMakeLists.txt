@@ -345,7 +345,7 @@ endif()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(GUI iucore iuvideo
+target_link_libraries(GUI PRIVATE iucore iuvideo
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
 )

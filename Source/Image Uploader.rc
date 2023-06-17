@@ -1505,8 +1505,6 @@ IDI_ICONADDITEM         ICON                    "res\\icon_additem.ico"
 
 IDI_ICONDELETEITEM      ICON                    "res\\icon_deleteitem.ico"
 
-IDI_ICONSETTINGS2       ICON                    "res\\icon-settings2.ico"
-
 IDI_ICONUSER            ICON                    "res\\icon-user.ico"
 
 IDI_ICONFOLDER2         ICON                    "res\\icon_folder2.ico"

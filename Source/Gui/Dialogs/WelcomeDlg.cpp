@@ -21,8 +21,6 @@
 
 #include "HistoryWindow.h"
 #include "SettingsDlg.h"
-#include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
@@ -84,7 +82,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.Init();
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
     
-    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD)/* static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(), IMAGE_ICON, 16, 16, 0))*/);
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
     
     ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, loadSmallIcon(IDI_ICONWEB), true);
 
