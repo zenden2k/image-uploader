@@ -192,7 +192,7 @@ bool CMyImage::LoadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         newwidth = static_cast<float>(BackBufferWidth);
         newheight = static_cast<float>(BackBufferHeight);
     }
-
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
     if (WhiteBg)
         gr.Clear(Color(GetRValue(transp), GetGValue(transp), GetBValue(transp)));
 

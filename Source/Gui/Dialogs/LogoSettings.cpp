@@ -103,7 +103,8 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
     StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
-    CIcon ico = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
+    int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = GetSystemMetrics(SM_CYSMICON);
     //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
@@ -115,14 +116,17 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(17, 17);
+    m_ProfileEditToolbar.SetButtonSize(iconWidth + 1, iconHeight + 1);
 
-    CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
-    CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
+    CIcon ico;
+    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONWHITEPAGE), iconWidth, iconHeight);
 
-    int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
+    CIcon saveIcon;
+    saveIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSAVE), iconWidth, iconHeight);
+    CIcon deleteIcon;
+    deleteIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight);
+
+    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
     profileEditToolbarImagelist_.AddIcon(ico);
     profileEditToolbarImagelist_.AddIcon(saveIcon);
     profileEditToolbarImagelist_.AddIcon(deleteIcon);

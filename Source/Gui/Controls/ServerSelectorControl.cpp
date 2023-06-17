@@ -84,6 +84,15 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     setTitle(title_);
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
+    userPictureControl_ = GetDlgItem(IDC_USERICON);
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    CIcon iconUser;
+    //iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
+    iconUser.LoadIcon(MAKEINTRESOURCE(IDI_ICONUSER));
+
+    userPictureControl_.SetIcon(iconUser);
+    userPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
 
     updateServerList();
 
@@ -363,6 +372,8 @@ void CServerSelectorControl::notifyServerListChanged()
 
 void CServerSelectorControl::updateServerList()
 {
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -617,17 +628,21 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    CIcon ico = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONSETTINGS2), IMAGE_ICON, 16, 16, 0));
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    CIcon ico;
+    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGS), iconWidth, iconHeight);
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_SETTINGSBUTTONPLACEHOLDER), &profileRect);
     ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
 
+
     settingsButtonToolbar_.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | WS_TABSTOP | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|CCS_RIGHT|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
     settingsButtonToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     settingsButtonToolbar_.SetButtonStructSize();
-    settingsButtonToolbar_.SetButtonSize(17,17);
+    settingsButtonToolbar_.SetButtonSize(iconWidth+1, iconWidth+1);
 
-    settingsButtonImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
+    settingsButtonImageList_.Create(iconWidth, iconWidth, ILC_COLOR32, 0, 6);
     settingsButtonImageList_.AddIcon(ico);
     settingsButtonToolbar_.SetImageList(settingsButtonImageList_);
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);

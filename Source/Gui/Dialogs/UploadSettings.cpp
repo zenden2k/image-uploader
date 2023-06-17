@@ -157,9 +157,20 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         m_PlaceSelectorImageList.Add(hBitmap, (HBITMAP) NULL);
     }
     else*/ {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-        m_PlaceSelectorImageList.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
-        m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
+        //hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
+        m_PlaceSelectorImageList.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
+        CIcon iconUser;
+        iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
+        m_PlaceSelectorImageList.AddIcon(iconUser);
+        CIcon iconFolder;
+        iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
+        m_PlaceSelectorImageList.AddIcon(iconFolder);
+
+        CIcon iconSeparator;
+        iconSeparator.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSEPARATOR), iconWidth, iconHeight);
+        m_PlaceSelectorImageList.AddIcon(iconSeparator);
+
+        //m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
 
 
@@ -836,7 +847,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         if(!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end()) )
         {    
             bool addedSeparator = false;
-            auto plug = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+            CAdvancedUploadEngine* plug = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
             /*if(!plug) return TBDDRET_TREATPRESSED;*/
 
             int i =0;

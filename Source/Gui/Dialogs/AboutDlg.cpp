@@ -38,10 +38,12 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    int iconWidth = ::GetSystemMetrics(SM_CXICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYICON);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
+    LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);
     LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
     auto* ver = AppParams::instance()->GetAppVersion();

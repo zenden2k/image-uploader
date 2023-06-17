@@ -182,7 +182,7 @@ BEGIN
     LTEXT           "Просто перетащите изображения или видео-файл в окно программы и программа обработает их.",IDC_SOVET2,172,244,209,24
     CTEXT           "Совет:",IDC_SOVET,115,244,50,8
     LTEXT           "Image Uploader",IDC_TITLE,206,6,184,22
-    CONTROL         "",1167,"Static",SS_BITMAP,160,1,33,28,WS_EX_TRANSPARENT
+    CONTROL         "",1167,"Static",SS_BITMAP,160,2,13,11,WS_EX_TRANSPARENT
     LISTBOX         IDC_LEFTBITMAP,0,0,113,269,LBS_SORT | LBS_NOREDRAW | LBS_OWNERDRAWVARIABLE | LBS_NOINTEGRALHEIGHT | NOT WS_BORDER
 END
 
@@ -272,7 +272,7 @@ BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
     CTEXT           "© 2007-2023 by Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
-    CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,17,15,13
+    CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,18,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
     RTEXT           "VERSION",IDC_CURLINFOLABEL,77,25,68,9
     LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
@@ -880,7 +880,7 @@ BEGIN
     GROUPBOX        "Сервер для хранения изображений:",IDC_SERVERGROUPBOX,0,1,259,41
     CONTROL         "",IDC_SERVERCOMBOBOX,"ComboBoxEx32",CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP,5,13,121,172
     LTEXT           "1",IDC_SETTINGSBUTTONPLACEHOLDER2,131,13,18,15,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    ICON            IDI_ICONUSER,IDC_USERICON,142,15,20,20,SS_REALSIZEIMAGE
+    ICON            "",IDC_USERICON,142,15,20,20,SS_REALSIZEIMAGE
     LTEXT           "",IDC_ACCOUNTINFO,155,14,101,9,SS_ENDELLIPSIS | WS_TABSTOP
     LTEXT           "Настройки загрузки",IDC_IMAGEPROCESSINGPARAMS,7,30,131,8,WS_TABSTOP
     ICON            IDI_ICONFOLDER2,IDC_FOLDERICON,142,30,18,16,SS_REALSIZEIMAGE
@@ -1461,8 +1461,6 @@ IDI_IMAGES              ICON                    "res\\images.ico"
 
 IDI_ICONSETTINGS        ICON                    "res\\icon-settings.ico"
 
-IDI_ICONFOLDER          ICON                    "res\\icon-folder.ico"
-
 IDI_ICONINFO            ICON                    "res\\icon-info.ico"
 
 IDI_ICONREGION          ICON                    "res\\icon-region.ico"
@@ -1498,8 +1496,6 @@ IDI_ICONWHITEPAGE       ICON                    "res\\icon_whitepage.ico"
 IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
 
 IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
-
-IDI_ICONDELETE          ICON                    "res\\icon_delete.ico"
 
 IDI_ICONRELOAD          ICON                    "res\\icon-reload.ico"
 
@@ -1544,6 +1540,8 @@ IDI_ICONPREVIEW         ICON                    "res\\icon_preview.ico"
 IDI_ICONLOG             ICON                    "res\\icon_log.ico"
 
 IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
+
+IDI_ICONSEPARATOR       ICON                    "res\\icon_separator.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1632,18 +1630,6 @@ IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pix
 IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
 
 IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDB_UPLOADTOOLBARBMP32BIT BITMAP                  "res\\toolbar22.bmp"
-
-IDB_UPLOADTOOLBARBMP16BIT BITMAP                  "res\\toolbar11.bmp"
-
-IDB_SERVERTOOLBARBMP2   BITMAP                  "res\\server_8bit.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

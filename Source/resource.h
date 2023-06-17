@@ -52,7 +52,6 @@
 #define IDB_BITMAP1                     214
 #define IDB_BITMAP2                     216
 #define IDI_ICONSETTINGS                217
-#define IDI_ICONFOLDER                  218
 #define IDI_ICONINFO                    219
 #define IDI_ICON1                       220
 #define IDI_ICONREGION                  220
@@ -60,9 +59,7 @@
 #define IDR_PNG1                        224
 #define IDR_PNG2                        225
 #define IDB_BITMAP3                     227
-#define IDB_UPLOADTOOLBARBMP32BIT       227
 #define IDB_BITMAP4                     228
-#define IDB_UPLOADTOOLBARBMP16BIT       228
 #define IDR_REGISTRY1                   229
 #define IDI_ERRORICON                   230
 #define IDI_ICONWARNING                 231
@@ -71,7 +68,6 @@
 #define IDI_WINDOW                      234
 #define IDR_PROGRESSGIF                 241
 #define IDB_BITMAP6                     242
-#define IDB_SERVERTOOLBARBMP2           242
 #define IDB_ICONUNDOPNG                 242
 #define IDI_ICONWINDOWS                 245
 #define IDI_FREEFORM                    246
@@ -84,7 +80,6 @@
 #define IDI_ICONSAVE                    253
 #define IDI_ICONHISTORY                 254
 #define IDI_ICON3                       255
-#define IDI_ICONDELETE                  255
 #define IDI_ICONRELOAD                  258
 #define IDB_PNG1                        259
 #define IDI_ICON4                       260
@@ -178,6 +173,8 @@
 #define IDI_ICONLOG                     330
 #define IDI_ICON13                      331
 #define IDI_ICONUPLOAD                  331
+#define IDI_ICON14                      332
+#define IDI_ICONSEPARATOR               332
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -788,7 +785,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        332
+#define _APS_NEXT_RESOURCE_VALUE        333
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1340
 #define _APS_NEXT_SYMED_VALUE           128
