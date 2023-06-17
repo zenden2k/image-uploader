@@ -31,7 +31,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     langListCombo_ = GetDlgItem(IDC_LANGLIST);
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
-    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
     
     boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
@@ -51,15 +51,13 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         }
     }
 
-    int selectedIndex = -1;
     for (const auto& [key,title] : languageList) {
         int index = langListCombo_.AddString(U2W(title));
         langListCombo_.SetItemDataPtr(index, _strdup(key.c_str()));
         if (key == selectedLocale) {
-            selectedIndex = index;
+            langListCombo_.SetCurSel(index);
         }
     }
-    langListCombo_.SetCurSel(selectedIndex);
 
     if (languageList.empty()) {
         EndDialog(IDOK);

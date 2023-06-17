@@ -38,11 +38,13 @@
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    int iconWidth = ::GetSystemMetrics(SM_CXICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYICON);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
-    LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
-    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
+    LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
 
     auto* ver = AppParams::instance()->GetAppVersion();
     auto* translator = ServiceLocator::instance()->translator();
@@ -69,8 +71,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     m_EmailLink.SubclassWindow(GetDlgItem(IDC_AUTHORNAMELABEL));
     m_EmailLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-    m_EmailLink.SetLabel((translator->getCurrentLanguage() == "Russian" ? U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
-        : _T("Sergey Svistunov")) + CString(_T(" (")) + authorEmail + CString(_T(")")));
+    m_EmailLink.SetLabel(CString(_T("\u200E"))+(translator->getCurrentLanguage() == "Russian" ?
+        U2W("\xD0\xA1\xD0\xB5\xD1\x80\xD0\xB3\xD0\xB5\xD0\xB9\x20\xD0\xA1\xD0\xB2\xD0\xB8\xD1\x81\xD1\x82\xD1\x83\xD0\xBD\xD0\xBE\xD0\xB2")
+        : _T("Sergey Svistunov")) + CString(_T(" \u200E(")) + authorEmail + CString(_T(")\u200E")));
     m_EmailLink.SetHyperLink(CString(_T("mailto:")) + authorEmail);
 
 
@@ -157,9 +160,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #if defined(_M_ARM64) || defined(_M_ARM)
     targetPlatform += "ARM";
 #endif
-    targetPlatform += _T(" (");
+    targetPlatform += _T(" \u200E(");
     targetPlatform += WinUtils::IntToStr(sizeof(void*) * CHAR_BIT);
-    targetPlatform += _T(" bit)");
+    targetPlatform += _T(" bit)\u200E");
     memoText +=  CString(L"Target platform: ") + targetPlatform + _T("\r\n\r\n");
     memoText += TR("Libraries:")+ CString("\r\n");
     memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
@@ -216,6 +219,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #ifdef IU_FFMPEG_STANDALONE
     memoText += CString(L"IU_FFMPEG_STANDALONE\r\n");
 #endif
+#ifdef IU_LIBHEIF_WITH_DAV1D
+    memoText += CString(L"IU_LIBHEIF_WITH_DAV1D\r\n");
+#endif
 #ifdef IU_STATIC_RUNTIME
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");
 #endif
@@ -224,10 +230,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;
-    buildInfo.Format(_T("Build %d"), ver->Build);
-#ifdef USE_OPENSSL
+    buildInfo.Format(_T("\u200EBuild %d"), ver->Build);
+/*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");
-#endif
+#endif*/
 
     buildInfo  +=  CString(_T("\r\n(")) + dateStr + _T(")");
 

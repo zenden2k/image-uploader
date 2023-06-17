@@ -64,22 +64,25 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     
     SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, settings->QuickUpload);
 
-    icon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDITEM), IMAGE_ICON, 16, 16, 0));
+    int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+    icon_.LoadIconWithScaleDown( MAKEINTRESOURCE(IDI_ICONADDITEM), iconWidth, iconHeight);
     SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon_);
     addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
 
-    icon2_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDELETEITEM), IMAGE_ICON, 16, 16, 0));
+    icon2_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEITEM), iconWidth, iconHeight);
     SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2_);
     deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
     GuiTools::AddToolTip(toolTipCtrl_, deleteItemButton_.m_hWnd, TR("Remove Item"));
 
-    icon3_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUP), IMAGE_ICON, 16, 16, 0));
+    icon3_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUP), iconWidth, iconHeight);
     SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3_);
     upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
     GuiTools::AddToolTip(toolTipCtrl_, upButton_.m_hWnd, TR("Move Up"));
 
-    icon4_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONDOWN), IMAGE_ICON, 16, 16, 0));
+    icon4_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDOWN), iconWidth, iconHeight);
     SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4_);
     downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
     GuiTools::AddToolTip(toolTipCtrl_, downButton_.m_hWnd, TR("Move Down"));

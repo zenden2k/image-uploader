@@ -67,7 +67,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     //RECT rc = {13, 170, 290, 400};
     img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
     //img.Create(m_hWnd, rc);
-    img.LoadImage(0);
+    img.loadImage(0);
     thumbsCombo_ = GetDlgItem(IDC_THUMBSCOMBO);
 
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
@@ -252,18 +252,55 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
         return;
     }
-    
-    Bitmap *toUse = bm->Clone(0,/*300*/50, bm->GetWidth(), /*bm->GetHeight() / 2*/100, PixelFormatDontCare);
-    GdiPlusImage source(toUse);
-    std::unique_ptr<AbstractImage> result = conv.createThumbnail(&source,  50 * 1024, 1);
-    if (result) {
-        auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
-        if (resultImg) {
-            img.LoadImage(0, resultImg->getBitmap());
+
+    std::unique_ptr<Gdiplus::Bitmap> toUse = createSampleImage(400, 300);
+    //Bitmap *toUse = bm->Clone(0, 0, bm->GetWidth(), bm->GetHeight(), PixelFormatDontCare);
+    if (toUse) {
+        GdiPlusImage source(toUse.release());
+        std::unique_ptr<AbstractImage> result = conv.createThumbnail(&source, 50 * 1024, 1);
+        if (result) {
+            auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
+            if (resultImg) {
+                img.loadImage(0, resultImg->getBitmap());
+            }
         }
     }
 
     //delete toUse;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> CThumbSettingsPage::createSampleImage(int width, int height) {
+    /*CClientDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);*/
+
+    using namespace Gdiplus;
+    auto bm = std::make_unique<Bitmap>(width, height, PixelFormat32bppARGB);
+    Graphics gr(bm.get());
+
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    ImageAttributes attr;
+    attr.SetWrapMode(WrapModeTileFlipXY);
+    Rect bounds(0, 0, width, height);
+    LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
+        LinearGradientModeVertical);
+
+    gr.FillRectangle(&brush, bounds);
+
+    auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
+
+    if (logo) {
+        int horMargin = 5;
+        int vertMargin = 5;
+        int w = static_cast<int>(logo->GetWidth());
+        int h = static_cast<int>(logo->GetHeight());
+        Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(width - horMargin * 2, height - vertMargin *2 ));
+
+        Rect dst((width - sz.Width) / 2, (height - sz.Height) / 2, sz.Width, sz.Height);
+        gr.DrawImage(logo.get(), dst, 0, 0, w, h, UnitPixel, &attr);
+    }
+    return bm;
 }
 
 bool CThumbSettingsPage::CreateNewThumbnail() {

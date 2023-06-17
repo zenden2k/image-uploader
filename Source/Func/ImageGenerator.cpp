@@ -61,8 +61,8 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
     int needwidth = gapwidth + ncols * (tilewidth + gapwidth);
     int needheight = gapheight + nstrings * (tileheight + gapheight) + infoHeight;
 
-    Graphics g(wnd_, true);
-    Bitmap BackBuffer(needwidth, needheight, &g);
+    //Graphics g(wnd_, true);
+    Bitmap BackBuffer(needwidth, needheight, PixelFormat32bppARGB);
     Graphics gr(&BackBuffer);
     Rect r(0, 0, needwidth, needheight);
     gr.Clear(Color(255, 180, 180, 180));
@@ -72,7 +72,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
     int x, y;
     Pen Framepen(Color(90, 90, 90));
 
-    Font font(L"Tahoma", 10, FontStyleBold);
+    Font font(L"Tahoma", 14, FontStyleBold, UnitPixel);
     Color ColorText(140, 255, 255, 255);
     Color ColorStroke(120, 0, 0, 0);
 	

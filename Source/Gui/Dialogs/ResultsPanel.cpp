@@ -124,25 +124,18 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     }
     CBitmap hBitmap;
 
-    HIMAGELIST m_hToolBarImageList;
+    //HIMAGELIST m_hToolBarImageList;
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
 
-    if (GuiTools::Is32BPP())
-    {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP3));
-        
-        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | rtlStyle, 0, 6);
-        ImageList_Add(m_hToolBarImageList, hBitmap, nullptr);
-    }
-    else
-    {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP4));
-
-        m_hToolBarImageList = ImageList_Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
-        ImageList_AddMasked(m_hToolBarImageList,hBitmap,RGB(255,0,255));
-    }
-
-    toolbarImageList_ = m_hToolBarImageList;
+    toolbarImageList_.Create(iconWidth, iconHeight, (GuiTools::Is32BPP() ? ILC_COLOR32 : ILC_COLOR32 | ILC_MASK) | rtlStyle, 0, 6);
+    
+    auto loadToolbarIcon = [&](int resourceId) -> int {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        return toolbarImageList_.AddIcon(icon);
+    };
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
@@ -165,16 +158,16 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     //TabBackgroundFix(Toolbar.m_hWnd);
     
     Toolbar.SetButtonStructSize();
-    Toolbar.SetButtonSize(30,18);
-    Toolbar.SetImageList(m_hToolBarImageList);
-    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, 0, TR("Copy to clipboard"), 0);
+    Toolbar.SetButtonSize(iconWidth+2, iconHeight +2);
+    Toolbar.SetImageList(toolbarImageList_);
+    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, loadToolbarIcon(IDI_CLIPBOARD), TR("Copy to clipboard"), 0);
     
     //bool IsLastVideo = false; 
 
-    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Info about last video"), 0);
+    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONINFO), TR("Info about last video"), 0);
     //Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Error log"), 0);
-    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Options"), 0);
-    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 4, TR("Preview"), 0);
+    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONSETTINGSGEAR), TR("Options"), 0);
+    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONPREVIEW), TR("Preview"), 0);
     
 	//bool isMediaInfoAvailable = MediaInfoHelper::IsMediaInfoAvailable();
 

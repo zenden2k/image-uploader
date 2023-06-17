@@ -99,13 +99,10 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
 
-    //LoadIconWithScaleDown(GetModuleHandle(0))
-    HICON ico = {};
-    int iconWidth = ::GetSystemMetrics(SM_CXICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYICON);
-    LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight, &ico);
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
 
-    deleteIcon_ = ico;
+    deleteIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight);
 
     CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);
     MapDialogRect(&dlgRect);

@@ -49,16 +49,16 @@ public:
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     Gdiplus::Bitmap *bm_;
-    bool IsImage;
+    bool imageLoaded_;
     bool HideParent;
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-    bool LoadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0);
+    bool loadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0, bool allowEnlarge = false);
     LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
-    int ImageWidth, ImageHeight;
+    int imageWidth_, imageHeight_;
     HBITMAP BackBufferBm;
     HGDIOBJ oldBm_ = nullptr;
     HDC BackBufferDc;

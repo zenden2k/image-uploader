@@ -16,7 +16,7 @@ set_target_properties(CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_D
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(CLI iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
+target_link_libraries(CLI PRIVATE iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
 
 if(WIN32)
     add_custom_command(TARGET CLI

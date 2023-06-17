@@ -21,13 +21,12 @@
 
 #include "HistoryWindow.h"
 #include "SettingsDlg.h"
-#include "Gui/GuiTools.h"
-#include "Func/WinUtils.h"
 #include "Func/MyUtils.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
 #endif
 #include "WizardDlg.h"
+#include "Core/Images/Utils.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -51,9 +50,11 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
-    LeftImage.LoadImage(0, 0, IDR_PNG2, false, RGB(255,255,255));
+    auto leftImage = createLeftImage();
+    LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
+
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
-    LogoImage.LoadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255));
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
 
     TRC(IDC_SELECTOPTION, "Select action:");
     TRC(IDC_SOVET, "Advice:");
@@ -61,31 +62,48 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     TRC(IDC_WELCOMEMSG, "Welcome to pictures Publishing Wizard, that will help you to upload your images, photos, video frames on Internet!");
     SetDlgItemText(IDC_TITLE, APPNAME);
 
+    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
+    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
+
+    auto loadSmallIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        return icon.m_hIcon;
+    };
+
+    auto loadBigIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconBigWidth, iconBigHeight);
+        return icon.m_hIcon;
+    };
+
     ListBox.Init();
-    ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, LOADICO(IDI_IMAGES));
+    ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
     
-    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADD), IMAGE_ICON, 16,16,0)));
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
     
-    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWEB), IMAGE_ICON, 16, 16, 0)), true);
+    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, loadSmallIcon(IDI_ICONWEB), true);
 
-    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONADDFOLDER), IMAGE_ICON, 16,16,0)),true,0,true);
+    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, loadSmallIcon(IDI_ICONADDFOLDER),true,0,true);
 
-    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_CLIPBOARD), IMAGE_ICON, 16,16,0)),true);
+    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD),true);
     
-    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, LOADICO(IDI_ICONRELOAD), true, 0, true);
-    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, LOADICO(IDI_ICONLINK), true, 0, false);
+    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
+    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
 
-    ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, LOADICO(IDI_SCREENSHOT));
-    ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT,LOADICO(IDI_ICONREGION));
-    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT,LOADICO(IDI_ICONLASTREGION));
+    ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
+    ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
+    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
     
-    ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, LOADICO(IDI_GRAB));
+    ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 #ifdef IU_ENABLE_MEDIAINFO
     if(MediaInfoHelper::IsMediaInfoAvailable())
-        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, static_cast<HICON>(LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONINFO), IMAGE_ICON, 16,16,0)));
+        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
 #endif
-    ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, GuiTools::LoadBigIcon(IDI_ICONSETTINGS));
-    ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY,LOADICO(IDI_ICONHISTORY));
+    ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
+    ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
     
     HFONT font = GetFont();
     LOGFONT alf;
@@ -118,6 +136,43 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     lastRegionAvailabilityChanged(WizardDlg->hasLastScreenshotRegion());
 
     return FALSE;  // Let the system set the focus
+}
+
+std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
+    CClientDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    CRect controlRect;
+    LeftImage.GetClientRect(controlRect);
+
+    using namespace Gdiplus;
+    auto bm = std::make_unique<Bitmap>(controlRect.Width(), controlRect.Height(), PixelFormat32bppARGB);
+    Graphics gr(bm.get());
+
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    ImageAttributes attr;
+    attr.SetWrapMode(WrapModeTileFlipXY);
+    Rect bounds(0, 0, controlRect.Width(), controlRect.Height());
+    LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
+            LinearGradientModeVertical);
+
+    gr.FillRectangle(&brush, bounds); 
+
+    auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
+
+    if (logo) {
+        int horMargin = MulDiv(5, dpiX, USER_DEFAULT_SCREEN_DPI);
+        int topMargin = MulDiv(80, dpiY, USER_DEFAULT_SCREEN_DPI);
+        int w = static_cast<int>(logo->GetWidth());
+        int h = static_cast<int>(logo->GetHeight());
+        Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(controlRect.Width() - horMargin * 2, controlRect.Height()));
+        
+        Rect dst((controlRect.Width() - sz.Width) / 2, topMargin, sz.Width, sz.Height);
+        gr.DrawImage(logo.get(), dst, 0, 0, w, h, UnitPixel, &attr);
+    }
+    return bm;
 }
 
 LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

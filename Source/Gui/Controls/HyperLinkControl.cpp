@@ -167,7 +167,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.idCommand = idCommand;
     item.Hover = false;
     item.Visible = Visible;
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
 
     SIZE tipDimensions = GetTextDimensions(dc, szTip, NormalFont);
     int szTipWidth = szTip ? tipDimensions.cx : 0;
@@ -424,7 +424,10 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     dc.FillRect(r,br);
 
     dc.SetBkMode(TRANSPARENT);
-
+    const int iconSmallWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconSmallHeight = GetSystemMetrics(SM_CYSMICON);
+    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
+    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
     for(size_t i=0; i<Items.GetCount(); i++)
     {
         const HyperLinkControlItem& item = Items[i];
@@ -438,7 +441,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         {
             RECT TextRect = item.ItemRect;
             
-            if(!m_bHyperLinks && (isHighlighted))
+            if(!m_bHyperLinks && isHighlighted)
             {    
                 CRect rec = item.ItemRect;
                 rec.right = rc.right-6;
@@ -469,7 +472,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 textY += (33-TextDims.cy)/2;
             }
 
-            ExtTextOutW(dc.m_hDC, TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
+            dc.ExtTextOutW(TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
 
             if (isHighlighted && m_bHyperLinks) {
@@ -483,10 +486,10 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
             dc.SetBkMode(TRANSPARENT);
             if(m_bHyperLinks){
-                //dc.DrawIconEx(item.ItemRect.left, item.ItemRect.top + 2, item.hIcon, 48, 48);
-                dc.DrawIcon(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon);
+                //dc.DrawIconEx(item.ItemRect.left+1, item.ItemRect.top + 2, item.hIcon, 20, 20);
+                dc.DrawIconEx(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon, iconBigWidth, iconBigHeight);
             }
-            else dc.DrawIcon(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon);
+            else dc.DrawIconEx(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon, iconBigWidth, iconBigHeight);
             dc.SelectFont(oldFont);
         } // End of drawing "big" item
 
@@ -499,9 +502,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 oldFont = dc.SelectFont(GetFont());
             }
 
-            dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon,16,16);
+            dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon, iconSmallWidth, iconSmallHeight);
                 
-            dc.ExtTextOut(item.ItemRect.left+23, item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
+            dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + ScaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
         }
     }

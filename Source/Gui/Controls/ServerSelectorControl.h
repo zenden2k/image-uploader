@@ -110,6 +110,7 @@ private:
     CHyperLink accountLink_;
     CImageListManaged comboBoxImageList_,settingsButtonImageList_;
     CToolBarCtrl settingsButtonToolbar_;
+    CStatic userPictureControl_;
     ServerProfile serverProfile_;
     bool showDefaultServerItem_;
     bool showImageProcessingParams_;

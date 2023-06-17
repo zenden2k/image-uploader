@@ -62,7 +62,7 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         RECT rc;
         GetWindowRect(&rc);
         imgControl.SetWindowPos(0, 0, 0, img.GetWidth() + 2, imgHeight + 2, SWP_NOMOVE);
-        imgControl.LoadImage(image_);
+        imgControl.loadImage(image_);
         SetWindowPos(0, 0, 0, rc.right - rc.left, rc.bottom - rc.top + imgHeight, SWP_NOMOVE);
         OffsetControl(GetDlgItem(IDC_VALUEEDIT), imgHeight );
         OffsetControl(GetDlgItem(IDCANCEL), imgHeight );

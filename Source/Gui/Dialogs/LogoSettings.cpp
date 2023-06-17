@@ -77,7 +77,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     RECT rc = {13, 20, 290, 95};
     img.Create(GetDlgItem(IDC_LOGOGROUP), rc);
     img.ShowWindow(SW_HIDE);
-    img.LoadImage(nullptr);
+    img.loadImage(nullptr);
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
     // Items order should be the same as ImageUtils::SaveImageFormat
@@ -103,7 +103,8 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
     StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
-    CIcon ico = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONWHITEPAGE));
+    int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = GetSystemMetrics(SM_CYSMICON);
     //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
@@ -115,14 +116,17 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(17, 17);
+    m_ProfileEditToolbar.SetButtonSize(iconWidth + 1, iconHeight + 1);
 
-    CIcon saveIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONSAVE));
-    CIcon deleteIcon = LoadIcon(GetModuleHandle(0),MAKEINTRESOURCE(IDI_ICONDELETE));
+    CIcon ico;
+    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONWHITEPAGE), iconWidth, iconHeight);
 
-    int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
+    CIcon saveIcon;
+    saveIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSAVE), iconWidth, iconHeight);
+    CIcon deleteIcon;
+    deleteIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight);
+
+    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
     profileEditToolbarImagelist_.AddIcon(ico);
     profileEditToolbarImagelist_.AddIcon(saveIcon);
     profileEditToolbarImagelist_.AddIcon(deleteIcon);
@@ -174,7 +178,7 @@ LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/,
     }
 
     SetDlgItemText(IDC_LOGOEDIT, fileName);
-    img.LoadImage(fileName);
+    img.loadImage(fileName);
     img.Invalidate();
     ProfileChanged();
     return 0;
@@ -234,7 +238,7 @@ void CLogoSettings::ShowParams(const ImageConvertingParams& params) {
     SetDlgItemText(IDC_LOGOEDIT, U2W(params.LogoFileName));
 
     if (!params.LogoFileName.empty() && WinUtils::FileExists(U2W(params.LogoFileName)))
-        img.LoadImage(U2W(params.LogoFileName));
+        img.loadImage(U2W(params.LogoFileName));
 
     SetDlgItemText(IDC_EDITYOURTEXT,U2W(params.Text));
     SendDlgItemMessage(IDC_LOGOPOSITION, CB_SETCURSEL, params.LogoPosition);
