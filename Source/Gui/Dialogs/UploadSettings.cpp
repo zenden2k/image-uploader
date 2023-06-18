@@ -932,7 +932,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
             mi.fType = MFT_STRING;
             mi.wID = IDC_ADD_ACCOUNT + !isImageServer;
-            CString newAccountStr = TR("New account...");
+            CString newAccountStr = TR("Add account...");
             mi.dwTypeData  = const_cast<LPWSTR>(newAccountStr.GetString());
 
             sub.InsertMenuItem(i++, true, &mi);

@@ -51,8 +51,9 @@ void CUploader::Cleanup()
 int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dlnow, double ultotal, double ulnow)
 {
     CUploader* uploader = this;
+    NetworkClient* networkClient = dynamic_cast<NetworkClient*>(nc);
 
-    if (!uploader)
+    if (!uploader || !networkClient)
         return 0;
 
     if (uploader->needStop())
@@ -88,6 +89,7 @@ int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dl
         uploader->m_PrInfo.Total = static_cast<uint64_t>(ultotal);
         uploader->m_PrInfo.Uploaded = static_cast<uint64_t>(ulnow);
     }
+    uploader->m_PrInfo.IsUploading = networkClient->currrentActionType() == NetworkClient::ActionType::atUpload;
     uploader->currentTask_->uploadProgress(uploader->m_PrInfo);
 
     if (uploader->onProgress_) {

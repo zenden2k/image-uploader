@@ -553,7 +553,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         mi.fType = MFT_STRING;
         mi.wID = IDC_ADD_ACCOUNT ;
 
-        CString text = TR("New account...");
+        CString text = TR("Add account...");
 
         mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
 

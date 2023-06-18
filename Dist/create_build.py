@@ -52,7 +52,7 @@ RESULT_ARCH_MAPPING = {
 }
 
 ALTERNATIVE_ARCH_DISPLAY_NAME = {
-    'armv8': 'ARM 64-bit',
+    'armv8': 'ARM64',
     'x86_64': "x86 64-bit",
     'x86': 'x86 32-bit'
 }

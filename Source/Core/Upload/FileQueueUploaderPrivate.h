@@ -1,4 +1,4 @@
-﻿#ifndef IU_CORE_UPLOAD_FILEQUEUEUPLOADERPRIVATE_H
+#ifndef IU_CORE_UPLOAD_FILEQUEUEUPLOADERPRIVATE_H
 #define IU_CORE_UPLOAD_FILEQUEUEUPLOADERPRIVATE_H
 
 #pragma once
@@ -7,7 +7,6 @@
 
 #include "UploadTask.h"
 #include "FileQueueUploader.h"
-#include "ServerSync.h"
 
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Upload/UploadErrorHandler.h"

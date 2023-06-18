@@ -12,7 +12,7 @@ class CResultsListView : public CWindowImpl<CResultsListView, CListViewCtrl> {
 
     BEGIN_MSG_MAP(CResultsListView)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
-        //REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
+        REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
     END_MSG_MAP()
 
     DECLARE_WND_SUPERCLASS(_T("CResultsListView"), CListViewCtrl::GetWndClassName())

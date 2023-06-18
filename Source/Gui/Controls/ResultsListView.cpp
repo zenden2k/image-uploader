@@ -64,21 +64,23 @@ LRESULT CResultsListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL&
 
         case CDDS_ITEMPREPAINT:
         {
-            auto color = model_->getItemTextColor(lplvcd->nmcd.dwItemSpec);
-
+            return CDRF_NOTIFYSUBITEMDRAW;
+            /*auto color = model_->getItemTextColor(lplvcd->nmcd.dwItemSpec);
             if (color) {
-                lplvcd->clrTextBk = color;
-                return CDRF_NEWFONT;
-            }
+                lplvcd->clrText = color;
+                //return CDRF_NEWFONT;
+                
+            }*/
         }
         break;
         case CDDS_SUBITEM | CDDS_ITEMPREPAINT:
-            lplvcd->clrText = RGB(255, 0, 0);
+            lplvcd->clrText = model_->getItemTextColor(lplvcd->nmcd.dwItemSpec, lplvcd->iSubItem);
             return CDRF_NEWFONT;
     }
     return CDRF_DODEFAULT;
 }
 
+// Called from the worker thread
 void CResultsListView::onRowChanged(size_t index) {
     RedrawItems(index, index);
 }

@@ -50,9 +50,6 @@ CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsW
     uploadManager_ = uploadManager;
     using namespace std::placeholders;
     resultsWindow_->setOnShortenUrlChanged(std::bind(&CUploadDlg::onShortenUrlChanged, this, _1));
-    #if  WINVER    >= 0x0601
-        ptl = nullptr;
-    #endif
 }
 
 CUploadDlg::~CUploadDlg()
@@ -76,11 +73,10 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     resultsWindow_->Create(m_hWnd);
     resultsWindow_->SetWindowPos(nullptr, &rc, SWP_NOZORDER|SWP_NOSIZE);
-    #if  WINVER    >= 0x0601
+
         // Initializing Windows 7 taskbar related stuff
         //const GUID IID_ITaskbarList3 = { 0xea1afb91,0x9e28,0x4b86,{0x90,0xe9,0x9e,0x9f, 0x8a,0x5e,0xef,0xaf}};
-        CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL, IID_ITaskbarList3, (void**)&ptl);
-    #endif
+    ptl_.CoCreateInstance(CLSID_TaskbarList, NULL, CLSCTX_ALL);
 
     TRC(IDC_COMMONPROGRESS, "Progress:");
     bool IsLastVideo = false;
@@ -111,20 +107,19 @@ bool CUploadDlg::startUpload() {
         return false;
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    
-    #if  WINVER  >= 0x0601
-        if(ptl)
-            ptl->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress 
-    #endif
+
+    if (ptl_) {
+        ptl_->SetProgressState(GetParent(), TBPF_NORMAL); // initialise Windows 7 taskbar button progress
+    }
 
     SetDlgItemText(IDC_COMMONPROGRESS2, _T(""));
     showUploadProgressTab();
     int n = MainDlg->FileList.GetCount();
+    uploadProgressBar_.SetState(PBST_NORMAL);
     uploadProgressBar_.SetPos(0);
-    uploadProgressBar_.SetRange(0, n);
+    //uploadProgressBar_.SetRange(0, n);
     SetDlgItemText(IDC_COMMONPERCENTS, _T("0%"));
 
-    TotalUploadProgress(0, n);
     SetTimer(kProgressTimer, 1000);
     uploadListView_.DeleteAllItems();
 
@@ -162,7 +157,9 @@ bool CUploadDlg::startUpload() {
             rowIndex++;
         }
     }
+    TotalUploadProgress(0, rowIndex);
     urlList_.resize(rowIndex);
+    uploadProgressBar_.SetRange(0, rowIndex);
     uploadSession_->addSessionFinishedCallback(std::bind(&CUploadDlg::onSessionFinished, this, std::placeholders::_1));
 
     uploadListModel_ = std::make_unique<UploadListModel>(uploadSession_);
@@ -253,10 +250,10 @@ int CUploadDlg::ThreadTerminated(void)
 {
     WizardDlg->setQuickUploadMarker(false);
 
-    #if  WINVER    >= 0x0601
-        if(ptl)
-            ptl->SetProgressState(GetParent(), TBPF_NOPROGRESS);
-    #endif
+    if (ptl_) {
+        ptl_->SetProgressState(GetParent(), TBPF_NOPROGRESS);
+    }
+
     KillTimer(kProgressTimer);
     SetNextCaption(TR("Finish >"));
     backgroundThreadStarted_ = false;
@@ -358,14 +355,13 @@ void CUploadDlg::GenerateOutput(bool immediately)
 void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 {
     uploadProgressBar_.SetPos(CurPos);
-#if  WINVER    >= 0x0601 // Windows 7 related stuff
-    if(ptl)
-    {
+
+    if(ptl_) {
         int NewCurrent = CurPos * 100 + FileProgress;
         int NewTotal = Total * 100;
-        ptl->SetProgressValue(WizardDlg->m_hWnd, NewCurrent, NewTotal);
+        ptl_->SetProgressValue(WizardDlg->m_hWnd, NewCurrent, NewTotal);
     }
-#endif
+
     progressCurrent = CurPos;
     progressTotal = Total;
     CString res;
@@ -380,7 +376,9 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 }
 
 void CUploadDlg::OnFolderUsed(UploadTask* task) {
-    resultsWindow_->AddServer(task->serverProfile());
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([task, this] {
+        resultsWindow_->AddServer(task->serverProfile());
+    });
 }
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
@@ -405,7 +403,6 @@ void CUploadDlg::createToolbar()
         icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
         return toolbarImageList_.AddIcon(icon);
     };
-
 
     if (GuiTools::Is32BPP()) {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 0, 6);
@@ -569,6 +566,12 @@ void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
     SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
     resultsWindow_->UpdateOutput(true);
     updateTotalProgress();
+    if (failedFileCount * 100 / totalFileCount >= 50) {
+        uploadProgressBar_.SetState(PBST_ERROR);
+    }
+    else if (failedFileCount) {
+        uploadProgressBar_.SetState(PBST_PAUSED);
+    }
     ThreadTerminated();
     if (successFileCount == totalFileCount) {
         if (settings->AutoCopyToClipboard) {

@@ -34,8 +34,8 @@ UploadListModel::~UploadListModel() {
 }
 
 CString UploadListModel::getItemText(int row, int column) const {
-    if (row >= static_cast<int>(items_.size())) {
-        return CString();
+    if (row < 0 || row >= static_cast<int>(items_.size())) {
+        return {};
     }
     UploadListItem* serverData = items_[row];
     if (column == 0) {
@@ -47,12 +47,16 @@ CString UploadListModel::getItemText(int row, int column) const {
     if (column == 2) {
         return serverData->thumbStatusText();
     }
-    return CString();
+    return {};
 }
 
-COLORREF UploadListModel::getItemTextColor(int row) const {
-    const UploadListItem& serverData = *items_[row];
-    return serverData.color;
+COLORREF UploadListModel::getItemTextColor(int row, int column) const {
+    if (column == 1 && row >=0 && row < items_.size()) {
+        const UploadListItem& serverData = *items_[row];
+        return serverData.color();
+    } else {
+        return GetSysColor(COLOR_WINDOWTEXT);
+    }
 }
 
 size_t UploadListModel::getCount() const {
@@ -136,6 +140,7 @@ void UploadListModel::onTaskStatusChanged(UploadTask* task) {
         if (urlTask->isFinished() && parentTask && parentTask->isFinished()) {
             CString statusText = U2W(parentTask->progress()->statusText);
             fps->setStatusText(statusText);
+
             notifyRowChanged(fps->tableRow);
         }
     }
@@ -147,6 +152,7 @@ void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
     if (!fileTask) {
         return;
     }
+
     if (fileTask->role() == UploadTask::ThumbRole) {
         UploadListItem* fps = static_cast<UploadListItem*>(task->parentTask()->userData());
         if (!fps) {
@@ -154,6 +160,14 @@ void UploadListModel::onTaskFinished(UploadTask* task, bool ok) {
         }
         fps->setThumbStatusText(TR("Finished"));
         notifyRowChanged(fps->tableRow);
+    } else if (fileTask->role() == UploadTask::DefaultRole ){
+        UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
+        if (fileTask->status() == UploadTask::StatusFinished) {
+            fps->setColor(RGB(34, 150, 16));// green
+        }
+        else if (fileTask->status() == UploadTask::StatusFailure) {
+            fps->setColor(RGB(255, 0, 0)); // red
+        }
     }
 }
 

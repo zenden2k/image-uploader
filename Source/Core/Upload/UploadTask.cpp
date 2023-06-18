@@ -408,6 +408,9 @@ UploadTask::Status UploadTask::status() const
 
 void UploadTask::uploadProgress(InfoProgress progress)
 {
+    if (!progress.IsUploading) {
+        return;
+    }
     progress_.uploaded = progress.Uploaded;
     progress_.totalUpload = progress.Total;
     progress_.isUploading = progress.IsUploading;
@@ -422,7 +425,7 @@ void UploadTask::uploadProgress(InfoProgress progress)
         UploadProgressTimeInfo ti;
         ti.bytes = Current;
         ti.ms = curTime;
-        if (progress_.timeBytes.size())
+        if (!progress_.timeBytes.empty())
         {
             speed = int(((double)(ti.bytes - progress_.timeBytes[0].bytes) / (curTime - progress_.timeBytes[0].ms) * 1000));
         }

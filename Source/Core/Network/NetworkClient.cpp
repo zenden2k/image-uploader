@@ -1004,3 +1004,7 @@ void NetworkClient::setMaxUploadSpeed(uint64_t speed) {
 void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
     curl_easy_setopt(curl_handle, CURLOPT_MAX_RECV_SPEED_LARGE, static_cast<curl_off_t>(speed));
 }
+
+NetworkClient::ActionType NetworkClient::currrentActionType() const {
+    return m_currentActionType;
+}

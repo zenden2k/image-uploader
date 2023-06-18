@@ -434,7 +434,7 @@ void UploadTaskProgress(UploadTask* task) {
     if (progress->totalUpload == 0) {
         return;
     }
-    ConsoleUtils::instance()->clearLine();
+    //ConsoleUtils::instance()->clearLine();
 
     //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
     double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
@@ -448,7 +448,7 @@ void UploadTaskProgress(UploadTask* task) {
     fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
     // part  that's full already
     for ( ; ii < dotz;ii++) {
-        fprintf(stderr,"=");
+        fprintf(stderr,"#");
     }
     // remaining part (spaces)
     for ( ; ii < totaldotz;ii++) {
@@ -458,6 +458,10 @@ void UploadTaskProgress(UploadTask* task) {
     fprintf(stderr,"]");
     fprintf(stderr," %s/%s", IuCoreUtils::FileSizeToString(progress->uploaded).c_str(),
             IuCoreUtils::FileSizeToString(progress->totalUpload).c_str());
+    // remaining part (spaces)
+    for (int i = 0; i < 30; i++) {
+        fprintf(stderr, " ");
+    }
     fprintf(stderr,"\r");
     fflush(stderr);
 }
@@ -468,7 +472,7 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     auto* userData = static_cast<TaskUserData*>(task->userData());
     ConsoleUtils::instance()->clearLine();
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
-    std::string statusText = progress->statusText + "\r";
+    std::string statusText = progress->statusText;
     if (task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure) {
         ConsoleUtils::instance()->printColoredText(stderr, statusText,
             task->status() == UploadTask::StatusFinished ? ConsoleUtils::Color::Green: ConsoleUtils::Color::Red
@@ -476,7 +480,7 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
-
+    fprintf(stderr, "\r");
 }
 
 void OnQueueFinished(CFileQueueUploader*) {

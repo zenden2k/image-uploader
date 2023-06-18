@@ -2,7 +2,7 @@
 #define IU_GUI_UPLOADLISTMODEL_H
 
 #pragma once
-
+#include <atomic>
 #include <string>
 #include <vector>
 #include <functional>
@@ -16,7 +16,7 @@ class UploadTask;
 
 class UploadListItem {
 public:
-    COLORREF color;
+
     bool finished;
     int tableRow;
     int fileIndex;
@@ -26,11 +26,11 @@ protected:
     CString statusText_;
     CString thumbStatusText_;
     CString serverName_;
-  
+    std::atomic<COLORREF> color_;
     mutable std::mutex dataMutex;
 public:
     UploadListItem() {
-        color = GetSysColor(COLOR_WINDOWTEXT); 
+        color_ = GetSysColor(COLOR_WINDOWTEXT); 
         finished = false;
         tableRow = -1;
         fileIndex = -1;
@@ -38,7 +38,7 @@ public:
 
     void clearInfo() {
         std::lock_guard<std::mutex> lk(dataMutex);
-        color = 0;
+        color_ = 0;
         fileName_.Empty();
         displayName_.Empty();
         statusText_.Empty();
@@ -93,6 +93,14 @@ public:
         std::lock_guard<std::mutex> lk(dataMutex);
         serverName_ = text;
     }
+
+    void setColor(COLORREF color) {
+        color_ = color;
+    }
+
+    COLORREF color() const {
+        return color_;
+    }
 };
 
 
@@ -101,7 +109,7 @@ public:
     explicit UploadListModel(std::shared_ptr<UploadSession> session);
     ~UploadListModel();
     CString getItemText(int row, int column) const;
-    COLORREF getItemTextColor(int row) const;
+    COLORREF getItemTextColor(int row, int column) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     UploadListItem* getDataByIndex(size_t row);

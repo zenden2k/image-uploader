@@ -235,6 +235,8 @@ class NetworkClient: public INetworkClient
 
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
+
+        ActionType currrentActionType() const;
         /*! @endcond */
     private:
 

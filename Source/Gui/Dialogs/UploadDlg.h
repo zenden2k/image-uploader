@@ -116,9 +116,8 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         bool backgroundThreadStarted_;
         std::mutex backgroundThreadStartedMutex_;
         
-        #if  WINVER    >= 0x0601
-                ITaskbarList3* ptl;
-        #endif
+        CComPtr<ITaskbarList3> ptl_;
+        
         UploadManager* uploadManager_;
         CToolBarCtrl toolbar_;
         CFont commonProgressLabelFont_, commonPercentLabelFont_;
