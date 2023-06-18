@@ -62,7 +62,7 @@ class CQuickSetupDlg : public CCustomDialogIndirectImpl<CQuickSetupDlg>
 		void doAuthCheckboxChanged();
         void translateUI();
 		CComboBoxEx serverComboBox_;
-		CImageList comboBoxImageList_;
+		CImageListManaged comboBoxImageList_;
 		void showAuthorizationControls(bool show);
 		void serverChanged();
 };

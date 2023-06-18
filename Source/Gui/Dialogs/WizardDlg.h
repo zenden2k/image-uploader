@@ -299,7 +299,7 @@ protected:
     std::shared_ptr<CFloatingWindow> floatWnd_;
     DWORD mainThreadId_;
     std::unique_ptr<CUpdateDlg> updateDlg;
-    HACCEL hLocalHotkeys;
+    CAccelerator localHotkeys_;
     INT m_bScreenshotFromTray;
     bool m_bShowWindow;
     bool m_bHandleCmdLineFunc;

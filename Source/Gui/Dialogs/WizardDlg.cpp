@@ -168,7 +168,6 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     NextPage = -1;
     ZeroMemory(Pages, sizeof(Pages));
     DragndropEnabled = true;
-    hLocalHotkeys = 0;
     QuickUploadMarker = false;
     m_bShowAfter = true;
     m_bHandleCmdLineFunc = false;
@@ -188,6 +187,11 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
             }
           
         }
+    }
+
+    if (!(m_hotkeys == Settings.Hotkeys)) {
+        UnRegisterLocalHotkeys();
+        RegisterLocalHotkeys();
     }
 }
 
@@ -235,10 +239,6 @@ CWizardDlg::~CWizardDlg()
 {
     for (auto* page: Pages) {
         delete page;
-    }
-    if (hLocalHotkeys) {
-        DestroyAcceleratorTable(hLocalHotkeys);
-        hLocalHotkeys = nullptr; 
     }
 
     for (auto logWnd : logWindowsByFileName_) {
@@ -609,7 +609,7 @@ BOOL CWizardDlg::PreTranslateMessage(MSG* pMsg)
         }*/
     }
 
-    if(hLocalHotkeys &&TranslateAccelerator(m_hWnd, hLocalHotkeys, pMsg)) 
+    if(localHotkeys_ &&TranslateAccelerator(m_hWnd, localHotkeys_, pMsg)) 
     {
         return TRUE;
     }
@@ -629,6 +629,7 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     ATLASSERT(pLoop != NULL);
     pLoop->RemoveMessageFilter(this);
     pLoop->RemoveIdleHandler(this);
+
     bHandled = false;
     return 0;
 }
@@ -1735,11 +1736,6 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     else 
         TRC(IDCANCEL, "Hide");
 
-    if(!(m_hotkeys == Settings.Hotkeys))
-    {
-        UnRegisterLocalHotkeys();
-        RegisterLocalHotkeys();
-    }
     return 0;
 }
 
@@ -1769,7 +1765,8 @@ bool CWizardDlg::RegisterLocalHotkeys() {
         j++;
     }
 
-    hLocalHotkeys = CreateAcceleratorTable(accels.get(), j);
+    localHotkeys_.DestroyObject();
+    localHotkeys_.CreateAcceleratorTable(accels.get(), j);
     return true;
 }
 
@@ -1785,12 +1782,9 @@ LRESULT CWizardDlg::OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 
 bool CWizardDlg::UnRegisterLocalHotkeys()
 {
-    if ( hLocalHotkeys ) {
-        DestroyAcceleratorTable(hLocalHotkeys);
-    }
+    localHotkeys_.DestroyObject();
 
     m_hotkeys.clear();
-    hLocalHotkeys = nullptr;
     return true;
 }
 

@@ -51,11 +51,11 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetIcon(hIconSmall, FALSE);
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
 
-    if ( !settings->IsPortable ) {
+    /*if (!settings->IsPortable) {
         SendDlgItemMessage( IDC_AUTOSTARTUPCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
         SendDlgItemMessage( IDC_CAPTUREPRINTSCREENCHECKBOX, BM_SETCHECK, BST_CHECKED, 0);
         SendDlgItemMessage( IDC_EXPLORERINTEGRATION, BM_SETCHECK, BST_CHECKED, 0);
-    }
+    }*/
     LogoImage.SubclassWindow(GetDlgItem( IDC_STATICLOGO ) );
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE | SWP_NOZORDER );
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
@@ -80,12 +80,10 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     
     comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 
-    //serverComboBox_.AddItem( _T("<") + CString(TR("Random server")) + _T(">"), -1, -1, 0, static_cast<LPARAM>( -1 ) );
-
     int selectedIndex = 0;
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     //CUploadEngineData *uploadEngine = _EngineList->byIndex( Settings.getServerID() );
-    std::string selectedServerName = "directupload.net" ;
+    std::string selectedServerName = settings->imageServer.getByIndex(0).serverName();
     TCHAR line[40];
     for (int i = 0; i < ARRAY_SIZE(line) - 1; i++) {
         line[i] = '-';

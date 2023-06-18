@@ -24,7 +24,7 @@ public:
     // Print utf-8 encoded string
     void printUnicode(FILE *f, const std::string& str);
     void printColoredText(FILE* f, const std::string& str, Color color);
-    void clearLine() const;
+    void clearLine(FILE* f) const;
     std::mutex& getOutputMutex();
 
 protected:

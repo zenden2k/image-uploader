@@ -70,7 +70,7 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://multi-up.com/$(File)"/>
 	</Server>
-	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000">
+	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000" DefaultForTypes="file">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="FTP Server" Debug="0" Plugin="ftp" FileHost="1" Authorize="1">
@@ -304,7 +304,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-	<Server Name="pixeldrain.com" Authorize="1" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0" DefaultForTypes="file">
+	<Server Name="pixeldrain.com" Authorize="1" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0">
 		<Actions>
 		</Actions>
 		<Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>

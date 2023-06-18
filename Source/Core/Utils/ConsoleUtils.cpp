@@ -102,19 +102,19 @@ void ConsoleUtils::printColoredText(FILE* f, const std::string& str, Color color
 #endif
     auto it = codes_.find(color);
     if (supportsEscapeCodes_ && it != codes_.end()) {
-        printf("\033[%dm", static_cast<int>(it->second));  
+        fprintf(f, "\033[%dm", static_cast<int>(it->second));  
     }
 
     printUnicode(f, str);
 
     if (supportsEscapeCodes_ && it != codes_.end()) {
-        printf("\033[0m");
+        fprintf(f, "\033[0m");
     }
 }
 
-void ConsoleUtils::clearLine() const {
+void ConsoleUtils::clearLine(FILE* f) const {
     if (supportsEscapeCodes_) {
-        printf("\33[2K");
+        fprintf(f, "\33[2K");
     }
 }
 

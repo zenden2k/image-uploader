@@ -309,7 +309,7 @@ void CUpdateDlg::Abort()
     if (IsRunning())
     {
         m_UpdateManager.stop();
-        Terminate();
+        WinUtils::MsgWaitForSingleObject(m_hThread, INFINITE);
     }
 }
 

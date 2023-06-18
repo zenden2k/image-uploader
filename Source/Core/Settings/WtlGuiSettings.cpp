@@ -354,33 +354,26 @@ void WtlGuiSettings::fixInvalidServers() {
     }
     CUploadEngineData* ue = {};
 
-    if (!imageServer.isEmpty()) {
-        auto& imageServerItem = imageServer.getItems()[0];
-        ue  = imageServerItem.uploadEngineData();
-        if (!ue) {
-            imageServerItem.setServerName(defaultImageServer);
-            imageServerItem.setProfileName(defaultImageServerProfileName);
-        }
-    }
-    
-    if (!contextMenuServer.isEmpty()) {
-        auto& contextMenuServerItem = contextMenuServer.getItems()[0];
-        ue = contextMenuServerItem.uploadEngineData();
-        if (!ue) {
-            contextMenuServerItem.setServerName(defaultImageServer);
-            contextMenuServerItem.setProfileName(defaultImageServerProfileName);
-        }
+    auto& imageServerItem = imageServer.getByIndex(0);
+    ue = imageServerItem.uploadEngineData();
+    if (!ue) {
+        imageServerItem.setServerName(defaultImageServer);
+        imageServerItem.setProfileName(defaultImageServerProfileName);
     }
 
-    if (!quickScreenshotServer.isEmpty()) {
-        auto& quickScreenshotServerItem = quickScreenshotServer.getItems()[0];
-        ue = quickScreenshotServerItem.uploadEngineData();
-        if (!ue) {
-            quickScreenshotServerItem.setServerName(defaultImageServer);
-            quickScreenshotServerItem.setProfileName(defaultImageServerProfileName);
-        }
+    auto& contextMenuServerItem = contextMenuServer.getByIndex(0);
+    ue = contextMenuServerItem.uploadEngineData();
+    if (!ue) {
+        contextMenuServerItem.setServerName(defaultImageServer);
+        contextMenuServerItem.setProfileName(defaultImageServerProfileName);
     }
 
+    auto& quickScreenshotServerItem = quickScreenshotServer.getByIndex(0);
+    ue = quickScreenshotServerItem.uploadEngineData();
+    if (!ue) {
+        quickScreenshotServerItem.setServerName(defaultImageServer);
+        quickScreenshotServerItem.setProfileName(defaultImageServerProfileName);
+    }
 
     ue = temporaryServer.uploadEngineData();
     if (!ue) {
@@ -388,48 +381,43 @@ void WtlGuiSettings::fixInvalidServers() {
         temporaryServer.setProfileName(defaultImageServerProfileName);
     }
     
+    std::string defaultFileServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
+    CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
 
-    if (!fileServer.isEmpty()) {
-        auto& fileServerItem = fileServer.getItems()[0];
-        ue = fileServerItem.uploadEngineData();
-        if (!ue) {
-            std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
-            CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
-            if (uploadEngineData) {
-                fileServerItem.setServerName(defaultServerName);
-                fileServerItem.setProfileName("");
-            }
-            else {
-                uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
-                if (uploadEngineData) {
-                    fileServerItem.setServerName(uploadEngineData->Name);
-                    fileServerItem.setProfileName("");
-                }
-                else {
-                    LOG(ERROR) << "Unable to find any file servers in the server list";
-                }
-            }
+    if (!uploadEngineData) {
+        uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeFileServer);
+        if (uploadEngineData) {
+            defaultFileServerName = uploadEngineData->Name;
+        } else {
+            LOG(WARNING) << "Unable to find any file servers in the server list";
         }
     }
 
+    auto& fileServerItem = fileServer.getByIndex(0);
+    ue = fileServerItem.uploadEngineData();
+    if (!ue) {
+        fileServerItem.setServerName(defaultFileServerName);
+        fileServerItem.setProfileName("");
+    }
 
-    if (urlShorteningServer.serverName().empty()) {
+    ue = urlShorteningServer.uploadEngineData();
+    if (!ue) {
         std::string defaultServerName = engineList_->getDefaultServerNameForType(
             CUploadEngineData::TypeUrlShorteningServer);
         CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
         if (uploadEngineData) {
             urlShorteningServer.setServerName(defaultServerName);
+            urlShorteningServer.setProfileName("");
         } else {
             uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeUrlShorteningServer);
             if (uploadEngineData) {
                 urlShorteningServer.setServerName(uploadEngineData->Name);
+                urlShorteningServer.setProfileName("");
             } else {
                 LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
             }
         }
     }
-    
-
 }
 
 WtlGuiSettings::WtlGuiSettings() : 

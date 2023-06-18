@@ -140,7 +140,7 @@ Translator translator; // dummy translator
 void DoUpdates(bool force = false);
 #endif
 
-int64_t lastProgressTime = 0;
+std::chrono::steady_clock::time_point lastProgressTime;
 
 void PrintUsage(bool help = false) {
    std::cerr<<"USAGE:  "<<"imgupload [OPTIONS] filename1 filename2 ..."<<std::endl;
@@ -418,22 +418,23 @@ void OnUploadSessionFinished(UploadSession* session) {
 }
 
 void UploadTaskProgress(UploadTask* task) {
-    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
-    auto* userData = static_cast<TaskUserData*>(task->userData());
 
-    timeval tp;
-    gettimeofday(&tp, NULL);
-    int64_t ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+    using namespace std::chrono_literals;
+    std::chrono::steady_clock::time_point cur = std::chrono::steady_clock::now();
 
-    if ( progress->totalUpload != progress->uploaded && ms - lastProgressTime < 500 ) { // Windows console output is too slow
+    if (progress->totalUpload != progress->uploaded && cur - lastProgressTime < 200ms) { // Windows console output is too slow
         return;
     }
-    lastProgressTime = ms;
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
+    auto* userData = static_cast<TaskUserData*>(task->userData());
+    lastProgressTime = cur;
     int totaldotz=30;
     if (progress->totalUpload == 0) {
         return;
     }
+
+    fprintf(stderr, "\r#%d ", userData->index);
     //ConsoleUtils::instance()->clearLine();
 
     //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
@@ -459,10 +460,10 @@ void UploadTaskProgress(UploadTask* task) {
     fprintf(stderr," %s/%s", IuCoreUtils::FileSizeToString(progress->uploaded).c_str(),
             IuCoreUtils::FileSizeToString(progress->totalUpload).c_str());
     // remaining part (spaces)
-    for (int i = 0; i < 30; i++) {
+    /*for (int i = 0; i < 30; i++) {
         fprintf(stderr, " ");
-    }
-    fprintf(stderr,"\r");
+    }*/
+
     fflush(stderr);
 }
 
@@ -470,7 +471,9 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     auto* userData = static_cast<TaskUserData*>(task->userData());
-    ConsoleUtils::instance()->clearLine();
+    ConsoleUtils::instance()->clearLine(stderr);
+    fprintf(stderr, "\r#%d ", userData->index);
+
     //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
     std::string statusText = progress->statusText;
     if (task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure) {
@@ -480,7 +483,11 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
-    fprintf(stderr, "\r");
+}
+
+void OnTaskFinished(UploadTask*, bool) {
+    std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
+    fprintf(stderr, "\r\n");
 }
 
 void OnQueueFinished(CFileQueueUploader*) {
@@ -578,6 +585,7 @@ int func() {
 
         std::shared_ptr<FileUploadTask> task = std::make_shared<FileUploadTask>(filesToUpload[i], IuCoreUtils::ExtractFileName(filesToUpload[i]));
         task->setServerProfile(serverProfile);
+        task->addTaskFinishedCallback(OnTaskFinished);
         task->setOnUploadProgressCallback(UploadTaskProgress);
         task->setOnStatusChangedCallback(OnUploadTaskStatusChanged);
         TaskUserData *userData = new TaskUserData;
