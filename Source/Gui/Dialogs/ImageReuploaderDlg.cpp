@@ -92,7 +92,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_ .reset(new CServerSelectorControl(uploadEngineManager_, true));
+    imageServerSelector_  = std::make_unique<CServerSelectorControl>(uploadEngineManager_, true);
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Server for uploading images"));
     imageServerSelector_->ShowWindow( SW_SHOW );

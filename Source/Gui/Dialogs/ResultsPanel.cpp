@@ -42,7 +42,6 @@
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>& urlList, bool openedFromHistory):
     WizardDlg(dlg), UrlList(urlList)
 {
-    webViewWindow_ = nullptr;
     m_nImgServer = m_nFileServer = -1;
     TemplateHead = TemplateFoot = nullptr; 
     openedFromHistory_ = openedFromHistory;
@@ -62,12 +61,10 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>& urlList
 CResultsPanel::~CResultsPanel()
 {
     delete[] TemplateHead;
-    if (webViewWindow_ )
-    {
+    if (webViewWindow_ ) {
         if (webViewWindow_->m_hWnd) {
             webViewWindow_->DestroyWindow();
         }
-        delete webViewWindow_;
     }  
 }
     
@@ -1114,7 +1111,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
 
     CRect r(0,0,600,400);
     if ( !webViewWindow_ ) {
-        webViewWindow_ = new CWebViewWindow();
+        webViewWindow_ = std::make_unique<CWebViewWindow>();
         webViewWindow_->Create(0,r,TR("Preview Window"),WS_POPUP|WS_OVERLAPPEDWINDOW,WS_EX_TOPMOST    );
         webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
         webViewWindow_->ShowWindow(SW_SHOW);

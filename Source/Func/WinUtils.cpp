@@ -1542,6 +1542,15 @@ CString TimestampToString(time_t t)
     return result;
 }
 
+BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg) {
+    if (hwnd == pmsg->hwnd || IsChild(hwnd, pmsg->hwnd)) {
+        return TranslateAccelerator(hwnd, hacc, pmsg);
+    }
+    else {
+        return FALSE;
+    }
+}
+
 }
 
 std::wstring Utf8ToWstring(const std::string &str)

@@ -1,10 +1,10 @@
 #include "NewStyleFileSaveDialog.h"
 
 CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& initialFolder, const CString& title, const FileFilterArray& filters){
-    COMDLG_FILTERSPEC* fileTypes = nullptr;
+    std::unique_ptr<COMDLG_FILTERSPEC[]> fileTypes;
     
     if (!filters.empty()) {
-        fileTypes = new COMDLG_FILTERSPEC[filters.size()];
+        fileTypes = std::make_unique<COMDLG_FILTERSPEC[]>(filters.size());
         for (size_t i = 0; i < filters.size(); i++) {
             fileTypes[i].pszName = filters[i].first;
             fileTypes[i].pszSpec = filters[i].second;
@@ -17,15 +17,12 @@ CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& ini
     HRESULT hr = newStyleDialog_.CoCreateInstance(CLSID_FileSaveDialog);
 
     if (FAILED(hr)) {
-        delete[] fileTypes;
         return;
     }
 
     if (fileTypes) {
-        newStyleDialog_->SetFileTypes(filters.size(), fileTypes);
+        newStyleDialog_->SetFileTypes(filters.size(), fileTypes.get());
     }
-
-    delete[] fileTypes;
 
     if (!title.IsEmpty()) {
         newStyleDialog_->SetTitle(title);
@@ -33,7 +30,7 @@ CNewStyleFileSaveDialog::CNewStyleFileSaveDialog(HWND parent, const CString& ini
 
     CComPtr<IShellItem> psiFolder;
 
-    hr = SHCreateItemFromParsingName(initialFolder, NULL, IID_PPV_ARGS(&psiFolder));
+    hr = SHCreateItemFromParsingName(initialFolder, nullptr, IID_PPV_ARGS(&psiFolder));
 
     if (SUCCEEDED(hr)) {
         newStyleDialog_->SetDefaultFolder(psiFolder);
@@ -65,7 +62,7 @@ CString CNewStyleFileSaveDialog::getFolderPath() {
     CComPtr<IShellItem> pFolderItem;
     HRESULT hr = newStyleDialog_->GetFolder(&pFolderItem);
     if (SUCCEEDED(hr)) {
-        LPOLESTR pwsz = NULL;
+        LPOLESTR pwsz = nullptr;
 
         // Get its file system path.
         hr = pFolderItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
@@ -92,20 +89,19 @@ void CNewStyleFileSaveDialog::setFileName(LPCWSTR fileName) {
 }
 
 void CNewStyleFileSaveDialog::getFiles(std::vector<CString>& arr) {
-    HRESULT hr;
     // If the user chose any files, loop thru the array of files.
 
     CComPtr<IShellItem> pItem;
 
-    hr = newStyleDialog_->GetResult(&pItem);
+    HRESULT hr = newStyleDialog_->GetResult(&pItem);
 
     if (SUCCEEDED(hr)) {
-        LPOLESTR pwsz = NULL;
+        LPOLESTR pwsz = nullptr;
         // Get its file system path.
         hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pwsz);
 
         if (SUCCEEDED(hr)) {
-            arr.push_back(pwsz);
+            arr.emplace_back(pwsz);
             CoTaskMemFree(pwsz);
         }
     }

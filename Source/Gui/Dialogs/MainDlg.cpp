@@ -84,11 +84,12 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     });
     UpdateStatusLabel();
 
-    ACCEL Accels[1];
-    Accels[0].fVirt = FCONTROL | FSHIFT | FVIRTKEY;
-    Accels[0].key = VkKeyScan('c');
-    Accels[0].cmd = MENUITEM_COPYFILEPATH;
-    hotkeys_ = CreateAcceleratorTable(Accels, ARRAY_SIZE(Accels));
+    ACCEL accels[]{
+        { FCONTROL | FSHIFT | FVIRTKEY, VkKeyScan('c'), MENUITEM_COPYFILEPATH},
+        { FALT | FVIRTKEY, VK_RETURN, MENUITEM_PROPERTIES},
+    };
+
+    hotkeys_.CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
 
     WaitThreadStop.Create();
     WaitThreadStop.ResetEvent();
@@ -97,7 +98,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    DestroyAcceleratorTable(hotkeys_);
+    bHandled = FALSE;
     WaitThreadStop.Close();
     return 0;
 }
@@ -221,7 +222,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         }
 
         contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_PROPERTIES, TR("Properties"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_PROPERTIES, TR("Properties")+CString(_T("\tAlt+Enter")));
 
         contextMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     }
@@ -588,7 +589,7 @@ LRESULT CMainDlg::OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 }
 
 BOOL CMainDlg::PreTranslateMessage(MSG* pMsg) {
-    if (hotkeys_ && TranslateAccelerator(m_hWnd, hotkeys_, pMsg)) {
+    if (hotkeys_ && WinUtils::TranslateAcceleratorForWindow(m_hWnd, hotkeys_, pMsg)) {
         return TRUE;
     }
     return FALSE;
@@ -598,7 +599,7 @@ CString CMainDlg::getSelectedFileName() {
     int nCurItem;
 
     if ((nCurItem = ThumbsView.GetNextItem(-1, LVNI_ALL|LVNI_SELECTED))<0)
-        return CString();
+        return {};
 
     LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
     if ( !FileName ) {

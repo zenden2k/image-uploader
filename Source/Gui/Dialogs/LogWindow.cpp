@@ -125,9 +125,8 @@ LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, B
 }
 
 LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/) {
-    const int maxItems = 1000;
-    int selectedItems[maxItems];
-    memset(selectedItems, 0, sizeof(selectedItems));
+    constexpr int maxItems = 1000;
+    int selectedItems[maxItems] = {};
     int selectedItemsCount = MsgList.GetSelItems(maxItems, selectedItems);
 
     if (selectedItemsCount >= 0) { 
@@ -172,9 +171,8 @@ LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     std::vector<DefaultLogger::LogEntry> items;
     {
         std::lock_guard<std::mutex> lk(queueMutex_);
-        // Copy vector to avoid deadlocks (it is a hack)
-        items = queuedItems_;
-        queuedItems_.clear();
+        // to avoid deadlocks 
+        std::swap(items, queuedItems_);
     }
     for (const auto& item : items) {
         WriteLogImpl(item);

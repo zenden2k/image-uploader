@@ -728,7 +728,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
         return true;
     }
 
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
     int height = static_cast<int>(roundf(45 * dpiScaleY_));
@@ -859,7 +859,6 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     LinearGradientBrush 
         br2(bounds, Color(130, 190, 190, 190), Color(255, 70, 70, 70), 
             LinearGradientModeBackwardDiagonal); 
-
 
     StringFormat format;
     format.SetAlignment(StringAlignmentCenter);
@@ -1137,7 +1136,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                             {
 
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
-                                CVideoGrabberPage* dlg = (CVideoGrabberPage*) Pages[1];
+                                CVideoGrabberPage* dlg = getPage<CVideoGrabberPage>(wpVideoGrabberPage);
                                 dlg->SetFileName(OutFileName);
                                 ReleaseStgMedium(&ddd2);
                                 break;
@@ -1384,15 +1383,19 @@ LRESULT CWizardDlg::OnTaskDispatcherMsg(UINT, WPARAM wParam, LPARAM, BOOL&) {
         auto msg = reinterpret_cast<TaskDispatcherMessageStruct*>(wParam);
         msg->callback(); 
     } else {
-        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
-        for(const auto& task: scheduledTasks_) {
+        // Async task
+        std::vector<TaskRunnerTask> tasks;
+        {
+            std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+            std::swap(tasks, scheduledTasks_);
+        }
+        for(const auto& task: tasks) {
             try {
                 task();
             } catch (std::exception& ex) {
                 LOG(ERROR) << ex.what();
             }
         }
-        scheduledTasks_.clear();
     }
     return 0;
 }

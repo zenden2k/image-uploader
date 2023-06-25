@@ -65,13 +65,6 @@ CServerProfileGroupSelectDialog::CServerProfileGroupSelectDialog(UploadEngineMan
 }
 
 CServerProfileGroupSelectDialog::~CServerProfileGroupSelectDialog() {
-    for(auto& it: serverSelectors_) {
-        delete it;
-    }
-
-    for (auto& it : deleteButtons_) {
-        delete it;
-    }
 }
 
 LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -82,7 +75,7 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
     RECT rect = {};
     this->GetClientRect(&rect);
 
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
 
@@ -119,7 +112,7 @@ LRESULT CServerProfileGroupSelectDialog::OnInitDialog(UINT uMsg, WPARAM wParam, 
 
 LRESULT CServerProfileGroupSelectDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    for (auto item: serverSelectors_) {
+    for (auto& item: serverSelectors_) {
         if (item->serverProfile().serverName().empty()) {
             continue;
         }
@@ -152,14 +145,10 @@ const ServerProfileGroup& CServerProfileGroupSelectDialog::serverProfileGroup() 
 }
 
 void CServerProfileGroupSelectDialog::addSelector(const ServerProfile& profile, HDC dc) {
-    
-
-    CServerSelectorControl* control = new CServerSelectorControl(uploadEngineManager_);
+    auto control = std::make_unique<CServerSelectorControl>(uploadEngineManager_);
     control->setShowEmptyItem(true);
     control->setServersMask(serverMask_);
     //control->setShowImageProcessingParams(false);
-
-    
 
     HWND parent = /*scrollContainer_.m_hWnd ? scrollContainer_.m_hWnd :*/panel_.m_hWnd;
     CRect rc(0, 0, 100, 100);
@@ -170,21 +159,21 @@ void CServerProfileGroupSelectDialog::addSelector(const ServerProfile& profile, 
     control->setServerProfile(profile);
     control->setTitle(TR("Server"));
 
-    serverSelectors_.push_back(control);
+    serverSelectors_.push_back(std::move(control));
 
     int index = serverSelectors_.size() - 1;
 
-    auto* deleteButton = new CButton;
+    auto deleteButton = std::make_unique<CButton>();
     deleteButton->Create(parent, rc, TR("Delete"), BS_ICON|BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | WS_TABSTOP);
     deleteButton->SetIcon(deleteIcon_);
     deleteButton->SetDlgCtrlID(IDC_DELETESERVER_FIRST_ID + index);
-    deleteButtons_.push_back(deleteButton);
+    deleteButtons_.push_back(std::move(deleteButton));
     updateSelectorPos(index, dc);
 }
 
 void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
-    auto* selector = serverSelectors_[index];
-    auto* deleteButton = deleteButtons_[index];
+    auto& selector = serverSelectors_[index];
+    auto& deleteButton = deleteButtons_[index];
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
 
@@ -206,7 +195,7 @@ void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
 }
 
 LRESULT CServerProfileGroupSelectDialog::OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
 
     addSelector({}, hdc);
     updateScroll();
@@ -224,7 +213,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
     serverSelectors_.erase(serverSelectors_.begin() + buttonIndex);
     deleteButtons_[buttonIndex]->DestroyWindow();
     deleteButtons_.erase(deleteButtons_.begin() + buttonIndex);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     for(size_t i = 0 /*buttonIndex*/; i < serverSelectors_.size(); i++) {
         updateSelectorPos(i, dc);
     }

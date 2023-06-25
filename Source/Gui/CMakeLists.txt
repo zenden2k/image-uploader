@@ -276,6 +276,7 @@ set(HEADER_LIST
     ../3rdpart/Unzipper.h
     ../3rdpart/vkCodes.h
     ../3rdpart/WinHotkeyCtrl.h
+    ../3rdpart/FastGaussianBlurTemplate.h
     ../Func/Common.h
     ../Func/ImageEditorConfigurationProvider.h
     ../Func/IuCommonFunctions.h

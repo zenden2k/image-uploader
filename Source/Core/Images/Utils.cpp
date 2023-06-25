@@ -44,6 +44,7 @@
 #include "Core/AppParams.h"
 #include "ImageLoader.h"
 #include "Core/Utils/IOException.h"
+#include "3rdpart/FastGaussianBlurTemplate.h"
 
 namespace ImageUtils {
 
@@ -172,117 +173,6 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     return image;
 }
 
-class DummyBitmap {
-public:
-    DummyBitmap(uint8_t* data,  int stride, int width, int height, int channel=0) {
-        data_ = data;
-        stride_ = stride;
-        width_ = width;
-        channel_ = channel;
-        dataSize_ = stride * height;
-        height_ = height;
-    }
-    uint8_t& operator[](int i) const {
-        int pos = (i/width_)*stride_ + (i%width_)*4 + channel_;
-        if ( pos >= dataSize_) {
-            return data_[0];
-        } else {
-            return data_[pos];
-        }
-    }
-protected:
-    uint8_t* data_;
-    int stride_;
-    int channel_;
-    int width_;
-    int dataSize_;
-    int height_;
-};
-
-
-int* boxesForGauss(float sigma, int n)  // standard deviation, number of boxes
-{
-    float wIdeal = sqrt((12*sigma*sigma/n)+1);  // Ideal averaging filter width 
-    int wl = static_cast<int>(floor(wIdeal));  
-    if(wl%2==0) wl--;
-    int wu = wl+2;
-
-    float mIdeal = (12*sigma*sigma - n*wl*wl - 4*n*wl - 3*n)/(-4*wl - 4);
-    float m = round(mIdeal);
-
-
-    int* sizes = new int[n];
-    for(int i=0; i<n; i++) sizes[i]=i<m?wl:wu;
-    return sizes;
-}
-
-void boxBlurH_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
-    float iarr = static_cast<float>(1.0 / (r + r + 1));
-    for(int i=0; i<h; i++) {
-        int ti = i*w, li = ti, ri = ti+r;
-        int fv = scl[ti], lv = scl[ti+w-1], val = (r+1)*fv;
-        for(int j=0; j<r; j++) val += scl[ti+j];
-        for(int j=0  ; j<=r ; j++) { 
-            val += scl[ri++] - fv;   
-            tcl[ti++] = static_cast<uint8_t>(round(val*iarr)); 
-        }
-        for(int j=r+1; j<w-r; j++) {
-            val += scl[ri++] - scl[li++];   
-            tcl[ti++] = static_cast<uint8_t>(round(val*iarr));
-        }
-        for(int j=w-r; j<w  ; j++) {
-            val += lv        - scl[li++];   
-            tcl[ti++] = static_cast<uint8_t>(round(val*iarr));
-        }
-    }
-}
-void boxBlurT_4 (DummyBitmap&  scl, DummyBitmap&  tcl, int w, int h, int r) {
-    float iarr = static_cast<float>(1.0 / (r+r+1));
-    for(int i=0; i<w; i++) {
-        int ti = i, li = ti, ri = ti+r*w;
-        int fv = scl[ti], lv = scl[ti+w*(h-1)], val = (r+1)*fv;
-        for(int j=0; j<r; j++) val += scl[ti+j*w];
-        for(int j=0  ; j<=r ; j++) { 
-            val += scl[ri] - fv     ;  
-            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
-            ri+=w; 
-            ti+=w; }
-        for(int j=r+1; j<h-r; j++) {
-            val += scl[ri] - scl[li];  
-            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
-            li+=w; ri+=w; ti+=w;
-        }
-        for(int j=h-r; j<h  ; j++) {
-            val += lv      - scl[li];  
-            tcl[ti] = static_cast<uint8_t>(round(val*iarr));
-            li+=w; 
-            ti+=w;
-        }
-    }
-}
-
-void boxBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
-    //for(int i=0; i<scl.length; i++) tcl[i] = scl[i];
-    boxBlurH_4(tcl, scl, w, h, r);
-    boxBlurT_4(scl, tcl, w, h, r);
-}
-
-void gaussBlur_4 (DummyBitmap& scl, DummyBitmap& tcl, int w, int h, int r) {
-    int* bxs = boxesForGauss(static_cast<float>(r), 3);
-    boxBlur_4 (scl, tcl, w, h, (bxs[0]-1)/2);
-    boxBlur_4 (tcl, scl, w, h, (bxs[1]-1)/2);
-    boxBlur_4 (scl, tcl, w, h, (bxs[2]-1)/2);
-    delete[] bxs;
-}
-uint8_t *prevBuf = 0;
-unsigned int prevSize=0;
-
-void BlurCleanup() {
-    delete[] prevBuf;
-    prevBuf = 0;
-    prevSize = 0;
-}
-
 void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
     using namespace Gdiplus;
     Rect rc(x, y, w, h);
@@ -298,42 +188,29 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
         } else {
             stride = - dataSource.Stride;
         }
-        uint8_t *buf;
+        
         size_t myStride = 4 * (w /*& ~3*/);
         size_t bufSize = myStride * h;
-
-        if (prevBuf && prevSize >= bufSize) {
-            buf = prevBuf;
-        } else {
-            delete[] prevBuf;
-            
-            buf = new uint8_t[bufSize];
-            prevSize = bufSize;
-            prevBuf = buf;
-        }
+        uint8_t* buf = new uint8_t[bufSize];
         
         uint8_t *bufCur = buf;
         uint8_t *sourceCur = source;
-       
+        uint8_t * temp = new uint8_t[bufSize];
+        uint8_t* tempCur = temp;
         for (int i = 0; i < h; i++) {
             memcpy(bufCur, sourceCur, myStride);
+            memcpy(tempCur, sourceCur, myStride);
             bufCur += myStride;
             sourceCur += stride;
+            tempCur += myStride;
         }
 
-        //memcpy(buf, source, stride * (h - 1) + w * 4 /*PixelFormat32bppARGB*/);
+        //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+        fast_gaussian_blur(temp, buf, w, h, 4, radius, 3, kExtend);
 
-        DummyBitmap srcR(source,  stride, w, h, 0);
-        DummyBitmap dstR(buf, myStride, w, h, 0);
-        DummyBitmap srcG(source,  stride, w, h, 1);
-        DummyBitmap dstG(buf, myStride, w, h, 1);
-        DummyBitmap srcB(source,  stride,  w, h,2);
-        DummyBitmap dstB(buf, myStride, w, h, 2);
-
-        gaussBlur_4(srcR, dstR, w, h, radius);
-        gaussBlur_4(srcG, dstG, w, h, radius);
-        gaussBlur_4(srcB, dstB, w, h, radius);
-
+        //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+        //LOG(ERROR) << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+       
         bufCur = buf;
         sourceCur = source;
         for (int i = 0; i < h; i++) {
@@ -341,8 +218,9 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
             bufCur += myStride;
             sourceCur += stride;
         }
+        delete[] temp;
+        delete[] buf;
 
-        //memcpy(source, buf, stride * (h-1)+w * 4 /*PixelFormat32bppARGB*/);
         bm->UnlockBits(&dataSource);
     }
 }

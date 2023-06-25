@@ -316,7 +316,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         {
             WORD id;
             // ExtractAssociatedIcon has memory leaks
-            HICON associatedIcon = ExtractAssociatedIcon(GetModuleHandle(0), const_cast<LPWSTR>(filename.GetString()), &id);
+            CIcon associatedIcon = ExtractAssociatedIcon(GetModuleHandle(0), const_cast<LPWSTR>(filename.GetString()), &id);
 
             if(associatedIcon) {
                 GuiTools::IconInfo ii = GuiTools::GetIconInfo(associatedIcon);
@@ -342,7 +342,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
 
                     ReleaseDC(dc);
                 }
-                DestroyIcon(associatedIcon);
+                //DestroyIcon(associatedIcon);
             }
         }
 
@@ -374,11 +374,6 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 WCHAR buf2[25];
                 std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
                 lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
-                //NewBytesToString(f, buf2, 25);
-                WCHAR FileExt[25];
-                lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
-                if (!lstrcmpi(FileExt, _T("jpg")))
-                    lstrcpy(FileExt, _T("JPEG"));
 
                 if (srcImageFormat.IsEmpty()) {
                     

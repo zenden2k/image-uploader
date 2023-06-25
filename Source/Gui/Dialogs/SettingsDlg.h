@@ -21,6 +21,9 @@
 #define IU_CORE_GUI_DIALOGS_SETTINGSDLG_H
 
 #pragma once
+
+#include <memory>
+
 #include "atlheaders.h"
 #include "MainDlg.h"
 #include "VideoGrabberPage.h"
@@ -68,8 +71,8 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
     int CurPage;
     CIcon hIcon;
     CIcon hIconSmall;
-    bool CreatePage(int PageID);
-    CSettingsPage* Pages[SettingsPageCount];
+    bool CreatePage(int pageId);
+    std::unique_ptr<CSettingsPage> Pages[SettingsPageCount];
     int PageToShow;
     bool ShowPage(int idPage);
     CTabListBox m_SettingsPagesListBox;

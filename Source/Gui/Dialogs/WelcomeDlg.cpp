@@ -260,6 +260,7 @@ void CWelcomeDlg::lastRegionAvailabilityChanged(bool available) {
 
 LRESULT CWelcomeDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    bHandled = FALSE;
     LeftImage.UnsubclassWindow();
     LogoImage.UnsubclassWindow();
     return 0;

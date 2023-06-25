@@ -120,7 +120,6 @@ LRESULT CSettingsDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     for (auto& page : Pages) {
         if (page) {
             ::DestroyWindow(page->PageWnd);
-            delete page;
         }
     }
     return 0;
@@ -171,7 +170,7 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             }
         } catch (ValidationException& ex) {
             ShowPage(i);
-            if (ex.errors_.size()) {
+            if (!ex.errors_.empty()) {
                 LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
                     ::SetFocus(ex.errors_[0].Control);
@@ -189,93 +188,53 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     return 0;
 }
 
-bool CSettingsDlg::CreatePage(int PageID)
+template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args) {
+    auto dlg = std::make_unique<T>(std::forward<Args>(args)...);
+    dlg->Create(hWnd, rc);
+    dlg->PageWnd = dlg->m_hWnd;
+    return dlg;
+}
+
+bool CSettingsDlg::CreatePage(int pageId)
 {
-    RECT rc = {150,3,636,400};
-
-    if(PageID == spGeneral)
-    {
-        CGeneralSettings *dlg = new CGeneralSettings();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-    }
-    else if(PageID == spServers)
-    {
-        CDefaultServersSettings *dlg = new CDefaultServersSettings(uploadEngineManager_);
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd = dlg->m_hWnd;
-    }
-    else if(PageID == spImages)
-    {
-        CLogoSettings *dlg = new CLogoSettings();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd = dlg->m_hWnd;
-    }
-
-    else if(PageID == spThumbnails)
-    {
-        CThumbSettingsPage *dlg = new CThumbSettingsPage();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd = dlg->m_hWnd;
-    }
-    else if(PageID==spScreenshot)
-    {
-        CScreenshotSettingsPagePage *dlg = new CScreenshotSettingsPagePage();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-        
-    }
-
-    else if(PageID == spVideo)
-    {
-        CVideoGrabberParams *dlg = new CVideoGrabberParams();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-    }
-
-     else if(PageID==spUploading)
-    {
-        CUploadSettingsPage *dlg = new CUploadSettingsPage();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-    }
-     else if(PageID==spIntegration)
-     {
-         CIntegrationSettings *dlg = new CIntegrationSettings(uploadEngineManager_);
-         Pages[PageID]= dlg;
-         dlg->Create(m_hWnd,rc);
-         Pages[PageID]->PageWnd=dlg->m_hWnd;
-     }
-
-     else if(PageID==spTrayIcon)
-    {
-        CTraySettingsPage *dlg = new CTraySettingsPage();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-    }
-    else if(PageID==spHotkeys)
-    {
-        CHotkeySettingsPage *dlg = new CHotkeySettingsPage();
-        Pages[PageID]= dlg;
-        dlg->Create(m_hWnd,rc);
-        Pages[PageID]->PageWnd=dlg->m_hWnd;
-        
-    }    
+    RECT rc = { 150,3,636,400 };
+    auto createObject = [&]() -> std::unique_ptr<CSettingsPage> {
+        switch (pageId) {
+            case spGeneral:
+                return createPageObject<CGeneralSettings>(m_hWnd, rc);
+            case spServers:
+                return createPageObject<CDefaultServersSettings>(m_hWnd, rc, uploadEngineManager_);
+            case spImages:
+                return createPageObject<CLogoSettings>(m_hWnd, rc);
+            case spThumbnails:
+                return createPageObject<CThumbSettingsPage>(m_hWnd, rc);
+            case spScreenshot:
+                return createPageObject<CScreenshotSettingsPagePage>(m_hWnd, rc);
+            case spVideo:
+                return createPageObject<CVideoGrabberParams>(m_hWnd, rc);
+            case spUploading:
+                return createPageObject<CUploadSettingsPage>(m_hWnd, rc);
+            case spIntegration:
+                return createPageObject<CIntegrationSettings>(m_hWnd, rc, uploadEngineManager_);
+            case spTrayIcon:
+                return createPageObject<CTraySettingsPage>(m_hWnd, rc);
+            case spHotkeys:
+                return createPageObject<CHotkeySettingsPage>(m_hWnd, rc);
+            default:
+                LOG(ERROR) << "No such page " << pageId;
+                return {};
+        }
+    };
+    
+    std::unique_ptr<CSettingsPage> page = createObject();
+    Pages[pageId] = std::move(page);
 
     WINDOWPLACEMENT wp;
     ::GetWindowPlacement(GetDlgItem(IDC_TABCONTROL), &wp);
     TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
-    ::SetWindowPos(Pages[PageID]->PageWnd, 0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
+    ::SetWindowPos(Pages[pageId]->PageWnd, 0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
 
-    Pages[PageID]->FixBackground();
+    Pages[pageId]->FixBackground();
     return true;
 }
 

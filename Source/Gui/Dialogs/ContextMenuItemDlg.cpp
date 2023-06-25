@@ -45,7 +45,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect( m_hWnd, IDC_IMAGESERVERPLACEHOLDER);
-    imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, false));
+    imageServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_, false);
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(TR("Choose server"));
     imageServerSelector_->ShowWindow( SW_SHOW );

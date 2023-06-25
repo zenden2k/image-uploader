@@ -107,7 +107,7 @@ class CResultsPanel :
     void setEngineList(CMyEngineList* EngineList);
 
     CString GenerateOutput();
-    CWebViewWindow* webViewWindow_;
+    std::unique_ptr<CWebViewWindow> webViewWindow_;
     bool LoadTemplate();
     LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
 

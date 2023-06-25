@@ -27,8 +27,6 @@
 #include <map>
 #include <random>
 
-
-#include "Core/Utils/CoreUtils.h"
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
 #include "Core/Scripting/API/UploadTaskWrappers.h"
@@ -151,7 +149,7 @@ public:
     CFolderItem defaultFolder;
 
     bool isEmpty() const {
-        return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && !params.size() && defaultFolder.getId().empty();
+        return authData.Login.empty() && authData.Password.empty() && !authData.DoAuth && params.empty() && defaultFolder.getId().empty();
     }
     /*! @endcond */
 

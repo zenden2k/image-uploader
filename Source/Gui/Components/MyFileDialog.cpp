@@ -2,7 +2,6 @@
 
 #include <cassert>
 
-#include "Func/WinUtils.h"
 #include "NewStyleFileDialog.h"
 #include "NewStyleFileSaveDialog.h"
 
@@ -20,7 +19,7 @@ void IMyFileDialog::setDefaultExtension(LPCTSTR extension) {
 } 
 
 CString IMyFileDialog::getFolderPath() {
-    return CString();
+    return {};
 }
 
 void IMyFileDialog::setFileTypeIndex(UINT iFileType) {

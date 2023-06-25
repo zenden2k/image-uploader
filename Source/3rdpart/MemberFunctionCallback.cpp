@@ -37,7 +37,7 @@ Dummy dummyObject;
 CBTHookMemberFunctionCallback::CBTHookMemberFunctionCallback(const HookCallback& method)
 {
     std::lock_guard<std::mutex> lock(AvailableCallbackSlotsMutex);
-    int imax = sizeof(AvailableCallbackSlots)/sizeof(AvailableCallbackSlots[0]);
+    constexpr int imax = std::size(AvailableCallbackSlots);
     for( m_nAllocIndex = 0; m_nAllocIndex < imax; ++m_nAllocIndex )
     {
         m_cbCallback = AvailableCallbackSlots[m_nAllocIndex]->Reserve( method);

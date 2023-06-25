@@ -91,8 +91,8 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     private:
         ServerProfileGroup profileGroup_;
-        std::vector<CServerSelectorControl*> serverSelectors_;
-        std::vector<CButton*> deleteButtons_;
+        std::vector<std::unique_ptr<CServerSelectorControl>> serverSelectors_;
+        std::vector<std::unique_ptr<CButton>> deleteButtons_;
         UploadEngineManager* uploadEngineManager_;
         CIcon icon_, iconSmall_;
         CIcon hIconSmall;

@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 Image Uploader -  free application for uploading images/files to the Internet
 
@@ -105,6 +105,7 @@ public:
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEnableDropTarget(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     DWORD Run();
@@ -147,13 +148,14 @@ public:
     CThumbsView ThumbsView;
     CEvent WaitThreadStop;
     HANDLE m_EditorProcess;
+    CFont dialogFont_;
     LRESULT OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
     bool listChanged_;
     DWORD callbackLastCallTime_;
     bool callbackLastCallType_; // selected or unselected
-    HACCEL hotkeys_;
+    CAccelerator hotkeys_;
     BOOL PreTranslateMessage(MSG* pMsg) override;
 };
 

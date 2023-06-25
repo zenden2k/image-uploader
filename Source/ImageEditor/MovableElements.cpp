@@ -725,7 +725,6 @@ BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int start
 
 BlurringRectangle::~BlurringRectangle()
 {
-    ImageUtils::BlurCleanup();
 }
 
 void BlurringRectangle::setBlurRadius(float radius)

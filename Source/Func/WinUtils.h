@@ -110,6 +110,7 @@ namespace WinUtils {
     bool CheckFileName(const CString& fileName);
     HRESULT IsElevated(/*__out_opt */ BOOL * pbElevated);
     CString TimestampToString(time_t t);
+    BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg);
 //#endif
 };
 

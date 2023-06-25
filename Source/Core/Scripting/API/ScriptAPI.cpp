@@ -73,12 +73,10 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
     va_list vl;
     va_start(vl, s);
     int len = /*1024; /*/ _vscprintf(s, vl) + 1;
-    char* buffer = new char[len + 1];
-    vsnprintf(buffer, len, s, vl);
+    auto buffer = std::make_unique<char[]>(len + 1);
+    vsnprintf(buffer.get(), len, s, vl);
     va_end(vl);
-    // std::wstring text =  Utf8ToWstring(buffer);
-    squirrelOutput[v] += buffer;
-    delete[] buffer;
+    squirrelOutput[v] += buffer.get();
 }
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
