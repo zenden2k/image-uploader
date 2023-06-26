@@ -32,12 +32,8 @@ source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEA
 
 add_library(iucapture STATIC ${SRC_LIST} ${HEADER_LIST})
 
-if (WIN32)
-    set(LIBS_LIST base-classes::base-classes)
-endif()
-
 target_link_libraries(iucapture 
-    ${LIBS_LIST} 
+    iucore
     ${COMMON_LIBS_LIST}
 )
 
