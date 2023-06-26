@@ -501,14 +501,13 @@ void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text) {
     ti.uFlags = TTF_SUBCLASS;
     ti.hwnd = hwnd;
     ti.hinst = _Module.GetModuleInstance();
-    TCHAR* textBuffer = new TCHAR[text.GetLength() + 1];
-    lstrcpy(textBuffer, text);
-    ti.lpszText = textBuffer;
+    auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
+    lstrcpy(textBuffer.get(), text);
+    ti.lpszText = textBuffer.get();
     ti.rect = clientRect;
 
     // Associate the tooltip with the "tool" window.
     SendMessage(hwndTT, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&ti));
-    delete[] textBuffer;
 }
 
 CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)

@@ -11,29 +11,26 @@ ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList
             || ued->PluginName == "directory") {
             continue;
         }
-        ServerData* sd = new ServerData();
+        auto sd = std::make_unique<ServerData>();
         sd->ued = ued;
         if (ued->hasType(CUploadEngineData::TypeFileServer)) {
             sd->serverType = CUploadEngineData::TypeFileServer;
-            items_.push_back(sd);
+            items_.push_back(std::move(sd));
         } else if (ued->hasType(CUploadEngineData::TypeImageServer)) {
             sd->serverType = CUploadEngineData::TypeImageServer;
-            items_.push_back(sd);
+            items_.push_back(std::move(sd));
         }
 
         if (ued->hasType(CUploadEngineData::TypeUrlShorteningServer)) {
-            ServerData* sd2 = new ServerData();
+            auto sd2 = std::make_unique<ServerData>();
             sd2->ued = ued;
             sd2->serverType = CUploadEngineData::TypeUrlShorteningServer;
-            items_.push_back(sd2);
+            items_.push_back(std::move(sd2));
         }  
     }
 }
 
 ServersCheckerModel::~ServersCheckerModel() {
-    for (auto* it : items_) {
-        delete it;
-    }
 }
 
 std::string ServersCheckerModel::getItemText(int row, int column) const {
@@ -101,7 +98,7 @@ ServerData* ServersCheckerModel::getDataByIndex(size_t row) {
     if (row >= items_.size()) {
         return nullptr;
     }
-    return items_[row];
+    return items_[row].get();
 }
 
 void ServersCheckerModel::setOnRowChangedCallback(std::function<void(size_t)> callback) {

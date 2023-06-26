@@ -286,7 +286,7 @@ protected:
     bool isFirstRun_;
     WtlGuiSettings& Settings;
 
-    std::map<CString, CLogWindow*> logWindowsByFileName_;
+    std::map<CString, std::unique_ptr<CLogWindow>> logWindowsByFileName_;
     std::vector<AddImageStruct> newImages_;
     std::mutex newImagesMutex_;
     std::shared_ptr<ScreenCapture::CScreenshotRegion> lastScreenshotRegion_;

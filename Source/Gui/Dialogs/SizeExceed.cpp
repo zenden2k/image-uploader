@@ -61,7 +61,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SERVERPLACEHOLDER);
-    imageServerSelector_.reset(new CServerSelectorControl(uploadEngineManager_, true));
+    imageServerSelector_ = std::make_unique<CServerSelectorControl>(uploadEngineManager_, true);
     imageServerSelector_->setShowFilesizeLimits(true);
     imageServerSelector_->Create(m_hWnd, serverSelectorRect);
     imageServerSelector_->setTitle(fileTask_->isImage() ? TR("Server for uploading images") : TR("Server for other file types"));

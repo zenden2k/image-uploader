@@ -104,10 +104,10 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
             task->setServerProfile(serverProfile);
             task->setOnStatusChangedCallback(std::bind(&ServersChecker::onTaskStatusChanged, this, _1));
             task->addTaskFinishedCallback(std::bind(&ServersChecker::onTaskFinished, this, _1, _2));
-            UploadTaskUserData* userData = new UploadTaskUserData();
+            auto userData = std::make_unique<UploadTaskUserData>();
             userData->rowIndex = i;
-            task->setUserData(userData);
-            uploadTaskUserDatas_.push_back(std::unique_ptr<UploadTaskUserData>(userData));
+            task->setUserData(userData.get());
+            uploadTaskUserDatas_.push_back(std::move(userData));
             uploadSession_->addTask(task);
             taskCount++;
         }

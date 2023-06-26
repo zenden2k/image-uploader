@@ -7,6 +7,8 @@
 #include <vector>
 #include <functional>
 #include <mutex>
+#include <memory>
+
 #include "Core/Utils/CoreTypes.h"
 
 class CUploadEngineData;
@@ -193,7 +195,7 @@ public:
     void resetData();
 protected:
     CMyEngineList* engineList_;
-    std::vector<ServerData*> items_;
+    std::vector<std::unique_ptr<ServerData>> items_;
     std::function<void(size_t)> rowChangedCallback_;
     DISALLOW_COPY_AND_ASSIGN(ServersCheckerModel);
 };

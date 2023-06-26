@@ -334,7 +334,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     int x = itemMargin_;
     int y = itemMargin_;
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(i);
+        SIZE s = CalcItemSize(&gr, i);
         drawItem(i, &gr, x, y);
 
         if ( orientation_ == orHorizontal ) {
@@ -529,7 +529,7 @@ LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-SIZE Toolbar::CalcItemSize(int index)
+SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index)
 {
     using namespace Gdiplus;
     SIZE res={0,0};
@@ -540,11 +540,9 @@ SIZE Toolbar::CalcItemSize(int index)
     }
 
     if (showButtonText_ && item.title.GetLength()) {
-        CWindowDC dc(m_hWnd);
-        Gdiplus::Graphics gr(dc);
         PointF origin(0,0);
         RectF textBoundingBox;
-        if (  gr.MeasureString(item.title, item.title.GetLength(), font_.get(), origin, &textBoundingBox) == Ok ) {
+        if (  gr->MeasureString(item.title, item.title.GetLength(), font_.get(), origin, &textBoundingBox) == Ok ) {
             res.cx = static_cast<LONG>(textBoundingBox.Width);
             res.cy = static_cast<LONG>(textBoundingBox.Height);
         }
@@ -578,8 +576,11 @@ int Toolbar::AutoSize()
     int y = itemMargin_;
     int width = 0;
     int height = 0;
+    CClientDC dc(m_hWnd);
+    Gdiplus::Graphics gr(dc);
+
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(i);
+        SIZE s = CalcItemSize(&gr, i);
         Item& item = buttons_[i];
         Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
         item.rect.left = x;
@@ -667,7 +668,7 @@ int Toolbar::AutoSize()
 
     CRect clientRect;
     GetClientRect(&clientRect);
-    CWindowDC dc(m_hWnd);
+
     if (backBuffer_.m_hBitmap) {
         backBufferDc_.SelectBitmap(oldSelectedBm_);
         backBuffer_.DeleteObject();
@@ -681,7 +682,7 @@ int Toolbar::AutoSize()
 void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 {
     using namespace Gdiplus;
-    SIZE size = CalcItemSize(itemIndex);
+    SIZE size = CalcItemSize(gr, itemIndex);
     
     Item& item = buttons_[itemIndex];
 
@@ -763,7 +764,7 @@ void Toolbar::createHintForSliders(HWND slider, CString hint) {
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = slider;
     ti.hinst    = _Module.GetModuleInstance();
-    auto textBuffer = std::unique_ptr<TCHAR[]>(new TCHAR[hint.GetLength() + 1]);
+    auto textBuffer = std::make_unique<TCHAR[]>(hint.GetLength() + 1);
     lstrcpy(textBuffer.get(), hint);
     ti.lpszText = textBuffer.get();
     ::GetClientRect(slider, &ti.rect);

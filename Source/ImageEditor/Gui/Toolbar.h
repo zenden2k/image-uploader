@@ -64,7 +64,7 @@ public:
     };
 
     explicit Toolbar(Orientation orientation); 
-    ~Toolbar();
+    ~Toolbar() override;
     bool Create(HWND parent, bool topMost = false, bool child = false);
     int addButton(const Item& item);
     DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
@@ -141,7 +141,7 @@ public:
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    SIZE CalcItemSize(int index);
+    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index);
     int AutoSize();
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);

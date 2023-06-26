@@ -23,6 +23,7 @@
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
@@ -75,7 +76,7 @@ public:
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
         std::unique_ptr<Gdiplus::Bitmap> createSampleImage(int width, int height);
         ThumbCreatingParams params_;
-        std::map<std::string, Thumbnail*> thumb_cache_;
+        std::map<std::string, std::unique_ptr<Thumbnail>> thumb_cache_;
         bool m_CatchFormChanges;
         CColorButton ThumbBackground;
         CComboBox thumbsCombo_;

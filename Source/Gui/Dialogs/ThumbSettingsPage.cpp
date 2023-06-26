@@ -43,9 +43,6 @@ CThumbSettingsPage::CThumbSettingsPage()
 
 CThumbSettingsPage::~CThumbSettingsPage()
 {
-    for (const auto& [fst, snd] : thumb_cache_) {
-        delete snd;
-    }
 }
 
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -168,13 +165,12 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     Thumbnail *thumb = nullptr;
     const auto it = thumb_cache_.find(fileName);
     if (it != thumb_cache_.end()) {
-        thumb = it->second;
+        thumb = it->second.get();
     }
     
-    if(!thumb)
-    { 
-        thumb = new Thumbnail();
-        autoPtrThumb.reset(thumb);
+    if(!thumb) { 
+        autoPtrThumb = std::make_unique<Thumbnail>();
+        thumb = autoPtrThumb.get();
         if(!thumb->loadFromFile(fileName))
         {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Couldn't load thumbnail preset!"));
@@ -184,8 +180,9 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     CThumbEditor dlg(thumb);
     if(dlg.DoModal(m_hWnd) == IDOK)
     {
-        thumb_cache_[fileName] = thumb;
-        autoPtrThumb.release();
+        if (autoPtrThumb) {
+            thumb_cache_[fileName] = std::move(autoPtrThumb);
+        }
         
         showSelectedThumbnailPreview();
     }
@@ -213,7 +210,7 @@ std::string CThumbSettingsPage::getSelectedThumbnailName() const
     CString buf;
     int index = thumbsCombo_.GetCurSel();
     if (index < 0) {
-        return std::string();
+        return {};
     }
     thumbsCombo_.GetLBText(index, buf);
     return WCstringToUtf8(buf);
@@ -232,12 +229,13 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
     const auto it = thumb_cache_.find(fileName);
 
     if (it != thumb_cache_.end()) {
-        thumb = it->second;
+        thumb = it->second.get();
     }
     if(!thumb)
     { 
-        thumb = new Thumbnail();
-        autoPtrThumb.reset(thumb);
+        autoPtrThumb = std::make_unique<Thumbnail>();
+        thumb = autoPtrThumb.get();
+
         if(!thumb->loadFromFile(fileName))
         {
             ServiceLocator::instance()->logger()->write(ILogger::logError, _T("CThumbSettingsPage"), TR("Couldn't load thumbnail preset!"));
@@ -291,8 +289,8 @@ std::unique_ptr<Gdiplus::Bitmap> CThumbSettingsPage::createSampleImage(int width
     auto logo = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_PNG2), _T("PNG"));
 
     if (logo) {
-        int horMargin = 5;
-        int vertMargin = 5;
+        constexpr int horMargin = 5;
+        constexpr int vertMargin = 5;
         int w = static_cast<int>(logo->GetWidth());
         int h = static_cast<int>(logo->GetHeight());
         Size sz = ImageUtils::ProportionalSize(Size(w, h), Size(width - horMargin * 2, height - vertMargin *2 ));
@@ -327,7 +325,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     Thumbnail* thumb = nullptr;
     std::unique_ptr<Thumbnail> thumbPtr;
     if (thumb_cache_.count(fileName)) {
-        thumb = thumb_cache_[fileName];
+        thumb = thumb_cache_[fileName].get();
     } else {
         thumbPtr = std::make_unique<Thumbnail>();
         thumb = thumbPtr.get();
@@ -353,7 +351,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         return false;
     }
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBSCOMBO, 1, Utf8ToWCstring(newName));
-    SendDlgItemMessage(IDC_THUMBSCOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), (LPARAM)(LPCTSTR)Utf8ToWCstring(newName));
+    thumbsCombo_.SelectString(-1, U2W(newName));
     GuiTools::EnableDialogItem(m_hWnd, IDC_EDITTHUMBNAILPRESET, true);
     showSelectedThumbnailPreview();
     return true;

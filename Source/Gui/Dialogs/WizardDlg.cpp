@@ -241,9 +241,8 @@ CWizardDlg::~CWizardDlg()
         delete page;
     }
 
-    for (auto logWnd : logWindowsByFileName_) {
+    for (auto& logWnd : logWindowsByFileName_) {
         logWnd.second->DestroyWindow();
-        delete logWnd.second;
     }
     settingsChangedConnection_.disconnect();
 }
@@ -2316,12 +2315,12 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
         return;
     }
 
-    CLogWindow* wnd = new CLogWindow;
+    auto wnd = std::make_unique<CLogWindow>();
     wnd->Create(nullptr);
     wnd->setFileNameFilter(fileName);
     wnd->setLogger(logger_.get());
     wnd->TranslateUI();
-    logWindowsByFileName_[fileName] = wnd;
+    logWindowsByFileName_[fileName] = std::move(wnd);
     wnd->reloadList();
     wnd->Show();
 }

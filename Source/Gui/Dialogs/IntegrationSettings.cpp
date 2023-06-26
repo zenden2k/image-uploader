@@ -246,15 +246,13 @@ LRESULT CIntegrationSettings::OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /
 
     if(itemIndex < menuItemsListBox_.GetCount() - 1)
     {
-        TCHAR* name = new TCHAR[menuItemsListBox_.GetTextLen(itemIndex)+1];
-    
-        menuItemsListBox_.GetText(itemIndex,name);
+        CString name;
+        menuItemsListBox_.GetText(itemIndex, name);
         DWORD_PTR data = menuItemsListBox_.GetItemData(itemIndex);
         menuItemsListBox_.DeleteString(itemIndex);
         menuItemsListBox_.InsertString(itemIndex + 1,name);
         menuItemsListBox_.SetItemData(itemIndex + 1,data);
         menuItemsListBox_.SetCurSel(itemIndex+1);
-        delete[] name;
         menuItemsChanged_ = true; 
     }
     return 0;
@@ -268,7 +266,7 @@ LRESULT CIntegrationSettings::OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*w
 
     if(itemIndex > 0)
     {
-        TCHAR* name = new TCHAR[menuItemsListBox_.GetTextLen(itemIndex)+1];
+        CString name;
 
         menuItemsListBox_.GetText(itemIndex,name);
         DWORD_PTR data = menuItemsListBox_.GetItemData(itemIndex);
@@ -276,7 +274,6 @@ LRESULT CIntegrationSettings::OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*w
         menuItemsListBox_.InsertString(itemIndex - 1,name);
         menuItemsListBox_.SetItemData(itemIndex - 1,data);
         menuItemsListBox_.SetCurSel(itemIndex-1);
-        delete[] name;
         menuItemsChanged_ = true; 
     }
 
