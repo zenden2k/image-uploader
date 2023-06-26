@@ -2320,9 +2320,10 @@ void CWizardDlg::showLogWindowForFileName(CString fileName) {
     wnd->setFileNameFilter(fileName);
     wnd->setLogger(logger_.get());
     wnd->TranslateUI();
-    logWindowsByFileName_[fileName] = std::move(wnd);
+    
     wnd->reloadList();
     wnd->Show();
+    logWindowsByFileName_[fileName] = std::move(wnd);
 }
 
 LRESULT CWizardDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
