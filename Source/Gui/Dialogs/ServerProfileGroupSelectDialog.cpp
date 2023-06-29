@@ -222,7 +222,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedDelete(WORD wNotifyCode, WORD 
 }
 
 void CServerProfileGroupSelectDialog::updateScroll() {
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
     CRect dlgRect(0, 0, CHILD_DIALOG_WIDTH, CHILD_DIALOG_HEIGHT);

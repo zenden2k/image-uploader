@@ -45,7 +45,7 @@ void TextParamsWindow::setFont(LOGFONT logFont)
 {
     fontName_ = logFont.lfFaceName;
     fontComboBox_.SelectString(-1, fontName_);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     SetDlgItemInt(IDC_FONTSIZECOMBO, MulDiv(-logFont.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY)));
     TBBUTTONINFO bi;
     memset(&bi,0,sizeof(bi));
@@ -64,7 +64,7 @@ LOGFONT TextParamsWindow::getFont() const
     LOGFONT logFont;
     memset(&logFont, 0, sizeof(logFont));
     logFont.lfCharSet = DEFAULT_CHARSET;
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
 
     int fontSelectedIndex = fontComboBox_.GetCurSel();
     if ( fontSelectedIndex !=-1 ) {
@@ -100,7 +100,7 @@ LRESULT TextParamsWindow::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     fontEnumerationThread_ = std::thread(&FontEnumerator::run, enumerator);
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FONTSIZECOMBO, 19, _T("7"), _T("8"), _T("9"), _T("10"),_T("11"),_T("12"), _T("13"),
         _T("14"), _T("15"),_T("16"),_T("18"),_T("20"),_T("22"), _T("24"),  _T("26"),  _T("28"),  _T("36"), _T("48"),_T("72")
-        );
+    );
 
     RECT toolbarRect;
     HWND toolbarPlaceholder = GetDlgItem(IDC_TOOLBARPLACEHOLDER);

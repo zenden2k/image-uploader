@@ -179,7 +179,7 @@ bool ImageEditorWindow::saveDocument(ClipboardFormat clipboardFormat, bool saveA
             return false;
         }
     } else if (clipboardFormat  == ClipboardFormat::Bitmap ) {
-        CWindowDC dc(m_hWnd);
+        CClientDC dc(m_hWnd);
         ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, resultingBitmap_.get(), true);
         return true;
     } else if (clipboardFormat == ClipboardFormat::DataUri || clipboardFormat == ClipboardFormat::DataUriHtml) {
@@ -351,7 +351,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     CRect displayBounds;
     GuiTools::GetScreenBounds(displayBounds);
 
-    CWindowDC hdc(nullptr);
+    CClientDC hdc(nullptr);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     int scrollbarWidth = GetSystemMetrics(SM_CXVSCROLL);
@@ -848,7 +848,7 @@ void ImageEditorWindow::createToolbars()
     }
     int dpiX;
     {
-        CWindowDC dc(m_hWnd);
+        CClientDC dc(m_hWnd);
         dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     }
     
@@ -1052,7 +1052,7 @@ void ImageEditorWindow::OnDrawingToolChanged(DrawingToolType drawingTool)
 
 void ImageEditorWindow::OnTextEditStarted(ImageEditor::TextElement * textElement)
 {
-    auto* control = dynamic_cast<InputBoxControl*>(textElement->getInputBox());
+    auto control = std::dynamic_pointer_cast<InputBoxControl>(textElement->getInputBox());
     if (!control) {
         return;
     }

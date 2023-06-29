@@ -109,7 +109,7 @@ public:
     explicit UploadListModel(std::shared_ptr<UploadSession> session);
     ~UploadListModel();
     CString getItemText(int row, int column) const;
-    COLORREF getItemTextColor(int row, int column) const;
+    COLORREF getItemTextColor(size_t row, int column) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     UploadListItem* getDataByIndex(size_t row);

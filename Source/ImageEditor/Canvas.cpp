@@ -1148,8 +1148,8 @@ bool Canvas::undo() {
     return result;
 }
 
-InputBox* Canvas::getInputBox( const RECT& rect ) {
-    inputBox_ = new InputBoxControl(this);
+std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {
+    inputBox_ = std::make_shared<InputBoxControl>(this);
     RECT rc = rect;
     rc.left++;
     rc.top++;

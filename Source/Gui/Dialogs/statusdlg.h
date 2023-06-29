@@ -21,6 +21,7 @@
 #define STATUSDLG_H
 
 #pragma once
+#include <atomic>
 #include <mutex>
 #include <memory>
 #include "atlheaders.h"
@@ -39,8 +40,6 @@ class CStatusDlg :
         ~CStatusDlg();
         enum { IDD = IDD_STATUSDLG };
         enum { kUpdateTimer = 1};
-        CString m_Title, m_Text;
-        bool m_bNeedStop;
         
         BEGIN_MSG_MAP(CStatusDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -56,14 +55,16 @@ class CStatusDlg :
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void SetInfo(const CString& Title, const CString& Text);
         void SetWindowTitle(const CString& WindowTitle);
-        bool NeedStop();
+        bool NeedStop() const;
         void ProcessFinished();
         void Hide();
 protected:
+    CString m_Title, m_Text;
+    std::atomic_bool m_bNeedStop;
     CFont titleFont_;
     bool canBeStopped_;
     bool processFinished_;
-    std::mutex CriticalSection, Section2;
+    std::mutex CriticalSection;
     std::shared_ptr<BackgroundTask> task_;
     CProgressBarCtrl progressBar_;
     boost::signals2::scoped_connection taskFinishedConnection_, taskProgressConnection_;

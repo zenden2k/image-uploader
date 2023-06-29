@@ -9,8 +9,6 @@
 #include "atlheaders.h"
 #include "../InputBox.h"
 
-// CLogListBox
-
 namespace ImageEditor {
 
 class InputBoxControlCallback {

@@ -7,12 +7,10 @@
 #include "Core/Images/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-
-ImageGeneratorTask::ImageGeneratorTask(HWND wnd, std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile):
+ImageGeneratorTask::ImageGeneratorTask(std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile):
 	files_(std::move(files)),
     maxWidth_(maxWidth),
 	maxHeight_(maxHeight),
-    wnd_(wnd),
     mediaFile_(mediaFile)
 {
 
@@ -30,8 +28,8 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         onProgress(this, -1, -1, W2U(TR("Getting info about file...")));
         /*bool bMediaInfoResult = */
         MediaInfoHelper::GetMediaFileInfo(mediaFile_, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
-
-        Graphics g1(wnd_);
+        Bitmap bm(100, 100, PixelFormat32bppARGB);
+        Graphics g1(&bm);
 
         auto font = ImageUtils::StringToGdiplusFont(Settings.VideoSettings.Font);
 
@@ -42,11 +40,11 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         infoHeight = int(TextRect.Height);
     }
 #endif
-    int n = files_.size();
+    size_t n = files_.size();
 
-    onProgress(this, 0, n-1, W2U(TR("Generating image...")));
+    onProgress(this, 0, n, W2U(TR("Generating image...")));
 	
-    int ncols = min(Settings.VideoSettings.Columns, n);
+    int ncols = std::min<int>(Settings.VideoSettings.Columns, n);
     if (ncols <= 0) {
         ncols = 1;
     }
@@ -76,7 +74,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
     Color ColorText(140, 255, 255, 255);
     Color ColorStroke(120, 0, 0, 0);
 	
-    for (int i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
     {
     	if (isCanceled()) {
             return BackgroundTaskResult::Canceled;
@@ -94,7 +92,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
             float(tileheight)), font, ColorText, ColorStroke, 3, 3);
         gr.DrawRectangle(&Framepen, Rect(x /*(tilewidth-newwidth)/2*/, (int)y, (int)tilewidth, (int)tileheight));
 
-        onProgress(this, i+1, n-1, W2U(TR("Generating image...")));
+        onProgress(this, i+1, n, W2U(TR("Generating image...")));
     }
 
     if (infoHeight)

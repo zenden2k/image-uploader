@@ -59,7 +59,7 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 LRESULT CTabListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
     int iItemIndex = lpmis->itemID;

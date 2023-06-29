@@ -1,6 +1,8 @@
 #ifndef MarkerTool_h__
 #define MarkerTool_h__
 
+#include <memory>
+
 #include "3rdpart/GdiplusH.h"
 #include "../DrawingElement.h"
 #include "../MovableElement.h"
@@ -22,7 +24,7 @@ public:
 protected:
     POINT oldPoint_;
     int circleStride_;
-    uint8_t* circleData_;
+    std::unique_ptr<uint8_t[]> circleData_;
     AffectedSegments segments_;
     Gdiplus::Region affectedRegion_;
     virtual void drawLine(int x0, int y0, int x1, int y1);

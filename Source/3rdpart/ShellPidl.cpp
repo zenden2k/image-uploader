@@ -129,7 +129,7 @@ LPITEMIDLIST CShellPidl::ILCloneFirst(LPCITEMIDLIST pidl)
 LPITEMIDLIST CShellPidl::ILCloneParent(LPCITEMIDLIST pidl)
 {
     // Get the size of the parent item identifier. 
-    UINT cb = (UINT)ILGetLast(pidl) - (UINT)pidl;
+    ptrdiff_t cb = (uint8_t*)ILGetLast(pidl) - (uint8_t*)pidl;
 
     LPITEMIDLIST pidlNew = (LPITEMIDLIST)getMalloc()->Alloc(cb + sizeof(USHORT));
 
@@ -176,7 +176,7 @@ CShellPidl::CShellPidl(UINT nSpecialFolder, HWND hOwner)
     SHGetSpecialFolderLocation(hOwner, nSpecialFolder, &m_pObj);
 }
 
-CShellPidl::CShellPidl(LPCTSTR pszPath, HWND hOwner)
+CShellPidl::CShellPidl(LPCTSTR pszPath, HWND hOwner): m_pMalloc(nullptr)
 {
     m_pObj = ILFromPath(pszPath, hOwner);
 }

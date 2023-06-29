@@ -52,7 +52,7 @@ void CThumbsView::Init(bool Extended)
 {
     const int THUMBNAIL_WIDTH = 150;
     const int THUMBNAIL_HEIGHT = 120;
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
     thumbnailWidth_ = static_cast<int>(roundf(THUMBNAIL_WIDTH * dpiScaleX_));

@@ -424,9 +424,8 @@ BEGIN_MSG_MAP(CCustomTreeControlImpl)
     LRESULT OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
         RECT rc;
         GetClientRect(&rc);
-        PAINTSTRUCT ps;
-        CDC dc = BeginPaint(&ps);
-        RECT paintRect = ps.rcPaint;
+        CPaintDC dc(m_hWnd); 
+        RECT paintRect = dc.m_ps.rcPaint;
         CreateDoubleBuffer();
         HGDIOBJ oldObj = SelectObject(m_memDC, m_memBM);
 
@@ -452,7 +451,6 @@ BEGIN_MSG_MAP(CCustomTreeControlImpl)
         BitBlt(dc, 0, 0, rc.right - rc.left, rc.bottom - rc.top, m_memDC, 0, 0, SRCCOPY);
         SelectObject(m_memDC, oldObj);
         DeleteObject(rgn);
-        EndPaint(&ps);
         bHandled = true;
         return 0;
     }

@@ -61,7 +61,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     if (seeker_) {
         seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
             onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
-            });
+        });
         SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
         ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
     }

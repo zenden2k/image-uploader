@@ -49,7 +49,6 @@ struct VideoSettingsStruct {
     int GapHeight;
     int NumOfFrames;
     int JPEGQuality;
-    BOOL UseAviInfo;
     BOOL ShowMediaInfo;
     CString Font;
     COLORREF TextColor;

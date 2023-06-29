@@ -100,7 +100,6 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
 LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    std::lock_guard<std::mutex> lk(Section2);
     m_bNeedStop = true;
 
 	if (task_) {
@@ -137,11 +136,9 @@ void CStatusDlg::SetWindowTitle(const CString& WindowTitle)
     SetWindowText(WindowTitle);
 }
 
-bool CStatusDlg::NeedStop()
+bool CStatusDlg::NeedStop() const
 {
-    std::lock_guard<std::mutex> lk(Section2);
-    bool res = m_bNeedStop;
-    return res;
+    return m_bNeedStop;
 }
 
 void CStatusDlg::Hide()

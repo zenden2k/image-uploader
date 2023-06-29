@@ -26,7 +26,7 @@ public:
     bool isSrcMultiFrame() const;
 protected:
     Gdiplus::Bitmap* bm_;
-    uint8_t* data_;
+    std::unique_ptr<uint8_t[]> data_;
     bool takeOwnership_;
     bool isSrcMultiFrame_;
     void init();

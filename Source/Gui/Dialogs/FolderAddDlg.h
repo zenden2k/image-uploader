@@ -14,7 +14,7 @@ public:
     void Do(CStringList &Paths, bool ImagesOnly, bool SubDirs = false);
     DWORD Run();
 private:
-    int count;
+    size_t count;
     CStringList m_Paths;
     bool m_bSubDirs;
     bool m_bImagesOnly;

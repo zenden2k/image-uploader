@@ -20,7 +20,7 @@ void CResultsListView::Init() {
     AddColumn(TR("Status"), 1);
     AddColumn(TR("Thumbnail"), 2);
 
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
     float dpiScaleX = static_cast<float>(GetDeviceCaps(hdc, LOGPIXELSX)) / 96.0f;
     int columnWidth = static_cast<int>(170 * dpiScaleX);
     SetColumnWidth(0, columnWidth);

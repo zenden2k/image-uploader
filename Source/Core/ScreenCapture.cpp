@@ -107,18 +107,18 @@ void transferOneARGBChannelFromOneBitmapToAnother(Bitmap& source, Bitmap& dest, 
     dest.LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdDst);
     BYTE* bpSrc = static_cast<BYTE*>(bdSrc.Scan0);
     BYTE* bpDst = static_cast<BYTE*>(bdDst.Scan0);
-    bpSrc += (int)sourceChannel;
-    bpDst += (int)destChannel;
+    bpSrc += sourceChannel;
+    bpDst += destChannel;
     for ( int i = r.Height * r.Width; i > 0; i-- )
     {
         *bpDst = *bpSrc;
         if (*bpDst == 0)
         {
-            bpDst -= (int)destChannel;
+            bpDst -= destChannel;
             *bpDst = 0;
             *(bpDst + 1) = 0;
             *(bpDst + 2) = 0;
-            bpDst += (int)destChannel;
+            bpDst += destChannel;
         }
         bpSrc += 4;
         bpDst += 4;
@@ -333,7 +333,7 @@ std::unique_ptr<Gdiplus::Bitmap> ComputeOriginal(Bitmap* whiteBGImage, Bitmap* b
     unsigned char* blackBGImageRGB = ( unsigned char*)pBlackImage /*new unsigned char[bytes]*/;
     unsigned char* whiteBGImageRGB = ( unsigned char*)pWhiteImage /*new unsigned char[bytes]*/;
     unsigned char* resultImageRGB = ( unsigned char*)pResultImage /* new unsigned char[bytes]*/;
-    int offset = 0;
+    size_t offset = 0;
     int b0, g0, r0, b1, g1, r1, alphaR, alphaG, alphaB, resultR, resultG, resultB;
     for (int y = 0; y < height; y++)
     {

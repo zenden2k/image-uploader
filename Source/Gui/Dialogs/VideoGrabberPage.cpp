@@ -42,7 +42,6 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/AppParams.h"
-#include "Core/Video/VideoUtils.h"
 #include "Func/ImageGenerator.h"
 #include "Func/MyUtils.h"
 
@@ -361,8 +360,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 		items.emplace_back(fileName, buf);
 	}
 	CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
-	auto task = std::make_shared<ImageGeneratorTask>(
-		m_hWnd, items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
+	auto task = std::make_shared<ImageGeneratorTask>(items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
 	
 	task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
 		if (taskResult == BackgroundTaskResult::Success && !task->outFileName().IsEmpty()) {
@@ -468,7 +466,6 @@ void CVideoGrabberPage::OnFrameGrabbed(const std::string& timeStr, int64_t, std:
         SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, (grabbedFramesCount + 1) * 10 );
         OnAddImage(bm, Utf8ToWCstring(timeStr));
     }
-
 }
 
 void CVideoGrabberPage::OnFrameGrabbingFinished(bool success)

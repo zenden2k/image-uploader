@@ -24,7 +24,7 @@
 
 #include "resource.h"
 #include "atlheaders.h"
-#include "Gui/Controls/MyImage.h"
+
 #include "Gui/Controls/DialogIndirect.h"
 
 class FontEnumerator;

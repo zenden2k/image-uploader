@@ -41,7 +41,7 @@ void TextTool::beginDraw( int x, int y ) {
         TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
 
         if (textElement) {
-            InputBox* input = textElement->getInputBox();
+            auto input = textElement->getInputBox();
             if (input) {
                 textElement->beginEdit();
                 input->show(true);
@@ -49,7 +49,6 @@ void TextTool::beginDraw( int x, int y ) {
             }
         }
     }
-
 }
 
 void TextTool::continueDraw( int x, int y, DWORD flags ) {
@@ -76,7 +75,7 @@ void TextTool::endDraw( int x, int y ) {
     RECT inputRect = {elX+3, elY+3, elX + currentElement_->getWidth()-6, elY + currentElement_->getHeight()-6 };
 
     TextElement * textElement = dynamic_cast<TextElement*>(currentElement_);
-    InputBox * inputBox = textElement ? textElement->getInputBox(): nullptr;
+    std::shared_ptr<InputBox> inputBox = textElement ? textElement->getInputBox(): nullptr;
     if ( !inputBox ) {
         inputBox = canvas_->getInputBox( inputRect );
         textElement->setInputBox(inputBox);
@@ -104,7 +103,7 @@ ImageEditor::CursorType TextTool::getCursor(int x, int y)
 {
     CursorType ct = MoveAndResizeTool::getCursor(x,y);
     TextElement* textElement = dynamic_cast<TextElement*>(currentElement_);
-    InputBox* inputBox = textElement ? textElement->getInputBox() : nullptr;
+    auto inputBox = textElement ? textElement->getInputBox() : nullptr;
     if ( (ct == CursorType::ctDefault || ( ct == CursorType::ctMove && canvas_->getElementAtPosition(x,y)!= currentElement_)) && 
         ( !inputBox || !inputBox->isVisible() )) {
             ct = CursorType::ctEdit;

@@ -485,7 +485,6 @@ WtlGuiSettings::WtlGuiSettings() :
     VideoSettings.GapHeight = 7;
     VideoSettings.NumOfFrames = 8;
     VideoSettings.JPEGQuality = 100;
-    VideoSettings.UseAviInfo = TRUE;
     VideoSettings.ShowMediaInfo = TRUE;
     VideoSettings.TextColor = RGB(0, 0, 0);
     VideoSettings.SnapshotsFolder.Empty();

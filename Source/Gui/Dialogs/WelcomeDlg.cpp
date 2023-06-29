@@ -45,7 +45,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
     DoDataExchange(FALSE);
     using namespace std::placeholders;
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 

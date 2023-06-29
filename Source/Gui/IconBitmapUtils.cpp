@@ -38,8 +38,7 @@ IconBitmapUtils::IconBitmapUtils()
 
 IconBitmapUtils::~IconBitmapUtils()
 {
-    std::map<UINT, HBITMAP>::iterator it;
-    for (it = bitmaps.begin(); it != bitmaps.end(); ++it)
+    for (std::map<UINT, HBITMAP>::iterator it = bitmaps.begin(); it != bitmaps.end(); ++it)
     {
         ::DeleteObject(it->second);
     }
@@ -50,7 +49,7 @@ IconBitmapUtils::~IconBitmapUtils()
 
 HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
 {
-    std::map<UINT, HBITMAP>::iterator bitmap_it = bitmaps.lower_bound(uIcon);
+    auto bitmap_it = bitmaps.lower_bound(uIcon);
     if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
         return bitmap_it->second;
 

@@ -142,8 +142,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
-    CBitmap hBitmap;
-
     int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
 

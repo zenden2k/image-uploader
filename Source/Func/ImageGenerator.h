@@ -13,7 +13,7 @@ public:
 			
 		}
 	};
-	explicit ImageGeneratorTask(HWND wnd, std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile);
+	explicit ImageGeneratorTask(std::vector<FileItem> files, int maxWidth, int maxHeight, CString mediaFile);
 	
 	BackgroundTaskResult doJob() override;
 
@@ -25,7 +25,6 @@ private:
 	std::vector<FileItem> files_;
 	int maxWidth_;
 	int maxHeight_;
-	HWND wnd_;
 	CString mediaFile_;
 };
 

@@ -24,7 +24,7 @@ void CServerListView::Init() {
     AddColumn(_T("View URL"), 5);
     AddColumn(_T("Time"), 6);
 
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     //int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 

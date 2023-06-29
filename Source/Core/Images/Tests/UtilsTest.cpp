@@ -37,12 +37,12 @@ TEST_F(UtilsTest, BitmapFromMemory)
     std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
     int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(fileName));
     ASSERT_GT(fileSize, 0);
-    uint8_t* data = new uint8_t[fileSize];
+    auto data = std::make_unique<uint8_t[]>(fileSize);
     FILE *f = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb");
-    size_t bytesRead = fread(data, 1, fileSize, f);
+    size_t bytesRead = fread(data.get(), 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);
-    auto bm = BitmapFromMemory(data, fileSize);
+    auto bm = BitmapFromMemory(data.get(), fileSize);
     ASSERT_TRUE(bm != nullptr);
     EXPECT_EQ(366, bm->GetHeight());
     EXPECT_EQ(251, bm->GetWidth());
@@ -50,8 +50,6 @@ TEST_F(UtilsTest, BitmapFromMemory)
     Gdiplus::Status status = bm->GetPixel(10, 10, &color);
     EXPECT_EQ(Gdiplus::Ok, status);
     EXPECT_EQ(16777215, color.GetValue());
-
-    delete[] data;
 }
 
 TEST_F(UtilsTest, GetThumbnail) {
@@ -59,12 +57,12 @@ TEST_F(UtilsTest, GetThumbnail) {
     ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
     int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(fileName));
     ASSERT_GT(fileSize, 0);
-    uint8_t* data = new uint8_t[fileSize];
+    auto data = std::make_unique<uint8_t>(fileSize);
     FILE *f = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb");
-    size_t bytesRead = fread(data, 1, fileSize, f);
+    size_t bytesRead = fread(data.get(), 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
     fclose(f);
-    auto bm = BitmapFromMemory(data, fileSize);
+    auto bm = BitmapFromMemory(data.get(), fileSize);
     ASSERT_TRUE(bm != nullptr);
     Gdiplus::Size size;
     auto thumb = GetThumbnail(bm.get(), 120, 100, &size);
@@ -80,8 +78,6 @@ TEST_F(UtilsTest, GetThumbnail) {
 
     EXPECT_EQ(251, thumb2->GetWidth());
     EXPECT_EQ(366, thumb2->GetHeight());
-
-    delete[] data;
 
     {
         auto thumb3 = GetThumbnail(U2W(TestHelpers::resolvePath("Images/exif-rgb-thumbnail.jpg")), 150, 120, &size);

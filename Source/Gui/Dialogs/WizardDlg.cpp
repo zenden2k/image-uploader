@@ -286,7 +286,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 #endif
     SetWindowText(APPNAME);
 
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
@@ -840,7 +840,7 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     RECT rc;
     GetClientRect(&rc);
     int width=rc.right-rc.left;
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
     int height = static_cast<int>(roundf(45 * dpiScaleY_));
@@ -2135,7 +2135,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 screenshotIndex++;
             if ( CopyToClipboard )
             {
-                CWindowDC dc(m_hWnd);
+                CClientDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {

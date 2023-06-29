@@ -100,4 +100,4 @@ bool CopyImageToClipboard(Gdiplus::Bitmap* image) {
     return false;
 }
 
-};
+}

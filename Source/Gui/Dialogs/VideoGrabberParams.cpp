@@ -46,7 +46,6 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetDlgItemInt(IDC_GAPWIDTH, Settings.VideoSettings.GapWidth);
     SetDlgItemInt(IDC_GAPHEIGHT, Settings.VideoSettings.GapHeight);
     WinUtils::StringToFont(Settings.VideoSettings.Font, &m_Font);
-    SendDlgItemMessage(IDC_USEAVIINFO, BM_SETCHECK, Settings.VideoSettings.UseAviInfo);
     SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_SETCHECK, Settings.VideoSettings.ShowMediaInfo);
 
     SetWindowText(TR("Appearance options"));
@@ -100,7 +99,6 @@ bool CVideoGrabberParams::Apply()
     Settings.VideoSettings.TileWidth = GetDlgItemInt(IDC_TILEWIDTH);
     Settings.VideoSettings.GapWidth = GetDlgItemInt(IDC_GAPWIDTH);
     Settings.VideoSettings.GapHeight = GetDlgItemInt(IDC_GAPHEIGHT);
-    Settings.VideoSettings.UseAviInfo = SendDlgItemMessage(IDC_USEAVIINFO, BM_GETCHECK);
     Settings.VideoSettings.ShowMediaInfo = SendDlgItemMessage(IDC_MEDIAINFOONIMAGE, BM_GETCHECK);
     WinUtils::FontToString(&m_Font, Settings.VideoSettings.Font);
     Settings.VideoSettings.SnapshotsFolder = GuiTools::GetDlgItemText(m_hWnd, IDC_VIDEOSNAPSHOTSFOLDEREDIT);

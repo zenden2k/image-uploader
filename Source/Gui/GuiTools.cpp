@@ -357,7 +357,7 @@ void ShowDialogItem(HWND dlg, int itemId, bool show) {
 
 RECT AutoSizeStaticControl(HWND control) {
     CString text = GuiTools::GetWindowText(control);
-    CWindowDC dc(control);
+    CClientDC dc(control);
     HFONT font = reinterpret_cast<HFONT>(SendMessage(control, WM_GETFONT, 0, 0));
 
     SIZE textSize;
@@ -627,4 +627,4 @@ BOOL SetClientRect(HWND hWnd, int x, int y)
     GetWindowRect(hWnd, &rect2);
     return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }
-};
+}

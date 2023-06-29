@@ -41,7 +41,6 @@ MarkerTool::MarkerTool( Canvas* canvas ) : AbstractDrawingTool( canvas ) {
 
 MarkerTool::~MarkerTool()
 {
-    delete[] circleData_;
 }
 
 void MarkerTool::beginDraw( int x, int y ) {
@@ -184,7 +183,7 @@ void MarkerTool::highlightRegion(RECT rc)
     if (canvasBm->LockBits(& rc2, ImageLockModeRead|ImageLockModeWrite, PixelFormat32bppARGB, & canvasData) == Ok) {
         UINT stride;
         uint8_t * source= (uint8_t *) canvasData.Scan0;
-        uint8_t * brSource= (uint8_t *) circleData_;
+        uint8_t * brSource= (uint8_t *) circleData_.get();
         if (canvasData.Stride > 0) {
             stride = canvasData.Stride;
         } else {
@@ -259,35 +258,32 @@ void MarkerTool::setPenSize(int size)
 void MarkerTool::createCircle()
 {
     using namespace Gdiplus;
-    delete[] circleData_;
     circleData_ = 0;
     circleStride_ = 0;
-    Bitmap * circle = new Bitmap(penSize_, penSize_, PixelFormat32bppARGB);
-    Graphics gr2(circle);
+    Bitmap  circle(penSize_, penSize_, PixelFormat32bppARGB);
+    Graphics gr2(&circle);
     SolidBrush br(Color(255,255,0));
     if (penSize_ == 1) {
         gr2.FillRectangle(&br, 0, 0, 1, 1);
     } else {
-        gr2.FillEllipse(&br, 0, 0, circle->GetWidth(), circle->GetHeight());
+        gr2.FillEllipse(&br, 0, 0, circle.GetWidth(), circle.GetHeight());
     }
    
     BitmapData circleData;
 
-    Rect lc(0,0,circle->GetWidth(),circle->GetHeight());
-    if ( circle->LockBits(&lc, ImageLockModeRead, PixelFormat32bppARGB, & circleData) == Ok)
+    Rect lc(0,0,circle.GetWidth(),circle.GetHeight());
+    if ( circle.LockBits(&lc, ImageLockModeRead, PixelFormat32bppARGB, & circleData) == Ok)
     {
         if (circleData.Stride > 0) { 
             circleStride_ = circleData.Stride;
         } else {
             circleStride_ = - circleData.Stride;
         }
-        size_t dataSize = circleStride_ * circle->GetHeight();
-        circleData_ = new uint8_t[dataSize];
-        memcpy(circleData_, circleData.Scan0, dataSize);
-        circle->UnlockBits(&circleData);
+        size_t dataSize = circleStride_ * circle.GetHeight();
+        circleData_ = std::make_unique<uint8_t[]>(dataSize);
+        memcpy(circleData_.get(), circleData.Scan0, dataSize);
+        circle.UnlockBits(&circleData);
     }
-    
-    delete circle;
 }
 
 }

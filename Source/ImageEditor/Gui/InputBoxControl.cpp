@@ -23,7 +23,6 @@
 #include <sstream>
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
-#include "Core/Logging.h"
 #include "ImageEditor/Canvas.h"
 #include "Core/i18n/Translator.h"
 
@@ -34,7 +33,6 @@ InputBoxControl::InputBoxControl(Canvas* canvas) : canvas_(canvas) {
 }
 
 InputBoxControl::~InputBoxControl() {
-    //Detach();
 }
 
 LRESULT InputBoxControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)

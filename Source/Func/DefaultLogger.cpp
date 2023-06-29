@@ -20,7 +20,7 @@ void DefaultLogger::write(LogMsgType MsgType, const std::string& Sender, const s
 
     entry.Time  = str(boost::wformat(L"%02d:%02d:%02d")% static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
 
-    int itemIndex;
+    size_t itemIndex;
     {
         std::lock_guard<std::mutex> lk(entriesMutex_);
         entries_.push_back(entry);
@@ -44,7 +44,7 @@ void DefaultLogger::write(LogMsgType MsgType, const wchar_t* Sender, const wchar
 
     entry.Time = str(boost::wformat(L"%02d:%02d:%02d") % static_cast<int>(st.wHour) % static_cast<int>(st.wMinute) % static_cast<int>(st.wSecond));
 
-    int itemIndex;
+    size_t itemIndex;
     {
         std::lock_guard<std::mutex> lk(entriesMutex_);
         entries_.push_back(entry);
@@ -60,8 +60,8 @@ void DefaultLogger::addListener(Listener* listener) {
     listeners_.push_back(listener);
 }
 
-void  DefaultLogger::removeListener(Listener* listener) {
-    for (int i = static_cast<int>(listeners_.size()) - 1; i >= 0; i--) {
+void DefaultLogger::removeListener(const Listener* listener) {
+    for (size_t i = 0; i < listeners_.size(); i++) {
         if (listeners_[i] == listener) {
             listeners_[i] = listeners_[listeners_.size() - 1];
             listeners_.pop_back();
@@ -73,7 +73,7 @@ size_t DefaultLogger::entryCount() const {
     return entries_.size();
 }
 
-void DefaultLogger::getEntry(int itemIndex, LogEntry* out) {
+void DefaultLogger::getEntry(size_t itemIndex, LogEntry* out) {
     std::lock_guard<std::mutex> lk(entriesMutex_);
     *out = entries_[itemIndex];
 }

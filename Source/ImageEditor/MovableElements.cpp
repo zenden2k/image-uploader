@@ -162,7 +162,8 @@ ImageEditor::ElementType Line::getType() const
     return ElementType::etLine;
 }
 
-TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY, bool filled) :MovableElement(canvas) {
+TextElement::TextElement(Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX,int endY, bool filled):
+                            MovableElement(canvas) {
     startPoint_.x = startX;
     startPoint_.y = startY;
     endPoint_.x   = endX;
@@ -176,7 +177,6 @@ TextElement::TextElement( Canvas* canvas, InputBox* inputBox, int startX, int st
 
 TextElement::~TextElement()
 {
-    delete inputBox_;
 }
 
 void TextElement::render(Painter* gr) {
@@ -218,7 +218,7 @@ void TextElement::resize(int width, int height)
     }
 }
 
-void TextElement::setInputBox(InputBox* inputBox)
+void TextElement::setInputBox(std::shared_ptr<InputBox> inputBox)
 {
     inputBox_ = inputBox;
     setTextColor();
@@ -243,7 +243,7 @@ LOGFONT TextElement::getFont() const
     return font_;
 }
 
-InputBox* TextElement::getInputBox() const
+std::shared_ptr<InputBox> TextElement::getInputBox() const
 {
     return inputBox_;
 }

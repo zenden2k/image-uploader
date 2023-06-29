@@ -141,7 +141,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         ::SetWindowLong(codeEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
     }
 
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
     float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
 

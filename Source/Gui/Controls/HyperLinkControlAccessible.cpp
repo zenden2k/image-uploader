@@ -58,7 +58,7 @@ STDMETHODIMP CHyperLinkControlAccessible::get_accParent(IDispatch** ppdispParent
 STDMETHODIMP CHyperLinkControlAccessible::get_accChildCount(long* pcountChildren) {
     HRESULT hr = CheckAlive();
     if (SUCCEEDED(hr)) {
-        *pcountChildren = control_->ItemCount();
+        *pcountChildren = static_cast<long>(control_->ItemCount());
     }
     return hr;
 }

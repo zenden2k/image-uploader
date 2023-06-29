@@ -30,10 +30,10 @@
 #include "Core/Settings/WtlGuiSettings.h"
 
 // CShortenUrlDlg
-CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager, const CString &initialBuffer)
+CShortenUrlDlg::CShortenUrlDlg(CWizardDlg *wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager, const CString &initialBuffer):
+                                m_InitialBuffer(initialBuffer)
 {
     m_WizardDlg = wizardDlg;
-    m_InitialBuffer = initialBuffer;
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
     uploadManager_ = uploadManager;
     uploadEngineManager_ = uploadEngineManager;

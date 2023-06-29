@@ -117,7 +117,7 @@ CString CMyEngineList::getIconNameForServer(const std::string& name) {
     if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
         iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName).MakeLower() +_T(".ico");
         if(!WinUtils::FileExists(iconFileName)) {
-            return CString();
+            return {};
         }
     }
     return U2W( IuCoreUtils::ExtractFileName(W2U(iconFileName)) );

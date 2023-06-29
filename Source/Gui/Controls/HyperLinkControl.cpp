@@ -403,7 +403,7 @@ void CHyperLinkControl::CreateDoubleBuffer() {
     }
     CRect rcClient;
     GetClientRect(rcClient);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
 
     dcMem_.CreateCompatibleDC(dc);
 
@@ -536,7 +536,7 @@ void CHyperLinkControl::SelectItem(int Index)
             temp.right= ClientRect.right;
             temp.InflateRect(3,6);
         }
-        if(*Items[selectedItemIndex_].szTip)
+        if(!Items[selectedItemIndex_].szTip.IsEmpty())
             //temp.left+=40;
             InvalidateRect(&temp,false);
         else InvalidateRect(&Items[selectedItemIndex_].ItemRect,false);
@@ -552,7 +552,7 @@ void CHyperLinkControl::SelectItem(int Index)
             temp.right= ClientRect.right;
             temp.InflateRect(3,6);
         }
-        if(*Items[Index].szTip)
+        if(!Items[Index].szTip.IsEmpty())
             //temp.left+=40;
             InvalidateRect(&temp,false);
         else InvalidateRect(&Items[Index].ItemRect,false);
@@ -578,7 +578,7 @@ void CHyperLinkControl::HoverItem(int Index)
             temp.right = ClientRect.right;
             temp.InflateRect(3, 6);
         }
-        if (*Items[hoverItemIndex_].szTip)
+        if (!Items[hoverItemIndex_].szTip.IsEmpty())
             InvalidateRect(&temp, false);
         else InvalidateRect(&Items[hoverItemIndex_].ItemRect, false);
     }
@@ -594,7 +594,7 @@ void CHyperLinkControl::HoverItem(int Index)
             temp.right = ClientRect.right;
             temp.InflateRect(3, 6);
         }
-        if (*item.szTip)
+        if (!item.szTip.IsEmpty())
             InvalidateRect(&temp, false);
         else InvalidateRect(&item.ItemRect, false);
     }
@@ -616,7 +616,7 @@ int CHyperLinkControl::selectedItemIndex() const {
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)
 {
     bool SubItem = false;
-    if (hoverItemIndex_ != -1 && *Items[hoverItemIndex_].szTip == 0) {
+    if (hoverItemIndex_ != -1 && Items[hoverItemIndex_].szTip.IsEmpty()) {
         SubItem = true;
     }
     CursorHand = (hoverItemIndex_ != -1) && (m_bHyperLinks || SubItem);

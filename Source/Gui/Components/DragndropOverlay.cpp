@@ -20,7 +20,7 @@ LRESULT  CDragndropOverlay::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     CRect clientRect;
     GetClientRect(&clientRect);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     backBufferDc_.CreateCompatibleDC(dc);
     backBufferBm_.CreateCompatibleBitmap(dc, clientRect.Width(), clientRect.Height());
     oldBm_ = backBufferDc_.SelectBitmap(backBufferBm_);

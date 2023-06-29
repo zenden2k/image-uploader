@@ -189,7 +189,7 @@ LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD 
                 if( ! (p->shi502_type & STYPE_SPECIAL) ) {
                     CString path = p->shi502_path+CString(L"\\");
                     if (directory ==  p->shi502_path) {
-                            sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\");
+                            sharedFolders_.emplace_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\");
                     } else if ( directory.Find(path) == 0  ) {
                         sharedFolders_.push_back(L"\\\\" + computerName_ + "\\" + p->shi502_netname+"\\" + directory.Mid(path.GetLength())+CString(L"\\"));
                     }

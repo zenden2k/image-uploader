@@ -118,7 +118,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         height -=  2;
     }
 
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
 
     BackBufferDc = ::CreateCompatibleDC(dc);
     BackBufferBm = ::CreateCompatibleBitmap(dc, BackBufferWidth, BackBufferHeight);

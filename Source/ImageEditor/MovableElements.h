@@ -24,15 +24,15 @@ class Line: public MovableElement {
 
 class TextElement: public MovableElement{
     public:
-        TextElement( Canvas* canvas, InputBox* inputBox, int startX, int startY, int endX,int endY, bool filled = false);
+        TextElement( Canvas* canvas, std::shared_ptr<InputBox> inputBox, int startX, int startY, int endX,int endY, bool filled = false);
         ~TextElement();
         void render(Painter* gr) override;
         void getAffectedSegments(AffectedSegments* segments) override;
         void resize(int width, int height) override;
-        void setInputBox(InputBox* inputBox);
+        void setInputBox(std::shared_ptr<InputBox> inputBox);
         void setFont(LOGFONT font,  DWORD changeMask);
         LOGFONT getFont() const;
-        InputBox* getInputBox() const;
+        std::shared_ptr<InputBox> getInputBox() const;
         ElementType getType() const override;
         void setSelected(bool selected) override;
         void beginEdit();
@@ -43,7 +43,7 @@ class TextElement: public MovableElement{
         void setFillBackground(bool fill);
         bool getFillBackground() const;
 protected:
-    InputBox *inputBox_;
+    std::shared_ptr<InputBox> inputBox_;
     LOGFONT font_;
     bool isEditing_;
     bool firstEdit_;

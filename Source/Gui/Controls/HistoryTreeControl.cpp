@@ -842,7 +842,7 @@ BOOL CHistoryTreeControl::SubclassWindow(HWND hWnd) {
 }
 
 void CHistoryTreeControl::Init() {
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 

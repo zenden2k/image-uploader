@@ -29,13 +29,13 @@ struct HyperLinkControlItem
     }
     CString szTitle;
     CString szTip;
-    HICON hIcon;
+    HICON hIcon = nullptr;
     int iconWidth = 0;
     int iconHeight = 0;
     int idCommand = 0;
-    RECT ItemRect;
-    bool Hover;
-    bool Visible;
+    RECT ItemRect{};
+    bool Hover = false;
+    bool Visible = true;
 };
 
 // CHyperLinkControl

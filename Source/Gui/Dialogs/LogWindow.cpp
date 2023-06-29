@@ -220,7 +220,7 @@ LRESULT CLogWindow::OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD 
     return 0;
 }
 
-void CLogWindow::onItemAdded(int index, const DefaultLogger::LogEntry& entry) {
+void CLogWindow::onItemAdded(size_t index, const DefaultLogger::LogEntry& entry) {
     WriteLog(entry);
 }
 

@@ -18,8 +18,8 @@ class Document {
     public:
 
         struct HistoryItem {
-            unsigned char *data;
-            unsigned int size;
+            unsigned char *data = nullptr;
+            unsigned int size = 0;
             AffectedSegments segments;
             bool full = false;
             int width = 0;

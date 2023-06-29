@@ -29,7 +29,7 @@ LRESULT CWebViewWindow::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     HWND hWnd = m_hWnd;
     ::CoInitialize(NULL);
-    HRESULT hr = -1;
+    HRESULT hr = E_FAIL;
     RECT rc;
     GetWindowRect(&rc);
     bool created = false;

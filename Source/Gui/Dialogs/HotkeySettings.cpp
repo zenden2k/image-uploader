@@ -45,7 +45,7 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_HotkeyList.AddColumn(TR("Action"),0);
     m_HotkeyList.AddColumn(TR("Local"),1);
     m_HotkeyList.AddColumn(TR("Global"),2);
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
     float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     m_HotkeyList.SetColumnWidth(0, static_cast<int>(175 * dpiScaleX));

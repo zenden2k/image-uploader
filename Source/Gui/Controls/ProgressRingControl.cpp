@@ -118,7 +118,7 @@ BOOL CProgressRingControl::SubclassWindow(HWND hWnd) {
 void CProgressRingControl::initControl() {
     CRect clientRect;
     GetClientRect(&clientRect);
-    CWindowDC dc(m_hWnd);
+    CClientDC dc(m_hWnd);
     backBufferWidth_ = clientRect.Width();
     backBufferHeight_ = clientRect.Height();
 

@@ -45,10 +45,11 @@ const TCHAR CImageReuploaderDlg::LogTitle[] = _T("Image Reuploader");
 
 // CImageReuploaderDlg
 CImageReuploaderDlg::CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
-    UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory())
+    UploadEngineManager *uploadEngineManager, const CString &initialBuffer) :
+        m_FileDownloader(std::make_shared<NetworkClientFactory>(), AppParams::instance()->tempDirectory()),
+        m_InitialBuffer(initialBuffer)
 {
     m_WizardDlg = wizardDlg;
-    m_InitialBuffer = initialBuffer;
     m_EngineList = engineList;
     uploadManager_ = uploadManager;
     htmlClipboardFormatId = RegisterClipboardFormat(_T("HTML Format"));
@@ -453,11 +454,13 @@ bool CImageReuploaderDlg::BeginDownloading()
             }
 
             result += absoluteUrl + "\r\n";
-            DownloadItemData * dit = new DownloadItemData();
-            downloadItems_.push_back(std::unique_ptr<DownloadItemData>(dit));
+            auto dit = std::make_unique<DownloadItemData>();
             dit->originalUrl = url;
             dit->sourceIndex = i;
-            m_FileDownloader.addFile( absoluteUrl, reinterpret_cast<void*>(dit), WCstringToUtf8(sourceUrl) );
+            void* id = dit.get();
+            downloadItems_.push_back(std::move(dit));
+           
+            m_FileDownloader.addFile( absoluteUrl, id, WCstringToUtf8(sourceUrl) );
             m_nFilesCount ++;    
 
         }

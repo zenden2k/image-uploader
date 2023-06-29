@@ -168,16 +168,6 @@ void CResultsWindow::InitUpload()
     ResultsPanel->InitUpload();
 }
 
-void CResultsWindow::Lock()
-{
-    ResultsPanel->outputMutex().lock();
-}
-
-void CResultsWindow::Unlock()
-{
-    ResultsPanel->outputMutex().unlock();
-}
-
 std::mutex& CResultsWindow::outputMutex() {
     return ResultsPanel->outputMutex();
 }

@@ -52,8 +52,6 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void AddServer(const ServerProfile& server);
         void InitUpload();
         void FinishUpload();
-        void Lock();
-        void Unlock();
         void EnableMediaInfo(bool Enable);
         DLGTEMPLATE* GetTemplate();
         std::mutex& outputMutex();

@@ -129,9 +129,9 @@ public:
 
     void resize(int w, int h) {
         if ( webViewWindow_.m_hWnd) {
-            CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
-            float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-            float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+            CClientDC dc(webViewWindow_.m_hWnd);
+            float dpiScaleX_ = GetDeviceCaps(dc, LOGPIXELSX) / 96.0f;
+            float dpiScaleY_ = GetDeviceCaps(dc, LOGPIXELSY) / 96.0f;
             webViewWindow_.ResizeClient(static_cast<int>(w * dpiScaleX_), static_cast<int>(h * dpiScaleY_));
 
         } else {
@@ -218,9 +218,9 @@ protected:
 
         //CRect r(0,0, initialWidth_, initialWidth_);
         webViewWindow_.Create(parent,CWindow::rcDefault,initialTitle_, WS_POPUP | WS_OVERLAPPEDWINDOW    );
-        CDC hdc = ::GetDC(webViewWindow_.m_hWnd);
-        float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-        float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+        CClientDC dc(webViewWindow_.m_hWnd);
+        float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
+        float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
         if ( initialWidth_ && initialHeight_ ) {
             webViewWindow_.ResizeClient(static_cast<int>(initialWidth_ * dpiScaleX_), static_cast<int>(initialHeight_ * dpiScaleY_));

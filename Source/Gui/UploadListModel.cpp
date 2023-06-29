@@ -50,8 +50,8 @@ CString UploadListModel::getItemText(int row, int column) const {
     return {};
 }
 
-COLORREF UploadListModel::getItemTextColor(int row, int column) const {
-    if (column == 1 && row >=0 && row < items_.size()) {
+COLORREF UploadListModel::getItemTextColor(size_t row, int column) const {
+    if (column == 1 && row < items_.size()) {
         const UploadListItem& serverData = *items_[row];
         return serverData.color();
     } else {

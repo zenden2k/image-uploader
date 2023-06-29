@@ -1,6 +1,7 @@
 #ifndef IMAGEEDITOR_CANVAS_H
 #define IMAGEEDITOR_CANVAS_H
 
+#include <memory>
 #include <vector>
 #include <stack>
 #include <utility>
@@ -127,7 +128,7 @@ class Canvas {
         int getHeigth() const;
         CursorType getCursor() const;
         bool undo();
-        InputBox* getInputBox( const RECT& rect ); 
+        std::shared_ptr<InputBox> getInputBox( const RECT& rect ); 
         TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
         int unselectAllElements();
@@ -243,7 +244,7 @@ private:
         POINT scrollOffset_;
         
         HWND parentWindow_;
-        InputBoxControl* inputBox_;
+        std::shared_ptr<InputBoxControl> inputBox_;
         Gdiplus::Rect lastAppliedCrop_;
         bool cropOnExport_;
         float dpiX_;

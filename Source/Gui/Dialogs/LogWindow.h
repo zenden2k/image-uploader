@@ -93,7 +93,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         void WriteLog(const DefaultLogger::LogEntry& entry);
 
-        void onItemAdded(int index, const DefaultLogger::LogEntry&) override;
+        void onItemAdded(size_t index, const DefaultLogger::LogEntry&) override;
         void reloadList();
 protected:
     void WriteLogImpl(const DefaultLogger::LogEntry& entry);

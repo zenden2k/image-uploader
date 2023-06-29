@@ -54,7 +54,7 @@ LRESULT CImageEditorView::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 LRESULT CImageEditorView::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     backgroundBrush_.CreateSolidBrush(GetSysColor(COLOR_APPWORKSPACE));
-    CWindowDC hdc(m_hWnd);
+    CClientDC hdc(m_hWnd);
     dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
     dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
     return 0;

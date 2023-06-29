@@ -23,7 +23,7 @@ class CFolderList
         */
         int GetCount() { return m_folderItems.size();}
         /*! @cond PRIVATE */
-        CFolderItem& operator [] (int index) {  return m_folderItems[index]; }
+        CFolderItem& operator [] (size_t index) {  return m_folderItems[index]; }
         void Clear() { m_folderItems.clear(); }
         /*! @endcond */
         void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);

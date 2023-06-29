@@ -23,7 +23,6 @@ GdiPlusImage::GdiPlusImage(Gdiplus::Bitmap* bm, bool takeOwnership)
 
 void GdiPlusImage::init()
 {
-    data_ = nullptr;
     width_ = 0;
     height_ = 0;
     takeOwnership_ = true;
@@ -31,7 +30,6 @@ void GdiPlusImage::init()
 }
 
 GdiPlusImage::~GdiPlusImage() {
-    delete[] data_;
     if (takeOwnership_) {
         delete bm_;
     }
@@ -58,7 +56,7 @@ bool GdiPlusImage::saveToFile(const std::string& fileName) const
     mimeTypes["png"] = "image/png";
     std::string ext = IuStringUtils::toLower(IuCoreUtils::ExtractFileExt(fileName));
 
-    std::map<std::string, std::string>::iterator it  = mimeTypes.find(ext);
+    auto it  = mimeTypes.find(ext);
     if ( it == mimeTypes.end() ) {
         LOG(ERROR) << "Format "<<ext<<" is not supported";
         return false;
@@ -107,11 +105,11 @@ bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t
         size_t newLineSize = width * 3;
         newLineSize = ((newLineSize + 3) & ~3);
         size_t newDataSize = /*dataSize*2/**2*//*+100000**/newLineSize * height;
-        data_ = new uint8_t[newDataSize];
+        data_ = std::make_unique<uint8_t[]>(newDataSize);
         for ( int y=height-1; y>=0; y--) {
-            memcpy(data_+(height-y-1)*newLineSize, data+y*lineSizeInBytes, width * 3 );
+            memcpy(data_.get()+(height-y-1)*newLineSize, data+y*lineSizeInBytes, width * 3 );
         }
-        bool res =  loadFromRgb(/*width*/width, height,data_,  newDataSize);
+        bool res =  loadFromRgb(/*width*/width, height,data_.get(),  newDataSize);
         return res;
 
     } else if ( dt == AbstractImage::dfBitmapRgb ) {
