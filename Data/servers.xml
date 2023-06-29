@@ -21,7 +21,7 @@
                %appdata%\Image Uploader\Servers\    (если вы использовали инсталлятор)
            Создайте там XML файл с такой же структурой, как у текущего файла.
     -->
-	<Server Name="ImageBan.ru" Authorize="1" Plugin="imageban" NeedPassword="0">
+	<Server Name="ImageBan.ru" Authorize="2" Plugin="imageban">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
