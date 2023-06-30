@@ -57,7 +57,7 @@ TEST_F(UtilsTest, GetThumbnail) {
     ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
     int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(fileName));
     ASSERT_GT(fileSize, 0);
-    auto data = std::make_unique<uint8_t>(fileSize);
+    auto data = std::make_unique<uint8_t[]>(fileSize);
     FILE *f = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb");
     size_t bytesRead = fread(data.get(), 1, fileSize, f);
     ASSERT_EQ(fileSize, bytesRead);
