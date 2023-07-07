@@ -371,15 +371,14 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 CString Filename = /*GetFileName(ItemID);*/filename;
                 CString Buffer;
                 //int f = MyGetFileSize(GetFileName(ItemID));
-                WCHAR buf2[25];
                 std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
-                lstrcpy(buf2, Utf8ToWCstring(fileSizeStr));
+                CString buf2 = Utf8ToWCstring(fileSizeStr);
 
                 if (srcImageFormat.IsEmpty()) {
                     
                 }
                 if (IuCommonFunctions::IsImage(filename) && bm) {
-                    Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, (LPCTSTR)buf2);
+                    Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, buf2.GetString());
                 }
                 else {
                     Buffer = buf2;

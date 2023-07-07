@@ -1,5 +1,7 @@
 #include "ResultsListView.h"
 
+#include <strsafe.h>
+
 #include "Gui/UploadListModel.h"
 #include "Core/i18n/Translator.h"
 
@@ -47,7 +49,7 @@ LRESULT CResultsListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled
 
     if (pItem->mask & LVIF_TEXT) {
         CString str = model_->getItemText(n, pItem->iSubItem);
-        lstrcpy(pItem->pszText, str);
+        StringCchCopy(pItem->pszText, pItem->cchTextMax, str);
     }
 
     return 0;

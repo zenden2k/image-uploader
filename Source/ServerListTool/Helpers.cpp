@@ -13,8 +13,8 @@ CString MyBytesToString(int64_t nBytes)
 
 CString GetFileInfo(CString fileName, MyFileInfo* mfi)
 {
-    int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(W2U(fileName)));
-    CString result = MyBytesToString(fileSize) + _T("(") + WinUtils::IntToStr(fileSize) + _T(" bytes);");
+    int64_t fileSize = IuCoreUtils::GetFileSize(W2U(fileName));
+    CString result = MyBytesToString(fileSize) + _T("(") + std::to_wstring(fileSize).c_str() + _T(" bytes);");
     CString mimeType = IuCoreUtils::GetFileMimeType(W2U(fileName)).c_str();
     result += mimeType + _T(";");
     if (mfi) mfi->mimeType = mimeType;

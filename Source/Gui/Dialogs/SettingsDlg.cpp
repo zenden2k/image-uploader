@@ -32,12 +32,11 @@
 #include "Gui/GuiTools.h"
 
 // CSettingsDlg
-CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
+CSettingsDlg::CSettingsDlg(SettingsPage Page, UploadEngineManager* uploadEngineManager):
+    PageToShow(Page), uploadEngineManager_(uploadEngineManager)
 {
-    CurPage = -1;
-    PageToShow = Page;
+    CurPage = spNone;
     memset(&Pages, 0, sizeof(Pages));
-    uploadEngineManager_ = uploadEngineManager;
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
 }
 
@@ -45,7 +44,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 {
     // center the dialog on the screen
     CenterWindow();
-    saveStatusLabel_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
+    saveStatusLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
 
     HWND parent = GetParent();
     if(!parent || !::IsWindowVisible(parent))
@@ -87,12 +86,12 @@ LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
     for (int i = 0; i < SettingsPageCount; i++) {
         try {
             if (Pages[i] && !Pages[i]->Apply()) {
-                ShowPage(i);
+                ShowPage(static_cast<SettingsPage>(i));
                 return 0;
             }
         } catch (ValidationException& ex) {
-            ShowPage(i);
-            if (ex.errors_.size()) {
+            ShowPage(static_cast<SettingsPage>(i));
+            if (!ex.errors_.empty()) {
                 LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
                     ::SetFocus(ex.errors_[0].Control);
@@ -132,16 +131,7 @@ LRESULT CSettingsDlg::OnTimer(UINT, WPARAM, LPARAM, BOOL&)
     return 0;
 }
 
-void CSettingsDlg::CloseDialog(int nVal)
-{
-    if(CurPage >= 0)
-        Pages[CurPage]->OnHide();
-    
-    DestroyWindow();
-    ::PostQuitMessage(nVal);
-}
-
-bool CSettingsDlg::ShowPage(int idPage)
+bool CSettingsDlg::ShowPage(SettingsPage idPage)
 {
     if(idPage< 0 || idPage> SettingsPageCount-1) return false;
 
@@ -153,7 +143,9 @@ bool CSettingsDlg::ShowPage(int idPage)
     if(Pages[idPage]) 
         ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
 
-    if(CurPage != -1 && Pages[CurPage]) ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
+    if (CurPage != spNone && Pages[CurPage]) {
+        ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
+    }
     CurPage = idPage;
 
     m_SettingsPagesListBox.SetCurSel(CurPage);
@@ -165,11 +157,11 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     for (int i = 0; i < SettingsPageCount; i++) {
         try {
             if (Pages[i] && !Pages[i]->Apply()) {
-                ShowPage(i);
+                ShowPage(static_cast<SettingsPage>(i));
                 return 0;
             }
         } catch (ValidationException& ex) {
-            ShowPage(i);
+            ShowPage(static_cast<SettingsPage>(i));
             if (!ex.errors_.empty()) {
                 LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
@@ -195,7 +187,7 @@ template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND 
     return dlg;
 }
 
-bool CSettingsDlg::CreatePage(int pageId)
+bool CSettingsDlg::CreatePage(SettingsPage pageId)
 {
     RECT rc = { 150,3,636,400 };
     auto createObject = [&]() -> std::unique_ptr<CSettingsPage> {
@@ -241,14 +233,14 @@ bool CSettingsDlg::CreatePage(int pageId)
 LRESULT CSettingsDlg::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-    ShowPage(Index);
+    ShowPage(static_cast<SettingsPage>(Index));
     return 0;
 }
 
 LRESULT CSettingsDlg::OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     int iPageIndex = m_SettingsPagesListBox.GetCurSel();
-    ShowPage(iPageIndex);
+    ShowPage(static_cast<SettingsPage>(iPageIndex));
 
     return 0;
 }

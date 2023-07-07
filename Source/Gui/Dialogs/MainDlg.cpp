@@ -84,7 +84,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     });
     UpdateStatusLabel();
 
-    ACCEL accels[]{
+    ACCEL accels[] = {
         { FCONTROL | FSHIFT | FVIRTKEY, VkKeyScan('c'), MENUITEM_COPYFILEPATH},
         { FALT | FVIRTKEY, VK_RETURN, MENUITEM_PROPERTIES},
     };

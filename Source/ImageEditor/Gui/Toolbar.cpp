@@ -1,5 +1,7 @@
 #include "Toolbar.h"
 
+#include <strsafe.h>
+
 #include "Core/Logging.h"
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
@@ -765,7 +767,7 @@ void Toolbar::createHintForSliders(HWND slider, CString hint) {
     ti.hwnd     = slider;
     ti.hinst    = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(hint.GetLength() + 1);
-    lstrcpy(textBuffer.get(), hint);
+    StringCchCopy(textBuffer.get(), hint.GetLength() + 1, hint);
     ti.lpszText = textBuffer.get();
     ::GetClientRect(slider, &ti.rect);
 
@@ -787,7 +789,7 @@ void Toolbar::CreateToolTipForItem(size_t index)
     ti.hinst    = _Module.GetModuleInstance();
     //CString textBuffer = item.hint;
     auto textBuffer = std::make_unique<TCHAR[]>(item.hint.GetLength() + 1);
-    lstrcpy(textBuffer.get(), item.hint);
+    StringCchCopy(textBuffer.get(), item.hint.GetLength() + 1, item.hint);
     ti.lpszText = textBuffer.get();
     ti.rect  = item.rect;
     ti.uId = static_cast<UINT_PTR>(index);

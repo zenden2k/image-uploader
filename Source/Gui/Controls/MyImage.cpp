@@ -49,34 +49,23 @@ CMyImage::~CMyImage()
 
 LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    PAINTSTRUCT ps;
-    HDC hdc;
+    CPaintDC dc(m_hWnd);
+
     bHandled = true;
-    if (!wParam) {
-        BeginPaint(&ps);
-        hdc = ps.hdc;
-    } else {
-        hdc = BeginPaint(&ps);
-    }
 
     if (imageLoaded_)
     {
         RECT rc;
         GetClientRect(&rc);
-        SetBkMode(hdc, TRANSPARENT);
-        BitBlt(hdc, 0, 0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
+        dc.SetBkMode(TRANSPARENT);
+        dc.BitBlt(0, 0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
     }
 
-    if (!wParam) {
-        EndPaint(&ps);
-    }
-    bHandled = true;
     return 0;
 }
 
 LRESULT CMyImage::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    
     return 0;
 }
 
@@ -218,5 +207,3 @@ LRESULT CMyImage::OnLButtonDown(UINT Flags, CPoint Pt)
 LRESULT CMyImage::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
     return SendMessage(GetParent(), uMsg, wParam, lParam);
 }
-
-

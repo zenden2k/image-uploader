@@ -26,6 +26,7 @@
 #include <filesystem>
 #include <map>
 #include <string>
+#include <sstream>
 
 #ifdef _WIN32
     #include <WinSock.h>
@@ -415,9 +416,11 @@ std::string FileSizeToString(int64_t nBytes)
 
 std::string ToString(double value, int precision)
 {
-    char buffer[100];
-    sprintf(buffer, ("%0." + std::to_string(precision) + "f").c_str(), value);
-    return buffer;
+    std::ostringstream stream;
+    stream << std::fixed;
+    stream << std::setprecision(precision);
+    stream << value;
+    return stream.str();
 }
 
 std::string GetDefaultExtensionForMimeType(const std::string& mimeType) {

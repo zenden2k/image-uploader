@@ -24,6 +24,7 @@
 #include <cstdarg>
 
 #include <ShObjIdl.h>
+#include <strsafe.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -482,7 +483,7 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
     ti.hwnd     = hwnd;
     ti.hinst    = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
-    lstrcpy(textBuffer.get(), text);
+    StringCchCopy(textBuffer.get(), text.GetLength() + 1, text);
     ti.lpszText = textBuffer.get();
     ti.rect  = clientRect;
 
@@ -502,7 +503,7 @@ void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text) {
     ti.hwnd = hwnd;
     ti.hinst = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
-    lstrcpy(textBuffer.get(), text);
+    StringCchCopy(textBuffer.get(), text.GetLength() + 1, text);
     ti.lpszText = textBuffer.get();
     ti.rect = clientRect;
 

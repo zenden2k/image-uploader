@@ -1404,9 +1404,8 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
     int nCount = 0;
 
     CComPtr<IFileOpenDialog> pDlg;
-    TCHAR filterBuffer[256];
 
-    lstrcpy(filterBuffer, CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"));
+    CString filterBuffer = CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)");
     CString imageFilter = IuCommonFunctions::PrepareFileDialogImageFilter();
     COMDLG_FILTERSPEC aFileTypes[] = {
         {filterBuffer, imageFilter},

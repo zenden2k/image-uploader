@@ -29,6 +29,6 @@
         <!-- правый бордер -->
         <Operation Type="blt" Rect="2;2;29; 29" Source="image" SourceRect="135;82;29;29" />
         <!--<Operation Type="fillrect" Rect="20;30; 50;80" Brush="gradient:#FFFFFF #CC11CC vert" /> -->
-        <Operation Type="text" Rect="65;$(Height)-17; $(Width)-2-65;17" Brush="gradient:#920D567D #9206AEFF vert" TextColors="#2C000000+$(TextColor) #a5000000+$(StrokeColor)" Condition="$(DrawText)" />
+        <Operation Type="text" Rect="30;$(Height)-17; $(Width)-2-30;17" Brush="gradient:#920D567D #9206AEFF vert" TextColors="#2C000000+$(TextColor) #a5000000+$(StrokeColor)" Condition="$(DrawText)" />
     </Drawing>
 </Thumbnail>

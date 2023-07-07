@@ -49,17 +49,7 @@
 	<Server Name="Dropbox" FileHost="1" Debug="0" NeedPassword="0" Authorize="2" Plugin="dropbox" SupportsFolders="0">
 		<Result ImageUrlTemplate="stub" />
 	</Server>
-	<Server Name="image2you.ru" Authorize="2" Debug="0" MaxThreads="1">
-		<Actions>
-            <Action Type="get" Url="http://image2you.ru/" />
-			<Action Type="login" Url="http://image2you.ru/index_ajax.php?task=users&amp;sub_task=login&amp;email=$(_LOGIN|urlencode)&amp;pass=$(_PASSWORD|urlencode)&amp;get=t" RegExp="iSuccess&quot;:1" />
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/upload/" RegExp="session&#039;: &#039;(\w+)&#039;" AssignVars="SessionId:0"/>
-			<Action Type="upload" Url="http://image2you.ru/ajax/cabinet/gallery/folder-0/" PostParams="Filename=$(_FILENAME);folder=/uploads;session=$(SessionId);Filedata=%filename%;Upload=Submit Query;" RegExp="\d+"/>
-			<Action Type="get" Url="http://image2you.ru/cabinet/gallery/folder-0/" RegExp='__code_link_(\d+)&quot; value=&quot;(\S+?)&quot;([\s\S]*?)__code_preview_(\d+)&quot; value=&quot;(\S+?)&quot;' AssignVars="Image:1;Thumb:4;"/>
-		</Actions>
-		<Result DownloadUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" />
-	</Server>
-	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="0" Plugin="fastpic">
+	<Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

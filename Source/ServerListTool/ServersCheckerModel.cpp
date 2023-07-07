@@ -76,10 +76,10 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
     } else if (column == 6) {
         return serverData.timeStr();
     }
-    return std::string();
+    return {};
 }
 
-unsigned long ServersCheckerModel::getItemColor(int row) const {
+uint32_t ServersCheckerModel::getItemColor(int row) const {
     const ServerData& serverData = *items_[row];
     return serverData.color;
 }

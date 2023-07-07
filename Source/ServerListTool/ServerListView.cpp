@@ -1,5 +1,7 @@
 #include "ServerListView.h"
 
+#include <strsafe.h>
+
 #include "ServersCheckerModel.h"
 #include "Core/Utils/CoreUtils.h"
 
@@ -40,11 +42,11 @@ void CServerListView::Init() {
 LRESULT CServerListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     auto* pDispInfo = reinterpret_cast<LV_DISPINFO*>(pnmh);
     LV_ITEM* pItem = &(pDispInfo)->item;
-    DWORD n = pItem->iItem;
 
     if (pItem->mask & LVIF_TEXT)  {
-        std::string str = model_->getItemText(n, pItem->iSubItem);
-        lstrcpy(pItem->pszText, U2W(str));
+        std::string str = model_->getItemText(pItem->iItem, pItem->iSubItem);
+        std::wstring wstr = IuCoreUtils::Utf8ToWstring(str);
+        StringCchCopy(pItem->pszText, pItem->cchTextMax, wstr.c_str());
     }
 
     return 0;

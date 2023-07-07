@@ -71,9 +71,8 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
         NewFont=CreateFontIndirect(&alf);
 
-        HDC dc = ::GetDC(nullptr);
-        alf.lfHeight  =  - MulDiv(11, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ::ReleaseDC(nullptr, dc);
+        CClientDC dc(m_hWnd);
+        alf.lfHeight  =  - MulDiv(11, dc.GetDeviceCaps(LOGPIXELSY), 72);
         NewFont = CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }

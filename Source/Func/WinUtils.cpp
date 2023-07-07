@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include <Aclapi.h>
+#include <strsafe.h>
 #include <TlHelp32.h>
 #include <Winhttp.h>
 #include <boost/format.hpp>
@@ -622,8 +623,8 @@ CString IntToStr(int n)
 bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize)
 {
     std::string res = IuCoreUtils::FileSizeToString(nBytes);
-    lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
-    return TRUE;
+    StringCchCopy(szBuffer, nBufSize, IuCoreUtils::Utf8ToWstring(res).c_str());
+    return true;
 }
 
 bool IsElevated() 
@@ -676,7 +677,8 @@ void DeleteDir2(LPCTSTR Dir)
     if (!Dir)
         return;
     TCHAR szBuffer[MAX_PATH];
-    lstrcpyn(szBuffer, Dir, MAX_PATH);
+    StringCchCopy(szBuffer, MAX_PATH, Dir);
+
     int nLen = lstrlen(szBuffer) - 1;
     if (nLen >= 0 && szBuffer[nLen] == _T('\\'))
         szBuffer[nLen] = 0;
@@ -714,7 +716,7 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
     WIN32_FIND_DATA wfd;
     ZeroMemory(&wfd, sizeof(wfd));
     HANDLE findfile = 0;
-    TCHAR szNameBuffer[MAX_PATH];
+
 
     for (;; )
     {
@@ -732,8 +734,8 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
         }
         if (lstrlen(wfd.cFileName) < 1)
             break;
-        lstrcpyn(szNameBuffer, wfd.cFileName, 254);
-        list.push_back(szNameBuffer);
+
+        list.emplace_back(wfd.cFileName);
     }
     // return TRUE;
 
@@ -901,7 +903,8 @@ bool ExtractStrFromList(
     goto lbl_allok;
 
 lbl_copydef:
-    if(szDefString) lstrcpy(szBuffer, szDefString);
+    if(szDefString)
+        StringCchCopy(szBuffer, nSize, szDefString);
     return false;
 
 lbl_allok:

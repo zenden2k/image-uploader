@@ -588,10 +588,10 @@ int func() {
         task->addTaskFinishedCallback(OnTaskFinished);
         task->setOnUploadProgressCallback(UploadTaskProgress);
         task->setOnStatusChangedCallback(OnUploadTaskStatusChanged);
-        TaskUserData *userData = new TaskUserData;
+        auto userData = std::make_unique<TaskUserData>();
         userData->index = i;
-        task->setUserData(userData);
-        userDataArray.emplace_back(userData);
+        task->setUserData(userData.get());
+        userDataArray.push_back(std::move(userData));
         session->addTask(task);
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));

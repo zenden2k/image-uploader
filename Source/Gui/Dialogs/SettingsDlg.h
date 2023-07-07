@@ -37,11 +37,14 @@
 class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
 {
     public:
-        CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager);
+        enum SettingsPage {
+            spNone = -1, spGeneral = 0, spServers, spImages, spThumbnails, spScreenshot,
+            spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys
+        };
+        CSettingsDlg(SettingsPage Page, UploadEngineManager* uploadEngineManager);
         enum { IDD = IDD_SETTINGSDLG };
         enum { kStatusLabelTimer = 1, SettingsPageCount = 10 };
-        enum SettingsPage { spGeneral, spServers, spImages, spThumbnails, spScreenshot,
-        spVideo, spUploading, spIntegration, spTrayIcon, spHotkeys};
+       
     protected:
         BEGIN_MSG_MAP(CSettingsDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -65,22 +68,21 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-    void CloseDialog(int nVal);
     LRESULT OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCtlColorStatic(HDC hdc, HWND hwndChild);
-    int CurPage;
+    SettingsPage CurPage;
     CIcon hIcon;
     CIcon hIconSmall;
-    bool CreatePage(int pageId);
+    bool CreatePage(SettingsPage pageId);
     std::unique_ptr<CSettingsPage> Pages[SettingsPageCount];
-    int PageToShow;
-    bool ShowPage(int idPage);
+    SettingsPage PageToShow;
+    bool ShowPage(SettingsPage idPage);
     CTabListBox m_SettingsPagesListBox;
     LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
     UploadEngineManager* uploadEngineManager_;
     CBrush backgroundBrush_;
-    CFont saveStatusLabel_;
+    CFont saveStatusLabelFont_;
 };
 
 #endif // IU_CORE_GUI_DIALOGS_SETTINGSDLG_H

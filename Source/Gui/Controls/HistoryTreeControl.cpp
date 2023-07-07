@@ -615,13 +615,12 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             int64_t fileSize = IuCoreUtils::GetFileSize(W2U(filename));
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
-            WCHAR FileExt[25];
-            lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
+            CString FileExt = WinUtils::GetFileExt(Filename);
             if(!lstrcmpi(FileExt, _T("jpg"))) 
-                lstrcpy(FileExt,_T("JPEG"));
+                FileExt = _T("JPEG");
             if(IuCommonFunctions::IsImage(filename) && bm)
             {
-                Buffer.Format( _T("%s %dx%d (%s)"), static_cast<LPCTSTR>(FileExt), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
+                Buffer.Format( _T("%s %dx%d (%s)"), FileExt.GetString(), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
             }
             else
             {
