@@ -76,10 +76,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         : _T("Sergey Svistunov")) + CString(_T(" \u200E(")) + authorEmail + CString(_T(")\u200E")));
     m_EmailLink.SetHyperLink(CString(_T("mailto:")) + authorEmail);
 
-
     CString memoText;
-    
-    
+
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
@@ -89,7 +87,6 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         translatorName.Empty();
     }
     if ( !translatorName.IsEmpty() ) {
-        
         memoText += TR("Translators:") + CString("\r\n");
 
         CString trans;
@@ -225,8 +222,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #ifdef IU_STATIC_RUNTIME
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");
 #endif
-    
-    
+
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;

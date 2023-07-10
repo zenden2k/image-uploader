@@ -191,8 +191,6 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
             m_nSuccessfullDownloads++;
             
         }
-           
-
     }
     m_nFileDownloaded++;
     SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  m_nFileDownloaded);

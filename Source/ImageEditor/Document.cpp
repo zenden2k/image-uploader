@@ -106,7 +106,6 @@ Gdiplus::Bitmap* Document::getBitmap() const
 
 void Document::saveDocumentState(bool full) {
     int pixelSize = 4;
-    typedef std::deque<RECT>::iterator iter;
     std::deque<RECT> rects;
     Gdiplus::Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
     int srcImageWidth = srcImage->GetWidth();
@@ -134,12 +133,10 @@ void Document::saveDocumentState(bool full) {
 
         unsigned char* pImageData = imageData;
 
-
         {
-
             AffectedSegments outSegments(srcImageWidth, srcImageHeight);
 
-            for (iter it = rects.begin(); it != rects.end(); ++it) {
+            for (auto it = rects.begin(); it != rects.end(); ++it) {
                 int x = it->left;
                 int y = it->top;
                 if (x < 0 || y < 0) {

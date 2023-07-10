@@ -81,8 +81,6 @@ class CUploadSettings:
 
     BEGIN_MSG_MAP(CUploadSettings)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        MESSAGE_HANDLER(WM_MEASUREITEM, OnMeasureItem)
-        MESSAGE_HANDLER(WM_DRAWITEM, OnDrawItem)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
@@ -140,8 +138,6 @@ class CUploadSettings:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -202,7 +198,6 @@ protected:
     void updateUrlShorteningCheckboxLabel();
     void shorteningUrlServerChanged(CServerSelectorControl* selectorControl);
     void settingsChanged(BasicSettings* settings);
-    std::map<int, HICON> serverMenuIcons_;
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;
     CIcon iconEdit_, iconDropdown_;

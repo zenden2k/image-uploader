@@ -43,6 +43,9 @@ class CColorCodeDialog :
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_COPYHEXBUTTON, BN_CLICKED, OnBnClickedCopyHexButton)
             COMMAND_HANDLER(IDC_COPYRGBBUTTON, BN_CLICKED, OnBnClickedCopyRgbButton)
+            COMMAND_HANDLER(IDC_HEXEDIT, EN_CHANGE, OnHexEditChange)
+            COMMAND_HANDLER(IDC_RGBEDIT, EN_CHANGE, OnRgbEditChange)
+            MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
         END_MSG_MAP()
 
         COLORREF getValue() const;
@@ -57,7 +60,14 @@ class CColorCodeDialog :
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedCopyHexButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedCopyRgbButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-        COLORREF value_;    
+        HBRUSH OnCtlColorStatic(CDCHandle dc, CStatic wndStatic);
+        LRESULT OnHexEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnRgbEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        COLORREF value_;
+        CBrush brush_;
+        void updateValue(COLORREF ref);
+        void generateHexEditText();
+        void generateRgbEditText();
 };
 
 #endif // ColorCodeDialog_H

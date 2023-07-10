@@ -268,45 +268,6 @@ LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     return 0;
 }
 
-// It is called only on XP and older versions
-LRESULT CUploadSettings::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    MEASUREITEMSTRUCT* lpmis = reinterpret_cast<MEASUREITEMSTRUCT*>(lParam);
-    if ( lpmis == nullptr ) {
-        return 0;
-    }
-
-    lpmis->itemWidth  = std::max(0, GetSystemMetrics(SM_CXSMICON) - GetSystemMetrics(SM_CXMENUCHECK) + 4);
-    lpmis->itemHeight = GetSystemMetrics(SM_CYSMICON)+2;
-    return TRUE;
-}
-
-// It is called only on XP and older versions
-LRESULT CUploadSettings::OnDrawItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    DRAWITEMSTRUCT* lpdis = reinterpret_cast<DRAWITEMSTRUCT*>(lParam);
-    if ((lpdis == nullptr) || (lpdis->CtlType != ODT_MENU))
-        return S_OK; //not for a menu
-    auto it = serverMenuIcons_.find(lpdis->itemID);
-    if (it == serverMenuIcons_.end()) {
-        return 0;
-    }
-    HICON hIcon = it->second;
-
-    if (hIcon == nullptr)
-        return 0;
-    // fix from http://miranda.svn.sourceforge.net/viewvc/miranda/trunk/miranda/src/modules/clist/genmenu.cpp
-    int w = GetSystemMetrics(SM_CXSMICON);
-    int h = GetSystemMetrics(SM_CYSMICON);
-    int y = lpdis->rcItem.top + (lpdis->rcItem.bottom - lpdis->rcItem.top - h) / 2;
-    int x = 2;
-
-    DrawIconEx(lpdis->hDC, x, y, hIcon, w, h, 0, NULL, DI_NORMAL);
-    DeleteObject(hIcon);
-    return TRUE;
-}
-
-
 LRESULT CUploadSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     EndDialog(wID);
@@ -591,7 +552,7 @@ void CUploadSettings::UpdateToolbarIcons()
 void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 {
     TBBUTTONINFO bi;
-    CToolBarCtrl& CurrentToolbar = (ImageServer) ? Toolbar: FileServerSelectBar;
+    CToolBarCtrl& CurrentToolbar = ImageServer ? Toolbar: FileServerSelectBar;
 
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
@@ -601,7 +562,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     ZeroMemory(&bi, sizeof(bi));
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_TEXT;
-    bi.pszText = (LPWSTR)(LPCTSTR)serverTitle;
+    bi.pszText = const_cast<LPWSTR>(serverTitle.GetString());
     CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
     if(serverProfile.isNull())
@@ -641,7 +602,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
             login = TR("Account is not enabled");
 
     }
-    bi.pszText = (LPWSTR)(LPCTSTR)login;
+    bi.pszText = const_cast<LPWSTR>(login.GetString());
     CurrentToolbar.SetButtonInfo(IDC_LOGINTOOLBUTTON+ImageServer, &bi);
 
     bool ShowFolderButton = uploadEngine->SupportsFolders && ShowLoginButton;
@@ -651,7 +612,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
         
     CString title = WinUtils::TrimString(Utf8ToWCstring(serverProfile.folderTitle()), 27);
     if(title.IsEmpty()) title = TR("No Folder Selected");
-    bi.pszText = (LPWSTR)(LPCTSTR)title;
+    bi.pszText = const_cast<LPWSTR>(title.GetString());
     CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
     
 }
@@ -687,9 +648,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
-    bool isVistaOrLater = true;
 
-    bool isImageServer = (idCtrl == IDC_IMAGETOOLBAR);
+    bool isImageServer = idCtrl == IDC_IMAGETOOLBAR;
     ServerProfile & serverProfile = isImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     std::vector<HBITMAP> bitmaps;
     CUploadEngineData *uploadEngine = nullptr;
@@ -698,7 +658,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         uploadEngine = serverProfile.uploadEngineData();
     }
 
-    CToolBarCtrl& CurrentToolbar = (isImageServer) ? Toolbar: FileServerSelectBar;
+    CToolBarCtrl& CurrentToolbar = isImageServer ? Toolbar: FileServerSelectBar;
     
     CMenu sub;    
     MENUITEMINFO mi;
@@ -725,18 +685,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.wID = (isImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
                 CString name  = Utf8ToWCstring(ued->Name); 
-                mi.dwTypeData  = (LPWSTR)(LPCTSTR) name;
+                mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
                 HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-                HBITMAP bm = 0;
-                if (isVistaOrLater) {
-                    bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
-                    bitmaps.push_back(bm);
-                }
+                HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
+                bitmaps.push_back(bm);
 
-                mi.hbmpItem = isVistaOrLater ? bm: HBMMENU_CALLBACK;
-                if (!isVistaOrLater) {
-                    serverMenuIcons_[mi.wID] = hImageIcon;
-                }
+                mi.hbmpItem = bm;
+
                 if ( mi.hbmpItem ) {
                     mi.fMask |= MIIM_BITMAP;
                 }
@@ -770,18 +725,11 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.wID = (isImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
             CUploadEngineData* ued = m_EngineList->byIndex(i);
             CString name  = Utf8ToWCstring(ued->Name); 
-            mi.dwTypeData  = (LPWSTR)(LPCTSTR)name;
+            mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
             HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-            if (!isVistaOrLater) {
-                serverMenuIcons_[mi.wID] = hImageIcon;
-            }
-            HBITMAP bm = 0;
-            if (isVistaOrLater) {
-                bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
-                bitmaps.push_back(bm);
-            }
-          
-            mi.hbmpItem = isVistaOrLater ? bm: HBMMENU_CALLBACK;
+            HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
+            bitmaps.push_back(bm);
+            mi.hbmpItem = bm;
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }
@@ -890,14 +838,12 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                     mi.fType = MFT_STRING;
                     mi.wID = command;
 
-                    mi.dwTypeData  = (LPWSTR)(LPCTSTR)login;
-                    HBITMAP bm = 0;
-                    if (isVistaOrLater) {
-                        bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
-                        bitmaps.push_back(bm);
-                    }
+                    mi.dwTypeData  = const_cast<LPWSTR>(login.GetString());
+                    HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
+                    bitmaps.push_back(bm);
+                    
 
-                    mi.hbmpItem = isVistaOrLater ? bm: HBMMENU_CALLBACK;
+                    mi.hbmpItem = bm;
                     if ( mi.hbmpItem ) {
                         mi.fMask |= MIIM_BITMAP;
                     }
@@ -943,8 +889,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     }
         
     RECT rc;
-    ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
-    ::MapWindowPoints(CurrentToolbar.m_hWnd, nullptr, reinterpret_cast<LPPOINT>(&rc), 2);
+    CurrentToolbar.GetRect(pnmtb->iItem, &rc);
+    CurrentToolbar.MapWindowPoints(nullptr, reinterpret_cast<LPPOINT>(&rc), 2);
     //CurrentToolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
@@ -981,7 +927,7 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         }
         if(!CurrentToolbar.IsButtonHidden(IDC_SELECTFOLDER))
         {
-            ::SendMessage(CurrentToolbar.m_hWnd,TB_GETRECT, IDC_SELECTFOLDER, reinterpret_cast<LPARAM>(&rc));
+            CurrentToolbar.GetRect(IDC_SELECTFOLDER, &rc);
             CurrentToolbar.ClientToScreen(&rc);
             if(PtInRect(&rc, pt))
             {
