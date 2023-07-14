@@ -88,8 +88,10 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     std::vector<CString> files;
     CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
     WinUtils::GetFolderFileList(files, folder , _T("*.xml"));
-    for(size_t i=0; i<files.size(); i++) {
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
+    for (const auto& file : files) {
+        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(
+            IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8(file))
+        ));
     }
     SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) U2W(params_.getThumbRef().TemplateName)); 
 

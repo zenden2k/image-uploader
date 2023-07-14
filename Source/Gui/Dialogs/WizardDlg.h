@@ -37,7 +37,6 @@
 #include "FolderAddDlg.h"
 #include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/HwndScopedWrapper.h"
-#include "Gui/Controls/IconButton.h"
 #include "Gui/CommonDefines.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Components/DragndropOverlay.h"
@@ -74,7 +73,7 @@ public:
     enum { IDD = IDD_WIZARDDLG };
     enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER };
     enum { kNewFilesTimer = 1 };
-    static const WPARAM kWmMyExitParam = 5;
+    static constexpr WPARAM kWmMyExitParam = 5;
 
     enum WizardPageId { wpWelcomePage = 0, wpVideoGrabberPage = 1, wpMainPage = 2, wpUploadSettingsPage = 3, wpUploadPage = 4 };
 

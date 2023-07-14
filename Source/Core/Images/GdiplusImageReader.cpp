@@ -4,8 +4,6 @@
 #include "Func/WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
 
-typedef IStream * (STDAPICALLTYPE *SHCreateMemStreamFuncType)(const BYTE *pInit, UINT cbInit);
-
 std::unique_ptr<GdiPlusImage> GdiplusImageReader::readFromFile(const wchar_t* fileName) {
     std::unique_ptr<Gdiplus::Bitmap> bm = std::make_unique<Gdiplus::Bitmap>(fileName);
     std::unique_ptr<GdiPlusImage> img = std::make_unique<GdiPlusImage>(bm.release());
@@ -18,12 +16,7 @@ std::unique_ptr<GdiPlusImage> GdiplusImageReader::readFromFile(const wchar_t* fi
 }
 
 std::unique_ptr<GdiPlusImage> GdiplusImageReader::readFromMemory(uint8_t* data, size_t size) {
-    auto SHCreateMemStreamFunc = shlwapiLib.GetProcAddress<SHCreateMemStreamFuncType>("SHCreateMemStream");
-    if (!SHCreateMemStreamFunc) {
-        return nullptr;
-    }
-
-    IStream* pStream = SHCreateMemStreamFunc(data, size);
+    IStream* pStream = SHCreateMemStream(data, size);
     if (pStream) {
         auto bitmap = readFromStream(pStream);
         pStream->Release();
@@ -54,7 +47,7 @@ bool GdiplusImageReader::checkLastStatus(Gdiplus::Bitmap* bm) {
     if (!bm) {
         return false;
     }
-    int lastError = ::GetLastError();
+    DWORD lastError = ::GetLastError();
     Gdiplus::Status status = bm->GetLastStatus();
     if (status != Gdiplus::Ok) {
     

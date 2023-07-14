@@ -525,7 +525,8 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         // Files laying in another folders will be ignored.
         hr = SHOpenFolderAndSelectItems(folderPidl, list.size(), &list[0], 0);
         if (!SUCCEEDED(hr)) {
-            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr;
+            _com_error err(hr);
+            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr << std::endl << err.ErrorMessage();
         }
 
         // SHBindToParent does not allocate a new PIDL; 

@@ -661,7 +661,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
     }
 
     if (result != Ok) {
-        int lastError = GetLastError();
+        DWORD lastError = GetLastError();
         CString error = GdiplusStatusToString(result);
         if (result == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError) + L"";

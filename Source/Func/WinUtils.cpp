@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include <Aclapi.h>
+#include <ComDef.h>
 #include <strsafe.h>
 #include <TlHelp32.h>
 #include <Winhttp.h>
@@ -465,7 +466,7 @@ CString GetSystemSpecialPath(int csidl)
     return result;
 }
 
-CString FormatWindowsErrorMessage(int idCode)
+CString FormatWindowsErrorMessage(DWORD idCode)
 {
     LPVOID lpMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
@@ -1415,8 +1416,59 @@ bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
     return true;
 }
 
+bool ShowFilesInFolder(const std::vector<CString>& files, HWND wnd) {
+    PIDLIST_ABSOLUTE folderPidl = nullptr;
+
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+
+    if (!SUCCEEDED(hr)) {
+        return false;
+    }
+
+    std::vector<LPCITEMIDLIST> list;
+    for (const auto& file : files) {
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(wnd, nullptr, const_cast<LPWSTR>(file.GetString()), nullptr, &newPIdL, nullptr);
+        if (SUCCEEDED(hr)) {
+            LPCITEMIDLIST relativePidl = nullptr;
+            CComPtr<IShellFolder> folder;
+
+            hr = SHBindToParent(newPIdL, IID_IShellFolder, reinterpret_cast<void**>(&folder), &relativePidl);
+            if (SUCCEEDED(hr)) {
+                list.push_back(relativePidl);
+                if (!folderPidl) {
+                    CComQIPtr<IPersistFolder2> persistFolder(folder);
+                    if (persistFolder) {
+                        persistFolder->GetCurFolder(&folderPidl);
+                    }
+                }
+            }
+        }
+    }
+    if (!list.empty() && folderPidl != nullptr) {
+        // Will be opened the parent folder of the first file.
+        // Files laying in another folders will be ignored.
+        hr = SHOpenFolderAndSelectItems(folderPidl, list.size(), &list[0], 0);
+        if (!SUCCEEDED(hr)) {
+            _com_error err(hr);
+            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr << std::endl << err.ErrorMessage();
+        } else {
+            return true;
+        }
+
+        // SHBindToParent does not allocate a new PIDL; 
+        // it simply receives a pointer through this parameter.
+        // Therefore, we are not responsible for freeing this resource.
+        /*for (auto& pidl : list) {
+            SHFree(const_cast<LPITEMIDLIST>(pidl));
+        }*/
+    }
+    return false;
+}
+
 bool ShowFileInFolder(CString fileName, HWND wnd) {
-    SHELLEXECUTEINFO ShInfo;
+    /*SHELLEXECUTEINFO ShInfo;
 
     ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
     ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -1434,7 +1486,8 @@ bool ShowFileInFolder(CString fileName, HWND wnd) {
         }
         return false;
     }
-    return true;
+    return true;*/
+    return ShowFilesInFolder({ fileName }, wnd);
 }
 
 /*SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {

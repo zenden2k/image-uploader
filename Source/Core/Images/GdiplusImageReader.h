@@ -4,7 +4,6 @@
 #pragma once
 
 #include "AbstractImageReader.h"
-#include "Func/Library.h"
 
 class GdiplusImageReader: public AbstractImageReader {
 public:
@@ -14,7 +13,6 @@ public:
     std::wstring getLastError() override;
 private:
     std::wstring lastError_;
-    Library shlwapiLib{ L"Shlwapi.dll" };
     bool checkLastStatus(Gdiplus::Bitmap* bm);
     void postLoad(GdiPlusImage* bm);
 };
