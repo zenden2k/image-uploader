@@ -252,15 +252,15 @@ LRESULT CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
     return 0;
 }
 
-LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     HDC hdcStatic = reinterpret_cast<HDC>(wParam);
-    HWND hwndStatic = WindowFromDC(hdcStatic);
+    HWND hwndStatic = reinterpret_cast<HWND>(lParam);
 
-    if ( hwndStatic != GetDlgItem(IDC_IMAGEUPLOADERLABEL) ) {
+    if (hwndStatic != GetDlgItem(IDC_IMAGEUPLOADERLABEL)) {
         return 0;
     }
     COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);
-    if ( textColor == 0 ) {
+    if (textColor == 0) {
         SetTextColor(hdcStatic, RGB(100,100,100));
         SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
     }

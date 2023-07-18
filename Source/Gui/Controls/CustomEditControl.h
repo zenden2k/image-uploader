@@ -18,7 +18,7 @@ class CCustomEditControl : public CWindowImpl<CCustomEditControl, CEdit> {
     CCustomEditControl() = default;
     LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnPaste(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    bool AttachToDlgItem(HWND parent, UINT dlgID);
+    bool AttachToDlgItem(HWND parent, int dlgID);
     using PasteCallback = std::function<bool(CCustomEditControl*)>;
     void setOnPasteCallback(PasteCallback callback);
 protected:

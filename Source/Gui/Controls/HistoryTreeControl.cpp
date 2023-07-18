@@ -25,7 +25,6 @@
 #include <boost/format.hpp>
 
 #include "Core/Utils/CoreUtils.h"
-#include "Func/Common.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"

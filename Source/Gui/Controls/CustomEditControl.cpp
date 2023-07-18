@@ -1,7 +1,6 @@
 #include "CustomEditControl.h"
 
-bool CCustomEditControl::AttachToDlgItem(HWND parent, UINT dlgID) {
-
+bool CCustomEditControl::AttachToDlgItem(HWND parent, int dlgID) {
     HWND hWnd = ::GetDlgItem(parent,dlgID);
     return SubclassWindow(hWnd)!= FALSE;
 }

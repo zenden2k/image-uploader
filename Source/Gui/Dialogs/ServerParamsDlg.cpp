@@ -28,7 +28,7 @@
 #include "Core/Settings/BasicSettings.h"
 
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
+CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
             serverProfile_(serverProfile)
 {
     focusOnLoginControl_ = focusOnLoginEdit;

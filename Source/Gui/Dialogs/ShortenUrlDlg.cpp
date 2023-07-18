@@ -46,7 +46,7 @@ CShortenUrlDlg::~CShortenUrlDlg()
 
 LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
     //PrevClipboardViewer = SetClipboardViewer();
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
@@ -58,7 +58,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDC_SHORTENURLTIP, "Paste a link to shorten it:");
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
+        // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
         GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_INPUTEDIT), WS_EX_RTLREADING);
         GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_RESULTSEDIT), WS_EX_RTLREADING);
     }
@@ -82,7 +82,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     urlShortenerServerSelector_->Create(m_hWnd, serverSelectorRect);
     urlShortenerServerSelector_->ShowWindow(SW_SHOW);
     urlShortenerServerSelector_->SetWindowPos(0, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, serverSelectorRect.bottom - serverSelectorRect.top, 0);
-    urlShortenerServerSelector_->setServerProfile(Settings.urlShorteningServer);
+    urlShortenerServerSelector_->setServerProfile(settings->urlShorteningServer);
     urlShortenerServerSelector_->setTitle(TR("URL shortening server"));
 
     if(!m_InitialBuffer.IsEmpty())
@@ -113,10 +113,10 @@ LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         LocalizedMessageBox(TR("You have not selected server"), TR("Error"), MB_ICONERROR);
         return 0;
     } else if (!urlShortenerServerSelector_->isAccountChosen()) {
-            CString message;
-            message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(urlShortenerServerSelector_->serverProfile().serverName()).c_str());
-            LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
-            return 0;
+        CString message;
+        message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(urlShortenerServerSelector_->serverProfile().serverName()).c_str());
+        LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
+        return 0;
     } 
     
     StartProcess();
@@ -194,18 +194,22 @@ bool CShortenUrlDlg::StartProcess() {
 }
 
 void CShortenUrlDlg::OnFileFinished(UploadTask* task, bool ok) {
-    if ( ok ) {
-        CString shortUrl = Utf8ToWCstring(task->uploadResult()->directUrl);
-        SetDlgItemText(IDC_RESULTSEDIT, shortUrl);
-        WinUtils::CopyTextToClipboard(shortUrl);
-        SetDlgItemText(IDC_RESULTSLABEL, TR("The short link has been copied to the clipboard!"));
-        ::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
-        ::SetFocus(GetDlgItem(IDC_RESULTSEDIT));
+    if (ok) {
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, task] {
+            CString shortUrl = Utf8ToWCstring(task->uploadResult()->directUrl);
+            SetDlgItemText(IDC_RESULTSEDIT, shortUrl);
+            WinUtils::CopyTextToClipboard(shortUrl);
+            SetDlgItemText(IDC_RESULTSLABEL, TR("The short link has been copied to the clipboard!"));
+            ::ShowWindow(GetDlgItem(IDC_RESULTSLABEL), SW_SHOW);
+            ::SetFocus(GetDlgItem(IDC_RESULTSEDIT));
+        });
     }
 }
 
 void CShortenUrlDlg::OnQueueFinished(UploadSession* session) {
-    ProcessFinished();
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        ProcessFinished();
+    });
 }
 
 void CShortenUrlDlg::ProcessFinished() {
@@ -215,23 +219,23 @@ void CShortenUrlDlg::ProcessFinished() {
 }
 
 void CShortenUrlDlg::OnClose() {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    Settings.urlShorteningServer = urlShortenerServerSelector_->serverProfile();
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->urlShorteningServer = urlShortenerServerSelector_->serverProfile();
 }
 
 bool CShortenUrlDlg::ParseBuffer(const CString& text) {
     CString textCopy = text;
-    if (  WebUtils::DoesTextLookLikeUrl(textCopy) ) {
+    if (WebUtils::DoesTextLookLikeUrl(textCopy)) {
         SetDlgItemText(IDC_INPUTEDIT, textCopy);
     }
     return false;
 }
 
-LRESULT CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
-    if ( hwnd == GetDlgItem(IDC_RESULTSLABEL ) ) {
+HBRUSH CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
+    if (hwnd == GetDlgItem(IDC_RESULTSLABEL) ) {
         SetTextColor(hdc, RGB(0,180,0));
         SetBkMode(hdc, TRANSPARENT);
-        return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(backgroundBrush_)); 
+        return backgroundBrush_; 
     }
-    return 0;
+    return nullptr;
 }

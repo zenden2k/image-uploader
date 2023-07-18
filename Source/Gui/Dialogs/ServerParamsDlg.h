@@ -36,7 +36,7 @@ class CServerParamsDlg :
     public CDialogResize<CServerParamsDlg>    
 {
     public:
-        CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
+        CServerParamsDlg(const ServerProfile&  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
         ~CServerParamsDlg();
         enum { IDD = IDD_SERVERPARAMSDLG };
 

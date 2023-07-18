@@ -33,7 +33,7 @@ class CUploadParamsDlg : public CCustomDialogIndirectImpl<CUploadParamsDlg>
 {
     public:
         CUploadParamsDlg(ServerProfile& serverProfile, bool showImageProcessingParams = true, bool defaultServer = false);
-        ~CUploadParamsDlg();
+        ~CUploadParamsDlg() override;
         enum { IDD = IDD_UPLOADPARAMSDLG };
         ImageUploadParams imageUploadParams() const;
     protected:

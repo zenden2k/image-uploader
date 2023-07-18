@@ -320,6 +320,7 @@
 #define IDC_SERVEREDIT                  1041
 #define IDC_UPDATEINFO2                 1041
 #define IDC_MANUALUPDATEINFO            1041
+#define IDC_WIDTHEDIT2                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -786,7 +787,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        333
+#define _APS_NEXT_RESOURCE_VALUE        334
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1341
 #define _APS_NEXT_SYMED_VALUE           128
