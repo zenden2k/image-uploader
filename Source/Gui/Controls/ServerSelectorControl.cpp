@@ -32,9 +32,24 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
-const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
-const TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
+namespace {
+
+constexpr char kAddFtpServer[] = "<add_ftp_server>";
+constexpr char kAddDirectoryAsServer[] = "<add_directory_as_server>";
+constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
+
+// Why not 'strdup' function ?
+// Because strdup requires usage of free() function.
+char* DuplicateString(const char* str) {
+    size_t len = strlen(str);
+    char* res = new char[len + 1];
+    memcpy(res, str, len);
+    res[len] = '\0';
+    return res;
+}
+
+}
+
 // CServerSelectorControl
 CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow)
 {
@@ -87,7 +102,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     userPictureControl_ = GetDlgItem(IDC_USERICON);
     int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-    CIcon iconUser;
+    CIconHandle iconUser;
     //iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
     iconUser.LoadIcon(MAKEINTRESOURCE(IDI_ICONUSER));
 
@@ -372,8 +387,6 @@ void CServerSelectorControl::notifyServerListChanged()
 
 void CServerSelectorControl::updateServerList()
 {
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -381,10 +394,10 @@ void CServerSelectorControl::updateServerList()
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (showEmptyItem_) {
-        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(strdup("")));
+        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("")));
     }
     if ( showDefaultServerItem_ ) {
-        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
+        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("default") ));
     }
 
     //CIcon hImageIcon = NULL, hFileIcon = NULL;
@@ -440,8 +453,8 @@ void CServerSelectorControl::updateServerList()
     }
     if (serversMask_ != smUrlShorteners ) {
         serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-        serverComboBox_.AddItem(  TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
-        serverComboBox_.AddItem(  TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
+        serverComboBox_.AddItem(TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddFtpServer));
+        serverComboBox_.AddItem(TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddDirectoryAsServer));
     }
 
     serverComboBox_.SetImageList( comboBoxImageList_ );
@@ -474,6 +487,8 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = settings->ServersSettings[serverProfile_.serverName()];
+    HICON userIcon = LoadIcon(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONUSER));
+    CBitmap bmp = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
 
     if (!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
         bool addedSeparator = false;
@@ -492,8 +507,6 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         menuOpenedUserNames_.clear();
 
         int command = IDC_USERNAME_FIRST_ID;
-        HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
-
         for (auto it = serverUsers.begin(); it != serverUsers.end(); ++it) {
             CString login = Utf8ToWCstring(it->first);
             if (!login.IsEmpty())/*&& it->second.authData.DoAuth**/ {
@@ -516,7 +529,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
 
                 mi.dwTypeData = const_cast<LPWSTR>(login.GetString());
 
-                mi.hbmpItem = WinUtils::IsVistaOrLater() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
+                mi.hbmpItem = bmp;
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;
                 }
@@ -597,7 +610,6 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
         copy.setProfileName(WCstringToUtf8(dlg.accountName()));
         if(Utf8ToWCstring(UserName) != dlg.accountName())
         {
-            
             copy.setFolderId("");
             copy.setFolderTitle("");
             copy.setFolderUrl("");

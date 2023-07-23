@@ -50,8 +50,8 @@ CThumbsView::~CThumbsView()
 
 void CThumbsView::Init(bool Extended)
 {
-    const int THUMBNAIL_WIDTH = 150;
-    const int THUMBNAIL_HEIGHT = 120;
+    constexpr int THUMBNAIL_WIDTH = 150;
+    constexpr int THUMBNAIL_HEIGHT = 120;
     CClientDC dc(m_hWnd);
     float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;

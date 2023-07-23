@@ -362,11 +362,11 @@ bool CUpdateManager::AreCoreUpdates() const
 }
 
 bool CUpdateManager::AreManualUpdates() const {
-    return m_manualUpdatesList.size() != 0;
+    return !m_manualUpdatesList.empty();
 }
 
 bool CUpdateManager::AreAutoUpdates() const {
-    return m_updateList.size() != 0;
+    return !m_updateList.empty();
 }
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)

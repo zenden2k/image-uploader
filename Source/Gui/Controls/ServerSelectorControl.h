@@ -124,8 +124,6 @@ private:
     bool defaultServer_;
     std::vector<CString> menuOpenedUserNames_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
-    static const char kAddFtpServer[];
-    static const char kAddDirectoryAsServer[];
     int previousSelectedServerIndex;
     UploadEngineManager* uploadEngineManager_;
     bool isPopingUp_;

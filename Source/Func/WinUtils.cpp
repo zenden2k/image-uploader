@@ -787,7 +787,7 @@ bool FontToString(const LOGFONT * lFont, CString &Result)
     return true;
 }
 
-bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
+bool StringToFont(LPCTSTR szBuffer, LPLOGFONT lFont, HDC targetDc)
 {
     TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
 
@@ -821,9 +821,13 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 
     ZeroMemory(lFont,sizeof(LOGFONT));
     lstrcpy(lFont->lfFaceName,szFontName);
-    HDC dc = ::GetDC(0);
+    HDC dc = targetDc ? targetDc : ::GetDC(nullptr);
+
     lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
-    ReleaseDC(0, dc);
+
+    if (!targetDc) {
+        ReleaseDC(nullptr, dc);
+    }
 
     lFont->lfItalic=bItalic;
     lFont->lfStrikeOut=bStrikeOut;

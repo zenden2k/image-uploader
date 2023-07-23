@@ -6,8 +6,8 @@
 #include "Core/3rdpart/UriParser.h"
 #include "Core/Utils/StringUtils.h"
 
-DownloadTask::DownloadTask(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, const std::vector<DownloadItem>& files):
-    factory_(std::move(factory)), files_(files), tempDirectory_(tempDirectory)
+DownloadTask::DownloadTask(std::shared_ptr<INetworkClientFactory> factory, std::string tempDirectory, const std::vector<DownloadItem>& files):
+    factory_(std::move(factory)), files_(files), tempDirectory_(std::move(tempDirectory))
 {
     isCanceled_ = false;
     isInProgress_ = false;
@@ -21,7 +21,13 @@ void DownloadTask::run() {
     isInProgress_ = true;
     std::unique_ptr<INetworkClient> nm(factory_->create());
     using namespace std::placeholders;
-    nm->setProgressCallback(std::bind(&DownloadTask::progressCallback, this, _1, _2, _3, _4, _5));
+    nm->setProgressCallback([this](INetworkClient* /* userData*/, double /*dltotal*/, double /*dlnow*/, double/* ultotal*/, double /*ulnow*/) -> int {
+        if (isCanceled_) {
+            return -1;
+        }
+
+        return 0;
+    });
 
     for (auto& file : files_) {
         if (isCanceled_) {
@@ -31,6 +37,7 @@ void DownloadTask::run() {
         std::string path = uri.path();
         std::string fileName = nm->urlDecode(IuCoreUtils::ExtractFileName(path));
 
+        std::string ext = IuCoreUtils::ExtractFileExt(fileName);
         if (fileName.length() > 30) {
             fileName = fileName.substr(0, 30);
         }
@@ -46,6 +53,9 @@ void DownloadTask::run() {
 #else
             filePath = tempstr;
 #endif
+            if (!ext.empty()) {
+                filePath += "." + ext;
+            }
         }
         else {
             filePath = file.fileName;
@@ -57,10 +67,11 @@ void DownloadTask::run() {
         FILE* f = IuCoreUtils::FopenUtf8(fullFilePath.c_str(), "wb");
         if (f) {
             fclose(f);
-        }
-        else {
+        } else {
+            char buf[256] = {'\0'};
+            strerror_s(buf, sizeof(buf), errno);
             LOG(ERROR) << "Unable to create file:" << std::endl << filePath << std::endl
-                << "Error: " << strerror(errno);
+                << "Error: " << buf;
             return;
         }
         std::string url = file.url;
@@ -97,12 +108,4 @@ bool DownloadTask::isCanceled() {
 
 bool DownloadTask::isInProgress() {
     return isInProgress_;
-}
-
-int DownloadTask::progressCallback(INetworkClient* /* userData*/, double /*dltotal*/, double /*dlnow*/, double/* ultotal*/, double /*ulnow*/) {
-    if (isCanceled_) {
-        return -1;
-    }
-
-    return 0;
 }

@@ -904,7 +904,7 @@ LRESULT CWizardDlg::OnDropFiles(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 
         if((IsVideoFile(szBuffer) && n==1) && !Settings.DropVideoFilesToTheList)
         {
-            if (enableDragndropOverlay_ && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList) {
+            if (enableDragndropOverlay_ && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList) {
                 goto filehost;
             }
 
@@ -1128,7 +1128,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         if(FileWasSaved) // Additing received file to program
                         {
                             if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_ 
-                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList))
+                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList))
                             {
 
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
@@ -1929,10 +1929,6 @@ bool CWizardDlg::isShowWindowSet() const {
 
 void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
-    if(Available)
-    {
-        //TRC(IDC_UPDATESLABEL, "Updates are available");
-    }
 }
     
 LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

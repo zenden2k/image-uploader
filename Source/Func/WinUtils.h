@@ -72,7 +72,7 @@ namespace WinUtils {
     }
 
     bool FontToString(LOGFONT const * lFont, CString &Result);
-    bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
+    bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont, HDC targetDc = nullptr);
 
     bool ExtractStrFromList(
         LPCTSTR szString /* Source string */,

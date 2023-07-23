@@ -9,13 +9,13 @@ class CDragndropOverlay :
 	public CWindowImpl <CDragndropOverlay>
 {
 public:
-	enum ITEM_ID { kInvalid, kAddToTheList, kImportVideoFile };
+	enum class ItemId { kInvalid, kAddToTheList, kImportVideoFile };
 	struct Item {
-		ITEM_ID id;
+        ItemId id;
 		RECT rc;
 		CString text;
 
-		Item(ITEM_ID i, const RECT& r, CString t): id(i), rc(r), text(t){
+		Item(ItemId i, const RECT& r, CString t): id(i), rc(r), text(t){
 		    
 		}
 	};
@@ -40,7 +40,7 @@ public:
 	LRESULT OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 
 	void dragMove(int x, int y);
-	ITEM_ID itemAtPos(int x, int y);
+    ItemId itemAtPos(int x, int y);
 private:
 	CFont font_;
 	CDC backBufferDc_;

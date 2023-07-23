@@ -315,7 +315,7 @@ protected:
     boost::signals2::connection settingsChangedConnection_;
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
-    CDragndropOverlay::ITEM_ID dragndropOverlaySelectedItem_ = CDragndropOverlay::kInvalid;
+    CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
 };
 
 

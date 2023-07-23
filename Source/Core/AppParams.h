@@ -5,7 +5,6 @@
 
 #include "Core/Utils/Singleton.h"
 
-
 #ifdef _WIN32
 #include "atlheaders.h"
 #endif

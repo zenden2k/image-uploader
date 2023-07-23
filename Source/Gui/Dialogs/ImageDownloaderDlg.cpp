@@ -34,6 +34,7 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
 #include "Core/3rdpart/UriParser.h"
+#include "Core/Images/ImageLoader.h"
 
 namespace {
 
@@ -159,7 +160,19 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
         if(!IuCommonFunctions::IsImage(ais.RealFileName))
         {
             std::string mimeType = IuCoreUtils::GetFileMimeType(W2U(ais.RealFileName));
-            if (mimeType.find("image/") != std::string::npos)
+
+            bool isImage = mimeType.find("image/") != std::string::npos;
+
+            /*if (!isImage) {
+
+                ImageLoader loader;
+                auto img = loader.loadFromFile(ais.RealFileName);
+                if(img) {
+                    isImage = true;
+                }
+            }*/
+
+            if (isImage)
             {
                 CString ext = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(mimeType));
                 if(!ext.IsEmpty())
@@ -188,7 +201,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
             } else {
                 m_downloadedFiles.push_back(ais.RealFileName);
             }
-            m_nSuccessfullDownloads++;
+            ++m_nSuccessfullDownloads;
             
         }
     }

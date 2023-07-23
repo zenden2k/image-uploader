@@ -221,7 +221,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGYANDEX, itemText);
         }
 
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove") + CString("\tDel"));
         contextMenu.AppendMenu(MF_STRING, MENUITEM_PROPERTIES, TR("Properties")+CString(_T("\tAlt+Enter")));
 
         contextMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);

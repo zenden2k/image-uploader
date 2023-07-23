@@ -60,14 +60,13 @@ LRESULT CTabListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 {
     auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
     CClientDC dc(m_hWnd);
-    //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
     int iItemIndex = lpmis->itemID;
     CString buf;
     RECT r = { 0, 0, 0, 0 };
     GetText(iItemIndex, buf);
     dc.DrawText(buf, buf.GetLength(), &r, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE);
-    lpmis->itemHeight = r.bottom - r.top + static_cast<int>(roundf(15 * dpiScaleY_));
+    lpmis->itemHeight = r.bottom - r.top + MulDiv(15, dpiY, USER_DEFAULT_SCREEN_DPI);
     bHandled = true;
     return TRUE;
 }

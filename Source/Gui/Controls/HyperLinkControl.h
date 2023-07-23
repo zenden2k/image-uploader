@@ -108,8 +108,6 @@ protected:
     HCURSOR handCursor_, arrowCursor_;
     CFont NormalFont;
     COLORREF m_BkColor;
-    int dpiX;
-    int dpiY;
     int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
     void CreateDoubleBuffer();
@@ -117,8 +115,6 @@ protected:
     CBitmap bmMem_;
     HBITMAP bmpOld_;
     static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
-    int ScaleX(int x) const;
-    int ScaleY(int y) const;
 };
 
 

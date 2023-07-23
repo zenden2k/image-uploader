@@ -50,9 +50,9 @@ CString trim(const CString& Str)
 // CLogListBox
 CLogListBox::CLogListBox()
 {
-    ErrorIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ERRORICON));
-    WarningIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWARNING));
-    InfoIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONINFOBIG));
+    ErrorIcon.LoadIcon(MAKEINTRESOURCE(IDI_ERRORICON));
+    WarningIcon.LoadIcon(MAKEINTRESOURCE(IDI_ICONWARNING));
+    InfoIcon.LoadIcon(MAKEINTRESOURCE(IDI_ICONINFOBIG));
 }
 
 CLogListBox::~CLogListBox()
@@ -125,7 +125,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
         POINT iconPos{ static_cast<int>(roundf(dpiScaleX_ * 5)), r.top + static_cast<int>(roundf(dpiScaleY_ * 5)) };
 
-        CIcon* ico = nullptr;
+        CIconHandle* ico = nullptr;
         switch (item->Type) {
             case ILogger::logError:
                 ico = &ErrorIcon;

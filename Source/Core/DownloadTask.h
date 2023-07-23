@@ -19,7 +19,7 @@ public:
         void* id; // pointer to user data
     };
 
-    explicit DownloadTask(std::shared_ptr<INetworkClientFactory> factory, const std::string& tempDirectory, const std::vector<DownloadItem>& files);
+    explicit DownloadTask(std::shared_ptr<INetworkClientFactory> factory, std::string tempDirectory, const std::vector<DownloadItem>& files);
     void run() override;
     void cancel() override;
     bool isCanceled() override;
@@ -34,8 +34,6 @@ private:
     std::shared_ptr<INetworkClientFactory> factory_;
     std::vector<DownloadItem> files_;
     std::string tempDirectory_;
-
-    int progressCallback(INetworkClient* userData, double dltotal, double dlnow, double ultotal, double ulnow);
 };
 
 #endif

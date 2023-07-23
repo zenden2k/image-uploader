@@ -79,6 +79,8 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     img.ShowWindow(SW_HIDE);
     img.loadImage(nullptr);
 
+    profileCombobox_ = GetDlgItem(IDC_PROFILECOMBO);
+
     GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
     // Items order should be the same as ImageUtils::SaveImageFormat
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 6, TR("Auto"), _T("JPEG"), _T("PNG"),_T("GIF"), _T("WebP"), _T("WebP (lossless)"));
@@ -305,20 +307,24 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 }
 
 void CLogoSettings::UpdateProfileList() {
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
+    profileCombobox_.ResetContent();
 
     bool found = false;
-    for (auto it = convert_profiles_.begin(); it != convert_profiles_.end(); ++it) {
-        GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
-        if (it->first == CurrentProfileName) found = true;
+    for (auto it: convert_profiles_) {
+        profileCombobox_.AddString(it.first);
+        if (it.first == CurrentProfileName) {
+            found = true;
+        }
     }
-    if (!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),
-                       reinterpret_cast<LPARAM>(CurrentProfileName.GetString()));
+    if (!found) {
+        profileCombobox_.AddString(CurrentProfileName);
+    }
+
+    profileCombobox_.SelectString(-1, CurrentProfileName);
 }
 
- LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
- {
+LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
     CInputDialog dlg(TR("New Profile Name"), TR("Enter new profile name:"), CurrentProfileOriginalName);
     if(dlg.DoModal(m_hWnd)==IDOK)
     {
@@ -331,7 +337,7 @@ void CLogoSettings::UpdateProfileList() {
          UpdateProfileList();
     }
     return 0;
- }
+}
 
 LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
@@ -349,7 +355,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     return 0;
 }
 
-void CLogoSettings::ShowParams(const CString profileName)
+void CLogoSettings::ShowParams(const CString& profileName)
 {
     if (CurrentProfileName == profileName) {
         return;
