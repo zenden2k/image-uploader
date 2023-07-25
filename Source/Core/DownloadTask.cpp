@@ -1,5 +1,6 @@
 #include "DownloadTask.h"
 
+#include <cstring>
 #include <boost/filesystem.hpp>
 
 #include "Core/Utils/CoreUtils.h"
@@ -46,7 +47,7 @@ void DownloadTask::run() {
 
         if (file.fileName.empty()) {
             boost::filesystem::path temp = boost::filesystem::unique_path();
-            auto tempstr = temp.native();
+            const auto& tempstr = temp.native();
 
 #ifdef _WIN32
             filePath = IuCoreUtils::WstringToUtf8(tempstr);
@@ -69,7 +70,11 @@ void DownloadTask::run() {
             fclose(f);
         } else {
             char buf[256] = {'\0'};
+#ifdef _WIN32
             strerror_s(buf, sizeof(buf), errno);
+#else
+            strerror_r(errno, buf, sizeof(buf));
+#endif
             LOG(ERROR) << "Unable to create file:" << std::endl << filePath << std::endl
                 << "Error: " << buf;
             return;
