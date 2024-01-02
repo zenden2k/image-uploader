@@ -412,9 +412,3 @@ if(IU_BUILD_QIMAGEUPLOADER)
 endif()	
 #enable_testing() 
 add_subdirectory(Tests)	
-
-#add_custom_target(graphviz ALL
-#    COMMAND ${CMAKE_COMMAND} "--graphviz=iu_graph.dot" .
-#    COMMAND dot -Tpng iu_graph.dot -o iu_graph.png
- #   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-#)
