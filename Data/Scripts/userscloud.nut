@@ -57,7 +57,6 @@ function UploadFile(fileName, options) {
                     }
                 }
                 
-                return 1;
             } else {
                 WriteLog("error", "[userscloud.com] Status: " + t.file_status);
             }

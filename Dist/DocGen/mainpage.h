@@ -16,7 +16,7 @@
 Squirrel is a high level imperative, object-oriented programming language, designed to be a light-weight scripting language that fits in the size, memory bandwidth, and real-time requirements of applications like video games.</p>
 <p>
 <a href="http://www.squirrel-lang.org/doc/squirrel3.html" target="_blank">Squirrel 3.0 reference manual</a><br>
-<a href="http://www.squirrel-lang.org/doc/sqstdlib3.html" target="_blank">Squirrel 3.0 Standard Libraries manual</a>
+<a href="http://www.squirrel-lang.org/doc/sqstdlib3.pdf" target="_blank">Squirrel 3.0 Standard Libraries manual (PDF)</a>
 
 <p>Scripts should be saved in utf-8 encoding in files with <code>.nut</code> extension and placed in the Data/Scripts directory.
 <hr/>

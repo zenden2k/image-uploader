@@ -112,13 +112,13 @@
             />
             <Action
                 Type="upload"
-                Url="http://$(Server).multiup.org/upload/index.php"
+                Url="https://$(Server).multiup.org/upload/index.php"
                 PostParams="files[]=%filename%;"
                 RegExp="&quot;name&quot;:&quot;([^&quot;]+)&quot;[\s\S]*?&quot;hash&quot;:&quot;([^&quot;]+)&quot;"
                 AssignVars="Name:0;Hash:1;"
             />
         </Actions>
-        <Result DownloadUrlTemplate="http://www.multiup.org/download/$(Hash)/$(Name)" />
+        <Result DownloadUrlTemplate="https://www.multiup.org/download/$(Hash)/$(Name)" />
     </Server>
         <!-- /Thanks to Alex_Qwerty -->
 	<!--
@@ -308,6 +308,23 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
+	<Server Name="nekofile.eu.org" FileHost="1">
+		<Actions>
+			<Action Type="upload" Url="https://nekofile.eu.org" PostParams="file=%filename%" RegExp="https://nekofile.eu.org/(\w+)" AssignVars="Link:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="https://nekofile.eu.org/$(Link)"/>
+	</Server>
+	<Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="200000000" PasswordLabel="userhash">
+		<Actions>
+			<Action Type="upload" Url="https://catbox.moe/user/api.php" PostParams="reqtype=fileupload;userhash=$(_PASSWORD);fileToUpload=%filename%;" RegExp="^(.+)$" AssignVars="UploadedUrl:0;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(UploadedUrl)" />
+	</Server>
+	<Server Name="fileditch.com" FileHost="1" Plugin="fileditch">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" />
 	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">

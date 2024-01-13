@@ -65,7 +65,6 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "statusdlg.h"
-#include "Core/Video/VideoUtils.h"
 #include "ServerListTool/ServersCheckerDlg.h"
 
 using namespace Gdiplus;
@@ -1716,7 +1715,7 @@ bool CWizardDlg::funcLastRegionScreenshot() {
 
 bool CWizardDlg::funcAddFolder() {
 
-    const DWORD kCheckboxId = 2000;
+    constexpr DWORD kCheckboxId = 2000;
     CNewStyleFolderDialog dlg(m_hWnd, CString(), TR("Choose folder"), true);
     dlg.AddCheckbox(kCheckboxId, TR("Including subdirectories"), Settings.ParseSubDirs);
     if (dlg.DoModal(m_hWnd) == IDOK) {
@@ -1748,12 +1747,12 @@ void CWizardDlg::CloseWizard()
 bool CWizardDlg::RegisterLocalHotkeys() {
     m_hotkeys = Settings.Hotkeys;
     int n = m_hotkeys.size();
-    constexpr auto PRDEFINED_ACCEL_COUNT = 2;
-    auto accels = std::make_unique<ACCEL[]>(n + PRDEFINED_ACCEL_COUNT);
+    constexpr auto PREDEFINED_ACCEL_COUNT = 2;
+    auto accels = std::make_unique<ACCEL[]>(n + PREDEFINED_ACCEL_COUNT);
     accels[0] = {FVIRTKEY, VK_F1, IDC_DOCUMENTATION};
     accels[1] = {FVIRTKEY | FCONTROL | FSHIFT, 'L', IDC_SHOWLOG};
 
-    int j = PRDEFINED_ACCEL_COUNT;
+    int j = PREDEFINED_ACCEL_COUNT;
     for (int i = 0; i < n; i++) {
         if (!m_hotkeys[i].localKey.keyCode) {
             continue;
