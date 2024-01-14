@@ -134,12 +134,12 @@ function UploadFile(FileName, options) {
         local bbCode = doc.find("input[name=bb]").attr("value");
         local reg = CRegExp("\\[URL=(.+?)\\]\\[IMG\\](.+?)\\[/IMG\\]", "mi");
         local viewUrl = "";
-        local thumbUrl = "";
+        local imageUrl = "";
         if (reg.match(bbCode)) {
             viewUrl = reg.getMatch(1);
-            thumbUrl = reg.getMatch(2);
+            imageUrl = reg.getMatch(2);
             options.setViewUrl(viewUrl);
-            options.setThumbUrl(thumbUrl);
+            options.setDirectUrl(imageUrl);
         }
         if (viewUrl != "") {
             return 1;

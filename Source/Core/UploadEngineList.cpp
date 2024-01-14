@@ -27,6 +27,25 @@
 #include "Core/Utils/StringUtils.h"
 #include "AppParams.h"
 
+namespace {
+
+template <typename T>
+void SplitAssignVarsString(T & reg) {
+    std::vector<std::string> Vars;
+    IuStringUtils::Split(reg.AssignVars, ";", Vars);
+
+    for (auto it = Vars.begin(); it != Vars.end(); ++it) {
+        std::vector<std::string> NameAndValue;
+        IuStringUtils::Split(*it, ":", NameAndValue);
+        if (NameAndValue.size() == 2) {
+            ActionVariable AV;
+            AV.Name = NameAndValue[0];
+            AV.nIndex = atoi(NameAndValue[1].c_str());
+            reg.Variables.push_back(AV);
+        }
+    }
+}
+}
 CUploadEngineList::CUploadEngineList()
 {
     m_EngineNumOfRetries = 3;
@@ -182,38 +201,48 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
             UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 
-            ActionRegExp regexp;
-            regexp.Pattern = actionNode.Attribute("RegExp");
-            regexp.AssignVars = actionNode.Attribute("AssignVars");
-            regexp.Required = true;
-            UA.Regexes.push_back(regexp);
+            ActionFunc funcCall(ActionFunc::FUNC_REGEXP);
+            funcCall.setArg(1, actionNode.Attribute("RegExp"));
+            funcCall.AssignVars = actionNode.Attribute("AssignVars");
+            funcCall.Required = true;
+            UA.FunctionCalls.push_back(funcCall);
 
-            std::vector<SimpleXmlNode> regexpNodes;
-            actionNode.GetChilds("RegExp", regexpNodes);
+            int funcCount = actionNode.GetChildCount();
 
-            for (auto& regexpNode : regexpNodes) {
-                ActionRegExp newRegexp;
-                newRegexp.Pattern = regexpNode.Attribute("Pattern");
-                newRegexp.AssignVars = regexpNode.Attribute("AssignVars");
-                newRegexp.Required = regexpNode.AttributeBool("Required");
-                newRegexp.Data = regexpNode.Attribute("Data");
-                UA.Regexes.push_back(newRegexp);
+            for (int k = 0; k < funcCount; k++) {
+                auto callNode = actionNode.GetChildByIndex(k);
+                if (callNode.Name() == "RegExp") {
+                    ActionFunc newFuncCall(ActionFunc::FUNC_REGEXP);
+                    newFuncCall.setArg(1, callNode.Attribute("Pattern"));
+                    newFuncCall.AssignVars = callNode.Attribute("AssignVars");
+                    newFuncCall.Required = callNode.AttributeBool("Required");
+                    newFuncCall.setArg(0, callNode.Attribute("Data"));
+                    UA.FunctionCalls.push_back(newFuncCall);
+                } else if (callNode.Name() == "Call") {
+                    ActionFunc newFuncCall;
+                    newFuncCall.Func = callNode.Attribute("Function");
+                    newFuncCall.AssignVars = callNode.Attribute("AssignVars");
+                    newFuncCall.Required = callNode.AttributeBool("Required");
+                    std::vector<std::string> argumentsAttributeNames;
+                    callNode.GetAttributes(argumentsAttributeNames);
+                    std::string prefix{ "Arg" };
+                    for (auto& name : argumentsAttributeNames) {
+                        if (!name.compare(0, prefix.size(), prefix)) {
+                            size_t index = std::stoi(name.substr(prefix.size()));
+                            std::string val;
+                            callNode.GetAttribute(name, val);
+                            newFuncCall.setArg(index, val);
+                        }
+                    }
+                    UA.FunctionCalls.push_back(newFuncCall);
+                } else {
+                    LOG(ERROR) << "Unknown function: " << callNode.Name();
+                    break;
+                }
             }
 
-            for (auto& reg : UA.Regexes) {
-                std::vector<std::string> Vars;
-                IuStringUtils::Split(reg.AssignVars, ";", Vars);
-
-                for (auto it = Vars.begin(); it != Vars.end(); ++it) {
-                    std::vector<std::string> NameAndValue;
-                    IuStringUtils::Split(*it, ":", NameAndValue);
-                    if (NameAndValue.size() == 2) {
-                        ActionVariable AV;
-                        AV.Name = NameAndValue[0];
-                        AV.nIndex = atoi(NameAndValue[1].c_str());
-                        reg.Variables.push_back(AV);
-                    }
-                }
+            for (auto& reg: UA.FunctionCalls) {
+                SplitAssignVarsString(reg);
             }
 
             UE.Actions.push_back(UA);

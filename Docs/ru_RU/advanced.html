@@ -199,8 +199,20 @@ To remove default field, pass an empty value.
 	<li><code>Required</code>  - генерировать ошибку, если сопоставление регулярному выражению не удалось. (по умолчанию 0)</li>
 	<li><code>Data</code> - в каком тексте производить поиск. Может содержать переменные. (по умолчанию  - текст ответа от сервера)</li>
 </ul>
+<code>Call</code> - вызов функции (version >= 1.4.0) 
+<pre class="prettyprint">
+&lt;Call Function=&quot;json&quot; Arg1=&quot;files[0].url&quot; AssignVars=&quot;DownloadUrl:0;&quot;/&gt;
+</pre>	
+<ul>
+	<li><code>Function</code> - название функции. Пока доступны только функции json и regexp. 
+		Примеры синтаксиса json path можно увидеть <a href="https://open-source-parsers.github.io/jsoncpp-docs/doxygen/class_json_1_1_path.html" target="_blank">здесь</a>.
+	</li>
+	<li><code>Arg[n]</code> (Arg0, Arg1, Arg2) - аргументы. Arg0 по-умолчанию содержит тело ответа. Могут содержать переменные.</li>
+	<li><code>AssignVars</code> - то же самое, что атрибут AssignVars у узла Action.</li>
+	<li><code>Required</code>  - генерировать ошибку, если функция завершилась с ошибкой (по умолчанию 0)</li>	
+</ul>
 </li>
-		
+
 <br />
 </ul>
 <p>Типичный вид xml-узла Result:</p>

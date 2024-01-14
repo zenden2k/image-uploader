@@ -54,15 +54,39 @@ struct ActionVariable
     }
 };
 
-struct ActionRegExp {
-    std::string Pattern;
-    std::string Data;
+
+struct ActionFunc {
+    static constexpr auto FUNC_REGEXP = "regexp";
+    static constexpr auto FUNC_JSON = "json";
+    std::string Func;
     std::string AssignVars;
+    std::vector<std::string> Arguments;
     std::vector<ActionVariable> Variables;
     bool Required;
 
-    ActionRegExp() : Required(true) {
+    ActionFunc() : Required(true) {
+
+    }
+
+    ActionFunc(std::string functionName): Func(std::move(functionName)), Required(true){
         
+    }
+
+    void setArg(size_t index, const std::string& value) {
+        if (index > 100) {
+            LOG(ERROR) << "Function call has too many arguments: " << index << " (max 100)";
+            return;
+        }
+        if (Arguments.size() < index + 1) {
+            Arguments.resize(index + 1);
+        }
+        Arguments[index] = value;
+    }
+    std::string getArg(size_t index) const {
+        if (index < Arguments.size()) {
+            return Arguments[index];
+        }
+        return {};
     }
 };
 
@@ -79,7 +103,8 @@ struct UploadAction
     std::string Type;
    // std::string RegExp;
 
-    std::vector<ActionRegExp> Regexes;
+    //std::vector<ActionRegExp> Regexes;
+    std::vector<ActionFunc> FunctionCalls;
     int RetryLimit;
     //int NumOfTries;
 

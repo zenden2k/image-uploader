@@ -217,11 +217,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-    <Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
+    <!-- Они отключили загрузку
+		<Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>
+	</Server>-->
     <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" LoginLabel="API key" NeedPassword="0">
 		<Actions>
 		</Actions>
@@ -253,16 +254,15 @@
 	</Server>
 	<Server Name="yourfilestore.com" FileHost="1" MaxFileSize="500000000">
 		<Actions>
-			<Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" AssignVars="FileId:0;">
+			<Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">
+				<RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>
+			</Action>
+			<Action Type="upload" Url="https://yourfilestore.com/upload" PostParams="UPLOAD_IDENTIFIER=$(UploadId);xcsrf_token=$(XcsrfToken);userfile=%filename%;" RegExp="(https://yourfilestore.com/download/.+?)&quot;" 
+					AssignVars="FileId:0;" Referer="https://yourfilestore.com/">
 				<RegExp Pattern="(https://yourfilestore.com/delete/.+?)&quot;" AssignVars="DeleteUrl:0"/>
 			</Action>
 		</Actions>
 		<Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
-	</Server>
-	<Server Name="myfile.is" Authorize="0" FileHost="1" Plugin="myfile.is" NeedPassword="0"> 
-		<Actions>
-		</Actions>
-		<Result DownloadUrlTemplate="stub" />
 	</Server>
 	<Server Name="freeimage.host" Authorize="0" Type="image" Plugin="freeimage.host">
 		<Actions>
@@ -311,7 +311,7 @@
 	</Server>
 	<Server Name="nekofile.eu.org" FileHost="1">
 		<Actions>
-			<Action Type="upload" Url="https://nekofile.eu.org" PostParams="file=%filename%" RegExp="https://nekofile.eu.org/(\w+)" AssignVars="Link:0"/>
+			<Action Type="upload" Url="https://nekofile.eu.org" PostParams="file=%filename%" RegExp="https://nekofile.eu.org/(.+)" AssignVars="Link:0"/>
 		</Actions>
 		<Result ImageUrlTemplate="https://nekofile.eu.org/$(Link)"/>
 	</Server>
@@ -329,8 +329,34 @@
 	<Server Name="imgsrc.ru" Plugin="imgsrc.ru" Authorize="2" SupportsFolders="1">
 		<Actions>
 		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
+		<Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" />
 	</Server>
+	<Server Name="qu.ax" FileHost="1" Plugin="qu.ax" MaxFileSize="268435456">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" />
+	</Server>
+	<!--<Server Name="qu.ax2" Debug="0" FileHost="1" MaxFileSize="268435456" MinVersion="1.4.0">
+		<Actions>
+			<Action Type="upload" Url="https://qu.ax/upload.php" PostParams="files[]=%filename%;">
+				<Call Function="json" Arg1="files[0].url" AssignVars="UploadedUrl:0;"/>
+			</Action>
+		</Actions>
+		<Result ImageUrlTemplate="$(UploadedUrl)" />
+	</Server>-->
+	<Server Name="file.silentsilas.com" FileHost="1" MaxFileSize="536870912">
+		<Actions>
+			<Action Type="upload" Url="https://file.silentsilas.com" PostParams="file=%filename%" RegExp="(https://file.silentsilas.com/.+)" AssignVars="Link:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Link)"/>
+	</Server>
+	<Server Name="m.freespeech.club" FileHost="1" MaxFileSize="536870912">
+		<Actions>
+			<Action Type="upload" Url="https://m.freespeech.club" PostParams="file=%filename%" RegExp="(https://m.freespeech.club/.+)" AssignVars="Link:0"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Link)"/>
+	</Server>
+
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

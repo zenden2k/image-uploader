@@ -44,18 +44,26 @@ TEST_F(UploadEngineListTest, loadFromFile)
     const UploadAction& action = engineData->Actions[0];
     EXPECT_EQ("http://fastpic.ru/upload?api=1", action.Url);
     EXPECT_EQ("method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)", action.PostParams);
-    EXPECT_EQ(2, action.Regexes.size());
+    EXPECT_EQ(3, action.FunctionCalls.size());
     {
-        const ActionRegExp& regexp = action.Regexes[0];
-        EXPECT_EQ("<imagepath>(.*?)<\\/imagepath>([\\s\\S]*?)<thumbpath>(.*?)<\\/thumbpath>", regexp.Pattern);
+        const ActionFunc& regexp = action.FunctionCalls[0];
+        EXPECT_EQ("<imagepath>(.*?)<\\/imagepath>([\\s\\S]*?)<thumbpath>(.*?)<\\/thumbpath>", regexp.getArg(1));
         EXPECT_EQ("Image:0;Thumb:2", regexp.AssignVars);
         EXPECT_EQ(true, regexp.Required);
     }
     {
-        const ActionRegExp& regexp = action.Regexes[1];
-        EXPECT_EQ("<viewurl>(.*?)<\\/viewurl>", regexp.Pattern);
+        const ActionFunc& regexp = action.FunctionCalls[1];
+        EXPECT_EQ("<viewurl>(.*?)<\\/viewurl>", regexp.getArg(1));
         EXPECT_EQ(false, regexp.Required);
         EXPECT_EQ("DownloadUrl:0;", regexp.AssignVars);
+    }
+
+    // function calls within action
+    {
+        const ActionFunc& functionCall = action.FunctionCalls[2];
+        EXPECT_EQ("json", functionCall.Func);
+        EXPECT_EQ(1, functionCall.Arguments.size());
+        EXPECT_EQ(1, functionCall.Variables.size());
     }
 
     engineData = list.byName("8b.kz");
@@ -72,10 +80,10 @@ TEST_F(UploadEngineListTest, loadFromFile)
         EXPECT_EQ("post", action.Type);
         EXPECT_EQ("custom=;url=$(_ORIGINALURL|urlencode)", action.PostParams);
         EXPECT_EQ("http://8b.kz/", action.Referer);
-        EXPECT_EQ(1, action.Regexes.size());
+        EXPECT_EQ(1, action.FunctionCalls.size());
         {
-            const ActionRegExp& regexp = action.Regexes[0];
-            EXPECT_EQ("\"key\":\"((\\\\\"|[^\"])*)\"", regexp.Pattern);
+            const ActionFunc& regexp = action.FunctionCalls[0];
+            EXPECT_EQ("\"key\":\"((\\\\\"|[^\"])*)\"", regexp.getArg(1));
             EXPECT_EQ(true, regexp.Required);
             EXPECT_EQ("surl:0", regexp.AssignVars);
         }
