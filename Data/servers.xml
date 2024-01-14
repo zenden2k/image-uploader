@@ -326,6 +326,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" />
 	</Server>
+	<Server Name="imgsrc.ru" Plugin="imgsrc.ru" Authorize="2" SupportsFolders="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" />
+	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>
