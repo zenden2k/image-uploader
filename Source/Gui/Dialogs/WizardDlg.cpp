@@ -1573,6 +1573,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcFullScreenshot();
     else if (funcName == _T("windowhandlescreenshot"))
         return funcWindowHandleScreenshot();
+    else if (funcName == _T("topwindowscreenshot"))
+        return funcTopWindowScreenshot();
     else if (funcName == _T("freeformscreenshot"))
         return funcFreeformScreenshot();
     else if (funcName == _T("lastregionscreenshot"))
@@ -2023,16 +2025,20 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             result = engine.capturedBitmap();
         } else {
             // Show old window for selecting screen region
-            RegionSelect.Parent = m_hWnd;
             SelectionMode selMode = SelectionMode::smRectangles;
+            bool onlyTopWindows = false;
             if(mode == cmFreeform)
                 selMode = SelectionMode::smFreeform;
             if(mode == cmRectangles)
                 selMode = SelectionMode::smRectangles;
-            if(mode == cmWindowHandles)
+            if (mode == cmWindowHandles || mode == cmTopWindowHandles) {
                 selMode = SelectionMode::smWindowHandles;
+            }
+            if (mode == cmTopWindowHandles) {
+                onlyTopWindows = true;
+            }
 
-            RegionSelect.m_SelectionMode = selMode;
+            RegionSelect.setSelectionMode(selMode, onlyTopWindows);
             std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
             if(res)
             {
@@ -2176,6 +2182,11 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 bool CWizardDlg::funcWindowHandleScreenshot()
 {
     return CommonScreenshot(ScreenCapture::cmWindowHandles);
+}
+
+bool CWizardDlg::funcTopWindowScreenshot()
+{
+    return CommonScreenshot(ScreenCapture::cmTopWindowHandles);
 }
 
 bool CWizardDlg::funcFreeformScreenshot()

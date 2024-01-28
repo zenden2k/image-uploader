@@ -47,8 +47,9 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
     CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
     CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
-    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONWINDOWS));
-    
+    CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, LOADICO(IDI_ICONWINDOWS));
+    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONCONTROLS));
+
     SetWindowText(TR("Screen Capture"));
     TRC(IDC_DELAYLABEL, "Timeout:");
     TRC(IDC_SECLABEL, "sec");
@@ -154,6 +155,11 @@ LRESULT CScreenshotDlg::OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD 
 LRESULT CScreenshotDlg::OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmWindowHandles;
+    return EndDialog(IDOK);
+}
+
+LRESULT CScreenshotDlg::OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    m_CaptureMode = cmTopWindowHandles;
     return EndDialog(IDOK);
 }
         

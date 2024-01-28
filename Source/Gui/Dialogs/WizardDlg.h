@@ -191,6 +191,7 @@ public:
     bool funcRegionScreenshot(bool ShowAfter = true);
     bool funcFullScreenshot();
     bool funcWindowHandleScreenshot();
+    bool funcTopWindowScreenshot();
     bool funcFreeformScreenshot();
     bool funcWindowScreenshot(bool Delay = false);
     bool funcLastRegionScreenshot();

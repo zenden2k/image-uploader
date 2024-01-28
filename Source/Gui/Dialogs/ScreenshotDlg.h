@@ -36,6 +36,7 @@
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
 #define IDC_FREEFORMREGION WM_USER + 222
 #define IDC_HWNDSREGION WM_USER + 223
+#define IDC_TOPWINDOWREGION WM_USER + 224
 
 
 class CScreenshotDlg : 
@@ -61,6 +62,7 @@ class CScreenshotDlg :
             COMMAND_HANDLER(IDC_REGIONSELECT, BN_CLICKED, OnBnClickedRegionselect)
             COMMAND_HANDLER(IDC_FREEFORMREGION, BN_CLICKED, OnBnClickedFreeFormRegion)
             COMMAND_HANDLER(IDC_HWNDSREGION, BN_CLICKED, OnBnClickedWindowHandlesRegion)
+            COMMAND_HANDLER(IDC_TOPWINDOWREGION, BN_CLICKED, OnBnClickedTopWindowRegion)
         END_MSG_MAP()
     
         // Handler prototypes:
@@ -80,6 +82,7 @@ class CScreenshotDlg :
         LRESULT OnClickedFullscreenCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;

@@ -30,7 +30,7 @@
 
 namespace ScreenCapture {
 
-enum CaptureMode { cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles, cmLastRegion };
+enum CaptureMode { cmFullScreen, cmActiveWindow, cmRectangles, cmFreeform, cmWindowHandles, cmLastRegion, cmTopWindowHandles};
 
 enum MonitorMode { kCurrentMonitor = -2, kAllMonitors = -1, kSelectedMonitor = 0 };
 
