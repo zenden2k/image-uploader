@@ -41,12 +41,13 @@ TEST_F(HeifImageReaderTest, ReadFromFile) {
 TEST_F(HeifImageReaderTest, ReadFromMemory) {
     {
         std::string fileName = TestHelpers::resolvePath("Images/heic-640.heic");
-        uint8_t* data{};
-        size_t size{};
-        ASSERT_TRUE(ImageUtils::ExUtilReadFile(IuCoreUtils::Utf8ToWstring(fileName).c_str(), &data, &size));
+       
+        auto [dataPtr, size] = ImageUtils::ExUtilReadFile(IuCoreUtils::Utf8ToWstring(fileName).c_str());
+       
+        ASSERT_TRUE(!!dataPtr);
 
         HeifImageReader reader;
-        auto img = reader.readFromMemory(data, size);
+        auto img = reader.readFromMemory(dataPtr.get(), size);
 
         ASSERT_TRUE(!!img);
 
@@ -68,11 +69,11 @@ TEST_F(HeifImageReaderTest, ReadFromMemory) {
 TEST_F(HeifImageReaderTest, ReadFromStream) {
     {
         std::string fileName = TestHelpers::resolvePath("Images/heic-640.heic");
-        uint8_t* data{};
-        size_t size{};
-        ASSERT_TRUE(ImageUtils::ExUtilReadFile(IuCoreUtils::Utf8ToWstring(fileName).c_str(), &data, &size));
 
-        IStream* stream = SHCreateMemStream(data, size);
+        auto [dataPtr, size] = ImageUtils::ExUtilReadFile(IuCoreUtils::Utf8ToWstring(fileName).c_str());
+
+        ASSERT_TRUE(!!dataPtr);
+        IStream* stream = SHCreateMemStream(dataPtr.get(), size);
         ASSERT_TRUE(stream != nullptr);
         HeifImageReader reader;
         auto img = reader.readFromStream(stream);

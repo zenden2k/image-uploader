@@ -82,7 +82,7 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
 // Load image from file with webp support
 std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName);
 CString GdiplusStatusToString(Gdiplus::Status statusID);
-bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size);
+std::pair<std::unique_ptr<uint8_t[]>, size_t> ExUtilReadFile(const wchar_t* file_name);
 short GetImageOrientation(Gdiplus::Image* img);
 bool RotateAccordingToOrientation(short orient, Gdiplus::Image* img, bool removeTag = false);
 ImageInfo GetImageInfo(const wchar_t* fileName);

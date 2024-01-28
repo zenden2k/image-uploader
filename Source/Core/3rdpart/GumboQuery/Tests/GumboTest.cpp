@@ -8,17 +8,17 @@
 class GumboTest : public ::testing::Test {
 
 };
-/*
+
 TEST_F(GumboTest, Simple)
 {
-    std::string page("<h1><a>some link</a></h1>");
+    std::string page("<h1><a href=\"#\">some link</a></h1>");
     CDocument doc;
-    doc.parse(page.c_str());
+    doc.parse(page);
      
     CSelection c = doc.find("h1 a");
     EXPECT_EQ("some link", c.nodeAt(0).text());
     //std::cout << c.nodeAt(0).attribute("class") << std::endl; // some link
-}*/
+}
 
 TEST_F(GumboTest, Simple2)
 {

@@ -1300,13 +1300,13 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
 }
 
 // Allocates storage for entire file 'file_name' and returns contents and size
-bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
+std::pair<std::unique_ptr<uint8_t[]>, size_t> ExUtilReadFile(const wchar_t* file_name) {
 
     std::unique_ptr<uint8_t[]> file_data;
 
-    if (data == nullptr || data_size == nullptr) return 0;
-    *data = nullptr;
-    *data_size = 0;
+    if (file_name == nullptr) {
+        return {};
+    }
 
     FILE* in = _wfopen(file_name, L"rb");
     if (in == nullptr) {
@@ -1321,18 +1321,20 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     catch (std::exception &) {
         LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
         fclose(in);
-        return false;
+        return {};
     }
-    if (file_data == nullptr) return false;
+    if (file_data == nullptr) {
+        fclose(in);
+        return {};
+    }
     int ok = (fread(file_data.get(), 1, file_size, in) == file_size);
     fclose(in);
 
     if (!ok) {
         throw IOException(str(boost::format("Could not read %d bytes of data from file") % file_size), IuCoreUtils::WstringToUtf8(file_name));
     }
-    *data = file_data.release();
-    *data_size = file_size;
-    return true;
+
+    return std::make_pair(std::move(file_data), file_size);
 }
 
 bool IsImageMultiFrame(Gdiplus::Image* img) {

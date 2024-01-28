@@ -82,6 +82,7 @@ std::unique_ptr<GdiPlusImage> HeifImageReader::readFromMemory(uint8_t* data, siz
     heif_error err = heif_context_read_from_memory_without_copy(ctx, data, size, nullptr);
 
     if (err.code != 0) {
+        heif_context_free(ctx);
         lastError_ = boost::str(boost::wformat(L"Could not read HEIF/AVIF file: %s") % err.message);
         return {};
     }
