@@ -141,7 +141,13 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             UE.MaxThreads = 1;
         }
         bool fileHost = cur.AttributeBool("FileHost");
-        UE.MaxFileSize = cur.AttributeInt("MaxFileSize");
+        std::string maxFileSize = cur.Attribute("MaxFileSize");
+        if (!maxFileSize.empty()) {
+            try {
+                UE.MaxFileSize = std::stoll(maxFileSize);
+            } catch (const std::exception&) {
+            }
+        }
 
         std::string typeString = cur.Attribute("Type");
 
@@ -281,7 +287,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     return true;
 }
 
-bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, std::unique_ptr<CUploadEngineData>& elem2)
+bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2)
 {
     return IuStringUtils::stricmp(elem1->Name.c_str(), elem2->Name.c_str()) < 0;
 }

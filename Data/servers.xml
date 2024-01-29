@@ -54,12 +54,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="multi-up.com" FileHost="1">
-		<Actions>
-			 <Action Type="upload" Url="http://multi-up.com/up.php" PostParams="upload=%filename%;" RegExp='a href=http://multi-up.com/(\d*)' AssignVars="File:0"/>
-		</Actions>
-		<Result DownloadUrlTemplate="http://multi-up.com/$(File)"/>
-	</Server>
 	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000" DefaultForTypes="file">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
@@ -232,12 +226,6 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
-	</Server>
-	<!-- anonfiles.com is blocked in Russia -->
-    <Server Name="anonfiles.com" Authorize="1" Debug="0" FileHost="1" Plugin="anonfiles.com" NeedPassword="0">
-		<Actions>
-		</Actions>
-		<Result DownloadUrlTemplate="stub" />
 	</Server>
     <Server Name="Google Photos" Debug="0"  Authorize="2" Plugin="gphotos" SupportsFolders="1" NeedPassword="0" MaxThreads="1">
         <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

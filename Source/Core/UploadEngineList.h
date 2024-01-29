@@ -39,7 +39,7 @@ class CUploadEngineList: public CUploadEngineListBase
         int m_ActionNumOfRetries;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
-        bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, std::unique_ptr<CUploadEngineData>& elem2);
+        bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

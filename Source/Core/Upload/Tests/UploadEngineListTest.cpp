@@ -32,7 +32,7 @@ TEST_F(UploadEngineListTest, loadFromFile)
     engineData = list.byName("fastpic.ru");
     ASSERT_TRUE(engineData != nullptr);
     EXPECT_EQ("fastpic.ru", engineData->Name);
-    EXPECT_EQ(5000000, engineData->MaxFileSize);
+    EXPECT_EQ(10737418240, engineData->MaxFileSize);
     EXPECT_EQ(true, engineData->Debug);
     EXPECT_EQ(0, engineData->NeedAuthorization);
     EXPECT_EQ("", engineData->PluginName);

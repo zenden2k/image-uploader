@@ -9,10 +9,10 @@ function UploadFile(FileName, options) {
         local sJSON = nm.responseBody();
         local t = ParseJSON(sJSON);
         if (t != null) {
-            if (t.success) {
+            if ("success" in t && t.success) {
                 options.setDirectUrl(t.url);
                 return 1;
-            } else {
+            } else if ("message" in t) {
                 WriteLog("error", "[file.coffee] " + t.message);
             }
         } 
