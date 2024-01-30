@@ -21,11 +21,11 @@ namespace ServersListTool {
 
 class ServerData {
 public:
-    bool skip;
+    std::atomic_bool skip;
     int stars[3]; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
     uint32_t color;
-    int fileToCheck;
-    int filesChecked;
+    std::atomic<int> fileToCheck;
+    std::atomic<int> filesChecked;
     std::chrono::milliseconds::rep timeElapsed;
     std::atomic_bool finished;
     CUploadEngineData* ued;

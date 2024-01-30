@@ -237,8 +237,10 @@ LRESULT CServersCheckerDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
         ServerData* sd = model_.getDataByIndex(i);
         if (sd) {
             sd->skip = !sd->skip;
+            model_.notifyRowChanged(i);
         }
     }
+
     listView_.Invalidate();
     return 0;
 }
