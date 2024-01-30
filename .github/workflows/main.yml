@@ -34,7 +34,7 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
-        version: 1.57.0
+        version: 1.62.0
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
@@ -81,7 +81,7 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
-        version: 1.57.0
+        version: 1.62.0
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
