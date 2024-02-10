@@ -5,3 +5,4 @@
 - Proxy provided by DefaultProxyProvider not being changed on redirects
 - Fix log window buttons moving when RTL is on
 - Fix function names in docs (CSelection etc.)
+- File name conflict when uploading to Yandex.disk

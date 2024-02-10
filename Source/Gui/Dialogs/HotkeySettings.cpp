@@ -129,6 +129,14 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
+
+        int nCurItem = m_HotkeyList.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        if (nCurItem >= 0) {
+            CRect rc;
+            if (m_HotkeyList.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
+                ClientPoint = rc.CenterPoint();
+            }
+        }
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     }

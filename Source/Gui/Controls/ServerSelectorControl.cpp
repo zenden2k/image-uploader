@@ -51,7 +51,7 @@ char* DuplicateString(const char* str) {
 }
 
 // CServerSelectorControl
-CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow)
+CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow, bool showServerIcons)
 {
     showDefaultServerItem_ = false;
     serversMask_ = smImageServers | smFileServers;
@@ -66,6 +66,7 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     hMyDlgTemplate_ = nullptr;
     isPopingUp_ = false;
     showEmptyItem_ = false;
+    showServerIcons_ = showServerIcons;
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -389,8 +390,10 @@ void CServerSelectorControl::updateServerList()
 {
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
+    if (showServerIcons_) {
+        DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+        comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
+    }
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (showEmptyItem_) {
@@ -433,10 +436,13 @@ void CServerSelectorControl::updateServerList()
             if ( !ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && (currentLoopMask & smUrlShorteners) ) {
                 continue;
             }
-            HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;
-            if ( hImageIcon ) {
-                nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
+            if (showServerIcons_) {
+                HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
+
+                if (hImageIcon) {
+                    nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
+                }
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
@@ -457,7 +463,9 @@ void CServerSelectorControl::updateServerList()
         serverComboBox_.AddItem(TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddDirectoryAsServer));
     }
 
-    serverComboBox_.SetImageList( comboBoxImageList_ );
+    if (showServerIcons_) {
+        serverComboBox_.SetImageList(comboBoxImageList_);
+    }
     serverComboBox_.SetCurSel( selectedIndex );
     serverChanged();
 }

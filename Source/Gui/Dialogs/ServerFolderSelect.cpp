@@ -230,48 +230,66 @@ LRESULT CServerFolderSelect::OnFolderlistLbnDblclk(int idCtrl, LPNMHDR pnmh, BOO
 
 LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    POINT screenPoint{};
+    HWND hwnd = reinterpret_cast<HWND>(wParam);
+    if (hwnd != m_FolderTree.m_hWnd) {
+        return 0;
+    }
+
+    HTREEITEM selectedItem{};
+    int xPos = GET_X_LPARAM(lParam);
+    int yPos = GET_Y_LPARAM(lParam);
+
+    if (xPos == -1 && yPos == -1) {
+        // If the context menu is generated from the keyboard, the application should display
+        // the context menu at the location of the current selection rather than at (xPos, yPos).
+        CRect rc;
+        HTREEITEM firstSelectedItem = m_FolderTree.GetNextSelectedItem(nullptr);
+        if (firstSelectedItem) {
+            if (m_FolderTree.GetItemRect(firstSelectedItem, &rc, FALSE) ) {
+                m_FolderTree.MapWindowPoints(nullptr, &rc);
+                screenPoint = { rc.left, rc.bottom };
+                selectedItem = firstSelectedItem;
+            }
+        }
+    } else {
+        screenPoint.x = xPos;
+        screenPoint.y = yPos;
+        POINT clientPoint = screenPoint;
+        ::ScreenToClient(hwnd, &clientPoint);
+
+        UINT flags{};
+        HTREEITEM testItem = m_FolderTree.HitTest(clientPoint, &flags);
+        if (testItem && flags & TVHT_ONITEM) {
+            selectedItem = testItem;
+        }
+    }
+
+    if (!selectedItem) {
+        return 0;
+    }
+
+    m_FolderTree.SelectItem(selectedItem);
+
+    int nIndex = m_FolderTree.GetItemData(selectedItem);
+    bool showViewInBrowserItem = false;
+    BOOL copyFolderIdFlag = MFS_DISABLED;
+    if (nIndex >= 0 && nIndex < m_FolderList.GetCount()) {
+        const CFolderItem& folder = m_FolderList[nIndex];
+        if (!folder.getViewUrl().empty()) {
+            showViewInBrowserItem = true;
+        }
+        if (!folder.getId().empty() && folder.getId() != CFolderItem::NewFolderMark) {
+            copyFolderIdFlag = MFS_ENABLED;
+        }
+    }
+
     CMenu sub;
     MENUITEMINFO mi;
     mi.cbSize = sizeof(mi);
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
-
-    POINT ClientPoint, ScreenPoint;
-    HWND hwnd = reinterpret_cast<HWND>(wParam);
-    if (hwnd != m_FolderTree.m_hWnd)
-        return 0;
-
-    if (lParam == -1)
-    {
-        ClientPoint.x = 0;
-        ClientPoint.y = 0;
-        ScreenPoint = ClientPoint;
-        ::ClientToScreen(hwnd, &ScreenPoint);
-    }
-    else
-    {
-        ScreenPoint.x = GET_X_LPARAM(lParam);
-        ScreenPoint.y = GET_Y_LPARAM(lParam);
-        ClientPoint = ScreenPoint;
-        ::ScreenToClient(hwnd, &ClientPoint);
-    }
-
-    UINT flags;
-    HTREEITEM selectedItem = m_FolderTree.HitTest(ClientPoint, &flags);
-    if (!selectedItem)
-        return 0;
-
-    m_FolderTree.SelectItem(selectedItem);
-
-    int nIndex = m_FolderTree.GetItemData(selectedItem);
-    bool showViewInBrowserItem = false;
-    if (nIndex >= 0 && nIndex < m_FolderList.GetCount()) {
-        const CFolderItem& folder = m_FolderList[nIndex];
-        if (!folder.getViewUrl().empty()) {
-            showViewInBrowserItem = true;
-        }
-    }
 
     mi.wID = ID_EDITFOLDER;
     CString editStr = TR("Edit");
@@ -290,7 +308,9 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     mi.dwTypeData = const_cast<LPWSTR>(createNestedFolderStr.GetString());
     sub.InsertMenuItem(2, true, &mi);
 
-    sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+    sub.AppendMenu(MFT_STRING | copyFolderIdFlag, ID_COPYFOLDERID, TR("Copy folder's ID"));
+
+    sub.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, screenPoint.x, screenPoint.y, m_hWnd);
     return 0;
 }
 
@@ -352,6 +372,26 @@ LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hW
     if (!str.IsEmpty())
     {
         WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
+    }
+    return 0;
+}
+
+LRESULT CServerFolderSelect::OnCopyFolderId(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    HTREEITEM item = m_FolderTree.GetSelectedItem();
+
+    if (!item)
+        return 0;
+    int nIndex = m_FolderTree.GetItemData(item);
+
+    if (nIndex <0 || nIndex >= m_FolderList.GetCount()) {
+        return 0;
+    }
+    CFolderItem& folder = m_FolderList[nIndex];
+
+    if (!folder.getId().empty() && folder.getId() != CFolderItem::NewFolderMark) {
+        CString str = U2W(folder.getId());
+
+        WinUtils::CopyTextToClipboard(str);
     }
     return 0;
 }

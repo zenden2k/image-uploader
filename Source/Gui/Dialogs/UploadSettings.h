@@ -40,6 +40,7 @@ constexpr unsigned int IDC_OPENINBROWSER = 4014;
 constexpr unsigned int IDC_SERVERPARAMS = 4016;
 constexpr unsigned int IDC_OPENREGISTERURL = 4018;
 constexpr unsigned int IDC_LOGINTOOLBUTTON = 4020;
+constexpr unsigned int IDC_COPYFOLDERID = 4022;
 
 constexpr unsigned int IDC_TOOLBARSEPARATOR1 = 4002;
 constexpr unsigned int IDC_TOOLBARSEPARATOR2 = 4003;
@@ -95,6 +96,9 @@ class CUploadSettings:
         COMMAND_HANDLER(IDC_NEWFOLDER+1, BN_CLICKED, OnNewFolder)
         COMMAND_HANDLER(IDC_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)
         COMMAND_HANDLER(IDC_OPENINBROWSER+1, BN_CLICKED, OnOpenInBrowser)
+        COMMAND_HANDLER(IDC_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
+        COMMAND_HANDLER(IDC_COPYFOLDERID + 1, BN_CLICKED, OnCopyFolderId)
+
         COMMAND_HANDLER(IDC_OPENREGISTERURL, BN_CLICKED, OnOpenSignupPage)
         COMMAND_HANDLER(IDC_OPENREGISTERURL+1, BN_CLICKED, OnOpenSignupPage)
         COMMAND_HANDLER(IDC_SERVERPARAMS, BN_CLICKED, OnServerParamsClicked)
@@ -149,6 +153,7 @@ class CUploadSettings:
     LRESULT OnFileServerSelect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnNewFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnOpenInBrowser(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnCopyFolderId(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnServerParamsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnOpenSignupPage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);

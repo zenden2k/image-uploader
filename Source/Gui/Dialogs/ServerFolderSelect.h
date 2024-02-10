@@ -39,6 +39,7 @@
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
+#define ID_COPYFOLDERID 10004
 
 class UploadEngineManager;
 class ServerProfile;
@@ -62,6 +63,7 @@ class CServerFolderSelect :
         COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
         COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
+        COMMAND_HANDLER(ID_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
         NOTIFY_HANDLER(IDC_FOLDERTREE, NM_DBLCLK, OnFolderlistLbnDblclk)
         CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
     END_MSG_MAP()
@@ -88,6 +90,7 @@ class CServerFolderSelect :
     LRESULT OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnCopyFolderId(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     void onTaskFinished(UploadTask* task, bool success);
     void OnLoadFinished();

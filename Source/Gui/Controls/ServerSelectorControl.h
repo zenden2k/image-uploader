@@ -45,7 +45,7 @@ class CServerSelectorControl :
     public CDialogIndirectImpl<CServerSelectorControl>
 {
 public:
-    explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
+    explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true, bool showServerIcons = true);
 virtual ~CServerSelectorControl();
     enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
         IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003
@@ -134,6 +134,7 @@ private:
     HGLOBAL hMyDlgTemplate_;
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
     bool showEmptyItem_;
+    bool showServerIcons_;
 };
 
 #endif

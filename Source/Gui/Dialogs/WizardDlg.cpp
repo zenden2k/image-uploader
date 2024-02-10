@@ -1740,9 +1740,34 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 void CWizardDlg::CloseWizard()
 {
-    if(CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit)
-        if(LocalizedMessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
-    
+    if(CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit) {
+        int buttonPressed{};
+        CTaskDialog dlg;
+        CString verText = TR("Do not ask again");
+        dlg.SetVerificationText(verText);
+        CString contentText = TR("Are you sure to quit?");
+        dlg.SetContentText(contentText);
+        CString windowTitle = APPNAME;
+        dlg.SetWindowTitle(windowTitle);
+        dlg.SetCommonButtons(TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
+        // From the official Win32 style guide: don't use the question mark icon to ask questions. Don't routinely replace
+        // question mark icons with warning icons. Replace a question mark icon with a warning icon only if the question
+        // has significant consequences. Otherwise, use no icon.
+        //dlg.SetMainIcon(TD_WARNING_ICON);
+        DWORD flags = TDF_POSITION_RELATIVE_TO_WINDOW | TDF_ALLOW_DIALOG_CANCELLATION;
+        if (ServiceLocator::instance()->translator()->isRTL()) {
+            flags |= TDF_RTL_LAYOUT;
+        }
+        dlg.ModifyFlags(0, flags);
+        BOOL verificationFlagChecked = FALSE;
+        int res = dlg.DoModal(m_hWnd, &buttonPressed, nullptr, &verificationFlagChecked);
+        if (verificationFlagChecked) {
+            Settings.ConfirmOnExit = false;
+        }
+        if (SUCCEEDED(res) && buttonPressed != IDYES) {
+            return;
+        }
+    }
     CloseDialog(0);
 }
 

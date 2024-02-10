@@ -944,16 +944,17 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
     ServerProfile & serverProfile = isImageServerToolbar ? getSessionImageServerItem() : getSessionFileServerItem();
 
     CMenu sub;    
-    MENUITEMINFO mi;
-    mi.cbSize = sizeof(mi);    
-    mi.fMask = MIIM_TYPE | MIIM_ID;
-    mi.fType = MFT_STRING;
-
     sub.CreatePopupMenu();
-    mi.wID = IDC_NEWFOLDER + static_cast<int>(isImageServerToolbar);
-    CString newFolderStr = TR("New folder");
-    mi.dwTypeData = const_cast<LPWSTR>(newFolderStr.GetString());
-    sub.InsertMenuItem(0, true, &mi);
+
+    sub.AppendMenu(MFT_STRING, IDC_NEWFOLDER + static_cast<int>(isImageServerToolbar), TR("New folder"));
+
+    if (!serverProfile.folderId().empty()) {
+        UINT flags = MFT_STRING;
+        if (serverProfile.folderId().empty() || serverProfile.folderId() == CFolderItem::NewFolderMark) {
+            flags |= MFS_DISABLED;
+        }
+        sub.AppendMenu(flags, IDC_COPYFOLDERID + static_cast<int>(isImageServerToolbar), TR("Copy folder's ID"));
+    }
 
     if (!serverProfile.folderUrl().empty()) {
         sub.AppendMenu(MFT_STRING, IDC_OPENINBROWSER + static_cast<int>(isImageServerToolbar), TR("Open in Web Browser"));
@@ -1006,6 +1007,18 @@ LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*
     CString str = U2W(serverProfile.folderUrl());
     if(!str.IsEmpty()) {
         WinUtils::ShellOpenFileOrUrl(str, m_hWnd);
+    }
+    return 0;
+}
+
+LRESULT CUploadSettings::OnCopyFolderId(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    bool ImageServer = (wID % 2) != 0;
+    ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    std::string folderId = serverProfile.folderId();
+    if (!folderId.empty() && folderId != CFolderItem::NewFolderMark) {
+        CString str = U2W(folderId);
+   
+        WinUtils::CopyTextToClipboard(str);
     }
     return 0;
 }
