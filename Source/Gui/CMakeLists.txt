@@ -3,6 +3,7 @@ add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL)
 set(SRC_LIST 
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
+    ../3rdpart/wintoastlib.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
     ../Core/ScreenCapture/MonitorEnumerator.cpp
@@ -35,6 +36,7 @@ set(SRC_LIST
     Components/NewStyleFileDialog.cpp
     Components/NewStyleFileSaveDialog.cpp
     Components/DragndropOverlay.cpp
+    Components/WinToastHandler.cpp
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
@@ -160,6 +162,7 @@ set(RESOURCE_LIST  "../Image Uploader.rc"
     
 set(HEADER_LIST 
     ../3rdpart/ShellPidl.h
+    ../3rdpart/wintoastlib.h
     ../Core/Images/ImageConverterPrivateBase.h
     ../Core/Images/ImageConverterPrivate_gdiplus.h
     ../Core/ScreenCapture/MonitorEnumerator.h
@@ -194,7 +197,8 @@ set(HEADER_LIST
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h
-    Components/DragndropOverlay.cpp
+    Components/DragndropOverlay.h
+    Components/WinToastHandler.h
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h

@@ -65,6 +65,8 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "statusdlg.h"
+#include "3rdpart/wintoastlib.h"
+#include "Gui/Components/WinToastHandler.h"
 #include "ServerListTool/ServersCheckerDlg.h"
 
 using namespace Gdiplus;
@@ -293,6 +295,16 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     helpButton_.SetIcon(helpButtonIcon_);
     ServiceLocator::instance()->logWindow()->TranslateUI();
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
+    using namespace WinToastLib;
+    if (WinToast::isCompatible()) {
+        WinToast::instance()->setAppName(APPNAME);
+        const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        WinToast::instance()->setAppUserModelId(aumi);
+
+        if (!WinToastLib::WinToast::instance()->initialize()) {
+            LOG(WARNING) << L"Error, could not initialize WinToastLib!" << std::endl;
+        }
+    }
 
     CString ErrorStr;
     if(!LoadUploadEngines(IuCommonFunctions::GetDataFolder()+_T("servers.xml"), ErrorStr))
@@ -2125,8 +2137,8 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else {
-            if (dialogResult == ImageEditorWindow::drCopiedToClipboard && floatWnd_->m_hWnd) {
-                floatWnd_->ShowScreenshotCopiedToClipboardMessage();
+            if (dialogResult == ImageEditorWindow::drCopiedToClipboard ) {
+                showScreenshotCopiedToClipboardMessage(imageEditor.getResultingBitmap());
             }
             CanceledByUser = true;
         }
@@ -2161,7 +2173,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
                     if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {
-                        floatWnd_->ShowScreenshotCopiedToClipboardMessage();
+                        showScreenshotCopiedToClipboardMessage(result);
                         Result = false;
                     }
                 }
@@ -2202,6 +2214,28 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     OnScreenshotFinished(Result);
 
     return Result;
+}
+
+void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap) {
+    if (floatWnd_->m_hWnd) {
+        floatWnd_->ShowScreenshotCopiedToClipboardMessage();
+    } else {
+        using namespace WinToastLib;
+        if (WinToast::isCompatible()) {
+            if (!winToastHandler_) {
+                winToastHandler_ = std::make_unique<WinToastHandler>();
+            }
+
+            WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/Text01);
+            //templ.setImagePath(L"C:/example.png");
+            //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
+            templ.setTextField(TR("Screenshot was saved to clipboard."), WinToastTemplate::FirstLine);
+            const auto toast_id = WinToast::instance()->showToast(templ, winToastHandler_.get());
+            if (toast_id < 0) {
+                LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
+            }
+        }
+    }
 }
 
 bool CWizardDlg::funcWindowHandleScreenshot()

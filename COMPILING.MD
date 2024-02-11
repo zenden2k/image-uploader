@@ -135,6 +135,8 @@ UTF8-CPP        http://utfcpp.sourceforge.net/
 
 libheif         https://github.com/strukturag/libheif 
 
+WinToast        https://github.com/mohabouje/WinToast
+
 DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK
 
 Libraries for building Mega.nz:

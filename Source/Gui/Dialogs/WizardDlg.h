@@ -41,6 +41,7 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Components/DragndropOverlay.h"
 
+class WinToastHandler;
 constexpr int ID_PASTE = 9888;
 constexpr int ID_HOTKEY_BASE = 10000;
 constexpr int WM_MY_ADDIMAGE = WM_USER + 222;
@@ -265,6 +266,7 @@ public:
     bool isShowWindowSet() const;
     void beginAddFiles();
     void endAddFiles();
+    void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
 protected:
     bool acceptsDragnDrop() const;
     CIcon hIcon;
@@ -317,6 +319,7 @@ protected:
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
+    std::unique_ptr<WinToastHandler> winToastHandler_;
 };
 
 

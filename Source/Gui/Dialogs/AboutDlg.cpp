@@ -145,6 +145,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"Crypto++") + L" \thttps://www.cryptopp.com/\u200E\r\n";
     memoText += CString(L"c-ares") + L"\t\thttps://c-ares.haxx.se/\u200E\r\n";
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
+    memoText += CString(L"WinToast") + L"\t\thttps://github.com/mohabouje/WinToast\r\n";
             
     memoText += CString(_T("Resources:\r\n")) +
         _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
