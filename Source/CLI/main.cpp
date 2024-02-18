@@ -155,7 +155,7 @@ void PrintHelp() {
    std::cerr<<" -s <server_name>"<<std::endl;
    std::cerr<<" -u <username>"<<std::endl;
    std::cerr<<" -p <password>"<<std::endl;
-   std::cerr<<" -cl <bbcode|html|plain> (Default: plain)"<<std::endl;
+   std::cerr<<" -cl <bbcode|html|json|plain> (Default: plain)"<<std::endl;
    std::cerr<<" -ct <TableOfThumbnails|ClickableThumbnails|Images|Links>"<<std::endl;
    std::cerr<<" -fl <folder_id> ID of remote folder (supported by some servers)\r\n"
 	   << "     Note that this is not the folder\'s name! \r\n"
@@ -230,6 +230,8 @@ bool parseCommandLine(int argc, char *argv[])
                 codeLang =  OutputCodeGenerator::clHTML;
             else if(!IuStringUtils::stricmp(codelang, "bbcode"))
                 codeLang =  OutputCodeGenerator::clBBCode;
+            else if (!IuStringUtils::stricmp(codelang, "json"))
+                codeLang = OutputCodeGenerator::clJSON;
             i++;
             continue;
         }
@@ -390,6 +392,7 @@ void OnUploadSessionFinished(UploadSession* session) {
             uo.directUrl = res->directUrl;
             uo.thumbUrl = res->thumbUrl;
             uo.viewUrl = res->downloadUrl;
+            uo.deleteUrl = res->deleteUrl;
             uo.serverName = task->serverName();
             if ( fileTask ) {
                 uo.localFilePath = fileTask->getFileName();
