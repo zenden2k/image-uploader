@@ -173,7 +173,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     return image;
 }
 
-void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius, Gdiplus::Rect exclude) {
     using namespace Gdiplus;
     Rect rc(x, y, w, h);
 
@@ -214,7 +214,16 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
         bufCur = buf;
         sourceCur = source;
         for (int i = 0; i < h; i++) {
-            memcpy(sourceCur, bufCur, myStride);
+            if (exclude.IsEmptyArea()) {
+                memcpy(sourceCur, bufCur, myStride);
+            } else {
+                for (int j = 0; j < w; j++) {
+                    if (!exclude.Contains(j, i)) {
+                        memcpy(sourceCur + j * 4, bufCur + j * 4, 4);
+                    }
+                }
+            }
+
             bufCur += myStride;
             sourceCur += stride;
         }
@@ -225,7 +234,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
     }
 }
 
-void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize) {
+void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize, Gdiplus::Rect exclude) {
     using namespace Gdiplus;
     Rect rc(xPos, yPos, w, h);
 
@@ -261,7 +270,9 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
                     }
                 }
                 uint32_t pixel = (alpha / numPixels << 24) + (red / numPixels << 16) +  (green / numPixels << 8) + blue / numPixels;
-
+                if (exclude.Contains(x, y)) {
+                    continue;
+                }
                 for (int i = x; i < maxX; i++) {
                     for (int j = y; j < maxY; j++) {
                         uint32_t* data = (uint32_t*)(source + j * stride + i*4);

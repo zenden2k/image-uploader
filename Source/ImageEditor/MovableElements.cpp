@@ -714,13 +714,15 @@ ElementType FilledRectangle::getType() const
     return ElementType::etBlurringRectangle;
 }
 
-BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate) : MovableElement(canvas)
+BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY,
+    bool pixelate, bool invertSelection) : MovableElement(canvas)
 {
     blurRadius_ = blurRadius;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
     isColorUsed_ = false;
     pixelate_ = pixelate;
+    invertSelection_ = invertSelection;
 } 
 
 BlurringRectangle::~BlurringRectangle()
@@ -732,9 +734,24 @@ void BlurringRectangle::setBlurRadius(float radius)
     blurRadius_ = radius;
 }
 
+void BlurringRectangle::setInvertSelection(bool invert) {
+    invertSelection_ = invert;
+}
+
+bool BlurringRectangle::getInvertSelection() const {
+    return invertSelection_;
+}
+
 float BlurringRectangle::getBlurRadius() const
 {
     return blurRadius_;
+}
+
+RECT BlurringRectangle::getPaintBoundingRect() {
+    if (invertSelection_) {
+        return { 0, 0, canvas_->getWidth(), canvas_->getHeigth() };
+    } 
+    return MovableElement::getPaintBoundingRect();
 }
 
 void BlurringRectangle::render(Painter* gr)
@@ -751,10 +768,12 @@ void BlurringRectangle::render(Painter* gr)
     if ( elRect.Width < 1 || elRect.Height < 1 ) {
         return;
     }
-    if ( !isMoving_ ) { // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
-        
+    // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
+    if ( !isMoving_ /* && !canvas_->manipulationStarted()*/) { 
+        Rect excludeRect = invertSelection_ ? elRect : Rect();
+        Rect applyRect = invertSelection_ ? canvasRect : elRect;
         if(pixelate_) {
-            ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
+            ImageUtils::ApplyPixelateEffect(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_), excludeRect);
         }
         else {
 #if GDIPVER >= 0x0110 
@@ -768,7 +787,7 @@ void BlurringRectangle::render(Painter* gr)
 
             st = gr->DrawImage(background, &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
 #else
-            ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
+            ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_), excludeRect);
 #endif
         }
 
@@ -781,8 +800,8 @@ ImageEditor::ElementType BlurringRectangle::getType() const
 }
 
 
-PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY) 
-            : BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true)
+PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY, bool invertSelection)
+            : BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true, invertSelection)
 {
 }
 

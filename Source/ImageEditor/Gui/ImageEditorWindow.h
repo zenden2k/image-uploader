@@ -99,6 +99,7 @@ public:
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
+        MESSAGE_HANDLER(MTBM_INVERTSELECTIONCHANGE, OnInvertSelectionChange)
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
@@ -168,6 +169,7 @@ public:
         LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnInvertSelectionChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnArrowTypeChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -253,6 +255,7 @@ public:
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
         arrowMode_ = 0;
+        invertSelection_ = false;
     }
     virtual ~ConfigurationProvider() = default;
     virtual void saveConfiguration() {}
@@ -285,6 +288,13 @@ public:
     bool fillTextBackground() const {
         return fillTextBackground_;
     }
+
+    void setInvertSelection(bool invert) {
+        invertSelection_ = invert;
+    }
+    bool invertSelection() const {
+        return invertSelection_;
+    }
     void setArrowMode(int mode) {
         arrowMode_ = mode;
     }
@@ -301,6 +311,7 @@ protected:
     bool allowAltTab_;
     SearchByImage::SearchEngine searchEngine_;
     bool fillTextBackground_;
+    bool invertSelection_;
 };
 
 }

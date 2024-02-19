@@ -83,21 +83,25 @@ private:
 
 class BlurringRectangle: public MovableElement {
 public:
-    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false);
+    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false, bool invertSelection = false);
     ~BlurringRectangle();
     void setBlurRadius(float radius);
     float getBlurRadius() const;
     void render(Painter* gr) override;
     ElementType getType() const override;
+    void setInvertSelection(bool invert);
+    bool getInvertSelection() const;
+    RECT getPaintBoundingRect() override;
 protected:
     float blurRadius_;
     bool pixelate_;
+    bool invertSelection_;
     DISALLOW_COPY_AND_ASSIGN(BlurringRectangle);
 };
 
 class PixelateRectangle : public BlurringRectangle {
 public:
-    PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY);
+    PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY, bool invertSelection = false);
     ElementType getType() const override;
 protected:
     DISALLOW_COPY_AND_ASSIGN(PixelateRectangle);

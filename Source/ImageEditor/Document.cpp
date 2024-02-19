@@ -53,15 +53,15 @@ Document::~Document()
     for (auto& i : history_) {
         delete[] i.data;
     }
-    delete currentCanvas_;
+    delete currentPainter_;
 }
 
 void Document::init() {
-    currentCanvas_ = nullptr;
+    currentPainter_ = nullptr;
     drawStarted_ = false;
     originalImage_ = nullptr;
     if ( currentImage_ ) {
-        currentCanvas_ = new Gdiplus::Graphics( currentImage_.get() );
+        currentPainter_ = new Gdiplus::Graphics( currentImage_.get() );
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
 }
@@ -75,8 +75,8 @@ void Document::beginDrawing(bool cloneImage) {
 }
 
 void Document::addDrawingElement(DrawingElement *element) {
-    currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
-    currentCanvas_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
+    currentPainter_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
+    currentPainter_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
     AffectedSegments segments;
     element->getAffectedSegments( &segments );
     changedSegments_ += segments;
@@ -84,7 +84,7 @@ void Document::addDrawingElement(DrawingElement *element) {
         saveDocumentState( );
         changedSegments_.clear();
     }
-    element->render( currentCanvas_ );
+    element->render( currentPainter_ );
 }
 
 void Document::endDrawing() {
@@ -280,7 +280,7 @@ bool Document::hasTransparentPixels() const
 }
 
 Painter* Document::getGraphicsObject() const {
-    return currentCanvas_;
+    return currentPainter_;
 }
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
@@ -294,6 +294,10 @@ void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
 
 bool Document::isSrcMultiFrame() const {
     return isSrcMultiFrame_;
+}
+
+bool Document::isInDrawingState() const {
+    return drawStarted_;
 }
 
 }

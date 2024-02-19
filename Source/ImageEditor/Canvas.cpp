@@ -568,7 +568,7 @@ AbstractDrawingTool* Canvas::setDrawingToolType(DrawingToolType toolType, bool n
             type = ElementType::etArrow;
         } else if ( toolType == DrawingToolType::dtRectangle ) {
             type = ElementType::etRectangle;
-        } else if ( toolType == DrawingToolType::dtBlurrringRectangle ) {
+        } else if ( toolType == DrawingToolType::dtBlurringRectangle ) {
             type = ElementType::etBlurringRectangle;
         } else if (toolType == DrawingToolType::dtPixelateRectangle) {
             type = ElementType::etPixelateRectangle;
@@ -681,6 +681,10 @@ bool Canvas::addDrawingElementToDoc(DrawingElement* element)
     return true;
 }
 
+void Canvas::beginDocDrawing() {
+    beginManipulation();
+    currentDocument()->beginDrawing();
+}
 
 void Canvas::endDocDrawing()
 {
@@ -688,6 +692,18 @@ void Canvas::endDocDrawing()
     UndoHistoryItem historyItem;
     historyItem.type = UndoHistoryItemType::uitDocumentChanged;
     addUndoHistoryItem(historyItem);
+}
+
+void Canvas::beginManipulation() {
+    manipulationStarted_ = true;
+}
+
+void Canvas::endManipulation() {
+    manipulationStarted_ = false;
+}
+
+bool Canvas::manipulationStarted() const {
+    return manipulationStarted_;
 }
 
 int Canvas::deleteSelectedElements()
@@ -1288,6 +1304,41 @@ void Canvas::setFillTextBackground(bool fill) {
 
 bool Canvas::getFillTextBackground() const {
     return fillTextBackground_;
+}
+
+void Canvas::setInvertSelection(bool invert) {
+    invertSelection_ = invert;
+    int count = 0;
+    UndoHistoryItem uhi;
+    uhi.type = UndoHistoryItemType::uitInvertSelectionChanged;
+
+    for (auto& el : elementsOnCanvas_) {
+        if (el->isSelected() && (el->getType() == ElementType::etBlurringRectangle || el->getType() == ElementType::etPixelateRectangle)) {
+            auto* blurEl = dynamic_cast<BlurringRectangle*>(el);
+            if (blurEl) {
+                bool prev = blurEl->getInvertSelection();
+                if (prev == invert) {
+                    continue;
+                }
+                blurEl->setInvertSelection(invert);
+
+                UndoHistoryItemElement uhie;
+                uhie.pos = 0;
+                uhie.movableElement = el;
+                uhie.penSize = prev;
+                uhi.elements.push_back(uhie);
+                count++;
+            }
+        }
+    }
+    if (count) {
+        addUndoHistoryItem(uhi);
+        updateView();
+    }
+}
+
+bool Canvas::getInvertSelection() const {
+    return invertSelection_;
 }
 
 void Canvas::setArrowMode(Arrow::ArrowMode arrowMode) {

@@ -819,6 +819,9 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
     imageEditor.nm_bind(ImageEditorSettings, ArrowType);
     imageEditor.nm_bind(ImageEditorSettings, Font);
+    imageEditor.nm_bind(ImageEditorSettings, FillTextBackground);
+    imageEditor.nm_bind(ImageEditorSettings, InvertSelection);
+
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
     //screenshot.nm_bind(ImageEditorSettings, SearchEngine);

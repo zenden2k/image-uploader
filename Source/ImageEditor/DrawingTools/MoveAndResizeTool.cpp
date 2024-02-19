@@ -297,6 +297,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     if ( isMoving_ ) {
         isMoving_ = false;
     }
+    canvas_->endManipulation();
 }
 
 void MoveAndResizeTool::render( Painter* gr ) {
@@ -348,10 +349,10 @@ void MoveAndResizeTool::createElement() {
             currentElement_ = new FilledEllipse(canvas_);
             break;
         case ElementType::etPixelateRectangle:
-            currentElement_ = new PixelateRectangle(canvas_, float(canvas_->getPixelateBlockSize()), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new PixelateRectangle(canvas_, float(canvas_->getPixelateBlockSize()), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getInvertSelection());
             break;
         case ElementType::etBlurringRectangle:
-            currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, false, canvas_->getInvertSelection());
             break;
         case ElementType::etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);

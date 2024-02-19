@@ -246,6 +246,11 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
         fillBackgroundCheckbox_.SetFont(systemFont_);
 
+        RECT invertSelectionCheckboxRect{ 0, 0, static_cast<LONG>(200 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+        invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
+        invertSelectionCheckbox_.SetFont(systemFont_);
+
         RECT arrowTypeComboRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
         arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST, 0, ID_ARROWTYPECOMBOBOX);
@@ -629,6 +634,10 @@ int Toolbar::AutoSize()
         ScreenToClient(&radiusSliderRect);
         roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE| SWP_NOZORDER);
 
+        RECT roundRadiusLabelRect;
+        roundRadiusLabel_.GetClientRect(&roundRadiusLabelRect);
+        roundRadiusLabel_.ClientToScreen(&roundRadiusLabelRect);
+        ScreenToClient(&roundRadiusLabelRect);
         //RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
         GuiTools::AutoSizeStaticControl(fontSizeLabel_);
@@ -657,6 +666,8 @@ int Toolbar::AutoSize()
 
         // Moving fill background checkbox
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        invertSelectionCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
@@ -852,6 +863,10 @@ void Toolbar::showFillBackgroundCheckbox(bool show) {
     fillBackgroundCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
+void Toolbar::showInvertSelectionCheckbox(bool show) {
+    invertSelectionCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
 void Toolbar::showArrowTypeCombo(bool show) {
     arrowTypeCombobox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
@@ -860,6 +875,12 @@ LRESULT Toolbar::OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wI
     ::SendMessage(GetParent(), MTBM_FILLBACKGROUNDCHANGE, 0, 0);
     return 0;
 }
+
+LRESULT Toolbar::OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_INVERTSELECTIONCHANGE, 0, 0);
+    return 0;
+}
+
 
 LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ::SendMessage(GetParent(), MTBM_ARROWTYPECHANGE, 0, 0);
@@ -881,6 +902,10 @@ bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
 }
 
+bool Toolbar::isInvertSelectionChecked() const {
+    return invertSelectionCheckbox_.GetCheck() == BST_CHECKED;
+}
+
 int Toolbar::getArrowType() const {
     return arrowTypeCombobox_.GetCurSel();
 }
@@ -900,6 +925,10 @@ void Toolbar::showApplyButtons(bool show) {
 
 void Toolbar::setFillBackgroundCheckbox(bool fill) {
     fillBackgroundCheckbox_.SetCheck(fill ? BST_CHECKED : BST_UNCHECKED);
+}
+
+void Toolbar::setInvertSelectionCheckbox(bool invert) {
+    invertSelectionCheckbox_.SetCheck(invert ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void Toolbar::setShowButtonText(bool show) {

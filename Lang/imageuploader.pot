@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-10 15:22+0300\n"
+"POT-Creation-Date: 2024-02-19 18:51+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,7 +60,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:821
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:833
 #, c-format
 msgid "%s - Updates available"
 msgstr ""
@@ -104,11 +104,11 @@ msgstr ""
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:387
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
 msgid "< Back"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:549
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:557
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:862
 msgid "<no authentication>"
 msgstr ""
@@ -117,11 +117,11 @@ msgstr ""
 msgid "A new version is available:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:245
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
 msgid "About Image Uploader"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2272
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2331
 msgid "About..."
 msgstr ""
 
@@ -138,7 +138,7 @@ msgstr ""
 msgid "Account with such name already exists."
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:322
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:323
 msgid "Account..."
 msgstr ""
 
@@ -155,7 +155,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:456
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:462
 msgid "Add FTP server..."
 msgstr ""
 
@@ -192,7 +192,7 @@ msgstr ""
 msgid "Add Menu Item"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:569
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:577
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:879
 msgid "Add account..."
 msgstr ""
@@ -213,7 +213,7 @@ msgstr ""
 msgid "Add local folder as new server..."
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:457
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:463
 msgid "Add local folder..."
 msgstr ""
 
@@ -234,8 +234,8 @@ msgid "Add to Wizard"
 msgstr ""
 
 #: ../Source/Gui/Components/DragndropOverlay.cpp:31
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:859
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:860
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:861
 msgid "Add to the list"
 msgstr ""
 
@@ -277,9 +277,9 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:673
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:384
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1621
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1815
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1335
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1633
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1852
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1341
 msgid "All files"
 msgstr ""
 
@@ -320,8 +320,8 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1408
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1843
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1420
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1880
 msgid "Any file"
 msgstr ""
 
@@ -331,7 +331,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:86
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:75
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:257
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:262
 msgid "Apply"
 msgstr ""
 
@@ -339,7 +339,7 @@ msgstr ""
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1744
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1760
 msgid "Are you sure to quit?"
 msgstr ""
 
@@ -358,15 +358,15 @@ msgstr ""
 msgid "Are you sure?"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:906
 msgid "Arrow"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:253
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:258
 msgid "Arrow 1"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:254
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:259
 msgid "Arrow 2"
 msgstr ""
 
@@ -383,7 +383,7 @@ msgstr ""
 msgid "Audio"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1814
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1851
 msgid "Audio files"
 msgstr ""
 
@@ -395,7 +395,7 @@ msgstr ""
 msgid "Authenticaton:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:242
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:243
 msgid "Author:"
 msgstr ""
 
@@ -435,8 +435,8 @@ msgid "Beta-testers:"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:120
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:785
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:912
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:786
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:913
 msgid "Blurring rectangle"
 msgstr ""
 
@@ -464,11 +464,11 @@ msgstr ""
 msgid "Browse..."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:902
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:903
 msgid "Brush"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:400
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:403
 msgid "By default"
 msgstr ""
 
@@ -492,7 +492,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
-#: ../Source/ImageEditor/Gui/Toolbar.cpp:261
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:266
 msgid "Cancel"
 msgstr ""
 
@@ -528,11 +528,11 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:499
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 msgid "Capture Last Region"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:188
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
 msgid "Capture Rectangular Region"
 msgstr ""
 
@@ -542,25 +542,25 @@ msgid "Capture Selected Area"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:503
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:191
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
 msgid "Capture Selected Object"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:50
 msgid "Capture Selected Window"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:502
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:190
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:47
 #: ../Source/Gui/Win7JumpList.cpp:243
 msgid "Capture the Active Window"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:501
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:189
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:46
 #: ../Source/Gui/Win7JumpList.cpp:235
 msgid "Capture the Entire Screen"
@@ -578,11 +578,11 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:144
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:152
 msgid "Change"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:499
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:507
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:802
 msgid "Change account settings"
 msgstr ""
@@ -598,7 +598,7 @@ msgstr ""
 msgid "Change width:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2274
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2333
 msgid "Check for Updates"
 msgstr ""
 
@@ -610,11 +610,11 @@ msgstr ""
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1845
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1882
 msgid "Choose files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1721
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1733
 msgid "Choose folder"
 msgstr ""
 
@@ -622,7 +622,7 @@ msgstr ""
 msgid "Choose folder..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1818
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1855
 msgid "Choose media file"
 msgstr ""
 
@@ -662,7 +662,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:387
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1624
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1636
 msgid "Choose video file"
 msgstr ""
 
@@ -671,7 +671,7 @@ msgid "Choose..."
 msgstr ""
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:146
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
 #: ../Source/Gui/Dialogs/LogWindow.cpp:161
 msgid "Clear"
 msgstr ""
@@ -684,7 +684,7 @@ msgstr ""
 msgid "Clear History..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:147
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:155
 msgid "Clear all"
 msgstr ""
 
@@ -726,7 +726,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:150
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:205
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:236
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:884
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:885
 msgid "Close"
 msgstr ""
 
@@ -738,7 +738,7 @@ msgstr ""
 msgid "Collecting files..."
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:915
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:916
 msgid "Color chooser"
 msgstr ""
 
@@ -787,7 +787,7 @@ msgstr ""
 msgid "Convert UNC path \"\\\\\" to \"file://///\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:359
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:371
 msgid "Converting history"
 msgstr ""
 
@@ -795,7 +795,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
 #: ../Source/Gui/Dialogs/LogWindow.cpp:118
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:875
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:876
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
 msgstr ""
@@ -816,11 +816,11 @@ msgstr ""
 msgid "Copy automatically results to clipboard"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:282
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:283
 msgid "Copy e-mail"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:297
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:311
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:956
 msgid "Copy folder's ID"
 msgstr ""
@@ -833,11 +833,11 @@ msgstr ""
 msgid "Copy image"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:808
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:809
 msgid "Copy in data:URI format"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:809
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:810
 msgid "Copy in data:URI format (html)"
 msgstr ""
 
@@ -851,7 +851,7 @@ msgstr ""
 msgid "Copy to clipboard"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:874
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:875
 #, c-format
 msgid "Copy to clipboard and close (%s)"
 msgstr ""
@@ -878,7 +878,7 @@ msgstr ""
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:883
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:895
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
@@ -886,7 +886,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:301
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:313
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -920,7 +920,7 @@ msgstr ""
 msgid "Create folder (album)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:293
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:307
 msgid "Create nested folder"
 msgstr ""
 
@@ -933,7 +933,7 @@ msgstr ""
 msgid "Creating new thumbnail preset"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:901
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:902
 msgid "Crop"
 msgstr ""
 
@@ -950,7 +950,7 @@ msgstr ""
 msgid "Cut"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:152
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:153
 msgid "Data file path:"
 msgstr ""
 
@@ -1014,6 +1014,7 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1758
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:328
 msgid "Do not ask again"
 msgstr ""
@@ -1022,11 +1023,11 @@ msgstr ""
 msgid "Do not launch new program's instance from tray"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:181
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:189
 msgid "Do nothing"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2273
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2332
 msgid "Documentation"
 msgstr ""
 
@@ -1066,7 +1067,7 @@ msgid "Duration: "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:190
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:281
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:295
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 msgid "Edit"
 msgstr ""
@@ -1088,7 +1089,7 @@ msgid "Edit hotkey..."
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:96
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:760
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:761
 msgid "Ellipse"
 msgstr ""
 
@@ -1096,7 +1097,7 @@ msgstr ""
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:323
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:324
 msgid "Enter account information"
 msgstr ""
 
@@ -1199,9 +1200,9 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:211
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:382
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1734
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:394
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1746
 msgid "Exit"
 msgstr ""
 
@@ -1344,13 +1345,13 @@ msgid "Fill background"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:112
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:773
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:774
 msgid "Filled ellipse"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:101
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:771
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:908
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:772
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:909
 msgid "Filled rectangle"
 msgstr ""
 
@@ -1443,7 +1444,7 @@ msgid "Frames layout"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:504
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:49
 msgid "Freehand Capture"
 msgstr ""
@@ -1515,17 +1516,17 @@ msgstr ""
 msgid "Height:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:295
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:297
 msgid "Help"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:160
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:384
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1736
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:396
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1748
 msgid "Hide"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:903
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:904
 msgid "Highlight"
 msgstr ""
 
@@ -1558,15 +1559,15 @@ msgid "Image Downloader"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:332
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:569
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:570
 msgid "Image Editor"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1519
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1531
 msgid "Image Editor  (%1%x%2%)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1525
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1537
 msgid "Image Editor - %1% (%2%x%3%)"
 msgstr ""
 
@@ -1584,7 +1585,7 @@ msgstr ""
 msgid "Image processing"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:93
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
 msgid "Image processing settings..."
 msgstr ""
 
@@ -1598,8 +1599,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:165
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:186
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1404
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1841
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1416
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1878
 msgid "Images"
 msgstr ""
 
@@ -1607,7 +1608,7 @@ msgstr ""
 msgid "Images editor:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
 msgid "Images from web"
 msgstr ""
 
@@ -1615,7 +1616,7 @@ msgstr ""
 msgid "Images per string:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:864
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:876
 msgid "Images settings and choosing server"
 msgstr ""
 
@@ -1626,7 +1627,7 @@ msgstr ""
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:251
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:494
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:186
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 #: ../Source/Gui/Dialogs/MainDlg.cpp:65
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100 ../Source/Gui/Win7JumpList.cpp:259
 msgid "Import Video File"
@@ -1637,7 +1638,7 @@ msgstr ""
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1722
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1734
 msgid "Including subdirectories"
 msgstr ""
 
@@ -1683,6 +1684,10 @@ msgid ""
 "https,etc)"
 msgstr ""
 
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:251
+msgid "Invert selection"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:83
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr ""
@@ -1714,11 +1719,11 @@ msgstr ""
 msgid "Left button single click:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:164
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:165
 msgid "Libraries:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:904
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
 msgid "Line"
 msgstr ""
 
@@ -1800,7 +1805,7 @@ msgstr ""
 msgid "MD5 check of the update package failed "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:378
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -1825,7 +1830,7 @@ msgstr ""
 msgid "Mouse clicks handlers"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:898
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:899
 msgid "Move"
 msgstr ""
 
@@ -1862,7 +1867,7 @@ msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:177
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:661
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:673
 msgid "Next >"
 msgstr ""
 
@@ -1927,7 +1932,7 @@ msgid "Open download page"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:190
-#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:287
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:301
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:960
 msgid "Open in Web Browser"
 msgstr ""
@@ -1954,8 +1959,8 @@ msgid "Open screenshot in the editor"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:577
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2276
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2335
 msgid "Open screenshots folder"
 msgstr ""
 
@@ -1985,7 +1990,7 @@ msgid "Password:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:488
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:158
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
@@ -2004,7 +2009,7 @@ msgid "Paste a link to shorten it:"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:125
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:786
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:787
 msgid "Pixelation"
 msgstr ""
 
@@ -2031,7 +2036,7 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:359
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:371
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
@@ -2060,7 +2065,7 @@ msgid "Preview Window"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:192
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:883
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:884
 msgid "Print..."
 msgstr ""
 
@@ -2081,7 +2086,7 @@ msgstr ""
 msgid "Processing folder:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:502
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:514
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2124,7 +2129,7 @@ msgid "Queued"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:491
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
 msgid "Quick upload image from clipboard"
 msgstr ""
 
@@ -2138,8 +2143,8 @@ msgid "Reason:"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:86
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:758
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:907
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:759
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:908
 msgid "Rectangle"
 msgstr ""
 
@@ -2196,7 +2201,7 @@ msgstr ""
 msgid "Reupload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
 msgid "Reupload images"
 msgstr ""
 
@@ -2210,8 +2215,8 @@ msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:91
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:107
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:759
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:772
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:760
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:773
 msgid "Rounded rectangle"
 msgstr ""
 
@@ -2229,7 +2234,7 @@ msgid "Same format as image"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:691
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:873
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:874
 msgid "Save"
 msgstr ""
 
@@ -2237,7 +2242,7 @@ msgstr ""
 msgid "Save Profile"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:797
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:798
 msgid "Save as"
 msgstr ""
 
@@ -2249,7 +2254,7 @@ msgstr ""
 msgid "Save as:"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1169
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1175
 msgid "Save changes?"
 msgstr ""
 
@@ -2272,7 +2277,7 @@ msgid "Screen Capture"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:496
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:187
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 #: ../Source/Gui/Dialogs/MainDlg.cpp:66
 msgid "Screenshot"
 msgstr ""
@@ -2282,6 +2287,7 @@ msgid "Screenshot Action"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:909
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2232
 msgid "Screenshot was saved to clipboard."
 msgstr ""
 
@@ -2303,14 +2309,14 @@ msgid "Search by image"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:217 ../Source/Gui/Dialogs/MainDlg.cpp:220
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:822
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:824
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:823
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:825
 #, c-format
 msgid "Search by image (%s)"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:879
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1120
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:880
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1126
 #, c-format
 msgid "Search on %s"
 msgstr ""
@@ -2337,7 +2343,7 @@ msgstr ""
 msgid "Select folder"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1310
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1316
 msgid "Select region"
 msgstr ""
 
@@ -2367,7 +2373,7 @@ msgstr ""
 msgid "Server [:port]:"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:660
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:668
 msgid "Server and authentication settings"
 msgstr ""
 
@@ -2438,13 +2444,13 @@ msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:183
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:105
 msgid "Settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:151
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:152
 msgid "Settings file path:"
 msgstr ""
 
@@ -2452,7 +2458,7 @@ msgstr ""
 msgid "Settings have been saved."
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:93
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:88
 msgid "Settings..."
 msgstr ""
@@ -2484,12 +2490,12 @@ msgid "Shorten URLs"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:94
 msgid "Shorten a link"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
 msgid "Shorten a link from the clipboard"
 msgstr ""
 
@@ -2508,7 +2514,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2281
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2340
 msgid "Show Error Log"
 msgstr ""
 
@@ -2525,7 +2531,7 @@ msgid "Show log for this file"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 msgid "Show program's window"
 msgstr ""
 
@@ -2575,7 +2581,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:910
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:911
 msgid "Step"
 msgstr ""
 
@@ -2633,7 +2639,7 @@ msgstr ""
 msgid "Test failed"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:909
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:910
 msgid "Text"
 msgstr ""
 
@@ -2762,7 +2768,7 @@ msgstr ""
 msgid "Tray icon"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:182
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:190
 msgid "Tray icon context menu"
 msgstr ""
 
@@ -2791,7 +2797,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2163
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2200
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -2804,7 +2810,7 @@ msgstr ""
 msgid "Unable to unpack archive %s"
 msgstr ""
 
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:916
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:917
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
 msgstr ""
@@ -2845,17 +2851,17 @@ msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:249
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:470
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:184
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
 msgid "Upload files"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:471
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:185
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
 msgid "Upload folder"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:248
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:183
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:191
 msgid "Upload images"
 msgstr ""
 
@@ -2876,13 +2882,13 @@ msgid "Upload speed limit per thread:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:124
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:867
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:868
 #, c-format
 msgid "Upload to %s"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:548
-#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:865
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:866
 msgid "Upload to Web"
 msgstr ""
 
@@ -2906,7 +2912,7 @@ msgstr ""
 msgid "Uploading errors"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:866
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:878
 msgid "Uploading file on server"
 msgstr ""
 
@@ -2959,7 +2965,7 @@ msgstr ""
 msgid "Use template"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:88
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:89
 msgid "User name"
 msgstr ""
 
@@ -2976,9 +2982,9 @@ msgid "Video engine which is used to extract frames from a video file."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:383
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1620
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1813
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1632
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1850
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1879
 msgid "Video files"
 msgstr ""
 
@@ -2995,7 +3001,7 @@ msgstr ""
 msgid "View BBCode/HTML codes"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:103
 msgid "View Media File Information"
 msgstr ""
@@ -3025,7 +3031,7 @@ msgstr ""
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:243
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:244
 msgid "Website:"
 msgstr ""
 

@@ -69,7 +69,7 @@ void ImageEditorWindow::init()
     menuItems_[ID_ARROW]           = DrawingToolType::dtArrow;
     menuItems_[ID_SELECTION]       = DrawingToolType::dtSelection;
     menuItems_[ID_BLUR]            = DrawingToolType::dtBlur;
-    menuItems_[ID_BLURRINGRECTANGLE]   = DrawingToolType::dtBlurrringRectangle;
+    menuItems_[ID_BLURRINGRECTANGLE]   = DrawingToolType::dtBlurringRectangle;
     menuItems_[ID_PIXELATERECTANGLE]   = DrawingToolType::dtPixelateRectangle;
     menuItems_[ID_COLORPICKER]     = DrawingToolType::dtColorPicker;
     menuItems_[ID_ROUNDEDRECTANGLE]     = DrawingToolType::dtRoundedRectangle;
@@ -118,7 +118,7 @@ void ImageEditorWindow::init()
     item2.icon = loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG);
     item2.command = ID_BLURRINGRECTANGLE;
     item2.hint = TR("Blurring rectangle");
-    subMenuItems_[DrawingToolType::dtBlurrringRectangle] = item2;
+    subMenuItems_[DrawingToolType::dtBlurringRectangle] = item2;
 
     item2.icon = loadToolbarIcon(IDB_ICONTOOLPIXELATE);
     item2.command = ID_PIXELATERECTANGLE;
@@ -136,7 +136,7 @@ void ImageEditorWindow::init()
     drawingToolsHotkeys_[kColorPickerKey] = DrawingToolType::dtColorPicker;
     drawingToolsHotkeys_[kCropKey] = DrawingToolType::dtCrop;
     drawingToolsHotkeys_[kMarkerKey] = DrawingToolType::dtMarker;
-    drawingToolsHotkeys_[kBlurringRectangleKey] = DrawingToolType::dtBlurrringRectangle;
+    drawingToolsHotkeys_[kBlurringRectangleKey] = DrawingToolType::dtBlurringRectangle;
     drawingToolsHotkeys_[kArrowKey] = DrawingToolType::dtArrow;
     drawingToolsHotkeys_[kLineKey] = DrawingToolType::dtLine;
     drawingToolsHotkeys_[kFilledRectangle] = DrawingToolType::dtFilledRectangle;
@@ -459,6 +459,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setFont(configurationProvider_->font());
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
         canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
+        canvas_->setInvertSelection(configurationProvider_->invertSelection());
         canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
         canvas_->setArrowMode(static_cast<Arrow::ArrowMode>(configurationProvider_->getArrowMode()));
         allowAltTab_ = configurationProvider_->allowAltTab();
@@ -932,6 +933,7 @@ void ImageEditorWindow::createToolbars()
     horizontalToolbar_.setStepInitialValue(1);
     horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
     horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
+    horizontalToolbar_.setInvertSelectionCheckbox(canvas_->getInvertSelection());
 }  
 
 
@@ -1092,6 +1094,8 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     bool showLineWidth = ( currentDrawingTool_ != DrawingToolType::dtStepNumber 
         && currentDrawingTool_ != DrawingToolType::dtText 
         && currentDrawingTool_ != DrawingToolType::dtCrop
+        && currentDrawingTool_ != DrawingToolType::dtBlurringRectangle
+        && currentDrawingTool_ != DrawingToolType::dtPixelateRectangle
     );
     horizontalToolbar_.showPenSize(showLineWidth);
 
@@ -1101,6 +1105,8 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
 
     bool showFillBackgound = currentDrawingTool_ == DrawingToolType::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
+    horizontalToolbar_.showInvertSelectionCheckbox(currentDrawingTool_ == DrawingToolType::dtBlurringRectangle
+        || currentDrawingTool_ == DrawingToolType::dtPixelateRectangle);
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 
@@ -1368,6 +1374,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
         configurationProvider_->setSearchEngine(searchEngine_);
         configurationProvider_->setFillTextBackground(canvas_->getFillTextBackground());
+        configurationProvider_->setInvertSelection(canvas_->getInvertSelection());
         configurationProvider_->setStepForegroundColor(canvas_->getStepForegroundColor());
         configurationProvider_->setStepBackgroundColor(canvas_->getStepBackgroundColor());
         configurationProvider_->setArrowMode(static_cast<int>(canvas_->getArrowMode()));
@@ -1493,6 +1500,11 @@ LRESULT ImageEditorWindow::OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wPar
 
 LRESULT ImageEditorWindow::OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     canvas_->setFillTextBackground(horizontalToolbar_.isFillBackgroundChecked());
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnInvertSelectionChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    canvas_->setInvertSelection(horizontalToolbar_.isInvertSelectionChecked());
     return 0;
 }
 

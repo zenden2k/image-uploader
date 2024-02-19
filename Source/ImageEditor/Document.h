@@ -46,10 +46,11 @@ class Document {
         bool isNull() const;
         bool hasTransparentPixels() const;
         bool isSrcMultiFrame() const;
+        bool isInDrawingState() const;
     private:
         std::shared_ptr<Gdiplus::Bitmap> currentImage_;
         Gdiplus::Bitmap* originalImage_;
-        Painter* currentCanvas_;
+        Painter* currentPainter_;
         std::vector<HistoryItem> history_;
         bool drawStarted_;
         AffectedSegments changedSegments_;

@@ -16,6 +16,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     searchEngine_ = settings->ImageEditorSettings.SearchEngine;
     fillTextBackground_ = settings->ImageEditorSettings.FillTextBackground;
     arrowMode_ = settings->ImageEditorSettings.ArrowType;
+    invertSelection_ = settings->ImageEditorSettings.InvertSelection;
 }
 
 void ImageEditorConfigurationProvider::saveConfiguration()
@@ -32,5 +33,6 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
     settings->ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;
     settings->ImageEditorSettings.ArrowType = arrowMode_;
+    settings->ImageEditorSettings.InvertSelection = invertSelection_;
 }
 

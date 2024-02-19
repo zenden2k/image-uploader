@@ -33,6 +33,7 @@ struct ImageEditorSettingsStruct {
     bool AllowEditingInFullscreen;
     SearchByImage::SearchEngine SearchEngine;
     bool FillTextBackground = false;
+    bool InvertSelection = false;
     int ArrowType;
 };
 

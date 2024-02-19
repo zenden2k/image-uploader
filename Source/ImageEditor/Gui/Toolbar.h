@@ -16,6 +16,7 @@ constexpr UINT MTBM_FILLBACKGROUNDCHANGE = WM_USER + 403;
 constexpr UINT MTBM_ARROWTYPECHANGE = WM_USER + 404;
 constexpr UINT MTBM_APPLY = WM_USER + 405; // Crop
 constexpr UINT MTBM_CANCEL = WM_USER + 406;
+constexpr UINT MTBM_INVERTSELECTIONCHANGE = WM_USER + 407;
 
 namespace ImageEditor {
 
@@ -26,7 +27,9 @@ public:
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
     enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
-    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON, ID_CANCELOPERATIONBUTTON};
+    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
+        ID_CANCELOPERATIONBUTTON, ID_INVERTSELECTIONCHECKBOX
+    };
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -81,9 +84,12 @@ public:
     void setStepInitialValue(int value);
     int getStepInitialValue() const;
     void showFillBackgroundCheckbox(bool show);
+    void showInvertSelectionCheckbox(bool show);
     void setFillBackgroundCheckbox(bool fill);
     void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
+    bool isInvertSelectionChecked() const;
+    void setInvertSelectionCheckbox(bool fill);
     int getArrowType() const;
     void setArrowType(int type);
     void setMovable(bool value);
@@ -110,6 +116,7 @@ public:
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
+        COMMAND_HANDLER(ID_INVERTSELECTIONCHECKBOX, BN_CLICKED, OnInvertSelectionCheckboxClicked)
         COMMAND_HANDLER(ID_ARROWTYPECOMBOBOX, CBN_SELCHANGE, OnArrowTypeComboChange)
         COMMAND_ID_HANDLER(ID_APPLYBUTTON, OnApplyButtonClicked)
         COMMAND_ID_HANDLER(ID_CANCELOPERATIONBUTTON, OnCancelOperationButtonClicked)
@@ -138,6 +145,7 @@ public:
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -156,6 +164,7 @@ public:
     CEdit initialValueEdit_;
     CButton testButton_;
     CButton fillBackgroundCheckbox_;
+    CButton invertSelectionCheckbox_;
     CComboBox arrowTypeCombobox_;
     CButton applyButton_;
     CButton cancelOperationButton_;

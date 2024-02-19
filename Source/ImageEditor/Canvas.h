@@ -25,7 +25,7 @@ class InputBoxControl;
 
 enum class DrawingToolType {
     dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection,
-    dtBlur, dtBlurrringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
+    dtBlur, dtBlurringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
     dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
 };
 
@@ -41,7 +41,7 @@ class Canvas {
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied
+            uitCropApplied, uitInvertSelectionChanged
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
 
@@ -137,6 +137,7 @@ class Canvas {
         void updateView();
         void updateView( RECT boundingRect );
         bool addDrawingElementToDoc(DrawingElement* element);
+        void beginDocDrawing();
         void endDocDrawing();
         int deleteSelectedElements();
         float getBlurRadius() const;
@@ -159,6 +160,9 @@ class Canvas {
         void setFillTextBackground(bool fill);
         bool getFillTextBackground() const;
 
+        void setInvertSelection(bool invert);
+        bool getInvertSelection() const;
+
         void setArrowMode(Arrow::ArrowMode arrowMode);
         Arrow::ArrowMode getArrowMode() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
@@ -174,6 +178,11 @@ class Canvas {
 
         void setDpi(float dpiX, float dpiY);
         std::pair<float, float> getDpi() const;
+
+        void beginManipulation();
+        void endManipulation();
+
+        bool manipulationStarted() const;
         boost::signals2::signal<void(int,int,int,int)> onCropChanged;
         boost::signals2::signal<void(int,int,int,int)> onCropFinished;
         boost::signals2::signal<void(DrawingToolType)> onDrawingToolChanged;
@@ -237,6 +246,7 @@ private:
         int nextNumber_; // next number for element StepNumber
         int stepFontSize_;
         bool fillTextBackground_;
+        bool invertSelection_;
         Arrow::ArrowMode arrowMode_;
         
         Gdiplus::Rect updatedRect_;
@@ -249,6 +259,7 @@ private:
         bool cropOnExport_;
         float dpiX_;
         float dpiY_;
+        bool manipulationStarted_;
 };
 
 }
