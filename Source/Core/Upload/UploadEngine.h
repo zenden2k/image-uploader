@@ -184,7 +184,7 @@ public:
      * Login
      * Password
      * 
-     * Custom parameters which should be visible in server settings dialog, should have the same name as in GetServerParamList. 
+     * Custom parameters which should be visible in server settings dialog, should have the same name as in \ref GetServerParamList. 
      */
     std::string getParam(const std::string& name)
     {

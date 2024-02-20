@@ -1,4 +1,5 @@
-local txt = "<h1><a id=\"logo\">some link</a></h1>";
+local txt = "<h1><a id=\"logo\" class=\"link\">some link</a></h1>";
+
 local doc = Document(txt);
 print(doc.find("h1 a").text()+"\r\n");
 print(doc.find("h1 a").length()+"\r\n");

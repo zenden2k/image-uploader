@@ -35,11 +35,11 @@
 class CurlShare;
 
 /**
-@brief  HTTP/FTP client (libcurl wrapper).
+@brief Network client (libcurl wrapper).
 
 Note: After each completed request, most of the options are set to default values.
 
-In scripts: nm - a global instance of NetworkClient
+In .nut scripts: "nm" is a global instance of NetworkClient
 */
 class NetworkClient: public INetworkClient
 {

@@ -12,7 +12,7 @@ function UploadFile(pathToFile, options) {
     nm.doUploadMultipartData();
 
     local response = nm.responseBody(); // 'local' it's like javascript's 'var' but only for local variables
-    local directUrl = regex_simple(response, "\\[IMG\\](.+)\\[/IMG\\]",0);
+    local directUrl = _RegexSimple(response, "\\[IMG\\](.+)\\[/IMG\\]",0);
     
     options.setDirectUrl(directUrl);
 
@@ -27,7 +27,7 @@ function UploadFile(pathToFile, options) {
 // @param int start - starting position
 // @return string - returns text captured by the first subpattern.
 //
-function regex_simple(data,regStr,start) {
+function _RegexSimple(data,regStr,start) {
     local ex = regexp(regStr);
     local res = ex.capture(data, start);
     local resultStr = "";

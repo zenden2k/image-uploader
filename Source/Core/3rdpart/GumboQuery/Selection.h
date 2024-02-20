@@ -36,11 +36,14 @@ class CSelection: public CObject
         CSelection& each(std::function<void(int, CNode)> callback);
         /* @endcond */
         CSelection& squirrelEach(Sqrat::Function callback);
-	public:
+
 
 		CSelection find(std::string aSelector);
 
+        CNode at(unsigned int i);
+        /* @cond PRIVATE */
 		CNode nodeAt(unsigned int i);
+        /* @endcond */
 
 		unsigned int nodeNum();
 

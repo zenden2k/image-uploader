@@ -1,10 +1,10 @@
 /**
 @file
 @section Implement Functions to implement
-You have to implement at least one function — <code>UploadFile</code>.<br>
-If your service supports authentication, you have to implement <code>Authenticate</code> function.
-If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, 
-<code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
+You have to implement at least one function — \ref UploadFile.<br>
+If your service supports authentication, you have to implement \ref Authenticate function.
+If you want to support album listing/creating/modifying, you have to implement also \ref GetFolderList, \ref CreateFolder, 
+ \ref ModifyFolder, \ref GetFolderAccessTypeList</i>.</p>
 */
 
 /**

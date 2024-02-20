@@ -419,6 +419,11 @@ namespace ScriptAPI {
 
     std::string GetDeviceId();
     std::string GetDeviceName();
+
+    /**
+    * @param type message severity (possible values: "error", "warning", "info")
+    */
+    void WriteLog(const std::string& type, const std::string& message);
 }
 
 #endif
