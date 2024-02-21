@@ -450,19 +450,6 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
     return 0;
 }
 
-
-LRESULT Toolbar::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = true;
-    return ::SendMessage(GetParent(), uMsg, wParam, lParam);
-}
-
-LRESULT Toolbar::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = true;
-    return ::SendMessage(GetParent(), uMsg, wParam, lParam);
-}
-
 LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     int xPos = GET_X_LPARAM(lParam); 
@@ -938,4 +925,5 @@ void Toolbar::setShowButtonText(bool show) {
 Toolbar::Orientation Toolbar::orientation() const {
     return orientation_;
 }
+
 }

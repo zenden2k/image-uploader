@@ -27,7 +27,9 @@ function _UploadToAccount(FileName, options) {
             options.setViewUrl(t.data.url_viewer);
             options.setDirectUrl(t.data.url);
             options.setThumbUrl(t.data.thumb.url);
-            //options.setDeleteUrl(t.data.delete_url);
+            if ("delete_url" in t.data) {
+                options.setDeleteUrl(t.data.delete_url);
+            }
             return 1;
         }
     } else if ("error" in t) {
@@ -69,6 +71,9 @@ function UploadFile(FileName, options) {
             options.setViewUrl(t.image.url_viewer);
             options.setDirectUrl(t.image.url);
             options.setThumbUrl(t.image.thumb.url);
+            if ("delete_url" in t.image) {
+                options.setDeleteUrl(t.image.delete_url);
+            }
             return 1;
         } else
             return 0;

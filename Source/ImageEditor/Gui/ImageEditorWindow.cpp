@@ -129,18 +129,18 @@ void ImageEditorWindow::init()
     selectedSubMenuItems_[ID_FILLEDRECTANGLE] = ID_FILLEDRECTANGLE;
     selectedSubMenuItems_[ID_BLURRINGRECTANGLE] = ID_BLURRINGRECTANGLE;
 
-    drawingToolsHotkeys_[kMoveKey] = DrawingToolType::dtMove;
-    drawingToolsHotkeys_[kBrushKey] = DrawingToolType::dtBrush;
-    drawingToolsHotkeys_[kTextKey] = DrawingToolType::dtText;
-    drawingToolsHotkeys_[kRectangleKey] = DrawingToolType::dtRectangle;
-    drawingToolsHotkeys_[kColorPickerKey] = DrawingToolType::dtColorPicker;
-    drawingToolsHotkeys_[kCropKey] = DrawingToolType::dtCrop;
-    drawingToolsHotkeys_[kMarkerKey] = DrawingToolType::dtMarker;
-    drawingToolsHotkeys_[kBlurringRectangleKey] = DrawingToolType::dtBlurringRectangle;
-    drawingToolsHotkeys_[kArrowKey] = DrawingToolType::dtArrow;
-    drawingToolsHotkeys_[kLineKey] = DrawingToolType::dtLine;
-    drawingToolsHotkeys_[kFilledRectangle] = DrawingToolType::dtFilledRectangle;
-    drawingToolsHotkeys_[kStepNumber] = DrawingToolType::dtStepNumber;
+    drawingToolsHotkeys_[kMoveKey] = ID_MOVE /*DrawingToolType::dtMove*/;
+    drawingToolsHotkeys_[kBrushKey] = ID_BRUSH /*DrawingToolType::dtBrush*/;
+    drawingToolsHotkeys_[kTextKey] = ID_TEXT /*DrawingToolType::dtText*/;
+    drawingToolsHotkeys_[kRectangleKey] = ID_RECTANGLE /*DrawingToolType::dtRectangle*/;
+    drawingToolsHotkeys_[kColorPickerKey] = ID_COLORPICKER /*DrawingToolType::dtColorPicker*/;
+    drawingToolsHotkeys_[kCropKey] = ID_CROP;
+    drawingToolsHotkeys_[kMarkerKey] = ID_MARKER;
+    drawingToolsHotkeys_[kBlurringRectangleKey] = ID_BLURRINGRECTANGLE;
+    drawingToolsHotkeys_[kArrowKey] = ID_ARROW;
+    drawingToolsHotkeys_[kLineKey] = ID_LINE;
+    drawingToolsHotkeys_[kFilledRectangle] = ID_FILLEDRECTANGLE;
+    drawingToolsHotkeys_[kStepNumber] = ID_STEPNUMBER;
     
     dialogResult_ = drCancel;
 }
@@ -428,16 +428,25 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
-    ACCEL accels[] = {
+    std::vector<ACCEL> accels = {
         { FVIRTKEY | FCONTROL, 'Z', ID_UNDO },
         { FVIRTKEY | FCONTROL, 'D', ID_UNSELECTALL },
         { FVIRTKEY | FCONTROL, 'S', ID_SAVE },
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
         { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
+        { FVIRTKEY, VK_ESCAPE, ID_CLOSE },
+        { FVIRTKEY, VK_RETURN, IDOK },
+        { FVIRTKEY, VK_DELETE, ID_DELETESELECTED },
     };
 
-    accelerators_ = CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
+    for(const auto& [k,v]: drawingToolsHotkeys_) {
+        accels.push_back(
+            { FVIRTKEY, static_cast<WORD>(k), static_cast<WORD>(v) }
+        );
+    }
+
+    accelerators_ = CreateAcceleratorTable(&accels[0], accels.size());
 
     //RECT rc;
     GetClientRect(&rc);
@@ -678,23 +687,23 @@ LRESULT ImageEditorWindow::OnGetMinMaxInfo(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
     return 0;
 }
 
+LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    if (showUploadButton_ || showAddToWizardButton_ ) {
+        if (!sourceFileName_.IsEmpty()) {
+            outFileName_ = sourceFileName_;
+        }
+        if (saveDocument()) {
+            DialogResult dr = showUploadButton_ ? drUpload : drAddToWizard;
+            EndDialog(dr);
+        }
+    }
+    return 0;
+}
+
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
      std::map<DrawingToolHotkey, DrawingToolType>::iterator it;
-     //HKL englishLayout = LoadKeyboardLayout(_T("00000409"),0);
-     if ( wParam == VK_ESCAPE ) {
-        onClose();
-        return 0;
-     } else if ( wParam == VK_RETURN && (showUploadButton_ || showAddToWizardButton_) ) {
-         if ( !sourceFileName_.IsEmpty() ) {
-             outFileName_ = sourceFileName_;
-         }
-         if ( saveDocument() ) {
-             DialogResult dr = showUploadButton_ ? drUpload : drAddToWizard;
-             EndDialog(dr);
-         }
-     }
-     else if (wParam == VK_OEM_6) { // ']'
+     if (wParam == VK_OEM_6) { // ']'
          canvas_->beginPenSizeChanging();
          canvas_->setPenSize(canvas_->getPenSize()+1);
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
@@ -707,15 +716,7 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
          updatePixelLabels();
          m_view.SendMessage(WM_SETCURSOR, reinterpret_cast<LPARAM>(m_view.m_hWnd), 0);
-     } else if ( (it = drawingToolsHotkeys_.find((DrawingToolHotkey)wParam)) != drawingToolsHotkeys_.end() 
-         && !(GetKeyState(VK_CONTROL) & 0x8000) 
-         && !(GetKeyState(VK_SHIFT) & 0x8000)
-        && !(GetKeyState(VK_MENU) & 0x8000) ) {
-         canvas_->setDrawingToolType(it->second);
-         updateToolbarDrawingTool(it->second);
-     } else if ( wParam == VK_DELETE ) {
-         canvas_->deleteSelectedElements();
-     } 
+     }
     return 0;
 }
 
@@ -1395,9 +1396,25 @@ bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
 }
 
 BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
+    HWND parent = ::GetParent(pMsg->hwnd);
+
+    if (parent) {
+        if (parent == m_view.m_hWnd) {
+            return FALSE;
+        }
+
+        if (parent == horizontalToolbar_.m_hWnd || parent == verticalToolbar_.m_hWnd) {
+            TCHAR className[MAX_PATH]{};
+            if (GetClassName(pMsg->hwnd, className, MAX_PATH) && !lstrcmp(className, _T("Edit"))) {
+                return FALSE;
+            }
+        }
+    }
+
     if (TranslateAccelerator(m_hWnd, accelerators_, pMsg)) {
         return TRUE;
     }
+
     return FALSE;
 }
 
@@ -1600,6 +1617,11 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
         }
         toolbar.SetWindowPos(nullptr, newPos.x, newPos.y, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
     }
+}
+
+LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->deleteSelectedElements();
+    return 0;
 }
 
 }

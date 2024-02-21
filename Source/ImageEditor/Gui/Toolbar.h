@@ -89,7 +89,7 @@ public:
     void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
     bool isInvertSelectionChecked() const;
-    void setInvertSelectionCheckbox(bool fill);
+    void setInvertSelectionCheckbox(bool invert);
     int getArrowType() const;
     void setArrowType(int type);
     void setMovable(bool value);
@@ -106,8 +106,6 @@ public:
         MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
         MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
-        MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
-        MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
         MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
         MESSAGE_HANDLER(WM_HSCROLL, OnHScroll)
@@ -139,8 +137,6 @@ public:
     LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

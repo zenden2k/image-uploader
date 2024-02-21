@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <map>
+#include <unordered_map>
 
 #include "atlheaders.h"
 #include "resource.h"
@@ -29,7 +30,7 @@ public:
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
         ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_SEARCHBYIMAGEINGOOGLE,
-        ID_SEARCHBYIMAGEINYANDEX,
+        ID_SEARCHBYIMAGEINYANDEX, ID_DELETESELECTED,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
@@ -105,6 +106,7 @@ public:
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
+        COMMAND_ID_HANDLER(IDOK, OnClickedOK)
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
         COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
@@ -122,9 +124,9 @@ public:
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
-        
         REFLECT_NOTIFICATIONS()
         /*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
         CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)*/
@@ -174,6 +176,9 @@ public:
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -181,7 +186,7 @@ public:
         std::map<int, DrawingToolType> menuItems_;
         std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;
-        std::map<DrawingToolHotkey, DrawingToolType> drawingToolsHotkeys_;
+        std::unordered_map<DrawingToolHotkey, int> drawingToolsHotkeys_;
         DialogResult dialogResult_;
         WindowDisplayMode displayMode_;
         DrawingToolType initialDrawingTool_;
