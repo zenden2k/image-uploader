@@ -1396,17 +1396,21 @@ bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
 }
 
 BOOL ImageEditorWindow::PreTranslateMessage(MSG* pMsg) {
-    HWND parent = ::GetParent(pMsg->hwnd);
+    if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_SYSKEYDOWN) {
+        // Disable accelerators for child controls of the view window (now it's just InputBoxControl)
+        // and all edit controls in toolbars.
+        HWND parent = ::GetParent(pMsg->hwnd);
 
-    if (parent) {
-        if (parent == m_view.m_hWnd) {
-            return FALSE;
-        }
-
-        if (parent == horizontalToolbar_.m_hWnd || parent == verticalToolbar_.m_hWnd) {
-            TCHAR className[MAX_PATH]{};
-            if (GetClassName(pMsg->hwnd, className, MAX_PATH) && !lstrcmp(className, _T("Edit"))) {
+        if (parent) {
+            if (parent == m_view.m_hWnd) {
                 return FALSE;
+            }
+
+            if (parent == horizontalToolbar_.m_hWnd || parent == verticalToolbar_.m_hWnd) {
+                TCHAR className[MAX_PATH]{};
+                if (GetClassName(pMsg->hwnd, className, MAX_PATH) && !lstrcmp(className, _T("Edit"))) {
+                    return FALSE;
+                }
             }
         }
     }

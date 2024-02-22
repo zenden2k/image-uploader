@@ -135,6 +135,7 @@ set(SRC_LIST
     ../ImageEditor/Gui/ImageEditorView.cpp
     ../ImageEditor/Gui/ImageEditorWindow.cpp
     ../ImageEditor/Gui/InputBoxControl.cpp
+    ../ImageEditor/Gui/CustomTrackBarControl.cpp
     ../ImageEditor/Gui/TextParamsWindow.cpp
     ../ImageEditor/Gui/Toolbar.cpp
     ../ImageEditor/DrawingTools/AbstractDrawingTool.cpp
@@ -302,6 +303,7 @@ set(HEADER_LIST
     ../ImageEditor/Gui/ImageEditorView.h
     ../ImageEditor/Gui/ImageEditorWindow.h
     ../ImageEditor/Gui/InputBoxControl.h
+    ../ImageEditor/Gui/CustomTrackBarControl.h
     ../ImageEditor/Gui/TextParamsWindow.h
     ../ImageEditor/Gui/Toolbar.h
     ../ImageEditor/DrawingTools/AbstractDrawingTool.h

@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 
+#include "CustomTrackBarControl.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
 
@@ -149,7 +150,7 @@ public:
     int AutoSize();
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);
-    CTrackBarCtrl  penSizeSlider_;
+    CCustomTrackBarControl penSizeSlider_;
     CTrackBarCtrl  roundRadiusSlider_;
     CStatic pixelLabel_;
     CStatic roundRadiusLabel_;
