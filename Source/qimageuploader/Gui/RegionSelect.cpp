@@ -28,11 +28,11 @@ RegionSelect::RegionSelect(QWidget *parent, QPixmap* src)
     setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint );
     setWindowState(Qt::WindowFullScreen);
     setCursor(Qt::CrossCursor);
-
-    sizeDesktop = QApplication::desktop()->size();
+    QScreen *screen = QGuiApplication::primaryScreen();
+    sizeDesktop = screen->size();
     resize(sizeDesktop);
 
-	 desktopPixmapBkg = *src;//QPixmap::grabWindow(QApplication::desktop()->winId());
+    desktopPixmapBkg = *src;//QPixmap::grabWindow(QApplication::desktop()->winId());
     desktopPixmapClr = desktopPixmapBkg;
 
     move(0, 0);
@@ -86,6 +86,7 @@ void RegionSelect::mouseMoveEvent(QMouseEvent *event)
 
 void RegionSelect::drawBackGround()
 {
+    QScreen *screen = QGuiApplication::primaryScreen();
     // create painter on  pixelmap of desktop
     QPainter painter(&desktopPixmapBkg);
 
@@ -93,9 +94,9 @@ void RegionSelect::drawBackGround()
     painter.setBrush(QBrush(QColor(0, 0, 0, 85), Qt::SolidPattern));
 
     // draw rect of desktop size in poainter
-    painter.drawRect(QApplication::desktop()->rect());
+    painter.drawRect(screen->geometry());
         
-    QRect txtRect = QApplication::desktop()->screenGeometry(QApplication::desktop()->primaryScreen());
+    QRect txtRect = screen->geometry();
     QString txtTip = QApplication::tr("Use your mouse to draw a rectangle to screenshot or  exit pressing\nany key or using the right or middle mouse buttons.");
 
     txtRect.setHeight(qRound((double)txtRect.height() / 10)); // rounded val of text rect height
@@ -116,7 +117,7 @@ void RegionSelect::drawBackGround()
     painter.setPen(QPen(Qt::black)); // black color pen
     painter.drawText(txtBgRect, Qt::AlignCenter, txtTip);
 
-    palBackground = (qApp->desktop()->numScreens() > 1);
+    palBackground = (qApp->screens().size() > 1);
 
     // set bkg to pallette widget
     if (palBackground)

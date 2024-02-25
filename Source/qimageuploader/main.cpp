@@ -82,6 +82,7 @@ int main(int argc, char *argv[])
     AppParams::instance()->setVersionInfo(appVersion);
 
 	QApplication a(argc, argv);
+    a.setStyle("Fusion");
     LogWindow logWindow;
 	logWindow.show();
 	auto logger = std::make_shared<QtDefaultLogger>(&logWindow);

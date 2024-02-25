@@ -75,7 +75,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     systemTrayIcon_ = new QSystemTrayIcon(this);
     systemTrayIcon_->setIcon(QIcon(":/res/icon_main.ico"));
     systemTrayIcon_->setContextMenu(contextMenu);
-    connect(systemTrayIcon_, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
+    connect(systemTrayIcon_, &QSystemTrayIcon::activated, this, [&](QSystemTrayIcon::ActivationReason reason) {
         if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick){
             setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
             show();
@@ -83,7 +83,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
         }
     });
     systemTrayIcon_->show();
-    qDebug() << systemTrayIcon_->geometry();
+    //qDebug() << systemTrayIcon_->geometry();
 
     connect(ui->showLogButton, &QPushButton::clicked, this, &MainWindow::onShowLog);
 }

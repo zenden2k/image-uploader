@@ -16,9 +16,10 @@ SET(CMAKE_AUTORCC ON)
  
 #set(CMAKE_CXX_STANDARD 14)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+#find_package(Qt6Core REQUIRED)
+#find_package(Qt6Gui REQUIRED)
+#find_package(Qt6Widgets REQUIRED)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS "Gui/ui/")
 
@@ -60,9 +61,9 @@ set(SOURCE_FILES
 
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
  
-target_link_libraries(${PROJECT_NAME} Qt5::Core)
-target_link_libraries(${PROJECT_NAME} Qt5::Gui)
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt6::Core)
+target_link_libraries(${PROJECT_NAME} Qt6::Gui)
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 dwmapi)
