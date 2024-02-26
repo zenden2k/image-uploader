@@ -5,6 +5,8 @@
 #include <QDialog>
 #include "Core/Logging/Logger.h"
 
+class LogListModel;
+
 namespace Ui {
 class LogWindow;
 }
@@ -19,7 +21,8 @@ public:
 	void writeLog(ILogger::LogMsgType MsgType, QString Sender, QString  Msg, QString Info);
 protected:
 	std::unique_ptr<Ui::LogWindow> ui;
-    Q_INVOKABLE void writeLogInMainThread(QString msg);
+    LogListModel* logModel_;
+    Q_INVOKABLE void writeLogInMainThread(ILogger::LogMsgType MsgType, QString Sender, QString Msg, QString Info);
 
 };
 

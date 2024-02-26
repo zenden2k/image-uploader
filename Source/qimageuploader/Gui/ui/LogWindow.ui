@@ -17,6 +17,9 @@
    <item>
     <widget class="QPlainTextEdit" name="plainTextEdit"/>
    </item>
+   <item>
+    <widget class="QListView" name="listView"/>
+   </item>
   </layout>
  </widget>
  <resources/>

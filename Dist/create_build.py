@@ -180,6 +180,8 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
     git_output = subprocess.check_output(['wsl', '-e', '/bin/bash', "git_rev.sh", arg, "HEAD"],cwd=source_dir + "/Dist/").decode("utf-8").strip()
     git_output = re.sub( r",\s*}", "}", git_output )
     git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
+    git_output = git_output.replace('"Call"', "Call")
+    
     print(git_output)
     commits = json.loads(git_output)
 

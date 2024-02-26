@@ -30,7 +30,11 @@ function UploadFile(FileName, options) {
 	nm.addQueryHeader("X-Requested-With", "XMLHttpRequest");
 	nm.addQueryHeader("Host", "imgbox.com");
 	nm.addQueryHeader("Referer", "https://imgbox.com/");
+	nm.addQueryHeader("Origin", "https://imgbox.com");
+	//nm.addQueryHeader("Content-Type", "application/json");
+	nm.addQueryHeader("Accept", "application/json, text/javascript, */*; q=0.01");
 	nm.doPost("");
+
 	local sBody = nm.responseBody();
 	if (nm.responseCode() != 200) {
 		WriteLog("warning", "Server response code is "+nm.responseCode()+" at \"generate\" stage.");

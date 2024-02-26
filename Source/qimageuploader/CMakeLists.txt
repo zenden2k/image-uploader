@@ -32,7 +32,7 @@ endif()
 
 set(SOURCE_FILES 
     main.cpp
-    Gui/mainwindow.cpp
+    Gui/MainWindow.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -40,8 +40,12 @@ set(SOURCE_FILES
     Gui/AboutDialog.cpp
     ../Core/ScreenCapture/ScreenCapture.cpp
     Gui/RegionSelect.cpp
-    Gui/models/uploadtreemodel.cpp 
+    Gui/models/UploadTreeModel.cpp   
+    Gui/models/LogListModel.cpp
+    Gui/models/LogListModel.h
     Gui/controls/MyListWidget.cpp
+    Gui/controls/LogListItemDelegate.h
+    Gui/controls/LogListItemDelegate.cpp
     QtUploadErrorHandler.cpp
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
@@ -50,7 +54,7 @@ set(SOURCE_FILES
     Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
     ../Video/QtImage.cpp
-    Gui/ui/mainwindow.ui 
+    Gui/ui/MainWindow.ui
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui
