@@ -84,7 +84,7 @@ private:
 class BlurringRectangle: public MovableElement {
 public:
     BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false, bool invertSelection = false);
-    ~BlurringRectangle();
+    ~BlurringRectangle() override;
     void setBlurRadius(float radius);
     float getBlurRadius() const;
     void render(Painter* gr) override;

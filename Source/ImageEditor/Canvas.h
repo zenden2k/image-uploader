@@ -41,9 +41,9 @@ class Canvas {
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied, uitInvertSelectionChanged
+            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged
         };
-        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
+        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kMaxBlurRadius = 10, kDefaultStepFontSize = 14 };
 
         struct UndoHistoryItemElement {
             MovableElement* movableElement;
@@ -51,7 +51,10 @@ class Canvas {
             POINT startPoint{};
             POINT endPoint{};
             Gdiplus::Color color;
-            int penSize; // pen size or rounding radius or fill background
+            union {
+                int penSize; // pen size or rounding radius or fill background
+                float floatVal;
+            };
             std::string rawText;
 
             UndoHistoryItemElement() {
@@ -142,8 +145,9 @@ class Canvas {
         int deleteSelectedElements();
         float getBlurRadius() const;
         void setBlurRadius(float radius);
+        void beginBlurRadiusChanging();
+        void endBlurRadiusChanging(float radius);
         bool hasBlurRectangles() const;
-        int getPixelateBlockSize() const;
         void showOverlay(bool show);
         void selectionChanged();
         Gdiplus::Rect currentRenderingRect() const;
@@ -212,7 +216,6 @@ private:
         Document* doc_;
         std::unique_ptr<Gdiplus::Graphics> bufferedGr_;
         float blurRadius_;
-        int pixelateBlockSize_;
         int canvasWidth_, canvasHeight_;
         POINT oldPoint_;
         POINT leftMouseDownPoint_;
@@ -239,6 +242,7 @@ private:
         int originalPenSize_;
         int roundingRadius_;
         int originalRoundingRadius_;
+        float originalBlurRadius_;
         bool canvasChanged_;
         bool fullRender_;
         int blurRectanglesCount_;

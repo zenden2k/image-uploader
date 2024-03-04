@@ -64,7 +64,7 @@
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
-#include "statusdlg.h"
+#include "StatusDlg.h"
 #include "3rdpart/wintoastlib.h"
 #include "Gui/Components/WinToastHandler.h"
 #include "ServerListTool/ServersCheckerDlg.h"

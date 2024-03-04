@@ -198,6 +198,7 @@ public:
         CString serverName_;
         int prevPenSize_;
         int prevRoundingRadius_;
+        float prevBlurRadius_;
         CIcon icon_;
         CIcon iconSmall_;
         std::unique_ptr<ColorsDelegate> colorsDelegate_;
@@ -261,6 +262,7 @@ public:
         fillTextBackground_ = false;
         arrowMode_ = 0;
         invertSelection_ = false;
+        blurRadius_ = 1.0f;
     }
     virtual ~ConfigurationProvider() = default;
     virtual void saveConfiguration() {}
@@ -278,6 +280,9 @@ public:
     int penSize() const { return penSize_;}
     void setRoundingRadius(int radius) { roundingRadius_ = radius; }
     int roundingRadius() const { return roundingRadius_;}
+    void setBlurRadius(float radius) { blurRadius_ = radius; }
+    float blurRadius() const { return blurRadius_; }
+
     bool allowAltTab() const  {  return allowAltTab_; } 
     void setFont(const LOGFONT& font) { font_ = font; }
     LOGFONT font() const { return font_; }
@@ -311,6 +316,7 @@ protected:
         stepForegroundColor_, stepBackgroundColor_;
     int penSize_;
     int roundingRadius_;
+    float blurRadius_;
     int arrowMode_;
     LOGFONT font_;
     bool allowAltTab_;

@@ -173,7 +173,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     return image;
 }
 
-void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius, Gdiplus::Rect exclude) {
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float radius, Gdiplus::Rect exclude) {
     using namespace Gdiplus;
     Rect rc(x, y, w, h);
 

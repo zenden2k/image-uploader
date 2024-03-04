@@ -214,7 +214,14 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
         roundRadiusLabel_.SetFont(systemFont_);
-        //createHintForSliders(roundRadiusLabel_.m_hWnd, TR("Rounding radius"));
+
+        RECT blurRadiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+        blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
+        createHintForSliders(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
+        //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+        
+        blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
+        blurRadiusLabel_.SetFont(systemFont_);
 
         RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
@@ -271,7 +278,8 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 LRESULT Toolbar::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( (HWND)lParam == penSizeSlider_.m_hWnd ||   (HWND)lParam == roundRadiusSlider_.m_hWnd ) {
+    if ( (HWND)lParam == penSizeSlider_.m_hWnd ||   (HWND)lParam == roundRadiusSlider_.m_hWnd
+        || (HWND)lParam == blurRadiusSlider_.m_hWnd) {
         ::SendMessage(GetParent(),uMsg, wParam, lParam);
     }
     return 0;
@@ -625,6 +633,20 @@ int Toolbar::AutoSize()
         roundRadiusLabel_.GetClientRect(&roundRadiusLabelRect);
         roundRadiusLabel_.ClientToScreen(&roundRadiusLabelRect);
         ScreenToClient(&roundRadiusLabelRect);
+
+        // Blur radius
+        blurRadiusSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 1 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        blurRadiusSlider_.SetRange(BLUR_RADIUS_PRECISION, Canvas::kMaxBlurRadius * BLUR_RADIUS_PRECISION);
+        RECT blurRadiusSliderRect;
+        blurRadiusSlider_.GetClientRect(&blurRadiusSliderRect);
+        blurRadiusSlider_.ClientToScreen(&blurRadiusSliderRect);
+        ScreenToClient(&blurRadiusSliderRect);
+        blurRadiusLabel_.SetWindowPos(0, blurRadiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        RECT blurRadiusLabelRect;
+        blurRadiusLabel_.GetClientRect(&blurRadiusLabelRect);
+        blurRadiusLabel_.ClientToScreen(&blurRadiusLabelRect);
+        ScreenToClient(&blurRadiusLabelRect);
         //RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
         GuiTools::AutoSizeStaticControl(fontSizeLabel_);
@@ -654,7 +676,7 @@ int Toolbar::AutoSize()
         // Moving fill background checkbox
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
-        invertSelectionCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        invertSelectionCheckbox_.SetWindowPos(0, blurRadiusLabelRect.right + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 

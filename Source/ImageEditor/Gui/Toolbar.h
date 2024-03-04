@@ -21,6 +21,8 @@ constexpr UINT MTBM_INVERTSELECTIONCHANGE = WM_USER + 407;
 
 namespace ImageEditor {
 
+constexpr float BLUR_RADIUS_PRECISION = 4.0f;
+
 class Toolbar : public CWindowImpl<Toolbar> {
 public:
     typedef CWindowImpl<Toolbar> TParent;
@@ -31,6 +33,7 @@ public:
     enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
         ID_CANCELOPERATIONBUTTON, ID_INVERTSELECTIONCHECKBOX
     };
+
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -151,9 +154,9 @@ public:
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);
     CCustomTrackBarControl penSizeSlider_;
-    CTrackBarCtrl  roundRadiusSlider_;
+    CTrackBarCtrl  roundRadiusSlider_, blurRadiusSlider_;
     CStatic pixelLabel_;
-    CStatic roundRadiusLabel_;
+    CStatic roundRadiusLabel_, blurRadiusLabel_;
     CStatic fontSizeLabel_;
     CEdit fontSizeEdit_;
     CUpDownCtrl fontSizeUpDownCtrl_;

@@ -28,6 +28,7 @@ struct ImageEditorSettingsStruct {
     Gdiplus::Color ForegroundColor, BackgroundColor, StepForegroundColor, StepBackgroundColor;
     int PenSize;
     int RoundingRadius;
+    float BlurRadius;
     LOGFONT Font;
     bool AllowAltTab;
     bool AllowEditingInFullscreen;

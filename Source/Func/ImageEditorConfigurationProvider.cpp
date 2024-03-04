@@ -12,6 +12,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     stepBackgroundColor_ = settings->ImageEditorSettings.StepBackgroundColor;
     font_ =  settings->ImageEditorSettings.Font;
     roundingRadius_ = settings->ImageEditorSettings.RoundingRadius;
+    blurRadius_ = settings->ImageEditorSettings.BlurRadius;
     allowAltTab_ = settings->ImageEditorSettings.AllowAltTab;
     searchEngine_ = settings->ImageEditorSettings.SearchEngine;
     fillTextBackground_ = settings->ImageEditorSettings.FillTextBackground;
@@ -27,6 +28,7 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.BackgroundColor = backgroundColor_;
     settings->ImageEditorSettings.Font = font_;
     settings->ImageEditorSettings.RoundingRadius = roundingRadius_;
+    settings->ImageEditorSettings.BlurRadius = blurRadius_;
     settings->ImageEditorSettings.AllowAltTab = allowAltTab_;
     settings->ImageEditorSettings.SearchEngine = searchEngine_;
     settings->ImageEditorSettings.FillTextBackground = fillTextBackground_;

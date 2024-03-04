@@ -525,6 +525,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.PenSize = 12;
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
+    ImageEditorSettings.BlurRadius = 4.0f;
     ImageEditorSettings.AllowAltTab = true;
     ImageEditorSettings.AllowEditingInFullscreen = false;
     ImageEditorSettings.SearchEngine = SearchByImage::SearchEngine::seYandex;
@@ -817,6 +818,7 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, PenSize);
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
+    imageEditor.nm_bind(ImageEditorSettings, BlurRadius);
     imageEditor.nm_bind(ImageEditorSettings, ArrowType);
     imageEditor.nm_bind(ImageEditorSettings, Font);
     imageEditor.nm_bind(ImageEditorSettings, FillTextBackground);

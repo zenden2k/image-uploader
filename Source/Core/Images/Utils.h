@@ -35,7 +35,7 @@ std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR
 void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* background, Gdiplus::Rect layoutArea);
 void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus::Pen* p, Gdiplus::Brush* br);
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico);
-void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x, int y, int w, int h, int radius, Gdiplus::Rect exclude = {});
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x, int y, int w, int h, float radius, Gdiplus::Rect exclude = {});
 void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize, Gdiplus::Rect exclude = {});
 std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fileName, bool* isAnimated);
 Gdiplus::Color StringToColor(const std::string& str);

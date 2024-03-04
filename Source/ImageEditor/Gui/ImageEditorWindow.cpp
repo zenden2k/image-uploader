@@ -52,6 +52,7 @@ void ImageEditorWindow::init()
     showAddToWizardButton_ = true;
     prevPenSize_ = 0;
     prevRoundingRadius_ = 0;
+    prevBlurRadius_ = 0;
     imageQuality_ = 85;
     searchEngine_ = SearchByImage::SearchEngine::seGoogle;
     currentDrawingTool_ = DrawingToolType::dtNone;
@@ -467,6 +468,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         canvas_->setBackgroundColor(configurationProvider_->backgroundColor());
         canvas_->setFont(configurationProvider_->font());
         canvas_->setRoundingRadius(configurationProvider_->roundingRadius());
+        canvas_->setBlurRadius(configurationProvider_->blurRadius());
         canvas_->setFillTextBackground(configurationProvider_->fillTextBackground());
         canvas_->setInvertSelection(configurationProvider_->invertSelection());
         canvas_->setStepColors(configurationProvider_->stepForegroundColor(), configurationProvider_->stepBackgroundColor());
@@ -930,6 +932,7 @@ void ImageEditorWindow::createToolbars()
     }
     horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
     horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
+    horizontalToolbar_.blurRadiusSlider_.SetPos(round(canvas_->getBlurRadius()*BLUR_RADIUS_PRECISION));
     horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
     horizontalToolbar_.setStepInitialValue(1);
     horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
@@ -1104,10 +1107,16 @@ void ImageEditorWindow::updateRoundingRadiusSlider()
     horizontalToolbar_.roundRadiusLabel_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
     horizontalToolbar_.roundRadiusSlider_.ShowWindow( showRoundingRadiusSlider ? SW_SHOW: SW_HIDE );
 
+    bool showBlurRadiusSlider = currentDrawingTool_ == DrawingToolType::dtBlurringRectangle
+        || currentDrawingTool_ == DrawingToolType::dtPixelateRectangle;
+
+    horizontalToolbar_.blurRadiusSlider_.ShowWindow(showBlurRadiusSlider ? SW_SHOW : SW_HIDE);
+    horizontalToolbar_.blurRadiusLabel_.ShowWindow(showBlurRadiusSlider ? SW_SHOW : SW_HIDE);
+    horizontalToolbar_.showInvertSelectionCheckbox(showBlurRadiusSlider);
+
     bool showFillBackgound = currentDrawingTool_ == DrawingToolType::dtText;
     horizontalToolbar_.showFillBackgroundCheckbox(showFillBackgound);
-    horizontalToolbar_.showInvertSelectionCheckbox(currentDrawingTool_ == DrawingToolType::dtBlurringRectangle
-        || currentDrawingTool_ == DrawingToolType::dtPixelateRectangle);
+
 
     horizontalToolbar_.showArrowTypeCombo(currentDrawingTool_ == DrawingToolType::dtArrow);
 
@@ -1331,6 +1340,8 @@ void ImageEditorWindow::updatePixelLabels()
 {
     horizontalToolbar_.pixelLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getPenSize()) + L" px");
     horizontalToolbar_.roundRadiusLabel_.SetWindowText(WinUtils::IntToStr(canvas_->getRoundingRadius()) + L" px");
+    std::string s = str(boost::format("%0.2f") % canvas_->getBlurRadius());
+    horizontalToolbar_.blurRadiusLabel_.SetWindowText(IuCoreUtils::Utf8ToWstring(s).c_str());
 }
 
 bool ImageEditorWindow::OnSaveAs()
@@ -1373,6 +1384,7 @@ void ImageEditorWindow::saveSettings()
         configurationProvider_->setBackgroundColor(canvas_->getBackgroundColor());
         configurationProvider_->setFont(canvas_->getFont());
         configurationProvider_->setRoundingRadius(canvas_->getRoundingRadius());
+        configurationProvider_->setBlurRadius(canvas_->getBlurRadius());
         configurationProvider_->setSearchEngine(searchEngine_);
         configurationProvider_->setFillTextBackground(canvas_->getFillTextBackground());
         configurationProvider_->setInvertSelection(canvas_->getInvertSelection());
@@ -1488,6 +1500,33 @@ LRESULT ImageEditorWindow::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
                 canvas_->beginRoundingRadiusChanging();
             }
             canvas_->setRoundingRadius(roundingRadius);
+            updatePixelLabels();
+            break;
+        }
+    }
+    else if (hwndSender == horizontalToolbar_.blurRadiusSlider_.m_hWnd) {
+        float blurRadius = HIWORD(wParam)/ BLUR_RADIUS_PRECISION;
+        switch (LOWORD(wParam)) {
+        case TB_ENDTRACK:
+            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos()/ BLUR_RADIUS_PRECISION;
+        case TB_THUMBPOSITION:
+            canvas_->endBlurRadiusChanging(blurRadius);
+            updatePixelLabels();
+            prevBlurRadius_ = 0;
+            break;
+        case TB_PAGEDOWN:
+        case TB_PAGEUP:
+        case TB_TOP:
+        case TB_LINEDOWN:
+        case TB_LINEUP:
+        case TB_BOTTOM:
+            blurRadius = horizontalToolbar_.blurRadiusSlider_.GetPos()/ BLUR_RADIUS_PRECISION;
+        case TB_THUMBTRACK:
+            if (!prevRoundingRadius_) {
+                prevBlurRadius_ = canvas_->getBlurRadius();
+                canvas_->beginBlurRadiusChanging();
+            }
+            canvas_->setBlurRadius(blurRadius);
             updatePixelLabels();
             break;
         }

@@ -773,7 +773,7 @@ void BlurringRectangle::render(Painter* gr)
         Rect excludeRect = invertSelection_ ? elRect : Rect();
         Rect applyRect = invertSelection_ ? canvasRect : elRect;
         if(pixelate_) {
-            ImageUtils::ApplyPixelateEffect(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_), excludeRect);
+            ImageUtils::ApplyPixelateEffect(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_ * 4.0 /*BLUR_RADIUS_PRECISION*/), excludeRect);
         }
         else {
 #if GDIPVER >= 0x0110 
@@ -787,7 +787,7 @@ void BlurringRectangle::render(Painter* gr)
 
             st = gr->DrawImage(background, &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
 #else
-            ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_), excludeRect);
+            ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, blurRadius_, excludeRect);
 #endif
         }
 

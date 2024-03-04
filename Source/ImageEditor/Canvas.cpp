@@ -59,11 +59,11 @@ Canvas::Canvas( HWND parent ) {
     originalPenSize_ = 0;
     roundingRadius_ = 12;
     originalRoundingRadius_ = 0;
+    originalBlurRadius_ = 0;
     selection_ = nullptr;
     canvasChanged_ = true;
     fullRender_ = true;
-    blurRadius_ = 5;
-    pixelateBlockSize_ = 12;
+    blurRadius_ = 1.0f;
     blurRectanglesCount_ = 0;
     currentDrawingTool_ = nullptr;
     isDocumentModified_ = false;
@@ -400,7 +400,7 @@ void Canvas::endRoundingRadiusChanging(int radius) {
     if ( updatedElementsCount ) {
         addUndoHistoryItem(uhi);
     }
-    originalPenSize_= 0;
+    originalRoundingRadius_ = 0;
 }
 
 void Canvas::setForegroundColor(Gdiplus::Color color)
@@ -748,13 +748,46 @@ void Canvas::setBlurRadius(float radius)
     blurRadius_ = radius;
 }
 
+void Canvas::beginBlurRadiusChanging() {
+    if (!originalBlurRadius_) {
+        originalBlurRadius_ = blurRadius_;
+    }
+}
+
+void Canvas::endBlurRadiusChanging(float radius) {
+    blurRadius_ = radius;
+    if (fabs(originalBlurRadius_) < 0.0001 || fabs(originalBlurRadius_ - blurRadius_) < 0.0001) {
+        return;
+    }
+    int updatedElementsCount = 0;
+    UndoHistoryItem uhi;
+    uhi.type = UndoHistoryItemType::uitBlurRadiusChanged;
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
+        if (elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i]->getType() == ElementType::etBlurringRectangle || elementsOnCanvas_[i]->getType() == ElementType::etPixelateRectangle)) {
+            auto el = dynamic_cast<BlurringRectangle*>(elementsOnCanvas_[i]);
+            if (el) {
+                UndoHistoryItemElement uhie;
+                uhie.floatVal = originalBlurRadius_;
+                RECT paintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+                uhie.movableElement = elementsOnCanvas_[i];
+                el->setBlurRadius(radius);
+                RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
+                uhi.elements.push_back(uhie);
+                UnionRect(&paintRect, &paintRect, &newPaintRect);
+                updatedElementsCount++;
+                updateView(paintRect);
+            }
+        }
+    }
+    if (updatedElementsCount) {
+        addUndoHistoryItem(uhi);
+    }
+    originalBlurRadius_ = 0;
+}
+
 bool Canvas::hasBlurRectangles() const
 {
     return blurRectanglesCount_!=0;
-}
-
-int Canvas::getPixelateBlockSize() const {
-    return pixelateBlockSize_;
 }
 
 void Canvas::showOverlay(bool show)
@@ -1127,6 +1160,14 @@ bool Canvas::undo() {
         for ( int i = itemCount-1; i>=0; i-- ) {
             if ( item.elements[i].movableElement->getType() == ElementType::etFilledRoundedRectangle || item.elements[i].movableElement->getType() == ElementType::etRoundedRectangle ) {
                 item.elements[i].movableElement->setRoundingRadius(item.elements[i].penSize);
+            }
+        }
+        result = true;
+    } else if (item.type == UndoHistoryItemType::uitBlurRadiusChanged) {
+        int itemCount = item.elements.size();
+        for (int i = itemCount - 1; i >= 0; i--) {
+            if (item.elements[i].movableElement->getType() == ElementType::etBlurringRectangle || item.elements[i].movableElement->getType() == ElementType::etPixelateRectangle) {
+                dynamic_cast<BlurringRectangle*>(item.elements[i].movableElement)->setBlurRadius(item.elements[i].floatVal);
             }
         }
         result = true;
