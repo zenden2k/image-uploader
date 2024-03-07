@@ -1043,7 +1043,6 @@ void StepNumber::setFontSize(int size) {
         int radius = recalcRadius();
         resize(radius * 2, radius * 2);
     }
-
 }
 
 }

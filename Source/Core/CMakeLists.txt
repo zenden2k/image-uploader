@@ -288,8 +288,8 @@ if (IU_ENABLE_WEBVIEW2)
     target_link_libraries(iucore PUBLIC WebView2LoaderStatic.lib version.lib)
 endif()
 
-if(MSVC)
-    target_compile_options(iucore PRIVATE "/MP")
-endif()
+#if(MSVC)
+#    target_compile_options(iucore PRIVATE "/MP")
+#endif()
 
 set_target_properties(iucore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

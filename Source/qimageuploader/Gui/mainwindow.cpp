@@ -28,14 +28,13 @@
 #include "Core/OutputCodeGenerator.h"
 #include "AboutDialog.h"
 
-
 MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
     engineList_ = engineList;
-
+    ServiceLocator::instance()->setProgramWindow(this);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
     auto uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
@@ -327,4 +326,16 @@ void MainWindow::on_actionAboutProgram_triggered() {
 void MainWindow::quitApp() {
     close();
     QApplication::quit();
+}
+
+WindowHandle MainWindow::getHandle() {
+    return this;
+}
+
+WindowNativeHandle MainWindow::getNativeHandle() {
+    return reinterpret_cast<WindowNativeHandle>(effectiveWinId());
+}
+
+void MainWindow::setServersChanged(bool changed) {
+    // TODO:
 }

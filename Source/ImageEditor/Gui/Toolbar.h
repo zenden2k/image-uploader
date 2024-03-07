@@ -29,7 +29,7 @@ public:
     enum Orientation { orHorizontal, orVertical };
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
-    enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
+    enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 360 };
     enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
         ID_CANCELOPERATIONBUTTON, ID_INVERTSELECTIONCHECKBOX
     };

@@ -70,7 +70,7 @@ target_link_libraries(iuvideo PRIVATE
 )
 
 if(MSVC)
-    target_compile_options(iuvideo PRIVATE "/MP")
+#    target_compile_options(iuvideo PRIVATE "/MP")
 endif()
 
 set_target_properties(iuvideo PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

@@ -151,7 +151,7 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
         json_builds_data = {
 
         }
-    last_commit_hash = json_builds_data.get("last_commit_hash");
+    last_commit_hash = json_builds_data.get("last_commit_hash")
 
     json_builds_data["last_commit_hash"] = version_header_defines['IU_COMMIT_HASH']
     
@@ -438,14 +438,15 @@ if not os.path.exists(VERSION_HEADER_FILE):
     shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
 
 version_file_abs_path = os.path.abspath(VERSION_HEADER_FILE)
-version_header_defines = generate_version_header(VERSION_HEADER_FILE, True)
+generate_version_header(VERSION_HEADER_FILE, True)
 repo_dir_abs = os.path.abspath(repo_dir)
 shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/" + VERSION_HEADER_FILE)
-app_ver = version_header_defines["IU_APP_VER"]
-build_number = version_header_defines["IU_BUILD_NUMBER"]
+
 dist_directory = os.path.dirname(os.path.realpath(__file__))
 #with cwd(repo_dir):
-generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
+version_header_defines = generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
+app_ver = version_header_defines["IU_APP_VER"]
+build_number = version_header_defines["IU_BUILD_NUMBER"]
 
 proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
 if proc.returncode !=0:

@@ -48,6 +48,7 @@ set(SRC_LIST
     GuiTools.cpp
     IconBitmapUtils.cpp
     WizardCommon.cpp
+    ScriptFunctionsImpl.cpp
     Dialogs/AboutDlg.cpp
     Dialogs/AddDirectoryServerDialog.cpp
     Dialogs/AddFtpServerDialog.cpp
@@ -170,6 +171,7 @@ set(HEADER_LIST
     ../Core/ScreenCapture/ScreenshotHelper.h
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
+    ../Core/Scripting/API/ScriptFunctionsImpl.h
     ../Core/SearchByImage.h
     ../Core/SearchByImageTask.h
     ../Core/SearchGoogleImages.h
@@ -213,6 +215,7 @@ set(HEADER_LIST
     GuiTools.h
     IconBitmapUtils.h
     WizardCommon.h
+
     Dialogs/AboutDlg.h
     Dialogs/AddDirectoryServerDialog.h
     Dialogs/AddFtpServerDialog.h

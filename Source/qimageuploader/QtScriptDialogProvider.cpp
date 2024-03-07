@@ -1,12 +1,14 @@
 #include "QtScriptDialogProvider.h"
 
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QMetaObject>
 #include <qapplication.h>
 #include "Core/Network/NetworkClient.h"
+#include "Core/ProgramWindow.h"
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/CommonDefs.h"
-
+#include "Core/ServiceLocator.h"
 
 QtScriptDialogProvider::QtScriptDialogProvider() {
     dialogResult_ = 0;
@@ -25,6 +27,12 @@ std::string QtScriptDialogProvider::inputDialog(const std::string& text, const s
 
 }
 
+std::string QtScriptDialogProvider::messageBox(const std::string &message, const std::string &title, const std::string &buttons, const std::string &type) {
+    std::string result;
+    QMetaObject::invokeMethod(qApp, [&]{ result = messageBoxInMainThread(U2Q(message), U2Q(title), U2Q(buttons), U2Q(type)); }, Qt::BlockingQueuedConnection);
+    return result;
+}
+
 std::string QtScriptDialogProvider::showDialog(const std::string& text, const std::string& defaultValue) {
     // GUI objects must be created only in main thread
     QString defaultValueStr = U2Q(defaultValue);
@@ -34,7 +42,7 @@ std::string QtScriptDialogProvider::showDialog(const std::string& text, const st
     return value_;
 }
 
-void  QtScriptDialogProvider::showDialogInMainThread(QString text, QString defaultValue) {
+void QtScriptDialogProvider::showDialogInMainThread(QString text, QString defaultValue) {
     QInputDialog dlg;
     dlg.setTextValue(defaultValue);
     dlg.setLabelText(text);
@@ -44,4 +52,60 @@ void  QtScriptDialogProvider::showDialogInMainThread(QString text, QString defau
     else {
         this->value_ = std::string();
     }
+}
+
+std::string QtScriptDialogProvider::messageBoxInMainThread(QString message, QString title, QString buttons, QString type) {
+    QMessageBox::StandardButtons uButtons  = QMessageBox::NoButton;
+    if (buttons == "ABORT_RETRY_IGNORE") {
+        uButtons = QMessageBox::Abort | QMessageBox::Retry | QMessageBox::Ignore;
+    } else if (buttons == "CANCEL_TRY_CONTINUE") {
+        uButtons = QMessageBox::Cancel | QMessageBox::Retry | QMessageBox::Ignore;
+    } else if (buttons == "OK_CANCEL") {
+        uButtons = QMessageBox::Ok | QMessageBox::Cancel;
+    }
+    else if (buttons == "RETRY_CANCEL") {
+        uButtons = QMessageBox::Retry | QMessageBox::Cancel;
+    }
+    else if (buttons == "YES_NO") {
+        uButtons = QMessageBox::Yes | QMessageBox::No;
+    }
+    else if (buttons == "YES_NO_CANCEL") {
+        uButtons = QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel;
+    }
+    QMessageBox::Icon icon = QMessageBox::NoIcon;
+    if (type == "EXCLAMATION") {
+        icon = QMessageBox::Warning;
+    }
+    else if (type == "WARNING") {
+        icon = QMessageBox::Warning;
+    }
+    else if (type == "INFORMATION") {
+        icon = QMessageBox::Information;
+    }
+    else if (type == "QUESTION") {
+        icon = QMessageBox::Question;
+    }
+    else if (type == "ERROR") {
+        icon = QMessageBox::Critical;
+    }
+    IProgramWindow* window = ServiceLocator::instance()->programWindow();
+
+    QMessageBox msgBox(icon, title, message, uButtons, window->getHandle());
+    int res = msgBox.exec();
+    if (res == QMessageBox::Abort) {
+        return "ABORT";
+    } else if (res == QMessageBox::Cancel) {
+        return "CANCEL";
+    } else if (res == QMessageBox::Ignore) {
+        return "IGNORE";
+    } else if (res == QMessageBox::No) {
+        return "NO";
+    } else if (res == QMessageBox::Ok) {
+        return "OK";
+    } else if (res == QMessageBox::Yes) {
+        return "YES";
+    } else if (res == QMessageBox::Retry) {
+        return "TRY";
+    }
+    return {};
 }

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "Core/ProgramWindow.h"
 #include "Core/UploadEngineList.h"
 
 class UploadManager;
@@ -17,7 +18,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public IProgramWindow
 {
     Q_OBJECT
     
@@ -26,6 +27,10 @@ public:
     ~MainWindow();
 
     bool eventFilter(QObject *, QEvent *);
+
+    WindowHandle getHandle() override;
+    WindowNativeHandle getNativeHandle() override;
+    void setServersChanged(bool changed) override;
 private slots:
     void updateView();
 

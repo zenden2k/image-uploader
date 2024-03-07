@@ -14,7 +14,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
  
-set(CMAKE_CXX_STANDARD 14)
+#set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -44,6 +44,7 @@ set(SOURCE_FILES
     QtUploadErrorHandler.cpp
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
+    QtScriptFunctionsImpl.cpp
     Gui/controls/ServerSelectorWidget.cpp
     Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
