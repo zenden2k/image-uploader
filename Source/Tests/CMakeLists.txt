@@ -16,6 +16,7 @@ set(SRC_LIST
    ../Core/DownloadTaskTest.cpp
    ../Core/Network/Tests/NetworkClientTest.cpp
    ../Core/Network/Tests/CurlTest.cpp
+   ../CLI/ConsoleScriptFunctionsImpl.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 
@@ -36,7 +37,6 @@ if(WIN32)
         ../Core/FileDownloaderTest.cpp
         ../Video/Tests/VideoGrabberTest.cpp
         ../Core/Settings/CliSettings.cpp
-        ../CLI/ConsoleScriptFunctionsImpl.cpp
     )
 endif()
 
