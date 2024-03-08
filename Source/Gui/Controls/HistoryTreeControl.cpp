@@ -25,6 +25,7 @@
 #include <boost/format.hpp>
 
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"
@@ -202,7 +203,12 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     if (serverName.empty()) {
         serverName = tr("unknown server");
     }
-    std::string filesText = str(boost::format(boost::locale::ngettext("%d file", "%d files", ses->entriesCount())) % ses->entriesCount());
+    std::string filesText;
+    try {
+        filesText = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file", "%d files", ses->entriesCount())) % ses->entriesCount());
+    } catch (const std::exception& e) {
+        LOG(ERROR) << e.what();
+    }
     std::string lowText = serverName + " (" + filesText + ")";
     CString text = Utf8ToWCstring(label);
 

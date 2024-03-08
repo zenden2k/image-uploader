@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-04 14:26+0300\n"
-"PO-Revision-Date: 2024-03-04 14:26+0300\n"
+"PO-Revision-Date: 2024-03-08 15:25+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -1736,7 +1736,7 @@ msgstr "Инвертировать выделение"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:83
 msgid "JPEG, PNG, GIF, BMP or any other file"
-msgstr "JPEG, PNG, GIF, BMP и любые другие файлы"
+msgstr "JPEG, PNG, GIF, BMP и другие форматы"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
 msgid ""
@@ -2459,10 +2459,8 @@ msgid "Server name:"
 msgstr "Имя сервера:"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:102
-#, fuzzy
-#| msgid "Server settings"
 msgid "Server not chosen"
-msgstr "Настройки сервера"
+msgstr "Сервер не выбран"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1039
 msgid "Server settings"

@@ -208,4 +208,11 @@ std::string Join(const std::vector<std::string>& strings, const std::string& del
     return result.str();
 }
 
+boost::format FormatNoExcept(const std::string& str) {
+    using namespace boost::io;
+    boost::format fmter(str);
+    fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit));
+    return fmter;
+}
+
 }

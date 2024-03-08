@@ -83,7 +83,7 @@ std::string password;
 std::string folderId;
 std::string proxy;
 int proxyPort;
-int proxyType; /* CURLPROXY_HTTP, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
+int proxyType; /* CURLPROXY_HTTP, CURLPROXY_HTTPS, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
@@ -165,7 +165,7 @@ void PrintHelp() {
 	   << "     and copy value of the '_FolderID' attribute"<<
 	   std::endl;
    std::cerr<<" -pr <x.x.x.x:xxxx> Proxy address "<<std::endl;
-   std::cerr<<" -pt <http|socks4|socks4a|socks5|socks5dns> Proxy type  (default http)"<<std::endl;
+   std::cerr<<" -pt <http|https|socks4|socks4a|socks5|socks5dns> Proxy type  (default http)"<<std::endl;
    std::cerr<<" -pu <username> Proxy username"<<std::endl;
    std::cerr<<" -pp <password> Proxy password"<<std::endl;
 #ifdef _WIN32
@@ -198,7 +198,11 @@ bool parseCommandLine(int argc, char *argv[])
     while(i < argc)
     {
         char *opt = argv[i];
-        if(!IuStringUtils::stricmp(opt, "--help"))
+        if(!IuStringUtils::stricmp(opt, "--help")
+#ifdef _WIN32
+            || !IuStringUtils::stricmp(opt, "/?")
+#endif
+            )
         {
             PrintUsage(true);
             PrintHelp();

@@ -25,6 +25,7 @@
 #include <boost/format.hpp>
 #include <shlobj.h>
 
+#include "Core/Utils/StringUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
@@ -786,13 +787,13 @@ void CMainDlg::UpdateStatusLabel() {
 
     try {
         if (selectedItemsCount) {
-            std::string first = str(boost::format(boost::locale::ngettext("%d file selected", "%d files selected", selectedItemsCount)) % selectedItemsCount);
-            std::string second = str(boost::format(boost::locale::ngettext("%d file total", "%d files total", totalCount)) % totalCount);
+            std::string first = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file selected", "%d files selected", selectedItemsCount)) % selectedItemsCount);
+            std::string second = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file total", "%d files total", totalCount)) % totalCount);
 
             statusText = U2W(str(boost::format("%1%/%2%") % first % second));
         }
         else {
-            statusText = U2W(str(boost::format(boost::locale::ngettext("%d file", "%d files", totalCount)) % totalCount));
+            statusText = U2W(str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file", "%d files", totalCount)) % totalCount));
         }
     } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();

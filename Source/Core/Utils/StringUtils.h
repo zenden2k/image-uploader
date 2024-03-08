@@ -24,6 +24,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <boost/format.hpp>
 #include "CoreTypes.h"
 
 namespace IuStringUtils
@@ -47,6 +48,7 @@ namespace IuStringUtils
     int stricmp(const char *s1, const char *s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);
+    boost::format FormatNoExcept(const std::string& str);
 };
 
 #endif

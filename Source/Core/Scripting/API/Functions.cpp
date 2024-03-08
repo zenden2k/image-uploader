@@ -328,9 +328,6 @@ void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
 }
 
 Sqrat::Object parseJSONObj(const Json::Value& root) {
-    //SquirrelObject obj;
-
-    
     if (root.isArray()) {
         Sqrat::Array obj(GetCurrentThreadVM(), root.size());
         for(auto it = root.begin(); it != root.end(); ++it) {
@@ -422,15 +419,7 @@ std::string GetAppLanguage() {
 }
 
 std::string GetAppLocale() {
-#ifndef IU_CLI
-    ITranslator* translator = ServiceLocator::instance()->translator();
-    if (!translator) {
-        LOG(ERROR) << "No translator set";
-    } else {
-        return ServiceLocator::instance()->translator()->getCurrentLocale();
-    }
-#endif 
-    return "en_US";
+    return Impl::GetAppLocaleImpl();
 }
 
 std::string GetCurrentThreadId()
