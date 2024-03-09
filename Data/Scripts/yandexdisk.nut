@@ -1,3 +1,5 @@
+const CURLOPT_FOLLOWLOCATION = 52;
+
 if (ServerParams.getParam("enableOAuth") == "") {
     ServerParams.setParam("enableOAuth", "true");
 }
@@ -59,7 +61,7 @@ function _CheckResponse() {
 }
 
 function _IsSuccessCode(code) {
-    return ( code >= 200 && code < 300);
+    return ( code >= 200 && code < 400);
 }
 
 function _GetAuthorizationString() {
@@ -351,7 +353,7 @@ function DoLogout() {
 function UploadFile(FileName, options) {
     local ansiFileName = ExtractFileName(FileName);
     local fileSize = GetFileSize(FileName);
-
+    local mimeType = GetFileMimeType(FileName);
     try {
         local task = options.getTask();
         ansiFileName = task.getDisplayName(); // ensure that this field is filled up correctly
@@ -373,6 +375,7 @@ function UploadFile(FileName, options) {
 
         nm.addQueryHeader("Accept", "application/json");
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
+
         try {
             nm.enableResponseCodeChecking(false);
         } catch ( ex ) {}
@@ -397,8 +400,8 @@ function UploadFile(FileName, options) {
             remotePath = folder + filename;
             nm.setUrl(baseUrl + "upload/?path=" + nm.urlEncode(remotePath));
             nm.addQueryHeader("Accept", "application/json");
-
             nm.addQueryHeader("Authorization", _GetAuthorizationString());
+
             try {
                 nm.enableResponseCodeChecking(false);
             } catch ( ex ) {}
@@ -437,6 +440,7 @@ function UploadFile(FileName, options) {
             nm.setUrl(baseUrl + "publish?path=" + nm.urlEncode(remotePath));
             nm.addQueryHeader("Accept", "application/json");
             //nm.addQueryHeader("Content-Length", "0");
+            nm.addQueryHeader("Content-Type", mimeType);
             nm.addQueryHeader("Transfer-Encoding", "");
             nm.addQueryHeader("Authorization",_GetAuthorizationString());
             nm.setMethod("PUT");
@@ -490,42 +494,30 @@ function UploadFile(FileName, options) {
         local url = "https://webdav.yandex.ru" + remotePathEncoded;
         nm.setUrl(url);
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
-        //nm.addQueryHeader("Expect", "100-continue");
         nm.addQueryHeader("Connection", "close");
-        nm.addQueryHeader("Content-Type", "application/binary");
-        nm.addQueryHeader("Content-Length", fileSize);
-        nm.addQueryHeader("Transfer-Encoding", "");
+        nm.addQueryHeader("Content-Type", mimeType);
         nm.setMethod("PUT");
         nm.doUpload(FileName, "");
         _CheckResponseCode();
 
-        nm.setUrl(url);
-        nm.setMethod("PROPPATCH");
-
+        nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0); // disable CURLOPT_FOLLOWLOCATION   
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
-        nm.addQueryHeader("Content-Type", "application/xml");
-        nm.addQueryHeader("Transfer-Encoding", "");
-        local data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-            "<propertyupdate xmlns=\"DAV:\">" +
-            "<set>"+
-            "<prop>" +
-            "<public_url xmlns=\"urn:yandex:disk:meta\">true</public_url>" +
-            "</prop>"  +
-            "</set>"     +
-            "</propertyupdate>";
-        nm.doUpload("", data);
+        nm.setUrl(url + "?publish");
+        nm.enableResponseCodeChecking(false);
+        nm.doPost("");
         _CheckResponseCode();
-        local data = nm.responseBody();
 
-        local viewUrl = _RegexSimple(data,"<public_url xmlns=\"urn:yandex:disk:meta\">(.+)</public_url>",0);
+        local viewUrl = nm.responseHeaderByName("Location");
 
-        options.setViewUrl(viewUrl);
+        if (viewUrl != "") {
+            options.setViewUrl(viewUrl);
+            return 1;
+        }
     } catch ( ex ) {
         WriteLog("error", "Exception:" + ex.tostring());
-        return 0;
     }
 
-    return 1;
+    return 0;
 }
 
 function GetFolderAccessTypeList() {

@@ -31,6 +31,8 @@ void ConfigureProxy(INetworkClient* nm)
     }
     nm->setUploadBufferSize(Settings.UploadBufferSize);
     nm->setMaxUploadSpeed(Settings.MaxUploadSpeed*1024);
+    /* curl_easy_setopt(nm->getCurlHandle(), CURLOPT_STDERR, fopen("d:/curl_log.txt", "w"));
+    curl_easy_setopt(nm->getCurlHandle(), CURLOPT_VERBOSE, 1L);*/
 }
 
 }

@@ -127,6 +127,9 @@ struct CurlInitializer {
     std::string certFileName;
 
     CurlInitializer() {
+#ifdef USE_OPENSSL
+        init_locks(); // init locks should be called BEFORE curl_global_init
+#endif
         curl_global_init(CURL_GLOBAL_ALL);
 #ifdef _WIN32
         wchar_t buffer[1024] = { 0 };
@@ -263,7 +266,6 @@ std::mutex NetworkClient::_mutex;
 
 NetworkClient::NetworkClient()
 {
-    curl_init();
     static NetworkClientInternal::CurlInitializer initializer;
     enableResponseCodeChecking_ = true;
     m_hOutFile = nullptr;
@@ -387,8 +389,9 @@ bool NetworkClient::doUploadMultipartData()
     if (m_method.empty()) {
         setMethod("POST");
     }
-    private_apply_method();
+
     private_init_transfer();
+    private_apply_method();
     std::vector<FILE *> openedFiles;
 
     struct curl_httppost *formpost=nullptr;
@@ -405,12 +408,10 @@ bool NetworkClient::doUploadMultipartData()
                     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
                                         std::string fileName = it->value;
                     // Known bug in curl: https://github.com/curl/curl/issues/768
-                    if (/*curFileSize > LONG_MAX*/  true ) { 
+                    if (/*curFileSize > LONG_MAX*/  true ) {
+
                         std::string ansiFileName = UTF8_FILENAME(fileName);
-                        
-#if defined(_WIN32) && !defined(CURL_WIN32_UTF8_FILENAMES)
-                        //LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data with file names non representable in system locale is not supported";
-#endif
+
                         if (it->contentType.empty())
                             curl_formadd(&formpost,
                             &lastptr,
@@ -498,7 +499,7 @@ void NetworkClient::addQueryHeader(const std::string& name, const std::string& v
     m_QueryHeaders.emplace_back(name, value);
 }
 
-bool NetworkClient::doGet(const std::string & url)
+bool NetworkClient::doGet(const std::string &url)
 {
     if(!url.empty())
         setUrl(url);
@@ -629,20 +630,6 @@ void NetworkClient::private_checkResponse()
     }
 }
 
-void NetworkClient::curl_init() {
-    std::lock_guard<std::mutex> guard(_mutex);
-    if (!_curl_init) {
-#ifdef USE_OPENSSL
-        NetworkClientInternal::init_locks(); // init locks should be called BEFORE curl_global_init
-        _curl_init = true;
-#endif
-    }
-}
-
-void NetworkClient::curl_cleanup()
-{
-}
-
 std::string NetworkClient::responseHeaderText()
 {
     return m_headerBuffer;
@@ -692,11 +679,12 @@ std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)
         name = m_ResponseHeaders[index].name;
         return m_ResponseHeaders[index].value;
     }
-    return std::string();
+    return {};
 }
 
 void NetworkClient::private_cleanup_before()
 {
+    m_nUploadDataOffset = 0;
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
 
     bool add = true;
@@ -770,7 +758,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
         size_t wantsToRead = size * nmemb;
         // dont even try to remove "<>" brackets!!
         size_t canRead = std::min<>(m_uploadData.size() - m_nUploadDataOffset, wantsToRead);
-        memcpy(ptr, m_uploadData.data(), canRead);
+        memcpy(ptr, m_uploadData.data() + m_nUploadDataOffset, canRead);
         m_nUploadDataOffset += canRead;
         retcode = canRead;
     }
@@ -811,12 +799,17 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     if(!fileName.empty())
     {
         m_uploadingFile = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb"); /* open file to upload */
-        if(!m_uploadingFile) 
-        {
-            LOG(ERROR)<< "Failed to open file '" << fileName << "'";
-            return false; /* can't continue */
+        if (fseek(m_uploadingFile, 0, SEEK_END) == 0) {
+            m_CurrentFileSize = IuCoreUtils::Ftell64(m_uploadingFile);
+            IuCoreUtils::Fseek64(m_uploadingFile, 0, SEEK_SET);
         }
-        m_CurrentFileSize = IuCoreUtils::GetFileSize(fileName);
+        else {
+            fclose(m_uploadingFile);
+            m_uploadingFile = nullptr;
+            //currentFileSize_ = NetworkClientInternal::GetBigFileSize(fileName);
+            return false;
+        }
+
         m_currentUploadDataSize = m_CurrentFileSize;
         if(m_CurrentFileSize < 0) {
             fclose(m_uploadingFile);
@@ -833,7 +826,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     }
     else
     {
-        m_nUploadDataOffset =0;
+        // FIXME: ignoring chunkSize_ and chunkOffset_
         m_uploadData = data;
         m_CurrentFileSize = data.length();
         m_currentUploadDataSize = m_CurrentFileSize;
@@ -841,13 +834,15 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     }
 
     private_init_transfer();
-    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
-    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
-    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, NULL);
     if (!private_apply_method()) {
         curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     }
-    curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
+
+    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
+
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
     
     /*if (m_method != "PUT") {

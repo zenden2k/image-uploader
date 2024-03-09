@@ -118,7 +118,7 @@ if(IU_ENABLE_MEGANZ)
 endif()
 
 SET(COMMON_DEPS boost/1.78.0
-				libcurl/7.87.0
+				libcurl/8.6.0
 				pcre/8.45
 				uriparser/0.9.5
 				zlib/1.2.13

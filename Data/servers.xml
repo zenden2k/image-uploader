@@ -97,22 +97,21 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647">
+	<Server Name="multiup.org" FileHost="1" MaxFileSize="2147483647" MinVersion="1.4.0">
         <Actions>
-            <Action Type="get" Url="http://www.multiup.org/api/get-fastest-server"
-                RegExp="&quot;server&quot;:&quot;https:\\/\\/(\w+)"
-                AssignVars="Server:0"
-                OnlyOnce="0"
-            />
+            <Action Type="get" Url="https://www.multiup.io/api/get-fastest-server" OnlyOnce="0">
+				<Call Function="json" Arg1="server" AssignVars="UploadUrl:0;"/>
+			</Action>
             <Action
                 Type="upload"
-                Url="https://$(Server).multiup.org/upload/index.php"
+                Url="$(UploadUrl)"
                 PostParams="files[]=%filename%;"
-                RegExp="&quot;name&quot;:&quot;([^&quot;]+)&quot;[\s\S]*?&quot;hash&quot;:&quot;([^&quot;]+)&quot;"
-                AssignVars="Name:0;Hash:1;"
-            />
+            >
+				<Call Function="json" Arg1="files[0].url" AssignVars="DownloadUrl:0;"/>
+				<Call Function="json" Arg1="files[0].deleteUrl" AssignVars="DeleteUrl:0;"/>
+			</Action>
         </Actions>
-        <Result DownloadUrlTemplate="https://www.multiup.org/download/$(Hash)/$(Name)" />
+        <Result DownloadUrlTemplate="$(DownloadUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
         <!-- /Thanks to Alex_Qwerty -->
 	<!--
@@ -189,12 +188,18 @@
 		</Actions>
 		<Result ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-    <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000">
+	<!-- u.cubeupload.com is blocked by Roskomnadzor -->
+    <Server Name="cubeupload.com" Authorize="2" MaxFileSize="5000000" MinVersion="1.4.0">
         <Actions>
             <Action Type="login" Url="https://cubeupload.com/login" PostParams="cube_username=$(_LOGIN);cube_password=$(_PASSWORD);login=Login" OnlyOnce="1"/>
-            <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" RegExp="&quot;file_name&quot;:&quot;(.+?)&quot;" AssignVars="Id:0"/>
+            <Action Type="upload" Url="https://cubeupload.com/upload_json.php" PostParams="name=$(FILENAME);userHash=false;userID=false;fileinput[0]=%filename%;" 
+			>
+				<Call Function="json" Arg1="img_direct_link" AssignVars="ImageUrl:0;"/>
+				<Call Function="json" Arg1="img_thumb_link" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="img_sharing_link" AssignVars="ViewUrl:0;"/>
+			</Action>
         </Actions>
-        <Result ImageUrlTemplate="http://u.cubeupload.com/$(_LOGIN)/$(Id)" ThumbUrlTemplate="http://u.cubeupload.com/$(_LOGIN)/t/$(Id)"/>
+        <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
     </Server>
 	<Server Name="picabox.ru" Authorize="0" FileHost="0" Debug="0" Plugin="picabox">
 		<Actions>
@@ -303,6 +308,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="https://nekofile.eu.org/$(Link)"/>
 	</Server>
+	<!-- Blocked by Roskomnadzor -->
 	<Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="200000000" PasswordLabel="userhash">
 		<Actions>
 			<Action Type="upload" Url="https://catbox.moe/user/api.php" PostParams="reqtype=fileupload;userhash=$(_PASSWORD);fileToUpload=%filename%;" RegExp="^(.+)$" AssignVars="UploadedUrl:0;"/>
@@ -332,12 +338,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(UploadedUrl)" />
 	</Server>-->
-	<Server Name="file.silentsilas.com" FileHost="1" MaxFileSize="536870912">
-		<Actions>
-			<Action Type="upload" Url="https://file.silentsilas.com" PostParams="file=%filename%" RegExp="(https://file.silentsilas.com/.+)" AssignVars="Link:0"/>
-		</Actions>
-		<Result ImageUrlTemplate="$(Link)"/>
-	</Server>
 	<Server Name="m.freespeech.club" FileHost="1" MaxFileSize="536870912">
 		<Actions>
 			<Action Type="upload" Url="https://m.freespeech.club" PostParams="file=%filename%" RegExp="(https://m.freespeech.club/.+)" AssignVars="Link:0"/>
@@ -349,8 +349,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
-	
-
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

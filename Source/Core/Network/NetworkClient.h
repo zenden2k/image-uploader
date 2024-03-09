@@ -284,8 +284,6 @@ class NetworkClient: public INetworkClient
         void private_checkResponse();
         public:
         /*! @cond PRIVATE */
-        static void curl_init();
-        static void curl_cleanup();
         static void closeFileList(std::vector<FILE *>& files);
         /*! @endcond */
         protected:

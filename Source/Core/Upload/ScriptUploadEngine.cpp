@@ -411,6 +411,7 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
         checkCallingThread();
         Function func(vm_.GetRootTable(), "ModifyFolder");
         if (func.IsNull()) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::modifyFolder\r\n" + std::string("Function ModifyFolder not found in script"));
             return 0;
         }
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&folder));
