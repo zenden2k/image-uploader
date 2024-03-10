@@ -47,7 +47,8 @@ jobs:
         run: sudo apt install graphviz
               
       # Create documentation   
-      - name: Create documentation     
+      - name: Create documentation
+        shell: bash     
         run: ./generate.sh
         working-directory: ${{github.workspace}}/Dist/DocGen/
         
