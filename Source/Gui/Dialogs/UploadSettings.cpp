@@ -686,11 +686,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
                 CString name  = Utf8ToWCstring(ued->Name); 
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-                HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-                HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
-                bitmaps.push_back(bm);
-
-                mi.hbmpItem = bm;
+                auto cacheItem = m_EngineList->getIconBitmapForServer(ued->Name);
+                
+                mi.hbmpItem = cacheItem.bm;
 
                 if ( mi.hbmpItem ) {
                     mi.fMask |= MIIM_BITMAP;
@@ -726,10 +724,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             CUploadEngineData* ued = m_EngineList->byIndex(i);
             CString name  = Utf8ToWCstring(ued->Name); 
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-            HICON hImageIcon = m_EngineList->getIconForServer(ued->Name);
-            HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(hImageIcon);
-            bitmaps.push_back(bm);
-            mi.hbmpItem = bm;
+            auto cacheItem = m_EngineList->getIconBitmapForServer(ued->Name);
+
+            mi.hbmpItem = cacheItem.bm;
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }

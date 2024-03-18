@@ -42,7 +42,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CenterWindow(GetParent());
 
     CommandBox.m_bHyperLinks = false;
-    CommandBox.Init();
+    CommandBox.Init(GetSysColor(COLOR_WINDOW));
     CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
     CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
     CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));

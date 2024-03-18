@@ -29,14 +29,16 @@ char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList()
+CMyEngineList::CMyEngineList(TaskDispatcher* taskDispatcher): iconBitmapUtils_(std::make_unique<IconBitmapUtils>()),
+    taskDispatcher_(taskDispatcher)
 {
 }
 
 CMyEngineList::~CMyEngineList()
 {
-    for ( const auto& it: serverIcons_) {
-        DestroyIcon(it.second);
+    for (const auto& it: serverIcons_) {
+        DestroyIcon(it.second.icon);
+        DeleteObject(it.second.bm);
     }
 }
 
@@ -66,7 +68,8 @@ bool CMyEngineList::loadFromFile(const CString& filename)
     return CUploadEngineList::loadFromFile(WCstringToUtf8(filename), Settings->ServersSettings);
 }
 
-HICON CMyEngineList::getIconForServer(const std::string& name) {
+CMyEngineList::ServerIconCacheItem CMyEngineList::getIconBitmapForServer(const std::string& name) {
+    std::lock_guard lk(cacheMutex_);
     const auto iconIt = serverIcons_.find(name);
     if (iconIt != serverIcons_.end()) {
         return iconIt->second;
@@ -85,12 +88,12 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
         if (ued && !ued->PluginName.empty()) {
             iconFileName = dataFolder + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
             if (!WinUtils::FileExists(iconFileName)) {
-                serverIcons_[name] = nullptr;
-                return nullptr;
+                serverIcons_[name]={};
+                return {};
             }
         } else {
-            serverIcons_[name] = nullptr;
-            return nullptr;
+            serverIcons_[name] = {};
+            return {};
         }
     }
 
@@ -104,10 +107,15 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     }
     
     if ( !icon ) {
-        return nullptr;
+        return {};
     }
-    serverIcons_[name] = icon;
-    return icon;
+    ServerIconCacheItem item(icon, iconBitmapUtils_->HIconToBitmapPARGB32(icon));
+    serverIcons_[name] = item;
+    return item;
+}
+
+HICON CMyEngineList::getIconForServer(const std::string& name) {
+    return getIconBitmapForServer(name).icon;
 }
 
 CString CMyEngineList::getIconNameForServer(const std::string& name) {
@@ -121,4 +129,18 @@ CString CMyEngineList::getIconNameForServer(const std::string& name) {
         }
     }
     return U2W( IuCoreUtils::ExtractFileName(W2U(iconFileName)) );
+}
+
+void CMyEngineList::preLoadIcons() {
+    if (iconsPreload_) {
+        throw std::logic_error("preLoadIcons() should not be called twice");
+    }
+    iconsPreload_ = true;
+    taskDispatcher_->post([this] {
+        for (int i = 0; i < count(); i++) {
+            CUploadEngineData* ued = byIndex(i);
+            CString name = Utf8ToWCstring(ued->Name);
+            [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name);
+        }
+    });
 }

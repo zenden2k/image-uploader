@@ -99,7 +99,7 @@ public:
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-    CBrush br; 
+    CBrushHandle br; 
     bool OnShow() override;
     void SetInitialFocus() override;
     bool QuickRegionPrint;

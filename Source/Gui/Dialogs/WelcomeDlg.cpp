@@ -31,7 +31,8 @@
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
-    br = CreateSolidBrush(RGB(255, 255, 255));
+    br = GetSysColorBrush(COLOR_WINDOW);
+    //CreateSolidBrush(RGB(255, 255, 255));
     QuickRegionPrint = false;
 }
 
@@ -79,7 +80,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         return icon.m_hIcon;
     };
 
-    ListBox.Init();
+    ListBox.Init(GetSysColor(COLOR_WINDOW));
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
     
     ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));

@@ -350,6 +350,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
 
 	Settings.fixInvalidServers();
+    enginelist_->preLoadIcons();
     if ( isFirstRun_ ) {
         CQuickSetupDlg quickSetupDialog;
 		if (quickSetupDialog.DoModal(m_hWnd) != IDOK){

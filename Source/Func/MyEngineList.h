@@ -21,16 +21,31 @@
 #ifndef IU_FUNC_MY_ENGINE_LIST_H
 #define IU_FUNC_MY_ENGINE_LIST_H
 
+#include <future>
+#include <mutex>
+
 #include "atlheaders.h"
 #include "Library.h"
 
+#include "Core/TaskDispatcher.h"
 #include "Core/UploadEngineList.h"
+#include "Gui/IconBitmapUtils.h"
 
 class CMyEngineList: public CUploadEngineList
 {
     public:
-        CMyEngineList();
-        ~CMyEngineList();
+        struct ServerIconCacheItem {
+            HICON icon{};
+            HBITMAP bm{};
+
+            ServerIconCacheItem() = default;
+
+            ServerIconCacheItem(HICON i, HBITMAP b): icon(i), bm(b) {
+                
+            }
+        };
+        explicit CMyEngineList(TaskDispatcher* taskDispatcher);
+        ~CMyEngineList() override;
         CString errorStr() const;
 
         using CUploadEngineListBase::byName;
@@ -40,11 +55,21 @@ class CMyEngineList: public CUploadEngineList
         bool loadFromFile(const CString& filename);
         HICON getIconForServer(const std::string& name);
         CString getIconNameForServer(const std::string& name);
+        ServerIconCacheItem getIconBitmapForServer(const std::string& name);
+
+        /**
+         * @throws std::logic_error 
+         */
+        void preLoadIcons();
         static char DefaultServer[];
         static char RandomServer[];
     private:
-        std::map<std::string, HICON> serverIcons_;
+        std::map<std::string, ServerIconCacheItem> serverIcons_;
         CString m_ErrorStr;
+        std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
+        std::mutex cacheMutex_;
+        TaskDispatcher* taskDispatcher_;
+        bool iconsPreload_ = false;
         DISALLOW_COPY_AND_ASSIGN(CMyEngineList);
 };
 #endif
