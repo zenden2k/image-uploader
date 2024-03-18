@@ -27,7 +27,18 @@
 #endif
 #include "WizardDlg.h"
 #include "Core/Images/Utils.h"
+#include "3rdpart/DarkMode.h"
 
+namespace {
+    Gdiplus::Color LightenColor(Gdiplus::Color inColor, double inAmount)
+    {
+        return Gdiplus::Color(
+            inColor.GetA(),
+            (int)std::min<int>(255, inColor.GetR() + 255 * inAmount),
+            (int)std::min<int>(255, inColor.GetG() + 255 * inAmount),
+            (int)std::min<int>(255, inColor.GetB() + 255 * inAmount));
+    }
+}
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
@@ -55,7 +66,12 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
 
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
-    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
+
+    COLORREF bg = RGB(255, 255, 255);
+    if (DarkModeHelper::instance()->g_darkModeEnabled) {
+        bg = DarkModeHelper::instance()->GetBackgroundColor();
+    }
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, bg, true);
 
     TRC(IDC_SELECTOPTION, "Select action:");
     TRC(IDC_SOVET, "Advice:");
@@ -80,7 +96,11 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         return icon.m_hIcon;
     };
 
-    ListBox.Init(GetSysColor(COLOR_WINDOW));
+    COLORREF color = GetSysColor(COLOR_WINDOW);
+    if (DarkModeHelper::instance()->g_darkModeEnabled) {
+        color = DarkModeHelper::instance()->GetBackgroundColor();
+    }
+    ListBox.Init(color);
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
     
     ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
@@ -156,7 +176,16 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
     ImageAttributes attr;
     attr.SetWrapMode(WrapModeTileFlipXY);
     Rect bounds(0, 0, controlRect.Width(), controlRect.Height());
-    LinearGradientBrush brush(bounds, Color(71, 124, 155), Color(104, 178, 112),
+    Gdiplus::Color start(71, 124, 155);
+    Gdiplus::Color end(104, 178, 112);
+
+    if (DarkModeHelper::instance()->g_darkModeEnabled) {
+        COLORREF clr = DarkModeHelper::instance()->GetBackgroundColor(); 
+        end.SetFromCOLORREF(clr);
+        start = LightenColor(end, 0.1);
+    }
+
+    LinearGradientBrush brush(bounds, start, end,
             LinearGradientModeVertical);
 
     gr.FillRectangle(&brush, bounds); 
@@ -197,6 +226,14 @@ LRESULT CWelcomeDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 {
+    if (DarkModeHelper::instance()->g_darkModeEnabled) {
+        COLORREF color = DarkModeHelper::instance()->GetBackgroundColor();
+        HBRUSH br = CreateSolidBrush(color);
+
+        SetTextColor(hdc, RGB(255, 255, 255));
+        SetBkColor(hdc, color);
+        return reinterpret_cast<LRESULT>(br);
+    }
     return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(br)); // Returning brush solid filled with COLOR_WINDOW color
 }
 

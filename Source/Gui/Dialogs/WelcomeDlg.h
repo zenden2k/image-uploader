@@ -23,17 +23,19 @@
 
 #pragma once
 // CWelcomeDlg
+#include <memory>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/HyperLinkControl.h"
 #include "Gui/Controls/MyImage.h"
-#include <atlcrack.h>
-#include <memory>
+#include "Gui/Controls/DialogIndirect.h"
 
 #define ID_VIEWHISTORY 36220
+
 class CWelcomeDlg : 
-    public CDialogImpl<CWelcomeDlg>, 
+    public CCustomDialogT<CWelcomeDlg>,
     public CWinDataExchange<CWelcomeDlg>, 
     public CWizardPage
 {
@@ -64,6 +66,7 @@ public:
         MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         REFLECT_NOTIFICATIONS()
+        CHAIN_MSG_MAP(CCustomDialogT<CWelcomeDlg>)
     END_MSG_MAP()
 
     BEGIN_DDX_MAP(WelcomeDlg)

@@ -56,6 +56,7 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
             COMMAND_HANDLER_EX(IDC_APPLY, BN_CLICKED, OnApplyBnClicked)
             COMMAND_HANDLER(IDC_SETTINGSPAGESLIST, LBN_SELCHANGE, OnSettingsPagesSelChanged)
             MSG_WM_CTLCOLORSTATIC(OnCtlColorStatic)
+            CHAIN_MSG_MAP(CCustomDialogIndirectImpl<CSettingsDlg>)
             REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:

@@ -32,6 +32,8 @@
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
 #endif
+#include <3rdpart/DarkMode.h>
+
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/IuCommonFunctions.h"
 #include "Func/LangClass.h"
@@ -253,20 +255,24 @@ LRESULT CAboutDlg::OnCloseCmd(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, 
     return 0;
 }
 
-LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     HDC hdcStatic = reinterpret_cast<HDC>(wParam);
     HWND hwndStatic = reinterpret_cast<HWND>(lParam);
+    HBRUSH br{};
+    if (hwndStatic == GetDlgItem(IDC_IMAGEUPLOADERLABEL)) {
+        COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);
+        COLORREF bgColor = GetSysColor(COLOR_BTNFACE);
+        SetTextColor(hdcStatic, RGB(100, 100, 100));
+        
+        if (DarkModeHelper::instance()->g_darkModeEnabled) {
+            bgColor = DarkModeHelper::instance()->GetBackgroundColor();
+            br = DarkModeHelper::instance()->GetBackgroundBrush();
+        }  
+        SetBkColor(hdcStatic, bgColor);
+        return reinterpret_cast<LRESULT>(br);
+    }
 
-    if (hwndStatic != GetDlgItem(IDC_IMAGEUPLOADERLABEL)) {
-        return 0;
-    }
-    COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);
-    if (textColor == 0) {
-        SetTextColor(hdcStatic, RGB(100,100,100));
-        SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
-    }
-    
-    return reinterpret_cast<LRESULT>(GetSysColorBrush(COLOR_BTNFACE));
+    return Dialog_OnColorDialog(m_hWnd, hdcStatic, hwndStatic);
 }
 
 LRESULT CAboutDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {

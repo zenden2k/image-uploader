@@ -16,6 +16,9 @@
      limitations under the License.
 */
 
+#include <dwmapi.h>
+#include <3rdpart/DarkMode.h>
+
 #include "atlheaders.h" 
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
@@ -53,6 +56,53 @@
 
 CAppModule _Module;
 
+LRESULT CALLBACK CBTProc(int nCode, WPARAM wParam, LPARAM lParam) {
+    if (nCode < 0) {
+        return CallNextHookEx(nullptr, nCode, wParam, lParam);
+    }
+    if (nCode == HC_ACTION) {
+        CWPSTRUCT* createStruct = (CWPSTRUCT*)lParam;
+        HWND wnd = createStruct->hwnd;
+
+        if (createStruct->message == WM_CREATE && createStruct) {
+            if (DarkModeHelper::instance()->g_darkModeEnabled && GetWindowLong(wnd, GWL_STYLE) & WS_CAPTION)
+            {
+                BOOL value = TRUE;
+                DwmSetWindowAttribute(wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
+            }
+            HBRUSH br = DarkModeHelper::instance()->GetBackgroundBrush();
+            SetClassLongPtr(wnd, GCL_HBRBACKGROUND, /*(LONG_PTR)GetStockObject(BLACK_BRUSH)*/(LONG_PTR)br);
+
+            TCHAR buf[MAX_PATH]{};
+
+            if (GetClassName(wnd, buf, MAX_PATH)) {
+                if (!lstrcmpi(buf, _T("BUTTON")) || !lstrcmpi(buf, _T("SysListView32"))) {
+                    SetWindowTheme(wnd, L"Explorer", NULL);
+                    DarkModeHelper::instance()->_AllowDarkModeForWindow(wnd, true);
+                    SendMessageW(wnd, WM_THEMECHANGED, 0, 0);
+                }
+                else if (!lstrcmpi(buf, _T("EDIT")) || !lstrcmpi(buf, _T("ComboBox")) || !lstrcmpi(buf, _T("ComboBoxEx32"))) {
+                    SetWindowTheme(wnd, L"CFD", NULL);
+                    DarkModeHelper::instance()->_AllowDarkModeForWindow(wnd, true);
+                    SendMessageW(wnd, WM_THEMECHANGED, 0, 0);
+                }
+                else if (!lstrcmpi(buf, _T("ListBox"))) {
+
+                    SetWindowTheme(wnd, L"CFD", NULL);
+                    DarkModeHelper::instance()->_AllowDarkModeForWindow(wnd, true);
+                    SendMessageW(wnd, WM_THEMECHANGED, 0, 0);
+                }
+            }
+
+        }
+        return(1);
+
+    }
+
+    return CallNextHookEx(nullptr, nCode, wParam, lParam);
+}
+
+
 class Application {
     CLogWindow logWindow_;
     WtlGuiSettings settings_;
@@ -73,6 +123,10 @@ class Application {
     CString commonTempFolder_, tempFolder_;
 public:
     Application() {
+        DarkModeHelper::instance()->InitDarkMode();
+        if (DarkModeHelper::instance()->g_darkModeEnabled) {
+            SetWindowsHookExA(WH_CALLWNDPROC, CBTProc, nullptr, GetCurrentThreadId());
+        }
         srand(static_cast<unsigned>(time(nullptr)));
         setAppVersion();
         initBasicServices();

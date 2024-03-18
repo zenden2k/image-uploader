@@ -59,7 +59,7 @@ class IconBitmapUtils;
 class CServerSelectorControl;
 
 class CUploadSettings: 
-    public CDialogImpl<CUploadSettings>,
+    public CCustomDialogT<CUploadSettings>,
     public CWizardPage
 {
     public:
@@ -134,6 +134,7 @@ class CUploadSettings:
         COMMAND_ID_HANDLER_EX(IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST, OnAddFtpServer)
         COMMAND_ID_HANDLER_EX(IDC_ADD_DIRECTORY_AS_SERVER, OnAddDirectoryAsServer)
         COMMAND_ID_HANDLER_EX(IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST, OnAddDirectoryAsServer)
+        CHAIN_MSG_MAP(CCustomDialogT<CUploadSettings>)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:

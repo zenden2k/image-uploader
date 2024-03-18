@@ -78,10 +78,22 @@ public:
 };
 
 
+LRESULT Dialog_OnColorDialog(HWND hWnd, HDC hdc, HWND hwndChild);
+
 template <class T, class TBase = CWindow>
 class ATL_NO_VTABLE CCustomDialogIndirectImpl : public CDialogIndirectImpl< T > {
 
 public:
+    BEGIN_MSG_MAP(CCustomDialogIndirectImpl<T>)
+        MSG_WM_CTLCOLORDLG(OnColorDialog)
+        MSG_WM_CTLCOLORSTATIC(OnColorDialog)
+        MSG_WM_CTLCOLORBTN(OnColorDialog)
+    END_MSG_MAP()
+
+    LRESULT OnColorDialog(HDC hdc, HWND hwndChild) {
+        return Dialog_OnColorDialog(m_hWnd, hdc, hwndChild);
+    }
+
     HGLOBAL m_hDlgTemplate = nullptr;
     bool m_bAppWindow = false;
     DLGTEMPLATE* CCustomDialogIndirectImpl::GetTemplate()
@@ -122,5 +134,21 @@ public:
     }
     
 };
+
+template < class T>
+class CCustomDialogT : public CDialogImpl<T>
+{
+public:
+    BEGIN_MSG_MAP(CCustomDialogT<T>)
+        MSG_WM_CTLCOLORDLG(OnColorDialog)
+        MSG_WM_CTLCOLORSTATIC(OnColorDialog)
+        MSG_WM_CTLCOLORBTN(OnColorDialog)
+    END_MSG_MAP()
+
+    LRESULT OnColorDialog(HDC hdc, HWND hwndChild) {
+        return Dialog_OnColorDialog(m_hWnd, hdc, hwndChild);
+    }
+};
+
 
 #endif // DIALOGINDIRECT_H

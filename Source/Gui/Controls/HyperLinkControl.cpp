@@ -22,6 +22,7 @@
 
 #include <algorithm>
 
+#include "3rdpart/DarkMode.h"
 #include "Gui/GuiTools.h"
 #include "HyperLinkControlAccessible.h"
 
@@ -451,7 +452,11 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             continue;
         }
         bool isHighlighted = static_cast<size_t>(selectedItemIndex_) == i || hoverItemIndex_ == i;
-        dc.SetTextColor(RGB(0,0,0));
+        if (DarkModeHelper::instance()->g_darkModeEnabled) {
+            dc.SetTextColor(RGB(255, 255, 255));
+        } else {
+            dc.SetTextColor(RGB(0, 0, 0));
+        }
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {

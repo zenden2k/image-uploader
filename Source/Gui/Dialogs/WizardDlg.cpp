@@ -42,6 +42,9 @@
 #include "Gui/Dialogs/MediaInfoDlg.h"
 #include "Func/MediaInfoHelper.h"
 #endif
+#include <dwmapi.h>
+#include <3rdpart/DarkMode.h>
+
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ImageReuploaderDlg.h"
 #include "Gui/Dialogs/ShortenUrlDlg.h"
@@ -68,10 +71,14 @@
 #include "3rdpart/wintoastlib.h"
 #include "Gui/Components/WinToastHandler.h"
 #include "ServerListTool/ServersCheckerDlg.h"
+//#include "3rdpart/DarkMode.h"
 
 using namespace Gdiplus;
 namespace
 {
+
+BOOLEAN(WINAPI* pShouldAppsUseDarkMode)(void) = 0; /* undocumented */
+DWORD(WINAPI* pSetPreferredAppMode)(DWORD) = 0; /* undocumented */
 
 struct TaskDispatcherMessageStruct {
     TaskRunnerTask callback;
@@ -254,6 +261,43 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    if (DarkModeHelper::instance()->g_darkModeEnabled)
+    {
+        DarkModeHelper::instance()->_AllowDarkModeForWindow(m_hWnd, true);
+       // SetWindowTheme(m_hWnd, L"Explorer", NULL);
+        BOOL value = TRUE;
+        DwmSetWindowAttribute(m_hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
+
+        using TYPE_AllowDarkModeForWindow = bool (WINAPI*)(HWND a_HWND, bool a_Allow);
+        //static const TYPE_AllowDarkModeForWindow AllowDarkModeForWindow = (TYPE_AllowDarkModeForWindow)GetProcAddress(hUxtheme, MAKEINTRESOURCEA(133));
+        HWND button = GetDlgItem(IDC_HELPBUTTON);
+        DarkModeHelper::instance()->_AllowDarkModeForWindow(button, true);
+        SetWindowTheme(button, L"Explorer", NULL);
+
+        button = GetDlgItem(IDCANCEL);
+        DarkModeHelper::instance()->_AllowDarkModeForWindow(button, true);
+        SetWindowTheme(button, L"Explorer", NULL);
+        //RefreshTitleBarThemeColor(hWnd);
+    }
+#if 0
+      /*HMODULE hUxTheme = LoadLibrary(_T("UXTHEME.DLL"));
+        DWORD win_version = GetVersion();
+        unsigned build = HIWORD(win_version);
+        win_version = ((win_version & 0xff) << 8) | ((win_version >> 8) & 0xff);
+        //printf("Windows %d.%d Build %d\n", win_version >> 8, win_version & 0xFF, build);
+        if (win_version > 0x0601 && build >= 17763) { // minimum version 1809
+            pShouldAppsUseDarkMode = reinterpret_cast<decltype(pShouldAppsUseDarkMode)>(GetProcAddress(hUxTheme, MAKEINTRESOURCEA(132))); /* ordinal */
+            pSetPreferredAppMode = reinterpret_cast<decltype(pSetPreferredAppMode)>(GetProcAddress(hUxTheme, MAKEINTRESOURCEA(135))); /* ordinal */
+                // this would be AllowDarkModeForApp before Windows build 18362
+        }
+
+    BOOL value = TRUE;
+    DwmSetWindowAttribute(m_hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
+    SetWindowTheme(m_hWnd, L"DarkMode_Explorer", NULL);
+    SetWindowTheme(GetDlgItem(IDC_HELPBUTTON), L"DarkMode_Explorer", NULL);*/
+#endif
+
+
     RECT clientRect;
     GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();

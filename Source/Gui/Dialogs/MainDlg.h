@@ -31,6 +31,7 @@ limitations under the License.
 #include "VideoGrabberPage.h"
 #include "Gui/Controls/ThumbsView.h"
 #include "Gui/CommonDefines.h"
+#include "Gui/Controls/DialogIndirect.h"
 
 struct CFileListItem
 {
@@ -40,7 +41,7 @@ struct CFileListItem
     bool selected;
 };
 
-class CMainDlg : public CDialogImpl<CMainDlg>,public CThreadImpl<CMainDlg>,public CWizardPage,
+class CMainDlg : public CCustomDialogT<CMainDlg>,public CThreadImpl<CMainDlg>,public CWizardPage,
     public CMessageFilter
 {
 public:
@@ -95,6 +96,7 @@ public:
         COMMAND_ID_HANDLER_EX(IDC_ADDIMAGES, OnAddFiles)
 
         NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnLvnItemDelete)
+        CHAIN_MSG_MAP(CCustomDialogT<CMainDlg>)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 // Handler prototypes (uncomment arguments if needed):

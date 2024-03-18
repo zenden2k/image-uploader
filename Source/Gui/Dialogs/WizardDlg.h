@@ -121,7 +121,8 @@ public:
         COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpbutton)
         COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentation)
         COMMAND_ID_HANDLER(IDC_SHOWLOG, OnShowLog)
-        REFLECT_NOTIFICATIONS()
+        CHAIN_MSG_MAP(CCustomDialogIndirectImpl<CWizardDlg>)
+    REFLECT_NOTIFICATIONS()
 
     END_MSG_MAP()
     // Handler prototypes:

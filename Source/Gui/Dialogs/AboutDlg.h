@@ -38,6 +38,7 @@ class CAboutDlg : public CCustomDialogIndirectImpl<CAboutDlg>
             COMMAND_ID_HANDLER(ID_COPYAUTHOREMAIL, OnCopyAuthorEmail)
             MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtlColorStatic)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+            CHAIN_MSG_MAP(CCustomDialogIndirectImpl<CAboutDlg>)
         END_MSG_MAP()
         CMyImage LogoImage;
         CHyperLink m_WebSiteLink;

@@ -4,6 +4,8 @@ set(SRC_LIST
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
     ../3rdpart/wintoastlib.cpp
+    ../3rdpart/IatHook.cpp
+    ../3rdpart/DarkMode.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
     ../Core/ScreenCapture/MonitorEnumerator.cpp
@@ -110,6 +112,7 @@ set(SRC_LIST
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
+    Controls/DialogIndirect.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -207,6 +210,7 @@ set(HEADER_LIST
     Controls/ResultsListView.h
     Controls/ProgressRingControl.h
 	Controls/CustomTreeControl.h
+    Controls/DialogIndirect.h
     Dialogs/ClearHistoryDlg.h
     Dialogs/FolderAddDlg.h
     Dialogs/SearchByImageDlg.h

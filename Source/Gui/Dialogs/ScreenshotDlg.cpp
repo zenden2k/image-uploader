@@ -24,6 +24,7 @@
 #include "Func/MyUtils.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "3rdpart/DarkMode.h"
 
 using namespace ScreenCapture;
 
@@ -42,7 +43,11 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CenterWindow(GetParent());
 
     CommandBox.m_bHyperLinks = false;
-    CommandBox.Init(GetSysColor(COLOR_WINDOW));
+    COLORREF color = GetSysColor(COLOR_WINDOW);
+    if (DarkModeHelper::instance()->g_darkModeEnabled) {
+        color = RGB(0, 0, 0);
+    }
+    CommandBox.Init(color);
     CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
     CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
     CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
