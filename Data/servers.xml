@@ -349,6 +349,32 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
+	<Server Name="lostpix.com" MaxFileSize="10485760">
+		<Actions>
+			<Action Type="upload" Url="https://lostpix.com/" PostParams="action=upload;width=$(_FILENAME);local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=dimensions" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;View:2;Thumb:3;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
+	</Server>
+	<Server Name="getapic.me" Debug="0" Authorize="1">
+		<Actions>
+			<Action Type="login" Url="https://getapic.me/login/auth" PostParams="next=;email=$(_LOGIN);password=$(_PASSWORD);" 
+				CustomHeaders="X-Requested-With:XMLHttpRequest" OnlyOnce="1"
+			>
+				<Call Function="json" Arg1="result.success" AssignVars="Success:0;"/>
+				<RegExp Data="$(Success)" Pattern="True" AssignVars=""/>
+			</Action>
+			<Action Type="get" Url="https://getapic.me/" RegExp="session\]'\)\.val\('(.+?)'" AssignVars="Session:0" OnlyOnce="0">
+				<RegExp Pattern="suid\]'\)\.val\('(.+?)'" AssignVars="Suid:0"/>
+			</Action>
+			<Action Type="upload" Url="https://getapic.me/upload" CustomHeaders="X-Requested-With:XMLHttpRequest" Referer="https://getapic.me/" 
+				PostParams="getpreviewsize=$(_THUMBWIDTH);getpreviewalt=;getreduceimage=320;needreduce=0;upload_quality=100;upload_angle=0;upload_resizeside=width;gettypeofdownload=N;session=$(Session);suid=$(Suid);file[]=%filename%;"
+			> 
+				<Call Function="json" Arg1="result.data.url" AssignVars="ResultsPage:0;"/>
+			</Action>
+			<Action Type="get" Url="$(ResultsPage)" RegExp="\[IMG\](.*?)\[([\s\S]*?)\[URL=(.*?)\]\[IMG\](.*?)\[" AssignVars="Image:0;View:2;Thumb:3;"/>
+		</Actions>
+		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)" />
+	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

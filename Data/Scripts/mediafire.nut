@@ -1,3 +1,5 @@
+const CURLOPT_POSTFIELDSIZE = 60;
+
 function min(a,b) {
     return a < b ? a : b;
 }
@@ -178,8 +180,10 @@ function _ChunkedUpload(sessionToken, folderId, FileName, fileNameBase, fileSize
         nm.addQueryHeader("X-Unit-Hash", chunkHash);
         nm.addQueryHeader("X-Unit-Size", chunk);
         nm.addQueryHeader("X-Unit-Id", i);
-        nm.setChunkOffset(i * chunkSize);
+        nm.setChunkOffset(offset);
         nm.setChunkSize(currentChunk);
+        nm.setMethod("POST");
+        nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, currentChunk);
         nm.doUpload(FileName, "");
 
         if (nm.responseCode() == 200) {
@@ -230,6 +234,7 @@ function UploadFile(FileName, options) {
     local sessionToken =  Sync.getValue("sessionToken");
     local fileSize = GetFileSize(FileName);
     local fileNameBase = ExtractFileName(FileName);
+    local mimeType = GetFileMimeType(FileName);
 
     local folderId = options.getFolderID();
     if (folderId == "") {
@@ -246,8 +251,10 @@ function UploadFile(FileName, options) {
         nm.addQueryHeader("X-Filename", fileNameBase);
         nm.addQueryHeader("X-Filesize", fileSize);
         nm.addQueryHeader("X-Filehash", fileHash);
+        nm.addQueryHeader("Content-Type", "application/octet-stream");
         nm.setReferer("https://app.mediafire.com/");
-
+        nm.setMethod("POST");
+        nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, fileSize);
         nm.doUpload(FileName, "");
 
         if (nm.responseCode() == 200) {

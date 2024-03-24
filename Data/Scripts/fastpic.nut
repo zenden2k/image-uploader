@@ -1,5 +1,5 @@
 function UploadFile(FileName, options) {
-    nm.setUrl("https://fastpic.ru/upload?api=1");
+    nm.setUrl("https://fastpic.org/upload?api=1");
     //nm.addQueryHeader("User-Agent","FPUploader");
     nm.addQueryParam("method", "file");
 	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName), "");

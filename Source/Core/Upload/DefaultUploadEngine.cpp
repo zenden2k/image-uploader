@@ -217,7 +217,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         return ReadServerResponse(Action);
     }
     catch (std::exception& ex) {
-        std::cerr<<ex.what()<<std::endl;
+        LOG(ERROR) << ex.what() << std::endl;
         return false;
     }
 }
@@ -334,9 +334,15 @@ bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& 
                 reader.parse(*data, root, false);
                 Json::Path jsonPath(ReplaceVars(actionRegExp.getArg(1)), Json::PathArgument());
                 std::string result;
+                const auto& resolved = jsonPath.resolve(root);
+                if (resolved.isString()) {
+                    result = resolved.asCString();
+                } else {
+                    std::stringstream sstr;
+                    sstr << resolved;
+                    result = sstr.str();
+                }
 
-                result = jsonPath.resolve(root).asCString();
-                const Json::Value& resolved = jsonPath.resolve(root);
                 if (!resolved.isNull()) {
                     assignVars(actionRegExp, [&result](int index) -> std::string {
                         if (index == 0) {
