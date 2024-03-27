@@ -78,7 +78,19 @@ function UploadFile(FileName, options) {
         local reg = CRegExp(BASE_URL + "view/([A-Za-z0-9]+)", "mi");
                            
         if (reg.match(nm.responseBody()) ) {
-            options.setViewUrl(reg.getMatch(0));
+            local viewUrl = reg.getMatch(0);
+            if (viewUrl != "") {
+                options.setViewUrl(viewUrl);
+                nm.doGet(viewUrl);
+                if (nm.responseCode() == 200) {
+                    doc = Document(nm.responseBody());
+                    node = doc.find(".main-image");
+                    if (node != null) {
+                        options.setDirectUrl(node.attr("src"));
+                    }
+                }
+            }
+
             local reg2 = CRegExp("\\[IMG\\](.+?)\\[/IMG\\]", "mi");
             if (reg2.match(nm.responseBody())) {
                 options.setThumbUrl(reg2.getMatch(1));

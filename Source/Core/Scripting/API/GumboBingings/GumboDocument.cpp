@@ -32,6 +32,7 @@ void RegisterGumboClasses(Sqrat::SqratVM& vm) {
         .Func("tagName", &CSelection::tagName)
         .Func("each", &CSelection::squirrelEach)
         .Func("attr", &CSelection::attribute)
+        .Func("attribute", &CSelection::attribute)
         );
 
     root.Bind("Node", Class<CNode>(vm.GetVM(), "Node")
@@ -42,6 +43,7 @@ void RegisterGumboClasses(Sqrat::SqratVM& vm) {
         .Func("childAt", &CNode::childAt)
         .Func("childCount", &CNode::childNum)
         .Func("attr", &CNode::attribute)
+        .Func("attribute", &CNode::attribute)
         .Func("text", &CNode::text)
         .Func("ownText", &CNode::ownText)
         .Func("tagName", &CNode::tag)
