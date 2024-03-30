@@ -58,11 +58,12 @@ int CAdvancedUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadP
     if (res == -2) {
         // Clear authorization flag and try again
         serverSync_->resetAuthorization();
-        res = doProcessTask(task, params);
+    }
+    /*  res = doProcessTask(task, params);
         if (res == -2) {
             return -1;
         }
-    }
+    }*/
     return res;
 }
 

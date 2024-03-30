@@ -285,7 +285,7 @@ function UploadFile(FileName, options) {
             nm.setMethod("PUT");
             nm.addQueryHeader("Authorization", _GetAuthorizationString());
             nm.addQueryHeader("Content-Type", mimeType);
-            nm.addQueryHeader("Content-Length", fileSizeStr);
+            //nm.addQueryHeader("Content-Length", fileSizeStr);
             nm.setUrl(sessionUri);
             nm.doUpload(FileName, "");
             if (_CheckResponse()) {

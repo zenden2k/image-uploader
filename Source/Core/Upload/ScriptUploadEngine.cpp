@@ -217,13 +217,13 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
         ival = -1; // fatal error
     }
-	catch (const Sqrat::Exception& e) {
+	/*catch (const Sqrat::Exception& e) {
     	if (!strcmp(e.what(), "unauthorized_exception")) {
             ival = -2;
     	} else {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
     	}
-    }
+    }*/
     catch (std::exception & e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
     }
