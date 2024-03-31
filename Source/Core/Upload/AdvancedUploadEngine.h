@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _IU_ADVANCED_UPLOAD_ENGINE_H
-#define _IU_ADVANCED_UPLOAD_ENGINE_H
+#ifndef IU_ADVANCED_UPLOAD_ENGINE_H
+#define IU_ADVANCED_UPLOAD_ENGINE_H
 
 #include <vector>
 #include <string>

@@ -4,13 +4,13 @@
              Sergey Svistunov @zenden2k
 */
 
-clientId <- "b38ba6b0919a898";
+const CLIENT_ID = "b38ba6b0919a898";
 
 function GetAuthorizationString() {
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
     if (token == "") {
-        return "Client-ID " + clientId;
+        return "Client-ID " + CLIENT_ID;
     }
     return "Bearer" + " " + token;
 }
@@ -19,7 +19,7 @@ function IsAuthenticated() {
     return ServerParams.getParam("token") != "" ? 1 : 0;
 }
 
-function checkResponse(except = true) {
+function checkResponse(except = false) {
     if ( nm.responseCode() == 403 ) {
         if ( nm.responseBody().find("Invalid token",0)!= null) {
             WriteLog("warning", nm.responseBody());
@@ -32,7 +32,7 @@ function checkResponse(except = true) {
             if (except) {
                 throw "unauthorized_exception";
             }
-            return 0;
+            return -2;
         } else {
             WriteLog("error", "403 Access denied" );
             return 0;
@@ -70,7 +70,7 @@ function RefreshToken() {
             // Refresh access token
             nm.setUrl("https://api.imgur.com/oauth2/token");
             nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", clientId); 
+            nm.addQueryParam("client_id", CLIENT_ID); 
             nm.addQueryParam("client_secret", "d91cd90f01cadaa1796d8d9b9231c218c11ed628"); 
             nm.addQueryParam("grant_type", "refresh_token"); 
             nm.doPost("");
@@ -112,7 +112,7 @@ function Authenticate()  {
         return 1;
     } 
     local login = ServerParams.getParam("Login");
-    local url = "https://api.imgur.com/oauth2/authorize?client_id=" + nm.urlEncode(clientId) +"&response_type=token&state=token";
+    local url = "https://api.imgur.com/oauth2/authorize?client_id=" + nm.urlEncode(CLIENT_ID) +"&response_type=token&state=token";
     ShellOpenUrl(url);
     
     local confirmCode = InputDialog(tr("imgur.confirmation.text", "You need to need to sign in to your Imgur account\r\n in web browser which just have opened and then\r\n copy confirmation code into the text field below.\r\nPlease enter confirmation code:"),"");
@@ -145,7 +145,10 @@ function UploadFile(FileName, options) {
     nm.addQueryHeader("Authorization", GetAuthorizationString());
     nm.addQueryParamFile("image", FileName, ExtractFileName(FileName),"");
     nm.doUploadMultipartData();
-    if (nm.responseCode() == 200) {
+    local code = checkResponse();
+    if (code < 1) {
+        return code;
+    } else if (nm.responseCode() == 200) {
         local retdoc = nm.responseBody();
         local json = ParseJSON(retdoc);
         if (json != null) {

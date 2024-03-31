@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _IU_SCRIPT_UPLOAD_ENGINE_H
-#define _IU_SCRIPT_UPLOAD_ENGINE_H
+#ifndef IU_SCRIPT_UPLOAD_ENGINE_H
+#define IU_SCRIPT_UPLOAD_ENGINE_H
 
 #include <vector>
 #include <string>
@@ -71,7 +71,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         void PrintCallback(const std::string& output) override;
         int processAuthTask(std::shared_ptr<UploadTask> task);
         int processTestTask(std::shared_ptr<UploadTask> task);
-        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params);
+        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         int refreshToken();
         bool preLoad() override;
         bool postLoad() override;

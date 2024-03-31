@@ -187,6 +187,8 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             isFatalError_ = true;
             Cleanup();
             return false;
+        } if (EngineRes == -2 && i == retryLimit) {
+            retryLimit++;
         }
         i++;
         if (needStop())
