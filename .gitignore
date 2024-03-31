@@ -29,5 +29,7 @@ Dist/serverchecker
 /Build*/
 .vs/
 .vscode/
+.idea/
 /Dist/Packages/
 /Dist/Build_Release_Temp/
+/Dist/Libs/

@@ -119,7 +119,7 @@ function _LoadAlbumList(list) {
         local code = nm.responseCode();
         if (code == 401){
             ServerParams.setParam("token","");
-            throw "unauthorized_exception";
+            return -2;
         }
 
         local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
@@ -383,7 +383,7 @@ function UploadFile(FileName, options) {
 
         if (nm.responseCode() == 401) { // not authorized
             ServerParams.setParam("token", "");
-            throw "unauthorized_exception";
+            return -2;
         }
 
         while ( nm.responseCode() == 409 ) {

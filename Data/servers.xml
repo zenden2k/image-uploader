@@ -240,7 +240,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" NeedPassword="0" LoginLabel="User key">
+	<Server Name="vgy.me" Type="image" Authorize="2" Plugin="vgy_me" PasswordLabel="User key">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -295,7 +295,7 @@
 	<Server Name="wdfiles.ru" FileHost="1" Plugin="wdfiles">
 		<Actions>
 		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+		<Result DownloadUrlTemplate="stub"/>
 	</Server>
 	<Server Name="userscloud.com" FileHost="1" Plugin="userscloud">
 		<Actions>

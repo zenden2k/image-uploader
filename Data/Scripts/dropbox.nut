@@ -20,7 +20,7 @@ try {
 } catch ( ex ) {
 }
     
-function signRequest(url, token) {
+function _SignRequest(url, token) {
     nm.addQueryHeader("Authorization", "Bearer " + token);
     
     return url;
@@ -41,12 +41,6 @@ function OnUrlChangedCallback(data) {
         }
         br.close();
     }
-}
-function sendOauthRequest(url, token) {
-    nm.setUrl(url);
-    signRequest(url, token);
-    nm.doPost("" );
-    return 0;
 }
 
 function RefreshToken() {
@@ -78,7 +72,7 @@ function RefreshToken() {
     return 1;
 }
 
-function ObtainAccessToken()  {
+function _ObtainAccessToken()  {
     if (authCode != ""){
         local url = "https://api.dropboxapi.com/oauth2/token";
         nm.setUrl(url);
@@ -126,7 +120,7 @@ function Authenticate() {
     browser.navigateToUrl(url);
     browser.showModal();
     
-    return ObtainAccessToken();
+    return _ObtainAccessToken();
 }
 
 function IsAuthenticated() {
@@ -143,7 +137,7 @@ function DoLogout() {
     }
     local url = "https://api.dropboxapi.com/2/auth/token/revoke";
     nm.setUrl(url);
-    signRequest(url, token);
+    _SignRequest(url, token);
     nm.addQueryHeader("Content-Type", "application/json");
     nm.doPost("null");
     ServerParams.setParam("token", "");
@@ -202,15 +196,15 @@ function UploadFile(FileName, options) {
                 }
                 if( session==""){
                     url = "https://content.dropboxapi.com/2/files/upload_session/start" ;
-                    signRequest(url, token);
+                    _SignRequest(url, token);
                     local arg ={
                         close=false
                     };
-                    local json = reg_replace(ToJSON(arg),"\n","");
+                    local json = _RegReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 } else{
                     url = "https://content.dropboxapi.com/2/files/upload_session/append_v2" ;
-                    signRequest(url, token);
+                    _SignRequest(url, token);
                     local arg ={
                         cursor={
                             session_id=session,
@@ -218,7 +212,7 @@ function UploadFile(FileName, options) {
                         },
                         close=false
                     };
-                    local json = reg_replace(ToJSON(arg),"\n","");
+                    local json = _RegReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 }
                 local chunkSize = min(chunkSize,fileSize.tofloat()-offset).tointeger();
@@ -266,10 +260,10 @@ function UploadFile(FileName, options) {
                 mute=false
             }
         };
-        local json = reg_replace(ToJSON(arg),"\n","");
+        local json = _RegReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.addQueryHeader("Content-Type", "application/octet-stream");
-        signRequest(url, token);
+        _SignRequest(url, token);
         nm.setMethod("POST");
         nm.doPost("");
 
@@ -280,7 +274,7 @@ function UploadFile(FileName, options) {
 
     } else {
         url = "https://content.dropboxapi.com/2/files/upload" ;
-        signRequest(url, token);
+        _SignRequest(url, token);
         local arg ={
             path=remotePath,
             mode="add",
@@ -288,7 +282,7 @@ function UploadFile(FileName, options) {
             mute=false
         };
         nm.addQueryHeader("Content-Type", "application/octet-stream");
-        local json = reg_replace(ToJSON(arg),"\n","");
+        local json = _RegReplace(ToJSON(arg),"\n","");
         nm.addQueryHeader("Dropbox-API-Arg", json);
         nm.setUrl(url);
         nm.doUpload(FileName, "");
@@ -303,14 +297,14 @@ function UploadFile(FileName, options) {
     fileId = data.id;
     
     url = "https://api.dropboxapi.com/2/sharing/create_shared_link_with_settings" ;
-    signRequest(url, token);
+    _SignRequest(url, token);
     local arg ={
             path=remotePath,
             settings={
                 requested_visibility="public"
             }
     };
-    local json = reg_replace(ToJSON(arg),"\n","");
+    local json = _RegReplace(ToJSON(arg),"\n","");
     nm.addQueryHeader("Content-Type","application/json")
     nm.setUrl(url);
     nm.enableResponseCodeChecking(false);
@@ -322,12 +316,12 @@ function UploadFile(FileName, options) {
         if (nm.responseCode() == 409) { // Shared link already exists
             data = ParseJSON(nm.responseBody());
             url = "https://api.dropboxapi.com/2/sharing/list_shared_links" ;
-            signRequest(url, token);
+            _SignRequest(url, token);
             local arg ={
                     path=remotePath,
                     direct_only=true
             };
-            local json = reg_replace(ToJSON(arg),"\n","");
+            local json = _RegReplace(ToJSON(arg),"\n","");
             nm.addQueryHeader("Content-Type","application/json")
             nm.setUrl(url);
             nm.doUpload("",json);
@@ -359,7 +353,7 @@ function UploadFile(FileName, options) {
     return 0;
 }
 
-function reg_replace(str, pattern, replace_with) {
+function _RegReplace(str, pattern, replace_with) {
     local resultStr = str;	
     local res;
     local start = 0;

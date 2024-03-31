@@ -13,7 +13,7 @@ function _ClearAuthData() {
     ServerParams.setParam("tokenTime", "");
 }
 
-function _CheckResponse(except = true) {
+function _CheckResponse(except = false) {
     if (nm.responseCode() == 403) {
         if (nm.responseBody().find("Invalid token", 0)!= null) {
             WriteLog("warning", nm.responseBody());
@@ -21,6 +21,7 @@ function _CheckResponse(except = true) {
             if (except) {
                 throw "unauthorized_exception";
             }
+            return -2;
         } else {
             WriteLog("error", "403 Access denied" );
         }
@@ -30,7 +31,7 @@ function _CheckResponse(except = true) {
         if (except) {
             throw "unauthorized_exception";
         } 
-        return 0;
+        return -2;
     } else if (/*nm.responseCode() == 0 ||*/ (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
         WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
         return 0;
@@ -65,8 +66,12 @@ function RefreshToken() {
             nm.addQueryParam("client_secret", clientSecret);
             nm.addQueryParam("grant_type", "refresh_token");
             nm.doPost("");
-            if (_CheckResponse()) {
-                local data =  nm.responseBody();
+            local code = _CheckResponse();
+            if (code < 1) {
+                WriteLog("error", "[googledrive] refreshing token failed, response code: " + nm.responseCode());
+                return code;
+            } else {
+                local data = nm.responseBody();
                 local t = ParseJSON(data);
                 if ("access_token" in t) {
                     token = t.access_token;
@@ -140,7 +145,9 @@ function Authenticate() {
     nm.addQueryParam("redirect_uri", redirectUrl);
     nm.addQueryParam("grant_type", "authorization_code");
     nm.doPost("");
-    if (!_CheckResponse(false)) {
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[googledrive] Auth failed, response code: " + nm.responseCode());
         return 0;
     }
     local data = nm.responseBody();
@@ -194,8 +201,11 @@ function DoLogout() {
 function GetFolderList(list) {
     nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.doGet("https://www.googleapis.com/drive/v2/files");
-
-    if (nm.responseCode() == 200) {
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[googledrive] Getting folder list failed, response code: " + nm.responseCode());
+        return code;
+    } else {
         local t = ParseJSON(nm.responseBody());
         if ( t != null ) {
             local count = t.items.len();
@@ -228,7 +238,11 @@ function CreateFolder(parentFolder, folder) {
     };
     nm.addQueryHeader("Content-Type","application/json");
     nm.doPost(ToJSON(data));
-    if (_CheckResponse()) {
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[googledrive] Creating folder failed, response code: " + nm.responseCode());
+        return code;
+    } else {
         local responseData = nm.responseBody();
         local item = ParseJSON(responseData);
         if ( item != null ) {
@@ -251,11 +265,13 @@ function ModifyFolder(folder) {
         title = folder.getTitle(),
     };
     nm.doUpload("", ToJSON(postData));
-    if (_CheckResponse()) {
-        return 1;
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[googledrive] Modifying folder failed, response code: " + nm.responseCode());
+        return code;
     }
 
-    return 0;
+    return 1;
 }
 
 function UploadFile(FileName, options) {
@@ -278,8 +294,12 @@ function UploadFile(FileName, options) {
     nm.setUrl("https://www.googleapis.com/upload/drive/v2/files?uploadType=resumable");
     nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.setMethod("POST");
-    nm.doUpload("", str);
-    if (_CheckResponse()) {
+    nm.doPost(str);
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[googledrive] Starting upload failed, response code: " + nm.responseCode());
+        return code;
+    } else {
         local sessionUri = nm.responseHeaderByName("Location");
         if (sessionUri != "") {
             nm.setMethod("PUT");
@@ -288,7 +308,11 @@ function UploadFile(FileName, options) {
             //nm.addQueryHeader("Content-Length", fileSizeStr);
             nm.setUrl(sessionUri);
             nm.doUpload(FileName, "");
-            if (_CheckResponse()) {
+            code = _CheckResponse();
+            if (code < 1) {
+                WriteLog("error", "[googledrive] Starting upload failed, response code: " + nm.responseCode());
+                return code;
+            } else {
                     local responseData = nm.responseBody();
                     local item = ParseJSON(responseData);
                     nm.addQueryHeader("Authorization", _GetAuthorizationString());
@@ -299,7 +323,7 @@ function UploadFile(FileName, options) {
                     };
                     nm.addQueryHeader("Content-Type", "application/json");
                     nm.setMethod("POST");
-                    nm.doUpload("", ToJSON(postData));
+                    nm.doPost(ToJSON(postData));
                     options.setViewUrl(item.alternateLink);
 
                     if (item.mimeType.find("image/", 0) == 0) {
