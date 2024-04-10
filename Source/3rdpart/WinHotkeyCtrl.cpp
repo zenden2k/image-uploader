@@ -96,7 +96,7 @@ void CWinHotkeyCtrl::UpdateText() {
     CString sText;
     if (HotkeyToString(m_vkCode, m_fModSet, sText))
         SetWindowText((LPCTSTR)sText);
-    else SetWindowText(_T("None"));
+    else SetWindowText(TR("None"));
     SetSel(0x8fffffff, 0x8fffffff, FALSE);
 }
 
