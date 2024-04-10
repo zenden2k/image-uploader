@@ -81,12 +81,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
 	</Server>
-	<Server Name="ipic.su">
-	<Actions>
-		<Action Type="upload" Url="http://ipic.su/api/index.php" PostParams="link=/;action=loadimg;origin=checked;quality=100;client=KISS075;tnsize=$(ThumbWidth);showall=1;image=%filename%" RegExp="(.+?)\r\n(.+?)\r\n(.+)" AssignVars="Line0:0;Line1:1;Line2:2;"/>
-	</Actions>
-	<Result ImageUrlTemplate="http://ipic.su$(Line2)/fs/$(Line0)" ThumbUrlTemplate="http://ipic.su$(Line2)/tn/$(Line0)"/>
-	</Server>
 	<Server Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1">
 		<Actions>
 		</Actions>
