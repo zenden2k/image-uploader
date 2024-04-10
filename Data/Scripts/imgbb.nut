@@ -16,7 +16,11 @@ function _ObtainToken() {
 
 function _UploadToAccount(FileName, options) {
     nm.enableResponseCodeChecking(true);
-    local apiKey = ServerParams.getParam("Login");
+    local apiKey = ServerParams.getParam("Password");
+    if (apiKey == "") {
+        WriteLog("error", "[imgbb.com] Cannot upload to account without API key");
+        return 0;
+    }
     nm.addQueryParam("key", apiKey);
     nm.addQueryParamFile("image", FileName, ExtractFileName(FileName), "");
     nm.setUrl("https://api.imgbb.com/1/upload");
@@ -40,9 +44,9 @@ function _UploadToAccount(FileName, options) {
 
 function UploadFile(FileName, options) {
     nm.enableResponseCodeChecking(false);
-    local apiKey = ServerParams.getParam("Login");
+    local login = ServerParams.getParam("Login");
 
-    if (apiKey != "") {
+    if (login != "") {
         return _UploadToAccount(FileName, options);
     }
 

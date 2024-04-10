@@ -46,7 +46,13 @@ public:
     defer(const defer&) = delete;
 
     defer(std::function<T()> functor) : mFunctor(functor) {}
-    ~defer() { mFunctor(); }
+    ~defer() {
+        try {
+            mFunctor();
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
+    }
 };
 
 namespace IuCoreUtils

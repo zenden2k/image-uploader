@@ -38,8 +38,8 @@
 	</Server>
 	<Server Name="directupload.net"  Authorize="1" MaxFileSize="4000000" DefaultForTypes="image">
 		<Actions>
-			<Action Type="login" Url="https://www.directupload.net/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
-			<Action Type="upload" Url="https://www.directupload.net/index.php?mode=upload" PostParams="bilddatei=%filename%;image_link=Die Bild-URL bitte hier einfügen;image_comment=;image_tags=;image_mail=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
+			<Action Type="login" Url="https://www.directupload.eu/index.php?mode=login" PostParams="username=$(_LOGIN);passwort=$(_PASSWORD);autologin=1;" OnlyOnce="1" Description="Authorization on directupload.net"/>
+			<Action Type="upload" Url="https://www.directupload.eu/index.php?mode=upload" PostParams="bilddatei=%filename%;image_link=Die Bild-URL bitte hier einfügen;image_comment=;image_tags=;image_mail=" RegExp='\[IMG\](.*?)\[\/IMG\]([\s\S]*?)\[IMG\](.*?)\[\/IMG\]' AssignVars="Image:2;Thumb:0"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
@@ -222,7 +222,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>-->
-    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" LoginLabel="API key" NeedPassword="0">
+    <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" PasswordLabel="API key">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

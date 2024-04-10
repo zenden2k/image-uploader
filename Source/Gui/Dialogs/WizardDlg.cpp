@@ -343,7 +343,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
                 LoadUploadEngines(userServersFolder + list[i], ErrorStr);
             }
         }
-    } catch ( std::exception& ex) {
+    } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
     
@@ -1038,10 +1038,10 @@ STDMETHODIMP CWizardDlg::DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POI
                 ReleaseStgMedium(&ddd);
             }
         }
-    }
 
-    if (!enableDragndropOverlay_) {
-        queryDropFiledescriptors(pDataObj, &enableDragndropOverlay_);
+        if (!enableDragndropOverlay_) {
+            queryDropFiledescriptors(pDataObj, &enableDragndropOverlay_);
+        }
     }
 
     if (enableDragndropOverlay_) {

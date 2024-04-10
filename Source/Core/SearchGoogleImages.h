@@ -6,11 +6,9 @@
 #include "SearchByImage.h"
 #include "Network/INetworkClient.h"
 
-class NetworkClient;
-
 class SearchGoogleImages: public SearchByImageTask  {
     public:
-        explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName);
+        explicit SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, std::string fileName);
 protected:
     BackgroundTaskResult doJob() override;
     static bool base64EncodeCompat(const std::string& file, std::string& output);

@@ -1,10 +1,14 @@
-﻿#include "TempFileDeleter.h"
+#include "TempFileDeleter.h"
 
 #include "Core/Utils/CoreUtils.h"
 
 TempFileDeleter::~TempFileDeleter()
 {
-    cleanup();
+    try {
+        cleanup();
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
 }
 
 void TempFileDeleter::addFile(const std::string& fileName)

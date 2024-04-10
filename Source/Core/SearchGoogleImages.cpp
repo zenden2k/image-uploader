@@ -4,7 +4,7 @@
 #include "Utils/CryptoUtils.h"
 #include "Core/Utils/DesktopUtils.h"
 
-SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, const std::string& fileName): SearchByImageTask(fileName),
+SearchGoogleImages::SearchGoogleImages(std::shared_ptr<INetworkClientFactory> networkClientFactory, std::string fileName): SearchByImageTask(std::move(fileName)),
     networkClientFactory_(std::move(networkClientFactory))
 {
 }
