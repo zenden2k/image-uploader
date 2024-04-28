@@ -336,11 +336,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="$(Link)"/>
 	</Server>
-	<Server Name="transfer.sh" FileHost="1" MaxFileSize="10737418240" Plugin="transfer.sh">
+	<!--<Server Name="transfer.sh" FileHost="1" MaxFileSize="10737418240" Plugin="transfer.sh">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
-	</Server>
+	</Server>-->
 	<Server Name="lostpix.com" MaxFileSize="10485760">
 		<Actions>
 			<Action Type="upload" Url="https://lostpix.com/" PostParams="action=upload;width=$(_FILENAME);local_uploadfile[]=%filename%;web_uploadfile=;thumb=true;thumb_width=$(_THUMBWIDTH);thumb_height=;texttype=dimensions" RegExp="\[img\](.*?)\[([\s\S]*?)\[url=(.*?)\]\[img\](.*?)\[" AssignVars="Image:0;View:2;Thumb:3;"/>
