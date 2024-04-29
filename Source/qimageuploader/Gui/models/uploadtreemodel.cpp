@@ -29,7 +29,7 @@ int UploadTreeModel::columnCount(const QModelIndex &parent) const
 QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
-        return QVariant();
+        return {};
 
     InternalItem * obj = reinterpret_cast<InternalItem*>(index.internalPointer());
 
@@ -42,13 +42,18 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
             ico = QIcon(":/icons/res/transfer_inactive.png");
         else if(obj->task->status() == UploadTask::StatusRunning)
             ico = QIcon(":/icons/res/transfer.png");
-        else return QVariant();
+        else return {};
         return ico;
     }
+    if (role == Qt::ForegroundRole && index.column()==1 && obj->task){
+        if(obj->task->status()== UploadTask::StatusFinished){
+            return QBrush(QColor(Qt::darkGreen));
+        }
+    }
     if (role != Qt::DisplayRole)
-        return QVariant();
+        return {};
 
-    if(!obj) return QVariant();
+    if(!obj) return {};
 
     QString result;
     if(index.column() == 0)
@@ -118,7 +123,7 @@ QVariant UploadTreeModel::headerData(int section, Qt::Orientation orientation,
         return headerLabels[section];
     }
 
-    return QVariant();
+    return {};
 }
 
 QModelIndex UploadTreeModel::index(int row, int column, const QModelIndex &parent) const

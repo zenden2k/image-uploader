@@ -25,7 +25,7 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
 	ui->lineEdit->setText(fileName);
     ui->comboBox->addItem("Auto", QVariant(int(VideoGrabber::veAuto)));
 #ifdef IU_ENABLE_FFMPEG
-    ui->comboBox->addItem("Avcodec", QVariant(int(VideoGrabber::veAvcodec)));
+    ui->comboBox->addItem("FFmpeg", QVariant(int(VideoGrabber::veAvcodec)));
 #endif
 
 #ifdef _WIN32

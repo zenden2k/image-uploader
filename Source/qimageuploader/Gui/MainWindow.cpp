@@ -104,14 +104,24 @@ void MainWindow::updateView() {
 }
 
 void MainWindow::on_actionGrab_frames_triggered() {
-    QString fileName = QFileDialog::getOpenFileName(this);
-    if (fileName.length()) {
-        FrameGrabberDlg dlg(fileName, this);
-        if (dlg.exec() == QDialog::Accepted) {
-            QStringList frames;
-            dlg.getGrabbedFrames(frames);
-            addMultipleFilesToList(frames);
-        }
+    QFileDialog fd(this,"Open multimedia file", QString(), tr("All files (*.*)"));
+    fd.setModal(true);
+    fd.setWindowModality(Qt::WindowModal);
+    fd.exec();
+    auto files = fd.selectedFiles();
+
+    if (files.empty()) {
+        return;
+    }
+    QString fileName = files.first();
+
+    FrameGrabberDlg dlg(fileName, this);
+    dlg.setModal(true);
+    dlg.setWindowModality(Qt::WindowModal);
+    if (dlg.exec() == QDialog::Accepted) {
+        QStringList frames;
+        dlg.getGrabbedFrames(frames);
+        addMultipleFilesToList(frames);
     }
 }
 
@@ -160,10 +170,17 @@ void MainWindow::on_actionScreenshot_triggered() {
 }
 
 void MainWindow::on_actionAdd_files_triggered() {
-    QStringList fileNames = QFileDialog::getOpenFileNames(this);
-    if (!fileNames.isEmpty()) {
-        addMultipleFilesToList(fileNames);
+    QFileDialog fd(this,"Open files", QString(), tr("All files (*.*)"));
+    fd.setModal(true);
+    fd.setWindowModality(Qt::WindowModal);
+    fd.exec();
+    auto fileNames = fd.selectedFiles();
+
+    if (fileNames.empty()) {
+        return;
     }
+
+    addMultipleFilesToList(fileNames);
 }
 
 bool MainWindow::addFileToList(QString fileName) {
@@ -254,7 +271,9 @@ void MainWindow::showCodeForIndex(const QModelIndex& index) {
         uploadTaskToUploadObject(item->task.get(), obj);
         uploadObjects.push_back(obj);
     }
-    ResultsWindow dlg(uploadObjects);
+    ResultsWindow dlg(uploadObjects, this);
+    dlg.setModal(true);
+    dlg.setWindowModality(Qt::WindowModal);
     dlg.exec();
 }
 
@@ -320,6 +339,8 @@ void MainWindow::onShowLog() {
 
 void MainWindow::on_actionAboutProgram_triggered() {
     AboutDialog dlg(this);
+    dlg.setModal(true);
+    dlg.setWindowModality(Qt::WindowModal);
     dlg.exec();
 }
 

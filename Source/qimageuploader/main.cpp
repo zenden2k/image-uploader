@@ -3,8 +3,10 @@
 #include <QDir>
 #include <QTemporaryDir>
 #include <QDebug>
+#include <QKeyEvent>
 //#include <3rdparty/qtdotnetstyle.h>
 #include "Core/Logging.h"
+#include "Core/Logging/MyLogSink.h"
 #include <boost/filesystem/path.hpp>
 #include <boost/locale.hpp>
 #include "Core/CommonDefs.h"
@@ -30,7 +32,7 @@ QString dataFolder = "Data/";
 QString dataFolder = "/usr/share/imageuploader/";
 #endif
 QtGuiSettings Settings;
-
+std::unique_ptr<LogWindow> logWindow;
 class Translator : public ITranslator {
 public:
 	std::string getCurrentLanguage() override {
@@ -49,6 +51,35 @@ public:
 #endif
 };
 Translator translator; // dummy translator
+
+class MyApplication : public QApplication
+{
+public:
+    // TODO: constructor etc.
+    MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
+    {
+
+    }
+protected:
+
+    bool notify(QObject *receiver, QEvent *event) override
+    {
+        if (event->type() == QEvent::KeyPress)
+        {
+            auto keyEvent = static_cast<QKeyEvent*>(event);
+            if (keyEvent->key() == Qt::Key_L && keyEvent->modifiers() == (Qt::ShiftModifier | Qt::ControlModifier) )
+            {
+                logWindow->show();
+                logWindow->raise();
+                logWindow->activateWindow();
+                // TODO: do what you need to do
+                return true;
+            }
+        }
+        return QApplication::notify(receiver, event);
+    }
+
+};
 
 int main(int argc, char *argv[])
 {
@@ -81,17 +112,20 @@ int main(int argc, char *argv[])
     appVersion.BranchName = IU_BRANCH_NAME;
     AppParams::instance()->setVersionInfo(appVersion);
 
-	QApplication a(argc, argv);
-    LogWindow logWindow;
-	logWindow.show();
-	auto logger = std::make_shared<QtDefaultLogger>(&logWindow);
-	auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get());
+    MyApplication a(argc, argv);
+    logWindow = std::make_unique<LogWindow>();
+    logWindow->show();
+    auto logger = std::make_shared<QtDefaultLogger>(logWindow.get());
+    auto myLogSink_ = std::make_unique<MyLogSink>(logger.get());
+    google::AddLogSink(myLogSink_.get());
+    auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get());
 	QtScriptDialogProvider dlgProvider;
-	ServiceLocator::instance()->setTranslator(&translator);
-	ServiceLocator::instance()->setUploadErrorHandler(errorHandler);
-	ServiceLocator::instance()->setLogger(logger);
-	ServiceLocator::instance()->setDialogProvider(&dlgProvider);
-
+    auto serviceLocator = ServiceLocator::instance();
+    serviceLocator->setTranslator(&translator);
+    serviceLocator->setUploadErrorHandler(errorHandler);
+    serviceLocator->setLogger(logger);
+    serviceLocator->setDialogProvider(&dlgProvider);
+    serviceLocator->setSettings(&Settings);
     AbstractImage::autoRegisterFactory<void>();
 
     QString appDirectory = QCoreApplication::applicationDirPath();
@@ -139,8 +173,8 @@ settingsDir.mkpath(settingsFolder);
 
 	Settings.setEngineList(engineList.get());
 	
-    //QApplication::setStyle(new QtDotNetStyle);
-    MainWindow w(engineList.get(), &logWindow);
+    //QApplication::setStyle("Fusion");
+    MainWindow w(engineList.get(), logWindow.get());
     w.show();
     
     int res =  a.exec();

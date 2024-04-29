@@ -31,7 +31,7 @@ endif()
 
 set(SOURCE_FILES 
     main.cpp
-    Gui/mainwindow.cpp
+    Gui/MainWindow.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -54,7 +54,7 @@ set(SOURCE_FILES
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui
     Gui/ui/LoginDialog.ui
-	Gui/ui/AboutDialog.ui
+    Gui/ui/AboutDialog.ui
     qimageuploader.qrc
 )
 
