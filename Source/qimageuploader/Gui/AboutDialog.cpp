@@ -13,9 +13,7 @@ AboutDialog::AboutDialog(QWidget *parent):
 
     ui->versionLabel->setText(QString::fromStdString(version->FullVersion) + " build " + QString::number(version->Build));
     QPushButton * btn = new QPushButton(tr("About Qt"), this);
-    connect(btn, &QPushButton::clicked, this, [] {
-        qApp->aboutQt();
-    });
+    connect(btn, &QPushButton::clicked, qApp, &QApplication::aboutQt);
 
     ui->buttonBox->addButton(btn, QDialogButtonBox::ActionRole);
 }

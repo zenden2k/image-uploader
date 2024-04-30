@@ -48,6 +48,7 @@ set(SOURCE_FILES
     Gui/controls/ServerSelectorWidget.cpp
     Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
+    ../Core/Settings/CommonGuiSettings.cpp
     ../Video/QtImage.cpp
     Gui/ui/mainwindow.ui 
     Gui/ui/FrameGrabberDlg.ui

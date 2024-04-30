@@ -48,10 +48,7 @@ protected:
 	bool showFileSizeLimits;
 	void serverChanged();
 	void updateAccountButtonMenu();
-
-	
-
-
+    void updateAccountButton();
 };
 
 #endif

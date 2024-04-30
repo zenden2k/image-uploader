@@ -152,8 +152,7 @@ void BasicSettings::BindToManager()
     upload.n_bind(MaxUploadSpeed);
 }
 
-bool BasicSettings::PostLoadSettings(SimpleXml &xml)
-{
+bool BasicSettings::PostLoadSettings(SimpleXml &xml) {
     return true;
 }
 

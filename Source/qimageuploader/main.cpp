@@ -55,7 +55,6 @@ Translator translator; // dummy translator
 class MyApplication : public QApplication
 {
 public:
-    // TODO: constructor etc.
     MyApplication(int &argc, char **argv, int flags = ApplicationFlags): QApplication(argc, argv, flags)
     {
 
@@ -182,5 +181,6 @@ settingsDir.mkpath(settingsFolder);
     //google::RemoveLogSink(&logSink);
 	Settings.SaveSettings();
     google::ShutdownGoogleLogging();
+    logWindow.reset();
     return res;
 }

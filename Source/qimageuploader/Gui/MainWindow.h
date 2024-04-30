@@ -47,6 +47,8 @@ protected:
 	void uploadTaskToUploadObject(UploadTask* task, UploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
 	void quitApp();
+    void saveOptions();
+    void closeEvent(QCloseEvent *event) override;
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;

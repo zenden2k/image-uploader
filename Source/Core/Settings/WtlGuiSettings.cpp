@@ -608,38 +608,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     }
 
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
-    LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
-
-    auto uploading = settingsNode.GetChild("Uploading");
-
-    ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldContextMenuServer;
-    // Load the old format of chosen servers (just reading)
-    LoadServerProfile(uploading.GetChild("Server"), oldImageServer);
-    LoadServerProfile(uploading.GetChild("FileServer"), oldFileServer);
-    LoadServerProfile(uploading.GetChild("QuickScreenshotServer"), oldQuickScreenshotServer);
-    LoadServerProfile(uploading.GetChild("ContextMenuServer"), oldContextMenuServer);
-    /*LoadServerProfile(uploading.GetChild("UrlShorteningServer"), oldUrlShorteningServer);
-    LoadServerProfile(uploading.GetChild("TemporaryServer"), oldTemporaryServer);*/
-
-    imageServer = oldImageServer;
-    fileServer = oldFileServer;
-    quickScreenshotServer = oldQuickScreenshotServer;
-    /*urlShorteningServer = oldUrlShorteningServer;
-    temporaryServer = oldTemporaryServer;*/
-
-    // Load the new format of chosen servers
-    LoadServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
-    LoadServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
-    LoadServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
-    LoadServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
-
-
-    PostLoadServerProfileGroup(imageServer);
-    PostLoadServerProfileGroup(fileServer);
-    PostLoadServerProfileGroup(contextMenuServer);
-    PostLoadServerProfileGroup(quickScreenshotServer);
-    PostLoadServerProfile(urlShorteningServer);
-    PostLoadServerProfile(temporaryServer);
 
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
@@ -692,13 +660,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     searchEngineNode.SetText(SearchByImage::searchEngineTypeToString(ImageEditorSettings.SearchEngine));
 
     SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
-    SaveServerProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
 
-    SimpleXmlNode uploading = xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading");
-    SaveServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
-    SaveServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
-    SaveServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
-    SaveServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
     /*SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
     SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);*/
     
@@ -829,7 +791,6 @@ void WtlGuiSettings::BindToManager() {
     //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
-    image.nm_bind(UploadProfile, KeepAsIs);
 
     /*SettingsNode& thumbnails = mgr_["Thumbnails"];
     thumbnails.nm_bind(ThumbSettings, FileName);
@@ -900,8 +861,8 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
 
-    urlShorteningServer.bind(upload["UrlShorteningServer"]);
-    temporaryServer.bind(upload["TemporaryServer"]);
+    /*urlShorteningServer.bind(upload["UrlShorteningServer"]);
+    temporaryServer.bind(upload["TemporaryServer"]);*/
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";
@@ -983,76 +944,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
         }
 }
 
-bool WtlGuiSettings::LoadServerProfiles(SimpleXmlNode root)
-{
-    std::vector<SimpleXmlNode> servers;
-    root.GetChilds("ServerProfile", servers);
 
-    for (size_t i = 0; i < servers.size(); i++) {
-        SimpleXmlNode serverProfileNode = servers[i];
-        std::string profileName = serverProfileNode.Attribute("ServerProfileId");
-        ServerProfile sp;
-        SettingsManager mgr;
-        sp.bind(mgr.root());
-
-        mgr.loadFromXmlNode(serverProfileNode);
-        ServerProfiles[Utf8ToWCstring(profileName)] = sp;
-    }
-    return true;
-}
-
-bool WtlGuiSettings::SaveServerProfiles(SimpleXmlNode root)
-{
-    for (ServerProfilesMap::iterator it = ServerProfiles.begin(); it != ServerProfiles.end(); ++it) {
-        SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
-
-        std::string profileName = WCstringToUtf8(it->first);
-
-        //ServerProfile sp = ;
-        SettingsManager mgr;
-        it->second.bind(mgr.root());
-        mgr["@ServerProfileId"].bind(profileName);
-
-        mgr.saveToXmlNode(serverProfileNode);
-    }
-    return true;
-}
-
-void WtlGuiSettings::LoadServerProfile(SimpleXmlNode root, ServerProfile& profile) {
-    SettingsManager mgr;
-    profile.bind(mgr.root());
-    mgr.loadFromXmlNode(root);
-}
-
-bool WtlGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
-    std::vector<SimpleXmlNode> servers;
-    root.GetChilds("ServerProfileItem", servers);
-    if (!servers.empty()) {
-        group.getItems().clear();
-        for (size_t i = 0; i < servers.size(); i++) {
-            SimpleXmlNode serverProfileNode = servers[i];
-            /*std::string profileName = serverProfileNode.Attribute("ServerProfileId");*/
-            ServerProfile sp;
-            SettingsManager mgr;
-            sp.bind(mgr.root());
-
-            mgr.loadFromXmlNode(serverProfileNode);
-            group.addItem(sp);
-        }
-    }
-    return true;
-}
-bool WtlGuiSettings::SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
-    for (auto& item: group.getItems()) {
-        SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfileItem");
-        SettingsManager mgr;
-        SettingsNode& image = mgr.root();
-        item.bind(image);
-
-        mgr.saveToXmlNode(serverProfileNode);
-    }
-    return true;
-}
 
 bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root)
 {
@@ -1181,16 +1073,8 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     }
 }
 
-void WtlGuiSettings::PostLoadServerProfileGroup(ServerProfileGroup& profileGroup) {
-    for(auto& item: profileGroup.getItems()) {
-        PostLoadServerProfile(item);
-    }
-}
-
 void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
-    if (!profile.profileName().empty() && ServersSettings[profile.serverName()].find(profile.profileName()) == ServersSettings[profile.serverName()].end()) {
-        profile.setProfileName("");
-    }
+    CommonGuiSettings::PostLoadServerProfile(profile);
 
     ThumbCreatingParams& th = profile.getImageUploadParamsRef().getThumbRef();
     if (!th.Width && !th.Height && th.Size) {

@@ -21,7 +21,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/AppParams.h"
-#include "Core/Settings/BasicSettings.h"
+#include "Core/Settings/QtGuiSettings.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "ResultsWindow.h"
 #include "Gui/LogWindow.h"
@@ -33,6 +33,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
     engineList_ = engineList;
     ServiceLocator::instance()->setProgramWindow(this);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
@@ -57,7 +58,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
 
     connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
 
-    ServerProfile imageProfile("directupload.net");
+    ServerProfile imageProfile = settings->imageServer.getByIndex(0);
     imageServerWidget = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
     imageServerWidget->setTitle(tr("Server for images:"));
     imageServerWidget->setServerProfile(imageProfile);
@@ -67,6 +68,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     fileServerWidget->setTitle(tr("Server for other file types:"));
     fileServerWidget->setServersMask(ServerSelectorWidget::smFileServers);
     fileServerWidget->updateServerList();
+    fileServerWidget->setServerProfile(settings->fileServer.getByIndex(0));
     ui->verticalLayout->insertWidget(2, fileServerWidget);
 
     QMenu* contextMenu = new QMenu(this);
@@ -344,6 +346,12 @@ void MainWindow::on_actionAboutProgram_triggered() {
     dlg.exec();
 }
 
+void  MainWindow::saveOptions() {
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    settings->imageServer = imageServerWidget->serverProfile();
+    settings->fileServer = fileServerWidget->serverProfile();
+}
+
 void MainWindow::quitApp() {
     close();
     QApplication::quit();
@@ -359,4 +367,8 @@ WindowNativeHandle MainWindow::getNativeHandle() {
 
 void MainWindow::setServersChanged(bool changed) {
     // TODO:
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    saveOptions();
 }

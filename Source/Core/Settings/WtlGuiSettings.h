@@ -154,18 +154,12 @@ protected:
     bool LoadConvertProfile(const CString& name, SimpleXmlNode profileNode);
     bool SaveConvertProfiles(SimpleXmlNode root);
     void BindConvertProfile(SettingsNode& mgr, ImageConvertingParams &params);
-    bool LoadServerProfiles(SimpleXmlNode root);
-    bool SaveServerProfiles(SimpleXmlNode root);
 
-    void LoadServerProfile(SimpleXmlNode root, ServerProfile& profile);
-    bool LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
-    bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
     bool PostLoadSettings(SimpleXml &xml) override;
     bool PostSaveSettings(SimpleXml &xml) override;
     void RegisterShellExtension(bool Register);
 
-    void PostLoadServerProfile(ServerProfile& profile);
-    void PostLoadServerProfileGroup(ServerProfileGroup& profile);
+    void PostLoadServerProfile(ServerProfile& profile) override;
 
     void BindToManager();
 private:

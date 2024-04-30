@@ -14,34 +14,23 @@
 #ifdef IU_QT
     #include <QString>
     typedef QString SettingsString;
+    #define Utf8ToSettingsString(s) QString::fromStdString(s)
+    #define SettingsStringToUtf8(s) s.toStdString()
+
 #else
     #include "atlheaders.h"
     typedef CString SettingsString;
+    #define Utf8ToSettingsString(s) Utf8ToWCstring(s)
+    #define SettingsStringToUtf8(s) WCstringToUtf8(s)
 #endif
 
 #include "EncodedPassword.h"
 
 #include "Core/Images/ImageConverter.h"
 
-struct UploadProfileStruct {
-    bool GenThumb;
-    bool KeepAsIs;
-    int ServerID, QuickServerID;
-};
+typedef std::map<SettingsString, ServerProfile> ServerProfilesMap;
 
-typedef std::map<CString, ServerProfile> ServerProfilesMap;
-
-struct FullUploadProfile {
-    ServerProfile upload_profile;
-    ImageConvertingParams convert_profile;
-};
-
-/*struct ThumbSettingsStruct : public ThumbCreatingParams {
-    TCHAR FontName[256];
-    BOOL UseServerThumbs;
-    bool CreateThumbs;
-};*/
-
+#ifndef IU_QT
 struct VideoSettingsStruct {
     int Columns;
     int TileWidth;
@@ -66,29 +55,31 @@ struct HistorySettingsStruct {
     bool EnableDownloading;
     bool HistoryConverted;
 };
- 
+#endif
+
 class CommonGuiSettings : public BasicSettings {
     public:   
         CommonGuiSettings();
         ~CommonGuiSettings();
 
-        UploadProfileStruct UploadProfile;
         bool UseDirectLinks;
+
+        ServerProfile urlShorteningServer, temporaryServer;
+        ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
+        ServerProfilesMap ServerProfiles;
+#ifndef IU_QT
+        CString Language;
         CString DataFolder;
         CString m_SettingsDir;
-        CString Language;
-
-#ifndef IU_SERVERLISTTOOL   
-        bool ShowTrayIcon;
-        bool ShowTrayIcon_changed;
+        bool ShowTrayIcon = false;
+        bool ShowTrayIcon_changed = false;
         bool AutoStartup;
         bool AutoStartup_changed;
         int ThumbsPerLine;
         TCHAR m_szLang[64];
         VideoSettingsStruct VideoSettings;
         MediaInfoSettingsStruct MediaInfoSettings;
-        ServerProfile urlShorteningServer, temporaryServer;
-        ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
+
         HistorySettingsStruct HistorySettings;
 
         int CodeLang;
@@ -100,12 +91,21 @@ class CommonGuiSettings : public BasicSettings {
         CString VideoFolder, ImagesFolder;
 
         std::map<CString, ImageConvertingParams> ConvertProfiles;
-        ServerProfilesMap ServerProfiles;
+
     protected:
         CString CurrentConvertProfileName;
-    public:
-
 #endif
+    protected:
+        void BindToManager();
+        bool PostSaveSettings(SimpleXml &xml) override;
+        bool PostLoadSettings(SimpleXml &xml) override;
+        bool LoadServerProfiles(SimpleXmlNode root);
+        bool SaveServerProfiles(SimpleXmlNode root);
+        void LoadServerProfile(SimpleXmlNode root, ServerProfile& profile);
+        bool LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
+        bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
+        void PostLoadServerProfileGroup(ServerProfileGroup& profile);
+        virtual void PostLoadServerProfile(ServerProfile& profile);
     public:
         static const TCHAR VideoEngineDirectshow[];
         static const TCHAR VideoEngineDirectshow2[];

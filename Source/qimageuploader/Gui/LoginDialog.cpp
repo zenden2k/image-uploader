@@ -69,12 +69,13 @@ void LoginDialog::onAccept() {
 	}
 
 	accountName_ = buffer;
-	serverProfile_.setProfileName(Q2U(buffer));
+    serverProfile_.setProfileName(Q2U(buffer));
+    li.Login = Q2U(buffer);
 	li.Password = Q2U(ui->passwordEdit->text());
 	li.DoAuth = true;
 	//uploadEngineManager_->resetAuthorization(serverProfile_);
 
-    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_);
+    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
     if(serverSettings) {
         serverSettings->authData = li;
     }

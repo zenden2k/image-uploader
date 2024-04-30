@@ -42,11 +42,11 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
 
     accountLayout->addItem(horizontalSpacer);
 
-
     grid->addLayout(accountLayout, 0, 1);
     connect(serverListComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxIndexChanged(int)));
     connect(accountButton, &QPushButton::clicked, this, &ServerSelectorWidget::accountButtonClicked);
     updateServerList();
+    updateAccountButton();
     updateAccountButtonMenu();
 }
 
@@ -60,6 +60,7 @@ void ServerSelectorWidget::setServerProfile(const ServerProfile& serverProfile) 
     int itemIndex = serverListComboBox->findData(U2Q(serverProfile.serverName()));
     if (itemIndex != -1) {
         serverListComboBox->setCurrentIndex(itemIndex);
+        updateAccountButton();
     }
 }
 
@@ -166,10 +167,12 @@ void ServerSelectorWidget::serverChanged() {
     QVariant data = serverListComboBox->currentData();
     QString serverName = data.toString();
     serverProfile_.setServerName(Q2U(serverName));
+    serverProfile_.setProfileName({});
     auto ued = serverProfile_.uploadEngineData();
     if (ued) {
         accountButton->setVisible(ued->NeedAuthorization != CUploadEngineData::naNotAvailable);
     }
+    updateAccountButton();
     updateAccountButtonMenu();
 }
 
@@ -187,7 +190,7 @@ void ServerSelectorWidget::accountButtonClicked(bool /*checked*/) {
     else {
         LoginDialog dlg(serverProfile_, false, this);
         if (dlg.exec() == QDialog::Accepted) {
-            accountButton->setText(dlg.accountName());
+            updateAccountButton();
             updateAccountButtonMenu();
         }
     }
@@ -211,14 +214,17 @@ void ServerSelectorWidget::updateAccountButtonMenu() {
         connect(userAction, &QAction::triggered, [accountName, this]
         {
             serverProfile_.setProfileName(accountName);
-            accountButton->setText(U2Q(accountName));
+            updateAccountButton();
         });
         accountButtonMenu_->addAction(userAction);
     }
 
-    QAction* viewCodeAction = new QAction(tr("<without account>"), accountButtonMenu_.get());
-    connect(viewCodeAction, &QAction::triggered, this, &ServerSelectorWidget::noAccountSelected);
-    accountButtonMenu_->addAction(viewCodeAction);
+    auto ued = serverProfile_.uploadEngineData();
+    if (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory) {
+        QAction* withoutAccountAction = new QAction(tr("<without account>"), accountButtonMenu_.get());
+        connect(withoutAccountAction, &QAction::triggered, this, &ServerSelectorWidget::noAccountSelected);
+        accountButtonMenu_->addAction(withoutAccountAction);
+    }
 
     accountButtonMenu_->addSeparator();
     QAction* addAccountAction = new QAction(tr("Add account..."), accountButtonMenu_.get());
@@ -229,7 +235,8 @@ void ServerSelectorWidget::updateAccountButtonMenu() {
 
 void ServerSelectorWidget::noAccountSelected() {
     serverProfile_.setProfileName(std::string());
-    accountButton->setText(tr("<without account>"));
+    //accountButton->setText(tr("<without account>"));
+    updateAccountButton();
 }
 
 void ServerSelectorWidget::addAccountClicked() {
@@ -238,15 +245,36 @@ void ServerSelectorWidget::addAccountClicked() {
 
     LoginDialog dlg(serverProfileCopy, true, this);
     if (dlg.exec() == QDialog::Accepted) {
-        serverProfileCopy.setProfileName(Q2U(dlg.accountName()));
+        std::string accountNameUtf8 = Q2U(dlg.accountName());
+        serverProfileCopy.setProfileName(accountNameUtf8);
         serverProfileCopy.setFolderId(std::string());
         serverProfileCopy.setFolderTitle(std::string());
         serverProfileCopy.setFolderUrl(std::string());
 
         serverProfile_ = serverProfileCopy;
-
-        accountButton->setText(dlg.accountName());
+        /*auto settings = ServiceLocator::instance()->basicSettings();
+        ServerSettingsStruct& sss = settings->ServersSettings[serverProfile_.serverName()][accountNameUtf8];
+        sss.authData.DoAuth = true;
+        sss.authData.Login = accountNameUtf8;
+        sss.authData.Password = dlg.*/
+        updateAccountButton();
         updateAccountButtonMenu();
     }
+}
 
+void ServerSelectorWidget::updateAccountButton() {
+    QString buttonText;
+    if (!serverProfile_.profileName().empty()){
+        buttonText = U2Q(serverProfile_.profileName());
+    } else {
+        auto ued = serverProfile_.uploadEngineData();
+
+        if (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory) {
+            buttonText = tr("<without account>");
+        } else {
+            buttonText = tr("choose account...");
+        }
+    }
+
+    accountButton->setText(buttonText);
 }

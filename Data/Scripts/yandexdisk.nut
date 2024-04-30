@@ -266,7 +266,7 @@ function Authenticate() {
 
         ShellOpenUrl("https://oauth.yandex.ru/authorize?response_type=code&client_id=a49c34035aa8418d9a77ff24e0660719");
 
-        local confirmCode = InputDialog(tr("yandexdisk.confirmation.text", "You need to need to sign in to your Yandex.Disk account in web browser which just have opened and then copy confirmation code into the text field below. Please enter confirmation code:"), "");
+        local confirmCode = InputDialog(tr("yandexdisk.confirmation.text", "You need to need to sign in to your Yandex.Disk account\r\nin web browser which just have opened and then copy\r\nconfirmation code into the text field below.\r\n\r\nPlease enter confirmation code:"), "");
         if ( confirmCode != "" ) {
             nm.setUrl("https://oauth.yandex.ru/token");
             nm.addQueryParam("grant_type", "authorization_code");
