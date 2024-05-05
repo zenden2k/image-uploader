@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 16:24+0300\n"
-"PO-Revision-Date: 2024-04-10 16:25+0300\n"
+"POT-Creation-Date: 2024-05-05 15:13+0300\n"
+"PO-Revision-Date: 2024-05-05 15:14+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -283,7 +283,7 @@ msgid "Aero only (Windows Vista or later)"
 msgstr "Только для Aero (Windows Vista и новее)"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:199
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:83
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:166
 #: ../Source/Gui/Dialogs/MainDlg.cpp:674
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
@@ -633,7 +633,7 @@ msgstr "Проверить обновления"
 msgid "Checking for updates..."
 msgstr "Проверка обновлений..."
 
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:55
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:57
 msgid "Choose executable file"
 msgstr "Выберите исполняемый файл"
 
@@ -667,7 +667,7 @@ msgid "Choose more servers..."
 msgstr "Выбрать больше серверов..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:202
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 msgid "Choose program"
 msgstr "Выберите программу"
 
@@ -1128,6 +1128,10 @@ msgstr "Редактировать..."
 msgid "Ellipse"
 msgstr "Эллипс"
 
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:45
+msgid "Enable Toast notifications (Windows 8+)"
+msgstr "Включить всплывающие уведомления (Windows 8+)"
+
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:90
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr "Введите список ссылок (http:// или ftp://, по одной ccылке в строке)"
@@ -1225,7 +1229,7 @@ msgstr "Ошибка:"
 msgid "Errors: %d"
 msgstr "Ошибок: %d"
 
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:82
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:85
 msgid "Executables"
 msgstr "Исполняемые файлы"
 

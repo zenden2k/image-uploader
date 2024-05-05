@@ -2222,7 +2222,7 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
     } else {
         using namespace WinToastLib;
-        if (WinToast::isCompatible()) {
+        if (Settings.EnableToastNotifications && WinToast::isCompatible()) {
             if (!winToastHandler_) {
                 winToastHandler_ = std::make_unique<WinToastHandler>();
             }

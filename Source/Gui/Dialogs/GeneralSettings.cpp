@@ -42,6 +42,8 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
     TRC(IDC_DEVELOPERMODE, "Developer mode");
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
+    TRC(IDC_ENABLETOASTS, "Enable Toast notifications (Windows 8+)");
+
     SetDlgItemText(IDC_IMAGEEDITORPATH, settings->ImageEditorPath);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
@@ -73,6 +75,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, settings->DropVideoFilesToTheList);
     GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
     GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
+    GuiTools::SetCheck(m_hWnd, IDC_ENABLETOASTS, settings->EnableToastNotifications);
     return 1;  // Let the system set the focus
 }
 
@@ -120,7 +123,7 @@ bool CGeneralSettings::Apply()
     settings->DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
     GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
     GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
-    
+    GuiTools::GetCheck(m_hWnd, IDC_ENABLETOASTS, settings->EnableToastNotifications);
     return true;
 }
 

@@ -116,6 +116,7 @@ public:
     bool DropVideoFilesToTheList;
     bool ConfirmOnExit;
     bool AutomaticallyCheckUpdates;
+    bool EnableToastNotifications;
 
     bool AutoCopyToClipboard;
     bool WatchClipboard;

@@ -105,6 +105,8 @@ zlib            http://www.zlib.net
 
 Boost           http://www.boost.org
 
+Qt              https://www.qt.io/
+
 pcre            http://www.pcre.org
 
 pcre++          http://www.daemon.de/PCRE (patched version)

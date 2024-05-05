@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-10 16:24+0300\n"
+"POT-Creation-Date: 2024-05-05 15:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -272,7 +272,7 @@ msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:199
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:83
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:166
 #: ../Source/Gui/Dialogs/MainDlg.cpp:674
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
@@ -610,7 +610,7 @@ msgstr ""
 msgid "Checking for updates..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:55
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:57
 msgid "Choose executable file"
 msgstr ""
 
@@ -644,7 +644,7 @@ msgid "Choose more servers..."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:202
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 msgid "Choose program"
 msgstr ""
 
@@ -1097,6 +1097,10 @@ msgstr ""
 msgid "Ellipse"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:45
+msgid "Enable Toast notifications (Windows 8+)"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:90
 msgid "Enter URLs (one http:// or ftp:// link per line)"
 msgstr ""
@@ -1194,7 +1198,7 @@ msgstr ""
 msgid "Errors: %d"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/GeneralSettings.cpp:82
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:85
 msgid "Executables"
 msgstr ""
 

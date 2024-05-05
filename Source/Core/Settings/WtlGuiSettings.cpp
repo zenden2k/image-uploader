@@ -458,6 +458,7 @@ WtlGuiSettings::WtlGuiSettings() :
     DropVideoFilesToTheList = false;
     CodeLang = 0;
     ConfirmOnExit = 1;
+    EnableToastNotifications = true;
    
     ExplorerContextMenu = false;
     ExplorerVideoContextMenu = true;
@@ -748,6 +749,7 @@ void WtlGuiSettings::BindToManager() {
     //general.n_bind(AutoStartup);
     general.n_bind(ShowTrayIcon);
     general.n_bind(AutoCopyToClipboard);
+    general.n_bind(EnableToastNotifications);
     general.n_bind(AutoShowLog);
     general.n_bind(ImagesFolder);
     general.n_bind(VideoFolder);

@@ -638,6 +638,7 @@
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
 #define IDC_ALLOWALTTABINIMAGEEDITOR    1273
+#define IDC_ENABLETOASTS                1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
 #define IDC_OUTPUTTEXT                  1275
@@ -789,7 +790,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        335
+#define _APS_NEXT_RESOURCE_VALUE        336
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1341
 #define _APS_NEXT_SYMED_VALUE           128
