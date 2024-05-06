@@ -37,6 +37,10 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
     int res = 0;
 
     Sqrat::Table t;
+    if (!obj) {
+        LOG(WARNING) << "Invalid result type";
+        return { 0, t };
+    }
 
     if (obj->GetType() == OT_INTEGER) {
         res = obj->Cast<int>();

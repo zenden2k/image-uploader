@@ -1,32 +1,10 @@
+const CURLOPT_POSTFIELDSIZE = 60;
+
 if(ServerParams.getParam("folder") == "") {
 	ServerParams.setParam("folder", "Screenshots") ;
 }
 
-function BeginLogin() {
-    try {
-        return Sync.beginAuth();
-    }
-    catch ( ex ) {
-    }
-    return true;
-}
-
-function EndLogin() {
-    try {
-        return Sync.endAuth();
-    } catch ( ex ) {
-        
-    }
-    return true;
-}
-
-function getAuthorizationString() {
-    local token = ServerParams.getParam("token");
-    local tokenType = ServerParams.getParam("tokenType");
-    return tokenType + " " + token ;
-}
-
-function checkResponse() {
+function _CheckResponse() {
     if ( nm.responseCode() == 403 ) {
         if ( nm.responseBody().find("Invalid token",0)!= null) {
             WriteLog("warning", nm.responseBody());
@@ -36,7 +14,7 @@ function checkResponse() {
             ServerParams.setParam("tokenType", "");
             ServerParams.setParam("prevLogin", "");
             ServerParams.setParam("tokenTime", "");
-            return 1 + DoLogin();
+            return 0;
         } else {
             WriteLog("error", "403 Access denied" );
             return 0;
@@ -48,7 +26,7 @@ function checkResponse() {
     return 1;
 }
 
-function CloudMailRu_GetServerAddress(character) {
+function _GetServerAddress(character) {
     nm.doGet("https://dispatcher.cloud.mail.ru/" + character);
     if (nm.responseCode() == 200) {
         local reg = CRegExp("(https://.+?) ", "");
@@ -59,8 +37,9 @@ function CloudMailRu_GetServerAddress(character) {
     return null;
 }
 
-function _DoLogin() 
-{ 
+function Authenticate() { 
+    local token = ServerParams.getParam("token");
+    local tokenType = ServerParams.getParam("tokenType");
     local login = ServerParams.getParam("Login");
     local password = ServerParams.getParam("Password");
     local scope = "offline_access files.readwrite";
@@ -69,61 +48,9 @@ function _DoLogin()
         WriteLog("error", "E-mail should not be empty!");
         return 0;
     }
-    
-    local token = ServerParams.getParam("token");
-    local tokenType = ServerParams.getParam("tokenType");
-    if ( token != "" && tokenType != "" ) {
-        local tokenTime  = 0;
-        local expiresIn = 0;
-        local refreshToken = "";
-        try { 
-            tokenTime = ServerParams.getParam("tokenTime").tointeger();
-        } catch ( ex ) {
-            
-        }
-        try { 
-        expiresIn = ServerParams.getParam("expiresIn").tointeger();
-        } catch ( ex ) {
-            
-        }
-        refreshToken = ServerParams.getParam("refreshToken");
-        if ( time() > tokenTime + expiresIn && refreshToken != "") {
-            local oServer = CloudMailRu_GetServerAddress("o");
-            // Refresh access token
-            nm.setUrl(oServer);
-            nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", "cloud-win"); 
-            nm.addQueryParam("grant_type", "refresh_token"); 
-            nm.doPost("");
-            if ( checkResponse() ) {
-                local data =  nm.responseBody();
-                local t = ParseJSON(data);
-                if ("access_token" in t) {
-                    token = t.access_token;
-                    ServerParams.setParam("expiresIn", t.expires_in);
-                    ServerParams.setParam("token", token);
-                    ServerParams.setParam("tokenTime", time().tostring());
-                    if ( token != "" ) {
-                        return 1;
-                    } else {
-                        token = "";
-                        tokenType = "";
-                        return 0;
-                    }
-                } else {
-                    WriteLog("error", "cloud.mail.ru: Unable to refresh access token.");
-                    return 0;
-                }
-            } else {
-                WriteLog("error", "cloud.mail.ru: Unable to refresh access token.");
-            }
-        } else {
-            return 1;
-        }
-    }
 
     nm.setUserAgent("CloudScreenshoterWindows 17.04.1017 beta 5cfe3ab6");
-    local oServer = CloudMailRu_GetServerAddress("o");
+    local oServer = _GetServerAddress("o");
     
     nm.addQueryParam("client_id", "cloud-win");
     nm.addQueryParam("grant_type", "password");
@@ -159,28 +86,69 @@ function _DoLogin()
         WriteLog("error", "cloud.mail.ru: unable to obtain token (login failed)");
     }  
     
-    
     return 0;        
 } 
 
-function DoLogin() {
-    if (!BeginLogin() ) {
-        return false;
+function RefreshToken() {
+    local token = ServerParams.getParam("token");
+    local tokenType = ServerParams.getParam("tokenType");
+    if ( token != "" && tokenType != "" ) {
+        local tokenTime  = 0;
+        local expiresIn = 0;
+        local refreshToken = "";
+        try { 
+            tokenTime = ServerParams.getParam("tokenTime").tointeger();
+        } catch ( ex ) {
+            
+        }
+        try { 
+        expiresIn = ServerParams.getParam("expiresIn").tointeger();
+        } catch ( ex ) {
+            
+        }
+        refreshToken = ServerParams.getParam("refreshToken");
+        if ( time() > tokenTime + expiresIn && refreshToken != "") {
+            local oServer = _GetServerAddress("o");
+            // Refresh access token
+            nm.setUrl(oServer);
+            nm.addQueryParam("refresh_token", refreshToken); 
+            nm.addQueryParam("client_id", "cloud-win"); 
+            nm.addQueryParam("grant_type", "refresh_token"); 
+            nm.doPost("");
+            if ( _CheckResponse() ) {
+                local data =  nm.responseBody();
+                local t = ParseJSON(data);
+                if ("access_token" in t) {
+                    token = t.access_token;
+                    ServerParams.setParam("expiresIn", t.expires_in);
+                    ServerParams.setParam("token", token);
+                    ServerParams.setParam("tokenTime", time().tostring());
+                    if ( token != "" ) {
+                        return 1;
+                    } else {
+                        token = "";
+                        tokenType = "";
+                        return 0;
+                    }
+                } else {
+                    WriteLog("error", "cloud.mail.ru: Unable to refresh access token.");
+                    return 0;
+                }
+            } else {
+                WriteLog("error", "cloud.mail.ru: Unable to refresh access token.");
+            }
+        } else {
+            return 1;
+        }
     }
-    local res = _DoLogin();
-    
-    EndLogin();
-    return res;
+    return 1;
 }
 
 function GetFolderList(list) {
-    if(!DoLogin()) {
-        return 0;
-    }
     return 0;
 }
 
-function CloudMailRu_PackNumber(number) {
+function _PackNumber(number) {
     local vec = "";
     while (number >= 0x80) {
         local b = number | 0x80;
@@ -191,7 +159,7 @@ function CloudMailRu_PackNumber(number) {
     return vec;
 }
 
-function CloudMailRu_HexToBytes(hex) {
+function _HexToBytes(hex) {
     local res = "";
     local lookup = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
     for (local i = 0; i < hex.len(); i += 2) {
@@ -202,35 +170,35 @@ function CloudMailRu_HexToBytes(hex) {
     return res;
 }
 
-function CloudMailRu_SendMetaRequest(nc, url, remoteFileName, hashUpper, size, create) {
+function _SendMetaRequest(nc, url, remoteFileName, hashUpper, size, create) {
     nc.setUrl(url);
     local vec = "";
     vec += "\x67\x0";
     vec += format("%c", remoteFileName.len() + 1);
     vec += remoteFileName;
     vec += "\x0";
-    vec += CloudMailRu_PackNumber(size);
-    vec += CloudMailRu_PackNumber(time());
+    vec += _PackNumber(size);
+    vec += _PackNumber(time());
     vec += "\x0";
-    vec += CloudMailRu_HexToBytes(hashUpper);
+    vec += _HexToBytes(hashUpper);
     vec += create? "\x1": "\x0";
+    nm.setMethod("POST");
+    nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, vec.len());
     return nc.doUpload("", vec);
 }
 
-function CloudMailRu_CreateFolder(nc, url, folderName) {
+function _CreateFolder(nc, url, folderName) {
     nc.setUrl(url);
     local vec = "\x6a\x0";
     vec += format("%c", folderName.len() + 1);
     vec += folderName;
     vec += "\x0\x0";
+    nm.setMethod("POST");
+    nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, vec.len());
     return nc.doUpload("", vec);
 }
         
-function  UploadFile(FileName, options) {
-    if(!DoLogin()) {
-        return -1;
-    }
-    
+function UploadFile(FileName, options) {
     local remoteFolderName = ServerParams.getParam("folder");
     if (remoteFolderName == "") {
         remoteFolderName = "Screenshots";
@@ -242,25 +210,25 @@ function  UploadFile(FileName, options) {
     local token = ServerParams.getParam("token");
     local fileSize = GetFileSize(FileName);
 
-    local uServer = CloudMailRu_GetServerAddress("u");
+    local uServer = _GetServerAddress("u");
     local fileHash = sha1_file_prefix(FileName, "mrCloud", fileSize.tostring()).toupper();
     //WriteLog("error", fileHash);
     
-    local metaServer = CloudMailRu_GetServerAddress("m");
+    local metaServer = _GetServerAddress("m");
     
-    local res = CloudMailRu_CreateFolder(nm, metaServer + "?client_id=cloud-win&token=" + token, "/" + remoteFolderName );
+    local res = _CreateFolder(nm, metaServer + "?client_id=cloud-win&token=" + token, "/" + remoteFolderName );
     if (!res || nm.responseCode() != 200) {  
         WriteLog("error", "Unable to create folder '" + remoteFolderName + "' on remote server.");
         return 0;
     }  
     
     // Creating stub image
-    res = CloudMailRu_SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, "01068324637F894C3AADC0FCDFA33B6A40CB4AD6", 23696, true);
+    res = _SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, "01068324637F894C3AADC0FCDFA33B6A40CB4AD6", 23696, true);
     if (!res || nm.responseCode() != 200) {  
         WriteLog("error", "Unable to create stub file on remote server");
         return 0;
     }    
-    local webLinkServer = CloudMailRu_GetServerAddress("w");
+    local webLinkServer = _GetServerAddress("w");
     nm.setUrl(webLinkServer + "create?client_id=cloud-win&token="+ token);
     nm.addQueryParam("file", remoteFileName);
     nm.addQueryParam("folder", "/" + remoteFolder);
@@ -297,7 +265,7 @@ function  UploadFile(FileName, options) {
                 }
                     
                 //nm.setUrl(metaServer + "?client_id=cloud-win&token=" + token);
-                res = CloudMailRu_SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, fileHash, fileSize, false);
+                res = _SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, fileHash, fileSize, false);
                 if (res && nm.responseCode() == 200 && shortLink != "") {
                     options.setViewUrl("https://s.mail.ru/" + shortLink);
                     return 1;
@@ -311,7 +279,7 @@ function  UploadFile(FileName, options) {
             if (reg.match(nm.responseBody())) {
                 WriteLog("info", "You are lucky! Hash found on server!");    
                 // Hash found on server
-                CloudMailRu_SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, fileHash, fileSize, false);
+                _SendMetaRequest(nm, metaServer + "?client_id=cloud-win&token=" + token, remoteFolder + remoteFileName, fileHash, fileSize, false);
                 if (nm.responseCode() == 200 && shortLink != "") {
                     options.setViewUrl("https://s.mail.ru/" + shortLink);
                     return 1;
