@@ -1,27 +1,26 @@
-#include "Gui/mainwindow.h"
 #include <QApplication>
 #include <QDir>
 #include <QTemporaryDir>
 #include <QDebug>
 #include <QKeyEvent>
+#include <QMessageBox>
+
+#include <boost/filesystem/path.hpp>
+#include <boost/locale.hpp>
+
 //#include <3rdparty/qtdotnetstyle.h>
 #include "Core/Logging.h"
 #include "Core/Logging/MyLogSink.h"
-#include <boost/filesystem/path.hpp>
-#include <boost/locale.hpp>
+#include "Gui/MainWindow.h"
 #include "Core/CommonDefs.h"
 #include "Core/ServiceLocator.h"
 #include "Core/AppParams.h"
-
 #include "QtUploadErrorHandler.h"
 #include "QtDefaultLogger.h"
 #include "QtScriptDialogProvider.h"
 #include "Gui/LogWindow.h"
-
-#include <Core/Settings/QtGuiSettings.h>
-#include <QMessageBox>
-#include <Video/QtImage.h>
-
+#include "Core/Settings/QtGuiSettings.h"
+#include "Video/QtImage.h"
 #include "Core/i18n/Translator.h"
 #include "versioninfo.h"
 

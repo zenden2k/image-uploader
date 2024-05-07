@@ -24,6 +24,11 @@
     #define SettingsStringToUtf8(s) WCstringToUtf8(s)
 #endif
 
+#ifndef _WIN32
+    #define TCHAR char
+    #define _T(a) a
+#endif
+
 #include "EncodedPassword.h"
 
 #include "Core/Images/ImageConverter.h"
