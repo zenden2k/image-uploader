@@ -34,6 +34,10 @@ rm -rf ~/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/DEBIAN
 cp control_qimageuploader ~/zenden2k-imageuploader/DEBIAN/control
 cp dirs ~/zenden2k-imageuploader/DEBIAN/dirs
+mkdir -p ~/zenden2k-imageuploader/usr/share/applications
+mkdir -p ~/zenden2k-imageuploader/usr/share/pixmaps
+cp ../../Source/res/icon_main_big.png ~/zenden2k-imageuploader/usr/share/pixmaps/zenden2k-imageuploader.png
+cp qimageuploader.desktop ~/zenden2k-imageuploader/usr/share/applications/zenden2k-imageuploader.desktop
 mkdir -p ~/zenden2k-imageuploader/usr/bin
 sed -i "s/YOUR_ARCHITECTURE/$Architecture/g" ~/zenden2k-imageuploader/DEBIAN/control
 sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" ~/zenden2k-imageuploader/DEBIAN/control 

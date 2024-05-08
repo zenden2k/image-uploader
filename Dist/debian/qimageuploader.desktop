@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Image Uploader 
+Type=Application
+Exec=zenden2k-imageuploader
+Terminal=false
+Icon=zenden2k-imageuploader.png
+Comment=Image and file uploader, screenshot maker
+NoDisplay=false
+Categories=Internet
