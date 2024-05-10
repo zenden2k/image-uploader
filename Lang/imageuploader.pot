@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-05 15:13+0300\n"
+"POT-Creation-Date: 2024-05-10 17:56+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -275,7 +275,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:166
 #: ../Source/Gui/Dialogs/MainDlg.cpp:674
-#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:253
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:384
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1634
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1853
@@ -1165,12 +1165,12 @@ msgstr ""
 msgid "Error control"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:214
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:240
 #, c-format
 msgid "Error in the field '%s':\n"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:267
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:293
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:146
 #, c-format
 msgid "Error in the field '%s': value should be between %d and %d."
@@ -1272,7 +1272,7 @@ msgstr ""
 msgid "File \"%s\" not found!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:215
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:241
 #, c-format
 msgid "File %s doesn't exist"
 msgstr ""
@@ -1974,6 +1974,10 @@ msgstr ""
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2336
 msgid "Open screenshots folder"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:120
+msgid "Open system connection settings"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:188

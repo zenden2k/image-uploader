@@ -30,8 +30,9 @@
 // CUploadSettingsPage
 
 class CUploadSettingsPage : 
-    public CDialogImpl<CUploadSettingsPage>, public CSettingsPage,
-        public CWinDataExchange <CUploadSettingsPage >
+    public CDialogImpl<CUploadSettingsPage>,
+    public CSettingsPage,
+    public CWinDataExchange<CUploadSettingsPage>
 {
 public:
     CUploadSettingsPage();
@@ -48,10 +49,14 @@ virtual ~CUploadSettingsPage();
         COMMAND_HANDLER(IDC_NOPROXY, BN_CLICKED, OnClickedNoProxy)
         COMMAND_HANDLER(IDC_USESYSTEMPROXY, BN_CLICKED, OnClickedUseSystemProxy)
         COMMAND_HANDLER(IDC_EXECUTESCRIPTCHECKBOX, BN_CLICKED, OnExecuteScriptCheckboxClicked)
+        COMMAND_HANDLER(IDC_OPENSYSTEMCONNECTION, BN_CLICKED, OnOpenSystemConnectionSettingsClicked)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CScreenshotDlg)
         DDX_CONTROL_HANDLE(IDC_SERVERTYPECOMBO, serverTypeCombo_)
+        DDX_CONTROL_HANDLE(IDC_OPENSYSTEMCONNECTION, openSystemConnectionSettingsButton_)
+        DDX_CONTROL_HANDLE(IDC_USESYSTEMPROXY, useSystemProxy_)
+        DDX_CONTROL_HANDLE(IDC_ADDRESSEDIT, addressEdit_)
     END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -65,6 +70,7 @@ virtual ~CUploadSettingsPage();
     LRESULT OnClickedNoProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedUseSystemProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnExecuteScriptCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     bool Apply() override;
     void TranslateUI();
     LRESULT OnBnClickedBrowseScriptButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -72,6 +78,10 @@ virtual ~CUploadSettingsPage();
     void executeScriptCheckboxChanged();
 protected:
     CComboBox serverTypeCombo_;
+    CButton openSystemConnectionSettingsButton_, useSystemProxy_;
+    CIcon externalLink_;
+    CToolTipCtrl toolTip_;
+    CEdit addressEdit_;
     void CheckBounds(int controlId, int minValue, int maxValue, int labelId = -1) const;
     std::vector<std::pair<CString, int>> proxyTypes = {
         { _T("HTTP"), 0 },

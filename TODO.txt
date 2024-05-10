@@ -1,7 +1,6 @@
 - Synchronize performed actions in DefaultUploadEngine (<Action OnlyOnce="1">)
 - Reload server list after update
 - [HIGH] Preserve photo order for some servers (like Picasa)
-- Convert korean.lng and farsi.lng ?
 - Proxy provided by DefaultProxyProvider not being changed on redirects
 - Fix log window buttons moving when RTL is on
 - Fix function names in docs (CSelection etc.)

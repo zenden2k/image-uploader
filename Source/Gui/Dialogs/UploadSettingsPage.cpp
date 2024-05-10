@@ -77,26 +77,52 @@ LRESULT CUploadSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         serverTypeCombo_.SetItemData(index, item.second);
 
 	}
-    /*serverTypeCombo_.AddString(_T("HTTP"));
-    serverTypeCombo_.AddString(_T("SOCKS4"));
-    serverTypeCombo_.AddString(_T("SOCKS4A"));
-    serverTypeCombo_.AddString(_T("SOCKS5"));
-    serverTypeCombo_.AddString(_T("SOCKS5(DNS)"));
-    serverTypeCombo_.AddString(_T("HTTPS"));*/
-	
     
     // ---- connection settings -----
     SetDlgItemText(IDC_ADDRESSEDIT, U2W(Settings.ConnectionSettings.ServerAddress));
     SendDlgItemMessage(IDC_NEEDSAUTH, BM_SETCHECK, (WPARAM) Settings.ConnectionSettings.NeedsAuth);
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM) Settings.AutoCopyToClipboard);
-    
 
     SendDlgItemMessage(IDC_USEPROXYSERVER, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy)?TRUE:FALSE);
     SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy)?TRUE:FALSE);
     SendDlgItemMessage(IDC_NOPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kNoProxy)?TRUE:FALSE);
 
+    int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+    SIZE radioButtonSize_{};
+
+    // Auto-size useSystemProxy_ radio button, then move openSystemConnectionSettingsButton_
+    // to the right of the radio button and center openSystemConnectionSettingsButton_ vertically 
+    if (useSystemProxy_.GetIdealSize(&radioButtonSize_)) {
+        useSystemProxy_.SetWindowPos(0, 0, 0, radioButtonSize_.cx, radioButtonSize_.cy, SWP_NOZORDER | SWP_NOMOVE);
+        CRect useSystemProxyRect;
+        if (useSystemProxy_.GetWindowRect(&useSystemProxyRect) && ScreenToClient(useSystemProxyRect)) {
+            WORD unitX = LOWORD(GetDialogBaseUnits());
+            // Horizontal margin of the button is equal to 3 base dialog units 
+            int offsetX = MulDiv(3, unitX, 4);
+            CRect buttonRect;
+            if (openSystemConnectionSettingsButton_.GetWindowRect(buttonRect) && ScreenToClient(buttonRect)) {
+                openSystemConnectionSettingsButton_.SetWindowPos(0, useSystemProxyRect.right + offsetX,
+                    buttonRect.top + (buttonRect.Height() - useSystemProxyRect.Height()) / 2, 0, 0, SWP_NOZORDER | SWP_NOSIZE
+                );
+            }
+        }
+    }
+
+    externalLink_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEXTERNALLINK), iconWidth, iconHeight);
+    openSystemConnectionSettingsButton_.SetIcon(externalLink_);
+
+    // Creating tooltip control. We will use subclassing of controls to intercept their messages
+    // The variant with usage of RelayEvent method is not available because we don't have access to message loop
+    // that is running in DialogBox method of CSettingsDlg.
+    toolTip_.Create(m_hWnd);
+    CString tipText = TR("Open system connection settings");
+    CToolInfo tip(TTF_SUBCLASS, openSystemConnectionSettingsButton_, 0, 0, const_cast<LPWSTR>(tipText.GetString()));
+    toolTip_.AddTool(tip);
+
     SetDlgItemText(IDC_PROXYLOGINEDIT, U2W(Settings.ConnectionSettings.ProxyUser));
-    SetDlgItemText(IDC_PROXYPASSWORDEDIT, (CString)Settings.ConnectionSettings.ProxyPassword);
+    SetDlgItemText(IDC_PROXYPASSWORDEDIT, static_cast<CString>(Settings.ConnectionSettings.ProxyPassword));
     SetDlgItemInt(IDC_UPLOADBUFFERSIZEEDIT,Settings.UploadBufferSize/1024);
     if(Settings.ConnectionSettings.ProxyPort) 
         SetDlgItemInt(IDC_PORTEDIT, Settings.ConnectionSettings.ProxyPort);
@@ -177,11 +203,17 @@ bool CUploadSettingsPage::Apply()
     
     Settings.ConnectionSettings.NeedsAuth = SendDlgItemMessage(IDC_NEEDSAUTH, BM_GETCHECK)!=0;
     Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
-    TCHAR Buffer[128];
 
-    GetDlgItemText(IDC_ADDRESSEDIT,Buffer, 128);
-    Settings.ConnectionSettings.ServerAddress = W2U(Buffer);
+    CString proxyAddress;
+    TCHAR Buffer[128];
+    addressEdit_.GetWindowText(proxyAddress);
+
+    Settings.ConnectionSettings.ServerAddress = W2U(proxyAddress);
     Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
+
+    if (proxyAddress.IsEmpty() /* || Settings.ConnectionSettings.ProxyPort == 0*/) {
+        Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
+    }
     
     GetDlgItemText(IDC_PROXYLOGINEDIT, Buffer, 128);
     Settings.ConnectionSettings.ProxyUser = W2U(Buffer);
@@ -267,4 +299,12 @@ void CUploadSettingsPage::CheckBounds(int controlId, int minValue, int maxValue,
         message.Format(TR("Error in the field '%s': value should be between %d and %d."), static_cast<LPCTSTR>(fieldName), minValue, maxValue);
         throw ValidationException(message, GetDlgItem(controlId));
     }
+}
+
+LRESULT CUploadSettingsPage::OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    HINSTANCE hinst = ShellExecute(0, _T("open"), _T("rundll32.exe"), _T("inetcpl.cpl,LaunchConnectionDialog"), NULL, SW_SHOWNORMAL);
+    if (reinterpret_cast<int>(hinst) <= 32) {
+        LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+    }
+    return 0;
 }

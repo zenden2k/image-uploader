@@ -97,7 +97,7 @@ namespace WinUtils {
     std::string AnsiToUtf8(const std::string &str, int codepage);
     std::string Utf8ToAnsi(const std::string &str, int codepage);
     CString GetProcessName(DWORD pid);
-    CString ErrorCodeToString(DWORD idCode);
+    CString ErrorCodeToString(DWORD idCode, HMODULE mod = NULL);
     CString ExpandEnvironmentStrings(const CString& s);
     void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);

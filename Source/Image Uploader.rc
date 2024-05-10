@@ -389,7 +389,8 @@ BEGIN
     CONTROL         "#",IDC_AUTOCOPYTOCLIPBOARD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,11,233,10
     GROUPBOX        "#",IDC_CONNECTIONSETTINGS,8,26,250,125
     CONTROL         "#No proxy",IDC_NOPROXY,"Button",BS_AUTORADIOBUTTON,21,39,226,10
-    CONTROL         "#Use system proxy",IDC_USESYSTEMPROXY,"Button",BS_AUTORADIOBUTTON,21,51,222,10
+    CONTROL         "#Use system proxy",IDC_USESYSTEMPROXY,"Button",BS_AUTORADIOBUTTON,21,51,212,10
+    PUSHBUTTON      "",IDC_OPENSYSTEMCONNECTION,240,47,18,14,BS_ICON | BS_NOTIFY
     CONTROL         "#Use provided proxy:",IDC_USEPROXYSERVER,"Button",BS_AUTORADIOBUTTON,21,63,217,10
     LTEXT           "Адрес:",IDC_ADDRESSLABEL,28,80,38,8
     EDITTEXT        IDC_ADDRESSEDIT,67,78,81,13,ES_AUTOHSCROLL
@@ -1541,6 +1542,8 @@ IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
 IDI_ICONSEPARATOR       ICON                    "res\\icon_separator.ico"
 
 IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
+
+IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1304,12 +1304,21 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
     return wstostr(strtows(str, codePageSrc), codePageDst);
 }
 
-CString ErrorCodeToString(DWORD idCode)
+CString ErrorCodeToString(DWORD idCode, HMODULE mod)
 {
     LPVOID lpMsgBuf;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
-        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
-    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
+    DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS;
+    if (mod != NULL) {
+        flags |= FORMAT_MESSAGE_FROM_HMODULE;
+    } else {
+        flags |= FORMAT_MESSAGE_FROM_SYSTEM;
+    }
+
+    if (!FormatMessage(flags, mod, idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL)) {
+        LOG(WARNING) << _T("Failed to format message! Error code %d\n") << GetLastError();
+    }
+    
+    CString res = static_cast<LPCTSTR>(lpMsgBuf);
     // Free the buffer.
     LocalFree(lpMsgBuf);
     return res;
