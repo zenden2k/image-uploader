@@ -1,5 +1,3 @@
-const CURLOPT_POSTFIELDSIZE = 60;
-
 function min(a,b) {
     return a < b ? a : b;
 }
@@ -183,7 +181,6 @@ function _ChunkedUpload(sessionToken, folderId, FileName, fileNameBase, fileSize
         nm.setChunkOffset(offset);
         nm.setChunkSize(currentChunk);
         nm.setMethod("POST");
-        nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, currentChunk);
         nm.doUpload(FileName, "");
 
         if (nm.responseCode() == 200) {
@@ -254,7 +251,6 @@ function UploadFile(FileName, options) {
         nm.addQueryHeader("Content-Type", "application/octet-stream");
         nm.setReferer("https://app.mediafire.com/");
         nm.setMethod("POST");
-        nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, fileSize);
         nm.doUpload(FileName, "");
 
         if (nm.responseCode() == 200) {

@@ -1,5 +1,3 @@
-const CURLOPT_POSTFIELDSIZE = 60;
-
 if(ServerParams.getParam("folder") == "") {
 	ServerParams.setParam("folder", "Screenshots") ;
 }
@@ -183,7 +181,6 @@ function _SendMetaRequest(nc, url, remoteFileName, hashUpper, size, create) {
     vec += _HexToBytes(hashUpper);
     vec += create? "\x1": "\x0";
     nm.setMethod("POST");
-    nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, vec.len());
     return nc.doUpload("", vec);
 }
 
@@ -194,7 +191,6 @@ function _CreateFolder(nc, url, folderName) {
     vec += folderName;
     vec += "\x0\x0";
     nm.setMethod("POST");
-    nm.setCurlOptionInt(CURLOPT_POSTFIELDSIZE, vec.len());
     return nc.doUpload("", vec);
 }
         

@@ -226,7 +226,6 @@ function _CheckIfExists(filename){
 
     if (nm.responseCode() == 401) {
         throw _GetAuthentificationErrorString(nm.responseCode());
-        return 0;
     }
     return (nm.responseCode() >= 200 && nm.responseCode() < 300);
 }

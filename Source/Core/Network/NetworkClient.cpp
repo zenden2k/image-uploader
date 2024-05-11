@@ -714,6 +714,7 @@ void NetworkClient::private_cleanup_after()
     m_OutFileName.clear();
     m_method.clear();
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(-1));
 
     m_uploadData.clear();
     m_uploadingFile = nullptr;
@@ -844,7 +845,8 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
 
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
-    
+
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     /*if (m_method != "PUT") {
         addQueryHeader("Content-Length", IuCoreUtils::Int64ToString(m_currentUploadDataSize));
     }*/
@@ -907,12 +909,12 @@ void NetworkClient::setUploadBufferSize(int size)
 
 void NetworkClient::setChunkOffset(double offset)
 {
-    chunkOffset_ = static_cast<uint64_t>(offset);
+    chunkOffset_ = static_cast<int64_t>(offset);
 }
 
 void NetworkClient::setChunkSize(double size)
 {
-    chunkSize_ = static_cast<uint64_t>(size);
+    chunkSize_ = static_cast<int64_t>(size);
 }
 
 void NetworkClient::setTreatErrorsAsWarnings(bool treat)

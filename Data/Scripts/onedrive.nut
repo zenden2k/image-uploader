@@ -323,7 +323,6 @@ function ModifyFolder(folder) {
 }
 
 function UploadFile(FileName, options) {
-    local fileSizeStr = GetFileSizeDouble(FileName).tostring();
     local mimeType = GetFileMimeType(FileName);
 
     local postData = {
@@ -351,8 +350,8 @@ function UploadFile(FileName, options) {
     } else {
         local t = ParseJSON(nm.responseBody());
         local uploadUrl = t.uploadUrl;
-        local fileSize = GetFileSize(FileName);
-        local chunkCount = ceil(GetFileSizeDouble(FileName).tofloat() / CHUNK_SIZE);
+        local fileSize = GetFileSize(FileName).tointeger();
+        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE);
 
         for ( local i = 0; i < chunkCount; i++) {
             local offset = i * CHUNK_SIZE;

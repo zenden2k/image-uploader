@@ -165,7 +165,7 @@ function UploadFile(FileName, options) {
     if ( userPath!="" && userPath[userPath.len()-1] != "/") {
         userPath+= "/";
     }
-    local chunkSize = (50*1024*1024).tofloat();
+    const CHUNK_SIZE = 52428800;
     local fileSize = 0;
     try { 
         fileSize=GetFileSize(FileName);
@@ -180,8 +180,9 @@ function UploadFile(FileName, options) {
     local path = "/"+ userPath;
     local remotePath =path+ExtractFileName(FileName);
     local fileId="";
+    
     if ( fileSize > 150000000 ) {
-        local chunkCount = ceil(fileSize / chunkSize);
+        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE);
         local session = null;
         local offset = 0;
         
@@ -215,26 +216,24 @@ function UploadFile(FileName, options) {
                     local json = _RegReplace(ToJSON(arg),"\n","");
                     nm.addQueryHeader("Dropbox-API-Arg", json);
                 }
-                local chunkSize = min(chunkSize,fileSize.tofloat()-offset).tointeger();
-                nm.setChunkSize(chunkSize);
+                local currentChunkSize = min(CHUNK_SIZE, fileSize - offset).tointeger();
+                nm.setChunkSize(currentChunkSize);
                 nm.addQueryHeader("Content-Type", "application/octet-stream");
                 nm.setUrl(url);
                 nm.doUpload(FileName,"");
-                
-                if ( nm.responseCode() != 200 ) {
-                    WriteLog("warning", "[dropbox.nut] Chunk upload failed, offset="+offset+", size="+chunkSize+(j< 1? "Trying again..." : ""));
+
+                if (nm.responseCode() != 200) {
+                    WriteLog("warning", "[dropbox.nut] Chunk upload failed, offset="+offset+", size="+currentChunkSize+(j< 1? "Trying again..." : ""));
                     if ( nm.responseCode() == 403 ) {
                         WriteLog("error", "[dropbox.nut] Upload failed. Access denied");
                         return 0;
                     }
                 } else {
                     local t = ParseJSON(nm.responseBody());
-                    if(session==""){
+                    if (session==""){
                         session = t.session_id;
-                    }else{
-                        
                     }
-                    offset += chunkSize;
+                    offset += currentChunkSize;
                     
                     break;
                 }
