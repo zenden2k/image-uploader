@@ -172,9 +172,9 @@ endif()
 if (WIN32)
 	list(APPEND COMMON_DEPS
         base-classes/1.0.0@zenden2k/stable
-        libheif/1.16.2
+        libheif/1.13.0
     )
-
+    # Support of avif images is broken in newer versions of libheif
 	if (IU_LIBHEIF_WITH_DAV1D)
 		add_definitions(-DIU_LIBHEIF_WITH_DAV1D)
 		list(APPEND ADDITIONAL_OPTIONS 
