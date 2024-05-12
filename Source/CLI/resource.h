@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by qimageuploader.rc
+// Used by CLI.rc
 //
 #define VS_VERSION_INFO                 1
 

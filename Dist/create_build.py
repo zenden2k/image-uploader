@@ -12,13 +12,14 @@ import xml.etree.ElementTree
 
 from contextlib import contextmanager
 
-IS_RELEASE = False
+IS_RELEASE = True
 TEST_MODE = False
 BUILD_DOCS = True
-OUTDIR = "Packages"
+OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
 DEFAULT_GIT_BRANCH = "master"
+PARALLEL_JOBS = "6"
 
 # --- Script requirements ---
 # git
@@ -73,6 +74,7 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
         'ffmpeg_standalone' : True,
+        'supported_os': 'Windows 7/8/10/11'
     },  
     {
         'os': "Windows",
@@ -91,6 +93,7 @@ BUILD_TARGETS = [
         'ffmpeg_standalone' : True,
         'installer_arch': 'x64',
         'run_tests': True,
+        'supported_os': 'Windows 7/8/10/11 (64 bit)'
     }, 
     {
         'os': "Windows",
@@ -106,6 +109,7 @@ BUILD_TARGETS = [
         'shell_ext_64bit_arch': 'ARM64',
         'ffmpeg_standalone' : True,
         'installer_arch': 'arm64',
+        'supported_os': 'Windows 10/11 (ARM64)'
     },
     {
         'os': "Linux",
@@ -119,6 +123,7 @@ BUILD_TARGETS = [
         'deb_package_arch': 'amd64',
         'build_qt_gui': True,
         'run_tests': True,
+        'supported_os': 'Linux (amd64)'
     },
 ]
 
@@ -212,7 +217,8 @@ def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subp
         "path": relativePath,
         "subproduct": subproduct,
         "sha256": hash,
-        "size": os.path.getsize(path)
+        "size": os.path.getsize(path),
+        "supported_os": target.get("supported_os"),
     }
     dictionary["files"] += [file]
     with open(jsonfile, "w") as outfile:
@@ -564,7 +570,7 @@ for target in BUILD_TARGETS:
             print("Generate failed")
             exit(1)
 
-        command = ["cmake", "--build", ".", "--config", target.get("build_type")]
+        command = ["cmake", "--build", ".", "-j", PARALLEL_JOBS, "--config", target.get("build_type")]
         if target.get("os") == "Linux":
             command =  ['wsl', '-e'] + command
             

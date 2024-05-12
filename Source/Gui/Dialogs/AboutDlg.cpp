@@ -227,12 +227,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;
-    buildInfo.Format(_T("\u200EBuild %d"), ver->Build);
+    buildInfo.Format(_T("\u200EBuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
+    
 /*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");
 #endif*/
 
-    buildInfo  +=  CString(_T("\r\n(")) + dateStr + _T(")");
+    buildInfo  +=  CString(_T("\r\n")) + dateStr;
 
     CString text = ver->FullVersion.c_str();
 

@@ -271,7 +271,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
-    CTEXT           "© 2007-2023 by Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
+    CTEXT           "© 2007-2024 by Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,18,15,13
     CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
     RTEXT           "VERSION",IDC_CURLINFOLABEL,77,25,68,9
@@ -1918,7 +1918,7 @@ BEGIN
             VALUE "FileDescription", "Image Uploader"
             VALUE "FileVersion", "1.3.3.0"
             VALUE "InternalName", "Image Uploader"
-            VALUE "LegalCopyright", "Copyright 2007-2023 by Sergey Svistunov (https://svistunov.dev)"
+            VALUE "LegalCopyright", "Copyright 2007-2024 by Sergey Svistunov (https://svistunov.dev)"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
             VALUE "ProductVersion", "1.3.3.0"
