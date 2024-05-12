@@ -28,6 +28,8 @@
 #include <boost/config.hpp>
 #include <boost/version.hpp>
 #include <webp/decode.h>
+#include <libheif/heif_version.h>
+
 #include "Core/AppParams.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
@@ -176,6 +178,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     memoText += CString(L"libwebp: v") + webpVersionStr + L"\r\n";
     memoText += CString(L"sqlite: v") + sqlite3_libversion() + L"\r\n";
+    memoText += CString(L"libheif: v") + LIBHEIF_VERSION + L"\r\n";
 
     /*if ( Settings.IsFFmpegAvailable() ) { // Can't determine actual ffmpeg version
         memoText += TR("FFmpeg version:")+ CString("\r\n");

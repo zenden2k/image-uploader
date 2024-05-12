@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)							
+cmake_minimum_required(VERSION 3.15.0)
 
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
@@ -30,7 +30,7 @@ set(Boost_USE_MULTITHREADED ON)
 
 include(conan.cmake)
 
-conan_add_remote(NAME zenden2k INDEX 1
+conan_add_remote(NAME zenden2k INDEX 0
             URL https://conan.svistunov.dev)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
@@ -172,7 +172,7 @@ endif()
 if (WIN32)
 	list(APPEND COMMON_DEPS
         base-classes/1.0.0@zenden2k/stable
-        libheif/1.13.0
+        libheif/1.16.2
     )
 
 	if (IU_LIBHEIF_WITH_DAV1D)
