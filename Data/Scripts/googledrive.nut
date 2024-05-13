@@ -32,6 +32,12 @@ function _CheckResponse(except = false) {
             throw "unauthorized_exception";
         } 
         return -2;
+    } else if (nm.responseCode() == 400) {
+        local t = ParseJSON(nm.responseBody());
+        if ("error" in t && t.error == "invalid_grant") {
+            _ClearAuthData();
+            return -2;
+        }
     } else if (/*nm.responseCode() == 0 ||*/ (nm.responseCode() >= 400 && nm.responseCode() <= 499)) {
         WriteLog("error", "Response code " + nm.responseCode() + "\r\n" + nm.errorString() );
         return 0;

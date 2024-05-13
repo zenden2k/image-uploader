@@ -82,6 +82,7 @@ function RefreshToken() {
         } catch ( ex ) {
 
         }
+        
         refreshToken = ServerParams.getParam("refreshToken");
         if ( time() > tokenTime + expiresIn && refreshToken != "") {
             // Refresh access token
@@ -104,6 +105,7 @@ function RefreshToken() {
                     ServerParams.setParam("tokenType", tokenType);
                     ServerParams.setParam("token", token);
                     ServerParams.setParam("tokenTime", time().tostring());
+                    ServerParams.setParam("refreshToken", t.refresh_token);
                     if ( token != "" ) {
                         return 1;
                     } else {
