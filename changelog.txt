@@ -2,6 +2,50 @@
 #
 # https://svistunov.dev/imageuploader
 
+1.4.0.5152 (2024-05-13)
+[+] Upload to multiple servers
+[+] Add new hostings: imgsrc.ru, userscloud.com, fileditch.com, postimages.org, upload.ee, file.coffee, lostpix.com, getapic.me
+[~] Fixed upload to directupload.eu, cloud.mail.ru, imgbox.com, mediafire.com, cubeupload.com, dropbox.com
+[+] Upload on mirrocreator.com account
+[-] Removed dead hostings 
+[~] Use direct links to image in Google Drive
+[+] Show a toast notification when copying an image to the clipboard
+[+] Image Editor: add inverted blur feature
+[+] Image Editor: adjustable blurring level
+[~] Image Editor: use fast blur algorithm
+[~] Image Editor: fixed hotkeys behavior
+[~] Image Editor: fixed issue with brush size hotkeys
+[~] Image Editor: reposition toolbars in fullscreen mode
+[~] Image Editor: do not show toolbar button text on small screen resolutions
+[+] Image Editor: show crop dimensions
+[~] Use Boost.Locale for internationalization 
+[+] Add korean translation
+[+] Add WebDAV support
+[~] Update favicons, preload them in background
+[~] Update libcurl to v8.6.0
+[~] Update FFmpeg to v5
+[+] CLI: Generate output in JSON format
+[+] Add "Copy folder's ID" item to folder's context menu
+[+] Add checkbox to exit confirmation dialog
+[+] Add overlay with options for video file drag-n-drop
+[~] Fix reading big numbers in MaxFileSize from servers.xml
+[+] Add "Call" child node of Action node in servers.xml (now supports simple json paths)
+[+] Screenshot: capture selected window (top level) 
+[+] Allow editing color in ColorCodeDialog
+[~] Update thumbnail templates
+[+] New icons
+[~] Fix High DPI issues
+[~] Fixed text size issues on generated images (DPI issue)
+[~] Changed GIF background color
+[+] Add support of HEIF/AVIF image format
+[~] Fix image drag-n-drop
+[~] Fix image format display in the file list
+[~] InnoSetup: Fix installation of the shell extension
+[+] New builds for Windows x64, ARM64
+[~] Fixed memory leaks
+[+] imageuploader-qt: add icon to the system menu in Debian package
+[~] Small improvements and fixes
+
 1.3.3.4964 (01.01.2023)
 [~] Fixed support for unicode file paths
 
