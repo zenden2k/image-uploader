@@ -19,6 +19,7 @@ function UploadFile(FileName, options){
     nm.addQueryHeader("User-Agent", "Shockwave Flash");
     nm.addQueryParam("compmenu", "0");
     nm.addQueryParam("albmenu", "0");
+    nm.addQueryParam("inf", "1");
     nm.addQueryParam("cat", "0");
     nm.addQueryParam("prew", getThumbnailWidth());
     nm.addQueryParam("ttl", "0");
