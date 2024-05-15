@@ -30,6 +30,15 @@
 #include "Core/Upload/UploadManager.h"
 #include "Core/TaskDispatcher.h"
 
+namespace {
+    struct TreeItemData
+    {
+        bool isLoadingTempItem = false;
+        bool childrenLoaded = false;
+        CFolderItem folder;
+    };
+}
+
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
 {
     m_UploadEngine = serverProfile_.uploadEngineData();
@@ -70,19 +79,13 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     //int iBitsPixel = GetDeviceCaps(::GetDC(HWND_DESKTOP), BITSPIXEL);
     int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-    m_PlaceSelectorImageList.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
-    CIcon iconUser;
-    iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
-    m_PlaceSelectorImageList.AddIcon(iconUser);
+    folderTreeViewImageList.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
+
     CIcon iconFolder;
     iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
-    m_PlaceSelectorImageList.AddIcon(iconFolder);
+    folderTreeViewImageList.AddIcon(iconFolder);
 
-    CIcon iconSeparator;
-    iconSeparator.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSEPARATOR), iconWidth, iconHeight);
-    m_PlaceSelectorImageList.AddIcon(iconSeparator);
-
-    m_FolderTree.SetImageList(m_PlaceSelectorImageList);
+    m_FolderTree.SetImageList(folderTreeViewImageList);
     m_FolderMap[L""] = nullptr;
    
     m_FolderOperationType = FolderOperationType::foGetFolders;
@@ -113,15 +116,17 @@ LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
     if (!item)
         return 0;
-    int nIndex = m_FolderTree.GetItemData(item);
 
-    if (nIndex < 0 || nIndex > m_FolderList.GetCount() - 1)
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
+
+    if (!tid) {
         return 0;
+    }
 
     if (!::IsWindowEnabled(GetDlgItem(IDOK)))
         return 0;
 
-    m_SelectedFolder = m_FolderList[nIndex];
+    m_SelectedFolder = tid->folder;
     EndDialog(wID);
 
     return 0;
@@ -152,15 +157,36 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
     isRunning_ = false;
 
     if (folderTask->operationType() == FolderOperationType::foGetFolders) {
-        m_FolderMap.clear();
 
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, success, folderTask]() {
+        std::string parentFolderId = folderTask->folderList().parentFolder().getId();
+        HTREEITEM treeViewItem = m_FolderMap[Utf8ToWstring(parentFolderId)];
+        auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(treeViewItem));
+        if (parentFolderId.empty()) {
+            m_FolderMap.clear();
+        }
+        if (tid) {
+            tid->childrenLoaded = true;
+        }
+
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, success, folderTask, parentFolderId, treeViewItem]() {
             if (!success) {
                 TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
             }
-            m_FolderList = folderTask->folderList();
-            m_FolderTree.DeleteAllItems();
-            BuildFolderTree(m_FolderList.m_folderItems, "");
+            
+            if (parentFolderId.empty()) {
+                m_FolderTree.DeleteAllItems();
+            } else {
+                m_FolderTree.DeleteItem(m_FolderTree.GetChildItem(treeViewItem));
+            }
+            if (folderTask->folderList().GetCount() == 0) {
+                TVITEM modifiedItem = {};
+                modifiedItem.hItem = treeViewItem;
+                modifiedItem.mask = TVIF_CHILDREN;
+                modifiedItem.cChildren = 0;
+                m_FolderTree.SetItem(&modifiedItem);
+            }
+            BuildFolderTree(folderTask->folderList().m_folderItems, U2W(parentFolderId));
+            
             m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
         });
     } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
@@ -271,11 +297,11 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     m_FolderTree.SelectItem(selectedItem);
 
-    int nIndex = m_FolderTree.GetItemData(selectedItem);
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(selectedItem));
     bool showViewInBrowserItem = false;
     BOOL copyFolderIdFlag = MFS_DISABLED;
-    if (nIndex >= 0 && nIndex < m_FolderList.GetCount()) {
-        const CFolderItem& folder = m_FolderList[nIndex];
+    if (tid) {
+        const CFolderItem& folder = tid->folder;
         if (!folder.getViewUrl().empty()) {
             showViewInBrowserItem = true;
         }
@@ -320,9 +346,9 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
 
     if (!item)
         return 0;
-    int nIndex = m_FolderTree.GetItemData(item);
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
 
-    CFolderItem& folder = m_FolderList[nIndex];
+    CFolderItem& folder = tid->folder;
 
     CNewFolderDlg dlg(folder, false, m_accessTypeList);
     if (dlg.DoModal(m_hWnd) == IDOK)
@@ -364,9 +390,9 @@ LRESULT CServerFolderSelect::OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hW
 
     if (!item)
         return 0;
-    int nIndex = m_FolderTree.GetItemData(item);
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
 
-    CFolderItem& folder = m_FolderList[nIndex];
+    const CFolderItem& folder = tid->folder;
 
     CString str = U2W(folder.viewUrl);
     if (!str.IsEmpty())
@@ -381,12 +407,12 @@ LRESULT CServerFolderSelect::OnCopyFolderId(WORD wNotifyCode, WORD wID, HWND hWn
 
     if (!item)
         return 0;
-    int nIndex = m_FolderTree.GetItemData(item);
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
 
-    if (nIndex <0 || nIndex >= m_FolderList.GetCount()) {
+    if (!tid) {
         return 0;
     }
-    CFolderItem& folder = m_FolderList[nIndex];
+    const CFolderItem& folder = tid->folder;
 
     if (!folder.getId().empty() && folder.getId() != CFolderItem::NewFolderMark) {
         CString str = U2W(folder.getId());
@@ -402,32 +428,47 @@ LRESULT CServerFolderSelect::OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HW
 
     if (!item)
         return 0;
-    int nIndex = m_FolderTree.GetItemData(item);
-
-    CFolderItem& folder = m_FolderList[nIndex];
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
+    if (!tid) {
+        return 0;
+    }
+    CFolderItem& folder = tid->folder;
     NewFolder(folder.id.c_str());
     return 0;
 }
 
-void CServerFolderSelect::BuildFolderTree(std::vector<CFolderItem>& list, const CString& parentFolderId)
+void CServerFolderSelect::BuildFolderTree(const std::vector<CFolderItem>& list, const CString& parentFolderId)
 {
     for (size_t i = 0; i < list.size(); i++)
     {
-        CFolderItem& cur = list[i];
+        const CFolderItem& cur = list[i];
         if (cur.parentid.c_str() == parentFolderId)
         {
             CString title = Utf8ToWCstring(cur.title);
             if (cur.itemCount != -1)
                 title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
-            HTREEITEM res = m_FolderTree.InsertItem(title, 1, 1, m_FolderMap[Utf8ToWstring(cur.parentid)], TVI_SORT  );
-            m_FolderTree.SetItemData(res, i);
+            TVINSERTSTRUCT tvis = {};
+            tvis.hParent = m_FolderMap[Utf8ToWstring(cur.parentid)];
+            tvis.hInsertAfter = TVI_SORT;
+            tvis.item.mask = TVIF_IMAGE | TVIF_SELECTEDIMAGE | TVIF_TEXT | TVIF_CHILDREN;
+            tvis.item.pszText = const_cast<LPTSTR>(title.GetString());
+            tvis.item.iImage = 0;
+            tvis.item.iSelectedImage = 0;
+            tvis.item.state = 0;
+            tvis.item.stateMask = 0;
+            tvis.item.lParam = 0;
+            tvis.item.cChildren = 1;
+            HTREEITEM res = m_FolderTree.InsertItem(&tvis);
+            TreeItemData* tid = new TreeItemData;
+            tid->folder = cur;
+            m_FolderTree.SetItemData(res, reinterpret_cast<DWORD_PTR>(tid));
 
             m_FolderMap[Utf8ToWstring(cur.id)] = res;
             if (!cur.id.empty()) {
                 BuildFolderTree(list, cur.id.c_str());
             }
             if (parentFolderId.IsEmpty()) {
-                m_FolderTree.Expand(res);
+                //m_FolderTree.Expand(res);
             }
         }
     }
@@ -450,4 +491,73 @@ void CServerFolderSelect::refreshList() {
     BlockWindow(true);
     UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
     uploadManager->addSession(uploadSession_);
+}
+
+LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto pnmtv = reinterpret_cast<LPNMTREEVIEWW>(pnmh);
+    if (pnmtv->action == TVE_EXPAND) {
+        auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(pnmtv->itemNew.hItem));
+        if (tid && tid->childrenLoaded) {
+            return 0;
+        }
+        TVINSERTSTRUCT tvis = {};
+        tvis.hParent = pnmtv->itemNew.hItem;
+        tvis.hInsertAfter = TVI_SORT;
+        tvis.item.mask =  TVIF_TEXT | TVIF_IMAGE;
+        CString text = TR("Loading...");
+        tvis.item.pszText = const_cast<LPTSTR>(text.GetString());
+        tvis.item.iImage = -1;
+        tvis.item.iSelectedImage = -1;
+        tvis.item.state = 0;
+        tvis.item.stateMask = 0;
+        tvis.item.lParam = 0;
+        tvis.item.cChildren = 1;
+        HTREEITEM res = m_FolderTree.InsertItem(&tvis);
+        auto* newData = new TreeItemData;
+        newData->isLoadingTempItem = true;
+        m_FolderTree.SetItemData(res, reinterpret_cast<DWORD_PTR>(newData));
+
+        if (isRunning_) {
+            return 0;
+        }
+        auto result = std::find_if(
+            m_FolderMap.begin(),
+            m_FolderMap.end(),
+            [&](const auto& mo) {return mo.second == pnmtv->itemNew.hItem; });
+
+        if (result != m_FolderMap.end()) {
+            std::string foundkey = IuCoreUtils::WstringToUtf8(result->first);
+            CFolderItem parent;
+            parent.setId(foundkey);
+            m_SelectedFolder = parent;
+            //= m_FolderMap.find([Utf8ToWstring(cur.parentid)]; */
+            auto task = std::make_shared<FolderTask>(FolderOperationType::foGetFolders);
+            task->folderList().setParentFolder(parent);
+            task->setServerProfile(serverProfile_);
+            //task->setFolder(parent);
+            currentTask_ = task;
+            using namespace std::placeholders;
+            task->addTaskFinishedCallback(std::bind(&CServerFolderSelect::onTaskFinished, this, _1, _2));
+
+            isRunning_ = true;
+            uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addTask(task);
+            BlockWindow(true);
+            UploadManager * uploadManager = ServiceLocator::instance()->uploadManager();
+            uploadManager->addSession(uploadSession_);
+        }
+            
+        
+    }
+   
+    return 0;
+}
+
+LRESULT CServerFolderSelect::OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto pnmtv = reinterpret_cast<LPNMTREEVIEW>(pnmh);
+    if (pnmtv->itemOld.lParam) {
+        auto* p = reinterpret_cast<TreeItemData*>(pnmtv->itemOld.lParam);
+        delete p;
+    }
+    return 0;
 }

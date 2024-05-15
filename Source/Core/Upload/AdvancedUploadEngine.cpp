@@ -42,7 +42,9 @@ int CAdvancedUploadEngine::processFolderTask(std::shared_ptr<UploadTask> task) {
     if (folderTask->operationType() == FolderOperationType::foGetFolders) {
         return getFolderList(folderTask->folderList());
     } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
-        return createFolder(CFolderItem(), folderTask->folder());
+        CFolderItem parent;
+        parent.setId(folderTask->folder().getParentId());
+        return createFolder(parent, folderTask->folder());
     } else if (folderTask->operationType() == FolderOperationType::foModifyFolder) {
         return modifyFolder(folderTask->folder());
     } else {

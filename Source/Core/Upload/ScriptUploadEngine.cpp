@@ -447,6 +447,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
         if (func.IsNull()) {
             return -1;
         }
+        //FolderList.setParentFolder(parent);
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&FolderList));
         ival = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {

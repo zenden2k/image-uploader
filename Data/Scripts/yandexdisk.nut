@@ -121,19 +121,27 @@ function _LoadAlbumList(list) {
             ServerParams.setParam("token","");
             return -2;
         }
+        local parentId = list.parentFolder().getId();
+        local folder = CFolderItem();
+        if (parentId == "") {
+            parentId = "/";
+            folder.setId("/");
+            folder.setTitle("/ (root)");
+            folder.setSummary("");
+            list.AddFolderItem(folder);
+    
+            return 1;
+        }
 
-        local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
+
+        local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=" + nm.urlEncode(parentId) + "&limit=100";
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");
         nm.doGet(url);
         code = nm.responseCode();
 
         if (code == 200) {
-            local folder = CFolderItem();
-            folder.setId("/");
-            folder.setTitle("/ (root)");
-            folder.setSummary("");
-            list.AddFolderItem(folder);
+            
             local res = ParseJSON(nm.responseBody());
             local itemsCount = res._embedded.items.len();
             for ( local i = 0; i< itemsCount; i++ ) {
@@ -147,6 +155,7 @@ function _LoadAlbumList(list) {
                 folder.setId(path);
                 folder.setTitle(item.name);
                 folder.setSummary("");
+                folder.setParentId(parentId);
                 list.AddFolderItem(folder);
             }
             return 1;
@@ -178,6 +187,26 @@ function GetFolderList(list) {
 }
 
 function CreateFolder(parentAlbum, album) {
+    if (_UseRestApi()) {
+        nm.addQueryHeader("Authorization", _GetAuthorizationString());
+        nm.addQueryHeader("Accept", "application/json");
+        //nm.addQueryHeader("Content-Type", "application/json; charset=utf-8");
+        nm.enableResponseCodeChecking(false);
+        nm.setUrl("https://cloud-api.yandex.net/v1/disk/resources?path=" + nm.urlEncode(parentAlbum.getId() + album.getTitle()));
+        nm.setMethod("PUT");
+        nm.doUpload("", "");
+        if (nm.responseCode() == 201) {
+            local t = ParseJSON(nm.responseBody());
+            /*if (t != null && "path" in t) {
+
+            }*/
+            return 1;
+        } else {
+            WriteLog("error", "[yandex.disk] Failed to create a folder, response code: " + nm.responseCode());
+        }
+        return 0;
+    }
+
     local folderName = album.getTitle();
     if (folderName == "") {
         return 0;

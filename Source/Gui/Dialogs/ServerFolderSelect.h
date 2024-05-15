@@ -65,6 +65,9 @@ class CServerFolderSelect :
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
         COMMAND_HANDLER(ID_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
         NOTIFY_HANDLER(IDC_FOLDERTREE, NM_DBLCLK, OnFolderlistLbnDblclk)
+        NOTIFY_HANDLER(IDC_FOLDERTREE, TVN_ITEMEXPANDING, OnFolderTreeItemExpanding)
+        NOTIFY_HANDLER(IDC_FOLDERTREE, TVN_DELETEITEM, OnFolderTreeDeleteItem)
+
         CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
     END_MSG_MAP()
 
@@ -91,10 +94,11 @@ class CServerFolderSelect :
     LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCopyFolderId(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+    LRESULT OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void onTaskFinished(UploadTask* task, bool success);
     void OnLoadFinished();
-    CImageList m_PlaceSelectorImageList;
+    CImageList folderTreeViewImageList;
     CFolderItem m_SelectedFolder;
 protected:
     CProgressRingControl m_wndAnimation;
@@ -120,7 +124,7 @@ protected:
     bool isRunning_;
 public:   
 
-    void BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId);
+    void BuildFolderTree(const std::vector<CFolderItem> &list,const CString& parentFolderId);
 };
 
 #endif // SERVERFOLDERSELECT_H

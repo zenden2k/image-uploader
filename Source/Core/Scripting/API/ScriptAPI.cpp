@@ -215,7 +215,9 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
     root.Bind("CFolderList", Class<CFolderList>(vm.GetVM(), "CFolderList").
         Func("AddFolder", &CFolderList::AddFolder).
         Func("AddFolderItem", &CFolderList::AddFolderItem).
-        Func("GetCount", &CFolderList::GetCount)
+        Func("GetCount", &CFolderList::GetCount).
+        Func("setParentFolder", &CFolderList::setParentFolder).
+        Func("parentFolder", &CFolderList::parentFolder)
     );
 
 
