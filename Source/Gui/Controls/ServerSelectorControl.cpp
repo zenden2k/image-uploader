@@ -201,7 +201,7 @@ void CServerSelectorControl::addAccount()
         serverProfileCopy.setFolderId("");
         serverProfileCopy.setFolderTitle("");
         serverProfileCopy.setFolderUrl("");
-
+        serverProfileCopy.setParentIds({});
         serverProfile_ = serverProfileCopy;
         updateInfoLabel();
         notifyChange();
@@ -269,13 +269,14 @@ void CServerSelectorControl::serverChanged() {
                     serverProfile_.setFolderId(s.defaultFolder.getId());
                     serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
                     serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
+                    serverProfile_.setParentIds(s.defaultFolder.parentIds);
                 } else {
                     serverProfile_.setProfileName("");
                     serverProfile_.setFolderId("");
                     serverProfile_.setFolderTitle("");
                     serverProfile_.setFolderUrl("");
+                    serverProfile_.setParentIds({});
                 }
-                
             }
         }
  
@@ -621,6 +622,7 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
             copy.setFolderId("");
             copy.setFolderTitle("");
             copy.setFolderUrl("");
+            serverProfile_.setParentIds({});
             serverProfile_ = copy;
             //iuPluginManager.UnloadPlugins();
             //_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
@@ -637,6 +639,7 @@ LRESULT CServerSelectorControl::OnNoAccountClicked(WORD wNotifyCode, WORD wID, H
     serverProfile_.setFolderId("");
     serverProfile_.setFolderTitle("");
     serverProfile_.setFolderUrl("");
+    serverProfile_.setParentIds({});
     updateInfoLabel();
     notifyChange();
     return 0;
@@ -700,7 +703,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     serverProfile_.setFolderId(serverSettings ? serverSettings->defaultFolder.getId() : std::string());
     serverProfile_.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle() : std::string());
     serverProfile_.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl : std::string());
-
+    serverProfile_.setParentIds(serverSettings ? serverSettings->defaultFolder.parentIds : std::vector<std::string>());
     notifyChange();
     updateInfoLabel();
     return 0;

@@ -27,6 +27,7 @@
 #include <sstream>
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Utils/SimpleXml.h"
+#include "Core/Utils/StringUtils.h"
 
 #define n_bind(a) operator[]( #a ).bind(a)
 #define nm_bind(b,a) operator[]( #a ).bind(b.a)
@@ -46,6 +47,14 @@ template<class T> std::string myToString(const T& value)
         return str.str();
 }
 
+inline std::string myToString(const std::vector<std::string>& value)
+{
+    return IuStringUtils::Join(value, ";");
+}
+
+inline void myFromString(const std::string& text, std::vector<std::string>& value) {
+    IuStringUtils::Split(text, ";", value);
+}
 
 template<class T> void myFromString(const std::string& text, T & value)
 {

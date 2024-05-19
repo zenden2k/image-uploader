@@ -123,21 +123,25 @@ CFolderItem class
 class CFolderItem
 {
 public:
+    enum ItemCount { icUnknown = -1, icNoChildren = 0 };
+
     CFolderItem()
     {
         accessType = 0;
-        itemCount = -1;
+        itemCount = icUnknown;
     }
 
     /*! @cond PRIVATE */
     static const std::string NewFolderMark;
 
-
+    
     std::string title;
     std::string summary;
     std::string id;
     std::string parentid;
     std::string viewUrl;
+    std::vector<std::string> parentIds;
+
     int accessType;
     int itemCount;
     /*! @endcond */

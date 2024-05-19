@@ -56,6 +56,8 @@ function GetFolderList(list) {
             local album = CFolderItem();
             album.setId(albumId);
             album.setTitle(linkNode.ownText());
+            // There is no child albums
+            album.setItemCount(0);
             list.AddFolderItem(album);
         });
         return 1;

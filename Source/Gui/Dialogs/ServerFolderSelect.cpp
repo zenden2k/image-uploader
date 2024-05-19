@@ -20,6 +20,8 @@
 
 #include "ServerFolderSelect.h"
 
+#include <algorithm>
+
 #include "Core/Upload/UploadEngineManager.h"
 #include "NewFolderDlg.h"
 #include "Core/Upload/AdvancedUploadEngine.h"
@@ -34,9 +36,12 @@ namespace {
     struct TreeItemData
     {
         bool isLoadingTempItem = false;
+        bool childrenStartedLoading = false;
         bool childrenLoaded = false;
         CFolderItem folder;
     };
+    constexpr int NORMAL_LOAD_SESSION = 0;
+    constexpr int INITIAL_LOAD_SESSION = 1;
 }
 
 CServerFolderSelect::CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager) :serverProfile_(serverProfile)
@@ -104,7 +109,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     uploadScript->setNetworkClient(m_NetworkClient.get());
     uploadScript->getAccessTypeList(m_accessTypeList);
 
-    refreshList();
+    loadInitialTree();
 
     m_FolderTree.SetFocus();
     return FALSE;
@@ -112,6 +117,9 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
 LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    if (isRunning_) {
+        return false;
+    }
     HTREEITEM item = m_FolderTree.GetSelectedItem();
 
     if (!item)
@@ -119,7 +127,7 @@ LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 
     auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
 
-    if (!tid) {
+    if (!tid || tid->isLoadingTempItem) {
         return 0;
     }
 
@@ -127,6 +135,17 @@ LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
         return 0;
 
     m_SelectedFolder = tid->folder;
+
+    // We save the path to the node (consisting of folder IDs) so that when opening
+    // the dialog box we can expand the list and select the desired element.
+    m_SelectedFolder.parentIds.clear();
+    HTREEITEM parentItem = item;
+    while ((parentItem = m_FolderTree.GetParentItem(parentItem))) {
+        auto* tid2 = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(parentItem));
+        m_SelectedFolder.parentIds.push_back(tid2->folder.getId());
+    }
+    std::reverse(m_SelectedFolder.parentIds.begin(), m_SelectedFolder.parentIds.end());
+
     EndDialog(wID);
 
     return 0;
@@ -153,41 +172,10 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
     if (!folderTask) {
         return;
     }
-    
-    isRunning_ = false;
 
     if (folderTask->operationType() == FolderOperationType::foGetFolders) {
-
-        std::string parentFolderId = folderTask->folderList().parentFolder().getId();
-        HTREEITEM treeViewItem = m_FolderMap[Utf8ToWstring(parentFolderId)];
-        auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(treeViewItem));
-        if (parentFolderId.empty()) {
-            m_FolderMap.clear();
-        }
-        if (tid) {
-            tid->childrenLoaded = true;
-        }
-
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, success, folderTask, parentFolderId, treeViewItem]() {
-            if (!success) {
-                TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
-            }
-            
-            if (parentFolderId.empty()) {
-                m_FolderTree.DeleteAllItems();
-            } else {
-                m_FolderTree.DeleteItem(m_FolderTree.GetChildItem(treeViewItem));
-            }
-            if (folderTask->folderList().GetCount() == 0) {
-                TVITEM modifiedItem = {};
-                modifiedItem.hItem = treeViewItem;
-                modifiedItem.mask = TVIF_CHILDREN;
-                modifiedItem.cChildren = 0;
-                m_FolderTree.SetItem(&modifiedItem);
-            }
-            BuildFolderTree(folderTask->folderList().m_folderItems, U2W(parentFolderId));
-            
-            m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, success, folderTask]() {
+            getListTaskFinished(folderTask, success);
         });
     } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
         m_FolderOperationType = FolderOperationType::foGetFolders;
@@ -205,13 +193,54 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
     OnLoadFinished();
 }
 
+void CServerFolderSelect::getListTaskFinished(FolderTask* folderTask, bool success) {
+    std::string parentFolderId = folderTask->folderList().parentFolder().getId();
+    std::wstring wideStrParentFolderId = Utf8ToWstring(parentFolderId);
+    //auto it = m_FolderMap.find(wideStrParentFolderId);
+    HTREEITEM treeViewItem{};
+    try {
+        treeViewItem = m_FolderMap[wideStrParentFolderId];
+    }
+    catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
+    }
+    auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(treeViewItem));
+    if (parentFolderId.empty()) {
+        m_FolderTree.DeleteAllItems();
+        m_FolderMap.clear();
+    } else {
+        HTREEITEM item = m_FolderTree.GetChildItem(treeViewItem);
+        auto* tid2 = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(item));
+        if (tid2 && tid2->isLoadingTempItem) {
+            m_FolderTree.DeleteItem(item);
+        }
+    }
+    if (tid) {
+        tid->childrenLoaded = true;
+    }
+
+    if (!success) {
+        TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
+    }
+
+    else {
+        
+    }
+    if (folderTask->folderList().GetCount() == 0) {
+        TVITEM modifiedItem = {};
+        modifiedItem.hItem = treeViewItem;
+        modifiedItem.mask = TVIF_CHILDREN;
+        modifiedItem.cChildren = 0;
+        m_FolderTree.SetItem(&modifiedItem);
+    }
+    BuildFolderTree(folderTask->folderList().m_folderItems, U2W(parentFolderId));
+
+    m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
+}
+
 void CServerFolderSelect::OnLoadFinished()
 {
-    stopSignal = false;
-    isRunning_ = false;
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this]() {
-        BlockWindow(false);
-    });
+
 }
 
 void CServerFolderSelect::NewFolder(const CString& parentFolderId)
@@ -233,6 +262,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
             uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
             uploadSession_->addTask(task);
             uploadManager->addSession(uploadSession_);
         }
@@ -247,10 +277,10 @@ LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WO
 
 LRESULT CServerFolderSelect::OnFolderlistLbnDblclk(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
-    HTREEITEM item = m_FolderTree.GetSelectedItem();
+    /*HTREEITEM item = m_FolderTree.GetSelectedItem();
     if (item) {
         SendDlgItemMessage(IDOK, BM_CLICK);
-    }
+    }*/
     return 0;
 }
 
@@ -366,6 +396,7 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
             UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
             currentTask_ = task;
             uploadSession_ = std::make_shared<UploadSession>();
+            uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
             uploadSession_->addTask(task);
             uploadManager->addSession(uploadSession_);
             //BlockWindow(true);
@@ -445,8 +476,8 @@ void CServerFolderSelect::BuildFolderTree(const std::vector<CFolderItem>& list, 
         if (cur.parentid.c_str() == parentFolderId)
         {
             CString title = Utf8ToWCstring(cur.title);
-            if (cur.itemCount != -1)
-                title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");
+            /*if (cur.itemCount != -1)
+                title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");*/
             TVINSERTSTRUCT tvis = {};
             tvis.hParent = m_FolderMap[Utf8ToWstring(cur.parentid)];
             tvis.hInsertAfter = TVI_SORT;
@@ -457,8 +488,16 @@ void CServerFolderSelect::BuildFolderTree(const std::vector<CFolderItem>& list, 
             tvis.item.state = 0;
             tvis.item.stateMask = 0;
             tvis.item.lParam = 0;
-            tvis.item.cChildren = 1;
+            if (cur.itemCount == CFolderItem::icNoChildren) {
+                tvis.item.cChildren = 0;
+            } else if (cur.itemCount == CFolderItem::icUnknown || cur.itemCount > 0) {
+                tvis.item.cChildren = 1;
+            }
             HTREEITEM res = m_FolderTree.InsertItem(&tvis);
+            if (!res) {
+                LOG(ERROR) << "Cannot insert tree node '" << title << "'";
+                continue;
+            }
             TreeItemData* tid = new TreeItemData;
             tid->folder = cur;
             m_FolderTree.SetItemData(res, reinterpret_cast<DWORD_PTR>(tid));
@@ -487,6 +526,7 @@ void CServerFolderSelect::refreshList() {
 
     isRunning_ = true;
     uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
     uploadSession_->addTask(task);
     BlockWindow(true);
     UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
@@ -494,10 +534,13 @@ void CServerFolderSelect::refreshList() {
 }
 
 LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    if (isRunning_) {
+        return 0;
+    }
     auto pnmtv = reinterpret_cast<LPNMTREEVIEWW>(pnmh);
     if (pnmtv->action == TVE_EXPAND) {
         auto* tid = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(pnmtv->itemNew.hItem));
-        if (tid && tid->childrenLoaded) {
+        if (tid && (tid->childrenLoaded || tid->childrenStartedLoading)) {
             return 0;
         }
         TVINSERTSTRUCT tvis = {};
@@ -530,7 +573,6 @@ LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh,
             CFolderItem parent;
             parent.setId(foundkey);
             m_SelectedFolder = parent;
-            //= m_FolderMap.find([Utf8ToWstring(cur.parentid)]; */
             auto task = std::make_shared<FolderTask>(FolderOperationType::foGetFolders);
             task->folderList().setParentFolder(parent);
             task->setServerProfile(serverProfile_);
@@ -542,12 +584,12 @@ LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh,
             isRunning_ = true;
             uploadSession_ = std::make_shared<UploadSession>();
             uploadSession_->addTask(task);
+            uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
+            tid->childrenStartedLoading = true;
             BlockWindow(true);
             UploadManager * uploadManager = ServiceLocator::instance()->uploadManager();
             uploadManager->addSession(uploadSession_);
         }
-            
-        
     }
    
     return 0;
@@ -560,4 +602,67 @@ LRESULT CServerFolderSelect::OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BO
         delete p;
     }
     return 0;
+}
+
+void CServerFolderSelect::onSessionFinished(UploadSession* session) {
+    if (session->userData() == reinterpret_cast<void*>(INITIAL_LOAD_SESSION)) {
+        //m_SelectedFolder.id = 
+        for (int i = 0; i < session->taskCount(); i++) {
+            auto task = session->getTask(i);
+            if (task->uploadSuccess()) {
+                auto* folderTask = dynamic_cast<FolderTask*>(task.get());
+                if (folderTask) {
+                    ServiceLocator::instance()->taskRunner()->runInGuiThread([this, folderTask]() {
+                        getListTaskFinished(folderTask, true);
+                    });
+
+                }
+            } else {
+                break;
+            }
+        }
+    }
+
+    stopSignal = false;
+    isRunning_ = false;
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this]() {
+        BlockWindow(false);
+    });
+}
+
+void CServerFolderSelect::onInitialLoadTaskFinished(UploadTask* task, bool success) {
+
+}
+
+void CServerFolderSelect::loadInitialTree() {
+    if (isRunning_) {
+        return;
+    }
+    using namespace std::placeholders;
+    CFolderItem folder = m_SelectedFolder;
+
+    uploadSession_ = std::make_shared<UploadSession>();
+    uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
+    std::vector<std::string> parentIds = folder.parentIds;
+    parentIds.insert(parentIds.begin(), "");
+
+    for ( const auto& folderId: parentIds) {
+        CFolderItem cur;
+        cur.setId(folderId);
+        auto task = std::make_shared<FolderTask>(FolderOperationType::foGetFolders);
+        task->folderList().setParentFolder(cur);
+        task->setServerProfile(serverProfile_);
+        task->addTaskFinishedCallback(std::bind(&CServerFolderSelect::onInitialLoadTaskFinished, this, _1, _2));
+        uploadSession_->addTask(task);
+    }
+
+    if (!uploadSession_->taskCount()) {
+        return;
+    }
+    uploadSession_->setUserData(reinterpret_cast<void*>(INITIAL_LOAD_SESSION));
+    isRunning_ = true;
+
+    BlockWindow(true);
+    UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
+    uploadManager->addSession(uploadSession_);
 }

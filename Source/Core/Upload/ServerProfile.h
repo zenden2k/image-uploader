@@ -1,4 +1,4 @@
-﻿#ifndef IU_CORE_UPLOAD_SERVERPROFILE_H
+#ifndef IU_CORE_UPLOAD_SERVERPROFILE_H
 #define IU_CORE_UPLOAD_SERVERPROFILE_H
 
 #pragma once
@@ -65,6 +65,9 @@ public:
 
     bool shortenLinks() const;
     void setShortenLinks(bool shorten);
+
+    void setParentIds(const std::vector<std::string> parentIds);
+    const std::vector<std::string>& parentIds() const;
     bool isNull() const;
     bool UseDefaultSettings;
     void clearFolderInfo();
@@ -85,7 +88,7 @@ protected:
     std::string folderId_;
     std::string folderUrl_;
     bool shortenLinks_;
-
+    std::vector<std::string> parentIds_;
     friend class CommonGuiSettings;
 };
 

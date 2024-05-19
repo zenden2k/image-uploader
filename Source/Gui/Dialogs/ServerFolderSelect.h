@@ -121,6 +121,10 @@ protected:
     void NewFolder(const CString& parentFolderId);
     void refreshList();
     //CString m_sNewFolderName, m_sNewFolderDescription;
+    void onSessionFinished(UploadSession*);
+    void onInitialLoadTaskFinished(UploadTask* task, bool success);
+    void loadInitialTree();
+    void getListTaskFinished(FolderTask* task, bool success);
     bool isRunning_;
 public:   
 

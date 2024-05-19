@@ -454,6 +454,7 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
             serverProfile.setFolderId("");
             serverProfile.setFolderTitle("");
             serverProfile.setFolderUrl("");
+            serverProfile.setParentIds({});
         }
             
         UpdateAllPlaceSelectors();
@@ -462,6 +463,7 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
         serverProfile.setFolderTitle("");
         serverProfile.setFolderUrl("");
         serverProfile.setProfileName("");
+        serverProfile.setParentIds({});
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -489,6 +491,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
         CServerFolderSelect as(serverProfile, uploadEngineManager_);
 
         as.m_SelectedFolder.id = serverProfile.folderId();
+        as.m_SelectedFolder.parentIds = serverProfile.parentIds();
         
         if(as.DoModal(m_hWnd) == IDOK){
             BasicSettings* settings = ServiceLocator::instance()->basicSettings();
@@ -501,6 +504,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
                 serverProfile.setFolderId(as.m_SelectedFolder.id);
                 serverProfile.setFolderTitle(as.m_SelectedFolder.title);
                 serverProfile.setFolderUrl(as.m_SelectedFolder.viewUrl);
+                serverProfile.setParentIds(as.m_SelectedFolder.parentIds);
             }
             else {
                 if (serverSettings) {
@@ -509,6 +513,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
                 serverProfile.setFolderId("");
                 serverProfile.setFolderTitle("");
                 serverProfile.setFolderUrl("");
+                serverProfile.setParentIds({});
             }
             UpdateAllPlaceSelectors();
         }
@@ -986,6 +991,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
          serverProfile.setFolderTitle(newFolder.title);
          serverProfile.setFolderId(CFolderItem::NewFolderMark);
          serverProfile.setFolderUrl("");
+         serverProfile.setParentIds(newFolder.parentIds);
          newFolder.setId(CFolderItem::NewFolderMark);
 
          if (serverSettings) {
@@ -1201,6 +1207,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
      sp.setFolderId(ss ? ss->defaultFolder.getId() : std::string());
      sp.setFolderTitle(ss ? ss->defaultFolder.getTitle(): std::string());
      sp.setFolderUrl(ss ? ss->defaultFolder.viewUrl: std::string());
+     sp.setParentIds(ss ? ss->defaultFolder.parentIds : std::vector<std::string>());
  }
 
 void CUploadSettings::updateUrlShorteningCheckboxLabel()
@@ -1308,7 +1315,7 @@ LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWN
     serverProfile.setFolderId(serverSettings ? serverSettings->defaultFolder.getId(): std::string());
     serverProfile.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle(): std::string());
     serverProfile.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl: std::string());
-
+    serverProfile.setParentIds(serverSettings ? serverSettings->defaultFolder.parentIds : std::vector<std::string>());
     /*if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
     {
         serverProfile.setFolderId("");
@@ -1337,7 +1344,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
         serverProfileCopy.setFolderId("");
         serverProfileCopy.setFolderTitle("");
         serverProfileCopy.setFolderUrl("");
-
+        serverProfileCopy.setParentIds({});
         serverProfile = serverProfileCopy;
         UpdateAllPlaceSelectors();
     } 
@@ -1352,6 +1359,7 @@ LRESULT CUploadSettings::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWn
     serverProfile.setFolderId("");
     serverProfile.setFolderTitle("");
     serverProfile.setFolderUrl("");
+    serverProfile.setParentIds({});
     UpdateAllPlaceSelectors();
     return 0;
 }
