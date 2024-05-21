@@ -43,6 +43,7 @@
 
 class UploadEngineManager;
 class ServerProfile;
+struct TreeItemData;
 
 class CServerFolderSelect : 
     public CCustomDialogIndirectImpl<CServerFolderSelect>,
@@ -118,7 +119,7 @@ protected:
     std::unique_ptr<INetworkClient> m_NetworkClient;
     std::shared_ptr<FolderTask> currentTask_;
     void BlockWindow(bool Block);
-    void NewFolder(const CString& parentFolderId);
+    void NewFolder(const CFolderItem& parentFolder);
     void refreshList();
     //CString m_sNewFolderName, m_sNewFolderDescription;
     void onSessionFinished(UploadSession*);
@@ -128,7 +129,7 @@ protected:
     bool isRunning_;
 public:   
 
-    void BuildFolderTree(const std::vector<CFolderItem> &list,const CString& parentFolderId);
+    void BuildFolderTree(TreeItemData* treeItemData, const std::vector<CFolderItem> &list,const std::string& parentFolderId);
 };
 
 #endif // SERVERFOLDERSELECT_H

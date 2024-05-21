@@ -133,7 +133,6 @@ function _LoadAlbumList(list) {
             return 1;
         }
 
-
         local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=" + nm.urlEncode(parentId) + "&limit=100";
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");

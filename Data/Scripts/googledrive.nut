@@ -205,8 +205,16 @@ function DoLogout() {
 }
 
 function GetFolderList(list) {
+    local parentId = list.parentFolder().getId();
+    if (parentId == "") {
+        parentId = "root";
+    }
+
     nm.addQueryHeader("Authorization", _GetAuthorizationString());
-    nm.doGet("https://www.googleapis.com/drive/v2/files");
+    local searchQuery = "mimeType = 'application/vnd.google-apps.folder' and '" + parentId + "' in parents";
+
+    nm.doGet("https://www.googleapis.com/drive/v2/files?q="+ nm.urlEncode(searchQuery));
+
     local code = _CheckResponse();
     if (code < 1) {
         WriteLog("error", "[googledrive] Getting folder list failed, response code: " + nm.responseCode());

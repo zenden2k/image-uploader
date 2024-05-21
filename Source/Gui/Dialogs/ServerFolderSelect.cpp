@@ -32,14 +32,15 @@
 #include "Core/Upload/UploadManager.h"
 #include "Core/TaskDispatcher.h"
 
+struct TreeItemData
+{
+    bool isLoadingTempItem = false;
+    bool childrenStartedLoading = false;
+    bool childrenLoaded = false;
+    CFolderItem folder;
+};
+
 namespace {
-    struct TreeItemData
-    {
-        bool isLoadingTempItem = false;
-        bool childrenStartedLoading = false;
-        bool childrenLoaded = false;
-        CFolderItem folder;
-    };
     constexpr int NORMAL_LOAD_SESSION = 0;
     constexpr int INITIAL_LOAD_SESSION = 1;
 }
@@ -196,7 +197,7 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
 void CServerFolderSelect::getListTaskFinished(FolderTask* folderTask, bool success) {
     std::string parentFolderId = folderTask->folderList().parentFolder().getId();
     std::wstring wideStrParentFolderId = Utf8ToWstring(parentFolderId);
-    //auto it = m_FolderMap.find(wideStrParentFolderId);
+
     HTREEITEM treeViewItem{};
     try {
         treeViewItem = m_FolderMap[wideStrParentFolderId];
@@ -216,24 +217,27 @@ void CServerFolderSelect::getListTaskFinished(FolderTask* folderTask, bool succe
         }
     }
     if (tid) {
+        if (tid->childrenLoaded) {
+            return;
+        }
         tid->childrenLoaded = true;
     }
 
     if (!success) {
         TRC(IDC_FOLDERLISTLABEL, "Failed to load folder list.");
+        return;
     }
 
-    else {
-        
-    }
     if (folderTask->folderList().GetCount() == 0) {
+        //m_FolderTree.Expand(treeViewItem, TVE_COLLAPSERESET);
+        // Tell treeview that the node has no children
         TVITEM modifiedItem = {};
         modifiedItem.hItem = treeViewItem;
         modifiedItem.mask = TVIF_CHILDREN;
         modifiedItem.cChildren = 0;
         m_FolderTree.SetItem(&modifiedItem);
     }
-    BuildFolderTree(folderTask->folderList().m_folderItems, U2W(parentFolderId));
+    BuildFolderTree(tid, folderTask->folderList().m_folderItems, parentFolderId);
 
     m_FolderTree.SelectItem(m_FolderMap[Utf8ToWstring(m_SelectedFolder.id)]);
 }
@@ -243,14 +247,14 @@ void CServerFolderSelect::OnLoadFinished()
 
 }
 
-void CServerFolderSelect::NewFolder(const CString& parentFolderId)
+void CServerFolderSelect::NewFolder(const CFolderItem& parentFolder)
 {
     CFolderItem newFolder;
     CNewFolderDlg dlg(newFolder, true, m_accessTypeList);
     if (dlg.DoModal(m_hWnd) == IDOK)
     {
         m_newFolder = newFolder;
-        m_newFolder.parentid = WCstringToUtf8(parentFolderId);
+        m_newFolder.parentid = parentFolder.getId();
         m_FolderOperationType = FolderOperationType::foCreateFolder;
         if (!isRunning_){
             auto task = std::make_shared<FolderTask>(FolderOperationType::foCreateFolder);
@@ -271,7 +275,7 @@ void CServerFolderSelect::NewFolder(const CString& parentFolderId)
 
 LRESULT CServerFolderSelect::OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    NewFolder("");
+    NewFolder({});
     return 0;
 }
 
@@ -463,18 +467,21 @@ LRESULT CServerFolderSelect::OnCreateNestedFolder(WORD wNotifyCode, WORD wID, HW
     if (!tid) {
         return 0;
     }
-    CFolderItem& folder = tid->folder;
-    NewFolder(folder.id.c_str());
+
+    NewFolder(tid->folder);
     return 0;
 }
 
-void CServerFolderSelect::BuildFolderTree(const std::vector<CFolderItem>& list, const CString& parentFolderId)
+void CServerFolderSelect::BuildFolderTree(TreeItemData* treeItemData, const std::vector<CFolderItem>& list, const std::string& parentFolderId)
 {
     for (size_t i = 0; i < list.size(); i++)
     {
         const CFolderItem& cur = list[i];
-        if (cur.parentid.c_str() == parentFolderId)
+        if (cur.parentid == parentFolderId)
         {
+            if (treeItemData) {
+                treeItemData->childrenLoaded = true;
+            }
             CString title = Utf8ToWCstring(cur.title);
             /*if (cur.itemCount != -1)
                 title += _T(" (") + WinUtils::IntToStr(cur.itemCount) + _T(")");*/
@@ -504,10 +511,7 @@ void CServerFolderSelect::BuildFolderTree(const std::vector<CFolderItem>& list, 
 
             m_FolderMap[Utf8ToWstring(cur.id)] = res;
             if (!cur.id.empty()) {
-                BuildFolderTree(list, cur.id.c_str());
-            }
-            if (parentFolderId.IsEmpty()) {
-                //m_FolderTree.Expand(res);
+                BuildFolderTree(tid, list, cur.id);
             }
         }
     }
