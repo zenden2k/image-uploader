@@ -110,8 +110,9 @@ protected:
     CFolderItem m_newFolder;
     std::shared_ptr<UploadSession> uploadSession_;
     std::vector<std::string> m_accessTypeList;
-    std::map<std::wstring,HTREEITEM> m_FolderMap;
+    std::map<std::string,HTREEITEM> m_FolderMap;
     std::atomic_bool stopSignal;
+    std::atomic<int> sessionsRunning_;
     CTreeViewCtrl m_FolderTree;
     ServerProfile& serverProfile_;
     //IU_PLUGIN_FolderItem * m_folderItems;
@@ -120,12 +121,13 @@ protected:
     std::shared_ptr<FolderTask> currentTask_;
     void BlockWindow(bool Block);
     void NewFolder(const CFolderItem& parentFolder);
-    void refreshList();
+    void refreshList(const std::string& parentFolderId);
     //CString m_sNewFolderName, m_sNewFolderDescription;
     void onSessionFinished(UploadSession*);
     void onInitialLoadTaskFinished(UploadTask* task, bool success);
     void loadInitialTree();
     void getListTaskFinished(FolderTask* task, bool success);
+
     bool isRunning_;
 public:   
 

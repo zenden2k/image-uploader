@@ -39,6 +39,9 @@ function _RegReplace(str, pattern, replace_with) {
     return resultStr;
 }
 
+function _IdFromPath(path) {
+    return _RegReplace(path, "disk:", "") + "/";
+}
 /*function _UrlEncodePath(str) {
     local res = "";
     local start = 0;
@@ -186,19 +189,32 @@ function GetFolderList(list) {
 }
 
 function CreateFolder(parentAlbum, album) {
+    local parentId = parentAlbum.getId();
+    if (parentId == "") {
+        parentId = "/";
+    }
     if (_UseRestApi()) {
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");
         //nm.addQueryHeader("Content-Type", "application/json; charset=utf-8");
         nm.enableResponseCodeChecking(false);
-        nm.setUrl("https://cloud-api.yandex.net/v1/disk/resources?path=" + nm.urlEncode(parentAlbum.getId() + album.getTitle()));
+        nm.setUrl("https://cloud-api.yandex.net/v1/disk/resources?path=" + nm.urlEncode(parentId + album.getTitle()));
         nm.setMethod("PUT");
         nm.doUpload("", "");
         if (nm.responseCode() == 201) {
             local t = ParseJSON(nm.responseBody());
-            /*if (t != null && "path" in t) {
-
-            }*/
+            if (t != null && "href" in t) {
+                nm.addQueryHeader("Authorization", _GetAuthorizationString());
+                nm.addQueryHeader("Accept", "application/json");
+                nm.doGet(t.href);
+                if (nm.responseCode() == 200) {
+                    t = ParseJSON(nm.responseBody());
+                    if (t != null && "path" in t) {
+                        album.setId(_IdFromPath(t.path));
+                        album.setParentId(parentId);
+                    }
+                }
+            }
             return 1;
         } else {
             WriteLog("error", "[yandex.disk] Failed to create a folder, response code: " + nm.responseCode());
