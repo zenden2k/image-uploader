@@ -150,7 +150,7 @@ function GetFolderList(list) {
     if (albumDivs.length()) {
         albumDivs.each(function(index, elem) {
             local folder = CFolderItem();
-            local openLink = elem.find("a[title='Album öffnen']");
+            local openLink = elem.find("a[title='Album bearbeiten']");
             folder.setTitle(openLink.text());
             local openUrl = openLink.attribute("href");
             local reg = CRegExp("id=(\\d+)", "mi");

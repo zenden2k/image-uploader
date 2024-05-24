@@ -206,12 +206,9 @@ function DoLogout() {
 
 function GetFolderList(list) {
     local parentId = list.parentFolder().getId();
-    if (parentId == "") {
-        parentId = "root";
-    }
 
     nm.addQueryHeader("Authorization", _GetAuthorizationString());
-    local searchQuery = "mimeType = 'application/vnd.google-apps.folder' and '" + parentId + "' in parents";
+    local searchQuery = "mimeType = 'application/vnd.google-apps.folder' and '" + (parentId == "" ? "root" : parentId)  + "' in parents";
 
     nm.doGet("https://www.googleapis.com/drive/v2/files?q="+ nm.urlEncode(searchQuery));
 
@@ -231,6 +228,7 @@ function GetFolderList(list) {
                 local folder = CFolderItem();
                 folder.setId(item.id);
                 folder.setTitle(item.title);
+                folder.setParentId(parentId);
                 //folder.setSummary(summary);
                 folder.setViewUrl(item.alternateLink);
                 list.AddFolderItem(folder);
@@ -250,6 +248,9 @@ function CreateFolder(parentFolder, folder) {
         title = folder.getTitle(),
         mimeType = "application/vnd.google-apps.folder"
     };
+    if (parentFolder.getId() != "") {
+        data.parents <- [ {id = parentFolder.getId(), kind = "drive#parentReference"}];
+    }
     nm.addQueryHeader("Content-Type","application/json");
     nm.doPost(ToJSON(data));
     local code = _CheckResponse();
@@ -341,7 +342,7 @@ function UploadFile(FileName, options) {
                     options.setViewUrl(item.alternateLink);
 
                     if (item.mimeType.find("image/", 0) == 0) {
-                        // There is not such URL in API response. It may break in the future.
+                        // There is no such URL in API response. It may break in the future.
                         options.setDirectUrl("https://drive.google.com/uc?export=view&id=" + item.id);
                     }
                     
