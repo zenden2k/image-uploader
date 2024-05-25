@@ -524,8 +524,9 @@ bool CVideoGrabberPage::OnNext()
     return true;
 }
 
-LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
+    bHandled = FALSE;
     CheckEnableNext();
     return 0;
 }

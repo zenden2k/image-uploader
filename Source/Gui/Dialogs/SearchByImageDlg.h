@@ -56,6 +56,7 @@ private:
     CProgressRingControl wndAnimation_;
     SearchByImage::SearchEngine searchEngine_;
     UploadManager* uploadManager_;
+    CFont titleLabelFont_;
     void onSeekerFinished(bool success, const std::string& msg);
 };
 

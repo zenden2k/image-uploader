@@ -99,7 +99,7 @@ class CServerFolderSelect :
     LRESULT OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void onTaskFinished(UploadTask* task, bool success);
     void OnLoadFinished();
-    CImageList folderTreeViewImageList;
+    CImageListManaged folderTreeViewImageList;
     CFolderItem m_SelectedFolder;
 protected:
     CProgressRingControl m_wndAnimation;

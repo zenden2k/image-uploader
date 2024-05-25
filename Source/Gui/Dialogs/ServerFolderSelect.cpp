@@ -186,6 +186,7 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
     } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) { 
         // Modifying an existing folder
         m_FolderOperationType = FolderOperationType::foModifyFolder;
+        m_newFolder.setId(folderTask->folder().getId());
         m_SelectedFolder = m_newFolder;
         refreshList(folderTask->folder().parentid);
         return;
@@ -267,6 +268,7 @@ void CServerFolderSelect::NewFolder(const CFolderItem& parentFolder)
             uploadSession_ = std::make_shared<UploadSession>();
             uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
             uploadSession_->addTask(task);
+            ++sessionsRunning_;
             BlockWindow(true);
             uploadManager->addSession(uploadSession_);
         }
@@ -402,9 +404,9 @@ LRESULT CServerFolderSelect::OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndC
             uploadSession_ = std::make_shared<UploadSession>();
             uploadSession_->addSessionFinishedCallback(std::bind(&CServerFolderSelect::onSessionFinished, this, _1));
             uploadSession_->addTask(task);
-            uploadManager->addSession(uploadSession_);
             ++sessionsRunning_;
             BlockWindow(true);
+            uploadManager->addSession(uploadSession_);
         }
     }
     return 0;
@@ -680,9 +682,8 @@ void CServerFolderSelect::loadInitialTree() {
     }
     uploadSession_->setUserData(reinterpret_cast<void*>(INITIAL_LOAD_SESSION));
     isRunning_ = true;
-
+    ++sessionsRunning_;
     BlockWindow(true);
     UploadManager* uploadManager = ServiceLocator::instance()->uploadManager();
-    ++sessionsRunning_;
     uploadManager->addSession(uploadSession_);
 }

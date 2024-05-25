@@ -102,7 +102,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
     GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, settings->ImageReuploaderSettings.PasteHtmlOnCtrlV);
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
+    descriptionLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
         m_wndAnimation.SubclassWindow(hWnd);
