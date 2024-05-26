@@ -355,24 +355,22 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 	std::vector<ImageGeneratorTask::FileItem> items;
 	for (int i = 0; i < n; i++) {
 		buf[0] = _T('\0');
-		CString fileName = ThumbsView.GetFileName(i);
+		LPCTSTR fileName = ThumbsView.GetFileName(i);
 		ThumbsView.GetItemText(i, 0, buf, 256);
 		items.emplace_back(fileName, buf);
 	}
 	CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 	auto task = std::make_shared<ImageGeneratorTask>(items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
-	
-	task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
+
+    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
 		if (taskResult == BackgroundTaskResult::Success && !task->outFileName().IsEmpty()) {
 			mainDlg->AddToFileList(task->outFileName(), L"", true, nullptr, true);
 		}
-
 	});
 	CStatusDlg dlg(task);
 	if (dlg.DoModal(m_hWnd) == IDOK) {
 		return 1;
 	}
-
 	return 0;
 }
 

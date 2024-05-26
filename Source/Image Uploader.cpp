@@ -266,7 +266,7 @@ public:
             CString CurrentParam = CmdLine[i];
             if (CurrentParam.Left(10) == _T("/language=")) {
                 CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
-                auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+                auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
                 auto it = languageList.find(W2U(shortLanguageName));
 

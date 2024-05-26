@@ -44,6 +44,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    PageWnd = m_hWnd;
     DoDataExchange(FALSE);
     using namespace std::placeholders;
     CClientDC dc(m_hWnd);
@@ -108,7 +109,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     HFONT font = GetFont();
     LOGFONT alf;
-    PageWnd = m_hWnd;
 
     bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
 
@@ -119,9 +119,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         NewFont=CreateFontIndirect(&alf);
 
         SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-        HDC dc = ::GetDC(nullptr);
-        alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ::ReleaseDC(nullptr, dc);
+        
+        alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
         NewFont = CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }
