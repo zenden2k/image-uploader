@@ -1005,3 +1005,9 @@ void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
 NetworkClient::ActionType NetworkClient::currrentActionType() const {
     return m_currentActionType;
 }
+
+void NetworkClient::clearThreadData() {
+#ifdef USE_OPENSSL
+    OPENSSL_thread_stop();
+#endif
+}

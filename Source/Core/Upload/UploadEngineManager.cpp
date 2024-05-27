@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 Image Uploader -  free application for uploading images/files to the Internet
 
@@ -186,6 +186,7 @@ void UploadEngineManager::setScriptsDirectory(const std::string & directory) {
 
 void UploadEngineManager::clearThreadData()
 {
+    NetworkClient::clearThreadData();
     std::lock_guard<std::mutex> lock(pluginsMutex_);
     std::thread::id threadId = std::this_thread::get_id();
     auto it = m_plugins.find(threadId);

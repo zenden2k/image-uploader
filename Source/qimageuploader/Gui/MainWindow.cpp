@@ -98,6 +98,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 }
 
 MainWindow::~MainWindow() {
+    uploadTreeModel_->reset();
     uploadManager_.reset(); // Must be destroyed first
 }
 

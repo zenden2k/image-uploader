@@ -237,6 +237,8 @@ class NetworkClient: public INetworkClient
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
 
         ActionType currrentActionType() const;
+
+        static void clearThreadData();
         /*! @endcond */
     private:
 
