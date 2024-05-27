@@ -151,8 +151,6 @@ void CFileDownloader::memberThreadFunc()
             }
         }
     }
-
-    NetworkClient::clearThreadData();
 }
 
 bool CFileDownloader::getNextJob(DownloadFileListItem& item)

@@ -101,5 +101,8 @@ namespace IuCoreUtils
     bool MoveFileOrFolder(const std::string& from ,const std::string& to);
     std::string ThreadIdToString(const std::thread::id& id);
     void DatePlusDays(struct tm* date, int days);
+
+    using ThreadExitFunctionPointer = void(*)();
+    void OnThreadExit(ThreadExitFunctionPointer func);
 };
 #endif

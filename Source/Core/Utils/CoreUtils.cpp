@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <map>
+#include <set>
 #include <string>
 #include <sstream>
 
@@ -475,6 +476,36 @@ bool RemoveFile(const std::string& utf8Filename) {
     } catch (const std::filesystem::filesystem_error&) {
     }
     return false;
+}
+
+void OnThreadExit(void (*func)()) {
+    class ThreadExiter
+    {
+        std::set<ThreadExitFunctionPointer> exitFuncs_;
+    public:
+        ThreadExiter() = default;
+        ThreadExiter(ThreadExiter const&) = delete;
+        void operator=(ThreadExiter const&) = delete;
+        ~ThreadExiter()
+        {
+            for(auto func: exitFuncs_) {
+                func();
+            }
+            exitFuncs_.clear();
+            /*while (!exit_funcs.empty())
+            {
+                exit_funcs.top()();
+                exit_funcs.pop();
+            }*/
+        }
+        void add(ThreadExitFunctionPointer func)
+        {
+            exitFuncs_.emplace(func);
+        }
+    };
+
+    thread_local ThreadExiter exiter;
+    exiter.add(func);
 }
 
 } // end of namespace IuCoreUtils

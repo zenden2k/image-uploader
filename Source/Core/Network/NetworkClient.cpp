@@ -267,6 +267,7 @@ std::mutex NetworkClient::_mutex;
 NetworkClient::NetworkClient()
 {
     static NetworkClientInternal::CurlInitializer initializer;
+    IuCoreUtils::OnThreadExit(&NetworkClient::clearThreadData);
     enableResponseCodeChecking_ = true;
     m_hOutFile = nullptr;
     chunkOffset_ = -1;
