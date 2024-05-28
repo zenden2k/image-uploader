@@ -1,4 +1,4 @@
-﻿/*
+/*
 
     Image Uploader -  free application for uploading images/files to the Internet
 
@@ -60,7 +60,7 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
         language_ = locale_;
     }
 
-    auto locales = LangHelper::getLocaleList();
+    auto locales = LangHelper::instance()->getLocaleList();
     auto it = locales.find(W2U(locale_));
 
     m_sLang = it == locales.end() ? locale_ : U2W(it->second);

@@ -66,7 +66,6 @@
 #define IDI_ADDITIONAL                  232
 #define IDI_CLOSE                       233
 #define IDI_WINDOW                      234
-#define IDR_PROGRESSGIF                 241
 #define IDB_BITMAP6                     242
 #define IDB_ICONUNDOPNG                 242
 #define IDI_ICONWINDOWS                 245
@@ -792,7 +791,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        337
+#define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1341
 #define _APS_NEXT_SYMED_VALUE           128

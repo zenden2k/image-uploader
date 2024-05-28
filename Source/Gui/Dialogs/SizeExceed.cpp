@@ -76,7 +76,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     //CString serverName = U2W(fileTask_->serverProfile().serverName());
 
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+    fileExceedNameLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
     
     int64_t fileSize = IuCoreUtils::GetFileSize(W2U(m_szFileName));
     WCHAR buf2[25];

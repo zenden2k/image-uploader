@@ -281,6 +281,7 @@ protected:
     HwndScopedWrapper aboutButtonToolTip_;
     CButton helpButton_;
     CIcon helpButtonIcon_;
+    CStatic headBitmap_;
     long m_lRef = 0;
     bool QuickUploadMarker;
     CString LastVideoFile;

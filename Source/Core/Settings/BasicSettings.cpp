@@ -96,7 +96,8 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
         tempSettings.defaultFolder.setId(server.Attribute("DefaultFolderId"));
         tempSettings.defaultFolder.viewUrl = server.Attribute("DefaultFolderUrl");
         tempSettings.defaultFolder.setTitle(server.Attribute("DefaultFolderTitle"));
-
+        
+        myFromString(server.Attribute("DefaultFolderParentIds"), tempSettings.defaultFolder.parentIds);
         ServersSettings[server_name][tempSettings.authData.Login] = tempSettings;
     }
     return true;
@@ -138,6 +139,7 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
                 serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
                 serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
                 serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
+                serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
             }
 
         }

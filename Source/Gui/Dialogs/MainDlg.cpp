@@ -53,7 +53,9 @@ CMainDlg::CMainDlg():
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    // register object for message filtering and idle updates
+    PageWnd = m_hWnd;
+
+    // register object for message filtering
     CMessageLoop* pLoop = _Module.GetMessageLoop();
     ATLASSERT(pLoop != NULL);
     pLoop->AddMessageFilter(this);
@@ -61,7 +63,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     listChanged_ = false;
     callbackLastCallType_ = false;
     SetTimer(kStatusTimer, 500);
-    PageWnd = m_hWnd;
     TRC(IDC_ADDIMAGES, "Add Files");
     TRC(IDC_ADDVIDEO, "Import Video File");
     TRC(IDC_SCREENSHOT, "Screenshot");

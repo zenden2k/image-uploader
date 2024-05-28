@@ -35,6 +35,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	InternalItem* getInternalItem(const QModelIndex &index);
+    void reset();
 private:
     void setupModelData(UploadManager *uploadManager);
     

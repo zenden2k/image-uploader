@@ -176,6 +176,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     }
     CServerFolderSelect folderSelectDlg(serverProfile_, uploadEngineManager_);
     folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
+    folderSelectDlg.m_SelectedFolder.parentIds = serverProfile().parentIds();
 
     if ( folderSelectDlg.DoModal(m_hWnd) == IDOK ) {
         CFolderItem folder = folderSelectDlg.m_SelectedFolder;
@@ -185,10 +186,12 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
             serverProfile_.setFolderId(folder.getId());
             serverProfile_.setFolderTitle(folder.getTitle());
             serverProfile_.setFolderUrl(folder.viewUrl);
+            serverProfile_.setParentIds(folder.parentIds);
         } else {
             serverProfile_.setFolderId("");
             serverProfile_.setFolderTitle("");
             serverProfile_.setFolderUrl("");
+            serverProfile_.setParentIds({});
         }
 
         SetDlgItemText(IDC_FOLDERNAMELABEL, Utf8ToWCstring( folder.getTitle() ));
@@ -216,6 +219,7 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
         serverProfile_.setFolderId("");
         serverProfile_.setFolderTitle("");
         serverProfile_.setFolderUrl("");
+        serverProfile_.setParentIds({});
         SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("not selected") + CString(">")) );
 
     }

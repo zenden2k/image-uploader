@@ -267,6 +267,7 @@ std::mutex NetworkClient::_mutex;
 NetworkClient::NetworkClient()
 {
     static NetworkClientInternal::CurlInitializer initializer;
+    IuCoreUtils::OnThreadExit(&NetworkClient::clearThreadData);
     enableResponseCodeChecking_ = true;
     m_hOutFile = nullptr;
     chunkOffset_ = -1;
@@ -1004,4 +1005,10 @@ void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
 
 NetworkClient::ActionType NetworkClient::currrentActionType() const {
     return m_currentActionType;
+}
+
+void NetworkClient::clearThreadData() {
+#ifdef USE_OPENSSL
+    OPENSSL_thread_stop();
+#endif
 }

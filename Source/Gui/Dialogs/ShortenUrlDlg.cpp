@@ -63,7 +63,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         GuiTools::RemoveWindowStyleEx(GetDlgItem(IDC_RESULTSEDIT), WS_EX_RTLREADING);
     }
 
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_RESULTSLABEL));
+    resultsLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_RESULTSLABEL));
 
     ::ShowWindow(GetDlgItem(IDC_DOWNLOADFILESPROGRESS), SW_HIDE);
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);

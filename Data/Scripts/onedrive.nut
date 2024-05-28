@@ -211,6 +211,17 @@ function DoLogout() {
 }
 
 function GetFolderList(list) {
+    local parentId = list.parentFolder().getId();
+    if (parentId != "" && parentId != "root") {
+        return 1;
+    }
+    if (parentId == "") {
+        local rootFolder = CFolderItem();
+        rootFolder.setId("root");
+        rootFolder.setTitle("/");
+        list.AddFolderItem(rootFolder);
+        return 1;
+    }
     nm.addQueryHeader("Authorization", _GetAuthorizationString());
     nm.enableResponseCodeChecking(false);
     nm.doGet("https://graph.microsoft.com/v1.0/drive/root/children?select=id%2cname&filter=folder%20ne%20null");
@@ -231,12 +242,8 @@ function GetFolderList(list) {
                 }
                 return 0;
             }
-            local rootFolder = CFolderItem();
-            rootFolder.setId("root");
-            rootFolder.setTitle("/");
-            list.AddFolderItem(rootFolder);
-            if ("value" in t)  {
 
+            if ("value" in t)  {
                 local num = t.value.len();
                 for (local i = 0; i < num; i++) {
                     local item = t.value[i];

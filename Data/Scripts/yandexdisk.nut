@@ -39,6 +39,9 @@ function _RegReplace(str, pattern, replace_with) {
     return resultStr;
 }
 
+function _IdFromPath(path) {
+    return _RegReplace(path, "disk:", "") + "/";
+}
 /*function _UrlEncodePath(str) {
     local res = "";
     local start = 0;
@@ -109,7 +112,7 @@ function _ParseAlbumList(data,list,parentid)
     return 1;
 }
 
-function _LoadAlbumList(list) {
+function GetFolderList(list) {
     if (_UseRestApi()) {
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");
@@ -121,19 +124,26 @@ function _LoadAlbumList(list) {
             ServerParams.setParam("token","");
             return -2;
         }
+        local parentId = list.parentFolder().getId();
+        local folder = CFolderItem();
+        if (parentId == "") {
+            parentId = "/";
+            folder.setId("/");
+            folder.setTitle("/ (root)");
+            folder.setSummary("");
+            list.AddFolderItem(folder);
+    
+            return 1;
+        }
 
-        local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=%2F&limit=100";
+        local url = "https://cloud-api.yandex.net:443/v1/disk/resources?path=" + nm.urlEncode(parentId) + "&limit=100";
         nm.addQueryHeader("Authorization", _GetAuthorizationString());
         nm.addQueryHeader("Accept", "application/json");
         nm.doGet(url);
         code = nm.responseCode();
 
         if (code == 200) {
-            local folder = CFolderItem();
-            folder.setId("/");
-            folder.setTitle("/ (root)");
-            folder.setSummary("");
-            list.AddFolderItem(folder);
+            
             local res = ParseJSON(nm.responseBody());
             local itemsCount = res._embedded.items.len();
             for ( local i = 0; i< itemsCount; i++ ) {
@@ -147,6 +157,7 @@ function _LoadAlbumList(list) {
                 folder.setId(path);
                 folder.setTitle(item.name);
                 folder.setSummary("");
+                folder.setParentId(parentId);
                 list.AddFolderItem(folder);
             }
             return 1;
@@ -173,11 +184,40 @@ function _LoadAlbumList(list) {
     return 0;
 }
 
-function GetFolderList(list) {
-    return _LoadAlbumList(list);
-}
-
 function CreateFolder(parentAlbum, album) {
+    local parentId = parentAlbum.getId();
+    if (parentId == "") {
+        parentId = "/";
+    }
+    if (_UseRestApi()) {
+        nm.addQueryHeader("Authorization", _GetAuthorizationString());
+        nm.addQueryHeader("Accept", "application/json");
+        //nm.addQueryHeader("Content-Type", "application/json; charset=utf-8");
+        nm.enableResponseCodeChecking(false);
+        nm.setUrl("https://cloud-api.yandex.net/v1/disk/resources?path=" + nm.urlEncode(parentId + album.getTitle()));
+        nm.setMethod("PUT");
+        nm.doUpload("", "");
+        if (nm.responseCode() == 201) {
+            local t = ParseJSON(nm.responseBody());
+            if (t != null && "href" in t) {
+                nm.addQueryHeader("Authorization", _GetAuthorizationString());
+                nm.addQueryHeader("Accept", "application/json");
+                nm.doGet(t.href);
+                if (nm.responseCode() == 200) {
+                    t = ParseJSON(nm.responseBody());
+                    if (t != null && "path" in t) {
+                        album.setId(_IdFromPath(t.path));
+                        album.setParentId(parentId);
+                    }
+                }
+            }
+            return 1;
+        } else {
+            WriteLog("error", "[yandex.disk] Failed to create a folder, response code: " + nm.responseCode());
+        }
+        return 0;
+    }
+
     local folderName = album.getTitle();
     if (folderName == "") {
         return 0;
@@ -196,6 +236,89 @@ function CreateFolder(parentAlbum, album) {
     }
 
     return 1;
+}
+
+function _WaitForOperation(operationUrl, successCallback) {
+    while (true) {
+        nm.addQueryHeader("Authorization", _GetAuthorizationString());
+        nm.addQueryHeader("Accept", "application/json");
+        nm.doGet(operationUrl);
+        if (nm.responseCode() == 200) {
+            local t2 = ParseJSON(nm.responseBody());
+            if (t2 != null && "status" in t2) {
+                if (t2.status == "in-progress") {
+                    Sleep(1000);
+                    continue;
+                } else if (t2.status == "success") {
+                   return successCallback();
+                } else if (t2.status == "failed") {
+                    return 0;
+                }
+            } else {
+                break;
+            }
+        }
+    }
+    return 0;
+}
+
+// Rename folder
+function ModifyFolder(folder) {
+    local title = folder.getTitle();
+    local id = folder.getId();
+
+    if (id == "" || id == "/") {
+        WriteLog("error", "[yandex.disk] Cannot rename root folder");
+        return 0;
+    }
+
+    nm.setMethod("POST");
+    nm.addQueryHeader("Authorization", _GetAuthorizationString());
+    nm.addQueryHeader("Accept", "application/json");
+    nm.enableResponseCodeChecking(false);
+    nm.setUrl("https://cloud-api.yandex.net/v1/disk/resources/move?from=" + nm.urlEncode(id) + "&path=" +  nm.urlEncode(folder.getParentId() + title));
+
+    nm.doPost("");
+    local code = _CheckResponse();
+    if (code < 1) {
+        WriteLog("error", "[yandex.disk] Unable to rename folder, response code: " + nm.responseCode());
+        return code;
+    } else {
+        local t = ParseJSON(nm.responseBody());
+        if (t != null && "href" in t) {
+            if (t.href.find("operations", 0) != null) {
+                return _WaitForOperation(t.href, function() {
+                    // Operation has finished successfully
+                    nm.addQueryHeader("Authorization", _GetAuthorizationString());
+                    nm.addQueryHeader("Accept", "application/json");
+                    nm.doGet("https://cloud-api.yandex.net/v1/disk/resources?path=" + nm.urlEncode(folder.getParentId() + title));
+                    if (_IsSuccessCode(nm.responseCode())) {
+                        local t3 = ParseJSON(nm.responseBody());
+                        folder.setId(_IdFromPath(t3.path));
+                        return 1;
+                    } else {
+                        WriteLog("error", "[yandex.disk] Renaming operation has finished successfully, but resource not found, response code: " + nm.responseCode());
+                    }
+                    return 0;
+                });
+            } else {
+                nm.addQueryHeader("Authorization", _GetAuthorizationString());
+                nm.addQueryHeader("Accept", "application/json");
+                nm.doGet(t.href);
+                if (_IsSuccessCode(nm.responseCode())) {
+                    t = ParseJSON(nm.responseBody());
+                    if (t != null && "path" in t) {
+                        folder.setId(_IdFromPath(t.path));
+                    }
+                } else {
+                    WriteLog("error", "[yandex.disk] Unable to rename folder, response code: " + nm.responseCode());
+                }
+                return 1;  
+            }
+        }
+    }
+
+    return 0;
 }
 
 function _GetAuthentificationErrorString(code) {

@@ -46,7 +46,7 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 {
     CenterWindow(GetParent());
     TRC(IDCANCEL, "Cancel");
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
+    titleLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_TITLE));
     SetWindowText(TR("Search by image"));
 
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);

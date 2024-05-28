@@ -291,10 +291,13 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
     helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconWidth, iconHeight);
 
-    helpButton_.m_hWnd = GetDlgItem(IDC_HELPBUTTON);
+    helpButton_ = GetDlgItem(IDC_HELPBUTTON);
     helpButton_.SetIcon(helpButtonIcon_);
+
+    headBitmap_ = GetDlgItem(IDC_HEADBITMAP);
+
     ServiceLocator::instance()->logWindow()->TranslateUI();
-    aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_HELPBUTTON), TR("Help"));
+    aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(helpButton_, TR("Help"));
     using namespace WinToastLib;
     if (WinToast::isCompatible()) {
         WinToast::instance()->setAppName(APPNAME);
@@ -638,6 +641,13 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     pLoop->RemoveMessageFilter(this);
     pLoop->RemoveIdleHandler(this);
 
+    CBitmapHandle bmpOld = headBitmap_.SetBitmap(nullptr);
+    if (bmpOld) {
+        bmpOld.DeleteObject();
+    }
+    // We need to make sure the icon is not in use before we delete it (otherwise the memory won't be freed)
+    HICON oldIcon = helpButton_.SetIcon(nullptr);
+    DestroyIcon(oldIcon);
     bHandled = false;
     return 0;
 }
@@ -674,10 +684,14 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
     SetDlgItemText(IDC_NEXT, TR("Next >"));
 
     HBITMAP bmp = Pages[idPage]->HeadBitmap;
-    if (!bmp) ::ShowWindow(GetDlgItem(IDC_HEADBITMAP), SW_HIDE);
-    else {
-        ::ShowWindow(GetDlgItem(IDC_HEADBITMAP), SW_SHOW);
-        SendDlgItemMessage(IDC_HEADBITMAP, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmp);
+    if (!bmp) {
+        headBitmap_.ShowWindow(SW_HIDE);
+    } else {
+        headBitmap_.ShowWindow(SW_SHOW);
+        CBitmapHandle bmpOld = headBitmap_.SetBitmap(bmp);
+        if (bmpOld) {
+            bmpOld.DeleteObject();
+        }
     }
 
     PrevPage = prev;

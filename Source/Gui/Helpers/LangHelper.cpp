@@ -3,12 +3,11 @@
 #include <filesystem>
 #include <map>
 
-#include "Func/LangClass.h"
+#include "Core/Utils/CoreUtils.h"
 
-namespace LangHelper {
-
-    std::unordered_map<std::string, std::string> localeNames = {
-            {"af_NA", "Afrikaans (Namibia)"},
+LangHelper::LangHelper() {
+    localeNames_ = {
+        {"af_NA", "Afrikaans (Namibia)"},
         {"af_ZA", "Afrikaans (South Africa)"},
         {"af", "Afrikaans"},
         {"ak_GH", "Akan (Ghana)"},
@@ -446,12 +445,27 @@ namespace LangHelper {
         {"zu", "Zulu"},
     };
 
-std::map<std::string, std::string> getLanguageList(const std::wstring& languagesDirectory) {
+    EnumSystemLocalesEx([](LPWSTR pStr, DWORD unnamedParam2, LPARAM param) -> BOOL {
+        auto* lh = reinterpret_cast<LangHelper*>(param);
+        WCHAR englishBuffer[256] = { '\0' }, nativeNameBufer[256] = { '\0' };
+        int iResult = GetLocaleInfoEx(pStr, LOCALE_SENGLISHLANGUAGENAME, englishBuffer, std::size(englishBuffer));
+        if (iResult > 0) {
+            iResult = GetLocaleInfoEx(pStr, LOCALE_SNATIVELANGUAGENAME, nativeNameBufer, std::size(nativeNameBufer));
+            CString key = pStr;
+            key.Replace(_T("-"), _T("_"));
+            lh->systemLocales_[key.GetString()] = { nativeNameBufer, englishBuffer };
+        }
+        return TRUE;
+    }, LOCALE_ALL, reinterpret_cast<LPARAM>(this), nullptr);
+}
+
+std::map<std::string, std::string> LangHelper::getLanguageList(const std::wstring& languagesDirectory) const {
     namespace fs = std::filesystem;
+
     std::map<std::string, std::string> result = {
         {"en", "English"}
     };
-    auto& locales = localeNames;
+    auto& locales = localeNames_;
     try {
 
         for (const auto& p : fs::directory_iterator(languagesDirectory + L"/locale/", fs::directory_options::skip_permission_denied)) {
@@ -459,9 +473,17 @@ std::map<std::string, std::string> getLanguageList(const std::wstring& languages
 
             if (is_directory(path)) {
                 std::wstring name = path.filename();
-                std::string nameA = IuCoreUtils::WstringToUtf8(name);
+                std::wstring nameClean = name.substr(0, name.find_last_of('.'));
+                std::string nameA = IuCoreUtils::WstringToUtf8(nameClean);
                 auto localeIt = locales.find(nameA);
-                result[nameA] = localeIt == locales.end() ? nameA : localeIt->second;
+                std::string displayName = (localeIt == locales.end() ? nameA : localeIt->second);
+                auto systemLocaleIt = systemLocales_.find(nameClean);
+
+                if (systemLocaleIt != systemLocales_.end() && !systemLocaleIt->second.nativeName.empty()) {
+                    displayName += " - ";
+                    displayName += IuCoreUtils::WstringToUtf8(systemLocaleIt->second.nativeName);
+                }
+                result[nameA] = displayName;
             }            
         }
     } catch (const fs::filesystem_error &) {
@@ -471,8 +493,8 @@ std::map<std::string, std::string> getLanguageList(const std::wstring& languages
     return result;
 }
 
-std::unordered_map<std::string, std::string>& getLocaleList() {
-    return localeNames;
+const std::unordered_map<std::string, std::string>& LangHelper::getLocaleList() const {
+    return localeNames_;
 }
 
-}
+
