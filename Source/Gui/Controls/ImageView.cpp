@@ -36,10 +36,14 @@ CImageViewWindow::~CImageViewWindow()
 LRESULT CImageViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     RECT rc = {380, 37, 636, 240};
-    Img.Create(m_hWnd, rc);
+    Img.Create(m_hWnd, rc, 0, WS_CHILD | WS_VISIBLE);
     Img.HideParent = true;
     SetFocus();
     return 0;  // Let the system set the focus
+}
+
+LRESULT CImageViewWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    return 0;
 }
 
 LRESULT CImageViewWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

@@ -31,5 +31,6 @@ Dist/serverchecker
 .vscode/
 .idea/
 /Dist/Packages/
+/Dist/Releases/
 /Dist/Build_Release_Temp/
 /Dist/Libs/

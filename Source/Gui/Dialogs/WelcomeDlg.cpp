@@ -116,13 +116,13 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     {
         alf.lfWeight = FW_BOLD;
 
-        NewFont=CreateFontIndirect(&alf);
+        NewFont.CreateFontIndirect(&alf);
 
         SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
         
         alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
-        NewFont = CreateFontIndirect(&alf);
-        SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
+        font2_.CreateFontIndirect(&alf);
+        SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)font2_,MAKELPARAM(false, 0));
     }
 
     ShowNext(false);

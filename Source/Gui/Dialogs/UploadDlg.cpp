@@ -393,7 +393,6 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 
 void CUploadDlg::createToolbar()
 {
-   
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
@@ -404,12 +403,12 @@ void CUploadDlg::createToolbar()
         return toolbarImageList_.AddIcon(icon);
     };
 
-    if (GuiTools::Is32BPP()) {
+    //if (GuiTools::Is32BPP()) {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 0, 6);
-    }
-    else {
+    //}
+    /*else {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
-    }
+    }*/
 
     RECT placeholderRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TOOLBARPLACEHOLDER);
     RECT rc = { 0, 0, 100, 24 };

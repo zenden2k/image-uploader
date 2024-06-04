@@ -509,6 +509,9 @@ LRESULT CThumbsView::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
     StopBackgroundThread(true);
     // Call DeleteAllItems to avoid memory leaks in list view control
     DeleteAllItems();
+    if (ImageView) {
+        ImageView.DestroyWindow();
+    }
     return 0;
 }
 

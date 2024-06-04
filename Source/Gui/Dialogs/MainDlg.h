@@ -140,7 +140,6 @@ public:
     int getSelectedFiles(std::vector<CString>& fileNames);
     //CUploader Uploader;
     CListViewCtrl lv;
-    CMyImage image;
     CAtlArray<CFileListItem> FileList;
     bool OnShow() override;
     bool OnHide() override;

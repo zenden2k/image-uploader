@@ -106,7 +106,7 @@ public:
 private:
     CMyImage LeftImage;
     CMyImage LogoImage;
-    CFont NewFont;
+    CFont NewFont, font2_;
     std::unique_ptr<Gdiplus::Bitmap> createLeftImage();
 };
 
