@@ -349,7 +349,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     int x = itemMargin_;
     int y = itemMargin_;
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(&gr, i);
+        SIZE s = CalcItemSize(&gr, i, x, y);
         drawItem(i, &gr, x, y);
 
         if ( orientation_ == orHorizontal ) {
@@ -531,14 +531,14 @@ LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index)
+SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y)
 {
     using namespace Gdiplus;
     SIZE res={0,0};
     Item &item = buttons_[index];
     
     if ( item.itemDelegate ) {
-        return item.itemDelegate->CalcItemSize(item,dpiScaleX_, dpiScaleY_);
+        return item.itemDelegate->CalcItemSize(item, x, y, dpiScaleX_, dpiScaleY_);
     }
 
     if (showButtonText_ && item.title.GetLength()) {
@@ -582,7 +582,7 @@ int Toolbar::AutoSize()
     Gdiplus::Graphics gr(dc);
 
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(&gr, i);
+        SIZE s = CalcItemSize(&gr, i, x, y);
         Item& item = buttons_[i];
         Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
         item.rect.left = x;
@@ -704,7 +704,7 @@ int Toolbar::AutoSize()
 void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 {
     using namespace Gdiplus;
-    SIZE size = CalcItemSize(gr, itemIndex);
+    SIZE size = CalcItemSize(gr, itemIndex, x, y);
     
     Item& item = buttons_[itemIndex];
 
@@ -798,22 +798,30 @@ void Toolbar::CreateToolTipForItem(size_t index)
 {
     Item& item = buttons_[index];
 
-    if (item.hint.IsEmpty()) {
+    std::vector<std::pair<RECT, CString>> hints;
+
+    if (!item.hint.IsEmpty()) {
+        hints.emplace_back(item.rect, item.hint);
+    } else if (item.itemDelegate) {
+        hints = item.itemDelegate->getSubItemsHints();
+    } else {
         return;
     }
-    
-    TOOLINFO ti = {};
-    ti.cbSize   = sizeof(TOOLINFO);
-    ti.uFlags   = TTF_SUBCLASS;
-    ti.hwnd     = m_hWnd;
-    ti.hinst    = _Module.GetModuleInstance();
-    //CString textBuffer = item.hint;
-    auto textBuffer = std::make_unique<TCHAR[]>(item.hint.GetLength() + 1);
-    StringCchCopy(textBuffer.get(), item.hint.GetLength() + 1, item.hint);
-    ti.lpszText = textBuffer.get();
-    ti.rect  = item.rect;
-    ti.uId = static_cast<UINT_PTR>(index);
-    tooltip_.AddTool(&ti);
+
+    for (const auto& hint : hints) {
+        TOOLINFO ti = {};
+        ti.cbSize = sizeof(TOOLINFO);
+        ti.uFlags = TTF_SUBCLASS;
+        ti.hwnd = m_hWnd;
+        ti.hinst = _Module.GetModuleInstance();
+        //CString textBuffer = item.hint;
+        auto textBuffer = std::make_unique<TCHAR[]>(hint.second.GetLength() + 1);
+        StringCchCopy(textBuffer.get(), hint.second.GetLength() + 1, hint.second);
+        ti.lpszText = textBuffer.get();
+        ti.rect = hint.first;
+        ti.uId = static_cast<UINT_PTR>(index);
+        tooltip_.AddTool(&ti);
+    }
 }
 
 void Toolbar::updateTooltipForItem(size_t index) {

@@ -4,6 +4,7 @@
 #include "atlheaders.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "CustomTrackBarControl.h"
@@ -65,9 +66,10 @@ public:
     class ToolbarItemDelegate {
     public:
         virtual ~ToolbarItemDelegate() {}
-        virtual SIZE CalcItemSize(Item& item, float dpiScaleX, float dpiScaleY) = 0;
+        virtual SIZE CalcItemSize(Item& item, int x, int y, float dpiScaleX, float dpiScaleY) = 0;
         virtual void DrawItem(Item& item, Gdiplus::Graphics* gr, int, int y, float dpiScaleX, float dpiScaleY) = 0;
         virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
+        virtual std::vector<std::pair<RECT, CString>> getSubItemsHints() { return {}; };
     };
 
     explicit Toolbar(Orientation orientation); 
@@ -149,7 +151,7 @@ public:
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index);
+    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y);
     int AutoSize();
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);

@@ -115,7 +115,8 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * cmake
  * conan
  * nuget
- * Inno Setup 6
+ * 7-Zip (7z.exe)
+ * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+
 
 ## Prerequisites On WSL (Ubuntu Linux)

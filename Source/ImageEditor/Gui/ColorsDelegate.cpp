@@ -1,6 +1,7 @@
 #include "ColorsDelegate.h"
 
 #include <cassert>
+#include <utility>
 
 #include "Gui/GuiTools.h"
 #include "Core/i18n/Translator.h"
@@ -34,7 +35,9 @@ ColorsDelegate::ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas) 
     assert(swapColorsIcon_);
 }
 
-SIZE ColorsDelegate::CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {
+SIZE ColorsDelegate::CalcItemSize(Toolbar::Item& item, int x, int y, float dpiScaleX, float dpiScaleY) {
+    foregroundRect_ = getForegroundRect(x, y, dpiScaleX, dpiScaleY);
+    swapColorsButtonRect_ = getSwapColorsRect(x, y, dpiScaleX, dpiScaleY);
     SIZE res = { static_cast<LONG>((kSquareSize + kOffset +5 + kPadding)* dpiScaleX), static_cast<LONG>((kSquareSize + kOffset + 10)* dpiScaleY ) };
     return res;
 }
@@ -51,7 +54,7 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     gr->FillRectangle(&backgroundBrush, backgroundRect_);
     gr->DrawRectangle(&borderPen, backgroundRect_);
 
-    foregroundRect_ = Rect(int(kPadding*dpiScaleX + x), int(y+ dpiScaleY*4), int(kSquareSize * dpiScaleX), int(kSquareSize *  dpiScaleY));
+    foregroundRect_ = getForegroundRect(x, y, dpiScaleX, dpiScaleY);
     gr->FillRectangle(&foregroundBrush, foregroundRect_);
     gr->DrawRectangle(&borderPen, foregroundRect_);
 
@@ -63,8 +66,21 @@ void ColorsDelegate::DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x,
     //toolbar_->ClientToScreen(&pt2);
     backgroundColorButton_.SetWindowPos(0, pt2.x, pt2.y,0,0,/*SWP_NOSIZE*/0);
 
-    swapColorsButtonRect_ = Rect(foregroundRect_.GetRight() + 1, foregroundRect_.Y - 5, static_cast<int>(12 * dpiScaleX), static_cast<int>(12 * dpiScaleY));
+    swapColorsButtonRect_ = getSwapColorsRect(x, y, dpiScaleX, dpiScaleY);
     gr->DrawImage(swapColorsIcon_.get(), swapColorsButtonRect_);
+}
+
+
+std::vector<std::pair<RECT, CString>> ColorsDelegate::getSubItemsHints()
+{
+    Gdiplus::Rect rc1 = swapColorsButtonRect_;
+    RECT rc { rc1.GetLeft(), rc1.GetTop(),
+        rc1.GetRight(), rc1.GetBottom()
+    };
+    std::vector<std::pair<RECT, CString>> res {
+        {rc, TR("Swap colors")}
+    };
+    return res;
 }
 
 void ColorsDelegate::setForegroundColor(Gdiplus::Color color ) {
@@ -110,6 +126,18 @@ void ColorsDelegate::OnBackgroundButtonSelChanged(COLORREF color, BOOL valid ) {
     backgroundColor_ = Gdiplus::Color(GetRValue(color), GetGValue(color), GetBValue(color));
     toolbar_->repaintItem(toolbarItemIndex_);
     canvas_->setBackgroundColor(backgroundColor_);
+}
+
+
+Gdiplus::Rect ColorsDelegate::getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY) const
+{
+    return Gdiplus::Rect(int(kPadding * dpiScaleX + x), int(y + dpiScaleY * 4), int(kSquareSize * dpiScaleX), int(kSquareSize * dpiScaleY));
+}
+
+Gdiplus::Rect ColorsDelegate::getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY) const
+{
+    Gdiplus::Rect foregroundRect = getForegroundRect(x, y, dpiScaleX, dpiScaleY);
+    return Gdiplus::Rect(foregroundRect.GetRight() + 1, foregroundRect.Y - 5, static_cast<int>(12 * dpiScaleX), static_cast<int>(12 * dpiScaleY));
 }
 
 void ColorsDelegate::swapColors() {

@@ -919,7 +919,7 @@ void ImageEditorWindow::createToolbars()
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
     int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
-    Toolbar::Item colorsButton(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,CString(), Toolbar::itButton, false);
+    Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
     colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index+1, canvas_.get());
     colorsButton.itemDelegate = colorsDelegate_.get();
     colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
