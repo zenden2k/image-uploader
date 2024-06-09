@@ -12,7 +12,7 @@ import xml.etree.ElementTree
 
 from contextlib import contextmanager
 
-IS_RELEASE = True
+IS_RELEASE = False
 TEST_MODE = False
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
@@ -26,6 +26,7 @@ PARALLEL_JOBS = "6"
 # cmake
 # conan
 # msbuild (you should run this script from Visual Studio Developer Command Prompt)
+# nuget
 # WSL 2 & Ubuntu 20.04+
 # -- On WSL2 --
 # conan 
@@ -64,7 +65,7 @@ BUILD_TARGETS = [
         'compiler': "VS2019",
         'build_type': "Release",
         'arch': 'x86',
-        'host_profile': '',
+        'host_profile': 'windows_vs2019_x86_release',
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "Win32", 
@@ -81,7 +82,7 @@ BUILD_TARGETS = [
         'compiler': "VS2019",
         'build_type': "Release",
         'arch': 'x86_64',
-        'host_profile': '',
+        'host_profile': 'windows_vs2019_x64_release',
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "x64",
@@ -595,7 +596,7 @@ for target in BUILD_TARGETS:
             #ext_native_arch = 
             if target.get("shell_ext_arch"):
                 # /p:Configuration="Release optimized";Platform=Win32
-                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
+                command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
                 if proc.returncode !=0:
@@ -603,7 +604,7 @@ for target in BUILD_TARGETS:
                     exit(1)
             
             if target.get("shell_ext_64bit_arch"):
-                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
+                command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
                 if proc.returncode !=0:

@@ -6,10 +6,12 @@ To build Image Uploader from source files you will need:
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
 - CMake (tested with v3.24.0)    https://cmake.org/
 - Python 3    https://www.python.org/downloads/
-- Conan v1.x (C++ package manager)   https://conan.io/
+- Conan v1.x (C++ package manager; tested with v1.62)   https://conan.io/
 
-I recommend to install Conan using `pip` utility. Ensure that your %PATH% environment 
+Ensure that your %PATH% environment 
 variable includes the directory of your Python and CMake distribution. 
+I recommend to install Conan using `pip` utility. 
+You can install specific version of conan: `pip3 install conan==1.62`. 
 
 To generate a Visual Studio solution from CMakeLists.txt you need to create a directory for build files and call `cmake`:
 
@@ -66,8 +68,8 @@ As the project is using cmake_find_package_multi generator, we have to use CMake
 Before compiling IU install the following packages:
 
 ```
+sudo apt-get install g++ cmake ninja-build python3-pip
 pip3 install conan
-sudo apt-get install g++ cmake ninja-build 
 ```
 
 Configure and build the project:
@@ -92,6 +94,52 @@ sudo apt-get install autoconf automake libtool fakeroot
 ```
 
 and pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
+
+# Build packages for all platforms at once
+
+Run on Windows:
+
+```
+git config --global core.autocrlf false
+```
+
+Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11). Another ways is to run Visual Studio Developer Command Prompt as Administrator.
+
+
+## Prerequisites  (on Windows)
+
+ * msbuild that is a part of Microsoft Visual Studio 2019 or newer (with x86/x64/ARM64 C++ compiler)
+ * ATL library for x86/x64/ARM64 platform (a part of Visual Studio)
+ * python 3
+ * git
+ * cmake
+ * conan
+ * nuget
+ * Inno Setup 6
+ * WSL 2 & Ubuntu 20.04+
+
+## Prerequisites On WSL (Ubuntu Linux)
+
+* git 
+* conan 
+* cmake (version >= 3.17)
+* doxygen
+* msgfmt (gettext)
+* Qt 5 development libraries
+* autoconf, automake, libtool, fakeroot for building Debian packages.
+
+You can install most of them by running the command 
+```
+sudo apt-get install git g++ cmake ninja-build python3-pip doxygen gettext  autoconf automake libtool fakeroot qt5-default
+pip3 install conan==1.62 
+```
+Note that Ubuntu 20.04 has CMake v3.16 but the script requires >= v3.17.
+You can install the latest binary distribution from the official website https://cmake.org/
+
+All programs must be added to the PATH environment variable.
+Copy `versioninfo.h` to the `Dist` directory. Edit this file and set the values ​​you need. The build number will be incremented automatically.
+ 
+Run `python create_build.py` from Visual Studio Developer Command Prompt.
 
 # Image Uploader is using the following libraries:
 

@@ -197,6 +197,7 @@ if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
 			ffmpeg:with_libalsa=False
 			ffmpeg:with_xcb=False
 			ffmpeg:with_pulse=False
+			ffmpeg:with_libaom=False
 		)
 	endif()
 	list(APPEND ADDITIONAL_OPTIONS
