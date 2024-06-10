@@ -690,6 +690,8 @@
 #define IDC_AUTHORLABEL                 1306
 #define IDC_URLSHORTENERPLACEHOLDER2    1306
 #define IDC_TEMPORARYSERVERPLACEHOLDER  1306
+#define IDC_SIGNUPLINK2                 1306
+#define IDC_WEBSITELINK                 1306
 #define IDC_EDIT                        1307
 #define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308
@@ -746,6 +748,7 @@
 #define IDC_CHOOSEMOREFILESERVERS       1338
 #define IDC_LABEL                       1339
 #define IDC_COLORSTATIC                 1340
+#define IDC_SERVERICON                  1341
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -793,7 +796,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        338
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1341
+#define _APS_NEXT_CONTROL_VALUE         1342
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

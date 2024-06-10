@@ -21,12 +21,13 @@
                %appdata%\Image Uploader\Servers\    (если вы использовали инсталлятор)
            Создайте там XML файл с такой же структурой, как у текущего файла.
     -->
-	<Server Name="ImageBan.ru" Authorize="2" Plugin="imageban">
+	<Server Name="ImageBan.ru" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0">
+	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
+		RegistrationUrl="https://imgur.com/register">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

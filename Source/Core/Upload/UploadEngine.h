@@ -235,6 +235,7 @@ class CUploadEngineData
         bool NeedPassword;
         int64_t MaxFileSize;
         std::string RegistrationUrl;
+        std::string WebsiteUrl;
         std::string CodedLogin;
         std::string CodedPassword;
         std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;

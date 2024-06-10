@@ -56,7 +56,7 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
-    bool loadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0, bool allowEnlarge = false);
+    bool loadImage(LPCTSTR FileName,Gdiplus::Image *img=NULL, int ResourceID=0,bool Bitmap=false, COLORREF transp=0, bool allowEnlarge = false, bool whiteBg = false);
     LRESULT OnLButtonDown(UINT Flags, CPoint Pt);
     int imageWidth_, imageHeight_;
     HBITMAP BackBufferBm;

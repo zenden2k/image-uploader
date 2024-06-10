@@ -61,6 +61,22 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
 LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
+    DoDataExchange(FALSE);
+    serverImage_.SubclassWindow(GetDlgItem(IDC_SERVERICON));
+
+    auto* myEngineList = dynamic_cast<CMyEngineList*>(ServiceLocator::instance()->engineList());
+    if (myEngineList) {
+        serverIcon_ = myEngineList->getBigIconForServer(m_UploadEngine->Name);
+        if (serverIcon_) {
+            int iconWidth = ::GetSystemMetrics(SM_CXICON);
+            int iconHeight = ::GetSystemMetrics(SM_CYICON);
+            serverImage_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
+            serverBitmap_.reset(Gdiplus::Bitmap::FromHICON(serverIcon_));
+            if (serverBitmap_ && serverBitmap_->GetLastStatus() == Gdiplus::Ok) {
+                serverImage_.loadImage(0, serverBitmap_.get(), 0, false, GetSysColor(COLOR_BTNFACE), false, true);
+            }
+        }
+    }
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
@@ -102,6 +118,14 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.ShowWindow(SW_SHOW);
     }
 
+    if (!m_UploadEngine->WebsiteUrl.empty()) {
+        websiteLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+        websiteLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+        std::wstring linkText = TR("Open the website");
+        websiteLink_.SetLabel(linkText.c_str());
+        websiteLink_.SetHyperLink(U2W(m_UploadEngine->WebsiteUrl));
+        websiteLink_.ShowWindow(SW_SHOW);
+    }
     accountName_ = Utf8ToWCstring(li.Login);
 
     SetDlgItemText(IDC_LOGINEDIT, accountName_);

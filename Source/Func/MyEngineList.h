@@ -54,7 +54,13 @@ class CMyEngineList: public CUploadEngineList
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
         HICON getIconForServer(const std::string& name);
-        CString getIconNameForServer(const std::string& name);
+
+        /**
+         * The caller of this function is responsible for destroying
+         * the icon when it is no longer needed.
+         */
+        [[nodiscard]] HICON getBigIconForServer(const std::string& name);
+        CString getIconNameForServer(const std::string& name, bool returnFullPath = false);
         ServerIconCacheItem getIconBitmapForServer(const std::string& name);
 
         /**

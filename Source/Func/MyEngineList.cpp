@@ -118,7 +118,26 @@ HICON CMyEngineList::getIconForServer(const std::string& name) {
     return getIconBitmapForServer(name).icon;
 }
 
-CString CMyEngineList::getIconNameForServer(const std::string& name) {
+HICON CMyEngineList::getBigIconForServer(const std::string& name)
+{
+    CString iconFileName = getIconNameForServer(name, true);
+
+    if (!iconFileName) {
+        return {};
+    }
+    const int w = GetSystemMetrics(SM_CXICON);
+    const int h = GetSystemMetrics(SM_CYICON);
+    HICON icon{};
+    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+
+    if (!icon) {
+        icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
+    }
+
+    return icon;
+}
+
+CString CMyEngineList::getIconNameForServer(const std::string& name, bool returnFullPath) {
     CUploadEngineData *ued = CUploadEngineList::byName(name);
     CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name).MakeLower()+_T(".ico");
 
@@ -128,7 +147,11 @@ CString CMyEngineList::getIconNameForServer(const std::string& name) {
             return {};
         }
     }
-    return U2W( IuCoreUtils::ExtractFileName(W2U(iconFileName)) );
+    if (returnFullPath) {
+        return iconFileName;
+    } else {
+        return U2W(IuCoreUtils::ExtractFileName(W2U(iconFileName)));
+    } 
 }
 
 void CMyEngineList::preLoadIcons() {

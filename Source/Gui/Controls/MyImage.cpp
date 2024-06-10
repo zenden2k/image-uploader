@@ -75,7 +75,7 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
     return TRUE;
 }
 
-bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge)
+bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg)
 {
     CRect rc;
     GetClientRect(&rc);
@@ -122,7 +122,6 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
     std::unique_ptr<Image> newBm;
     Image* bm = nullptr;
-    bool WhiteBg = false;
     if (img) {
         bm = img;
     } else if (FileName) {
@@ -133,7 +132,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     } else if (ResourceID){
         if (!Bmp) {
             newBm = ImageUtils::BitmapFromResource(_Module.GetResourceInstance(), MAKEINTRESOURCE(ResourceID), _T("PNG"));
-            WhiteBg = true;
+            whiteBg = true;
         } else {
             newBm = std::make_unique<Bitmap>(_Module.GetResourceInstance(), MAKEINTRESOURCE(ResourceID));
         }
@@ -154,7 +153,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         newheight = sz.Height;
     }
 
-    if (WhiteBg) {
+    if (whiteBg) {
         gr.Clear(Color(GetRValue(transp), GetGValue(transp), GetBValue(transp)));
     } else {
         gr.Clear(Color(255, 145, 145, 145));
@@ -180,7 +179,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
            LinearGradientModeBackwardDiagonal);
 
-        if (!WhiteBg) {
+        if (!whiteBg) {
             gr.FillRectangle(&br, (float)1, (float)1, (float)width, (float)height);
         }
 

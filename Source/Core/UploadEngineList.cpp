@@ -109,6 +109,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
         UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
         UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
+        UE.WebsiteUrl = cur.Attribute("WebsiteUrl");
         UE.UserAgent = cur.Attribute("UserAgent");
         UE.PluginName = cur.Attribute("Plugin");
         UE.Engine = cur.Attribute("Engine");

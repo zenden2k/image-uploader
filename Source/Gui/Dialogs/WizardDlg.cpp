@@ -2413,6 +2413,26 @@ LRESULT CWizardDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
     return 0;
 }
 
+LRESULT CWizardDlg::OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    auto cmd = GET_APPCOMMAND_LPARAM(lParam);
+
+    if (cmd == APPCOMMAND_BROWSER_BACKWARD) {
+        HWND prevBtn = GetDlgItem(IDC_PREV);
+        if (::IsWindowEnabled(prevBtn) && ::IsWindowVisible(prevBtn)) {
+            SendMessage(WM_COMMAND, MAKEWPARAM(IDC_PREV, BN_CLICKED), reinterpret_cast<LPARAM>(prevBtn));
+        }
+        return TRUE;
+    } else if (cmd == APPCOMMAND_BROWSER_FORWARD) {
+        HWND nextBtn = GetDlgItem(IDC_NEXT);
+        if (::IsWindowEnabled(nextBtn) && ::IsWindowVisible(nextBtn)) {
+            SendMessage(WM_COMMAND, MAKEWPARAM(IDC_NEXT, BN_CLICKED), reinterpret_cast<LPARAM>(nextBtn));
+        }
+        return TRUE;
+    }
+    return 0;
+}
+
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
     dlg.DoModal(m_hWnd);
