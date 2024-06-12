@@ -79,7 +79,6 @@ protected:
     CString accountName_;
     CButton loginButton_, logoutButton_;
     CMyImage serverImage_;
-    CStatic serverIconStatic_;
     CIcon serverIcon_;
     std::unique_ptr<Gdiplus::Bitmap> serverBitmap_;
     bool createNew_;

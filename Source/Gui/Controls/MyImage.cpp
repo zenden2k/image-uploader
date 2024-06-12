@@ -75,7 +75,7 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
     return TRUE;
 }
 
-bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg)
+bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg, bool drawBorder)
 {
     CRect rc;
     GetClientRect(&rc);
@@ -101,7 +101,11 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     int width = rc.Width();
     int height = rc.Height();
 
-    if (!ResourceID)
+    if (ResourceID) {
+        drawBorder = false;
+    }
+
+    if (drawBorder)
     {
         width -=  2;
         height -=  2;
@@ -184,7 +188,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         }
 
         imageLoaded_ = true;
-        Rect destRect(ResourceID ? 0 : 1 + (width - newwidth) / 2, ResourceID ? 0 : 1 + (height - newheight) / 2, newwidth, newheight);
+        Rect destRect(drawBorder ? 1 + (width - newwidth) / 2 : 0, drawBorder ? 1 + (height - newheight) / 2 : 0, newwidth, newheight);
         if (bm) {
             gr.DrawImage(bm, destRect, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
         }

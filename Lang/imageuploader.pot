@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-09 20:42+0300\n"
+"POT-Creation-Date: 2024-06-11 19:55+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -94,8 +94,8 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:382
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:383
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1290
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1291
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1294
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1295
 msgid "(edited)"
 msgstr ""
 
@@ -133,8 +133,8 @@ msgstr ""
 msgid "Account is not enabled"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:189
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:245
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:213
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:269
 msgid "Account with such name already exists."
 msgstr ""
 
@@ -348,7 +348,7 @@ msgstr ""
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:144
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:168
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
@@ -387,7 +387,7 @@ msgstr ""
 msgid "Audio files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:297
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:321
 msgid "Authenticated succesfully."
 msgstr ""
 
@@ -417,7 +417,7 @@ msgstr ""
 msgid "Automatically check for updates"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:70
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:86
 msgid "Autorization parameters"
 msgstr ""
 
@@ -485,7 +485,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:88
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:255
 #: ../Source/Gui/Dialogs/InputDialog.cpp:53
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:75
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:91
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:48
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -638,8 +638,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:133
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:138
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:139
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1466
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1478
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1481
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1493
 msgid "Choose more servers..."
 msgstr ""
 
@@ -865,7 +865,7 @@ msgstr ""
 msgid "Could not add server."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:302
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:326
 msgid "Could not authenticate. Please try again."
 msgstr ""
 
@@ -994,7 +994,7 @@ msgstr ""
 msgid "Delete Profile"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:76
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 msgid "Delete account"
 msgstr ""
 
@@ -1035,12 +1035,12 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:99
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:115
 #, c-format
 msgid "Don't have an account? Sign up on %s right now"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1105
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1109
 msgid "Don't resize"
 msgstr ""
 
@@ -1145,9 +1145,9 @@ msgstr ""
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:134
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:143
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:149
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:189
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:240
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:245
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:213
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:264
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:269
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:122
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:95
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:166
@@ -1243,7 +1243,7 @@ msgstr ""
 msgid "Failed to load folder list."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:309
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:333
 msgid "Failed to logout."
 msgstr ""
 
@@ -1785,12 +1785,12 @@ msgstr ""
 msgid "Logging in..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:240
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:264
 msgid "Login cannot be empty"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:71
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:87
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:211
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:256
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
@@ -1798,11 +1798,11 @@ msgstr ""
 msgid "Login:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:77
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:93
 msgid "Logout"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:309
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:333
 msgid "Logout succesfully."
 msgstr ""
 
@@ -1981,6 +1981,11 @@ msgstr ""
 msgid "Open system connection settings"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:124
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1054
+msgid "Open the website"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/MainDlg.cpp:189
 msgid "Open with..."
 msgstr ""
@@ -1998,7 +2003,7 @@ msgid "Parameters:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:73
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:212
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:258
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:49
@@ -2197,7 +2202,7 @@ msgstr ""
 msgid "Remove from list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:117
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:141
 msgid "Remove this account from the list (not from the remote server)"
 msgstr ""
 
@@ -2375,8 +2380,8 @@ msgid "Selected server: %s"
 msgstr ""
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:107
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1468
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1481
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1483
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1496
 #, c-format
 msgid "Selected servers: %d"
 msgstr ""
@@ -2497,7 +2502,7 @@ msgid "Shorten URL"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:893
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1218
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1222
 #, c-format
 msgid "Shorten URL using %s"
 msgstr ""
@@ -2560,7 +2565,7 @@ msgstr ""
 msgid "Show tray icon"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:87
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:103
 msgid "Sign in..."
 msgstr ""
 
@@ -2710,7 +2715,7 @@ msgstr ""
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1063
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1067
 msgid "This server doesn't have any settings."
 msgstr ""
 
@@ -2805,7 +2810,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:1131
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1135
 msgid "URL shortening server"
 msgstr ""
 
@@ -2813,7 +2818,7 @@ msgstr ""
 msgid "URL:"
 msgstr ""
 
-#: ../Source/Gui/Controls/MyImage.cpp:178
+#: ../Source/Gui/Controls/MyImage.cpp:181
 #: ../Source/Gui/Controls/ThumbsView.cpp:301
 msgid "Unable to load picture"
 msgstr ""

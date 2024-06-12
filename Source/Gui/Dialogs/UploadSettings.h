@@ -41,6 +41,7 @@ constexpr unsigned int IDC_SERVERPARAMS = 4016;
 constexpr unsigned int IDC_OPENREGISTERURL = 4018;
 constexpr unsigned int IDC_LOGINTOOLBUTTON = 4020;
 constexpr unsigned int IDC_COPYFOLDERID = 4022;
+constexpr unsigned int IDC_OPENWEBSITE = 4024;
 
 constexpr unsigned int IDC_TOOLBARSEPARATOR1 = 4002;
 constexpr unsigned int IDC_TOOLBARSEPARATOR2 = 4003;
@@ -98,7 +99,8 @@ class CUploadSettings:
         COMMAND_HANDLER(IDC_OPENINBROWSER+1, BN_CLICKED, OnOpenInBrowser)
         COMMAND_HANDLER(IDC_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
         COMMAND_HANDLER(IDC_COPYFOLDERID + 1, BN_CLICKED, OnCopyFolderId)
-
+        COMMAND_HANDLER(IDC_OPENWEBSITE, BN_CLICKED, OnOpenWebsite)
+        COMMAND_HANDLER(IDC_OPENWEBSITE + 1, BN_CLICKED, OnOpenWebsite)
         COMMAND_HANDLER(IDC_OPENREGISTERURL, BN_CLICKED, OnOpenSignupPage)
         COMMAND_HANDLER(IDC_OPENREGISTERURL+1, BN_CLICKED, OnOpenSignupPage)
         COMMAND_HANDLER(IDC_SERVERPARAMS, BN_CLICKED, OnServerParamsClicked)
@@ -167,6 +169,8 @@ class CUploadSettings:
 	LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    
     //int m_nImageServer, m_nFileServer;
     void ShowParams();
     CToolBarCtrl Toolbar;

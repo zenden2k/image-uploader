@@ -1049,6 +1049,10 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
         mi.dwTypeData = const_cast<LPWSTR>(goToSignupPageStr.GetString());
         sub.InsertMenuItem(1, true, &mi);
     }
+
+    if (!serverProfile.uploadEngineData()->WebsiteUrl.empty()) {
+        sub.AppendMenu(MF_STRING, IDC_OPENWEBSITE + (int)isImageServerToolbar, TR("Open the website"));
+    }
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
 }
 
@@ -1458,6 +1462,17 @@ LRESULT CUploadSettings::OnChooseMoreFileServersClicked(WORD wNotifyCode, WORD w
         UpdateAllPlaceSelectors();
     }
     return 0;
+}
+
+LRESULT CUploadSettings::OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    bool ImageServer = (wID % 2) != 0;
+    ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+
+    CUploadEngineData* ue = serverProfile.uploadEngineData();
+    if (ue && !ue->WebsiteUrl.empty()) {
+        WinUtils::ShellOpenFileOrUrl(U2W(ue->WebsiteUrl), m_hWnd);
+    }
+    return  0;
 }
 
 void CUploadSettings::updateMoreImageServersLink() {
