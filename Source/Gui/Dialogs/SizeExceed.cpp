@@ -86,7 +86,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     CString params; 
     CString onlyFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_szFileName), 40);
     if (isImage) {
-        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.imageWidth_, img.imageHeight_, static_cast<LPCTSTR>(buf2));
+        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.imageWidth(), img.imageHeight(), static_cast<LPCTSTR>(buf2));
     } else {
         params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(onlyFileName), static_cast<LPCTSTR>(buf2));
     }

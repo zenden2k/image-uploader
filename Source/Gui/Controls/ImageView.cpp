@@ -36,8 +36,9 @@ CImageViewWindow::~CImageViewWindow()
 LRESULT CImageViewWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     RECT rc = {380, 37, 636, 240};
-    Img.Create(m_hWnd, rc, 0, WS_CHILD | WS_VISIBLE);
-    Img.HideParent = true;
+    imageControl_.Create(m_hWnd, rc, 0, WS_CHILD | WS_VISIBLE);
+    imageControl_.setHideParent(true);
+
     SetFocus();
     return 0;  // Let the system set the focus
 }
@@ -48,14 +49,15 @@ LRESULT CImageViewWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
 LRESULT CImageViewWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    return ShowWindow(SW_HIDE);
+    hide();
+    return 0;
 }
 
 LRESULT CImageViewWindow::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     switch (wParam) {
         case kDblClickTimer:
         {
-            Img.HideParent = true;
+            imageControl_.setHideParent(true);
             KillTimer(kDblClickTimer);
         }
         break;
@@ -70,11 +72,11 @@ LRESULT CImageViewWindow::OnKillFocus(HWND hwndNewFocus)
 
 bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
     currentItem_ = item;
-    std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(item.fileName);
-    if (!srcImg) {
+    srcImg_ = ImageUtils::LoadImageFromFileExtended(item.fileName);
+    if (!srcImg_) {
         return false;
     }
-    Gdiplus::Bitmap* img = srcImg->getBitmap();
+    Gdiplus::Bitmap* img = srcImg_->getBitmap();
     
     if (img) {
         float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);
@@ -101,16 +103,15 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
 
         if (realwidth < 200) realwidth = 200;
         if (realheight < 180) realheight = 180;
-        //ShowWindow(SW_HIDE);
 
-        //MoveWindow(0, 0, realwidth, realheight);
-        Img.MoveWindow(0, 0, realwidth, realheight);
-        Img.loadImage(item.fileName, img);
-        
+        imageControl_.MoveWindow(0, 0, realwidth, realheight);
+        imageControl_.loadImage(item.fileName, img);
+        imageControl_.ShowWindow(SW_SHOW);
+
         currentParent_ = Parent;
         MyCenterWindow(Parent, realwidth, realheight);
         if (!IsWindowVisible()) {
-            Img.HideParent = false;
+            imageControl_.setHideParent(false);
             SetTimer(kDblClickTimer, 300);
         }
         ShowWindow(SW_SHOW);
@@ -122,8 +123,9 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
 
 LRESULT CImageViewWindow::OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact)
 {
-    if (state == WA_INACTIVE) 
-        return ShowWindow(SW_HIDE);
+    if (state == WA_INACTIVE) {
+        hide();
+    }
     return 0;
 }
 
@@ -220,11 +222,16 @@ LRESULT CImageViewWindow::OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags)
         break;
         case VK_RETURN:
         case VK_ESCAPE:
-            ShowWindow(SW_HIDE);
+            hide();
     }
     return 0;
 }
 
 void CImageViewWindow::setCallback(CImageViewCallback* callback) {
     callback_ = callback;
+}
+
+void CImageViewWindow::hide() {
+    ShowWindow(SW_HIDE);
+    imageControl_.reset();
 }

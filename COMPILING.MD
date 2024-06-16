@@ -103,7 +103,7 @@ Run on Windows:
 git config --global core.autocrlf false
 ```
 
-Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11). Another ways is to run Visual Studio Developer Command Prompt as Administrator.
+Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11). Another way is to run Visual Studio Developer Command Prompt as Administrator.
 
 
 ## Prerequisites  (on Windows)

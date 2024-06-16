@@ -149,7 +149,7 @@ public:
     static bool isImageCodec(AVCodecID codec)
     {
         return codec == AV_CODEC_ID_PNG
-            || codec == AV_CODEC_ID_MJPEG;
+            /* || codec == AV_CODEC_ID_MJPEG*/;
     }
 
     static void checkReturnCode(int code, const std::string& msg) {

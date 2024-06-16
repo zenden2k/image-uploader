@@ -305,6 +305,8 @@ NetworkClient::NetworkClient()
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
 
+    //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
+
     /*
     TODO: use new progress callbacks
 #if LIBCURL_VERSION_NUM >= 0x072000

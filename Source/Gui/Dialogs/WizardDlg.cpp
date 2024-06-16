@@ -1765,9 +1765,9 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-void CWizardDlg::CloseWizard()
+void CWizardDlg::CloseWizard(bool force)
 {
-    if(CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit) {
+    if(!force && CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit) {
         int buttonPressed{};
         CTaskDialog dlg;
         CString verText = TR("Do not ask again");
@@ -2330,7 +2330,7 @@ bool CWizardDlg::funcFromClipboard(bool fromCmdLine) {
     return false;
 }
 
-bool CWizardDlg::funcExit() {
+bool CWizardDlg::funcExit(bool force) {
     CloseWizard();
     return true;
 }
@@ -2431,6 +2431,21 @@ LRESULT CWizardDlg::OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         return TRUE;
     }
     return 0;
+}
+
+LRESULT CWizardDlg::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (lParam == 0) {      
+        // Computer is shutting down
+        HWND exitBtn = GetDlgItem(IDCANCEL);
+        if (!::IsWindowEnabled(exitBtn)) {
+            ShutdownBlockReasonCreate(m_hWnd, TR("Work in progress"));
+            return FALSE;
+        }
+    }
+    if ((lParam & ENDSESSION_LOGOFF) == ENDSESSION_LOGOFF) {
+        // User is logging off
+    }
+    return TRUE;
 }
 
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

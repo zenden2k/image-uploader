@@ -55,6 +55,23 @@ public:
     }
 };
 
+struct freer
+{
+    void operator()(void* p) const noexcept {
+        std::free(p);
+    }
+};
+
+template<class T>
+using unique_c_ptr = std::unique_ptr<T, freer>;
+
+template<class T>
+[[nodiscard]] unique_c_ptr<T>
+make_unique_malloc(std::size_t size) noexcept
+{
+    static_assert(std::is_trivial_v<T>);
+    return unique_c_ptr<T>{static_cast<T*>(std::malloc(size))};
+}
 namespace IuCoreUtils
 {
     // A version of fopen() function which supports utf8 file names

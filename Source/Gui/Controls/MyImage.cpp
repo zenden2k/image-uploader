@@ -24,26 +24,18 @@
 #include "Core/Images/Utils.h"
 
 using namespace Gdiplus;
-// CMyImage
-CMyImage::CMyImage() : bm_(nullptr), BackBufferWidth(0), BackBufferHeight(0)
-{
-    imageLoaded_ = false;
-    BackBufferDc = NULL;
-    BackBufferBm = 0;
-    HideParent = false;
-    imageWidth_  = 0;
-    imageHeight_ = 0;
 
+CMyImage::CMyImage() {
 }
 
 CMyImage::~CMyImage()
 {
-    if (BackBufferDc) {
-        SelectObject(BackBufferDc, oldBm_);
-        DeleteDC(BackBufferDc);
+    if (backBufferDc_) {
+        SelectObject(backBufferDc_, oldBm_);
+        DeleteDC(backBufferDc_);
     }
-    if (BackBufferBm) {
-        DeleteObject(BackBufferBm);
+    if (backBufferBm_) {
+        DeleteObject(backBufferBm_);
     }
 }
 
@@ -58,7 +50,7 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
         RECT rc;
         GetClientRect(&rc);
         dc.SetBkMode(TRANSPARENT);
-        dc.BitBlt(0, 0, BackBufferWidth, BackBufferHeight, BackBufferDc, 0, 0, SRCCOPY);
+        dc.BitBlt(0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);
     }
 
     return 0;
@@ -66,6 +58,7 @@ LRESULT CMyImage::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL&
 
 LRESULT CMyImage::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    reset();
     return 0;
 }
 
@@ -77,25 +70,27 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
 
 bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg, bool drawBorder)
 {
+    reset();
     CRect rc;
     GetClientRect(&rc);
 
-    if (BackBufferDc) {
-        SelectObject(BackBufferDc, oldBm_);
-        DeleteDC(BackBufferDc);
+    if (backBufferDc_) {
+        SelectObject(backBufferDc_, oldBm_);
+        DeleteDC(backBufferDc_);
     }
-    BackBufferDc = nullptr;
-    if (BackBufferBm) {
-        DeleteObject(BackBufferBm);
+    backBufferDc_ = nullptr;
+    if (backBufferBm_) {
+        DeleteObject(backBufferBm_);
     }
-    BackBufferBm = nullptr;
+    backBufferBm_ = nullptr;
     oldBm_ = nullptr;
 
     Graphics g(m_hWnd, true);
 
-    BackBufferWidth = rc.right;
-    BackBufferHeight = rc.bottom;
+    backBufferWidth_ = rc.right;
+    backBufferHeight_ = rc.bottom;
 
+    isAnimated_ = false;
     int imgwidth = 0, imgheight = 0;
     int newwidth = 0, newheight = 0;
     int width = rc.Width();
@@ -113,12 +108,12 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
     CClientDC dc(m_hWnd);
 
-    BackBufferDc = ::CreateCompatibleDC(dc);
-    BackBufferBm = ::CreateCompatibleBitmap(dc, BackBufferWidth, BackBufferHeight);
+    backBufferDc_ = ::CreateCompatibleDC(dc);
+    backBufferBm_ = ::CreateCompatibleBitmap(dc, backBufferWidth_, backBufferHeight_);
 
-    oldBm_ = ::SelectObject(BackBufferDc, BackBufferBm);
+    oldBm_ = ::SelectObject(backBufferDc_, backBufferBm_);
 
-    Graphics gr(BackBufferDc);
+    Graphics gr(backBufferDc_);
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
     gr.SetPixelOffsetMode(PixelOffsetModeHalf);
     ImageAttributes attr;
@@ -180,6 +175,17 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
 
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     } else {
+        destRect_ = Rect(drawBorder ? 1 + (width - newwidth) / 2 : 0, drawBorder ? 1 + (height - newheight) / 2 : 0, newwidth, newheight);
+        if (img && FileName && testForAnimatedGIF(img)) {
+            animatedImage_ = img;
+            initAnimation();
+            isAnimated_ = true;
+            imageLoaded_ = true;
+            Release();
+            Start();
+            return false;
+        }
+
         LinearGradientBrush br(bounds, Color(255, 255, 255, 255), Color(255, 210, 210, 210),
            LinearGradientModeBackwardDiagonal);
 
@@ -188,9 +194,9 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         }
 
         imageLoaded_ = true;
-        Rect destRect(drawBorder ? 1 + (width - newwidth) / 2 : 0, drawBorder ? 1 + (height - newheight) / 2 : 0, newwidth, newheight);
+        
         if (bm) {
-            gr.DrawImage(bm, destRect, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
+            gr.DrawImage(bm, destRect_, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
         }
     }
 
@@ -199,9 +205,82 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     return false;
 }
 
+void CMyImage::initAnimation() {
+    exitEvent_.Close();
+    pauseEvent_.Close();
+    exitEvent_.Create(0, TRUE, FALSE);
+    pauseEvent_.Create(0, TRUE, TRUE);
+}
+
+bool CMyImage::testForAnimatedGIF(Gdiplus::Image* img) {
+    UINT count = 0;
+    count = img->GetFrameDimensionsCount();
+    auto pDimensionIDs = std::make_unique<GUID[]>(count);
+
+    // Get the list of frame dimensions from the Image object.
+    img->GetFrameDimensionsList(pDimensionIDs.get(), count);
+
+    // Get the number of frames in the first dimension.
+    frameCount_ = img->GetFrameCount(&pDimensionIDs[0]);
+
+    // Assume that the image has a property item of type PropertyTagFrameDelay.
+    // Get the size of that property item.
+    int nSize = img->GetPropertyItemSize(PropertyTagFrameDelay);
+
+    // Allocate a buffer to receive the property item.
+    propertyItem_ = make_unique_malloc<PropertyItem>(nSize);
+
+    img->GetPropertyItem(PropertyTagFrameDelay, nSize, propertyItem_.get());
+
+    return frameCount_ > 1;
+}
+
+DWORD CMyImage::Run() {
+    framePosition_ = 0;
+
+    bool bExit = false;
+    while (bExit == false)
+    {
+        bExit = drawFrame();
+    }
+    return 0;
+}
+
+bool CMyImage::drawFrame() {
+    CRect clientRect;
+    GetClientRect(&clientRect);
+    pauseEvent_.WaitForEvent(INFINITE);
+
+    GUID pageGuid = FrameDimensionTime;
+
+    long hmWidth = animatedImage_->GetWidth();
+    long hmHeight = animatedImage_->GetHeight();
+
+    Graphics graphics(backBufferDc_);
+    Color backgroundColor(255, 210, 210, 210);
+    Rect rc(clientRect.left, clientRect.top, clientRect.Width()-1, clientRect.Height()-1);
+
+    graphics.Clear(backgroundColor);
+    Gdiplus::Pen pen(Color(255, 145, 145, 145));
+    graphics.DrawRectangle(&pen, rc);
+    graphics.DrawImage(animatedImage_, destRect_);
+    Invalidate();
+    animatedImage_->SelectActiveFrame(&pageGuid, framePosition_++);
+
+    if (framePosition_ == frameCount_) {
+        framePosition_ = 0;
+    }
+
+    long lPause = ((long*)propertyItem_->value)[framePosition_] * 10;
+    if (lPause < 50) {
+        lPause = 100;
+    }
+    return exitEvent_.WaitForEvent(lPause);
+}
+
 LRESULT CMyImage::OnLButtonDown(UINT Flags, CPoint Pt)
 {
-    if (HideParent) {
+    if (hideParent_) {
         ::ShowWindow(GetParent(), SW_HIDE);
     }
     return 0;
@@ -209,4 +288,45 @@ LRESULT CMyImage::OnLButtonDown(UINT Flags, CPoint Pt)
 
 LRESULT CMyImage::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&) {
     return SendMessage(GetParent(), uMsg, wParam, lParam);
+}
+
+int CMyImage::imageWidth() const {
+    return imageWidth_;
+}
+
+int CMyImage::imageHeight() const {
+    return imageHeight_;
+}
+
+void CMyImage::setPause(bool bPause) {
+    if (!isAnimated_)
+        return;
+
+    if (bPause && !paused_) {
+        pauseEvent_.ResetEvent();
+    } else {
+        if (paused_ && !bPause) {
+            pauseEvent_.ResetEvent();
+        }
+    }
+
+    paused_ = bPause;
+}
+
+bool CMyImage::isPaused() const {
+    return paused_;
+}
+
+void CMyImage::reset() {
+    if (isAnimated_ && IsRunning()) {
+        exitEvent_.SetEvent();
+        WaitForThread();
+    }
+    animatedImage_ = nullptr;
+    frameCount_ = 0;
+    propertyItem_ = nullptr;
+}
+
+void CMyImage::setHideParent(bool hide) {
+    hideParent_ = hide;
 }

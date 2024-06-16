@@ -109,6 +109,7 @@ public:
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(MYWM_ENABLEDROPTARGET, OnEnableDropTarget)
         MESSAGE_HANDLER(WM_APPCOMMAND, OnAppCommand)
+        MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
@@ -148,6 +149,7 @@ public:
     LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
     void setSessionImageServer(const ServerProfileGroup& server);
@@ -210,7 +212,7 @@ public:
     bool funcShortenUrl();
     bool funcOpenScreenshotFolder();
     bool funcFromClipboard(bool fromCmdLine = false);
-    bool funcExit();
+    bool funcExit(bool force = false);
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
 
@@ -252,7 +254,7 @@ public:
     //CRegionSelectCallback
     void OnScreenshotFinished(int Result) override;
     void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm) override;
-    void CloseWizard();
+    void CloseWizard(bool force = false);
     bool RegisterLocalHotkeys();
     bool UnRegisterLocalHotkeys();
     void CreateUpdateDlg();
