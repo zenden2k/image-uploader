@@ -151,35 +151,47 @@ void CHistoryWindow::Show()
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
-    POINT ClientPoint, ScreenPoint;
+    POINT clientPoint, screenPoint;
+
     if(hwnd != GetDlgItem(IDC_HISTORYTREE)) return 0;
     
-    TreeItem* item = m_treeView.selectedItem();
-    if (!item) return 0;
-
+    TreeItem* item{};
+    int itemIndex = -1;
     if(lParam == -1) 
     {
-        ClientPoint.x = 0;
-        ClientPoint.y = 0;
-        int itemIndex = m_treeView.GetCurSel();
+        clientPoint.x = 0;
+        clientPoint.y = 0;
+        itemIndex = m_treeView.GetCurSel();
         if (itemIndex >= 0) {
             CRect rc; 
             if (m_treeView.GetItemRect(itemIndex, &rc) != LB_ERR) {
-                ClientPoint = rc.CenterPoint();
+                clientPoint = rc.CenterPoint();
             }
         }
         
-        ScreenPoint = ClientPoint;
-        ::ClientToScreen(hwnd, &ScreenPoint);
+        screenPoint = clientPoint;
+        ::ClientToScreen(hwnd, &screenPoint);
+        item = m_treeView.selectedItem();
     }
     else
     {
-        ScreenPoint.x = GET_X_LPARAM(lParam);
-        ScreenPoint.y = GET_Y_LPARAM(lParam);
-        ClientPoint = ScreenPoint;
-        ::ScreenToClient(hwnd, &ClientPoint);
+        screenPoint.x = GET_X_LPARAM(lParam);
+        screenPoint.y = GET_Y_LPARAM(lParam);
+
+        clientPoint = screenPoint;
+        ::ScreenToClient(hwnd, &clientPoint);
+        BOOL outside = FALSE;
+        itemIndex = m_treeView.ItemFromPoint(clientPoint, outside);
+        if (outside) {
+            return 0;
+        }
+
+        item = m_treeView.GetItem(itemIndex);
     }
-   
+
+    if (!item) {
+        return 0;
+    }
     bool isSessionItem = item->level()==0;
     
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
@@ -189,7 +201,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     {
         menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Open in Web Browser"));
         menu.SetMenuDefaultItem(ID_OPENINBROWSER, FALSE);
-        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL"));
+        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL") + CString(_T("\tCtrl+C")));
     }
     menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("View BBCode/HTML codes"));
     if(!isSessionItem)
@@ -205,11 +217,11 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         }
         if (!historyItem->deleteUrl.empty())
         {
-            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server"));
+            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server")+CString(_T("\tDelete")));
         }
     }
     
-    menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+    menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, screenPoint.x, screenPoint.y, m_hWnd);
     return 0;
 }
 
@@ -498,6 +510,24 @@ LRESULT CHistoryWindow::OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     initSearchForm();
     LoadHistory();
     return 0;
+}
+
+LRESULT CHistoryWindow::OnHistoryTreeVkeyToItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    bool isCtrlPressed = (GetKeyState(VK_CONTROL) & 0x80) != 0;
+    bool isShiftPressed = (GetKeyState(VK_SHIFT) & 0x80) != 0;
+    bool isMenuPressed = (GetKeyState(VK_MENU) & 0x80) != 0;
+    WORD vKey = LOWORD(wParam);
+    if (vKey == VK_DELETE && !isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_DELETEFILEONSERVER, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    else if (vKey == _T('C') && isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_COPYTOCLIPBOARD, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    else if (vKey == VK_RETURN && !isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_OPENINBROWSER, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    return -1;
 }
 
 void CHistoryWindow::initSearchForm() {

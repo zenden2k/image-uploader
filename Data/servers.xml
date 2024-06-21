@@ -278,11 +278,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub" />
 	</Server3>
-	<Server Name="file.coffee" Authorize="0" FileHost="1" Plugin="file.coffee">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" />
-	</Server>
 	<Server Name="upload.ee" Authorize="0" FileHost="1" Plugin="upload.ee" MaxFileSize="104857600" WebsiteUrl="https://www.upload.ee" 
 		RegistrationUrl="https://www.upload.ee/register.html">
 		<Actions>

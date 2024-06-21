@@ -42,10 +42,11 @@ class CHistoryTreeControl :
     public:
         CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory);
         ~CHistoryTreeControl();
-        DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListViewCtrl::GetWndClassName())
+        //DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListBox/**/CListViewCtrl*/::GetWndClassName())
 
         BEGIN_MSG_MAP(CHistoryTreeControl)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
             CHAIN_MSG_MAP(CCustomTreeControlImpl<CHistoryTreeControl>)
         END_MSG_MAP()
 
@@ -65,7 +66,8 @@ class CHistoryTreeControl :
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
         LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
-
+        LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
         bool downloading_enabled_;

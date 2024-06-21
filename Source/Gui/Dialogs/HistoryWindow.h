@@ -41,6 +41,7 @@ constexpr int ID_EDITFILEONSERVER = ID_OPENINBROWSER + 4;
 constexpr int ID_DELETEFILEONSERVER = ID_OPENINBROWSER + 5;
 constexpr int WM_MY_OPENHISTORYFILE = WM_USER + 101;
 
+
 class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
     public CDialogResize <CHistoryWindow>,
     public CWinDataExchange <CHistoryWindow>,
@@ -57,6 +58,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             MESSAGE_HANDLER(WM_MY_OPENHISTORYFILE, OnWmOpenHistoryFile)
+            MESSAGE_HANDLER(WM_VKEYTOITEM, OnHistoryTreeVkeyToItem)     
             COMMAND_ID_HANDLER(IDOK, OnOk)
             COMMAND_ID_HANDLER(ID_OPENINBROWSER, OnOpenInBrowser)
             COMMAND_ID_HANDLER(ID_COPYTOCLIPBOARD, OnCopyToClipboard)
@@ -107,6 +109,8 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnOk(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnDateFromCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnHistoryTreeVkeyToItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        
         void Show();
         void FillList(CHistoryReader* mgr);
         CHistoryTreeControl m_treeView;

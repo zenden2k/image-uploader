@@ -653,6 +653,14 @@ LRESULT CHistoryTreeControl::OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam,
     return CCustomTreeControlImpl<CHistoryTreeControl>::OnDblClick(uMsg, wParam, lParam, bHandled);
 }
 
+LRESULT CHistoryTreeControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (wParam != VK_TAB && wParam != VK_ESCAPE) {
+        return DLGC_WANTALLKEYS;
+    }
+    return 0;
+}
+
 HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
 {
     if(item->thumbnail!=0)
