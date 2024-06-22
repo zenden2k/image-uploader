@@ -21,7 +21,14 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/tinyxml.cpp
     3rdpart/tinyxmlerror.cpp
     3rdpart/tinyxmlparser.cpp
-    OutputCodeGenerator.cpp
+    OutputGenerator/OutputGeneratorFactory.cpp
+    OutputGenerator/AbstractOutputGenerator.cpp
+    OutputGenerator/AbstractCodeGenerator.cpp
+    OutputGenerator/BBCodeGenerator.cpp
+    OutputGenerator/HTMLGenerator.cpp
+    OutputGenerator/MarkdownGenerator.cpp
+    OutputGenerator/PlainTextGenerator.cpp
+    OutputGenerator/JSONGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
     AppParams.cpp
@@ -101,7 +108,14 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/tinyxml.h
     3rdpart/utf8.h
     3rdpart/UriParser.h
-    OutputCodeGenerator.h
+    OutputGenerator/OutputGeneratorFactory.h
+    OutputGenerator/AbstractOutputGenerator.h
+    OutputGenerator/AbstractCodeGenerator.h
+    OutputGenerator/BBCodeGenerator.h
+    OutputGenerator/HTMLGenerator.h
+    OutputGenerator/MarkdownGenerator.h
+    OutputGenerator/PlainTextGenerator.h
+    OutputGenerator/JSONGenerator.h
     UploadEngineList.h
     SettingsManager.h
     AppParams.h

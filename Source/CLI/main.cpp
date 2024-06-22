@@ -35,7 +35,7 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/ConsoleUploadErrorHandler.h"
 #include "Core/Upload/UploadEngineManager.h"
-#include "Core/OutputCodeGenerator.h"
+#include "Core/OutputGenerator/OutputGeneratorFactory.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Utils/StringUtils.h"
@@ -92,8 +92,9 @@ bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
 
-OutputCodeGenerator::CodeType codeType = OutputCodeGenerator::ctClickableThumbnails;
-OutputCodeGenerator::CodeLang codeLang = OutputCodeGenerator::clPlain;
+namespace OutputGenerator = ImageUploader::Core::OutputGenerator;
+OutputGenerator::CodeType codeType = OutputGenerator::ctClickableThumbnails;
+OutputGenerator::CodeLang codeLang = OutputGenerator::clPlain;
 bool autoUpdate = false;
 std::shared_ptr<UploadSession> session;
 
@@ -229,13 +230,13 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codelang = argv[++i];
             if(!IuStringUtils::stricmp(codelang, "plain"))
-                codeLang =  OutputCodeGenerator::clPlain;
+                codeLang = OutputGenerator::clPlain;
             else if(!IuStringUtils::stricmp(codelang, "html"))
-                codeLang =  OutputCodeGenerator::clHTML;
+                codeLang = OutputGenerator::clHTML;
             else if(!IuStringUtils::stricmp(codelang, "bbcode"))
-                codeLang =  OutputCodeGenerator::clBBCode;
+                codeLang = OutputGenerator::clBBCode;
             else if (!IuStringUtils::stricmp(codelang, "json"))
-                codeLang = OutputCodeGenerator::clJSON;
+                codeLang = OutputGenerator::clJSON;
             i++;
             continue;
         }
@@ -245,13 +246,13 @@ bool parseCommandLine(int argc, char *argv[])
                 return false;
             char * codetype = argv[++i];
             if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
-                codeType =  OutputCodeGenerator::ctTableOfThumbnails;
+                codeType = OutputGenerator::ctTableOfThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
-                codeType =  OutputCodeGenerator::ctClickableThumbnails;
+                codeType = OutputGenerator::ctClickableThumbnails;
             else if(!IuStringUtils::stricmp(codetype, "Images"))
-                codeType =  OutputCodeGenerator::ctImages;
+                codeType = OutputGenerator::ctImages;
             else if(!IuStringUtils::stricmp(codetype, "Links"))
-                codeType =  OutputCodeGenerator::ctLinks;
+                codeType = OutputGenerator::ctLinks;
             i++;
             continue;
         }
@@ -385,14 +386,15 @@ CUploadEngineData* getServerByName(const std::string& name) {
 }
 
 void OnUploadSessionFinished(UploadSession* session) {
+    using namespace OutputGenerator;
     int taskCount = session->taskCount();
-    std::vector<UploadObject> uploadedList;
+    std::vector<OutputGenerator::UploadObject> uploadedList;
     for (int i = 0; i < taskCount; i++) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
         auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
-            UploadObject uo;
+            OutputGenerator::UploadObject uo;
             uo.directUrl = res->directUrl;
             uo.thumbUrl = res->thumbUrl;
             uo.viewUrl = res->downloadUrl;
@@ -406,13 +408,13 @@ void OnUploadSessionFinished(UploadSession* session) {
             uploadedList.push_back(uo);
         }
     }
-    OutputCodeGenerator generator;
-    generator.setLang(codeLang);
-    generator.setType(codeType);
+    OutputGenerator::OutputGeneratorFactory factory;
+    auto generator = factory.createOutputGenerator(codeLang, codeType);
+
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
     if ( !uploadedList.empty() ) {
         std::cerr<<std::endl<<"Result:"<<std::endl;
-        std::cout<< generator.generate(uploadedList);
+        std::cout<< generator->generate(uploadedList);
         std::cerr<<std::endl;
     }
     {
