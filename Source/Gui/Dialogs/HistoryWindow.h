@@ -123,7 +123,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         void onItemDblClick(TreeItem* item);
         bool delayedLoad_;
         std::vector<CString> m_HistoryFiles;
-        bool delayed_closing_;
+        bool delayedClosing_;
         CString historyFolder;
         CWizardDlg* wizardDlg_;
         void LoadHistory();

@@ -59,7 +59,7 @@ SYSTEMTIME GregorianDateToSystemTime(const boost::gregorian::date& d) {
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg) :
     m_treeView(ServiceLocator::instance()->networkClientFactory())
 {
-    delayed_closing_ = false;
+    delayedClosing_ = false;
     wizardDlg_ = wizardDlg;
     delayedLoad_ = false;
 }
@@ -123,7 +123,7 @@ BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    delayed_closing_ = true;
+    delayedClosing_ = true;
     if(!m_treeView.isRunning())
     {
         settings->HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
@@ -286,6 +286,9 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
     WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
     return 0;
@@ -323,6 +326,9 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     else
     {
         HistoryItem* hit = CHistoryTreeControl::getItemData(item);
+        if (!hit) {
+            return 0;
+        }
         CUrlListItem it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
@@ -336,6 +342,9 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
     std::string fileName  = historyItem->localFilePath;
     if(fileName.empty()) return 0;
     std::string directory = IuCoreUtils::ExtractFilePath(fileName);
@@ -355,6 +364,9 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (historyItem) {
+        return 0;
+    }
     WinUtils::ShellOpenFileOrUrl(U2W(historyItem->editUrl), m_hWnd);
     return 0;
 }
@@ -365,7 +377,9 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
     if (!item) return 0;
     if (LocalizedMessageBox(TR("Are you sure?"), APPNAME, MB_ICONQUESTION|MB_YESNO) == IDYES) {
         HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
-        DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
+        if (historyItem) {
+            DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
+        }
     }
     
     return 0;
@@ -420,6 +434,9 @@ void CHistoryWindow::LoadHistory()
 
 void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return;
+    }
     std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
     WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
 }
@@ -431,7 +448,7 @@ void CHistoryWindow::threadsFinished()
     if (delayedLoad_) {
         SendMessage(WM_MY_OPENHISTORYFILE);        
     }
-    else if(delayed_closing_)
+    else if(delayedClosing_)
     {
         EndDialog(0);
         return;

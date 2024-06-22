@@ -90,15 +90,15 @@ public:
         m_callback = c;
     }
 
-    bool IsExpanded() {
+    bool IsExpanded() const {
         return m_isExpanded;
     }
 
-    int level() {
+    int level() const {
         return nLevel;
     }
 
-    int ItemCount() {
+    int ItemCount() const {
         return m_subItems.size();
     }
 
@@ -110,7 +110,7 @@ public:
         m_Text = text;
     }
 
-    CString text() {
+    CString text() const {
         return m_Text;
     }
 

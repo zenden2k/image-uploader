@@ -137,6 +137,9 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
 
 HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
+    if (!res || res->level() != 1) {
+        return nullptr;
+    }
     auto* item = static_cast<HistoryTreeItem*> (res->userData());
     return item ? item->hi : nullptr;
 }
