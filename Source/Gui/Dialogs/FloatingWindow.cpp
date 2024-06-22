@@ -34,6 +34,7 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
+#include "Core/OutputGenerator/AbstractOutputGenerator.h"
 
 namespace {
 
@@ -822,26 +823,20 @@ void CFloatingWindow::stopIconAnimation() {
 }
 
 void CFloatingWindow::showLastUploadedCode() {
-    std::vector<CUrlListItem> items;
-    CUrlListItem it;
+    using namespace ImageUploader::Core::OutputGenerator;
+    std::vector<UploadObject> items;
+    UploadObject newItem;
     if (lastUploadedItem_) {
         UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-        it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
-        it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
-        it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
-        it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
-        it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
-        if (fileTask) {
-            it.FileName = U2W(fileTask->getDisplayName());
-            it.FileIndex = fileTask->index();
-            it.ServerName = U2W(lastUploadedItem_->serverName());
-            items.push_back(it);
-            if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
-                return;
-            CResultsWindow rp(wizardDlg_, items, false);
-            rp.DoModal(m_hWnd);
-        } 
+        newItem.fillFromUploadResult(uploadResult, lastUploadedItem_);
+        newItem.uploadResult = *uploadResult;
+
+        if (newItem.isNull()) {
+            return;
+        }
+        items.push_back(newItem);
+        CResultsWindow rp(wizardDlg_, items, false);
+        rp.DoModal(m_hWnd);
     }
 }
 

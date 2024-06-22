@@ -20,7 +20,10 @@
 
 #pragma once
 
+#include <memory>
 #include <mutex>
+#include <optional>
+#include <string>
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
@@ -28,7 +31,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Gui/WizardCommon.h"
 #include "Func/MyEngineList.h"
-
+#include "Core/OutputGenerator/AbstractOutputGenerator.h"
 
 #define IDC_OPTIONSMENU 10002
 #define IDC_USEDIRECTLINKS 10003
@@ -45,17 +48,18 @@ class CResultsPanel;
 
 // CResultsPanel
 class CWizardDlg;
-struct IU_Result_Template
-{
-    CString Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;
+
+struct ResultTemplate {
+    std::string Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;
 };
+
 class CWebViewWindow;
 
 class CResultsPanel : 
     public CDialogImpl<CResultsPanel>    
 {
     public:
-        CResultsPanel(CWizardDlg *dlg, std::vector<CUrlListItem>  & urlList, bool openedFromHistory = false);
+        CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory = false);
         virtual ~CResultsPanel();
         enum { IDD = IDD_RESULTSPANEL};
 
@@ -80,7 +84,8 @@ class CResultsPanel :
         END_MSG_MAP()
     using ShortenUrlChangedCallback = std::function<void(bool)>;
 
-    enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
+    using TabPage = ImageUploader::Core::OutputGenerator::CodeLang;
+    //enum TabPage { kBbCode = 0, kHtml, kPlainText, kMarkdown };
     enum CodeType { ctTableOfThumbnails = 0, ctClickableThumbnails, ctImages, ctLinks };
     enum { kOutputTimer = 1};
 
@@ -106,20 +111,16 @@ class CResultsPanel :
     void SetPage(TabPage Index);
     void setEngineList(CMyEngineList* EngineList);
 
-    CString GenerateOutput();
+    std::string GenerateOutput();
     std::unique_ptr<CWebViewWindow> webViewWindow_;
     bool LoadTemplate();
-    LPTSTR TemplateHead,TemplateFoot; //TemplateFoot is only pointer to part of TemplateHead 
-
+    
 
     /**
      * Returns selected item's index of code type combobox.
      * First four indices correspond to CodeType enum
      */
     int GetCodeType() const;
-    void GenerateBBCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
-    void GenerateHTMLCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
-    void GenerateMarkdownCode(CString& buffer, CodeType codeType, int thumbsPerLine, bool preferDirectLinks);
     void UpdateOutput(bool immediately = false);
     void SetCodeType(int Index);
     void Clear();
@@ -135,20 +136,22 @@ class CResultsPanel :
     void setShortenUrls(bool shorten);
     void setOnShortenUrlChanged(ShortenUrlChangedCallback callback);
     void setGroupByFilename(bool enable);
+    ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* createOrGetGenerator(ImageUploader::Core::OutputGenerator::CodeLang lang,
+        ImageUploader::Core::OutputGenerator::CodeType);
 protected:
     CToolBarCtrl Toolbar;
     CComboBox codeTypeComboBox;
     TabPage m_Page;
-    std::map<CString, CString> m_Vars;
+    std::map<std::string, std::string> m_Vars;
     std::vector<ServerProfile> m_Servers;
-    std::vector<CUrlListItem>  &UrlList;
-    std::mutex UrlListCS;
+    std::vector<ImageUploader::Core::OutputGenerator::UploadObject>  &UrlList;
+    std::mutex urlListMutex_;
+    std::unordered_map<ImageUploader::Core::OutputGenerator::CodeLang, std::unique_ptr<ImageUploader::Core::OutputGenerator::AbstractOutputGenerator>> outputGenerators_;
     int m_nImgServer, m_nFileServer;
-    CString code_;
     CWizardDlg *WizardDlg;
     CMyEngineList *m_EngineList;
-    CAtlArray<IU_Result_Template> Templates;
-    CString ReplaceVars(const CString& Text);
+    CAtlArray<ResultTemplate> Templates;
+    std::string ReplaceVars(const std::string& Text);
     bool outputChanged_;
     RECT rectNeeded;
     bool shortenUrl_;
@@ -156,9 +159,7 @@ protected:
     bool groupByFileName_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
     CImageListManaged toolbarImageList_;
-    void BBCode_Link(CString &Buffer, CUrlListItem &item);
-    void Markdown_Link(CString &Buffer, CUrlListItem &item);
-    void HTML_Link(CString &Buffer, CUrlListItem &item);
+    std::optional<std::string> templateHead_, templateFoot_;
    
     void onCodeTypeChanged();
 };

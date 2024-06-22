@@ -28,5 +28,16 @@ std::string HTMLGenerator::group(const std::string& fileName, const std::string&
 
 }
 
+std::string HTMLGenerator::itemSeparator() const {
+    return "  ";
+}
+
+std::string HTMLGenerator::lineSeparator() const {
+    return "<br>";
+}
+
+std::string HTMLGenerator::rowSeparator() const {
+    return "\r\n<br>\r\n<br>\r\n";
+}
 
 }

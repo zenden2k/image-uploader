@@ -19,10 +19,6 @@ std::string AbstractCodeGenerator::generate(const std::vector<UploadObject>& ite
 
         std::string& cur = groups[index];
 
-        if (i) {
-            cur += "\r\n";
-        }
-
         fileNames[index] = item.onlyFileName();
         cur += generateCodeForItem(item, i);
     }
@@ -39,26 +35,48 @@ std::string AbstractCodeGenerator::generateCodeForItem(const UploadObject& item,
 
     if (lang() == clPlain) {
         return url;
-    } else {     
+    } else {
+        std::string res;
         if ((codeType_ == ctClickableThumbnails || codeType_ == ctTableOfThumbnails) ) {
             if (!item.getThumbUrl(shortenUrl_).empty()) {
-                return link(url, image(item.thumbUrl, item.onlyFileName()));
+                res = link(url, image(item.getThumbUrl(shortenUrl_), item.onlyFileName()));
             }  else {
-                return link(url, groupByFile_? item.serverName : item.onlyFileName());
+                res = link(url, groupByFile_? item.uploadResult.serverName : item.onlyFileName());
             }
+
+            if (codeType_ == ctTableOfThumbnails) {
+                if ((index + 1) % itemsPerLine_) {
+                    res += itemSeparator();
+                } else {
+                    res += rowSeparator();
+                }
+
+            }
+            return res;
         }
         else if (codeType_ == ctImages) {
+            if (index && codeType_ == ctImages) {
+                res += lineSeparator();
+                res += lineSeparator();
+            }
             if (!item.getImageUrl(shortenUrl_).empty() && (preferDirectLinks_ || item.getDownloadUrl(shortenUrl_).empty())) {
-                return image(item.getImageUrl(shortenUrl_), item.onlyFileName());
+                res += image(item.getImageUrl(shortenUrl_), item.onlyFileName());
             }
             else {
-                return link(url, item.onlyFileName());
+                res += link(url, item.onlyFileName());
             }
+            
+            return res;
+        } else {
+            if (index) {
+                res += lineSeparator();
+                res += lineSeparator();
+            }
+            res += link(url, item.onlyFileName());
         }
-
-        else
+        return res;
         // if (m_CodeType == ctLinks ||  item.directUrl.empty())
-            return link(url, item.onlyFileName());
+           
     }
     return {};
 }
@@ -74,10 +92,22 @@ std::string AbstractCodeGenerator::link(const std::string& url, const std::strin
 std::string AbstractCodeGenerator::group(const std::string& fileName, const std::string& content, size_t index){
     std::string result;
     if (index) {
-        result += "\r\n";
+        result += lineSeparator();
     }
     result += content;
     return result;
+}
+
+std::string AbstractCodeGenerator::itemSeparator() const {
+    return "  ";
+}
+
+std::string AbstractCodeGenerator::rowSeparator() const {
+    return "\r\n\r\n";
+}
+
+std::string AbstractCodeGenerator::lineSeparator() const {
+    return "\r\n";
 }
 
 }

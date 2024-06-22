@@ -11,7 +11,7 @@ std::string MarkdownGenerator::image(const std::string& url, const std::string& 
 }
 
 std::string MarkdownGenerator::link(const std::string& url, const std::string& body) {
-    return "[" + body + "](" + url + "[/url]";
+    return "[" + body + "](" + url + ")";
 }
 
 std::string MarkdownGenerator::group(const std::string& fileName, const std::string& content, size_t index) {
@@ -25,6 +25,14 @@ std::string MarkdownGenerator::group(const std::string& fileName, const std::str
 
     result += content;
     return result;
+}
+
+std::string MarkdownGenerator::itemSeparator() const {
+    return "  ";
+}
+
+std::string MarkdownGenerator::lineSeparator() const {
+    return "\r\n\r\n";
 }
 
 }

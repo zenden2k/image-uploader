@@ -4,6 +4,7 @@
 #include "MarkdownGenerator.h"
 #include "HTMLGenerator.h"
 #include "PlainTextGenerator.h"
+#include "JSONGenerator.h"
 
 namespace ImageUploader::Core::OutputGenerator {
 
@@ -22,8 +23,13 @@ std::unique_ptr<AbstractOutputGenerator> OutputGeneratorFactory::createOutputGen
     case clPlain:
         tmp = std::make_unique<PlainTextGenerator>();
         break;
+    case clJSON:
+        tmp = std::make_unique<JSONGenerator>();
+        break;
     }
-
+    if (!tmp) {
+        return tmp;
+    }
     tmp->setType(codeType);
     return tmp;
 }

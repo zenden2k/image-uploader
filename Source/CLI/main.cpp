@@ -395,16 +395,7 @@ void OnUploadSessionFinished(UploadSession* session) {
         auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
             OutputGenerator::UploadObject uo;
-            uo.directUrl = res->directUrl;
-            uo.thumbUrl = res->thumbUrl;
-            uo.viewUrl = res->downloadUrl;
-            uo.deleteUrl = res->deleteUrl;
-            uo.serverName = task->serverName();
-            if ( fileTask ) {
-                uo.localFilePath = fileTask->getFileName();
-                uo.displayFileName = fileTask->getDisplayName();
-            }
-            uo.uploadFileSize = task->getDataLength();
+            uo.fillFromUploadResult(res, task.get());
             uploadedList.push_back(uo);
         }
     }
