@@ -25,8 +25,10 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "ResultsWindow.h"
 #include "Gui/LogWindow.h"
-#include "Core/OutputCodeGenerator.h"
+#include "Core/OutputGenerator/AbstractOutputGenerator.h"
 #include "AboutDialog.h"
+
+using namespace ImageUploader::Core::OutputGenerator;
 
 MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWidget* parent) :
     QMainWindow(parent),
@@ -233,26 +235,7 @@ void MainWindow::itemDoubleClicked(const QModelIndex& index) {
 }
 
 void MainWindow::uploadTaskToUploadObject(UploadTask* task, UploadObject& obj) {
-
-    /*HistoryItem hi;
-    hi.localFilePath = fileTask->originalFileName();
-    hi.serverName = fileTask->serverProfile().serverName();*/
-    obj.serverName = task->serverProfile().serverName();
-    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-
-    obj.localFilePath = fileTask ? fileTask->originalFileName() : std::string();
-
-    UploadResult* uploadResult = task->uploadResult();
-    obj.directUrl = uploadResult->directUrl;
-    //obj.directUrlShortened = uploadResult->directUrlShortened;
-    obj.thumbUrl = uploadResult->thumbUrl;
-    obj.viewUrl = uploadResult->downloadUrl;
-    //obj.viewUrlShortened = uploadResult->downloadUrlShortened;
-    //obj.editUrl = uploadResult->editUrl;
-    //obj.deleteUrl = uploadResult->deleteUrl;
-    obj.displayFileName = fileTask ? fileTask->getDisplayName() : std::string();
-    //obj.sortIndex = fileTask->index();
-    obj.uploadFileSize = task->getDataLength();
+    obj.fillFromUploadResult(task->uploadResult(), task);
 }
 
 void MainWindow::showCodeForIndex(const QModelIndex& index) {

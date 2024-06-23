@@ -1,5 +1,7 @@
 #include "XmlTemplateGenerator.h"
 
+#include <unordered_map>
+
 #include "Core/3rdpart/pcreplusplus.h"
 #include "Core/Utils/StringUtils.h"
 
@@ -12,7 +14,7 @@ XmlTemplateGenerator::XmlTemplateGenerator(XmlTemplateList* templateList): templ
 std::string XmlTemplateGenerator::generate(const std::vector<UploadObject>& items) {
     std::string res;
     std::string itemsStr;
-    std::map<std::string, std::string> m_Vars;
+    std::unordered_map<std::string, std::string> vars;
     size_t n = items.size();
     int p = itemsPerLine_;
     const auto& templ = templateList_->at(templateIndex_);
@@ -23,30 +25,30 @@ std::string XmlTemplateGenerator::generate(const std::vector<UploadObject>& item
         }
         std::string fname = item.onlyFileName();
         std::string imageUrl = item.getImageUrl(shortenUrl_);
-        m_Vars["DownloadUrl"] = item.getDownloadUrl(shortenUrl_);
-        m_Vars["ImageUrl"] = imageUrl.empty() ? item.getDownloadUrl(shortenUrl_) : imageUrl;
-        m_Vars["ThumbUrl"] = item.getThumbUrl(shortenUrl_);
-        m_Vars["FileName"] = fname;
-        m_Vars["FullFileName"] = item.displayFileName;
-        m_Vars["Index"] = std::to_string(i);
+        vars["DownloadUrl"] = item.getDownloadUrl(shortenUrl_);
+        vars["ImageUrl"] = imageUrl.empty() ? item.getDownloadUrl(shortenUrl_) : imageUrl;
+        vars["ThumbUrl"] = item.getThumbUrl(shortenUrl_);
+        vars["FileName"] = fname;
+        vars["FullFileName"] = item.displayFileName;
+        vars["Index"] = std::to_string(i);
         //CString buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
-        m_Vars["FileNameWithoutExt"] = IuCoreUtils::ExtractFileNameNoExt(item.displayFileName);
+        vars["FileNameWithoutExt"] = IuCoreUtils::ExtractFileNameNoExt(item.displayFileName);
         if (p != 0 && !((i) % p))
 
-            itemsStr += replaceVars(templ.LineStart, m_Vars);
-        itemsStr += replaceVars(templ.Items, m_Vars);
+            itemsStr += replaceVars(templ.LineStart, vars);
+        itemsStr += replaceVars(templ.Items, vars);
         if ((p != 0 && ((i + 1) % p)) || p == 0)
-            itemsStr += replaceVars(templ.ItemSep, m_Vars);
+            itemsStr += replaceVars(templ.ItemSep, vars);
 
         if (p != 0 && !((i + 1) % p)) {
-            itemsStr += replaceVars(templ.LineEnd, m_Vars);
+            itemsStr += replaceVars(templ.LineEnd, vars);
             if (p != 0)
-                itemsStr += replaceVars(templ.LineSep, m_Vars);
+                itemsStr += replaceVars(templ.LineSep, vars);
         }
     }
-    m_Vars.clear();
-    m_Vars["Items"] = itemsStr;
-    res += replaceVars(templ.TemplateText, m_Vars);
+    vars.clear();
+    vars["Items"] = itemsStr;
+    res += replaceVars(templ.TemplateText, vars);
     return res;
 }
 
@@ -55,7 +57,8 @@ GeneratorID XmlTemplateGenerator::id() const
     return gidXmlTemplate;
 }
 
-std::string XmlTemplateGenerator::replaceVars(const std::string& text, const std::map<std::string, std::string>& m_Vars) {
+std::string XmlTemplateGenerator::replaceVars(const std::string& text, const std::unordered_map<std::string, std::string>& vars)
+{
     std::string Result = text;
 
     pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
@@ -65,7 +68,7 @@ std::string XmlTemplateGenerator::replaceVars(const std::string& text, const std
         if (reg.search(str, pos)) {
             pos = reg.get_match_end() + 1;
             std::string vv = reg[1];
-            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", m_Vars.at(vv));
+            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", vars.at(vv));
         }
         else {
             break;

@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 
@@ -17,7 +17,7 @@ public:
     std::string generate(const std::vector<UploadObject>& items) override;
     void setTemplateIndex(size_t index);
 private:
-    std::string replaceVars(const std::string& text, const std::map<std::string, std::string>& m_Vars);
+    std::string replaceVars(const std::string& text, const std::unordered_map<std::string, std::string>& vars);
     XmlTemplateList* templateList_;
     size_t templateIndex_ = 0;
 };
