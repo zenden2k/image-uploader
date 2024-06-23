@@ -39,4 +39,40 @@ void AbstractOutputGenerator::setItemsPerLine(int n) {
     itemsPerLine_ = n;
 }
 
+bool AbstractOutputGenerator::loadTemplate(const std::string& templateFileName){
+    if (templateHead_ || templateFoot_) {
+        return true;
+    }
+
+    std::string fileContents = IuCoreUtils::GetFileContents(templateFileName);
+
+    if (fileContents.empty()) {
+        return false;
+    }
+
+    std::string pattern = "%images%";
+    auto it = fileContents.find(pattern);
+
+    if (it != std::string::npos) {
+        templateHead_ = fileContents.substr(0, it);
+        templateFoot_ = fileContents.substr(it + pattern.length());
+    }
+
+    return true;
+}
+
+std::string AbstractOutputGenerator::generateWithTemplate(const std::vector<UploadObject>& items) {
+    std::string res;
+    if (templateHead_) {
+        res += *templateHead_;
+    }
+
+    res += generate(items);
+
+    if (templateFoot_) {
+        res += *templateFoot_;
+    }
+    return res;
+}
+
 }

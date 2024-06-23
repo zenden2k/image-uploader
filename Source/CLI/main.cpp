@@ -400,8 +400,9 @@ void OnUploadSessionFinished(UploadSession* session) {
         }
     }
     OutputGenerator::OutputGeneratorFactory factory;
-    auto generator = factory.createOutputGenerator(codeLang, codeType);
-
+    OutputGenerator::GeneratorID gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
+    auto generator = factory.createOutputGenerator(gid, codeType);
+    generator->setPreferDirectLinks(true);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
     if ( !uploadedList.empty() ) {
         std::cerr<<std::endl<<"Result:"<<std::endl;

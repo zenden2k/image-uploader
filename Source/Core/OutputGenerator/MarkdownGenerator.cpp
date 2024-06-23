@@ -2,8 +2,9 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-CodeLang MarkdownGenerator::lang() const{
-    return clMarkdown;
+GeneratorID MarkdownGenerator::id() const
+{
+    return gidMarkdown;
 }
 
 std::string MarkdownGenerator::image(const std::string& url, const std::string& alt) {
@@ -18,7 +19,7 @@ std::string MarkdownGenerator::group(const std::string& fileName, const std::str
     std::string result;
     if (groupByFile_ && !content.empty()) {
         if (index) {
-            result += "\r\n";
+            result += "\r\n\r\n";
         }
         result += fileName + "\r\n\r\n";
     }
@@ -32,6 +33,10 @@ std::string MarkdownGenerator::itemSeparator() const {
 }
 
 std::string MarkdownGenerator::lineSeparator() const {
+    return "\r\n";
+}
+
+std::string MarkdownGenerator::rowSeparator() const {
     return "\r\n\r\n";
 }
 

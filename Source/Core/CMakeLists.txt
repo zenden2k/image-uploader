@@ -29,6 +29,8 @@ set(SRC_LIST Network/NetworkClient.cpp
     OutputGenerator/MarkdownGenerator.cpp
     OutputGenerator/PlainTextGenerator.cpp
     OutputGenerator/JSONGenerator.cpp
+    OutputGenerator/XmlTemplateList.cpp
+    OutputGenerator/XmlTemplateGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
     AppParams.cpp
@@ -116,6 +118,8 @@ set(HEADER_LIST Network/NetworkClient.h
     OutputGenerator/MarkdownGenerator.h
     OutputGenerator/PlainTextGenerator.h
     OutputGenerator/JSONGenerator.h
+    OutputGenerator/XmlTemplateList.h
+    OutputGenerator/XmlTemplateGenerator.h
     UploadEngineList.h
     SettingsManager.h
     AppParams.h

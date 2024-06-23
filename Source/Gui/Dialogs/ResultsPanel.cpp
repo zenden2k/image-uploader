@@ -38,6 +38,8 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
+#include "Core/OutputGenerator/XmlTemplateList.h"
+#include "Core/OutputGenerator/XmlTemplateGenerator.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory):
@@ -54,8 +56,24 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::O
     m_Page = OG::clBBCode;
     m_EngineList = nullptr;
     groupByFileName_ = false;
-    if(!LoadTemplates(TemplateLoadError)) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), TemplateLoadError);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
+    std::string userTemplateFile = settings->SettingsFolder + "user_templates.xml";
+    templateList_ = std::make_unique<OG::XmlTemplateList>();
+    try {
+        templateList_->loadFromFile(W2U(XmlFileName));
+
+    } catch (const std::exception& e) {
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), U2W(e.what()));
+    }
+
+    if (IuCoreUtils::FileExists(userTemplateFile)) {
+        try {
+            templateList_->loadFromFile(userTemplateFile);
+        }
+        catch (const std::exception& e) {
+            ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Results Module"), U2W(e.what()));
+        }
     }
 }
 
@@ -66,30 +84,6 @@ CResultsPanel::~CResultsPanel()
             webViewWindow_->DestroyWindow();
         }
     }  
-}
-    
-bool CResultsPanel::LoadTemplate() {
-    if (templateHead_ || templateFoot_) {
-        return true;
-    }
-
-    CString FileName = IuCommonFunctions::GetDataFolder() + _T("template.txt");
-
-    std::string fileContents = IuCoreUtils::GetFileContents(W2U(FileName));
-
-    if (fileContents.empty()) {
-        return false;
-    }
-
-    std::string pattern = "%images%";
-    auto it = fileContents.find(pattern);
-
-    if (it != std::string::npos) {
-        templateHead_ = fileContents.substr(0, it);
-        templateFoot_ = fileContents.substr(it + pattern.length());
-    }
-
-    return true;
 }
 
 LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -172,12 +166,11 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     codeTypeComboBox.AddString(TR("Images"));
     codeTypeComboBox.AddString(TR("Links to Images/Files")); 
         
-    for(size_t i=0;i<Templates.GetCount(); i++) {
-        codeTypeComboBox.AddString(U2W(Templates[i].Name));  
+    for(size_t i=0;i<templateList_->size(); i++) {
+        codeTypeComboBox.AddString(U2W(templateList_->at(i).Name));
     }
     
     codeTypeComboBox.SetCurSel(0);
-    LoadTemplate();
 
     SetTimer(kOutputTimer, 1000);
     return 1;  // Let the system set the focus
@@ -240,70 +233,41 @@ std::string CResultsPanel::GenerateOutput()
     int p=GetDlgItemInt(IDC_THUMBSPERLINE);
     if(p>=0 && p<5555)
         settings->ThumbsPerLine = p;
-
+    if (p < 1) {
+        p = 4;
+    }
     bool UseTemplate = settings->UseTxtTemplate;
     bool preferDirectLinks = settings->UseDirectLinks;
     groupByFileName_ = settings->GroupByFilename;
     settings->UseTxtTemplate = UseTemplate;
-    if (UseTemplate && templateHead_ && m_Page != OG::clPlain) {
-        Buffer += *templateHead_;
+
+    OG::GeneratorID generatorId = OG::gidBBCode;
+    OG::CodeLang lang = OG::clBBCode;
+
+    if (m_Page != OG::clPlain && Index > 3) {
+        //template from templates.xml
+        generatorId = OG::gidXmlTemplate;
+        lang = OG::clUnknown;
+    } else if (m_Page >= OG::clBBCode && m_Page <= OG::clJSON) {
+        generatorId = static_cast<OG::GeneratorID>(m_Page);
+        lang = m_Page;
     }
-
-    if (m_Page != OG::clPlain && Index > 3) //template from templates.xml
-    {
-        int TemplateIndex = Index - 4;
-        std::string Items;
-
-        for(int i=0; i<n; i++)
-        {
-            if (UrlList[i].isNull())
-            {
-                continue;
-            }
-            std::string fname = UrlList[i].onlyFileName();
-            std::string imageUrl = UrlList[i].getImageUrl(shortenUrl_);
-            m_Vars["DownloadUrl"] = UrlList[i].getDownloadUrl(shortenUrl_);
-            m_Vars["ImageUrl"] = imageUrl.empty() ? UrlList[i].getDownloadUrl(shortenUrl_) : imageUrl;
-            m_Vars["ThumbUrl"]= UrlList[i].getThumbUrl(shortenUrl_);
-            m_Vars["FileName"] = fname;
-            m_Vars["FullFileName"] = UrlList[i].displayFileName;
-            m_Vars["Index"] = std::to_string(i);
-            //CString buffer = WinUtils::GetOnlyFileName(UrlList[i].FileName);
-            m_Vars["FileNameWithoutExt"] = IuCoreUtils::ExtractFileNameNoExt(UrlList[i].displayFileName);
-            if(p!=0  && !((i)%p))
-
-                Items+=ReplaceVars(Templates[TemplateIndex].LineStart);
-            Items+=ReplaceVars(Templates[TemplateIndex].Items);
-            if((p!=0 && ((i+1)%p)) || p==0) 
-                Items+=ReplaceVars(Templates[TemplateIndex].ItemSep);
-
-            if(p!=0 && !((i+1)%p))
-            {
-                Items+=ReplaceVars(Templates[TemplateIndex].LineEnd);
-                if(p!=0)
-                    Items+=ReplaceVars(Templates[TemplateIndex].LineSep);
-            }
-
-        }
-        m_Vars.clear();
-        m_Vars["Items"]=Items;
-        Buffer += ReplaceVars(Templates[TemplateIndex].TemplateText);
-        m_Vars.clear();
-        return Buffer;
-    }
-
-    if (p < 1) {
-        p = 4;
-    }
-
-     auto* generator = createOrGetGenerator(m_Page, static_cast<OG::CodeType>(codeType));
-     generator->setPreferDirectLinks(preferDirectLinks);
-     generator->setItemsPerLine(p);
-     generator->setGroupByFile(groupByFileName_);
-     Buffer += generator->generate(UrlList);
     
-    if (UseTemplate && templateFoot_ && m_Page != OG::clPlain) {
-        Buffer += *templateFoot_;
+    OG::AbstractOutputGenerator* generator = createOrGetGenerator(generatorId, lang, static_cast<OG::CodeType>(codeType));
+    
+    generator->setPreferDirectLinks(preferDirectLinks);
+    generator->setItemsPerLine(p);
+    generator->setGroupByFile(groupByFileName_);
+
+    if (generatorId == OG::gidXmlTemplate) {
+        int templateIndex = Index - 4;
+        auto xmlTemplateGenerator = dynamic_cast<OG::XmlTemplateGenerator*>(generator);
+        xmlTemplateGenerator->setTemplateIndex(templateIndex);
+    }
+    if (UseTemplate) {
+        Buffer += generator->generateWithTemplate(UrlList);
+    } else {
+        Buffer += generator->generate(UrlList);
     }
 
     return Buffer;
@@ -382,86 +346,6 @@ void CResultsPanel::Clear()
 void  CResultsPanel::EnableMediaInfo(bool Enable)
 {
     Toolbar.HideButton(IDC_MEDIAFILEINFO,!Enable);
-}
-
-bool CResultsPanel::LoadTemplates(CString &Error)
-{
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
-    LoadTemplateFromFile(XmlFileName, Error);
-    CString userTemplateError;
-    CString userTemplateFile = Utf8ToWCstring(settings->SettingsFolder) +  _T("user_templates.xml");
-    LoadTemplateFromFile(userTemplateFile, userTemplateError);
-
-    return true;
-}
-
-bool CResultsPanel::LoadTemplateFromFile(const CString& fileName, CString &Error)
-{
-    SimpleXml XML;
-    if(!WinUtils::FileExists(fileName))
-    {
-        Error = TR("File not found.");
-        return false;
-    }
-
-    if(!XML.LoadFromFile(WCstringToUtf8(fileName)))
-    {
-        Error = _T("xml loading error");
-        return false;
-    }
-
-    SimpleXmlNode templatesNode = XML.getRoot("Templates");
-    if(templatesNode.IsNull())
-    {
-        Error = _T("Unable to find Templates node");
-        return false;
-    }
-
-    std::vector<SimpleXmlNode> templates;
-    templatesNode.GetChilds("Template",templates);
-
-    for(size_t i=0; i<templates.size(); i++)
-    {
-        ResultTemplate Template;
-        Template.Name = templates[i].Attribute("Name");
-
-        Template.TemplateText = templates[i]["Text"].Text();
-
-        SimpleXmlNode itemsNode = templates[i]["Items"];
-        if(!itemsNode.IsNull())
-        {
-            Template.LineStart = itemsNode.Attribute("LineStart");
-            Template.LineEnd = itemsNode.Attribute("LineEnd");
-            Template.LineSep = itemsNode.Attribute("LineSep");
-            Template.ItemSep = itemsNode.Attribute("ItemSep");
-
-            Template.Items = itemsNode.Text();
-        }
-
-        Templates.Add(Template);
-    }
-    return true;
-}
-
-std::string CResultsPanel::ReplaceVars(const std::string& Text) {
-    std::string Result =  Text;
-
-    pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
-    std::string str = Text;
-    size_t pos = 0;
-    while (pos <= str.length()) {
-        if (reg.search(str, pos)) {
-            pos = reg.get_match_end()+1;
-            std::string vv = reg[1];
-            Result = IuStringUtils::Replace(Result, "$(" + vv + ")", m_Vars[vv]);
-        } else {
-            break;
-        }
-    }
-    Result = IuStringUtils::Replace(Result, "\\n", "\r\n");
-
-    return Result;
 }
 
 LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
@@ -735,16 +619,18 @@ void CResultsPanel::setGroupByFilename(bool enable) {
     groupByFileName_ = enable;
 }
 
-ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* CResultsPanel::createOrGetGenerator(ImageUploader::Core::OutputGenerator::CodeLang lang,
+ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* CResultsPanel::createOrGetGenerator(ImageUploader::Core::OutputGenerator::GeneratorID gid,  ImageUploader::Core::OutputGenerator::CodeLang lang,
         ImageUploader::Core::OutputGenerator::CodeType type) {
     using namespace ImageUploader::Core::OutputGenerator;
-    auto it = outputGenerators_.find(lang);
+    auto it = outputGenerators_.find(gid);
     AbstractOutputGenerator* res{};
     if (it == outputGenerators_.end()) {
         OutputGeneratorFactory factory;
-        auto tmp = factory.createOutputGenerator(lang, type);
+        auto tmp = factory.createOutputGenerator(gid, type, templateList_.get());
+        CString templateFileName = IuCommonFunctions::GetDataFolder() + _T("template.txt");
+        tmp->loadTemplate(W2U(templateFileName));
         res = tmp.get();
-        outputGenerators_[lang] = std::move(tmp);
+        outputGenerators_[gid] = std::move(tmp);
     } else {
         res = it->second.get();
     }

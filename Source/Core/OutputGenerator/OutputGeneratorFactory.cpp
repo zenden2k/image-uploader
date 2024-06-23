@@ -5,26 +5,31 @@
 #include "HTMLGenerator.h"
 #include "PlainTextGenerator.h"
 #include "JSONGenerator.h"
+#include "XmlTemplateGenerator.h"
 
 namespace ImageUploader::Core::OutputGenerator {
 
-std::unique_ptr<AbstractOutputGenerator> OutputGeneratorFactory::createOutputGenerator(CodeLang lang, CodeType codeType) {
+std::unique_ptr<AbstractOutputGenerator> OutputGeneratorFactory::createOutputGenerator(GeneratorID gid, /*CodeLang lang, */ CodeType codeType,
+                                                                    XmlTemplateList* xmlTemplateList) {
     std::unique_ptr<AbstractOutputGenerator> tmp;
-    switch (lang) {
-    case clBBCode:
+    switch (gid) {
+    case gidBBCode:
         tmp = std::make_unique<BBCodeGenerator>();
         break;
-    case clHTML:
+    case gidHTML:
         tmp = std::make_unique<HTMLGenerator>();
         break;
-    case clMarkdown:
+    case gidMarkdown:
         tmp = std::make_unique<MarkdownGenerator>();
         break;
-    case clPlain:
+    case gidPlain:
         tmp = std::make_unique<PlainTextGenerator>();
         break;
-    case clJSON:
+    case gidJSON:
         tmp = std::make_unique<JSONGenerator>();
+        break;
+    case gidXmlTemplate:
+        tmp = std::make_unique<XmlTemplateGenerator>(xmlTemplateList);
         break;
     }
     if (!tmp) {

@@ -6,7 +6,7 @@ namespace ImageUploader::Core::OutputGenerator {
 
 class HTMLGenerator : public AbstractCodeGenerator {
 public:
-    CodeLang lang() const override;
+    GeneratorID id() const override;
 private:
     std::string image(const std::string& url, const std::string& alt) override;
     std::string link(const std::string& url, const std::string& body) override;

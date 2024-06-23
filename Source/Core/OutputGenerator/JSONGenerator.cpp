@@ -24,8 +24,9 @@ std::string JSONGenerator::generate(const std::vector<UploadObject>& items) {
     return Json::writeString(builder, arrValue);
 }
 
-CodeLang JSONGenerator::lang() const {
-    return clJSON;
+GeneratorID JSONGenerator::id() const
+{
+    return gidJSON;
 }
 
 }

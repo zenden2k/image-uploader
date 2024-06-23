@@ -2,8 +2,9 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-CodeLang HTMLGenerator::lang() const{
-    return clHTML;
+GeneratorID HTMLGenerator::id() const
+{
+    return gidHTML;
 }
 
 std::string HTMLGenerator::image(const std::string& url, const std::string& alt) {
@@ -18,14 +19,13 @@ std::string HTMLGenerator::group(const std::string& fileName, const std::string&
     std::string result;
     if (groupByFile_ && !content.empty()) {
         if (index) {
-            result += "<br>";
+            result += "<br><br>";
         }
-        result += fileName + "<br><br>";
+        result += fileName + "<br>";
     }
 
     result += content;
     return result;
-
 }
 
 std::string HTMLGenerator::itemSeparator() const {

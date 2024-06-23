@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -52,7 +53,8 @@ struct UploadObject {
     }
 };
 
-enum CodeLang { clBBCode, clHTML,  clPlain, clMarkdown, clJSON };
+enum CodeLang { clUnknown = -1, clBBCode, clHTML,  clPlain, clMarkdown, clJSON };
+enum GeneratorID { gidBBCode, gidHTML, gidPlain, gidMarkdown, gidJSON, gidXmlTemplate};
 enum CodeType { ctTableOfThumbnails, ctClickableThumbnails, ctImages, ctLinks };
 
 class AbstractOutputGenerator
@@ -65,12 +67,15 @@ public:
     void setShortenUrl(bool shorten);
     void setGroupByFile(bool group);
     void setItemsPerLine(int n);
-    virtual CodeLang lang() const = 0;
+    virtual GeneratorID id() const = 0;
+    bool loadTemplate(const std::string& templateFileName);
+    std::string generateWithTemplate(const std::vector<UploadObject>& items);
     virtual std::string generate(const std::vector<UploadObject>& items) = 0;
 protected:
     CodeType codeType_;
     bool preferDirectLinks_ = true, shortenUrl_ = false, groupByFile_ = false;
     int itemsPerLine_ = 4;
+    std::optional<std::string> templateHead_, templateFoot_;
 };
 
 }

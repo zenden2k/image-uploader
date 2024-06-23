@@ -2,8 +2,18 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-ImageUploader::Core::OutputGenerator::CodeLang PlainTextGenerator::lang() const {
-    return clPlain;
+GeneratorID PlainTextGenerator::id() const
+{
+    return gidPlain;
+}
+
+std::string PlainTextGenerator::generateCodeForItem(const UploadObject& item, int index) {
+    std::string res;
+    if (index) {
+        res += lineSeparator();
+    }
+    res += getItemTargetUrl(item);
+    return res;
 }
 
 }

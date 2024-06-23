@@ -11,7 +11,7 @@ namespace ImageUploader::Core::OutputGenerator {
 class JSONGenerator : public AbstractOutputGenerator {
 public:
     JSONGenerator() = default;
-    CodeLang lang() const override;
+    GeneratorID id() const override;
     std::string generate(const std::vector<UploadObject>& items) override;
 private:
 };

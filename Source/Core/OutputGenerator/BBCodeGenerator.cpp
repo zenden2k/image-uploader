@@ -2,8 +2,9 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-CodeLang BBCodeGenerator::lang() const {
-    return clBBCode;
+GeneratorID BBCodeGenerator::id() const
+{
+    return gidBBCode;
 }
 
 std::string BBCodeGenerator::image(const std::string& url, const std::string& alt) {
@@ -18,9 +19,9 @@ std::string BBCodeGenerator::group(const std::string& fileName, const std::strin
     std::string result;
     if (groupByFile_ && !content.empty()) {
         if (index) {
-            result += "\r\n";
+            result += "\r\n\r\n";
         }
-        result += fileName + "\r\n\r\n";
+        result += fileName + "\r\n";
     }
 
     result += content;

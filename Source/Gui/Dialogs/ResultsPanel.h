@@ -49,11 +49,12 @@ class CResultsPanel;
 // CResultsPanel
 class CWizardDlg;
 
-struct ResultTemplate {
-    std::string Name,Items,LineSep,LineStart,ItemSep,LineEnd,TemplateText;
-};
-
 class CWebViewWindow;
+
+namespace ImageUploader::Core::OutputGenerator{
+    class XmlTemplateList;
+    class XmlTemplateGenerator;
+}
 
 class CResultsPanel : 
     public CDialogImpl<CResultsPanel>    
@@ -113,8 +114,6 @@ class CResultsPanel :
 
     std::string GenerateOutput();
     std::unique_ptr<CWebViewWindow> webViewWindow_;
-    bool LoadTemplate();
-    
 
     /**
      * Returns selected item's index of code type combobox.
@@ -125,9 +124,6 @@ class CResultsPanel :
     void SetCodeType(int Index);
     void Clear();
     void EnableMediaInfo(bool Enable);
-   
-    bool LoadTemplates(CString &Error);
-    bool LoadTemplateFromFile(const CString& fileName, CString &Error);
     void InitUpload();
     void AddServer(const ServerProfile& server);
     bool copyResultsToClipboard();
@@ -136,7 +132,7 @@ class CResultsPanel :
     void setShortenUrls(bool shorten);
     void setOnShortenUrlChanged(ShortenUrlChangedCallback callback);
     void setGroupByFilename(bool enable);
-    ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* createOrGetGenerator(ImageUploader::Core::OutputGenerator::CodeLang lang,
+    ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* createOrGetGenerator(ImageUploader::Core::OutputGenerator::GeneratorID gid, ImageUploader::Core::OutputGenerator::CodeLang lang,
         ImageUploader::Core::OutputGenerator::CodeType);
 protected:
     CToolBarCtrl Toolbar;
@@ -146,12 +142,12 @@ protected:
     std::vector<ServerProfile> m_Servers;
     std::vector<ImageUploader::Core::OutputGenerator::UploadObject>  &UrlList;
     std::mutex urlListMutex_;
-    std::unordered_map<ImageUploader::Core::OutputGenerator::CodeLang, std::unique_ptr<ImageUploader::Core::OutputGenerator::AbstractOutputGenerator>> outputGenerators_;
+    std::unordered_map<ImageUploader::Core::OutputGenerator::GeneratorID, std::unique_ptr<ImageUploader::Core::OutputGenerator::AbstractOutputGenerator>> outputGenerators_;
     int m_nImgServer, m_nFileServer;
     CWizardDlg *WizardDlg;
     CMyEngineList *m_EngineList;
-    CAtlArray<ResultTemplate> Templates;
-    std::string ReplaceVars(const std::string& Text);
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateGenerator> xmlTemplateGenerator_;
     bool outputChanged_;
     RECT rectNeeded;
     bool shortenUrl_;
@@ -159,7 +155,7 @@ protected:
     bool groupByFileName_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
     CImageListManaged toolbarImageList_;
-    std::optional<std::string> templateHead_, templateFoot_;
+
    
     void onCodeTypeChanged();
 };
