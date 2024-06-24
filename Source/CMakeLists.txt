@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15.0)
 
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
 #set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
-
+ 
 set(CMAKE_CXX_STANDARD 17)
 
 set(CMAKE_SKIP_RPATH 1)   
@@ -135,6 +135,10 @@ SET(COMMON_DEPS boost/1.78.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
 )
+
+if (IU_ENABLE_WEBVIEW2)
+    SET(WEBVIEW2_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
+endif()
 
 if (IU_USE_OPENSSL)
 	list(APPEND COMMON_DEPS 
