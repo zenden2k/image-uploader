@@ -96,7 +96,8 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     commonProgressLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     commonPercentLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
+    using namespace ImageUploader::Core::OutputGenerator;
+    resultsWindow_->SetPage(static_cast<CodeLang>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
     return 1;  
@@ -597,20 +598,13 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         {
             return;
         }
-        CUrlListItem item;
-        UploadResult* uploadResult = task->uploadResult();
-        item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
-        //item.FileIndex = fileTask->fileIndex();
-        item.ImageUrlShortened = Utf8ToWCstring(uploadResult->directUrlShortened);
-        item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
-        item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
-        item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
-        item.FileIndex = task->index();
-        item.ServerName = U2W(task->serverName());
+        ImageUploader::Core::OutputGenerator::UploadObject item;
+        item.fillFromUploadResult(task->uploadResult(), task);
+
+        item.fileIndex = task->index();
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            urlList_[fps->tableRow] = item;
+            urlList_[fps->tableRow] = std::move(item);
         }
 
         /*taskDispatcher->runInGuiThread([this] { 
@@ -626,9 +620,9 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         }
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            auto& row = urlList_[fps->tableRow];
-            row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
-            row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
+            auto& row = urlList_[fps->tableRow]; 
+            row.uploadResult.directUrlShortened = parentTask->uploadResult()->getDirectUrlShortened();
+            row.uploadResult.downloadUrlShortened = parentTask->uploadResult()->getDownloadUrlShortened();
         }
         
     }

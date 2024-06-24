@@ -25,16 +25,17 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
+namespace OG = ImageUploader::Core::OutputGenerator;
 // CResultsWindow
-CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<CUrlListItem>  & urlList,bool ChildWindow)
+CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<OG::UploadObject>  & urlList,bool ChildWindow)
 {
     m_WizardDlg = wizardDlg;
     ResultsPanel = std::make_unique<CResultsPanel>(wizardDlg, urlList, !ChildWindow);
     m_childWindow = ChildWindow;
-    tabPageToCodeLang[0] = CResultsPanel::kBbCode;
-    tabPageToCodeLang[1] = CResultsPanel::kHtml;
-    tabPageToCodeLang[2] = CResultsPanel::kMarkdown;
-    tabPageToCodeLang[3] = CResultsPanel::kPlainText;
+    tabPageToCodeLang[0] = OG::clBBCode;
+    tabPageToCodeLang[1] = OG::clHTML;
+    tabPageToCodeLang[2] = OG::clMarkdown;
+    tabPageToCodeLang[3] = OG::clPlain;
     hMyDlgTemplate_ = nullptr;
 }
 
@@ -142,7 +143,7 @@ void CResultsWindow::EnableMediaInfo(bool Enable)
     ResultsPanel->EnableMediaInfo(Enable);
 }
 
-void CResultsWindow::SetPage(CResultsPanel::TabPage Index)
+void CResultsWindow::SetPage(OG::CodeLang Index)
 {
     auto it = std::find_if(tabPageToCodeLang.begin(), tabPageToCodeLang.end(), [&](const std::pair<int,int>& v) {return v.second == Index; });
 

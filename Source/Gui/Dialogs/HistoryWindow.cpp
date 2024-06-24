@@ -294,32 +294,35 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     return 0;
 }
 
-CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
+ImageUploader::Core::OutputGenerator::UploadObject fromHistoryItem(const HistoryItem& historyItem)
 {
-    CUrlListItem it;
-    it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
-    it.ImageUrlShortened = Utf8ToWstring(historyItem.directUrlShortened).c_str();
-    it.ThumbUrl =  Utf8ToWstring(historyItem.thumbUrl).c_str();
-    it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
-    it.DownloadUrlShortened = Utf8ToWstring(historyItem.viewUrlShortened).c_str();
-    it.FileName = Utf8ToWstring(historyItem.displayName).c_str();
-    it.ServerName = U2W(historyItem.serverName);
-    it.FileIndex = historyItem.sortIndex;
+    ImageUploader::Core::OutputGenerator::UploadObject it;
+    it.uploadResult.directUrl = historyItem.directUrl;
+    it.uploadResult.directUrlShortened = historyItem.directUrlShortened;
+    it.uploadResult.thumbUrl = historyItem.thumbUrl;
+    it.uploadResult.downloadUrl = historyItem.viewUrl;
+    it.uploadResult.downloadUrlShortened = historyItem.viewUrlShortened;
+    it.uploadResult.editUrl = historyItem.editUrl;
+    it.uploadResult.deleteUrl = historyItem.deleteUrl;
+    it.displayFileName = historyItem.displayName;
+    it.uploadResult.serverName = historyItem.serverName;
+    it.fileIndex = historyItem.sortIndex;
     return it;
 }
 
 LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    using namespace ImageUploader::Core::OutputGenerator;
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    std::vector<CUrlListItem> items;
+    std::vector<UploadObject> items;
 
     if(item->level()==0)
     {
         auto* ses = static_cast<CHistorySession*>(item->userData());
         for(int i=0; i<ses->entriesCount(); i++)
         {
-            CUrlListItem it  =fromHistoryItem(ses->entry(i));
+            UploadObject it = fromHistoryItem(ses->entry(i));
             items.push_back(it);
         }
     }
@@ -329,7 +332,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
         if (!hit) {
             return 0;
         }
-        CUrlListItem it  = fromHistoryItem(*hit);
+        ImageUploader::Core::OutputGenerator::UploadObject it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
     CResultsWindow rp(wizardDlg_, items, false);

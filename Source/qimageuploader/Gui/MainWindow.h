@@ -9,7 +9,9 @@ class UploadManager;
 class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
+namespace ImageUploader::Core::OutputGenerator {
 struct UploadObject;
+}
 class ServerSelectorWidget;
 class LogWindow;
 class QSystemTrayIcon;
@@ -44,7 +46,7 @@ private slots:
 protected:
 	bool addFileToList(QString fileName);
 	bool addMultipleFilesToList(QStringList fileNames);
-	void uploadTaskToUploadObject(UploadTask* task, UploadObject& obj);
+    void uploadTaskToUploadObject(UploadTask* task, ImageUploader::Core::OutputGenerator::UploadObject& obj);
 	void showCodeForIndex(const QModelIndex& index);
 	void quitApp();
     void saveOptions();

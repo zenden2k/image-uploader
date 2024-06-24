@@ -1,10 +1,11 @@
 #include "ResultsWindow.h"
 
 #include <QClipboard>
+#include "Core/OutputGenerator/OutputGeneratorFactory.h"
 
 #include "ui_ResultsWindow.h"
-
-ResultsWindow::ResultsWindow(std::vector<UploadObject> objects, QWidget* parent) :
+namespace OutputCodeGenerator = ImageUploader::Core::OutputGenerator;
+ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> objects, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::ResultsWindow),
     uploadObjects_(objects) {
@@ -27,21 +28,24 @@ ResultsWindow::~ResultsWindow() {
 }
 
 void ResultsWindow::generateCode() {
-    OutputCodeGenerator generator;
+    OutputCodeGenerator::OutputGeneratorFactory factory;
+
     OutputCodeGenerator::CodeLang lang;
     OutputCodeGenerator::CodeType codeType;
+    OutputCodeGenerator::GeneratorID gid;
     int tabIndex = ui->tabBar->currentIndex();
     if (tabIndex == 0) {
-        lang = OutputCodeGenerator::clBBCode;
+        //lang = OutputCodeGenerator::clBBCode;
+        gid = OutputCodeGenerator::gidBBCode;
     }
     else if (tabIndex == 1) {
-        lang = OutputCodeGenerator::clHTML;
+        gid = OutputCodeGenerator::gidHTML;
     }
     else if (tabIndex == 2) {
-        lang = OutputCodeGenerator::clHTML;
+        gid = OutputCodeGenerator::gidMarkdown;
     }
     else {
-        lang = OutputCodeGenerator::clPlain;
+        gid = OutputCodeGenerator::gidPlain;
     }
     int codeTypeIndex = ui->codeTypeCombo->currentIndex();
     if (codeTypeIndex == 0) {
@@ -58,10 +62,10 @@ void ResultsWindow::generateCode() {
     } else {
         codeType = OutputCodeGenerator::ctTableOfThumbnails;
     }
-    generator.setLang(lang);
-    generator.setType(codeType);
-    std::string res = generator.generate(uploadObjects_);
-    ui->plainTextEdit->setPlainText(QString::fromUtf8(res.c_str()));
+    auto generator = factory.createOutputGenerator(gid, codeType);
+    generator->setType(codeType);
+    std::string res = generator->generate(uploadObjects_);
+    ui->plainTextEdit->setPlainText(QString::fromStdString(res));
 }
 
 void ResultsWindow::currentTabChanged(int index) {

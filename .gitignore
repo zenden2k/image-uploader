@@ -26,6 +26,7 @@ ipch/
 Lang/*.new
 Dist/debian/imgupload
 Dist/serverchecker
+Dist/versioninfo.h
 /Build*/
 .vs/
 .vscode/
