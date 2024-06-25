@@ -38,9 +38,16 @@ if(WIN32)
         ../Video/Tests/VideoGrabberTest.cpp
         ../Core/Settings/CliSettings.cpp
     )
+   
 endif()
 
 add_executable(Tests ${SRC_LIST})
+
+if (IU_ENABLE_WEBVIEW2)
+    set_target_properties(Tests PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    set_target_properties(Tests PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+    set_target_properties(Tests PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+endif()
 
 set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 if(WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)

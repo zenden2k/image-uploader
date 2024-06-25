@@ -510,7 +510,8 @@ for target in BUILD_TARGETS:
         if os.path.islink(link_path):
             os.unlink(link_path)
         os.symlink(build_dir_path_abs, link_path)
-        if target.get("enable_webview2"):
+        #if target.get("enable_webview2"):
+        if False:
             proc = subprocess.run(["nuget", "install", "Microsoft.Web.WebView2", "-Version", "1.0.1823.32", "-ExcludeVersion", "-NonInteractive","-OutputDirectory", "packages"])
             if proc.returncode !=0:
                 print("Nuget WebView2 install failed")
