@@ -455,6 +455,7 @@ WtlGuiSettings::WtlGuiSettings() :
     UseTxtTemplate = false;
     GroupByFilename = false;
     UseDirectLinks = true;
+    TrayResult = trJustURL; 
     DropVideoFilesToTheList = false;
     CodeLang = 0;
     ConfirmOnExit = 1;
@@ -862,7 +863,7 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(ExecuteScript);
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
-
+    upload.n_bind(TrayResult);
     /*urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);*/
 

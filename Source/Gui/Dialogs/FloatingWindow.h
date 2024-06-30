@@ -75,6 +75,10 @@ constexpr int IDM_MONITOR_SELECTEDMONITOR_LAST = IDM_REUPLOADIMAGES + 50 + 25;
 constexpr int WM_CLOSETRAYWND = WM_USER + 2;
 constexpr int WM_RELOADSETTINGS = WM_USER + 3;
 
+namespace ImageUploader::Core::OutputGenerator {
+class XmlTemplateList;
+class XmlTemplateGenerator;
+}
 
 class CFloatingWindow :
     public CWindowImpl<CFloatingWindow>, 
@@ -221,7 +225,7 @@ public:
      UploadEngineManager* uploadEngineManager_;
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
-     void ShowImageUploadedMessage(const CString& url);
+     void ShowImageUploadedMessage(UploadTask* task, const CString& url);
      void ShowScreenshotCopiedToClipboardMessage();
      std::string source_file_name_;
      std::string server_name_;
@@ -237,6 +241,7 @@ public:
      };
      CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
+     std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
     static CString HotkeyToString(CString funcName, CString menuItemText);
 };

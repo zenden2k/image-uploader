@@ -93,7 +93,9 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     ResultsPanel->setEngineList(myEngineList);
     ResultsPanel->Create(m_hWnd,rc);
-
+    using namespace ImageUploader::Core::OutputGenerator;
+    SetPage(static_cast<CodeLang>(settings->CodeLang));
+    ResultsPanel->SetCodeType(settings->CodeType);
     ResultsPanel->GetClientRect(&rc);
     BOOL b;
     OnTabChanged(IDC_RESULTSTAB, 0, b);
@@ -113,8 +115,10 @@ LRESULT CResultsWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
     return 0;
 }
 
-LRESULT CResultsWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+LRESULT CResultsWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->CodeLang = GetPage();
+    settings->CodeType = GetCodeType();
     return 0;
 }
 

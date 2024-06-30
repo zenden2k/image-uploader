@@ -35,6 +35,9 @@
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
 #include "Core/OutputGenerator/AbstractOutputGenerator.h"
+#include "Core/OutputGenerator/OutputGeneratorFactory.h"
+#include "Core/OutputGenerator/XmlTemplateGenerator.h"
+#include "Func/IuCommonFunctions.h"
 
 namespace {
 
@@ -95,6 +98,8 @@ LRESULT CFloatingWindow::OnClose(void)
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+    using namespace ImageUploader::Core::OutputGenerator;
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     /*int w = ::GetSystemMetrics(SM_CXSMICON);
     if ( w > 32 ) {
         w = 48;
@@ -113,6 +118,24 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION;
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
+
+     CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
+    std::string userTemplateFile = settings->SettingsFolder + "user_templates.xml";
+    templateList_ = std::make_unique<XmlTemplateList>();
+    try {
+        templateList_->loadFromFile(W2U(XmlFileName));
+
+    } catch (const std::exception& e) {
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Floating Window Module"), U2W(e.what()));
+    }
+
+    if (IuCoreUtils::FileExists(userTemplateFile)) {
+        try {
+            templateList_->loadFromFile(userTemplateFile);
+        } catch (const std::exception& e) {
+            ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Floating Window Module"), U2W(e.what()));
+        }
+    }
     return 0;
 }
 
@@ -824,19 +847,19 @@ void CFloatingWindow::stopIconAnimation() {
 
 void CFloatingWindow::showLastUploadedCode() {
     using namespace ImageUploader::Core::OutputGenerator;
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     std::vector<UploadObject> items;
     UploadObject newItem;
     if (lastUploadedItem_) {
         UploadResult* uploadResult = lastUploadedItem_->uploadResult();
         newItem.fillFromUploadResult(uploadResult, lastUploadedItem_);
-        newItem.uploadResult = *uploadResult;
 
         if (newItem.isNull()) {
             return;
         }
         items.push_back(newItem);
-        CResultsWindow rp(wizardDlg_, items, false);
-        rp.DoModal(m_hWnd);
+        CResultsWindow resultsWindow_(wizardDlg_, items, false);
+        resultsWindow_.DoModal(m_hWnd);
     }
 }
 
@@ -869,7 +892,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
                 usedDirectLink = false;
             }
             lastUploadedItem_ = task;
-            ShowImageUploadedMessage(url);
+            ShowImageUploadedMessage(task, url);
 
         } else {
             CString statusText = TR("Could not upload screenshot :(");
@@ -890,9 +913,39 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     return 0;
 }
 
-void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
-    WinUtils::CopyTextToClipboard(url);
-    CString trimmedUrl = WinUtils::TrimString(url, 70);
+void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& url)
+{
+    using namespace ImageUploader::Core::OutputGenerator;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    UploadObject obj;
+    obj.fillFromUploadResult(task->uploadResult(), task);
+    CString code;
+    if (settings->TrayResult == WtlGuiSettings::trJustURL) {
+        code = url;
+    } else if (settings->TrayResult == WtlGuiSettings::trLastCodeType) {
+        GeneratorID generatorId = static_cast<GeneratorID>(settings->CodeLang);
+        //CodeLang lang = clBBCode;
+        CodeType codeType = static_cast<CodeType>(settings->CodeType);
+        OutputGeneratorFactory factory;
+        std::vector<UploadObject> objects { obj };
+        auto generator = factory.createOutputGenerator(generatorId, codeType);
+        generator->setPreferDirectLinks(settings->UseDirectLinks);
+        generator->setItemsPerLine(settings->ThumbsPerLine);
+        generator->setGroupByFile(settings->GroupByFilename);
+
+        if (generatorId == gidXmlTemplate) {
+            int templateIndex = settings->CodeType - 4;
+            auto xmlTemplateGenerator = dynamic_cast<XmlTemplateGenerator*>(generator.get());
+            xmlTemplateGenerator->setTemplateIndex(templateIndex);
+        }
+        if (settings->UseTxtTemplate) {
+            code = U2W(generator->generateWithTemplate(objects));
+        } else {
+            code = U2W(generator->generate(objects));
+        }
+    }
+    WinUtils::CopyTextToClipboard(code);
+    CString trimmedUrl = WinUtils::TrimString(code, 70);
     ShowBaloonTip(trimmedUrl + CString("\r\n")
         + TR("(the link has been copied to the clipboard)")+ CString("\r\n") + TR("Click on this message to view details...") , 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });

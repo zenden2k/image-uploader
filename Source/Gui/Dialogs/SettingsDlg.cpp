@@ -25,7 +25,8 @@
 #include "ScreenshotSettingsPage.h"
 #include "ThumbSettingsPage.h"
 #include "GeneralSettings.h"
-#include "UploadSettingsPage.h"
+#include "ConnectionSettingsPage.h"
+#include "TransferSettingsPage.h"
 #include "VideoGrabberParams.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
@@ -58,6 +59,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     m_SettingsPagesListBox.AddString(TR("Thumbnails"));
     m_SettingsPagesListBox.AddString(TR("Screen Capture"));
     m_SettingsPagesListBox.AddString(TR("Video"));
+    m_SettingsPagesListBox.AddString(TR("Connection"));
     m_SettingsPagesListBox.AddString(TR("Uploading"));
     m_SettingsPagesListBox.AddString(TR("Integration"));
     m_SettingsPagesListBox.AddString(TR("Tray icon"));
@@ -204,8 +206,10 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
                 return createPageObject<CScreenshotSettingsPagePage>(m_hWnd, rc);
             case spVideo:
                 return createPageObject<CVideoGrabberParams>(m_hWnd, rc);
+            case spConnection:
+                return createPageObject<CConnectionSettingsPage>(m_hWnd, rc);
             case spUploading:
-                return createPageObject<CUploadSettingsPage>(m_hWnd, rc);
+                return createPageObject<CTransferSettingsPage>(m_hWnd, rc);
             case spIntegration:
                 return createPageObject<CIntegrationSettings>(m_hWnd, rc, uploadEngineManager_);
             case spTrayIcon:

@@ -91,7 +91,8 @@ set(SRC_LIST
     Dialogs/UploadDlg.cpp
     Dialogs/UploadParamsDlg.cpp
     Dialogs/UploadSettings.cpp
-    Dialogs/UploadSettingsPage.cpp
+    Dialogs/ConnectionSettingsPage.cpp
+    Dialogs/TransferSettingsPage.cpp
     Dialogs/VideoGrabberPage.cpp
     Dialogs/VideoGrabberParams.cpp
     Dialogs/WebViewWindow.cpp
@@ -256,7 +257,8 @@ set(HEADER_LIST
     Dialogs/UploadDlg.h
     Dialogs/UploadParamsDlg.h
     Dialogs/UploadSettings.h
-    Dialogs/UploadSettingsPage.h
+    Dialogs/ConnectionSettingsPage.h
+    Dialogs/TransferSettingsPage.h
     Dialogs/VideoGrabberPage.h
     Dialogs/VideoGrabberParams.h
     Dialogs/WebViewWindow.h

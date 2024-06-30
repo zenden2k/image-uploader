@@ -117,7 +117,10 @@ public:
     bool ConfirmOnExit;
     bool AutomaticallyCheckUpdates;
     bool EnableToastNotifications;
-
+    enum TrayResult {
+        trJustURL, trLastCodeType
+    };
+    int TrayResult;
     bool AutoCopyToClipboard;
     bool WatchClipboard;
     bool ParseSubDirs;
