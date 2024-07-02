@@ -43,7 +43,7 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
         };
         CSettingsDlg(SettingsPage Page, UploadEngineManager* uploadEngineManager);
         enum { IDD = IDD_SETTINGSDLG };
-        enum { kStatusLabelTimer = 1, SettingsPageCount = 10 };
+        enum { kStatusLabelTimer = 1, SettingsPageCount = 11 };
        
     protected:
         BEGIN_MSG_MAP(CSettingsDlg)

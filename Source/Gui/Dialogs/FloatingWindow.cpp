@@ -77,7 +77,6 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     m_bStopCapturingWindows = false;
     WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
     m_bIsUploading = false;
-    lastUploadedItem_ = nullptr;
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
@@ -849,15 +848,9 @@ void CFloatingWindow::showLastUploadedCode() {
     using namespace ImageUploader::Core::OutputGenerator;
     auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     std::vector<UploadObject> items;
-    UploadObject newItem;
-    if (lastUploadedItem_) {
-        UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-        newItem.fillFromUploadResult(uploadResult, lastUploadedItem_);
 
-        if (newItem.isNull()) {
-            return;
-        }
-        items.push_back(newItem);
+    if (lastUploadedItem_) {
+        items.push_back(*lastUploadedItem_);
         CResultsWindow resultsWindow_(wizardDlg_, items, false);
         resultsWindow_.DoModal(m_hWnd);
     }
@@ -891,7 +884,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
                 url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
                 usedDirectLink = false;
             }
-            lastUploadedItem_ = task;
+
             ShowImageUploadedMessage(task, url);
 
         } else {
@@ -917,8 +910,9 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
 {
     using namespace ImageUploader::Core::OutputGenerator;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    UploadObject obj;
-    obj.fillFromUploadResult(task->uploadResult(), task);
+    auto obj = std::make_unique<UploadObject>();
+    obj->fillFromUploadResult(task->uploadResult(), task);
+
     CString code;
     if (settings->TrayResult == WtlGuiSettings::trJustURL) {
         code = url;
@@ -927,7 +921,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         //CodeLang lang = clBBCode;
         CodeType codeType = static_cast<CodeType>(settings->CodeType);
         OutputGeneratorFactory factory;
-        std::vector<UploadObject> objects { obj };
+        std::vector<UploadObject> objects { *obj };
         auto generator = factory.createOutputGenerator(generatorId, codeType);
         generator->setPreferDirectLinks(settings->UseDirectLinks);
         generator->setItemsPerLine(settings->ThumbsPerLine);
@@ -951,6 +945,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
     CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
     setStatusText(statusText, kStatusHideTimeout);
+    lastUploadedItem_ = std::move(obj);
 }
 
 void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {

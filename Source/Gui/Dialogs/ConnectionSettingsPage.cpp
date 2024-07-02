@@ -49,7 +49,6 @@ LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
 		}
         int index = serverTypeCombo_.AddString(item.first);
         serverTypeCombo_.SetItemData(index, item.second);
-
 	}
     
     // ---- connection settings -----
@@ -145,7 +144,6 @@ LRESULT CConnectionSettingsPage::OnClickedUseSystemProxy(WORD wNotifyCode, WORD 
     return 0;
 }
 
-
 bool CConnectionSettingsPage::Apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -203,7 +201,6 @@ void CConnectionSettingsPage::proxyRadioChanged() {
         OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, nullptr, bHandled);
     }
 }
-
 
 void CConnectionSettingsPage::CheckBounds(int controlId, int minValue, int maxValue, int labelId) const {
     int value = GetDlgItemInt(controlId);

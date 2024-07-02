@@ -50,7 +50,6 @@ LRESULT CTransferSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPa
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     executeScriptCheckboxChanged();
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
-    SetDlgItemInt(IDC_UPLOADSPEEDLIMITEDIT, Settings.MaxUploadSpeed);
 
     useLastCodeTypeRadioButton_.SetCheck(Settings.TrayResult == WtlGuiSettings::trLastCodeType);
     justURLRadioButton_.SetCheck(Settings.TrayResult == WtlGuiSettings::trJustURL);

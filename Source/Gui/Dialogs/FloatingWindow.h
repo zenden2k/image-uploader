@@ -31,8 +31,8 @@
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
 #include "Core/Upload/UploadManager.h"
-#include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Settings/WtlGuiSettings.h"
+
 // FloatingWindow
 
 constexpr int IDM_UPLOADFILES = 20001;
@@ -78,7 +78,10 @@ constexpr int WM_RELOADSETTINGS = WM_USER + 3;
 namespace ImageUploader::Core::OutputGenerator {
 class XmlTemplateList;
 class XmlTemplateGenerator;
+struct UploadObject;
 }
+
+class UrlShorteningTask;
 
 class CFloatingWindow :
     public CWindowImpl<CFloatingWindow>, 
@@ -96,7 +99,7 @@ public:
     CIcon activeIcon_;
     bool m_bStopCapturingWindows;
     bool m_bIsUploading;
-    UploadTask* lastUploadedItem_;
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::UploadObject> lastUploadedItem_;
     std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
@@ -239,9 +242,9 @@ public:
      enum UploadType {
          utImage, utUrl, utShorteningImageUrl
      };
-     CWizardDlg* wizardDlg_;
+    CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
-     std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
     static CString HotkeyToString(CString funcName, CString menuItemText);
 };
