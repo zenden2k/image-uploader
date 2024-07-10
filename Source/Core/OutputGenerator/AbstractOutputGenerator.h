@@ -69,13 +69,13 @@ public:
     void setItemsPerLine(int n);
     virtual GeneratorID id() const = 0;
     bool loadTemplate(const std::string& templateFileName);
-    std::string generateWithTemplate(const std::vector<UploadObject>& items);
-    virtual std::string generate(const std::vector<UploadObject>& items) = 0;
+    std::string generate(const std::vector<UploadObject>& items, bool withTemplate = true);
 protected:
     CodeType codeType_;
     bool preferDirectLinks_ = true, shortenUrl_ = false, groupByFile_ = false;
     int itemsPerLine_ = 4;
     std::optional<std::string> templateHead_, templateFoot_;
+    virtual std::string doGenerate(const std::vector<UploadObject>& items) = 0;
 };
 
 }

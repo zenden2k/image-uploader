@@ -5,7 +5,7 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-std::string JSONGenerator::generate(const std::vector<UploadObject>& items) {
+std::string JSONGenerator::doGenerate(const std::vector<UploadObject>& items) {
     Json::Value arrValue(Json::arrayValue);
 
     for (const auto& item : items) {

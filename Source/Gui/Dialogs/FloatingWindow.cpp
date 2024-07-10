@@ -932,11 +932,8 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
             auto xmlTemplateGenerator = dynamic_cast<XmlTemplateGenerator*>(generator.get());
             xmlTemplateGenerator->setTemplateIndex(templateIndex);
         }
-        if (settings->UseTxtTemplate) {
-            code = U2W(generator->generateWithTemplate(objects));
-        } else {
-            code = U2W(generator->generate(objects));
-        }
+
+        code = U2W(generator->generate(objects, settings->UseTxtTemplate));
     }
     WinUtils::CopyTextToClipboard(code);
     CString trimmedUrl = WinUtils::TrimString(code, 70);

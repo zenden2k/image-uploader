@@ -2,7 +2,7 @@
 
 namespace ImageUploader::Core::OutputGenerator {
 
-std::string AbstractCodeGenerator::generate(const std::vector<UploadObject>& items) {
+std::string AbstractCodeGenerator::doGenerate(const std::vector<UploadObject>& items) {
     std::string result;
     std::vector<std::string> groups;
     std::vector<std::string> fileNames;

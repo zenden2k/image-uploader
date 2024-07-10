@@ -222,7 +222,7 @@ std::string CResultsPanel::GenerateOutput()
 {
     namespace OG = ImageUploader::Core::OutputGenerator;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    std::string Buffer;
+
     if (!Toolbar.m_hWnd) return {};
     int Index = GetCodeType();
     
@@ -264,13 +264,8 @@ std::string CResultsPanel::GenerateOutput()
         auto xmlTemplateGenerator = dynamic_cast<OG::XmlTemplateGenerator*>(generator);
         xmlTemplateGenerator->setTemplateIndex(templateIndex);
     }
-    if (UseTemplate) {
-        Buffer += generator->generateWithTemplate(UrlList);
-    } else {
-        Buffer += generator->generate(UrlList);
-    }
 
-    return Buffer;
+    return generator->generate(UrlList, UseTemplate);
 }
 
 void CResultsPanel::UpdateOutput(bool immediately)

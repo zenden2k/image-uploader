@@ -10,9 +10,9 @@ namespace ImageUploader::Core::OutputGenerator {
 
 class AbstractCodeGenerator: public AbstractOutputGenerator {
     public:
-        AbstractCodeGenerator() = default;
-        std::string generate(const std::vector<UploadObject>& items) override;
+        AbstractCodeGenerator() = default; 
     protected:
+        std::string doGenerate(const std::vector<UploadObject>& items) override;
         virtual std::string generateCodeForItem(const UploadObject& item, int index);
         virtual std::string image(const std::string& url, const std::string& alt);
         virtual std::string link(const std::string& url, const std::string& body);

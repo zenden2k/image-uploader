@@ -12,7 +12,8 @@ class JSONGenerator : public AbstractOutputGenerator {
 public:
     JSONGenerator() = default;
     GeneratorID id() const override;
-    std::string generate(const std::vector<UploadObject>& items) override;
+protected:
+    std::string doGenerate(const std::vector<UploadObject>& items) override;
 private:
 };
 

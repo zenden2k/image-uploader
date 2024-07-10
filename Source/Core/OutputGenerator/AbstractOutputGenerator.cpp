@@ -61,15 +61,15 @@ bool AbstractOutputGenerator::loadTemplate(const std::string& templateFileName){
     return true;
 }
 
-std::string AbstractOutputGenerator::generateWithTemplate(const std::vector<UploadObject>& items) {
+std::string AbstractOutputGenerator::generate(const std::vector<UploadObject>& items, bool withTemplate /*= true*/) {
     std::string res;
-    if (templateHead_) {
+    if (withTemplate && templateHead_) {
         res += *templateHead_;
     }
 
-    res += generate(items);
+    res += doGenerate(items);
 
-    if (templateFoot_) {
+    if (withTemplate && templateFoot_) {
         res += *templateFoot_;
     }
     return res;

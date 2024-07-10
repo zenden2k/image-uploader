@@ -11,7 +11,7 @@ XmlTemplateGenerator::XmlTemplateGenerator(XmlTemplateList* templateList): templ
 
 }
 
-std::string XmlTemplateGenerator::generate(const std::vector<UploadObject>& items) {
+std::string XmlTemplateGenerator::doGenerate(const std::vector<UploadObject>& items) {
     std::string res;
     std::string itemsStr;
     std::unordered_map<std::string, std::string> vars;
