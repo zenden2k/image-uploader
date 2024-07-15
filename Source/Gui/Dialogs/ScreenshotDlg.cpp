@@ -41,14 +41,23 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     GetClientRect(&ClientRect);
     CenterWindow(GetParent());
 
+    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
+    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
+
+    auto loadBigIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconBigWidth, iconBigHeight);
+        return icon.m_hIcon;
+    };
+
     CommandBox.m_bHyperLinks = false;
     CommandBox.Init(GetSysColor(COLOR_WINDOW));
-    CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
-    CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
-    CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
-    CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
-    CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, LOADICO(IDI_ICONWINDOWS));
-    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONCONTROLS));
+    CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, loadBigIcon(IDI_SCREENSHOT));
+    CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW, loadBigIcon(IDI_WINDOW));
+    CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT, loadBigIcon(IDI_ICONREGION));
+    CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION, loadBigIcon(IDI_FREEFORM));
+    CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, loadBigIcon(IDI_ICONWINDOWS));
+    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION, loadBigIcon(IDI_ICONCONTROLS));
 
     SetWindowText(TR("Screen Capture"));
     TRC(IDC_DELAYLABEL, "Timeout:");

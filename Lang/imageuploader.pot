@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-06-30 19:25+0300\n"
+"POT-Creation-Date: 2024-07-11 20:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,8 +99,8 @@ msgstr ""
 msgid "(edited)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:873
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:950
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:866
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:941
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
@@ -229,7 +229,7 @@ msgstr ""
 msgid "Add text to image"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:583
 msgid "Add to Wizard"
 msgstr ""
 
@@ -275,7 +275,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:166
 #: ../Source/Gui/Dialogs/MainDlg.cpp:675
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:117
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:116
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:382
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1648
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1867
@@ -287,7 +287,7 @@ msgstr ""
 msgid "All files have been successfully uploaded."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:535
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:74
 msgid "All monitors"
 msgstr ""
@@ -523,7 +523,7 @@ msgstr ""
 msgid "Cannot load thumbnail for image."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:694
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:693
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -531,7 +531,7 @@ msgid ""
 " Maybe it is being used by another process."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:523
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:522
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 msgid "Capture Last Region"
 msgstr ""
@@ -540,12 +540,12 @@ msgstr ""
 msgid "Capture Rectangular Region"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:521
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:520
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:48
 msgid "Capture Selected Area"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:527
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:526
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
 msgid "Capture Selected Object"
@@ -556,14 +556,14 @@ msgstr ""
 msgid "Capture Selected Window"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:526
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:525
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:47
 #: ../Source/Gui/Win7JumpList.cpp:243
 msgid "Capture the Active Window"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:525
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:524
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:46
 #: ../Source/Gui/Win7JumpList.cpp:235
@@ -630,7 +630,7 @@ msgstr ""
 msgid "Choose media file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:557
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:556
 msgid "Choose monitor"
 msgstr ""
 
@@ -712,7 +712,7 @@ msgstr ""
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:950
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:941
 msgid "Click on this message to view details..."
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Copy URL"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:405
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:400
 msgid "Copy URL  "
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr ""
 msgid "Copy in data:URI format (html)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:575
 msgid "Copy to Clipboard"
 msgstr ""
 
@@ -894,7 +894,7 @@ msgstr ""
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:898
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:891
 msgid "Could not upload screenshot :("
 msgstr ""
 
@@ -949,7 +949,7 @@ msgstr ""
 msgid "Crop"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:538
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:537
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:65
 msgid "Current monitor"
 msgstr ""
@@ -1008,6 +1008,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
 msgid "Delete file from server"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:381
+msgid "Deleting the file from the server"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:43
@@ -1173,13 +1177,13 @@ msgstr ""
 msgid "Error control"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:104
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:103
 #, c-format
 msgid "Error in the field '%s':\n"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:213
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:147
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:210
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:146
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:146
 #, c-format
 msgid "Error in the field '%s': value should be between %d and %d."
@@ -1215,8 +1219,8 @@ msgstr ""
 msgid "Execute Squirrel script for each task (file)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:235
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:608
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:234
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:607
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:398
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1761
@@ -1270,7 +1274,7 @@ msgstr ""
 msgid "File"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:800
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:799
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr ""
@@ -1281,7 +1285,7 @@ msgstr ""
 msgid "File \"%s\" not found!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:105
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:104
 #, c-format
 msgid "File %s doesn't exist"
 msgstr ""
@@ -1456,7 +1460,7 @@ msgstr ""
 msgid "Frames layout"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:528
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:527
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:49
 msgid "Freehand Capture"
@@ -1517,7 +1521,7 @@ msgstr ""
 msgid "Gradient color 2:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:385
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:380
 msgid "Group by filename"
 msgstr ""
 
@@ -1639,7 +1643,7 @@ msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:251
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:518
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:517
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 #: ../Source/Gui/Dialogs/MainDlg.cpp:67
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102 ../Source/Gui/Win7JumpList.cpp:259
@@ -1837,7 +1841,7 @@ msgstr ""
 msgid "Middle button click:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:542
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:91
 msgid "Monitor"
 msgstr ""
@@ -1963,7 +1967,7 @@ msgstr ""
 msgid "Open in Web Browser"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
 msgid "Open in Wizard"
 msgstr ""
 
@@ -1976,7 +1980,7 @@ msgstr ""
 msgid "Open in folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
 msgid "Open in the editor"
 msgstr ""
 
@@ -1984,13 +1988,13 @@ msgstr ""
 msgid "Open screenshot in the editor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:601
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:600
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2350
 msgid "Open screenshots folder"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:93
+#: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:92
 msgid "Open system connection settings"
 msgstr ""
 
@@ -2024,7 +2028,7 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:512
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:511
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
 #: ../Source/Gui/Dialogs/MainDlg.cpp:160
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
@@ -2095,7 +2099,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:591
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:586
 msgid "Preview Window"
 msgstr ""
 
@@ -2163,7 +2167,7 @@ msgstr ""
 msgid "Queued"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:515
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:514
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
 msgid "Quick upload image from clipboard"
 msgstr ""
@@ -2311,23 +2315,23 @@ msgstr ""
 msgid "Screen Capture"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:520
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:519
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 #: ../Source/Gui/Dialogs/MainDlg.cpp:68
 msgid "Screenshot"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:591
 msgid "Screenshot Action"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:957
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:949
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2247
 msgid "Screenshot was saved to clipboard."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:951
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:952
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:942
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:943
 msgid "Screenshot was uploaded"
 msgstr ""
 
@@ -2478,7 +2482,7 @@ msgid "Session total:"
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:183
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:606
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:605
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:79
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:107
@@ -2502,7 +2506,7 @@ msgstr ""
 msgid "Shell context menu integration"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:874
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:867
 msgid "Short URL"
 msgstr ""
 
@@ -2510,11 +2514,11 @@ msgstr ""
 msgid "Shorten"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:371
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:366
 msgid "Shorten URL"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:369
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:364
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1222
 #, c-format
 msgid "Shorten URL using %s"
@@ -2524,7 +2528,7 @@ msgstr ""
 msgid "Shorten URLs"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:598
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:597
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:96
 msgid "Shorten a link"
@@ -2534,7 +2538,7 @@ msgstr ""
 msgid "Shorten a link from the clipboard"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:412
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:411
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr ""
@@ -2565,12 +2569,12 @@ msgstr ""
 msgid "Show log for this file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:600
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:599
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 msgid "Show program's window"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:603
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:602
 msgid "Show results of last upload"
 msgstr ""
 
@@ -2628,7 +2632,7 @@ msgstr ""
 msgid "Stop"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:616
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:615
 msgid "Stop uploading"
 msgstr ""
 
@@ -2840,7 +2844,7 @@ msgstr ""
 msgid "Unable to make screenshot!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:877
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:870
 msgid "Unable to shorten the link..."
 msgstr ""
 
@@ -2889,12 +2893,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:249
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:494
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:493
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
 msgid "Upload files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:495
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:494
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
 msgid "Upload folder"
 msgstr ""
@@ -2926,7 +2930,7 @@ msgstr ""
 msgid "Upload to %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:572
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:869
 msgid "Upload to Web"
 msgstr ""
@@ -2971,7 +2975,7 @@ msgstr ""
 msgid "Uploading module"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:805
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:804
 msgid "Uploading screenshot"
 msgstr ""
 
@@ -2983,7 +2987,7 @@ msgstr ""
 msgid "Use default thumbnail settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:379
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:374
 msgid "Use direct links"
 msgstr ""
 
@@ -3004,7 +3008,7 @@ msgstr ""
 msgid "Use system proxy settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:390
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:385
 msgid "Use template"
 msgstr ""
 
@@ -3049,8 +3053,8 @@ msgstr ""
 msgid "View Media File Information"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:878
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:899
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:871
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:892
 msgid "View log for details."
 msgstr ""
 

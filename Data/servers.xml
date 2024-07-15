@@ -290,7 +290,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-	<Server Name="pixeldrain.com" Authorize="1" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0" WebsiteUrl="https://pixeldrain.com"
+	<Server Name="pixeldrain.com" Authorize="2" FileHost="1" Plugin="pixeldrain.com" NeedPassword="0" WebsiteUrl="https://pixeldrain.com"
 		RegistrationUrl="https://pixeldrain.com/register">
 		<Actions>
 		</Actions>
@@ -305,12 +305,6 @@
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-	</Server>
-	<Server Name="nekofile.eu.org" FileHost="1" WebsiteUrl="https://nekofile.eu.org">
-		<Actions>
-			<Action Type="upload" Url="https://nekofile.eu.org" PostParams="file=%filename%" RegExp="https://nekofile.eu.org/(.+)" AssignVars="Link:0"/>
-		</Actions>
-		<Result ImageUrlTemplate="https://nekofile.eu.org/$(Link)"/>
 	</Server>
 	<!-- Blocked by Roskomnadzor -->
 	<Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="200000000" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" 

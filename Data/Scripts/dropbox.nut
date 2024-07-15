@@ -9,16 +9,6 @@ authStep1Url <- "https://api.dropbox.com/1/oauth/request_token";
 authStep2Url <- "https://api.dropbox.com/1/oauth/access_token";
 
 authCode <- "";
-
-regMatchOffset <- 0;
-
-try {
-    local ver = GetAppVersion();
-    if ( ver.Build > 4422 ) {
-        regMatchOffset = 1;
-    }
-} catch ( ex ) {
-}
     
 function _SignRequest(url, token) {
     nm.addQueryHeader("Authorization", "Bearer " + token);
@@ -32,11 +22,11 @@ function OnUrlChangedCallback(data) {
         local br = data.browser;
         local regError = CRegExp("error=([^&]+)", "");
         if ( regError.match(data.url) ) {
-            WriteLog("warning", regError.getMatch(regMatchOffset+0));
+            WriteLog("warning", regError.getMatch(1));
         } else {
             local codeRegexp = CRegExp("code=([^&]+)", "");
             if ( codeRegexp.match(data.url) ) {
-                authCode = codeRegexp.getMatch(regMatchOffset+0);
+                authCode = codeRegexp.getMatch(1);
             }
         }
         br.close();
