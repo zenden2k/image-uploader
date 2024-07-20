@@ -279,7 +279,6 @@ set(HEADER_LIST
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
-    ../3rdpart/QColorQuantizer.h
     ../3rdpart/Registry.h
     ../3rdpart/Unzipper.h
     ../3rdpart/vkCodes.h

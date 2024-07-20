@@ -34,7 +34,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Logging.h"
 #include "Func/WinUtils.h"
-#include "3rdpart/QColorQuantizer.h"
+#include "Core/Images/ColorQuantizer.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -651,8 +651,8 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
     } else if (Format == sifGIF) { // GIF
-        QColorQuantizer quantizer;
-        quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
+        ColorQuantizer quantizer;
+        quantizedImage = quantizer.getQuantized(img, (Quality < 50) ? 16 : 256);
         if (quantizedImage) {
             img = quantizedImage.get();
         }

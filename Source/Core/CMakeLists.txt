@@ -202,8 +202,9 @@ if(WIN32)
         Images/WebpImageReader.cpp
         Images/HeifImageReader.cpp
         Images/ImageLoader.cpp
-        ../3rdpart/QColorQuantizer.cpp
         Images/GdiPlusImage.cpp
+        Images/ColorQuantizer.cpp
+        Images/OctreeColorQuantizer.cpp
         ../Func/GdiPlusInitializer.cpp
     )
     
@@ -236,7 +237,8 @@ if(WIN32)
         Images/HeifImageReader.h
         Images/AbstractImageReader.h
         Images/ImageLoader.h
-        ../3rdpart/QColorQuantizer.h
+        Images/ColorQuantizer.h
+        Images/OctreeColorQuantizer.h
     )
 else()
     list(APPEND SRC_LIST  

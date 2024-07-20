@@ -32,7 +32,6 @@ if(WIN32)
         ../Core/Images/Thumbnail.cpp
         ../Core/3rdpart/parser.cpp
         ../Func/MyUtils.cpp
-        ../3rdpart/QColorQuantizer.cpp
         ../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
         ../Video/Tests/VideoGrabberTest.cpp
