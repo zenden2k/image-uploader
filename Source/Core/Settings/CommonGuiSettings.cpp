@@ -24,10 +24,10 @@ limitations under the License.
 #include "Func/WinUtils.h"
 #endif
 
-const TCHAR CommonGuiSettings::VideoEngineDirectshow[] = _T("Directshow");
-const TCHAR CommonGuiSettings::VideoEngineDirectshow2[] = _T("Directshow_2");
-const TCHAR CommonGuiSettings::VideoEngineFFmpeg[] = _T("FFmpeg");
-const TCHAR CommonGuiSettings::VideoEngineAuto[] = _T("Auto");
+const char CommonGuiSettings::VideoEngineDirectshow[] = "Directshow";
+const char CommonGuiSettings::VideoEngineDirectshow2[] = "Directshow_2";
+const char CommonGuiSettings::VideoEngineFFmpeg[] = "FFmpeg";
+const char CommonGuiSettings::VideoEngineAuto[] = "Auto";
 
 CommonGuiSettings::CommonGuiSettings() : BasicSettings()
 {
@@ -184,6 +184,11 @@ void CommonGuiSettings::BindToManager() {
     SettingsNode& upload = mgr_["Uploading"];
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);
+
+    SettingsNode& video = mgr_["VideoGrabber"];
+    video.nm_bind(VideoSettings, NumOfFrames);
+    video.nm_bind(VideoSettings, JPEGQuality);
+    video.nm_bind(VideoSettings, Engine);
 }
 
 bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {

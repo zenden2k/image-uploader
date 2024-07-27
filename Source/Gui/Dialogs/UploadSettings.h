@@ -58,13 +58,14 @@ constexpr unsigned int IDC_RESIZEPRESETMENU_LAST_ID = 18100;
 class CMyEngineList;
 class IconBitmapUtils;
 class CServerSelectorControl;
+class WinServerIconCache;
 
-class CUploadSettings: 
+class CUploadSettings : 
     public CDialogImpl<CUploadSettings>,
     public CWizardPage
 {
     public:
-        explicit CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager);
+        explicit CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager, WinServerIconCache* iconCache);
         ~CUploadSettings() override;
         enum { IDD = IDD_UPLOADSETTINGS };
 
@@ -212,8 +213,8 @@ protected:
     CIcon iconEdit_, iconDropdown_;
     boost::signals2::connection settingsChangedConnection_;
     CHyperLink moreImageServersLink_, moreFileServersLink_;
+    WinServerIconCache* iconCache_;
 public:
-    
     LRESULT OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     std::map<CString, ImageConvertingParams>& convert_profiles_;
     void ShowParams(const ImageConvertingParams& params);

@@ -34,6 +34,7 @@ public:
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
     TaskDispatcher* taskDispatcher_;
+    AbstractServerIconCache* serverIconCache_ = nullptr;
 };
 
 
@@ -162,6 +163,18 @@ void ServiceLocator::setTaskDispatcher(TaskDispatcher* dispatcher) {
 
 TaskDispatcher* ServiceLocator::taskDispatcher() const {
     return d_ptr->taskDispatcher_;
+}
+
+
+void ServiceLocator::setServerIconCache(AbstractServerIconCache* cache)
+{
+    d_ptr->serverIconCache_ = cache;
+}
+
+
+AbstractServerIconCache* ServiceLocator::serverIconCache() const
+{
+    return d_ptr->serverIconCache_;
 }
 
 ServiceLocator* ServiceLocator::instance() {

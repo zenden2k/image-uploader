@@ -49,8 +49,12 @@ set(SOURCE_FILES
     Gui/controls/ProgressRingWidget.cpp
     ../Core/Settings/QtGuiSettings.cpp
     ../Core/Settings/CommonGuiSettings.cpp
+    ../Core/AbstractServerIconCache.cpp
+    ../Core/AbstractServerIconCache.h
+    ../Core/QtServerIconCache.cpp
+    ../Core/QtServerIconCache.h
     ../Video/QtImage.cpp
-    Gui/ui/mainwindow.ui 
+    Gui/ui/MainWindow.ui
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui

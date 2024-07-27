@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <deque>
+#include <memory>
 
 #include <QPoint>
 #include <QPainter>
@@ -24,8 +25,8 @@ QRegion QRegionFromHRGN(HRGN winRegion)
     if (!size) {
         return result;
     }
-    BYTE* buffer = new BYTE[size];
-    LPRGNDATA data = reinterpret_cast<LPRGNDATA>(buffer);
+    auto buffer = std::make_unique<BYTE[]>(size);
+    LPRGNDATA data = reinterpret_cast<LPRGNDATA>(buffer.get());
     data->rdh.dwSize = sizeof(RGNDATAHEADER);
     if (GetRegionData(winRegion, size, data) != 0) {
         RECT *rects = reinterpret_cast<RECT*>(data->Buffer);
@@ -35,7 +36,7 @@ QRegion QRegionFromHRGN(HRGN winRegion)
             result |= rct;
         }
     }
-    delete[] buffer;
+
     return result;
 }
 

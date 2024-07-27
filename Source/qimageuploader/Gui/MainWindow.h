@@ -2,13 +2,16 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QThread>
+
 #include "Core/ProgramWindow.h"
 #include "Core/UploadEngineList.h"
-
+#include "Core/QtServerIconCache.h"
 class UploadManager;
 class UploadEngineManager;
 class UploadTreeModel;
 class ScriptsManager;
+
 namespace ImageUploader::Core::OutputGenerator {
 struct UploadObject;
 }
@@ -57,10 +60,12 @@ private:
     std::unique_ptr<UploadManager> uploadManager_;
     std::unique_ptr<UploadEngineManager> uploadEngineManager_;
     std::unique_ptr<ScriptsManager> scriptsManager_;
+    std::unique_ptr<QtServerIconCache> serverIconCache_;
     QSystemTrayIcon* systemTrayIcon_;
 	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;
+    QThread* iconsLoadingThread_{};
 };
 
 #endif // MAINWINDOW_H

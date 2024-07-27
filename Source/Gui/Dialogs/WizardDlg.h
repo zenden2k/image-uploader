@@ -62,6 +62,7 @@ class ScriptsManager;
 class Win7JumpList;
 class WtlGuiSettings;
 class CFloatingWindow;
+class WinServerIconCache;
 
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
@@ -320,6 +321,7 @@ protected:
     int screenshotIndex;
     CString m_bCurrentFunc;
     CMyEngineList* enginelist_;
+    std::unique_ptr<WinServerIconCache> serverIconCache_;
     boost::signals2::connection settingsChangedConnection_;
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;

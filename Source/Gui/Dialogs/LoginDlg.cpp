@@ -33,7 +33,7 @@
 #include "Core/Upload/AuthTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
-
+#include "Core/AbstractServerIconCache.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -66,7 +66,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     auto* myEngineList = dynamic_cast<CMyEngineList*>(ServiceLocator::instance()->engineList());
     if (myEngineList) {
-        serverIcon_ = myEngineList->getBigIconForServer(m_UploadEngine->Name);
+        serverIcon_ = ServiceLocator::instance()->serverIconCache()->getBigIconForServer(m_UploadEngine->Name);
         if (serverIcon_) {
             int iconWidth = ::GetSystemMetrics(SM_CXICON);
             int iconHeight = ::GetSystemMetrics(SM_CYICON);

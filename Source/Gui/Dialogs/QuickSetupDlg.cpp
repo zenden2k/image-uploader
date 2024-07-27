@@ -27,6 +27,7 @@
 #include "Core/ServiceLocator.h"
 #include "Func/MyEngineList.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/AbstractServerIconCache.h"
 
 CQuickSetupDlg::CQuickSetupDlg() {
 }
@@ -94,7 +95,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
             if ((!ue->hasType(CUploadEngineData::TypeImageServer) && j == 0)|| (!ue->hasType(CUploadEngineData::TypeFileServer) && j == 1)) {
                 continue;
             }
-            HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
+            HICON hImageIcon = ServiceLocator::instance()->serverIconCache()->getIconForServer(ue->Name);
             int nImageIndex = -1;
             if (hImageIcon) {
                 nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);

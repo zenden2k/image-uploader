@@ -137,7 +137,7 @@ public:
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
         serviceLocator->setTranslator(&lang_);
         scriptsManager_ = std::make_unique<ScriptsManager>(serviceLocator->networkClientFactory());
-        engineList_ = std::make_unique<CMyEngineList>(taskDispatcher_.get());
+        engineList_ = std::make_unique<CMyEngineList>();
         serviceLocator->setEngineList(engineList_.get());
         serviceLocator->setMyEngineList(engineList_.get());
         settings_.setEngineList(engineList_.get());

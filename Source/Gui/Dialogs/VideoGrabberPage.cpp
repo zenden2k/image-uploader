@@ -92,14 +92,14 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
     openInFolderLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
 
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineAuto);
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow);
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow2);
+    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineAuto));
+    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineDirectshow));
+    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineDirectshow2));
     if (WtlGuiSettings::IsFFmpegAvailable()) {
-        videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineFFmpeg);
+        videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineFFmpeg));
     }
 
-    int itemIndex = videoEngineCombo_.FindStringExact(0, Settings.VideoSettings.Engine);
+    int itemIndex = videoEngineCombo_.FindStringExact(0, U2W(Settings.VideoSettings.Engine));
     if ( itemIndex == CB_ERR){
         itemIndex = 0;
     }
@@ -172,7 +172,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     int videoEngineIndex = videoEngineCombo_.GetCurSel();
     CString buf;
     videoEngineCombo_.GetLBText(videoEngineIndex, buf);
-    settings->VideoSettings.Engine = buf;
+    settings->VideoSettings.Engine = W2U(buf);
 
     SetNextCaption(TR("Next >"));
     EnableNext(false);
@@ -396,7 +396,7 @@ LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*
 int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString videoEngine = settings->VideoSettings.Engine;
+    std::string videoEngine = settings->VideoSettings.Engine;
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
         if ( !settings->IsFFmpegAvailable() ) {
@@ -409,14 +409,6 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
             }
         }
     }
-
-    settings->VideoSettings.NumOfFrames = NumOfFrames;
-
-    videoGrabber_ = std::make_unique<VideoGrabber>();
-    videoGrabber_->setFrameCount(NumOfFrames);
-    using namespace std::placeholders;
-    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
-    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
 #ifdef IU_ENABLE_FFMPEG
     if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
@@ -428,6 +420,15 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow2) {
         engine = VideoGrabber::veDirectShow2;
     }
+
+
+    settings->VideoSettings.NumOfFrames = NumOfFrames;
+
+    videoGrabber_ = std::make_unique<VideoGrabber>();
+    videoGrabber_->setFrameCount(NumOfFrames);
+    using namespace std::placeholders;
+    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
+    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
 
     videoGrabber_->setVideoEngine(engine);
     videoGrabber_->grab(W2U(szFile));

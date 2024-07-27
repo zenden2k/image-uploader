@@ -35,6 +35,7 @@ public slots:
 	void accountButtonClicked(bool checked);
 	void noAccountSelected();
 	void addAccountClicked();
+    void fillServerIcons();
 protected:
 	QLabel* titleLabel, *accountLabel, *accountIcon;
 	QToolButton* accountButton;

@@ -35,6 +35,7 @@
 #include "Core/AppParams.h"
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
+#include "Core/AbstractServerIconCache.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
@@ -459,10 +460,8 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     }
 }
 
-HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
-{
-    auto* engineList = ServiceLocator::instance()->myEngineList();
-    return engineList->getIconForServer(W2U(serverName));
+HICON CHistoryTreeControl::getIconForServer(const CString& serverName) {
+    return ServiceLocator::instance()->serverIconCache()->getIconForServer(W2U(serverName));
 }
 
 bool CHistoryTreeControl::IsItemAtPos(int x, int y, bool &isRoot)

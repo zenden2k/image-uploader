@@ -38,6 +38,7 @@
 #include "ServerProfileGroupSelectDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/WinServerIconCache.h"
 
 namespace {
     struct ResizePreset {
@@ -63,8 +64,9 @@ namespace {
     };
 }
 
-CUploadSettings::CUploadSettings(CMyEngineList * EngineList, UploadEngineManager * uploadEngineManager) 
-    :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles)
+CUploadSettings::CUploadSettings(CMyEngineList* EngineList, UploadEngineManager* uploadEngineManager, WinServerIconCache* iconCache) 
+    :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles),
+    iconCache_(iconCache)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     nImageIndex = nFileIndex = -1;
@@ -525,11 +527,13 @@ void CUploadSettings::UpdateToolbarIcons()
 {
     HICON hImageIcon = NULL, hFileIcon = NULL;
 
-    if(!getSessionImageServerItem().isNull())
-        hImageIcon = m_EngineList->getIconForServer(getSessionImageServerItem().serverName());
+    if (!getSessionImageServerItem().isNull()) {
+        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName());
+    }
         
-    if(!getSessionFileServerItem().isNull())
-        hFileIcon =m_EngineList->getIconForServer(getSessionFileServerItem().serverName());
+    if (!getSessionFileServerItem().isNull()) {
+        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName());
+    }
     
     if(hImageIcon)
     {
@@ -691,9 +695,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
                 CString name  = Utf8ToWCstring(ued->Name); 
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-                auto cacheItem = m_EngineList->getIconBitmapForServer(ued->Name);
-                
-                mi.hbmpItem = cacheItem.bm;
+                mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
 
                 if ( mi.hbmpItem ) {
                     mi.fMask |= MIIM_BITMAP;
@@ -729,9 +731,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             CUploadEngineData* ued = m_EngineList->byIndex(i);
             CString name  = Utf8ToWCstring(ued->Name); 
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
-            auto cacheItem = m_EngineList->getIconBitmapForServer(ued->Name);
-
-            mi.hbmpItem = cacheItem.bm;
+            mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }

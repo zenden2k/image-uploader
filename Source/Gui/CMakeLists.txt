@@ -26,6 +26,8 @@ set(SRC_LIST
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
     ../Core/Upload/Filters/UserFilter.cpp
+    ../Core/AbstractServerIconCache.cpp
+    ../Core/WinServerIconCache.cpp
     ../Core/BackgroundTask.cpp
     ../Func/CmdLine.cpp
     ../Func/DefaultLogger.cpp
@@ -191,6 +193,8 @@ set(HEADER_LIST
     ../Core/Upload/Filters/SizeExceedFilter.h
     ../Core/Upload/Filters/UrlShorteningFilter.h
     ../Core/Upload/Filters/UserFilter.h
+    ../Core/AbstractServerIconCache.h
+    ../Core/WinServerIconCache.h
     ../Func/CmdLine.h
     ../Func/DefaultLogger.h
     ../Func/DefaultUploadErrorHandler.h

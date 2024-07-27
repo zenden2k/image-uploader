@@ -31,6 +31,7 @@
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/AbstractServerIconCache.h"
 
 namespace {
 
@@ -389,6 +390,7 @@ void CServerSelectorControl::notifyServerListChanged()
 
 void CServerSelectorControl::updateServerList()
 {
+    auto iconCache = ServiceLocator::instance()->serverIconCache();
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
     if (showServerIcons_) {
@@ -439,7 +441,7 @@ void CServerSelectorControl::updateServerList()
             }
             int nImageIndex = -1;
             if (showServerIcons_) {
-                HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
+                HICON hImageIcon = iconCache->getIconForServer(ue->Name);
 
                 if (hImageIcon) {
                     nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);

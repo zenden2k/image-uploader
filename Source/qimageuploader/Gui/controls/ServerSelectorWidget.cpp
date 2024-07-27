@@ -12,6 +12,7 @@
 #include "Core/AppParams.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/LoginDialog.h"
+#include "Core/AbstractServerIconCache.h"
 
 ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineManager, bool defaultServer,
                                            QWidget* parent) : QGroupBox(parent) {
@@ -77,8 +78,10 @@ void ServerSelectorWidget::setShowFilesizeLimits(bool show) {
 }
 
 void ServerSelectorWidget::updateServerList() {
+    auto serviceLocator = ServiceLocator::instance();
     serverListComboBox->clear();
-    auto* myEngineList = ServiceLocator::instance()->engineList();
+    auto* serverIconCache = serviceLocator->serverIconCache();
+    auto* myEngineList = serviceLocator->engineList();
 
     int addedItems = 0;
     std::string selectedServerName = serverProfile_.serverName();
@@ -118,14 +121,14 @@ void ServerSelectorWidget::updateServerList() {
 
             QString iconPath = QDir(dataDir).filePath("Favicons/" + U2Q(ue->Name).toLower() + ".ico");
 
-            QIcon ico;
-            if (QFile::exists(iconPath)) {
+            QIcon ico = serverIconCache->getIconForServer(ue->Name);
+            /*if (QFile::exists(iconPath)) {
                 ico = QIcon(iconPath);
 
             }
             if (ico.isNull()) {
                 ico = QIcon(":/res/server.png");
-            }
+            }*/
             /*HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;
             if (hImageIcon) {
@@ -259,6 +262,18 @@ void ServerSelectorWidget::addAccountClicked() {
         sss.authData.Password = dlg.*/
         updateAccountButton();
         updateAccountButtonMenu();
+    }
+}
+
+void ServerSelectorWidget::fillServerIcons() {
+    auto* serverIconCache = ServiceLocator::instance()->serverIconCache();
+    int count = serverListComboBox->count();
+    for (int i = 0; i < count; i++) {
+        QString s = serverListComboBox->itemData(i).toString();
+        std::string serverName = s.toStdString();
+
+        QIcon ico = serverIconCache->getIconForServer(serverName);
+        serverListComboBox->setItemIcon(i, ico);
     }
 }
 

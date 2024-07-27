@@ -6,6 +6,7 @@
 #include <QDialog>
 #include <QIcon>
 #include "Core/Images/AbstractImage.h"
+#include "Video/VideoGrabber.h"
 class VideoGrabber;
 
 namespace Ui {
@@ -30,11 +31,16 @@ private slots:
     void frameGrabbedSlot(QString timeStr, QString fileName, QIcon image);
     void grabFinishedSlot();
     void itemDoubleClicked(const QModelIndex& index);
+    void onFinished();
 protected:
 	void onGrabFinished();
 private:
     Ui::FrameGrabberDlg *ui;
 	std::unique_ptr<VideoGrabber> grabber_;
+    VideoGrabber::VideoEngine getVideoEngine() const;
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // FRAMEGRABBERDLG_H

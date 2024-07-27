@@ -27,9 +27,7 @@
 #include "atlheaders.h"
 #include "Library.h"
 
-#include "Core/TaskDispatcher.h"
 #include "Core/UploadEngineList.h"
-#include "Gui/IconBitmapUtils.h"
 
 class CMyEngineList: public CUploadEngineList
 {
@@ -44,7 +42,7 @@ class CMyEngineList: public CUploadEngineList
                 
             }
         };
-        explicit CMyEngineList(TaskDispatcher* taskDispatcher);
+        CMyEngineList();
         ~CMyEngineList() override;
         CString errorStr() const;
 
@@ -53,29 +51,11 @@ class CMyEngineList: public CUploadEngineList
 
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
-        HICON getIconForServer(const std::string& name);
-
-        /**
-         * The caller of this function is responsible for destroying
-         * the icon when it is no longer needed.
-         */
-        [[nodiscard]] HICON getBigIconForServer(const std::string& name);
-        CString getIconNameForServer(const std::string& name, bool returnFullPath = false);
-        ServerIconCacheItem getIconBitmapForServer(const std::string& name);
-
-        /**
-         * @throws std::logic_error 
-         */
-        void preLoadIcons();
+      
         static char DefaultServer[];
         static char RandomServer[];
     private:
-        std::map<std::string, ServerIconCacheItem> serverIcons_;
         CString m_ErrorStr;
-        std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
-        std::mutex cacheMutex_;
-        TaskDispatcher* taskDispatcher_;
-        bool iconsPreload_ = false;
         DISALLOW_COPY_AND_ASSIGN(CMyEngineList);
 };
 #endif

@@ -21,6 +21,7 @@ class CMyEngineList;
 class CLogWindow;
 class UrlShorteningFilter;
 class TaskDispatcher;
+class AbstractServerIconCache;
 
 class ServiceLocator {
     ServiceLocator();
@@ -67,6 +68,10 @@ public:
 
     void setTaskDispatcher(TaskDispatcher* dispatcher);
     TaskDispatcher* taskDispatcher() const;
+
+    void setServerIconCache(AbstractServerIconCache* cache);
+    AbstractServerIconCache* serverIconCache() const;
+
     static ServiceLocator* instance();
 
 protected:

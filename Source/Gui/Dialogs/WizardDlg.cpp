@@ -68,6 +68,7 @@
 #include "3rdpart/wintoastlib.h"
 #include "Gui/Components/WinToastHandler.h"
 #include "ServerListTool/ServersCheckerDlg.h"
+#include "Core/WinServerIconCache.h"
 
 using namespace Gdiplus;
 namespace
@@ -175,7 +176,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     m_bScreenshotFromTray = false;
     serversChanged_ = false;
     using namespace std::placeholders;
-    settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1)); 
+    settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
 }
 
 void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
@@ -353,7 +354,11 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     LoadUploadEngines(_T("userservers.xml"), ErrorStr);    
 
 	Settings.fixInvalidServers();
-    enginelist_->preLoadIcons();
+    std::string iconsDir = W2U(IuCommonFunctions::GetDataFolder() + _T("Favicons\\"));
+    serverIconCache_ = std::make_unique<WinServerIconCache>(enginelist_, iconsDir);
+    ServiceLocator::instance()->setServerIconCache(serverIconCache_.get());
+    serverIconCache_->preLoadIcons();
+
     if ( isFirstRun_ ) {
         CQuickSetupDlg quickSetupDialog;
 		if (quickSetupDialog.DoModal(m_hWnd) != IDOK){
@@ -784,7 +789,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case wpUploadSettingsPage:
             CUploadSettings *tmp3;
-            tmp3 = new CUploadSettings(enginelist_, uploadEngineManager_);
+            tmp3 = new CUploadSettings(enginelist_, uploadEngineManager_, serverIconCache_.get());
             Pages[PageID]=tmp3;
             Pages[PageID]->WizardDlg=this;
             tmp3->Create(m_hWnd,rc2);

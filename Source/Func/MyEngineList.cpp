@@ -29,17 +29,12 @@ char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList(TaskDispatcher* taskDispatcher): iconBitmapUtils_(std::make_unique<IconBitmapUtils>()),
-    taskDispatcher_(taskDispatcher)
-{
+CMyEngineList::CMyEngineList() {
 }
 
 CMyEngineList::~CMyEngineList()
 {
-    for (const auto& it: serverIcons_) {
-        DestroyIcon(it.second.icon);
-        DeleteObject(it.second.bm);
-    }
+   
 }
 
 CUploadEngineData* CMyEngineList::byName(const CString& name)
@@ -66,104 +61,4 @@ bool CMyEngineList::loadFromFile(const CString& filename)
     }
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     return CUploadEngineList::loadFromFile(WCstringToUtf8(filename), Settings->ServersSettings);
-}
-
-CMyEngineList::ServerIconCacheItem CMyEngineList::getIconBitmapForServer(const std::string& name) {
-    std::lock_guard lk(cacheMutex_);
-    const auto iconIt = serverIcons_.find(name);
-    if (iconIt != serverIcons_.end()) {
-        return iconIt->second;
-    }
-    
-    CUploadEngineData *ued = CUploadEngineList::byName(name);
-
-    HICON icon = nullptr;
-    CString serverName = Utf8ToWCstring(name);
-    serverName.Replace(_T("\\"), _T("_"));
-    serverName.Replace(_T("/"), _T("_"));
-    const CString dataFolder = IuCommonFunctions::GetDataFolder();
-    CString iconFileName = dataFolder  + _T("Favicons\\")+ serverName +_T(".ico");
-
-    if ( !WinUtils::FileExists(iconFileName) ) {
-        if (ued && !ued->PluginName.empty()) {
-            iconFileName = dataFolder + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
-            if (!WinUtils::FileExists(iconFileName)) {
-                serverIcons_[name]={};
-                return {};
-            }
-        } else {
-            serverIcons_[name] = {};
-            return {};
-        }
-    }
-
-    const int w = GetSystemMetrics(SM_CXSMICON);
-    const int h = GetSystemMetrics(SM_CYSMICON);
-
-    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
-    
-    if (!icon) {
-        icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
-    }
-    
-    if ( !icon ) {
-        return {};
-    }
-    ServerIconCacheItem item(icon, iconBitmapUtils_->HIconToBitmapPARGB32(icon));
-    serverIcons_[name] = item;
-    return item;
-}
-
-HICON CMyEngineList::getIconForServer(const std::string& name) {
-    return getIconBitmapForServer(name).icon;
-}
-
-HICON CMyEngineList::getBigIconForServer(const std::string& name)
-{
-    CString iconFileName = getIconNameForServer(name, true);
-
-    if (!iconFileName) {
-        return {};
-    }
-    const int w = GetSystemMetrics(SM_CXICON);
-    const int h = GetSystemMetrics(SM_CYICON);
-    HICON icon{};
-    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
-
-    if (!icon) {
-        icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
-    }
-
-    return icon;
-}
-
-CString CMyEngineList::getIconNameForServer(const std::string& name, bool returnFullPath) {
-    CUploadEngineData *ued = CUploadEngineList::byName(name);
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name).MakeLower()+_T(".ico");
-
-    if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
-        iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName).MakeLower() +_T(".ico");
-        if(!WinUtils::FileExists(iconFileName)) {
-            return {};
-        }
-    }
-    if (returnFullPath) {
-        return iconFileName;
-    } else {
-        return U2W(IuCoreUtils::ExtractFileName(W2U(iconFileName)));
-    } 
-}
-
-void CMyEngineList::preLoadIcons() {
-    if (iconsPreload_) {
-        throw std::logic_error("preLoadIcons() should not be called twice");
-    }
-    iconsPreload_ = true;
-    taskDispatcher_->post([this] {
-        for (int i = 0; i < count(); i++) {
-            CUploadEngineData* ued = byIndex(i);
-            CString name = Utf8ToWCstring(ued->Name);
-            [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name);
-        }
-    });
 }

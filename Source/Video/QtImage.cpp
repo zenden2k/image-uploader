@@ -1,6 +1,7 @@
 #include "QtImage.h"
 
 #include <cassert>
+#include <QDebug>
 
 #include "Core/CommonDefs.h"
 
@@ -21,20 +22,20 @@ bool QtImage::loadFromFile(const std::string &fileName)
 
 bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) {
     if (dt == dfRGB888) {
-        size_t oldStripeSize = width * 3;
+        int oldStripeSize = reinterpret_cast<int>(parameter);
         size_t newDataSize = oldStripeSize * height;
-        uint8_t* newData;
+        uint8_t* newData{};
         assert( newDataSize <= dataSize);
         try {
             newData = new uint8_t[newDataSize];
-        } catch (std::exception& ex) {
+        } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
             return false;
         }
         memcpy(newData, data, newDataSize);
        
         img_ = QImage(newData, width, height, oldStripeSize, QImage::Format_RGB888, [](void* d) {
-            delete[] reinterpret_cast<uint8_t*>(d);
+            delete[] static_cast<uint8_t*>(d);
         }, newData);
         /*img_.save("/home/user/test.jpg");
         return true;*/

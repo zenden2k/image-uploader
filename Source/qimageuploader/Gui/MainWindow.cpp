@@ -1,5 +1,6 @@
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+
+#include "ui_MainWindow.h"
 
 #include <vector>
 #include <QDebug>
@@ -10,6 +11,9 @@
 #include <QTemporaryFile>
 #include <QClipboard>
 #include <QSystemTrayIcon>
+#include <QTimer>
+#include <QThread>
+
 #include <Gui/FrameGrabberDlg.h>
 #include <Gui/RegionSelect.h>
 #include "Gui/controls/ServerSelectorWidget.h"
@@ -27,6 +31,7 @@
 #include "Gui/LogWindow.h"
 #include "Core/OutputGenerator/AbstractOutputGenerator.h"
 #include "AboutDialog.h"
+#include "Core/QtServerIconCache.h"
 
 using namespace ImageUploader::Core::OutputGenerator;
 
@@ -35,17 +40,40 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
-    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    auto serviceLocator = ServiceLocator::instance();
+    auto settings = serviceLocator->settings<QtGuiSettings>();
     engineList_ = engineList;
-    ServiceLocator::instance()->setProgramWindow(this);
+    serviceLocator->setProgramWindow(this);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
     scriptsManager_ = std::make_unique<ScriptsManager>(networkClientFactory);
-    auto uploadErrorHandler = ServiceLocator::instance()->uploadErrorHandler();
+    auto uploadErrorHandler = serviceLocator->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
                                        networkClientFactory, 3);
+    std::string dataDirectory = AppParams::instance()->dataDirectory();
+    std::string iconsDir = dataDirectory + "Favicons/";
+    serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);
+    serviceLocator->setServerIconCache(serverIconCache_.get());
 
-    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    iconsLoadingThread_ = new QThread(this);
+    auto timer = new QTimer(nullptr);
+    timer->moveToThread(iconsLoadingThread_);
+    timer->setSingleShot(true);
+
+    connect(timer, &QTimer::timeout, [this](){
+        serverIconCache_->preLoadIcons();
+        QMetaObject::invokeMethod(this, [this] {
+            imageServerWidget->fillServerIcons();
+            fileServerWidget->fillServerIcons();
+        }, Qt::QueuedConnection);
+        iconsLoadingThread_->quit();
+    });
+    connect(iconsLoadingThread_, SIGNAL(started()), timer, SLOT(start()));
+    connect(iconsLoadingThread_, &QThread::destroyed, timer, &QTimer::deleteLater);
+
+    iconsLoadingThread_->start();
+
+    std::string scriptsDirectory = dataDirectory + "/Scripts/";
     uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
 
     uploadTreeModel_ = new UploadTreeModel(this, uploadManager_.get());
@@ -102,6 +130,7 @@ bool MainWindow::eventFilter(QObject* obj, QEvent* event) {
 MainWindow::~MainWindow() {
     uploadTreeModel_->reset();
     uploadManager_.reset(); // Must be destroyed first
+    iconsLoadingThread_->wait();
 }
 
 void MainWindow::updateView() {
@@ -356,3 +385,4 @@ void MainWindow::setServersChanged(bool changed) {
 void MainWindow::closeEvent(QCloseEvent *event) {
     saveOptions();
 }
+

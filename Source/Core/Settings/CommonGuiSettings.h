@@ -35,7 +35,7 @@
 
 typedef std::map<SettingsString, ServerProfile> ServerProfilesMap;
 
-#ifndef IU_QT
+
 struct VideoSettingsStruct {
     int Columns;
     int TileWidth;
@@ -43,14 +43,17 @@ struct VideoSettingsStruct {
     int GapHeight;
     int NumOfFrames;
     int JPEGQuality;
-    BOOL ShowMediaInfo;
+    std::string Engine;
+#ifndef IU_QT
+    bool ShowMediaInfo;
     CString Font;
     COLORREF TextColor;
-    CString Engine;
     CString SnapshotsFolder;
     CString SnapshotFileTemplate;
+#endif
 };
 
+#ifndef IU_QT
 struct MediaInfoSettingsStruct {
     int InfoType; // 0 - short summary, 1 - full info
     bool EnableLocalization;
@@ -72,6 +75,7 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfile urlShorteningServer, temporaryServer;
         ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
         ServerProfilesMap ServerProfiles;
+        VideoSettingsStruct VideoSettings;
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -82,7 +86,7 @@ class CommonGuiSettings : public BasicSettings {
         bool AutoStartup_changed;
         int ThumbsPerLine;
         TCHAR m_szLang[64];
-        VideoSettingsStruct VideoSettings;
+
         MediaInfoSettingsStruct MediaInfoSettings;
 
         HistorySettingsStruct HistorySettings;
@@ -112,10 +116,10 @@ class CommonGuiSettings : public BasicSettings {
         void PostLoadServerProfileGroup(ServerProfileGroup& profile);
         virtual void PostLoadServerProfile(ServerProfile& profile);
     public:
-        static const TCHAR VideoEngineDirectshow[];
-        static const TCHAR VideoEngineDirectshow2[];
-        static const TCHAR VideoEngineFFmpeg[];
-        static const TCHAR VideoEngineAuto[];
+        static const char VideoEngineDirectshow[];
+        static const char VideoEngineDirectshow2[];
+        static const char VideoEngineFFmpeg[];
+        static const char VideoEngineAuto[];
         static bool IsFFmpegAvailable();
     };
 #endif
