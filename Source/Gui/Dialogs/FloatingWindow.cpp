@@ -914,7 +914,9 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
     obj->fillFromUploadResult(task->uploadResult(), task);
 
     CString code;
+    CString message; 
     if (settings->TrayResult == WtlGuiSettings::trJustURL) {
+        message = TR("(the link has been copied to the clipboard)");
         code = url;
     } else if (settings->TrayResult == WtlGuiSettings::trLastCodeType) {
         GeneratorID generatorId = static_cast<GeneratorID>(settings->CodeLang);
@@ -934,13 +936,15 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         }
 
         code = U2W(generator->generate(objects, settings->UseTxtTemplate));
+        message = TR("(the code has been copied to the clipboard)");
     }
     WinUtils::CopyTextToClipboard(code);
-    CString trimmedUrl = WinUtils::TrimString(code, 70);
-    ShowBaloonTip(trimmedUrl + CString("\r\n")
-        + TR("(the link has been copied to the clipboard)")+ CString("\r\n") + TR("Click on this message to view details...") , 
+    CString trimmedCode = WinUtils::TrimString(code, 70);
+
+    ShowBaloonTip(trimmedCode + CString("\r\n")
+            + message + CString("\r\n") + TR("Click on this message to view details..."), 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
-    CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
+    CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedCode;
     setStatusText(statusText, kStatusHideTimeout);
     lastUploadedItem_ = std::move(obj);
 }

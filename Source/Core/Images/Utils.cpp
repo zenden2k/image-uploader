@@ -1502,4 +1502,102 @@ CString ImageFormatGUIDToString(GUID guid) {
     return "unknown";
 }
 
+/*
+Gdiplus::Bitmap* GetIconPixelData(HICON hIcon)
+{
+    ICONINFO iconInfo;
+    GetIconInfo(hIcon, &iconInfo);
+
+    BITMAP iconBmp;
+    GetObject(iconInfo.hbmColor, sizeof(BITMAP), &iconBmp);
+
+    Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(iconBmp.bmWidth, iconBmp.bmHeight, PixelFormat32bppARGB);
+
+    bool hasAlpha = false;
+    {
+        // We have to read the raw pixels of the bitmap to get proper transparency information
+        // (not sure why, all we're doing is copying one bitmap into another)
+
+        Gdiplus::Bitmap colorBitmap(iconInfo.hbmColor, NULL);
+        Gdiplus::BitmapData bmpData;
+        Gdiplus::Rect bmBounds(0, 0, colorBitmap.GetWidth(), colorBitmap.GetHeight());
+
+        colorBitmap.LockBits(&bmBounds, Gdiplus::ImageLockModeRead, colorBitmap.GetPixelFormat(), &bmpData);
+        for (int y = 0; y < colorBitmap.GetHeight(); y++) {
+            byte* pixelBytes = (byte*)bmpData.Scan0 + y * bmpData.Stride;
+
+            for (int x = 0; x < colorBitmap.GetHeight(); x++) {
+                ARGB* pixel = (ARGB*)(pixelBytes + x * 4);
+                bitmap->SetPixel(x, y, Gdiplus::Color(*pixel));
+                hasAlpha = hasAlpha || (pixelBytes[3] > 0 && pixelBytes[3] < 255);
+            }
+        }
+
+        colorBitmap.UnlockBits(&bmpData);
+    }
+
+    if (!hasAlpha) {
+        // If there's no alpha transparency information, we need to use the mask
+        // to turn back on visible pixels
+
+        Gdiplus::Bitmap maskBitmap(iconInfo.hbmMask, NULL);
+        Gdiplus::Color cMask, cBitmap;
+        for (int y = 0; y < maskBitmap.GetHeight(); y++) {
+            for (int x = 0; x < maskBitmap.GetWidth(); x++) {
+                maskBitmap.GetPixel(x, y, &cBitmap);
+                cBitmap.SetValue(cBitmap.GetValue() | 0xFF000000); // turn alpha to opaque (i.e. 0xFF)
+                bitmap->SetPixel(x, y, cBitmap);
+            }
+        }
+    }
+    return bitmap;
+}*/
+
+std::pair<std::unique_ptr<Gdiplus::Bitmap>,std::unique_ptr<BYTE[]>> GetIconPixelData(HICON hIcon) {
+    if (hIcon == NULL){
+        return {};
+    }
+    ICONINFO icInfo = { 0 };
+
+    if (!::GetIconInfo(hIcon, &icInfo)) {
+        return {};
+    }
+
+    BITMAP bitmap;
+    GetObject(icInfo.hbmColor, sizeof(BITMAP), &bitmap);
+    std::unique_ptr<Bitmap> pBitmap;
+    std::unique_ptr<Bitmap> pWrapBitmap;
+    std::unique_ptr<BYTE[]> data;
+    if (bitmap.bmBitsPixel != 32) {
+        pBitmap.reset(Bitmap::FromHICON(hIcon));
+    } else {
+        pWrapBitmap.reset(Bitmap::FromHBITMAP(icInfo.hbmColor, NULL));
+        BitmapData bitmapData;
+        Rect rcImage(0, 0, pWrapBitmap->GetWidth(), pWrapBitmap->GetHeight());
+
+        if (pWrapBitmap->LockBits(&rcImage, ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData) == Ok) {
+            BYTE* srcData {};
+            size_t resultOffset = 0;
+            size_t size = std::abs(bitmapData.Stride) * bitmapData.Height;
+            if (bitmapData.Stride < 0) {
+                srcData = (BYTE*)bitmapData.Scan0 + bitmapData.Stride * (bitmapData.Height-1);
+                resultOffset = -bitmapData.Stride * (bitmapData.Height-1);
+            } else {
+                srcData = (BYTE*)bitmapData.Scan0;
+            }
+            
+            data = std::make_unique<BYTE[]>(size);
+            memcpy(data.get(), srcData, size);
+            pBitmap = std::make_unique<Bitmap>(bitmapData.Width, bitmapData.Height, bitmapData.Stride,
+                PixelFormat32bppARGB, data.get() + resultOffset);
+            pWrapBitmap->UnlockBits(&bitmapData);
+        }
+    }
+
+    DeleteObject(icInfo.hbmColor);
+    DeleteObject(icInfo.hbmMask);
+
+    return std::make_pair(std::move(pBitmap), std::move(data));
+}
+
 }

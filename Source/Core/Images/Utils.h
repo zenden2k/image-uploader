@@ -9,8 +9,7 @@
 
 namespace ImageUtils {
 
-enum SaveImageFormat
-{
+enum SaveImageFormat {
     sifJPEG,
     sifPNG,
     sifGIF,
@@ -19,11 +18,11 @@ enum SaveImageFormat
     sifDetectByExtension,
 };
 
-struct ImageInfo
-{
+struct ImageInfo {
     int width, height;
 
-    ImageInfo() {
+    ImageInfo()
+    {
         width = 0;
         height = 0;
     }
@@ -43,32 +42,31 @@ CComPtr<IStream> CreateMemStream(const BYTE* pInit, UINT cbInit);
 bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserveAlpha = true);
 void Gdip_RemoveAlpha(Gdiplus::Bitmap& source, Gdiplus::Color color);
 
-
 /**
  * @throws IOException, runtime_error
  */
 bool MySaveImage(Gdiplus::Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format,
-                 int Quality,
-                 LPCTSTR Folder = 0);
+    int Quality,
+    LPCTSTR Folder = 0);
 
 /**
  * @throws IOException, runtime_error
  */
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format,
-                     int Quality, CString* mimeType = nullptr);
+    int Quality, CString* mimeType = nullptr);
 SaveImageFormat GetFormatByFileName(CString filename);
 void DrawGradient(Gdiplus::Graphics& gr, Gdiplus::Rect rect, Gdiplus::Color& Color1, Gdiplus::Color& Color2);
 void DrawStrokedText(Gdiplus::Graphics& gr, LPCTSTR Text, Gdiplus::RectF Bounds, const Gdiplus::Font& font,
-                     const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0,
-                     int VertPos = 0,
-                     int width = 1);
+    const Gdiplus::Color& ColorText, const Gdiplus::Color& ColorStroke, int HorPos = 0,
+    int VertPos = 0,
+    int width = 1);
 void ChangeAlphaChannel(Gdiplus::Bitmap& source, Gdiplus::Bitmap& dest, int sourceChannel, int destChannel);
 Gdiplus::Rect MeasureDisplayString(Gdiplus::Graphics& graphics, CString text, Gdiplus::RectF boundingRect,
-                                   Gdiplus::Font& font);
+    Gdiplus::Font& font);
 CRect CenterRect(CRect r1, const CRect& intoR2);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int height, Gdiplus::Size* realSize = 0);
 std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(const CString& filename, int width, int height,
-                                              Gdiplus::Size* realSize = 0, CString* imageFormat = nullptr);
+    Gdiplus::Size* realSize = 0, CString* imageFormat = nullptr);
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal);
 Gdiplus::Size ProportionalSize(const Gdiplus::Size& originalSize, const Gdiplus::Size& newSize);
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t size);
@@ -97,6 +95,7 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
 
 std::unique_ptr<Gdiplus::Font> StringToGdiplusFont(LPCTSTR szBuffer);
 CString ImageFormatGUIDToString(GUID guid);
-}
 
+std::pair<std::unique_ptr<Gdiplus::Bitmap>, std::unique_ptr<BYTE[]>> GetIconPixelData(HICON hIcon);
+}
 #endif

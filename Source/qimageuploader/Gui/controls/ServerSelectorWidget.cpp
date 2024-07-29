@@ -97,7 +97,7 @@ void ServerSelectorWidget::updateServerList() {
             continue;
         }
         if (addedItems) {
-            serverListComboBox->addItem(line);
+            serverListComboBox->insertSeparator(addedItems);
         }
         for (int i = 0; i < myEngineList->count(); i++) {
             CUploadEngineData* ue = myEngineList->byIndex(i);

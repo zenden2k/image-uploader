@@ -22,9 +22,9 @@ std::string AbstractServerIconCache::getIconNameForServer(const std::string& nam
     CUploadEngineData* ued = engineList_->byName(name);
 
     std::string serverName = IuStringUtils::Replace(name, "\\", "_");
-    serverName = IuStringUtils::Replace(name, "/", "_");
+    serverName = IuStringUtils::Replace(serverName, "/", "_");
 
-    std::string iconFileName = iconsDir_ + StrToLower(name) + ".ico";
+    std::string iconFileName = iconsDir_ + StrToLower(serverName) + ".ico";
 
     if (!IuCoreUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty()) {
         iconFileName = iconsDir_ + StrToLower(ued->PluginName) + ".ico";

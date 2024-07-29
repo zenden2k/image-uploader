@@ -1,7 +1,5 @@
 #include "QtServerIconCache.h"
 
-#include <thread>
-
 #include <QFile>
 
 #include "Core/Upload/UploadEngine.h"
@@ -44,9 +42,6 @@ QtServerIconCache::CacheItem QtServerIconCache::tryIconLoad(const std::string &n
         return iconIt->second;
     }
 
-    CUploadEngineData* ued = engineList_->byName(name);
-
-    HICON icon = nullptr;
     QString iconFileName = QString::fromStdString(getIconNameForServer(name, true));
 
     if (!QFile::exists(iconFileName)) {

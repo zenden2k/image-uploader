@@ -80,7 +80,6 @@ protected:
     CButton loginButton_, logoutButton_;
     CMyImage serverImage_;
     CIcon serverIcon_;
-    std::unique_ptr<Gdiplus::Bitmap> serverBitmap_;
     bool createNew_;
     bool ignoreExistingAccount_;
     bool serverSupportsBeforehandAuthorization_, serverSupportsLogout_;
