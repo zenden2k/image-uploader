@@ -1576,20 +1576,18 @@ std::pair<std::unique_ptr<Gdiplus::Bitmap>,std::unique_ptr<BYTE[]>> GetIconPixel
         Rect rcImage(0, 0, pWrapBitmap->GetWidth(), pWrapBitmap->GetHeight());
 
         if (pWrapBitmap->LockBits(&rcImage, ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData) == Ok) {
-            BYTE* srcData {};
-            size_t resultOffset = 0;
-            size_t size = std::abs(bitmapData.Stride) * bitmapData.Height;
-            if (bitmapData.Stride < 0) {
-                srcData = (BYTE*)bitmapData.Scan0 + bitmapData.Stride * (bitmapData.Height-1);
-                resultOffset = -bitmapData.Stride * (bitmapData.Height-1);
-            } else {
-                srcData = (BYTE*)bitmapData.Scan0;
-            }
+            int absStride = std::abs(bitmapData.Stride);
+            size_t size = absStride * bitmapData.Height;
             
             data = std::make_unique<BYTE[]>(size);
-            memcpy(data.get(), srcData, size);
-            pBitmap = std::make_unique<Bitmap>(bitmapData.Width, bitmapData.Height, bitmapData.Stride,
-                PixelFormat32bppARGB, data.get() + resultOffset);
+
+            for (int y = 0; y < bitmapData.Height; y++) {
+                BYTE* srcData = static_cast<BYTE*>(bitmapData.Scan0) + y* bitmapData.Stride;
+                memcpy(data.get() + y * absStride, srcData, bitmapData.Width * 4);
+            }
+
+            pBitmap = std::make_unique<Bitmap>(bitmapData.Width, bitmapData.Height, absStride,
+                PixelFormat32bppARGB, data.get());
             pWrapBitmap->UnlockBits(&bitmapData);
         }
     }
