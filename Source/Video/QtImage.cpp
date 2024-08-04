@@ -22,7 +22,7 @@ bool QtImage::loadFromFile(const std::string &fileName)
 
 bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) {
     if (dt == dfRGB888) {
-        int oldStripeSize = reinterpret_cast<int>(parameter);
+        size_t oldStripeSize = reinterpret_cast<size_t>(parameter);
         size_t newDataSize = oldStripeSize * height;
         uint8_t* newData{};
         assert( newDataSize <= dataSize);
