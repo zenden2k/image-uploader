@@ -382,4 +382,21 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(ViewUrl)" />
 	</Server>-->
+	<Server Name="Google Lens" Type="searchbyimage" WebsiteUrl="https://www.google.com/?olud" UploadToTempServer="1">
+		<Actions>
+			<Action Type="openurl" Url="https://lens.google.com/uploadbyurl?url=$(_IMAGEURL|urlencode)" />
+		</Actions>
+		<Result />
+	</Server>
+	<Server Name="Bing.com" Type="searchbyimage" WebsiteUrl="https://www.bing.com/" UploadToTempServer="1" DefaultForTypes="searchbyimage">
+		<Actions>
+			<Action Type="openurl" Url="https://www.bing.com/images/search?view=detailv2&amp;iss=sbi&amp;q=imgurl:$(_IMAGEURL|urlencode)" />
+		</Actions>
+		<Result />
+	</Server>
+	<Server Name="Yandex" Type="searchbyimage" WebsiteUrl="https://yandex.ru/" Plugin="ImageSearch/yandex">
+		<Actions>
+		</Actions>
+		<Result />
+	</Server>
 </Servers>

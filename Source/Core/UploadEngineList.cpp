@@ -150,6 +150,8 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
         }
 
+        UE.UploadToTempServer = cur.AttributeBool("UploadToTempServer");
+
         std::string typeString = cur.Attribute("Type");
 
         UE.TypeMask = 0;

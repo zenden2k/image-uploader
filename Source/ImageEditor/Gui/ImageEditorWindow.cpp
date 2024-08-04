@@ -13,6 +13,7 @@
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
+#include "Core/AbstractServerIconCache.h"
 
 namespace ImageEditor {
     
@@ -54,7 +55,6 @@ void ImageEditorWindow::init()
     prevRoundingRadius_ = 0;
     prevBlurRadius_ = 0;
     imageQuality_ = 85;
-    searchEngine_ = SearchByImage::SearchEngine::seGoogle;
     currentDrawingTool_ = DrawingToolType::dtNone;
     initialDrawingTool_ = DrawingToolType::dtBrush;
     displayMode_ = wdmAuto;
@@ -818,15 +818,35 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
     }
     else if (item->command == ID_SEARCHBYIMAGE) {
+        auto* engineList = ServiceLocator::instance()->engineList();
         CMenu rectangleMenu;
         RECT rc = item->rect;
         horizontalToolbar_.ClientToScreen(&rc);
         rectangleMenu.CreatePopupMenu();
-        CString itemText;
-        itemText.Format(TR("Search by image (%s)"), _T("Google"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_SEARCHBYIMAGEINGOOGLE, itemText);
-        itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
-        rectangleMenu.AppendMenu(MF_STRING, ID_SEARCHBYIMAGEINYANDEX, itemText);
+
+        int i = 0;
+        auto* serverIconCache = ServiceLocator::instance()->serverIconCache();
+        for (const auto& engine : *engineList) {
+            if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+                CString itemText;
+                itemText.Format(TR("Search by image (%s)"), U2W(engine->Name).GetString());
+                MENUITEMINFO mi;
+                ZeroMemory(&mi, sizeof(mi));
+                mi.cbSize = sizeof(mi);
+                mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+                mi.fType = MFT_STRING;
+                mi.wID = ID_SEARCHBYIMAGE_START + i;
+                mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
+                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name);
+
+                if (mi.hbmpItem) {
+                    mi.fMask |= MIIM_BITMAP;
+                }
+                rectangleMenu.InsertMenuItem(i, true, &mi);
+                i++;
+            }
+        }
+
         TPMPARAMS excludeArea;
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
@@ -879,7 +899,7 @@ void ImageEditorWindow::createToolbars()
     horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
     
     CString itemText;
-    CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
+    CString searchEngineName = U2W(searchEngine_.serverName());
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
     horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
@@ -1132,7 +1152,7 @@ void ImageEditorWindow::updateSearchButton() {
     int buttonIndex = horizontalToolbar_.getItemIndexByCommand(ID_SEARCHBYIMAGE);
     if (buttonIndex != -1) {
         Toolbar::Item* item = horizontalToolbar_.getItem(buttonIndex);
-        CString searchEngineName = U2W(SearchByImage::getSearchEngineDisplayName(searchEngine_));
+        CString searchEngineName = U2W(searchEngine_.serverName());
         item->title.Format(TR("Search on %s"), searchEngineName.GetString());
         horizontalToolbar_.AutoSize();
         //horizontalToolbar_.Invalidate(FALSE);
@@ -1278,12 +1298,27 @@ LRESULT ImageEditorWindow::OnPrintImage(WORD wNotifyCode, WORD wID, HWND hWndCtl
 }
 
 LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    if (wID == ID_SEARCHBYIMAGEINGOOGLE) {
-        searchEngine_ = SearchByImage::SearchEngine::seGoogle;
-    } else if (wID == ID_SEARCHBYIMAGEINYANDEX) {
-        searchEngine_ = SearchByImage::SearchEngine::seYandex;
+    if (wID != ID_SEARCHBYIMAGE) {
+        int serverIndex = wID - ID_SEARCHBYIMAGE_START;
+        int i = 0;
+        auto* engineList = ServiceLocator::instance()->engineList();
+        for (const auto& engine : *engineList) {
+            if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+                if (i == serverIndex) {
+                    searchEngine_ = ServerProfile(engine->Name);
+
+                    break;
+                }
+                i++;
+            }
+        }
     }
-    const bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000)!=0;
+
+    if (searchEngine_.isNull()) {
+        return 0;
+    }
+
+    const bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
     updateSearchButton();
     const CString fileName = saveToTempFile();
     if (fileName.IsEmpty()) {
@@ -1293,10 +1328,11 @@ LRESULT ImageEditorWindow::OnSearchByImage(WORD wNotifyCode, WORD wID, HWND hWnd
     auto uploadManager = ServiceLocator::instance()->uploadManager();
     CSearchByImageDlg dlg(uploadManager, searchEngine_, fileName);
     if (dlg.DoModal(m_hWnd) == IDOK) {
-        if (displayMode_ == wdmFullscreen &&  !shiftPressed) {
+        if (displayMode_ == wdmFullscreen && !shiftPressed) {
             EndDialog(drSearch);
         }
     }
+
     return 0;
 }
 

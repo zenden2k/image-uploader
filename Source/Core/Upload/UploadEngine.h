@@ -220,7 +220,7 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 class CUploadEngineData
 {
     public:
-        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8};
+        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 
         std::string Name;
@@ -246,6 +246,7 @@ class CUploadEngineData
         int RetryLimit;
         //int NumOfTries;
         int MaxThreads;
+        bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
         CUploadEngineData();

@@ -36,6 +36,7 @@ CUploadEngineData::CUploadEngineData()
     RetryLimit = 0;
     MaxThreads = 0;
     TypeMask = 0;
+    UploadToTempServer = false;
 }
 
 bool CUploadEngineData::hasType(ServerType type) const
@@ -52,6 +53,8 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
         return TypeTextServer;
     } else if (serverType == "urlshortening"){
         return TypeUrlShorteningServer;
+    } else if (serverType == "searchbyimage") {
+        return TypeSearchByImageServer;
     }
     return TypeInvalid;
 }

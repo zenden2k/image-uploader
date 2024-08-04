@@ -44,6 +44,7 @@ for %%x in (
     %temp_dir%\Data\Scripts\Lang
     %temp_dir%\Data\Scripts\Utils
     %temp_dir%\Data\Scripts\UploadFilters
+    %temp_dir%\Data\Scripts\ImageSearch
     %temp_dir%\Data\Servers
     %temp_dir%\Data\Update
     %temp_dir%\Data\Utils
@@ -85,6 +86,8 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\Utils\*.nut" %temp_dir%\Data\Scripts\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\UploadFilters\*.nut" %temp_dir%\Data\Scripts\UploadFilters\
+if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Data\Scripts\ImageSearch\*.nut" %temp_dir%\Data\Scripts\ImageSearch\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 if ERRORLEVEL 1 goto CopyFailed

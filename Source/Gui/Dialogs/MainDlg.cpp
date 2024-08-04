@@ -40,13 +40,15 @@
 #include "Core/SearchByImage.h"
 #include "3rdpart/ShellPidl.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/WinServerIconCache.h"
 
-CMainDlg::CMainDlg():
+CMainDlg::CMainDlg(WinServerIconCache* iconCache):
     m_EditorProcess(nullptr),
     listChanged_(false),
     callbackLastCallTime_(0),
     callbackLastCallType_(false),
-    hotkeys_(nullptr)
+    hotkeys_(nullptr),
+    iconCache_(iconCache)
 {
 
 }
@@ -169,6 +171,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     }
     else
     {
+        auto* engineList = ServiceLocator::instance()->engineList();
+
         CString singleSelectedItem;
         bool isImage = false;
         if ( ThumbsView.GetSelectedCount() == 1 ) {
@@ -215,12 +219,32 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
             contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as"));
 
-            CString itemText;
-            itemText.Format(TR("Search by image (%s)"), _T("Google"));
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGITEM, itemText);
+            CMenu searchSubMenu;
+            searchSubMenu.CreatePopupMenu();
 
-            itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGYANDEX, itemText);
+            int i = 0;
+
+            for (const auto& engine : *engineList) {
+                if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+                    CString itemText = U2W(engine->Name);
+                    MENUITEMINFO mi;
+                    ZeroMemory(&mi, sizeof(mi));
+                    mi.cbSize = sizeof(mi);
+                    mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+                    mi.fType = MFT_STRING;
+                    mi.wID = MENUITEM_SEARCHBYIMG_START + i;
+                    mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
+                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name);
+
+                    if (mi.hbmpItem) {
+                        mi.fMask |= MIIM_BITMAP;
+                    }
+                    searchSubMenu.InsertMenuItem(i, true, &mi);
+                    //searchSubMenu.AppendMenu(MF_STRING, , itemText,);
+                    i++;
+                }
+            }
+            contextMenu.AppendMenu(0, searchSubMenu.Detach(), TR("Search by image") );
         }
 
         contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove") + CString("\tDel"));
@@ -752,16 +776,25 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
-    SearchByImage::SearchEngine se = SearchByImage::SearchEngine::seGoogle;
-    if (wID == MENUITEM_SEARCHBYIMGYANDEX) {
-        se = SearchByImage::SearchEngine::seYandex;
+    int serverIndex = wID - MENUITEM_SEARCHBYIMG_START;
+    int i = 0;
+    auto* engineList = ServiceLocator::instance()->engineList();
+    for (const auto& engine : *engineList) {
+        if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+            if (i == serverIndex) {
+                CString fileName = getSelectedFileName();
+                if (!fileName.IsEmpty()) {
+                    auto uploadManager = ServiceLocator::instance()->uploadManager();
+                    ServerProfile searchProfile(engine->Name);
+                    CSearchByImageDlg dlg(uploadManager, searchProfile, fileName);
+                    dlg.DoModal(m_hWnd);
+                }
+                break;
+            }
+            i++;
+        }
     }
-    CString fileName = getSelectedFileName();
-    if (!fileName.IsEmpty()) {
-        auto uploadManager = ServiceLocator::instance()->uploadManager();
-        CSearchByImageDlg dlg(uploadManager, se, fileName);
-        dlg.DoModal(m_hWnd);
-    }
+    
     return 0;
 }
 

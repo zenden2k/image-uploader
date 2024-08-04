@@ -32,7 +32,6 @@ struct ImageEditorSettingsStruct {
     LOGFONT Font;
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
-    SearchByImage::SearchEngine SearchEngine;
     bool FillTextBackground = false;
     bool InvertSelection = false;
     int ArrowType;

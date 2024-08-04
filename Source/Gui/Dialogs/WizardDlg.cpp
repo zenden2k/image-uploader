@@ -781,7 +781,7 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
 
         case wpMainPage:
             CMainDlg *tmp2;
-            tmp2=new CMainDlg();
+            tmp2 = new CMainDlg(serverIconCache_.get());
             Pages[PageID]=tmp2;
             Pages[PageID]->WizardDlg=this;
             tmp2->Create(m_hWnd,rc);

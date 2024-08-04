@@ -156,13 +156,13 @@ bool CommonGuiSettings::PostLoadSettings(SimpleXml &xml)
     LoadServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
     LoadServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
 
-
     PostLoadServerProfileGroup(imageServer);
     PostLoadServerProfileGroup(fileServer);
     PostLoadServerProfileGroup(contextMenuServer);
     PostLoadServerProfileGroup(quickScreenshotServer);
     PostLoadServerProfile(urlShorteningServer);
     PostLoadServerProfile(temporaryServer);
+    PostLoadServerProfile(imageSearchServer);
 
     return true;
 }
@@ -184,6 +184,7 @@ void CommonGuiSettings::BindToManager() {
     SettingsNode& upload = mgr_["Uploading"];
     urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);
+    imageSearchServer.bind(upload["ImageSearchServer"]);
 
     SettingsNode& video = mgr_["VideoGrabber"];
     video.nm_bind(VideoSettings, NumOfFrames);

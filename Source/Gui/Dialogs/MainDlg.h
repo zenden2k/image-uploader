@@ -32,8 +32,9 @@ limitations under the License.
 #include "Gui/Controls/ThumbsView.h"
 #include "Gui/CommonDefines.h"
 
-struct CFileListItem
-{
+class WinServerIconCache;
+
+struct CFileListItem {
     CString FilePath;
     CString FileName;
     CString VirtualFileName;
@@ -51,12 +52,16 @@ public:
         // Menu for files
         MENUITEM_VIEW, MENUITEM_OPENINDEFAULTVIEWER, MENUITEM_EDIT, MENUITEM_EDITINEXTERNALEDITOR, MENUITEM_PRINT,
         MENUITEM_EXTRACTFRAMES, MENUITEM_OPENINFOLDER, MENUITEM_SAVEAS, MENUITEM_COPYFILETOCLIPBOARD, MENUITEM_COPYFILEPATH,
-        MENUITEM_SEARCHBYIMGITEM, MENUITEM_SEARCHBYIMGYANDEX, MENUITEM_DELETE, MENUITEM_PROPERTIES, MENUITEM_OPENWITH
+        MENUITEM_SEARCHBYIMG_START = 6000,
+        MENUITEM_SEARCHBYIMG_END = 6099,
+        MENUITEM_DELETE,
+        MENUITEM_PROPERTIES,
+        MENUITEM_OPENWITH
 
 
     };
     enum { kStatusTimer = 1 };
-    CMainDlg();
+    explicit CMainDlg(WinServerIconCache* iconCache);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)        
@@ -81,9 +86,7 @@ public:
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURI, OnCopyFileAsDataUri)
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURIHTML, OnCopyFileAsDataUriHtml)
 		COMMAND_ID_HANDLER(MENUITEM_COPYFILEPATH, OnCopyFilePath)
-        COMMAND_ID_HANDLER(MENUITEM_SEARCHBYIMGITEM, OnSearchByImage)
-        COMMAND_ID_HANDLER(MENUITEM_SEARCHBYIMGYANDEX, OnSearchByImage)
-
+        COMMAND_RANGE_HANDLER(MENUITEM_SEARCHBYIMG_START, MENUITEM_SEARCHBYIMG_END, OnSearchByImage)
         COMMAND_HANDLER(IDC_DELETE, BN_CLICKED, OnDelete)
         COMMAND_HANDLER(IDC_ADDVIDEO, BN_CLICKED, OnBnClickedAddvideo)
         COMMAND_HANDLER(IDC_SCREENSHOT, BN_CLICKED, OnBnClickedScreenshot)
@@ -156,6 +159,7 @@ protected:
     bool callbackLastCallType_; // selected or unselected
     CAccelerator hotkeys_;
     BOOL PreTranslateMessage(MSG* pMsg) override;
+    WinServerIconCache* iconCache_;
 };
 
 #endif // IU_GUI_MAINDLG_H

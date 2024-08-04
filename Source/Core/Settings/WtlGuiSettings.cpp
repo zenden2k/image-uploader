@@ -530,7 +530,6 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.BlurRadius = 4.0f;
     ImageEditorSettings.AllowAltTab = true;
     ImageEditorSettings.AllowEditingInFullscreen = false;
-    ImageEditorSettings.SearchEngine = SearchByImage::SearchEngine::seYandex;
     WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
     ImageEditorSettings.ArrowType = 0; // default arrow
 
@@ -601,13 +600,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         }
     }
 
-    SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
-    if (!searchEngineNode.IsNull()) {
-        std::string searchEngineName = searchEngineNode.Text();
-        if (!searchEngineName.empty()) {
-            ImageEditorSettings.SearchEngine = SearchByImage::searchEngineTypeFromString(searchEngineName);
-        }
-    }
 
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
 
@@ -657,9 +649,6 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
     CommonGuiSettings::PostSaveSettings(xml);
-
-    SimpleXmlNode searchEngineNode = xml.getRoot(rootName_).GetChild("Settings").GetChild("ImageEditor").GetChild("SearchEngine");
-    searchEngineNode.SetText(SearchByImage::searchEngineTypeToString(ImageEditorSettings.SearchEngine));
 
     SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
 

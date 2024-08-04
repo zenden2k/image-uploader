@@ -11,6 +11,9 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UrlShorteningTask.cpp
     Upload/TestConnectionTask.cpp
     Upload/FolderTask.cpp
+    Upload/SearchByImageUrlTask.cpp
+    Upload/SearchByImageFileTask.cpp
+    Upload/TempImageUploadTask.cpp
     Utils/CoreUtils.cpp
     Utils/CryptoUtils.cpp
     Utils/SimpleXml.cpp
@@ -74,6 +77,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/GumboQuery/Selector.cpp
     Scripting/API/Process.cpp
     Upload/Filters/UrlShorteningFilter.cpp
+    Upload/Filters/ImageSearchFilter.cpp
     Upload/Filters/UserFilter.cpp
     LocalFileCache.cpp
     Utils/SystemUtils.cpp
@@ -99,6 +103,9 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/TestConnectionTask.h
     Upload/UrlShorteningTask.h
     Upload/FolderTask.h
+    Upload/SearchByImageUrlTask.h
+    Upload/SearchByImageFileTask.h
+    Upload/TempImageUploadTask.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h
     Utils/SimpleXml.h
@@ -162,6 +169,7 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/GumboQuery/Selector.h
     Scripting/API/Process.h
     Upload/Filters/UrlShorteningFilter.h
+    Upload/Filters/ImageSearchFilter.h
     Upload/Filters/UserFilter.h
     LocalFileCache.h
     Utils/SystemUtils.h

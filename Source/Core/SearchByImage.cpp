@@ -1,39 +1,28 @@
 #include "SearchByImage.h"
 
-#include "SearchGoogleImages.h"
-#include "SearchYandexImages.h"
+#include "Core/Upload/SearchByImageFileTask.h"
+#include "Core/Upload/TempImageUploadTask.h"
+#include "Core/Upload/UploadSession.h"
+#include "Core/Upload/UploadManager.h"
 
-std::unique_ptr<SearchByImageTask> SearchByImage::createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, UploadManager* uploadManager,
-    SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName) {
-    if (se == SearchEngine::seGoogle) {
-        return std::make_unique<SearchGoogleImages>(std::move(networkClientFactory), fileName);
-    } else if (se == SearchEngine::seYandex) {
-        return std::make_unique<SearchYandexImages>(std::move(networkClientFactory),  fileName);
+std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager)
+{
+    CUploadEngineData* ued = imageSearchServer.uploadEngineData();
+    if (!ued->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+        return {};
     }
-    return nullptr;
-}
-
-std::string SearchByImage::getSearchEngineDisplayName(SearchEngine se) {
-    if (se == SearchEngine::seGoogle) {
-        return "Google";
-    } else if (se == SearchEngine::seYandex) {
-        return "Yandex";
+    auto session = std::make_shared<UploadSession>(false);
+    std::string displayName = IuCoreUtils::ExtractFileName(fileName);
+    if (ued->UploadToTempServer) { 
+        auto uploadTask = std::make_shared<TempImageUploadTask>(fileName, displayName);
+        uploadTask->setServerProfile(temporaryServer);
+        uploadTask->setSearchServerProfile(imageSearchServer);
+        session->addTask(uploadTask);
+    } else {
+        auto uploadTask = std::make_shared<SearchByImageFileTask>(fileName, displayName);
+        uploadTask->setServerProfile(imageSearchServer);
+        session->addTask(uploadTask);
     }
-    return {};
-}
-
-std::string SearchByImage::searchEngineTypeToString(SearchEngine se) {
-    if (se == SearchEngine::seGoogle) {
-        return "google";
-    } else if (se == SearchEngine::seYandex) {
-        return "yandex";
-    }
-    return {};
-}
-
-SearchByImage::SearchEngine SearchByImage::searchEngineTypeFromString(const std::string& name) {
-    if (name == "yandex") {
-        return SearchEngine::seYandex;
-    }
-    return SearchEngine::seGoogle;
+    
+    return session;
 }

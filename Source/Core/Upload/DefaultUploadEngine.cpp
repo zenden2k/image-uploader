@@ -26,10 +26,12 @@
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UrlShorteningTask.h"
 #include "FileUploadTask.h"
+#include "SearchByImageUrlTask.h"
+#include "SearchByImageFileTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
-
+#include "Core/Utils/DesktopUtils.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
 {
@@ -56,6 +58,10 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
             res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
         } else if (task->type() == UploadTask::TypeUrl) {
             res = doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
+        } else if (task->type() == UploadTask::TypeSearchByImageFile) {
+            res = doUploadFile(std::dynamic_pointer_cast<SearchByImageFileTask>(task), params);
+        } else if (task->type() == UploadTask::TypeSearchByImageUrl) {
+            res = doSearchImageByUrl(std::dynamic_pointer_cast<SearchByImageUrlTask>(task), params);
         } else {
             UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
         }
@@ -122,6 +128,17 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
         UploadError( ErrorInfo::mtError, "Empty result", 0, false );
         return false;
     }
+    return true;
+}
+
+bool CDefaultUploadEngine::doSearchImageByUrl(std::shared_ptr<SearchByImageUrlTask> task, UploadParams& params) {
+    prepareUpload(params);
+    m_Vars["_IMAGEURL"] = task->url();
+    bool actionsExecuteResult = executeActions();
+    if (!actionsExecuteResult) {
+        return false;
+    }
+
     return true;
 }
 
@@ -444,7 +461,9 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     else
     if (Action.Type == "get")
         Result = DoGetAction(Current);
-
+    else if (Action.Type == "openurl") {
+        Result = DesktopUtils::ShellOpenUrl(Current.Url);
+    }
     if (Action.OnlyOnce)
     {
         if (Result)

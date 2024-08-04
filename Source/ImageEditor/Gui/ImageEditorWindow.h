@@ -29,8 +29,10 @@ public:
     DECLARE_WND_CLASS(_T("ImageEditorWindow"))
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_SEARCHBYIMAGEINGOOGLE,
-        ID_SEARCHBYIMAGEINYANDEX, ID_DELETESELECTED,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE,
+        ID_SEARCHBYIMAGE_START = 1400,
+        ID_SEARCHBYIMAGE_END = 1499,
+        ID_DELETESELECTED,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
@@ -122,8 +124,7 @@ public:
         COMMAND_ID_HANDLER(ID_UNSELECTALL, OnUnselectAll)
         COMMAND_ID_HANDLER(ID_PRINTIMAGE, OnPrintImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
-        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
-        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
+        COMMAND_RANGE_HANDLER(ID_SEARCHBYIMAGE_START, ID_SEARCHBYIMAGE_END, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
@@ -207,7 +208,7 @@ public:
         HWND cropToolTip_;
         int imageQuality_;
         bool allowAltTab_;
-        SearchByImage::SearchEngine searchEngine_;
+        ServerProfile searchEngine_;
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         std::wstring windowTitle_;
         ConfigurationProvider* configurationProvider_; 
@@ -257,7 +258,6 @@ public:
         penSize_ = 12;
         roundingRadius_ = 5;
         allowAltTab_ = false; 
-        searchEngine_ = SearchByImage::SearchEngine::seGoogle;
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
         arrowMode_ = 0;
@@ -286,10 +286,10 @@ public:
     bool allowAltTab() const  {  return allowAltTab_; } 
     void setFont(const LOGFONT& font) { font_ = font; }
     LOGFONT font() const { return font_; }
-    void setSearchEngine(SearchByImage::SearchEngine se) {
+    void setSearchEngine(const ServerProfile& se) {
         searchEngine_ = se;
     }
-    SearchByImage::SearchEngine searchEngine() const {
+    const ServerProfile& searchEngine() const{
         return searchEngine_;
     }
     void setFillTextBackground(bool fill) {
@@ -320,7 +320,7 @@ protected:
     int arrowMode_;
     LOGFONT font_;
     bool allowAltTab_;
-    SearchByImage::SearchEngine searchEngine_;
+    ServerProfile searchEngine_;
     bool fillTextBackground_;
     bool invertSelection_;
 };

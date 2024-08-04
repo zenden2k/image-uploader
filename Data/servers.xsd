@@ -7,6 +7,7 @@
             <xs:enumeration value="get" />
             <xs:enumeration value="upload" />
             <xs:enumeration value="login" />
+            <xs:enumeration value="openurl" />     
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="Bool">
@@ -28,6 +29,7 @@
             <xs:enumeration value="get" />
             <xs:enumeration value="image" />
             <xs:enumeration value="urlshortening" />
+            <xs:enumeration value="searchbyimage" />
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="ServerTypes">
@@ -55,6 +57,7 @@
                             <xs:enumeration value="file"/>
                             <xs:enumeration value="image"/>
                             <xs:enumeration value="urlshortening"/>
+                            <xs:enumeration value="searchbyimage"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:list>
@@ -166,7 +169,8 @@
                         <xs:attribute type="ServerTypes" name="Types" use="optional"/>
                         <xs:attribute type="xs:string" name="LoginLabel" use="optional"/>
                         <xs:attribute type="xs:string" name="PasswordLabel" use="optional"/>
-                        <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/>    
+                        <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/> 
+                        <xs:attribute type="Bool" name="UploadToTempServer" use="optional"/>    
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="Server2" maxOccurs="unbounded" minOccurs="0">

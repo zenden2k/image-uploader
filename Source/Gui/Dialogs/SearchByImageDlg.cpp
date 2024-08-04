@@ -27,9 +27,11 @@
 #include "Func/WinUtils.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/Settings/CommonGuiSettings.h"
+#include "Core/Upload/UploadManager.h"
+
 // CSearchByImageDlg
 
-CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName):
+CSearchByImageDlg::CSearchByImageDlg(UploadManager* uploadManager, const ServerProfile& searchEngine, CString fileName):
     fileName_(fileName),
     uploadManager_(uploadManager)
 {
@@ -57,21 +59,26 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
-    seeker_ = SearchByImage::createSearchEngine(ServiceLocator::instance()->networkClientFactory(), uploadManager_, searchEngine_, settings->temporaryServer, W2U(fileName_));
-    if (seeker_) {
+    session_ = SearchByImage::search(W2U(fileName_), searchEngine_, settings->temporaryServer, uploadManager_);
+    session_->addSessionFinishedCallback([this](UploadSession* ses) -> void {
+        bool success = ses->finishedTaskCount(UploadTask::StatusFinished) == ses->taskCount();
+        onSeekerFinished(success, success ? _T("") : TR("Error"));
+    });
+    uploadManager_->addSession(session_);
+    /* if (seeker_) {
         seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
             onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
         });
         SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
         ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
-    }
+    }*/
     return 1;  // Let the system set the focus
 }
 
 LRESULT CSearchByImageDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     cancelPressed_ = true;
-    seeker_->cancel();
+    uploadManager_->stopSession(session_.get());
 
     if (finished_) {
         EndDialog(IDCANCEL);
@@ -80,13 +87,14 @@ LRESULT CSearchByImageDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWnd
 }
 
 
-void CSearchByImageDlg::onSeekerFinished(bool success, const std::string& msg) {
+void CSearchByImageDlg::onSeekerFinished(bool success, const CString& msg)
+{
     finished_ = true;
     wndAnimation_.ShowWindow(SW_HIDE);
     if (success) {
         EndDialog(IDOK);
     } else {
-        SetDlgItemText(IDC_TEXT, Utf8ToWCstring(msg));
+        SetDlgItemText(IDC_TEXT, msg);
         if (cancelPressed_) {
             EndDialog(IDCANCEL);
         }

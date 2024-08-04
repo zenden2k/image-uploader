@@ -72,7 +72,7 @@ class CommonGuiSettings : public BasicSettings {
 
         bool UseDirectLinks;
 
-        ServerProfile urlShorteningServer, temporaryServer;
+        ServerProfile urlShorteningServer, temporaryServer, imageSearchServer;
         ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
         ServerProfilesMap ServerProfiles;
         VideoSettingsStruct VideoSettings;

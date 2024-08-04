@@ -9,9 +9,6 @@ set(SRC_LIST
     ../Core/ScreenCapture/MonitorEnumerator.cpp
     ../Core/ScreenCapture/ScreenshotHelper.cpp
     ../Core/SearchByImage.cpp
-    ../Core/SearchByImageTask.cpp
-    ../Core/SearchGoogleImages.cpp
-    ../Core/SearchYandexImages.cpp
     ../Core/Settings/CommonGuiSettings.cpp
     ../Core/Settings/WtlGuiSettings.cpp
     ../Core/TempFileDeleter.cpp
@@ -175,9 +172,6 @@ set(HEADER_LIST
     ../Core/Scripting/ScriptsManager.h
     ../Core/Scripting/API/ScriptFunctionsImpl.h
     ../Core/SearchByImage.h
-    ../Core/SearchByImageTask.h
-    ../Core/SearchGoogleImages.h
-    ../Core/SearchYandexImages.h
     ../Core/Settings/CommonGuiSettings.h
     ../Core/Settings/WtlGuiSettings.h
     ../Core/TempFileDeleter.h

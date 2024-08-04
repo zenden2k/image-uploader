@@ -44,6 +44,7 @@
 #include "Core/Upload/Filters/ImageConverterFilter.h"
 #include "Core/Upload/Filters/SizeExceedFilter.h"
 #include "Core/Upload/Filters/UrlShorteningFilter.h"
+#include "Core/Upload/Filters/ImageSearchFilter.h"
 #include "Core/Upload/UploadEngineManager.h"
 #include "Gui/Helpers/LangHelper.h"
 
@@ -67,6 +68,7 @@ class Application {
     std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
     std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    std::shared_ptr<ImageSearchFilter> imageSearchFilter_;
     std::unique_ptr<UserFilter> userFilter_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
     std::unique_ptr<TaskDispatcher> taskDispatcher_;
@@ -149,12 +151,14 @@ public:
         imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
         sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(engineList_.get(), uploadEngineManager_.get());
         urlShorteningFilter_ = std::make_shared<UrlShorteningFilter>();
+        imageSearchFilter_ = std::make_shared<ImageSearchFilter>();
         userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
         
         uploadManager_->addUploadFilter(imageConverterFilter_.get());
         uploadManager_->addUploadFilter(userFilter_.get());
         uploadManager_->addUploadFilter(sizeExceedFilter_.get());
         uploadManager_->addUploadFilter(urlShorteningFilter_.get());
+        uploadManager_->addUploadFilter(imageSearchFilter_.get());
 
         serviceLocator->setUrlShorteningFilter(urlShorteningFilter_);
     }

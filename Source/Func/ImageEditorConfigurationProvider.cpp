@@ -14,7 +14,7 @@ ImageEditorConfigurationProvider::ImageEditorConfigurationProvider()
     roundingRadius_ = settings->ImageEditorSettings.RoundingRadius;
     blurRadius_ = settings->ImageEditorSettings.BlurRadius;
     allowAltTab_ = settings->ImageEditorSettings.AllowAltTab;
-    searchEngine_ = settings->ImageEditorSettings.SearchEngine;
+    searchEngine_ = settings->imageSearchServer;
     fillTextBackground_ = settings->ImageEditorSettings.FillTextBackground;
     arrowMode_ = settings->ImageEditorSettings.ArrowType;
     invertSelection_ = settings->ImageEditorSettings.InvertSelection;
@@ -30,7 +30,7 @@ void ImageEditorConfigurationProvider::saveConfiguration()
     settings->ImageEditorSettings.RoundingRadius = roundingRadius_;
     settings->ImageEditorSettings.BlurRadius = blurRadius_;
     settings->ImageEditorSettings.AllowAltTab = allowAltTab_;
-    settings->ImageEditorSettings.SearchEngine = searchEngine_;
+    settings->imageSearchServer = searchEngine_;
     settings->ImageEditorSettings.FillTextBackground = fillTextBackground_;
     settings->ImageEditorSettings.StepForegroundColor = stepForegroundColor_;
     settings->ImageEditorSettings.StepBackgroundColor = stepBackgroundColor_;

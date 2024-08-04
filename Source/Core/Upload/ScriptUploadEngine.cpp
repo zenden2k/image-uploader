@@ -26,6 +26,7 @@
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Upload/SearchByImageFileTask.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 #include "AuthTask.h"
@@ -212,6 +213,20 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             if ( ival > 0 ) {
                 ival = !params.DirectUrl.empty();
             }
+        } else if (task->type() == UploadTask::TypeSearchByImageFile) {
+            auto searchTask = std::dynamic_pointer_cast<SearchByImageFileTask>(task);
+            Function func(vm_.GetRootTable(), "SearchByImage");
+            if (func.IsNull()) {
+                Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function SearchByImage not found in the script"));
+                currentTask_ = nullptr;
+                return -1;
+            }
+            std::string fileName = searchTask->getFileName();
+            auto [status, table] = GetOperationResult(func.Evaluate<Object>(fileName.c_str(), &params));
+            /*SharedPtr<int> ivalPtr*/ ival = status;
+            /* if (ival > 0) {
+                ival = !params.DirectUrl.empty();
+            }*/
         }
     }
     catch (NetworkClient::AbortedException & ) {
