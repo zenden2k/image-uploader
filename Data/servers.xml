@@ -301,11 +301,6 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
 	</Server>
-	<Server Name="userscloud.com" FileHost="1" Plugin="userscloud" WebsiteUrl="https://userscloud.com" RegistrationUrl="https://userscloud.com/signup">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
-	</Server>
 	<!-- Blocked by Roskomnadzor -->
 	<Server Name="catbox.moe" Authorize="1" FileHost="1" MaxFileSize="200000000" PasswordLabel="userhash" WebsiteUrl="https://catbox.moe/" 
 		RegistrationUrl="https://catbox.moe/user/register.php">
