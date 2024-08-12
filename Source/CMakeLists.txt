@@ -134,6 +134,7 @@ SET(COMMON_DEPS boost/1.78.0
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
+                tinyxml2/9.0.0
 )
 
 if (IU_ENABLE_WEBVIEW2)

@@ -20,10 +20,6 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/StringUtils.cpp
     Utils/ConsoleUtils.cpp
     3rdpart/pcreplusplus.cpp
-    3rdpart/tinystr.cpp
-    3rdpart/tinyxml.cpp
-    3rdpart/tinyxmlerror.cpp
-    3rdpart/tinyxmlparser.cpp
     OutputGenerator/OutputGeneratorFactory.cpp
     OutputGenerator/AbstractOutputGenerator.cpp
     OutputGenerator/AbstractCodeGenerator.cpp
@@ -113,8 +109,6 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/ConsoleUtils.h
     Utils/IOException.h
     3rdpart/pcreplusplus.h
-    3rdpart/tinystr.h
-    3rdpart/tinyxml.h
     3rdpart/utf8.h
     3rdpart/UriParser.h
     OutputGenerator/OutputGeneratorFactory.h

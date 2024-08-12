@@ -216,10 +216,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             funcCall.Required = true;
             UA.FunctionCalls.push_back(funcCall);
 
-            int funcCount = actionNode.GetChildCount();
-
-            for (int k = 0; k < funcCount; k++) {
-                auto callNode = actionNode.GetChildByIndex(k);
+            actionNode.each([&](int k, SimpleXmlNode& callNode) -> bool {
                 if (callNode.Name() == "RegExp") {
                     ActionFunc newFuncCall(ActionFunc::FUNC_REGEXP);
                     newFuncCall.setArg(1, callNode.Attribute("Pattern"));
@@ -234,7 +231,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                     newFuncCall.Required = callNode.AttributeBool("Required");
                     std::vector<std::string> argumentsAttributeNames;
                     callNode.GetAttributes(argumentsAttributeNames);
-                    std::string prefix{ "Arg" };
+                    std::string prefix { "Arg" };
                     for (auto& name : argumentsAttributeNames) {
                         if (!name.compare(0, prefix.size(), prefix)) {
                             size_t index = std::stoi(name.substr(prefix.size()));
@@ -246,9 +243,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                     UA.FunctionCalls.push_back(newFuncCall);
                 } else {
                     LOG(ERROR) << "Unknown function: " << callNode.Name();
-                    break;
+                    return true;
                 }
-            }
+                return false;
+            });
 
             for (auto& reg: UA.FunctionCalls) {
                 SplitAssignVarsString(reg);
