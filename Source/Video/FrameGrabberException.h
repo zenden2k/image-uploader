@@ -1,3 +1,9 @@
+
+#pragma once
+
+#include <stdexcept>
+#include <string>
+
 class FrameGrabberException : virtual public std::runtime_error {
 public:
     explicit

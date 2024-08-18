@@ -20,7 +20,6 @@
 
 #include "SearchByImageDlg.h"
 
-#include "atlheaders.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Core/SearchByImage.h"
@@ -28,6 +27,8 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/Settings/CommonGuiSettings.h"
 #include "Core/Upload/UploadManager.h"
+#include "Core/TaskDispatcher.h"
+#include "Core/ServiceLocator.h"
 
 // CSearchByImageDlg
 
@@ -59,19 +60,24 @@ LRESULT CSearchByImageDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     auto* settings = ServiceLocator::instance()->settings<CommonGuiSettings>();
 
     using namespace std::placeholders;
+
+    /* auto statusChangeCallback = [&](const std::string& msg) {
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+            SetDlgItemText(IDC_TEXT, U2W(msg));
+        });
+    };*/
+
     session_ = SearchByImage::search(W2U(fileName_), searchEngine_, settings->temporaryServer, uploadManager_);
     session_->addSessionFinishedCallback([this](UploadSession* ses) -> void {
         bool success = ses->finishedTaskCount(UploadTask::StatusFinished) == ses->taskCount();
-        onSeekerFinished(success, success ? _T("") : TR("Error"));
-    });
-    uploadManager_->addSession(session_);
-    /* if (seeker_) {
-        seeker_->onTaskFinished.connect([this](BackgroundTask* task, BackgroundTaskResult result) {
-            onSeekerFinished(result == BackgroundTaskResult::Success, dynamic_cast<SearchByImageTask*>(task)->message());
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+            onSeekerFinished(success, success ? _T("") : TR("Error"));
         });
-        SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
-        ServiceLocator::instance()->taskDispatcher()->postTask(seeker_);
-    }*/
+    });
+
+    SetDlgItemText(IDC_TEXT, TR("Uploading image..."));
+
+    uploadManager_->addSession(session_);
     return 1;  // Let the system set the focus
 }
 
@@ -95,6 +101,7 @@ void CSearchByImageDlg::onSeekerFinished(bool success, const CString& msg)
         EndDialog(IDOK);
     } else {
         SetDlgItemText(IDC_TEXT, msg);
+        SetDlgItemText(IDCANCEL, TR("Close"));
         if (cancelPressed_) {
             EndDialog(IDCANCEL);
         }

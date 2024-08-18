@@ -4,8 +4,9 @@
 #include "Core/Upload/TempImageUploadTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
+#include "Core/i18n/Translator.h"
 
-std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager)
+std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager, std::function<void(const std::string&)> statusCallback)
 {
     CUploadEngineData* ued = imageSearchServer.uploadEngineData();
     if (!ued->hasType(CUploadEngineData::TypeSearchByImageServer)) {
@@ -23,6 +24,6 @@ std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName
         uploadTask->setServerProfile(imageSearchServer);
         session->addTask(uploadTask);
     }
-    
+
     return session;
 }

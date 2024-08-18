@@ -3,6 +3,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 
 #include "Core/Upload/UploadEngine.h"
 
@@ -12,7 +13,7 @@ class SearchByImage  {
     public:
         //enum class SearchEngine { seGoogle, seYandex};
 
-        static std::shared_ptr<UploadSession> search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager);
+        static std::shared_ptr<UploadSession> search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager, std::function<void(const std::string&)> statusCallback = {});
 
         /* static std::unique_ptr<SearchByImageTask> createSearchEngine(std::shared_ptr<INetworkClientFactory> networkClientFactory, 
             UploadManager* uploadManager, SearchEngine se, const ServerProfile& temporaryServer, const std::string& fileName);
