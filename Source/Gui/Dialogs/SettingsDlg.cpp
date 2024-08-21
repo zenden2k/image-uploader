@@ -80,7 +80,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     
     m_SettingsPagesListBox.SetCurSel(PageToShow);
     ShowPage(PageToShow);
-    return 0;  // Let the system set the focus
+    return 0; 
 }
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -228,7 +228,7 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
     WINDOWPLACEMENT wp;
     ::GetWindowPlacement(GetDlgItem(IDC_TABCONTROL), &wp);
     TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
-    ::SetWindowPos(Pages[pageId]->PageWnd, 0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
+    ::SetWindowPos(Pages[pageId]->PageWnd, m_SettingsPagesListBox, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left + wp.rcNormalPosition.right, -wp.rcNormalPosition.top + wp.rcNormalPosition.bottom, 0);
 
     Pages[pageId]->FixBackground();
     return true;

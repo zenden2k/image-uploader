@@ -32,10 +32,17 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     {
         CRect roundedRect(lpdis->rcItem);
         roundedRect.DeflateRect(3,3);
+        HPEN oldPen = 0;
         CPen pen;
-        pen.CreatePen(PS_SOLID, 1, 0xC5C5C5);
-        HPEN oldPen = dc.SelectPen(pen);
-        dc.RoundRect(roundedRect, CPoint(2,2));
+        dc.FillRect(&lpdis->rcItem, COLOR_WINDOW);
+
+        if (lpdis->itemState & ODS_FOCUS) {
+            dc.DrawFocusRect(roundedRect);
+        } else {
+            pen.CreatePen(PS_SOLID, 1, 0xC5C5C5);
+            oldPen = dc.SelectPen(pen);
+            dc.RoundRect(roundedRect, CPoint(2, 2));
+        }
         CRect rc(lpdis->rcItem);
         rc.DeflateRect(4,4);
 

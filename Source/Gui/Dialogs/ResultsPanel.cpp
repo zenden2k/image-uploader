@@ -131,7 +131,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     rc.bottom -= static_cast<LONG>(dpiScaleY_ * 4);
     rc.left = static_cast<LONG>(dpiScaleX_ * 8);
     rc.right -= static_cast<LONG>(dpiScaleX_ * 8);
-    Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD|WS_CHILD | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+    Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
     //TabBackgroundFix(Toolbar.m_hWnd);
     
     Toolbar.SetButtonStructSize();
