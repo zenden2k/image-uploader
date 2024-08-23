@@ -16,7 +16,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 {
     public:
         typedef CScrollWindowImpl<CImageEditorView> TBase;
-        DECLARE_WND_CLASS(L"CImageEditorView")
+        DECLARE_WND_CLASS_EX(L"CImageEditorView", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
         CImageEditorView();
         ~CImageEditorView();
         BOOL PreTranslateMessage(MSG* pMsg);

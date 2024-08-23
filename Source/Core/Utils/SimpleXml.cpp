@@ -105,13 +105,13 @@ SimpleXmlNode SimpleXmlNode::GetChildByIndex(int index) {
     XMLNode* rootElem = nullptr;
     if (impl_->m_el) {
         int count = 0;
-        XMLNode* child = impl_->m_el->FirstChild();
+        XMLNode* child = impl_->m_el->FirstChildElement();
         while (child) {
             if (index == count) {
                 rootElem = child;
                 break;
             }
-            child = child->NextSibling();
+            child = child->NextSiblingElement();
             count++;
         }
     }
@@ -123,9 +123,9 @@ SimpleXmlNode SimpleXmlNode::GetChildByIndex(int index) {
 
 int SimpleXmlNode::GetChildCount() {
     int count = 0;
-    XMLNode* child = impl_->m_el->FirstChild();
+    XMLNode* child = impl_->m_el->FirstChildElement();
     while (child) {
-        child = child->NextSibling();
+        child = child->NextSiblingElement();
         count++;
     }
     return count;
@@ -326,11 +326,15 @@ void SimpleXmlNode::SetText(const std::string& value) {
 }
 
 bool SimpleXmlNode::GetAttribute(const std::string& name, std::string& value) const {
-    const char* v {};
+    const char* v = nullptr;
     if (impl_->m_el)
         if (impl_->m_el->QueryStringAttribute(name.c_str(), &v) != XML_SUCCESS)
             return false;
-    return true;
+    if (v) {
+        value = v;
+        return true;
+    }
+    return false;
 }
 
 bool SimpleXmlNode::GetAttributes(std::vector<std::string>& out) const {

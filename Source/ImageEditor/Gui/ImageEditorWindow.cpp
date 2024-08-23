@@ -360,8 +360,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     int desiredClientWidth = currentDoc_->getWidth() + static_cast<int>(40 * dpiScaleX) + kCanvasMargin + scrollbarWidth; // with toolbars
     int desiredClientHeight = currentDoc_->getHeight() + static_cast<int>(60 * dpiScaleY) + kCanvasMargin + scrollbarHeight;
     CRect rc(rcDefault);
-    DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX |
-        WS_MINIMIZEBOX | WS_CLIPCHILDREN;
+    DWORD initialWindowStyle = WS_OVERLAPPED | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX | WS_MAXIMIZEBOX | WS_MINIMIZEBOX  | WS_CLIPCHILDREN;
     // Parent window should be null here!
     if (Create(nullptr, rc, _T("Image Editor"), initialWindowStyle, 0) == NULL) {
         LOG(ERROR) << "Main window creation failed!\n";
@@ -615,6 +614,7 @@ LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
 
 LRESULT ImageEditorWindow::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+    return 0;
     CPaintDC dc(m_hWnd);
     if ( displayMode_ == wdmWindowed ) {
         

@@ -43,8 +43,6 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_RESIZEBYWIDTH, "Change width:");
     TRC(IDC_YOURLOGO, "Add watermark");
     TRC(IDC_SMARTCONVERTING, "Skip image processing step if the image has right parameters");
-    //TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
-    //TRC(IDC_YOURLOGO, "Add watermark");
     TRC(IDC_YOURTEXT, "Add text to image");
     TRC(IDC_XLABEL, "and/or height:");
     TRC(IDC_RESIZEMODELABEL, "Resize mode:");

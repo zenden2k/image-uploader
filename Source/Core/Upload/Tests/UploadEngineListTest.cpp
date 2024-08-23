@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "Core/UploadEngineList.h"
-#include <Tests/TestHelpers.h>
+#include "Tests/TestHelpers.h"
 
 class UploadEngineListTest : public ::testing::Test {
 public:

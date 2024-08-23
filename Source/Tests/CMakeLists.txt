@@ -9,6 +9,7 @@ set(SRC_LIST
    ../Core/Utils/Tests/CryptoUtilsTest.cpp
    ../Core/Utils/Tests/StringUtilsTest.cpp
    ../Core/Utils/Tests/TextUtilsTest.cpp
+   ../Core/Utils/Tests/SimpleXmlTest.cpp
    ../Core/Upload/Tests/UploadEngineListTest.cpp
    ../Core/Upload/Tests/ScriptUploadEngineTest.cpp
    ../Core/Upload/Tests/DefaultUploadEngineTest.cpp

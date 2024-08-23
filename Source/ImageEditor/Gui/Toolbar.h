@@ -76,7 +76,7 @@ public:
     ~Toolbar() override;
     bool Create(HWND parent, bool topMost = false, bool child = false);
     int addButton(const Item& item);
-    DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
+    DECLARE_WND_CLASS_EX(L"ImageEditor_Toolbar", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE);
     int getItemAtPos(int clientX, int clientY) const;
     int getItemIndexByCommand(int command) const;
     Item* getItem(int index);

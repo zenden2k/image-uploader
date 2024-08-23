@@ -36,20 +36,23 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         CPen pen;
         dc.FillRect(&lpdis->rcItem, COLOR_WINDOW);
 
-        if (lpdis->itemState & ODS_FOCUS) {
+        /* if (lpdis->itemState & ODS_FOCUS) {
             dc.DrawFocusRect(roundedRect);
-        } else {
+        } else {*/
             pen.CreatePen(PS_SOLID, 1, 0xC5C5C5);
             oldPen = dc.SelectPen(pen);
             dc.RoundRect(roundedRect, CPoint(2, 2));
-        }
+        //}
         CRect rc(lpdis->rcItem);
         rc.DeflateRect(4,4);
 
-        TRIVERTEX vertex[2] = { {rc.left, rc.top, 0xF500, 0xF200, 0xE200, 0x0000},   
+        TRIVERTEX vertexFocused[2] = { {rc.left, rc.top, 0xF500, 0xF200, 0xE200, 0x0000},   
                                 {rc.right, rc.bottom, 0xEF00, 0xD000, 0x7700, 0x0000}};
+        TRIVERTEX vertexUnfocused[2] = { { rc.left, rc.top, 0xF800, 0xF600, 0xEB00, 0x0000 },
+            { rc.right, rc.bottom, 0xF400, 0xDE00, 0xA000, 0x0000 } };
+
         GRADIENT_RECT gradientrc = {0, 1};
-        dc.GradientFill(vertex, 2, &gradientrc, 1, GRADIENT_FILL_RECT_V);
+        dc.GradientFill(lpdis->itemState & ODS_FOCUS ? vertexFocused : vertexUnfocused, 2, &gradientrc, 1, GRADIENT_FILL_RECT_V);
         dc.SelectPen(oldPen);
     }
     else
