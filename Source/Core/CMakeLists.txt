@@ -270,6 +270,7 @@ target_link_libraries(iucore PUBLIC
     gumbo-parser::gumbo-parser 
     base64::base64
     SQLite::SQLite3
+    tinyxml2::tinyxml2
     ${COMMON_LIBS_LIST}
 )
 

@@ -101,7 +101,7 @@ bool GdiPlusImage::isNull() const
 bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter)
 {
     if ( dt == AbstractImage::dfRGB888 )  {
-        int lineSizeInBytes = reinterpret_cast<int>(parameter);
+        size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
         size_t newLineSize = width * 3;
         newLineSize = ((newLineSize + 3) & ~3);
         size_t newDataSize = /*dataSize*2/**2*//*+100000**/newLineSize * height;

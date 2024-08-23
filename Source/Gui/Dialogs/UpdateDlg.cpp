@@ -126,8 +126,8 @@ LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWn
            
             /*if (MessageBox(message, APPNAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
                 HINSTANCE hinst = ShellExecute(0, L"open", upd.downloadPage(), NULL, NULL, SW_SHOWNORMAL);
-                if (reinterpret_cast<int>(hinst) <= 32) {
-                    LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+                if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
+                    LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<INT_PTR>(hinst);
                 }
             }
         }
