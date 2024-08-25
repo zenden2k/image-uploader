@@ -18,8 +18,8 @@
 
 */
 
-#include "atlheaders.h"
 #include "ImageView.h"
+
 #include "Core/Images/Utils.h"
 
 // CImageView
@@ -72,11 +72,11 @@ LRESULT CImageViewWindow::OnKillFocus(HWND hwndNewFocus)
 
 bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
     currentItem_ = item;
-    srcImg_ = ImageUtils::LoadImageFromFileExtended(item.fileName);
-    if (!srcImg_) {
+    std::unique_ptr<GdiPlusImage> srcImg = ImageUtils::LoadImageFromFileExtended(item.fileName);
+    if (!srcImg) {
         return false;
     }
-    Gdiplus::Bitmap* img = srcImg_->getBitmap();
+    Gdiplus::Bitmap* img = srcImg->getBitmap();
     
     if (img) {
         float width = static_cast<float>(GetSystemMetrics(SM_CXSCREEN) - 12);

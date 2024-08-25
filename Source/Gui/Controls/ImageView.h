@@ -19,11 +19,11 @@
 */
 
 #pragma once
-#include <memory.h>
 
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "myimage.h"
-#include <atlcrack.h>
+
 
 // CImageView
 
@@ -80,7 +80,6 @@ class CImageViewWindow :
 protected:
     CImageViewCallback* callback_;
     CImageViewItem currentItem_;
-    std::unique_ptr<GdiPlusImage> srcImg_;
     HWND currentParent_;
     CMyImage imageControl_;
     //CPictureExWnd animationControl_;
