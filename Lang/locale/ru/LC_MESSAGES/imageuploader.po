@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-07-29 19:06+0300\n"
-"PO-Revision-Date: 2024-07-29 19:08+0300\n"
+"PO-Revision-Date: 2024-08-30 15:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -531,11 +531,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:700
 msgid "Cannot copy file "
-msgstr "Не могу скопировать файл"
+msgstr "Не могу скопировать файл "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:689
 msgid "Cannot copy file: "
-msgstr "Не могу скопировать файл:"
+msgstr "Не могу скопировать файл: "
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:184
 msgid "Cannot create registry key for extension: "
@@ -1227,7 +1227,7 @@ msgstr "Ошибка в поле '%s': значение должно быть м
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:91
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
-msgstr "Ошибка в поле '%s': значение должно быть больше нуля."
+msgstr "Ошибка в поле '%s': значение должно быть больше нуля"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:162
 msgid "Error log"
@@ -1965,7 +1965,7 @@ msgstr "Без прокси (прямое соединение)"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:206
 msgid "No updates for Image Uploader's components are available"
-msgstr "Нет доступных обновлений для компонентов программы."
+msgstr "Нет доступных обновлений для компонентов программы"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
 msgid "None"
