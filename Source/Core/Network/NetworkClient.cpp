@@ -260,10 +260,6 @@ void NetworkClient::setMethod(const std::string &str)
     m_method = str;
 }
 
-bool  NetworkClient::_curl_init = false;
-
-std::mutex NetworkClient::_mutex;
-
 NetworkClient::NetworkClient()
 {
     static NetworkClientInternal::CurlInitializer initializer;

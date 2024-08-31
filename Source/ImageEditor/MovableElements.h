@@ -144,8 +144,6 @@ public:
     DISALLOW_COPY_AND_ASSIGN(FilledRoundedRectangle);
 };
 
-
-
 class Arrow: public Line {
 public:
     enum class ArrowMode { Mode1, Mode2 };
@@ -154,6 +152,7 @@ public:
     void render(Painter* gr) override;
     RECT getPaintBoundingRect() override;
     ElementType getType() const override;
+    static void render(Painter* gr, Gdiplus::Color color, int penSize, POINT startPoint, POINT endPoint, ArrowMode mode);
     DISALLOW_COPY_AND_ASSIGN(Arrow);
 protected:
     ArrowMode mode_;

@@ -323,8 +323,6 @@ class NetworkClient: public INetworkClient
         CurlShare* curlShare_;
         Logger * logger_;
         std::shared_ptr<ProxyProvider> proxyProvider_;
-        static std::mutex _mutex;
-        static bool _curl_init;
 };
 
 #endif

@@ -5,15 +5,6 @@ apiVersion <- "5.131";
 expiresIn <- 0;
 testMode <- "1"; // not used
 
-regMatchOffset <- 0;
-try {
-    local ver = GetAppVersion();
-    if ( ver.Build > 4422 ) {
-        regMatchOffset = 1;
-    }
-} catch ( ex ) {
-}
-
 function StringPrivacyToAccessType(s) {
     if ( s == "nobody" ) {
         return 3;
@@ -43,23 +34,23 @@ function OnUrlChangedCallback(data) {
 
         local regError = CRegExp("error=([^&]+)", "");
         if ( regError.match(data.url) ) {
-            WriteLog("warning", regError.getMatch(regMatchOffset+0));
+            WriteLog("warning", regError.getMatch(1));
         } else {
             local regToken = CRegExp("access_token=([^&]+)", "");
             local token = "";
             if ( regToken.match(data.url) ) {
-                token = regToken.getMatch(regMatchOffset+0);
+                token = regToken.getMatch(1);
             }
             
             local regExpires = CRegExp("expires_in=([^&]+)", "");
             if ( regExpires.match(data.url) ) {
-                expiresIn = regExpires.getMatch(regMatchOffset+0);
+                expiresIn = regExpires.getMatch(1);
             }
 
             local regUserId = CRegExp("user_id=([^&]+)", "");
             local userId = "";
             if ( regUserId.match(data.url) ) {
-                userId = regUserId.getMatch(regMatchOffset+0);
+                userId = regUserId.getMatch(1);
             }
 
             ServerParams.setParam("prevLogin", ServerParams.getParam("Login"));

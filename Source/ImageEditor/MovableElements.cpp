@@ -623,8 +623,15 @@ Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode
 void Arrow::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen(/* color_*/color_, REAL(penSize_));
-    if (mode_ == ArrowMode::Mode1) {
+    render(gr, color_, penSize_, startPoint_, endPoint_, mode_);
+}
+
+void Arrow::render(Painter* gr, Gdiplus::Color color, int penSize, POINT startPoint, POINT endPoint, ArrowMode mode)
+{
+    using namespace Gdiplus;
+
+    Gdiplus::Pen pen(/* color_*/ color, REAL(penSize));
+    if (mode == ArrowMode::Mode1) {
         AdjustableArrowCap cap1(5, 3, true);
         cap1.SetBaseCap(LineCapTriangle);
         cap1.SetStrokeJoin(LineJoinRound);
@@ -632,20 +639,20 @@ void Arrow::render(Painter* gr)
         //pen.SetStartCap(LineCapRound);
         pen.SetCustomEndCap(&cap1);
 
-        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
-    }
-    else {
+        gr->DrawLine(&pen, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+    } else {
         pen.SetStartCap(LineCapRound);
         pen.SetEndCap(LineCapRound);
-        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
-        Gdiplus::Pen pen2(color_, REAL(penSize_));
+        gr->DrawLine(&pen, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+        Gdiplus::Pen pen2(color, REAL(penSize));
 
-        int head_length = penSize_ * 6;
-        int head_width = penSize_ * 4;
-        const auto dx = static_cast<float>(endPoint_.x - startPoint_.x);
-        const auto dy = static_cast<float>(endPoint_.y - startPoint_.y);
-        const auto length = std::sqrt(dx*dx + dy * dy);
-        if (head_length < 1 || length < head_length / 2.0) return;
+        int head_length = penSize * 6;
+        int head_width = penSize * 4;
+        const auto dx = static_cast<float>(endPoint.x - startPoint.x);
+        const auto dy = static_cast<float>(endPoint.y - startPoint.y);
+        const auto length = std::sqrt(dx * dx + dy * dy);
+        if (head_length < 1 || length < head_length / 2.0)
+            return;
         // ux,uy is a unit vector parallel to the line.
         const auto ux = dx / length;
         const auto uy = dy / length;
@@ -655,16 +662,16 @@ void Arrow::render(Painter* gr)
         const auto vy = ux;
 
         const auto half_width = 0.5f * head_width;
-        Point p1{ int(round(endPoint_.x - head_length * ux + half_width * vx)),
-                 int(round(endPoint_.y - head_length * uy + half_width * vy)) };
+        Point p1 { int(round(endPoint.x - head_length * ux + half_width * vx)),
+            int(round(endPoint.y - head_length * uy + half_width * vy)) };
 
-        Point p2{ int(round(endPoint_.x - head_length * ux - half_width * vx)),
-                int(round(endPoint_.y - head_length * uy - half_width * vy)) };
+        Point p2 { int(round(endPoint.x - head_length * ux - half_width * vx)),
+            int(round(endPoint.y - head_length * uy - half_width * vy)) };
 
         pen2.SetEndCap(LineCapRound);
         pen2.SetStartCap(LineCapRound);
-        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p1.X, p1.Y);
-        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p2.X, p2.Y);
+        gr->DrawLine(&pen2, endPoint.x, endPoint.y, p1.X, p1.Y);
+        gr->DrawLine(&pen2, endPoint.x, endPoint.y, p2.X, p2.Y);
     }
 }
 

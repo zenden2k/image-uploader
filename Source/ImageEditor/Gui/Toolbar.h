@@ -117,6 +117,8 @@ public:
         MESSAGE_HANDLER(WM_HSCROLL, OnHScroll)
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(WM_CLOSE, OnClose)
+        MESSAGE_HANDLER(WM_MEASUREITEM, OnMeasureItem)
+        MESSAGE_HANDLER(WM_DRAWITEM, OnDrawItem)
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
@@ -146,6 +148,8 @@ public:
     LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnMeasureItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -200,7 +204,10 @@ protected:
     Gdiplus::TextRenderingHint textRenderingHint_;
     bool movable_;
     bool showButtonText_;
+    std::vector<std::unique_ptr<Gdiplus::Bitmap>> arrowTypeBitmaps_;
     void createHintForSliders(HWND slider, CString hint);
+    SIZE getArrowComboBoxBitmapSize(HDC dc);
+    void setArrowComboboxMode(int itemIndex, int arrowType);
 };
 
 }

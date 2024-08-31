@@ -260,10 +260,13 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
         RECT arrowTypeComboRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST, 0, ID_ARROWTYPECOMBOBOX);
+        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
         arrowTypeCombobox_.SetFont(systemFont_);
-        arrowTypeCombobox_.AddString(TR("Arrow 1"));
-        arrowTypeCombobox_.AddString(TR("Arrow 2"));
+
+        int itemIndex = arrowTypeCombobox_.AddString(_T(""));
+        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode1));
+        itemIndex = arrowTypeCombobox_.AddString(_T(""));
+        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
         RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
         applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
@@ -874,6 +877,109 @@ LRESULT Toolbar::OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT Toolbar::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     return 0;
+}
+
+SIZE Toolbar::getArrowComboBoxBitmapSize(HDC hdc) {
+    int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
+    int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+    return {
+        MulDiv(70, dpiX, USER_DEFAULT_SCREEN_DPI),
+        MulDiv(18, dpiY, USER_DEFAULT_SCREEN_DPI)
+    };
+}
+
+void Toolbar::setArrowComboboxMode(int itemIndex, int arrowType) {
+    arrowTypeCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(arrowType));
+}
+
+LRESULT Toolbar::OnMeasureItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    LPMEASUREITEMSTRUCT lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
+    CClientDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    if (wParam == ID_ARROWTYPECOMBOBOX) {
+        SIZE sz = getArrowComboBoxBitmapSize(dc);
+        int paddingY = /*/ MulDiv(2, dpiX, USER_DEFAULT_SCREEN_DPI)*/0;
+        lpmis->itemWidth = std::max<int>(MulDiv(200, dpiX, USER_DEFAULT_SCREEN_DPI), sz.cx);
+
+        if (lpmis->itemHeight < sz.cy + paddingY) {
+            lpmis->itemHeight = sz.cy + paddingY;
+        }
+
+        return TRUE;
+    }
+    return FALSE;
+}
+
+LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    using namespace Gdiplus;
+    LPDRAWITEMSTRUCT lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+
+    if (wParam == ID_ARROWTYPECOMBOBOX) {
+        COLORREF clrBackground;
+        COLORREF clrForeground;
+        TEXTMETRIC tm;
+        int x;
+        int y;
+        HRESULT hr;
+        size_t itemLength, cch;
+   
+        if (lpdis->itemID == -1) { // Empty item
+            return FALSE;
+        }
+
+        auto arrowMode = static_cast<Arrow::ArrowMode>(lpdis->itemData);
+
+        // The colors depend on whether the item is selected.
+        clrForeground = SetTextColor(lpdis->hDC,
+            GetSysColor((lpdis->itemState & ODS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT));
+
+        clrBackground = SetBkColor(lpdis->hDC,
+            GetSysColor(lpdis->itemState & ODS_SELECTED ? COLOR_HIGHLIGHT : COLOR_WINDOW));
+
+        // Calculate the vertical and horizontal position.
+        GetTextMetrics(lpdis->hDC, &tm);
+        y = (lpdis->rcItem.bottom + lpdis->rcItem.top - tm.tmHeight) / 2;
+        x = LOWORD(GetDialogBaseUnits()) / 4;
+
+        itemLength = ::SendMessage(lpdis->hwndItem, CB_GETLBTEXTLEN, lpdis->itemID, 0);
+        if (itemLength == CB_ERR) {
+            return FALSE;
+        }
+        CString buf;
+        auto b = buf.GetBuffer(itemLength + 1);
+        // Get and display the text for the list item.
+        ::SendMessage(lpdis->hwndItem, CB_GETLBTEXT, lpdis->itemID, (LPARAM)b);
+        buf.ReleaseBuffer(itemLength);
+
+        SIZE bitmapSize = getArrowComboBoxBitmapSize(lpdis->hDC);
+        ExtTextOut(lpdis->hDC, bitmapSize.cx + 2 * x, y,
+            ETO_CLIPPED | ETO_OPAQUE, &lpdis->rcItem,
+            buf, buf.GetLength(), NULL);
+
+        {
+            Graphics gr(lpdis->hDC);
+            gr.SetPageUnit(Gdiplus::UnitPixel);
+            gr.SetSmoothingMode(SmoothingModeAntiAlias);
+            Color clr;
+            clr.SetFromCOLORREF(GetSysColor((lpdis->itemState & ODS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT));
+            
+            int bitmapY = (lpdis->rcItem.bottom + lpdis->rcItem.top) / 2;
+            Arrow::render(&gr, clr, 3, { 1, bitmapY }, { bitmapSize.cx + 1, bitmapY }, arrowMode);    
+        }
+
+        // Restore the previous colors.
+        SetTextColor(lpdis->hDC, clrForeground);
+        SetBkColor(lpdis->hDC, clrBackground);
+
+        // If the item has the focus, draw the focus rectangle.
+        if (lpdis->itemState & ODS_FOCUS) {
+            DrawFocusRect(lpdis->hDC, &lpdis->rcItem);
+        }
+
+        return TRUE;
+    }
+    return FALSE;
 }
 
 void Toolbar::showFillBackgroundCheckbox(bool show) {
