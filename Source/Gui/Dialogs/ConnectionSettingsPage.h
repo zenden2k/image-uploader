@@ -49,7 +49,7 @@ public:
     LRESULT OnClickedNoProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedUseSystemProxy(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-    bool Apply() override;
+    bool apply() override;
     void TranslateUI();
     void proxyRadioChanged();
 protected:

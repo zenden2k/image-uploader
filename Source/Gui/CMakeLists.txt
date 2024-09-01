@@ -78,7 +78,7 @@ set(SRC_LIST
     Dialogs/ServerFolderSelect.cpp
     Dialogs/ServerParamsDlg.cpp
     Dialogs/SettingsDlg.cpp
-    Dialogs/settingspage.cpp
+    Dialogs/SettingsPage.cpp
     Dialogs/ShortenUrlDlg.cpp
     Dialogs/SizeExceed.cpp
     Dialogs/StatusDlg.cpp

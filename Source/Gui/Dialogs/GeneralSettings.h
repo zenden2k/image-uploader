@@ -34,7 +34,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         enum { IDD = IDD_GENERALSETTINGS };
 
         virtual ~CGeneralSettings() = default;
-        bool Apply() override;
+        bool apply() override;
 
     protected:
         BEGIN_MSG_MAP(CGeneralSettings)

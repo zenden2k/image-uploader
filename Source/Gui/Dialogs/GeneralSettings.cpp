@@ -104,7 +104,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 }
 
     
-bool CGeneralSettings::Apply()
+bool CGeneralSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     int index = langListCombo_.GetCurSel();

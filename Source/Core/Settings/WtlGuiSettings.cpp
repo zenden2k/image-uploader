@@ -22,12 +22,9 @@ limitations under the License.
 
 #include <cassert>
 
-#ifdef _WIN32
-#include <atlheaders.h>
 #include <Shlobj.h>
-#endif
-#include "Core/SettingsManager.h"
 
+#include "Core/SettingsManager.h"
 #include "Func/MyUtils.h"
 #include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
@@ -41,10 +38,6 @@ limitations under the License.
 #include "Core/SearchByImage.h"
 #include "Func/Common.h"
 #include "StringConvert.h"
-
-#ifndef CheckBounds
-#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
-#endif
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
@@ -338,7 +331,6 @@ void WtlGuiSettings::FindDataFolder()
     }
 }
 
-
 void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
@@ -415,6 +407,25 @@ void WtlGuiSettings::fixInvalidServers() {
                 urlShorteningServer.setProfileName("");
             } else {
                 LOG(ERROR) << "Unable to find any URL shortening servers in the server list";
+            }
+        }
+    }
+
+    ue = imageSearchServer.uploadEngineData();
+    if (!ue) {
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
+        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+
+        if (uploadEngineData) {
+            imageSearchServer.setServerName(defaultServerName);
+            imageSearchServer.setProfileName("");
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeSearchByImageServer);
+            if (uploadEngineData) {
+                imageSearchServer.setServerName(uploadEngineData->Name);
+                imageSearchServer.setProfileName("");
+            } else {
+                LOG(ERROR) << "Unable to find any reverse image search servers in the server list";
             }
         }
     }

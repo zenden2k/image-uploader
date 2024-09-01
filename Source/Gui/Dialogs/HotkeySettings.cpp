@@ -37,7 +37,6 @@ CHotkeySettingsPage::~CHotkeySettingsPage()
 LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    TabBackgroundFix(m_hWnd);
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
     TRC(IDC_EDITHOTKEY, "Edit hotkey...");
     TRC(IDC_ATTENTION, "Attention! Global hotkeys are active only when tray icon is shown.");
@@ -74,7 +73,7 @@ LRESULT CHotkeySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     EndDialog(wID);
     return 0;
 }
-bool CHotkeySettingsPage::Apply()
+bool CHotkeySettingsPage::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!(settings->Hotkeys == hotkeyList)) {

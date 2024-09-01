@@ -205,7 +205,7 @@ protected:
     bool movable_;
     bool showButtonText_;
     std::vector<std::unique_ptr<Gdiplus::Bitmap>> arrowTypeBitmaps_;
-    void createHintForSliders(HWND slider, CString hint);
+    void createHintForControl(HWND slider, CString hint);
     SIZE getArrowComboBoxBitmapSize(HDC dc);
     void setArrowComboboxMode(int itemIndex, int arrowType);
 };

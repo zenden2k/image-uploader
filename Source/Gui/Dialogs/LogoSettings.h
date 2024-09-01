@@ -89,7 +89,7 @@ protected:
     //LogoParams *params;
     LOGFONT lf, ThumbFont;
     CString CurrentProfileOriginalName;
-    bool Apply() override;
+    bool apply() override;
     void ShowParams(const ImageConvertingParams& params);
     void ShowParams(const CString& profileName);
     bool SaveParams(ImageConvertingParams& params);

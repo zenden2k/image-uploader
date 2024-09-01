@@ -47,7 +47,6 @@ CThumbSettingsPage::~CThumbSettingsPage()
 
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TabBackgroundFix(m_hWnd);
     // Translating controls
 
     TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
@@ -100,7 +99,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     return 1;  // Let the system set the focus
 }
 
-bool CThumbSettingsPage::Apply()
+bool CThumbSettingsPage::apply()
 {
     WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;

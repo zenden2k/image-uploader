@@ -122,7 +122,7 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     return 1;  // Let the system set the focus
 }
  
-bool CDefaultServersSettings::Apply()
+bool CDefaultServersSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 

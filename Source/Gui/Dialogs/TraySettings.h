@@ -71,7 +71,8 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    bool Apply() override;
+    bool apply() override;
+    bool validate() override;
     LRESULT OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 protected:
     CComboBox leftButtonDblClickCombo_, leftButtonClickCombo_, middleButtonClickCombo_, rightButtoClickCombo_;

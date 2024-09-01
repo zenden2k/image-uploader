@@ -93,8 +93,9 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     if(!m_InitialBuffer.IsEmpty())
     {
-        ParseBuffer(m_InitialBuffer, false);
-        BeginDownloading(); 
+        if (ParseBuffer(m_InitialBuffer, false) != 0) {
+            BeginDownloading(); 
+        }
     } else {
         CString text;
         if (WinUtils::GetClipboardText(text, m_hWnd)) {
@@ -283,7 +284,7 @@ bool CImageDownloaderDlg::LinksAvailableInText(CString text)
     return !links.empty();
 }
 
-void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
+size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
 {
     CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
 
@@ -291,7 +292,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
     if (buffer.Find(_T("\n")) == -1) {
         // Text contains just one link
         uriparser::Uri uri(IuCoreUtils::WstringToUtf8(buffer.GetString()));
-        if (uri.isValid()) {
+        if (uri.isValid() && !uri.scheme().empty()) {
             std::string ext = IuCoreUtils::ExtractFileExt(uri.path());
             if (ext.empty() || IuCommonFunctions::IsImage(U2W(uri.path()))) {
                 if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
@@ -299,7 +300,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
                 }
                 text += buffer + _T("\r\n");
                 SetDlgItemText(IDC_FILEINFOEDIT, text);
-                return;
+                return 1;
             }
         }
     }
@@ -317,6 +318,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
         }
     }
     SetDlgItemText(IDC_FILEINFOEDIT, text);
+    return links.size();
 }
 
 void CImageDownloaderDlg::clipboardUpdated()

@@ -69,7 +69,6 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     convert_profiles_ = settings->ConvertProfiles;
-    TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
     RECT rc = {13, 20, 290, 95};
@@ -202,7 +201,7 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
 
-bool CLogoSettings::Apply()
+bool CLogoSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString saveToProfile = CurrentProfileName;

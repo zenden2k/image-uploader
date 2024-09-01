@@ -110,7 +110,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     return 1;  // Let the system set the focus
 }
 
-bool CScreenshotSettingsPagePage::Apply()
+bool CScreenshotSettingsPagePage::apply()
 {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_SCREENSHOTFILENAMEEDIT));
     if(!WinUtils::CheckFileName(fileName))

@@ -79,6 +79,8 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
     bool ShowPage(SettingsPage idPage);
     CTabListBox m_SettingsPagesListBox;
     LRESULT OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+    bool apply();
+
 protected:
     UploadEngineManager* uploadEngineManager_;
     CBrush backgroundBrush_;

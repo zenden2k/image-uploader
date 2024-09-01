@@ -37,7 +37,7 @@ function _UploadToAccount(FileName, options) {
             return 1;
         }
     } else if ("error" in t) {
-        WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + t.error.message);
+        WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + (("error" in t) ? t.error.message: ""));
     }
     return 0;
 }
@@ -85,7 +85,7 @@ function UploadFile(FileName, options) {
     } else {
         local t = ParseJSON(nm.responseBody());
         if (t != null) {
-            WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + t.error.message);
+            WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + (("error" in t) ? t.error.message: ""));
         }
         return 0;
     }

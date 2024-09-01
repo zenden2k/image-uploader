@@ -12,6 +12,20 @@
 class CWizardDlg;
 class CSettingsDlg;
 
+struct ValidationError {
+    CString Message;
+    HWND Control;
+
+    ValidationError()
+    {
+        Control = nullptr;
+    }
+    ValidationError(CString message, HWND control)
+        : Message(message)
+        , Control(control)
+    {
+    }
+};
 
 class ValidationException : public std::exception {
 public:
@@ -19,10 +33,14 @@ public:
         CString Message;
         HWND Control;
 
-        ValidationError() {
+        ValidationError()
+        {
             Control = nullptr;
         }
-        ValidationError(CString message, HWND control) : Message(message), Control(control) {
+        ValidationError(CString message, HWND control)
+            : Message(message)
+            , Control(control)
+        {
         }
     };
     ValidationException(CString Message, HWND Control = nullptr) : std::exception("Form validation error") {
@@ -50,21 +68,18 @@ class CSettingsPage
         virtual ~CSettingsPage() = default;
         CWizardDlg *WizardDlg = nullptr;
         HBITMAP HeadBitmap = nullptr;
-        virtual bool OnShow();
-        virtual bool OnHide();
-        virtual bool OnNext();
-        void EnableNext(bool Enable = true);
-        void EnablePrev(bool Enable = true);
-        void EnableExit(bool Enable = true);
-        void SetNextCaption(LPTSTR Caption);
+        virtual bool onShow();
+        virtual bool onHide();
         HWND PageWnd = nullptr;
-        void ShowNext(bool Show = true);
-        void ShowPrev(bool Show = true);
+        void fixBackground() const;
 
-        void FixBackground() const;
-        static void TabBackgroundFix(HWND hwnd);
-        
-        virtual bool Apply();
+        void addError(CString message, HWND control = NULL);
+        virtual bool apply();
+        virtual bool validate();
+        void clearErrors();
+        const std::vector<ValidationError>& errors() const;
+    protected:
+         std::vector<ValidationError> errors_;
 };
 
 #endif // SETTINGSPAGE_H

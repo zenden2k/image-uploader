@@ -85,24 +85,8 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    for (int i = 0; i < SettingsPageCount; i++) {
-        try {
-            if (Pages[i] && !Pages[i]->Apply()) {
-                ShowPage(static_cast<SettingsPage>(i));
-                return 0;
-            }
-        } catch (ValidationException& ex) {
-            ShowPage(static_cast<SettingsPage>(i));
-            if (!ex.errors_.empty()) {
-                LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
-                if (ex.errors_[0].Control) {
-                    ::SetFocus(ex.errors_[0].Control);
-                }
-            }
-
-            return 0;
-            // If some tab cannot apply changes - do not close dialog
-        }
+    if (!apply()) {
+        return 0;  // If some tab cannot apply changes - do not close dialog
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->SaveSettings();
@@ -156,11 +140,45 @@ bool CSettingsDlg::ShowPage(SettingsPage idPage)
 
 LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    if (!apply()) {
+        return 0;
+    }
+    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
+    SetTimer(kStatusLabelTimer, 3000);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->SaveSettings();
+    return 0;
+}
+
+bool CSettingsDlg::apply()  {
+    for (int i = 0; i < SettingsPageCount; i++) {
+        const auto& page = Pages[i];
+        if (!page) {
+            continue;
+        }
+        page->clearErrors();
+        if (!page->validate()) {
+            ShowPage(static_cast<SettingsPage>(i));
+            const auto& errors = page->errors();
+            if (!errors.empty()) {
+                CString msg;
+                for (const auto& error : errors) {
+                    msg += error.Message;
+                    msg += _T("\r\n");
+                }
+                LocalizedMessageBox(msg, TR("Error"), MB_ICONERROR);
+                if (errors[0].Control) {
+                    ::SetFocus(errors[0].Control);
+                }
+            }
+            return false;
+        }
+    }
     for (int i = 0; i < SettingsPageCount; i++) {
         try {
-            if (Pages[i] && !Pages[i]->Apply()) {
+            if (Pages[i] && !Pages[i]->apply()) {
                 ShowPage(static_cast<SettingsPage>(i));
-                return 0;
+                return false;
             }
         } catch (ValidationException& ex) {
             ShowPage(static_cast<SettingsPage>(i));
@@ -171,15 +189,11 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                 }
             }
 
-            return 0;
+            return false;
             // If some tab cannot apply changes - do not close dialog
         }
     }
-    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
-    SetTimer(kStatusLabelTimer, 3000);
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    settings->SaveSettings();
-    return 0;
+    return true;
 }
 
 template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args) {
@@ -230,7 +244,7 @@ bool CSettingsDlg::CreatePage(SettingsPage pageId)
     TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
     ::SetWindowPos(Pages[pageId]->PageWnd, m_SettingsPagesListBox, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left + wp.rcNormalPosition.right, -wp.rcNormalPosition.top + wp.rcNormalPosition.bottom, 0);
 
-    Pages[pageId]->FixBackground();
+    Pages[pageId]->fixBackground();
     return true;
 }
 

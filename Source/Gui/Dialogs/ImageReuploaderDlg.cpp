@@ -353,8 +353,9 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
             } else {
                 url = reg[1];
             }
+            auto& supportedExtensions = IuCommonFunctions::GetSupportedImageExtensions();
             std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(url) );
-            if (fileExt == "png" || fileExt == "jpg" || fileExt == "gif" || fileExt == "jpeg" || fileExt == "bmp" || fileExt == "webp") {
+            if (supportedExtensions.find(fileExt) != supportedExtensions.end()) {
                 Match match;
                 match.start = reg.get_match_start(0);
                 match.length = reg.get_match_end(0) - match.start + 1;

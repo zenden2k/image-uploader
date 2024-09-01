@@ -73,7 +73,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     return 1;  // Let the system set the focus
 }
 
-bool CTraySettingsPage::Apply() {
+bool CTraySettingsPage::apply() {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->ShowTrayIcon_changed = settings->ShowTrayIcon;
     settings->ShowTrayIcon = SendDlgItemMessage(IDC_SHOWTRAYICON, BM_GETCHECK)==BST_CHECKED;
@@ -93,6 +93,18 @@ bool CTraySettingsPage::Apply() {
     settings->TrayIconSettings.DontLaunchCopy = SendDlgItemMessage(IDC_ONEINSTANCE, BM_GETCHECK) == BST_CHECKED;
     
     return true;
+}
+
+bool CTraySettingsPage::validate() {
+    CString leftDoubleClickCommandStr = getCommandByIndex(leftButtonDblClickCombo_.GetCurSel());
+    CString leftClickCommandStr = getCommandByIndex(leftButtonClickCombo_.GetCurSel());
+    CString middleClickCommandStr = getCommandByIndex(middleButtonClickCombo_.GetCurSel());
+    CString rightClickCommandStr = getCommandByIndex(rightButtoClickCombo_.GetCurSel());
+    if (leftDoubleClickCommandStr.IsEmpty() && leftClickCommandStr.IsEmpty()
+        && middleClickCommandStr.IsEmpty() && rightClickCommandStr.IsEmpty()) {
+        addError(TR("At least one mouse command should not be empty"));
+    }
+    return CSettingsPage::validate();
 }
 
 LRESULT CTraySettingsPage::OnShowTrayIconBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl) {

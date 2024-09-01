@@ -169,11 +169,15 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         std::string path = uri.path();
         NetworkClient nc;
         std::string fileName = nc.urlDecode(IuCoreUtils::ExtractFileName(path));
-
-        if (fileName.length() > 30) {
-            fileName = fileName.substr(0, 30);
+        
+        if (fileName.length() > 50) {
+            size_t pos = fileName.find_last_of('.');
+            if (pos != std::string::npos) {
+                fileName = fileName.substr(0, 46) + "." + fileName.substr(pos);
+            } else {
+                fileName = fileName.substr(0, 50);
+            }
         }
-
         
         CString possiblePath = U2W(tempDirectory_) + Utf8ToWstring(fileName).c_str();
         if (possiblePath.GetLength() > MAX_PATH - 4) {

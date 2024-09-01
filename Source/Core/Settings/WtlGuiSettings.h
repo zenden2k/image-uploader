@@ -17,7 +17,6 @@
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
 #define TRAY_SCREENSHOT_OPENINEDITOR 4
 
-
 class CFloatingWindow;
 
 struct ImageReuploaderSettingsStruct {

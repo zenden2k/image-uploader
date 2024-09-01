@@ -39,7 +39,6 @@ CVideoGrabberParams::~CVideoGrabberParams()
 LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    TabBackgroundFix(m_hWnd);
 
     SetDlgItemInt(IDC_COLUMNSEDIT, Settings.VideoSettings.Columns);
     SetDlgItemInt(IDC_TILEWIDTH, Settings.VideoSettings.TileWidth);
@@ -82,7 +81,7 @@ LRESULT CVideoGrabberParams::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     return 1;  // Let the system set the focus
 }
 
-bool CVideoGrabberParams::Apply()
+bool CVideoGrabberParams::apply()
 {
     int columns = GetDlgItemInt(IDC_COLUMNSEDIT);
     if (columns <= 0) {

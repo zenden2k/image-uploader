@@ -202,26 +202,28 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
     if ( orientation_ == orHorizontal ) {
         penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
-        createHintForSliders(penSizeSlider_.m_hWnd, TR("Line thickness"));
+        createHintForControl(penSizeSlider_.m_hWnd, TR("Line thickness"));
         RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
+        pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | WS_VISIBLE | SS_NOTIFY);
         pixelLabel_.SetFont(systemFont_);
-        //createHintForSliders(pixelLabel_.m_hWnd, TR("Line thickness"));
+        createHintForControl(pixelLabel_, TR("Line thickness"));
 
         RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
         roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
-        createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
+        createHintForControl(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
+        roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
         roundRadiusLabel_.SetFont(systemFont_);
+        createHintForControl(roundRadiusLabel_, TR("Rounding radius"));
 
         RECT blurRadiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
         blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
-        createHintForSliders(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
+        createHintForControl(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
         
-        blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
+        blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
         blurRadiusLabel_.SetFont(systemFont_);
+        createHintForControl(blurRadiusLabel_, TR("Blur radius"));
 
         RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
@@ -263,6 +265,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
         arrowTypeCombobox_.SetFont(systemFont_);
 
+        createHintForControl(arrowTypeCombobox_, TR("Type of arrow"));
         int itemIndex = arrowTypeCombobox_.AddString(_T(""));
         setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode1));
         itemIndex = arrowTypeCombobox_.AddString(_T(""));
@@ -783,7 +786,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
     }
 }
 
-void Toolbar::createHintForSliders(HWND slider, CString hint) {
+void Toolbar::createHintForControl(HWND slider, CString hint) {
     TOOLINFO ti = {};
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;

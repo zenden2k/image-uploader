@@ -120,7 +120,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     return 1;  // Let the system set the focus
 }
 
-bool CIntegrationSettings::Apply()
+bool CIntegrationSettings::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 

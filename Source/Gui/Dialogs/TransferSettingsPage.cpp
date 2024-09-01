@@ -35,7 +35,6 @@ void CTransferSettingsPage::TranslateUI()
 LRESULT CTransferSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    TabBackgroundFix(m_hWnd);
     TranslateUI();
 
     BOOL temp;
@@ -75,7 +74,7 @@ LRESULT CTransferSettingsPage::OnExecuteScriptCheckboxClicked(WORD wNotifyCode, 
     return 0;
 }
 
-bool CTransferSettingsPage::Apply()
+bool CTransferSettingsPage::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     CheckBounds(IDC_FILERETRYLIMIT, 1, 10, IDC_RETRIES1LABEL);

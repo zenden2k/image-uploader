@@ -36,7 +36,6 @@ void CConnectionSettingsPage::TranslateUI()
 LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    TabBackgroundFix(m_hWnd);
     TranslateUI();
 
     BOOL temp;
@@ -144,7 +143,7 @@ LRESULT CConnectionSettingsPage::OnClickedUseSystemProxy(WORD wNotifyCode, WORD 
     return 0;
 }
 
-bool CConnectionSettingsPage::Apply()
+bool CConnectionSettingsPage::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     
