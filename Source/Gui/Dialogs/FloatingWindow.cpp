@@ -43,20 +43,25 @@ namespace {
 
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
 {
-    MENUITEMINFO MenuItem;
+    MENUITEMINFO MenuItem {};
 
     MenuItem.cbSize = sizeof(MenuItem);
-    if (szTitle)
+    MenuItem.fMask = MIIM_FTYPE | MIIM_ID;
+    if (szTitle) {
         MenuItem.fType = MFT_STRING;
-    else
+        MenuItem.fMask |= MIIM_STRING;
+    } else {
         MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
-    if (bm)
-        MenuItem.fMask |= MIIM_CHECKMARKS;
+    }
+
+    if (bm) {
+        MenuItem.fMask |= MIIM_BITMAP;
+        MenuItem.hbmpItem = bm;
+    }
     MenuItem.wID = id;
-    MenuItem.hbmpChecked = bm;
-    MenuItem.hbmpUnchecked = bm;
+
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
+    MenuItem.cch = lstrlen(szTitle);
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem) != 0;
 }
 
@@ -547,7 +552,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                     break;
                 }
             }
-            MENUITEMINFO monitorMenuItem;
+            MENUITEMINFO monitorMenuItem {};
             monitorMenuItem.cbSize = sizeof(monitorMenuItem);
             monitorMenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_SUBMENU;
             monitorMenuItem.fType = MFT_STRING;
@@ -555,6 +560,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             monitorMenuItem.wID = 10001;
             CString title = TR("Choose monitor");
             monitorMenuItem.dwTypeData = const_cast<LPWSTR>(title.GetString());
+            monitorMenuItem.cch = title.GetLength();
             TrayMenu.InsertMenuItem(i++, true, &monitorMenuItem);
             MonitorsSubMenu.Detach();
         }
@@ -582,13 +588,14 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD ? MFS_CHECKED : 0),
            IDM_SCREENTSHOTACTION_ADDTOWIZARD, TR("Add to Wizard"));
 
-        MENUITEMINFO mi;
+        MENUITEMINFO mi {};
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_TYPE | MIIM_ID | MIIM_SUBMENU;
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
         CString title = TR("Screenshot Action");
+        mi.cch = title.GetLength();
         mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         TrayMenu.InsertMenuItem(i++, true, &mi);
 

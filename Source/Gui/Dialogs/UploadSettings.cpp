@@ -695,6 +695,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
                 CString name  = Utf8ToWCstring(ued->Name); 
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
+                mi.cch = name.GetLength();
                 mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
 
                 if ( mi.hbmpItem ) {
@@ -731,6 +732,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             CUploadEngineData* ued = m_EngineList->byIndex(i);
             CString name  = Utf8ToWCstring(ued->Name); 
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
+            mi.cch = name.GetLength();
             mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
@@ -771,6 +773,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         }
         CString addFtpServerStr = TR("Add FTP/SFTP server...");
         mi.dwTypeData = const_cast<LPWSTR>(addFtpServerStr.GetString());
+        mi.cch = addFtpServerStr.GetLength();
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
@@ -779,6 +782,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.wID = isImageServer ? IDC_ADD_DIRECTORY_AS_SERVER : IDC_ADD_DIRECTORY_AS_SERVER_FROM_FILESERVER_LIST;
         CString addLocalFolderStr = TR("Add local folder as new server...");
         mi.dwTypeData = const_cast<LPWSTR>(addLocalFolderStr.GetString());
+        mi.cch = addLocalFolderStr.GetLength();
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
@@ -803,6 +807,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.wID = IDC_LOGINTOOLBUTTON + static_cast<int>(isImageServer);
                 CString changeAccountSettingsStr = TR("Change account settings");
                 mi.dwTypeData = const_cast<LPWSTR>(changeAccountSettingsStr.GetString());
+                mi.cch = changeAccountSettingsStr.GetLength();
                 sub.InsertMenuItem(i++, true, &mi);
             } else {
                 addedSeparator = true;
@@ -815,6 +820,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.wID = IDC_SERVERPARAMS + static_cast<int>(isImageServer);
                 CString serverSettingsStr = TR("Server settings...");
                 mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());
+                mi.cch = serverSettingsStr.GetLength();
                 sub.InsertMenuItem(i++, true, &mi);
             }
             int command = IDC_USERNAME_FIRST_ID;
@@ -841,6 +847,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                     mi.wID = command;
 
                     mi.dwTypeData  = const_cast<LPWSTR>(login.GetString());
+                    mi.cch = login.GetLength();
                     HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
                     bitmaps.push_back(bm);
                     
@@ -863,6 +870,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.wID = IDC_NO_ACCOUNT + !isImageServer;
                 CString noAthenticationStr = TR("<no authentication>");
                 mi.dwTypeData  = const_cast<LPWSTR>(noAthenticationStr.GetString());
+                mi.cch = noAthenticationStr.GetLength();
                 sub.InsertMenuItem(i++, true, &mi);
             }
   
@@ -880,7 +888,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.wID = IDC_ADD_ACCOUNT + !isImageServer;
             CString newAccountStr = TR("Add account...");
             mi.dwTypeData  = const_cast<LPWSTR>(newAccountStr.GetString());
-
+            mi.cch = newAccountStr.GetLength();
             sub.InsertMenuItem(i++, true, &mi);
             sub.SetMenuDefaultItem(0,TRUE);
         }
@@ -1032,21 +1040,33 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     if ( serverProfile.isNull() ) {
         return;
     }
+    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    CIcon ico;
+    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGS), iconWidth, iconHeight);
+    
     CMenu sub;    
-    MENUITEMINFO mi;
-    mi.cbSize = sizeof(mi);    
-    mi.fMask = MIIM_TYPE | MIIM_ID;
-    mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
+    MENUITEMINFO mi {};
+    mi.cbSize = sizeof(mi);
+    mi.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
     mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
     CString serverSettingsStr = TR("Server settings");
+    CBitmap bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico);
+    mi.hbmpItem = bm;
     mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());
-    sub.InsertMenuItem(0, true, &mi);
+    mi.cch = serverSettingsStr.GetLength();
+    if (!sub.InsertMenuItem(0, true, &mi)) {
+        //LOG(WARNING) << "Cannot insert menu item" << std::endl << WinUtils::GetLastErrorAsString();
+    }
+
+    mi.fMask = MIIM_ID | MIIM_STRING;
     if(!serverProfile.uploadEngineData()->RegistrationUrl.empty())
     {
         mi.wID = IDC_OPENREGISTERURL + (int)isImageServerToolbar;
         CString goToSignupPageStr = TR("Go to signup page");
         mi.dwTypeData = const_cast<LPWSTR>(goToSignupPageStr.GetString());
+        mi.cch = goToSignupPageStr.GetLength();
         sub.InsertMenuItem(1, true, &mi);
     }
 

@@ -8,7 +8,14 @@
 
 std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName, const ServerProfile& imageSearchServer, const ServerProfile& temporaryServer, UploadManager* uploadManager, std::function<void(const std::string&)> statusCallback)
 {
-    CUploadEngineData* ued = imageSearchServer.uploadEngineData();
+    ServerProfile server = imageSearchServer;
+    server.UseDefaultSettings = false;
+    server.setShortenLinks(false);
+    auto& uploadParams = server.getImageUploadParamsRef();
+    uploadParams.CreateThumbs = false;
+    uploadParams.ProcessImages = false;
+
+    CUploadEngineData* ued = server.uploadEngineData();
     if (!ued->hasType(CUploadEngineData::TypeSearchByImageServer)) {
         return {};
     }
@@ -17,11 +24,11 @@ std::shared_ptr<UploadSession> SearchByImage::search(const std::string& fileName
     if (ued->UploadToTempServer) { 
         auto uploadTask = std::make_shared<TempImageUploadTask>(fileName, displayName);
         uploadTask->setServerProfile(temporaryServer);
-        uploadTask->setSearchServerProfile(imageSearchServer);
+        uploadTask->setSearchServerProfile(server);
         session->addTask(uploadTask);
     } else {
         auto uploadTask = std::make_shared<SearchByImageFileTask>(fileName, displayName);
-        uploadTask->setServerProfile(imageSearchServer);
+        uploadTask->setServerProfile(server);
         session->addTask(uploadTask);
     }
 

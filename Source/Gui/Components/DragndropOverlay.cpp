@@ -68,9 +68,10 @@ void CDragndropOverlay::updateBackBuffer() {
             backBufferDc_.Rectangle(&item.rc);
             backBufferDc_.SelectBrush(oldBr);
         }
-        backBufferDc_.SetTextColor(RGB(255, 255, 255));
+        COLORREF oldTextColor = backBufferDc_.SetTextColor(RGB(255, 255, 255));
         backBufferDc_.SetBkMode(TRANSPARENT);
         backBufferDc_.DrawText(item.text, -1, &item.rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        backBufferDc_.SetTextColor(oldTextColor);
         index++;
     }
    

@@ -205,7 +205,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         serverName = ses->entry(0).serverName;
     }
     if (serverName.empty()) {
-        serverName = tr("unknown server");
+        serverName = _("unknown server");
     }
     std::string filesText;
     try {
@@ -220,7 +220,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect calcRect;
 
     dc.SetBkMode(TRANSPARENT);
-    dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+    COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
     CBrush backgroundBrush;
 
     DWORD color = RGB(255, 255, 255);
@@ -315,6 +315,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     }
 
     dc.SelectFont(oldFont);
+    dc.SetTextColor(oldTextColor);
 
     int itemHeight = std::max<int>(textRect.Height() + kPaddingY * 2, 16);
 
@@ -376,9 +377,10 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     HFONT oldFont = dc.SelectFont(listboxFont);
 
     CBrush br;
+    COLORREF oldTextColor {};
     if (draw) {
         dc.SetBkMode(TRANSPARENT);
-        dc.SetTextColor(RGB(0, 0, 0));
+        oldTextColor = dc.SetTextColor(RGB(0, 0, 0));
     }
 
     CBrush backgroundBrush;
@@ -449,9 +451,11 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     urlRect.top += filenameHeight + 3;
 
     CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
-    dc.SetTextColor(RGB(166, 166, 166));
+    
     if (draw) {
+        dc.SetTextColor(RGB(166, 166, 166));
         dc.DrawText(url, url.GetLength(), &urlRect, DT_LEFT);
+        dc.SetTextColor(oldTextColor);
     }
     dc.SelectFont(oldFont);
 

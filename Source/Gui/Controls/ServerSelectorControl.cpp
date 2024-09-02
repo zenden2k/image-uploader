@@ -509,6 +509,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             mi.wID = IDC_LOGINMENUITEM;
             CString name = TR("Change account settings");
             mi.dwTypeData = const_cast<LPWSTR>(name.GetString());
+            mi.cch = name.GetLength();
             sub.InsertMenuItem(i++, true, &mi);
         }
         else {
@@ -539,7 +540,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
                 mi.wID = command;
 
                 mi.dwTypeData = const_cast<LPWSTR>(login.GetString());
-
+                mi.cch = login.GetLength();
                 mi.hbmpItem = bmp;
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;
@@ -560,6 +561,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             CString text = TR("<no authentication>");
 
             mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
+            mi.cch = text.GetLength();
             sub.InsertMenuItem(i++, true, &mi);
         }
 
@@ -580,7 +582,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         CString text = TR("Add account...");
 
         mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
-
+        mi.cch = text.GetLength();
 
         sub.InsertMenuItem(i++, true, &mi);
         sub.SetMenuDefaultItem(0,TRUE);

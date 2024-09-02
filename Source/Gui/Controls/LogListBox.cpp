@@ -73,8 +73,8 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
     if (dis->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)) {
-        dc.SetBkColor(GetSysColor(COLOR_WINDOW));
-        dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+        COLORREF oldBkColor = dc.SetBkColor(GetSysColor(COLOR_WINDOW));
+        COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
         CRect r(dis->rcItem);
         if (!(dis->itemState & ODS_SELECTED)) {
             CBrush br;
@@ -98,7 +98,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             SelectObject(dc.m_hDC, oldPen);
         }
 
-        SetBkMode(dc.m_hDC,TRANSPARENT);
+        int oldBkMode = SetBkMode(dc.m_hDC,TRANSPARENT);
 
         SIZE TimeLabelDimensions;
         auto oldFont = SelectObject(dc.m_hDC, NormalFont);
@@ -141,6 +141,9 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             dc.DrawIcon(iconPos.x, iconPos.y, *ico);
         }
         SelectObject(dc.m_hDC, oldFont);
+        dc.SetBkColor(oldBkColor);
+        dc.SetTextColor(oldTextColor);
+        dc.SetBkMode(oldBkMode);
     }
 
     bHandled = true;

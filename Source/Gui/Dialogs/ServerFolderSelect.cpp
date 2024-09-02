@@ -347,7 +347,7 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     }
 
     CMenu sub;
-    MENUITEMINFO mi;
+    MENUITEMINFO mi {};
     mi.cbSize = sizeof(mi);
     mi.fMask = MIIM_TYPE | MIIM_ID;
     mi.fType = MFT_STRING;
@@ -356,18 +356,21 @@ LRESULT CServerFolderSelect::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     mi.wID = ID_EDITFOLDER;
     CString editStr = TR("Edit");
     mi.dwTypeData = const_cast<LPWSTR>(editStr.GetString());
+    mi.cch = editStr.GetLength();
     sub.InsertMenuItem(1, true, &mi);
 
     if (showViewInBrowserItem) {
         mi.wID = ID_OPENINBROWSER;
         CString openInBrowserStr = TR("Open in Web Browser");
         mi.dwTypeData = const_cast<LPWSTR>(openInBrowserStr.GetString());
+        mi.cch = openInBrowserStr.GetLength();
         sub.InsertMenuItem(0, true, &mi);
     }
 
     mi.wID = ID_CREATENESTEDFOLDER;
     CString createNestedFolderStr = TR("Create nested folder");
     mi.dwTypeData = const_cast<LPWSTR>(createNestedFolderStr.GetString());
+    mi.cch = createNestedFolderStr.GetLength();
     sub.InsertMenuItem(2, true, &mi);
 
     sub.AppendMenu(MFT_STRING | copyFolderIdFlag, ID_COPYFOLDERID, TR("Copy folder's ID"));

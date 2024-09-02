@@ -451,7 +451,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             continue;
         }
         bool isHighlighted = static_cast<size_t>(selectedItemIndex_) == i || hoverItemIndex_ == i;
-        dc.SetTextColor(RGB(0,0,0));
+        COLORREF oldTextColor = dc.SetTextColor(RGB(0,0,0));
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
@@ -523,6 +523,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + scaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
         }
+        dc.SetTextColor(oldTextColor);
     }
 
     paintDc.BitBlt(0, 0, rc.right - rc.left, rc.bottom - rc.top, dcMem_, 0, 0, SRCCOPY);

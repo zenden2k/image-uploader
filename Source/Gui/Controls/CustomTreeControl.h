@@ -674,9 +674,11 @@ BEGIN_MSG_MAP(CCustomTreeControlImpl)
         dc.FillSolidRect(&rcItem, clrBack);
         rcItem.left += 2; // Indent text
         dc.SetBkMode(TRANSPARENT);
-        dc.SetBkColor(clrBack);
-        dc.SetTextColor(clrFront);
+        COLORREF oldBkColor = dc.SetBkColor(clrBack);
+        COLORREF oldTextColor = dc.SetTextColor(clrFront);
         dc.DrawText(name, -1, &rcItem, DT_LEFT | DT_SINGLELINE | DT_EDITCONTROL | DT_NOPREFIX | DT_VCENTER);
+        dc.SetBkColor(oldBkColor);
+        dc.SetTextColor(oldTextColor);
     }
 
     void DrawItem(LPDRAWITEMSTRUCT lpDIS) {

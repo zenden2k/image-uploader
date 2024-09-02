@@ -11,7 +11,7 @@
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {
     auto* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (!fileTask) {
+    if (!fileTask || fileTask->type() == FileUploadTask::TypeSearchByImageFile) {
         return true;
     }
     if (task->parentTask())

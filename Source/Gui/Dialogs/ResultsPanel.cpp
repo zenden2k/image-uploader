@@ -348,7 +348,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
     CMenu sub;    
-    MENUITEMINFO mi;
+    MENUITEMINFO mi {};
     mi.cbSize = sizeof(mi);
     mi.fMask = MIIM_TYPE|MIIM_ID;
     mi.fType = MFT_STRING;
@@ -366,6 +366,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
             menuItemTitle = TR("Shorten URL");
         }
         mi.dwTypeData  = const_cast<LPWSTR>(menuItemTitle.GetString());
+        mi.cch = menuItemTitle.GetLength();
         sub.InsertMenuItem(count++, true, &mi);
     
 
@@ -373,17 +374,20 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
     mi.wID = IDC_USEDIRECTLINKS;
     CString useDirectLinks = TR("Use direct links");
     mi.dwTypeData = const_cast<LPWSTR>(useDirectLinks.GetString());
+    mi.cch = useDirectLinks.GetLength();
     sub.InsertMenuItem(count++, true, &mi);
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_GROUPBYFILENAME;
     CString groupByFilename = TR("Group by filename");
     mi.dwTypeData = const_cast<LPWSTR>(groupByFilename.GetString());
+    mi.cch = groupByFilename.GetLength();
     sub.InsertMenuItem(count++, true, &mi);
 
     mi.wID = IDC_USETEMPLATE;
     CString useTemplate = TR("Use template");
     mi.dwTypeData = const_cast<LPWSTR>(useTemplate.GetString());
+    mi.cch = useTemplate.GetLength();
     sub.InsertMenuItem(count++, true, &mi);
 
     int insertedServersCount = 0;
@@ -400,6 +404,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         CString title = TR("Copy URL  ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
         mi.wID = IDC_COPYFOLDERURL + i;
         mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
+        mi.cch = title.GetLength();
         sub.InsertMenuItem(count++, true, &mi);
         insertedServersCount++;
     }

@@ -362,7 +362,7 @@ int CMegaNzUploadEngine::doLogin() {
     loginFinished_ = false;
     loginSuccess_ = false;
     if (currentTask_) {
-        currentTask_->setStatusText(tr("Logging in..."));
+        currentTask_->setStatusText(_("Logging in..."));
     }
     megaApi_->login(m_ServersSettings->authData.Login.c_str(), m_ServersSettings->authData.Password.c_str());
     while (!loginFinished_ && !needStop()) {
@@ -467,7 +467,7 @@ bool CMegaNzUploadEngine::ensureNodesFetched() {
         fetchNodesFinished_ = false;
         fetchNodesSuccess_ = false;
         if (currentTask_) {
-            currentTask_->setStatusText(tr("Fetching filesystem..."));
+            currentTask_->setStatusText(_("Fetching filesystem..."));
         }
         megaApi_->fetchNodes();
         while (!fetchNodesFinished_ && !needStop()) {

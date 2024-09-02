@@ -837,6 +837,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
                 mi.fType = MFT_STRING;
                 mi.wID = ID_SEARCHBYIMAGE_START + i;
                 mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
+                mi.cch = itemText.GetLength();
                 mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name);
 
                 if (mi.hbmpItem) {

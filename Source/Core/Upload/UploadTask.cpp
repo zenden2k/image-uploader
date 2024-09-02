@@ -367,29 +367,29 @@ void UploadTask::setStatus(Status status)
 
     switch (status) {
         case StatusRunning:
-            progress_.statusText = tr("Begin upload");
+            progress_.statusText = _("Begin upload");
             break;
         case StatusStopped:
-            progress_.statusText = tr("Stopped");
+            progress_.statusText = _("Stopped");
             break;
         case StatusFinished:
-            progress_.statusText = tr("Finished");
+            progress_.statusText = _("Finished");
             break;
         case StatusFailure:
-            progress_.statusText = tr("Error");
+            progress_.statusText = _("Error");
             break;
         case StatusInQueue:
-            progress_.statusText = tr("In queue");
+            progress_.statusText = _("In queue");
             break;
         case StatusPostponed:
-            progress_.statusText = tr("Postponed");
+            progress_.statusText = _("Postponed");
             break;
         case StatusWaitingChildren:
-            progress_.statusText = tr("Waiting for child tasks");
+            progress_.statusText = _("Waiting for child tasks");
             break;
                 
         default:
-            progress_.statusText = tr("Unknown status");
+            progress_.statusText = _("Unknown status");
             
     }
     statusChanged();

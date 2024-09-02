@@ -106,7 +106,7 @@ void EnableNextN(HWND Control, int n, bool Enable) {
 }
 
 bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
-    MENUITEMINFO MenuItem;
+    MENUITEMINFO MenuItem {};
 
     MenuItem.cbSize = sizeof(MenuItem);
     if(szTitle)
@@ -119,6 +119,7 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     MenuItem.hbmpChecked = bm;
     MenuItem.hbmpUnchecked = bm;
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
+    MenuItem.cch = lstrlen(szTitle);
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
