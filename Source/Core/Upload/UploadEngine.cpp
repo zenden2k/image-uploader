@@ -22,8 +22,56 @@
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
+#include "Core/Upload/FileUploadTask.h"
 
-CUploadEngineData::CUploadEngineData()
+SQInteger UploadParams::getTask2(HSQUIRRELVM v)
+{
+    using namespace Sqrat;
+    //print_args(v);
+    ClassData<UploadParams>* cd = ClassType<UploadParams>::getClassData(v);
+    const auto& m = cd->instances.Get();
+    HSQOBJECT obj{};
+    if (sq_getstackobj(v, 1, &obj) != SQ_OK) {
+        return 0;
+    }
+
+    auto it = std::find_if(std::begin(*m), std::end(*m),
+        [&obj](auto&& p) -> bool { return p.second._type == obj._type && p.second._unVal.pInstance == obj._unVal.pInstance; });
+
+    if (it == std::end(*m)) {
+        return 0;
+    }
+    auto* pThis = it->first;
+    ScriptAPI::UploadTaskWrapper* task = pThis->task_.get();
+    if (!task) {
+        return 0;
+    }
+    auto* fileTask = dynamic_cast<ScriptAPI::FileUploadTaskWrapper*>(task);
+    if (fileTask) {
+        Sqrat::ClassType<ScriptAPI::FileUploadTaskWrapper>::PushInstance(v, fileTask);
+        return 1;
+    }
+    auto* urlShorteningTask = dynamic_cast<ScriptAPI::UrlShorteningTaskWrapper*>(task);
+    if (urlShorteningTask) {
+        Sqrat::ClassType<ScriptAPI::UrlShorteningTaskWrapper>::PushInstance(v, urlShorteningTask);
+        return 1;
+    }
+
+    Sqrat::ClassType<ScriptAPI::UploadTaskWrapper>::PushInstance(v, task);
+
+    return 1; // Number of returned values
+}
+
+ScriptAPI::UploadTaskWrapper* UploadParams::getTask()
+{
+    return task_.get();
+    /*auto file = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    if (file) {
+        return std::make_shared<ScriptAPI::FileUploadTaskWrapper>(file);
+    }
+    return nullptr; */
+}
+    CUploadEngineData::CUploadEngineData()
 {
     SupportsFolders = false;
     UsingPlugin = false;

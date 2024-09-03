@@ -275,7 +275,7 @@ public:
 
     std::string ServerFileName;
     std::string temp_;
-    ScriptAPI::UploadTaskWrapper task_;
+    std::shared_ptr<ScriptAPI::UploadTaskWrapper> /* std::shared_ptr<UploadTask>*/ task_;
 
     UploadParams() {
         apiVersion = 0;
@@ -349,7 +349,9 @@ public:
     }
 
     std::string getServerFileName() const { return ServerFileName; }
-    ScriptAPI::UploadTaskWrapper getTask() { return task_; }
+
+    static SQInteger getTask2(HSQUIRRELVM v);
+    ScriptAPI::UploadTaskWrapper* getTask();
 };
 
 class CUploadEngineListBase

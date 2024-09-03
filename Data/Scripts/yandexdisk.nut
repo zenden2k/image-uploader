@@ -476,6 +476,13 @@ function UploadFile(FileName, options) {
     local ansiFileName = ExtractFileName(FileName);
     local fileSize = GetFileSize(FileName);
     local mimeType = GetFileMimeType(FileName);
+    local task2 = options.getTask();
+    //WriteLog("error", "0 " + task2.serverName());
+
+    if (task2 instanceof FileUploadTask) {
+        WriteLog("error", "1 FileUploadTask");
+    }
+    WriteLog("error", "2 " + task2.getDisplayName());
     try {
         local task = options.getTask();
         ansiFileName = task.getDisplayName(); // ensure that this field is filled up correctly
