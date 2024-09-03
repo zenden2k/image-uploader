@@ -64,12 +64,12 @@ public:
         MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MSG_WM_KEYDOWN(OnKeyDown)
-        MSG_WM_LBUTTONDBLCLK(OnLButtonDblClk)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_BEGINDRAG, OnLvnBeginDrag)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteAllItems)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
         REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnCustomDraw)
+        REFLECTED_NOTIFY_CODE_HANDLER(NM_DBLCLK, OnDoubleClick)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -80,6 +80,7 @@ public:
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
     CAutoCriticalSection ImageListCS;
@@ -97,7 +98,6 @@ public:
     bool LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image *img = NULL);
     int GetImageIndex(int ItemIndex) const;
     CImageViewWindow ImageView;
-    LRESULT OnLButtonDblClk(UINT Flags, CPoint Pt);
     DWORD Run();
     void ViewSelectedImage();
     bool ExtendedView;

@@ -11,7 +11,7 @@ class VideoGrabber
 {
 public:
     enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec, veDirectShow2  };
-    explicit VideoGrabber();
+    explicit VideoGrabber(bool async = true, bool logErrors = true);
     ~VideoGrabber();
     void setVideoEngine(VideoEngine engine);
     VideoEngine videoEngine() const;
@@ -32,6 +32,7 @@ private:
     std::unique_ptr<VideoGrabberRunnable> worker_;
     FrameGrabbedCallback onFrameGrabbed_;
     FinishCallback onFinished_;
+    bool async_, logErrors_;
     DISALLOW_COPY_AND_ASSIGN(VideoGrabber);
 };
 

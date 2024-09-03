@@ -190,6 +190,9 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
         }
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Show in default viewer"));
+        if (isVideoFile) {
+            contextMenu.SetMenuDefaultItem(MENUITEM_OPENINDEFAULTVIEWER, FALSE);
+        }
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
 
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
