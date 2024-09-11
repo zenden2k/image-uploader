@@ -219,6 +219,28 @@ std::string FileUploadTaskWrapper::originalFileName() const
 }
 
 
+bool FileUploadTaskWrapper::isImage() const{
+    checkNull(BOOST_CURRENT_FUNCTION);
+    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    if (!fileTask) {
+        LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
+                   << "this is not a FileUploadTask";
+        return false;
+    }
+    return fileTask->isImage();
+}
+
+bool FileUploadTaskWrapper::isVideo() const {
+    checkNull(BOOST_CURRENT_FUNCTION);
+    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    if (!fileTask) {
+        LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
+                   << "this is not a FileUploadTask";
+        return false;
+    }
+    return fileTask->isVideo();
+}
+
 UrlShorteningTaskWrapper::UrlShorteningTaskWrapper(UrlShorteningTask* task)
     : UploadTaskWrapper(task)
 {
@@ -277,7 +299,6 @@ UploadTaskWrapper::UploadTaskWrapper(std::shared_ptr<UploadTask> task)
 {
     task_ = task;
 }
-
 
 void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
     using namespace Sqrat;

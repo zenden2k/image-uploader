@@ -73,7 +73,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
             serverImage_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
             auto [serverBitmap, data] = ImageUtils::GetIconPixelData(serverIcon_);
             if (serverBitmap && serverBitmap->GetLastStatus() == Gdiplus::Ok) {
-                serverImage_.loadImage(0, serverBitmap.get(), 0, false, GetSysColor(COLOR_BTNFACE), false, true, false);
+                serverImage_.loadImage(0, std::move(serverBitmap), 0, false, GetSysColor(COLOR_BTNFACE), false, true, false);
             }
         }
     }

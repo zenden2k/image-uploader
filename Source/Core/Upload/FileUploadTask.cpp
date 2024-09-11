@@ -118,6 +118,14 @@ void FileUploadTask::setIsImage(bool image) {
     isImage_ = image;
 }
 
+bool FileUploadTask::isVideo() const{
+    return isVideo_;
+}
+
+void FileUploadTask::setIsVideo(bool isVid) {
+    isVideo_ = isVid;
+}
+
 int64_t FileUploadTask::getFileSize() const
 {
     return getDataLength();

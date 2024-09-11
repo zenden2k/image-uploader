@@ -185,6 +185,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
         }
         //            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
+        SimpleXmlNode supportedFormatsNode = cur.GetChild("SupportedFormats", false);
+        if (!supportedFormatsNode.IsNull()) {
+            loadFormats(supportedFormatsNode, UE, UE.SupportedFormatGroups);
+        }
 
         std::vector<SimpleXmlNode> actions;
         cur["Actions"].GetChilds("Action", actions);
@@ -291,6 +295,29 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2)
 {
     return IuStringUtils::stricmp(elem1->Name.c_str(), elem2->Name.c_str()) < 0;
+}
+
+void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out)
+{
+    node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
+        if (groupNode.Name() == "FormatGroup") {
+            FileFormatGroup group;
+            group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
+
+            groupNode.each([&](int k, SimpleXmlNode& formatNode) -> bool {
+                if (formatNode.Name() == "Format") {
+                    FileFormat format;
+                    IuStringUtils::Split(formatNode.Attribute("MimeType"), ",", format.MimeTypes);
+                    IuStringUtils::Split(formatNode.Text(), ",", format.FileNameWildcards);
+                    format.MaxFileSize = formatNode.AttributeInt64("MaxFileSize");
+                    group.Formats.push_back(std::move(format));
+                }
+                return false;
+            });
+            out.push_back(std::move(group));
+        }
+        return false;
+    });
 }
 
 void CUploadEngineList::setNumOfRetries(int Engine, int Action)

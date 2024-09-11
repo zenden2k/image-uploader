@@ -27,8 +27,9 @@
 #include "Upload/UploadEngine.h"
 #include "Core/Utils/CoreTypes.h"
 
-class CUploadEngineList: public CUploadEngineListBase
-{
+class SimpleXmlNode;
+
+class CUploadEngineList : public CUploadEngineListBase {
     public:
         CUploadEngineList();
         bool loadFromFile(const std::string& filename, ServerSettingsMap&);
@@ -40,6 +41,7 @@ class CUploadEngineList: public CUploadEngineListBase
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
         bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);
+        void loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out);
 };
 
 #endif // IU_CORE_UPLOADENGINELIST_H

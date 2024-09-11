@@ -39,6 +39,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/WinServerIconCache.h"
+#include "Func/IuCommonFunctions.h"
 
 namespace {
     struct ResizePreset {
@@ -100,6 +101,32 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 
         }
     }
+}
+
+bool CUploadSettings::checkFileFormats() {
+    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+    int n = mainDlg->FileList.GetCount();
+    std::string messages;
+    for (int i = 0; i < n; i++) {
+        CString fileName = mainDlg->FileList[i].FileName;
+        std::string utf8Name = W2U(fileName);
+        std::string onlyName = IuCoreUtils::ExtractFileName(utf8Name);
+        std::string mimeType = IuCoreUtils::GetFileMimeType(utf8Name);
+        int64_t size = IuCoreUtils::GetFileSize(utf8Name);
+        ServerProfileGroup& profileGroup = IuCommonFunctions::IsImage(fileName) ? sessionImageServer_ : sessionFileServer_;
+        for (const auto& serverProfile : profileGroup.getItems()) {
+            CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
+            if (uploadEngineData && !uploadEngineData->supportsFileFormat(onlyName, mimeType, size)) {
+                messages += str(IuStringUtils::FormatNoExcept(_("%1%: server %2% doesn't support these kind of file (%3% %4%)\n")) % onlyName
+                    % uploadEngineData->Name % mimeType % IuCoreUtils::FileSizeToString(size));
+            }
+        }
+    }
+    if (!messages.empty()) {
+        GuiTools::LocalizedMessageBox(m_hWnd, U2W(messages), TR("Error"), MB_ICONERROR);
+        return false;
+    }
+    return true;
 }
 
 void CUploadSettings::TranslateUI()
@@ -359,6 +386,10 @@ bool CUploadSettings::OnNext()
             GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
+    }
+
+    if (!checkFileFormats()) {
+        return false;
     }
 
     ImageUploadParams& imageUploadParams = sessionImageServer.getImageUploadParamsRef();

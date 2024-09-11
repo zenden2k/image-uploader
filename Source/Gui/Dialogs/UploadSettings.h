@@ -208,6 +208,7 @@ protected:
     void updateUrlShorteningCheckboxLabel();
     void shorteningUrlServerChanged(CServerSelectorControl* selectorControl);
     void settingsChanged(BasicSettings* settings);
+    bool checkFileFormats();
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;
     CIcon iconEdit_, iconDropdown_;

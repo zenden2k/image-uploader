@@ -9,8 +9,7 @@
 class FileUploadTask;
 class UrlShorteningTask;
 
-namespace ScriptAPI {
-;
+namespace ScriptAPI {;
 
 class UploadTaskWrapper;
 
@@ -61,6 +60,8 @@ public:
     std::string getDisplayName() const;
     void setDisplayName(const std::string& name);
     std::string originalFileName() const;
+    bool isImage() const;
+    bool isVideo() const;
 };
 
 /**

@@ -23,55 +23,9 @@
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UrlShorteningTask.h"
 
-SQInteger UploadParams::getTask2(HSQUIRRELVM v)
-{
-    using namespace Sqrat;
-    //print_args(v);
-    ClassData<UploadParams>* cd = ClassType<UploadParams>::getClassData(v);
-    const auto& m = cd->instances.Get();
-    HSQOBJECT obj{};
-    if (sq_getstackobj(v, 1, &obj) != SQ_OK) {
-        return 0;
-    }
-
-    auto it = std::find_if(std::begin(*m), std::end(*m),
-        [&obj](auto&& p) -> bool { return p.second._type == obj._type && p.second._unVal.pInstance == obj._unVal.pInstance; });
-
-    if (it == std::end(*m)) {
-        return 0;
-    }
-    auto* pThis = it->first;
-    ScriptAPI::UploadTaskWrapper* task = pThis->task_.get();
-    if (!task) {
-        return 0;
-    }
-    auto* fileTask = dynamic_cast<ScriptAPI::FileUploadTaskWrapper*>(task);
-    if (fileTask) {
-        Sqrat::ClassType<ScriptAPI::FileUploadTaskWrapper>::PushInstance(v, fileTask);
-        return 1;
-    }
-    auto* urlShorteningTask = dynamic_cast<ScriptAPI::UrlShorteningTaskWrapper*>(task);
-    if (urlShorteningTask) {
-        Sqrat::ClassType<ScriptAPI::UrlShorteningTaskWrapper>::PushInstance(v, urlShorteningTask);
-        return 1;
-    }
-
-    Sqrat::ClassType<ScriptAPI::UploadTaskWrapper>::PushInstance(v, task);
-
-    return 1; // Number of returned values
-}
-
-ScriptAPI::UploadTaskWrapper* UploadParams::getTask()
-{
-    return task_.get();
-    /*auto file = std::dynamic_pointer_cast<FileUploadTask>(task_);
-    if (file) {
-        return std::make_shared<ScriptAPI::FileUploadTaskWrapper>(file);
-    }
-    return nullptr; */
-}
-    CUploadEngineData::CUploadEngineData()
+CUploadEngineData::CUploadEngineData()
 {
     SupportsFolders = false;
     UsingPlugin = false;
@@ -90,6 +44,47 @@ ScriptAPI::UploadTaskWrapper* UploadParams::getTask()
 bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
+}
+
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize) {
+    if (this->SupportedFormatGroups.empty()) {
+        return true;
+    }
+    for (const auto& group : this->SupportedFormatGroups) {
+        if (fileSize > group.MaxFileSize) {
+            continue;
+        }
+
+        for (const auto& format : group.Formats) {
+            if (fileSize > format.MaxFileSize) {
+                continue;
+            }
+            bool mimeMatches = false;
+            bool fileNameMatches = false;
+            if (!format.MimeTypes.empty()) {
+                for (const auto& type : format.MimeTypes) {
+                    if (IuStringUtils::Match(type.c_str(), mimeType.c_str())) {
+                        mimeMatches = true;
+                        break;
+                    }
+                }
+                continue;
+            }
+            if (!format.FileNameWildcards.empty()) {
+                for (const auto& wildcard : format.FileNameWildcards) {
+                    if (IuStringUtils::Match(wildcard.c_str(), fileName.c_str())) {
+                        fileNameMatches = true;
+                        break;
+                    }
+                }
+                continue;
+            }
+            if (mimeMatches || fileNameMatches) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std::string& serverType) {
@@ -328,3 +323,17 @@ ServerSync* CAbstractUploadEngine::serverSync() const
 }
 
 const std::string CFolderItem::NewFolderMark = "_iu_create_folder_";
+
+ScriptAPI::UploadTaskWrapper UploadParams::getTask() {
+    return task_;
+}
+
+ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask() {
+    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    return fileTask;
+}
+
+ScriptAPI::UrlShorteningTaskWrapper UploadParams::getUrlShorteningTask() {
+    auto urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
+    return urlShorteningTask;
+}

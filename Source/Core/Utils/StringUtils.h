@@ -49,6 +49,7 @@ namespace IuStringUtils
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);
     boost::format FormatNoExcept(const std::string& str);
+    bool Match(char const* needle, char const* haystack);
 };
 
 #endif

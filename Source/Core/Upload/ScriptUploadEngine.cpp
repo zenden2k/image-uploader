@@ -180,7 +180,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     }
    
     params.folderId = task->serverProfile().folderId();
-    params.task_ = std::make_shared<ScriptAPI::UploadTaskWrapper>(task);
+    params.task_ = task;
     int ival = 0;
 
     if (!params.folderId.empty() && task->onFolderUsed_) {
