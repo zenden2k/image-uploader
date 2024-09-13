@@ -71,6 +71,14 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/GumboQuery/QueryUtil.cpp
     3rdpart/GumboQuery/Selection.cpp
     3rdpart/GumboQuery/Selector.cpp
+    3rdpart/xdgmime/xdgmime.c
+    3rdpart/xdgmime/xdgmimeglob.c
+    3rdpart/xdgmime/xdgmimeint.c
+    3rdpart/xdgmime/xdgmimemagic.c
+    3rdpart/xdgmime/xdgmimealias.c
+    3rdpart/xdgmime/xdgmimeparent.c
+    3rdpart/xdgmime/xdgmimecache.c
+    3rdpart/xdgmime/xdgmimeicon.c
     Scripting/API/Process.cpp
     Upload/Filters/UrlShorteningFilter.cpp
     Upload/Filters/ImageSearchFilter.cpp
@@ -111,6 +119,14 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/pcreplusplus.h
     3rdpart/utf8.h
     3rdpart/UriParser.h
+    3rdpart/xdgmime/xdgmime.h
+    3rdpart/xdgmime/xdgmimealias.h
+    3rdpart/xdgmime/xdgmimecache.h
+    3rdpart/xdgmime/xdgmimeglob.h
+    3rdpart/xdgmime/xdgmimeicon.h
+    3rdpart/xdgmime/xdgmimeint.h
+    3rdpart/xdgmime/xdgmimemagic.h
+    3rdpart/xdgmime/xdgmimeparent.h 
     OutputGenerator/OutputGeneratorFactory.h
     OutputGenerator/AbstractOutputGenerator.h
     OutputGenerator/AbstractCodeGenerator.h
@@ -195,6 +211,7 @@ if(WIN32)
         ../3rdpart/Registry.cpp
         ../3rdpart/Unzipper.cpp
         ../3rdpart/MemberFunctionCallback.cpp
+        3rdpart/xdgmime/ports/fnmatch.c
         ../Gui/Dialogs/WebViewWindow.cpp
         ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
@@ -251,7 +268,11 @@ endif()
 if(IU_ENABLE_MEGANZ)
     list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
     list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
-endif() 
+endif()
+
+if(WIN32)   
+	include_directories(${CMAKE_SOURCE_DIR}/Core/3rdpart/xdgmime/ports)
+endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 

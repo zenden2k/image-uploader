@@ -112,13 +112,14 @@ bool CUploadSettings::checkFileFormats() {
         std::string utf8Name = W2U(fileName);
         std::string onlyName = IuCoreUtils::ExtractFileName(utf8Name);
         std::string mimeType = IuCoreUtils::GetFileMimeType(utf8Name);
+        std::string extension = IuCoreUtils::ExtractFileExt(utf8Name);
         int64_t size = IuCoreUtils::GetFileSize(utf8Name);
         ServerProfileGroup& profileGroup = IuCommonFunctions::IsImage(fileName) ? sessionImageServer_ : sessionFileServer_;
         for (const auto& serverProfile : profileGroup.getItems()) {
             CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
-            if (uploadEngineData && !uploadEngineData->supportsFileFormat(onlyName, mimeType, size)) {
-                messages += str(IuStringUtils::FormatNoExcept(_("%1%: server %2% doesn't support these kind of file (%3% %4%)\n")) % onlyName
-                    % uploadEngineData->Name % mimeType % IuCoreUtils::FileSizeToString(size));
+            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), mimeType, size)) {
+                messages += str(IuStringUtils::FormatNoExcept(_("%1%: server %2% doesn't support this type of file (%3% %4% with .%5% extension )\n")) % onlyName
+                    % uploadEngineData->Name % mimeType % IuCoreUtils::FileSizeToString(size) % extension);
             }
         }
     }
@@ -388,7 +389,7 @@ bool CUploadSettings::OnNext()
         }
     }
 
-    if (!checkFileFormats()) {
+    if (settings->CheckFileTypesBeforeUpload && !checkFileFormats()) {
         return false;
     }
 

@@ -51,12 +51,12 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
         return true;
     }
     for (const auto& group : this->SupportedFormatGroups) {
-        if (fileSize > group.MaxFileSize) {
+        if (group.MaxFileSize > 0 && fileSize > group.MaxFileSize) {
             continue;
         }
 
         for (const auto& format : group.Formats) {
-            if (fileSize > format.MaxFileSize) {
+            if (format.MaxFileSize > 0 && fileSize > format.MaxFileSize) {
                 continue;
             }
             bool mimeMatches = false;
@@ -68,7 +68,9 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
                         break;
                     }
                 }
-                continue;
+                if (!mimeMatches) {
+                    continue;
+                }
             }
             if (!format.FileNameWildcards.empty()) {
                 for (const auto& wildcard : format.FileNameWildcards) {
@@ -77,7 +79,9 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
                         break;
                     }
                 }
-                continue;
+                if (!fileNameMatches) {
+                    continue;
+                }
             }
             if (mimeMatches || fileNameMatches) {
                 return true;

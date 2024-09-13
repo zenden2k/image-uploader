@@ -38,25 +38,25 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Types="image file" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
+	<Server Name="imgur.com" Type="image" Types="image file" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
 		RegistrationUrl="https://imgur.com/register">
 		<SupportedFormats>
-			<FormatGroup>
+			<FormatGroup MaxFileSize="10485760">
 				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
 				<Format MimeType="image/png">*.png</Format>
 				<Format MimeType="image/gif">*.gif</Format>
 				<Format MimeType="image/webp">*.webp</Format>
 				<Format MimeType="image/tiff">*.tiff</Format>
 			</FormatGroup>
-			<FormatGroup>
+			<FormatGroup MaxFileSize="209715200">
 				<Format MimeType="video/mp4">*.mp4</Format>
 				<Format MimeType="video/webm">*.webm</Format>
-				<Format MimeType="video/mpeg">*.mpeg,*.vob</Format>
-				<Format MimeType="video/x-msvideo">*.avi</Format>
-				<Format MimeType="video/quicktime">*.mov</Format>
-				<Format MimeType="video/x-matroska">*.mkv</Format>
-				<Format MimeType="video/x-flv">*.flv</Format>
-				<Format MimeType="video/x-ms-wmv">*.wmv</Format>
+				<Format MimeType="video/mpeg">*.mpeg,*.vob,*.mpg</Format>
+				<!--<Format MimeType="video/x-msvideo">*.avi</Format>-->
+				<!--<Format MimeType="video/quicktime">*.mov</Format>-->
+				<Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
+				<!--<Format MimeType="video/x-flv">*.flv</Format>-->
+				<Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
 			</FormatGroup>		 
 		</SupportedFormats>
 		<Actions>

@@ -485,6 +485,7 @@
 #define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
 #define IDC_HEIGHTCHECKBOX              1142
 #define IDC_SKIPANIMATEDCHECKBOX        1142
+#define IDC_CHECKFILETYPESCHECKBOX      1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -756,6 +757,8 @@
 #define IDC_SERVERICON                  1341
 #define IDC_QUICKUPLOADLABEL            1342
 #define IDC_GENERATEDCODELABEL          1343
+#define IDC_CHECK6                      1344
+#define IDC_THUMBNAILSFORVIDEOCHECKBOX  1344
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -803,7 +806,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        340
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1344
+#define _APS_NEXT_CONTROL_VALUE         1345
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

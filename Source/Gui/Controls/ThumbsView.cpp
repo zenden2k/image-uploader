@@ -34,6 +34,7 @@
 #include "Gui/Dialogs/MainDlg.h"
 #include "Video/VideoGrabber.h"
 #include "Func/MyUtils.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
@@ -239,6 +240,8 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     {
         return false;
     }
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     std::unique_ptr<Image> bm;
     CString filename;
     if(itemId>=0) 
@@ -252,7 +255,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     int  thumbheight = thumbnailHeight_;
     std::shared_ptr<GdiPlusImage> grabbedFrame;
     bool isImage = img || IuCommonFunctions::IsImage(filename);
-    bool isVideo = IsVideoFile(filename);
+    bool isVideo = settings->ShowPreviewForVideoFiles && IsVideoFile(filename);
     if (isVideo) {
         VideoGrabber grabber(false, false);
         grabber.setVideoEngine(VideoGrabber::veAvcodec);
