@@ -78,6 +78,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
     GuiTools::SetCheck(m_hWnd, IDC_ENABLETOASTS, settings->EnableToastNotifications);
     GuiTools::SetCheck(m_hWnd, IDC_THUMBNAILSFORVIDEOCHECKBOX, settings->ShowPreviewForVideoFiles);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBNAILSFORVIDEOCHECKBOX, WtlGuiSettings::IsFFmpegAvailable());
     return 1;  // Let the system set the focus
 }
 

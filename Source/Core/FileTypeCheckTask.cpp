@@ -8,7 +8,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/Filters/ImageConverterFilter.h"
 
-constexpr int MAX_BAD_ITEMS = 10;
+constexpr int MAX_BAD_ITEMS = std::numeric_limits<int64_t>::max();
 
 FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer)
     :
@@ -22,6 +22,7 @@ FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGro
 BackgroundTaskResult FileTypeCheckTask::doJob()
 {
     message_.clear();
+    errors_.clear();
     auto* settings = ServiceLocator::instance()->basicSettings();
 
     size_t n = fileList_->getFileCount();
@@ -48,9 +49,13 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             sf.fileName = utf8Name;
             sf.mimeType = mimeType;
             
+            
             if (item->isImage()) {
                 ImageConverterFilter::supposedOutputFormat(sf, serverProfile);
-            } 
+            }
+            if (sf.fileSize < 0) {
+                sf.fileSize = size;
+            }
             std::string onlyName = IuCoreUtils::ExtractFileName(sf.fileName);
             std::string extension = IuCoreUtils::ExtractFileExt(sf.fileName);
 
@@ -58,18 +63,23 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             ServerSettingsStruct* sss = settings->getServerSettings(serverProfile, false);
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
            
-            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), sf.mimeType, size, isAuthorized)) {
+            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), sf.mimeType, sf.fileSize, isAuthorized)) {
                 badItems++;
                 if (badItems > MAX_BAD_ITEMS) {
                     message_ += "\n..."; 
                     goto exitLoop;
                 }
-
-                
-                message_ += str(IuStringUtils::FormatNoExcept(extension.empty() ?
+                BadFileFormat bff;
+                bff.uploadProfile = &serverProfile;
+                bff.fileName = onlyName;
+                bff.mimeType = sf.mimeType;
+                bff.fileSize = sf.fileSize;
+                bff.index = i;
+                bff.message = str(IuStringUtils::FormatNoExcept(extension.empty() ?
                     _("\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n")
                     : _("\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' extension)\n"))
                     % onlyName % uploadEngineData->Name % sf.mimeType % IuCoreUtils::FileSizeToString(size) % extension);
+                errors_.push_back(std::move(bff));
                 
             }
         }
@@ -89,4 +99,8 @@ exitLoop:
 
 std::string FileTypeCheckTask::message() const {
     return message_;
+}
+
+std::vector<BadFileFormat>& FileTypeCheckTask::errors() {
+    return errors_;
 }

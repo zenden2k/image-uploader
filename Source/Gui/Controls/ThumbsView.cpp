@@ -43,6 +43,7 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
     maxheight = 0;
     callbackLastCallTime_ = 0;
     ExtendedView = false;
+    isFFmpegAvailable_ = WtlGuiSettings::IsFFmpegAvailable();
 }
 
 CThumbsView::~CThumbsView()

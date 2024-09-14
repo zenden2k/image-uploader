@@ -69,7 +69,7 @@ struct ThumbCreatingParams
 struct SupposedFormat {
     std::string fileName;
     std::string mimeType;
-    int64_t fileSize = 0;
+    int64_t fileSize = -1;
 };
 
 class ImageConverterPrivate;

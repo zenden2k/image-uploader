@@ -42,6 +42,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "StatusDlg.h"
 #include "Core/FileTypeCheckTask.h"
+#include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 
 namespace {
     struct ResizePreset {
@@ -110,18 +111,26 @@ bool CUploadSettings::checkFileFormats() {
 
     auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
     std::string message;
+    std::vector<BadFileFormat> errors;
 
     boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
-        if (taskResult == BackgroundTaskResult::Success && !task->message().empty()) {
+        if (taskResult == BackgroundTaskResult::Success) {
             message = task->message();
+            errors = std::move(task->errors());
         }
     });
     CStatusDlg dlg(task);
     if (dlg.DoModal(m_hWnd) == IDOK) {
-        if (!message.empty()) {
+        if (!errors.empty()) {
+            CFileFormatCheckErrorDlg fileFormatDlg(&mainDlg->FileList, errors);
+            if (fileFormatDlg.DoModal() != IDOK) {
+                return false;
+            }
+        }
+        /* if (!message.empty()) {
             GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);
             return false;
-        }
+        }*/
     } else {
         return false;
     }

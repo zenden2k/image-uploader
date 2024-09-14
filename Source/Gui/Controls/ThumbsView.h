@@ -126,6 +126,7 @@ protected:
     int thumbnailWidth_ = 0, thumbnailHeight_ = 0; // height without label
     int fullThumbHeight_ = 0;
     bool batchAdd_ = false;
+    bool isFFmpegAvailable_;
 };
 
 
