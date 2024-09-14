@@ -8,6 +8,8 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/Filters/ImageConverterFilter.h"
 
+constexpr int MAX_BAD_ITEMS = 10;
+
 FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer)
     :
     fileList_(fileList),
@@ -23,7 +25,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
     auto* settings = ServiceLocator::instance()->basicSettings();
 
     size_t n = fileList_->getFileCount();
-
+    size_t badItems = 0;
     onProgress(this, 0, n, _("Checking file formats..."));
 
     for (size_t i = 0; i < n; i++) {
@@ -57,11 +59,23 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
            
             if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), sf.mimeType, size, isAuthorized)) {
-                message_ += str(IuStringUtils::FormatNoExcept(_("%1%: server %2% doesn't support this type of file (%3% %4% with .%5% extension )\n")) % onlyName
-                    % uploadEngineData->Name % sf.mimeType % IuCoreUtils::FileSizeToString(size) % extension);
+                badItems++;
+                if (badItems > MAX_BAD_ITEMS) {
+                    message_ += "\n..."; 
+                    goto exitLoop;
+                }
+
+                
+                message_ += str(IuStringUtils::FormatNoExcept(extension.empty() ?
+                    _("\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n")
+                    : _("\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' extension)\n"))
+                    % onlyName % uploadEngineData->Name % sf.mimeType % IuCoreUtils::FileSizeToString(size) % extension);
+                
             }
         }
     }
+
+exitLoop:
 
     onProgress(this, n, n, "");
 

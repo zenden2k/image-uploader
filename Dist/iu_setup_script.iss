@@ -95,6 +95,7 @@ Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; 
 Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
+Source: "..\Data\mime.cache"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion  
 Source: "..\Data\Scripts\Utils\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Utils"; Flags: ignoreversion  

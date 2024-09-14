@@ -58,9 +58,11 @@
 				<!--<Format MimeType="video/x-flv">*.flv</Format>-->
 				<Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
 			</FormatGroup>
+			<!-- 
 			<FormatGroup Authorized="1">
 				<Format MimeType="video/quicktime">*.mov</Format>
-			</FormatGroup>		 
+			</FormatGroup>	
+			-->	 
 		</SupportedFormats>
 		<Actions>
 		</Actions>
