@@ -46,7 +46,7 @@ bool CUploadEngineData::hasType(ServerType type) const
     return (TypeMask & type) == type;
 }
 
-bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize) {
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) {
     if (this->SupportedFormatGroups.empty()) {
         return true;
     }
@@ -54,7 +54,9 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
         if (group.MaxFileSize > 0 && fileSize > group.MaxFileSize) {
             continue;
         }
-
+        if (group.Authorized && !authorized) {
+            continue;
+        }
         for (const auto& format : group.Formats) {
             if (format.MaxFileSize > 0 && fileSize > format.MaxFileSize) {
                 continue;

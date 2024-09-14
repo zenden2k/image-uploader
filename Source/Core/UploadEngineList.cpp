@@ -302,6 +302,7 @@ void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, 
     node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
         if (groupNode.Name() == "FormatGroup") {
             FileFormatGroup group;
+            group.Authorized = groupNode.AttributeBool("Authorized");
             group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
 
             groupNode.each([&](int k, SimpleXmlNode& formatNode) -> bool {

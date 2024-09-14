@@ -151,6 +151,7 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
+    FileList.cpp
     ../ServerListTool/ServersCheckerDlg.cpp 
     ../ServerListTool/ServersChecker.cpp
     ../ServerListTool/ServersCheckerModel.cpp
@@ -213,7 +214,6 @@ set(HEADER_LIST
     GuiTools.h
     IconBitmapUtils.h
     WizardCommon.h
-
     Dialogs/AboutDlg.h
     Dialogs/AddDirectoryServerDialog.h
     Dialogs/AddFtpServerDialog.h
@@ -319,6 +319,7 @@ set(HEADER_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.h
     ../ImageEditor/Helpers/FontEnumerator.h
     UploadListModel.h
+    FileList.h
     ../ServerListTool/ServersChecker.h
     ../ServerListTool/ServersCheckerModel.h
     ../ServerListTool/Helpers.h

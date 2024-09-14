@@ -66,6 +66,12 @@ struct ThumbCreatingParams
     }
 };
 
+struct SupposedFormat {
+    std::string fileName;
+    std::string mimeType;
+    int64_t fileSize = 0;
+};
+
 class ImageConverterPrivate;
 
 class ImageConverter
@@ -82,6 +88,7 @@ class ImageConverter
         void setImageConvertingParams(const ImageConvertingParams& params);
         void setThumbCreatingParams(const ThumbCreatingParams& params);
         void setThumbnail(Thumbnail* thumb);
+        bool supposedOutputFormat(SupposedFormat& fileFormat);
         std::unique_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
     protected:
         ImageConverterPrivate* d_ptr;

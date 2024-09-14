@@ -57,6 +57,9 @@
 				<Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
 				<!--<Format MimeType="video/x-flv">*.flv</Format>-->
 				<Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
+			</FormatGroup>
+			<FormatGroup Authorized="1">
+				<Format MimeType="video/quicktime">*.mov</Format>
 			</FormatGroup>		 
 		</SupportedFormats>
 		<Actions>
@@ -83,6 +86,16 @@
 		<Result ImageUrlTemplate="stub" />
 	</Server>
 	<Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/avif">*.avif</Format>
+			</FormatGroup>	 
+		</SupportedFormats>
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

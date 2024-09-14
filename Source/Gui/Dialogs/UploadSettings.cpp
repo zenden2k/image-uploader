@@ -40,6 +40,8 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/WinServerIconCache.h"
 #include "Func/IuCommonFunctions.h"
+#include "StatusDlg.h"
+#include "Core/FileTypeCheckTask.h"
 
 namespace {
     struct ResizePreset {
@@ -105,28 +107,25 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 
 bool CUploadSettings::checkFileFormats() {
     auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
-    int n = mainDlg->FileList.GetCount();
-    std::string messages;
-    for (int i = 0; i < n; i++) {
-        CString fileName = mainDlg->FileList[i].FileName;
-        std::string utf8Name = W2U(fileName);
-        std::string onlyName = IuCoreUtils::ExtractFileName(utf8Name);
-        std::string mimeType = IuCoreUtils::GetFileMimeType(utf8Name);
-        std::string extension = IuCoreUtils::ExtractFileExt(utf8Name);
-        int64_t size = IuCoreUtils::GetFileSize(utf8Name);
-        ServerProfileGroup& profileGroup = IuCommonFunctions::IsImage(fileName) ? sessionImageServer_ : sessionFileServer_;
-        for (const auto& serverProfile : profileGroup.getItems()) {
-            CUploadEngineData* uploadEngineData = serverProfile.uploadEngineData();
-            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), mimeType, size)) {
-                messages += str(IuStringUtils::FormatNoExcept(_("%1%: server %2% doesn't support this type of file (%3% %4% with .%5% extension )\n")) % onlyName
-                    % uploadEngineData->Name % mimeType % IuCoreUtils::FileSizeToString(size) % extension);
-            }
+
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
+    std::string message;
+
+    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
+        if (taskResult == BackgroundTaskResult::Success && !task->message().empty()) {
+            message = task->message();
         }
-    }
-    if (!messages.empty()) {
-        GuiTools::LocalizedMessageBox(m_hWnd, U2W(messages), TR("Error"), MB_ICONERROR);
+    });
+    CStatusDlg dlg(task);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (!message.empty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);
+            return false;
+        }
+    } else {
         return false;
     }
+    
     return true;
 }
 
@@ -389,9 +388,7 @@ bool CUploadSettings::OnNext()
         }
     }
 
-    if (settings->CheckFileTypesBeforeUpload && !checkFileFormats()) {
-        return false;
-    }
+
 
     ImageUploadParams& imageUploadParams = sessionImageServer.getImageUploadParamsRef();
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
@@ -418,6 +415,8 @@ bool CUploadSettings::OnNext()
         thumb.ResizeMode = ThumbCreatingParams::trByWidth;
     }
 
+    
+
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
     {
@@ -434,7 +433,12 @@ bool CUploadSettings::OnNext()
     if ( settings->RememberFileServer ) {
         settings->fileServer = sessionFileServer_;
     }
+
+    if (settings->CheckFileTypesBeforeUpload && !checkFileFormats()) {
+        return false;
+    }
     SaveCurrentProfile();
+
     return true;
 }
 

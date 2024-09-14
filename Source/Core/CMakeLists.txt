@@ -93,6 +93,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/htmlentities.cpp
     Video/VideoUtils.cpp
     Images/AbstractImage.cpp
+    FileTypeCheckTask.cpp
 )
 
 set(HEADER_LIST Network/NetworkClient.h
@@ -191,6 +192,8 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/htmlentities.h
     Video/VideoUtils.h
     i18n/Translator.h
+    FileTypeCheckTask.h
+    IFileList.h
 )
     
 if(WIN32)

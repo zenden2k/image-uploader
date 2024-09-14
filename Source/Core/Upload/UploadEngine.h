@@ -125,7 +125,8 @@ struct FileFormat {
 
 struct FileFormatGroup {
     std::vector<FileFormat> Formats;
-    int64_t MaxFileSize;
+    int64_t MaxFileSize = 0;
+    bool Authorized = false;
 };
 
 /**
@@ -261,7 +262,7 @@ class CUploadEngineData
         bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
-        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize);
+        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false);
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);

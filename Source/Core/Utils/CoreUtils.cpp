@@ -518,6 +518,7 @@ std::string GetFileMimeType(const std::string& fileName)
     }
     char buffer[256] {};
     size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
+    fclose(f);
     int resultPrio = 0;
    
     auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);
@@ -528,11 +529,11 @@ std::string GetFileMimeType(const std::string& fileName)
     std::string result = mime;
     // auto* mime = xdg_mime_get_mime_type_for_file(fname, &st);
 
-    if (result == "image/x-png") {
+    /* if (result == "image/x-png") {
         result = "image/png";
     } else if (result == "image/pjpeg") {
         result = "image/jpeg";
-    } /*else if (result == "application/octet-stream") {
+    } else if (result == "application/octet-stream") {
         if (byBuff[0] == 'R' && byBuff[1] == 'I' && byBuff[2] == 'F' && byBuff[3] == 'F'
             && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B' && byBuff[11] == 'P') {
             result = "image/webp";
@@ -540,6 +541,12 @@ std::string GetFileMimeType(const std::string& fileName)
     }*/
 
     return result;
+}
+
+std::string GetFileMimeTypeByName(const std::string& fileName) {
+    struct stat st;
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    return mime;
 }
 
 } // end of namespace IuCoreUtils
