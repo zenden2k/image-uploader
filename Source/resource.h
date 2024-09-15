@@ -407,6 +407,7 @@
 #define IDC_LOGOUT                      1080
 #define IDC_BROWSEPRIVATEKEYBUTTON      1080
 #define IDC_OPENSYSTEMCONNECTION        1080
+#define IDC_IGNOREALL                   1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
@@ -616,6 +617,7 @@
 #define IDC_TESTCONNECTIONBTN           1263
 #define IDC_ADDBUTTON                   1263
 #define IDC_CHOOSESERVERS               1263
+#define IDC_IGNORE                      1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264

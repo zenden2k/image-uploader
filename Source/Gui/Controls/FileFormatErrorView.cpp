@@ -29,8 +29,8 @@ void CFileFormatErrorView::Init() {
     //int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 
     SetColumnWidth(0, MulDiv(25, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(1, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(2, MulDiv(120, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(1, MulDiv(160, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(2, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
     SetColumnWidth(3, MulDiv(80, dpiX, USER_DEFAULT_SCREEN_DPI));
     SetColumnWidth(4, MulDiv(90, dpiX, USER_DEFAULT_SCREEN_DPI));
     SetColumnWidth(5, MulDiv(170, dpiX, USER_DEFAULT_SCREEN_DPI));

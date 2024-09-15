@@ -47,7 +47,7 @@ uint32_t FileFormatCheckErrorModel::getItemColor(int row) const {
         case FileFormatModelData::RowStatus::Skipped: 
             return RGB(160, 160, 160);
         case FileFormatModelData::RowStatus::Ignore:
-            return RGB(255, 242, 0);
+            return RGB(29, 194, 74);
         case FileFormatModelData::RowStatus::Error:
             return RGB(230, 0, 0);
 
@@ -83,4 +83,14 @@ void FileFormatCheckErrorModel::resetData() {
     for (auto& it : items_) {
         it->clearInfo();
     }
+}
+
+size_t FileFormatCheckErrorModel::hasItemsWithStatus(FileFormatModelData::RowStatus status) const {
+    size_t count = 0;
+    for (auto& it : items_) {
+        if (it->status() == status) {
+            ++count;
+        }
+    }
+    return count;
 }

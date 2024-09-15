@@ -12,13 +12,13 @@
 #include "Core/Upload/UploadEngine.h"
 //#include "Gui/Dialogs/WizardDlg.h"
 
-class UploadManager;
-class UploadEngineManager;
-class NetworkClient;
 class WtlGuiSettings;
 
-class CFileFormatCheckErrorDlg :
-    public CDialogImpl<CFileFormatCheckErrorDlg>, public CDialogResize<CFileFormatCheckErrorDlg>, public CWinDataExchange<CFileFormatCheckErrorDlg> {
+struct FileFormatCheckResult {
+    std::vector<size_t> skippedFileIndexes;
+};
+
+class CFileFormatCheckErrorDlg : public CDialogImpl<CFileFormatCheckErrorDlg>, public CDialogResize<CFileFormatCheckErrorDlg>, public CWinDataExchange<CFileFormatCheckErrorDlg> {
 public:
     enum { IDD = IDD_FILEFORMATERRORDLG };
      enum {
@@ -32,8 +32,11 @@ public:
         COMMAND_ID_HANDLER(IDOK, OnOK)
         COMMAND_ID_HANDLER(IDC_BUTTONSKIP, OnSkip)
         COMMAND_ID_HANDLER(IDC_BUTTONSKIPALL, OnSkipAll)
+        COMMAND_ID_HANDLER(IDC_IGNORE, OnIgnore)
+        COMMAND_ID_HANDLER(IDC_IGNOREALL, OnIgnoreAll)
         COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
         COMMAND_ID_HANDLER(IDC_ERRORLOGBUTTON, OnErrorLogButtonClicked)
+        NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnListViewItemChanged)
         CHAIN_MSG_MAP(CDialogResize<CFileFormatCheckErrorDlg>)
         REFLECT_NOTIFICATIONS()   
     END_MSG_MAP()
@@ -43,7 +46,8 @@ public:
         DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIP, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDC_BUTTONSKIPALL, DLSZ_MOVE_Y)
-        DLGRESIZE_CONTROL(IDC_ERRORLOGBUTTON, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_IGNORE, DLSZ_MOVE_Y)
+        DLGRESIZE_CONTROL(IDC_IGNOREALL, DLSZ_MOVE_Y)
         DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
     END_DLGRESIZE_MAP()
 
@@ -66,7 +70,13 @@ public:
     
     LRESULT OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnIgnore(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnIgnoreAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnListViewItemChanged(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
+    const FileFormatCheckResult& result() const;
+
 private:
     int contextMenuItemId;
     CString sourceFileHash_;
@@ -78,9 +88,12 @@ private:
 
     WtlGuiSettings* settings_;
     CProgressRingControl loadingAnimation_;
+    FileFormatCheckResult result_;
     /**
      * @throws ValidationException
      */
     void validateSettings();
+
+    void enableButtons();
 };
 

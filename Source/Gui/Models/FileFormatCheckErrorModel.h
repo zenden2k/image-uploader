@@ -74,6 +74,8 @@ public:
     FileFormatModelData* getDataByIndex(size_t row);
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void resetData();
+    size_t hasItemsWithStatus(FileFormatModelData::RowStatus status) const;
+
 protected:
     IFileList* fileList_;
     std::vector<std::unique_ptr<FileFormatModelData>> items_;

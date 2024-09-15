@@ -24,8 +24,8 @@ LRESULT CFileFormatCheckErrorDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     TRC(IDC_BUTTONSKIP, "Skip selected");
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "Continue");
-    TRC(IDC_ERRORLOGBUTTON, "Show error log");
-
+    TRC(IDC_IGNORE, "Ignore");
+    TRC(IDC_IGNOREALL, "Ignore all");
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
@@ -41,6 +41,7 @@ LRESULT CFileFormatCheckErrorDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     listView_.Init();
 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
+    enableButtons();
     return TRUE;
 }
 
@@ -104,15 +105,38 @@ void CFileFormatCheckErrorDlg::validateSettings() {
 
 }
 
+void CFileFormatCheckErrorDlg::enableButtons(){
+    bool enable = listView_.GetSelectedCount() != 0;
+    GuiTools::EnableDialogItem(m_hWnd, IDC_BUTTONSKIP, enable);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_IGNORE, enable);
+}
+
 LRESULT CFileFormatCheckErrorDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    try {
+    /* try {
         validateSettings();
     } catch (const ValidationException& ex) {
         GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, APPNAME, MB_ICONERROR);
         return 0;
+    }*/
+    size_t errorCount = model_.hasItemsWithStatus(FileFormatModelData::RowStatus::Error);
+    if (errorCount) {
+        CString msg;
+        msg.Format(TR("%u errors not fixed."), errorCount), 
+        GuiTools::LocalizedMessageBox(m_hWnd, msg, APPNAME, MB_ICONERROR);
+        return 0;
     }
-    
+
+    for (size_t i = 0; i < model_.getCount(); i++) {
+        auto* row = model_.getDataByIndex(i);
+        bool isSkipped = row->status() == FileFormatModelData::RowStatus::Skipped;
+
+        row->file->setSkipped(isSkipped);
+        if (isSkipped) {
+            result_.skippedFileIndexes.push_back(i);
+        }
+    }
+    EndDialog(wID);
     return 0;
 }
 
@@ -131,11 +155,7 @@ LRESULT CFileFormatCheckErrorDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*
         if (nIndex == -1) break;
         auto* sd = model_.getDataByIndex(nIndex);
         if (sd) {
-            if (sd->status() == FileFormatModelData::RowStatus::Skipped) {
-                sd->setStatus(FileFormatModelData::RowStatus::Error);
-            } else {
-                sd->setStatus(FileFormatModelData::RowStatus::Skipped);
-            }
+            sd->setStatus(FileFormatModelData::RowStatus::Skipped);
             model_.notifyRowChanged(nIndex);
         }
 
@@ -151,17 +171,11 @@ LRESULT CFileFormatCheckErrorDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, 
     return 0;
 }
 
-LRESULT CFileFormatCheckErrorDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CFileFormatCheckErrorDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     for (int i = 0; i < model_.getCount(); i++) {
         auto* sd = model_.getDataByIndex(i);
         if (sd) {
-            if (sd->status() == FileFormatModelData::RowStatus::Skipped) {
-                sd->setStatus(FileFormatModelData::RowStatus::Error);
-            } else {
-                sd->setStatus(FileFormatModelData::RowStatus::Skipped);
-            }
-
+            sd->setStatus(FileFormatModelData::RowStatus::Skipped);
             model_.notifyRowChanged(i);
         }
     }
@@ -169,6 +183,47 @@ LRESULT CFileFormatCheckErrorDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND
     listView_.Invalidate();
     return 0;
 }
+
+LRESULT CFileFormatCheckErrorDlg::OnIgnore(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int nIndex = -1;
+    do {
+        nIndex = listView_.GetNextItem(nIndex, LVNI_SELECTED);
+        if (nIndex == -1)
+            break;
+        auto* sd = model_.getDataByIndex(nIndex);
+        if (sd) {
+            sd->setStatus(FileFormatModelData::RowStatus::Ignore);
+            model_.notifyRowChanged(nIndex);
+        }
+
+    } while (true);
+    return 0;
+}
+
+LRESULT CFileFormatCheckErrorDlg::OnIgnoreAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    for (int i = 0; i < model_.getCount(); i++) {
+        auto* sd = model_.getDataByIndex(i);
+        if (sd) {
+            sd->setStatus(FileFormatModelData::RowStatus::Ignore);
+            model_.notifyRowChanged(i);
+        }
+    }
+
+    listView_.Invalidate();
+    return 0;
+}
+
+LRESULT CFileFormatCheckErrorDlg::OnListViewItemChanged(int idCtrl, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
+    if (idCtrl == IDC_FILELIST) {
+        enableButtons();
+    }
+    return 0;
+}
+
+const FileFormatCheckResult& CFileFormatCheckErrorDlg::result() const {
+    return result_;
+}
+
 /*
 LRESULT CFileFormatCheckErrorDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
     ServerData* sd = model_.getDataByIndex(contextMenuItemId);

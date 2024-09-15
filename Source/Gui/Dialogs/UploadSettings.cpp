@@ -397,8 +397,6 @@ bool CUploadSettings::OnNext()
         }
     }
 
-
-
     ImageUploadParams& imageUploadParams = sessionImageServer.getImageUploadParamsRef();
     imageUploadParams.ProcessImages = SendDlgItemMessage(IDC_KEEPASIS, BM_GETCHECK, 0) == BST_CHECKED;
     imageUploadParams.CreateThumbs = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
@@ -462,6 +460,14 @@ bool CUploadSettings::OnShow()
         sessionFileServer_ = WizardDlg->getSessionFileServer();
         WizardDlg->setServersChanged(false);
         ShowParams();
+    }
+
+    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+
+    // Reset skip flag, which can be set when checkFileFormats on file list is called
+    // CAtlArray doesn't have begin() and end() methods.
+    for (size_t i = 0; i < mainDlg->FileList.GetCount(); i++) {
+        mainDlg->FileList[i].setSkipped(false);
     }
 
     CString profileName = sessionImageServer_.isEmpty() ? _T(""): U2W(sessionImageServer_.getByIndex(0).getImageUploadParamsRef().ImageProfileName);

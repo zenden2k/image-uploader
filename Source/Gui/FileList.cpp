@@ -23,6 +23,14 @@ bool CFileListItem::isImage() const
     return IuCommonFunctions::IsImage(FileName);
 }
 
+void CFileListItem::setSkipped(bool enable) {
+    skipped_ = enable;
+}
+
+bool CFileListItem::isSkipped() const {
+    return skipped_;
+}
+
 size_t CFileList::getFileCount() const
 {
     return GetCount();

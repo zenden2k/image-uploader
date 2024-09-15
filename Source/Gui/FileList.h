@@ -12,9 +12,12 @@ public:
     std::string getMimeType() const override;
     void setMimeType(const std::string& mimeType) override;
     bool isImage() const override;
+    void setSkipped(bool enable) override;
+    bool isSkipped() const override;
 
 private:
     std::string mimeType_;
+    bool skipped_ = false;
 };
 
 class CFileList : public CAtlArray<CFileListItem>, public IFileList {

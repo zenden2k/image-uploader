@@ -7,6 +7,8 @@ public:
     virtual std::string getMimeType() const = 0;
     virtual void setMimeType(const std::string& mimeType) = 0;
     virtual bool isImage() const = 0;
+    virtual void setSkipped(bool enable) = 0;
+    virtual bool isSkipped() const = 0;
 };
 
 class IFileList {
