@@ -13,7 +13,6 @@ CFileFormatCheckErrorDlg::CFileFormatCheckErrorDlg(IFileList* items, const std::
     : model_(items, errors)
     , listView_(&model_)
 {
-
     contextMenuItemId = -1;
 }
 
@@ -37,6 +36,8 @@ LRESULT CFileFormatCheckErrorDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     iconSmall_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
+
+    labelBoldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILESCANNOTBEUPLOADED));
     
     listView_.Init();
 
@@ -102,7 +103,6 @@ void CFileFormatCheckErrorDlg::validateSettings() {
     /* if (!WinUtils::FileExists(fileName)) {
         throw ValidationException(CString(_T("Test file not found.")) + _T("\r\n") + fileName);
     }*/
-
 }
 
 void CFileFormatCheckErrorDlg::enableButtons(){
@@ -111,32 +111,27 @@ void CFileFormatCheckErrorDlg::enableButtons(){
     GuiTools::EnableDialogItem(m_hWnd, IDC_IGNORE, enable);
 }
 
-LRESULT CFileFormatCheckErrorDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    /* try {
-        validateSettings();
-    } catch (const ValidationException& ex) {
-        GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, APPNAME, MB_ICONERROR);
-        return 0;
-    }*/
+LRESULT CFileFormatCheckErrorDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
     size_t errorCount = model_.hasItemsWithStatus(FileFormatModelData::RowStatus::Error);
     if (errorCount) {
-        CString msg;
-        msg.Format(TR("%u errors not fixed."), errorCount), 
-        GuiTools::LocalizedMessageBox(m_hWnd, msg, APPNAME, MB_ICONERROR);
+        std::string msg = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%u error has not been fixed.", "%u errors have not been fixed.", errorCount)) % errorCount);
+        GuiTools::LocalizedMessageBox(m_hWnd, IuCoreUtils::Utf8ToWstring(msg).c_str(), APPNAME, MB_ICONERROR);
         return 0;
     }
 
+    size_t skippedCount = 0;
     for (size_t i = 0; i < model_.getCount(); i++) {
         auto* row = model_.getDataByIndex(i);
         bool isSkipped = row->status() == FileFormatModelData::RowStatus::Skipped;
 
         row->file->setSkipped(isSkipped);
         if (isSkipped) {
+            skippedCount++;
             result_.skippedFileIndexes.push_back(i);
         }
     }
-    EndDialog(wID);
+
+    EndDialog((model_.getCount() - skippedCount) ? IDOK : IDCANCEL);
     return 0;
 }
 

@@ -89,6 +89,7 @@ private:
     WtlGuiSettings* settings_;
     CProgressRingControl loadingAnimation_;
     FileFormatCheckResult result_;
+    CFont labelBoldFont_;
     /**
      * @throws ValidationException
      */
