@@ -11,19 +11,18 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#define HAVE_MMAP 1
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <fcntl.h>
-//#include <unistd.h>
 #include <errno.h>
 #include <fnmatch.h>
 #include <assert.h>
 
 #ifdef _WIN32
-    #define HAVE_MMAP 1
     #include "ports/mman.h"
 #elif defined(HAVE_MMAP)
     #include <sys/mman.h>
@@ -32,6 +31,7 @@
 #ifdef _WIN32
     #include <winsock.h>
 #else
+    #include <unistd.h>
     #include <netinet/in.h> /* for ntohl/ntohs */
 #endif
 
@@ -819,7 +819,7 @@ _xdg_mime_cache_get_mime_type_for_file (const char  *file_name,
 
   if (!statbuf)
     {
-      if (stat (file_name, &buf) != 0)
+      if (XDG_STAT (file_name, &buf) != 0)
 	return XDG_MIME_TYPE_UNKNOWN;
 
       statbuf = &buf;
@@ -839,7 +839,7 @@ _xdg_mime_cache_get_mime_type_for_file (const char  *file_name,
   if (data == NULL)
     return XDG_MIME_TYPE_UNKNOWN;
         
-  file = fopen (file_name, "r");
+  file = XDG_FOPEN (file_name, "r");
   if (file == NULL)
     {
       free (data);

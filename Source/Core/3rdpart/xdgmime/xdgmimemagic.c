@@ -804,7 +804,7 @@ _xdg_mime_magic_read_from_file (XdgMimeMagic *mime_magic,
   FILE *magic_file;
   char header[12];
 
-  magic_file = fopen (file_name, "r");
+  magic_file = XDG_FOPEN(file_name, "r");
 
   if (magic_file == NULL)
     return;

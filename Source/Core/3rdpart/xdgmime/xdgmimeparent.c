@@ -115,7 +115,7 @@ _xdg_mime_parent_read_from_file (XdgParentList *list,
   int i, alloc;
   XdgMimeParents *entry;
 
-  file = fopen (file_name, "r");
+  file = XDG_FOPEN(file_name, "r");
 
   if (file == NULL)
     return;

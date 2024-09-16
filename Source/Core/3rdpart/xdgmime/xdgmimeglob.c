@@ -599,7 +599,7 @@ _xdg_mime_glob_read_from_file (XdgGlobHash *glob_hash,
   char line[255];
   char *p;
 
-  glob_file = fopen (file_name, "r");
+  glob_file = XDG_FOPEN(file_name, "r");
 
   if (glob_file == NULL)
     return;

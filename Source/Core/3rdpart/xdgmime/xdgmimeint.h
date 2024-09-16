@@ -59,4 +59,13 @@ void           _xdg_reverse_ucs4 (xdg_unichar_t *source, int len);
 const char    *_xdg_get_base_name (const char    *file_name);
 const char    *_xdg_binary_or_text_fallback(const void *data, size_t len);
 
+#if defined(_WIN32)
+    #include "Core/Utils/IOUtf8_win.h"
+    #define XDG_STAT stat_utf8
+    #define XDG_FOPEN fopen_utf8
+#else
+    #define XDG_STAT stat
+    #define XDG_FOPEN fopen
+#endif
+
 #endif /* __XDG_MIME_INT_H__ */

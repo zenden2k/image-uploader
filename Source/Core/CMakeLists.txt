@@ -200,6 +200,7 @@ if(WIN32)
     list(APPEND SRC_LIST 
         Utils/Utils_win.cpp
         Utils/CryptoUtils_win.cpp
+        Utils/IOUtf8_win.cpp
         DefaultProxyProvider.cpp 
         3rdpart/CodePages.cpp 
         Scripting/API/HtmlDocument.cpp
@@ -261,6 +262,7 @@ if(WIN32)
         Images/ImageLoader.h
         Images/ColorQuantizer.h
         Images/OctreeColorQuantizer.h
+        Utils/IOUtf8_win.h
     )
 else()
     list(APPEND SRC_LIST  

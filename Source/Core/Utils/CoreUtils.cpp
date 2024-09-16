@@ -511,23 +511,27 @@ void OnThreadExit(void (*func)()) {
 
 std::string GetFileMimeType(const std::string& fileName)
 {
-    std::string DefaultMimeType = "application/octet-stream";
-    FILE* f = FopenUtf8(fileName.c_str(), "rb");
+    const std::string DefaultMimeType = "application/octet-stream";
+    /* FILE* f = FopenUtf8(fileName.c_str(), "rb");
     if (!f) {
         return DefaultMimeType;
     }
     char buffer[256] {};
     size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
     fclose(f);
-    int resultPrio = 0;
+    int resultPrio = 0;*/
    
-    auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);
+    /*auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);*/
     struct stat st;
+   
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
     if (!mime) {
         return DefaultMimeType;
     }
     std::string result = mime;
-    // auto* mime = xdg_mime_get_mime_type_for_file(fname, &st);
+    /* if (result == DefaultMimeType) {
+        return GetFileMimeTypeByName(fileName)
+    }*/
 
     /* if (result == "image/x-png") {
         result = "image/png";

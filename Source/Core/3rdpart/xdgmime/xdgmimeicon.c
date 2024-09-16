@@ -107,7 +107,7 @@ _xdg_mime_icon_read_from_file (XdgIconList *list,
   char line[255];
   int alloc;
 
-  file = fopen (file_name, "r");
+  file = XDG_FOPEN(file_name, "r");
 
   if (file == NULL)
     return;

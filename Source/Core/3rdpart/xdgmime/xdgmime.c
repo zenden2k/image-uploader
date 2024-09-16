@@ -52,6 +52,7 @@ int gettimeofday(struct timeval* tp, struct timezone* tzp)
 }
 #else
 #include <unistd.h>
+#include <sys/time.h>
 #endif
 
 #include <assert.h>
@@ -163,7 +164,7 @@ xdg_mime_init_from_directory (const char *directory,
 
   file_name = malloc (strlen (directory) + strlen ("/mime.cache") + 1);
   strcpy (file_name, directory); strcat (file_name, "/mime.cache");
-  if (stat (file_name, &st) == 0)
+  if (XDG_STAT (file_name, &st) == 0)
     {
       XdgMimeCache *cache = _xdg_mime_cache_new_from_file (file_name);
 
@@ -183,7 +184,7 @@ xdg_mime_init_from_directory (const char *directory,
 
   file_name = malloc (strlen (directory) + strlen ("/globs2") + 1);
   strcpy (file_name, directory); strcat (file_name, "/globs2");
-  if (stat (file_name, &st) == 0)
+  if (XDG_STAT (file_name, &st) == 0)
     {
       _xdg_mime_glob_read_from_file (global_hash, file_name, TRUE);
       xdg_dir_time_list_add (file_name, st.st_mtime);
@@ -193,7 +194,7 @@ xdg_mime_init_from_directory (const char *directory,
       free (file_name);
       file_name = malloc (strlen (directory) + strlen ("/globs") + 1);
       strcpy (file_name, directory); strcat (file_name, "/globs");
-      if (stat (file_name, &st) == 0)
+      if (XDG_STAT (file_name, &st) == 0)
         {
           _xdg_mime_glob_read_from_file (global_hash, file_name, FALSE);
           xdg_dir_time_list_add (file_name, st.st_mtime);
@@ -206,7 +207,7 @@ xdg_mime_init_from_directory (const char *directory,
 
   file_name = malloc (strlen (directory) + strlen ("/magic") + 1);
   strcpy (file_name, directory); strcat (file_name, "/magic");
-  if (stat (file_name, &st) == 0)
+  if (XDG_STAT (file_name, &st) == 0)
     {
       _xdg_mime_magic_read_from_file (global_magic, file_name);
       xdg_dir_time_list_add (file_name, st.st_mtime);
@@ -323,7 +324,7 @@ xdg_init_dirs (void)
       ptr = end_ptr;
     }
 
-   xdg_dirs[current_dir++] = strdup("./");
+   //xdg_dirs[current_dir++] = strdup("./");
   /* NULL terminator */
   xdg_dirs[current_dir] = NULL;
 
@@ -390,7 +391,7 @@ xdg_check_file (const char *file_path,
   struct stat st;
 
   /* If the file exists */
-  if (stat (file_path, &st) == 0)
+  if (XDG_STAT (file_path, &st) == 0)
     {
       XdgDirTimeList *list;
 
@@ -603,7 +604,7 @@ xdg_mime_get_mime_type_for_file (const char  *file_name,
 
   if (!statbuf)
     {
-      if (stat (file_name, &buf) != 0)
+      if (XDG_STAT (file_name, &buf) != 0)
 	return XDG_MIME_TYPE_UNKNOWN;
 
       statbuf = &buf;
@@ -620,7 +621,7 @@ xdg_mime_get_mime_type_for_file (const char  *file_name,
   if (data == NULL)
     return XDG_MIME_TYPE_UNKNOWN;
         
-  file = fopen (file_name, "r");
+  file = XDG_FOPEN (file_name, "r");
   if (file == NULL)
     {
       free (data);
