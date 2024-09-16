@@ -143,3 +143,21 @@ TEST_F(UploadEngineListTest, addServer)
 
     EXPECT_EQ(1, list.count());
 }
+
+TEST_F(UploadEngineListTest, formats)
+{
+    CUploadEngineList list;
+    ServerSettingsMap settings;
+    bool res = list.loadFromFile(fileName, settings);
+    EXPECT_TRUE(res);
+    CUploadEngineData* engineData = list.byIndex(2);
+
+    engineData = list.byName("radikal.ru");
+    ASSERT_TRUE(engineData != nullptr);
+    EXPECT_EQ("radikal.ru", engineData->Name);
+
+    ASSERT_EQ(2, engineData->SupportedFormatGroups.size());
+    const auto& format = engineData->SupportedFormatGroups[0].Formats[0];
+    EXPECT_EQ("image/jpeg", format.MimeTypes[0]);
+    EXPECT_EQ(3000000, format.MaxFileSize);
+}

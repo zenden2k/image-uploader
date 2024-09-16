@@ -53,7 +53,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     auto leftImage = createLeftImage();
-    LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
+    LeftImage.loadImage(0, std::move(leftImage), 1, false, RGB(255,255,255), true);
 
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);

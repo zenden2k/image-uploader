@@ -117,6 +117,18 @@ struct UploadAction
     }
 };
 
+struct FileFormat {
+    std::vector<std::string> MimeTypes;
+    std::vector<std::string> FileNameWildcards;
+    int64_t MaxFileSize;
+};
+
+struct FileFormatGroup {
+    std::vector<FileFormat> Formats;
+    int64_t MaxFileSize = 0;
+    bool Authorized = false;
+};
+
 /**
 CFolderItem class
 */
@@ -240,6 +252,7 @@ class CUploadEngineData
         std::string CodedPassword;
         std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;
         std::vector<UploadAction> Actions;
+        std::vector<FileFormatGroup> SupportedFormatGroups;
         std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;
@@ -249,6 +262,7 @@ class CUploadEngineData
         bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
+        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false);
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);
@@ -275,7 +289,7 @@ public:
 
     std::string ServerFileName;
     std::string temp_;
-    ScriptAPI::UploadTaskWrapper task_;
+    std::shared_ptr<UploadTask> task_;
 
     UploadParams() {
         apiVersion = 0;
@@ -349,7 +363,9 @@ public:
     }
 
     std::string getServerFileName() const { return ServerFileName; }
-    ScriptAPI::UploadTaskWrapper getTask() { return task_; }
+    ScriptAPI::UploadTaskWrapper getTask();
+    ScriptAPI::FileUploadTaskWrapper getFileTask();
+    ScriptAPI::UrlShorteningTaskWrapper getUrlShorteningTask();
 };
 
 class CUploadEngineListBase
@@ -366,7 +382,7 @@ public:
     int getRandomFileServer();
     int getUploadEngineIndex(const std::string& Name) const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
-    std::vector< std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
+    std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;

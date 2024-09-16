@@ -46,6 +46,7 @@
 #include "Core/Upload/Filters/UrlShorteningFilter.h"
 #include "Core/Upload/Filters/ImageSearchFilter.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Gui/Helpers/LangHelper.h"
 
 #ifndef NDEBUG
@@ -129,6 +130,17 @@ public:
     }
 
     void initServices() {
+        CString dataFolder = settings_.DataFolder;
+        if (dataFolder.Right(1) == "\\") {
+            dataFolder.Truncate(dataFolder.GetLength() - 1);
+        }
+        std::string dir = WinUtils::wstostr(dataFolder.GetString(), CP_ACP);
+        char* cacheDir = strdup(dir.c_str());
+        const char* dirs[2]
+            = { cacheDir ,  nullptr};
+        xdg_mime_set_dirs(dirs);
+        free(cacheDir);
+
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
         serviceLocator->setTaskDispatcher(taskDispatcher_.get());

@@ -22,18 +22,54 @@
            Создайте там XML файл с такой же структурой, как у текущего файла.
     -->
 	<Server Name="ImageBan.ru" Authorize="2" Plugin="imageban" WebsiteUrl="https://imageban.ru" RegistrationUrl="https://imageban.ru/u/register">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+			</FormatGroup>
+			<FormatGroup>
+				<Format MimeType="video/webm">*.webm</Format>
+			</FormatGroup>
+		</SupportedFormats>
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="imgur.com" MaxFileSize="10485760" Type="image" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
+	<Server Name="imgur.com" Type="image" Types="image file" Authorize="1" Plugin="imgur" NeedPassword="0" WebsiteUrl="https://imgur.com" 
 		RegistrationUrl="https://imgur.com/register">
+		<SupportedFormats>
+			<FormatGroup MaxFileSize="10485760">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="image/tiff">*.tiff</Format>
+			</FormatGroup>
+			<FormatGroup MaxFileSize="209715200">
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+				<Format MimeType="video/mpeg">*.mpeg,*.vob,*.mpg</Format>
+				<!--<Format MimeType="video/x-msvideo">*.avi</Format>-->
+				<!--<Format MimeType="video/quicktime">*.mov</Format>-->
+				<Format MimeType="video/x-matroska,application/x-matroska">*.mkv</Format>
+				<!--<Format MimeType="video/x-flv">*.flv</Format>-->
+				<Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
+			</FormatGroup>
+			<!-- 
+			<FormatGroup Authorized="1">
+				<Format MimeType="video/quicktime">*.mov</Format>
+			</FormatGroup>	
+			-->	 
+		</SupportedFormats>
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
 	<Server Name="Imageshack.us" Authorize="2" MaxFileSize="26214400" Debug="0" Plugin="imageshack" SupportsFolders="1" WebsiteUrl="https://imageshack.com"
-	RegistrationUrl="https://imageshack.com/signup">
+		RegistrationUrl="https://imageshack.com/signup">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrlTemplate="$(View)"/>
@@ -52,6 +88,16 @@
 		<Result ImageUrlTemplate="stub" />
 	</Server>
 	<Server Name="fastpic.ru" MaxFileSize="26214400" Debug="0" Plugin="fastpic" WebsiteUrl="https://fastpic.org">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/avif">*.avif</Format>
+			</FormatGroup>	 
+		</SupportedFormats>
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

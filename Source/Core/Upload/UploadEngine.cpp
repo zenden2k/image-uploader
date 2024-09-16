@@ -22,6 +22,8 @@
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UrlShorteningTask.h"
 
 CUploadEngineData::CUploadEngineData()
 {
@@ -42,6 +44,53 @@ CUploadEngineData::CUploadEngineData()
 bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
+}
+
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) {
+    if (this->SupportedFormatGroups.empty()) {
+        return true;
+    }
+    for (const auto& group : this->SupportedFormatGroups) {
+        if (group.MaxFileSize > 0 && fileSize > group.MaxFileSize) {
+            continue;
+        }
+        if (group.Authorized && !authorized) {
+            continue;
+        }
+        for (const auto& format : group.Formats) {
+            if (format.MaxFileSize > 0 && fileSize > format.MaxFileSize) {
+                continue;
+            }
+            bool mimeMatches = false;
+            bool fileNameMatches = false;
+            if (!format.MimeTypes.empty()) {
+                for (const auto& type : format.MimeTypes) {
+                    if (IuStringUtils::Match(type.c_str(), mimeType.c_str())) {
+                        mimeMatches = true;
+                        break;
+                    }
+                }
+                if (!mimeMatches) {
+                    continue;
+                }
+            }
+            if (!format.FileNameWildcards.empty()) {
+                for (const auto& wildcard : format.FileNameWildcards) {
+                    if (IuStringUtils::Match(wildcard.c_str(), fileName.c_str())) {
+                        fileNameMatches = true;
+                        break;
+                    }
+                }
+                if (!fileNameMatches) {
+                    continue;
+                }
+            }
+            if (mimeMatches || fileNameMatches) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std::string& serverType) {
@@ -280,3 +329,17 @@ ServerSync* CAbstractUploadEngine::serverSync() const
 }
 
 const std::string CFolderItem::NewFolderMark = "_iu_create_folder_";
+
+ScriptAPI::UploadTaskWrapper UploadParams::getTask() {
+    return task_;
+}
+
+ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask() {
+    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    return fileTask;
+}
+
+ScriptAPI::UrlShorteningTaskWrapper UploadParams::getUrlShorteningTask() {
+    auto urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
+    return urlShorteningTask;
+}

@@ -83,6 +83,11 @@ void ImageConverter::setThumbnail(Thumbnail* thumb)
     d->thumbnailTemplate_ = thumb;
 }
 
+bool ImageConverter::supposedOutputFormat(SupposedFormat& fileFormat) {
+    MY_D(ImageConverter);
+    return d->supposedOutputFormat(fileFormat);
+}
+
 std::unique_ptr<AbstractImage> ImageConverter::createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat)
 {
     MY_D(ImageConverter);

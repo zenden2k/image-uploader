@@ -98,6 +98,8 @@ set(SRC_LIST
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
+    Dialogs/FileFormatCheckErrorDlg.cpp
+    Models/FileFormatCheckErrorModel.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
@@ -109,6 +111,7 @@ set(SRC_LIST
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
+    Controls/FileFormatErrorView.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -151,6 +154,7 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
+    FileList.cpp
     ../ServerListTool/ServersCheckerDlg.cpp 
     ../ServerListTool/ServersChecker.cpp
     ../ServerListTool/ServersCheckerModel.cpp
@@ -213,7 +217,6 @@ set(HEADER_LIST
     GuiTools.h
     IconBitmapUtils.h
     WizardCommon.h
-
     Dialogs/AboutDlg.h
     Dialogs/AddDirectoryServerDialog.h
     Dialogs/AddFtpServerDialog.h
@@ -263,6 +266,8 @@ set(HEADER_LIST
     Dialogs/WelcomeDlg.h
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
+    Dialogs/FileFormatCheckErrorDlg.h
+    Models/FileFormatCheckErrorModel.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -274,6 +279,7 @@ set(HEADER_LIST
     Controls/TabListBox.h
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
+    Controls/FileFormatErrorView.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
@@ -319,6 +325,7 @@ set(HEADER_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.h
     ../ImageEditor/Helpers/FontEnumerator.h
     UploadListModel.h
+    FileList.h
     ../ServerListTool/ServersChecker.h
     ../ServerListTool/ServersCheckerModel.h
     ../ServerListTool/Helpers.h

@@ -1,10 +1,13 @@
-﻿#ifndef IU_CORE_UPLOADTTASKWRAPPERS_H
+#ifndef IU_CORE_UPLOADTTASKWRAPPERS_H
 #define IU_CORE_UPLOADTTASKWRAPPERS_H
 
 #pragma once
 #include <memory>
 #include "Core/Upload/UploadTask.h"
 #include "Core/Scripting/Squirrelnc.h"
+
+class FileUploadTask;
+class UrlShorteningTask;
 
 namespace ScriptAPI {;
 
@@ -13,10 +16,13 @@ class UploadTaskWrapper;
 /**
 * Upload task base class
 */
-class UploadTaskWrapperBase
+class UploadTaskWrapper
 {
 public:
-    UploadTaskWrapperBase();
+    UploadTaskWrapper();
+    explicit UploadTaskWrapper(UploadTask* task);
+    UploadTaskWrapper(std::shared_ptr<UploadTask> task);
+    virtual ~UploadTaskWrapper() = default;
     const std::string role();
     void setRole(const std::string& role);  
     const std::string type();
@@ -32,7 +38,7 @@ public:
     ServerProfile serverProfile();
     void setServerProfile(const ServerProfile& profile);
     std::string toString();
-    void addChildTask(UploadTaskWrapperBase* child);
+    void addChildTask(UploadTaskWrapper* child);
     void addTempFile(const std::string& fileName);
     bool isNull();
 protected:
@@ -43,9 +49,10 @@ protected:
 /**
 * File upload task
 */
-class FileUploadTaskWrapper : public  UploadTaskWrapperBase  {
+class FileUploadTaskWrapper : public UploadTaskWrapper  {
 public:
-    FileUploadTaskWrapper();
+    explicit FileUploadTaskWrapper(FileUploadTask* task);
+    FileUploadTaskWrapper(std::shared_ptr<FileUploadTask> task);
     explicit FileUploadTaskWrapper(const std::string& fileName, const std::string& displayName);
     std::string getFileName() const;
     int64_t getFileSize() const;
@@ -53,13 +60,17 @@ public:
     std::string getDisplayName() const;
     void setDisplayName(const std::string& name);
     std::string originalFileName() const;
+    bool isImage() const;
+    bool isVideo() const;
 };
 
 /**
 * Url shortening task
 */
-class UrlShorteningTaskWrapper : public  FileUploadTaskWrapper {
+class UrlShorteningTaskWrapper : public UploadTaskWrapper {
 public:
+    explicit UrlShorteningTaskWrapper(UrlShorteningTask* task);
+    UrlShorteningTaskWrapper(std::shared_ptr<UrlShorteningTask> task);
     std::string getUrl() const;
     /**
      * Possible values: DirectUrl, DownloadUrl
@@ -68,13 +79,13 @@ public:
     const std::string parentUrlType();
 };
 
-class UploadTaskWrapper : public UrlShorteningTaskWrapper {
+/*class UploadTaskWrapper : public UrlShorteningTaskWrapper {
 public:
     UploadTaskWrapper();
     UploadTaskWrapper(const std::string& type);
     explicit UploadTaskWrapper(UploadTask* task);
     UploadTaskWrapper(std::shared_ptr<UploadTask> task);
-};
+}*;*/
 
 /* @cond PRIVATE */
 void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm);

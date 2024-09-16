@@ -32,6 +32,9 @@
 #include "Func/IuCommonFunctions.h"
 #include "Gui/CommonDefines.h"
 #include "Gui/Dialogs/MainDlg.h"
+#include "Video/VideoGrabber.h"
+#include "Func/MyUtils.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 // CThumbsView
 CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
@@ -40,6 +43,7 @@ CThumbsView::CThumbsView() :deletePhysicalFiles_(false)
     maxheight = 0;
     callbackLastCallTime_ = 0;
     ExtendedView = false;
+    isFFmpegAvailable_ = WtlGuiSettings::IsFFmpegAvailable();
 }
 
 CThumbsView::~CThumbsView()
@@ -237,6 +241,8 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     {
         return false;
     }
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
     std::unique_ptr<Image> bm;
     CString filename;
     if(itemId>=0) 
@@ -248,9 +254,32 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     height = thumbnailHeight_/*rc.bottom-16*/;
     int thumbwidth = thumbnailWidth_;
     int  thumbheight = thumbnailHeight_;
+    std::shared_ptr<GdiPlusImage> grabbedFrame;
     bool isImage = img || IuCommonFunctions::IsImage(filename);
+    bool isVideo = settings->ShowPreviewForVideoFiles && IsVideoFile(filename);
+    if (isVideo) {
+        VideoGrabber grabber(false, false);
+        grabber.setVideoEngine(VideoGrabber::veAvcodec);
+        grabber.setFrameCount(1);
+        grabber.setOnFrameGrabbed([&](const std::string&, int64_t, std::shared_ptr<AbstractImage> frame) {
+            grabbedFrame = std::dynamic_pointer_cast<GdiPlusImage>(frame);
+            if (!grabbedFrame) {
+                LOG(WARNING) << "Frame is not an instace of GdiPlusImage";
+                return;
+            } 
+            img = grabbedFrame->getBitmap();
+        });
+
+        try {
+            grabber.grab(W2U(filename));
+        } catch (const std::exception& ex) {
+            LOG(WARNING) << ex.what();
+        }
+    }
+
     CString srcImageFormat;
-    if ( isImage)
+
+    if (isImage || isVideo)
     {
         if (img) {
             imgwidth = img->GetWidth();
@@ -263,7 +292,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         }
            
         else 
-            if(itemId>=0) 
+            if(isImage && itemId>=0) 
             {
                 Gdiplus::Size originalImageSize;
                 bm = ImageUtils::GetThumbnail(filename, thumbnailWidth_, thumbnailHeight_, &originalImageSize, &srcImageFormat);
@@ -299,7 +328,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         Font font(L"Arial", 12, FontStyleBold);
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("List of Images"), TR("Cannot load thumbnail for image."), CString(TR("File:")) + _T(" ") + filename);
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
-    }
+    } 
 
     // 
 
@@ -374,13 +403,11 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 std::string fileSizeStr = IuCoreUtils::FileSizeToString(IuCoreUtils::GetFileSize(WCstringToUtf8(Filename)));
                 CString buf2 = Utf8ToWCstring(fileSizeStr);
 
-                if (srcImageFormat.IsEmpty()) {
-                    
-                }
                 if (IuCommonFunctions::IsImage(filename) && bm) {
                     Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, buf2.GetString());
-                }
-                else {
+                } else if (isVideo) {
+                    Buffer.Format(TR("VIDEO %s"), buf2);
+                } else {
                     Buffer = buf2;
                 }
                 gr.DrawString(Buffer, -1, &font, bounds, &format, &brush);
@@ -422,12 +449,6 @@ int CThumbsView::GetImageIndex(int ItemIndex) const
     item.mask = LVIF_IMAGE;
     GetItem(&item);
     return item.iImage;
-}
-
-LRESULT CThumbsView::OnLButtonDblClk(UINT Flags, CPoint Pt)
-{
-    ViewSelectedImage();
-    return 0;
 }
 
 // The Thread which loads Thumbnails in ImageList
@@ -713,6 +734,21 @@ LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     }
 
     return CDRF_DODEFAULT;
+}
+
+LRESULT CThumbsView::OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto itemActivate = reinterpret_cast<LPNMITEMACTIVATE>(pnmh);
+
+    LPCTSTR FileName = GetFileName(itemActivate->iItem);
+    if (!FileName) {
+        return 0;
+    }
+    if (IuCommonFunctions::IsImage(FileName)) {
+        ViewSelectedImage();
+    } else if (IsVideoFile(FileName)) {
+        ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CMainDlg::MENUITEM_OPENINDEFAULTVIEWER, 0), 0);
+    }
+    return 0;
 }
 
 void CThumbsView::getThumbnail(int itemIndex) {

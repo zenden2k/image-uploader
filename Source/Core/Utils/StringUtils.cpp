@@ -210,9 +210,38 @@ std::string Join(const std::vector<std::string>& strings, const std::string& del
 
 boost::format FormatNoExcept(const std::string& str) {
     using namespace boost::io;
+
     boost::format fmter(str);
-    fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit));
+    fmter.exceptions(no_error_bits);
+    //fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit | bad_format_string_bit));
     return fmter;
+}
+
+bool Match(char const* needle, char const* haystack)
+{
+    for (; *needle != '\0'; ++needle) {
+        switch (*needle) {
+        case '?':
+            if (*haystack == '\0')
+                return false;
+            ++haystack;
+            break;
+        case '*': {
+            if (needle[1] == '\0')
+                return true;
+            size_t max = strlen(haystack);
+            for (size_t i = 0; i < max; i++)
+                if (Match(needle + 1, haystack + i))
+                    return true;
+            return false;
+        }
+        default:
+            if (*haystack != *needle)
+                return false;
+            ++haystack;
+        }
+    }
+    return *haystack == '\0';
 }
 
 }

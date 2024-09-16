@@ -123,6 +123,9 @@ public:
     bool WatchClipboard;
     bool ParseSubDirs;
     bool ExplorerCascadedMenu;
+    bool CheckFileTypesBeforeUpload;
+    bool ShowPreviewForVideoFiles;
+
     CHotkeyList Hotkeys;
     bool Hotkeys_changed;
 

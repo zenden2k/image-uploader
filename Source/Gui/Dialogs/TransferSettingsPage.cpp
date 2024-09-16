@@ -30,6 +30,7 @@ void CTransferSettingsPage::TranslateUI()
     TRC(IDC_GENERATEDCODELABEL, "Copy to the clipboard:");
     TRC(IDC_JUSTURLRADIO, "Just URL");
     TRC(IDC_USELASTCODETYPERADIO, "Last code type selected");
+    TRC(IDC_CHECKFILETYPESCHECKBOX, "Check file types before upload");
 }
     
 LRESULT CTransferSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -47,6 +48,7 @@ LRESULT CTransferSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPa
     SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_SETCHECK, (WPARAM)Settings.AutoCopyToClipboard);
 
     GuiTools::SetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
+    GuiTools::SetCheck(m_hWnd, IDC_CHECKFILETYPESCHECKBOX, Settings.CheckFileTypesBeforeUpload);
     executeScriptCheckboxChanged();
     SetDlgItemText(IDC_SCRIPTFILENAMEEDIT, IuCoreUtils::Utf8ToWstring(Settings.ScriptFileName).c_str());
 
@@ -85,6 +87,8 @@ bool CTransferSettingsPage::apply()
     Settings.ActionRetryLimit = GetDlgItemInt(IDC_ACTIONRETRYLIMIT);
 
     Settings.AutoCopyToClipboard = SendDlgItemMessage(IDC_AUTOCOPYTOCLIPBOARD, BM_GETCHECK)!=0;
+    Settings.CheckFileTypesBeforeUpload = SendDlgItemMessage(IDC_CHECKFILETYPESCHECKBOX, BM_GETCHECK)== BST_CHECKED;
+
     Settings.TrayResult = useLastCodeTypeRadioButton_.GetCheck() == BST_CHECKED;
     CheckBounds(IDC_MAXTHREADSEDIT, 1, 20, IDC_MAXTHREADSLABEL);
     Settings.MaxThreads = GetDlgItemInt(IDC_MAXTHREADSEDIT);

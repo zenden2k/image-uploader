@@ -68,7 +68,7 @@ LRESULT CMyImage::OnEraseBkg(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BO
     return TRUE;
 }
 
-bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg, bool drawBorder)
+bool CMyImage::loadImage(LPCTSTR FileName, std::shared_ptr<Gdiplus::Image> img, int ResourceID, bool Bmp, COLORREF transp, bool allowEnlarge, bool whiteBg, bool drawBorder)
 {
     reset();
     CRect rc;
@@ -120,7 +120,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     attr.SetWrapMode(WrapModeTileFlipXY);
 
     std::unique_ptr<Image> newBm;
-    Image* bm = nullptr;
+    std::shared_ptr<Image> bm;
     if (img) {
         bm = img;
     } else if (FileName) {
@@ -138,7 +138,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
     }
 
     if (newBm) {
-        bm = newBm.get();
+        bm = std::move(newBm);
     }
 
     if (bm){
@@ -176,7 +176,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         gr.DrawString(TR("Unable to load picture"), -1, &font, bounds, &format, &brush);
     } else {
         destRect_ = Rect(drawBorder ? 1 + (width - newwidth) / 2 : 0, drawBorder ? 1 + (height - newheight) / 2 : 0, newwidth, newheight);
-        if (img && FileName && testForAnimatedGIF(img)) {
+        if (img && FileName && testForAnimatedGIF(img.get())) {
             animatedImage_ = img;
             initAnimation();
             isAnimated_ = true;
@@ -196,7 +196,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, Image* img, int ResourceID, bool Bmp,
         imageLoaded_ = true;
         
         if (bm) {
-            gr.DrawImage(bm, destRect_, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
+            gr.DrawImage(bm.get(), destRect_, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
         }
     }
 
@@ -263,7 +263,7 @@ bool CMyImage::drawFrame() {
     graphics.Clear(backgroundColor);
     Gdiplus::Pen pen(Color(255, 145, 145, 145));
     graphics.DrawRectangle(&pen, rc);
-    graphics.DrawImage(animatedImage_, destRect_);
+    graphics.DrawImage(animatedImage_.get(), destRect_);
     Invalidate();
     animatedImage_->SelectActiveFrame(&pageGuid, framePosition_++);
 

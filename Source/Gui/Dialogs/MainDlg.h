@@ -31,15 +31,11 @@ limitations under the License.
 #include "VideoGrabberPage.h"
 #include "Gui/Controls/ThumbsView.h"
 #include "Gui/CommonDefines.h"
+#include "Gui/FileList.h"
 
 class WinServerIconCache;
 
-struct CFileListItem {
-    CString FilePath;
-    CString FileName;
-    CString VirtualFileName;
-    bool selected;
-};
+
 
 class CMainDlg : public CDialogImpl<CMainDlg>,public CThreadImpl<CMainDlg>,public CWizardPage,
     public CMessageFilter
@@ -96,7 +92,6 @@ public:
         COMMAND_HANDLER(MENUITEM_DELETE, BN_CLICKED, OnBnClickedDelete)
         COMMAND_ID_HANDLER_EX(MENUITEM_ADDFILES, OnAddFiles)
         COMMAND_ID_HANDLER_EX(IDC_ADDIMAGES, OnAddFiles)
-
         NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnLvnItemDelete)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
@@ -143,7 +138,7 @@ public:
     int getSelectedFiles(std::vector<CString>& fileNames);
     //CUploader Uploader;
     CListViewCtrl lv;
-    CAtlArray<CFileListItem> FileList;
+    CFileList FileList;
     bool OnShow() override;
     bool OnHide() override;
     void UpdateStatusLabel();

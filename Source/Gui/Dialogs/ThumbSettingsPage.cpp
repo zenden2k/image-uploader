@@ -258,7 +258,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         if (result) {
             auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
             if (resultImg) {
-                img.loadImage(0, resultImg->getBitmap());
+                img.loadImage(0, std::shared_ptr<Image>(resultImg->releaseBitmap()));
             }
         }
     }

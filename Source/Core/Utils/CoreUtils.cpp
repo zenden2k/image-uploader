@@ -44,6 +44,7 @@
 #endif
 
 #include "Core/3rdpart/UriParser.h"
+#include "Core/3rdpart/xdgmime/xdgmime.h"
 
 #ifdef _WIN32
 
@@ -79,7 +80,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 namespace IuCoreUtils {
 
-FILE * FopenUtf8(const char * filename, const char * mode)
+    FILE * FopenUtf8(const char * filename, const char * mode)
 {
 #ifdef _MSC_VER
     return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
@@ -506,6 +507,50 @@ void OnThreadExit(void (*func)()) {
 
     thread_local ThreadExiter exiter;
     exiter.add(func);
+}
+
+std::string GetFileMimeType(const std::string& fileName)
+{
+    const std::string DefaultMimeType = "application/octet-stream";
+    /* FILE* f = FopenUtf8(fileName.c_str(), "rb");
+    if (!f) {
+        return DefaultMimeType;
+    }
+    char buffer[256] {};
+    size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
+    fclose(f);
+    int resultPrio = 0;*/
+   
+    /*auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);*/
+    struct stat st;
+   
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    if (!mime) {
+        return DefaultMimeType;
+    }
+    std::string result = mime;
+    /* if (result == DefaultMimeType) {
+        return GetFileMimeTypeByName(fileName)
+    }*/
+
+    /* if (result == "image/x-png") {
+        result = "image/png";
+    } else if (result == "image/pjpeg") {
+        result = "image/jpeg";
+    } else if (result == "application/octet-stream") {
+        if (byBuff[0] == 'R' && byBuff[1] == 'I' && byBuff[2] == 'F' && byBuff[3] == 'F'
+            && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B' && byBuff[11] == 'P') {
+            result = "image/webp";
+        }
+    }*/
+
+    return result;
+}
+
+std::string GetFileMimeTypeByName(const std::string& fileName) {
+    struct stat st;
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    return mime;
 }
 
 } // end of namespace IuCoreUtils

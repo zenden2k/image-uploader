@@ -476,6 +476,7 @@ function UploadFile(FileName, options) {
     local ansiFileName = ExtractFileName(FileName);
     local fileSize = GetFileSize(FileName);
     local mimeType = GetFileMimeType(FileName);
+
     try {
         local task = options.getTask();
         ansiFileName = task.getDisplayName(); // ensure that this field is filled up correctly

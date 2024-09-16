@@ -133,7 +133,11 @@ bool CUploadDlg::startUpload() {
 
     int rowIndex = 0;
     for (int i = 0; i < n; i++) {
-        CString FileName = MainDlg->FileList[i].FileName;
+        const auto& item = MainDlg->FileList[i];
+        if (item.isSkipped()) {
+            continue;
+        }
+        CString FileName = item.FileName;
         std::string fileNameUtf8 = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 

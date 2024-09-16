@@ -180,6 +180,8 @@
 #define IDI_ICONEXTERNALLINK            336
 #define IDD_DIALOG1                     338
 #define IDD_TRANSFERSETTINGSPAGE        338
+#define IDD_SERVERSCHECKERDLG1          339
+#define IDD_FILEFORMATERRORDLG          339
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -405,6 +407,7 @@
 #define IDC_LOGOUT                      1080
 #define IDC_BROWSEPRIVATEKEYBUTTON      1080
 #define IDC_OPENSYSTEMCONNECTION        1080
+#define IDC_IGNOREALL                   1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
@@ -485,6 +488,7 @@
 #define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
 #define IDC_HEIGHTCHECKBOX              1142
 #define IDC_SKIPANIMATEDCHECKBOX        1142
+#define IDC_CHECKFILETYPESCHECKBOX      1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -613,6 +617,7 @@
 #define IDC_TESTCONNECTIONBTN           1263
 #define IDC_ADDBUTTON                   1263
 #define IDC_CHOOSESERVERS               1263
+#define IDC_IGNORE                      1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -756,6 +761,9 @@
 #define IDC_SERVERICON                  1341
 #define IDC_QUICKUPLOADLABEL            1342
 #define IDC_GENERATEDCODELABEL          1343
+#define IDC_CHECK6                      1344
+#define IDC_THUMBNAILSFORVIDEOCHECKBOX  1344
+#define IDC_FILESCANNOTBEUPLOADED       1345
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -803,7 +811,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        340
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1344
+#define _APS_NEXT_CONTROL_VALUE         1346
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

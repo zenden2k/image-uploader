@@ -105,7 +105,7 @@ bool CImageViewWindow::ViewImage(const CImageViewItem& item, HWND Parent){
         if (realheight < 180) realheight = 180;
 
         imageControl_.MoveWindow(0, 0, realwidth, realheight);
-        imageControl_.loadImage(item.fileName, img);
+        imageControl_.loadImage(item.fileName, std::shared_ptr<Gdiplus::Image>(srcImg->releaseBitmap()));
         imageControl_.ShowWindow(SW_SHOW);
 
         currentParent_ = Parent;

@@ -88,6 +88,22 @@ bool ImageConverterFilter::PostUpload(UploadTask* task)
 {
     return true;
 }
+
+bool ImageConverterFilter::supposedOutputFormat(SupposedFormat& fileFormat, ServerProfile serverProfile) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    ImageUploadParams imageUploadParams = serverProfile.getImageUploadParams();
+    if (!imageUploadParams.ProcessImages) {
+        return false;
+    }
+    
+    auto& convertProfile = settings->ConvertProfiles[U2W(imageUploadParams.ImageProfileName)];
+    ImageConverter imageConverter;
+    imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
+    imageConverter.setImageConvertingParams(convertProfile);
+    return imageConverter.supposedOutputFormat(fileFormat);
+}
+
 /*
 void ImageConverterFilter::OnFileFinished(UploadTask* task, bool ok)
 {

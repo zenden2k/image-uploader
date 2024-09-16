@@ -98,7 +98,7 @@ std::string ConvertToUtf8(const std::string &text, const std::string& codePage)
 
     return text;
 }
-
+/*
 std::string GetFileMimeType(const std::string& fileName)
 {
     std::string DefaultMimeType = "application/octet-stream";
@@ -134,7 +134,7 @@ std::string GetFileMimeType(const std::string& fileName)
     }
 
     return result;
-}
+}*/
 
 bool DirectoryExists(const std::string& path)
 {

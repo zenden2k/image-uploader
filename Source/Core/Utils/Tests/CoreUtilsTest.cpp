@@ -217,4 +217,12 @@ TEST_F(CoreUtilsTest, GetFileMimeType) {
     ASSERT_TRUE(IuCoreUtils::FileExists(webpFilePath));
     std::string type2 = GetFileMimeType(webpFilePath);
     EXPECT_EQ("image/webp", type2);
+    
+    {
+        std::string jpegFilePath = TestHelpers::resolvePath("\x67\x72\x61\x62\x5f\xd1\x8e\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb4\x5f\xe4\xbd\xa0\xe5\xa5\xbd\x2e\x6a\x70\x67");
+        ASSERT_TRUE(IuCoreUtils::FileExists(jpegFilePath));
+        std::string type3 = GetFileMimeType(jpegFilePath);
+        EXPECT_EQ("image/jpeg", type3);
+    }
+   
 }

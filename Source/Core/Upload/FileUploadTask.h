@@ -22,6 +22,8 @@ class FileUploadTask: public UploadTask {
         std::string title() const override;
         bool isImage() const;
         void setIsImage(bool image);
+        bool isVideo() const;
+        void setIsVideo(bool isVid);
         void setFileIndex(size_t index);
         size_t fileIndex() const;
 protected:
@@ -29,7 +31,7 @@ protected:
         std::string originalFileName_;
         std::string displayName_;
         mutable int64_t cachedFileSize_;
-        bool isImage_;
+        bool isImage_, isVideo_;
         size_t fileIndex_;
 };    
 

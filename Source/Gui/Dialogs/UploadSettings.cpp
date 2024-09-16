@@ -39,6 +39,10 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/WinServerIconCache.h"
+#include "Func/IuCommonFunctions.h"
+#include "StatusDlg.h"
+#include "Core/FileTypeCheckTask.h"
+#include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 
 namespace {
     struct ResizePreset {
@@ -100,6 +104,38 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 
         }
     }
+}
+
+bool CUploadSettings::checkFileFormats() {
+    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
+    std::string message;
+    std::vector<BadFileFormat> errors;
+
+    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
+        if (taskResult == BackgroundTaskResult::Success) {
+            message = task->message();
+            errors = std::move(task->errors());
+        }
+    });
+    CStatusDlg dlg(task);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (!errors.empty()) {
+            CFileFormatCheckErrorDlg fileFormatDlg(&mainDlg->FileList, errors);
+            if (fileFormatDlg.DoModal() != IDOK) {
+                return false;
+            }
+        }
+        /* if (!message.empty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);
+            return false;
+        }*/
+    } else {
+        return false;
+    }
+    
+    return true;
 }
 
 void CUploadSettings::TranslateUI()
@@ -386,6 +422,8 @@ bool CUploadSettings::OnNext()
         thumb.ResizeMode = ThumbCreatingParams::trByWidth;
     }
 
+    
+
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
     {
@@ -402,7 +440,12 @@ bool CUploadSettings::OnNext()
     if ( settings->RememberFileServer ) {
         settings->fileServer = sessionFileServer_;
     }
+
+    if (settings->CheckFileTypesBeforeUpload && !checkFileFormats()) {
+        return false;
+    }
     SaveCurrentProfile();
+
     return true;
 }
 
@@ -417,6 +460,14 @@ bool CUploadSettings::OnShow()
         sessionFileServer_ = WizardDlg->getSessionFileServer();
         WizardDlg->setServersChanged(false);
         ShowParams();
+    }
+
+    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
+
+    // Reset skip flag, which can be set when checkFileFormats on file list is called
+    // CAtlArray doesn't have begin() and end() methods.
+    for (size_t i = 0; i < mainDlg->FileList.GetCount(); i++) {
+        mainDlg->FileList[i].setSkipped(false);
     }
 
     CString profileName = sessionImageServer_.isEmpty() ? _T(""): U2W(sessionImageServer_.getByIndex(0).getImageUploadParamsRef().ImageProfileName);

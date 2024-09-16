@@ -545,7 +545,7 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
     return rc;
 }
 
-bool MySaveImage(Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
+bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
 {
     if (Format == -1) {
         Format = sifJPEG;
@@ -571,6 +571,10 @@ bool MySaveImage(Bitmap* img, const CString& szFilename, CString& szBuffer, Save
     }
     buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
                     szImgTypes[Format]);
+    if (!img) {
+        szBuffer = buffer2;
+        return true;
+    }
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
     WinUtils::CreateFilePath(resultFilename);
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);

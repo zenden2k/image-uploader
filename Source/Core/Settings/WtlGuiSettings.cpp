@@ -484,6 +484,8 @@ WtlGuiSettings::WtlGuiSettings() :
     RememberFileServer = true;
 
     AutomaticallyCheckUpdates = true;
+    CheckFileTypesBeforeUpload = true;
+    ShowPreviewForVideoFiles = true;
 
     ImageEditorPath = _T("mspaint.exe \"%1\"");
     AutoCopyToClipboard = false;
@@ -863,6 +865,8 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(ExecuteScript);
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
+    upload.n_bind(CheckFileTypesBeforeUpload);
+    upload.n_bind(ShowPreviewForVideoFiles);
     upload.n_bind(TrayResult);
     /*urlShorteningServer.bind(upload["UrlShorteningServer"]);
     temporaryServer.bind(upload["TemporaryServer"]);*/
