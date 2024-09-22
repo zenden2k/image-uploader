@@ -8,7 +8,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/Filters/ImageConverterFilter.h"
 
-constexpr int MAX_BAD_ITEMS = std::numeric_limits<int64_t>::max();
+constexpr auto MAX_BAD_ITEMS = std::numeric_limits<size_t>::max();
 
 FileTypeCheckTask::FileTypeCheckTask(IFileList* fileList, const ServerProfileGroup& sessionImageServer, const ServerProfileGroup& sessionFileServer)
     :
@@ -80,7 +80,6 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
                     : _("\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' extension)\n"))
                     % onlyName % uploadEngineData->Name % sf.mimeType % IuCoreUtils::FileSizeToString(size) % extension);
                 errors_.push_back(std::move(bff));
-                
             }
         }
     }

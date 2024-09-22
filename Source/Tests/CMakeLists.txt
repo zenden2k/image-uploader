@@ -11,6 +11,7 @@ set(SRC_LIST
    ../Core/Utils/Tests/TextUtilsTest.cpp
    ../Core/Utils/Tests/SimpleXmlTest.cpp
    ../Core/Upload/Tests/UploadEngineListTest.cpp
+   ../Core/Upload/Tests/UploadEngineDataTest.cpp
    ../Core/Upload/Tests/ScriptUploadEngineTest.cpp
    ../Core/Upload/Tests/DefaultUploadEngineTest.cpp
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
