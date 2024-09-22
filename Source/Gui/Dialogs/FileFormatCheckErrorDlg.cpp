@@ -21,6 +21,7 @@ LRESULT CFileFormatCheckErrorDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/,
     SetWindowText(TR("Error while file format checking"));
     TRC(IDC_FILESCANNOTBEUPLOADED, "These files cannot be uploaded to chosen servers:");
     TRC(IDC_BUTTONSKIP, "Skip selected");
+    TRC(IDC_BUTTONSKIPALL, "Skip all");
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "Continue");
     TRC(IDC_IGNORE, "Ignore");

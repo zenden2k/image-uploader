@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-15 17:21+0300\n"
+"POT-Creation-Date: 2024-09-21 11:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,7 +90,7 @@ msgstr ""
 msgid "%s translation:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:126
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:118
 #, c-format
 msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
@@ -1229,7 +1229,7 @@ msgstr ""
 msgid "Error log"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:22
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:21
 msgid "Error while file format checking"
 msgstr ""
 
@@ -1260,6 +1260,10 @@ msgstr ""
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:403
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1766
 msgid "Exit"
+msgstr ""
+
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:23
+msgid "Extension"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:205
@@ -1304,6 +1308,7 @@ msgstr ""
 msgid "Fetching filesystem..."
 msgstr ""
 
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:20
 #: ../Source/Gui/Controls/ResultsListView.cpp:21
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:94
 msgid "File"
@@ -1882,6 +1887,10 @@ msgstr ""
 msgid "Middle button click:"
 msgstr ""
 
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:21
+msgid "Mime-type"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:546
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:100
 msgid "Monitor"
@@ -1911,6 +1920,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
 msgid "Multiple files"
+msgstr ""
+
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
+msgid "N"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
@@ -2444,6 +2457,7 @@ msgstr ""
 msgid "Selected servers: %d"
 msgstr ""
 
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:160
 msgid "Server"
@@ -2635,6 +2649,14 @@ msgstr ""
 msgid "Single file"
 msgstr ""
 
+#: ../Source/Gui/Controls/FileFormatErrorView.cpp:22
+msgid "Size"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:24
+msgid "Skip all"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:59
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:158
 msgid "Skip animated"
@@ -2644,7 +2666,7 @@ msgstr ""
 msgid "Skip image processing step if the image has right parameters"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:24
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:23
 msgid "Skip selected"
 msgstr ""
 
@@ -2777,7 +2799,7 @@ msgstr ""
 msgid "The short link has been copied to the clipboard!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:23
+#: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:22
 msgid "These files cannot be uploaded to chosen servers:"
 msgstr ""
 

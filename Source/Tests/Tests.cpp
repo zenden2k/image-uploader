@@ -172,6 +172,7 @@ int main(int argc, char *argv[]){
         const char* dirs[2]
             = { cacheDir, nullptr };
         xdg_mime_set_dirs(dirs);
+        free(cacheDir);
         #endif
 
     } catch (std::exception& ex) {

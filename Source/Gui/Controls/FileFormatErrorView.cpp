@@ -4,6 +4,7 @@
 
 #include "Gui/Models/FileFormatCheckErrorModel.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/i18n/Translator.h"
 
 CFileFormatErrorView::CFileFormatErrorView(FileFormatCheckErrorModel* model)
     : model_(model)
@@ -15,12 +16,12 @@ CFileFormatErrorView::CFileFormatErrorView(FileFormatCheckErrorModel* model)
 void CFileFormatErrorView::Init() {
     SetItemCount(model_->getCount());
 
-    AddColumn(_T("N"), 0);
-    AddColumn(_T("File"), 1);
-    AddColumn(_T("Mime-type"), 2);
-    AddColumn(_T("Size"), 3);
-    AddColumn(_T("Extension"), 4);
-    AddColumn(_T("Server"), 5);
+    AddColumn(TR("N"), 0);
+    AddColumn(TR("File"), 1);
+    AddColumn(TR("Mime-type"), 2);
+    AddColumn(TR("Size"), 3);
+    AddColumn(TR("Extension"), 4);
+    AddColumn(TR("Server"), 5);
     /* AddColumn(_T("View URL"), 5);
     AddColumn(_T("Time"), 6);*/
 
