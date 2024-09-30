@@ -939,7 +939,9 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         if (generatorId == gidXmlTemplate) {
             int templateIndex = settings->CodeType - 4;
             auto xmlTemplateGenerator = dynamic_cast<XmlTemplateGenerator*>(generator.get());
-            xmlTemplateGenerator->setTemplateIndex(templateIndex);
+            if (xmlTemplateGenerator) {
+                xmlTemplateGenerator->setTemplateIndex(templateIndex);
+            }
         }
 
         code = U2W(generator->generate(objects, settings->UseTxtTemplate));

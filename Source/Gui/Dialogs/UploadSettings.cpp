@@ -106,38 +106,6 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
     }
 }
 
-bool CUploadSettings::checkFileFormats() {
-    auto* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
-
-    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
-    std::string message;
-    std::vector<BadFileFormat> errors;
-
-    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
-        if (taskResult == BackgroundTaskResult::Success) {
-            message = task->message();
-            errors = std::move(task->errors());
-        }
-    });
-    CStatusDlg dlg(task);
-    if (dlg.DoModal(m_hWnd) == IDOK) {
-        if (!errors.empty()) {
-            CFileFormatCheckErrorDlg fileFormatDlg(&mainDlg->FileList, errors);
-            if (fileFormatDlg.DoModal() != IDOK) {
-                return false;
-            }
-        }
-        /* if (!message.empty()) {
-            GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);
-            return false;
-        }*/
-    } else {
-        return false;
-    }
-    
-    return true;
-}
-
 void CUploadSettings::TranslateUI()
 {
     TRC(IDC_FORMATLABEL, "Format:");
@@ -432,6 +400,10 @@ bool CUploadSettings::OnNext()
         sessionFileServer.setShortenLinks(shorten);
     }
 
+    if (settings->CheckFileTypesBeforeUpload && !WizardDlg->checkFileFormats(sessionImageServer_, sessionFileServer_)) {
+        return false;
+    }
+
     WizardDlg->setSessionImageServer(sessionImageServer_);
     WizardDlg->setSessionFileServer(sessionFileServer_);
     if ( settings->RememberImageServer ) {
@@ -441,9 +413,6 @@ bool CUploadSettings::OnNext()
         settings->fileServer = sessionFileServer_;
     }
 
-    if (settings->CheckFileTypesBeforeUpload && !checkFileFormats()) {
-        return false;
-    }
     SaveCurrentProfile();
 
     return true;

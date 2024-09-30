@@ -35,8 +35,6 @@ limitations under the License.
 
 class WinServerIconCache;
 
-
-
 class CMainDlg : public CDialogImpl<CMainDlg>,public CThreadImpl<CMainDlg>,public CWizardPage,
     public CMessageFilter
 {
@@ -53,8 +51,6 @@ public:
         MENUITEM_DELETE,
         MENUITEM_PROPERTIES,
         MENUITEM_OPENWITH
-
-
     };
     enum { kStatusTimer = 1 };
     explicit CMainDlg(WinServerIconCache* iconCache);

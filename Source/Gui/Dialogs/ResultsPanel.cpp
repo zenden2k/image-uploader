@@ -50,7 +50,6 @@ CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::O
     openedFromHistory_ = openedFromHistory;
     rectNeeded = {};
     rectNeeded.left = -1;
-    CString TemplateLoadError;
     shortenUrl_ = false;
     outputChanged_ = false;
     m_Page = OG::clBBCode;
@@ -236,10 +235,9 @@ std::string CResultsPanel::GenerateOutput()
     if (p < 1) {
         p = 4;
     }
-    bool UseTemplate = settings->UseTxtTemplate;
+    bool useTemplate = settings->UseTxtTemplate;
     bool preferDirectLinks = settings->UseDirectLinks;
     groupByFileName_ = settings->GroupByFilename;
-    settings->UseTxtTemplate = UseTemplate;
 
     OG::GeneratorID generatorId = OG::gidBBCode;
     OG::CodeLang lang = OG::clBBCode;
@@ -262,10 +260,12 @@ std::string CResultsPanel::GenerateOutput()
     if (generatorId == OG::gidXmlTemplate) {
         int templateIndex = Index - 4;
         auto xmlTemplateGenerator = dynamic_cast<OG::XmlTemplateGenerator*>(generator);
-        xmlTemplateGenerator->setTemplateIndex(templateIndex);
+        if (xmlTemplateGenerator) {
+            xmlTemplateGenerator->setTemplateIndex(templateIndex);
+        }
     }
 
-    return generator->generate(UrlList, UseTemplate);
+    return generator->generate(UrlList, useTemplate);
 }
 
 void CResultsPanel::UpdateOutput(bool immediately)

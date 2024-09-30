@@ -272,6 +272,8 @@ public:
     void beginAddFiles();
     void endAddFiles();
     void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
+    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer); 
+
 protected:
     bool acceptsDragnDrop() const;
     CIcon hIcon;

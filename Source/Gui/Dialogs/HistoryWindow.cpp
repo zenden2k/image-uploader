@@ -367,7 +367,7 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
-    if (historyItem) {
+    if (!historyItem) {
         return 0;
     }
     WinUtils::ShellOpenFileOrUrl(U2W(historyItem->editUrl), m_hWnd);

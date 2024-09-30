@@ -65,7 +65,7 @@ NativeIcon WinServerIconCache::getIconForServer(const std::string& name) {
 NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name) {
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
 
-    if (!iconFileName) {
+    if (iconFileName.IsEmpty()) {
         return {};
     }
     const int w = GetSystemMetrics(SM_CXICON);

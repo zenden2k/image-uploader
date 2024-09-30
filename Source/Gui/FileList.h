@@ -7,7 +7,7 @@ public:
     CString FilePath;
     CString FileName;
     CString VirtualFileName;
-    bool selected;
+    bool selected = false;
     std::string getFileName() const override;
     std::string getMimeType() const override;
     void setMimeType(const std::string& mimeType) override;

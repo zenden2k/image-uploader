@@ -228,24 +228,21 @@ LRESULT CAddFtpServerDialog::OnClickedTestConnection(WORD wNotifyCode, WORD wID,
 
 void CAddFtpServerDialog::addServer(bool test) {
     CString serverName = GuiTools::GetDlgItemText(m_hWnd, IDC_SERVEREDIT);
-    serverName.TrimLeft(L" ");
-    serverName.TrimRight(L" ");
+    serverName.Trim(_T(" "));
 
     if (serverName.IsEmpty()) {
         MessageBox(TR("Server's name cannot be empty"), TR("Error"), MB_ICONERROR);
         return;
     }
     CString connectionName = GuiTools::GetDlgItemText(m_hWnd, IDC_CONNECTIONNAMEEDIT);
-    connectionName.TrimLeft(L" ");
-    connectionName.TrimRight(L" ");
+    connectionName.Trim(_T(" "));
     if (connectionName.IsEmpty()) {
         LocalizedMessageBox(TR("Connection name cannot be empty"), TR("Error"), MB_ICONERROR);
         return;
     }
 
     CString downloadUrl = GuiTools::GetDlgItemText(m_hWnd, IDC_DOWNLOADURLEDIT);
-    downloadUrl.TrimLeft(L" ");
-    downloadUrl.TrimRight(L" ");
+    downloadUrl.Trim(_T(" "));
     if (downloadUrl.IsEmpty()) {
         LocalizedMessageBox(TR("Download URL cannot be empty."), TR("Error"), MB_ICONERROR);
         return;
@@ -312,7 +309,6 @@ void CAddFtpServerDialog::addServer(bool test) {
         } else {
             EndDialog(IDOK);
         }
-        
     }
     catch (const std::exception& ex) {
         CString errorMessage = TR("Could not add server.");
@@ -328,7 +324,6 @@ void CAddFtpServerDialog::enableControls(bool enable) {
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_TESTCONNECTIONBTN, enable);
 }
-
 
 LRESULT CAddFtpServerDialog::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild) {
     if (hwndChild == GetDlgItem(IDC_CONNECTIONSTATUSLABEL)) {

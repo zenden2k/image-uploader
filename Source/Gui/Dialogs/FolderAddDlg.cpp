@@ -7,6 +7,7 @@
 #include "WizardDlg.h"
 #include "MainDlg.h"
 #include "Func/IuCommonFunctions.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 CFolderAdd::CFolderAdd(CWizardDlg *WizardDlg): 
     count(0), 
@@ -84,6 +85,7 @@ int CFolderAdd::ProcessDir(CString currentDir, bool bRecursive /* = true  */)
 
 DWORD CFolderAdd::Run()
 {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     EnableWindow(m_pWizardDlg->m_hWnd, false);
     ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         m_pWizardDlg->beginAddFiles();
@@ -118,8 +120,12 @@ DWORD CFolderAdd::Run()
         GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APPNAME, MB_ICONINFORMATION);
     else {
         if (m_pWizardDlg->getQuickUploadMarker()) {
+            if (settings->CheckFileTypesBeforeUpload && !m_pWizardDlg->checkFileFormats(m_pWizardDlg->getSessionImageServer(), m_pWizardDlg->getSessionFileServer())) {
+                m_pWizardDlg->ShowPage(CWizardDlg::wpUploadSettingsPage);
+            } else {
+                m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
+            }
 
-            m_pWizardDlg->ShowPage(CWizardDlg::wpUploadPage);
         } else {
             m_pWizardDlg->ShowPage(CWizardDlg::wpMainPage);
             //m_pWizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage)->ThumbsView.LoadThumbnails();

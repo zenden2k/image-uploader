@@ -35,6 +35,7 @@ Document::Document(int width, int height) {
 }
 
 Document::Document(const wchar_t* fileName) {
+    hasTransparentPixels_ = false;
     currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcMultiFrame_);
     init();
     if ( currentImage_ ) {

@@ -22,7 +22,7 @@ namespace ServersListTool {
 class ServerData {
 public:
     std::atomic_bool skip;
-    int stars[3]; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
+    int stars[10]; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
     uint32_t color;
     std::atomic<int> fileToCheck;
     std::atomic<int> filesChecked;

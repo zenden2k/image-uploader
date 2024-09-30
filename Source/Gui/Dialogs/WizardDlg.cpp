@@ -69,6 +69,8 @@
 #include "Gui/Components/WinToastHandler.h"
 #include "ServerListTool/ServersCheckerDlg.h"
 #include "Core/WinServerIconCache.h"
+#include "Core/FileTypeCheckTask.h"
+#include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -646,7 +648,7 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     pLoop->RemoveMessageFilter(this);
     pLoop->RemoveIdleHandler(this);
 
-    CBitmapHandle bmpOld = headBitmap_.SetBitmap(nullptr);
+    CBitmapHandle bmpOld { headBitmap_.SetBitmap(nullptr) };
     if (bmpOld) {
         bmpOld.DeleteObject();
     }
@@ -693,7 +695,7 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
         headBitmap_.ShowWindow(SW_HIDE);
     } else {
         headBitmap_.ShowWindow(SW_SHOW);
-        CBitmapHandle bmpOld = headBitmap_.SetBitmap(bmp);
+        CBitmapHandle bmpOld { headBitmap_.SetBitmap(bmp) };
         if (bmpOld) {
             bmpOld.DeleteObject();
         }
@@ -1435,9 +1437,10 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
     CString filterBuffer = CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)");
     CString imageFilter = IuCommonFunctions::PrepareFileDialogImageFilter();
+    CString anyFileStr = TR("Any file");
     COMDLG_FILTERSPEC aFileTypes[] = {
         {filterBuffer, imageFilter},
-        {TR("Any file"), _T("*.*")}
+        {anyFileStr, _T("*.*") }
     };
     DWORD dwFlags = 0;
 
@@ -1894,7 +1897,7 @@ bool CWizardDlg::funcMediaInfo()
 #endif
 bool CWizardDlg::funcAddFiles()
 {
-    IMyFileDialog::FileFilterArray filters = { 
+    IMyFileDialog::FileFilterArray filters { 
         { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), IuCommonFunctions::PrepareFileDialogImageFilter() },
         { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
@@ -2486,4 +2489,37 @@ void  CWizardDlg::endAddFiles() {
         return;
     }
     MainDlg->ThumbsView.endAdd();
+}
+
+bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer)
+{
+    auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
+
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
+    std::string message;
+    std::vector<BadFileFormat> errors;
+
+    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
+        if (taskResult == BackgroundTaskResult::Success) {
+            message = task->message();
+            errors = std::move(task->errors());
+        }
+    });
+    CStatusDlg dlg(task);
+    if (dlg.DoModal(m_hWnd) == IDOK) {
+        if (!errors.empty()) {
+            CFileFormatCheckErrorDlg fileFormatDlg(&mainDlg->FileList, errors);
+            if (fileFormatDlg.DoModal() != IDOK) {
+                return false;
+            }
+        }
+        /* if (!message.empty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);
+            return false;
+        }*/
+    } else {
+        return false;
+    }
+
+    return true;
 }

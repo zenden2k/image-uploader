@@ -9,7 +9,7 @@ function SearchByImage(FileName, options) {
 
     nm.setUrl("https://yandex.ru/images/search?rpt=imageview");
     nm.addQueryHeader("Origin", "https://yandex.ru");
-    nm.addQueryParamFile("upfile", FileName, ExtractFileName(FileName), "");
+    nm.addQueryParamFile("upfile", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
     nm.addQueryParam("original_width", imageInfo.Width);
     nm.addQueryParam("original_height", imageInfo.Height);
     nm.addQueryParam("prg", "1");

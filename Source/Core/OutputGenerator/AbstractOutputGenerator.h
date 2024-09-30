@@ -71,7 +71,7 @@ public:
     bool loadTemplate(const std::string& templateFileName);
     std::string generate(const std::vector<UploadObject>& items, bool withTemplate = true);
 protected:
-    CodeType codeType_;
+    CodeType codeType_ = ctTableOfThumbnails;
     bool preferDirectLinks_ = true, shortenUrl_ = false, groupByFile_ = false;
     int itemsPerLine_ = 4;
     std::optional<std::string> templateHead_, templateFoot_;
