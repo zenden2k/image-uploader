@@ -1,4 +1,4 @@
-function reg_replace(str, pattern, replace_with) {
+function _Replace(str, pattern, replace_with) {
     local resultStr = str;
     local res;
     local start = 0;
@@ -40,17 +40,17 @@ function  UploadFile(FileName, options) {
     }
     local encodedFileName = newFilename;
     if (downloadUrl.find("://") != null) {
-        encodedFileName = reg_replace(nm.urlEncode(newFilename), "%2E", ".");
+        encodedFileName = _Replace(nm.urlEncode(newFilename), "%2E", ".");
     }
 
     options.setDirectUrl(downloadUrl + encodedFileName);
 
     if (downloadUrl.find("\\\\") == 0) {
-        local convertedUrl = "file:///" + reg_replace(downloadUrl, "\\"," / ") + reg_replace(nm.urlEncode(newFilename)," % 2E",".");
+        downloadUrl = downloadUrl.slice(2);
+        local convertedUrl = "file://" + _Replace(downloadUrl, "\\", "/") + _Replace(nm.urlEncode(newFilename), "%2E", ".");
         if (convertUncPath == 1) {
             options.setDirectUrl(convertedUrl);
         } else {
-
             options.setViewUrl(convertedUrl);
         }
     }
@@ -62,6 +62,6 @@ function GetServerParamList() {
     return {
         directory = "Directory"
         downloadUrl = "Download path (ftp or http)",
-        convertUncPath = "Convert UNC path \"\\\\\" to file://///"
+        convertUncPath = "Convert UNC path \"\\\\\" to file://"
     }
 }

@@ -46,6 +46,7 @@ private slots:
 	void itemDoubleClicked(const QModelIndex &index);
 	void onCustomContextMenu(const QPoint &point);
 	void onShowLog();
+    void fillServerIcons();
 protected:
 	bool addFileToList(QString fileName);
 	bool addMultipleFilesToList(QStringList fileNames);
@@ -62,7 +63,7 @@ private:
     std::unique_ptr<ScriptsManager> scriptsManager_;
     std::unique_ptr<QtServerIconCache> serverIconCache_;
     QSystemTrayIcon* systemTrayIcon_;
-	ServerSelectorWidget* imageServerWidget, *fileServerWidget;
+    ServerSelectorWidget* imageServerWidget_, *fileServerWidget_;
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;
     QThread* iconsLoadingThread_{};

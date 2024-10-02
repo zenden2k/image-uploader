@@ -27,7 +27,7 @@ class ServerSelectorWidget : public QGroupBox
 	void setServersMask(int mask);
 	void setShowFilesizeLimits(bool show);
 	void updateServerList();
-	ServerProfile serverProfile() const;
+    const ServerProfile& serverProfile() const;
 	enum ServerMaskEnum { smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4 };
 
 public slots:

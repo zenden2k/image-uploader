@@ -10,6 +10,10 @@ public:
     ServerProfileGroup();
     ServerProfileGroup(const ServerProfile& profile);
     void addItem(const ServerProfile& profile);
+
+    /**
+     * @throws std::out_of_range
+     */
     ServerProfile& getByIndex(size_t index);
     std::vector<ServerProfile>& getItems();
     std::size_t getCount() const;

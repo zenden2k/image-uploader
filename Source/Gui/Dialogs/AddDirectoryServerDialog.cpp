@@ -47,7 +47,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
-    const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://///\"");
+    const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
 
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
    
@@ -157,8 +157,9 @@ LRESULT CAddDirectoryServerDialog::OnPresetSharedFolderMenuItemClick(WORD wNotif
 
 LRESULT CAddDirectoryServerDialog::OnDirectoryEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString directory =  GuiTools::GetDlgItemText(m_hWnd, IDC_DIRECTORYEDIT);
-    if ( !connectionNameEdited ) {   
-        const CString serverName = TR("Folder ") + CString(_T(" ")) + WinUtils::TrimString(directory, 30);
+    if ( !connectionNameEdited ) {
+        CString serverName;
+        serverName.Format(TR("Folder %s"), WinUtils::TrimString(directory, 30).GetString());
         SetDlgItemText(IDC_CONNECTIONNAMEEDIT, serverName);
     }
     GenerateDownloadLink();
@@ -246,9 +247,11 @@ void CAddDirectoryServerDialog::GenerateExampleUrl()
 
     bool addFileProtocol = GuiTools::GetCheck(m_hWnd, IDC_ADDFILEPROTOCOL);
 
+    // Should be the same converting as in directory.nut script
     if ( addFileProtocol && downloadUrl.Left(2) == _T("\\\\") ) {
+        downloadUrl = downloadUrl.Mid(2);
         downloadUrl.Replace(L"\\", L"/");
-        downloadUrl = L"file:///" + downloadUrl;
+        downloadUrl = L"file://" + downloadUrl;
     }
 
     SetDlgItemText(IDC_EXAMPLEURLLABEL, downloadUrl + "example.png");
@@ -372,7 +375,12 @@ LRESULT CAddDirectoryServerDialog::OnBnClickedBrowsebutton(WORD /*wNotifyCode*/,
   
     if(fd.DoModal(m_hWnd) == IDOK)
     {
-        SetDlgItemText(IDC_DIRECTORYEDIT,fd.GetFolderPath());
+        path = fd.GetFolderPath();
+        CString lastChar = path.Right(1);
+        if (lastChar != _T("\\") && lastChar != _T("/")) {
+            path += _T("\\");
+        }
+        SetDlgItemText(IDC_DIRECTORYEDIT, path);
         return true;
     }
     return 0;

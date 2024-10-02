@@ -27,5 +27,5 @@ ServerProfile& ServerProfileGroup::getByIndex(size_t index) {
     if (items_.empty()) {
         addItem({});
     }
-    return items_[index];
+    return items_.at(index);
 }

@@ -22,8 +22,8 @@ class CUploadEngineListBase;
 class AbstractServerIconCache {
 public:
     AbstractServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir)
-        : engineList_(std::move(engineList))
-        , iconsDir_(iconsDir)
+        : engineList_(engineList)
+        , iconsDir_(std::move(iconsDir))
 
     {
 

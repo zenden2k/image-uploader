@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
 #endif
 
     google::InitGoogleLogging(argv[0]);
+
     AppParams::AppVersionInfo appVersion;
     appVersion.FullVersion = IU_APP_VER;
     appVersion.FullVersionClean = IU_APP_VER_CLEAN;
@@ -112,7 +113,7 @@ int main(int argc, char *argv[])
 
     MyApplication a(argc, argv);
     logWindow = std::make_unique<LogWindow>();
-    logWindow->show();
+    //logWindow->show();
     auto logger = std::make_shared<QtDefaultLogger>(logWindow.get());
     auto myLogSink_ = std::make_unique<MyLogSink>(logger.get());
     google::AddLogSink(myLogSink_.get());
@@ -159,7 +160,7 @@ settingsDir.mkpath(settingsFolder);
         LOG(ERROR) << "Unable to create temp directory!";
     }
 
-	Settings.LoadSettings(AppParams::instance()->settingsDirectory());
+    Settings.LoadSettings(AppParams::instance()->settingsDirectory()/*, "qimageuploader.xml"*/);
 	auto engineList = std::make_unique<CUploadEngineList>();
 	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");

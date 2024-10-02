@@ -14,8 +14,8 @@
 #include <QTimer>
 #include <QThread>
 
-#include <Gui/FrameGrabberDlg.h>
-#include <Gui/RegionSelect.h>
+#include "Gui/FrameGrabberDlg.h"
+#include "Gui/RegionSelect.h"
 #include "Gui/controls/ServerSelectorWidget.h"
 #include "models/uploadtreemodel.h"
 #include "Core/CommonDefs.h"
@@ -40,8 +40,8 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
-    auto serviceLocator = ServiceLocator::instance();
-    auto settings = serviceLocator->settings<QtGuiSettings>();
+    auto* serviceLocator = ServiceLocator::instance();
+    auto* settings = serviceLocator->settings<QtGuiSettings>();
     engineList_ = engineList;
     serviceLocator->setProgramWindow(this);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();
@@ -55,24 +55,6 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);
     serviceLocator->setServerIconCache(serverIconCache_.get());
 
-    iconsLoadingThread_ = new QThread(this);
-    auto timer = new QTimer(nullptr);
-    timer->moveToThread(iconsLoadingThread_);
-    timer->setSingleShot(true);
-
-    connect(timer, &QTimer::timeout, [this](){
-        serverIconCache_->preLoadIcons();
-        QMetaObject::invokeMethod(this, [this] {
-            imageServerWidget->fillServerIcons();
-            fileServerWidget->fillServerIcons();
-        }, Qt::QueuedConnection);
-        iconsLoadingThread_->quit();
-    });
-    connect(iconsLoadingThread_, SIGNAL(started()), timer, SLOT(start()));
-    connect(iconsLoadingThread_, &QThread::destroyed, timer, &QTimer::deleteLater);
-
-    iconsLoadingThread_->start();
-
     std::string scriptsDirectory = dataDirectory + "/Scripts/";
     uploadEngineManager_->setScriptsDirectory(scriptsDirectory);
 
@@ -85,21 +67,36 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->treeView->setColumnWidth(2, 150); // Progress column
 
     connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::itemDoubleClicked);
-
     connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
 
-    ServerProfile imageProfile = settings->imageServer.getByIndex(0);
-    imageServerWidget = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
-    imageServerWidget->setTitle(tr("Server for images:"));
-    imageServerWidget->setServerProfile(imageProfile);
-    ui->verticalLayout->insertWidget(1, imageServerWidget);
+    const ServerProfile imageProfile = settings->imageServer.getByIndex(0);
 
-    fileServerWidget = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
-    fileServerWidget->setTitle(tr("Server for other file types:"));
-    fileServerWidget->setServersMask(ServerSelectorWidget::smFileServers);
-    fileServerWidget->updateServerList();
-    fileServerWidget->setServerProfile(settings->fileServer.getByIndex(0));
-    ui->verticalLayout->insertWidget(2, fileServerWidget);
+    imageServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
+    imageServerWidget_->setTitle(tr("Server for images:"));
+    imageServerWidget_->setServerProfile(imageProfile);
+    ui->verticalLayout->insertWidget(1, imageServerWidget_);
+    fileServerWidget_ = new ServerSelectorWidget(uploadEngineManager_.get(), false, this);
+    fileServerWidget_->setTitle(tr("Server for other file types:"));
+    fileServerWidget_->setServersMask(ServerSelectorWidget::smFileServers);
+    fileServerWidget_->updateServerList();
+
+    const ServerProfile fileServerProfile = settings->fileServer.getByIndex(0);
+    fileServerWidget_->setServerProfile(fileServerProfile);
+    ui->verticalLayout->insertWidget(2, fileServerWidget_);
+
+    iconsLoadingThread_ = new QThread(this);
+    auto* timer = new QTimer(nullptr);
+    timer->moveToThread(iconsLoadingThread_);
+    timer->setSingleShot(true);
+    connect(timer, &QTimer::timeout, [this, serviceLocator](){
+        serviceLocator->serverIconCache()->preLoadIcons();
+        QMetaObject::invokeMethod(this, "fillServerIcons", Qt::AutoConnection);
+        iconsLoadingThread_->quit();
+    });
+    connect(iconsLoadingThread_, SIGNAL(started()), timer, SLOT(start()));
+    connect(iconsLoadingThread_, &QThread::destroyed, timer, &QTimer::deleteLater);
+
+    iconsLoadingThread_->start();
 
     QMenu* contextMenu = new QMenu(this);
     QAction* exitAction = contextMenu->addAction(tr("Exit"));
@@ -115,7 +112,6 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
         }
     });
     systemTrayIcon_->show();
-    qDebug() << systemTrayIcon_->geometry();
 
     connect(ui->showLogButton, &QPushButton::clicked, this, &MainWindow::onShowLog);
 }
@@ -141,7 +137,9 @@ void MainWindow::on_actionGrab_frames_triggered() {
     QFileDialog fd(this,"Open multimedia file", QString(), tr("All files (*.*)"));
     fd.setModal(true);
     fd.setWindowModality(Qt::WindowModal);
-    fd.exec();
+    if (fd.exec() != QDialog::Accepted) {
+        return;
+    }
     auto files = fd.selectedFiles();
 
     if (files.empty()) {
@@ -207,20 +205,24 @@ void MainWindow::on_actionAdd_files_triggered() {
     QFileDialog fd(this,"Open files", QString(), tr("All files (*.*)"));
     fd.setModal(true);
     fd.setWindowModality(Qt::WindowModal);
-    fd.exec();
-    auto fileNames = fd.selectedFiles();
+    if (fd.exec() == QDialog::Accepted) {
+        auto fileNames = fd.selectedFiles();
 
-    if (fileNames.empty()) {
-        return;
+        if (fileNames.empty()) {
+            return;
+        }
+
+        addMultipleFilesToList(fileNames);
     }
-
-    addMultipleFilesToList(fileNames);
 }
 
 bool MainWindow::addFileToList(QString fileName) {
+    if (fileName.isEmpty()) {
+        return false;
+    }
     auto uploadSession = std::make_shared<UploadSession>();
     auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-    ServerProfile serverProfile = imageServerWidget->serverProfile();
+    ServerProfile serverProfile = imageServerWidget_->serverProfile();
     task->setServerProfile(serverProfile);
     uploadSession->addTask(task);
     uploadManager_->addSession(uploadSession);
@@ -241,7 +243,7 @@ bool MainWindow::addMultipleFilesToList(QStringList fileNames) {
     auto uploadSession = std::make_shared<UploadSession>();
     for (const auto& fileName : fileNames) {
         auto task = std::make_shared<FileUploadTask>(Q2U(fileName), IuCoreUtils::ExtractFileName(Q2U(fileName)));
-        ServerProfile serverProfile = imageServerWidget->serverProfile();
+        ServerProfile serverProfile = imageServerWidget_->serverProfile();
         task->setServerProfile(serverProfile);
         uploadSession->addTask(task);
     }
@@ -352,6 +354,11 @@ void MainWindow::onShowLog() {
     logWindow_->activateWindow();
 }
 
+void MainWindow::fillServerIcons() {
+    imageServerWidget_->fillServerIcons();
+    fileServerWidget_->fillServerIcons();
+}
+
 void MainWindow::on_actionAboutProgram_triggered() {
     AboutDialog dlg(this);
     dlg.setModal(true);
@@ -361,8 +368,8 @@ void MainWindow::on_actionAboutProgram_triggered() {
 
 void  MainWindow::saveOptions() {
     auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
-    settings->imageServer = imageServerWidget->serverProfile();
-    settings->fileServer = fileServerWidget->serverProfile();
+    settings->imageServer = imageServerWidget_->serverProfile();
+    settings->fileServer = fileServerWidget_->serverProfile();
 }
 
 void MainWindow::quitApp() {

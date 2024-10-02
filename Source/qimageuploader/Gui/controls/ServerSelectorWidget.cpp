@@ -80,7 +80,7 @@ void ServerSelectorWidget::setShowFilesizeLimits(bool show) {
 void ServerSelectorWidget::updateServerList() {
     auto serviceLocator = ServiceLocator::instance();
     serverListComboBox->clear();
-    auto* serverIconCache = serviceLocator->serverIconCache();
+    //auto* serverIconCache = serviceLocator->serverIconCache();
     auto* myEngineList = serviceLocator->engineList();
 
     int addedItems = 0;
@@ -121,7 +121,7 @@ void ServerSelectorWidget::updateServerList() {
 
             QString iconPath = QDir(dataDir).filePath("Favicons/" + U2Q(ue->Name).toLower() + ".ico");
 
-            QIcon ico = serverIconCache->getIconForServer(ue->Name);
+            //QIcon ico = serverIconCache->getIconForServer(ue->Name);
             /*if (QFile::exists(iconPath)) {
                 ico = QIcon(iconPath);
 
@@ -139,7 +139,7 @@ void ServerSelectorWidget::updateServerList() {
             if (showFileSizeLimits && ue->MaxFileSize > 0) {
                 displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
             }
-            serverListComboBox->addItem(ico, U2Q(displayName), U2Q(ue->Name));
+            serverListComboBox->addItem(QIcon(), U2Q(displayName), U2Q(ue->Name));
             /*if (ue->Name == selectedServerName) {
                 selectedIndex = itemIndex;
             }*/
@@ -162,7 +162,7 @@ void ServerSelectorWidget::comboBoxIndexChanged(int index) {
     }
 }
 
-ServerProfile ServerSelectorWidget::serverProfile() const {
+const ServerProfile& ServerSelectorWidget::serverProfile() const {
     return serverProfile_;
 }
 

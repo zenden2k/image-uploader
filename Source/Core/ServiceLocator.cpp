@@ -8,32 +8,22 @@ class UploadManager;
 class ServiceLocatorPrivate{
 public:
     ServiceLocatorPrivate() {
-        translator_ = nullptr;
-        engineList_ = nullptr;
-        programWindow_ = nullptr;
-        dialogProvider_ = nullptr;
-        uploadManager_ = nullptr;
-        myEngineList_ = nullptr;
-        taskRunner_ = nullptr;
-        logWindow_ = nullptr;
-        settings_ = nullptr;
-        taskDispatcher_ = nullptr;
     }
     std::shared_ptr<ILogger> logger_;
-    ITranslator* translator_;
-    CUploadEngineListBase* engineList_;
+    ITranslator* translator_ = nullptr;
+    CUploadEngineListBase* engineList_ = nullptr;
     CHistoryManager historyManager;
-    IProgramWindow* programWindow_;
+    IProgramWindow* programWindow_ = nullptr;
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
-    IDialogProvider* dialogProvider_;
-    ITaskRunner* taskRunner_;
-    UploadManager* uploadManager_;
-    CMyEngineList* myEngineList_;
-    CLogWindow* logWindow_;
-    BasicSettings* settings_;
+    IDialogProvider* dialogProvider_ = nullptr;
+    ITaskRunner* taskRunner_ = nullptr;
+    UploadManager* uploadManager_ = nullptr;
+    CMyEngineList* myEngineList_ = nullptr;
+    CLogWindow* logWindow_ = nullptr;
+    BasicSettings* settings_ = nullptr;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
-    TaskDispatcher* taskDispatcher_;
+    TaskDispatcher* taskDispatcher_ = nullptr;
     AbstractServerIconCache* serverIconCache_ = nullptr;
 };
 
