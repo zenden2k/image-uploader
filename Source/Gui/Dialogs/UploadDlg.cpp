@@ -100,7 +100,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     resultsWindow_->SetPage(static_cast<CodeLang>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
-    return 1;  
+    return FALSE;  
 }
 
 bool CUploadDlg::startUpload() {
@@ -314,7 +314,7 @@ bool CUploadDlg::OnShow()
     resultsWindow_->SetCodeType(newcode);
     resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(settings->CodeLang));
 
-    ::SetFocus(GetDlgItem(IDC_CODEEDIT));
+    //::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;
     backgroundThreadStarted();
     startUpload();
@@ -485,6 +485,10 @@ void CUploadDlg::viewImage(int itemIndex) {
             imageViewWindow_.ViewImage(imgViewItem, wizardDlg);
         }
     }
+}
+
+void CUploadDlg::SetInitialFocus() {
+    resultsWindow_->SetFocus();
 }
 
 LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

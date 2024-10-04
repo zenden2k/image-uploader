@@ -106,6 +106,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void createToolbar();
         void updateTotalProgress();
         void viewImage(int itemIndex);
+        void SetInitialFocus() override;
         int currentTab_;
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;

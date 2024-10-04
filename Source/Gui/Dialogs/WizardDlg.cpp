@@ -705,7 +705,8 @@ bool CWizardDlg::ShowPage(WizardPageId idPage, int prev, int next)
     NextPage = next;
     CurPage = idPage;
     ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
-    ::SetFocus(Pages[idPage]->PageWnd);
+    Pages[idPage]->SetInitialFocus();
+    
     Pages[idPage]->OnShow();
 
     //::ShowWindow(GetDlgItem(IDC_HELPBUTTON), idPage == wpWelcomePage);

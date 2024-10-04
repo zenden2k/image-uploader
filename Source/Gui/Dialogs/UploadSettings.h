@@ -188,6 +188,8 @@ class CUploadSettings :
     int nFileIndex;
     void OnFolderButtonContextMenu(POINT pt, bool isImageServerToolbar);
     void OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar);
+    void SetInitialFocus() override;
+
 protected:
     CMyEngineList * m_EngineList;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;

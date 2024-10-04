@@ -265,7 +265,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     ShowParams(profileName);
     UpdateProfileList();
     UpdateAllPlaceSelectors();
-    return 1;  // Let the system set the focus
+    return FALSE; 
 }
 
 LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -1094,6 +1094,10 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
         sub.AppendMenu(MF_STRING, IDC_OPENWEBSITE + (int)isImageServerToolbar, TR("Open the website"));
     }
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
+}
+
+void CUploadSettings::SetInitialFocus(){
+    ::SetFocus(WizardDlg->GetDlgItem(IDC_NEXT));
 }
 
 LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

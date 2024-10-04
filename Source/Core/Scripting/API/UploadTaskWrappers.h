@@ -79,6 +79,9 @@ public:
     const std::string parentUrlType();
 };
 
+/**
+ * Upload task union
+ */
 class UploadTaskUnion {
 public:
     UploadTaskUnion() = default;

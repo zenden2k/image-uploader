@@ -13,9 +13,9 @@ Example:
 This function is called before upload
 @return true - success, false - error (will abort upload)
 */
-bool PreUpload(ScriptAPI::UploadTaskWrapperBase task, int reserved);
+bool PreUpload(ScriptAPI::UploadTaskUnion taskUnion, int reserved);
 
 /**
 This function is called after upload, but child tasks (url shortening, thumbnail upload) of this task can be still running
 */
-bool PostUpload(ScriptAPI::UploadTaskWrapperBase task, int reserved);
+bool PostUpload(ScriptAPI::UploadTaskUnion taskUnion, int reserved);
