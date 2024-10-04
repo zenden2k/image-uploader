@@ -59,7 +59,7 @@ function _ChooseMirrors(fileName, fileSize, availableMirrors, defaultMirrors, us
 }
 
 function _UploadToAccount(fileName, options) {
-    local task = options.getTask();
+    local task = options.getTask().getFileTask();
     local apiKey = ServerParams.getParam("Password");
     nm.setUrl(API_URL + "/api/v1/get_upload_info");
     nm.addQueryParam("api_key", apiKey);

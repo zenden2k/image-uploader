@@ -192,7 +192,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         if (task->type() == UploadTask::TypeFile) {
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function UploadFile not found in script")); 
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -203,7 +203,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function ShortenUrl not found in script")); 
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -217,7 +217,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             auto searchTask = std::dynamic_pointer_cast<SearchByImageFileTask>(task);
             Function func(vm_.GetRootTable(), "SearchByImage");
             if (func.IsNull()) {
-                Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function SearchByImage not found in the script"));
+                Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function SearchByImage not found in the script"));
                 currentTask_ = nullptr;
                 return -1;
             }
@@ -233,18 +233,18 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         throw;
     }
     catch (ServerSyncException& e) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
         ival = -1; // fatal error
     }
 	/*catch (const Sqrat::Exception& e) {
     	if (!strcmp(e.what(), "unauthorized_exception")) {
             ival = -2;
     	} else {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
     	}
     }*/
     catch (std::exception & e) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
     }
     
     FlushSquirrelOutput();

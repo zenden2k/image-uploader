@@ -208,11 +208,10 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getEditUrl", &UploadParams::getEditUrl).
         Func("getServerFileName", &UploadParams::getServerFileName).
         Func("getTask", &UploadParams::getTask).
-        Func("getFileTask", &UploadParams::getFileTask).
-        Func("getUrlShorteningTask", &UploadParams::getUrlShorteningTask).
+        //Func("getFileTask", &UploadParams::getFileTask).
+        //Func("getUrlShorteningTask", &UploadParams::getUrlShorteningTask).
         Func("getParam", &UploadParams::getParam)
     );
-
 
     root.Bind("CFolderList", Class<CFolderList>(vm.GetVM(), "CFolderList").
         Func("AddFolder", &CFolderList::AddFolder).

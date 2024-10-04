@@ -363,9 +363,9 @@ public:
     }
 
     std::string getServerFileName() const { return ServerFileName; }
-    ScriptAPI::UploadTaskWrapper getTask();
-    ScriptAPI::FileUploadTaskWrapper getFileTask();
-    ScriptAPI::UrlShorteningTaskWrapper getUrlShorteningTask();
+    ScriptAPI::UploadTaskUnion getTask();
+    /* ScriptAPI::FileUploadTaskWrapper getFileTask();
+    ScriptAPI::UrlShorteningTaskWrapper getUrlShorteningTask();*/
 };
 
 class CUploadEngineListBase

@@ -330,11 +330,12 @@ ServerSync* CAbstractUploadEngine::serverSync() const
 
 const std::string CFolderItem::NewFolderMark = "_iu_create_folder_";
 
-ScriptAPI::UploadTaskWrapper UploadParams::getTask() {
+ScriptAPI::UploadTaskUnion UploadParams::getTask() {
     return task_;
 }
 
-ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask() {
+/*/ ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask()
+{
     auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task_);
     return fileTask;
 }
@@ -342,4 +343,4 @@ ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask() {
 ScriptAPI::UrlShorteningTaskWrapper UploadParams::getUrlShorteningTask() {
     auto urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
     return urlShorteningTask;
-}
+}*/

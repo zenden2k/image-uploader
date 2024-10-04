@@ -79,13 +79,18 @@ public:
     const std::string parentUrlType();
 };
 
-/*class UploadTaskWrapper : public UrlShorteningTaskWrapper {
+class UploadTaskUnion {
 public:
-    UploadTaskWrapper();
-    UploadTaskWrapper(const std::string& type);
-    explicit UploadTaskWrapper(UploadTask* task);
-    UploadTaskWrapper(std::shared_ptr<UploadTask> task);
-}*;*/
+    UploadTaskUnion() = default;
+    UploadTaskUnion(UploadTask* task);
+    UploadTaskUnion(std::shared_ptr<UploadTask> task);
+    std::string type() const;
+    UploadTaskWrapper getTask();
+    FileUploadTaskWrapper getFileTask();
+    UrlShorteningTaskWrapper getUrlShorteningTask();
+private:
+    std::shared_ptr<UploadTask> task_;
+};
 
 /* @cond PRIVATE */
 void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm);

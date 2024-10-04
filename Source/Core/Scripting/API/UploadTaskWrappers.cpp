@@ -324,7 +324,7 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("setServerName", &UploadResult::setServerName)
         );
 
-    root.Bind("UploadTask", Class<UploadTaskWrapper>(hvm, "UploadTask").
+    root.Bind("UploadTaskWrapper", Class<UploadTaskWrapper>(hvm, "UploadTaskWrapper").
         Func("role", &UploadTaskWrapper::role).
         Func("type", &UploadTaskWrapper::type).
         Func("setRole", &UploadTaskWrapper::setRole).
@@ -341,7 +341,7 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("uploadResult", &UploadTaskWrapper::uploadResult)
         );
 
-    root.Bind("FileUploadTask", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapper>(hvm, "FileUploadTask").
+    root.Bind("FileUploadTaskWrapper", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapper>(hvm, "FileUploadTaskWrapper").
         Ctor().
         Ctor<const std::string&, const std::string&>().
         Func("getFileName", &FileUploadTaskWrapper::getFileName).
@@ -352,15 +352,53 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("originalFileName", &FileUploadTaskWrapper::originalFileName)
         );
 
-    root.Bind("UrlShorteningTask", DerivedClass<UrlShorteningTaskWrapper, UploadTaskWrapper>(hvm, "UrlShorteningTask").
+    root.Bind("UrlShorteningTaskWrapper", DerivedClass<UrlShorteningTaskWrapper, UploadTaskWrapper>(hvm, "UrlShorteningTaskWrapper").
         Func("getUrl", &UrlShorteningTaskWrapper::getUrl).
         Func("setParentUrlType", &UrlShorteningTaskWrapper::setParentUrlType).
         Func("parentUrlType", &UrlShorteningTaskWrapper::parentUrlType)
         );
 
-    /* DerivedClass<UploadTaskWrapper, UrlShorteningTaskWrapper> UploadTaskWrapperClass(hvm, "UploadTask");
-    root.Bind("UploadTask", UploadTaskWrapperClass);*/
+    root.Bind("UploadTaskUnion", Class<UploadTaskUnion>(hvm, "UploadTaskUnion")
+        .Ctor().Func("type", &UploadTaskUnion::type)
+        .Func("getTask", &UploadTaskUnion::getTask)
+        .Func("getFileTask", &UploadTaskUnion::getFileTask)
+        .Func("getUrlShorteningTask", &UploadTaskUnion::getUrlShorteningTask)
+    );
 }
 
+UploadTaskUnion::UploadTaskUnion(std::shared_ptr<UploadTask> task) : task_(task) {
+}
+
+UploadTaskUnion::UploadTaskUnion(UploadTask* task){
+    release_deleter<UploadTask> deleter;
+    deleter.release();
+    task_.reset(task, deleter);
+}
+
+
+std::string UploadTaskUnion::type() const{
+    return UploadTask::EnumToString(task_->type());
+}
+
+ScriptAPI::UploadTaskWrapper UploadTaskUnion::getTask() {
+    return task_;
+}
+
+ScriptAPI::FileUploadTaskWrapper UploadTaskUnion::getFileTask() {
+    auto res = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    if (!res) {
+        throw std::runtime_error("Pointer cast failed. It is not FileUploadTask");
+    }
+    return res;
+}
+
+
+ScriptAPI::UrlShorteningTaskWrapper UploadTaskUnion::getUrlShorteningTask() {
+    auto res = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
+    if (!res) {
+        throw std::runtime_error("Pointer cast failed. It is not UrlShorteningTask");
+    }
+    return res;
+}
 
 }
