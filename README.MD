@@ -38,6 +38,12 @@ Available options:
 
 https://svistunov.dev/imageuploader-cli
 
+## Documentation
+
+[User Guide (Russian)](https://zenden2k.github.io/image-uploader/)
+
+[Scripting API](https://zenden2k.github.io/image-uploader/api/html/index.html)
+
 ## Building from source
 
 See COMPILING.MD
