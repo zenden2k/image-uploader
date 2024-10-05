@@ -223,6 +223,25 @@ namespace Util {
         return (written > 0) ? S_OK : E_FAIL;
     }
 
+    // Added by zenden2k
+    inline HRESULT defaultExecutableDir(_In_ WCHAR* path, _In_ DWORD nSize = MAX_PATH)
+    {
+        DWORD written = GetModuleFileNameExW(GetCurrentProcess(), nullptr, path, nSize);
+
+        if (!written) {
+            return E_FAIL;
+        }
+
+        for (int i = written - 1; i >= 0; i--) {
+            if (path[i] == '\\') {
+                path[i + 1] = '\0';
+                break;
+            }
+        }
+        DEBUG_MSG("Default executable path: " << path);
+        return S_OK;
+    }
+
     inline HRESULT defaultShellLinksDirectory(_In_ WCHAR* path, _In_ DWORD nSize = MAX_PATH) {
         DWORD written = GetEnvironmentVariableW(L"APPDATA", path, nSize);
         HRESULT hr    = written > 0 ? S_OK : E_INVALIDARG;
@@ -613,9 +632,11 @@ HRESULT WinToast::createShellLinkHelper() {
     }
 
     WCHAR exePath[MAX_PATH]{L'\0'};
+    WCHAR exeDir[MAX_PATH]{L'\0'};
     WCHAR slPath[MAX_PATH]{L'\0'};
     Util::defaultShellLinkPath(_appName, slPath);
     Util::defaultExecutablePath(exePath);
+    Util::defaultExecutableDir(exeDir);
     ComPtr<IShellLinkW> shellLink;
     HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink));
     if (SUCCEEDED(hr)) {
@@ -623,7 +644,7 @@ HRESULT WinToast::createShellLinkHelper() {
         if (SUCCEEDED(hr)) {
             hr = shellLink->SetArguments(L"");
             if (SUCCEEDED(hr)) {
-                hr = shellLink->SetWorkingDirectory(exePath);
+                hr = shellLink->SetWorkingDirectory(exeDir);
                 if (SUCCEEDED(hr)) {
                     ComPtr<IPropertyStore> propertyStore;
                     hr = shellLink.As(&propertyStore);

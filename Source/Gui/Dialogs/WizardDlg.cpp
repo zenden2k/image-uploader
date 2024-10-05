@@ -303,11 +303,15 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     aboutButtonToolTip_ = GuiTools::CreateToolTipForWindow(helpButton_, TR("Help"));
     using namespace WinToastLib;
     if (WinToast::isCompatible()) {
-        WinToast::instance()->setAppName(APPNAME);
-        const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
-        WinToast::instance()->setAppUserModelId(aumi);
+        WinToast* toast = WinToast::instance();
 
-        if (!WinToastLib::WinToast::instance()->initialize()) {
+        toast->setAppName(APPNAME);
+        toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
+        
+        const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        toast->setAppUserModelId(aumi);
+
+        if (!toast->initialize()) {
             LOG(WARNING) << L"Error, could not initialize WinToastLib!" << std::endl;
         }
     }
