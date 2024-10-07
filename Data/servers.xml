@@ -45,7 +45,6 @@
 				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
 				<Format MimeType="image/png">*.png</Format>
 				<Format MimeType="image/gif">*.gif</Format>
-				<Format MimeType="image/webp">*.webp</Format>
 				<Format MimeType="image/tiff">*.tiff</Format>
 			</FormatGroup>
 			<FormatGroup MaxFileSize="209715200">

@@ -2500,7 +2500,7 @@ bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const S
 {
     auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
-    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, sessionImageServer_, sessionFileServer_);
+    auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer);
     std::string message;
     std::vector<BadFileFormat> errors;
 
