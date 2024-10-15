@@ -21,9 +21,18 @@ function _UploadToAccount(FileName, options) {
         WriteLog("error", "[imgbb.com] Cannot upload to account without API key");
         return 0;
     }
+    local expiration = 0;
+    try {
+        expiration = 60 * ServerParams.getParam("uploadExpiration").tointeger();
+    } catch (ex) {
+
+    }
     nm.addQueryParam("key", apiKey);
+    if (expiration) {
+        nm.addQueryParam("expiration", expiration);
+    }
     nm.addQueryParamFile("image", FileName, ExtractFileName(FileName), "");
-    nm.setUrl("https://api.imgbb.com/1/upload");
+    nm.setUrl("https://api.imgbb.com/1/upload?expiration=" + expiration);
     nm.doUploadMultipartData();
     local t = ParseJSON(nm.responseBody());
     if (nm.responseCode() == 200) { 
@@ -89,4 +98,104 @@ function UploadFile(FileName, options) {
         }
         return 0;
     }
+}
+
+function GetServerParamList() {
+    return {
+        uploadExpiration = tr("imgbb.expiration", "Expiration (in minutes)")
+        /*uploadExpiration = {
+            title = "Auto-delete after",
+            type = "choice",
+            items = [
+                {
+                    id = "",
+                    label = "Never"
+                },
+                {
+                    id = "PT5M",
+                    label = "15 minutes"
+                },
+                {
+                    id = "PT30M",
+                    label = "30 minutes"
+                },
+                {
+                    id = "PT1H",
+                    label = "1 hour"
+                },
+                {
+                    id = "PT3H",
+                    label = "3 hours"
+                },
+                {
+                    id = "PT6H",
+                    label = "6 hours"
+                },
+                {
+                    id = "PT12H",
+                    label = "12 hours"
+                },
+                {
+                    id = "P1D",
+                    label = "1 day"
+                },
+                {
+                    id = "P2D",
+                    label = "2 days"
+                },
+                {
+                    id = "P3D",
+                    label = "3 days"
+                },
+                {
+                    id = "P4D",
+                    label = "4 days"
+                },
+                {
+                    id = "P5D",
+                    label = "5 days"
+                },
+                {
+                    id = "P6D",
+                    label = "6 days"
+                },
+                {
+                    id = "P1W",
+                    label = "1 week"
+                },
+                {
+                    id = "P2W",
+                    label = "2 weeks"
+                },
+                {
+                    id = "P3W",
+                    label = "3 weeks"
+                },
+                {
+                    id = "P1M",
+                    label = "1 month"
+                },
+                {
+                    id = "P2M",
+                    label = "2 months"
+                },
+                {
+                    id = "P3M",
+                    label = "3 months"
+                },
+                {
+                    id = "P4M",
+                    label = "4 months"
+                },
+                {
+                    id = "P5M",
+                    label = "5 months"
+                },
+                {
+                    id = "P6M",
+                    label = "6 months"
+                }
+            ]
+        }*/
+    };
 }

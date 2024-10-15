@@ -27,6 +27,7 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Core/Upload/Parameters/AbstractParameter.h"
 
 class ServerProfile;
 class UploadEngineManager;
@@ -69,7 +70,7 @@ class CServerParamsDlg :
         ServerProfile serverProfile() const;
     protected:
         CPropertyListCtrl m_wndParamList;
-        std::map<std::string,std::string> m_paramNameList;
+        ParameterList m_paramNameList;
         CUploadEngineData *m_ue;
         bool focusOnLoginControl_;
         CAdvancedUploadEngine *m_pluginLoader;
@@ -77,6 +78,7 @@ class CServerParamsDlg :
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;
         void doAuthChanged();
+        void updateServerParamList(ServerSettingsStruct* serverSettings);
 };
 
 

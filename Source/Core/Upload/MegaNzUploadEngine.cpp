@@ -354,7 +354,8 @@ int CMegaNzUploadEngine::getAccessTypeList(std::vector<std::string>& list) {
     return 1;
 }
 
-int CMegaNzUploadEngine::getServerParamList(std::map<std::string, std::string>& list) {
+int CMegaNzUploadEngine::getServerParamList(ParameterList& list)
+{
     return 0;
 }
 

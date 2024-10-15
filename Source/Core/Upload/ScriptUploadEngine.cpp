@@ -31,6 +31,8 @@
 #include "Core/ThreadSync.h"
 #include "AuthTask.h"
 #include "FolderTask.h"
+#include "Parameters/TextParameter.h"
+#include "Parameters/ChoiceParameter.h"
 
 namespace {
 
@@ -52,6 +54,49 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
         LOG(WARNING) << "Invalid result type";
     }
     return {res, t};
+}
+
+std::unique_ptr<AbstractParameter> SqTableToParameter(const std::string name, const std::string& type, Sqrat::Table& table) {
+    if (type == "text") {
+        return std::make_unique<TextParameter>(name);
+    } if (type == "choice") {
+        auto choiceParameter = std::make_unique<ChoiceParameter>(name);
+        auto choices = table.GetValue<Sqrat::Array>("items");
+        if (!!choices) {
+            Sqrat::Array::iterator it;
+            while (choices->Next(it)) {
+                Sqrat::Table tbl(it.getValue(), choices->GetVM());
+                std::string itemLabel = ScriptAPI::GetValue(tbl.GetValue<std::string>("label"));
+                std::string itemId = ScriptAPI::GetValue(tbl.GetValue<std::string>("id"));
+                choiceParameter->addItem(itemId, itemLabel);
+            }
+        }
+        return choiceParameter;
+    }
+    return {};
+}
+
+void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& list) {
+    list.clear();
+    Sqrat::Array::iterator it;
+    while (tbl->Next(it)) {
+        Sqrat::Object obj(it.getValue(), tbl->GetVM());
+        if (obj.GetType() == OT_STRING) {
+            auto newParam = std::make_unique<TextParameter>(it.getName());
+            std::string value = obj.Cast<std::string>();
+            newParam->setTitle(value);
+            list.push_back(std::move(newParam));
+        } else if (obj.GetType() == OT_TABLE) {
+            Sqrat::Table table(it.getValue(), tbl->GetVM());
+            std::string title = ScriptAPI::GetValue(table.GetValue<std::string>("title"));
+            std::string typeStr = ScriptAPI::GetValue(table.GetValue<std::string>("type"));
+            auto newParam = SqTableToParameter(it.getName(), typeStr, table);
+            if (newParam) {
+                newParam->setTitle(title);
+                list.push_back(std::move(newParam));
+            }
+        }
+    }
 }
 
 }
@@ -326,7 +371,7 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
     return 1;
 }
 
-int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& list)
+int CScriptUploadEngine::getServerParamList(ParameterList& list)
 {
     using namespace Sqrat;
 
@@ -346,19 +391,9 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
             return -1;
         }
 
-        Sqrat::Array::iterator it;
-        list.clear();
-        
-        while (arr->Next(it))
-        {
-            std::string t = Sqrat::Object(it.getValue(), vm_.GetVM()).Cast<std::string>();
-            /*if ( t ) */{
-                //std::string title = t;
-                list[it.getName()] =  std::move(t);
-            }
-        }
+        SqTableToParameterList(arr, list);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string(e.what()));
     }

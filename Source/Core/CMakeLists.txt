@@ -50,6 +50,9 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UploadManager.cpp
     Upload/UploadSession.cpp
     Upload/AdvancedUploadEngine.cpp
+    Upload/Parameters/AbstractParameter.cpp
+    Upload/Parameters/TextParameter.cpp
+    Upload/Parameters/ChoiceParameter.cpp
     ServiceLocator.cpp
     Settings/BasicSettings.cpp
     Logging/MyLogSink.cpp
@@ -111,6 +114,9 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/SearchByImageUrlTask.h
     Upload/SearchByImageFileTask.h
     Upload/TempImageUploadTask.h
+    Upload/Parameters/AbstractParameter.h
+    Upload/Parameters/TextParameter.h
+    Upload/Parameters/ChoiceParameter.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h
     Utils/SimpleXml.h

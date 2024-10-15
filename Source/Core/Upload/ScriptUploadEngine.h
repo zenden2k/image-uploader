@@ -33,6 +33,7 @@
 #include "Core/Scripting/Script.h"
 #include "Core/Network/NetworkClient.h"
 #include "AdvancedUploadEngine.h"
+#include "Parameters/AbstractParameter.h"
 
 class CScriptUploadEngine : public CAdvancedUploadEngine, 
                             public Script,
@@ -49,7 +50,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
         int modifyFolder(CFolderItem &folder) override;
         int getAccessTypeList(std::vector<std::string> &list) override;
-        int getServerParamList(std::map<std::string, std::string> &list) override;
+        int getServerParamList(ParameterList& list) override;
         int doLogin() override;
         int doLogout() override;
         bool supportsLogout() override;

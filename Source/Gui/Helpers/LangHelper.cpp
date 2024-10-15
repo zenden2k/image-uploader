@@ -480,7 +480,7 @@ std::map<std::string, std::string> LangHelper::getLanguageList(const std::wstrin
                 auto systemLocaleIt = systemLocales_.find(nameClean);
 
                 if (systemLocaleIt != systemLocales_.end() && !systemLocaleIt->second.nativeName.empty()) {
-                    displayName += " - ";
+                    displayName += " / ";
                     displayName += IuCoreUtils::WstringToUtf8(systemLocaleIt->second.nativeName);
                 }
                 result[nameA] = displayName;

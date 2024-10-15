@@ -26,6 +26,8 @@
 #include "Gui/Dialogs/InputDialog.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/BasicSettings.h"
+#include "Core/Upload/Parameters/TextParameter.h"
+#include "Core/Upload/Parameters/ChoiceParameter.h"
 
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
@@ -94,11 +96,7 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     if (m_pluginLoader) {
         m_pluginLoader->getServerParamList(m_paramNameList);
 
-        for (auto it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
-            CString name = it->first.c_str();
-            CString humanName = it->second.c_str();
-            m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
-        }
+        updateServerParamList(serverSettings);
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle());
 
@@ -120,15 +118,27 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         serverSettings->authData.Login = WCstringToUtf8(login);
         serverSettings->authData.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
 
-        for (const auto& [first, second]: m_paramNameList){
-            CString name = first.c_str();
-            CString humanName = second.c_str();
+        for (const auto& parameter: m_paramNameList) {
+            HPROPERTY pr = m_wndParamList.FindProperty(reinterpret_cast<LPARAM>(parameter.get()));
 
-            HPROPERTY pr = m_wndParamList.FindProperty(humanName);
-            CComVariant vValue;
-            pr->GetValue(&vValue);
+            if (pr) {
+                CComVariant vValue;
+                pr->GetValue(&vValue);
 
-            serverSettings->params[WCstringToUtf8(name)] = WCstringToUtf8(vValue.bstrVal);
+                if (parameter->getType() == "text") {
+                    serverSettings->params[parameter->getName()] = WCstringToUtf8(vValue.bstrVal);
+                } else if (parameter->getType() == "choice") {
+                    auto choiceParameter = dynamic_cast<ChoiceParameter*>(parameter.get());
+                    if (choiceParameter) {
+                        const auto& items = choiceParameter->getItems();
+                        try {
+                            const auto& [id, label] = items.at(vValue.intVal);
+                            serverSettings->params[parameter->getName()] = id;
+                        } catch (const std::out_of_range& e) {
+                        }  
+                    }
+                }   
+            }
         }
     } else {
         LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
@@ -158,6 +168,52 @@ void CServerParamsDlg::doAuthChanged() {
     //::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), (IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory) && m_ue->NeedPassword);
 }
 
+
+void CServerParamsDlg::updateServerParamList(ServerSettingsStruct* serverSettings) {
+    for (const auto& parameter : m_paramNameList) {
+        HPROPERTY prop = nullptr;
+        CString name = U2W(parameter->getName());
+        std::string value = serverSettings ? serverSettings->params[parameter->getName()] : std::string();
+        auto lParam = reinterpret_cast<LPARAM>(parameter.get());
+        {
+            auto par = dynamic_cast<TextParameter*>(parameter.get());
+            if (par) {
+                prop = PropCreateSimple(U2W(par->getTitle()), serverSettings ? Utf8ToWCstring(serverSettings->params[parameter->getName()]) : CString(), lParam);
+            }
+        }
+        {
+            auto par = dynamic_cast<ChoiceParameter*>(parameter.get());
+            if (par) {
+                auto items = par->getItems();
+                size_t selectedIndex = 0;
+                bool found = false;
+                size_t i = 0;
+                std::vector<CString> s; // Maybe only this vector of CString is enough?
+                std::vector<LPCTSTR> choices;
+                for (const auto& it : items) {
+                    s.push_back(U2W(it.second));
+                    choices.push_back(s.back().GetString());
+                    if (!found && it.first == value) {
+                        selectedIndex = i;
+                        found = true;
+                    }
+                    ++i;
+                }
+                choices.push_back(nullptr);
+                prop = PropCreateList(U2W(par->getTitle()), choices.data(), selectedIndex, lParam);
+            }
+        }
+
+        if (prop) {
+            m_wndParamList.AddItem(prop);
+        }
+    }
+    /* for (auto it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
+            CString name = it->first.c_str();
+            CString humanName = it->second.c_str();
+            m_wndParamList.AddItem();
+        }*/
+}
 
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
@@ -204,11 +260,12 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     m_pluginLoader->getServerParamList(m_paramNameList);
 
     if (serverSettings) {
-        for (const auto& it: m_paramNameList) {
+        updateServerParamList(serverSettings);
+        /* for (const auto& it : m_paramNameList) {
             CString name = it.first.c_str();
             CString humanName = it.second.c_str();
             m_wndParamList.AddItem(PropCreateSimple(humanName, Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)])));
-        }
+        }*/
     }
 
     return 0;

@@ -136,10 +136,12 @@ public:
         }
         std::string dir = WinUtils::wstostr(dataFolder.GetString(), CP_ACP);
         char* cacheDir = strdup(dir.c_str());
-        const char* dirs[2]
-            = { cacheDir ,  nullptr};
-        xdg_mime_set_dirs(dirs);
-        free(cacheDir);
+        if (cacheDir) {
+            const char* dirs[2]
+                = { cacheDir, nullptr };
+            xdg_mime_set_dirs(dirs);
+            free(cacheDir);
+        }
 
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
