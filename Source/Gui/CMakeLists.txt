@@ -36,6 +36,7 @@ set(SRC_LIST
     Components/NewStyleFileSaveDialog.cpp
     Components/DragndropOverlay.cpp
     Components/WinToastHandler.cpp
+    Components/ParameterListAdapter.cpp
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
@@ -204,6 +205,7 @@ set(HEADER_LIST
     Components/NewStyleFileSaveDialog.h
     Components/DragndropOverlay.h
     Components/WinToastHandler.h
+    Components/ParameterListAdapter.h
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h

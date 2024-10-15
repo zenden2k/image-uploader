@@ -13,6 +13,7 @@ public:
     void clearItems();
     const std::vector<std::pair<std::string, std::string>>& getItems() const;
 
+    inline static const std::string TYPE = "choice";
 private:
     std::string value_;
     std::vector<std::pair<std::string, std::string>> items_;

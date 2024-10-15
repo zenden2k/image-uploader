@@ -10,6 +10,8 @@ public:
     std::string getValue() const override;
     void setValue(const std::string& val) override;
 
+    inline static const std::string TYPE = "text";
+
 private:
     std::string value_;
 };

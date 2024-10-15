@@ -186,6 +186,7 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
     git_output = subprocess.check_output(['wsl', '-e', '/bin/bash', "git_rev.sh", arg, "HEAD"],cwd=source_dir + "/Dist/").decode("utf-8").strip()
     git_output = re.sub( r",\s*}", "}", git_output )
     git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
+    git_output = git_output.replace("\"Upload settings\"", "Upload settings");
     print(git_output)
     commits = json.loads(git_output)
 
@@ -440,7 +441,6 @@ if not os.path.exists(repo_dir):
         print("Git clone failed to directory " + repo_dir)
 
 git_commit_message = subprocess.check_output("git log -1 --pretty=%B").decode("utf-8").strip() 
-
 if not os.path.exists(VERSION_HEADER_FILE):
     shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
 

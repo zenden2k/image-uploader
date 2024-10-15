@@ -28,6 +28,7 @@
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Core/Upload/Parameters/AbstractParameter.h"
+#include "Gui/Components/ParameterListAdapter.h"
 
 class ServerProfile;
 class UploadEngineManager;
@@ -77,8 +78,8 @@ class CServerParamsDlg :
         CString oldLogin_;
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;
+        std::unique_ptr<ParameterListAdapter> parameterListAdapter_;
         void doAuthChanged();
-        void updateServerParamList(ServerSettingsStruct* serverSettings);
 };
 
 

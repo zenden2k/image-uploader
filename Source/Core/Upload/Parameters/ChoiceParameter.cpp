@@ -6,7 +6,7 @@ ChoiceParameter::ChoiceParameter(std::string title)
 }
 
 std::string ChoiceParameter::getType() const {
-    return "choice";
+    return TYPE;
 }
 
 std::string ChoiceParameter::getValue() const {
