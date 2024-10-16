@@ -14,7 +14,7 @@ class IParameterController {
 public:
     ~IParameterController() = default;
     virtual HPROPERTY show(AbstractParameter* parameter, CString title, const std::string& value, LPARAM lParam) = 0;
-    virtual std::string save(AbstractParameter* parameter, const CComVariant& value) = 0;
+    virtual bool save(AbstractParameter* parameter, const CComVariant& value) = 0;
 };
 
 class ParameterListAdapter {

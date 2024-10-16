@@ -6,10 +6,10 @@ TextParameter::TextParameter(std::string title)
 }
 
 std::string TextParameter::getType() const {
-    return "text";
+    return TYPE;
 }
 
-std::string TextParameter::getValue() const {
+std::string TextParameter::getValueAsString() const {
     return value_;
 }
 

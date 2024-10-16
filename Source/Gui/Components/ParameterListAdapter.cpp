@@ -5,6 +5,7 @@
 #include "3rdpart/PropertyList.h"
 #include "Core/Upload/Parameters/TextParameter.h"
 #include "Core/Upload/Parameters/ChoiceParameter.h"
+#include "Core/Upload/Parameters/BooleanParameter.h"
 #include "Core/Upload/UploadEngine.h"
 
 class TextParameterController : public IParameterController {
@@ -14,11 +15,33 @@ public:
         if (!par) {
             return nullptr;
         }
-        return PropCreateSimple(title, U2W(value), lParam);
+        return PropCreateSimple(title, U2W(parameter->getValueAsString()), lParam);
     }
 
-    std::string save(AbstractParameter* parameter, const CComVariant& value) override {
-        return WCstringToUtf8(value.bstrVal);
+    bool save(AbstractParameter* parameter, const CComVariant& value) override {
+        parameter->setValue(WCstringToUtf8(value.bstrVal));
+        return true;
+    }
+};
+
+class BooleanParameterController : public IParameterController {
+public:
+    HPROPERTY show(AbstractParameter* parameter, CString title, const std::string& value, LPARAM lParam) override {
+        auto par = dynamic_cast<BooleanParameter*>(parameter);
+        if (!par) {
+            return nullptr;
+        }
+
+        return PropCreateCheckButton(title, par->getValue(), lParam);
+    }
+
+    bool save(AbstractParameter* parameter, const CComVariant& value) override {
+        auto par = dynamic_cast<BooleanParameter*>(parameter);
+        if (!par) {
+            return nullptr;
+        }
+        par->setValue(value.boolVal);
+        return true;
     }
 };
 
@@ -31,35 +54,23 @@ public:
         }
 
         const auto& items = par->getItems();
-        size_t selectedIndex = 0;
-        bool found = false;
-        size_t i = 0;
         std::vector<CString> s; // Maybe only this vector of CString is enough?
         std::vector<LPCTSTR> choices;
         for (const auto& it : items) {
             s.push_back(U2W(it.second));
             choices.push_back(s.back().GetString());
-            if (!found && it.first == value) {
-                selectedIndex = i;
-                found = true;
-            }
-            ++i;
         }
         choices.push_back(nullptr);
-        return PropCreateList(U2W(par->getTitle()), choices.data(), selectedIndex, lParam);
+        return PropCreateList(U2W(par->getTitle()), choices.data(), par->selectedIndex(), lParam);
     }
 
-    std::string save(AbstractParameter* parameter, const CComVariant& value) override {
+    bool save(AbstractParameter* parameter, const CComVariant& value) override {
         auto choiceParameter = dynamic_cast<ChoiceParameter*>(parameter);
         if (choiceParameter) {
-            const auto& items = choiceParameter->getItems();
-            try {
-                const auto& [id, label] = items.at(value.intVal);
-                return id;
-            } catch (const std::out_of_range& e) {
-            }
+            choiceParameter->setSelectedIndex(value.intVal);
+            return true;
         }
-        return {};
+        return false;
     }
 };
 
@@ -68,6 +79,7 @@ ParameterListAdapter::ParameterListAdapter(ParameterList* parameterList, CProper
     control_(control)
 {
     registerParameterController(TextParameter::TYPE, std::make_unique<TextParameterController>());
+    registerParameterController(BooleanParameter::TYPE, std::make_unique<BooleanParameterController>());
     registerParameterController(ChoiceParameter::TYPE, std::make_unique<ChoiceParameterController>());
 }
 
@@ -81,6 +93,7 @@ void ParameterListAdapter::updateControl(ServerSettingsStruct* serverSettings) {
         auto controller = getParameterController(parameter->getType());
 
         if (controller) {
+            parameter->setValue(value);
             prop = controller->show(parameter.get(), U2W(parameter->getTitle()), value, lParam);
         }
 
@@ -98,11 +111,13 @@ void ParameterListAdapter::saveValues(ServerSettingsStruct* serverSettings) {
             CComVariant vValue;
             pr->GetValue(&vValue);
 
-           auto controller = getParameterController(parameter->getType());
+            auto controller = getParameterController(parameter->getType());
             std::string result;
              
             if (controller) {
-                result = controller->save(parameter.get(), vValue);
+                if (controller->save(parameter.get(), vValue)) {
+                    result = parameter->getValueAsString();
+                }
             }
 
             serverSettings->params[parameter->getName()] = result;

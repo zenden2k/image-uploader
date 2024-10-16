@@ -15,7 +15,7 @@ public:
     virtual std::string getType() const = 0; 
 
     virtual void setValue(const std::string& val) = 0;
-    virtual std::string getValue() const = 0;
+    virtual std::string getValueAsString() const  = 0;
 
 private:
     std::string name_, title_;

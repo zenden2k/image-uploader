@@ -32,7 +32,7 @@
 #include "AuthTask.h"
 #include "FolderTask.h"
 #include "Parameters/TextParameter.h"
-#include "Parameters/ChoiceParameter.h"
+#include "Parameters/ParameterFactory.h"
 
 namespace {
 
@@ -56,10 +56,9 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
     return {res, t};
 }
 
-std::unique_ptr<AbstractParameter> SqTableToParameter(const std::string name, const std::string& type, Sqrat::Table& table) {
-    if (type == "text") {
-        return std::make_unique<TextParameter>(name);
-    } if (type == "choice") {
+/* std::unique_ptr<AbstractParameter> SqTableToParameter(const std::string name, const std::string& type, Sqrat::Table& table)
+{
+    if (type == ChoiceParameter::TYPE) {
         auto choiceParameter = std::make_unique<ChoiceParameter>(name);
         auto choices = table.GetValue<Sqrat::Array>("items");
         if (!!choices) {
@@ -73,20 +72,26 @@ std::unique_ptr<AbstractParameter> SqTableToParameter(const std::string name, co
         }
         return choiceParameter;
     }
-    return {};
-}
+    if (type == BooleanParameter::TYPE) {
+        return std::make_unique<BooleanParameter>(name);
+    } else {
+        return std::make_unique<TextParameter>(name);
+    }
+}*/
 
 void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& list) {
     list.clear();
-    Sqrat::Array::iterator it;
+    Sqrat::Object::iterator it;
     while (tbl->Next(it)) {
         Sqrat::Object obj(it.getValue(), tbl->GetVM());
         if (obj.GetType() == OT_STRING) {
+            // The old way to declare a parameter
             auto newParam = std::make_unique<TextParameter>(it.getName());
             std::string value = obj.Cast<std::string>();
             newParam->setTitle(value);
             list.push_back(std::move(newParam));
         } else if (obj.GetType() == OT_TABLE) {
+            // The new way to declare a parameter (in a nested table)
             Sqrat::Table table(it.getValue(), tbl->GetVM());
             std::string title = ScriptAPI::GetValue(table.GetValue<std::string>("title"));
             std::string typeStr = ScriptAPI::GetValue(table.GetValue<std::string>("type"));

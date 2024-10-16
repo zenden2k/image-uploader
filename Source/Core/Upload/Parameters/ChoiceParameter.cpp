@@ -9,12 +9,24 @@ std::string ChoiceParameter::getType() const {
     return TYPE;
 }
 
-std::string ChoiceParameter::getValue() const {
-    return value_;
+std::string ChoiceParameter::getValueAsString() const {
+    if (selectedIndex_ == -1) {
+        return {};
+    }
+    return items_.at(selectedIndex_).first;
 }
 
 void ChoiceParameter::setValue(const std::string& val) {
-    value_ = val;
+    size_t i = 0;
+
+    for (const auto& it : items_) {
+        if (it.first == val) {
+            selectedIndex_ = i;
+            return;
+        }
+        ++i;
+    }
+    selectedIndex_ = -1;
 }
 
 void ChoiceParameter::addItem(const std::string& id, const std::string& value) {
@@ -23,8 +35,19 @@ void ChoiceParameter::addItem(const std::string& id, const std::string& value) {
 
 void ChoiceParameter::clearItems() {
     items_.clear();
+    selectedIndex_ = -1;
 }
 
 const std::vector<std::pair<std::string, std::string>>& ChoiceParameter::getItems() const{
     return items_;
+}
+
+void ChoiceParameter::setSelectedIndex(int val) {
+    if (val >= -1 && val < items_.size()) {
+        selectedIndex_ = val;
+    }
+}
+
+int ChoiceParameter::selectedIndex() const {
+    return selectedIndex_;
 }
