@@ -207,7 +207,6 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
         serverProfile_.setFolderUrl("");
         serverProfile_.setParentIds({});
         SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("not selected") + CString(">")) );
-
     }
     return 0;
 }

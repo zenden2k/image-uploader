@@ -212,6 +212,9 @@ void CConnectionSettingsPage::CheckBounds(int controlId, int minValue, int maxVa
 }
 
 LRESULT CConnectionSettingsPage::OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (IsWindows10OrGreater() && WinUtils::ShellOpenFileOrUrl(_T("ms-settings:network-proxy"), m_hWnd)) {
+        return 0;
+    }
     HINSTANCE hinst = ShellExecute(0, _T("open"), _T("rundll32.exe"), _T("inetcpl.cpl,LaunchConnectionDialog"), NULL, SW_SHOWNORMAL);
     if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
         LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<INT_PTR>(hinst);
