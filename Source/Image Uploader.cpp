@@ -98,6 +98,8 @@ public:
                 IuCommonFunctions::ClearTempFolder(commonTempFolder_ + _T("\\") + folder);
         }
 
+        xdg_mime_set_dirs(nullptr);
+        xdg_mime_shutdown();
         // deletes empty temp directory
         RemoveDirectory(commonTempFolder_);
     }
@@ -134,7 +136,7 @@ public:
         if (dataFolder.Right(1) == "\\") {
             dataFolder.Truncate(dataFolder.GetLength() - 1);
         }
-        std::string dir = WinUtils::wstostr(dataFolder.GetString(), CP_ACP);
+        std::string dir = W2U(dataFolder);
         char* cacheDir = strdup(dir.c_str());
         if (cacheDir) {
             const char* dirs[2]

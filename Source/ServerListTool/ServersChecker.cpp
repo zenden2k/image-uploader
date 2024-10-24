@@ -185,10 +185,9 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 
         CString report = GetFileInfo(fileName, &mfi);
 
-        CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8((fileName))));
         if (fileId < 2) // is thumb or image
         {
-            if (mimeType.Find(_T("image/")) >= 0) {
+            if (mfi.mimeType.Find(_T("image/")) >= 0) {
                 if (fileId == 0 && (mfi.width != m_sourceFileInfo.width || mfi.height != m_sourceFileInfo.height))
                     serverData.stars[fileId] = 0;
                 else

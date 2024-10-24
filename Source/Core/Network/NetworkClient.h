@@ -239,6 +239,8 @@ class NetworkClient: public INetworkClient
         ActionType currrentActionType() const;
 
         static void clearThreadData();
+
+        void cleanupAfter() override;
         /*! @endcond */
     private:
 
@@ -280,7 +282,6 @@ class NetworkClient: public INetworkClient
         bool private_apply_method();
         void private_parse_headers();
         void private_cleanup_before();
-        void private_cleanup_after();
         bool private_on_finish_request();
         void private_init_transfer();
         void private_checkResponse();

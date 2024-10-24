@@ -468,7 +468,7 @@ bool NetworkClient::doUploadMultipartData()
 bool NetworkClient::private_on_finish_request()
 {
     private_checkResponse();
-    private_cleanup_after();
+    cleanupAfter();
     private_parse_headers();
     if (curl_result != CURLE_OK)
     {
@@ -700,7 +700,7 @@ void NetworkClient::private_cleanup_before()
     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 }
 
-void NetworkClient::private_cleanup_after()
+void NetworkClient::cleanupAfter()
 {
     m_currentActionType = ActionType::atNone;
     m_QueryHeaders.clear();
@@ -884,7 +884,7 @@ bool NetworkClient::private_apply_method()
 
 void NetworkClient::setReferer(const std::string &str)
 {
-    curl_easy_setopt(curl_handle, CURLOPT_REFERER, str.c_str());
+    curl_easy_setopt(curl_handle, CURLOPT_REFERER, !str.empty() ? str.c_str() : nullptr);
 }
 
 int NetworkClient::getCurlResult()

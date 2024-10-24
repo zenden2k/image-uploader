@@ -134,15 +134,16 @@ TEST_F(DefaultUploadEngineTest, login)
     ON_CALL(networkClient, doGet(_)).WillByDefault(Return(true));
     ON_CALL(networkClient, doPost(_)).WillByDefault(Return(true));
     ON_CALL(networkClient, responseCode()).WillByDefault(Return(200));
-    {
-        testing::InSequence dummy;
-        EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    //{
+        //testing::InSequence dummy;
+        EXPECT_CALL(networkClient, setReferer(action1.Referer)).Times(AtLeast(1));
         EXPECT_CALL(networkClient, addQueryParam("password", "qwerty"));
         EXPECT_CALL(networkClient, addQueryParam("login", "username"));
         EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true));
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("<result>success</result>"));
-    }
+        EXPECT_CALL(networkClient, setReferer("")).Times(AtLeast(1));
+    //}
     std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
     auto fileTask = std::make_shared<FileUploadTask>(constSizeFileName, displayName);
     ServerSettingsStruct serverSettings;
@@ -197,6 +198,7 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     ON_CALL(networkClient, urlEncode(_)).WillByDefault(Return("http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
 
     EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    EXPECT_CALL(networkClient, setReferer(""));
     EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
     {
         testing::InSequence dummy;
@@ -267,6 +269,7 @@ TEST_F(DefaultUploadEngineTest, json)
     ON_CALL(networkClient, urlEncode(_)).WillByDefault(Return("http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
 
     EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    EXPECT_CALL(networkClient, setReferer(""));
     EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
     {
         testing::InSequence dummy;

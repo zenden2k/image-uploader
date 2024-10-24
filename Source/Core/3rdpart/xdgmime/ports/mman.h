@@ -84,8 +84,19 @@ static void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t
 	if (flags & MAP_PRIVATE)
 		dwDesiredAccess |= FILE_MAP_COPY;
 	void *ret = MapViewOfFile(h, dwDesiredAccess, DWORD_HI(offset), DWORD_LO(offset), length);
+
+    // Mapped views of a file mapping object maintain internal references to the object, and a
+    // file mapping object does not close until all references to it are released. Therefore,
+    // to fully close a file mapping object, an application must unmap all mapped views of the
+    // file mapping object by calling UnmapViewOfFile and close the file mapping object handle
+    // by calling CloseHandle. These functions can be called in any order.
+    //
+    // Although an application may close the file handle used to create a file mapping object,
+    // the system holds the corresponding file open until the last view of the file is unmapped.
+    // Files for which the last view has not yet been unmapped are held open with no sharing
+    // restrictions.
+    CloseHandle(h);
 	if (ret == NULL) {
-		CloseHandle(h);
 		ret = MAP_FAILED;
 	}
 	return ret;
@@ -94,7 +105,6 @@ static void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t
 static void munmap(void *addr, size_t length)
 {
 	UnmapViewOfFile(addr);
-	/* ruh-ro, we leaked handle from CreateFileMapping() ... */
 }
 
 #undef DWORD_HI

@@ -94,6 +94,7 @@ namespace IuCoreUtils
     int64_t StringToInt64(const std::string& str);
     std::string GetFileMimeType(const std::string&);
     std::string GetFileMimeTypeByName(const std::string& fileName);
+    std::string GetFileMimeTypeByContents(const std::string& fileName);
     std::string GetDefaultExtensionForMimeType(const std::string&);
     std::string StrReplace(std::string text, std::string s, std::string d);
     std::string ConvertToUtf8(const std::string &text, const std::string& codePage);

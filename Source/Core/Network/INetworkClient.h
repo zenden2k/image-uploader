@@ -102,6 +102,7 @@ class INetworkClient {
         virtual std::string urlDecode(const std::string& str){ return std::string(); }
         virtual void setMaxUploadSpeed(uint64_t speed){}
         virtual void setMaxDownloadSpeed(uint64_t speed) {}
+        virtual void cleanupAfter() {}
 };
 
 class INetworkClientFactory {

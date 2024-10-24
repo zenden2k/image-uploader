@@ -553,4 +553,24 @@ std::string GetFileMimeTypeByName(const std::string& fileName) {
     return mime;
 }
 
+std::string GetFileMimeTypeByContents(const std::string& fileName)
+{
+    const std::string DefaultMimeType = "application/octet-stream";
+    FILE* f = FopenUtf8(fileName.c_str(), "rb");
+    if (!f) {
+        return DefaultMimeType;
+    }
+    char buffer[256] {};
+    size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
+    fclose(f);
+    int resultPrio = 0;
+
+    auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);
+
+    if (!mime) {
+        return DefaultMimeType;
+    }
+    return mime;
+}
+
 } // end of namespace IuCoreUtils

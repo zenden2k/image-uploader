@@ -406,6 +406,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         }
     }
 
+    defer<void>([this] {
+        m_NetworkClient->setReferer({});
+        m_NetworkClient->cleanupAfter();
+    });
+
     if (!Action.Description.empty())
         SetStatus(stUserDescription, Action.Description);
     else

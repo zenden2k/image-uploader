@@ -402,8 +402,9 @@
 				<Call Function="json" Arg1="result.success" AssignVars="Success:0;"/>
 				<RegExp Data="$(Success)" Pattern="True" AssignVars=""/>
 			</Action>
-			<Action Type="get" Url="https://getapic.me/" RegExp="session\]'\)\.val\('(.+?)'" AssignVars="Session:0" OnlyOnce="0">
-				<RegExp Pattern="suid\]'\)\.val\('(.+?)'" AssignVars="Suid:0"/>
+			<Action Type="get" Url="https://getapic.me/" CustomHeaders="X-Requested-With:XMLHttpRequest">
+				<Call Function="json" Arg1="result.data.suid" AssignVars="Suid:0;"/>
+				<Call Function="json" Arg1="result.data.session" AssignVars="Session:0;"/>
 			</Action>
 			<Action Type="upload" Url="https://getapic.me/upload" CustomHeaders="X-Requested-With:XMLHttpRequest" Referer="https://getapic.me/" 
 				PostParams="getpreviewsize=$(_THUMBWIDTH);getpreviewalt=;getreduceimage=320;needreduce=0;upload_quality=100;upload_angle=0;upload_resizeside=width;gettypeofdownload=N;session=$(Session);suid=$(Suid);file[]=%filename%;"

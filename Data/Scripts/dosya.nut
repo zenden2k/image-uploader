@@ -66,13 +66,13 @@ function UploadFile(FileName, options) {
             local action = form.attr("action");
             nm.setUrl(action);
             form.find("textarea").each(function(index, elem) {
-                nm.addQueryParam(elem.attr("name"), elem.text());
+                nm.addQueryParam(elem.attr("name"), strip(elem.text()));
             });
             nm.doPost("");
             
             if (nm.responseCode() == 200) {
                 local doc3 = Document(nm.responseBody());
-                local link = doc3.find("textarea#ic0-").text();
+                local link = strip(doc3.find("textarea#ic0-").text());
                 options.setViewUrl(link); 
                 if (link != "") {
                     return 1;

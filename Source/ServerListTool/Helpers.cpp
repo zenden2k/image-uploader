@@ -15,7 +15,7 @@ CString GetFileInfo(CString fileName, MyFileInfo* mfi)
 {
     int64_t fileSize = IuCoreUtils::GetFileSize(W2U(fileName));
     CString result = MyBytesToString(fileSize) + _T("(") + std::to_wstring(fileSize).c_str() + _T(" bytes);");
-    CString mimeType = IuCoreUtils::GetFileMimeType(W2U(fileName)).c_str();
+    CString mimeType = IuCoreUtils::GetFileMimeTypeByContents(W2U(fileName)).c_str();
     result += mimeType + _T(";");
     if (mfi) mfi->mimeType = mimeType;
     if (mimeType.Find(_T("image/")) >= 0) {
