@@ -4,7 +4,7 @@
              Sergey Svistunov @zenden2k
 */
 
-const CLIENT_ID = "b38ba6b0919a898";
+const CLIENT_ID = "11681f18f30e0f2";
 
 function GetAuthorizationString() {
     local token = ServerParams.getParam("token");
@@ -71,7 +71,7 @@ function RefreshToken() {
             nm.setUrl("https://api.imgur.com/oauth2/token");
             nm.addQueryParam("refresh_token", refreshToken); 
             nm.addQueryParam("client_id", CLIENT_ID); 
-            nm.addQueryParam("client_secret", "d91cd90f01cadaa1796d8d9b9231c218c11ed628"); 
+            nm.addQueryParam("client_secret", "b3686e5a9c3387a3c50fd05db1a8513ec71c3004"); 
             nm.addQueryParam("grant_type", "refresh_token"); 
             nm.doPost("");
             if (checkResponse()) {
