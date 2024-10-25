@@ -193,6 +193,8 @@ bool CConnectionSettingsPage::apply()
 
 void CConnectionSettingsPage::proxyRadioChanged() {
     bool Checked = SendDlgItemMessage(IDC_USEPROXYSERVER, BM_GETCHECK) != 0;
+    bool useSystemProxyChecked = useSystemProxy_.GetCheck() == BST_CHECKED;
+    openSystemConnectionSettingsButton_.EnableWindow(useSystemProxyChecked);
     GuiTools::EnableNextN(GetDlgItem(IDC_USEPROXYSERVER), Checked ? 8 : 11, Checked);
 
     BOOL bHandled = false;
