@@ -127,5 +127,33 @@ typedef struct tagNMPROPERTYITEM
    HPROPERTY prop;
 } NMPROPERTYITEM, *LPNMPROPERTYITEM;
 
+typedef UINT(WINAPI* GetDpiForWindowFuncType)(_In_ HWND hwnd);
+typedef HTHEME(STDAPICALLTYPE* OpenThemeDataForDpiFuncType)(
+    _In_opt_ HWND hwnd,
+    _In_ LPCWSTR pszClassList,
+    _In_ UINT dpi);
+
+static HTHEME OpenThemeDataExEx(HWND hwnd, LPCWSTR pszClassList)
+{
+    HTHEME htheme = 0;
+    if (IsWindows10OrGreater()) {
+        HMODULE mod = GetModuleHandle(_T("user32.dll"));
+        // MSDN: Minimum supported client - Windows 10, version 1703
+        auto getDpiForWindowFunc = reinterpret_cast<GetDpiForWindowFuncType>(GetProcAddress(mod, "GetDpiForWindow"));
+        if (getDpiForWindowFunc) {
+            UINT dpi = getDpiForWindowFunc(hwnd);
+            HMODULE lib = LoadLibrary(_T("uxtheme.dll"));
+            if (lib) {
+                auto openThemeDataForDpiFunc = reinterpret_cast<OpenThemeDataForDpiFuncType>(GetProcAddress(lib, "OpenThemeDataForDpi"));
+                htheme = openThemeDataForDpiFunc(hwnd, pszClassList, dpi);
+                FreeLibrary(lib);
+            }
+        }
+    }
+    if (!htheme) {
+        htheme = OpenThemeData(hwnd, pszClassList);
+    }
+    return htheme;
+}
 
 #endif // __PROPERTYITEM__H

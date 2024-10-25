@@ -363,6 +363,7 @@ public:
       CPropertyEditWindow* win = new CPropertyEditWindow();
       ATLASSERT(win);
       RECT rcWin = rc;
+      rcWin.top += 2;
       m_hwndEdit = win->Create(hWnd, rcWin, pszText, WS_VISIBLE | WS_CHILD | ES_LEFT | ES_AUTOHSCROLL);
       ATLASSERT(::IsWindow(m_hwndEdit));
       // Simple hack to validate numbers
@@ -484,6 +485,7 @@ class CPropertyCheckButtonItem : public CProperty
 protected:
    bool m_bValue;
 
+
 public:
    CPropertyCheckButtonItem(LPCTSTR pstrName, LPARAM lParam) : 
       CProperty(pstrName, lParam),
@@ -522,18 +524,51 @@ public:
 
    void DrawValue(PROPERTYDRAWINFO& di)
    {
-      int cxThumb = ::GetSystemMetrics(SM_CXMENUCHECK);
-      int cyThumb = ::GetSystemMetrics(SM_CYMENUCHECK);
-      RECT rcMark = di.rcItem;
-      rcMark.left += 10;
-      rcMark.right = rcMark.left + cxThumb;
-      rcMark.top += 2;
-      if( rcMark.top + cyThumb >= rcMark.bottom ) rcMark.top -= rcMark.top + cyThumb - rcMark.bottom + 1;
-      rcMark.bottom = rcMark.top + cyThumb;
-      UINT uState = DFCS_BUTTONCHECK | DFCS_FLAT;
-      if( m_bValue ) uState |= DFCS_CHECKED;
-      if( (di.state & ODS_DISABLED) != 0 ) uState |= DFCS_INACTIVE;
-      ::DrawFrameControl(di.hDC, &rcMark, DFC_BUTTON, uState);
+        auto f = [&](int cxThumb, int cyThumb) -> RECT {
+           RECT rcMark = di.rcItem;
+          
+           rcMark.left += 5;
+           rcMark.right = rcMark.left + cxThumb;
+           rcMark.top += 1;
+           if (rcMark.top + cyThumb >= rcMark.bottom)
+               rcMark.top -= rcMark.top + cyThumb - rcMark.bottom + 1;
+           rcMark.bottom = rcMark.top + cyThumb;
+           return rcMark;
+        };
+        RECT rcMark = f(::GetSystemMetrics(SM_CXMENUCHECK), ::GetSystemMetrics(SM_CYMENUCHECK));
+        HTHEME htheme = OpenThemeDataExEx(m_hWndOwner, L"BUTTON");
+
+        if (htheme) {
+            SIZE sz {};
+            if (SUCCEEDED(GetThemePartSize(htheme, NULL, BP_CHECKBOX, 0, NULL, TS_TRUE, &sz))) {
+                rcMark = f(sz.cx, sz.cy);
+            }
+						
+            UINT uState = CBS_UNCHECKEDNORMAL;
+            if (m_bValue) {
+                if (di.state & ODS_DISABLED) {
+                    uState = CBS_CHECKEDDISABLED;
+                } else {
+                    uState = CBS_CHECKEDNORMAL;
+                }
+            } else {
+                if (di.state & ODS_DISABLED) {
+                  uState = CBS_UNCHECKEDDISABLED;
+                } else {
+                    uState = CBS_UNCHECKEDNORMAL;
+                }
+            }
+              
+            DrawThemeBackground(htheme, di.hDC, BP_CHECKBOX, uState, &rcMark, 0);
+            CloseThemeData(htheme);
+        } else {
+            UINT uState = DFCS_BUTTONCHECK | DFCS_FLAT;
+            if (m_bValue)
+                uState |= DFCS_CHECKED;
+            if ((di.state & ODS_DISABLED) != 0)
+                uState |= DFCS_INACTIVE;
+            ::DrawFrameControl(di.hDC, &rcMark, DFC_BUTTON, uState);
+        }
    }
 
    BOOL Activate(UINT action, LPARAM /*lParam*/) 

@@ -524,7 +524,8 @@ public:
       // Create a new editor window
       RECT rcValue = { 0 };
       _GetInPlaceRect(idx, rcValue);
-      ::InflateRect(&rcValue, 0, -1);
+      rcValue.bottom--;
+      //::InflateRect(&rcValue, 0, -1);
       m_hwndInplace = prop->CreateInplaceControl(m_hWnd, rcValue);
       if( m_hwndInplace != NULL ) {
          // Activate the new editor window
@@ -994,7 +995,7 @@ public:
 
    void MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
    {
-      lpMIS->itemHeight = m_di.tmText.tmHeight + 3;
+      lpMIS->itemHeight = m_di.tmText.tmHeight + 7;
    }
 
    void DrawItem(LPDRAWITEMSTRUCT lpDIS)
