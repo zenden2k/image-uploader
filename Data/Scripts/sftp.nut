@@ -125,6 +125,9 @@ function GetServerParamList() {
         hostname = "Server ip or hostname [:port]"
         folder = "Remote folder"
         downloadPath = "Download path (ftp or http)",
-        privateKeyPath = "Private key path"
+        privateKeyPath = {
+            title = "Private key path",
+            type = "filename"
+        }
     }
 }

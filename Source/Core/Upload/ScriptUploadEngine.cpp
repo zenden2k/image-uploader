@@ -56,29 +56,6 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
     return {res, t};
 }
 
-/* std::unique_ptr<AbstractParameter> SqTableToParameter(const std::string name, const std::string& type, Sqrat::Table& table)
-{
-    if (type == ChoiceParameter::TYPE) {
-        auto choiceParameter = std::make_unique<ChoiceParameter>(name);
-        auto choices = table.GetValue<Sqrat::Array>("items");
-        if (!!choices) {
-            Sqrat::Array::iterator it;
-            while (choices->Next(it)) {
-                Sqrat::Table tbl(it.getValue(), choices->GetVM());
-                std::string itemLabel = ScriptAPI::GetValue(tbl.GetValue<std::string>("label"));
-                std::string itemId = ScriptAPI::GetValue(tbl.GetValue<std::string>("id"));
-                choiceParameter->addItem(itemId, itemLabel);
-            }
-        }
-        return choiceParameter;
-    }
-    if (type == BooleanParameter::TYPE) {
-        return std::make_unique<BooleanParameter>(name);
-    } else {
-        return std::make_unique<TextParameter>(name);
-    }
-}*/
-
 void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& list) {
     list.clear();
     Sqrat::Object::iterator it;

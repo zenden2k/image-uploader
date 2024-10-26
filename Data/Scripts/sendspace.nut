@@ -1,4 +1,4 @@
-apiKey <- "KAAK63MDZJ";
+const API_KEY = "KAAK63MDZJ";
 
 function IsAuthenticated() {
     if (Sync.getValue("sessionKey") != "") {
@@ -21,7 +21,7 @@ function Authenticate() {
     
     nm.addQueryHeader("Expect","");
     
-    nm.setUrl("https://api.sendspace.com/rest/?method=auth.createtoken&api_key=" + apiKey + "&api_version=1.0&response_format=xml");
+    nm.setUrl("https://api.sendspace.com/rest/?method=auth.createtoken&api_key=" + API_KEY + "&api_version=1.0&response_format=xml");
     nm.doGet("");
     local data =  nm.responseBody();
     
@@ -192,7 +192,7 @@ function UploadFile(FileName, options) {
     local sessionKey = Sync.getValue("sessionKey");
   
     local albumID = options.getFolderID();
-    if(albumID == "") {
+    if (albumID == "") {
         albumID = "0";
     }
     
@@ -201,9 +201,9 @@ function UploadFile(FileName, options) {
     if (anonymous) {
         func = "anonymous.uploadgetinfo";
     }
-    
+
     if(anonymous) {
-        nm.setUrl("https://api.sendspace.com/rest/?method=anonymous.uploadgetinfo&api_key=KAAK63MDZJ&api_version=1.0");
+        nm.setUrl("https://api.sendspace.com/rest/?method=anonymous.uploadgetinfo&api_key=" + API_KEY + "&api_version=1.0");
     }  else {
         nm.setUrl("https://api.sendspace.com/rest/?method=" + func + "&session_key=" + sessionKey);
     }
@@ -211,99 +211,94 @@ function UploadFile(FileName, options) {
     nm.doGet("");
     local data = nm.responseBody();
 
-    local uploadUrl ="";
+    local xml = SimpleXml();
+    local uploadUrl = "";
+    local maxFileSize = "";
+    local uploadIdentifier ="";
+    local extraInfo = "";
+    if (xml.LoadFromString(data)) {
+        local root = xml.GetRoot("result", false);
+        local uploadNode = root.GetChild("upload", false);
+        uploadUrl = uploadNode.Attribute("url");
 
-    local ex = regexp("upload url=\"(.+)\"");
-
-    local res = ex.capture(data);
-
-    if(res != null){	
-        uploadUrl= data.slice(res[1].begin,res[1].end);     
-    } else {
-        return 0;
-    }
-    
-    local max_file_size = "";
-
-    ex = regexp("max_file_size=\"(.+)\"");
-    res = ex.capture(data);
-    if(res != null){	
-        max_file_size= data.slice(res[1].begin,res[1].end);
-    }
-        
-    local upload_identifier="";
-
-    ex = regexp("upload_identifier=\"(.+)\"");
-    res = ex.capture(data);
-    if(res != null){	
-        upload_identifier= data.slice(res[1].begin,res[1].end);    
+        if (uploadUrl == "") {
+            WriteLog("error", "[sendspace.com] Failed to obtain upload URL.");
+            return 0;
+        }
+        maxFileSize = uploadNode.Attribute("max_file_size");
+        uploadIdentifier = uploadNode.Attribute("upload_identifier");
+        extraInfo = uploadNode.Attribute("extra_info");
     } 
         
-    local extra_info="";
-
-    ex = regexp("extra_info=\"(.+)\"");
-    res = ex.capture(data);
-    if(res != null){	
-        extra_info= data.slice(res[1].begin,res[1].end);    
-    }
-        
     nm.setUrl(uploadUrl);
-    nm.addQueryParam("MAX_FILE_SIZE", max_file_size);
-    nm.addQueryParam("UPLOAD_IDENTIFIER", upload_identifier);
-    
-    nm.addQueryParam("extra_info", extra_info);
-    nm.addQueryParam("MAX_FILE_SIZE", max_file_size);
+    nm.addQueryParam("MAX_FILE_SIZE", maxFileSize);
+    nm.addQueryParam("UPLOAD_IDENTIFIER", uploadIdentifier);
+    nm.addQueryParam("extra_info", extraInfo);
     nm.addQueryParam("folder_id", albumID);
-    nm.addQueryParamFile("userfile",FileName, ExtractFileName(FileName),"");
+    nm.addQueryParamFile("userfile", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
 
     nm.doUploadMultipartData();
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[sendspace.com] Upload failed, response code=" + nm.responseCode());
+        return 0;
+    }
     data = nm.responseBody();
     local directUrl="";
     local thumbUrl ="";
     
     local fileId="";
     local ex;
-    local download_page_url="";
-    local direct_download_url="";
-    if(anonymous) {
-        ex = regexp("<download_url>(.+)</download_url>");
-        res = ex.capture(data);
-        if(res != null){	
-            download_page_url= data.slice(res[1].begin,res[1].end);
-        }
+    local downloadPageUrl="";
+    local directDownloadUrl="";
+    local deleteUrl="";
+    xml = SimpleXml();
+    xml.LoadFromString(data);
+
+    if (anonymous) {
+        xml = SimpleXml();
+        xml.LoadFromString(data);
+
+        local rootNode = xml.GetRoot("upload_done", false);
+        downloadPageUrl = rootNode.GetChild("download_url", false).Text();
+        deleteUrl = rootNode.GetChild("delete_url", false).Text();
     } else {
-        ex	= regexp("id=(\\w+)");
+        ex	= regexp("file_id=(\\w+)");
         local res = ex.capture(data);
         
         if(res != null){	
             fileId = data.slice(res[1].begin,res[1].end);  
         }        
-        
+
+        if (fileId == "") {
+            WriteLog("error", "[sendspace.com] Upload failed");
+            return 0;
+        }
         nm.doGet("https://api.sendspace.com/rest/?method=files.getInfo&session_key=" + sessionKey+"&file_id="+fileId);
-    
+        
+        if (nm.responseCode() != 200) {
+            WriteLog("error", "[sendspace.com] Upload failed, response code=" + nm.responseCode());
+            return 0;
+        }
         data = nm.responseBody();
         
-        //[\\w/:&?%]
-        ex = regexp("download_page_url=\"(.+)\"");
-        res = ex.capture(data);
-        if(res != null){	
-            download_page_url= data.slice(res[1].begin,res[1].end);
-            
-        }
-        
-        ex = regexp("direct_download_url=\"([\\w/:?&]*)\"");
-        res = ex.capture(data);
-        if(res != null){	
-            direct_download_url = data.slice(res[1].begin,res[1].end);
-        }
+        xml = SimpleXml();
+        xml.LoadFromString(data);
+
+        local rootNode = xml.GetRoot("result", false);
+        local fileNode = rootNode.GetChild("file", false);
+        downloadPageUrl = fileNode.Attribute("download_page_url");
+        directDownloadUrl = fileNode.Attribute("direct_download_url");
     }	
         
-    if(direct_download_url != "") {
-        options.setDirectUrl(direct_download_url);
+    if (downloadPageUrl != "" || directDownloadUrl != "") {
+        options.setDirectUrl(directDownloadUrl);  
+        options.setViewUrl(downloadPageUrl);
+        options.setDeleteUrl(deleteUrl);
+        return 1;
+    } else {
+        WriteLog("error", "[sendspace.com] Upload failed. Cannot obtain links to file.");
     }
-        
-    options.setViewUrl(download_page_url);
-    return 1;
+    return 0;
 }
 
 function ModifyFolder(album) {
@@ -334,5 +329,5 @@ function ModifyFolder(album) {
 }
 
 function GetFolderAccessTypeList() {
-    return ["Приватный", "Для всех"];
+    return ["Private", "Public"];
 }
