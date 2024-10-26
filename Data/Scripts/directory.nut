@@ -60,8 +60,15 @@ function  UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
-        directory = "Directory"
+        directory = {
+            title = "Directory",
+            type = "filename",
+            directory = true
+        },
         downloadUrl = "Download path (ftp or http)",
-        convertUncPath = "Convert UNC path \"\\\\\" to file://"
+        convertUncPath = {
+            title = "Convert UNC path \"\\\\\" to file://",
+            type = "boolean",
+        }
     }
 }

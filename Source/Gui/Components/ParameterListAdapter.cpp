@@ -6,7 +6,11 @@
 #include "Core/Upload/Parameters/TextParameter.h"
 #include "Core/Upload/Parameters/ChoiceParameter.h"
 #include "Core/Upload/Parameters/BooleanParameter.h"
+#include "Core/Upload/Parameters/FileNameParameter.h"
 #include "Core/Upload/UploadEngine.h"
+#include "Gui/Components/MyFileDialog.h"
+#include "Core/i18n/Translator.h"
+#include "Gui/Components/NewStyleFolderDialog.h"
 
 class TextParameterController : public IParameterController {
 public:
@@ -74,6 +78,22 @@ public:
     }
 };
 
+class FileNameParameterController : public IParameterController {
+public:
+    HPROPERTY show(AbstractParameter* parameter, CString title, const std::string& value, LPARAM lParam) override {
+        auto par = dynamic_cast<FileNameParameter*>(parameter);
+        if (!par) {
+            return nullptr;
+        }
+        return PropCreateFileName(title, U2W(parameter->getValueAsString()), lParam);
+    }
+
+    bool save(AbstractParameter* parameter, const CComVariant& value) override {
+        parameter->setValue(WCstringToUtf8(value.bstrVal));
+        return true;
+    }
+};
+
 ParameterListAdapter::ParameterListAdapter(ParameterList* parameterList, CPropertyListCtrl* control):
     parameterList_(parameterList),
     control_(control)
@@ -81,9 +101,14 @@ ParameterListAdapter::ParameterListAdapter(ParameterList* parameterList, CProper
     registerParameterController(TextParameter::TYPE, std::make_unique<TextParameterController>());
     registerParameterController(BooleanParameter::TYPE, std::make_unique<BooleanParameterController>());
     registerParameterController(ChoiceParameter::TYPE, std::make_unique<ChoiceParameterController>());
+    registerParameterController(FileNameParameter::TYPE, std::make_unique<FileNameParameterController>());
 }
 
 void ParameterListAdapter::updateControl(ServerSettingsStruct* serverSettings) {
+    std::sort(parameterList_->begin(), parameterList_->end(), [](auto& l, auto& r) {
+        int res = lstrcmpi(IuCoreUtils::Utf8ToWstring(l->getName()).c_str(), IuCoreUtils::Utf8ToWstring(r->getName()).c_str());
+        return res < 0;
+    });
     for (const auto& parameter : *parameterList_) {
         HPROPERTY prop = nullptr;
         CString name = U2W(parameter->getName());
@@ -123,6 +148,46 @@ void ParameterListAdapter::saveValues(ServerSettingsStruct* serverSettings) {
             serverSettings->params[parameter->getName()] = result;
         }
     }
+}
+
+void ParameterListAdapter::browseFileDialog(HPROPERTY prop) {
+    auto par = reinterpret_cast<AbstractParameter*>(prop->GetItemData());
+
+    if (!par) {
+        return;
+    }
+
+    auto* fileNameParameter = dynamic_cast<FileNameParameter*>(par);
+    if (!fileNameParameter) {
+        return;
+    }
+    VARIANT vart;
+    vart.vt = VT_BSTR;
+    if (!fileNameParameter->directory()) {
+        // TODO: customizable file name filters
+        IMyFileDialog::FileFilterArray filters = {
+            { TR("All files"), _T("*.*") }
+        };
+        CString fileDir = U2W(IuCoreUtils::ExtractFilePath(fileNameParameter->getValueAsString()));
+
+        auto dlg = MyFileDialogFactory::createFileDialog(control_->m_hWnd, fileDir, {}, filters, false);
+        if (dlg->DoModal(control_->m_hWnd) != IDOK) {
+            return;
+        }
+        vart.bstrVal = dlg->getFile().AllocSysString();
+        
+    } else {
+        CString initialDir = U2W(fileNameParameter->getValueAsString());
+        CNewStyleFolderDialog dlg(control_->m_hWnd, initialDir, TR("Choose folder"), true);
+        if (dlg.DoModal(control_->m_hWnd) != IDOK) {
+            return;
+        }
+
+        vart.bstrVal = dlg.GetFolderPath().AllocSysString();
+    }
+
+    control_->SetItemValue(prop, &vart);
+    SysFreeString(vart.bstrVal);
 }
 
 void ParameterListAdapter::registerParameterController(const std::string& type, std::unique_ptr<IParameterController> controller) {

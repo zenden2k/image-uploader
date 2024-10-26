@@ -49,6 +49,7 @@ class CServerParamsDlg :
             COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
             COMMAND_HANDLER(IDC_BROWSESERVERFOLDERS, BN_CLICKED, OnBrowseServerFolders)
             COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange)
+            NOTIFY_HANDLER(IDC_PARAMLIST, PIN_BROWSE, OnParamListBrowseFile)
             CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
@@ -68,6 +69,7 @@ class CServerParamsDlg :
         LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnParamListBrowseFile(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         ServerProfile serverProfile() const;
     protected:
         CPropertyListCtrl m_wndParamList;

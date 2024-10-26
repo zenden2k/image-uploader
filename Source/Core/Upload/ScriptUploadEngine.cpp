@@ -93,12 +93,23 @@ void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& l
         } else if (obj.GetType() == OT_TABLE) {
             // The new way to declare a parameter (in a nested table)
             Sqrat::Table table(it.getValue(), tbl->GetVM());
-            std::string title = ScriptAPI::GetValue(table.GetValue<std::string>("title"));
-            std::string typeStr = ScriptAPI::GetValue(table.GetValue<std::string>("type"));
-            auto newParam = SqTableToParameter(it.getName(), typeStr, table);
-            if (newParam) {
-                newParam->setTitle(title);
-                list.push_back(std::move(newParam));
+            try {
+                if (!table.HasKey("title")) {
+                    throw std::runtime_error("Parameter's declaration should have 'title' key.");
+                }
+                std::string title = ScriptAPI::GetValue(table.GetValue<std::string>("title"));
+                std::string typeStr;
+
+                if (table.HasKey("type")) {
+                    typeStr = ScriptAPI::GetValue(table.GetValue<std::string>("type"));
+                }
+                auto newParam = SqTableToParameter(it.getName(), typeStr, table);
+                if (newParam) {
+                    newParam->setTitle(title);
+                    list.push_back(std::move(newParam));
+                }
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << ex.what();
             }
         }
     }

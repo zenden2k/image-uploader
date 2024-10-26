@@ -54,6 +54,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/Parameters/TextParameter.cpp
     Upload/Parameters/ChoiceParameter.cpp
     Upload/Parameters/BooleanParameter.cpp
+    Upload/Parameters/FileNameParameter.cpp
     Upload/Parameters/ParameterFactory.cpp
     ServiceLocator.cpp
     Settings/BasicSettings.cpp
@@ -120,6 +121,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/Parameters/TextParameter.h
     Upload/Parameters/ChoiceParameter.h
     Upload/Parameters/BooleanParameter.h
+    Upload/Parameters/FileNameParameter.h
     Upload/Parameters/ParameterFactory.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h

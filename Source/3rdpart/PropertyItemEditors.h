@@ -753,8 +753,17 @@ public:
       LPDRAWITEMSTRUCT lpdis = (LPDRAWITEMSTRUCT) lParam;
       if( m_wndButton != lpdis->hwndItem ) return 0;
       CDCHandle dc(lpdis->hDC);
-      // Paint as ellipsis button
-      dc.DrawFrameControl(&lpdis->rcItem, DFC_BUTTON, (lpdis->itemState & ODS_SELECTED) != 0 ? DFCS_BUTTONPUSH | DFCS_PUSHED : DFCS_BUTTONPUSH);
+
+      HTHEME htheme = OpenThemeDataExEx(m_wndButton, L"BUTTON");
+      if (htheme) {
+          int uState = (lpdis->itemState & ODS_SELECTED) != 0 ? PBS_PRESSED : PBS_NORMAL;
+          DrawThemeBackground(htheme, dc, BP_PUSHBUTTON, uState, &lpdis->rcItem, 0);
+
+          CloseThemeData(htheme);
+      } else {
+          // Paint as ellipsis button
+          dc.DrawFrameControl(&lpdis->rcItem, DFC_BUTTON, (lpdis->itemState & ODS_SELECTED) != 0 ? DFCS_BUTTONPUSH | DFCS_PUSHED : DFCS_BUTTONPUSH);
+      }
       dc.SetBkMode(TRANSPARENT);
       LPCTSTR pstrEllipsis = _T("...");
       dc.DrawText(pstrEllipsis, ::lstrlen(pstrEllipsis), &lpdis->rcItem, DT_CENTER | DT_EDITCONTROL | DT_SINGLELINE | DT_VCENTER);

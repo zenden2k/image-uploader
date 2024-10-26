@@ -211,6 +211,13 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
     return 0;
 }
 
+LRESULT CServerParamsDlg::OnParamListBrowseFile(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto nmh = reinterpret_cast<NMPROPERTYITEM*>(pnmh);
+    parameterListAdapter_->browseFileDialog(nmh->prop);
+
+    return 0;
+}
+
 ServerProfile CServerParamsDlg::serverProfile() const
 {
     return serverProfile_;

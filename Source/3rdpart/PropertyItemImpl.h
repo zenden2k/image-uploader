@@ -614,6 +614,10 @@ public:
       RECT rcWin = rc;
       win->m_prop = this;
       win->Create(hWnd, rcWin, szText);
+      /*RECT rcText;
+      win->GetRect(&rcText);
+      rcText.top += 3;
+      win->SetRect(&rcText);*/
       ATLASSERT(win->IsWindow());
       return *win;
    }
@@ -654,10 +658,10 @@ public:
       USES_CONVERSION;
       LPCTSTR pstrFileName = OLE2CT(m_val.bstrVal);
       LPCTSTR p = pstrFileName;
-      while( *p != '\0' ) {
+      /* while (*p != '\0') {
          if( *p == _T(':') || *p == _T('\\') ) pstrFileName = p + 1;
          p = ::CharNext(p);
-      }
+      }*/
       ::lstrcpyn(pstr, pstrFileName, cchMax);
       return TRUE;
    }

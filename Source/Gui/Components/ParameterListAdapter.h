@@ -22,6 +22,7 @@ public:
     ParameterListAdapter(ParameterList* parameterList, CPropertyListCtrl* control);
     void updateControl(ServerSettingsStruct* serverSettings);
     void saveValues(ServerSettingsStruct* serverSettings);
+    void browseFileDialog(HPROPERTY prop);
 
     void registerParameterController(const std::string& type, std::unique_ptr<IParameterController> controller);
 private:
