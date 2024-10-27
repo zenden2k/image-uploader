@@ -47,6 +47,8 @@ set(SOURCE_FILES
     QtScriptFunctionsImpl.cpp
     Gui/controls/ServerSelectorWidget.cpp
     Gui/controls/ProgressRingWidget.cpp
+    Gui/controls/UploadTreeView.cpp
+    Gui/controls/UploadTreeView.h
     ../Core/Settings/QtGuiSettings.cpp
     ../Core/Settings/CommonGuiSettings.cpp
     ../Core/AbstractServerIconCache.cpp

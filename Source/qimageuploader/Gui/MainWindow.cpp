@@ -65,7 +65,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->treeView->setColumnWidth(0, 150); // Filename column
     ui->treeView->setColumnWidth(1, 150); // Status column
     ui->treeView->setColumnWidth(2, 150); // Progress column
-
+    ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::itemDoubleClicked);
     connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
 
@@ -310,11 +310,33 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
         contextMenu->setDefaultAction(viewCodeAction);
 
         if (internalItem->task) {
-            auto uploadResult = internalItem->task->uploadResult();
-            QString url = QString::fromUtf8(uploadResult->getDirectUrl().c_str());
-            if (url.isEmpty()) {
-                url = QString::fromUtf8(uploadResult->getDownloadUrl().c_str());
+            auto* uploadResult = internalItem->task->uploadResult();
+            QString directUrl = QString::fromStdString(uploadResult->getDirectUrl());
+            QString viewUrl = QString::fromStdString(uploadResult->getDownloadUrl());
+
+            if (!directUrl.isEmpty()) {
+                QAction* copyDirectLinkAction = new QAction(tr("Copy direct link"), contextMenu);
+                copyDirectLinkAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+                connect(copyDirectLinkAction, &QAction::triggered, [directUrl](bool checked) {
+                    QClipboard* clipboard = QApplication::clipboard();
+                    clipboard->setText(directUrl);
+                });
+                contextMenu->addAction(copyDirectLinkAction);
             }
+
+            if (!viewUrl.isEmpty()) {
+                QAction* copyViewLinkAction = new QAction(tr("Copy view link"), contextMenu);
+                if (directUrl.isEmpty()) {
+                    copyViewLinkAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+                }
+                connect(copyViewLinkAction, &QAction::triggered, [viewUrl](bool checked) {
+                    QClipboard* clipboard = QApplication::clipboard();
+                    clipboard->setText(viewUrl);
+                });
+                contextMenu->addAction(copyViewLinkAction);
+            }
+            contextMenu->addSeparator();
+            QString url = directUrl.isEmpty() ? viewUrl : directUrl;
             if (!url.isEmpty()) {
                 QAction* viewInBrowser = new QAction(tr("Open in browser"), contextMenu);
                 connect(viewInBrowser, &QAction::triggered, [url](bool checked)

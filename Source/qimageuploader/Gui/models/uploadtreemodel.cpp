@@ -50,6 +50,13 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
             return QBrush(QColor(Qt::darkGreen));
         }
     }
+
+    if (role == Qt::UserRole && index.column() == 0 && obj->task) {
+        std::string directUrl = obj->task->uploadResult()->getDirectUrl();
+        std::string viewUrl = obj->task->uploadResult()->getDownloadUrl();
+        return directUrl.empty() ? QString::fromStdString(viewUrl) : QString::fromStdString(directUrl);
+    }
+
     if (role != Qt::DisplayRole)
         return {};
 
@@ -58,8 +65,8 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
     QString result;
     if(index.column() == 0)
     {
-        if ( obj->task ) {
-            result = U2Q(obj->task->title());
+        if (obj->task ) {
+            result = U2Q(obj->task->title());  
         } else if ( obj->session) {
 
             result = QString(tr("Session %1 (%2 files)").arg(obj->index + 1).arg(obj->session->taskCount()));
