@@ -115,6 +115,7 @@
 		</Actions>
         <Result DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
+	<!-- Blocked by RKN ? -->
 	<Server Name="hostingkartinok.com"  Authorize="1" Debug="0" WebsiteUrl="https://hostingkartinok.com" RegistrationUrl="https://hostingkartinok.com/register.php">
 		<Actions>
 			<Action Type="upload" Url="https://hostingkartinok.com/login.php" PostParams="autologin=1;email=$(_LOGIN);password=$(_PASSWORD);login=Войти" OnlyOnce="1" />
@@ -431,6 +432,11 @@
 		<Actions>
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
+	</Server>
+	<Server Name="imghippo.com" Authorize="2" Type="image" Plugin="imghippo" NeedPassword="0">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">

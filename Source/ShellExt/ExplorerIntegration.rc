@@ -68,10 +68,10 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "Comments", "Image Uploader shell extension"
-            VALUE "FileDescription", "Image Uploader 1.3.x shell extension"
+            VALUE "FileDescription", "Image Uploader 1.4.x shell extension"
             VALUE "FileVersion", "1.1.0.2"
             VALUE "InternalName", "ExplorerIntegration.dll"
-            VALUE "LegalCopyright", "Copyright 2009-2019 Sergey Svistunov"
+            VALUE "LegalCopyright", "© 2009-2024 Sergey Svistunov"
             VALUE "OriginalFilename", "ExplorerIntegration.dll"
             VALUE "ProductName", "Image Uploader"
             VALUE "ProductVersion", "1.3.2.0"
@@ -90,7 +90,9 @@ END
 //
 
 IDR_EXPLORERINTEGRATION REGISTRY                "ExplorerIntegration.rgs"
+
 IDR_ISHELLCONTEXTMENU   REGISTRY                "IShellContextMenu.rgs"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -100,9 +102,13 @@ IDR_ISHELLCONTEXTMENU   REGISTRY                "IShellContextMenu.rgs"
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICONINFO            ICON                    "Res\\icon-info-16px.ico"
+
 IDI_ICONMOVIE           ICON                    "Res\\icon-movie-16px.ico"
+
 IDI_ICONUPLOAD          ICON                    "Res\\icon-upload-16px.ico"
+
 IDI_ICONMAIN            ICON                    "..\\Res\\new-icon.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
