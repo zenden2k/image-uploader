@@ -47,6 +47,8 @@ private slots:
 	void onCustomContextMenu(const QPoint &point);
 	void onShowLog();
     void fillServerIcons();
+    void onCopyDirectLinkTriggered(bool checked);
+    void onCopyFilePathTriggered(bool checked);
 protected:
 	bool addFileToList(QString fileName);
 	bool addMultipleFilesToList(QStringList fileNames);
@@ -55,6 +57,7 @@ protected:
 	void quitApp();
     void saveOptions();
     void closeEvent(QCloseEvent *event) override;
+    QModelIndex getUploadTreeViewSelectedIndex();
 private:
     std::unique_ptr<Ui::MainWindow> ui;
     UploadTreeModel* uploadTreeModel_;
@@ -67,6 +70,8 @@ private:
 	LogWindow* logWindow_;
 	CUploadEngineList* engineList_;
     QThread* iconsLoadingThread_{};
+    QAction* copyDirectLinkAction_ = nullptr;
+    QAction* copyFilePathAction_ = nullptr;
 };
 
 #endif // MAINWINDOW_H

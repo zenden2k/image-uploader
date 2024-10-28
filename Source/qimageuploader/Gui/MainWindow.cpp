@@ -66,8 +66,20 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui->treeView->setColumnWidth(1, 150); // Status column
     ui->treeView->setColumnWidth(2, 150); // Progress column
     ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     connect(ui->treeView, &QTreeView::doubleClicked, this, &MainWindow::itemDoubleClicked);
     connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &MainWindow::onCustomContextMenu);
+
+    copyDirectLinkAction_ = new QAction(tr("Copy direct link"), this);
+    copyDirectLinkAction_->setShortcut(QKeySequence::Copy);
+    connect(copyDirectLinkAction_, &QAction::triggered, this, &MainWindow::onCopyDirectLinkTriggered);
+
+    copyFilePathAction_ = new QAction(tr("Copy file path to clipboard"), this);
+    copyFilePathAction_->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_C));
+    connect(copyFilePathAction_, &QAction::triggered, this, &MainWindow::onCopyFilePathTriggered);
+
+    ui->treeView->addAction(copyDirectLinkAction_);
+    ui->treeView->addAction(copyFilePathAction_);
 
     const ServerProfile imageProfile = settings->imageServer.getByIndex(0);
 
@@ -98,12 +110,12 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
 
     iconsLoadingThread_->start();
 
-    QMenu* contextMenu = new QMenu(this);
-    QAction* exitAction = contextMenu->addAction(tr("Exit"));
+    QMenu* trayContextMenu = new QMenu(this);
+    QAction* exitAction = trayContextMenu->addAction(tr("Exit"));
     connect(exitAction, &QAction::triggered, this, &MainWindow::quitApp);
     systemTrayIcon_ = new QSystemTrayIcon(this);
     systemTrayIcon_->setIcon(QIcon(":/res/icon_main.ico"));
-    systemTrayIcon_->setContextMenu(contextMenu);
+    systemTrayIcon_->setContextMenu(trayContextMenu);
     connect(systemTrayIcon_, &QSystemTrayIcon::activated, [&](QSystemTrayIcon::ActivationReason reason) {
         if (reason == QSystemTrayIcon::Trigger || reason == QSystemTrayIcon::DoubleClick){
             setWindowState(windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
@@ -299,7 +311,7 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
     if (index.isValid()) {
         UploadTreeModel::InternalItem* internalItem = uploadTreeModel_->getInternalItem(index);
         QMenu* contextMenu = new QMenu(ui->treeView);
-        //ui->treeView->setContextMenuPolicy(Qt::ActionsContextMenu);
+
         QAction* viewCodeAction = new QAction(tr("View HTML/BBCode"), contextMenu);
 
         contextMenu->addAction(viewCodeAction);
@@ -315,19 +327,13 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
             QString viewUrl = QString::fromStdString(uploadResult->getDownloadUrl());
 
             if (!directUrl.isEmpty()) {
-                QAction* copyDirectLinkAction = new QAction(tr("Copy direct link"), contextMenu);
-                copyDirectLinkAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-                connect(copyDirectLinkAction, &QAction::triggered, [directUrl](bool checked) {
-                    QClipboard* clipboard = QApplication::clipboard();
-                    clipboard->setText(directUrl);
-                });
-                contextMenu->addAction(copyDirectLinkAction);
+                contextMenu->addAction(copyDirectLinkAction_);
             }
 
             if (!viewUrl.isEmpty()) {
                 QAction* copyViewLinkAction = new QAction(tr("Copy view link"), contextMenu);
                 if (directUrl.isEmpty()) {
-                    copyViewLinkAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+                    copyViewLinkAction->setShortcut(QKeySequence::Copy);
                 }
                 connect(copyViewLinkAction, &QAction::triggered, [viewUrl](bool checked) {
                     QClipboard* clipboard = QApplication::clipboard();
@@ -355,14 +361,7 @@ void MainWindow::onCustomContextMenu(const QPoint& point) {
                     QDesktopServices::openUrl("file:///" + fileName);
                 });
                 contextMenu->addAction(openInProgram);
-
-                QAction* copyPathAction = new QAction(tr("Copy file path to clipboard"), contextMenu);
-                connect(copyPathAction, &QAction::triggered, [fileName](bool checked)
-                {
-                    QClipboard* clipboard = QApplication::clipboard();
-                    clipboard->setText(fileName);
-                });
-                contextMenu->addAction(copyPathAction);
+                contextMenu->addAction(copyFilePathAction_);
             }
 
         }
@@ -379,6 +378,39 @@ void MainWindow::onShowLog() {
 void MainWindow::fillServerIcons() {
     imageServerWidget_->fillServerIcons();
     fileServerWidget_->fillServerIcons();
+}
+
+void MainWindow::onCopyDirectLinkTriggered(bool checked) {
+    QModelIndex index = getUploadTreeViewSelectedIndex();
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    QString url = ui->treeView->model()->data(index, Qt::UserRole).toString();
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setText(url);
+}
+
+void MainWindow::onCopyFilePathTriggered(bool checked) {
+    QModelIndex index = getUploadTreeViewSelectedIndex();
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    UploadTreeModel::InternalItem* internalItem = uploadTreeModel_->getInternalItem(index);
+
+    if (!internalItem || !internalItem->task) {
+        return;
+
+    }
+    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(internalItem->task);
+
+    if (fileTask) {
+        QString fileName = U2Q(fileTask->getFileName());
+        QApplication::clipboard()->setText(fileName);
+    }
 }
 
 void MainWindow::on_actionAboutProgram_triggered() {
@@ -413,5 +445,17 @@ void MainWindow::setServersChanged(bool changed) {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     saveOptions();
+}
+
+QModelIndex MainWindow::getUploadTreeViewSelectedIndex() {
+    QItemSelectionModel * selection = ui->treeView->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
+
+    if(indexes.size() < 1) {
+        return {};
+    }
+    std::sort(indexes.begin(), indexes.end());
+    QModelIndex index = indexes.first();
+    return index;
 }
 

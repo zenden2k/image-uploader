@@ -73,11 +73,17 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 dwmapi)
+    if (IU_ENABLE_WEBVIEW2)
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+    endif()
 endif()
 
 target_link_libraries(qimageuploader iucore iuvideo ${COMMON_LIBS_LIST})
 
 if(WIN32)
+
     add_custom_command(TARGET qimageuploader
         POST_BUILD
         COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:qimageuploader> $<CONFIG>
