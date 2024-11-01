@@ -30,7 +30,7 @@ void ChoiceParameter::setValue(const std::string& val) {
 }
 
 void ChoiceParameter::addItem(const std::string& id, const std::string& value) {
-    items_.push_back({ id, value });
+    items_.emplace_back(id, value);
 }
 
 void ChoiceParameter::clearItems() {

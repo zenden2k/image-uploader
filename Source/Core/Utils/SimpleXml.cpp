@@ -156,7 +156,7 @@ void SimpleXmlNode::DeleteChilds() {
     impl_->m_el->DeleteChildren();
 }
 
-const std::string SimpleXmlNode::Attribute(const std::string& name) const {
+std::string SimpleXmlNode::Attribute(const std::string& name) const {
     const char* v {};
     std::string result;
 
@@ -300,7 +300,7 @@ SimpleXmlNode SimpleXml::getRoot(const std::string& name, bool create) {
     return el;
 }
 
-const std::string SimpleXml::ToString() {
+std::string SimpleXml::ToString() {
     XMLPrinter printer;
     //printer.SetIndent( "    " );
     impl_->doc.Accept( &printer );

@@ -103,7 +103,6 @@ protected:
     int allocatedFrameWidth_;
     int allocatedFrameHeight_;
     size_t allocatedBufferSize_;
-    uint64_t fileSize_;
     bool NeedStop;
     bool SeekToKeyFrame;
     bool seekByBytes;

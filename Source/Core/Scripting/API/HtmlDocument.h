@@ -25,7 +25,7 @@ public:
     Return an array of HtmlElement matched to query.
     */
     Sqrat::Array querySelectorAll(const std::string& query);
-    const std::string getHTML();
+    std::string getHTML();
 protected:
     std::shared_ptr<HtmlDocumentPrivate> d_;
 };

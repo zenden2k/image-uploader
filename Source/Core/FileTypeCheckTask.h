@@ -5,12 +5,12 @@
 #include "IFileList.h"
 
 struct BadFileFormat {
-    size_t index;
+    size_t index = -1;
     std::string fileName;
     std::string message;
     std::string mimeType;
     int64_t fileSize = -1;
-    const ServerProfile* uploadProfile;
+    const ServerProfile* uploadProfile = nullptr;
 };
 
 class FileTypeCheckTask: public BackgroundTask {

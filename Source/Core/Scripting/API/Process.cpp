@@ -1,4 +1,4 @@
-﻿#include "Process.h"
+#include "Process.h"
 
 #undef environ
 #include <algorithm>
@@ -222,7 +222,7 @@ int Process::waitForExit()
     return d_->waitForExit();
 }
 
-const std::string Process::readOutput()
+std::string Process::readOutput()
 {
     std::string res;
     d_->readOutput(res);
@@ -239,7 +239,7 @@ void Process::setCaptureOutput(bool read)
     d_->readProcessOutput_ = read;
 }
 
-const std::string Process::findExecutableInPath(const std::string& executable)
+std::string Process::findExecutableInPath(const std::string& executable)
 {
     return bp::search_path(executable).string();
 }

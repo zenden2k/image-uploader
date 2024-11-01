@@ -42,7 +42,7 @@ HtmlElement::HtmlElement(HtmlElementPrivate* pr)
 
 
 
-const std::string HtmlElement::getAttribute(const std::string& name)
+std::string HtmlElement::getAttribute(const std::string& name)
 {
     if ( !checkNull("getAttribute") ) {
         return std::string();
@@ -66,7 +66,7 @@ void HtmlElement::removeAttribute(const std::string& name)
     d_->removeAttribute(name);
 }
 
-const std::string HtmlElement::getId()
+std::string HtmlElement::getId()
 {
     if ( !checkNull("getId") ) {
         return std::string();
@@ -82,7 +82,7 @@ void HtmlElement::setId(const std::string& id)
     d_->setId(id);
 }
 
-const std::string HtmlElement::getInnerHTML()
+std::string HtmlElement::getInnerHTML()
 {
     if ( !checkNull("getInnerHTML") ) {
         return std::string();
@@ -98,7 +98,7 @@ void HtmlElement::setInnerHTML(const std::string& html)
     d_->setInnerHTML(html);
 }
 
-const std::string HtmlElement::getInnerText()
+std::string HtmlElement::getInnerText()
 {
     if ( !checkNull("getInnerText") ) {
         return std::string();
@@ -114,7 +114,7 @@ void HtmlElement::setInnerText(const std::string& text)
     d_->setInnerText(text);
 }
 
-const std::string HtmlElement::getOuterHTML()
+std::string HtmlElement::getOuterHTML()
 {
     if ( !checkNull("getOuterHTML") ) {
         return std::string();
@@ -130,7 +130,7 @@ void HtmlElement::setOuterHTML(const std::string& html)
     d_->setOuterHTML(html);
 }
 
-const std::string HtmlElement::getOuterText()
+std::string HtmlElement::getOuterText()
 {
     if ( !checkNull("getOuterText") ) {
         return std::string();
@@ -154,7 +154,7 @@ void HtmlElement::setValue(const std::string& value)
     d_->setValue(value);
 }
 
-const std::string HtmlElement::getValue()
+std::string HtmlElement::getValue()
 {
     if ( !checkNull("getValue") ) {
         return std::string();
@@ -162,7 +162,7 @@ const std::string HtmlElement::getValue()
     return d_->getValue();
 }
 
-const std::string HtmlElement::getTagName()
+std::string HtmlElement::getTagName()
 {
     if ( !checkNull("getTagName") ) {
         return std::string();

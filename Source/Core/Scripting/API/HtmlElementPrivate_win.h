@@ -60,7 +60,7 @@ class HtmlElementPrivate {
             docPrivate_= docPrivate;
         }
 
-        const std::string getAttribute(const std::string& name)
+        std::string getAttribute(const std::string& name)
         {
             if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "class")) {
                 return getClassName();
@@ -72,7 +72,7 @@ class HtmlElementPrivate {
             return std::string();
         }
 
-        const std::string getClassName() {
+        std::string getClassName() {
 
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_className(&res) ) && res  ) {
@@ -98,7 +98,7 @@ class HtmlElementPrivate {
             elem_->removeAttribute(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()), 0, &res);
         }
 
-        const std::string getId()
+        std::string getId()
         {
             CComBSTR res;
             if ( SUCCEEDED ( elem_->get_id(&res) ) && res  ) {
@@ -112,7 +112,7 @@ class HtmlElementPrivate {
             elem_->put_id((CComBSTR(IuCoreUtils::Utf8ToWstring(id).c_str())));
         }
 
-        const std::string getInnerHTML()
+        std::string getInnerHTML()
         {
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_innerHTML(&res) ) && res  ) {
@@ -126,7 +126,7 @@ class HtmlElementPrivate {
             elem_->put_innerHTML(CComBSTR(IuCoreUtils::Utf8ToWstring(html).c_str()));
         }
 
-        const std::string getInnerText()
+        std::string getInnerText()
         {
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_innerText(&res) ) && res  ) {
@@ -140,7 +140,7 @@ class HtmlElementPrivate {
             elem_->put_innerText(CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
         }
 
-        const std::string getOuterHTML()
+        std::string getOuterHTML()
         {
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_outerHTML(&res) ) && res   ) {
@@ -154,7 +154,7 @@ class HtmlElementPrivate {
             elem_->put_outerHTML(CComBSTR(IuCoreUtils::Utf8ToWstring(html).c_str()));
         }
 
-        const std::string getOuterText()
+        std::string getOuterText()
         {
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_outerText(&res) )  && res  ) {
@@ -168,7 +168,7 @@ class HtmlElementPrivate {
             elem_->put_outerText(CComBSTR(IuCoreUtils::Utf8ToWstring(text).c_str()));
         }
 
-        const std::string getTagName()
+        std::string getTagName()
         {
             CComBSTR res;
             if ( SUCCEEDED( elem_->get_tagName(&res) ) && res  ) {
@@ -181,7 +181,7 @@ class HtmlElementPrivate {
         }
 
         void setValue(const std::string& value);
-        const std::string getValue();
+        std::string getValue();
 
         HtmlElement getParentElement()
         {

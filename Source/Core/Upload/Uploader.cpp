@@ -156,7 +156,8 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
     if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByWidth) {
         uparams.thumbWidth = tcParams.Width;
-    } if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
+    }
+    if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
         uparams.thumbHeight = tcParams.Height;
     }
     

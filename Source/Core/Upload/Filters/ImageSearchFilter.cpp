@@ -44,7 +44,7 @@ bool ImageSearchFilter::PostUpload(UploadTask* task) {
     }
 
     std::string directUrl = tempTask->uploadResult()->directUrl;
-    std::string downloadUrl = tempTask->uploadResult()->downloadUrl;
+    //std::string downloadUrl = tempTask->uploadResult()->downloadUrl;
 
     if (!directUrl.empty()) {
         auto imgSearchTask = std::make_shared<SearchByImageUrlTask>(directUrl, task);

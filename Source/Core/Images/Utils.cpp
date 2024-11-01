@@ -613,7 +613,7 @@ CString GdiplusStatusToString(Gdiplus::Status statusID) {
 }
 
 std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
-    std::unique_ptr<Bitmap> res(new Bitmap(bm->GetWidth(), bm->GetHeight(), PixelFormat32bppARGB));
+    auto res = std::make_unique<Bitmap>(bm->GetWidth(), bm->GetHeight(), PixelFormat32bppARGB);
 
     if (res->GetLastStatus() != Ok) {
         return {};

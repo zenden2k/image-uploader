@@ -264,7 +264,9 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     m_bShowWindow = true;
 
-    win7JumpList_ = std::make_unique<Win7JumpList>();
+    if (!Settings.IsPortable) {
+        win7JumpList_ = std::make_unique<Win7JumpList>();
+    }
 
     LPDWORD DlgCreationResult = reinterpret_cast<LPDWORD>(lParam);
 

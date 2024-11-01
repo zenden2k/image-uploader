@@ -153,7 +153,7 @@ void VideoGrabber::grab(const std::string& fileName) {
      if ( !IuCoreUtils::FileExists(fileName) ) {
          return;
      }
-     std::string ext = IuCoreUtils::ExtractFileExt(fileName);
+     //std::string ext = IuCoreUtils::ExtractFileExt(fileName);
      fileName_ = fileName;
      worker_ = std::make_unique<VideoGrabberRunnable>(this, logErrors_);
      if (async_) {

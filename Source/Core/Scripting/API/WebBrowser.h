@@ -43,12 +43,12 @@ class WebBrowserPrivate;
             /**
             Returns current url.
             */
-            const std::string url();
+            std::string url();
 
             /**
             Returns current page title or url if title is empty.
             */
-            const std::string title();
+            std::string title();
 
             /**
             Show the web browser window and wait until it is closed. 
@@ -73,10 +73,10 @@ class WebBrowserPrivate;
             /**
             Returns current page contents.
             */
-            const std::string getDocumentContents();
+            std::string getDocumentContents();
             bool setHtml(const std::string& html);
-            const std::string runJavaScript(const std::string& code);
-            const std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
+            std::string runJavaScript(const std::string& code);
+            std::string callJavaScriptFunction(const std::string& funcName, Sqrat::Object args);
             void setSilent(bool silent);
             void addTrustedSite(const std::string& domain);
             int getMajorVersion();

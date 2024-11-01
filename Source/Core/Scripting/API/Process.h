@@ -1,4 +1,4 @@
-﻿#ifndef IU_CORE_SCRIPTAPI_PROCESS_H
+#ifndef IU_CORE_SCRIPTAPI_PROCESS_H
 #define IU_CORE_SCRIPTAPI_PROCESS_H
 
 #pragma once
@@ -54,14 +54,14 @@ public:
     * @return Exist code returned by child process
     */
     int waitForExit();
-    const std::string readOutput();
+    std::string readOutput();
 
     /**
     * If set to true, process window is hidden (Windows only)
     */
     void setHidden(bool hidden);
     void setCaptureOutput(bool read);
-    const std::string findExecutableInPath(const std::string& executable);
+    std::string findExecutableInPath(const std::string& executable);
 
     /**
     Set the encoding of process output stream.

@@ -31,6 +31,7 @@ FileUploadTask::FileUploadTask(const std::string& fileName, const std::string& d
 {
     tempFileDeleter_ = nullptr;
     isImage_ = false;
+    isVideo_ = false;
     cachedFileSize_ = IuCoreUtils::GetFileSize(fileName);
     if ( displayName.empty() ) {
         displayName_ = IuCoreUtils::ExtractFileName(fileName);

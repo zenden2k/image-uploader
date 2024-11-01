@@ -23,17 +23,17 @@ public:
     explicit UploadTaskWrapper(UploadTask* task);
     UploadTaskWrapper(std::shared_ptr<UploadTask> task);
     virtual ~UploadTaskWrapper() = default;
-    const std::string role();
+    std::string role();
     void setRole(const std::string& role);  
-    const std::string type();
-    const std::string getMimeType();
+    std::string type();
+    std::string getMimeType();
     int64_t getDataLength();
     UploadTaskWrapper parentTask();
     UploadTaskWrapper child(int index);
     int childCount();
     UploadResult* uploadResult();
     std::string serverName() const;
-    const std::string profileName();
+    std::string profileName();
     void setStatusText(const std::string& status);
     ServerProfile serverProfile();
     void setServerProfile(const ServerProfile& profile);
@@ -76,7 +76,7 @@ public:
      * Possible values: DirectUrl, DownloadUrl
      */
     void setParentUrlType(const std::string& type);
-    const std::string parentUrlType();
+    std::string parentUrlType();
 };
 
 /**

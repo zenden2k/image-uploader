@@ -185,9 +185,6 @@ bool CConnectionSettingsPage::apply()
 	}
     Settings.MaxUploadSpeed = maxUploadSpeed;
 
-    GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
-    CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
-
     return true;
 }
 

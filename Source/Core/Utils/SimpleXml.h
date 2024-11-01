@@ -54,7 +54,7 @@ class SimpleXmlNode
         /*! @endcond */
         virtual ~SimpleXmlNode();
         
-        const std::string Attribute(const std::string& name) const;
+        std::string Attribute(const std::string& name) const;
         /*! @cond PRIVATE */
         SimpleXmlNode operator[](const std::string& name);
         bool GetAttribute(const std::string& name, std::string& value) const;
@@ -143,7 +143,7 @@ class SimpleXml
         bool LoadFromString(const std::string& string);
         bool SaveToFile(const std::string& fileName) const;
         SimpleXmlNode getRoot(const std::string& name, bool create = true);
-        const std::string ToString();
+        std::string ToString();
     private:
         SimpleXml_impl *impl_;
         //DISALLOW_COPY_AND_ASSIGN(SimpleXml);

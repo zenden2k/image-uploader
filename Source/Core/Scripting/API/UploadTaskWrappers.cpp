@@ -12,7 +12,7 @@ UploadTaskWrapper::UploadTaskWrapper()
 {
 }
 
-const std::string UploadTaskWrapper::role()
+std::string UploadTaskWrapper::role()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return UploadTask::EnumToString(task_->role());
@@ -24,14 +24,14 @@ void UploadTaskWrapper::setRole(const std::string& role)
     task_->setRole(UploadTask::StringToEnumRole(role.c_str()));
 }
 
-const std::string UploadTaskWrapper::type()
+std::string UploadTaskWrapper::type()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return UploadTask::EnumToString(task_->type());
 }
 
 
-const std::string UploadTaskWrapper::getMimeType()
+std::string UploadTaskWrapper::getMimeType()
 {   
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->getMimeType();
@@ -73,7 +73,7 @@ std::string UploadTaskWrapper::serverName() const
     return task_->serverName();
 }
 
-const std::string UploadTaskWrapper::profileName()
+std::string UploadTaskWrapper::profileName()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->serverProfile().profileName();
@@ -276,7 +276,7 @@ void UrlShorteningTaskWrapper::setParentUrlType(const std::string& type)
     urlShorteningTask->setParentUrlType(UrlShorteningTask::StringToEnumParentUrlType(type.c_str())); 
 }
 
-const std::string UrlShorteningTaskWrapper::parentUrlType()
+std::string UrlShorteningTaskWrapper::parentUrlType()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     UrlShorteningTask* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());

@@ -38,6 +38,7 @@ limitations under the License.
 #include "Core/SearchByImage.h"
 #include "Func/Common.h"
 #include "StringConvert.h"
+#include "Gui/Win7JumpList.h"
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
@@ -1044,6 +1045,9 @@ void WtlGuiSettings::Uninstall() {
     reg3.DeleteKey("Software\\Zenden.ws");
     CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
     DeleteFile(ShortcutName);
+
+    Win7JumpList jumplist;
+    jumplist.DeleteJumpList();
 }
 
 void WtlGuiSettings::EnableAutostartup(bool enable) {
