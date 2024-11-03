@@ -959,7 +959,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
 }
 
 void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
-    CString statusText = TR("Screenshot was saved to clipboard.");
+    CString statusText = TR("Screenshot has been copied to clipboard.");
     ShowBaloonTip(statusText, APPNAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
 }

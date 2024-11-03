@@ -2259,7 +2259,7 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
             WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/Text01);
             //templ.setImagePath(L"C:/example.png");
             //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
-            templ.setTextField(TR("Screenshot was saved to clipboard."), WinToastTemplate::FirstLine);
+            templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
             const auto toast_id = WinToast::instance()->showToast(templ, winToastHandler_.get());
             if (toast_id < 0) {
                 LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
