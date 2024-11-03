@@ -188,9 +188,11 @@ libheif         https://github.com/strukturag/libheif
 
 WinToast        https://github.com/mohabouje/WinToast
 
+argparse        https://github.com/p-ranav/argparse
+
 DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK
 
-Libraries for building Mega.nz:
+**Libraries for building Mega.nz:**
 
 Mega SDK        https://github.com/meganz/sdk
 
@@ -200,6 +202,6 @@ c-ares          https://c-ares.haxx.se/
 
 libuv           https://github.com/libuv/libuv
 
-Libraries for building tests:
+**Libraries for building tests:**
 
 Google Mock     https://github.com/abseil/googletest

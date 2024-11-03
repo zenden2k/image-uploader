@@ -24,6 +24,7 @@
 #include <boost/format.hpp>
 
 #include <curl/curl.h>
+#include <argparse/argparse.hpp>
 #include <csignal>
 
 #include "Core/Upload/Uploader.h"
@@ -81,6 +82,8 @@ std::string serverName;
 std::string login;
 std::string password;
 std::string folderId;
+std::map<std::string,std::string> serverParameters;
+bool printServerParameters;
 std::string proxy;
 int proxyPort;
 int proxyType; /* CURLPROXY_HTTP, CURLPROXY_HTTPS, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
@@ -143,41 +146,6 @@ void DoUpdates(bool force = false);
 
 std::chrono::steady_clock::time_point lastProgressTime;
 
-void PrintUsage(bool help = false) {
-   std::cerr<<"USAGE:  "<<"imgupload [OPTIONS] filename1 filename2 ..."<<std::endl;
-   if ( !help ) {
-	std::cerr<<"Use '--help' option for more detailed information."<<std::endl;
-   }
-}
-
-void PrintHelp() {
-   std::cerr<<"\r\nAvailable options:"<<std::endl;
-   std::cerr<<" -l Prints server list"<<std::endl;
-   std::cerr<<" -s <server_name>"<<std::endl;
-   std::cerr<<" -u <username>"<<std::endl;
-   std::cerr<<" -p <password>"<<std::endl;
-   std::cerr<<" -cl <bbcode|html|json|plain> (Default: plain)"<<std::endl;
-   std::cerr<<" -ct <TableOfThumbnails|ClickableThumbnails|Images|Links>"<<std::endl;
-   std::cerr<<" -fl <folder_id> ID of remote folder (supported by some servers)\r\n"
-	   << "     Note that this is not the folder\'s name! \r\n"
-	   << "     How to obtain it: open Image Uploader GUI version's\r\n"
-	   << "     configuration file 'settings.xml' in text editor, \r\n"
-	   << "     find your server under 'ServersParams' node,\r\n"
-	   << "     and copy value of the '_FolderID' attribute"<<
-	   std::endl;
-   std::cerr<<" -pr <x.x.x.x:xxxx> Proxy address "<<std::endl;
-   std::cerr<<" -pt <http|https|socks4|socks4a|socks5|socks5dns> Proxy type  (default http)"<<std::endl;
-   std::cerr<<" -pu <username> Proxy username"<<std::endl;
-   std::cerr<<" -pp <password> Proxy password"<<std::endl;
-#ifdef _WIN32
-    std::cerr << " -ps Use system proxy settings (this option supported only on Windows)" << std::endl;
-    //std::cerr<<" --disable-update Disable auto-updating servers.xml"<<std::endl;
-	std::cerr<<std::endl<<" -up   Update servers.xml\r\n"
-		<<"     the 'Data' directory must be writable, otherwise update will fail"
-		<<std::endl;
-#endif
-}
-
 void PrintServerList()
 {
     for (const auto& ued : *list) {
@@ -188,197 +156,12 @@ void PrintServerList()
    }
 }
 
-bool parseCommandLine(int argc, char *argv[])
+CUploadEngineData* getServerByName(const std::string& name)
 {
-    if(argc == 1)
-    {
-        PrintUsage();
-        return false;
-    }
-    int i = 1;
-    while(i < argc)
-    {
-        char *opt = argv[i];
-        if(!IuStringUtils::stricmp(opt, "--help")
-#ifdef _WIN32
-            || !IuStringUtils::stricmp(opt, "/?")
-#endif
-            )
-        {
-            PrintUsage(true);
-            PrintHelp();
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-s"))
-        {
-            if(i+1 == argc)
-                return false;
-            serverName = argv[++i];
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-l"))
-        {
-            PrintServerList();
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-cl"))
-        {
-            if(i+1 == argc)
-                return false;
-            char * codelang = argv[++i];
-            if(!IuStringUtils::stricmp(codelang, "plain"))
-                codeLang = OutputGenerator::clPlain;
-            else if(!IuStringUtils::stricmp(codelang, "html"))
-                codeLang = OutputGenerator::clHTML;
-            else if(!IuStringUtils::stricmp(codelang, "bbcode"))
-                codeLang = OutputGenerator::clBBCode;
-            else if (!IuStringUtils::stricmp(codelang, "json"))
-                codeLang = OutputGenerator::clJSON;
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-ct"))
-        {
-            if(i+1 == argc)
-                return false;
-            char * codetype = argv[++i];
-            if(!IuStringUtils::stricmp(codetype, "TableOfThumbnails"))
-                codeType = OutputGenerator::ctTableOfThumbnails;
-            else if(!IuStringUtils::stricmp(codetype, "ClickableThumbnails"))
-                codeType = OutputGenerator::ctClickableThumbnails;
-            else if(!IuStringUtils::stricmp(codetype, "Images"))
-                codeType = OutputGenerator::ctImages;
-            else if(!IuStringUtils::stricmp(codetype, "Links"))
-                codeType = OutputGenerator::ctLinks;
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-u"))
-        {
-            if(i+1 == argc)
-                return false;
-            login = argv[++i];
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-p"))
-        {
-            if(i+1 == argc)
-                return false;
-            password = argv[++i];
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-fl"))
-        {
-            if(i+1 == argc)
-                return false;
-            folderId = argv[++i];
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-pr"))
-        {
-            if(i+1 == argc)
-                return false;
-            proxy = argv[++i];
-            std::vector<std::string> tokens;
-            IuStringUtils::Split(proxy,":",tokens,2);
-            if ( tokens.size() > 1) {
-                proxy = tokens[0];
-                proxyPort = atoi(tokens[1].c_str());
-            }
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-pu"))
-        {
-            if(i+1 == argc)
-                return false;
-            proxyUser = argv[++i];
-
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-pp"))
-        {
-            if(i+1 == argc)
-                return false;
-            proxyPassword = argv[++i];
-
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-pt"))
-        {
-            if(i+1 == argc)
-                return false;
-            std::map<std::string, int> types;
-            std::string type = argv[++i];
-            types["http"] = CURLPROXY_HTTP;
-            types["socks4"] = CURLPROXY_SOCKS4;
-            types["socks4a"] = CURLPROXY_SOCKS4A;
-            types["socks5"] = CURLPROXY_SOCKS5;
-            types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
-            types["https"] = CURLPROXY_HTTPS;
-            auto it = types.find(type);
-            if (it != types.end()) {
-                proxyType = it->second;
-            } else {
-                std::cerr<<"Invalid proxy type"<<std::endl;
-            }
-
-            i++;
-            continue;
-        }
-#ifdef _WIN32
-        else if (!IuStringUtils::stricmp(opt, "-ps")) {
-            useSystemProxy = true;
-            i++;
-            continue;
-        }
-        else if(!IuStringUtils::stricmp(opt, "-up"))
-        {
-            DoUpdates(true);
-            i++;
-            return 0;
-        }
-        else if(!IuStringUtils::stricmp(opt, "--disable-update"))
-        {
-            autoUpdate = false;
-            i++;
-            continue;
-        }
-
-#endif
-
-        std::string fileName =
-#ifndef _WIN32
-                IuCoreUtils::SystemLocaleToUtf8(argv[i]);
-#else
-                argv[i];
-#endif
-        if ( !IuCoreUtils::FileExists(fileName) ) {
-            std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n") % fileName);
-            ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
-            return false;
-        }
-        filesToUpload.push_back(fileName);
-        i++;
-    }
-
-    return true;
-}
-
-CUploadEngineData* getServerByName(const std::string& name) {
     CUploadEngineData* uploadEngineData = list->byName(serverName);
-    if(!uploadEngineData) {
-        for(int i=0; i<list->count(); i++)
-        {
-            if((IuStringUtils::toLower(list->byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
+    if (!uploadEngineData) {
+        for (int i = 0; i < list->count(); i++) {
+            if ((IuStringUtils::toLower(list->byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
                 return list->byIndex(i);
         }
     }
@@ -574,6 +357,9 @@ int func() {
     s.setParam("FolderID", folderId);
     serverProfile.setFolderId(folderId);
 
+    for (const auto& [k,v]: serverParameters) {
+        s.setParam(k, v);
+    }
     session = std::make_shared<UploadSession>(false);
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
@@ -608,6 +394,42 @@ int func() {
         finishSignal.wait(lk/*, [] {return finished;}*/);
     }
 	return res;	
+}
+
+
+void PrintServerParamList()
+{
+    if (serverName.empty()) {
+        throw std::invalid_argument("Server name is empty");
+    }
+    CUploadEngineData* ued = getServerByName(serverName);
+    if (!ued) {
+        throw std::invalid_argument("No such server");
+    }
+
+    ServerProfile profile(ued->Name);
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
+    ServiceLocator* serviceLocator = ServiceLocator::instance();
+    serviceLocator->setUploadErrorHandler(uploadErrorHandler);
+    auto networkClientFactory = std::make_shared<NetworkClientFactory>();
+    auto scriptsManager = std::make_unique<ScriptsManager>(networkClientFactory);
+    std::unique_ptr<UploadEngineManager> uploadEngineManager;
+    uploadEngineManager = std::make_unique<UploadEngineManager>(list.get(), uploadErrorHandler, networkClientFactory);
+    std::string scriptsDirectory = AppParams::instance()->dataDirectory() + "/Scripts/";
+    uploadEngineManager->setScriptsDirectory(scriptsDirectory);
+    ParameterList parameterList;
+    auto* m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager->getUploadEngine(profile));
+    if (m_pluginLoader) {
+        std::cout << "Parameters of server '" << ued->Name << "':" << std::endl;
+        m_pluginLoader->getServerParamList(parameterList);
+        int i = 0;
+        for (auto& parameter : parameterList) {
+            std::cout << ++i << ") " << parameter->getTitle() << std::endl
+                      << "Name: " << parameter->getName() << " Type: " << parameter->getType() << std::endl;
+        }
+    } else {
+        throw std::invalid_argument("This server cannot have parameters");
+    }
 }
 
 #ifdef _WIN32
@@ -698,6 +520,173 @@ int main(int argc, char *argv[]){
     appVersion.CommitHashShort = IU_COMMIT_HASH_SHORT;
     appVersion.BranchName = IU_BRANCH_NAME;
     AppParams::instance()->setVersionInfo(appVersion);
+
+    argparse::ArgumentParser program("imgupload", appVersion.FullVersion);
+    program.add_argument("-s", "--server")
+        .help("Server name")
+        .required()
+        .metavar("NAME")
+        .store_into(serverName);
+
+    program.add_argument("-l", "--list")
+        .help("Print server list (hostings) and exit")
+        .action([=](const auto& s) {
+            PrintServerList();
+            std::exit(0);
+        })
+        .default_value(false)
+        .implicit_value(true)
+        .nargs(0);
+
+    program.add_argument("-cl", "--code_lang")
+        .help("Code language (bbcode|html|json|plain)")
+        .action([&](const std::string& cl) {
+            const std::unordered_map<std::string, OutputGenerator::CodeLang> types = {
+                { "plain", OutputGenerator::clPlain },
+                { "html", OutputGenerator::clHTML },
+                { "bbcode", OutputGenerator::clBBCode },
+                { "json", OutputGenerator::clJSON }
+            };
+            auto it = types.find(cl);
+            if (it != types.end()) {
+                codeLang = it->second;
+            } else {
+                throw std::invalid_argument("Invalid code language");
+            }
+        })
+        .default_value("plain")
+        .nargs(1);
+
+    program.add_argument("-ct", "--code_type")
+        .help("Code type (TableOfThumbnails|ClickableThumbnails|Images|Links)")
+        .action([&](const std::string& ct) {
+            const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
+                { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
+                { "ClickableThumbnails", OutputGenerator::ctClickableThumbnails },
+                { "Images", OutputGenerator::ctImages },
+                { "Links", OutputGenerator::ctLinks }
+            };
+            auto it = types.find(ct);
+            if (it != types.end()) {
+                codeType = it->second;
+            } else {
+                throw std::invalid_argument("Invalid code type");
+            }
+     })
+     .default_value("Links")
+     .nargs(1);
+
+    program.add_argument("-u", "--user")
+        .help("User name (login)")
+        .metavar("USERNAME")
+        .store_into(login);
+
+    program.add_argument("-p", "--password")
+        .help("Password")
+        .metavar("PASSWORD")
+        .store_into(password);
+
+    program.add_argument("-fl", "--folder_id")
+        .help("The ID of remote folder/album (supported by some servers)")
+        .metavar("ID")
+        .store_into(folderId);
+
+    program.add_argument("-sp", "--server_param")
+        .help("Set parameter of remote server (NAME:VALUE)")
+        .metavar("NAME:VALUE")
+        .append();
+       // .nargs(argparse::nargs_pattern::at_least_one);
+
+    program.add_argument("-pl", "--param_list")
+        .help("Print server parameter list and exit")
+        .action([=](const auto& s) {
+            PrintServerParamList();
+            std::exit(0);
+        })
+        .default_value(false)
+        .implicit_value(true)
+        .nargs(0);
+    
+    program.add_argument("-pr", "--proxy")
+        .help("Proxy address (with port)")
+        .action([&](const std::string& pr) {
+            const std::unordered_map<std::string, OutputGenerator::CodeType> types = {
+                { "TableOfThumbnails", OutputGenerator::ctTableOfThumbnails },
+                { "ClickableThumbnails", OutputGenerator::ctClickableThumbnails },
+                { "Images", OutputGenerator::ctImages },
+                { "Links", OutputGenerator::ctLinks }
+            };
+            std::vector<std::string> tokens;
+            IuStringUtils::Split(pr, ":", tokens, 2);
+            if (tokens.size() > 1) {
+                proxy = tokens[0];
+                proxyPort = atoi(tokens[1].c_str());
+            } else {
+                throw std::invalid_argument("Invalid proxy");
+            }
+        });
+
+    program.add_argument("-pu", "--proxy_user")
+         .help("Proxy username (login)")
+         .metavar("USERNAME")
+         .store_into(login);
+
+    program.add_argument("-pp", "--proxy_password")
+         .help("Proxy password")
+         .metavar("PASSWORD")
+         .store_into(password);
+
+
+    program.add_argument("-pt", "--proxy_type")
+         .help("Proxy type (http|https|socks4|socks4a|socks5|socks5dns)")
+         .choices("http", "socks4", "socks4a", "socks5", "socks5dns", "https")
+         .action([&](const std::string& type) {
+            std::map<std::string, int> types;
+            types["http"] = CURLPROXY_HTTP;
+            types["socks4"] = CURLPROXY_SOCKS4;
+            types["socks4a"] = CURLPROXY_SOCKS4A;
+            types["socks5"] = CURLPROXY_SOCKS5;
+            types["socks5dns"] = CURLPROXY_SOCKS5_HOSTNAME;
+            types["https"] = CURLPROXY_HTTPS;
+
+            auto it = types.find(type);
+            if (it != types.end()) {
+                proxyType = it->second;
+            } else { 
+                 throw std::invalid_argument("Invalid proxy type");
+            }
+         })
+         .default_value("http")
+         .nargs(1);
+
+    program.add_argument("-ps", "--proxy_system")
+         .help("Use system proxy settings (this option supported only on Windows)")
+         .flag()
+         .store_into(useSystemProxy);
+#ifdef _WIN32
+    program.add_argument("-up", "--update")
+        .help("Update servers.xml. The 'Data' directory must be writable, otherwise update will fail.")
+        .action([=](const auto& s) {
+            DoUpdates(true);
+            std::exit(0);
+        })
+        .default_value(false)
+        .implicit_value(true)
+        .nargs(0);
+#endif
+    /*program.add_argument("-d", "--disable_update")
+       .help(Disable auto-updating servers.xml")
+       .action([=](const auto& s) {
+           autoUpdate = false;
+       })
+       .default_value(false)
+       .implicit_value(true)
+       .nargs(0);*/
+
+    program.add_argument("files")
+         .help("Files to upload on remote server")
+         .remaining();
+
     list = std::make_unique<CUploadEngineList>();
     std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
     
@@ -748,7 +737,7 @@ int main(int argc, char *argv[]){
 #else
     params->setTempDirectory("/var/tmp/");
 #endif
-    PrintWelcomeMessage();
+    //PrintWelcomeMessage();
     if(! list->loadFromFile(dataFolder + "servers.xml", Settings.ServersSettings)) {
         std::cerr<<"Cannot load server list!"<<std::endl;
     }
@@ -758,10 +747,47 @@ int main(int argc, char *argv[]){
     }
     Settings.LoadSettings(settingsFolder,"settings_cli.xml");
 
-    if(!parseCommandLine(argc, argv)) {
+    try {
+        program.parse_args(argc, argv);
+    } catch (const std::exception& err) {
+        ConsoleUtils::instance()->printColoredText(stderr, err.what(), ConsoleUtils::Color::Red);
+        std::cerr << std::endl;
+        std::cerr << program;
+        return 1;
+    }
+
+    try {
+        filesToUpload = program.get<std::vector<std::string>>("files");
+        for (auto& file : filesToUpload) {
+            if (!IuCoreUtils::FileExists(file)) {
+                std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n") % file);
+                ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
+            }
+        }
+    } catch (std::logic_error& e) {
+        ConsoleUtils::instance()->printColoredText(stderr, "No files provided", ConsoleUtils::Color::Red);
+        std::cerr << std::endl;
         return 0;
     }
-	
+
+    try {
+        auto params = program.get<std::vector<std::string>>("--server_param");
+        for (const auto& param : params) {
+            auto it = param.find(':');
+            if (it != std::string::npos) {
+                serverParameters[param.substr(0, it)] = param.substr(it + 1);
+            } else {
+                throw std::invalid_argument(str(boost::format("Invalid server paramter '%s'") % param));
+            }
+        }
+    } catch (std::logic_error& e) {
+
+    } catch (std::exception& e) {
+        ConsoleUtils::instance()->printColoredText(stderr, e.what(), ConsoleUtils::Color::Red);
+        std::cerr << std::endl;
+        return 0;
+    }
+
     if (filesToUpload.empty()) {
         return 0;
     }
