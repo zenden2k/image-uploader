@@ -663,7 +663,7 @@ int main(int argc, char *argv[]){
          .help("Use system proxy settings (this option supported only on Windows)")
          .flag()
          .store_into(useSystemProxy);
-
+#ifdef _WIN32
     program.add_argument("-up", "--update")
         .help("Update servers.xml. The 'Data' directory must be writable, otherwise update will fail.")
         .action([=](const auto& s) {
@@ -673,7 +673,7 @@ int main(int argc, char *argv[]){
         .default_value(false)
         .implicit_value(true)
         .nargs(0);
-
+#endif
     /*program.add_argument("-d", "--disable_update")
        .help(Disable auto-updating servers.xml")
        .action([=](const auto& s) {
