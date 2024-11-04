@@ -143,7 +143,18 @@ typedef struct tagVIDEOINFOHEADER2
 
 class DirectshowFrameGrabber2Private: public CGrabCallback {
 public:
+    class Initializer {
+    public:
+        Initializer() {
+        }
+
+        ~Initializer() {
+            DbgTerminate();
+        }
+    };
+
     DirectshowFrameGrabber2Private() {
+        static Initializer initializer;
         memset(&vih, 0, sizeof(vih));
     }
 

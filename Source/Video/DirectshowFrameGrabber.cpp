@@ -82,6 +82,12 @@ public:
 		BufferEvent = nullptr;
 		prev = 0;
     }
+
+    ~CSampleGrabberCB() {
+        if (BufferEvent) {
+            CloseHandle(BufferEvent);
+        }
+    }
     std::mutex mutex_;
     DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;

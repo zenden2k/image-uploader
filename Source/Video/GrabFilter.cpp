@@ -33,6 +33,7 @@ CGrabFilter::CGrabFilter(LPUNKNOWN pUnk, CGrab* grab) :
 }
 
 CGrabFilter::~CGrabFilter() {
+    delete m_pPosition;
 }
 
 CBasePin * CGrabFilter::GetPin(int n){

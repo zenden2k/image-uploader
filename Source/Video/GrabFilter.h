@@ -28,7 +28,6 @@ public:
 
 class CGrabFilter : public CBaseFilter
 {
-   
     CCritSec m_ReceiveLock;
     bool m_doGrab;
     CGrabCallback* m_callback;
