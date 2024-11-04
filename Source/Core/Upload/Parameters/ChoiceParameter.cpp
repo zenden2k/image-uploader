@@ -51,3 +51,13 @@ void ChoiceParameter::setSelectedIndex(int val) {
 int ChoiceParameter::selectedIndex() const {
     return selectedIndex_;
 }
+
+std::string ChoiceParameter::getDescription() const {
+    std::string res = "Possible values:\n";
+    
+    for (const auto& it : items_) {
+        res += "    \"" + it.first + "\" (" + it.second + ")\n";
+    }
+
+    return res;
+}

@@ -23,7 +23,7 @@ function _UploadToAccount(FileName, options) {
     }
     local expiration = 0;
     try {
-        expiration = 60 * ServerParams.getParam("uploadExpiration").tointeger();
+        expiration = 60 * ServerParams.getParam("expirationAuthorized").tointeger();
     } catch (ex) {
 
     }
@@ -62,6 +62,7 @@ function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
     local mime = GetFileMimeType(name);
     local token = _ObtainToken();
+    local expiration = ServerParams.getParam("expiration");
     if (token == "") {
         WriteLog("error", "[imgbb.com] Unable to obtain auth token");
         
@@ -74,6 +75,10 @@ function UploadFile(FileName, options) {
     nm.addQueryParam("timestamp", time() + "000");
     nm.addQueryParam("auth_token", token);
     nm.addQueryParam("category_id", "");
+    if (expiration != "") {
+        nm.addQueryParam("expiration", expiration);
+    }
+
     nm.addQueryParam("nswd", "");
     nm.addQueryParamFile("source", FileName, name, mime);
     nm.doUploadMultipartData();
@@ -102,14 +107,14 @@ function UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
-        uploadExpiration = tr("imgbb.expiration", "Expiration (in minutes)")
-        /*uploadExpiration = {
-            title = "Auto-delete after",
+        expirationAuthorized = tr("imgbb.expiration_authorized", "Expiration in minutes (authorized)"),
+        expiration = {
+            title = tr("imgbb.expiration", "Expiration (anonymous)"),
             type = "choice",
             items = [
                 {
                     id = "",
-                    label = "Never"
+                    label = tr("imgbb.never", "Never")
                 },
                 {
                     id = "PT5M",
@@ -196,6 +201,6 @@ function GetServerParamList() {
                     label = "6 months"
                 }
             ]
-        }*/
+        }
     };
 }

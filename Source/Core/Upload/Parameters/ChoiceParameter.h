@@ -17,6 +17,8 @@ public:
     void setSelectedIndex(int val);
     int selectedIndex() const;
 
+    std::string getDescription() const override;
+
 private:
     std::vector<std::pair<std::string, std::string>> items_;
     int selectedIndex_ = -1;

@@ -104,7 +104,7 @@ std::shared_ptr<UploadSession> session;
 std::mutex finishSignalMutex;
 std::condition_variable finishSignal;
 bool finished = false;
-
+int funcResult = 0;
 struct TaskUserData {
     int index;
 };
@@ -175,11 +175,13 @@ void OnUploadSessionFinished(UploadSession* session) {
     for (int i = 0; i < taskCount; i++) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
-        auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
+        //auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
         if ( task->uploadSuccess() ) {
             OutputGenerator::UploadObject uo;
             uo.fillFromUploadResult(res, task.get());
             uploadedList.push_back(uo);
+        } else {
+            funcResult++;
         }
     }
     OutputGenerator::OutputGeneratorFactory factory;
@@ -287,7 +289,6 @@ int func() {
 #ifdef _WIN32
     GdiPlusInitializer gdiPlusInitializer;
 #endif
-	int res = 0;
     auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
@@ -366,7 +367,7 @@ int func() {
         {
             std::string errorMessage = str(boost::format("File '%s' doesn't exist!")%filesToUpload[i]);
             ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
-            res++;
+            funcResult++;
             continue;
         }
 
@@ -393,7 +394,7 @@ int func() {
     while (!finished) {
         finishSignal.wait(lk/*, [] {return finished;}*/);
     }
-	return res;	
+	return funcResult;	
 }
 
 
@@ -426,6 +427,12 @@ void PrintServerParamList()
         for (auto& parameter : parameterList) {
             std::cout << ++i << ") " << parameter->getTitle() << std::endl
                       << "Name: " << parameter->getName() << " Type: " << parameter->getType() << std::endl;
+
+            std::string description = parameter->getDescription();
+
+            if (!description.empty()) {
+                std::cout << description << std::endl;
+            }
         }
     } else {
         throw std::invalid_argument("This server cannot have parameters");
@@ -529,7 +536,7 @@ int main(int argc, char *argv[]){
         .store_into(serverName);
 
     program.add_argument("-l", "--list")
-        .help("Print server list (hostings) and exit")
+        .help("Prints server list (hosting services) and exits")
         .action([=](const auto& s) {
             PrintServerList();
             std::exit(0);
@@ -659,11 +666,12 @@ int main(int argc, char *argv[]){
          .default_value("http")
          .nargs(1);
 
+#ifdef _WIN32
     program.add_argument("-ps", "--proxy_system")
-         .help("Use system proxy settings (this option supported only on Windows)")
+         .help("Use system proxy settings (this option is supported only on Windows)")
          .flag()
          .store_into(useSystemProxy);
-#ifdef _WIN32
+
     program.add_argument("-up", "--update")
         .help("Update servers.xml. The 'Data' directory must be writable, otherwise update will fail.")
         .action([=](const auto& s) {

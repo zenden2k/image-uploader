@@ -17,3 +17,7 @@ void AbstractParameter::setTitle(const std::string title) {
 std::string AbstractParameter::getTitle() const {
     return title_;
 }
+
+std::string AbstractParameter::getDescription() const {
+    return {};
+}
