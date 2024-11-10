@@ -54,8 +54,6 @@ class CThumbsView :
     public CWindowImpl<CThumbsView, CListViewCtrl>, public CThreadImpl<CThumbsView>, public CImageViewCallback
 {
 public:
-    
-    CImageListManaged ImageList;
     CThumbsView();
     ~CThumbsView() override;
     DECLARE_WND_SUPERCLASS(_T("CThumbsView"), CListViewCtrl::GetWndClassName())
@@ -127,6 +125,10 @@ protected:
     int fullThumbHeight_ = 0;
     bool batchAdd_ = false;
     bool isFFmpegAvailable_;
+
+    // The image list will be destroyed when the list-view control is destroyed,
+    // no need to use 'managed' class
+    CImageList imageList_;
 };
 
 

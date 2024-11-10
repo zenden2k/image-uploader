@@ -135,7 +135,7 @@ struct CurlInitializer {
         wchar_t buffer[1024] = { 0 };
         if (GetModuleFileNameW(nullptr, buffer, 1024) != 0) {
             int len = lstrlenW(buffer);
-            for (int i = len; i >= 0; i--) {
+            for (int i = len - 1; i >= 0; i--) {
                 if (buffer[i] == '\\') {
                     buffer[i + 1] = 0;
                     break;

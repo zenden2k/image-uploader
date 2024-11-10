@@ -448,7 +448,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
     if(root.IsNull()) return false;
 
-    CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
+    //CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_TimeStamp =  root.AttributeInt("TimeStamp");
         
     int core=root.AttributeInt("CoreUpdate");

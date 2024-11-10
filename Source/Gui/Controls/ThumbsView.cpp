@@ -66,8 +66,8 @@ void CThumbsView::Init(bool Extended)
     ExtendedView = Extended;
     ImageView.Create(m_hWnd);
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    ImageList.Create(thumbnailWidth_, fullThumbHeight_, ILC_COLOR24 | rtlStyle, 0, 3);
-    SetImageList(ImageList, LVSIL_NORMAL);
+    imageList_.Create(thumbnailWidth_, fullThumbHeight_, ILC_COLOR24 | rtlStyle, 0, 3);
+    SetImageList(imageList_, LVSIL_NORMAL);
     DWORD style = GetExtendedListViewStyle();
     style = style | LVS_EX_DOUBLEBUFFER | LVS_EX_BORDERSELECT;
     SetExtendedListViewStyle(style);
@@ -82,7 +82,7 @@ int CThumbsView::AddImage(LPCTSTR FileName, LPCTSTR Title, bool ensureVisible, G
     
     int n = GetItemCount();
 
-    if(ImageList.GetImageCount() < 1)
+    if(imageList_.GetImageCount() < 1)
         LoadThumbnail(-1, nullptr, nullptr);
 
     AddItem(n, 0, Title, 0);
@@ -424,17 +424,17 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         
         int oldImageIndex = GetImageIndex(itemId);
         if (oldImageIndex != 0) {
-            ImageList.Replace(oldImageIndex, bmp, nullptr);
+            imageList_.Replace(oldImageIndex, bmp, nullptr);
             RedrawItems(itemId, itemId);
            // SetItem(ItemID, 0, LVIF_IMAGE, 0, oldImageIndex, 0, 0, 0);
         } else {
-            int imageIndex = ImageList.Add(bmp, (COLORREF)0);
+            int imageIndex = imageList_.Add(bmp, (COLORREF)0);
             SetItem(itemId, 0, LVIF_IMAGE, 0, imageIndex, 0, 0, 0);
         }
         DeleteObject(bmp);
     } else {
         defaultImage_ = bmp;
-        ImageList.Add(bmp, (COLORREF)0);
+        imageList_.Add(bmp, (COLORREF)0);
     }
 
     return true;
@@ -769,7 +769,7 @@ void CThumbsView::getThumbnail(int itemIndex) {
 
 void CThumbsView::clearImageList() {
     // Default thumbnail (index=0) will be regenerated in AddImage()
-    ImageList.RemoveAll();
+    imageList_.RemoveAll();
 }
 
 void CThumbsView::beginAdd() {

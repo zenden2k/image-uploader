@@ -143,7 +143,7 @@ LRESULT CServerFolderSelect::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
     HTREEITEM parentItem = item;
     while ((parentItem = m_FolderTree.GetParentItem(parentItem))) {
         auto* tid2 = reinterpret_cast<TreeItemData*>(m_FolderTree.GetItemData(parentItem));
-        m_SelectedFolder.parentIds.push_back(tid2->folder.getId());
+        m_SelectedFolder.parentIds.emplace_back(tid2->folder.getId());
     }
     std::reverse(m_SelectedFolder.parentIds.begin(), m_SelectedFolder.parentIds.end());
 

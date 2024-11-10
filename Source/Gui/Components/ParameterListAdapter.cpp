@@ -61,7 +61,7 @@ public:
         std::vector<CString> s; // Maybe only this vector of CString is enough?
         std::vector<LPCTSTR> choices;
         for (const auto& it : items) {
-            s.push_back(U2W(it.second));
+            s.emplace_back(IuCoreUtils::Utf8ToWstring(it.second).c_str());
             choices.push_back(s.back().GetString());
         }
         choices.push_back(nullptr);
@@ -145,7 +145,7 @@ void ParameterListAdapter::saveValues(ServerSettingsStruct* serverSettings) {
                 }
             }
 
-            serverSettings->params[parameter->getName()] = result;
+            serverSettings->params[parameter->getName()] = std::move(result);
         }
     }
 }

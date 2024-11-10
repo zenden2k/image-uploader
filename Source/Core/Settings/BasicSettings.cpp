@@ -78,7 +78,7 @@ bool BasicSettings::LoadAccounts(SimpleXmlNode root)
                 std::string value = server.Attribute(attribName);
                 attribName = attribName.substr(1, attribName.size() - 1);
                 if (!value.empty())
-                    tempSettings.params[attribName] = value;
+                    tempSettings.params[attribName] = std::move(value);
             }
         }
         tempSettings.authData.DoAuth = server.AttributeBool("Auth");

@@ -145,8 +145,9 @@ public:
      CComQIPtr<IObjectWithSite> pObjectWithSite;
      CSampleGrabberCB CB;
      NoDirectVobSub graphBuilderCallback;
-     VIDEOINFOHEADER vih;
-protected:
+     VIDEOINFOHEADER vih {};
+
+ protected:
      std::unique_ptr<DirectshowVideoFrame> currentFrame_; 
 };
 

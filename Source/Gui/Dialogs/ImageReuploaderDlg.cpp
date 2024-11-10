@@ -249,13 +249,8 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
 
     auto* dit = static_cast<DownloadItemData*>(it.id);
     
-    auto* uploadItemData = new UploadItemData;
-    {
-        std::lock_guard<std::mutex> lk(uploadItemsMutex_);
-        uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
-    }
+    auto uploadItemData = std::make_unique<UploadItemData>();
     uploadItemData->sourceUrl = it.url;
-
     uploadItemData->sourceIndex = dit->sourceIndex;
     uploadItemData->originalUrl = dit->originalUrl;
 
@@ -268,9 +263,15 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
     std::shared_ptr<FileUploadTask> fileUploadTask = std::make_shared<FileUploadTask>(localFileName, displayName);
     fileUploadTask->setServerProfile(serverProfile_);
     fileUploadTask->setIsImage(true);
-    fileUploadTask->setUserData(uploadItemData);
+    fileUploadTask->setUserData(uploadItemData.get());
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
+
+    {
+        std::lock_guard<std::mutex> lk(uploadItemsMutex_);
+        uploadItems_.push_back(std::move(uploadItemData));
+    }
+
     using namespace std::placeholders;
     fileUploadTask->addTaskFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     {

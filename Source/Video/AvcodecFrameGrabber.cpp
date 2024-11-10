@@ -93,7 +93,7 @@ protected:
     const AVCodec* pCodec;
     AVFrame* pFrame;
     AVFrame* pFrameRGB;
-    AVPacket packet;
+    AVPacket packet {};
     AVFormatContext* ic;
     uint8_t* buffer;
     int frameFinished;

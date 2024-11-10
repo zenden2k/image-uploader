@@ -56,9 +56,10 @@ bool ExtractLinks(CString text, std::vector<CString>& result) {
 }
 
 // CImageDownloaderDlg
-CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) {
+CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg* wizardDlg, const CString& initialBuffer)
+    : m_InitialBuffer(initialBuffer)
+{
     m_WizardDlg = wizardDlg;
-    m_InitialBuffer = initialBuffer;
     m_retCode = 0;
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;

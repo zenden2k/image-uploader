@@ -1,5 +1,7 @@
 #include "WinServerIconCache.h"
 
+#include <ComDef.h>
+
 #include "Core/UploadEngineList.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Core/Utils/StringUtils.h"
@@ -32,21 +34,32 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
     HICON icon = nullptr;
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
 
-    if (!WinUtils::FileExists(iconFileName)) {
+    /*if (!WinUtils::FileExists(iconFileName)) {
         serverIcons_[name] = {};
         return {};
-    }
+    }*/
 
     const int w = GetSystemMetrics(SM_CXSMICON);
     const int h = GetSystemMetrics(SM_CYSMICON);
 
-    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+    HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+
+    if (FAILED(hr)) {
+        if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
+            serverIcons_[name] = {};
+            return {}; 
+        } else {
+            _com_error err(hr);
+            LOG(WARNING) << "LoadIconWithScaleDown" << std::endl << err.ErrorMessage();
+        }
+    }
 
     if (!icon) {
         icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
     }
 
     if (!icon) {
+        serverIcons_[name] = {};
         return {};
     }
     WinIcon item(icon, iconBitmapUtils_->HIconToBitmapPARGB32(icon));
@@ -71,7 +84,17 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name) {
     const int w = GetSystemMetrics(SM_CXICON);
     const int h = GetSystemMetrics(SM_CYICON);
     HICON icon {};
-    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+    HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
+
+    if (FAILED(hr)) {
+        if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
+            return {};
+        } else {
+            _com_error err(hr);
+            LOG(WARNING) << "getBigIconForServer() LoadIconWithScaleDown" << std::endl
+                         << err.ErrorMessage();
+        }
+    }
 
     if (!icon) {
         icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));

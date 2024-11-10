@@ -81,7 +81,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int checkAuth();
         bool needStop() override;
         bool newAuthMode_;
-        bool hasRefreshTokenFunc_;
+        bool hasRefreshTokenFunc_ = false;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 #endif
