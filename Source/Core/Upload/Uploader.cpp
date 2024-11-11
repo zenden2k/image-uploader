@@ -199,14 +199,14 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         }
         if (!EngineRes && i != retryLimit)
         {
-            Error(false, "", etRepeating, i, topLevelFileName);
+            Error(false, "", etRepeating, i, task.get(), topLevelFileName);
         }
     }
     while (!EngineRes && i < retryLimit);
 
     if (!EngineRes)
     {
-        Error(true, "", etRetriesLimitReached, -1, topLevelFileName);
+        Error(true, "", etRetriesLimitReached, -1, task.get(), topLevelFileName);
         Cleanup();
         return false;
     }
@@ -320,7 +320,7 @@ void CUploader::ErrorMessage(const ErrorInfo& error)
     }
 }
 
-void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, const std::string& topLevelFileName)
+void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, UploadTask* uploadTask, const std::string& topLevelFileName)
 {
     ErrorInfo err;
     err.ActionIndex  = -1;
@@ -331,5 +331,8 @@ void CUploader::Error(bool error, std::string message, ErrorType type, int retry
     err.sender = "CUploader";
     err.RetryIndex = retryIndex;
     err.TopLevelFileName = topLevelFileName;
+    if (uploadTask) {
+        err.ServerName = uploadTask->serverName();
+    }
     ErrorMessage(err);
 }

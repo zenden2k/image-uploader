@@ -66,7 +66,7 @@ class CUploader
         std::string m_ErrorReason;
         bool isFatalError_;
         
-        void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, const std::string& topLevelFileName = std::string() );
+        void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
         void ErrorMessage(const ErrorInfo&);
         std::unique_ptr<INetworkClient> m_NetworkClient;
         CAbstractUploadEngine *m_CurrentEngine;

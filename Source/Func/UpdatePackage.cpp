@@ -286,6 +286,14 @@ bool CUpdateManager::internal_load_update(CString name)
     version["BuildDate"] = ver->BuildDate;
     version["CurlWithOpenSSL"] = ver->CurlWithOpenSSL;
     version["Is64Bit"] = sizeof(void*) == 8;
+#if defined(_M_ARM64)
+    version["Architecture"] = "ARM64";
+#elif defined(_M_X64)
+    version["Architecture"] = "x64";   
+#elif defined(_M_IX86)
+    version["Architecture"] = "x86"; 
+#endif
+
     ITranslator* translator = ServiceLocator::instance()->translator();
     if (translator != nullptr) {
         version["Language"] = translator->getCurrentLanguage();

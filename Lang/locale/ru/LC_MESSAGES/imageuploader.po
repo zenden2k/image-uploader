@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-11-02 17:29+0300\n"
-"PO-Revision-Date: 2024-11-02 17:38+0300\n"
+"PO-Revision-Date: 2024-11-10 19:06+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -3022,7 +3022,7 @@ msgstr "Загрузить изображения..."
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:71
 msgid "Upload failed! (retry limit reached)"
-msgstr "Загрузка не сервер удалась! (лимит попыток исчерпан)"
+msgstr "Загрузка на сервер не удалась! (лимит попыток исчерпан)"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:69
 #, c-format
