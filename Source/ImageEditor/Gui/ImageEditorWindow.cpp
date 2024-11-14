@@ -938,6 +938,8 @@ void ImageEditorWindow::createToolbars()
 
     //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_ROTATECLOCKWISE, TR("Rotate clockwise"), Toolbar::itTinyCombo, false, 1));
+
     int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
     Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
@@ -1701,6 +1703,12 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->deleteSelectedElements();
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::Rotate90FlipNone);
     return 0;
 }
 

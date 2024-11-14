@@ -54,15 +54,14 @@ Document::~Document()
     for (auto& i : history_) {
         delete[] i.data;
     }
-    delete currentPainter_;
 }
 
 void Document::init() {
-    currentPainter_ = nullptr;
+    currentPainter_.reset();
     drawStarted_ = false;
     originalImage_ = nullptr;
     if ( currentImage_ ) {
-        currentPainter_ = new Gdiplus::Graphics( currentImage_.get() );
+        currentPainter_ = std::make_unique<Gdiplus::Graphics>( currentImage_.get() );
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
 }
@@ -85,7 +84,7 @@ void Document::addDrawingElement(DrawingElement *element) {
         saveDocumentState( );
         changedSegments_.clear();
     }
-    element->render( currentPainter_ );
+    element->render( currentPainter_.get());
 }
 
 void Document::endDrawing() {
@@ -103,6 +102,12 @@ void Document::addAffectedSegments(const AffectedSegments& segments)
 Gdiplus::Bitmap* Document::getBitmap() const
 {
     return currentImage_.get();
+}
+
+void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
+    saveDocumentState(true);
+    currentImage_ = bm;
+    init();
 }
 
 void Document::saveDocumentState(bool full) {
@@ -234,6 +239,7 @@ bool Document::undo() {
         /*std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(undoItem.width, undoItem.height);
         memcpy(bpSrc, pdata, undoItem.size);*/
         currentImage_ = undoItem.bmp;
+        init();
     } else {
         for (auto it = rects.begin(); it != rects.end(); ++it) {
             int x = it->left;
@@ -281,7 +287,7 @@ bool Document::hasTransparentPixels() const
 }
 
 Painter* Document::getGraphicsObject() const {
-    return currentPainter_;
+    return currentPainter_.get();
 }
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {

@@ -260,14 +260,15 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
         if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
             &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
-            Canvas::UndoHistoryItem uhi;
-            uhi.type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
+            
+            auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
+            uhi->type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
             Canvas::UndoHistoryItemElement uhie;
             uhie.startPoint = originalStartPoint_;
             uhie.endPoint = originalEndPoint_;
             uhie.movableElement = currentElement_;
-            uhi.elements.push_back(uhie);
-            canvas_->addUndoHistoryItem(uhi);
+            uhi->elements.push_back(uhie);
+            canvas_->addUndoHistoryItem(std::move(uhi));
         }
 
         elementJustCreated_ = false;

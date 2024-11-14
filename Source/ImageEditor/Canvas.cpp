@@ -320,8 +320,8 @@ void Canvas::endPenSizeChanging(int penSize) {
         return ;
     }
     int updatedElementsCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitPenSizeChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitPenSizeChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected()) {
             UndoHistoryItemElement uhie;
@@ -330,14 +330,14 @@ void Canvas::endPenSizeChanging(int penSize) {
             uhie.movableElement = elementsOnCanvas_[i];
             elementsOnCanvas_[i]->setPenSize(penSize);
             RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-            uhi.elements.push_back(uhie);
+            uhi->elements.push_back(uhie);
             UnionRect(&paintRect, &paintRect, &newPaintRect);
             updatedElementsCount++;
             updateView(paintRect);
         }
     }
     if ( updatedElementsCount ) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
     }
     originalPenSize_= 0;
 }
@@ -381,8 +381,8 @@ void Canvas::endRoundingRadiusChanging(int radius) {
         return ;
     }
     int updatedElementsCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitRoundingRadiusChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitRoundingRadiusChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i] ->getType() == ElementType::etRoundedRectangle || elementsOnCanvas_[i]->getType() == ElementType::etFilledRoundedRectangle)) {
             UndoHistoryItemElement uhie;
@@ -391,14 +391,14 @@ void Canvas::endRoundingRadiusChanging(int radius) {
             uhie.movableElement = elementsOnCanvas_[i];
             elementsOnCanvas_[i]->setRoundingRadius(radius);
             RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-            uhi.elements.push_back(uhie);
+            uhi->elements.push_back(uhie);
             UnionRect(&paintRect, &paintRect, &newPaintRect);
             updatedElementsCount++;
             updateView(paintRect);
         }
     }
     if ( updatedElementsCount ) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
     }
     originalRoundingRadius_ = 0;
 }
@@ -414,8 +414,8 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
         currentDrawingTool_->setForegroundColor(color);
     }
     int updatedElementsCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitElementForegroundColorChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitElementForegroundColorChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isColorUsed() ) {
             UndoHistoryItemElement uhie;
@@ -424,13 +424,13 @@ void Canvas::setForegroundColor(Gdiplus::Color color)
             uhie.movableElement = elementsOnCanvas_[i];
             elementsOnCanvas_[i]->setColor(color);
             if ( elementsOnCanvas_[i]->getType() != ElementType::etText ) { // TextElements saves it's color by itself
-                uhi.elements.push_back(uhie);
+                uhi->elements.push_back(uhie);
                 updatedElementsCount++;
             }
         }
     }
     if ( updatedElementsCount ) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
         updateView();
     }
 }
@@ -448,8 +448,8 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
         currentDrawingTool_->setBackgroundColor(color);
     }
     int updatedElementsCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitElementBackgroundColorChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitElementBackgroundColorChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if ( elementsOnCanvas_[i]->isSelected() && elementsOnCanvas_[i]->isBackgroundColorUsed()) {
             UndoHistoryItemElement uhie;
@@ -457,12 +457,12 @@ void Canvas::setBackgroundColor(Gdiplus::Color color)
             uhie.pos = i;
             uhie.movableElement = elementsOnCanvas_[i];
             elementsOnCanvas_[i]->setBackgroundColor(color);
-            uhi.elements.push_back(uhie);
+            uhi->elements.push_back(uhie);
             updatedElementsCount++;
         }
     }
     if ( updatedElementsCount ) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
         updateView();
     }
 }
@@ -663,13 +663,13 @@ void Canvas::addMovableElement(MovableElement* element)
         if ( element->getType() == ElementType::etBlurringRectangle || element->getType() == ElementType::etPixelateRectangle) {
             blurRectanglesCount_ ++;
         }
-        UndoHistoryItem historyItem;
-        historyItem.type = UndoHistoryItemType::uitElementAdded;
+        auto historyItem = std::make_unique<UndoHistoryItem>();
+        historyItem->type = UndoHistoryItemType::uitElementAdded;
         UndoHistoryItemElement uhie;
         uhie.pos = elementsOnCanvas_.size();
         uhie.movableElement = element;
-        historyItem.elements.push_back(uhie);
-        addUndoHistoryItem(historyItem);
+        historyItem->elements.push_back(uhie);
+        addUndoHistoryItem(std::move(historyItem));
         setDocumentModified(true);
         elementsToDelete_.push_back(element);
     }
@@ -689,9 +689,9 @@ void Canvas::beginDocDrawing() {
 void Canvas::endDocDrawing()
 {
     currentDocument()->endDrawing();
-    UndoHistoryItem historyItem;
-    historyItem.type = UndoHistoryItemType::uitDocumentChanged;
-    addUndoHistoryItem(historyItem);
+    auto historyItem = std::make_unique<UndoHistoryItem>();
+    historyItem->type = UndoHistoryItemType::uitDocumentChanged;
+    addUndoHistoryItem(std::move(historyItem));
 }
 
 void Canvas::beginManipulation() {
@@ -709,8 +709,8 @@ bool Canvas::manipulationStarted() const {
 int Canvas::deleteSelectedElements()
 {
     int deletedCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitElementRemoved;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitElementRemoved;
     bool isStepNumberRemoved = false;
 
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
@@ -718,7 +718,7 @@ int Canvas::deleteSelectedElements()
             UndoHistoryItemElement uhie;
             uhie.movableElement = elementsOnCanvas_[i];
             uhie.pos = i;
-            uhi.elements.push_back(uhie );
+            uhi->elements.push_back(uhie );
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
             if (uhie.movableElement->getType() == ElementType::etStepNumber) {
                 isStepNumberRemoved = true;
@@ -728,7 +728,7 @@ int Canvas::deleteSelectedElements()
         }
     }
     if ( deletedCount ) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
         if (isStepNumberRemoved) {
             recalcStepNumbers();
         }
@@ -760,8 +760,8 @@ void Canvas::endBlurRadiusChanging(float radius) {
         return;
     }
     int updatedElementsCount = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitBlurRadiusChanged;
+    auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitBlurRadiusChanged;
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
         if (elementsOnCanvas_[i]->isSelected() && (elementsOnCanvas_[i]->getType() == ElementType::etBlurringRectangle || elementsOnCanvas_[i]->getType() == ElementType::etPixelateRectangle)) {
             auto el = dynamic_cast<BlurringRectangle*>(elementsOnCanvas_[i]);
@@ -772,7 +772,7 @@ void Canvas::endBlurRadiusChanging(float radius) {
                 uhie.movableElement = elementsOnCanvas_[i];
                 el->setBlurRadius(radius);
                 RECT newPaintRect = elementsOnCanvas_[i]->getPaintBoundingRect();
-                uhi.elements.push_back(uhie);
+                uhi->elements.push_back(uhie);
                 UnionRect(&paintRect, &paintRect, &newPaintRect);
                 updatedElementsCount++;
                 updateView(paintRect);
@@ -780,7 +780,7 @@ void Canvas::endBlurRadiusChanging(float radius) {
         }
     }
     if (updatedElementsCount) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
     }
     originalBlurRadius_ = 0;
 }
@@ -860,7 +860,7 @@ void Canvas::updateView( RECT boundingRect ) {
 
     //region.CreateRectRgnIndirect( &boundingRect );
     if ( callback_ ) {
-        callback_->updateView( this, updatedRect_ );
+        callback_->updateView(this, updatedRect_, fullRender_);
     }
 
 }
@@ -990,9 +990,9 @@ Gdiplus::Bitmap* Canvas::getBufferBitmap() const
     return buffer_.get();
 }
 
-void Canvas::addUndoHistoryItem(const UndoHistoryItem& item)
+void Canvas::addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item)
 {
-    undoHistory_.push(item);
+    undoHistory_.push(std::move(item));
     setDocumentModified(true);
 }
 
@@ -1083,6 +1083,13 @@ int Canvas::deleteElementsByType(ElementType elementType)
     return count;
 }
 
+void Canvas::deleteAllElements() {
+    for (const auto& it: elementsOnCanvas_) {
+        delete it;
+    }
+    elementsOnCanvas_.clear();
+}
+
 int Canvas::getWidth() const
 {
     return canvasWidth_;
@@ -1103,62 +1110,83 @@ bool Canvas::undo() {
         return false;
     }
     bool result = false;
-    UndoHistoryItem item = undoHistory_.top();
-    if ( item.type == UndoHistoryItemType::uitDocumentChanged ){
-        result =  doc_->undo();
+    auto& item = undoHistory_.top();
+
+    result = undoItem(*item.get());
+
+    if ( result ) {
+        undoHistory_.pop();
+        setDocumentModified(true);
+    }
+    updateView();
+    return result;
+}
+
+bool Canvas::undoItem(UndoHistoryItem& item) {
+    bool result = false;
+    if (item.type == UndoHistoryItemType::uitMultipleChanges) {
+        for (auto& change : item.changes) {
+            result = undoItem(*change.get()) || result;
+        }
+        setSize(doc_->getWidth(), doc_->getHeight());
+        if (callback_) {
+            callback_->canvasSizeChanged();
+        }
+    } else if (item.type == UndoHistoryItemType::uitDocumentChanged) {
+        result = doc_->undo();
     } else if (item.type == UndoHistoryItemType::uitCropApplied) {
         result = doc_->undo();
         canvasWidth_ = doc_->getWidth();
         canvasHeight_ = doc_->getHeight();
         createDoubleBuffer();
-            
+
         POINT p = item.elements[0].startPoint;
-        
+
         for (auto& el : elementsOnCanvas_) {
             el->move(p.x, p.y, false);
         }
         if (callback_) {
             callback_->canvasSizeChanged();
         }
-    } else if ( item.type == UndoHistoryItemType::uitElementAdded ) {
-        for (size_t i = 0; i< item.elements.size(); i++) {
+    } else if (item.type == UndoHistoryItemType::uitElementAdded) {
+        for (size_t i = 0; i < item.elements.size(); i++) {
             deleteMovableElement(item.elements[i].movableElement);
         }
         result = true;
-    } else if  ( item.type == UndoHistoryItemType::uitElementRemoved ) {
+    } else if (item.type == UndoHistoryItemType::uitElementRemoved) {
         int itemCount = item.elements.size();
         // Insert elements in their initial positions
-        for ( int i = itemCount-1; i>=0; i-- ) {
-            elementsOnCanvas_.insert(elementsOnCanvas_.begin()+ item.elements[i].pos, item.elements[i].movableElement);
-            if ( item.elements[i].movableElement->getType() == ElementType::etBlurringRectangle
+        for (int i = itemCount - 1; i >= 0; i--) {
+            elementsOnCanvas_.insert(elementsOnCanvas_.begin() + item.elements[i].pos, item.elements[i].movableElement);
+            if (item.elements[i].movableElement->getType() == ElementType::etBlurringRectangle
                 || item.elements[i].movableElement->getType() == ElementType::etPixelateRectangle) {
                 blurRectanglesCount_++;
             }
         }
         recalcStepNumbers();
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitElementForegroundColorChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitElementForegroundColorChanged) {
         int itemCount = item.elements.size();
-        for ( int i = itemCount-1; i>=0; i-- ) {
+        for (int i = itemCount - 1; i >= 0; i--) {
             item.elements[i].movableElement->setColor(item.elements[i].color);
         }
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitElementBackgroundColorChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitElementBackgroundColorChanged) {
         int itemCount = item.elements.size();
-        for ( int i = itemCount-1; i>=0; i-- ) {
+        for (int i = itemCount - 1; i >= 0; i--) {
             item.elements[i].movableElement->setBackgroundColor(item.elements[i].color);
         }
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitPenSizeChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitPenSizeChanged) {
         int itemCount = item.elements.size();
-        for ( int i = itemCount-1; i>=0; i-- ) {
+        for (int i = itemCount - 1; i >= 0; i--) {
             item.elements[i].movableElement->setPenSize(item.elements[i].penSize);
         }
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitRoundingRadiusChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitRoundingRadiusChanged) {
         int itemCount = item.elements.size();
-        for ( int i = itemCount-1; i>=0; i-- ) {
-            if ( item.elements[i].movableElement->getType() == ElementType::etFilledRoundedRectangle || item.elements[i].movableElement->getType() == ElementType::etRoundedRectangle ) {
+        for (int i = itemCount - 1; i >= 0; i--) {
+            if (item.elements[i].movableElement->getType() == ElementType::etFilledRoundedRectangle || item.elements[i].movableElement->getType() == ElementType::etRoundedRectangle) {
                 item.elements[i].movableElement->setRoundingRadius(item.elements[i].penSize);
             }
         }
@@ -1171,21 +1199,21 @@ bool Canvas::undo() {
             }
         }
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitElementPositionChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitElementPositionChanged) {
         int itemCount = item.elements.size();
         // Insert elements in their initial positions
-        for ( int i = itemCount-1; i>=0; i-- ) {
-            MovableElement * el = item.elements[i].movableElement;
+        for (int i = itemCount - 1; i >= 0; i--) {
+            MovableElement* el = item.elements[i].movableElement;
             el->setStartPoint(item.elements[i].startPoint);
             el->setEndPoint(item.elements[i].endPoint);
-            if ( el->getType() == ElementType::etCrop) {
+            if (el->getType() == ElementType::etCrop) {
                 onCropChanged(el->getX(), el->getY(), el->getWidth(), el->getHeight());
             }
         }
         result = true;
-    } else if ( item.type == UndoHistoryItemType::uitTextChanged ) {
+    } else if (item.type == UndoHistoryItemType::uitTextChanged) {
         int itemCount = item.elements.size();
-        for ( int i = itemCount-1; i>=0; i-- ) {
+        for (int i = itemCount - 1; i >= 0; i--) {
             dynamic_cast<TextElement*>(item.elements[i].movableElement)->setRawText(item.elements[i].rawText);
         }
         result = true;
@@ -1197,12 +1225,53 @@ bool Canvas::undo() {
         }
         result = true;
     }
-    if ( result ) {
-        undoHistory_.pop();
-        setDocumentModified(true);
+    return result;
+}
+
+void Canvas::rotate(Gdiplus::RotateFlipType angle) {
+    auto bmp = getBitmapForExport();
+    bmp->RotateFlip(angle);
+    doc_->updateBitmap(bmp);
+  
+    // Deleting all elements on canvas
+    int deletedCount = 0;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitElementRemoved;
+    bool isStepNumberRemoved = false;
+
+    for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
+        if (elementsOnCanvas_[i]->getType() != ElementType::etCrop) {
+            UndoHistoryItemElement uhie;
+            uhie.movableElement = elementsOnCanvas_[i];
+            uhie.pos = i;
+            uhi->elements.push_back(uhie);
+            elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
+            i--;
+            deletedCount++;
+        }
+    }
+
+    auto historyItem = std::make_unique<UndoHistoryItem>();
+    historyItem->type = UndoHistoryItemType::uitDocumentChanged;
+
+    auto multiItem = std::make_unique<UndoHistoryItem>();
+    multiItem->type = UndoHistoryItemType::uitMultipleChanges;
+    if (deletedCount) {
+        multiItem->changes.push_back(std::move(uhi));
+    }
+    multiItem->changes.push_back(std::move(historyItem));
+
+    addUndoHistoryItem(std::move(multiItem));
+
+    setSize(bmp->GetWidth(), bmp->GetHeight());
+    if (callback_) {
+        callback_->canvasSizeChanged();
     }
     updateView();
-    return result;
+    if (deletedCount) {
+        selectionChanged();
+    }
+
 }
 
 std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {
@@ -1315,8 +1384,8 @@ int Canvas::getStepFontSize() const {
 void Canvas::setFillTextBackground(bool fill) {
     fillTextBackground_ = fill;
     int count = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitFillBackgroundChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitFillBackgroundChanged;
     
     for (auto& el: elementsOnCanvas_) {
         if (el->isSelected() && el->getType() == ElementType::etText) {
@@ -1332,13 +1401,13 @@ void Canvas::setFillTextBackground(bool fill) {
                 uhie.pos = 0;
                 uhie.movableElement = el;
                 uhie.penSize = prev;
-                uhi.elements.push_back(uhie);
+                uhi->elements.push_back(uhie);
                 count++;
             }
         }
     }
     if (count) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
         updateView();
     }
 }
@@ -1350,8 +1419,8 @@ bool Canvas::getFillTextBackground() const {
 void Canvas::setInvertSelection(bool invert) {
     invertSelection_ = invert;
     int count = 0;
-    UndoHistoryItem uhi;
-    uhi.type = UndoHistoryItemType::uitInvertSelectionChanged;
+    auto uhi = std::make_unique<UndoHistoryItem>();
+    uhi->type = UndoHistoryItemType::uitInvertSelectionChanged;
 
     for (auto& el : elementsOnCanvas_) {
         if (el->isSelected() && (el->getType() == ElementType::etBlurringRectangle || el->getType() == ElementType::etPixelateRectangle)) {
@@ -1367,13 +1436,13 @@ void Canvas::setInvertSelection(bool invert) {
                 uhie.pos = 0;
                 uhie.movableElement = el;
                 uhie.penSize = prev;
-                uhi.elements.push_back(uhie);
+                uhi->elements.push_back(uhie);
                 count++;
             }
         }
     }
     if (count) {
-        addUndoHistoryItem(uhi);
+        addUndoHistoryItem(std::move(uhi));
         updateView();
     }
 }
@@ -1412,13 +1481,13 @@ void Canvas::applyCrop(Crop* crop) {
     gr.DrawImage(buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
     lastAppliedCrop_ = Rect(cropX, cropY, cropWidth, cropHeight);
 
-    UndoHistoryItem historyItem;
-    historyItem.type = UndoHistoryItemType::uitCropApplied;
+    auto historyItem = std::make_unique<UndoHistoryItem>();
+    historyItem->type = UndoHistoryItemType::uitCropApplied;
     UndoHistoryItemElement element;
     element.startPoint = { cropX , cropY };
     element.endPoint = { cropX + cropWidth, cropY + cropHeight };
-    historyItem.elements.push_back(element);
-    addUndoHistoryItem(historyItem);
+    historyItem->elements.push_back(element);
+    addUndoHistoryItem(std::move(historyItem));
     canvasWidth_ = cropWidth;
     canvasHeight_ = cropHeight;
     for (auto& el : elementsOnCanvas_) {
