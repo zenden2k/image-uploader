@@ -341,7 +341,7 @@ if (IU_ENABLE_MEDIAINFO)
 endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
-source_group("Resource Files" FILES ${RESOURCE_LIST})
+#source_group("Resource Files" FILES ${RESOURCE_LIST})
 
 add_executable(GUI WIN32  
     ${SRC_LIST} ${HEADER_LIST} ${RESOURCE_LIST}

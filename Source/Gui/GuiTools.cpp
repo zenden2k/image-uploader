@@ -112,14 +112,14 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
     if(szTitle)
         MenuItem.fType = MFT_STRING;
     else MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
+    MenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
     if(bm)
-        MenuItem.fMask |= MIIM_CHECKMARKS;
+        MenuItem.fMask |= MIIM_BITMAP;
     MenuItem.wID = id;
-    MenuItem.hbmpChecked = bm;
-    MenuItem.hbmpUnchecked = bm;
+    MenuItem.hbmpItem = bm;
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
     MenuItem.cch = lstrlen(szTitle);
+
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 

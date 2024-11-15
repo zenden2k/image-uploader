@@ -853,6 +853,8 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         excludeArea.cbSize = sizeof(excludeArea);
         excludeArea.rcExclude = rc;
         rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+    } else if (item->command == ID_MOREACTIONS) {
+        showMoreActionsDropdownMenu(item);
     }
     return 0;
 }
@@ -904,8 +906,10 @@ void ImageEditorWindow::createToolbars()
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
     horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
+
+    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
     
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
@@ -938,6 +942,7 @@ void ImageEditorWindow::createToolbars()
 
     //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
     verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    
     int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
     Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
@@ -1160,9 +1165,23 @@ void ImageEditorWindow::updateSearchButton() {
     }
 }
 
-std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource)
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource, bool resize)
 {
-    return std::shared_ptr<Gdiplus::Bitmap>(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource),_T("PNG")) );
+    using namespace Gdiplus;
+    int cx = GetSystemMetrics(SM_CXSMICON);
+    int cy = GetSystemMetrics(SM_CYSMICON);
+
+    std::shared_ptr<Bitmap> bm(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
+    if (!resize) {
+        return bm;
+    }
+    auto newBm = std::make_shared<Bitmap>(cx, cy, PixelFormat32bppARGB);
+    Graphics gr(newBm.get());
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    gr.DrawImage(bm.get(), 0, 0, cx, cy);
+
+    return newBm;
 }
 
 void ImageEditorWindow::EndDialog(DialogResult dr)
@@ -1699,8 +1718,77 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
     }
 }
 
+void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
+    CMenu rectangleMenu;
+    RECT rc = item->rect;
+    horizontalToolbar_.ClientToScreen(&rc);
+    rectangleMenu.CreatePopupMenu();
+    int i = 0;
+    if (!bmIconRotateCW_) {
+        std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadToolbarIcon(IDB_ICONROTATECW, true);
+        iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
+    }
+    if (!bmIconRotate_) {
+        std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadToolbarIcon(IDB_ICONROTATE, true);
+        iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
+    }
+
+    if (!bmIconFlipHorizontal_) {
+        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPHORIZONTAL, true);
+        icon->GetHBITMAP({}, &bmIconFlipHorizontal_.m_hBitmap);
+    }
+
+    if (!bmIconFlipVertical_) {
+        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPVERTICAL, true);
+        icon->GetHBITMAP({}, &bmIconFlipVertical_.m_hBitmap);
+    }
+
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECLOCKWISE, TR("Rotate clockwise (90°)"), bmIconRotateCW_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECOUNTERCLOCKWISE, TR("Rotate counter clockwise (-90°)"), bmIconRotate_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPHORIZONTAL, TR("Flip horizontal"), bmIconFlipHorizontal_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPVERTICAL, TR("Flip vertical"), bmIconFlipVertical_);
+   
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+    rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+}
+
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->deleteSelectedElements();
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::Rotate90FlipNone);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::Rotate270FlipNone);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnFlipVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::RotateNoneFlipY);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::RotateNoneFlipX);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int itemIndex = horizontalToolbar_.getItemIndexByCommand(ID_MOREACTIONS);
+    if (itemIndex != -1) {
+        showMoreActionsDropdownMenu(horizontalToolbar_.getItem(itemIndex));
+    }
     return 0;
 }
 

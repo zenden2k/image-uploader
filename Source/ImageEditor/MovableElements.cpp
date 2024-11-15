@@ -346,14 +346,14 @@ void TextElement::endEdit(bool save)
 
 void TextElement::saveToHistory() {
     if (originalRawText_ != inputBox_->getRawText()) {
-        Canvas::UndoHistoryItem uhi;
+        auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
         Canvas::UndoHistoryItemElement uhie;
-        uhi.type = Canvas::UndoHistoryItemType::uitTextChanged;
+        uhi->type = Canvas::UndoHistoryItemType::uitTextChanged;
         uhie.movableElement = this;
         uhie.rawText = originalRawText_;
-        uhi.elements.push_back(uhie);
+        uhi->elements.push_back(uhie);
 
-        canvas_->addUndoHistoryItem(uhi);
+        canvas_->addUndoHistoryItem(std::move(uhi));
         originalRawText_.clear();
     }
 }

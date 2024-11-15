@@ -33,7 +33,7 @@ class Canvas {
     public:
         class Callback {
             public:
-                virtual void updateView(Canvas* canvas, Gdiplus::Rect rect) = 0;
+                virtual void updateView(Canvas* canvas, Gdiplus::Rect rect, bool fullRender) = 0;
                 virtual void canvasSizeChanged() = 0;
                 virtual ~Callback(){}
         }; 
@@ -41,7 +41,7 @@ class Canvas {
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged
+            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges
         };
         enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kMaxBlurRadius = 10, kDefaultStepFontSize = 14 };
 
@@ -69,9 +69,13 @@ class Canvas {
         };
 
         struct UndoHistoryItem {
+            UndoHistoryItem() = default;
+            DISALLOW_COPY_AND_ASSIGN(UndoHistoryItem);
             UndoHistoryItemType type;
             
             std::vector<UndoHistoryItemElement> elements;
+
+            std::vector<std::unique_ptr<UndoHistoryItem>> changes;
         };
 
         explicit Canvas( HWND parent );
@@ -121,16 +125,19 @@ class Canvas {
         void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const;
         void setZoomFactor(float zoomFactor);
         Gdiplus::Bitmap* getBufferBitmap() const;
-        void addUndoHistoryItem(const UndoHistoryItem& item);
+        void addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item);
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
     
         float getZoomFactor() const;
         MovableElement* getElementAtPosition(int x, int y, ElementType et = ElementType::etNone);
         int deleteElementsByType(ElementType elementType);
+        void deleteAllElements();
         int getWidth() const;
         int getHeigth() const;
         CursorType getCursor() const;
         bool undo();
+        bool undoItem(UndoHistoryItem& historyItem);
+        void rotate(Gdiplus::RotateFlipType angle);
         std::shared_ptr<InputBox> getInputBox( const RECT& rect ); 
         TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
@@ -236,7 +243,7 @@ private:
             stepForegroundColor_, stepBackgroundColor_;
         bool stepColorsSet_;
         Gdiplus::Rect currentRenderingRect_;
-        std::stack<UndoHistoryItem> undoHistory_;
+        std::stack<std::unique_ptr<UndoHistoryItem>> undoHistory_;
         std::vector<MovableElement*> elementsToDelete_;
         int penSize_;
         int originalPenSize_;

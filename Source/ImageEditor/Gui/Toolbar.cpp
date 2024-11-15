@@ -237,7 +237,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
         RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD |  UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
         fontSizeUpDownCtrl_.SetRange(1, 100);
 
         RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
@@ -664,8 +664,10 @@ int Toolbar::AutoSize()
         ScreenToClient(&fontSizeLabelRect);
 
         fontSizeEdit_.SetWindowPos(0, fontSizeLabelRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(2 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
 
+        if (!fontSizeUpDownCtrl_.GetBuddy()) {
+            fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
+        }
         RECT upDownRect, rect;
         fontSizeUpDownCtrl_.GetWindowRect(&upDownRect);
         ScreenToClient(&upDownRect);
@@ -673,7 +675,8 @@ int Toolbar::AutoSize()
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
-        initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(38 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
