@@ -28,6 +28,10 @@ IDB_ICONROTATECW        PNG                     "res\\ImageEditor\\icon_rotate_c
 
 IDB_ICONROTATE          PNG                     "res\\ImageEditor\\icon_rotate.png"
 
+IDB_ICONROTATEFLIP      PNG                     "res\\ImageEditor\\icon_rotate_flip.png"
+
+IDB_ICONFLIPHORIZONTAL  PNG                     "res\\ImageEditor\\icon_flip_horizontal.png"
+
 #endif    // Neutral (Default) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -1675,6 +1679,8 @@ IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pix
 IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
 
 IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
+
+IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
 
 
 /////////////////////////////////////////////////////////////////////////////

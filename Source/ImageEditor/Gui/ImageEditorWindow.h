@@ -29,7 +29,8 @@ public:
     DECLARE_WND_CLASS_EX(_T("ImageEditorWindow"), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE, ID_ROTATECOUNTERCLOCKWISE, ID_MOREACTIONS,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE,
+        ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS,
         ID_SEARCHBYIMAGE_START = 1400,
         ID_SEARCHBYIMAGE_END = 1499,
         ID_DELETESELECTED,
@@ -127,6 +128,10 @@ public:
         COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
         COMMAND_ID_HANDLER(ID_ROTATECLOCKWISE, OnRotateClockwise)
         COMMAND_ID_HANDLER(ID_ROTATECOUNTERCLOCKWISE, OnRotateCounterClockwise)
+        COMMAND_ID_HANDLER(ID_FLIPVERTICAL, OnFlipVertical)
+        COMMAND_ID_HANDLER(ID_FLIPHORIZONTAL, OnFlipHorizontal)
+        COMMAND_ID_HANDLER(ID_MOREACTIONS, OnMoreActionsClicked)
+
         //MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         REFLECT_NOTIFICATIONS()
@@ -182,6 +187,9 @@ public:
         LRESULT OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnFlipVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
@@ -218,7 +226,7 @@ public:
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
         HMODULE richeditLib_;
-        CBitmap bmIconRotateCW_, bmIconRotate_;
+        CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);

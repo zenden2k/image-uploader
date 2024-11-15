@@ -906,10 +906,10 @@ void ImageEditorWindow::createToolbars()
     itemText.Format(TR("Search on %s"), searchEngineName.GetString());
 
     horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
-    
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Print..."), loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Rotate"), {}, ID_MOREACTIONS, TR("Rotate"), Toolbar::itComboButton));
+    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
 
+    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
+    
     horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
     horizontalToolbar_.AutoSize();
     if ( displayMode_ != wdmFullscreen ) {
@@ -1718,21 +1718,36 @@ void ImageEditorWindow::repositionToolbar(Toolbar& toolbar, const CRect& otherTo
     }
 }
 
-
 void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
     CMenu rectangleMenu;
     RECT rc = item->rect;
     horizontalToolbar_.ClientToScreen(&rc);
     rectangleMenu.CreatePopupMenu();
     int i = 0;
-    std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadToolbarIcon(IDB_ICONROTATECW, true);
-    std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadToolbarIcon(IDB_ICONROTATE, true);
+    if (!bmIconRotateCW_) {
+        std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadToolbarIcon(IDB_ICONROTATECW, true);
+        iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
+    }
+    if (!bmIconRotate_) {
+        std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadToolbarIcon(IDB_ICONROTATE, true);
+        iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
+    }
 
-    iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
-    iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
+    if (!bmIconFlipHorizontal_) {
+        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPHORIZONTAL, true);
+        icon->GetHBITMAP({}, &bmIconFlipHorizontal_.m_hBitmap);
+    }
+
+    if (!bmIconFlipVertical_) {
+        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPVERTICAL, true);
+        icon->GetHBITMAP({}, &bmIconFlipVertical_.m_hBitmap);
+    }
 
     GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECLOCKWISE, TR("Rotate clockwise (90°)"), bmIconRotateCW_);
     GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECOUNTERCLOCKWISE, TR("Rotate counter clockwise (-90°)"), bmIconRotate_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPHORIZONTAL, TR("Flip horizontal"), bmIconFlipHorizontal_);
+    GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPVERTICAL, TR("Flip vertical"), bmIconFlipVertical_);
+   
     TPMPARAMS excludeArea;
     ZeroMemory(&excludeArea, sizeof(excludeArea));
     excludeArea.cbSize = sizeof(excludeArea);
@@ -1754,6 +1769,26 @@ LRESULT ImageEditorWindow::OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/,
 
 LRESULT ImageEditorWindow::OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     canvas_->rotate(Gdiplus::Rotate270FlipNone);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnFlipVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::RotateNoneFlipY);
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    canvas_->rotate(Gdiplus::RotateNoneFlipX);
+    return 0;
+}
+
+LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int itemIndex = horizontalToolbar_.getItemIndexByCommand(ID_MOREACTIONS);
+    if (itemIndex != -1) {
+        showMoreActionsDropdownMenu(horizontalToolbar_.getItem(itemIndex));
+    }
     return 0;
 }
 

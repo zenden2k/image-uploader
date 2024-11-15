@@ -292,7 +292,6 @@ Painter* Document::getGraphicsObject() const {
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     saveDocumentState(true);
-    using namespace Gdiplus;
     std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
     Gdiplus::Graphics gr(newBitmap.get());
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);

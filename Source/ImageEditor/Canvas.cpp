@@ -792,7 +792,7 @@ bool Canvas::hasBlurRectangles() const
 
 void Canvas::showOverlay(bool show)
 {
-    if ( !overlay_ ) {
+    if (show && !overlay_) {
         overlay_ = new CropOverlay(this, 0,0, getWidth(),getHeigth());
     }
     showOverlay_ = show;
@@ -1230,8 +1230,15 @@ bool Canvas::undoItem(UndoHistoryItem& item) {
 }
 
 void Canvas::rotate(Gdiplus::RotateFlipType angle) {
+    if (angle == Gdiplus::RotateNoneFlipNone) {
+        return;
+    }
+    bool oldCropValue = cropOnExport_;
+    setCropOnExport(false);
     std::shared_ptr<Gdiplus::Bitmap> bmp = getBitmapForExport();
-    
+    bool justFlip = (angle == Gdiplus::RotateNoneFlipX || angle == Gdiplus::RotateNoneFlipY
+        || angle == Gdiplus::RotateNoneFlipXY);
+
     bmp->RotateFlip(angle);
     bmp = std::shared_ptr<Gdiplus::Bitmap>(bmp->Clone(0, 0, bmp->GetWidth(), bmp->GetHeight(), PixelFormat32bppARGB));
     doc_->updateBitmap(bmp);
@@ -1243,7 +1250,7 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
     bool isStepNumberRemoved = false;
 
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        //if (elementsOnCanvas_[i]->getType() != ElementType::etCrop)
+        if (!justFlip || elementsOnCanvas_[i]->getType() != ElementType::etCrop)
         {
             UndoHistoryItemElement uhie;
             uhie.movableElement = elementsOnCanvas_[i];
@@ -1266,15 +1273,19 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
     multiItem->changes.push_back(std::move(historyItem));
 
     addUndoHistoryItem(std::move(multiItem));
-
-    setSize(bmp->GetWidth(), bmp->GetHeight());
-    if (callback_) {
-        callback_->canvasSizeChanged();
+    if (!justFlip) {
+        showOverlay(false);
+        setSize(bmp->GetWidth(), bmp->GetHeight());
+        if (callback_) {
+            callback_->canvasSizeChanged();
+        }
     }
+
     if (deletedCount) {
         selectionChanged();
     }
     updateView();
+    setCropOnExport(oldCropValue);
 }
 
 std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {
