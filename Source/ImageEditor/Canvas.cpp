@@ -119,6 +119,7 @@ void Canvas::mouseMove( int x, int y, DWORD flags) {
     }*/
     if ( isLButtonDown  ) {
         assert( currentDrawingTool_ );
+
         currentDrawingTool_->continueDraw( x,  y, flags );
     }
     CursorType ct = currentDrawingTool_->getCursor(x ,y);
@@ -220,12 +221,11 @@ void Canvas::render(HDC dc, const RECT& rectInWindowCoordinates, POINT scrollOff
         }
     }
 
-    
     if ( canvasChanged_ || fullRender_ ) {
         renderInBuffer(updatedRect_);    
     }
     BitmapData bitmapData;
-    Rect lockRect(0,0,  getWidth(),getHeigth());
+    Rect lockRect(0,0, getWidth(),getHeigth());
     // I hope Gdiplus does not copy data in LockBits
     if ( buffer_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok ) {
         uint8_t * source = (uint8_t *) bitmapData.Scan0;
@@ -893,8 +893,10 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
         Gdiplus::Region reg(rc);
         bufferedGr_->SetClip(&reg);
     } else {
-        Gdiplus::Region reg;
+        /* Gdiplus::Region reg;
         bufferedGr_->SetClip(&reg);
+        */
+        bufferedGr_->ResetClip();
     }
     //LOG(INFO) << "renderInBuffer " << rc.X << " " << rc.Y << " " << rc.Width << " " <<rc.Height << " forExport=" << forExport;
     bufferedGr_->SetPageUnit(Gdiplus::UnitPixel);
@@ -968,6 +970,7 @@ void Canvas::renderInBuffer(Gdiplus::Rect rc,bool forExport)
     canvasChanged_ = false;
     fullRender_ = false;
     updatedRect_ = Rect();
+    bufferedGr_->ResetClip();
 }
 
 void Canvas::getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const
@@ -1021,13 +1024,11 @@ std::shared_ptr<Gdiplus::Bitmap> Canvas::getBitmapForExport()
         return buffer_;
     }
 
-    
     int cropX = crop->getX();
     int cropY = crop->getY();
     int cropWidth = crop->getWidth();
     int cropHeight = crop->getHeight();
 
-    
     auto bm = std::make_shared<Bitmap>(cropWidth, cropHeight);
     Graphics gr(bm.get());
     gr.DrawImage( buffer_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel );
@@ -1229,8 +1230,10 @@ bool Canvas::undoItem(UndoHistoryItem& item) {
 }
 
 void Canvas::rotate(Gdiplus::RotateFlipType angle) {
-    auto bmp = getBitmapForExport();
+    std::shared_ptr<Gdiplus::Bitmap> bmp = getBitmapForExport();
+    
     bmp->RotateFlip(angle);
+    bmp = std::shared_ptr<Gdiplus::Bitmap>(bmp->Clone(0, 0, bmp->GetWidth(), bmp->GetHeight(), PixelFormat32bppARGB));
     doc_->updateBitmap(bmp);
   
     // Deleting all elements on canvas
@@ -1240,11 +1243,12 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
     bool isStepNumberRemoved = false;
 
     for (size_t i = 0; i < elementsOnCanvas_.size(); i++) {
-        if (elementsOnCanvas_[i]->getType() != ElementType::etCrop) {
+        //if (elementsOnCanvas_[i]->getType() != ElementType::etCrop)
+        {
             UndoHistoryItemElement uhie;
             uhie.movableElement = elementsOnCanvas_[i];
             uhie.pos = i;
-            uhi->elements.push_back(uhie);
+            uhi->elements.push_back(std::move(uhie));
             elementsOnCanvas_.erase(elementsOnCanvas_.begin() + i);
             i--;
             deletedCount++;
@@ -1267,11 +1271,10 @@ void Canvas::rotate(Gdiplus::RotateFlipType angle) {
     if (callback_) {
         callback_->canvasSizeChanged();
     }
-    updateView();
     if (deletedCount) {
         selectionChanged();
     }
-
+    updateView();
 }
 
 std::shared_ptr<InputBox> Canvas::getInputBox( const RECT& rect ) {

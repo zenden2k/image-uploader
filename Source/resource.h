@@ -182,6 +182,9 @@
 #define IDD_TRANSFERSETTINGSPAGE        338
 #define IDD_SERVERSCHECKERDLG1          339
 #define IDD_FILEFORMATERRORDLG          339
+#define IDB_ICONROTATECW                342
+#define IDB_PNG13                       343
+#define IDB_ICONROTATE                  343
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -809,7 +812,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        340
+#define _APS_NEXT_RESOURCE_VALUE        344
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1346
 #define _APS_NEXT_SYMED_VALUE           128

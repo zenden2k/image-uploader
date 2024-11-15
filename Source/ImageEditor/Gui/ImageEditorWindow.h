@@ -29,7 +29,7 @@ public:
     DECLARE_WND_CLASS_EX(_T("ImageEditorWindow"), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE, ID_ROTATECOUNTERCLOCKWISE,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE, ID_ROTATECOUNTERCLOCKWISE, ID_MOREACTIONS,
         ID_SEARCHBYIMAGE_START = 1400,
         ID_SEARCHBYIMAGE_END = 1499,
         ID_DELETESELECTED,
@@ -126,6 +126,7 @@ public:
         COMMAND_RANGE_HANDLER(ID_SEARCHBYIMAGE_START, ID_SEARCHBYIMAGE_END, OnSearchByImage)
         COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
         COMMAND_ID_HANDLER(ID_ROTATECLOCKWISE, OnRotateClockwise)
+        COMMAND_ID_HANDLER(ID_ROTATECOUNTERCLOCKWISE, OnRotateCounterClockwise)
         //MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         REFLECT_NOTIFICATIONS()
@@ -180,6 +181,7 @@ public:
         LRESULT OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
@@ -216,6 +218,7 @@ public:
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
         HMODULE richeditLib_;
+        CBitmap bmIconRotateCW_, bmIconRotate_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);
@@ -226,7 +229,7 @@ public:
         void updateRoundingRadiusSlider();
         void updateSearchButton();
         void updateFontSizeControls();
-        std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
+        std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource, bool resize = false);
         void EndDialog(DialogResult dr);
         void init();
         bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None, bool saveAs = false);
@@ -246,11 +249,13 @@ public:
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
         void showApplyButtons();
-
+        
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible
          */
         void repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect);
+
+        void showMoreActionsDropdownMenu(Toolbar::Item* item);
 };
 
 class ConfigurationProvider {
