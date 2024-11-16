@@ -27,9 +27,13 @@ function reg_replace(str, pattern, replace_with) {
 
 function _GetHostString() {
     local host = ServerParams.getParam("hostname");
+    local secureConnection = 0;
+    try {
+        secureConnection = ServerParams.getParam("secure").tointeger();
+    } catch(ex) {}
 
     if (host.find("http://") == null && host.find("https://") == null) {
-        host = "http://" + host;
+        host = (secureConnection ? "https://" : "http://") + host;
     }
     return host;
 }
@@ -126,8 +130,12 @@ function UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
-        hostname = "Server ip or hostname [:port]",
-        folder = "Remote folder",
-        downloadPath = "Download path (ftp or http)"
+        hostname = tr("ftp.server","Server IP or hostname [:port]"),
+        folder = tr("ftp.remote_dir", "Remote directory"),
+        downloadPath = tr("ftp.download_path", "Download path (ftp or http)"),
+        secure = {
+            title = tr("ftp.secure_connection", "Secure connection (SSL/TLS)"),
+            type = "boolean"
+        }
     }
 }

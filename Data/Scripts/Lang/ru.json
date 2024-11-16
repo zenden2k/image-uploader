@@ -43,5 +43,17 @@
         "expiration": "Автоудаление через (анонимно)",
         "expiration_authorized": "Автоудаление в минутах (с аккаунтом)",
         "never": "Никогда"
+    },
+    "ftp": {
+        "server": "IP сервера или название хоста [:порт]",
+        "download_path": "Адрес скачивания (http)",
+        "secure_connection": "Защищенное соединение (SSL/TLS)",
+        "active_connection_port": "Порт активного соединения",
+        "remote_dir": "Удаленная директория",
+        "secure_connection_no": "Нет",
+        "secure_connection_explicit": "Явно",
+        "secure_connection_implicit": "Неявно"
+    },
+    "webdav": {
     }
 }

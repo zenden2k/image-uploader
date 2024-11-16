@@ -45,6 +45,96 @@ LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// PNG
+//
+
+IDR_PNG1                PNG                     "res\\icon_main.png"
+
+IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
+
+IDR_bottomLeftShadow    PNG                     "res\\shadows\\bottomLeftShadow.png"
+
+IDR_bottomRightShadow   PNG                     "res\\shadows\\bottomRightShadow.png"
+
+IDR_bottomShadow        PNG                     "res\\shadows\\bottomShadow.png"
+
+IDR_leftShadow          PNG                     "res\\shadows\\leftShadow.png"
+
+IDR_rightShadow         PNG                     "res\\shadows\\rightShadow.png"
+
+IDR_topLeftShadow       PNG                     "res\\shadows\\topLeftShadow.png"
+
+IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.png"
+
+IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
+
+IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
+
+IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
+
+IDB_DROPDOWNICONPNG     PNG                     "res\\icon_dropdown_png.png"
+
+IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
+
+IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
+
+IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
+
+IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
+
+IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
+
+IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
+
+IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
+
+IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
+
+IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
+
+IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
+
+IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
+
+IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
+
+IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
+
+IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
+
+IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
+
+IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
+
+IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
+
+IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
+
+IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
+
+IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
+
+IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload.png"
+
+IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
+
+IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
+
+IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
+
+IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
+
+IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
+
+IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
+
+IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
+
+IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // Dialog
 //
 
@@ -792,7 +882,7 @@ BEGIN
     LTEXT           "Static",IDC_SHORTENINGSERVERPLACEHOLDER,5,4,261,43,NOT WS_VISIBLE
 END
 
-IDD_ADDFTPSERVERDIALOG DIALOGEX 0, 0, 227, 275
+IDD_ADDFTPSERVERDIALOG DIALOGEX 0, 0, 227, 304
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Add FTP server"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
@@ -803,25 +893,28 @@ BEGIN
     COMBOBOX        IDC_SERVERTYPECOMBO,89,30,123,74,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Server [:port]:",IDC_SERVERSTATIC,7,66,80,8
     EDITTEXT        IDC_SERVEREDIT,89,64,124,14,ES_AUTOHSCROLL
-    LTEXT           "Authentication:",IDC_AUTHENTICATIONLABEL,7,84,48,8
-    LTEXT           "Login:",IDC_LOGINLABEL,7,99,81,8
-    EDITTEXT        IDC_LOGINEDITBOX,89,96,124,14,ES_AUTOHSCROLL
-    LTEXT           "Password:",IDC_PASSWORDLABEL,7,117,81,8
-    EDITTEXT        IDC_PASSWORDEDITBOX,89,114,124,14,ES_PASSWORD | ES_AUTOHSCROLL
-    LTEXT           "#Server type",IDC_PRIVATEKEYLABEL,7,135,78,8
-    EDITTEXT        IDC_PRIVATEKEYEDIT,89,133,103,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BROWSEPRIVATEKEYBUTTON,195,133,17,14
-    LTEXT           "Remote directory:",IDC_REMOTEDIRECTORYLABEL,7,158,81,8
-    EDITTEXT        IDC_REMOTEDIRECTORYEDIT,89,154,124,14,ES_AUTOHSCROLL
-    LTEXT           "Download URL:",IDC_DOWNLOADURLLABEL,7,176,81,8
-    EDITTEXT        IDC_DOWNLOADURLEDIT,89,173,124,14,ES_AUTOHSCROLL
-    LTEXT           "The URL of uploaded file will look like:",IDC_THEURLOFUPLOADEDLABEL,7,195,204,10
-    LTEXT           "http://example.com/screenshot.png",IDC_EXAMPLEURLLABEL,17,207,197,8
-    PUSHBUTTON      "#test_connection",IDC_TESTCONNECTIONBTN,58,218,105,14
-    LTEXT           "",IDC_CONNECTIONSTATUSLABEL,11,234,211,19
-    LTEXT           "Static",IDC_ANIMATION,7,251,27,19
-    DEFPUSHBUTTON   "OK",IDOK,107,255,50,15
-    PUSHBUTTON      "Cancel",IDCANCEL,163,255,50,15
+    LTEXT           "#secured connection",IDC_SECUREDCONNECTIONLABEL,7,82,78,8
+    COMBOBOX        IDC_SECUREDCONNECTIONCOMBOBOX,89,82,123,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "#active connection",IDC_ACTIVECONNECTIONCHECKBOX,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,89,97,123,10
+    LTEXT           "Authentication:",IDC_AUTHENTICATIONLABEL,7,107,82,8
+    LTEXT           "Login:",IDC_LOGINLABEL,7,122,81,8
+    EDITTEXT        IDC_LOGINEDITBOX,89,119,124,14,ES_AUTOHSCROLL
+    LTEXT           "Password:",IDC_PASSWORDLABEL,7,140,81,8
+    EDITTEXT        IDC_PASSWORDEDITBOX,89,137,124,14,ES_PASSWORD | ES_AUTOHSCROLL
+    LTEXT           "#Server type",IDC_PRIVATEKEYLABEL,7,158,78,8
+    EDITTEXT        IDC_PRIVATEKEYEDIT,89,156,103,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BROWSEPRIVATEKEYBUTTON,195,156,17,14
+    LTEXT           "Remote directory:",IDC_REMOTEDIRECTORYLABEL,7,181,81,8
+    EDITTEXT        IDC_REMOTEDIRECTORYEDIT,89,177,124,14,ES_AUTOHSCROLL
+    LTEXT           "Download URL:",IDC_DOWNLOADURLLABEL,7,199,81,8
+    EDITTEXT        IDC_DOWNLOADURLEDIT,89,196,124,14,ES_AUTOHSCROLL
+    LTEXT           "The URL of uploaded file will look like:",IDC_THEURLOFUPLOADEDLABEL,7,218,204,10
+    LTEXT           "http://example.com/screenshot.png",IDC_EXAMPLEURLLABEL,17,230,197,8
+    PUSHBUTTON      "#test_connection",IDC_TESTCONNECTIONBTN,58,241,105,14
+    LTEXT           "",IDC_CONNECTIONSTATUSLABEL,11,257,211,19
+    LTEXT           "Static",IDC_ANIMATION,7,280,27,19
+    DEFPUSHBUTTON   "OK",IDOK,107,284,50,15
+    PUSHBUTTON      "Cancel",IDCANCEL,163,284,50,15
 END
 
 IDD_ADDDIRECTORYSERVERDLG DIALOGEX 0, 0, 249, 127
@@ -1387,7 +1480,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 222
         TOPMARGIN, 7
-        BOTTOMMARGIN, 270
+        BOTTOMMARGIN, 299
     END
 
     IDD_ADDDIRECTORYSERVERDLG, DIALOG
@@ -1591,96 +1684,6 @@ IDI_ICONSEPARATOR       ICON                    "res\\icon_separator.ico"
 IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
 
 IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// PNG
-//
-
-IDR_PNG1                PNG                     "res\\icon_main.png"
-
-IDR_PNG2                PNG                     "res\\imageuploader_wizard.png"
-
-IDR_bottomLeftShadow    PNG                     "res\\shadows\\bottomLeftShadow.png"
-
-IDR_bottomRightShadow   PNG                     "res\\shadows\\bottomRightShadow.png"
-
-IDR_bottomShadow        PNG                     "res\\shadows\\bottomShadow.png"
-
-IDR_leftShadow          PNG                     "res\\shadows\\leftShadow.png"
-
-IDR_rightShadow         PNG                     "res\\shadows\\rightShadow.png"
-
-IDR_topLeftShadow       PNG                     "res\\shadows\\topLeftShadow.png"
-
-IDR_topRightShadow      PNG                     "res\\shadows\\topRightShadow.png"
-
-IDR_topShadow           PNG                     "res\\shadows\\topShadow.png"
-
-IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSquare.png"
-
-IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
-
-IDB_DROPDOWNICONPNG     PNG                     "res\\icon_dropdown_png.png"
-
-IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
-
-IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"
-
-IDB_ICONTOOLPENCIL      PNG                     "res\\ImageEditor\\icon_tool_pencil.png"
-
-IDB_ICONTOOLBRUSHPNG    PNG                     "res\\ImageEditor\\icon_tool_brush.png"
-
-IDB_ICONTOOLTEXTPNG     PNG                     "res\\ImageEditor\\icon_tool_text.png"
-
-IDB_ICONTOOLFILLEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rectangle.png"
-
-IDB_ICONCOLORPICKERPNG  PNG                     "res\\ImageEditor\\icon_tool_color_picker.png"
-
-IDB_ICONTOOLLINE        PNG                     "res\\ImageEditor\\icon_tool_line.png"
-
-IDB_ICONTOOLRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_rectangle.png"
-
-IDB_ICONTOOLSELECTION   PNG                     "res\\ImageEditor\\icon_tool_selection.png"
-
-IDB_ICONUNDOPNG         PNG                     "res\\ImageEditor\\icon_undo.png"
-
-IDB_ICONTOOLARROWPNG    PNG                     "res\\ImageEditor\\icon_tool_arrow.png"
-
-IDB_ICONTOOLBLURINGRECTANGLEPNG PNG                     "res\\ImageEditor\\icon_tool_bluring_rectangle.png"
-
-IDB_ICONTOOLROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_rounded_rectangle.png"
-
-IDB_ICONTOOLFILLEDROUNDEDRECTANGLE PNG                     "res\\ImageEditor\\icon_tool_filled_rounded_rectangle.png"
-
-IDB_ICONTOOLELLIPSE     PNG                     "res\\ImageEditor\\icon_tool_ellipse.png"
-
-IDB_ICONTOOLFILLEDELLIPSE PNG                     "res\\ImageEditor\\icon_tool_filled_ellipse.png"
-
-IDB_ICONTOOLMARKER      PNG                     "res\\ImageEditor\\icon_tool_marker.png"
-
-IDB_ICONSAVEPNG         PNG                     "res\\ImageEditor\\icon_save.png"
-
-IDB_ICONADDPNG          PNG                     "res\\ImageEditor\\icon_add.png"
-
-IDB_ICONUPLOADPNG       PNG                     "res\\ImageEditor\\icon_upload.png"
-
-IDR_ICONMAINNEW         PNG                     "res\\icon_main_new.png"
-
-IDB_ICONCLIPBOARDPNG    PNG                     "res\\ImageEditor\\icon_clipboard.png"
-
-IDB_ICONTOOLSTEP        PNG                     "res\\ImageEditor\\icon_tool_step.png"
-
-IDB_SWAPCOLORS          PNG                     "res\\ImageEditor\\icon_swap_colors.png"
-
-IDB_ICONTOOLPIXELATE    PNG                     "res\\ImageEditor\\icon_tool_pixelate.png"
-
-IDB_ICONSEARCH          PNG                     "res\\ImageEditor\\icon_search.png"
-
-IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.png"
-
-IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
 
 
 /////////////////////////////////////////////////////////////////////////////

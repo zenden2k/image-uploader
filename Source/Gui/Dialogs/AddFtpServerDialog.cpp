@@ -38,11 +38,18 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_SERVERTYPELABEL, "Server type:");
     TRC(IDC_PRIVATEKEYLABEL, "Private key file:");
     TRC(IDC_TESTCONNECTIONBTN, "Test connection");
+    TRC(IDC_SECUREDCONNECTIONLABEL, "Secured connection:");
+    TRC(IDC_ACTIVECONNECTIONCHECKBOX, "Active connection");
 
     serverTypeComboBox_ = GetDlgItem(IDC_SERVERTYPECOMBO);
     serverTypeComboBox_.AddString(TR("FTP"));
     serverTypeComboBox_.AddString(TR("SFTP"));
     serverTypeComboBox_.AddString(TR("WebDAV"));
+
+    securedConectionCombobox_ = GetDlgItem(IDC_SECUREDCONNECTIONCOMBOBOX);
+
+    activeConnectionCheckBox_ = GetDlgItem(IDC_ACTIVECONNECTIONCHECKBOX);
+    activeConnectionCheckBox_.SetCheck(BST_UNCHECKED);
 
     serverTypeComboBox_.SetCurSel(static_cast<int>(ServerListManager::ServerType::stFTP));
     connectionStatusLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_CONNECTIONSTATUSLABEL));
@@ -219,6 +226,13 @@ void CAddFtpServerDialog::onServerTypeChange() {
     GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYLABEL, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_PRIVATEKEYEDIT, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_BROWSEPRIVATEKEYBUTTON, enable);
+
+    bool enableSSL = serverType == ServerListManager::ServerType::stFTP || serverType == ServerListManager::ServerType::stWebDAV;
+    GuiTools::EnableDialogItem(m_hWnd, IDC_SECUREDCONNECTIONLABEL, enableSSL);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_SECUREDCONNECTIONCOMBOBOX, enableSSL);
+
+    activeConnectionCheckBox_.EnableWindow(serverType == ServerListManager::ServerType::stFTP);
+    updateSecuredConnectionCombobox();
 }
 
 LRESULT CAddFtpServerDialog::OnClickedTestConnection(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
@@ -259,13 +273,16 @@ void CAddFtpServerDialog::addServer(bool test) {
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDITBOX);
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDITBOX);
     serverType_ = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+
+    int securedConnection = securedConectionCombobox_.GetCurSel();
+    bool activeConnection = activeConnectionCheckBox_.GetCheck() == BST_CHECKED;
     std::string privateKeyFile;
     if (serverType_ == ServerListManager::ServerType::stSFTP) {
         privateKeyFile = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_PRIVATEKEYEDIT));
 
         if (privateKeyFile.length() && !IuCoreUtils::FileExists(privateKeyFile)) {
             LocalizedMessageBox(TR("Private key file doesn't exist."), TR("Error"), MB_ICONERROR);
-            return ;
+            return;
         }
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -273,7 +290,7 @@ void CAddFtpServerDialog::addServer(bool test) {
     ServerListManager slm(settings->SettingsFolder + "\\Servers\\", uploadEngineList_, settings->ServersSettings);
     try {
         std::string servName = slm.addFtpServer(serverType_, test, W2U(connectionName), W2U(serverName), W2U(login),
-            W2U(password), W2U(remoteDirectory), W2U(downloadUrl), privateKeyFile);
+            W2U(password), W2U(remoteDirectory), W2U(downloadUrl), privateKeyFile, securedConnection, activeConnection ? "-" : "");
         createdServerName_ = U2W(servName);
         createdServerLogin_ = login;
         if (test) {
@@ -323,6 +340,19 @@ void CAddFtpServerDialog::addServer(bool test) {
 void CAddFtpServerDialog::enableControls(bool enable) {
     GuiTools::EnableDialogItem(m_hWnd, IDOK, enable);
     GuiTools::EnableDialogItem(m_hWnd, IDC_TESTCONNECTIONBTN, enable);
+}
+
+void CAddFtpServerDialog::updateSecuredConnectionCombobox() {
+    ServerListManager::ServerType serverType = static_cast<ServerListManager::ServerType>(serverTypeComboBox_.GetCurSel());
+
+    securedConectionCombobox_.ResetContent();
+    securedConectionCombobox_.AddString(TR("No"));
+    if (serverType == ServerListManager::ServerType::stFTP) {
+        securedConectionCombobox_.AddString(TR("Explicit"));
+        securedConectionCombobox_.AddString(TR("Implicit"));
+    } else {
+        securedConectionCombobox_.AddString(TR("Yes"));
+    }
 }
 
 LRESULT CAddFtpServerDialog::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild) {

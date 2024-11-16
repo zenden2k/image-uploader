@@ -37,7 +37,7 @@ ServerListManager::ServerListManager(const std::string &serversDirectory, CUploa
 
 
 std::string ServerListManager::addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password, const std::string &remoteDirectory, const std::string &downloadUrl, 
-    const std::string& privateKeyFile)
+    const std::string& privateKeyFile, int securedConnection, const std::string& activeConnectionPort)
 {
     SimpleXml xml;
     SimpleXmlNode root = xml.getRoot("Servers");
@@ -110,6 +110,12 @@ std::string ServerListManager::addFtpServer(ServerType serverType, bool temporar
 
     if (serverType == ServerType::stSFTP) {
         ss.setParam("privateKeyPath", privateKeyFile);
+    }
+    if (serverType == ServerType::stFTP || serverType == ServerType::stWebDAV) {
+        ss.setParam("secure", std::to_string(securedConnection));
+    }
+    if (serverType == ServerType::stFTP) {
+        ss.setParam("activeConnectionPort", activeConnectionPort);
     }
     ss.authData.Login = login;
     ss.authData.Password = password;

@@ -20,7 +20,7 @@ public:
     * @throws std::runtime_error
     */
     std::string addFtpServer(ServerType serverType, bool temporary, const std::string &name, const std::string &serverName, const std::string &login, const std::string &password,
-        const std::string &remoteDirectory, const std::string &downloadUrl, const std::string& privateKeyFile);
+        const std::string& remoteDirectory, const std::string& downloadUrl, const std::string& privateKeyFile, int securedConnection, const std::string& activeConnectionPort);
 
     /**
     * @throws std::runtime_error

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-15 16:28+0300\n"
+"POT-Creation-Date: 2024-11-16 16:36+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,6 +171,10 @@ msgstr ""
 msgid "Action:"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
+msgid "Active connection"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:87
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 msgid "Add"
@@ -293,7 +297,7 @@ msgid "Aero only (Windows Vista or later)"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:199
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:206
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
 #: ../Source/Gui/Dialogs/MainDlg.cpp:703
@@ -673,7 +677,7 @@ msgstr ""
 msgid "Choose more servers..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:202
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:209
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:92
 msgid "Choose program"
 msgstr ""
@@ -802,7 +806,7 @@ msgid "Connection  name:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:240
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
 msgid "Connection name cannot be empty"
 msgstr ""
 
@@ -901,7 +905,7 @@ msgid "Copy to the clipboard:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:112
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:314
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:331
 msgid "Could not add server."
 msgstr ""
 
@@ -1089,7 +1093,7 @@ msgid "Don't resize"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:247
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
 msgid "Download URL cannot be empty."
 msgstr ""
 
@@ -1178,11 +1182,11 @@ msgstr ""
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:234
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:240
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:247
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:267
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:319
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:336
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
@@ -1264,6 +1268,10 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:351
+msgid "Explicit"
+msgstr ""
+
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:23
 msgid "Extension"
 msgstr ""
@@ -1289,7 +1297,7 @@ msgstr ""
 msgid "Extracting video frames was stopped by user."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:43
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
 msgid "FTP"
 msgstr ""
 
@@ -1697,6 +1705,10 @@ msgstr ""
 msgid "Immediately begin uploading to the server"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
+msgid "Implicit"
+msgstr ""
+
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:245
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:522
@@ -1962,6 +1974,10 @@ msgstr ""
 msgid "Next >"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:349
+msgid "No"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:643
 msgid "No Folder Selected"
 msgstr ""
@@ -2173,7 +2189,7 @@ msgstr ""
 msgid "Print..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:267
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
 msgid "Private key file doesn't exist."
 msgstr ""
 
@@ -2242,7 +2258,7 @@ msgid "Re-upload images"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:115
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:317
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:334
 msgid "Reason:"
 msgstr ""
 
@@ -2341,7 +2357,7 @@ msgstr ""
 msgid "Rounding radius"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:44
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:46
 msgid "SFTP"
 msgstr ""
 
@@ -2439,6 +2455,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:32
 msgid "Searching for picture files..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:41
+msgid "Secured connection:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:99
@@ -2543,7 +2563,7 @@ msgstr ""
 msgid "Server type:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:234
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
 msgid "Server's name cannot be empty"
 msgstr ""
 
@@ -2748,7 +2768,7 @@ msgstr ""
 msgid "Subtitles: "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:290
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
 msgid "Success"
 msgstr ""
 
@@ -2772,7 +2792,7 @@ msgstr ""
 msgid "Test connection"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:290
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
 msgid "Test failed"
 msgstr ""
 
@@ -3181,7 +3201,7 @@ msgstr ""
 msgid "Watermark position:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:47
 msgid "WebDAV"
 msgstr ""
 
@@ -3206,6 +3226,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2456
 msgid "Work in progress"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:354
+msgid "Yes"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:169

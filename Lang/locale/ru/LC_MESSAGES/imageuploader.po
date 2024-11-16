@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-15 16:28+0300\n"
-"PO-Revision-Date: 2024-11-15 16:30+0300\n"
+"POT-Creation-Date: 2024-11-16 16:36+0300\n"
+"PO-Revision-Date: 2024-11-16 16:37+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -185,6 +185,10 @@ msgstr "Действие"
 msgid "Action:"
 msgstr "Действие:"
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
+msgid "Active connection"
+msgstr "Активный режим"
+
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:87
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 msgid "Add"
@@ -307,7 +311,7 @@ msgid "Aero only (Windows Vista or later)"
 msgstr "Только для Aero (Windows Vista и новее)"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:199
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:206
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
 #: ../Source/Gui/Dialogs/MainDlg.cpp:703
@@ -699,7 +703,7 @@ msgstr "Выберите монитор"
 msgid "Choose more servers..."
 msgstr "Выбрать больше серверов..."
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:202
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:209
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:92
 msgid "Choose program"
 msgstr "Выберите программу"
@@ -828,7 +832,7 @@ msgid "Connection  name:"
 msgstr "Имя соединения:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:240
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
 msgid "Connection name cannot be empty"
 msgstr "Название соединения не может быть пустым"
 
@@ -927,7 +931,7 @@ msgid "Copy to the clipboard:"
 msgstr "Копировать в буфер обмена:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:112
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:314
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:331
 msgid "Could not add server."
 msgstr "Не удалось добавить сервер."
 
@@ -1122,7 +1126,7 @@ msgid "Don't resize"
 msgstr "Без изменения"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:247
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
 msgid "Download URL cannot be empty."
 msgstr "Ссылка для скачивания не может быть пустой."
 
@@ -1212,11 +1216,11 @@ msgstr "Введите текст:"
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:234
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:240
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:247
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:267
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:319
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:336
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
@@ -1298,6 +1302,10 @@ msgstr "Выполнять Squirrel-скрипт для каждой задач�
 msgid "Exit"
 msgstr "Выход"
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:351
+msgid "Explicit"
+msgstr "Явно"
+
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:23
 msgid "Extension"
 msgstr "Расширение"
@@ -1323,7 +1331,7 @@ msgstr "Извлечение кадров было завершено."
 msgid "Extracting video frames was stopped by user."
 msgstr "Извлечение кадров было остановлено пользователем."
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:43
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
 msgid "FTP"
 msgstr ""
 
@@ -1740,6 +1748,10 @@ msgstr "Параметры изображений и выбор сервера"
 msgid "Immediately begin uploading to the server"
 msgstr "Сразу начинать загрузку на сервер"
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
+msgid "Implicit"
+msgstr "Неявно"
+
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:245
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:522
@@ -2011,6 +2023,10 @@ msgstr "Новый профиль"
 msgid "Next >"
 msgstr "Далее >"
 
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:349
+msgid "No"
+msgstr "Нет"
+
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:643
 msgid "No Folder Selected"
 msgstr "Папка не выбрана"
@@ -2224,7 +2240,7 @@ msgstr "Окно предпросмотра"
 msgid "Print..."
 msgstr "Печать..."
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:267
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
 msgid "Private key file doesn't exist."
 msgstr "Файл с приватным ключом не существует."
 
@@ -2296,7 +2312,7 @@ msgid "Re-upload images"
 msgstr "Повторная загрузка изображений"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:115
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:317
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:334
 msgid "Reason:"
 msgstr "Причина:"
 
@@ -2396,7 +2412,7 @@ msgstr "Скругленный прямоугольник"
 msgid "Rounding radius"
 msgstr "Радиус закругления"
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:44
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:46
 msgid "SFTP"
 msgstr ""
 
@@ -2495,6 +2511,10 @@ msgstr "Поиск в %s"
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:32
 msgid "Searching for picture files..."
 msgstr "Поиск графических файлов..."
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:41
+msgid "Secured connection:"
+msgstr "Защищ. соединение:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:99
 msgid "Select Region..."
@@ -2598,7 +2618,7 @@ msgstr "Cервер для загрузки изображений"
 msgid "Server type:"
 msgstr "Тип сервера:"
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:234
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
 msgid "Server's name cannot be empty"
 msgstr "Имя сервера не может быть пустым"
 
@@ -2803,7 +2823,7 @@ msgstr "Цвет обводки:"
 msgid "Subtitles: "
 msgstr "Субтитры: "
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:290
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
 msgid "Success"
 msgstr "Успешно"
 
@@ -2827,7 +2847,7 @@ msgstr "Таблица эскизов с увеличением по клику"
 msgid "Test connection"
 msgstr "Тест соединения"
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:290
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
 msgid "Test failed"
 msgstr "Неудача"
 
@@ -3241,7 +3261,7 @@ msgstr "Водяной знак"
 msgid "Watermark position:"
 msgstr "Позиция логотипа:"
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:47
 msgid "WebDAV"
 msgstr ""
 
@@ -3270,6 +3290,10 @@ msgstr "Интеграция с проводником Windows"
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2456
 msgid "Work in progress"
 msgstr "В процессе работы"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:354
+msgid "Yes"
+msgstr "Да"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:169
 msgid "You are using the latest Image Uploader version."

@@ -25,14 +25,14 @@ It can upload to more than [20 image hostings sites](https://svistunov.dev/image
 
 It is also possible to specify your own output format template.
 
-### Grabbing Frames from a Video Clip
+### Grabbing frames from a video clip
 Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV (it depends on DirectShow codecs you have installed on your system). It is recommended to install K-lite Codec Pack.
 
 Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
 
-## Console Utility
+## Console utility
 
-![Image Uploader Console Utility running on Ubuntu](./Pics/cli_terminal.png)
+![Image Uploader CLI running on Ubuntu](./Pics/cli_terminal.png)
 
 Available options:
 
@@ -46,4 +46,4 @@ https://svistunov.dev/imageuploader-cli
 
 ## Building from source
 
-See COMPILING.MD
+See [COMPILING.MD](COMPILING.MD)
