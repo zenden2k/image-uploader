@@ -328,7 +328,6 @@ protected:
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
-    std::unique_ptr<WinToastHandler> winToastHandler_;
 };
 
 

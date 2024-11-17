@@ -661,6 +661,11 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     // We need to make sure the icon is not in use before we delete it (otherwise the memory won't be freed)
     HICON oldIcon = helpButton_.SetIcon(nullptr);
     DestroyIcon(oldIcon);
+    using namespace WinToastLib;
+    if (WinToast::instance()->isInitialized()) {
+        WinToast::instance()->clear();
+    }
+
     bHandled = false;
     return 0;
 }
@@ -2251,16 +2256,14 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
     } else {
         using namespace WinToastLib;
-        if (Settings.EnableToastNotifications && WinToast::isCompatible()) {
-            if (!winToastHandler_) {
-                winToastHandler_ = std::make_unique<WinToastHandler>();
-            }
+        auto instance = WinToast::instance();
+        if (Settings.EnableToastNotifications && instance->isInitialized()) {
 
             WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/Text01);
             //templ.setImagePath(L"C:/example.png");
             //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
             templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
-            const auto toast_id = WinToast::instance()->showToast(templ, winToastHandler_.get());
+            const auto toast_id = instance->showToast(templ, new WinToastHandler());
             if (toast_id < 0) {
                 LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
             }
