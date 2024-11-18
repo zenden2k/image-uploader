@@ -27,16 +27,11 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui->numOfFramesSpinBox->setValue(settings->VideoSettings.NumOfFrames);
 	ui->stopButton->setVisible(false);
 	ui->lineEdit->setText(fileName);
+    for (const auto& engine: CommonGuiSettings::VideoEngines) {
+        QString name = QString::fromStdString(engine);
+        ui->comboBox->addItem(name, QVariant(name));
+    }
 
-    ui->comboBox->addItem("Auto", QVariant(QString::fromUtf8(CommonGuiSettings::VideoEngineAuto)));
-#ifdef IU_ENABLE_FFMPEG
-    ui->comboBox->addItem("FFmpeg", QVariant(QString::fromUtf8(CommonGuiSettings::VideoEngineFFmpeg)));
-#endif
-
-#ifdef _WIN32
-    ui->comboBox->addItem("Directshow", QVariant(QString::fromUtf8(CommonGuiSettings::VideoEngineDirectshow)));
-    ui->comboBox->addItem("Directshow2", QVariant(QString::fromUtf8(CommonGuiSettings::VideoEngineDirectshow2)));
-#endif
     int index = ui->comboBox->findData(QString::fromStdString(settings->VideoSettings.Engine));
     if ( index != -1 ) {
         ui->comboBox->setCurrentIndex(index);
@@ -200,6 +195,8 @@ VideoGrabber::VideoEngine FrameGrabberDlg::getVideoEngine() const {
         engine = VideoGrabber::veDirectShow;
     } else if (videoEngine == QtGuiSettings::VideoEngineDirectshow2) {
         engine = VideoGrabber::veDirectShow2;
+    } else if (videoEngine == QtGuiSettings::VideoEngineMediaFoundation) {
+        engine = VideoGrabber::veMediaFoundation;
     }
     return engine;
 }

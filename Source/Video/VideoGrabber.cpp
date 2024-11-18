@@ -27,6 +27,7 @@
 #ifdef _WIN32
 #include "DirectshowFrameGrabber.h"
 #include "DirectshowFrameGrabber2.h"
+#include "MediaFoundationFrameGrabber.h"
 #endif
 #include "AbstractVideoFrame.h"
 #ifdef IU_ENABLE_FFMPEG
@@ -202,9 +203,12 @@ std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
     #endif
     if (videoEngine_ == veDirectShow2) {
         grabber = std::make_unique<DirectshowFrameGrabber2>();
+    } else if (videoEngine_ == veMediaFoundation) {
+        grabber = std::make_unique<MediaFoundationFrameGrabber>();
     }
     else {
         grabber = std::make_unique<DirectshowFrameGrabber>();
+
     }
 #elif defined(IU_ENABLE_FFMPEG)
     grabber.reset(new AvcodecFrameGrabber());

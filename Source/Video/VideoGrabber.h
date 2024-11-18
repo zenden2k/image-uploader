@@ -10,7 +10,7 @@ class AbstractImage;
 class VideoGrabber
 {
 public:
-    enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec, veDirectShow2  };
+    enum VideoEngine { veAuto = 0, veDirectShow, veAvcodec, veDirectShow2, veMediaFoundation  };
     explicit VideoGrabber(bool async = true, bool logErrors = true);
     ~VideoGrabber();
     void setVideoEngine(VideoEngine engine);

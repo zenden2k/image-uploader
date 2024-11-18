@@ -50,7 +50,7 @@ bool MySaveImage(Gdiplus::Bitmap* img, const CString& szFilename, CString& szBuf
     LPCTSTR Folder = 0);
 
 /**
- * @throws IOException, runtime_error
+ * @throws IOException, std::runtime_error
  */
 bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* stream, SaveImageFormat Format,
     int Quality, CString* mimeType = nullptr);

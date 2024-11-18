@@ -247,7 +247,8 @@ if(WIN32)
         list(APPEND SRC_LIST  ../Gui/Controls/Webview2BrowserView.cpp)
     endif()
 
-    list(APPEND HEADER_LIST 
+    list(APPEND HEADER_LIST
+        COMInitializer.h
         DefaultProxyProvider.h 
         3rdpart/CodePages.h 
         Scripting/API/HtmlDocument.h

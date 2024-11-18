@@ -22,6 +22,7 @@ if(WIN32)
         GrabFilter.cpp
         DirectShowUtil.cpp
         ../Core/3rdpart/dxerr.cpp
+        MediaFoundationFrameGrabber.cpp
     )
     list(APPEND HEADER_LIST 
         DirectshowFrameGrabber.h
@@ -31,6 +32,7 @@ if(WIN32)
         GrabFilter.h
         DirectShowUtil.h
         ../Core/3rdpart/dxerr.h
+        MediaFoundationFrameGrabber.h
     )
 endif()
 
@@ -58,7 +60,7 @@ if (IU_ENABLE_FFMPEG)
 endif()	
 
 if (WIN32)
-    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib)
+    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib Mfreadwrite.lib Propsys.lib)
 endif()
 
 target_link_libraries(iuvideo PUBLIC

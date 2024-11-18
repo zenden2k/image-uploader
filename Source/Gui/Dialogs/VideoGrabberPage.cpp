@@ -92,11 +92,8 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
     openInFolderLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
 
-    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineAuto));
-    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineDirectshow));
-    videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineDirectshow2));
-    if (WtlGuiSettings::IsFFmpegAvailable()) {
-        videoEngineCombo_.AddString(U2W(WtlGuiSettings::VideoEngineFFmpeg));
+    for (const auto& engine : CommonGuiSettings::VideoEngines) {
+        videoEngineCombo_.AddString(U2W(engine));
     }
 
     int itemIndex = videoEngineCombo_.FindStringExact(0, U2W(Settings.VideoSettings.Engine));
@@ -344,7 +341,7 @@ LRESULT CVideoGrabberPage::OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /
 void CVideoGrabberPage::SavingMethodChanged(void)
 {
     BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
-    ::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS), !check);
+    //::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS), !check);
 }
 
 int CVideoGrabberPage::GenPicture(CString& outFileName)
@@ -419,8 +416,9 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
         engine = VideoGrabber::veDirectShow;
     } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow2) {
         engine = VideoGrabber::veDirectShow2;
+    } else if (videoEngine == WtlGuiSettings::VideoEngineMediaFoundation) {
+        engine = VideoGrabber::veMediaFoundation;
     }
-
 
     settings->VideoSettings.NumOfFrames = NumOfFrames;
 

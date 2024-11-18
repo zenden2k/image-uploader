@@ -662,7 +662,7 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     HICON oldIcon = helpButton_.SetIcon(nullptr);
     DestroyIcon(oldIcon);
     using namespace WinToastLib;
-    if (WinToast::instance()->isInitialized()) {
+    if (WinToast::isCompatible() && WinToast::instance()->isInitialized()) {
         WinToast::instance()->clear();
     }
 
@@ -2256,16 +2256,18 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
     } else {
         using namespace WinToastLib;
-        auto instance = WinToast::instance();
-        if (Settings.EnableToastNotifications && instance->isInitialized()) {
+        if (WinToast::isCompatible()) {
+            auto instance = WinToast::instance();
+            if (Settings.EnableToastNotifications && instance->isInitialized()) {
 
-            WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/Text01);
-            //templ.setImagePath(L"C:/example.png");
-            //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
-            templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
-            const auto toast_id = instance->showToast(templ, new WinToastHandler());
-            if (toast_id < 0) {
-                LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
+                WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/ Text01);
+                //templ.setImagePath(L"C:/example.png");
+                //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
+                templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
+                const auto toast_id = instance->showToast(templ, new WinToastHandler());
+                if (toast_id < 0) {
+                    LOG(WARNING) << L"Error: Could not launch your toast notification!" << std::endl;
+                }
             }
         }
     }

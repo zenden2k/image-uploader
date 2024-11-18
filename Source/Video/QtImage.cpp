@@ -3,6 +3,7 @@
 #include <cassert>
 #include <QDebug>
 
+#include "Core/Logging.h"
 #include "Core/CommonDefs.h"
 
 QtImage::QtImage()
@@ -21,11 +22,11 @@ bool QtImage::loadFromFile(const std::string &fileName)
 }
 
 bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter) {
-    if (dt == dfRGB888) {
+    if (dt == dfRGB888 || dt == dfRGB32bpp) {
         size_t oldStripeSize = reinterpret_cast<size_t>(parameter);
         size_t newDataSize = oldStripeSize * height;
         uint8_t* newData{};
-        assert( newDataSize <= dataSize);
+        assert(newDataSize <= dataSize);
         try {
             newData = new uint8_t[newDataSize];
         } catch (const std::exception& ex) {
@@ -33,8 +34,16 @@ bool QtImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* dat
             return false;
         }
         memcpy(newData, data, newDataSize);
-       
-        img_ = QImage(newData, width, height, oldStripeSize, QImage::Format_RGB888, [](void* d) {
+        std::unordered_map<DataFormat, QImage::Format> mapping = {
+            {dfRGB888, QImage::Format_RGB888},
+            {dfRGB32bpp,QImage::Format_RGB32 }
+        };
+
+        auto it = mapping.find(dt);
+        if (it == mapping.end()) {
+            LOG(ERROR) << "Image format not supported";
+        }
+        img_ = QImage(newData, width, height, oldStripeSize, it->second, [](void* d) {
             delete[] static_cast<uint8_t*>(d);
         }, newData);
         /*img_.save("/home/user/test.jpg");

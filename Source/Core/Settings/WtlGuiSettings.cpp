@@ -644,13 +644,11 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         AutoStartup = Reg2.ReadBool("AutoStartup", false);
     }
 
-    if (VideoSettings.Engine != VideoEngineDirectshow
-        && VideoSettings.Engine != VideoEngineDirectshow2
-        &&  VideoSettings.Engine != VideoEngineFFmpeg 
-        && VideoSettings.Engine != VideoEngineAuto) {
+    if (std::find(std::begin(VideoEngines), std::end(VideoEngines), VideoSettings.Engine) == std::end(VideoEngines)) {
         VideoSettings.Engine = VideoEngineAuto;
     }
-    if (!IsFFmpegAvailable()) {
+
+    if (VideoSettings.Engine == VideoEngineFFmpeg && !IsFFmpegAvailable()) {
         VideoSettings.Engine = VideoEngineDirectshow;
     }
 

@@ -100,23 +100,38 @@ bool GdiPlusImage::isNull() const
 
 bool GdiPlusImage::loadFromRawData(DataFormat dt, int width, int height, uint8_t* data, size_t dataSize, void* parameter)
 {
-    if ( dt == AbstractImage::dfRGB888 )  {
-        size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
-        size_t newLineSize = width * 3;
-        newLineSize = ((newLineSize + 3) & ~3);
-        size_t newDataSize = /*dataSize*2/**2*//*+100000**/newLineSize * height;
-        data_ = std::make_unique<uint8_t[]>(newDataSize);
-        for ( int y=height-1; y>=0; y--) {
-            memcpy(data_.get()+(height-y-1)*newLineSize, data+y*lineSizeInBytes, width * 3 );
-        }
-        bool res =  loadFromRgb(/*width*/width, height,data_.get(),  newDataSize);
-        return res;
+    try {
+        if (dt == AbstractImage::dfRGB888) {
+            size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
+            size_t newLineSize = width * 3;
+            newLineSize = ((newLineSize + 3) & ~3);
+            size_t newDataSize = /*dataSize*2/**2*/ /*+100000**/ newLineSize * height;
+            data_ = std::make_unique<uint8_t[]>(newDataSize);
+            for (int y = height - 1; y >= 0; y--) {
+                memcpy(data_.get() + (height - y - 1) * newLineSize, data + y * lineSizeInBytes, width * 3);
+            }
+            bool res = loadFromRgb(/*width*/ width, height, data_.get(), newDataSize);
+            return res;
 
-    } else if ( dt == AbstractImage::dfBitmapRgb ) {
-        return loadFromRgb(width, height, data+sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER),dataSize);
-    } else {
-        LOG(ERROR) << "Format not supported "<< dt;
+        } else if (dt == AbstractImage::dfBitmapRgb) {
+            return loadFromRgb(width, height, data + sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER), dataSize);
+        } else if (dt == AbstractImage::dfRGB32bpp) {
+            size_t lineSizeInBytes = reinterpret_cast<size_t>(parameter);
+            data_ = std::make_unique<uint8_t[]>(dataSize);
+            memcpy(data_.get(), data, dataSize);
+            bm_ = new Gdiplus::Bitmap(width, height, lineSizeInBytes, PixelFormat32bppRGB, data_.get());
+            if (bm_->GetLastStatus() == Ok) {
+                width_ = width;
+                height_ = height;
+                return true;
+            }
+        } else {
+            LOG(ERROR) << "Format not supported " << dt;
+        }
+    } catch (const std::bad_alloc& ex) {
+        LOG(ERROR) << "Not enough memory";
     }
+   
     return false;
 }
 
@@ -150,8 +165,8 @@ bool GdiPlusImage::loadFromRgb(int width, int height, uint8_t* data, size_t data
     bi.bmiHeader = bih;
 
    
-    /*size_t newLineSize = 4 * ((width * 3 + 3) / 4);
-    bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
+    /*size_t newLineSize = 4 * ((width * 3 + 3) / 4);*/
+    //bm_.reset(new Gdiplus::Bitmap(width, height, newLineSize, PixelFormat24bppRGB, data));*/
     bm_ = new Gdiplus::Bitmap(&bi, data);
 
     if ( bm_->GetLastStatus() == Ok ) {

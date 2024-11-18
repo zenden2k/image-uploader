@@ -48,6 +48,7 @@
 #include "Core/Upload/UploadEngineManager.h"
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Gui/Helpers/LangHelper.h"
+#include "Video/MediaFoundationFrameGrabber.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -73,6 +74,7 @@ class Application {
     std::unique_ptr<UserFilter> userFilter_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
     std::unique_ptr<TaskDispatcher> taskDispatcher_;
+    MediaFoundationInitializer mediaFoundationInitializer_;
     CString commonTempFolder_, tempFolder_;
 public:
     Application() {

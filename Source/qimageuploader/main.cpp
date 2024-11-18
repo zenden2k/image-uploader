@@ -22,6 +22,9 @@
 #include "Core/Settings/QtGuiSettings.h"
 #include "Video/QtImage.h"
 #include "Core/i18n/Translator.h"
+#ifdef _WIN32
+    #include "Video/MediaFoundationFrameGrabber.h"
+#endif
 #include "versioninfo.h"
 
 #ifdef _WIN32
@@ -58,6 +61,9 @@ public:
     {
 
     }
+#ifdef _WIN32
+    MediaFoundationInitializer mediaFoundationInitializer_;
+#endif
 protected:
 
     bool notify(QObject *receiver, QEvent *event) override

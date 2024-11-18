@@ -24,11 +24,6 @@ limitations under the License.
 #include "Func/WinUtils.h"
 #endif
 
-const char CommonGuiSettings::VideoEngineDirectshow[] = "Directshow";
-const char CommonGuiSettings::VideoEngineDirectshow2[] = "Directshow_2";
-const char CommonGuiSettings::VideoEngineFFmpeg[] = "FFmpeg";
-const char CommonGuiSettings::VideoEngineAuto[] = "Auto";
-
 CommonGuiSettings::CommonGuiSettings() : BasicSettings()
 {
     // Default values of settings
@@ -41,6 +36,10 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
 }
 
 CommonGuiSettings::~CommonGuiSettings() {
+    if (!IsFFmpegAvailable()) {
+        auto it = std::remove(std::begin(VideoEngines), std::end(VideoEngines), VideoEngineFFmpeg);
+        VideoEngines.erase(it, VideoEngines.end());
+    }
 }
 
 bool CommonGuiSettings::IsFFmpegAvailable() {
