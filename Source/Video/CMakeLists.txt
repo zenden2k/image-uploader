@@ -60,7 +60,7 @@ if (IU_ENABLE_FFMPEG)
 endif()	
 
 if (WIN32)
-    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib Mfreadwrite.lib Propsys.lib)
+    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib Mfreadwrite.lib Mfplat.lib mfuuid.lib Propsys.lib)
 endif()
 
 target_link_libraries(iuvideo PUBLIC
