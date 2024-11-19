@@ -92,7 +92,7 @@ bool MediaFoundationFrameGrabber::open(const std::string& fileName)
     hr = MFCreateSourceReaderFromURL(IuCoreUtils::Utf8ToWstring(fileName).c_str(), pAttributes, &sourceReader_);
     if (FAILED(hr)) {
         _com_error comError(hr);
-        LOG(WARNING) << "MFCreateSourceReaderFromURL failed." << comError.ErrorMessage();
+        LOG(WARNING) << "MFCreateSourceReaderFromURL failed." << std::endl << comError.ErrorMessage();
         return false;
     }
 
@@ -101,7 +101,7 @@ bool MediaFoundationFrameGrabber::open(const std::string& fileName)
 
     if (FAILED(hr)) {
         _com_error comError(hr);
-        LOG(WARNING) << "SelectVideoStream failed." << comError.ErrorMessage();
+        LOG(WARNING) << "SelectVideoStream failed." << std::endl << comError.ErrorMessage();
         return false;
     }
 
@@ -115,7 +115,7 @@ bool MediaFoundationFrameGrabber::open(const std::string& fileName)
         duration_ = hnsDuration;
     } else {
         _com_error comError(hr);
-        LOG(WARNING) << "getDuration failed." << comError.ErrorMessage();
+        LOG(WARNING) << "getDuration failed." << std::endl << comError.ErrorMessage();
     }
 
     return true;
@@ -513,7 +513,7 @@ MediaFoundationInitializer::MediaFoundationInitializer() {
     HRESULT hr = MFStartup(MF_VERSION);
     if (FAILED(hr)) {
         _com_error comError(hr);
-        LOG(ERROR) << "MFStartup failed." << comError.ErrorMessage();
+        LOG(ERROR) << "MFStartup failed." << std::endl << comError.ErrorMessage();
     }
 }
 

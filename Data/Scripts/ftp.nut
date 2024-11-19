@@ -121,9 +121,9 @@ function UploadFile(FileName, options) {
         
     if(folder.slice(folder.len()-1) != "/")
         folder += "/";
-    ansiFileName = _StrReplace(ansiFileName, " ", "%20");
+
     folder = _StrReplace(folder, " ", "%20");
-    local url = _GetProtocol() + "://" + host + folder + ansiFileName;
+    local url = _GetProtocol() + "://" + host + folder + nm.urlEncode(ansiFileName);
 
     if (secureConnection) {
         nm.setCurlOptionInt(CURLOPT_USE_SSL, CURLUSESSL_TRY);
