@@ -175,7 +175,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     QuickUploadMarker = false;
     m_bShowAfter = true;
     m_bHandleCmdLineFunc = false;
-    m_bScreenshotFromTray = false;
+    screenshotInitiator_ = siDefault;
     serversChanged_ = false;
     using namespace std::placeholders;
     settingsChangedConnection_ = Settings.onChange.connect(std::bind(&CWizardDlg::settingsChanged, this, _1));
@@ -1590,7 +1590,9 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
     CString funcParam1 = WinUtils::StringSection(funcBody, _T(','), 1);
 
     if (!funcParam1.IsEmpty()) {
-        m_bScreenshotFromTray = _ttoi(funcParam1);
+        screenshotInitiator_ = static_cast<ScreenshotInitiator>(_ttoi(funcParam1));
+    } else {
+        screenshotInitiator_ = siDefault;
     }
     if (LaunchCopy) {
         if (Settings.TrayIconSettings.DontLaunchCopy) {
@@ -2025,9 +2027,10 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     using namespace ScreenCapture;
     // TODO: this method is too complicated and long. 
     bool needToShow = IsWindowVisible()!=FALSE;
-    if(m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd_->m_hWnd)
+    bool fromTray = screenshotInitiator_ == siFromTray || screenshotInitiator_ == siFromHotkey;
+    if(fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd_->m_hWnd)
     {
-        m_bScreenshotFromTray = false;
+        fromTray = false;
         //return false;
     }
     bool CanceledByUser = false;
@@ -2043,9 +2046,14 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
     wcfFlags.RemoveBackground =     Settings.ScreenshotSettings.RemoveBackground;
     wcfFlags.RemoveCorners = Settings.ScreenshotSettings.RemoveCorners;
-    int WindowHidingDelay = (needToShow||m_bScreenshotFromTray==2)? Settings.ScreenshotSettings.WindowHidingDelay: 0;
-    
-    engine.setDelay(WindowHidingDelay);
+    int WindowHidingDelay = (needToShow || screenshotInitiator_ == siFromTray) ? Settings.ScreenshotSettings.WindowHidingDelay : 0;
+    int Delay = WindowHidingDelay;
+
+    if (screenshotInitiator_ != siFromHotkey && screenshotInitiator_ != siFromWelcomeDialog) {
+        Delay += Settings.ScreenshotSettings.Delay * 1000;
+    }
+
+    engine.setDelay(Delay);
     MonitorMode monitorMode = static_cast<MonitorMode>(Settings.ScreenshotSettings.MonitorMode);
     HMONITOR monitor = nullptr;
     if (mode == cmLastRegion) {
@@ -2066,16 +2074,16 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
     engine.setMonitorMode(monitorMode, monitor);
     if(mode == cmFullScreen)
-    {
-        engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay*1000);
+    {  
         engine.captureScreen();
         result = engine.capturedBitmap();
     }
     else if (mode == cmActiveWindow)
     {
-        int Delay = Settings.ScreenshotSettings.Delay;
-        if(Delay <1) Delay = 1;
-        engine.setDelay(WindowHidingDelay + Delay*1000);
+        if (Delay < 1000) {
+            Delay = 1000;
+        }
+        engine.setDelay(Delay);
         CActiveWindowRegion winRegion;
         winRegion.setWindowCapturingFlags(wcfFlags);
         winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
@@ -2086,22 +2094,19 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             LOG(ERROR) << "Last region is empty!";
         }
         else {
-            engine.setDelay(WindowHidingDelay + Settings.ScreenshotSettings.Delay * 1000);
             engine.captureRegion(lastScreenshotRegion_.get());
             result = engine.capturedBitmap();
         }
-    }
-    else if(engine.captureScreen())
-    {
-        if ( mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod ) {
+    } else if (engine.captureScreen()) {
+        if (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             result = engine.capturedBitmap();
         } else {
             // Show old window for selecting screen region
             SelectionMode selMode = SelectionMode::smRectangles;
             bool onlyTopWindows = false;
-            if(mode == cmFreeform)
+            if (mode == cmFreeform)
                 selMode = SelectionMode::smFreeform;
-            if(mode == cmRectangles)
+            if (mode == cmRectangles)
                 selMode = SelectionMode::smRectangles;
             if (mode == cmWindowHandles || mode == cmTopWindowHandles) {
                 selMode = SelectionMode::smWindowHandles;
@@ -2112,36 +2117,32 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
             RegionSelect.setSelectionMode(selMode, onlyTopWindows);
             std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
-            if(res)
-            {
-                HBITMAP gdiBitmap=0;
-                res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
-                if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor))
-                {
-                    if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
-                    engine.setSource(gdiBitmap);
-                    
-                    else{
+            if (res) {
+                HBITMAP gdiBitmap = 0;
+                res->GetHBITMAP(Color(255, 255, 255), &gdiBitmap);
+                if (RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor)) {
+                    if (RegionSelect.wasImageEdited() || (mode != cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/))
+                        engine.setSource(gdiBitmap);
+
+                    else {
                         engine.setSource(0);
                     }
-                    
+
                     engine.setDelay(0);
                     auto rgn = RegionSelect.region();
-                    if(rgn)
-                    {
-                        auto* whr =  dynamic_cast<CWindowHandlesRegion*>(rgn.get());
-                        if(whr)
-                        {
+                    if (rgn) {
+                        auto* whr = dynamic_cast<CWindowHandlesRegion*>(rgn.get());
+                        if (whr) {
                             whr->SetWindowHidingDelay(static_cast<int>(Settings.ScreenshotSettings.WindowHidingDelay * 1.2));
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
-                        engine.captureRegion(rgn.get());    
+                        engine.captureRegion(rgn.get());
                         result = engine.capturedBitmap();
                         DeleteObject(gdiBitmap);
                     }
                     setLastScreenshotRegion(rgn, monitor);
-                }
-                else CanceledByUser = true;
+                } else
+                    CanceledByUser = true;
             }
         }
     }
@@ -2152,13 +2153,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
     }
 
-    if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!m_bScreenshotFromTray && Settings.ScreenshotSettings.OpenInEditor ) || (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
+    if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
     {
         ImageEditorConfigurationProvider configProvider;
         ImageEditor::ImageEditorWindow imageEditor(result, mode == cmFreeform ||   mode == cmActiveWindow, &configProvider);
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
-        imageEditor.showUploadButton(m_bScreenshotFromTray!=0);
-        if ( m_bScreenshotFromTray ) {
+        imageEditor.showUploadButton(fromTray);
+        if ( fromTray ) {
             imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.getByIndex(0).serverName()));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
@@ -2185,7 +2186,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         {
             Result = true;
             bool CopyToClipboard = false;
-            if((m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
+            if((fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD) || Settings.ScreenshotSettings.CopyToClipboard)
             {
 
                 CopyToClipboard = true;
@@ -2206,14 +2207,14 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             {
                 CClientDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
-                    if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
+                    if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD 
                         && dialogResult == ImageEditorWindow::drCancel) {
                         showScreenshotCopiedToClipboardMessage(result);
                         Result = false;
                     }
                 }
             }
-            if(!m_bScreenshotFromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
+            if(!fromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
             {
                 CreatePage(wpMainPage);
                 CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
@@ -2223,7 +2224,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 mainDlg->ThumbsView.SetFocus();
                 ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
             }
-            else if(m_bScreenshotFromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
+            else if(fromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
             {
                 Result = false;
                 CString displayFileName = WinUtils::myExtractFileName(buf);
@@ -2239,13 +2240,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     m_bShowAfter  = false;
     if(Result || needToShow )
     {
-        if(needToShow || (!m_bScreenshotFromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
+        if(needToShow || (!fromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
         {
             m_bShowAfter = true;
         }
     } 
     else m_bShowAfter = false;
-    m_bScreenshotFromTray = false;
+    fromTray = false;
     OnScreenshotFinished(Result);
 
     return Result;

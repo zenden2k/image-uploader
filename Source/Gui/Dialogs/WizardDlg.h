@@ -40,6 +40,7 @@
 #include "Gui/CommonDefines.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Components/DragndropOverlay.h"
+#include "Gui/WizardCommon.h"
 
 class WinToastHandler;
 constexpr int ID_PASTE = 9888;
@@ -310,7 +311,7 @@ protected:
     DWORD mainThreadId_;
     std::unique_ptr<CUpdateDlg> updateDlg;
     CAccelerator localHotkeys_;
-    INT m_bScreenshotFromTray;
+    ScreenshotInitiator screenshotInitiator_;
     bool m_bShowWindow;
     bool m_bHandleCmdLineFunc;
     ServerProfileGroup sessionImageServer_, sessionFileServer_;

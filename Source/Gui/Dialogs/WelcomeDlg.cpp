@@ -218,7 +218,9 @@ LRESULT CWelcomeDlg::OnBnClickedSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    WizardDlg->executeFunc(_T("regionscreenshot"));    
+    CString func;
+    func.Format(_T("regionscreenshot,%d"), static_cast<int>(siFromWelcomeDialog));
+    WizardDlg->executeFunc(func);   
     return 0;
 }
 

@@ -230,8 +230,7 @@ public:
      void OnFileFinished(UploadTask*  task, bool ok);
      void ShowImageUploadedMessage(UploadTask* task, const CString& url);
      void ShowScreenshotCopiedToClipboardMessage();
-     std::string source_file_name_;
-     std::string server_name_;
+
      int iconAnimationCounter_;
      std::shared_ptr<UploadSession> currentUploadSession_;
 

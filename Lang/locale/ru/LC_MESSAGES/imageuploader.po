@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-16 16:36+0300\n"
-"PO-Revision-Date: 2024-11-16 16:37+0300\n"
+"POT-Creation-Date: 2024-11-24 15:38+0300\n"
+"PO-Revision-Date: 2024-11-24 15:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -78,7 +78,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr "%s - быстрая настройка"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:862
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:867
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - Доступны обновления"
@@ -156,7 +156,7 @@ msgstr "Доступна новая версия:"
 msgid "About Image Uploader"
 msgstr "О программе"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2361
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2367
 msgid "About..."
 msgstr "О программе..."
 
@@ -316,9 +316,9 @@ msgstr "Только для Aero (Windows Vista и новее)"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
 #: ../Source/Gui/Dialogs/MainDlg.cpp:703
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:382
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1663
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1882
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:379
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1670
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1889
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1409
 msgid "All files"
 msgstr "Все файлы"
@@ -348,7 +348,7 @@ msgstr "Разрешить редактирование в полноэкран�
 msgid "Always copy captured image to clipboard"
 msgstr "Всегда копировать в буфер обмена"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:475
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:473
 msgid "An error occured while extracting video frames."
 msgstr "Во время извлечения кадров произошла ошибка."
 
@@ -360,8 +360,8 @@ msgstr "Ошибка при загрузке скрипта."
 msgid "An error occured while receiving update information from server."
 msgstr "Ошибка при получении данных об обновлениях."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1447
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1910
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1452
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1917
 msgid "Any file"
 msgstr "Любые файлы"
 
@@ -381,7 +381,7 @@ msgstr ""
 "Вы действительно хотите поместить текст и логотип в одном месте на "
 "изображении?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1797
 msgid "Are you sure to quit?"
 msgstr "Вы действительно хотите выйти из программы?"
 
@@ -424,7 +424,7 @@ msgstr ""
 msgid "Audio"
 msgstr "Аудио"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1881
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1888
 msgid "Audio files"
 msgstr "Аудио файлы"
 
@@ -656,7 +656,7 @@ msgstr "Изменение ширины:"
 msgid "Check file types before upload"
 msgstr "Проверять типы файлов перед загрузкой"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2363
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2369
 msgid "Check for Updates"
 msgstr "Проверить обновления"
 
@@ -673,12 +673,12 @@ msgstr "Проверка обновлений..."
 msgid "Choose executable file"
 msgstr "Выберите исполняемый файл"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1912
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1919
 msgid "Choose files"
 msgstr "Выберите файлы"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1763
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1770
 msgid "Choose folder"
 msgstr "Выбор папки"
 
@@ -686,7 +686,7 @@ msgstr "Выбор папки"
 msgid "Choose folder..."
 msgstr "Выберите папку..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1885
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1892
 msgid "Choose media file"
 msgstr "Выберите медиафайл"
 
@@ -725,8 +725,8 @@ msgstr "Выберите сервер..."
 msgid "Choose servers"
 msgstr "Выбрать серверы"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:385
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1666
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:382
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1673
 msgid "Choose video file"
 msgstr "Выберите видеофайл"
 
@@ -952,7 +952,7 @@ msgstr "Не найдено ссылок на изображения!"
 msgid "Could not read package %s"
 msgstr "Невозможно прочесть архив %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:924
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:929
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "Не удалось сохранить файл с настройками. Для подробностей смотрите журнал "
@@ -1055,7 +1055,7 @@ msgstr "Настройки по-умолчанию"
 msgid "Deinterlace"
 msgstr "Деинтерлейсинг"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:123
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:120
 msgid "Deinterlace video"
 msgstr "Устранение чересстрочности"
 
@@ -1099,7 +1099,7 @@ msgstr "Отключить локализацию"
 msgid "Display video file information on resulting picture"
 msgstr "Отобразить информацию о видеофайле на картинке"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1795
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:329
 msgid "Do not ask again"
 msgstr "Больше не спрашивать"
@@ -1112,7 +1112,7 @@ msgstr "Не запускать новые копии программы из т
 msgid "Do nothing"
 msgstr "Нет действия"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2362
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2368
 msgid "Documentation"
 msgstr "Документация"
 
@@ -1298,7 +1298,7 @@ msgstr "Выполнять Squirrel-скрипт для каждой задач�
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:411
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1776
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1783
 msgid "Exit"
 msgstr "Выход"
 
@@ -1314,7 +1314,7 @@ msgstr "Расширение"
 msgid "Extract frames"
 msgstr "Извлечь кадры"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:215
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:212
 msgid "Extracting frame "
 msgstr "Извлекаю кадр "
 
@@ -1323,11 +1323,11 @@ msgstr "Извлекаю кадр "
 msgid "Extracting frames from video"
 msgstr "Извлечение видеокадров"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:475
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:473
 msgid "Extracting video frames was finished."
 msgstr "Извлечение кадров было завершено."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:311
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:308
 msgid "Extracting video frames was stopped by user."
 msgstr "Извлечение кадров было остановлено пользователем."
 
@@ -1343,7 +1343,7 @@ msgstr "Не удалось загрузить список папок."
 msgid "Failed to logout."
 msgstr "Ошибка при выходе."
 
-#: ../Source/Video/VideoGrabber.cpp:74
+#: ../Source/Video/VideoGrabber.cpp:75
 #, c-format
 msgid "Failed to open video file '%s'."
 msgstr "Не удалось открыть видеофайл '%s'."
@@ -1364,7 +1364,7 @@ msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "Идет загрузка \"%s\" на сервер %s."
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:96
-#: ../Source/Video/VideoGrabber.cpp:60
+#: ../Source/Video/VideoGrabber.cpp:61
 #, c-format
 msgid "File \"%s\" not found!"
 msgstr "Файл \"%s\" не найден!"
@@ -1374,7 +1374,7 @@ msgstr "Файл \"%s\" не найден!"
 msgid "File %s doesn't exist"
 msgstr "Файл %s не существует"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:151
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:148
 #, c-format
 msgid ""
 "File doesn't exist:\n"
@@ -1609,7 +1609,7 @@ msgid "Go to signup page"
 msgstr "Открыть страницу регистрации"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:440
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:438
 msgid "Grab"
 msgstr "Извлечь"
 
@@ -1639,7 +1639,7 @@ msgstr "Помощь"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:160
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:413
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1778
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1785
 msgid "Hide"
 msgstr "Скрыть"
 
@@ -1723,8 +1723,8 @@ msgstr "Параметры изображений"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1445
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1908
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1450
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1915
 msgid "Images"
 msgstr "Изображения"
 
@@ -1740,7 +1740,7 @@ msgstr "Изображения из Web"
 msgid "Images per string:"
 msgstr "Картинок в строке:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:905
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:910
 msgid "Images settings and choosing server"
 msgstr "Параметры изображений и выбор сервера"
 
@@ -1766,7 +1766,7 @@ msgstr "Импорт видео"
 msgid "In queue"
 msgstr "В очереди"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1764
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1771
 msgid "Including subdirectories"
 msgstr "Включая поддиректории"
 
@@ -2018,8 +2018,8 @@ msgstr "Новая папка"
 msgid "New profile"
 msgstr "Новый профиль"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:177
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:697
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:174
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:702
 msgid "Next >"
 msgstr "Далее >"
 
@@ -2120,7 +2120,7 @@ msgstr "Открыть скриншот в редакторе"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:607
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2365
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2371
 msgid "Open screenshots folder"
 msgstr "Открыть папку со снимками"
 
@@ -2475,7 +2475,7 @@ msgid "Screenshot Action"
 msgstr "Действие со снимком"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2262
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2267
 msgid "Screenshot has been copied to clipboard."
 msgstr "Скриншот был скопирован в буфер обмена."
 
@@ -2706,7 +2706,7 @@ msgstr "Снимок выбранной области..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2370
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2376
 msgid "Show Error Log"
 msgstr "Показать журнал ошибок"
 
@@ -2728,7 +2728,7 @@ msgstr "Превью видеофайлов в списке"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:606
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
-msgid "Show program's window"
+msgid "Show program window"
 msgstr "Показать окно программы"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:609
@@ -2797,7 +2797,7 @@ msgstr "Шаг"
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:87
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:670
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:181
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:178
 msgid "Stop"
 msgstr "Остановить"
 
@@ -3017,7 +3017,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "Невозможно загрузить изображение"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2230
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2236
 msgid "Unable to make screenshot!"
 msgstr "Невозможно сделать скриншот!"
 
@@ -3135,7 +3135,7 @@ msgstr "Загрузка"
 msgid "Uploading errors"
 msgstr "Ошибки загрузки"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:907
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:912
 msgid "Uploading file on server"
 msgstr "Загрузка файлов на сервер"
 
@@ -3209,16 +3209,16 @@ msgstr "Вертикальный промежуток:"
 msgid "Video"
 msgstr "Видео"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:121
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:118
 msgid "Video engine which is used to extract frames from a video file."
 msgstr ""
 "Видео-движок, который будет использоваться для извлечения кадров из "
 "видеофайла."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:381
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1662
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1880
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1909
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:378
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1669
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1887
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
 msgid "Video files"
 msgstr "Видео файлы"
 
@@ -3287,7 +3287,7 @@ msgstr "Ширина:"
 msgid "Windows Explorer integration"
 msgstr "Интеграция с проводником Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2456
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2462
 msgid "Work in progress"
 msgstr "В процессе работы"
 
@@ -3384,6 +3384,9 @@ msgstr "Переводчикам:"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:208
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "Show program's window"
+#~ msgstr "Показать окно программы"
 
 #~ msgid "Screenshot was saved to clipboard."
 #~ msgstr "Снимок сохранен в буфере обмена."
