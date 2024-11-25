@@ -27,6 +27,7 @@ PARALLEL_JOBS = "6"
 # conan
 # msbuild (you should run this script from Visual Studio Developer Command Prompt)
 # nuget
+# 7zip (7z.exe)
 # WSL 2 & Ubuntu 20.04+
 # -- On WSL2 --
 # conan 
@@ -630,7 +631,7 @@ for target in BUILD_TARGETS:
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
 
             # Creating CLI archive (imgupload)
             command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
@@ -648,7 +649,7 @@ for target in BUILD_TARGETS:
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
 
             # Creating installer for Windows
             print("Running command:", repo_dir_abs + used_dist_dir + r"create_portable.bat")

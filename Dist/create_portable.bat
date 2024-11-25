@@ -1,5 +1,5 @@
 @echo off
-set zipcmd="C:/Program Files/7-Zip/7z.exe"
+set zipcmd=7z
 set "IU_APP_VER="
 set "IU_BUILD_NUMBER="
 

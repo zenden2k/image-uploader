@@ -61,7 +61,7 @@ namespace ScriptAPI {
 
 std::string GetScriptsDirectory()
 {
-    return AppParams::instance()->settingsDirectory() + "Scripts/";
+    return AppParams::instance()->dataDirectory() + "/Scripts/";
 }
 
 std::string GetAppLanguageFile()

@@ -50,6 +50,7 @@
 #include "Core/Utils/ConsoleUtils.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Images/AbstractImage.h"
+#include "Core/3rdpart/xdgmime/xdgmime.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -288,7 +289,22 @@ void OnQueueFinished(CFileQueueUploader*) {
 int func() {
 #ifdef _WIN32
     GdiPlusInitializer gdiPlusInitializer;
+    std::string dFolder = dataFolder;
+    if (!dFolder.empty() && dFolder.back() == '\\') {
+        dFolder.pop_back();
+    }
+    char* cacheDir = strdup(dFolder.c_str());
+    if (cacheDir) {
+        const char* dirs[2]
+            = { cacheDir, nullptr };
+        xdg_mime_set_dirs(dirs);
+        free(cacheDir);
+    }
 #endif
+    defer<void> d([] {
+        xdg_mime_set_dirs(nullptr);
+        xdg_mime_shutdown();
+    });
     auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
