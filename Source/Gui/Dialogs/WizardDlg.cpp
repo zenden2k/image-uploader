@@ -2298,7 +2298,7 @@ bool CWizardDlg::IsClipboardDataAvailable()
         if(IsClipboardFormatAvailable(CF_UNICODETEXT)) 
         {
             CString text;
-            WinUtils::GetClipboardText(text);
+            WinUtils::GetClipboardText(text, m_hWnd);
             if (text.Left(5) == _T("data:")) {
                 IsClipboard = true;
             }

@@ -67,7 +67,7 @@ int _vscprintf(const char * format, va_list pargs) {
     return retval;
 }
 #endif
-static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
+void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 {
     std::lock_guard<std::mutex> lock(squirrelOutputMutex);
     va_list vl;

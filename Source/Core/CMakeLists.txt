@@ -19,6 +19,7 @@ set(SRC_LIST Network/NetworkClient.cpp
     Utils/SimpleXml.cpp
     Utils/StringUtils.cpp
     Utils/ConsoleUtils.cpp
+    Utils/MimeTypeHelper.cpp
     3rdpart/pcreplusplus.cpp
     OutputGenerator/OutputGeneratorFactory.cpp
     OutputGenerator/AbstractOutputGenerator.cpp
@@ -129,6 +130,7 @@ set(HEADER_LIST Network/NetworkClient.h
     Utils/StringUtils.h
     Utils/ConsoleUtils.h
     Utils/IOException.h
+    Utils/MimeTypeHelper.h
     3rdpart/pcreplusplus.h
     3rdpart/utf8.h
     3rdpart/UriParser.h

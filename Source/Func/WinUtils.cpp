@@ -74,9 +74,9 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
         if (OpenClipboard(hwnd)) {
             HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
             if (!hglb) {
-                if (OpenClipboard(hwnd)) {
+                //if (OpenClipboard(hwnd)) {
                     hglb = GetClipboardData(CF_TEXT);
-                }
+                //}
                
                 if (!hglb) {
                     if (raiseError) {
@@ -85,8 +85,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                     }
                 } else {
                     LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
-                    text = lpstr;
-                    GlobalUnlock(hglb);
+                    if (lpstr) {
+                        text = lpstr;
+                        GlobalUnlock(hglb);
+                    }
                     CloseClipboard();
                     return true;
                 }
@@ -94,8 +96,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                 return false;
             }
             LPCWSTR lpstr = static_cast<LPCWSTR>(GlobalLock(hglb));
-            text = lpstr;
-            GlobalUnlock(hglb);
+            if (lpstr) {
+                text = lpstr;
+                GlobalUnlock(hglb);
+            }
             CloseClipboard();
             return true;
         }

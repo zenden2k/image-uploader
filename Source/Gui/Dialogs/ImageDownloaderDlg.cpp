@@ -35,6 +35,7 @@
 #include "Core/DownloadTask.h"
 #include "Core/3rdpart/UriParser.h"
 #include "Core/Images/ImageLoader.h"
+#include "Core/Utils/MimeTypeHelper.h"
 
 namespace {
 
@@ -159,44 +160,37 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
             ais.VirtualFileName = WinUtils::myExtractFileName(ais.RealFileName);
         }
         bool add = true;
-        if(!IuCommonFunctions::IsImage(ais.RealFileName))
-        {
-            std::string mimeType = IuCoreUtils::GetFileMimeType(W2U(ais.RealFileName));
+        std::string u8FileName = W2U(ais.RealFileName);
+        std::string mimeType = IuCoreUtils::GetFileMimeTypeByContents(u8FileName);
 
-            bool isImage = mimeType.find("image/") != std::string::npos;
+        bool isImage = mimeType.find("image/") != std::string::npos;
+        /* if (!isImage) {
+            mimeType = IuCoreUtils::GetFileMimeType(u8FileName);
+            isImage = mimeType.find("image/") != std::string::npos;
+        }*/
 
-            /*if (!isImage) {
-
-                ImageLoader loader;
-                auto img = loader.loadFromFile(ais.RealFileName);
-                if(img) {
-                    isImage = true;
-                }
-            }*/
-
-            if (isImage)
-            {
-                CString ext = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(mimeType));
-                if(!ext.IsEmpty())
-                {
-                    CString newFileName = ais.RealFileName + _T(".") + ext;
-                    MoveFile(ais.RealFileName, newFileName);
-                    ais.RealFileName = newFileName;
-                    if (CString(WinUtils::GetFileExt(ais.VirtualFileName)).MakeLower() != ext) {
-                        ais.VirtualFileName += _T(".") + ext;
+        if (isImage) {
+            CString ext = U2W(MimeTypeHelper::getDefaultExtensionForMimeType(mimeType));
+            if (!ext.IsEmpty()) {
+                CString newFileName = ais.RealFileName + _T(".") + ext;
+                MoveFile(ais.RealFileName, newFileName);
+                ais.RealFileName = newFileName;
+                if (CString(WinUtils::GetFileExt(ais.VirtualFileName)).MakeLower() != ext) {
+                    if (!ais.VirtualFileName.IsEmpty() && ais.VirtualFileName[ais.VirtualFileName.GetLength() - 1] != '.') {
+                        ais.VirtualFileName += _T(".");
                     }
+                    ais.VirtualFileName += ext;
                 }
             }
-            else 
-            {
-                add = false;
-                
-                std::wstring url = IuCoreUtils::Utf8ToWstring(it.url);
-                std::wstring mimeTypeW = IuCoreUtils::Utf8ToWstring(mimeType);
-                std::wstring errorStr = str(boost::wformat(TR("File is not an image.\nUrl: %s\nMime-Type: %s")) % url % mimeTypeW);
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr.c_str());
-            }
+        } else {
+            add = false;
+
+            std::wstring url = IuCoreUtils::Utf8ToWstring(it.url);
+            std::wstring mimeTypeW = IuCoreUtils::Utf8ToWstring(mimeType);
+            std::wstring errorStr = str(boost::wformat(TR("File is not an image.\nUrl: %s\nMime-Type: %s")) % url % mimeTypeW);
+            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr.c_str());
         }
+
         if (add) {
             if (m_WizardDlg) {
                 SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE, reinterpret_cast<WPARAM>(&ais), 0);

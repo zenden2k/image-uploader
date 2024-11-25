@@ -45,6 +45,7 @@
 
 #include "Core/3rdpart/UriParser.h"
 #include "Core/3rdpart/xdgmime/xdgmime.h"
+#include "MimeTypeHelper.h"
 
 #ifdef _WIN32
 
@@ -426,19 +427,7 @@ std::string ToString(double value, int precision)
 }
 
 std::string GetDefaultExtensionForMimeType(const std::string& mimeType) {
-	if (mimeType == "image/gif") {
-        return "gif";
-	}
-	if (mimeType == "image/png") {
-        return "png";
-	}
-	if (mimeType == "image/jpeg") {
-        return "jpg";
-    }
-	if (mimeType == "image/webp") {
-	    return "webp";
-    }
-    return {};
+    return MimeTypeHelper::getDefaultExtensionForMimeType(mimeType);
 }
 
 std::string ThreadIdToString(const std::thread::id& id)

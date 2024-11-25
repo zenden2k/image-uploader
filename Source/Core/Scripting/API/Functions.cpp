@@ -20,11 +20,16 @@
 
 #include "Functions.h"
 
+#include <iomanip>
+#include <sstream>
+#include <random>
+#include <json/json.h>
+
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Logging.h"
-#include <json/json.h>
+
 #include "Core/Network/NetworkClient.h"
 #ifdef _WIN32
     #include <windows.h>
@@ -40,10 +45,6 @@
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-#include <json/json.h>
-#include <sstream>
-#include <iomanip>
-#include <random>
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"
 #include "ScriptAPI.h"

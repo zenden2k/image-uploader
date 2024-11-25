@@ -122,7 +122,7 @@ endif()
 SET(COMMON_DEPS boost/1.78.0
 				libcurl/8.6.0
 				pcre/8.45
-				uriparser/0.9.5
+				uriparser/0.9.8
 				zlib/1.2.13
 				minizip/1.2.13	
 				jsoncpp/1.9.5
