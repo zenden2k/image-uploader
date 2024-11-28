@@ -14,7 +14,7 @@ QtScriptDialogProvider::QtScriptDialogProvider() {
     dialogResult_ = 0;
 }
 
-std::string QtScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {
+std::string QtScriptDialogProvider::askUserCaptcha(INetworkClient* nm, const std::string& url) {
     std::lock_guard<std::mutex> lk(mutex_);
     // TODO: Implement this
     DesktopUtils::ShellOpenUrl(url);

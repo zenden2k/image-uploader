@@ -176,7 +176,7 @@ std::string Translate(const std::string& key, const std::string& originalText) {
     return originalText;
 }
 
-std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
+std::string AskUserCaptcha(INetworkClient* nm, const std::string& url)
 {
     return ServiceLocator::instance()->dialogProvider()->askUserCaptcha(nm, url);
 }

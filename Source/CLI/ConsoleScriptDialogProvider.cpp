@@ -9,7 +9,7 @@
 #include "Core/Utils/ConsoleUtils.h"
 #include "Core/Utils/StringUtils.h"
 
-std::string ConsoleScriptDialogProvider::askUserCaptcha(NetworkClient* nm, const std::string& url) {
+std::string ConsoleScriptDialogProvider::askUserCaptcha(INetworkClient* nm, const std::string& url) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     DesktopUtils::ShellOpenUrl(url);
     std::cerr << "Enter text from the image:" << std::endl;

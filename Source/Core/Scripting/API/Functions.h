@@ -4,7 +4,7 @@
 #include <string>
 #include "../Squirrelnc.h"
 
-class NetworkClient;
+class INetworkClient;
 
 #undef random
 
@@ -130,7 +130,7 @@ namespace ScriptAPI {
      * url - address of the image with captcha. 
      * The return value is the text entered by the user.
      */
-    std::string AskUserCaptcha(NetworkClient* nm, const std::string& url);
+    std::string AskUserCaptcha(INetworkClient* nm, const std::string& url);
 
     /**
      * Converts a string from ANSI encoding to UTF-8. 

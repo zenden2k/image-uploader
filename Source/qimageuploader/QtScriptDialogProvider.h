@@ -12,7 +12,7 @@ class QtScriptDialogProvider : public QObject, public IDialogProvider {
     Q_OBJECT
 public:
 	QtScriptDialogProvider();
-    std::string askUserCaptcha(NetworkClient *nm, const std::string& url) override;
+    std::string askUserCaptcha(INetworkClient *nm, const std::string& url) override;
     std::string inputDialog(const std::string& text, const std::string& defaultValue) override;
     std::string messageBox(const std::string& message, const std::string& title, const std::string& buttons, const std::string& type) override;
 protected:
