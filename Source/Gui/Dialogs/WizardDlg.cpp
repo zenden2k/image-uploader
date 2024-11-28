@@ -2525,6 +2525,15 @@ bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const S
             if (fileFormatDlg.DoModal() != IDOK) {
                 return false;
             }
+            auto n = mainDlg->FileList.GetCount();
+
+            for (size_t i = 0; i < n; i++) {
+                if (!mainDlg->FileList.getFile(i)->isSkipped()) {
+                    return true;
+                }
+            }
+            return false;
+
         }
         /* if (!message.empty()) {
             GuiTools::LocalizedMessageBox(m_hWnd, U2W(message), TR("Error"), MB_ICONERROR);

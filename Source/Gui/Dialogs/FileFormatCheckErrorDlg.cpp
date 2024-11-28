@@ -132,7 +132,8 @@ LRESULT CFileFormatCheckErrorDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hW
         }
     }
 
-    EndDialog((model_.getCount() - skippedCount) ? IDOK : IDCANCEL);
+    // EndDialog((model_.getCount() - skippedCount) ? IDOK : IDCANCEL);
+    EndDialog(wID);
     return 0;
 }
 

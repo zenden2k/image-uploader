@@ -11,7 +11,6 @@ function Authenticate() {
     
     nm.addQueryParam("login",login);
     nm.addQueryParam("password", password);
-    nm.addQueryParam("username", login);
     nm.addQueryParam("autologin", "on");
     nm.setUrl(BASE_HOST + "/login.html");
     nm.doPost("");

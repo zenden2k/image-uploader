@@ -107,6 +107,27 @@
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
     </Server>
 	<Server Name="imageup.ru" Authorize="2" Plugin="imageup" WebsiteUrl="https://imageup.ru" RegistrationUrl="https://imageup.ru/registration.html">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/tiff">*.tiff,*.tif</Format>
+			</FormatGroup>	 
+		</SupportedFormats>
+		<Actions>
+		</Actions>
+        <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+    </Server>
+	<Server Name="turboimagehost.com" Authorize="1" Plugin="turboimagehost" SupportsFolders="1" WebsiteUrl="https://www.turboimagehost.com" RegistrationUrl="https://www.turboimagehost.com/signup.tu">
+		<SupportedFormats>
+			<FormatGroup MaxFileSize="20971520">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+			</FormatGroup>	 
+		</SupportedFormats>
 		<Actions>
 		</Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
