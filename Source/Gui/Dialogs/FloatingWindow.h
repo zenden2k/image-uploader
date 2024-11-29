@@ -41,7 +41,7 @@ constexpr int IDM_SCREENSHOT = IDM_UPLOADFILES + 2;
 constexpr int IDM_SCREENSHOTDLG = IDM_UPLOADFILES + 3;
 constexpr int IDM_REGIONSCREENSHOT = IDM_UPLOADFILES + 4;
 constexpr int IDM_FULLSCREENSHOT = IDM_UPLOADFILES + 5;
-constexpr int IDM_WINDOWSCREENSHOT = IDM_UPLOADFILES + 6;
+constexpr int IDM_ACTIVEWINDOWSCREENSHOT = IDM_UPLOADFILES + 6;
 constexpr int IDM_WINDOWHANDLESCREENSHOT = IDM_UPLOADFILES + 7;
 constexpr int IDM_FREEFORMSCREENSHOT = IDM_UPLOADFILES + 8;
 constexpr int IDM_ADDFOLDERS = IDM_UPLOADFILES + 9;
@@ -126,7 +126,8 @@ public:
         COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_WINDOWHANDLESCREENSHOT, OnWindowHandleScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_FREEFORMSCREENSHOT, OnFreeformScreenshot)
-        COMMAND_ID_HANDLER_EX(IDM_WINDOWSCREENSHOT, OnWindowScreenshot)
+        COMMAND_ID_HANDLER_EX(IDM_ACTIVEWINDOWSCREENSHOT, OnActiveWindowScreenshot)
+        COMMAND_ID_HANDLER_EX(IDM_TOPWINDOWSCREENSHOT, OnWindowScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_LASTREGIONSCREENSHOT, OnLastRegionScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_ADDFOLDERS, OnAddFolder)
         COMMAND_ID_HANDLER_EX(IDM_SHOWAPPWINDOW, OnShowAppWindow)
@@ -179,8 +180,9 @@ public:
      LRESULT OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-     LRESULT OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnActiveWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnLastRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnAddFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);

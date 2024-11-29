@@ -50,7 +50,7 @@ BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam)
 BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam)
 {
     bool onlyTopWindows = lParam;
-    if(IsWindowVisible(hwnd)) {
+    if(GuiTools::IsWindowVisibleOnScreen(hwnd)) {
         if (!onlyTopWindows) {
             EnumChildWindows(hwnd, EnumChildProc, 0);
         }
@@ -68,7 +68,8 @@ HWND WindowUnderCursor(POINT pt, HWND exclude, bool onlyTopWindows = false)
         EnumWindows(RegionEnumWindowsProc, onlyTopWindows);
     }
     for (const auto& curItem : windowsList) {
-        if (::PtInRect(&curItem.rect, pt) && curItem.handle != exclude && IsWindowVisible(curItem.handle)) {
+        if (::PtInRect(&curItem.rect, pt) && curItem.handle != exclude && GuiTools::IsWindowVisibleOnScreen(curItem.handle)) {
+            //LOG(ERROR) << curItem.handle << " " << GuiTools::GetWindowText(curItem.handle) << " " << IsIconic(curItem.handle);
             return curItem.handle;
         }
     }

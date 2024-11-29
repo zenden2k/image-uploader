@@ -25,6 +25,7 @@
 
 #include <ShObjIdl.h>
 #include <strsafe.h>
+#include <dwmapi.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -629,4 +630,15 @@ BOOL SetClientRect(HWND hWnd, int x, int y)
     GetWindowRect(hWnd, &rect2);
     return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }
+
+BOOL IsWindowCloaked(HWND hwnd) {
+    BOOL isCloaked = FALSE;
+    return SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED,
+     &isCloaked, sizeof(isCloaked))) && isCloaked;
+}
+
+BOOL IsWindowVisibleOnScreen(HWND hwnd) {
+    return IsWindowVisible(hwnd) && !IsWindowCloaked(hwnd);
+}
+
 }

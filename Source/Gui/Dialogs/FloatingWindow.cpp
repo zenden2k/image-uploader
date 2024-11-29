@@ -392,6 +392,11 @@ LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND h
     return 0;
 }
 
+LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("topwindowscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     if (lastUrlShorteningTask_ && lastUrlShorteningTask_->isRunning()) {
         return false;
@@ -430,7 +435,7 @@ LRESULT CFloatingWindow::OnShowLastUploadResults(WORD wNotifyCode, WORD wID, HWN
     return 0;
 }
 
-LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+LRESULT CFloatingWindow::OnActiveWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if (m_PrevActiveWindow)
         SetForegroundWindow(m_PrevActiveWindow);
@@ -527,7 +532,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             MyInsertMenu(TrayMenu, i++, IDM_LASTREGIONSCREENSHOT, HotkeyToString("lastregionscreenshot", TR("Capture Last Region")));
         }
         MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, HotkeyToString("fullscreenshot", TR("Capture the Entire Screen")));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_ACTIVEWINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_TOPWINDOWSCREENSHOT, HotkeyToString("topwindowscreenshot", TR("Capture Selected Window")));
+
         MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, HotkeyToString("windowhandlescreenshot", TR("Capture Selected Object")));
         MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, HotkeyToString("freeformscreenshot", TR("Freehand Capture")));
 
