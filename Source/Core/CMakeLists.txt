@@ -332,7 +332,7 @@ if (IU_ENABLE_SFTP)
 endif()
 
 if (WIN32)
-    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon)
+    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)
