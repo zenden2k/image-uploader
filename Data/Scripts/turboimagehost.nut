@@ -141,14 +141,16 @@ function CreateFolder(parentAlbum, album) {
     nm.setUrl(BASE_HOST + "index.tu");
     nm.addQueryParam("addalbum", album.getTitle());
     nm.addQueryParam("newalbum", "Create a new gallery");
+    nm.doPost("");
+
     if (nm.responseCode() == 200) {
-        album.setId(id);
-        album.setViewUrl(link);
+        return 1;
+        //album.setId(id);
     } else {
         WriteLog("error", "[TurboImageHost] Failed to create album, response code = " + nm.responseCode());
     }
         
-    return 1;
+    return 0;
 }
 
 function _GenerateRandomString(length) {
