@@ -3,6 +3,10 @@ const CURLOPT_PASSWORD = 10174;
 const CURLOPT_USE_SSL = 119;
 const CURLUSESSL_TRY = 1;
 const CURLOPT_FTPPORT = 10017;
+const CURLOPT_NOBODY = 44;
+
+const CURLE_OK = 0;
+const CURLE_REMOTE_FILE_NOT_FOUND = 78;
 
 const SECURE_CONNECTION_NONE = 0;
 const SECURE_CONNECTION_EXPLICIT = 1;
@@ -95,9 +99,9 @@ function TestConnection() {
 }
 
 function UploadFile(FileName, options) {
-    local newFilename = ExtractFileName(FileName);
-    newFilename = random() +"_"+newFilename;
-    local ansiFileName = newFilename;
+    local originalFileName = ExtractFileName(FileName);
+    local newFilename = originalFileName;
+
     local host = ServerParams.getParam("hostname");
     local folder = ServerParams.getParam("folder");
     
@@ -116,6 +120,12 @@ function UploadFile(FileName, options) {
         nm.setCurlOption(CURLOPT_PASSWORD, pass);
     }
 
+    if (secureConnection) {
+        nm.setCurlOptionInt(CURLOPT_USE_SSL, CURLUSESSL_TRY);
+    }
+
+    nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
+
     if(folder.slice(0,1) != "/")
         folder = "/" + folder;
         
@@ -123,13 +133,18 @@ function UploadFile(FileName, options) {
         folder += "/";
 
     folder = _StrReplace(folder, " ", "%20");
-    local url = _GetProtocol() + "://" + host + folder + nm.urlEncode(ansiFileName);
-
-    if (secureConnection) {
-        nm.setCurlOptionInt(CURLOPT_USE_SSL, CURLUSESSL_TRY);
+    local url = _GetProtocol() + "://" + host + folder + nm.urlEncode(newFilename);
+    nm.setUrl(url);
+    nm.setCurlOptionInt(CURLOPT_NOBODY, 1);
+    nm.enableResponseCodeChecking(false);
+    nm.doPost("");
+    nm.enableResponseCodeChecking(true);
+    if (nm.getCurlResult() == CURLE_OK) {
+        // File exists on remote server
+        newFilename = GenerateRandomFilename(originalFileName, 6);
+        url = _GetProtocol() + "://" + host + folder + nm.urlEncode(newFilename);
     }
-
-    nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
+ 
     nm.setUrl(url);
     nm.setMethod("PUT");
     nm.doUpload(FileName, "");

@@ -597,7 +597,7 @@ void NetworkClient::private_init_transfer()
 
 void NetworkClient::private_checkResponse()
 {
-    if ( !enableResponseCodeChecking_ && curl_result == CURLE_OK )  {
+    if (!enableResponseCodeChecking_ /* && curl_result == CURLE_OK*/) {
         return;
     }
     int code = responseCode();

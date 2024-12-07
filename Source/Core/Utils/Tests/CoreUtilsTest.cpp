@@ -8,12 +8,14 @@
 //#include <limits.h>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "Core/Utils/CoreUtils.h"
 #ifdef _WIN32
 #include <WinSock.h>
 #endif
 #include "Core/Utils/CryptoUtils.h"
 #include "Tests/TestHelpers.h"
+#include "Core/3rdpart/pcreplusplus.h"
 
 class CoreUtilsTest : public ::testing::Test {
 public:
@@ -83,6 +85,54 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
     EXPECT_EQ(result, "archive.tar");
     result = ExtractFileNameNoExt(R"(\\?\e:\Video\test.mp4)");
     EXPECT_EQ(result, "test");
+}
+
+TEST_F(CoreUtilsTest, GenerateRandomFilename)
+{
+    using testing::MatchesRegex;
+
+    {
+        std::string fileName = R"(c:\Program Files (x86)\Image Uploader\Image Uploader.exe)";
+        std::string result = GenerateRandomFilename(fileName, 8);
+        pcrepp::Pcre regexp(R"(^c:\\Program Files \(x86\)\\Image Uploader\\Image Uploader_\w{8}\.exe$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "ExplorerIntegration64.dll";
+        std::string result = GenerateRandomFilename(fileName, 5);
+        pcrepp::Pcre regexp(R"(^ExplorerIntegration64_\w{5}\.dll$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "ExplorerIntegration64.dll";
+        std::string result = GenerateRandomFilename(fileName, 0);
+        pcrepp::Pcre regexp(R"(^ExplorerIntegration64_\w+\.dll$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "/usr/bin/imgupload";
+        std::string result = GenerateRandomFilename(fileName, 7);
+        pcrepp::Pcre regexp(R"(^/usr/bin/imgupload_\w{7}$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "imgupload";
+        std::string result = GenerateRandomFilename(fileName, 1);
+        pcrepp::Pcre regexp(R"(^imgupload_\w$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "";
+        std::string result = GenerateRandomFilename(fileName, 10);
+        pcrepp::Pcre regexp(R"(^\w{10}$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+    //EXPECT_THAT(result, MatchesRegex(R"(c:\\Program Files \(x86\)\\Image Uploader\\Image Uploader_\w+\.exe)"));
 }
 
 TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)

@@ -46,6 +46,7 @@
 #include "Core/3rdpart/UriParser.h"
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "MimeTypeHelper.h"
+#include "StringUtils.h"
 
 #ifdef _WIN32
 
@@ -560,6 +561,28 @@ std::string GetFileMimeTypeByContents(const std::string& fileName)
         return DefaultMimeType;
     }
     return mime;
+}
+
+std::string GenerateRandomFilename(const std::string& path, int suffixLen)
+{
+    if (!suffixLen) {
+        suffixLen = 8;
+    }
+    int i, len = path.length();
+    if (!len) {
+        return IuStringUtils::RandomString(suffixLen);
+    }
+    for (i = len - 1; i >= 0; i--) {
+        if (path[i] == '\\' || path[i] == '/') {
+            break;
+        }
+    }
+    std::string filename = path.substr(i + 1);
+    size_t dotPos = filename.find_last_of('.');
+    if (dotPos != std::string::npos) {
+        return path.substr(0, i + 1) + filename.substr(0, dotPos) + "_" + IuStringUtils::RandomString(suffixLen) + filename.substr(dotPos);
+    }
+    return path.substr(0, i + 1) + filename + "_" + IuStringUtils::RandomString(suffixLen);
 }
 
 } // end of namespace IuCoreUtils

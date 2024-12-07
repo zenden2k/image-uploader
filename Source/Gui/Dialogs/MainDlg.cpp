@@ -155,9 +155,9 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if(hti.iItem < 0) { // no item selected
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDIMAGES, TR("Add Images"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFILES, TR("Add Files"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFOLDER, TR("Add folder"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDIMAGES, TR("Add images..."));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFILES, TR("Add files..."));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFOLDER, TR("Add folder..."));
 
         CString pasteMenuItemTitle(TR("Paste"));
         pasteMenuItemTitle += _T("\t");

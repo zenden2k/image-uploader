@@ -1071,7 +1071,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     mi.cbSize = sizeof(mi);
     mi.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
     mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
-    CString serverSettingsStr = TR("Server settings");
+    CString serverSettingsStr = TR("Server settings...");
     CBitmap bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico);
     mi.hbmpItem = bm;
     mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());

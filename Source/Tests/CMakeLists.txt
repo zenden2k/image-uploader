@@ -65,7 +65,7 @@ else()
     #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
-target_link_libraries(Tests iucore iuvideo GTest::GTest ${COMMON_LIBS_LIST})
+target_link_libraries(Tests iucore iuvideo GTest::gtest GTest::gmock ${COMMON_LIBS_LIST}) 
 
 if (NOT CMAKE_CROSSCOMPILING)
 	include(GoogleTest)

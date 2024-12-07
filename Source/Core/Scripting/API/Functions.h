@@ -75,6 +75,18 @@ namespace ScriptAPI {
     std::string GetFileExtension(const std::string& path);
 
     /**
+     * Generates file path with alphanumeric suffix
+     * @since 1.4.1
+     */
+    std::string GenerateRandomFilename(const std::string& path, int suffixLen);
+
+    /**
+     * Generates random string of given length
+     * @since 1.4.1
+     */
+    std::string RandomString(int length);
+
+    /**
      * Returns the directory for temporary files
      * @since 1.3.0
      */

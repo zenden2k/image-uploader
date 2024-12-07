@@ -87,6 +87,7 @@ namespace IuCoreUtils
     std::string ExtractFileNameNoExt(const std::string& fileName);
     std::string ExtractFileNameFromUrl(const std::string& url);
     std::string IncrementFileName(const std::string& originalFileName, int counter);
+    std::string GenerateRandomFilename(const std::string& path, int suffixLen = 8);
     std::string ToString(double value, int precision);
     std::string Utf8ToSystemLocale(const std::string& str);
     std::string SystemLocaleToUtf8(const std::string& str);

@@ -50,6 +50,7 @@ namespace IuStringUtils
     size_t LengthOfUtf8String(const std::string &utf8_string);
     boost::format FormatNoExcept(const std::string& str);
     bool Match(char const* needle, char const* haystack);
+    std::string RandomString(std::size_t length);
 };
 
 #endif
