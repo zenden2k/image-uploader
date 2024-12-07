@@ -378,11 +378,16 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    if (LocalizedMessageBox(TR("Are you sure?"), TR("Deleting the file from the server"), MB_ICONQUESTION|MB_YESNO) == IDYES) {
-        HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
-        if (historyItem) {
-            DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
-        }
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+    std::string message = str(
+        boost::format(_("Are you sure you want to delete the file '%s' from the server?"))
+        % historyItem->displayName
+    );
+    if (LocalizedMessageBox(U2W(message), TR("Deleting the file from the server"), MB_ICONQUESTION|MB_YESNO) == IDYES) {
+        DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
     }
     
     return 0;

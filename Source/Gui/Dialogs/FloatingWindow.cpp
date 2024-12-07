@@ -941,7 +941,8 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         auto generator = factory.createOutputGenerator(generatorId, codeType);
         generator->setPreferDirectLinks(settings->UseDirectLinks);
         generator->setItemsPerLine(settings->ThumbsPerLine);
-        generator->setGroupByFile(settings->GroupByFilename);
+        generator->setGroupByFile(settings->GroupByFilename);    
+        generator->setShortenUrl(task->serverProfile().shortenLinks());
 
         if (generatorId == gidXmlTemplate) {
             int templateIndex = settings->CodeType - 4;

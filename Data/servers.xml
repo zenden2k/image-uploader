@@ -209,7 +209,7 @@
 		<Actions>
 			<Action
 				Type="get"
-				Url="http://tinyurl.com/api-create.php?url=$(_ORIGINALURL|urlencode)"
+				Url="https://tinyurl.com/api-create.php?url=$(_ORIGINALURL|urlencode)"
 				RegExp='tinyurl\.com\/(\w+)'
 				AssignVars="surl:0"
 			/>

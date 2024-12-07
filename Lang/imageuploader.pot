@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-07 10:41+0300\n"
+"POT-Creation-Date: 2024-12-07 17:14+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -381,14 +381,15 @@ msgstr ""
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:386
+#, c-format
+msgid "Are you sure you want to delete the file '%s' from the server?"
+msgstr ""
+
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:168
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:381
-msgid "Are you sure?"
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:934
@@ -1054,7 +1055,7 @@ msgstr ""
 msgid "Delete file from server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:381
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:389
 msgid "Deleting the file from the server"
 msgstr ""
 
@@ -1618,7 +1619,7 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:494
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:499
 msgid "History has been cleared successfully."
 msgstr ""
 

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-07 10:41+0300\n"
-"PO-Revision-Date: 2024-12-07 10:42+0300\n"
+"POT-Creation-Date: 2024-12-07 17:14+0300\n"
+"PO-Revision-Date: 2024-12-07 17:15+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -397,16 +397,17 @@ msgstr "Вы действительно хотите выйти из прогр�
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr "Вы действительно хотите удалить профиль '%s'?"
 
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:386
+#, c-format
+msgid "Are you sure you want to delete the file '%s' from the server?"
+msgstr "Вы действительно хотите удалить файл '%s' с сервера?"
+
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:168
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
 msgstr ""
 "Вы действительно хотите удалить этот аккаунт из внутреннего списка программы?"
-
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:381
-msgid "Are you sure?"
-msgstr "Вы уверены?"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:934
 msgid "Arrow"
@@ -1087,7 +1088,7 @@ msgstr "Удалить аккаунт"
 msgid "Delete file from server"
 msgstr "Удалить файл с сервера"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:381
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:389
 msgid "Deleting the file from the server"
 msgstr "Удаление файла с сервера"
 
@@ -1659,7 +1660,7 @@ msgstr "Подсвечивающий маркер"
 msgid "History"
 msgstr "История"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:494
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:499
 msgid "History has been cleared successfully."
 msgstr "История была успешно очищена."
 
@@ -3389,6 +3390,9 @@ msgstr "Переводчикам:"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:208
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "Are you sure?"
+#~ msgstr "Вы уверены?"
 
 #~ msgid "Add folder"
 #~ msgstr "Добавить папку"

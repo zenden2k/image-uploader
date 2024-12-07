@@ -223,11 +223,16 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
     int i = 0; //counter for limiting max redirects
     if (!targetUrl.empty()) {
         int responseCode = 0;
+
         do {
             client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
             client->doGet(targetUrl);
+
             responseCode = client->responseCode();
-            targetUrl = client->responseHeaderByName("Location");
+            if (responseCode == 302 || responseCode == 301) {
+                targetUrl = client->getCurlInfoString(CURLINFO_REDIRECT_URL);
+            }
+
             i++;
         } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
 

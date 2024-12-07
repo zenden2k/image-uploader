@@ -256,6 +256,7 @@ std::string CResultsPanel::GenerateOutput()
     generator->setPreferDirectLinks(preferDirectLinks);
     generator->setItemsPerLine(p);
     generator->setGroupByFile(groupByFileName_);
+    generator->setShortenUrl(shortenUrl_);
 
     if (generatorId == OG::gidXmlTemplate) {
         int templateIndex = Index - 4;
@@ -531,6 +532,8 @@ LRESULT CResultsPanel::OnShortenUrlClicked(WORD /*wNotifyCode*/, WORD /*wID*/, H
     shortenUrl_ = !shortenUrl_;
     if (onShortenUrlChanged_) {
         onShortenUrlChanged_(shortenUrl_);
+    } else {
+        UpdateOutput(true);
     }
     return 0;
 }
