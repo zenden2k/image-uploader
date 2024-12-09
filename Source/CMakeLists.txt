@@ -120,21 +120,21 @@ if(IU_ENABLE_MEGANZ)
 endif()
 
 SET(COMMON_DEPS boost/1.78.0
-				libcurl/8.6.0
+				libcurl/8.10.1
 				pcre/8.45
 				uriparser/0.9.8
-				zlib/1.2.13
-				minizip/1.2.13	
-				jsoncpp/1.9.5
+				zlib/1.3.1
+				minizip/1.3.1
+				jsoncpp/1.9.6
 				sqlite3/3.36.0
 				base64/0.4.0
 				glog/0.6.0@zenden2k/stable
 #				glog/0.6.0
-				libwebp/1.2.1              
+				libwebp/1.4.0              
 				gtest/1.10.0
 				gumbo-parser/0.10.1@zenden2k/stable
 				squirrel/3.0.0@zenden2k/stable
-                tinyxml2/9.0.0
+                tinyxml2/10.0.0
 )
 
 if (IU_ENABLE_WEBVIEW2)
@@ -144,7 +144,7 @@ endif()
 if (IU_USE_OPENSSL)
 	list(APPEND COMMON_DEPS 
 #		openssl/3.1.1
-		openssl/1.1.1u
+		openssl/1.1.1w
     )
 endif()
 	
