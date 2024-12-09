@@ -67,7 +67,7 @@ function TestConnection() {
 
 function UploadFile(FileName, options) {	
     local newFilename = ExtractFileName(FileName);
-    newFilename = random() +"_"+newFilename;
+    newFilename = GenerateRandomFilename(newFilename, 6);
     local ansiFileName = newFilename;
     local host = ServerParams.getParam("hostname");
     local folder = ServerParams.getParam("folder");
