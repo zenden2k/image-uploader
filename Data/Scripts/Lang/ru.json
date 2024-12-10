@@ -55,5 +55,9 @@
         "secure_connection_implicit": "Неявно"
     },
     "webdav": {
+    },
+    "chevereto": {
+        "expiration": "Автоудаление через",
+        "never": "Никогда"
     }
 }

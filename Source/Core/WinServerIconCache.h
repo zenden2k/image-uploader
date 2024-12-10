@@ -4,6 +4,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <future>
 
 #include "AbstractServerIconCache.h"
 
@@ -44,7 +45,7 @@ private:
     std::unordered_map<std::string, WinIcon> serverIcons_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     std::mutex cacheMutex_;
+    std::future<int> future_;
     bool iconsPreload_ = false;
-
     WinIcon tryIconLoad(const std::string& name);
 };

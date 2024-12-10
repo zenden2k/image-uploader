@@ -118,6 +118,10 @@ function GetServerParamList() {
                 },
                 {
                     id = "PT5M",
+                    label = "5 minutes"
+                },
+                {
+                    id = "PT15M",
                     label = "15 minutes"
                 },
                 {

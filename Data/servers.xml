@@ -132,6 +132,27 @@
 		</Actions>
         <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
     </Server>
+	<Server Name="imgfoto.host" Authorize="2" Plugin="imgfoto" WebsiteUrl="https://imgfoto.host/" RegistrationUrl="https://imgfoto.host/signup" NeedPassword="0">
+		<SupportedFormats>
+			<FormatGroup MaxFileSize="5242880">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+			</FormatGroup>	
+			<FormatGroup MaxFileSize="10485760" Authorized="1">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+			</FormatGroup>	  
+		</SupportedFormats>
+		<Actions>
+		</Actions>
+        <Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+    </Server>
 	<Server Name="sendspace.com" FileHost="1" Debug="0"  Authorize="1" Plugin="sendspace" SupportsFolders="1" MaxFileSize="300000000" DefaultForTypes="file"
 		WebsiteUrl="https://www.sendspace.com" RegistrationUrl="https://www.sendspace.com/register.html">
 		<Result DownloadUrlTemplate="stub" ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

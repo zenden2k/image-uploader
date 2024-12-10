@@ -5,8 +5,6 @@
 #include "Core/UploadEngineList.h"
 #include "Gui/IconBitmapUtils.h"
 #include "Core/Utils/StringUtils.h"
-#include "Core/ServiceLocator.h"
-#include "Core/TaskDispatcher.h"
 #include "Func/WinUtils.h"
 
 WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir)
@@ -16,6 +14,7 @@ WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::s
 }
 
 WinServerIconCache::~WinServerIconCache(){
+    future_.wait();
     for (const auto& it : serverIcons_) {
         DestroyIcon(it.second.icon);
         DeleteObject(it.second.bm);
@@ -108,12 +107,12 @@ void WinServerIconCache::preLoadIcons() {
         throw std::logic_error("preLoadIcons() should not be called twice");
     }
     iconsPreload_ = true;
-    auto* taskDispatcher = ServiceLocator::instance()->taskDispatcher();
 
-    taskDispatcher->post([this] {
+    future_ = std::async(std::launch::async, [this]() -> int {
         for (int i = 0; i < engineList_->count(); i++) {
             CUploadEngineData* ued = engineList_->byIndex(i);
             [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name);
         }
+        return 0;
     });
 }
