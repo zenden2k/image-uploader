@@ -14,7 +14,9 @@ WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::s
 }
 
 WinServerIconCache::~WinServerIconCache(){
-    future_.wait();
+    if (future_.valid()) {
+        future_.wait();
+    }
     for (const auto& it : serverIcons_) {
         DestroyIcon(it.second.icon);
         DeleteObject(it.second.bm);
