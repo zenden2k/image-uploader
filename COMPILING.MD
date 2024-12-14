@@ -1,4 +1,4 @@
-﻿# Building Image Uploader on Windows
+# Building Image Uploader on Windows
 
 
 To build Image Uploader from source files you will need:

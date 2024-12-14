@@ -1528,6 +1528,10 @@ void Canvas::setCropOnExport(bool crop) {
     cropOnExport_ = crop;
 }
 
+bool Canvas::getCropOnExport() const {
+    return cropOnExport_;
+}
+
 void Canvas::setDpi(float dpiX, float dpiY) {
     dpiX_ = dpiX;
     dpiY_ = dpiY;

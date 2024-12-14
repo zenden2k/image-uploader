@@ -186,6 +186,7 @@ class Canvas {
         bool hasElementOfType(ElementType type) const;
 
         void setCropOnExport(bool crop);
+        bool getCropOnExport() const;
 
         void setDpi(float dpiX, float dpiY);
         std::pair<float, float> getDpi() const;
