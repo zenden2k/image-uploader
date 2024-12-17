@@ -219,20 +219,34 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     }
 
     bool menuItemEnabled = false;
+    bool enableCopyLinkMenuItem = false;
+    bool enableCopyViewLinkMenuItem = false;
+    bool enableCopyThumbLinkMenuItem = false;
+    bool enableCopyDeleteLinkMenuItem = false;
     bool isImage = false;
     if (nCurItem >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
         if (item) {
             isImage = IuCommonFunctions::IsImage(item->fileName());
             if (!uploadSession_->isRunning()) {
-
                 isImage = IuCommonFunctions::IsImage(item->fileName());
                 auto task = uploadSession_->getTask(nCurItem);
                 if (task) {
                     auto status = task->status();
                     if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
                         menuItemEnabled = true;
+                    } else if (status == UploadTask::StatusFinished) {
+                        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+                        if (nCurItem < urlList_.size()) {
+                            auto& obj = urlList_[nCurItem];
+                            enableCopyLinkMenuItem = !obj.uploadResult.getDirectUrl().empty()
+                                || !obj.uploadResult.getDownloadUrl().empty();
+                            enableCopyViewLinkMenuItem = !obj.uploadResult.getDownloadUrl().empty();
+                            enableCopyThumbLinkMenuItem = !obj.uploadResult.getThumbUrl().empty();
+                            enableCopyDeleteLinkMenuItem = !obj.uploadResult.deleteUrl.empty();
+                        }
                     }
+
                 }
             }
         }
@@ -244,9 +258,24 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         menu.AppendMenu(MF_STRING, ID_VIEWIMAGE, TR("View"));
     }
     menu.AppendMenu(MF_STRING, ID_RETRYUPLOAD, TR("Retry"));
+    menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
+
     menu.AppendMenu(MF_STRING, ID_SHOWLOGFORTHISFILE, TR("Show log for this file"));
     menu.SetMenuDefaultItem(ID_VIEWIMAGE, FALSE);
-    menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
+
+    menu.AppendMenu(MF_SEPARATOR);
+    menu.AppendMenu(MF_STRING, ID_COPYLINK, TR("Copy link"));
+    menu.EnableMenuItem(ID_COPYLINK, enableCopyLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYVIEWLINK, TR("Copy link to view page"));
+    menu.EnableMenuItem(ID_COPYVIEWLINK, enableCopyViewLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYTHUMBLINK, TR("Copy link to thumbnail"));
+    menu.EnableMenuItem(ID_COPYTHUMBLINK, enableCopyThumbLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYDELETELINK, TR("Copy delete link"));
+    menu.EnableMenuItem(ID_COPYDELETELINK, enableCopyDeleteLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
     menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }
@@ -685,6 +714,65 @@ LRESULT CUploadDlg::OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCt
     if (nCurItem >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
         WizardDlg->showLogWindowForFileName(item->fileName());
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            std::string url = obj.uploadResult.directUrl.length() ? obj.uploadResult.directUrl : obj.uploadResult.downloadUrl;
+            WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.getDownloadUrl().empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.getDownloadUrl()));
+            }
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.getThumbUrl().empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.getThumbUrl()));
+            }
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyDeleteLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.deleteUrl.empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.deleteUrl));
+            }
+        }
     }
     return 0;
 }

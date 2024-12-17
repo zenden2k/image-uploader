@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-07 17:14+0300\n"
-"PO-Revision-Date: 2024-12-07 17:15+0300\n"
+"POT-Creation-Date: 2024-12-17 19:46+0300\n"
+"PO-Revision-Date: 2024-12-17 19:47+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -130,7 +130,7 @@ msgstr "&Загрузить"
 msgid "(edited)"
 msgstr "(изменен)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:955
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:956
 msgid "(the code has been copied to the clipboard)"
 msgstr "(код был скопирован в буфер обмена)"
 
@@ -330,7 +330,7 @@ msgstr "Только для Aero (Windows Vista и новее)"
 msgid "All files"
 msgstr "Все файлы"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:564
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:593
 msgid "All files have been successfully uploaded."
 msgstr "Все файлы были успешно загружены."
 
@@ -397,7 +397,7 @@ msgstr "Вы действительно хотите выйти из прогр�
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr "Вы действительно хотите удалить профиль '%s'?"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:386
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:424
 #, c-format
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr "Вы действительно хотите удалить файл '%s' с сервера?"
@@ -781,7 +781,7 @@ msgstr "Удалять фон окна"
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "Нажмите кнопку \"Загрузить\" чтобы начать процесс загрузки."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:961
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 msgid "Click on this message to view details..."
 msgstr "Нажмите на это сообщение для открытия окна с кодом..."
 
@@ -883,17 +883,17 @@ msgstr "Копировать"
 msgid "Copy &as"
 msgstr "Копировать как"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:204
-msgid "Copy URL"
-msgstr "Копировать адрес"
-
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:404
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:405
 msgid "Copy URL  "
 msgstr "Копировать ссылку на альбом (папку) "
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
 msgid "Copy automatically results to clipboard"
 msgstr "Автоматически копировать результаты в буфер обмена"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:276
+msgid "Copy delete link"
+msgstr "Копировать ссылку на удаление"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:287
 msgid "Copy e-mail"
@@ -919,6 +919,21 @@ msgstr "Копировать в формате data:URI"
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:813
 msgid "Copy in data:URI format (html)"
 msgstr "Копировать в формате data:URI (HTML)"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:204
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:267
+msgid "Copy link"
+msgstr "Копировать ссылку"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:273
+msgid "Copy link to thumbnail"
+msgstr "Копировать ссылку на миниатюру"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:205
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:270
+msgid "Copy link to view page"
+msgstr "Копировать ссылку на страницу просмотра"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:588
 msgid "Copy to Clipboard"
@@ -1084,11 +1099,11 @@ msgstr "Удалить профиль"
 msgid "Delete account"
 msgstr "Удалить аккаунт"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:223
 msgid "Delete file from server"
 msgstr "Удалить файл с сервера"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:389
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:427
 msgid "Deleting the file from the server"
 msgstr "Удаление файла с сервера"
 
@@ -1171,7 +1186,7 @@ msgstr "Редактировать"
 msgid "Edit Profile"
 msgstr "Редактировать профиль"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:216
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
 msgid "Edit file on server"
 msgstr "Редактировать файл на сервере"
 
@@ -1290,7 +1305,7 @@ msgstr "Ошибка при обновлении компонента "
 msgid "Error:"
 msgstr "Ошибка:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:569
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:598
 #, c-format
 msgid "Errors: %d"
 msgstr "Ошибок: %d"
@@ -1418,7 +1433,7 @@ msgstr "Имя файла содержит запрещенные символы
 msgid "File size exceeding"
 msgstr "Превышение размера"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:567
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:596
 msgid "File uploading was cancelled by user."
 msgstr "Загрузка файлов прервана пользователем."
 
@@ -1480,7 +1495,7 @@ msgstr "Фильтры"
 msgid "Finish"
 msgstr "Завершить"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:263
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:292
 msgid "Finish >"
 msgstr "Завершить >"
 
@@ -1630,7 +1645,7 @@ msgstr "Цвет градиента 1:"
 msgid "Gradient color 2:"
 msgstr "Цвет градиента 2:"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:382
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:383
 msgid "Group by filename"
 msgstr "Группировать по имени файла"
 
@@ -1660,7 +1675,7 @@ msgstr "Подсвечивающий маркер"
 msgid "History"
 msgstr "История"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:499
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:537
 msgid "History has been cleared successfully."
 msgstr "История была успешно очищена."
 
@@ -1881,11 +1896,11 @@ msgstr "Линия"
 msgid "Line thickness"
 msgstr "Толщина линии"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:431
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:460
 msgid "Links"
 msgstr "Ссылки на файлы"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:373
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:402
 #, c-format
 msgid "Links (%d)"
 msgstr "Ссылки на файлы (%d)"
@@ -1919,7 +1934,7 @@ msgstr "Локальные"
 msgid "Local hotkey:"
 msgstr "Локальная комбинация клавиш:"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:432
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:461
 msgid "Log"
 msgstr "Лог"
 
@@ -2114,7 +2129,7 @@ msgstr "Открыть в окне мастера"
 msgid "Open in external editor"
 msgstr "Открыть во внешнем редакторе"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:212
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:208
 msgid "Open in folder"
 msgstr "Показать файлы в папке"
@@ -2240,7 +2255,7 @@ msgstr "Сохранять EXIF (информация о камере, пара�
 msgid "Preview"
 msgstr "Предпросмотр"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:591
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:594
 msgid "Preview Window"
 msgstr "Окно предпросмотра"
 
@@ -2376,7 +2391,7 @@ msgstr "Режим:"
 msgid "Retrieve thumbnails from the Internet"
 msgstr "Загружать миниатюры из Интернета"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:246
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:260
 msgid "Retry"
 msgstr "Повторить"
 
@@ -2483,13 +2498,13 @@ msgstr "Скриншот"
 msgid "Screenshot Action"
 msgstr "Действие со снимком"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:969
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2267
 msgid "Screenshot has been copied to clipboard."
 msgstr "Скриншот был скопирован в буфер обмена."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:963
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:964
 msgid "Screenshot was uploaded"
 msgstr "Снимок успешно загружен"
 
@@ -2673,11 +2688,11 @@ msgstr "Короткая ссылка"
 msgid "Shorten"
 msgstr "Сократить"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:366
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:367
 msgid "Shorten URL"
 msgstr "Сократить ссылки"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:364
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:365
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1266
 #, c-format
 msgid "Shorten URL using %s"
@@ -2724,7 +2739,7 @@ msgstr "Автоматически показывать окно журнала 
 msgid "Show in default viewer"
 msgstr "Открыть в приложении по-умолчанию"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:247
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:263
 msgid "Show log for this file"
 msgstr "Показать лог для этого файла"
 
@@ -2801,7 +2816,7 @@ msgstr "Шаг"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:87
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:670
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:699
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:178
 msgid "Stop"
@@ -3095,7 +3110,7 @@ msgstr "Загрузить изображения"
 msgid "Upload images only"
 msgstr "Загрузить только изображения"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:430
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:459
 msgid "Upload progress"
 msgstr "Процесс загрузки"
 
@@ -3145,7 +3160,7 @@ msgstr "Ошибки загрузки"
 msgid "Uploading file on server"
 msgstr "Загрузка файлов на сервер"
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:570
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:599
 msgid "Uploading has been finished."
 msgstr "Загрузка завершена."
 
@@ -3173,7 +3188,7 @@ msgstr "Сокращение ссылок"
 msgid "Use default thumbnail settings"
 msgstr "Настройки эскизов по-умолчанию"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:375
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:376
 msgid "Use direct links"
 msgstr "Использовать прямые ссылки"
 
@@ -3194,7 +3209,7 @@ msgstr "Использовать серверные миниатюры"
 msgid "Use system proxy settings"
 msgstr "Использовать системные настройки прокси"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:388
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:389
 msgid "Use template"
 msgstr "Использовать шаблон"
 
@@ -3233,11 +3248,11 @@ msgid "Video: "
 msgstr "Видео: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:189
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:244
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:258
 msgid "View"
 msgstr "Просмотр"
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:206
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:211
 msgid "View BBCode/HTML codes"
 msgstr "Коды BBCode/HTML"
 
@@ -3390,6 +3405,9 @@ msgstr "Переводчикам:"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:208
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "Copy URL"
+#~ msgstr "Копировать адрес"
 
 #~ msgid "Are you sure?"
 #~ msgstr "Вы уверены?"

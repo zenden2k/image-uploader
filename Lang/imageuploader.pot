@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-07 17:14+0300\n"
+"POT-Creation-Date: 2024-12-17 19:46+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -116,7 +116,7 @@ msgstr ""
 msgid "(edited)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:955
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:956
 msgid "(the code has been copied to the clipboard)"
 msgstr ""
 
@@ -316,7 +316,7 @@ msgstr ""
 msgid "All files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:564
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:593
 msgid "All files have been successfully uploaded."
 msgstr ""
 
@@ -381,7 +381,7 @@ msgstr ""
 msgid "Are you sure you want to delete profile '%s'?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:386
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:424
 #, c-format
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr ""
@@ -755,7 +755,7 @@ msgstr ""
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:961
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 msgid "Click on this message to view details..."
 msgstr ""
 
@@ -857,16 +857,16 @@ msgstr ""
 msgid "Copy &as"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:204
-msgid "Copy URL"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:404
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:405
 msgid "Copy URL  "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
 msgid "Copy automatically results to clipboard"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:276
+msgid "Copy delete link"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:287
@@ -892,6 +892,21 @@ msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:813
 msgid "Copy in data:URI format (html)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:204
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:267
+msgid "Copy link"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:273
+msgid "Copy link to thumbnail"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:205
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:270
+msgid "Copy link to view page"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:588
@@ -1051,11 +1066,11 @@ msgstr ""
 msgid "Delete account"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:223
 msgid "Delete file from server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:389
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:427
 msgid "Deleting the file from the server"
 msgstr ""
 
@@ -1137,7 +1152,7 @@ msgstr ""
 msgid "Edit Profile"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:216
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
 msgid "Edit file on server"
 msgstr ""
 
@@ -1256,7 +1271,7 @@ msgstr ""
 msgid "Error:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:569
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:598
 #, c-format
 msgid "Errors: %d"
 msgstr ""
@@ -1377,7 +1392,7 @@ msgstr ""
 msgid "File size exceeding"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:567
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:596
 msgid "File uploading was cancelled by user."
 msgstr ""
 
@@ -1439,7 +1454,7 @@ msgstr ""
 msgid "Finish"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:263
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:292
 msgid "Finish >"
 msgstr ""
 
@@ -1589,7 +1604,7 @@ msgstr ""
 msgid "Gradient color 2:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:382
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:383
 msgid "Group by filename"
 msgstr ""
 
@@ -1619,7 +1634,7 @@ msgstr ""
 msgid "History"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:499
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:537
 msgid "History has been cleared successfully."
 msgstr ""
 
@@ -1834,11 +1849,11 @@ msgstr ""
 msgid "Line thickness"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:431
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:460
 msgid "Links"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:373
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:402
 #, c-format
 msgid "Links (%d)"
 msgstr ""
@@ -1872,7 +1887,7 @@ msgstr ""
 msgid "Local hotkey:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:432
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:461
 msgid "Log"
 msgstr ""
 
@@ -2065,7 +2080,7 @@ msgstr ""
 msgid "Open in external editor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:212
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:217
 #: ../Source/Gui/Dialogs/MainDlg.cpp:208
 msgid "Open in folder"
 msgstr ""
@@ -2189,7 +2204,7 @@ msgstr ""
 msgid "Preview"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:591
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:594
 msgid "Preview Window"
 msgstr ""
 
@@ -2321,7 +2336,7 @@ msgstr ""
 msgid "Retrieve thumbnails from the Internet"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:246
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:260
 msgid "Retry"
 msgstr ""
 
@@ -2428,13 +2443,13 @@ msgstr ""
 msgid "Screenshot Action"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:969
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2267
 msgid "Screenshot has been copied to clipboard."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:963
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:964
 msgid "Screenshot was uploaded"
 msgstr ""
 
@@ -2618,11 +2633,11 @@ msgstr ""
 msgid "Shorten"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:366
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:367
 msgid "Shorten URL"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:364
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:365
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1266
 #, c-format
 msgid "Shorten URL using %s"
@@ -2669,7 +2684,7 @@ msgstr ""
 msgid "Show in default viewer"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:247
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:263
 msgid "Show log for this file"
 msgstr ""
 
@@ -2746,7 +2761,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:87
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:670
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:699
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:178
 msgid "Stop"
@@ -3040,7 +3055,7 @@ msgstr ""
 msgid "Upload images only"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:430
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:459
 msgid "Upload progress"
 msgstr ""
 
@@ -3087,7 +3102,7 @@ msgstr ""
 msgid "Uploading file on server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:570
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:599
 msgid "Uploading has been finished."
 msgstr ""
 
@@ -3115,7 +3130,7 @@ msgstr ""
 msgid "Use default thumbnail settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:375
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:376
 msgid "Use direct links"
 msgstr ""
 
@@ -3136,7 +3151,7 @@ msgstr ""
 msgid "Use system proxy settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:388
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:389
 msgid "Use template"
 msgstr ""
 
@@ -3173,11 +3188,11 @@ msgid "Video: "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:189
-#: ../Source/Gui/Dialogs/UploadDlg.cpp:244
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:258
 msgid "View"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HistoryWindow.cpp:206
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:211
 msgid "View BBCode/HTML codes"
 msgstr ""
 

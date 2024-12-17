@@ -201,24 +201,27 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     {
         menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Open in Web Browser"));
         menu.SetMenuDefaultItem(ID_OPENINBROWSER, FALSE);
-        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL") + CString(_T("\tCtrl+C")));
+        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy link") + CString(_T("\tCtrl+C")));
+        menu.AppendMenu(MF_STRING, ID_COPYVIEWLINK, TR("Copy link to view page"));
+        menu.EnableMenuItem(ID_COPYVIEWLINK, historyItem->viewUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        menu.AppendMenu(MF_STRING, ID_COPYTHUMBLINK, TR("Copy link to thumbnail"));
+        menu.EnableMenuItem(ID_COPYTHUMBLINK, historyItem->thumbUrl.empty() ? MF_DISABLED : MF_ENABLED);
     }
     menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("View BBCode/HTML codes"));
-    if(!isSessionItem)
-    {
-        if(!historyItem->localFilePath.empty() && 
-            IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(historyItem->localFilePath)))
-        {
-            menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
-        }
-        if (!historyItem->editUrl.empty())
-        {
-            menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Edit file on server"));
-        }
-        if (!historyItem->deleteUrl.empty())
-        {
-            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server")+CString(_T("\tDelete")));
-        }
+
+    if (!isSessionItem) {
+        bool fileExists = !historyItem->localFilePath.empty() && 
+            IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(historyItem->localFilePath));
+
+        menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
+        menu.EnableMenuItem(ID_OPENFOLDER, fileExists ? MF_ENABLED : MF_DISABLED);
+
+        menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Edit file on server"));
+        menu.EnableMenuItem(ID_EDITFILEONSERVER, historyItem->editUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server")+CString(_T("\tDelete")));
+        menu.EnableMenuItem(ID_DELETEFILEONSERVER, historyItem->deleteUrl.empty() ? MF_DISABLED : MF_ENABLED);
     }
     
     menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, screenPoint.x, screenPoint.y, m_hWnd);
@@ -291,6 +294,38 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     }
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
     WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) {
+        return 0;
+    }
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+
+    if (!historyItem->viewUrl.empty()) {
+        WinUtils::CopyTextToClipboard(Utf8ToWCstring(historyItem->viewUrl));
+    }
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) {
+        return 0;
+    }
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+
+    if (!historyItem->thumbUrl.empty()) {
+        WinUtils::CopyTextToClipboard(Utf8ToWCstring(historyItem->thumbUrl));
+    }
     return 0;
 }
 
@@ -380,6 +415,9 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
     if (!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
+        return 0;
+    }
+    if (historyItem->deleteUrl.empty()) {
         return 0;
     }
     std::string message = str(

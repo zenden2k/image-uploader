@@ -39,6 +39,8 @@ constexpr int ID_VIEWBBCODE = ID_OPENINBROWSER + 2;
 constexpr int ID_OPENFOLDER = ID_OPENINBROWSER + 3;
 constexpr int ID_EDITFILEONSERVER = ID_OPENINBROWSER + 4;
 constexpr int ID_DELETEFILEONSERVER = ID_OPENINBROWSER + 5;
+constexpr int ID_COPYVIEWLINK = ID_OPENINBROWSER + 6;
+constexpr int ID_COPYTHUMBLINK = ID_OPENINBROWSER + 7;
 constexpr int WM_MY_OPENHISTORYFILE = WM_USER + 101;
 
 
@@ -62,6 +64,8 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             COMMAND_ID_HANDLER(IDOK, OnOk)
             COMMAND_ID_HANDLER(ID_OPENINBROWSER, OnOpenInBrowser)
             COMMAND_ID_HANDLER(ID_COPYTOCLIPBOARD, OnCopyToClipboard)
+            COMMAND_ID_HANDLER(ID_COPYVIEWLINK, OnCopyViewLink)
+            COMMAND_ID_HANDLER(ID_COPYTHUMBLINK, OnCopyThumbLink)
             COMMAND_ID_HANDLER(ID_VIEWBBCODE, OnViewBBCode)
             COMMAND_ID_HANDLER(ID_OPENFOLDER, OnOpenFolder)
             COMMAND_ID_HANDLER(ID_EDITFILEONSERVER, OnEditFileOnServer)
@@ -137,6 +141,8 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         // Context menu callbacks
         LRESULT OnOpenInBrowser(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
