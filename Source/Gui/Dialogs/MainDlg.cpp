@@ -435,17 +435,15 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
     if(!FileName) return FALSE;
     
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    // TODO: Edit this bullshit
-    CString EditorCmd = Settings.ImageEditorPath;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    CString EditorCmd = settings->ImageEditorPath;
     EditorCmd.Replace(_T("%1"), FileName);
     CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
-    TCHAR FilePathBuffer[256];
-    WinUtils::ExtractFilePath(FileName, FilePathBuffer, ARRAY_SIZE(FilePathBuffer));
-
     CCmdLine EditorLine(EditorCmdLine);
-
+    CString moduleName = EditorLine.ModuleName();
+    CString params = EditorLine.OnlyParams();
     SHELLEXECUTEINFO Sei;
     ZeroMemory(&Sei, sizeof(Sei));
     Sei.cbSize = sizeof(Sei);
@@ -453,12 +451,14 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     Sei.hwnd = m_hWnd;
     Sei.lpVerb = _T("open");
 
-    Sei.lpFile = EditorLine.ModuleName();
-    Sei.lpParameters = EditorLine.OnlyParams();
+    Sei.lpFile = moduleName;
+    Sei.lpParameters = params;
     Sei.nShow = SW_SHOW;
 
     if (!::ShellExecuteEx(&Sei)) {
-        LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
+        DWORD lastError = GetLastError();
+        LOG(ERROR) << "Opening external editor failed." << std::endl
+                   << "Reason: " << WinUtils::ErrorCodeToString(lastError);
         return 0;
     }
 
@@ -469,7 +469,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
             WaitThreadStop.SetEvent();
             WaitForThread(9999);
         }
-        ThumbsView.OutDateThumb(nCurItem);
+        itemIndexThumbToBeUpdated_ = nCurItem;
         m_EditorProcess = Sei.hProcess;
         Release();
         Start();
@@ -508,6 +508,14 @@ DWORD CMainDlg::Run()
     Events[0] = m_EditorProcess;
     Events[1] = WaitThreadStop.m_hEvent;
     WaitForMultipleObjects(2, Events, FALSE, INFINITE);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        if (itemIndexThumbToBeUpdated_ < 0) {
+            return;
+        }
+        ThumbsView.OutDateThumb(itemIndexThumbToBeUpdated_);
+        itemIndexThumbToBeUpdated_ = -1;
+    }, true);
+
     WaitThreadStop.ResetEvent();
     return 0;
 }

@@ -141,6 +141,7 @@ public:
     CThumbsView ThumbsView;
     CEvent WaitThreadStop;
     HANDLE m_EditorProcess;
+    int itemIndexThumbToBeUpdated_ = -1;
     CFont dialogFont_;
     LRESULT OnBnClickedDelete(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnAddFiles(WORD wNotifyCode, WORD wID, HWND hWndCtl);
