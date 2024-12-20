@@ -46,7 +46,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 { 
 	public:
 		CVideoGrabberPage(UploadEngineManager * uploadEngineManager);
-		enum { IDD = IDD_VIDEOGRABBER };
+		enum { IDD = IDD_VIDEOGRABBER, ID_DEINTERLACE = 18000, ID_VIDEOSETTINGS, ID_OPENFOLDER, ID_VIDEOENGINEFIRST = 18100, ID_VIDEOENNGINELAST = 18131 };
 
 	protected:
 		BEGIN_MSG_MAP(CVideoGrabberPage)
@@ -54,20 +54,24 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 			MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
 			COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
 			COMMAND_HANDLER(IDC_GRAB, BN_CLICKED, OnBnClickedGrab)
-			COMMAND_HANDLER(IDC_GRABBERPARAMS, BN_CLICKED, OnBnClickedGrabberparams)
+            COMMAND_HANDLER(ID_VIDEOSETTINGS, BN_CLICKED, OnBnClickedGrabberparams)
 			COMMAND_HANDLER(IDC_MULTIPLEFILES, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SAVEASONE, BN_CLICKED, OnBnClickedMultiplefiles)
 			COMMAND_HANDLER(IDC_SELECTVIDEO, BN_CLICKED, OnBnClickedBrowseButton)
-			COMMAND_ID_HANDLER(IDC_OPENFOLDER, OnOpenFolder)
+			COMMAND_ID_HANDLER(ID_OPENFOLDER, OnOpenFolder)
+            COMMAND_ID_HANDLER(ID_DEINTERLACE, OnDeinterlace)
 			NOTIFY_HANDLER(IDC_THUMBLIST, LVN_DELETEITEM, OnLvnItemDelete)
 			COMMAND_HANDLER(IDC_FILEINFOBUTTON, BN_CLICKED, OnBnClickedFileinfobutton)
+            COMMAND_HANDLER(IDC_OPTIONSBUTTON, BN_CLICKED, OnBnClickedOptions)
+            NOTIFY_HANDLER(IDC_OPTIONSBUTTON, BCN_DROPDOWN, OnBnDropdownOptions)
+            COMMAND_RANGE_HANDLER(ID_VIDEOENGINEFIRST, ID_VIDEOENNGINELAST, OnMenuVideoEngine)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
         
         BEGIN_DDX_MAP(CVideoGrabberPage)
             DDX_CONTROL_HANDLE(IDC_FILEEDIT, fileEdit_)
-            DDX_CONTROL_HANDLE(IDC_VIDEOENGINECOMBO, videoEngineCombo_)
             DDX_CONTROL_HANDLE(IDC_UPDOWN, frameCountUpDownCtrl_)
+            DDX_CONTROL_HANDLE(IDC_OPTIONSBUTTON, optionsButton_)
         END_DDX_MAP()
 
 		// Handler prototypes:
@@ -85,7 +89,11 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		LRESULT OnBnClickedFileinfobutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
 		LRESULT OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-		
+        LRESULT OnBnClickedOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnBnDropdownOptions(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnDeinterlace(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnMenuVideoEngine(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
 		int GrabBitmaps(const CString& szFile );
 		bool SetGrabbingStatusText(LPCTSTR String);
 		int ThreadTerminated();
@@ -99,26 +107,27 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
 		bool OnShow() override; // Reimplemented function of CWizardPage
 		void OnFrameGrabbed(const std::string&, int64_t, std::shared_ptr<AbstractImage>);
 		void OnFrameGrabbingFinished(bool success);
-
-		CHyperLink openInFolderLink_;
+        void optionsButtonClicked();
 		std::unique_ptr<VideoGrabber> videoGrabber_ ;
 
 //		CImgSavingThread SavingThread;
 		CString ErrorStr;
 		CString snapshotsFolder;
 		bool Terminated;
-		int originalGrabInfoLabelWidth_;
 		int grabbedFramesCount;
 		int NumOfFrames;
+        bool deinterlace_ = false;
+        int currentVideoEngine = 0;
 		bool SetFileName(LPCTSTR FileName);
 		CString fileName_;
 		bool CanceledByUser;
 		CMainDlg* MainDlg;
         CEdit fileEdit_;
-        CComboBox videoEngineCombo_;
 		UploadEngineManager * uploadEngineManager_;
         CToolTipCtrl toolTipCtrl_;
 		CUpDownCtrl frameCountUpDownCtrl_;
+        CButton optionsButton_;
+        std::vector<std::string> videoEngines_;
 };
 
 #endif // VIDEOGRABBER_H
