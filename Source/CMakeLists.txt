@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
-
-#set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
-#set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+cmake_minimum_required(VERSION 3.24)
  
 set(CMAKE_CXX_STANDARD 17)
 
@@ -22,16 +19,11 @@ set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
-set(IU_HOST_PROFILE "" CACHE STRING "Conan host profile")
-set(IU_BUILD_PROFILE "" CACHE STRING "Conan build profile")
+#set(IU_HOST_PROFILE "" CACHE STRING "Conan host profile")
+#set(IU_BUILD_PROFILE "" CACHE STRING "Conan build profile")
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-
-include(conan.cmake)
-
-conan_add_remote(NAME zenden2k INDEX 0
-            URL https://conan.svistunov.dev)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
@@ -258,34 +250,34 @@ else()
 	)					
 endif()
 	
-conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
-						GENERATORS cmake_find_package_multi 
-						OPTIONS 
-						boost:shared=False
-						boost:without_context=True
-						boost:without_contract=True
-						boost:without_coroutine=True
-						boost:without_fiber=True
-						boost:without_graph=True
-						boost:without_graph_parallel=True
-						boost:without_json=True
-						boost:without_iostreams=True
-						boost:without_log=True
-						boost:without_math=True
-						boost:without_mpi=True
-						boost:without_nowide=True
-						boost:without_python=True
-						boost:without_random=True
-						boost:without_regex=True
-						boost:without_serialization=True
-						boost:without_stacktrace=True
-						boost:without_test=True
-						boost:without_timer=True 
-						boost:without_type_erasure=True
-						boost:without_wave=True
-#						glog:with_gflags=False
-						${ADDITIONAL_OPTIONS}
-						)
+#conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
+#						GENERATORS cmake_find_package_multi 
+#						OPTIONS 
+#						boost:shared=False
+#						boost:without_context=True
+#						boost:without_contract=True
+# 						boost:without_coroutine=True
+# 						boost:without_fiber=True
+# 						boost:without_graph=True
+# 						boost:without_graph_parallel=True
+# 						boost:without_json=True
+# 						boost:without_iostreams=True
+# 						boost:without_log=True
+# 						boost:without_math=True
+# 						boost:without_mpi=True
+# 						boost:without_nowide=True
+# 						boost:without_python=True
+# 						boost:without_random=True
+# 						boost:without_regex=True
+# 						boost:without_serialization=True
+# 						boost:without_stacktrace=True
+# 						boost:without_test=True
+# 						boost:without_timer=True 
+# 						boost:without_type_erasure=True
+# 						boost:without_wave=True
+# #						glog:with_gflags=False
+# 						${ADDITIONAL_OPTIONS}
+#						)
 
 SET(msvc_link_setting "")
 
@@ -295,35 +287,22 @@ SET(msvc_link_setting "")
 	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
 #endif()
 
-if (IU_HOST_PROFILE STREQUAL "") 
-	#message("Building with host profile '" ${IU_HOST_PROFILE} "', build profile '" ${IU_BUILD_PROFILE} "'" )
-	foreach(TYPE ${CONFIGURATION_TYPES})
-		conan_cmake_autodetect(settings BUILD_TYPE ${TYPE} ) #ARCH ${IU_ARCH}
-		conan_cmake_install(PATH_OR_REFERENCE .
-						BUILD missing
-						SETTINGS ${settings}
-		)
-				
-		# Linux dirty fix:  
-		# BUILD openjpeg libx264 libx265
-	endforeach()
-	
-else()
-	conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD missing                    
-						PROFILE_HOST ${IU_HOST_PROFILE} #"vs2022_arm64"
-						PROFILE_BUILD ${IU_BUILD_PROFILE} #vs2022_arm64
-	)
-endif()
+
+#	conan_cmake_install(PATH_OR_REFERENCE .
+#                        BUILD missing                    
+#						PROFILE_HOST ${IU_HOST_PROFILE} #"vs2022_arm64"
+#						PROFILE_BUILD ${IU_BUILD_PROFILE} #vs2022_arm64
+#	)
+
 
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
-find_package(Boost CONFIG COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 if (IU_USE_OPENSSL)
-    find_package(OpenSSL CONFIG REQUIRED)
+    find_package(OpenSSL REQUIRED)
 endif()	
-find_package(CURL CONFIG REQUIRED)
-find_package(PCRE CONFIG REQUIRED)
+find_package(CURL REQUIRED)
+find_package(PCRE REQUIRED)
 find_package(uriparser CONFIG REQUIRED)
 find_package(ZLIB CONFIG REQUIRED)
 find_package(uriparser CONFIG REQUIRED)

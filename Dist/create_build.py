@@ -12,7 +12,7 @@ import xml.etree.ElementTree
 
 from contextlib import contextmanager
 
-IS_RELEASE = False
+IS_RELEASE = True
 TEST_MODE = False
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
@@ -188,6 +188,7 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
     git_output = re.sub( r",\s*}", "}", git_output )
     git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
     git_output = git_output.replace("\"cloaked\"", "cloaked");
+    git_output = git_output.replace("\"Upload settings\"", "Upload settings");
     print(git_output)
     commits = json.loads(git_output)
 

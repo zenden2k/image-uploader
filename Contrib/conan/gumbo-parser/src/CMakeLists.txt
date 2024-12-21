@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.1.0)
 
 project(gumbo-parser)
 
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
-
 set(SRC_LIST 
 		src/attribute.c
 		src/char_ref.c
