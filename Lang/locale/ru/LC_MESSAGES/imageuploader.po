@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-17 19:46+0300\n"
-"PO-Revision-Date: 2024-12-17 19:47+0300\n"
+"POT-Creation-Date: 2024-12-20 21:04+0300\n"
+"PO-Revision-Date: 2024-12-20 21:04+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -31,7 +31,7 @@ msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
 msgstr "\"%1%\": сервер %2% не поддерживает такой тип файла (%3% %4%)\n"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
-#: ../Source/Gui/Dialogs/MainDlg.cpp:834
+#: ../Source/Gui/Dialogs/MainDlg.cpp:842
 #, c-format
 msgid "%d file"
 msgid_plural "%d files"
@@ -39,7 +39,7 @@ msgstr[0] "%d файл"
 msgstr[1] "%d файла"
 msgstr[2] "%d файлов"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:828
+#: ../Source/Gui/Dialogs/MainDlg.cpp:836
 #, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
@@ -47,7 +47,7 @@ msgstr[0] "%d файл выбран"
 msgstr[1] "%d файла выбрано"
 msgstr[2] "%d файлов выбрано"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:829
+#: ../Source/Gui/Dialogs/MainDlg.cpp:837
 #, c-format
 msgid "%d file total"
 msgid_plural "%d files total"
@@ -297,6 +297,10 @@ msgstr "Добавить водяной знак"
 msgid "Adding directory as server"
 msgstr "Добавление папки как сервера"
 
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:465
+msgid "Additional options..."
+msgstr "Дополнительные опции..."
+
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:60
 msgid "Additional params"
 msgstr "Дополнительные параметры"
@@ -321,9 +325,9 @@ msgstr "Только для Aero (Windows Vista и новее)"
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:206
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
-#: ../Source/Gui/Dialogs/MainDlg.cpp:703
+#: ../Source/Gui/Dialogs/MainDlg.cpp:711
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:119
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:379
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:347
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1670
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1889
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1409
@@ -355,7 +359,7 @@ msgstr "Разрешить редактирование в полноэкран�
 msgid "Always copy captured image to clipboard"
 msgstr "Всегда копировать в буфер обмена"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:473
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:441
 msgid "An error occured while extracting video frames."
 msgstr "Во время извлечения кадров произошла ошибка."
 
@@ -514,7 +518,7 @@ msgid "Bring window to foreground when selected by mouse"
 msgstr "Выводить окно на передний план при выборе мышью"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:78
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
 msgstr "Обзор..."
 
@@ -560,11 +564,11 @@ msgstr ""
 "Не могу соединить фильтры (возможно, формат не поддерживается).\n"
 "Убедитесь, что в системе установлены нужные кодеки."
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:728
+#: ../Source/Gui/Dialogs/MainDlg.cpp:736
 msgid "Cannot copy file "
 msgstr "Не могу скопировать файл "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:717
+#: ../Source/Gui/Dialogs/MainDlg.cpp:725
 msgid "Cannot copy file: "
 msgstr "Не могу скопировать файл: "
 
@@ -734,7 +738,7 @@ msgstr "Выберите сервер..."
 msgid "Choose servers"
 msgstr "Выбрать серверы"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:382
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:350
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1673
 msgid "Choose video file"
 msgstr "Выберите видеофайл"
@@ -1075,13 +1079,9 @@ msgstr "Сервер по-умолчанию для хранения изобр�
 msgid "Default settings"
 msgstr "Настройки по-умолчанию"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:464
 msgid "Deinterlace"
 msgstr "Деинтерлейсинг"
-
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:120
-msgid "Deinterlace video"
-msgstr "Устранение чересстрочности"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Delay when hiding window:"
@@ -1338,20 +1338,20 @@ msgstr "Расширение"
 msgid "Extract frames"
 msgstr "Извлечь кадры"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:212
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:196
 msgid "Extracting frame "
 msgstr "Извлекаю кадр "
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 msgid "Extracting frames from video"
 msgstr "Извлечение видеокадров"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:473
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:441
 msgid "Extracting video frames was finished."
 msgstr "Извлечение кадров было завершено."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:308
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:277
 msgid "Extracting video frames was stopped by user."
 msgstr "Извлечение кадров было остановлено пользователем."
 
@@ -1398,7 +1398,7 @@ msgstr "Файл \"%s\" не найден!"
 msgid "File %s doesn't exist"
 msgstr "Файл %s не существует"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:148
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:149
 #, c-format
 msgid ""
 "File doesn't exist:\n"
@@ -1452,7 +1452,7 @@ msgstr "Формат имени файла:"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:49
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
 msgid "Filename:"
 msgstr "Имя файла:"
 
@@ -1460,7 +1460,7 @@ msgstr "Имя файла:"
 msgid "Filename: "
 msgstr "Имя файла: "
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:702
+#: ../Source/Gui/Dialogs/MainDlg.cpp:710
 msgid "Files"
 msgstr "Файлы"
 
@@ -1632,8 +1632,8 @@ msgstr "Глобальная комбинация:"
 msgid "Go to signup page"
 msgstr "Открыть страницу регистрации"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:438
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:406
 msgid "Grab"
 msgstr "Извлечь"
 
@@ -1800,7 +1800,7 @@ msgstr "Инфо о видео"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:246
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:89
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
 msgid "Information about file"
 msgstr "Информация о файле"
 
@@ -2014,10 +2014,6 @@ msgstr "Переместить вниз"
 msgid "Move Up"
 msgstr "Переместить вверх"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
-msgid "Multiple files"
-msgstr "множество файлов"
-
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
 msgid "N"
 msgstr "№"
@@ -2042,7 +2038,7 @@ msgstr "Новая папка"
 msgid "New profile"
 msgstr "Новый профиль"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:174
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:169
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:702
 msgid "Next >"
 msgstr "Далее >"
@@ -2083,7 +2079,7 @@ msgstr "Кол-во попыток для одной операции:"
 msgid "Number of columns:"
 msgstr "Количество колонок:"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
 msgid "Number of frames:"
 msgstr "Кол-во кадров:"
 
@@ -2107,7 +2103,7 @@ msgstr ""
 msgid "Older than 30 days"
 msgstr "Старше 30 дней"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:90
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:468
 msgid "Open containing folder"
 msgstr "Открыть папку с изображениями"
 
@@ -2162,6 +2158,7 @@ msgid "Open with..."
 msgstr "Открыть с помощью..."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:145
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
 msgstr "Опции"
 
@@ -2445,7 +2442,7 @@ msgstr ""
 msgid "Same format as image"
 msgstr "Как у изображения"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:721
+#: ../Source/Gui/Dialogs/MainDlg.cpp:729
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
 msgid "Save"
 msgstr "Сохранить"
@@ -2462,7 +2459,7 @@ msgstr "Сохранить как"
 msgid "Save as..."
 msgstr "Сохранить как..."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
 msgid "Save as:"
 msgstr "Сохранить как:"
 
@@ -2672,7 +2669,6 @@ msgid "Settings have been saved."
 msgstr "Настройки сохранены."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:95
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:88
 msgid "Settings..."
 msgstr "Параметры..."
 
@@ -2764,10 +2760,6 @@ msgstr "Показывать значок в трее"
 msgid "Sign in..."
 msgstr "Выполнить авторизацию прямо сейчас..."
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
-msgid "Single file"
-msgstr "один файл"
-
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:22
 msgid "Size"
 msgstr "Размер"
@@ -2817,8 +2809,8 @@ msgstr "Шаг"
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:87
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:699
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:178
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:173
 msgid "Stop"
 msgstr "Остановить"
 
@@ -3230,13 +3222,11 @@ msgstr "Вертикальный промежуток:"
 msgid "Video"
 msgstr "Видео"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:118
-msgid "Video engine which is used to extract frames from a video file."
-msgstr ""
-"Видео-движок, который будет использоваться для извлечения кадров из "
-"видеофайла."
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:463
+msgid "Video backend"
+msgstr "Видео бэкенд"
 
-#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:378
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:346
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1669
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1887
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1916
@@ -3382,6 +3372,10 @@ msgstr "папка \"%s\""
 msgid "msec"
 msgstr "мс"
 
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
+msgid "multiple files"
+msgstr "множество файлов"
+
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:105
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:209
 msgid "not selected"
@@ -3391,6 +3385,10 @@ msgstr "не выбран"
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "sec"
 msgstr "сек"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
+msgid "single file (mosaic)"
+msgstr "один файл (мозаика)"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 msgid "to:"
@@ -3405,6 +3403,23 @@ msgstr "Переводчикам:"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:208
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "Rendering backend"
+#~ msgstr "Видео бэкенд"
+
+#~ msgid "Deinterlace video"
+#~ msgstr "Устранение чересстрочности"
+
+#~ msgid "Multiple files"
+#~ msgstr "множество файлов"
+
+#~ msgid "Single file"
+#~ msgstr "один файл"
+
+#~ msgid "Video engine which is used to extract frames from a video file."
+#~ msgstr ""
+#~ "Видео-движок, который будет использоваться для извлечения кадров из "
+#~ "видеофайла."
 
 #~ msgid "Copy URL"
 #~ msgstr "Копировать адрес"

@@ -116,8 +116,8 @@ class CommonGuiSettings : public BasicSettings {
         void PostLoadServerProfileGroup(ServerProfileGroup& profile);
         virtual void PostLoadServerProfile(ServerProfile& profile);
     public:
-        inline static const std::string VideoEngineDirectshow = "Directshow";
-        inline static const std::string VideoEngineDirectshow2 = "Directshow_2";
+        inline static const std::string VideoEngineDirectshow = "DirectShow";
+        inline static const std::string VideoEngineDirectshow2 = "DirectShow v2";
         inline static const std::string VideoEngineMediaFoundation = "MediaFoundation"; 
         inline static const std::string VideoEngineFFmpeg = "FFmpeg";
         inline static const std::string VideoEngineAuto = "Auto";
