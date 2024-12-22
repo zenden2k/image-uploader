@@ -356,7 +356,7 @@ set(LIBS_LIST
 )
 
 if (IU_ENABLE_MEDIAINFO)
-	list(APPEND LIBS_LIST MediaInfoLib::MediaInfoLib)
+	list(APPEND LIBS_LIST mediainfo)
 endif()	
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")

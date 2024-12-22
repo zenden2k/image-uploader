@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.7.2)
 project(megaio CXX)
-
-include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-conan_basic_setup()
+set(CMAKE_CXX_STANDARD 17)
 
 # This file enables building with cmake on windows  
 #
@@ -332,15 +330,15 @@ add_library(megaio STATIC
 target_include_directories(megaio PRIVATE ${MegaDir}/include ${Mega_PlatformSpecificIncludes})
 target_include_directories(megaio PUBLIC ${MegaDir}/include ${Mega_PlatformSpecificIncludes})
 target_link_libraries(megaio PUBLIC ZLIB::ZLIB 
-                $<${USE_CRYPTOPP}:cryptopp::cryptopp-static> 
+                $<${USE_CRYPTOPP}:cryptopp::cryptopp> 
                 $<${USE_SODIUM}:sodium> 
                 $<$<AND:${USE_OPENSSL},$<NOT:${USE_WEBRTC}>>:ssl> 
                 $<$<AND:${USE_OPENSSL},$<NOT:${USE_WEBRTC}>>:crypto> 
                 $<${USE_WEBRTC}:webrtc::webrtc> 
                 $<${USE_CURL}:CURL::libcurl>  
-                $<${USE_CURL}:c-ares::c-ares> 
+                $<${USE_CURL}:c-ares::cares> 
                 $<${USE_SQLITE}:SQLite::SQLite3>
-                $<${USE_MEDIAINFO}:MediaInfoLib::MediaInfoLib> $<${USE_MEDIAINFO}:ZenLib::ZenLib> 
+                $<${USE_MEDIAINFO}:mediainfo> $<${USE_MEDIAINFO}:zen> 
                 $<${USE_LIBUV}:uv> 
                 $<${USE_FREEIMAGE}:freeimage> $<${USE_FREEIMAGE}:freeimage_IlmImf> $<${USE_FREEIMAGE}:freeimage_IlmImfUtil> $<${USE_FREEIMAGE}:freeimage_IlmThread> $<${USE_FREEIMAGE}:freeimage_Iex> $<${USE_FREEIMAGE}:freeimage_IexMath>
                                               $<${USE_FREEIMAGE}:freeimage_jpeg> $<${USE_FREEIMAGE}:freeimage_turbojpeg> $<${USE_FREEIMAGE}:freeimage_jpegxr> $<${USE_FREEIMAGE}:freeimage_jxrglue> $<${USE_FREEIMAGE}:freeimage_openjp2>
