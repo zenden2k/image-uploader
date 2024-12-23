@@ -31,16 +31,18 @@ class ImageUploaderRecipe(ConanFile):
 
     def configure(self):
         if self.settings.os != "Windows":
-            self.options["ffmpeg"].with_vaapi = False
-            self.options["ffmpeg"].with_vdpau = False
-            self.options["ffmpeg"].with_vulkan = False
-            self.options["ffmpeg"].with_libalsa = False
-            self.options["ffmpeg"].with_xcb = False
-            self.options["ffmpeg"].with_pulse = False
-            self.options["ffmpeg"].with_libaom = False
+            self.options["ffmpeg/*"].with_vaapi = False
+            self.options["ffmpeg/*"].with_vdpau = False
+            self.options["ffmpeg/*"].with_vulkan = False
+            self.options["ffmpeg/*"].with_libalsa = False
+            self.options["ffmpeg/*"].with_xcb = False
+            self.options["ffmpeg/*"].with_pulse = False
+            self.options["ffmpeg/*"].with_libaom = False
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
-            self.options["libheif"].with_dav1d = False
-               
+            self.options["libheif/*"].with_dav1d = False
+            self.options["ffmpeg/*"].with_libdav1d = False
+            self.options["ffmpeg/*"].with_libsvtav1 = False
+            self.options["megaio/*"].UseMediainfo = False
 #    def validate(self):
 #        if self.info.settings.os == "Macos" and self.info.settings.arch == "armv8":
 #            raise ConanInvalidConfiguration("ARM v8 not supported")
@@ -60,14 +62,17 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("gtest/1.10.0")
         self.requires("gumbo-parser/0.10.1")
         self.requires("squirrel/3.0.0")
-        self.requires("libmediainfo/22.03")
         self.requires("tinyxml2/10.0.0", force=True)
-        self.requires("ffmpeg/5.1")
+        self.requires("ffmpeg/5.1.3")
         self.requires("megaio/3.5.2")
+        
+
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
             self.requires("openssl/1.1.1w", force=True)
         else:
             self.requires("openssl/3.3.2")
+            self.requires("libmediainfo/22.03")
+            self.requires("dav1d/1.4.3", force=True)
         # self.requires("xz_utils/5.4.2")
 
         # Add base64 dependency only for Windows

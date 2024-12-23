@@ -13,12 +13,12 @@ import xml.etree.ElementTree
 from contextlib import contextmanager
 
 IS_RELEASE = False
-TEST_MODE = False
+TEST_MODE = True
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "master"
+DEFAULT_GIT_BRANCH = "conan2"
 PARALLEL_JOBS = "6"
 
 # --- Script requirements ---
@@ -553,7 +553,7 @@ for target in BUILD_TARGETS:
         #cmake ..\Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DIU_HOST_PROFILE=vs2019_x86_debug -DIU_BUILD_PROFILE=vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On 
         build_type = target.get("build_type")
         command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
-                   "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=../Repo/Source/conan_provider.cmake",
+                   "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake",
                    # "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
                     "-DCONAN_HOST_PROFILE=" + host_profile,
                     "-DCONAN_BUILD_PROFILE=" + build_profile

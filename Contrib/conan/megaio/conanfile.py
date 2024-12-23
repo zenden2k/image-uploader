@@ -100,7 +100,7 @@ class MegaioConan(ConanFile):
         
     def requirements(self):
         if self.options.UseCryptopp:
-            self.requires("cryptopp/8.5.0")
+            self.requires("cryptopp/8.9.0")
         if self.options.UseOpenSsl:
             self.requires("openssl/[>=1.1 <4]")
         if self.options.UseCurl:
