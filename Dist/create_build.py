@@ -300,8 +300,8 @@ def check_conan_version(args):
 
     if res:
         conan_major_version = int(res.group(1))
-        if conan_major_version != 1:
-            print("Only Conan 1.x is supported.")
+        if conan_major_version < 2:
+            print("Only Conan 2.x is supported.")
             sys.exit(1)
     else:
         print("Warning: Unknown Conan version")
@@ -553,6 +553,7 @@ for target in BUILD_TARGETS:
         #cmake ..\Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DIU_HOST_PROFILE=vs2019_x86_debug -DIU_BUILD_PROFILE=vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On 
         build_type = target.get("build_type")
         command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
+                   "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=../Repo/Source/conan_provider.cmake",
                    # "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
                     "-DCONAN_HOST_PROFILE=" + host_profile,
                     "-DCONAN_BUILD_PROFILE=" + build_profile
