@@ -11,11 +11,11 @@ set(IU_ENABLE_SFTP ON CACHE BOOL "Use LibSSH2 for SFTP connections")
 set(IU_ENABLE_MEDIAINFO ON CACHE BOOL "Use MediaInfo")
 
 if(WIN32)
-	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+	set(IU_ENABLE_WEBVIEW2 ON CACHE BOOL "Enable support of Microsoft Edge WebView2")
 endif()
 set(IU_ENABLE_FFMPEG ON CACHE BOOL "Use FFmpeg libraries")
 set(IU_FFMPEG_STANDALONE OFF CACHE BOOL "Don't Use FFmpeg Conan package")
-set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
+#set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
@@ -111,34 +111,11 @@ if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)
 endif()
 
-SET(COMMON_DEPS boost/1.78.0
-				libcurl/8.10.1
-				pcre/8.45
-				uriparser/0.9.8
-				zlib/1.3.1
-				minizip/1.3.1
-				jsoncpp/1.9.6
-				sqlite3/3.36.0
-				base64/0.4.0
-				glog/0.6.0@zenden2k/stable
-#				glog/0.6.0
-				libwebp/1.4.0              
-				gtest/1.10.0
-				gumbo-parser/0.10.1@zenden2k/stable
-				squirrel/3.0.0@zenden2k/stable
-                tinyxml2/10.0.0
-)
 
 if (IU_ENABLE_WEBVIEW2)
     SET(WEBVIEW2_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
 endif()
 
-if (IU_USE_OPENSSL)
-	list(APPEND COMMON_DEPS 
-#		openssl/3.1.1
-		openssl/1.1.1w
-    )
-endif()
 	
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS 
@@ -166,89 +143,10 @@ if (IU_ENABLE_MEGANZ)
 	#endif()
 endif()
 
-if (WIN32)
-	list(APPEND COMMON_DEPS
-        base-classes/1.0.0@zenden2k/stable
-        libheif/1.13.0
-    )
-    # Support of avif images is broken in newer versions of libheif
-	if (IU_LIBHEIF_WITH_DAV1D)
-		add_definitions(-DIU_LIBHEIF_WITH_DAV1D)
-		list(APPEND ADDITIONAL_OPTIONS 
-			libheif:with_dav1d=True
-		)	
-	endif()	
-endif()	 
-
-if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
-    list(APPEND COMMON_DEPS 
-	    ffmpeg/5.1
-	    xz_utils/5.4.2
-    )
-
-	if(NOT WIN32)
-		list(APPEND ADDITIONAL_OPTIONS 
-			ffmpeg:with_vaapi=False
-			ffmpeg:with_vdpau=False
-			ffmpeg:with_vulkan=False
-			ffmpeg:with_libalsa=False
-			ffmpeg:with_xcb=False
-			ffmpeg:with_pulse=False
-			ffmpeg:with_libaom=False
-		)
-	endif()
-	list(APPEND ADDITIONAL_OPTIONS
-		ffmpeg:shared=False
-		ffmpeg:disable_all_encoders=True
-		ffmpeg:disable_all_muxers=True
-		ffmpeg:with_programs=False
-		ffmpeg:disable_protocols=True
-		ffmpeg:with_libmp3lame=False
-		ffmpeg:with_libfdk_aac=False
-		ffmpeg:avdevice=False
-		ffmpeg:avfilter=False
-		ffmpeg:with_freetype=False
-		ffmpeg:with_openjpeg=False
-		ffmpeg:with_vorbis=False
-		ffmpeg:with_opus=False
-		ffmpeg:with_libx264=False
-		ffmpeg:with_libvpx=False
-		ffmpeg:with_libiconv=False
-		ffmpeg:with_libx265=False
-		ffmpeg:with_openh264=False
-	)	
-endif()
-
 if (IU_ENABLE_SFTP) 
-	add_definitions(-DIU_ENABLE_SFTP)
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_libssh2=True
-	)						
+	add_definitions(-DIU_ENABLE_SFTP)					
 endif()
 
-if (IU_ENABLE_MEDIAINFO) 
-	list(APPEND COMMON_DEPS 
-		libmediainfo/22.03
-	)						
-endif()
-
-if(IU_USE_OPENSSL)
-	list(APPEND ADDITIONAL_OPTIONS 
-		openssl:shared=False
-#		openssl:no_zlib=True
-	)	
-endif()
-
-if(WIN32 AND NOT IU_USE_OPENSSL)
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_ssl=schannel
-	)	
-
-else()
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_ssl=openssl
-	)					
-endif()
 	
 #conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
 #						GENERATORS cmake_find_package_multi 
@@ -284,7 +182,7 @@ SET(msvc_link_setting "")
 #if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
 #   SET(CONFIGURATION_TYPES "Release")
 #else()
-	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
+#	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
 #endif()
 
 

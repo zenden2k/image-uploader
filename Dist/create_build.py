@@ -12,7 +12,7 @@ import xml.etree.ElementTree
 
 from contextlib import contextmanager
 
-IS_RELEASE = True
+IS_RELEASE = False
 TEST_MODE = False
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
@@ -41,7 +41,9 @@ PARALLEL_JOBS = "6"
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019";
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022";
 
-DEFAULT_BUILD_PROFILE = "windows_vs2022_x64"
+DEFAULT_BUILD_PROFILE = "default"
+#DEFAULT_BUILD_PROFILE = "windows_vs2022_x64"
+
 NUGET_ARCH_MAPPING = {
     'armv8': 'arm64',
     'x86_64': "x64",
@@ -75,7 +77,7 @@ BUILD_TARGETS = [
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
         'supported_os': 'Windows 7/8/10/11'
     },  
     {
@@ -92,7 +94,7 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
         'supported_os': 'Windows 7/8/10/11 (64 bit)'
@@ -109,7 +111,7 @@ BUILD_TARGETS = [
         'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_LIBHEIF_WITH_DAV1D=Off"],
         'enable_webview2': True,
         'shell_ext_64bit_arch': 'ARM64',
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
         'installer_arch': 'arm64',
         'supported_os': 'Windows 10/11 (ARM64)'
     },
@@ -551,9 +553,9 @@ for target in BUILD_TARGETS:
         #cmake ..\Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DIU_HOST_PROFILE=vs2019_x86_debug -DIU_BUILD_PROFILE=vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On 
         build_type = target.get("build_type")
         command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
-                    "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
-                    "-DIU_HOST_PROFILE=" + host_profile,
-                    "-DIU_BUILD_PROFILE=" + build_profile
+                   # "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
+                    "-DCONAN_HOST_PROFILE=" + host_profile,
+                    "-DCONAN_BUILD_PROFILE=" + build_profile
                 ]
         if target.get("cmake_platform"):
             command += ["-A", target.get("cmake_platform")]
