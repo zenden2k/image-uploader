@@ -64,7 +64,10 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1")
         self.requires("megaio/3.5.2")
-        self.requires("openssl/3.3.2")
+        if self.settings.os == "Windows" and self.settings.arch == "armv8":
+            self.requires("openssl/1.1.1w", force=True)
+        else:
+            self.requires("openssl/3.3.2")
         # self.requires("xz_utils/5.4.2")
 
         # Add base64 dependency only for Windows
