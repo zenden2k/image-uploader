@@ -14,7 +14,11 @@ on:
       - Source/**
       - Contrib/Include/**
   workflow_dispatch:
- 
+
+env:
+  CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
+  CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
+
 jobs:
   windows:
     name: run on windows
@@ -34,13 +38,15 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
-        version: 1.62.0
+        version: 2.11.0
+    - name: Add conan remote
+      run: conan remote add zenden2k https://conan.svistunov.dev --index 0
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DIU_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x86_release -DIU_BUILD_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x64 -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE/Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=$GITHUB_WORKSPACE/Conan/Profiles/windows_vs2022_x86_release -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
     - name: Build
       working-directory: ${{github.workspace}}/Build
       shell: bash
@@ -81,13 +87,15 @@ jobs:
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
-        version: 1.62.0
+        version: 2.11.0
+    - name: Add conan remote
+      run: conan remote add zenden2k https://conan.svistunov.dev --index 0     
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
       shell: bash
       working-directory: ${{github.workspace}}/Build
-      run: cmake $GITHUB_WORKSPACE/Source -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE/Source -G "Ninja Multi-Config" -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CONFIGURATION_TYPES:STRING=$BUILD_TYPE -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=$BUILD_TYPE
     - name: Build
       working-directory: ${{github.workspace}}/Build
       shell: bash

@@ -1,7 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
-
-#set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/c_flag_overrides.cmake)
-#set(CMAKE_USER_MAKE_RULES_OVERRIDE_CXX ${CMAKE_CURRENT_SOURCE_DIR}/cxx_flag_overrides.cmake)
+cmake_minimum_required(VERSION 3.24)
  
 set(CMAKE_CXX_STANDARD 17)
 
@@ -14,24 +11,19 @@ set(IU_ENABLE_SFTP ON CACHE BOOL "Use LibSSH2 for SFTP connections")
 set(IU_ENABLE_MEDIAINFO ON CACHE BOOL "Use MediaInfo")
 
 if(WIN32)
-	set(IU_ENABLE_WEBVIEW2 OFF CACHE BOOL "Enable support of Microsoft Edge WebView2")
+	set(IU_ENABLE_WEBVIEW2 ON CACHE BOOL "Enable support of Microsoft Edge WebView2")
 endif()
 set(IU_ENABLE_FFMPEG ON CACHE BOOL "Use FFmpeg libraries")
 set(IU_FFMPEG_STANDALONE OFF CACHE BOOL "Don't Use FFmpeg Conan package")
-set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
+#set(IU_LIBHEIF_WITH_DAV1D ON CACHE BOOL "Build libheif with libdav1d")
 set(IU_BUILD_QIMAGEUPLOADER OFF CACHE BOOL "Enable build of imageuploader-qt")
 set(IU_STATIC_RUNTIME ON CACHE BOOL "Use static runtime")
 #set(IU_ARCH "" CACHE STRING "Architecture (x86, x86_64, armv8)")
-set(IU_HOST_PROFILE "" CACHE STRING "Conan host profile")
-set(IU_BUILD_PROFILE "" CACHE STRING "Conan build profile")
+#set(IU_HOST_PROFILE "" CACHE STRING "Conan host profile")
+#set(IU_BUILD_PROFILE "" CACHE STRING "Conan build profile")
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-
-include(conan.cmake)
-
-conan_add_remote(NAME zenden2k INDEX 0
-            URL https://conan.svistunov.dev)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
@@ -119,34 +111,11 @@ if(IU_ENABLE_MEGANZ)
     add_definitions(-DIU_ENABLE_MEGANZ)
 endif()
 
-SET(COMMON_DEPS boost/1.78.0
-				libcurl/8.10.1
-				pcre/8.45
-				uriparser/0.9.8
-				zlib/1.3.1
-				minizip/1.3.1
-				jsoncpp/1.9.6
-				sqlite3/3.36.0
-				base64/0.4.0
-				glog/0.6.0@zenden2k/stable
-#				glog/0.6.0
-				libwebp/1.4.0              
-				gtest/1.10.0
-				gumbo-parser/0.10.1@zenden2k/stable
-				squirrel/3.0.0@zenden2k/stable
-                tinyxml2/10.0.0
-)
 
 if (IU_ENABLE_WEBVIEW2)
     SET(WEBVIEW2_PACKAGES_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
 endif()
 
-if (IU_USE_OPENSSL)
-	list(APPEND COMMON_DEPS 
-#		openssl/3.1.1
-		openssl/1.1.1w
-    )
-endif()
 	
 if (IU_ENABLE_MEGANZ)
 	list(APPEND COMMON_DEPS 
@@ -174,188 +143,96 @@ if (IU_ENABLE_MEGANZ)
 	#endif()
 endif()
 
-if (WIN32)
-	list(APPEND COMMON_DEPS
-        base-classes/1.0.0@zenden2k/stable
-        libheif/1.13.0
-    )
-    # Support of avif images is broken in newer versions of libheif
-	if (IU_LIBHEIF_WITH_DAV1D)
-		add_definitions(-DIU_LIBHEIF_WITH_DAV1D)
-		list(APPEND ADDITIONAL_OPTIONS 
-			libheif:with_dav1d=True
-		)	
-	endif()	
-endif()	 
-
-if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE) # AND NOT(WIN32)
-    list(APPEND COMMON_DEPS 
-	    ffmpeg/5.1
-	    xz_utils/5.4.2
-    )
-
-	if(NOT WIN32)
-		list(APPEND ADDITIONAL_OPTIONS 
-			ffmpeg:with_vaapi=False
-			ffmpeg:with_vdpau=False
-			ffmpeg:with_vulkan=False
-			ffmpeg:with_libalsa=False
-			ffmpeg:with_xcb=False
-			ffmpeg:with_pulse=False
-			ffmpeg:with_libaom=False
-		)
-	endif()
-	list(APPEND ADDITIONAL_OPTIONS
-		ffmpeg:shared=False
-		ffmpeg:disable_all_encoders=True
-		ffmpeg:disable_all_muxers=True
-		ffmpeg:with_programs=False
-		ffmpeg:disable_protocols=True
-		ffmpeg:with_libmp3lame=False
-		ffmpeg:with_libfdk_aac=False
-		ffmpeg:avdevice=False
-		ffmpeg:avfilter=False
-		ffmpeg:with_freetype=False
-		ffmpeg:with_openjpeg=False
-		ffmpeg:with_vorbis=False
-		ffmpeg:with_opus=False
-		ffmpeg:with_libx264=False
-		ffmpeg:with_libvpx=False
-		ffmpeg:with_libiconv=False
-		ffmpeg:with_libx265=False
-		ffmpeg:with_openh264=False
-	)	
-endif()
-
 if (IU_ENABLE_SFTP) 
-	add_definitions(-DIU_ENABLE_SFTP)
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_libssh2=True
-	)						
+	add_definitions(-DIU_ENABLE_SFTP)					
 endif()
 
-if (IU_ENABLE_MEDIAINFO) 
-	list(APPEND COMMON_DEPS 
-		libmediainfo/22.03
-	)						
-endif()
-
-if(IU_USE_OPENSSL)
-	list(APPEND ADDITIONAL_OPTIONS 
-		openssl:shared=False
-#		openssl:no_zlib=True
-	)	
-endif()
-
-if(WIN32 AND NOT IU_USE_OPENSSL)
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_ssl=schannel
-	)	
-
-else()
-	list(APPEND ADDITIONAL_OPTIONS 
-		libcurl:with_ssl=openssl
-	)					
-endif()
 	
-conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
-						GENERATORS cmake_find_package_multi 
-						OPTIONS 
-						boost:shared=False
-						boost:without_context=True
-						boost:without_contract=True
-						boost:without_coroutine=True
-						boost:without_fiber=True
-						boost:without_graph=True
-						boost:without_graph_parallel=True
-						boost:without_json=True
-						boost:without_iostreams=True
-						boost:without_log=True
-						boost:without_math=True
-						boost:without_mpi=True
-						boost:without_nowide=True
-						boost:without_python=True
-						boost:without_random=True
-						boost:without_regex=True
-						boost:without_serialization=True
-						boost:without_stacktrace=True
-						boost:without_test=True
-						boost:without_timer=True 
-						boost:without_type_erasure=True
-						boost:without_wave=True
-#						glog:with_gflags=False
-						${ADDITIONAL_OPTIONS}
-						)
+#conan_cmake_configure(REQUIRES "${COMMON_DEPS}"
+#						GENERATORS cmake_find_package_multi 
+#						OPTIONS 
+#						boost:shared=False
+#						boost:without_context=True
+#						boost:without_contract=True
+# 						boost:without_coroutine=True
+# 						boost:without_fiber=True
+# 						boost:without_graph=True
+# 						boost:without_graph_parallel=True
+# 						boost:without_json=True
+# 						boost:without_iostreams=True
+# 						boost:without_log=True
+# 						boost:without_math=True
+# 						boost:without_mpi=True
+# 						boost:without_nowide=True
+# 						boost:without_python=True
+# 						boost:without_random=True
+# 						boost:without_regex=True
+# 						boost:without_serialization=True
+# 						boost:without_stacktrace=True
+# 						boost:without_test=True
+# 						boost:without_timer=True 
+# 						boost:without_type_erasure=True
+# 						boost:without_wave=True
+# #						glog:with_gflags=False
+# 						${ADDITIONAL_OPTIONS}
+#						)
 
 SET(msvc_link_setting "")
 
 #if (NOT DEFINED CMAKE_CONFIGURATION_TYPES)
 #   SET(CONFIGURATION_TYPES "Release")
 #else()
-	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
+#	SET(CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES})
 #endif()
 
-if (IU_HOST_PROFILE STREQUAL "") 
-	#message("Building with host profile '" ${IU_HOST_PROFILE} "', build profile '" ${IU_BUILD_PROFILE} "'" )
-	foreach(TYPE ${CONFIGURATION_TYPES})
-		conan_cmake_autodetect(settings BUILD_TYPE ${TYPE} ) #ARCH ${IU_ARCH}
-		conan_cmake_install(PATH_OR_REFERENCE .
-						BUILD missing
-						SETTINGS ${settings}
-		)
-				
-		# Linux dirty fix:  
-		# BUILD openjpeg libx264 libx265
-	endforeach()
-	
-else()
-	conan_cmake_install(PATH_OR_REFERENCE .
-                        BUILD missing                    
-						PROFILE_HOST ${IU_HOST_PROFILE} #"vs2022_arm64"
-						PROFILE_BUILD ${IU_BUILD_PROFILE} #vs2022_arm64
-	)
-endif()
+
+#	conan_cmake_install(PATH_OR_REFERENCE .
+#                        BUILD missing                    
+#						PROFILE_HOST ${IU_HOST_PROFILE} #"vs2022_arm64"
+#						PROFILE_BUILD ${IU_BUILD_PROFILE} #vs2022_arm64
+#	)
+
 
 set(CMAKE_MODULE_PATH ${CONAN_CMAKE_MODULE_PATH} ${CMAKE_MODULE_PATH})
 
-find_package(Boost CONFIG COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 if (IU_USE_OPENSSL)
-    find_package(OpenSSL CONFIG REQUIRED)
+    find_package(OpenSSL REQUIRED)
 endif()	
-find_package(CURL CONFIG REQUIRED)
-find_package(PCRE CONFIG REQUIRED)
-find_package(uriparser CONFIG REQUIRED)
-find_package(ZLIB CONFIG REQUIRED)
-find_package(uriparser CONFIG REQUIRED)
-find_package(base64 CONFIG REQUIRED)
-find_package(jsoncpp CONFIG REQUIRED)
+find_package(CURL REQUIRED)
+find_package(PCRE REQUIRED)
+find_package(uriparser REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(uriparser REQUIRED)
+find_package(base64 REQUIRED)
+find_package(jsoncpp REQUIRED)
 #find_package(Libssh2 CONFIG REQUIRED)
-find_package(SQLite3 CONFIG REQUIRED)
-find_package(minizip CONFIG REQUIRED)
-find_package(glog CONFIG REQUIRED)
-find_package(tinyxml2 CONFIG REQUIRED)
+find_package(SQLite3 REQUIRED)
+find_package(minizip REQUIRED)
+find_package(glog REQUIRED)
+find_package(tinyxml2 REQUIRED)
 if (IU_ENABLE_MEGANZ)
 #	find_package(cryptopp CONFIG REQUIRED)
 	#find_package(c-ares CONFIG REQUIRED)
 	#find_package(libuv CONFIG REQUIRED)
 endif()
-find_package(WebP CONFIG REQUIRED)
+find_package(WebP REQUIRED)
 if (IU_ENABLE_MEDIAINFO)
-	find_package(MediaInfoLib CONFIG REQUIRED) 
+	find_package(MediaInfoLib REQUIRED) 
 endif()	
 if(IU_ENABLE_MEGANZ)
-	find_package(megaio CONFIG REQUIRED) 
+	find_package(megaio REQUIRED) 
 endif()	
-find_package(gumbo-parser CONFIG REQUIRED) 
-find_package(GTest CONFIG REQUIRED)
-find_package(squirrel CONFIG COMPONENTS sqstdlib REQUIRED) 
+find_package(gumbo-parser REQUIRED) 
+find_package(GTest REQUIRED)
+find_package(squirrel COMPONENTS sqstdlib REQUIRED) 
 if(WIN32)
-	find_package(base-classes CONFIG REQUIRED)
-    find_package(libheif CONFIG REQUIRED)
+	find_package(base-classes REQUIRED)
+    find_package(libheif REQUIRED)
 endif()	
 
 if (IU_ENABLE_FFMPEG AND NOT IU_FFMPEG_STANDALONE)
-	find_package(ffmpeg CONFIG REQUIRED)
+	find_package(ffmpeg REQUIRED)
 endif()
   
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}/lib")

@@ -300,16 +300,16 @@ add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
 
 target_link_libraries(iucore PUBLIC
     CURL::libcurl
-    Boost::Boost 
+    boost::boost 
     uriparser::uriparser 
     ZLIB::ZLIB 
-    jsoncpp::jsoncpp 
+    JsonCpp::JsonCpp
     glog::glog 
-    PCRE::PCRE
+    pcre::pcre
     squirrel::squirrel 
     squirrel::sqstdlib 
     gumbo-parser::gumbo-parser 
-    base64::base64
+    aklomp::base64
     SQLite::SQLite3
     tinyxml2::tinyxml2
     ${COMMON_LIBS_LIST}
@@ -323,7 +323,7 @@ if (IU_ENABLE_MEGANZ)
 endif()
 
 if (IU_USE_OPENSSL)
-    target_link_libraries(iucore PUBLIC OpenSSL::OpenSSL)
+    target_link_libraries(iucore PUBLIC openssl::openssl)
 endif()
 
 if (IU_ENABLE_SFTP)
