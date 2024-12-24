@@ -40,7 +40,7 @@ jobs:
       with:
         version: 2.11.0
     - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev
+      run: conan remote add zenden2k https://conan.svistunov.dev --index 0
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
@@ -89,7 +89,7 @@ jobs:
       with:
         version: 2.11.0
     - name: Add conan remote
-      run: conan remote add zenden2k https://conan.svistunov.dev    
+      run: conan remote add zenden2k https://conan.svistunov.dev --index 0     
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/Build
     - name: Configure CMake
