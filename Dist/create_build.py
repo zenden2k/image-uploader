@@ -13,12 +13,12 @@ import xml.etree.ElementTree
 from contextlib import contextmanager
 
 IS_RELEASE = False
-TEST_MODE = True
+TEST_MODE = False
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "conan2"
+DEFAULT_GIT_BRANCH = "master"
 PARALLEL_JOBS = "6"
 
 # --- Script requirements ---
