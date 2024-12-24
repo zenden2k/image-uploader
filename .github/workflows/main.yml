@@ -14,7 +14,11 @@ on:
       - Source/**
       - Contrib/Include/**
   workflow_dispatch:
- 
+
+env:
+  CONAN_LOGIN_USERNAME_ZENDEN2K: ${{ secrets.CONAN_LOGIN_USERNAME_ZENDEN2K }}
+  CONAN_PASSWORD_ZENDEN2K: ${{ secrets.CONAN_PASSWORD_ZENDEN2K }}
+
 jobs:
   windows:
     name: run on windows
