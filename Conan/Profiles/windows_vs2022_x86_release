@@ -1,12 +1,8 @@
 [settings]
 os=Windows
-os_build=Windows
 arch=x86
-arch_build=x86_64
-compiler=Visual Studio
-compiler.version=17
-compiler.runtime=MT
+compiler=msvc
+compiler.version=194
+compiler.cppstd=17
+compiler.runtime=static
 build_type=Release
-[options]
-[build_requires]
-[env]
