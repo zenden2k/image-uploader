@@ -12,7 +12,11 @@ Ensure that your %PATH% environment
 variable includes the directory of your Python and CMake distribution. 
 I recommend to install Conan using `pip` utility. 
 You can install specific version of conan: `pip3 install conan==2.11.0`. 
+Run this command to add conan remote:
 
+```bash
+conan remote add zenden2k https://conan.svistunov.dev --index 0
+```
 To generate a Visual Studio solution from CMakeLists.txt you need to create a directory for build files and call `cmake`:
 
 ```bash
@@ -94,10 +98,10 @@ Run on Windows:
 
 ```bash
 git config --global core.autocrlf false
+conan remote add zenden2k https://conan.svistunov.dev --index 0
 ```
 
 Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11). Another way is to run Visual Studio Developer Command Prompt as Administrator.
-
 
 ## Prerequisites  (on Windows)
 
@@ -111,6 +115,12 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * 7-Zip (7z.exe)
  * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+
+
+Add Conan remote:
+
+```bash
+conan remote add zenden2k https://conan.svistunov.dev --index 0
+```
 
 ## Prerequisites On WSL (Ubuntu Linux)
 
