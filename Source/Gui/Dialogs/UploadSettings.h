@@ -121,7 +121,7 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_QUALITYEDIT, EN_CHANGE, OnProfileEditedCommand)
         COMMAND_HANDLER(IDC_IMAGEWIDTH, EN_CHANGE, OnProfileEditedCommand)
         COMMAND_HANDLER(IDC_IMAGEHEIGHT, EN_CHANGE, OnProfileEditedCommand)
-
+        COMMAND_HANDLER(IDC_SKIPANIMATEDCHECKBOX, BN_CLICKED, OnProfileEditedCommand)
 
         COMMAND_RANGE_HANDLER(IDC_IMAGESERVER_FIRST_ID, IDC_IMAGESERVER_LAST_ID, OnImageServerSelect)
         COMMAND_RANGE_HANDLER(IDC_FILESERVER_FIRST_ID, IDC_FILESERVER_LAST_ID, OnFileServerSelect)
@@ -231,7 +231,6 @@ public:
     LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     LRESULT OnAddDirectoryAsServer(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-
 };
 
 

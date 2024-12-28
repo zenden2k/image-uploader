@@ -67,6 +67,7 @@ public:
             COMMAND_HANDLER(IDC_EDITYOURTEXT, EN_CHANGE, OnProfileEditedCommand)
             COMMAND_HANDLER(IDC_TEXTPOSITION, CBN_SELCHANGE, OnProfileEditedCommand)
             COMMAND_HANDLER(IDC_LOGOEDIT, EN_CHANGE, OnProfileEditedCommand)
+            COMMAND_HANDLER(IDC_SKIPANIMATEDCHECKBOX, BN_CLICKED, OnProfileEditedCommand)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
 protected:
