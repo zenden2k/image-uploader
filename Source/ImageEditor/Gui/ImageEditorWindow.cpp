@@ -14,6 +14,7 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 namespace ImageEditor {
     
@@ -35,12 +36,7 @@ ImageEditorWindow::ImageEditorWindow(CString imageFileName, ConfigurationProvide
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
-    suggestedFileName_ = WinUtils::myExtractFileName(sourceFileName_);
-    CString fileExt = WinUtils::GetFileExt(suggestedFileName_);
-    fileExt.MakeLower();
-    if (fileExt != _T("png") && fileExt != _T("jpg") && fileExt != _T("jpeg") && fileExt != _T("webp")) {
-        suggestedFileName_ = WinUtils::GetOnlyFileName(suggestedFileName_) + _T(".png");
-    }
+    setSuggestedFileName(WinUtils::myExtractFileName(sourceFileName_));
     init();
 }
 
@@ -293,7 +289,23 @@ void ImageEditorWindow::showAddToWizardButton(bool show)
 
 void ImageEditorWindow::setSuggestedFileName(CString fileName)
 {
-    suggestedFileName_ = fileName;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    CString fileExt = WinUtils::GetFileExt(suggestedFileName_);
+    fileExt.MakeLower();
+
+    //ImageUtils::SaveImageFormat savingFormat = static_cast<ImageUtils::SaveImageFormat>();
+    TCHAR* imgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp") };
+    int format = settings->ScreenshotSettings.Format;
+    if (format >= 0 && format < std::size(imgTypes)) {
+        fileExt = imgTypes[format];
+    }
+
+    if (fileExt.IsEmpty()) {
+        fileExt = _T("png");
+    }
+    
+    suggestedFileName_ = WinUtils::GetOnlyFileName(fileName) + _T(".") + fileExt;
 }
 
 std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::getResultingBitmap() const
@@ -798,7 +810,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
         RECT rc = item->rect;
         horizontalToolbar_.ClientToScreen(&rc);
         rectangleMenu.CreatePopupMenu();
-        rectangleMenu.AppendMenu(MF_STRING, ID_SAVEAS, TR("Save as"));
+        rectangleMenu.AppendMenu(MF_STRING, ID_SAVEAS, TR("Save as..."));
         TPMPARAMS excludeArea;
         ZeroMemory(&excludeArea, sizeof(excludeArea));
         excludeArea.cbSize = sizeof(excludeArea);
@@ -1410,17 +1422,20 @@ bool ImageEditorWindow::OnSaveAs()
     };
 
     auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), filters, false, false);
+
     dlg->setFileName(suggestedFileName_);
     CString ext = WinUtils::GetFileExt(suggestedFileName_);
     ext.MakeLower();
     dlg->setDefaultExtension(ext);
-    int index = 1; // png
-    if (ext == "jpg") {
-        index = 2;
-    } else if (ext == "webp") {
-        index = 3;
+
+    auto it = std::find_if(filters.begin(), filters.end(), [ext] (auto&& s) {
+        return s.first.CompareNoCase(ext) == 0;
+    });
+
+    if (it != filters.end()) {
+        int index = it - filters.begin() + 1; // This is a one-based index, not zero-based.
+        dlg->setFileTypeIndex(index); 
     }
-    dlg->setFileTypeIndex(index);
     enableToolbarsIfNecessary(false);
     if (dlg->DoModal(m_hWnd) != IDOK) {
         enableToolbarsIfNecessary(true);
