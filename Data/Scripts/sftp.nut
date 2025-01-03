@@ -65,8 +65,9 @@ function TestConnection() {
     };
 }
 
-function UploadFile(FileName, options) {	
-    local newFilename = ExtractFileName(FileName);
+function UploadFile(FileName, options) {
+    local task = options.getTask().getFileTask();
+    local newFilename = task.getDisplayName();	
     newFilename = GenerateRandomFilename(newFilename, 6);
     local ansiFileName = newFilename;
     local host = ServerParams.getParam("hostname");

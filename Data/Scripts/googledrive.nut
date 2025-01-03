@@ -290,6 +290,9 @@ function ModifyFolder(folder) {
 }
 
 function UploadFile(FileName, options) {
+    local task = options.getTask().getFileTask();
+    local displayName = task.getDisplayName();
+
     local fileSizeStr = GetFileSizeDouble(FileName).tostring();
     local mimeType = GetFileMimeType(FileName);
     nm.addQueryHeader("Content-Type", "application/json; charset=UTF-8");
@@ -297,7 +300,7 @@ function UploadFile(FileName, options) {
     nm.addQueryHeader("X-Upload-Content-Length", fileSizeStr);
     nm.setCurlOptionInt(52, 0); //disable CURLOPT_FOLLOWLOCATION
     local postData = {
-        title = ExtractFileName(FileName),
+        title = displayName,
         parents = [],
     };
     local folderId = options.getFolderID();

@@ -318,12 +318,6 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-    <!-- Они отключили загрузку
-		<Server Name="abload.de" Authorize="2" Type="image" Plugin="abload" MaxFileSize="10485760">
-		<Actions>
-		</Actions>
-		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
-	</Server>-->
     <Server Name="imgbb.com" MaxFileSize="32000000" Plugin="imgbb" Authorize="1" PasswordLabel="API key" WebsiteUrl="https://imgbb.com/" 
 			RegistrationUrl="https://imgbb.com/signup">
 		<Actions>

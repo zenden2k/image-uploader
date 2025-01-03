@@ -45,7 +45,12 @@ public:
         MENUITEM_PASTE, MENUITEM_ADDIMAGES, MENUITEM_ADDFILES, MENUITEM_ADDFOLDER, MENUITEM_DELETEALL,
         // Menu for files
         MENUITEM_VIEW, MENUITEM_OPENINDEFAULTVIEWER, MENUITEM_EDIT, MENUITEM_EDITINEXTERNALEDITOR, MENUITEM_PRINT,
-        MENUITEM_EXTRACTFRAMES, MENUITEM_OPENINFOLDER, MENUITEM_SAVEAS, MENUITEM_COPYFILETOCLIPBOARD, MENUITEM_COPYFILEPATH,
+        MENUITEM_EXTRACTFRAMES,
+        MENUITEM_OPENINFOLDER,
+        MENUITEM_SAVEAS,
+        MENUITEM_COPYFILETOCLIPBOARD,
+        MENUITEM_COPYFILEPATH,
+        MENUITEM_RENAME,
         MENUITEM_SEARCHBYIMG_START = 6000,
         MENUITEM_SEARCHBYIMG_END = 6099,
         MENUITEM_DELETE,
@@ -78,6 +83,7 @@ public:
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURI, OnCopyFileAsDataUri)
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURIHTML, OnCopyFileAsDataUriHtml)
 		COMMAND_ID_HANDLER(MENUITEM_COPYFILEPATH, OnCopyFilePath)
+        COMMAND_ID_HANDLER(MENUITEM_RENAME, OnRename)
         COMMAND_RANGE_HANDLER(MENUITEM_SEARCHBYIMG_START, MENUITEM_SEARCHBYIMG_END, OnSearchByImage)
         COMMAND_HANDLER(IDC_DELETE, BN_CLICKED, OnDelete)
         COMMAND_HANDLER(IDC_ADDVIDEO, BN_CLICKED, OnBnClickedAddvideo)
@@ -88,7 +94,9 @@ public:
         COMMAND_HANDLER(MENUITEM_DELETE, BN_CLICKED, OnBnClickedDelete)
         COMMAND_ID_HANDLER_EX(MENUITEM_ADDFILES, OnAddFiles)
         COMMAND_ID_HANDLER_EX(IDC_ADDIMAGES, OnAddFiles)
-        NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnLvnItemDelete)
+        NOTIFY_HANDLER(IDC_FILELIST, LVN_DELETEITEM, OnLvnItemDelete)
+        NOTIFY_HANDLER(IDC_FILELIST, LVN_ENDLABELEDIT, OnListViewEndLabelEdit)
+        NOTIFY_HANDLER(IDC_FILELIST, LVN_BEGINLABELEDIT, OnListViewBeginLabelEdit)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 // Handler prototypes (uncomment arguments if needed):
@@ -126,7 +134,10 @@ public:
     LRESULT OnSearchByImage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExtractFramesFromSelectedFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnListViewEndLabelEdit(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
+    LRESULT OnListViewBeginLabelEdit(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/);
 
     BOOL FileProp();
     bool AddToFileList(LPCTSTR FileName, const CString& virtualFileName=_T(""), bool ensureVisible = false, Gdiplus::Image *Img = nullptr, bool selectItem = false);

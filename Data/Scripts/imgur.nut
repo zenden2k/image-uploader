@@ -140,10 +140,12 @@ function Authenticate()  {
 } 
 
 function UploadFile(FileName, options) {	
+    local task = options.getTask().getFileTask();
+    local displayName = task.getDisplayName();
     local login = ServerParams.getParam("Login");
     nm.setUrl("https://api.imgur.com/3/image");
     nm.addQueryHeader("Authorization", GetAuthorizationString());
-    nm.addQueryParamFile("image", FileName, ExtractFileName(FileName), GetFileMimeType(FileName));
+    nm.addQueryParamFile("image", FileName, displayName, GetFileMimeType(FileName));
     nm.doUploadMultipartData();
     local code = checkResponse();
     if (code < 1) {

@@ -149,6 +149,8 @@ function min(a,b) {
 }
 
 function UploadFile(FileName, options) {		
+    local task = options.getTask().getFileTask();
+    local displayName = task.getDisplayName();
     local token = ServerParams.getParam("token");
     local url = null;
     local userPath = ServerParams.getParam("UploadPath");
@@ -168,7 +170,7 @@ function UploadFile(FileName, options) {
         return 0;
     }
     local path = "/"+ userPath;
-    local remotePath =path+ExtractFileName(FileName);
+    local remotePath =path + displayName;
     local fileId="";
     
     if ( fileSize > 150000000 ) {

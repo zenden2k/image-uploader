@@ -55,9 +55,10 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
             {
                 TempFileDeleter* deleter = fileTask->tempFileDeleter();
                 deleter->addFile(convertedImageFileName);
+                std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getDisplayName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
+                fileTask->setDisplayName(virtualName);
             }
-            std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getFileName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
-            fileTask->setDisplayName(virtualName);
+
             fileTask->setFileName(convertedImageFileName);
         } 
         if (genThumbs) {

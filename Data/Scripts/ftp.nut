@@ -99,7 +99,8 @@ function TestConnection() {
 }
 
 function UploadFile(FileName, options) {
-    local originalFileName = ExtractFileName(FileName);
+    local task = options.getTask().getFileTask();
+    local originalFileName = task.getDisplayName();
     local newFilename = originalFileName;
 
     local host = ServerParams.getParam("hostname");
@@ -153,7 +154,7 @@ function UploadFile(FileName, options) {
         
         if(nm.responseCode() == 530)
         errorStr += " (wrong username/password?)";
-        print(errorStr);
+        WriteLog("error", errorStr);
         return 0;
     }
     if(downloadPath == ""){

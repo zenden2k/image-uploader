@@ -91,9 +91,10 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     ACCEL accels[] = {
         { FCONTROL | FSHIFT | FVIRTKEY, static_cast<WORD>(VkKeyScan('c')), MENUITEM_COPYFILEPATH},
         { FALT | FVIRTKEY, VK_RETURN, MENUITEM_PROPERTIES},
+        { FVIRTKEY, VK_F2, MENUITEM_RENAME },
     };
 
-    hotkeys_.CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
+    hotkeys_.CreateAcceleratorTable(accels, std::size(accels));
 
     WaitThreadStop.Create();
     WaitThreadStop.ResetEvent();
@@ -826,6 +827,42 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
     return 0;
 }
 
+LRESULT CMainDlg::OnListViewEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    auto* di = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+    if (di->item.pszText) {
+        CString forbiddenCharacters { _T("\\/:*?\"<>|") };
+        CString fileName { di->item.pszText };
+        if (fileName.IsEmpty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name cannot be empty."), APPNAME, MB_ICONERROR);
+            return 0;
+        }
+        if (fileName.FindOneOf(forbiddenCharacters) != -1) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name contains forbidden characters."), APPNAME, MB_ICONERROR);
+            return 0;
+        }
+        if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {
+            FileList[di->item.iItem].VirtualFileName = di->item.pszText;
+            return TRUE;
+        }    
+    }
+    return 0;
+}
+
+LRESULT CMainDlg::OnListViewBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    auto* di = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+    if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {
+        // Select only file name without extension in the edit control
+        CEdit editControl = ThumbsView.GetEditControl();
+        CString fileName;
+        editControl.GetWindowText(fileName);
+        int endPos = fileName.ReverseFind(_T('.'));
+
+        editControl.SetSel(0, endPos);
+    }    
+
+    return 0;
+}
+
 void CMainDlg::UpdateStatusLabel() {
     int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
@@ -857,5 +894,14 @@ LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
             WinUtils::DisplaySystemPrintDialogForImage(selectedFiles, m_hWnd);
         }
     }
+    return 0;
+}
+
+LRESULT CMainDlg::OnRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int itemIndex = ThumbsView.GetNextItem(-1, LVNI_ALL | LVNI_FOCUSED | LVNI_SELECTED);
+    if (itemIndex < 0) {
+        return 0;
+    }
+    ThumbsView.EditLabel(itemIndex);
     return 0;
 }
