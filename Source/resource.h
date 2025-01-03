@@ -774,6 +774,7 @@
 #define IDC_FILESCANNOTBEUPLOADED       1345
 #define IDC_SECUREDCONNECTIONLABEL      1346
 #define IDC_SECUREDCONNECTIONCOMBOBOX   1347
+#define IDC_GROUPBOX                    1348
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -821,7 +822,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        347
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1348
+#define _APS_NEXT_CONTROL_VALUE         1349
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

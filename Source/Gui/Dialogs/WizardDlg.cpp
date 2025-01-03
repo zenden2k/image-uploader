@@ -71,6 +71,7 @@
 #include "Core/WinServerIconCache.h"
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
+#include "Gui/Dialogs/ScreenshotDlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -1688,7 +1689,7 @@ bool CWizardDlg::funcImportVideo()
 
 bool CWizardDlg::funcScreenshotDlg()
 {
-    CScreenshotDlg dlg;
+    CScreenshotDlg dlg(this);
     if(dlg.DoModal(m_hWnd) != IDOK) return false;
     
     CommonScreenshot(dlg.captureMode()); 

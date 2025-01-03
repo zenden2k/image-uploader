@@ -24,20 +24,24 @@
 #include "Func/MyUtils.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Dialogs/WizardDlg.h"
 
 using namespace ScreenCapture;
 
 // CScreenshotDlg
-CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
+CScreenshotDlg::CScreenshotDlg(CWizardDlg* wizardDlg)
+    : m_CaptureMode(cmFullScreen),
+    wizardDlg_(wizardDlg)
 {
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
 
 LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CommandBox.SubclassWindow(GetDlgItem(IDC_COMMANDBOX));
-    RECT ClientRect;
+    CRect ClientRect;
     GetClientRect(&ClientRect);
     CenterWindow(GetParent());
 
@@ -59,6 +63,10 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, loadBigIcon(IDI_ICONWINDOWS));
     CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION, loadBigIcon(IDI_ICONCONTROLS));
 
+    if (wizardDlg_->hasLastScreenshotRegion()) {
+        CommandBox.AddString(TR("Capture Last Region"), _T(" "), IDC_LASTREGIONSCREENSHOT, loadBigIcon(IDI_ICONLASTREGION));
+    }
+
     SetWindowText(TR("Screen Capture"));
     TRC(IDC_DELAYLABEL, "Timeout:");
     TRC(IDC_SECLABEL, "sec");
@@ -66,6 +74,11 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, settings->ScreenshotSettings.OpenInEditor);
     SetDlgItemInt(IDC_DELAYEDIT, settings->ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
+
+    CRect commandBoxRect;
+    CommandBox.GetClientRect(commandBoxRect);
+    int newHeight = ClientRect.Height() + std::max(0, CommandBox.desiredHeight() - commandBoxRect.Height());
+    GuiTools::SetClientRect(m_hWnd, ClientRect.Width(), newHeight);
 
     m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
 
@@ -172,6 +185,11 @@ LRESULT CScreenshotDlg::OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*
     return EndDialog(IDOK);
 }
         
+LRESULT CScreenshotDlg::OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    m_CaptureMode = cmLastRegion;
+    return EndDialog(IDOK);
+}
+
 CaptureMode CScreenshotDlg::captureMode() const
 {
     return m_CaptureMode;

@@ -98,6 +98,8 @@ public:
     void HoverItem(int Index);
     HyperLinkControlItem* getItemByCommand(int command);
     int selectedItemIndex() const;
+    int desiredHeight() const;
+
 protected:
     CAtlArray<HyperLinkControlItem> Items;
     int BottomY, SubItemRightY;

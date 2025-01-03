@@ -30,7 +30,6 @@
 #include "HotkeySettings.h"
 #include "Core/ScreenCapture.h"
 #include "resource.h"       // main symbols
-#include "ScreenshotDlg.h"
 #include "Gui/Dialogs/UpdateDlg.h"
 #include "Core/ProgramWindow.h"
 #include "Core/TaskDispatcher.h"
@@ -41,6 +40,7 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/Components/DragndropOverlay.h"
 #include "Gui/WizardCommon.h"
+#include "Gui/Dialogs/RegionSelect.h"
 
 class WinToastHandler;
 constexpr int ID_PASTE = 9888;

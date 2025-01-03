@@ -628,6 +628,18 @@ int CHyperLinkControl::selectedItemIndex() const {
     return selectedItemIndex_;
 }
 
+int CHyperLinkControl::desiredHeight() const {
+    CClientDC dc(m_hWnd);
+
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    auto scaleY = [dpiY](int y) {
+        return MulDiv(y, dpiY, USER_DEFAULT_SCREEN_DPI);
+    };
+
+    return BottomY + scaleY(3);
+}
+
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)
 {
     bool SubItem = false;
