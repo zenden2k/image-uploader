@@ -100,7 +100,9 @@ set(SRC_LIST
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
     Dialogs/FileFormatCheckErrorDlg.cpp
+    Dialogs/NetworkDebugDlg.cpp
     Models/FileFormatCheckErrorModel.cpp
+    Models/NetworkDebugModel.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
@@ -113,6 +115,7 @@ set(SRC_LIST
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
     Controls/FileFormatErrorView.cpp
+    Controls/NetworkDebugListView.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -269,7 +272,9 @@ set(HEADER_LIST
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
     Dialogs/FileFormatCheckErrorDlg.h
+    Dialogs/NetworkDebugDlg.cpp
     Models/FileFormatCheckErrorModel.h
+    Models/NetworkDebugModel.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -282,6 +287,7 @@ set(HEADER_LIST
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
     Controls/FileFormatErrorView.h
+    Controls/NetworkDebugListView.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h

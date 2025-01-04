@@ -182,6 +182,8 @@
 #define IDD_TRANSFERSETTINGSPAGE        338
 #define IDD_SERVERSCHECKERDLG1          339
 #define IDD_FILEFORMATERRORDLG          339
+#define IDD_CURLDEBUGDLG                340
+#define IDD_NETWORKDEBUGDLG             340
 #define IDB_ICONROTATECW                342
 #define IDB_ICONROTATE                  343
 #define IDB_ICONROTATEFLIP              344
