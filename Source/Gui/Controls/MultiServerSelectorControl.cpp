@@ -32,6 +32,8 @@
 CMultiServerSelectorControl::CMultiServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow) {
     serversMask_ = CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers;
     uploadEngineManager_ = uploadEngineManager;
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); });
 }
 
 CMultiServerSelectorControl::~CMultiServerSelectorControl() {
@@ -108,4 +110,18 @@ void CMultiServerSelectorControl::updateInfoLabel() {
     }
 
     SetDlgItemText(IDC_LABEL, text.c_str());
+}
+
+void CMultiServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {
+    for (auto& serverProfile : serverProfileGroup_.getItems()) {
+        if (!serverProfile.profileName().empty()) {
+            ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile);
+            if (!serverSettings) {
+                serverProfile.setProfileName({});
+                serverProfile.setParentIds({});
+                serverProfile.clearFolderInfo();
+            }
+        }
+    }
+    
 }

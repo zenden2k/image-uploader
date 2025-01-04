@@ -44,7 +44,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
     TRC(IDC_ENABLETOASTS, "Enable Toast notifications (Windows 8+)");
     TRC(IDC_THUMBNAILSFORVIDEOCHECKBOX, "Show preview for video files in file list");
-
+    TRC(IDC_CLEARSERVERSETTINGS, "Clear server settings");
     SetDlgItemText(IDC_IMAGEEDITORPATH, settings->ImageEditorPath);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
@@ -143,5 +143,26 @@ LRESULT CGeneralSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         free(static_cast<char*>(langListCombo_.GetItemDataPtr(i)));
     }
     langListCombo_.ResetContent();
+    return 0;
+}
+
+LRESULT CGeneralSettings::OnBnClickedClearServerSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    auto builtInScripts = ServiceLocator::instance()->engineList()->builtInScripts();
+
+    // 'Directory' server type has no account
+    auto newEnd = std::remove_if(builtInScripts.begin(), builtInScripts.end(), [](auto&& s) { return s == "directory"; });
+    builtInScripts.erase(newEnd, builtInScripts.end());
+
+    std::string msg = str(boost::format(
+        _("All account data will be deleted, including logins, passwords and other settings. "
+          "The following server types' settings will also be deleted: %s.")
+        )
+        % IuStringUtils::Join(builtInScripts, ", ")
+    );
+    if (GuiTools::LocalizedMessageBox(m_hWnd, U2WC(msg), APPNAME, MB_OKCANCEL | MB_ICONWARNING) == IDOK) {
+        BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+        settings->clearServerSettings();
+        settings->SaveSettings();
+    }
     return 0;
 }

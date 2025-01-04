@@ -117,30 +117,30 @@ bool BasicSettings::SaveAccounts(SimpleXmlNode root)
 
             serverNode.SetAttribute("Name", it1->first);
 
-            std::map <std::string, std::string>::iterator param;
-            for (param = it->second.params.begin(); param != sss.params.end(); ++param) {
-                if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
-                    continue;
-                }
-                serverNode.SetAttribute("_" + param->first, param->second);
-            }
-            serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
+std::map <std::string, std::string>::iterator param;
+for (param = it->second.params.begin(); param != sss.params.end(); ++param) {
+    if (param->first == "FolderID" || param->first == "FolderUrl" || param->first == "FolderTitle") {
+        continue;
+    }
+    serverNode.SetAttribute("_" + param->first, param->second);
+}
+serverNode.SetAttributeBool("Auth", sss.authData.DoAuth);
 
-            CEncodedPassword login(sss.authData.Login);
-            serverNode.SetAttribute("Login", login.toEncodedData());
+CEncodedPassword login(sss.authData.Login);
+serverNode.SetAttribute("Login", login.toEncodedData());
 
-            CUploadEngineData* ued = engineList_->byName(it->first);
-            if (!ued || ued->NeedPassword) {
-                CEncodedPassword pass(it->second.authData.Password);
-                serverNode.SetAttribute("Password", pass.toEncodedData());
-            }
+CUploadEngineData* ued = engineList_->byName(it->first);
+if (!ued || ued->NeedPassword) {
+    CEncodedPassword pass(it->second.authData.Password);
+    serverNode.SetAttribute("Password", pass.toEncodedData());
+}
 
-            if (!it->second.defaultFolder.getId().empty()) {
-                serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
-                serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
-                serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
-                serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
-            }
+if (!it->second.defaultFolder.getId().empty()) {
+    serverNode.SetAttributeString("DefaultFolderId", sss.defaultFolder.getId());
+    serverNode.SetAttributeString("DefaultFolderUrl", sss.defaultFolder.viewUrl);
+    serverNode.SetAttributeString("DefaultFolderTitle", sss.defaultFolder.getTitle());
+    serverNode.SetAttributeString("DefaultFolderParentIds", myToString(sss.defaultFolder.parentIds));
+}
 
         }
     }
@@ -154,7 +154,7 @@ void BasicSettings::BindToManager()
     upload.n_bind(MaxUploadSpeed);
 }
 
-bool BasicSettings::PostLoadSettings(SimpleXml &xml) {
+bool BasicSettings::PostLoadSettings(SimpleXml& xml) {
     return true;
 }
 
@@ -192,7 +192,7 @@ bool BasicSettings::SaveSettings()
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
     bool result = true;
     if (!xml.SaveToFile(fileName_)) {
-        LOG(ERROR) << "Could not save settings!" << std::endl << "File: "<< fileName_;
+        LOG(ERROR) << "Could not save settings!" << std::endl << "File: " << fileName_;
         result = false;
     }
     notifyChange();
@@ -213,4 +213,48 @@ ServerSettingsStruct* BasicSettings::getServerSettings(const ServerProfile& prof
         }
     }
     return nullptr;
+}
+
+void BasicSettings::deleteProfile(const std::string& serverName, const std::string& profileName) {
+    auto it = ServersSettings.find(serverName);
+    if (it == ServersSettings.end()) {
+        return;
+    }
+    if (it->second.erase(profileName)) {
+        onProfileListChanged(this, { serverName });
+    }
+}
+
+void BasicSettings::clearServerSettings() {
+    auto builtInScripts = engineList_->builtInScripts();
+
+    std::vector<std::string> deletedServerProfiles;
+
+    {
+        std::lock_guard<std::mutex> lock(serverSettingsMutex_);
+
+        for (auto& [serverName, serverMap] : ServersSettings) {
+            CUploadEngineData *ued = engineList_->byName(serverName);
+
+            // Maybe we should skip profiles related to these scripts ?
+            // bool isBuiltInScript = ued  && !ued->PluginName.empty() &&
+            //    std::find(builtInScripts.begin(), builtInScripts.end(), ued->PluginName) != builtInScripts.end();
+
+            for (auto it = serverMap.cbegin(); it != serverMap.cend();) {
+                bool mustDelete = false;
+                if (!it->first.empty()) {
+                    mustDelete = true;
+                }
+                if (mustDelete) {
+                    it = serverMap.erase(it);
+                    deletedServerProfiles.push_back(serverName);
+                } else {
+                    ++it;
+                }
+            }
+        }
+    }
+    if (!deletedServerProfiles.empty()) {
+        onProfileListChanged(this, deletedServerProfiles);
+    }
 }

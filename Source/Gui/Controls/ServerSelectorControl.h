@@ -27,6 +27,8 @@
 #include <functional>
 #include <memory>
 
+#include <boost/signals2.hpp>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/SettingsPage.h"
@@ -135,6 +137,9 @@ private:
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
     bool showEmptyItem_;
     bool showServerIcons_;
+    boost::signals2::scoped_connection profileListChangedConnection_;
+
+    void profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers);
 };
 
 #endif

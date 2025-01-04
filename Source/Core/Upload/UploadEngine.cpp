@@ -202,6 +202,10 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
     return {};
 }
 
+std::vector<std::string> CUploadEngineListBase::builtInScripts() const {
+    return { "ftp", "sftp", "webdav", "directory" };
+}
+
 void CUploadEngineListBase::removeServer(const std::string& name) {
     m_list.erase(std::remove_if(m_list.begin(), m_list.end(),
         [name](auto& x) { return x->Name == name; }));

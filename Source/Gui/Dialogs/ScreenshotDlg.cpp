@@ -24,14 +24,13 @@
 #include "Func/MyUtils.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
-#include "Gui/Dialogs/WizardDlg.h"
 
 using namespace ScreenCapture;
 
 // CScreenshotDlg
-CScreenshotDlg::CScreenshotDlg(CWizardDlg* wizardDlg)
-    : m_CaptureMode(cmFullScreen),
-    wizardDlg_(wizardDlg)
+CScreenshotDlg::CScreenshotDlg(bool enableLastRegionScreenshot)
+    : m_CaptureMode(cmFullScreen)
+    , enableLastRegionScreenshot_(enableLastRegionScreenshot)
 {
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
@@ -63,7 +62,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, loadBigIcon(IDI_ICONWINDOWS));
     CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION, loadBigIcon(IDI_ICONCONTROLS));
 
-    if (wizardDlg_->hasLastScreenshotRegion()) {
+    if (enableLastRegionScreenshot_) {
         CommandBox.AddString(TR("Capture Last Region"), _T(" "), IDC_LASTREGIONSCREENSHOT, loadBigIcon(IDI_ICONLASTREGION));
     }
 

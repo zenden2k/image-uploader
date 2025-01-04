@@ -384,6 +384,8 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
+    std::vector<std::string> builtInScripts() const;
+
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;

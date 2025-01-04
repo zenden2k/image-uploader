@@ -26,6 +26,7 @@
 
 #include <functional>
 #include <memory>
+#include <boost/signals2.hpp>
 
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
@@ -77,7 +78,10 @@ private:
     CString title_;
     CFont serverGroupboxFont_;
     std::function<void(CMultiServerSelectorControl*)> onChangeCallback_;
+    boost::signals2::scoped_connection profileListChangedConnection_;
+
     void updateInfoLabel();
+    void profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers);
 };
 
 #endif

@@ -626,6 +626,7 @@
 #define IDC_CHOOSESERVERS               1263
 #define IDC_IGNORE                      1263
 #define IDC_OPTIONSBUTTON               1263
+#define IDC_CLEARSERVERSETTINGS         1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264

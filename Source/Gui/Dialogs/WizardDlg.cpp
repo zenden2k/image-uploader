@@ -1689,7 +1689,7 @@ bool CWizardDlg::funcImportVideo()
 
 bool CWizardDlg::funcScreenshotDlg()
 {
-    CScreenshotDlg dlg(this);
+    CScreenshotDlg dlg(hasLastScreenshotRegion());
     if(dlg.DoModal(m_hWnd) != IDOK) return false;
     
     CommonScreenshot(dlg.captureMode()); 

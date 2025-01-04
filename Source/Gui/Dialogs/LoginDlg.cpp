@@ -169,8 +169,7 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
         return 0;
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    std::map <std::string, ServerSettingsStruct>& ss = settings->ServersSettings[serverProfile_.serverName()];
-    ss.erase(WCstringToUtf8(accountName_));
+    settings->deleteProfile(serverProfile_.serverName(), W2U(accountName_));
 
     accountName_.Empty();
     EndDialog(ID_DELETEACCOUNT);

@@ -118,7 +118,7 @@ class CommonGuiSettings : public BasicSettings {
     public:
         inline static const std::string VideoEngineDirectshow = "DirectShow";
         inline static const std::string VideoEngineDirectshow2 = "DirectShow v2";
-        inline static const std::string VideoEngineMediaFoundation = "MediaFoundation"; 
+        inline static const std::string VideoEngineMediaFoundation = "Media Foundation"; 
         inline static const std::string VideoEngineFFmpeg = "FFmpeg";
         inline static const std::string VideoEngineAuto = "Auto";
         

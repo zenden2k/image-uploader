@@ -39,15 +39,13 @@
 #define IDC_HWNDSREGION WM_USER + 223
 #define IDC_TOPWINDOWREGION WM_USER + 224
 
-class CWizardDlg;
-
 class CScreenshotDlg : 
     public /*aero::*/CCustomDialogIndirectImpl<CScreenshotDlg>,
     public CWinDataExchange<CScreenshotDlg>,
     public CDialogResize<CScreenshotDlg>
 {
     public:
-        explicit CScreenshotDlg(CWizardDlg* wizardDlg);
+        explicit CScreenshotDlg(bool enableLastRegionScreenshot);
         ~CScreenshotDlg() = default;
         ScreenCapture::CaptureMode captureMode() const;
         enum { IDD = IDD_SCREENSHOTDLG };
@@ -105,7 +103,7 @@ class CScreenshotDlg :
         CHyperLinkControl CommandBox;
         ScreenCapture::CaptureMode m_CaptureMode;
         CComboBox m_monitorCombobox;
-        CWizardDlg* wizardDlg_;
+        bool enableLastRegionScreenshot_ = false;
 };
 
 #endif // SCREENSHOTDLG_H

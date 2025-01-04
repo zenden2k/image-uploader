@@ -68,6 +68,8 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     isPopingUp_ = false;
     showEmptyItem_ = false;
     showServerIcons_ = showServerIcons;
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); } );
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -673,6 +675,19 @@ void CServerSelectorControl::createSettingsButton() {
     settingsButtonImageList_.AddIcon(ico);
     settingsButtonToolbar_.SetImageList(settingsButtonImageList_);
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);
+}
+
+void CServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {
+    if (!serverProfile_.profileName().empty()) {
+        ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
+        if (!serverSettings) {
+            serverProfile_.setProfileName({});
+            serverProfile_.setParentIds({});
+            serverProfile_.clearFolderInfo();
+        }
+    }
+
+    updateInfoLabel();
 }
 
 void CServerSelectorControl::setShowImageProcessingParams(bool show) {
