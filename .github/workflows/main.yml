@@ -1,4 +1,4 @@
-name: Compile and test Image Uploader
+name: Build Image Uploader
 
 on:
   pull_request:

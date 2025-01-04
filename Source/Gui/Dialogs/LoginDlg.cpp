@@ -54,8 +54,6 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
         }
     }
     createNew_ = createNew;
-
-    NetworkClient_ = ServiceLocator::instance()->networkClientFactory()->create();
 }
 
 LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)

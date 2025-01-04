@@ -85,7 +85,6 @@ protected:
     bool serverSupportsBeforehandAuthorization_, serverSupportsLogout_;
     bool isAuthenticated_;
     void enableControls(bool enable);
-    std::unique_ptr<INetworkClient> NetworkClient_;
     CProgressRingControl wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
     std::shared_ptr<AuthTask> currentTask_;
