@@ -14,6 +14,8 @@
 #include <curl/curl.h>
 
 #include "Core/Utils/CoreTypes.h"
+#include "Core/Network/NetworkClient.h"
+#include "Core/Network/NetworkDebugger.h"
 
 class NetworkDebugModelData {
 public:
@@ -22,8 +24,9 @@ public:
     uint32_t color;
     curl_infotype type;
     RowStatus status_;
-
-protected:
+    std::string data;
+    time_t time_;
+    std::string threadId_;
 
 public:
     NetworkDebugModelData()
@@ -53,8 +56,10 @@ public:
     void resetData();
 
 protected:
+    mutable std::mutex itemsMutex_;
     std::vector<NetworkDebugModelData> items_;
     std::function<void(size_t)> rowChangedCallback_;
+    boost::signals2::scoped_connection debugMessageConnection_;
     DISALLOW_COPY_AND_ASSIGN(NetworkDebugModel);
 };
 #endif

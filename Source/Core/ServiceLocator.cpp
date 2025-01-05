@@ -25,6 +25,7 @@ public:
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
     TaskDispatcher* taskDispatcher_ = nullptr;
     AbstractServerIconCache* serverIconCache_ = nullptr;
+    std::shared_ptr<NetworkDebugger> networkDebugger_;
 };
 
 
@@ -137,6 +138,15 @@ std::shared_ptr<UrlShorteningFilter> ServiceLocator::urlShorteningFilter() const
 
 void ServiceLocator::setUrlShorteningFilter(std::shared_ptr<UrlShorteningFilter> filter) {
     d_ptr->urlShorteningFilter_ = filter;
+}
+
+void ServiceLocator::setNetworkDebugger(std::shared_ptr<NetworkDebugger> debugger) {
+    d_ptr->networkDebugger_ = debugger;
+}
+
+std::shared_ptr<NetworkDebugger> ServiceLocator::networkDebugger() const
+{
+    return d_ptr->networkDebugger_;
 }
 
 void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory) {

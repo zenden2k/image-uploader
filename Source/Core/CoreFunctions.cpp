@@ -6,11 +6,14 @@
 #ifdef _WIN32
 #include "DefaultProxyProvider.h"
 #endif
+#include "Core/Network/NetworkDebugger.h"
 
 namespace CoreFunctions {
 
 void ConfigureProxy(INetworkClient* nm)
 {
+    auto debugger = ServiceLocator::instance()->networkDebugger();
+    nm->setDebugger(debugger);
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 #ifdef _WIN32
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {

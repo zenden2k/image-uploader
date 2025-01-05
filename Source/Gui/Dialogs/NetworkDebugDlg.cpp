@@ -8,6 +8,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/WebUtils.h"
+#include "Core/3rdpart/Hexdump.hpp"
 
 CNetworkDebugDlg::CNetworkDebugDlg()
     : model_()
@@ -16,13 +17,12 @@ CNetworkDebugDlg::CNetworkDebugDlg()
     contextMenuItemId = -1;
 }
 
-LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
-    SetWindowText(TR("Error while file format checking"));
-    TRC(IDC_FILESCANNOTBEUPLOADED, "These files cannot be uploaded to chosen servers:");
+LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    SetWindowText(TR("Network Debugger"));
     CenterWindow(); // center the dialog on the screen
-    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
 
+    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
+    DoDataExchange(FALSE);
 
     // set icons
     icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
@@ -32,13 +32,35 @@ LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
 
-    labelBoldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILESCANNOTBEUPLOADED));
-    
+    LOGFONT logFont;
+    WinUtils::StringToFont(_T("Courier New,9,,204"), &logFont);
+
+    detailsEditFont_.CreateFontIndirect(&logFont);
+    detailsEdit_.SetFont(detailsEditFont_);
+
+   // listView_.SubclassWindow(GetDlgItem(IDC_DEBUGLIST));
     listView_.Init();
 
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
-    enableButtons();
+
+    CMessageLoop* pLoop = _Module.GetMessageLoop();
+    ATLASSERT(pLoop != NULL);
+    pLoop->AddMessageFilter(this);
+
     return TRUE;
+}
+
+LRESULT CNetworkDebugDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    // unregister message filtering
+    CMessageLoop* pLoop = _Module.GetMessageLoop();
+    ATLASSERT(pLoop != NULL);
+    pLoop->RemoveMessageFilter(this);
+    return 0;
+}
+
+LRESULT CNetworkDebugDlg::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    ShowWindow(SW_HIDE);
+    return 0;
 }
 
 LRESULT CNetworkDebugDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
@@ -71,7 +93,7 @@ LRESULT CNetworkDebugDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
     listView_.HitTest(&hti);
 
     if (hti.iItem >= 0) {
-        FileFormatModelData* sd = model_.getDataByIndex(hti.iItem);
+        /* FileFormatModelData* sd = model_.getDataByIndex(hti.iItem);
 
         if (sd) {
             CMenu menu;
@@ -84,146 +106,40 @@ LRESULT CNetworkDebugDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 
             menu.AppendMenu(MF_STRING, ID_COPYVIEWURL, _T("Copy view url"));
             menu.EnableMenuItem(ID_COPYVIEWURL, sd->viewurl().empty() ? MF_DISABLED : MF_ENABLED);
-            */
+            
             contextMenuItemId = hti.iItem;
             menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
-        } 
+        } */
     }
 
     return 0;
 }
 
-void CNetworkDebugDlg::validateSettings() {
-    //CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
-    /* if (!WinUtils::FileExists(fileName)) {
-        throw ValidationException(CString(_T("Test file not found.")) + _T("\r\n") + fileName);
-    }*/
-}
 
-void CNetworkDebugDlg::enableButtons(){
-    bool enable = listView_.GetSelectedCount() != 0;
-    GuiTools::EnableDialogItem(m_hWnd, IDC_BUTTONSKIP, enable);
-    GuiTools::EnableDialogItem(m_hWnd, IDC_IGNORE, enable);
-}
-
-LRESULT CNetworkDebugDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/){
-    size_t errorCount = model_.hasItemsWithStatus(FileFormatModelData::RowStatus::Error);
-    if (errorCount) {
-        std::string msg = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%u error has not been fixed.", "%u errors have not been fixed.", errorCount)) % errorCount);
-        GuiTools::LocalizedMessageBox(m_hWnd, IuCoreUtils::Utf8ToWstring(msg).c_str(), APPNAME, MB_ICONERROR);
-        return 0;
-    }
-
-    size_t skippedCount = 0;
-    for (size_t i = 0; i < model_.getCount(); i++) {
-        auto* row = model_.getDataByIndex(i);
-        bool isSkipped = row->status() == FileFormatModelData::RowStatus::Skipped;
-
-        row->file->setSkipped(isSkipped);
-        if (isSkipped) {
-            skippedCount++;
-            result_.skippedFileIndexes.push_back(i);
-        }
-    }
-
-    // EndDialog((model_.getCount() - skippedCount) ? IDOK : IDCANCEL);
-    EndDialog(wID);
-    return 0;
-}
-
-LRESULT CNetworkDebugDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    EndDialog(wID);
-    
-    return 0;
-}
-
-LRESULT CNetworkDebugDlg::OnSkip(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
-    int nIndex = -1;
-    do {
-        nIndex = listView_.GetNextItem(nIndex, LVNI_SELECTED);
-        if (nIndex == -1) break;
-        auto* sd = model_.getDataByIndex(nIndex);
-        if (sd) {
-            sd->setStatus(FileFormatModelData::RowStatus::Skipped);
-            model_.notifyRowChanged(nIndex);
-        }
-
-    } while (true);
-
-    return 0;
-}
-
-LRESULT CNetworkDebugDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CNetworkDebugDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CLogWindow* logWindow = ServiceLocator::instance()->logWindow();
     logWindow->Show();
     return 0;
 }
 
-LRESULT CNetworkDebugDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    for (int i = 0; i < model_.getCount(); i++) {
-        auto* sd = model_.getDataByIndex(i);
-        if (sd) {
-            sd->setStatus(FileFormatModelData::RowStatus::Skipped);
-            model_.notifyRowChanged(i);
+LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    if (idCtrl == IDC_DEBUGLIST) {
+        auto* p = reinterpret_cast<LPNMLISTVIEW>(pnmh);
+        if (p->iItem >= 0) {
+
+            auto* item = model_.getDataByIndex(p->iItem);
+            if (item->type == CURLINFO_SSL_DATA_OUT || item->type == CURLINFO_SSL_DATA_IN) {
+                std::stringstream ss;
+                ss << CustomHexdump<8, true>(item->data.data(), item->data.length());
+                detailsEdit_.SetWindowText(IuCoreUtils::Utf8ToWstring(ss.str()).c_str());
+            } else {
+                detailsEdit_.SetWindowText(IuCoreUtils::Utf8ToWstring(item->data).c_str());
+            }
         }
     }
-
-    listView_.Invalidate();
     return 0;
 }
 
-LRESULT CNetworkDebugDlg::OnIgnore(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    int nIndex = -1;
-    do {
-        nIndex = listView_.GetNextItem(nIndex, LVNI_SELECTED);
-        if (nIndex == -1)
-            break;
-        auto* sd = model_.getDataByIndex(nIndex);
-        if (sd) {
-            sd->setStatus(FileFormatModelData::RowStatus::Ignore);
-            model_.notifyRowChanged(nIndex);
-        }
-
-    } while (true);
-    return 0;
+BOOL CNetworkDebugDlg::PreTranslateMessage(MSG* pMsg) {
+    return CWindow::IsDialogMessage(pMsg);
 }
-
-LRESULT CNetworkDebugDlg::OnIgnoreAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    for (int i = 0; i < model_.getCount(); i++) {
-        auto* sd = model_.getDataByIndex(i);
-        if (sd) {
-            sd->setStatus(FileFormatModelData::RowStatus::Ignore);
-            model_.notifyRowChanged(i);
-        }
-    }
-
-    listView_.Invalidate();
-    return 0;
-}
-
-LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/) {
-    if (idCtrl == IDC_FILELIST) {
-        enableButtons();
-    }
-    return 0;
-}
-
-const FileFormatCheckResult& CNetworkDebugDlg::result() const {
-    return result_;
-}
-
-/*
-LRESULT CNetworkDebugDlg::OnCopyDirectUrl(WORD, WORD, HWND, BOOL&) {
-    ServerData* sd = model_.getDataByIndex(contextMenuItemId);
-    if (sd) {
-        std::string directUrl = sd->directUrl();
-        if (!directUrl.empty()) {
-            WinUtils::CopyTextToClipboard(U2W(directUrl));
-        }
-    }
-
-    return 0;
-}*/

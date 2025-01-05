@@ -284,7 +284,6 @@ NetworkClient::NetworkClient()
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
     logger_ = nullptr;
-    proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
     m_userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36";
 
@@ -592,6 +591,12 @@ void NetworkClient::private_init_transfer()
     curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
     if (proxyProvider_) {
         proxyProvider_->provideProxyForUrl(this, m_url);
+    }
+    if (debugger_ && debugger_->isDebugEnabled()) {
+        curl_easy_setopt(curl_handle, CURLOPT_DEBUGFUNCTION, debug_callback);
+        curl_easy_setopt(curl_handle, CURLOPT_DEBUGDATA, this);
+        curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
+        debugger_->configureClient(this);
     }
 }
 
@@ -953,6 +958,10 @@ void NetworkClient::setProxyProvider(std::shared_ptr<ProxyProvider> provider) {
     proxyProvider_ = provider;
 }
 
+void NetworkClient::setDebugger(std::shared_ptr<Debugger> debugger) {
+    debugger_ = debugger;
+}
+
 void NetworkClient::setCurlOption(int option, const std::string &value) {
     curl_easy_setopt(curl_handle, static_cast<CURLoption>(option), value.c_str());
 }
@@ -1009,4 +1018,12 @@ void NetworkClient::clearThreadData() {
 #ifdef USE_OPENSSL
     OPENSSL_thread_stop();
 #endif
+}
+
+int NetworkClient::debug_callback(CURL* handle, curl_infotype type, char* data, size_t size, void* clientp) {
+    auto* pthis = static_cast<NetworkClient*>(clientp);
+    if (pthis->debugger_) {
+        return pthis->debugger_->debugCallback(pthis, type, data, size);
+    }
+    return 0;
 }

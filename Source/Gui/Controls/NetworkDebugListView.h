@@ -2,11 +2,11 @@
 #pragma once
 #include "atlheaders.h"
 
-class FileFormatCheckErrorModel;
+class NetworkDebugModel;
 
 class CNetworkDebugListView : public CWindowImpl<CNetworkDebugListView, CListViewCtrl> {
 public:
-    CNetworkDebugListView(FileFormatCheckErrorModel* model);
+    CNetworkDebugListView(NetworkDebugModel* model);
     ~CNetworkDebugListView() = default;
     DECLARE_WND_SUPERCLASS(_T("CNetworkDebugListView"), CListViewCtrl::GetWndClassName())
 
@@ -26,7 +26,7 @@ public:
     LRESULT OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 protected:
-    FileFormatCheckErrorModel* model_;
+    NetworkDebugModel* model_;
     void onRowChanged(size_t index);
 };
 

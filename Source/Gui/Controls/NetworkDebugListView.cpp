@@ -2,11 +2,13 @@
 
 #include <strsafe.h>
 
-#include "Gui/Models/FileFormatCheckErrorModel.h"
+#include "Gui/Models/NetworkDebugModel.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/i18n/Translator.h"
+#include "Core/ServiceLocator.h"
+#include "Core/TaskDispatcher.h"
 
-CNetworkDebugListView::CNetworkDebugListView(FileFormatCheckErrorModel* model)
+CNetworkDebugListView::CNetworkDebugListView(NetworkDebugModel* model)
     : model_(model)
 {
     using namespace std::placeholders;
@@ -17,11 +19,11 @@ void CNetworkDebugListView::Init() {
     SetItemCount(model_->getCount());
 
     AddColumn(TR("N"), 0);
-    AddColumn(TR("File"), 1);
-    AddColumn(TR("Mime-type"), 2);
-    AddColumn(TR("Size"), 3);
-    AddColumn(TR("Extension"), 4);
-    AddColumn(TR("Server"), 5);
+    AddColumn(TR("Thread"), 1);
+    AddColumn(TR("Time"), 2);
+    AddColumn(TR("Type"), 3);
+    AddColumn(TR("Text"), 4);
+
     /* AddColumn(_T("View URL"), 5);
     AddColumn(_T("Time"), 6);*/
 
@@ -30,12 +32,10 @@ void CNetworkDebugListView::Init() {
     //int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 
     SetColumnWidth(0, MulDiv(25, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(1, MulDiv(160, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(2, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(3, MulDiv(80, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(4, MulDiv(90, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(5, MulDiv(170, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(6, MulDiv(40, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(1, MulDiv(45, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(2, MulDiv(160, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(3, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
+    SetColumnWidth(4, MulDiv(320, dpiX, USER_DEFAULT_SCREEN_DPI));
 }
 
 LRESULT CNetworkDebugListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -77,5 +77,8 @@ LRESULT CNetworkDebugListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, 
 }
 
 void CNetworkDebugListView::onRowChanged(size_t index) {
-    RedrawItems(index, index);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+        SetItemCount(model_->getCount());
+        RedrawItems(index, index);
+    });
 }

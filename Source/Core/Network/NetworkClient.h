@@ -235,7 +235,7 @@ class NetworkClient: public INetworkClient
 
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
-
+        void setDebugger(std::shared_ptr<Debugger> debugger) override;
         ActionType currrentActionType() const;
 
         static void clearThreadData();
@@ -279,12 +279,15 @@ class NetworkClient: public INetworkClient
         size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
         static int private_seek_callback(void *userp, curl_off_t offset, int origin);
         static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
+        static int debug_callback(CURL* handle, curl_infotype type, char* data, size_t size, void* clientp);
         bool private_apply_method();
         void private_parse_headers();
         void private_cleanup_before();
         bool private_on_finish_request();
         void private_init_transfer();
         void private_checkResponse();
+       
+        
         public:
         /*! @cond PRIVATE */
         static void closeFileList(std::vector<FILE *>& files);
@@ -324,6 +327,7 @@ class NetworkClient: public INetworkClient
         CurlShare* curlShare_;
         Logger * logger_;
         std::shared_ptr<ProxyProvider> proxyProvider_;
+        std::shared_ptr<Debugger> debugger_;
 };
 
 #endif
