@@ -13,6 +13,7 @@ CNetworkDebugListView::CNetworkDebugListView(NetworkDebugModel* model)
 {
     using namespace std::placeholders;
     model_->setOnRowChangedCallback([this](auto&& PH1) { onRowChanged(PH1); });
+    model_->setOnItemCountChangedCallback([this](auto&& PH1) { onItemCountChanged(PH1); });
 }
 
 void CNetworkDebugListView::Init() {
@@ -78,7 +79,12 @@ LRESULT CNetworkDebugListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, 
 
 void CNetworkDebugListView::onRowChanged(size_t index) {
     ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-        SetItemCount(model_->getCount());
         RedrawItems(index, index);
+    });
+}
+
+void CNetworkDebugListView::onItemCountChanged(size_t index) {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+        SetItemCount(index);
     });
 }

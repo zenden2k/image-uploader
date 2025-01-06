@@ -46,7 +46,7 @@ NetworkDebugModel::NetworkDebugModel() {
         NetworkDebugModelData item;
         item.type = type;
         item.time_ = std::time(nullptr);
-        item.data = std::string(data, length);
+        item.data.assign(data, length);
         item.threadId_ = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
         size_t index = -1;
         {
@@ -54,9 +54,7 @@ NetworkDebugModel::NetworkDebugModel() {
             items_.push_back(std::move(item));
             index = items_.size() - 1;
         }
-        if (rowChangedCallback_) {
-            rowChangedCallback_(index);
-        }
+        notifyCountChanged(index+1);
     });
 }
 
@@ -102,12 +100,21 @@ uint32_t NetworkDebugModel::getItemColor(int row) const {
 }
 
 size_t NetworkDebugModel::getCount() const {
+    std::lock_guard<std::mutex> lk(itemsMutex_);
     return items_.size();
 }
 
 void NetworkDebugModel::notifyRowChanged(size_t row) {
     if (row < items_.size() && rowChangedCallback_) {
         rowChangedCallback_(row);
+    }
+}
+
+
+void NetworkDebugModel::notifyCountChanged(size_t row)
+{
+    if (itemCountChangedCallback_) {
+        itemCountChangedCallback_(row);
     }
 }
 
@@ -120,6 +127,11 @@ NetworkDebugModelData* NetworkDebugModel::getDataByIndex(size_t row) {
 
 void NetworkDebugModel::setOnRowChangedCallback(std::function<void(size_t)> callback) {
     rowChangedCallback_ = std::move(callback);
+}
+
+
+void NetworkDebugModel::setOnItemCountChangedCallback(std::function<void(size_t)> callback) {
+    itemCountChangedCallback_ = std::move(callback);
 }
 
 void NetworkDebugModel::resetData() {

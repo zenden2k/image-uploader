@@ -51,14 +51,17 @@ public:
     uint32_t getItemColor(int row) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
+    void notifyCountChanged(size_t row);
     NetworkDebugModelData* getDataByIndex(size_t row);
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
+    void setOnItemCountChangedCallback(std::function<void(size_t)> callback);
     void resetData();
 
 protected:
     mutable std::mutex itemsMutex_;
     std::vector<NetworkDebugModelData> items_;
     std::function<void(size_t)> rowChangedCallback_;
+    std::function<void(size_t)> itemCountChangedCallback_;
     boost::signals2::scoped_connection debugMessageConnection_;
     DISALLOW_COPY_AND_ASSIGN(NetworkDebugModel);
 };

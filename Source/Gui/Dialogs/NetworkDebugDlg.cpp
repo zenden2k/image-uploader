@@ -21,8 +21,12 @@ LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     SetWindowText(TR("Network Debugger"));
     CenterWindow(); // center the dialog on the screen
 
-    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
+    DlgResize_Init(true, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
+
+    splitterCtrl_.SubclassWindow(GetDlgItem(IDC_SPLITTER));
+    splitterCtrl_.SetSplitterPanes(listView_, detailsEdit_);
+    
 
     // set icons
     icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
@@ -128,12 +132,27 @@ LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& 
         if (p->iItem >= 0) {
 
             auto* item = model_.getDataByIndex(p->iItem);
+            bool hexDump = false;
             if (item->type == CURLINFO_SSL_DATA_OUT || item->type == CURLINFO_SSL_DATA_IN) {
+                hexDump = true;
+            } else {
+                std::wstring s = IuCoreUtils::Utf8ToWstring(item->data);
+               
+                for (int i = 0; i < 10, i < s.length(); i++) {
+                    if (!iswprint(s[i]) && !iswspace(s[i])) {
+                        hexDump = true;
+                        break;
+                    }
+                }
+
+                if (!hexDump) {
+                    detailsEdit_.SetWindowText(s.c_str());
+                }
+            }
+            if (hexDump) {
                 std::stringstream ss;
                 ss << CustomHexdump<8, true>(item->data.data(), item->data.length());
                 detailsEdit_.SetWindowText(IuCoreUtils::Utf8ToWstring(ss.str()).c_str());
-            } else {
-                detailsEdit_.SetWindowText(IuCoreUtils::Utf8ToWstring(item->data).c_str());
             }
         }
     }

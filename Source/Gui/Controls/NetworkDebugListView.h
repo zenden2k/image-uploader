@@ -28,6 +28,7 @@ public:
 protected:
     NetworkDebugModel* model_;
     void onRowChanged(size_t index);
+    void onItemCountChanged(size_t index);
 };
 
 

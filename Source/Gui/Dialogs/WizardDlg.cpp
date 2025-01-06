@@ -668,6 +668,9 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         WinToast::instance()->clear();
     }
 
+    if (networkDebugDlg_) {
+        networkDebugDlg_->DestroyWindow();
+    }
     bHandled = false;
     return 0;
 }
@@ -2477,7 +2480,7 @@ LRESULT CWizardDlg::OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hW
 
     if (!networkDebugDlg_) {
         networkDebugDlg_ = std::make_unique<CNetworkDebugDlg>();
-        networkDebugDlg_->Create(m_hWnd);
+        networkDebugDlg_->Create(NULL);
     }
     networkDebugDlg_->ShowWindow(SW_SHOW);
 

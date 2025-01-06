@@ -9,6 +9,7 @@
 #include "Gui/Models/NetworkDebugModel.h"
 #include "Gui/Controls/NetworkDebugListView.h"
 #include "Core/Upload/UploadEngine.h"
+#include "3rdpart/SplitterBar.h"
 //#include "Gui/Dialogs/WizardDlg.h"
 
 class WtlGuiSettings;
@@ -37,10 +38,11 @@ public:
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CNetworkDebugDlg)
-        BEGIN_DLGRESIZE_GROUP()
-            DLGRESIZE_CONTROL(IDC_DEBUGLIST, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+        //BEGIN_DLGRESIZE_GROUP()
+            DLGRESIZE_CONTROL(IDC_DEBUGLIST, /* DLSZ_SIZE_X | */DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDC_SPLITTER, /*DLSZ_MOVE_X | */DLSZ_SIZE_Y)
             DLGRESIZE_CONTROL(IDC_DEBUGDETAILS, DLSZ_SIZE_X | DLSZ_SIZE_Y)
-        END_DLGRESIZE_GROUP()
+        //END_DLGRESIZE_GROUP()
     END_DLGRESIZE_MAP()
 
     BEGIN_DDX_MAP(CNetworkDebugDlg)
@@ -70,6 +72,7 @@ private:
     NetworkDebugModel model_;
     CNetworkDebugListView listView_;
     CEdit detailsEdit_;
+    CVertSplitterCtrl splitterCtrl_;
     CIcon icon_, iconSmall_;
     
     CFont detailsEditFont_;
