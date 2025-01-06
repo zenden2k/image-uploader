@@ -11,6 +11,9 @@
 #include <mutex>
 #include <memory>
 
+#include <ppl.h>
+#include <concurrent_vector.h>
+
 #include <curl/curl.h>
 
 #include "Core/Utils/CoreTypes.h"
@@ -55,11 +58,11 @@ public:
     NetworkDebugModelData* getDataByIndex(size_t row);
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void setOnItemCountChangedCallback(std::function<void(size_t)> callback);
-    void resetData();
+    void clear();
 
 protected:
-    mutable std::mutex itemsMutex_;
-    std::vector<NetworkDebugModelData> items_;
+    //mutable std::mutex itemsMutex_;
+    concurrency::concurrent_vector<NetworkDebugModelData> items_;
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;
     boost::signals2::scoped_connection debugMessageConnection_;

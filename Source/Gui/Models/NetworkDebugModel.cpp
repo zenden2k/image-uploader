@@ -50,7 +50,7 @@ NetworkDebugModel::NetworkDebugModel() {
         item.threadId_ = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
         size_t index = -1;
         {
-            std::lock_guard<std::mutex> lk(itemsMutex_);
+            //std::lock_guard<std::mutex> lk(itemsMutex_);
             items_.push_back(std::move(item));
             index = items_.size() - 1;
         }
@@ -62,7 +62,7 @@ NetworkDebugModel::~NetworkDebugModel() {
 }
 
 std::string NetworkDebugModel::getItemText(int row, int column) const {
-    std::lock_guard<std::mutex> lk(itemsMutex_);
+    //std::lock_guard<std::mutex> lk(itemsMutex_);
     const auto& modelData = items_[row];
     if (column == 0) {
        // return std::to_string(row + 1);
@@ -88,7 +88,7 @@ std::string NetworkDebugModel::getItemText(int row, int column) const {
 }
 
 uint32_t NetworkDebugModel::getItemColor(int row) const {
-    std::lock_guard<std::mutex> lk(itemsMutex_);
+    //std::lock_guard<std::mutex> lk(itemsMutex_);
     const auto& modelData = items_[row];
     switch (modelData.type) {
         case CURLINFO_TEXT: 
@@ -100,7 +100,7 @@ uint32_t NetworkDebugModel::getItemColor(int row) const {
 }
 
 size_t NetworkDebugModel::getCount() const {
-    std::lock_guard<std::mutex> lk(itemsMutex_);
+    //std::lock_guard<std::mutex> lk(itemsMutex_);
     return items_.size();
 }
 
@@ -134,10 +134,9 @@ void NetworkDebugModel::setOnItemCountChangedCallback(std::function<void(size_t)
     itemCountChangedCallback_ = std::move(callback);
 }
 
-void NetworkDebugModel::resetData() {
-    for (auto& it : items_) {
-        it.clearInfo();
-    }
+void NetworkDebugModel::clear() {
+    items_.clear();
+    notifyCountChanged(0);
 }
 /*
 size_t NetworkDebugModel::hasItemsWithStatus(NetworkDebugModelData::RowStatus status) const {

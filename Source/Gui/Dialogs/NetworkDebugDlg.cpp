@@ -23,9 +23,10 @@ LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     DlgResize_Init(true, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
+    TRC(IDC_CLEARLOGBUTTON, "Clear log");
 
     splitterCtrl_.SubclassWindow(GetDlgItem(IDC_SPLITTER));
-    splitterCtrl_.SetSplitterPanes(listView_, detailsEdit_);
+    splitterCtrl_.SetSplitterPanes(listView_.m_hWnd, detailsEdit_.m_hWnd);
     
 
     // set icons
@@ -123,6 +124,12 @@ LRESULT CNetworkDebugDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lPa
 LRESULT CNetworkDebugDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CLogWindow* logWindow = ServiceLocator::instance()->logWindow();
     logWindow->Show();
+    return 0;
+}
+
+LRESULT CNetworkDebugDlg::OnClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    model_.clear();
+    detailsEdit_.SetWindowText(_T(""));
     return 0;
 }
 

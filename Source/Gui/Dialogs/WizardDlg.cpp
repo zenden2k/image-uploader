@@ -2398,7 +2398,11 @@ void CWizardDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
         PostMessage(WM_TASKDISPATCHERMSG, 0, 0);
     } else {
         if (GetCurrentThreadId() == mainThreadId_) {
-            task();
+            try {
+                task();
+            } catch (std::exception& ex) {
+                LOG(ERROR) << "Synchronous task error: " << ex.what();
+            }
         } else {
             TaskDispatcherMessageStruct msg;
             msg.callback = std::move(task);

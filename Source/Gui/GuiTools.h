@@ -87,5 +87,11 @@ namespace GuiTools
     BOOL SetClientRect(HWND hWnd, int x, int y);
     BOOL IsWindowCloaked(HWND hwnd);
     BOOL IsWindowVisibleOnScreen(HWND hwnd);
+
+    void SetWindowPointer(HWND hwnd, void* pthis);
+    // We need this function to check in lambda if CWindow* 'this' is still alive.
+    // The function checks if the window exists and belongs to the current class.
+    bool CheckWindowPointer(HWND hwnd, void* pthis);
+    void ClearWindowPointer(HWND hwnd);
 }
 #endif

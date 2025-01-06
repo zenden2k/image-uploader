@@ -31,6 +31,8 @@
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Core/ServiceLocator.h"
+#include "Core/TaskDispatcher.h"
 
 namespace {
 
@@ -70,6 +72,7 @@ CHistoryWindow::~CHistoryWindow()
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     CenterWindow();
     DlgResize_Init();
     dateFromPicker_ = GetDlgItem(IDC_DATEFROMPICKER);
@@ -489,21 +492,27 @@ void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
 
 void CHistoryWindow::threadsFinished()
 {
-    m_wndAnimation.ShowWindow(SW_HIDE);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this)) {
+            return;
+        }
+        m_wndAnimation.ShowWindow(SW_HIDE);
     
-    if (delayedLoad_) {
-        SendMessage(WM_MY_OPENHISTORYFILE);        
-    }
-    else if(delayedClosing_)
-    {
-        EndDialog(0);
-        return;
-    }
-    m_treeView.EnableWindow(true);
-    ::EnableWindow(GetDlgItem(IDCANCEL), true);
-    ::EnableWindow(GetDlgItem(IDOK), true);
-    ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), true);
-    ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
+        if (delayedLoad_) {
+            SendMessage(WM_MY_OPENHISTORYFILE);        
+        }
+        else if(delayedClosing_)
+        {
+            EndDialog(0);
+            return;
+        }
+        m_treeView.EnableWindow(true);
+        ::EnableWindow(GetDlgItem(IDCANCEL), true);
+        ::EnableWindow(GetDlgItem(IDOK), true);
+        ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), true);
+        ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
+    },
+    true);
 }
 
 void CHistoryWindow::threadsStarted()

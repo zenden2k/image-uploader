@@ -77,14 +77,20 @@ LRESULT CNetworkDebugListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, 
     return 0;
 }
 
+// This callback is called in the working thread
 void CNetworkDebugListView::onRowChanged(size_t index) {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-        RedrawItems(index, index);
-    });
+    //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+    // It is just SendMessage call
+    PostMessage(LVM_REDRAWITEMS, index, index);
+    //RedrawItems(index, index);
+    //});
 }
 
+// This callback is called in the working thread
 void CNetworkDebugListView::onItemCountChanged(size_t index) {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-        SetItemCount(index);
-    });
+    //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+    // It is just SendMessage call
+    //SetItemCount(index);
+    PostMessage(LVM_SETITEMCOUNT, index, 0L);
+    //});
 }

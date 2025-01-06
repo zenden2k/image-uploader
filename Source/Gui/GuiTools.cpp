@@ -641,4 +641,17 @@ BOOL IsWindowVisibleOnScreen(HWND hwnd) {
     return IsWindowVisible(hwnd) && !IsWindowCloaked(hwnd);
 }
 
+void SetWindowPointer(HWND hwnd, void* pthis) {
+    ::SetWindowLongPtr(hwnd, GWL_USERDATA, reinterpret_cast<LONG_PTR>(pthis));
+}
+
+bool CheckWindowPointer(HWND hwnd, void* pthis) {
+    return ::IsWindow(hwnd)
+        && ::GetWindowLongPtr(hwnd, GWL_USERDATA) == reinterpret_cast<LONG_PTR>(pthis);
+}
+
+void ClearWindowPointer(HWND hwnd) {
+    ::SetWindowLongPtr(hwnd, GWL_USERDATA, 0);
+}
+
 }

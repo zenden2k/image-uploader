@@ -56,6 +56,7 @@ CMainDlg::CMainDlg(WinServerIconCache* iconCache):
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     PageWnd = m_hWnd;
+    GuiTools::SetWindowPointer(m_hWnd, this);
 
     // register object for message filtering
     CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -103,6 +104,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+    GuiTools::ClearWindowPointer(m_hWnd);
     bHandled = FALSE;
     WaitThreadStop.Close();
     return 0;
@@ -509,8 +511,8 @@ DWORD CMainDlg::Run()
     Events[0] = m_EditorProcess;
     Events[1] = WaitThreadStop.m_hEvent;
     WaitForMultipleObjects(2, Events, FALSE, INFINITE);
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
-        if (itemIndexThumbToBeUpdated_ < 0) {
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this) || itemIndexThumbToBeUpdated_ < 0) {
             return;
         }
         ThumbsView.OutDateThumb(itemIndexThumbToBeUpdated_);

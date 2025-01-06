@@ -58,6 +58,7 @@ CUploadDlg::~CUploadDlg()
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     uploadProgressBar_ = GetDlgItem(IDC_UPLOADPROGRESS);
     imageViewWindow_.Create(m_hWnd);
@@ -410,9 +411,11 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 }
 
 void CUploadDlg::OnFolderUsed(UploadTask* task) {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([task, this] {
-        resultsWindow_->AddServer(task->serverProfile());
-    });
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = this->m_hWnd, profile = task->serverProfile(), this] {
+        if (::IsWindow(wnd)) {
+            resultsWindow_->AddServer(profile);
+        }
+    }, true);
 }
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
@@ -574,62 +577,54 @@ void CUploadDlg::showUploadProgressTab() {
 }
 
 // This callback is being executed in worker thread
-void CUploadDlg::onSessionFinished(UploadSession* session)
-{
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-        onSessionFinished_UiThread(session);
-    });
-}
-
-// This function is being executed in UI thread
-void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+void CUploadDlg::onSessionFinished(UploadSession* session) {
     int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     int totalFileCount = session->taskCount();
-    KillTimer(kEnableNextButtonTimer);
-    CString progressLabelText;
-    if (successFileCount == totalFileCount) {
-        progressLabelText = TR("All files have been successfully uploaded.");
-    } else {
-        if (CancelByUser) {
-            progressLabelText = TR("File uploading was cancelled by user.");
+
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, successFileCount, failedFileCount, totalFileCount, this] {
+        if (!::IsWindow(wnd)) {
+            return;
+        }
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        KillTimer(kEnableNextButtonTimer);
+        CString progressLabelText;
+        if (successFileCount == totalFileCount) {
+            progressLabelText = TR("All files have been successfully uploaded.");
+        } else {
+            if (CancelByUser) {
+                progressLabelText = TR("File uploading was cancelled by user.");
+            } else if (failedFileCount) {
+                progressLabelText.Format(TR("Errors: %d"), failedFileCount);
+                progressLabelText = CString(TR("Uploading has been finished.")) + _T(" ") + progressLabelText;
+            }
+        }
+
+        SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
+        resultsWindow_->UpdateOutput(true);
+        updateTotalProgress();
+        if (failedFileCount * 100 / totalFileCount >= 50) {
+            uploadProgressBar_.SetState(PBST_ERROR);
         } else if (failedFileCount) {
-            progressLabelText.Format(TR("Errors: %d"), failedFileCount);
-            progressLabelText = CString(TR("Uploading has been finished.")) + _T(" ") + progressLabelText;
+            uploadProgressBar_.SetState(PBST_PAUSED);
         }
-    }
-
-    SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
-    resultsWindow_->UpdateOutput(true);
-    updateTotalProgress();
-    if (failedFileCount * 100 / totalFileCount >= 50) {
-        uploadProgressBar_.SetState(PBST_ERROR);
-    }
-    else if (failedFileCount) {
-        uploadProgressBar_.SetState(PBST_PAUSED);
-    }
-    ThreadTerminated();
-    if (successFileCount == totalFileCount) {
-        if (settings->AutoCopyToClipboard) {
-            resultsWindow_->copyResultsToClipboard();
+        ThreadTerminated();
+        if (successFileCount == totalFileCount) {
+            if (settings->AutoCopyToClipboard) {
+                resultsWindow_->copyResultsToClipboard();
+            }
+            showUploadResultsTab();
         }
-        showUploadResultsTab();
-    }
+    }, true);
 }
-
 
 // This callback is being executed in worker thread
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 {
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (!fileTask)
-    {
-        return;
-    }
-    auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
+    //auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
 
-    if (fileTask->role() == UploadTask::DefaultRole && ok) {
+    if (fileTask && fileTask->role() == UploadTask::DefaultRole /* && ok*/) {
         UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
@@ -644,12 +639,8 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
             urlList_[fps->tableRow] = std::move(item);
         }
 
-        /*taskDispatcher->runInGuiThread([this] { 
-            updateTotalProgress(); 
-        });*/
-        
-        //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
-    } else if (fileTask->role() == UploadTask::UrlShorteningRole && ok) {
+    }
+    if (task->role() == UploadTask::UrlShorteningRole && ok) {
         UploadTask* parentTask = task->parentTask();
         UploadListItem* fps = static_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
@@ -660,25 +651,26 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
             auto& row = urlList_[fps->tableRow]; 
             row.uploadResult.directUrlShortened = parentTask->uploadResult()->getDirectUrlShortened();
             row.uploadResult.downloadUrlShortened = parentTask->uploadResult()->getDownloadUrlShortened();
-        }
-        
+        }   
     }
-    //taskDispatcher->runInGuiThread([&] {
-        GenerateOutput();
-    //});
+
+    // No need to use runInGuiThread() here because update of the output is postponed and triggers by timer
+    GenerateOutput();
 }
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-    auto* dispatcher = ServiceLocator::instance()->taskRunner();
-    if (!backgroundThreadStarted_)
-    {
-        dispatcher->runInGuiThread([&] {
-            backgroundThreadStarted();
-        });
-    }
     using namespace std::placeholders;
     child->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+    auto* dispatcher = ServiceLocator::instance()->taskRunner();
+    if (!backgroundThreadStarted_) {
+        dispatcher->runInGuiThread([wnd = this->m_hWnd, this] {
+            if (GuiTools::CheckWindowPointer(wnd, this)) {
+                backgroundThreadStarted();
+            }
+        }, true);
+    }
+   
 }
 
 void CUploadDlg::backgroundThreadStarted()

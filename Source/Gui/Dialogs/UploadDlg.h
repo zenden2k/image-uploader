@@ -109,7 +109,6 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
-        void onSessionFinished_UiThread(UploadSession* session);
         void onTaskFinished(UploadTask* task, bool ok);
         void onChildTaskAdded(UploadTask* child);
         void backgroundThreadStarted();
