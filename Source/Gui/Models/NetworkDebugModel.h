@@ -30,6 +30,7 @@ public:
     std::string data;
     time_t time_;
     std::string threadId_;
+    std::string decoded_;
 
 public:
     NetworkDebugModelData()
@@ -44,6 +45,12 @@ public:
     RowStatus status() const {
         return status_;
     }
+
+    bool hasDecoded() const {
+        return !decoded_.empty();
+    }
+
+    std::string getDecoded();
 };
 
 class NetworkDebugModel {

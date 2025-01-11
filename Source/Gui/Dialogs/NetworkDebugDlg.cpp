@@ -143,18 +143,9 @@ LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& 
             if (item->type == CURLINFO_SSL_DATA_OUT || item->type == CURLINFO_SSL_DATA_IN) {
                 hexDump = true;
             } else {
-                std::wstring s = IuCoreUtils::Utf8ToWstring(item->data);
-               
-                for (int i = 0; i < 10, i < s.length(); i++) {
-                    if (!iswprint(s[i]) && !iswspace(s[i])) {
-                        hexDump = true;
-                        break;
-                    }
-                }
-
-                if (!hexDump) {
-                    detailsEdit_.SetWindowText(s.c_str());
-                }
+                
+                showText(item->hasDecoded() ? item->getDecoded() : item->data);
+                return 0;
             }
             if (hexDump) {
                 std::stringstream ss;
@@ -166,6 +157,42 @@ LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& 
     return 0;
 }
 
+LRESULT CNetworkDebugDlg::OnDecodeResponseButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int nCurItem;
+
+    if ((nCurItem = listView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED)) < 0)
+        return {};
+
+    auto* item = model_.getDataByIndex(nCurItem);
+    if (!item) {
+        return 0;
+    }
+    std::string s = item->getDecoded();
+    showText(s);
+    return 0;
+}
+
 BOOL CNetworkDebugDlg::PreTranslateMessage(MSG* pMsg) {
     return CWindow::IsDialogMessage(pMsg);
+}
+
+bool CNetworkDebugDlg::showText(const std::string src)
+{
+    std::wstring s = IuCoreUtils::Utf8ToWstring(src);
+    bool hexDump = false;
+    for (int i = 0; i < 10, i < s.length(); i++) {
+        if (!iswprint(s[i]) && !iswspace(s[i])) {
+            hexDump = true;
+            break;
+        }
+    }
+
+    if (!hexDump) {
+        detailsEdit_.SetWindowText(s.c_str());
+    } else {
+        std::stringstream ss;
+        ss << CustomHexdump<8, true>(src.data(), src.length());
+        detailsEdit_.SetWindowText(IuCoreUtils::Utf8ToWstring(ss.str()).c_str());
+    }
+    return true;
 }
