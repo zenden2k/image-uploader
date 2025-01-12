@@ -22,6 +22,7 @@ class CLogWindow;
 class UrlShorteningFilter;
 class TaskDispatcher;
 class AbstractServerIconCache;
+class NetworkDebugger;
 
 class ServiceLocator {
     ServiceLocator();
@@ -56,6 +57,8 @@ public:
     void setSettings(BasicSettings* settingsInstance);
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter() const;
     void setUrlShorteningFilter(std::shared_ptr<UrlShorteningFilter> filter);
+    void setNetworkDebugger(std::shared_ptr<NetworkDebugger> debugger);
+    std::shared_ptr<NetworkDebugger> networkDebugger() const;
 
     template<class T> T* settings() const {
         T* res = dynamic_cast<T*>(basicSettings());

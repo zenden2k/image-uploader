@@ -15,7 +15,7 @@ function _Replace(str, pattern, replace_with) {
 function  UploadFile(FileName, options) {
     local task = options.getTask().getFileTask();
     local newFilename = task.getDisplayName();
-    local directory = ServerParams.getParam("directory");
+    local directory = ServerParams.getParam("directory") + "/";
     local convertUncPath = 0;
     try {
         convertUncPath = ServerParams.getParam("convertUncPath").tointeger();

@@ -27,6 +27,8 @@ limitations under the License.
 #include <string>
 #include <memory>
 #include <functional>
+
+#include <curl/curl.h>
 #include "Core/Utils/CoreTypes.h"
 
 typedef void CURL;
@@ -48,6 +50,14 @@ class INetworkClient {
         public:
             virtual void logNetworkError(bool error, const std::string & msg) = 0;
             virtual ~Logger() = default;
+        };
+
+        class Debugger {
+        public:
+            virtual int debugCallback(INetworkClient* client, curl_infotype type, char* data, size_t size) = 0;
+            virtual bool isDebugEnabled() const = 0;
+            virtual void configureClient(INetworkClient* client) = 0;
+            virtual ~Debugger() = default;
         };
 
         class AbortedException : public std::runtime_error {
@@ -97,6 +107,7 @@ class INetworkClient {
         virtual void setTreatErrorsAsWarnings(bool treat){}
         virtual void setUploadBufferSize(int size){}
         virtual void setProxyProvider(std::shared_ptr<ProxyProvider> provider){}
+        virtual void setDebugger(std::shared_ptr<Debugger> debugger) {};
         virtual void setLogger(Logger* logger){}
         virtual std::string urlEncode(const std::string& str){ return std::string(); }
         virtual std::string urlDecode(const std::string& str){ return std::string(); }

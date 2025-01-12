@@ -72,6 +72,7 @@
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 #include "Gui/Dialogs/ScreenshotDlg.h"
+#include "Gui/Dialogs/NetworkDebugDlg.h"
 
 using namespace Gdiplus;
 namespace
@@ -667,6 +668,9 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
         WinToast::instance()->clear();
     }
 
+    if (networkDebugDlg_) {
+        networkDebugDlg_->DestroyWindow();
+    }
     bHandled = false;
     return 0;
 }
@@ -2371,7 +2375,9 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+    popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, _T("Network Debugger"));
 #ifndef NDEBUG
+
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
 #endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
@@ -2392,7 +2398,11 @@ void CWizardDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
         PostMessage(WM_TASKDISPATCHERMSG, 0, 0);
     } else {
         if (GetCurrentThreadId() == mainThreadId_) {
-            task();
+            try {
+                task();
+            } catch (std::exception& ex) {
+                LOG(ERROR) << "Synchronous task error: " << ex.what();
+            }
         } else {
             TaskDispatcherMessageStruct msg;
             msg.callback = std::move(task);
@@ -2468,6 +2478,17 @@ LRESULT CWizardDlg::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         // User is logging off
     }
     return TRUE;
+}
+
+LRESULT CWizardDlg::OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+
+    if (!networkDebugDlg_) {
+        networkDebugDlg_ = std::make_unique<CNetworkDebugDlg>();
+        networkDebugDlg_->Create(NULL);
+    }
+    networkDebugDlg_->ShowWindow(SW_SHOW);
+
+    return 0;
 }
 
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

@@ -182,6 +182,8 @@
 #define IDD_TRANSFERSETTINGSPAGE        338
 #define IDD_SERVERSCHECKERDLG1          339
 #define IDD_FILEFORMATERRORDLG          339
+#define IDD_CURLDEBUGDLG                340
+#define IDD_NETWORKDEBUGDLG             340
 #define IDB_ICONROTATECW                342
 #define IDB_ICONROTATE                  343
 #define IDB_ICONROTATEFLIP              344
@@ -316,6 +318,7 @@
 #define IDC_MENUITEMTITLEEDIT           1040
 #define IDC_FILENAMEEDIT                1040
 #define IDC_THUMBHEIGHT                 1040
+#define IDC_DEBUGDETAILS                1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -414,6 +417,7 @@
 #define IDC_BROWSEPRIVATEKEYBUTTON      1080
 #define IDC_OPENSYSTEMCONNECTION        1080
 #define IDC_IGNOREALL                   1080
+#define IDC_DECODERESPONSEBUTTON        1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
@@ -776,6 +780,9 @@
 #define IDC_SECUREDCONNECTIONLABEL      1346
 #define IDC_SECUREDCONNECTIONCOMBOBOX   1347
 #define IDC_GROUPBOX                    1348
+#define IDC_TITLELABEL                  1349
+#define IDC_DEBUGLIST                   1350
+#define IDC_SPLITTER                    1351
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -823,7 +830,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        347
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1349
+#define _APS_NEXT_CONTROL_VALUE         1352
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

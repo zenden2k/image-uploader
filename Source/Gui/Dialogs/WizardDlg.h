@@ -64,6 +64,7 @@ class Win7JumpList;
 class WtlGuiSettings;
 class CFloatingWindow;
 class WinServerIconCache;
+class CNetworkDebugDlg;
 
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
@@ -74,7 +75,7 @@ class CWizardDlg :
 {
 public:
     enum { IDD = IDD_WIZARDDLG };
-    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER };
+    enum { IDM_OPENSCREENSHOTS_FOLDER = 9889, IDM_OPENSERVERSCHECKER, IDM_NETWORKDEBUGGER };
     enum { kNewFilesTimer = 1 };
     static constexpr WPARAM kWmMyExitParam = 5;
 
@@ -116,6 +117,7 @@ public:
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
         COMMAND_HANDLER(IDM_OPENSERVERSCHECKER, BN_CLICKED, OnServersCheckerClicked)
+        COMMAND_HANDLER(IDM_NETWORKDEBUGGER, BN_CLICKED, OnNetworkDebuggerClicked)
         
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
         COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
@@ -152,6 +154,7 @@ public:
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
     void setSessionImageServer(const ServerProfileGroup& server);
@@ -329,6 +332,7 @@ protected:
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
+    std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
 };
 
 

@@ -39,6 +39,7 @@
 #include "Gui/Dialogs/LangSelect.h"
 #include "versioninfo.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Network/NetworkDebugger.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Upload/Filters/UserFilter.h"
 #include "Core/Upload/Filters/ImageConverterFilter.h"
@@ -74,6 +75,7 @@ class Application {
     std::unique_ptr<UserFilter> userFilter_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
     std::unique_ptr<TaskDispatcher> taskDispatcher_;
+    std::shared_ptr<NetworkDebugger> networkDebugger_;
     MediaFoundationInitializer mediaFoundationInitializer_;
     CString commonTempFolder_, tempFolder_;
 public:
@@ -156,6 +158,8 @@ public:
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
         serviceLocator->setTranslator(&lang_);
+        networkDebugger_ = std::make_shared<NetworkDebugger>();
+        serviceLocator->setNetworkDebugger(networkDebugger_);
         scriptsManager_ = std::make_unique<ScriptsManager>(serviceLocator->networkClientFactory());
         engineList_ = std::make_unique<CMyEngineList>();
         serviceLocator->setEngineList(engineList_.get());

@@ -1,6 +1,7 @@
 
 set(SRC_LIST Network/NetworkClient.cpp
 	Network/NetworkClientFactory.cpp
+	Network/NetworkDebugger.cpp
     Upload/DefaultUploadEngine.cpp
     Upload/FileUploadTask.cpp
     Upload/ScriptUploadEngine.cpp
@@ -105,6 +106,7 @@ set(SRC_LIST Network/NetworkClient.cpp
 
 set(HEADER_LIST Network/NetworkClient.h
 	Network/NetworkClientFactory.h
+    Network/NetworkDebugger.h
     Upload/DefaultUploadEngine.h
     Upload/FileUploadTask.h
     Upload/ScriptUploadEngine.h

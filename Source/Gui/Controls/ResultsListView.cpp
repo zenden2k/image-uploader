@@ -84,5 +84,5 @@ LRESULT CResultsListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL&
 
 // Called from the worker thread
 void CResultsListView::onRowChanged(size_t index) {
-    RedrawItems(index, index);
+    PostMessage(LVM_REDRAWITEMS, index, index);
 }
