@@ -81,8 +81,10 @@ function TestConnection() {
         nm.setCurlOptionInt(CURLOPT_USE_SSL, CURLUSESSL_TRY);
     }
 
-    nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
-
+    if (activeConnectionPort != "") {
+        nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
+    }
+    
     if (nm.doGet(url)){
         if (nm.responseBody() != "") {
             return {
@@ -125,7 +127,9 @@ function UploadFile(FileName, options) {
         nm.setCurlOptionInt(CURLOPT_USE_SSL, CURLUSESSL_TRY);
     }
 
-    nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
+    if (activeConnectionPort != "") {
+        nm.setCurlOption(CURLOPT_FTPPORT, activeConnectionPort);
+    }
 
     if(folder.slice(0,1) != "/")
         folder = "/" + folder;

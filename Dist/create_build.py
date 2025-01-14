@@ -334,6 +334,8 @@ def generate_version_header(filename, inc_version):
             elif define_name == "IU_APP_VER":
                 if IS_RELEASE:
                     result[define_name] = result[define_name].replace("-nightly", "")
+                else:
+                    result[define_name] = now.strftime("%Y%m%d-nightly")
                 out_text += "#define {} \"{}\"\n".format(define_name, str( result[define_name] ))
             elif define_name == "IU_BUILD_DATE":
                 now = datetime.datetime.now()
