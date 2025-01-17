@@ -12,6 +12,7 @@
 #include "ServerListTool/Helpers.h"
 #include "Core/ServiceLocator.h"
 #include "Core/TaskDispatcher.h"
+#include "CheckShortUrlTask.h"
 
 namespace ServersListTool {
 
@@ -131,6 +132,10 @@ void ServersChecker::stop() {
     if (uploadSession_) {
         uploadSession_->stop();
     }
+    std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+    for (auto& task : scheduledTasks_) {
+        task->cancel();
+    }
 }
 
 bool ServersChecker::isRunning() const {
@@ -214,39 +219,28 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
         return;
     }
     UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
-    ServerData& data = *model_->getDataByIndex(userData->rowIndex);
+    ServerData* data = model_->getDataByIndex(userData->rowIndex);
 
-    client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-
-    bool ok = false;
-    std::string targetUrl = task->uploadResult()->directUrl;
-    int i = 0; //counter for limiting max redirects
-    if (!targetUrl.empty()) {
-        int responseCode = 0;
-
-        do {
-            client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-            client->doGet(targetUrl);
-
-            responseCode = client->responseCode();
-            if (responseCode == 302 || responseCode == 301) {
-                targetUrl = client->getCurlInfoString(CURLINFO_REDIRECT_URL);
-            }
-
-            i++;
-        } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
-
-        if (!targetUrl.empty() && targetUrl == urlTask->getUrl()) {
-            data.setStrMark("Good link");
-            //m_ListView.SetItemText(userData->rowIndex, 3, _T("Good link"));
-            ok = true;
+    auto networkClientFactory = ServiceLocator::instance()->networkClientFactory();
+    auto checkTask = std::make_shared<CheckShortUrlTask>(networkClientFactory, task->uploadResult()->directUrl, urlTask->getUrl());
+    checkTask->onTaskFinished.connect([this, rowIndex = userData->rowIndex, data](auto* task, bool ok) {
+        if (ok) {
+            data->setStrMark("Good link");
         }
+        data->filesChecked++;
+        data->stars[0] = ok ? 5 : 0;
+        data->finished = true;
+        markServer(rowIndex);
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        auto it = std::remove_if(scheduledTasks_.begin(), scheduledTasks_.end(), [task](auto&& a) { return a.get() == task; });
+        scheduledTasks_.erase(it, scheduledTasks_.end());
+    });
+    {
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        scheduledTasks_.push_back(checkTask);
     }
 
-    data.filesChecked++;
-    data.stars[0] = ok ? 5 : 0;
-    data.finished = true;
-    markServer(userData->rowIndex);
+    ServiceLocator::instance()->taskDispatcher()->postTask(checkTask);
 }
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {

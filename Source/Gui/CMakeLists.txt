@@ -164,6 +164,7 @@ set(SRC_LIST
     ../ServerListTool/ServersCheckerModel.cpp
     ../ServerListTool/Helpers.cpp
     ../ServerListTool/ServerListView.cpp
+    ../ServerListTool/CheckShortUrlTask.cpp
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
@@ -338,6 +339,7 @@ set(HEADER_LIST
     ../ServerListTool/ServersCheckerModel.h
     ../ServerListTool/Helpers.h
     ../ServerListTool/ServerListView.h
+    ../ServerListTool/CheckShortUrlTask.h
     ../resource.h
 )
 	

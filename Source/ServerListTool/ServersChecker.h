@@ -16,6 +16,7 @@ class CFileDownloader;
 namespace ServersListTool {
 
 class ServersCheckerModel;
+class CheckShortUrlTask;
 
 struct UploadTaskUserData {
     size_t rowIndex = 0;
@@ -58,6 +59,8 @@ protected:
     std::string srcFileHash_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::atomic<int> linksToCheck_;
+    std::vector<std::shared_ptr<CheckShortUrlTask>> scheduledTasks_;
+    std::mutex scheduledTasksMutex_;
 };
 }
 #endif

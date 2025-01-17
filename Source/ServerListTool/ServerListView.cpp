@@ -78,6 +78,6 @@ LRESULT CServerListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& 
 }
 
 void CServerListView::onRowChanged(size_t index) {
-    RedrawItems(index, index);
+    PostMessage(LVM_REDRAWITEMS, index, index);
 }
 }
