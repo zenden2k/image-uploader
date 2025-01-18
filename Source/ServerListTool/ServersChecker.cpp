@@ -213,7 +213,6 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 }
 
 void ServersChecker::checkShortUrl(UploadTask* task) {
-    auto client = networkClientFactory_->create();
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     if (!urlTask) {
         return;
@@ -221,13 +220,12 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
     UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
     ServerData* data = model_->getDataByIndex(userData->rowIndex);
 
-    auto networkClientFactory = ServiceLocator::instance()->networkClientFactory();
-    auto checkTask = std::make_shared<CheckShortUrlTask>(networkClientFactory, task->uploadResult()->directUrl, urlTask->getUrl());
+    auto checkTask = std::make_shared<CheckShortUrlTask>(networkClientFactory_, task->uploadResult()->directUrl, urlTask->getUrl());
     checkTask->onTaskFinished.connect([this, rowIndex = userData->rowIndex, data](auto* task, bool ok) {
         if (ok) {
             data->setStrMark("Good link");
         }
-        data->filesChecked++;
+        ++data->filesChecked;
         data->stars[0] = ok ? 5 : 0;
         data->finished = true;
         markServer(rowIndex);

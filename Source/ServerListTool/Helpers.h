@@ -2,11 +2,11 @@
 #define IU_SERVERLISTTOOL_HELPERS_H
 
 #pragma once
+
 #include "Core/Utils/CoreTypes.h"
 #include "atlheaders.h"
 
-namespace ServersListTool {
-namespace Helpers {
+namespace ServersListTool::Helpers {
 
 struct MyFileInfo {
     int width;
@@ -20,10 +20,8 @@ struct MyFileInfo {
     }
 };
 
-CString MyBytesToString(int64_t nBytes);
 CString GetFileInfo(CString fileName, MyFileInfo* mfi);
 
-}
 }
 
 #endif

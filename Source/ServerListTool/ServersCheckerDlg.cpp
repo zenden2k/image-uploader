@@ -133,6 +133,7 @@ LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
         return 0;
     }
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+    std::string utf8FileName = W2U(fileName);
     sourceFileHash_ = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
     CString report = _T("Source file: ") + GetFileInfo(fileName, &sourceFileInfo_);
     SetDlgItemText(IDC_TOOLSOURCEFILE, report);
@@ -155,11 +156,11 @@ LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
     model_.resetData();
 
     CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
-
-    settings_->testFileName = W2U(fileName);
-    settings_->testUrl = W2U(url);
+    std::string utf8Url = W2U(url);
+    settings_->testFileName = utf8FileName;
+    settings_->testUrl = utf8Url;
     loadingAnimation_.ShowWindow(SW_SHOW);
-    serversChecker_->start(W2U(fileName), W2U(url));
+    serversChecker_->start(utf8FileName, utf8Url);
     return 0;
 }
 

@@ -35,8 +35,6 @@ public:
         color = 0;
     }
 
-    
-
     void clearInfo() {
         color = 0;
         // TODO:
@@ -51,15 +49,6 @@ public:
     {
         status_ = status;
     }
-    /*
-    std::string statusText() const {
-        return statusText_;
-    }
-
-    void setStatusText(const std::string& text) {
-        statusText_ = text;
-    }*/
-
 };
 
 

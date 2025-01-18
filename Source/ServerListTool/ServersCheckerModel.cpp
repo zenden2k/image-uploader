@@ -5,10 +5,12 @@
 namespace ServersListTool {
 
 ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList_(engineList) {
+    auto builtInScripts = engineList_->builtInScripts();
+
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);
-        if (ued->PluginName == "ftp" || ued->PluginName == "sftp" || ued->PluginName == "webdav" 
-            || ued->PluginName == "directory") {
+        
+        if (std::find(builtInScripts.begin(), builtInScripts.end(), ued->PluginName) != builtInScripts.end()) {
             continue;
         }
         auto sd = std::make_unique<ServerData>();
