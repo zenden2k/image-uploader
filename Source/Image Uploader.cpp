@@ -58,6 +58,7 @@
 CAppModule _Module;
 
 class Application {
+    CMessageLoop theLoop_;
     CLogWindow logWindow_;
     WtlGuiSettings settings_;
     CLang lang_;
@@ -78,6 +79,7 @@ class Application {
     std::shared_ptr<NetworkDebugger> networkDebugger_;
     MediaFoundationInitializer mediaFoundationInitializer_;
     CString commonTempFolder_, tempFolder_;
+
 public:
     Application() {
         srand(static_cast<unsigned>(time(nullptr)));
@@ -89,6 +91,7 @@ public:
         CScriptUploadEngine::DestroyScriptEngine();
         //ServiceLocator::instance()->setUploadManager(nullptr);
         logWindow_.DestroyWindow();
+        _Module.RemoveMessageLoop();
         // Remove temporary files
         IuCommonFunctions::ClearTempFolder(tempFolder_);
         std::vector<CString> folders;
@@ -128,6 +131,8 @@ public:
         google::AddLogSink(myLogSink_.get());
         serviceLocator->setSettings(&settings_);
         serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
+
+        _Module.AddMessageLoop(&theLoop_);
         logWindow_.Create(nullptr);
         logWindow_.setLogger(logger_.get());
 
@@ -244,9 +249,6 @@ public:
 
         GdiPlusInitializer gdiPlusInitializer;
         initServices();
-
-        CMessageLoop theLoop;
-        _Module.AddMessageLoop(&theLoop);
         
         CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
         auto* serviceLocator = ServiceLocator::instance();
@@ -368,11 +370,10 @@ public:
             dlgMain.ShowWindow(nCmdShow);
         }
 
-        int nRet = theLoop.Run();
+        int nRet = theLoop_.Run();
         if (dlgMain.m_hWnd) {
             dlgMain.DestroyWindow();
         }
-        _Module.RemoveMessageLoop();
 
         return nRet;
     }
@@ -418,7 +419,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     }
     _Module.Term();
 
-    
     OleUninitialize();
     //google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();

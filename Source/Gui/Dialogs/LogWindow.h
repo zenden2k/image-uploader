@@ -59,6 +59,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
 
         BEGIN_MSG_MAP(CLogWindow)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_ID_HANDLER(IDC_COPYTEXTTOCLIPBOARD, OnCopyToClipboard)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
@@ -81,10 +82,11 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CLogListBox MsgList;
-        void Show();
+        void Show(bool setActive = true);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
         LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
         LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);

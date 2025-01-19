@@ -36,6 +36,7 @@
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Core/TaskDispatcher.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
@@ -56,10 +57,7 @@ CHistoryTreeControl::~CHistoryTreeControl()
     }
 }
 
-void CHistoryTreeControl::CreateDownloader()
-{
-    using namespace std::placeholders;
-
+void CHistoryTreeControl::CreateDownloader() {
     if(!m_FileDownloader) {
         m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
         m_FileDownloader->setOnConfigureNetworkClientCallback([this](auto* nm) { OnConfigureNetworkClient(nm); });
@@ -79,6 +77,11 @@ LRESULT CHistoryTreeControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CHistoryTreeControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
     abortLoadingThreads();
+    return 0;
+}
+
+LRESULT CHistoryTreeControl::OnThumbLoaded(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    Invalidate();
     return 0;
 }
 
@@ -124,6 +127,7 @@ void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoE
     it2->hi = it;
     it2->thumbnail = nullptr;
     it2->ThumbnailRequested = false;
+    it2->treeItem = item;
 }
 
 DWORD CHistoryTreeControl::OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
@@ -709,8 +713,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
         std::string thumbUrl = it->hi->thumbUrl;
         if(thumbUrl.empty()) return ;
         std::string cacheFile = ServiceLocator::instance()->localFileCache()->get(thumbUrl);
-        if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))
-        {
+        if(!cacheFile.empty()) {
             it->thumbnailSource = cacheFile;
             m_thumbLoadingQueueMutex.lock();
             m_thumbLoadingQueue.push_back(it);
@@ -742,9 +745,16 @@ DWORD CHistoryTreeControl::Run()
             // Try downloading it
             DownloadThumb(it);    
         }
-        else
-        {
-            Invalidate();
+        else {
+            /* ServiceLocator::instance()->taskRunner()->runInGuiThread([this, treeItem = it->treeItem] {
+                RECT rc {};
+                if (GetItemRect(FindVisibleItemIndex(treeItem), &rc) != LB_ERR) {
+                    InvalidateRect(&rc);
+                }
+            },
+            true);*/
+           
+            PostMessage(WM_APP_MY_THUMBLOADED, 0, 0);
         }
     }
     m_bIsRunning = false;

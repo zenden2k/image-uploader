@@ -277,17 +277,17 @@ LRESULT CAboutDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/
     HWND wnd = reinterpret_cast<HWND>(wParam);
     HWND authorNameLabelWnd = GetDlgItem(IDC_AUTHORNAMELABEL);
 	
-	if (wnd == authorNameLabelWnd) {
+    if (wnd == authorNameLabelWnd) {
         RECT rc;
         ::GetWindowRect(authorNameLabelWnd, &rc);
-        POINT menuOrigin{ rc.left,rc.bottom };
-		
+        POINT menuOrigin { rc.left, rc.bottom };
+
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
         contextMenu.AppendMenu(MF_STRING, ID_COPYAUTHOREMAIL, TR("Copy e-mail"));
         //contextMenu.SetMenuDefaultItem(ID_COPYAUTHOREMAIL, FALSE);
         contextMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
-	}
+    }
 
     return 0;
 }

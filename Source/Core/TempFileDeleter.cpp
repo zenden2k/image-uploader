@@ -7,7 +7,9 @@ TempFileDeleter::~TempFileDeleter()
     try {
         cleanup();
     } catch (const std::exception& ex) {
-        LOG(ERROR) << ex.what();
+        LOG(ERROR) << "Failed to clean up temporary files: " << ex.what();
+    } catch (...) {
+        LOG(ERROR) << "Unknown error during cleanup.";
     }
 }
 
