@@ -1,13 +1,16 @@
 #include "NetworkDebugModel.h"
 
 #include <iomanip>
+#include <fstream>
 #include <sstream>
+#include <filesystem>
 
 #include <zlib.h>
 
 #include "Core/ServiceLocator.h"
 #include "Core/Network/NetworkDebugger.h"
 #include "Func/MyEngineList.h"
+#include "Core/Utils/IOException.h"
 
 namespace {
 
@@ -120,27 +123,7 @@ NetworkDebugModel::~NetworkDebugModel() {
 std::string NetworkDebugModel::getItemText(int row, int column) const {
     //std::lock_guard<std::mutex> lk(itemsMutex_);
     const auto& modelData = items_[row];
-    if (column == 0) {
-       // return std::to_string(row + 1);
-    } else if (column == 1) {
-        return modelData.threadId_;
-    }
-    else if (column == 2) {
-        std::stringstream ss;
-        ss << std::put_time(std::localtime(&modelData.time_), "%F %T");
-        return ss.str();
-    }  else if (column == 3) {
-        return CurlTypeToString(modelData.type);
-    } else if (column == 4) {
-        if (modelData.type == CURLINFO_HEADER_IN || modelData.type == CURLINFO_HEADER_OUT || modelData.type == CURLINFO_TEXT) {
-            return modelData.data.substr(0, modelData.data.find_first_of("\r\n"));
-        }
-    } /* else if (column == 4) {
-        return modelData->extension;
-    } else if (column == 5) {
-        return modelData->badFileFormat.uploadProfile->serverName();
-    }*/
-    return {};
+    return getCell(modelData, row, column);
 }
 
 uint32_t NetworkDebugModel::getItemColor(int row) const {
@@ -194,13 +177,38 @@ void NetworkDebugModel::clear() {
     items_.clear();
     notifyCountChanged(0);
 }
-/*
-size_t NetworkDebugModel::hasItemsWithStatus(NetworkDebugModelData::RowStatus status) const {
-    size_t count = 0;
-    for (auto& it : items_) {
-        if (it->status() == status) {
-            ++count;
+
+void NetworkDebugModel::saveToFile(const std::string& fileName) {
+    const auto COLUMN_COUNT = 5;
+    int i = 0;
+    std::ofstream out(std::filesystem::u8path(fileName));
+    if (!out) {
+        throw IOException("Failed to save debug log to file", fileName);
+    }
+    for (const auto& row : items_) {
+        for (int j = 0; j < COLUMN_COUNT; j++) {
+            out << getCell(row, i, j) << "  ";
+        }
+        out << std::endl;
+        ++i;
+    }
+}
+
+std::string NetworkDebugModel::getCell(const NetworkDebugModelData& modelData, int row, int column) const {
+    if (column == 0) {
+        // return std::to_string(row + 1);
+    } else if (column == 1) {
+        return modelData.threadId_;
+    } else if (column == 2) {
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&modelData.time_), "%F %T");
+        return ss.str();
+    } else if (column == 3) {
+        return CurlTypeToString(modelData.type);
+    } else if (column == 4) {
+        if (modelData.type == CURLINFO_HEADER_IN || modelData.type == CURLINFO_HEADER_OUT || modelData.type == CURLINFO_TEXT) {
+            return modelData.data.substr(0, modelData.data.find_first_of("\r\n"));
         }
     }
-    return count;
-}*/
+    return {};
+}

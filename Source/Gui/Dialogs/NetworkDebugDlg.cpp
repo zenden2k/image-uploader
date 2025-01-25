@@ -9,6 +9,8 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/WebUtils.h"
 #include "Core/3rdpart/Hexdump.hpp"
+#include "Gui/Components/MyFileDialog.h"
+#include "Core/Utils/IOException.h"
 
 CNetworkDebugDlg::CNetworkDebugDlg()
     : model_()
@@ -24,11 +26,12 @@ LRESULT CNetworkDebugDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     DlgResize_Init(true, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
     TRC(IDC_CLEARLOGBUTTON, "Clear log");
+    TRC(IDC_SAVETOFILEBTN, "Save to file");
+    TRC(IDC_DECODERESPONSEBUTTON, "Decode response");
 
     splitterCtrl_.SubclassWindow(GetDlgItem(IDC_SPLITTER));
     splitterCtrl_.SetSplitterPanes(listView_.m_hWnd, detailsEdit_.m_hWnd);
     
-
     // set icons
     icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
@@ -172,11 +175,33 @@ LRESULT CNetworkDebugDlg::OnDecodeResponseButtonClicked(WORD /*wNotifyCode*/, WO
     return 0;
 }
 
+LRESULT CNetworkDebugDlg::OnSaveToFileButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    IMyFileDialog::FileFilterArray filters {
+        { TR("Text files"), _T("*.txt;*.log") },
+        { TR("All files"), _T("*.*") }
+    };
+
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, {}, TR("Save log file"), filters, false, false);
+    dlg->setDefaultExtension(_T("txt"));
+
+    if (dlg->DoModal(m_hWnd) != IDOK) {
+        return 0;
+    }
+
+    try {
+        model_.saveToFile(W2U(dlg->getFile()));
+    } catch (const IOException& ex) {
+        GuiTools::LocalizedMessageBox(m_hWnd, U2WC(ex.what()), TR("Error"), MB_ICONERROR);
+    }
+
+    return 0;
+}
+
 BOOL CNetworkDebugDlg::PreTranslateMessage(MSG* pMsg) {
     return CWindow::IsDialogMessage(pMsg);
 }
 
-bool CNetworkDebugDlg::showText(const std::string src)
+bool CNetworkDebugDlg::showText(const std::string& src)
 {
     std::wstring s = IuCoreUtils::Utf8ToWstring(src);
     bool hexDump = false;

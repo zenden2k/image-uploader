@@ -378,6 +378,7 @@
 #define IDC_SERVERMENU                  1047
 #define IDC_NEWTHUMBNAIL                1047
 #define IDC_CLEARFILTERS                1047
+#define IDC_SAVETOFILEBTN               1047
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049

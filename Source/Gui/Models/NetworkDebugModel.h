@@ -66,6 +66,10 @@ public:
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void setOnItemCountChangedCallback(std::function<void(size_t)> callback);
     void clear();
+    /**
+     * @throws IOException
+     */
+    void saveToFile(const std::string& fileName);
 
 protected:
     //mutable std::mutex itemsMutex_;
@@ -73,6 +77,7 @@ protected:
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;
     boost::signals2::scoped_connection debugMessageConnection_;
+    std::string getCell(const NetworkDebugModelData& item, int row, int column) const;
     DISALLOW_COPY_AND_ASSIGN(NetworkDebugModel);
 };
 #endif
