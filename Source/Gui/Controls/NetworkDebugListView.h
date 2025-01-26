@@ -13,6 +13,7 @@ public:
     BEGIN_MSG_MAP(CNetworkDebugListView)
         REFLECTED_NOTIFY_CODE_HANDLER(LVN_GETDISPINFO, OnGetDispInfo)
         REFLECTED_NOTIFY_CODE_HANDLER(NM_CUSTOMDRAW, OnListViewNMCustomDraw)
+        NOTIFY_CODE_HANDLER(HDN_FILTERCHANGE, OnHeaderFilterChange)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEITEM, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_DELETEALLITEMS, OnDeleteItem)
         //REFLECTED_NOTIFY_CODE_HANDLER(LVN_ITEMCHANGED, OnItemChanged)
@@ -25,10 +26,21 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnHeaderFilterChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
 protected:
     NetworkDebugModel* model_;
     void onRowChanged(size_t index);
     void onItemCountChanged(size_t index);
+    void applyFilters();
+
+    struct ColumnInfo {
+        int index {};
+        CString title;
+        int filterType = HDFT_ISSTRING;
+        int width = 100;
+    };
+    std::vector<ColumnInfo> columns_;
 };
 
 

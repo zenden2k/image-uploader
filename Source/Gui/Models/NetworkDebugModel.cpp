@@ -1,9 +1,11 @@
 #include "NetworkDebugModel.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <filesystem>
+#include <locale>
 
 #include <zlib.h>
 
@@ -42,6 +44,35 @@ std::string CurlTypeToString(curl_infotype type)
     };
 }
 
+size_t StringSearch(const std::string& str1, const std::string& str2) {
+    auto loc = std::locale();
+    auto it = std::search(str1.begin(), str1.end(),
+        str2.begin(), str2.end(), [&loc](char ch1, char ch2) -> bool {
+            return std::toupper(ch1, loc) == std::toupper(ch2, loc);
+    });
+    if (it != str1.end()) {
+        return it - str1.begin();
+    } else {
+        return -1; // not found
+    }
+}
+
+}
+
+bool NetworkDebugModelData::acceptFilter(const std::vector<std::string>& fields) const {
+    bool result = true;
+
+    if (fields.size() < NetworkDebugModelNS::COLUMN_COUNT) {
+        return true;
+    }
+    if (!fields[NetworkDebugModelNS::COLUMN_THREAD_ID].empty()) {
+        result = result && (threadId_ == fields[NetworkDebugModelNS::COLUMN_THREAD_ID]);
+    }
+    if (!fields[NetworkDebugModelNS::COLUMN_TYPE].empty()) {
+        std::string val = CurlTypeToString(type);
+        result = result && (StringSearch(val, fields[NetworkDebugModelNS::COLUMN_TYPE]) != std::string::npos);
+    }
+    return result;
 }
 
 std::string NetworkDebugModelData::getDecoded() {
@@ -108,12 +139,12 @@ NetworkDebugModel::NetworkDebugModel() {
         item.data.assign(data, length);
         item.threadId_ = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
         size_t index;
-        {
-            //std::lock_guard<std::mutex> lk(itemsMutex_);
-            items_.push_back(std::move(item));
-            index = items_.size();
+        auto it = items_.push_back(std::move(item));
+        index = std::distance(items_.begin(), it);
+        if (item.acceptFilter(filter_)) {
+            filteredItemsIndexes_.push_back(index);
+            notifyCountChanged(filteredItemsIndexes_.size());
         }
-        notifyCountChanged(index);
     });
 }
 
@@ -122,25 +153,28 @@ NetworkDebugModel::~NetworkDebugModel() {
 
 std::string NetworkDebugModel::getItemText(int row, int column) const {
     //std::lock_guard<std::mutex> lk(itemsMutex_);
-    const auto& modelData = items_[row];
+    const auto& modelData = *getDataByIndex(row);
     return getCell(modelData, row, column);
 }
 
 uint32_t NetworkDebugModel::getItemColor(int row) const {
     //std::lock_guard<std::mutex> lk(itemsMutex_);
-    const auto& modelData = items_[row];
-    switch (modelData.type) {
+    const auto* modelData = getDataByIndex(row);
+
+    switch (modelData->type) {
         case CURLINFO_TEXT: 
             return RGB(160, 160, 160);
         default:
             return GetSysColor(COLOR_WINDOWTEXT);
     } 
-    return modelData.color;
+    return modelData->color;
 }
 
 size_t NetworkDebugModel::getCount() const {
-    //std::lock_guard<std::mutex> lk(itemsMutex_);
-    return items_.size();
+    if (filter_.empty()) {
+        return items_.size();
+    }
+    return filteredItemsIndexes_.size();
 }
 
 void NetworkDebugModel::notifyRowChanged(size_t row) {
@@ -157,7 +191,13 @@ void NetworkDebugModel::notifyCountChanged(size_t row)
     }
 }
 
-NetworkDebugModelData* NetworkDebugModel::getDataByIndex(size_t row) {
+const NetworkDebugModelData* NetworkDebugModel::getDataByIndex(size_t row) const {
+    if (!filter_.empty()) {
+        if (row >= filteredItemsIndexes_.size()) {
+            return nullptr;
+        }
+        row = filteredItemsIndexes_[row];
+    }
     if (row >= items_.size()) {
         return nullptr;
     }
@@ -175,22 +215,45 @@ void NetworkDebugModel::setOnItemCountChangedCallback(std::function<void(size_t)
 
 void NetworkDebugModel::clear() {
     items_.clear();
+    filteredItemsIndexes_.clear();
     notifyCountChanged(0);
 }
 
+void NetworkDebugModel::applyFilter(const std::vector<std::string>& fields) {
+    filter_ = fields;
+    filteredItemsIndexes_.clear();
+    size_t i = 0;
+    for (const auto& item : items_) {
+        if (item.acceptFilter(filter_)) {
+            filteredItemsIndexes_.push_back(i);
+        }
+        i++;
+    }
+    notifyCountChanged(getCount());
+}
+
 void NetworkDebugModel::saveToFile(const std::string& fileName) {
-    const auto COLUMN_COUNT = 5;
-    int i = 0;
     std::ofstream out(std::filesystem::u8path(fileName));
     if (!out) {
         throw IOException("Failed to save debug log to file", fileName);
     }
-    for (const auto& row : items_) {
-        for (int j = 0; j < COLUMN_COUNT; j++) {
+    auto writeFunc = [&out, this](const NetworkDebugModelData& row, size_t i) {
+        for (int j = 0; j < NetworkDebugModelNS::COLUMN_COUNT; j++) {
             out << getCell(row, i, j) << "  ";
         }
         out << std::endl;
-        ++i;
+    };
+    if (!filter_.empty()) {
+        for (const auto& i : filteredItemsIndexes_) {
+            const auto& row = items_[i];
+            writeFunc(row, i);
+        }
+    } else {
+        size_t i = 0;
+        for (const auto& row : items_) {
+            writeFunc(row, i);
+            ++i;
+        }
     }
 }
 

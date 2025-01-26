@@ -141,7 +141,7 @@ LRESULT CNetworkDebugDlg::OnListViewItemChanged(int idCtrl, LPNMHDR pnmh, BOOL& 
         auto* p = reinterpret_cast<LPNMLISTVIEW>(pnmh);
         if (p->iItem >= 0) {
 
-            auto* item = model_.getDataByIndex(p->iItem);
+            auto* item = const_cast<NetworkDebugModelData*>(model_.getDataByIndex(p->iItem));
             bool hexDump = false;
             if (item->type == CURLINFO_SSL_DATA_OUT || item->type == CURLINFO_SSL_DATA_IN) {
                 hexDump = true;
@@ -170,7 +170,7 @@ LRESULT CNetworkDebugDlg::OnDecodeResponseButtonClicked(WORD /*wNotifyCode*/, WO
     if (!item) {
         return 0;
     }
-    std::string s = item->getDecoded();
+    std::string s = const_cast<NetworkDebugModelData*>(item)->getDecoded();
     showText(s);
     return 0;
 }

@@ -20,6 +20,16 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Network/NetworkDebugger.h"
 
+namespace NetworkDebugModelNS {
+
+constexpr auto COLUMN_COUNT = 5;
+constexpr auto COLUMN_N = 0;
+constexpr auto COLUMN_THREAD_ID = 1;
+constexpr auto COLUMN_TIME = 2;
+constexpr auto COLUMN_TYPE = 3;
+constexpr auto COLUMN_TEXT = 4;
+}
+
 class NetworkDebugModelData {
 public:
     enum class RowStatus { Normal, Error, Skipped, Ignore};
@@ -50,6 +60,7 @@ public:
         return !decoded_.empty();
     }
 
+    bool acceptFilter(const std::vector<std::string>& fields) const;
     std::string getDecoded();
 };
 
@@ -62,10 +73,11 @@ public:
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     void notifyCountChanged(size_t row);
-    NetworkDebugModelData* getDataByIndex(size_t row);
+    const NetworkDebugModelData* getDataByIndex(size_t row) const;
     void setOnRowChangedCallback(std::function<void(size_t)> callback);
     void setOnItemCountChangedCallback(std::function<void(size_t)> callback);
     void clear();
+    void applyFilter(const std::vector<std::string>& fields);
     /**
      * @throws IOException
      */
@@ -74,10 +86,12 @@ public:
 protected:
     //mutable std::mutex itemsMutex_;
     concurrency::concurrent_vector<NetworkDebugModelData> items_;
+    concurrency::concurrent_vector<size_t> filteredItemsIndexes_;
     std::function<void(size_t)> rowChangedCallback_;
     std::function<void(size_t)> itemCountChangedCallback_;
     boost::signals2::scoped_connection debugMessageConnection_;
     std::string getCell(const NetworkDebugModelData& item, int row, int column) const;
     DISALLOW_COPY_AND_ASSIGN(NetworkDebugModel);
+    std::vector<std::string> filter_;
 };
 #endif

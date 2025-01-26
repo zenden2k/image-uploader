@@ -1,5 +1,6 @@
 #include "NetworkDebugListView.h"
 
+#include <cassert>
 #include <strsafe.h>
 
 #include "Gui/Models/NetworkDebugModel.h"
@@ -18,25 +19,37 @@ CNetworkDebugListView::CNetworkDebugListView(NetworkDebugModel* model)
 
 void CNetworkDebugListView::Init() {
     SetItemCount(model_->getCount());
+    columns_ = {
+        { NetworkDebugModelNS::COLUMN_N, TR("N"), HDFT_ISSTRING, 25 },
+        { NetworkDebugModelNS::COLUMN_THREAD_ID, TR("Thread"), HDFT_ISSTRING  /* HDFT_ISNUMBER*/, 55 },
+        { NetworkDebugModelNS::COLUMN_TIME, TR("Time"), HDFT_ISSTRING, 160 },
+        { NetworkDebugModelNS::COLUMN_TYPE, TR("Type"), HDFT_ISSTRING, 130},
+        { NetworkDebugModelNS::COLUMN_TEXT, TR("Text"), HDFT_ISSTRING, 320 }
+    };
 
-    AddColumn(TR("N"), 0);
-    AddColumn(TR("Thread"), 1);
-    AddColumn(TR("Time"), 2);
-    AddColumn(TR("Type"), 3);
-    AddColumn(TR("Text"), 4);
+    assert(columns_.size() == NetworkDebugModelNS::COLUMN_COUNT);
 
-    /* AddColumn(_T("View URL"), 5);
-    AddColumn(_T("Time"), 6);*/
+    for (const auto& column : columns_) {
+        AddColumn(column.title, column.index);
+    }
+
+    CHeaderCtrl hdr = GetHeader();
+    hdr.ModifyStyle(0, HDS_FILTERBAR);
 
     CClientDC dc(m_hWnd);
     int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     //int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 
-    SetColumnWidth(0, MulDiv(25, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(1, MulDiv(45, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(2, MulDiv(160, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(3, MulDiv(130, dpiX, USER_DEFAULT_SCREEN_DPI));
-    SetColumnWidth(4, MulDiv(320, dpiX, USER_DEFAULT_SCREEN_DPI));
+    for (const auto& column : columns_) {
+        SetColumnWidth(column.index, MulDiv(column.width, dpiX, USER_DEFAULT_SCREEN_DPI));
+
+        HDITEM hdItem {};
+        hdItem.mask = HDI_FILTER;
+        hdItem.type = column.filterType;
+        hdr.SetItem(column.index, &hdItem);
+    }
+
+    hdr.SetFilterChangeTimeout(1000);
 }
 
 LRESULT CNetworkDebugListView::OnGetDispInfo(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
@@ -77,10 +90,16 @@ LRESULT CNetworkDebugListView::OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, 
     return 0;
 }
 
+
+LRESULT CNetworkDebugListView::OnHeaderFilterChange(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto* pNMHeader = reinterpret_cast<LPNMHEADER>(pnmh);
+    applyFilters();
+    return 0;
+}
+
 // This callback is called in the working thread
 void CNetworkDebugListView::onRowChanged(size_t index) {
     //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-    // It is just SendMessage call
     PostMessage(LVM_REDRAWITEMS, index, index);
     //RedrawItems(index, index);
     //});
@@ -89,8 +108,37 @@ void CNetworkDebugListView::onRowChanged(size_t index) {
 // This callback is called in the working thread
 void CNetworkDebugListView::onItemCountChanged(size_t index) {
     //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-    // It is just SendMessage call
     //SetItemCount(index);
     PostMessage(LVM_SETITEMCOUNT, index, 0L);
     //});
+}
+
+void CNetworkDebugListView::applyFilters() {
+    std::vector<std::string> filters(NetworkDebugModelNS::COLUMN_COUNT);
+
+    for (const auto& column: columns_) {
+        HDITEM item {};
+        item.mask = HDI_FILTER;
+        int val = 0;
+        TCHAR buffer[MAX_PATH] { '\0' };
+        HDTEXTFILTER filter {};
+        item.type = column.filterType;
+
+        // Get values from filter edit boxes 
+        if (column.filterType == HDFT_ISSTRING) {
+            filter.pszText = buffer;
+            filter.cchTextMax = std::size(buffer);
+            item.pvFilter = &filter;
+            if (GetHeader().GetItem(column.index, &item)) {
+                filters[column.index] = W2U(buffer);
+            }
+        } else if (column.filterType == HDFT_ISNUMBER) {
+            // HDFT_ISNUMBER type is not working properly 
+            item.pvFilter = &val;
+            if (GetHeader().GetItem(column.index, &item) && val) {
+                filters[column.index] = std::to_string(val);
+            }
+        }
+    }
+    model_->applyFilter(filters);
 }
