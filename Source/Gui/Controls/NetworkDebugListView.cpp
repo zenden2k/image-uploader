@@ -23,7 +23,7 @@ void CNetworkDebugListView::Init() {
         { NetworkDebugModelNS::COLUMN_N, TR("N"), HDFT_ISSTRING, 25 },
         { NetworkDebugModelNS::COLUMN_THREAD_ID, TR("Thread"), HDFT_ISSTRING  /* HDFT_ISNUMBER*/, 55 },
         { NetworkDebugModelNS::COLUMN_TIME, TR("Time"), HDFT_ISSTRING, 160 },
-        { NetworkDebugModelNS::COLUMN_TYPE, TR("Type"), HDFT_ISSTRING, 130},
+        { NetworkDebugModelNS::COLUMN_TYPE, TR("Type"), HDFT_ISSTRING, 130 },
         { NetworkDebugModelNS::COLUMN_TEXT, TR("Text"), HDFT_ISSTRING, 320 }
     };
 
@@ -116,6 +116,8 @@ void CNetworkDebugListView::onItemCountChanged(size_t index) {
 void CNetworkDebugListView::applyFilters() {
     std::vector<std::string> filters(NetworkDebugModelNS::COLUMN_COUNT);
 
+    bool allEmpty = true;
+
     for (const auto& column: columns_) {
         HDITEM item {};
         item.mask = HDI_FILTER;
@@ -139,6 +141,12 @@ void CNetworkDebugListView::applyFilters() {
                 filters[column.index] = std::to_string(val);
             }
         }
+        if (!filters[column.index].empty()) {
+            allEmpty = false;
+        }
+    }
+    if (allEmpty) {
+        filters.clear();
     }
     model_->applyFilter(filters);
 }

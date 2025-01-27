@@ -16,8 +16,7 @@
 
 namespace {
 
-std::string CurlTypeToString(curl_infotype type)
-{
+std::string CurlTypeToString(curl_infotype type) {
     switch (type) {
     case CURLINFO_TEXT:
         return "== Info: ";
@@ -53,26 +52,42 @@ size_t StringSearch(const std::string& str1, const std::string& str2) {
     if (it != str1.end()) {
         return it - str1.begin();
     } else {
-        return -1; // not found
+        return std::string::npos; // not found
     }
 }
 
 }
 
 bool NetworkDebugModelData::acceptFilter(const std::vector<std::string>& fields) const {
-    bool result = true;
-
     if (fields.size() < NetworkDebugModelNS::COLUMN_COUNT) {
         return true;
     }
-    if (!fields[NetworkDebugModelNS::COLUMN_THREAD_ID].empty()) {
-        result = result && (threadId_ == fields[NetworkDebugModelNS::COLUMN_THREAD_ID]);
+    if (!fields[NetworkDebugModelNS::COLUMN_THREAD_ID].empty() && threadId_ != fields[NetworkDebugModelNS::COLUMN_THREAD_ID]) {
+        return false;
     }
     if (!fields[NetworkDebugModelNS::COLUMN_TYPE].empty()) {
         std::string val = CurlTypeToString(type);
-        result = result && (StringSearch(val, fields[NetworkDebugModelNS::COLUMN_TYPE]) != std::string::npos);
+        if (StringSearch(val, fields[NetworkDebugModelNS::COLUMN_TYPE]) == std::string::npos) {
+            return false;
+        }
     }
-    return result;
+    if (!fields[NetworkDebugModelNS::COLUMN_TIME].empty()) {
+        std::stringstream ss;
+        ss << std::put_time(std::localtime(&time_), "%F %T");
+        if (StringSearch(ss.str(), fields[NetworkDebugModelNS::COLUMN_TIME]) == std::string::npos) {
+            return false;
+        }
+    }
+    if (!fields[NetworkDebugModelNS::COLUMN_TEXT].empty()) {
+        if (type == CURLINFO_HEADER_IN || type == CURLINFO_HEADER_OUT || type == CURLINFO_TEXT) {
+            if (StringSearch(data.substr(0, data.find_first_of("\r\n")), fields[NetworkDebugModelNS::COLUMN_TEXT]) == std::string::npos) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string NetworkDebugModelData::getDecoded() {
@@ -258,17 +273,17 @@ void NetworkDebugModel::saveToFile(const std::string& fileName) {
 }
 
 std::string NetworkDebugModel::getCell(const NetworkDebugModelData& modelData, int row, int column) const {
-    if (column == 0) {
+    if (column == NetworkDebugModelNS::COLUMN_N) {
         // return std::to_string(row + 1);
-    } else if (column == 1) {
+    } else if (column == NetworkDebugModelNS::COLUMN_THREAD_ID) {
         return modelData.threadId_;
-    } else if (column == 2) {
+    } else if (column == NetworkDebugModelNS::COLUMN_TIME) {
         std::stringstream ss;
         ss << std::put_time(std::localtime(&modelData.time_), "%F %T");
         return ss.str();
-    } else if (column == 3) {
+    } else if (column == NetworkDebugModelNS::COLUMN_TYPE) {
         return CurlTypeToString(modelData.type);
-    } else if (column == 4) {
+    } else if (column == NetworkDebugModelNS::COLUMN_TEXT) {
         if (modelData.type == CURLINFO_HEADER_IN || modelData.type == CURLINFO_HEADER_OUT || modelData.type == CURLINFO_TEXT) {
             return modelData.data.substr(0, modelData.data.find_first_of("\r\n"));
         }
