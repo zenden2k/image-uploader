@@ -57,7 +57,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     if (!xml.LoadFromFile(filename))
         return false;
 
-    SimpleXmlNode root = xml.getRoot("ServerListTool");
+    SimpleXmlNode root = xml.getRoot("Servers");
 
     std::vector<SimpleXmlNode> childs;
     root.GetChilds("Server", childs);
@@ -117,17 +117,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         UE.MaxThreads = atoi(MaxThreadsStr.c_str());
 
         if (UE.PluginName == "ftp") {
-            auto it = serversSettings.find(UE.Name);
-            if (it != serversSettings.end() && !it->second.empty()) {
-
-                std::string hostname = it->second.begin()->second.getParam("hostname");
-                if (hostname.empty() || hostname == "ftp.example.com") {
-                    //LOG(WARNING) << "Skipping server  "<< UE.Name;
-                    continue;
-                }
-            } else {
+            /* auto it = serversSettings.find(UE.Name);
+            if (it == serversSettings.end() || it->second.empty()) { 
                 continue;
-            }
+            }*/
             if (MaxThreadsStr.empty()) {
                 UE.MaxThreads = 1;
             }
