@@ -10,6 +10,7 @@ std::string JSONGenerator::doGenerate(const std::vector<UploadObject>& items) {
 
     for (const auto& item : items) {
         Json::Value objValue(Json::objectValue);
+        objValue["success"] = !item.isNull();
         objValue["direct_url"] = item.getImageUrl(shortenUrl_);
         objValue["thumb_url"] = item.uploadResult.thumbUrl;
         objValue["view_url"] = item.getDownloadUrl(shortenUrl_);

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-25 16:09+0300\n"
-"PO-Revision-Date: 2025-01-25 16:19+0300\n"
+"POT-Creation-Date: 2025-02-02 15:23+0300\n"
+"PO-Revision-Date: 2025-02-02 15:25+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -1367,7 +1367,6 @@ msgid "Extracting frame "
 msgstr "Извлекаю кадр "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 msgid "Extracting frames from video"
 msgstr "Извлечение видеокадров"
 
@@ -2039,7 +2038,7 @@ msgid "Move Up"
 msgstr "Переместить вверх"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:22
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
 msgid "N"
 msgstr "№"
 
@@ -2052,6 +2051,7 @@ msgid "Name:"
 msgstr "Название:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2378
 msgid "Network Debugger"
 msgstr "Сетевой отладчик"
 
@@ -2898,7 +2898,7 @@ msgstr "Тест соединения"
 msgid "Test failed"
 msgstr "Неудача"
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:950
 msgid "Text"
 msgstr "Текст"
@@ -2969,7 +2969,7 @@ msgstr "Это означает, что миниатюры будут созда
 msgid "This server doesn't have any settings."
 msgstr "У этого сервера нет настроек."
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
 msgid "Thread"
 msgstr "Нить"
 
@@ -3012,7 +3012,7 @@ msgstr "Размеры:"
 msgid "Thumbnails"
 msgstr "Миниатюры"
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
 msgid "Time"
 msgstr "Время"
 
@@ -3056,7 +3056,7 @@ msgstr "Трей"
 msgid "Tray icon context menu"
 msgstr "Контекстное меню значка"
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
 msgid "Type"
 msgstr "Тип"
 
@@ -3421,6 +3421,10 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:224
 msgid "data:URI (HTML)"
 msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
+msgid "extracting frames from video"
+msgstr "извлечение видеокадров"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:135
 #, c-format

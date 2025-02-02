@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-25 16:09+0300\n"
+"POT-Creation-Date: 2025-02-02 15:23+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1331,7 +1331,6 @@ msgid "Extracting frame "
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 msgid "Extracting frames from video"
 msgstr ""
 
@@ -1988,7 +1987,7 @@ msgid "Move Up"
 msgstr ""
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:22
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
 msgid "N"
 msgstr ""
 
@@ -2001,6 +2000,7 @@ msgid "Name:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2378
 msgid "Network Debugger"
 msgstr ""
 
@@ -2841,7 +2841,7 @@ msgstr ""
 msgid "Test failed"
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:950
 msgid "Text"
 msgstr ""
@@ -2912,7 +2912,7 @@ msgstr ""
 msgid "This server doesn't have any settings."
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
 msgid "Thread"
 msgstr ""
 
@@ -2955,7 +2955,7 @@ msgstr ""
 msgid "Thumbnails"
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
 msgid "Time"
 msgstr ""
 
@@ -2999,7 +2999,7 @@ msgstr ""
 msgid "Tray icon context menu"
 msgstr ""
 
-#: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
+#: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
 msgid "Type"
 msgstr ""
 
@@ -3357,6 +3357,10 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:224
 msgid "data:URI (HTML)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
+msgid "extracting frames from video"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:135

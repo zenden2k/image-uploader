@@ -21,11 +21,11 @@
 #include <cmath>
 #include <iostream>
 #include <condition_variable>
-#include <boost/format.hpp>
+#include <csignal>
 
+#include <boost/format.hpp>
 #include <curl/curl.h>
 #include <argparse/argparse.hpp>
-#include <csignal>
 
 #include "Core/Upload/Uploader.h"
 #include "Core/Utils/CoreUtils.h"
@@ -51,18 +51,16 @@
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Images/AbstractImage.h"
 #include "Core/3rdpart/xdgmime/xdgmime.h"
+#include "Core/3rdpart/termcolor.hpp"
 
 #ifdef _WIN32
+    #include <cstdio>
     #include <windows.h>
-    #include "Func/UpdatePackage.h"
     #include <fcntl.h>
     #include <io.h>
-    #include <cstdio>
     #include "Func/IuCommonFunctions.h"
     #include "Func/GdiPlusInitializer.h"
-    //#ifndef NDEBUG
-        //#include <vld.h>
-    //#endif
+    #include "Func/UpdatePackage.h"
 #else
     #include <sys/stat.h>
     #include <sys/time.h>
@@ -116,10 +114,6 @@ void SignalHandler (int param) {
     if ( session ) {
         session->stop();
     }
-}
-
-void PrintWelcomeMessage() {
-    std::cerr << "imgupload " << "(Image Uploader " << IU_APP_VER << " build " << IU_BUILD_NUMBER << ")" << std::endl;
 }
 
 class Translator : public ITranslator {
@@ -177,24 +171,24 @@ void OnUploadSessionFinished(UploadSession* session) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
         //auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
-        if ( task->uploadSuccess() ) {
-            OutputGenerator::UploadObject uo;
-            uo.fillFromUploadResult(res, task.get());
-            uploadedList.push_back(uo);
-        } else {
+        
+        OutputGenerator::UploadObject uo;
+        uo.fillFromUploadResult(res, task.get());
+        if (!task->uploadSuccess()) {
             funcResult++;
         }
+        uploadedList.push_back(uo);
     }
     OutputGenerator::OutputGeneratorFactory factory;
     OutputGenerator::GeneratorID gid = static_cast<OutputGenerator::GeneratorID>(codeLang);
     auto generator = factory.createOutputGenerator(gid, codeType);
     generator->setPreferDirectLinks(true);
     //ConsoleUtils::instance()->SetCursorPos(0, taskCount + 2);
-    if ( !uploadedList.empty() ) {
-        std::cerr<<std::endl<<"Result:"<<std::endl;
-        std::cout<< generator->generate(uploadedList);
-        std::cerr<<std::endl;
-    }
+
+    std::cerr<<std::endl<<"Result:"<<std::endl;
+    std::cout<< generator->generate(uploadedList);
+    std::cerr<<std::endl;
+    
     {
         // LOG(ERROR) << "Sending finish signal" << std::endl;
         std::lock_guard<std::mutex> lk(finishSignalMutex);
@@ -204,7 +198,42 @@ void OnUploadSessionFinished(UploadSession* session) {
     finishSignal.notify_one();
 }
 
+constexpr auto TOTAL_DOTS = 30;
+
+void PrintProgress(UploadTask* task) {
+    UploadProgress* progress = task->progress();
+    double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
+
+    if (fractiondownloaded > 100)
+        fractiondownloaded = 0;
+    // part of the progressmeter that's already "full"
+    int dotz = static_cast<int>(floor(fractiondownloaded * TOTAL_DOTS));
+
+    // create the "meter"
+    int ii = 0;
+    fprintf(stderr, "%3.0f%% [", fractiondownloaded * 100);
+    // part  that's full already
+    for (; ii < dotz; ii++) {
+        fprintf(stderr, "#");
+    }
+    // remaining part (spaces)
+    for (; ii < TOTAL_DOTS; ii++) {
+        fprintf(stderr, " ");
+    }
+    // and back to line begin - do not forget the fflush to avoid output buffering problems!
+    fprintf(stderr, "]");
+    fprintf(stderr, " %s/%s", IuCoreUtils::FileSizeToString(progress->uploaded).c_str(),
+        IuCoreUtils::FileSizeToString(progress->totalUpload).c_str());
+    // remaining part (spaces)
+    /*for (int i = 0; i < 30; i++) {
+            fprintf(stderr, " ");
+        }*/
+
+    fflush(stderr);
+}
+
 void UploadTaskProgress(UploadTask* task) {
+
     UploadProgress* progress = task->progress();
 
     using namespace std::chrono_literals;
@@ -216,57 +245,43 @@ void UploadTaskProgress(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     auto* userData = static_cast<TaskUserData*>(task->userData());
     lastProgressTime = cur;
-    int totaldotz=30;
+    
     if (progress->totalUpload == 0) {
         return;
     }
-
-    fprintf(stderr, "\r#%d ", userData->index);
-    //ConsoleUtils::instance()->clearLine();
-
-    //ConsoleUtils::instance()->SetCursorPos(0, 2 + userData->index);
-    double fractiondownloaded = static_cast<double>(progress->uploaded) / progress->totalUpload;
-    if(fractiondownloaded > 100)
-        fractiondownloaded = 0;
-    // part of the progressmeter that's already "full"
-    int dotz = static_cast<int>(floor(fractiondownloaded * totaldotz));
-
-    // create the "meter"
-    int ii=0;
-    fprintf(stderr, "%3.0f%% [",fractiondownloaded*100);
-    // part  that's full already
-    for ( ; ii < dotz;ii++) {
-        fprintf(stderr,"#");
+   
+    if (termcolor::_internal::is_atty(std::cerr) /* || (std::abs(fractiondownloaded - 1) <= 0.001) */ || task->isFinished()) {
+        fprintf(stderr, "\r#%d ", userData->index);
+        PrintProgress(task);
     }
-    // remaining part (spaces)
-    for ( ; ii < totaldotz;ii++) {
-        fprintf(stderr," ");
-    }
-    // and back to line begin - do not forget the fflush to avoid output buffering problems!
-    fprintf(stderr,"]");
-    fprintf(stderr," %s/%s", IuCoreUtils::FileSizeToString(progress->uploaded).c_str(),
-            IuCoreUtils::FileSizeToString(progress->totalUpload).c_str());
-    // remaining part (spaces)
-    /*for (int i = 0; i < 30; i++) {
-        fprintf(stderr, " ");
-    }*/
-
-    fflush(stderr);
 }
 
 void OnUploadTaskStatusChanged(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     UploadProgress* progress = task->progress();
     auto* userData = static_cast<TaskUserData*>(task->userData());
-    ConsoleUtils::instance()->clearLine(stderr);
-    fprintf(stderr, "\r#%d ", userData->index);
+    bool finished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
 
-    //ConsoleUtils::instance()->SetCursorPos(55, 2 + userData->index);
+    if (termcolor::_internal::is_atty(std::cerr)) { 
+        ConsoleUtils::instance()->clearLine(stderr);
+        fprintf(stderr, "\r#%d ", userData->index);
+    } else {
+        fprintf(stderr, "\n#%d ", userData->index);
+        if (finished) {
+            PrintProgress(task);
+            fprintf(stderr, "\n#%d ", userData->index);
+        }
+    }
+
     std::string statusText = progress->statusText;
-    if (task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure) {
-        ConsoleUtils::instance()->printColoredText(stderr, statusText,
-            task->status() == UploadTask::StatusFinished ? ConsoleUtils::Color::Green: ConsoleUtils::Color::Red
-        );
+    if (finished) {   
+        if (task->status() == UploadTask::StatusFinished) {
+            std::cerr << termcolor::green;
+        } else {
+            std::cerr << termcolor::red;
+        }
+        std::cerr << statusText << termcolor::reset << " ";
+      
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
@@ -381,7 +396,7 @@ int func() {
     for(size_t i=0; i<filesToUpload.size(); i++) {
         if(!IuCoreUtils::FileExists(filesToUpload[i]))
         {
-            std::string errorMessage = str(boost::format("File '%s' doesn't exist!")%filesToUpload[i]);
+            std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n")%filesToUpload[i]);
             ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
             funcResult++;
             continue;
@@ -397,6 +412,9 @@ int func() {
         task->setUserData(userData.get());
         userDataArray.push_back(std::move(userData));
         session->addTask(task);
+    }
+    if (session->taskCount() == 0) {
+        return funcResult;
     }
     session->addSessionFinishedCallback(UploadSession::SessionFinishedCallback(OnUploadSessionFinished));
     //ConsoleUtils::instance()->InitScreen();
@@ -774,23 +792,21 @@ int main(int argc, char *argv[]){
     try {
         program.parse_args(argc, argv);
     } catch (const std::exception& err) {
-        ConsoleUtils::instance()->printColoredText(stderr, err.what(), ConsoleUtils::Color::Red);
-        std::cerr << std::endl;
+        std::cerr << termcolor::red << err.what() << termcolor::reset << std::endl;
         std::cerr << program;
         return 1;
     }
 
     try {
         filesToUpload = program.get<std::vector<std::string>>("files");
-        for (auto& file : filesToUpload) {
+        /*for (auto& file : filesToUpload) {
             if (!IuCoreUtils::FileExists(file)) {
                 std::string errorMessage = str(boost::format("File '%s' doesn't exist!\n") % file);
                 ConsoleUtils::instance()->printUnicode(stderr, errorMessage);
             }
-        }
+        }*/
     } catch (std::logic_error& e) {
-        ConsoleUtils::instance()->printColoredText(stderr, "No files provided", ConsoleUtils::Color::Red);
-        std::cerr << std::endl;
+        std::cerr << termcolor::red << "No files provided" << termcolor::reset << std::endl;
         return 0;
     }
 
@@ -806,9 +822,8 @@ int main(int argc, char *argv[]){
         }
     } catch (std::logic_error& e) {
 
-    } catch (std::exception& e) {
-        ConsoleUtils::instance()->printColoredText(stderr, e.what(), ConsoleUtils::Color::Red);
-        std::cerr << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << termcolor::red << e.what() << termcolor::reset << std::endl;
         return 0;
     }
 
