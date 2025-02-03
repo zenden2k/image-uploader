@@ -104,7 +104,9 @@ set(SRC_LIST Network/NetworkClient.cpp
     FileTypeCheckTask.cpp
 )
 
-set(HEADER_LIST Network/NetworkClient.h
+set(HEADER_LIST
+    BasicConstants.h
+    Network/NetworkClient.h
 	Network/NetworkClientFactory.h
     Network/NetworkDebugger.h
     Upload/DefaultUploadEngine.h

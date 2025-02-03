@@ -26,6 +26,7 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include "AppParams.h"
+#include "Core/BasicConstants.h"
 
 namespace {
 
@@ -48,8 +49,8 @@ void SplitAssignVarsString(T & reg) {
 }
 CUploadEngineList::CUploadEngineList()
 {
-    m_EngineNumOfRetries = 3;
-    m_ActionNumOfRetries = 2;
+    m_EngineNumOfRetries = MAX_RETRIES_PER_FILE;
+    m_ActionNumOfRetries = MAX_RETRIES_PER_ACTION;
 }
 
 bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings) {

@@ -25,14 +25,15 @@ limitations under the License.
 #include <boost/uuid/uuid_io.hpp> 
 
 #include "EncodedPassword.h"
+#include "Core/BasicConstants.h"
 
 BasicSettings::BasicSettings()
 {
     rootName_ = "ImageUploader";
     LastUpdateTime = 0;
     UploadBufferSize = 1024 * 1024;
-    FileRetryLimit = 3;
-    ActionRetryLimit = 2;
+    FileRetryLimit = MAX_RETRIES_PER_FILE;
+    ActionRetryLimit = MAX_RETRIES_PER_ACTION;
     ExecuteScript = false;
     loadFromRegistry_ = false;
     MaxThreads = 3;

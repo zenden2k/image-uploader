@@ -364,11 +364,6 @@ std::string TimeStampToString(time_t t)
     return buf;
 }
 
-std::string Int64ToString(int64_t value)
-{
-    return std::to_string(value);
-}
-
 int64_t StringToInt64(const std::string& str)
 {
     return strtoll(str.c_str(), nullptr, 10);

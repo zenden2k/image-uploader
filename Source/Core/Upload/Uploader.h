@@ -64,7 +64,7 @@ class CUploader
         std::string m_FileName;
         std::string m_displayFileName;
         std::string m_ErrorReason;
-        bool isFatalError_;
+        bool isFatalServerError_;
         
         void Error(bool error, std::string message, ErrorType type = etOther, int retryIndex = -1, UploadTask* uploadTask = nullptr, const std::string& topLevelFileName = std::string());
         void ErrorMessage(const ErrorInfo&);

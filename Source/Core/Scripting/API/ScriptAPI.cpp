@@ -79,6 +79,18 @@ void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
     squirrelOutput[v] += buffer.get();
 }
 
+void RegisterConstants(Sqrat::SqratVM& vm) {
+    using namespace Sqrat;
+
+    ConstTable(vm.GetVM()).Enum("ResultCode", Enumeration(vm.GetVM()).
+        Const("FatalError", static_cast<int>(ResultCode::FatalError)).
+        Const("TryAgain", static_cast<int>(ResultCode::TryAgain)).
+        Const("FatalServerError", static_cast<int>(ResultCode::FatalServerError)).
+        Const("Failure", static_cast<int>(ResultCode::Failure)).
+        Const("Success", static_cast<int>(ResultCode::Success))
+    );
+}
+
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
     vm.GetRootTable().Bind("NetworkClient", Class<INetworkClient>(vm.GetVM(), "NetworkClient").
@@ -255,6 +267,7 @@ std::mutex vmServicesMutex;
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
    // Sqrat::DefaultVM::Set(vm.GetVM());
+
     RegisterNetworkClientClass(vm);
     RegisterRegularExpressionClass(vm);
     RegisterUploadClasses(vm);
@@ -276,6 +289,7 @@ void RegisterAPI(Sqrat::SqratVM& vm)
     threadVm = vm.GetVM();
     //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
+    RegisterConstants(vm);
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }

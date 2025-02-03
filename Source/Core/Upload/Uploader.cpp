@@ -32,7 +32,7 @@ CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory
     m_PrInfo.IsUploading = false;
     m_PrInfo.Total = 0;
     m_PrInfo.Uploaded = 0;
-    isFatalError_ = false;
+    isFatalServerError_ = false;
     m_NetworkClient = networkClientFactory->create();
 }
 
@@ -103,7 +103,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string& displ
 }
 
 bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
-    isFatalError_ = false;
+    isFatalServerError_ = false;
     if (!m_CurrentEngine) {
         Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
         return false;
@@ -168,7 +168,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
     m_NetworkClient->setProgressCallback(std::bind(&CUploader::pluginProgressFunc, this, _1, _2, _3, _4, _5));
-    int EngineRes = 0;
+    ResultCode EngineRes = ResultCode::Failure;
     int retryLimit = task->retryLimit();
     if (!retryLimit) {
         retryLimit = m_CurrentEngine->RetryLimit();
@@ -181,31 +181,39 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             Cleanup();
             return false;
         }
-        EngineRes = m_CurrentEngine->processTask(task, uparams);
+        EngineRes = static_cast<ResultCode>(m_CurrentEngine->processTask(task, uparams));
         task->setCurrentUploadEngine(nullptr);
 
-        if ( EngineRes == -1 ) {
-            isFatalError_ = true;
+        switch (EngineRes) {
+        case ResultCode::FatalServerError:
+            isFatalServerError_ = true;
             Cleanup();
             return false;
-        } if (EngineRes == -2 && i == retryLimit) {
-            retryLimit++;
+        case ResultCode::TryAgain:
+            if (i == retryLimit) {
+                retryLimit++;
+            }
+            break;
+        case ResultCode::FatalError:
+            i = std::max(i, retryLimit - 1);
+            break;
+        default:
+            break;
         }
+
         i++;
         if (needStop())
         {
             Cleanup();
             return false;
         }
-        if (!EngineRes && i != retryLimit)
+        if (EngineRes < ResultCode::Success && i != retryLimit)
         {
             Error(false, "", etRepeating, i, task.get(), topLevelFileName);
         }
-    }
-    while (!EngineRes && i < retryLimit);
+    } while (EngineRes < ResultCode::Success && i < retryLimit);
 
-    if (!EngineRes)
-    {
+    if (EngineRes == ResultCode::Failure || EngineRes == ResultCode::FatalError) {
         Error(true, "", etRetriesLimitReached, -1, task.get(), topLevelFileName);
         Cleanup();
         return false;
@@ -222,7 +230,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
         return !(result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty());
     } else {
-        return EngineRes;
+        return EngineRes == ResultCode::Success;
     }
 }
 
@@ -249,7 +257,7 @@ StatusType CUploader::GetStatus() const
 
 bool CUploader::isFatalError() const
 {
-    return isFatalError_;
+    return isFatalServerError_;
 }
 
 CAbstractUploadEngine* CUploader::getUploadEngine()

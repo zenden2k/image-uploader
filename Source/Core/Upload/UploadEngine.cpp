@@ -46,7 +46,7 @@ bool CUploadEngineData::hasType(ServerType type) const
     return (TypeMask & type) == type;
 }
 
-bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) {
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) const {
     if (this->SupportedFormatGroups.empty()) {
         return true;
     }

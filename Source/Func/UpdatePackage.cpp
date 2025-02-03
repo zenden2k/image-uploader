@@ -335,7 +335,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     if (nm->responseCode() != 200 || tokens.empty() || tokens[0] != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + WinUtils::IntToStr(nm->responseCode()) + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
@@ -392,7 +392,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     
     if(nm_->responseCode() != 200)
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + WinUtils::IntToStr(nm_->responseCode())+ _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
         return false;
     }
 
@@ -531,7 +531,7 @@ bool CUpdatePackage::doUpdate()
 
             }
         }
-        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(rand()%10000)).c_str()+ _T(".old");
+        CString renameTo = copyTo + _T(".") + WinUtils::IntToStr(rand() % 10000) + _T(".old");
 
         CString buffer = U2W(IuCoreUtils::ExtractFilePath(W2U(copyTo)));
         std::vector<std::string> tokens;

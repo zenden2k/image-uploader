@@ -144,16 +144,6 @@ TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 
 }
 
-TEST_F(CoreUtilsTest, int64_tToString) 
-{
-    EXPECT_EQ("-2147483648", Int64ToString(std::numeric_limits<int>::min()));
-    EXPECT_EQ(Int64ToString(INT64_MAX), "9223372036854775807");
-    EXPECT_EQ("-9223372036854775808", Int64ToString(INT64_MIN));
-    EXPECT_EQ("-9223372036854775807", Int64ToString(INT64_MIN + 1) );
-   
-    EXPECT_EQ(Int64ToString(0), "0");
-}
-
 TEST_F(CoreUtilsTest, stringToint64_t) 
 {
     EXPECT_TRUE(StringToInt64("9223372036854775807")== 9223372036854775807);

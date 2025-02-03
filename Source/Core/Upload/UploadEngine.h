@@ -263,7 +263,7 @@ class CUploadEngineData
         bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
-        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false);
+        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false) const;
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);
@@ -367,6 +367,17 @@ public:
     ScriptAPI::UploadTaskUnion getTask();
     /* ScriptAPI::FileUploadTaskWrapper getFileTask();
     ScriptAPI::UrlShorteningTaskWrapper getUrlShorteningTask();*/
+};
+
+/**
+ * Task result code
+ */
+enum class ResultCode {
+    FatalError = -3,
+    TryAgain = -2,
+    FatalServerError = -1,
+    Failure = 0,
+    Success = 1
 };
 
 class CUploadEngineListBase

@@ -19,7 +19,7 @@ function _UploadToAccount(FileName, options) {
     local apiKey = ServerParams.getParam("Password");
     if (apiKey == "") {
         WriteLog("error", "[imgbb.com] Cannot upload to account without API key");
-        return 0;
+        return ResultCode.Failure;
     }
     local expiration = 0;
     try {
@@ -43,12 +43,15 @@ function _UploadToAccount(FileName, options) {
             if ("delete_url" in t.data) {
                 options.setDeleteUrl(t.data.delete_url);
             }
-            return 1;
+            return ResultCode.Success;
         }
     } else if ("error" in t) {
         WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + (("error" in t) ? t.error.message: ""));
+        if (nm.responseCode() == 400) {
+            return ResultCode.FatalError;
+        }
     }
-    return 0;
+    return ResultCode.Failure;
 }
 
 function UploadFile(FileName, options) {
@@ -66,7 +69,7 @@ function UploadFile(FileName, options) {
     if (token == "") {
         WriteLog("error", "[imgbb.com] Unable to obtain auth token");
         
-        return 0;
+        return ResultCode.Failure;
     }
     nm.setUrl("https://imgbb.com/json");
     nm.addQueryParam("type", "file");
@@ -92,16 +95,16 @@ function UploadFile(FileName, options) {
             if ("delete_url" in t.image) {
                 options.setDeleteUrl(t.image.delete_url);
             }
-            return 1;
-        } else
-            return 0;
-
+            return ResultCode.Success;
+        } else {
+            return ResultCode.Failure;
+        }
     } else {
         local t = ParseJSON(nm.responseBody());
         if (t != null) {
             WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + (("error" in t) ? t.error.message: ""));
         }
-        return 0;
+        return ResultCode.Failure;
     }
 }
 

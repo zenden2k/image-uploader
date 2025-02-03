@@ -52,6 +52,7 @@
 #include "Core/Images/AbstractImage.h"
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Core/3rdpart/termcolor.hpp"
+#include "Core/BasicConstants.h"
 
 #ifdef _WIN32
     #include <cstdio>
@@ -89,7 +90,8 @@ int proxyType; /* CURLPROXY_HTTP, CURLPROXY_HTTPS, CURLPROXY_SOCKS4, CURLPROXY_S
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
-
+int maxRetries = MAX_RETRIES_PER_FILE;
+int maxRetriesPerAction = MAX_RETRIES_PER_ACTION;
 bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
@@ -503,7 +505,6 @@ public:
         }
         else
         {
-
             std::cerr<<"All is up-to-date"<<std::endl;
         }
 
@@ -631,6 +632,18 @@ int main(int argc, char *argv[]){
         .help("The ID of remote folder/album (supported by some servers)")
         .metavar("ID")
         .store_into(folderId);
+    
+    program.add_argument("-r", "--retries")
+        .help("Maximum number of attempts (per file)")
+        //.metavar("NUMBER")
+       // .default_value(MAX_RETRIES_PER_FILE)
+        .store_into(maxRetries);
+
+    program.add_argument("-a", "--retries_per_action")
+        .help("Maximum number of attempts (per action)")
+        //.metavar("NUMBER")
+        //.default_value(MAX_RETRIES_PER_ACTION)
+        .store_into(maxRetriesPerAction);
 
     program.add_argument("-sp", "--server_param")
         .help("Set parameter of remote server (NAME:VALUE)")
@@ -796,6 +809,8 @@ int main(int argc, char *argv[]){
         std::cerr << program;
         return 1;
     }
+
+    list->setNumOfRetries(maxRetries, maxRetriesPerAction);
 
     try {
         filesToUpload = program.get<std::vector<std::string>>("files");
