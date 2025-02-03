@@ -203,7 +203,8 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
 }
 
 std::vector<std::string> CUploadEngineListBase::builtInScripts() const {
-    return { "ftp", "sftp", "webdav", "directory" };
+    auto keys = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
+    return std::vector<std::string>(keys.begin(), keys.end());
 }
 
 void CUploadEngineListBase::removeServer(const std::string& name) {

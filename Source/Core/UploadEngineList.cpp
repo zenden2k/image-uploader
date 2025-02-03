@@ -116,16 +116,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         std::string MaxThreadsStr = cur.Attribute("MaxThreads");
         UE.MaxThreads = atoi(MaxThreadsStr.c_str());
 
-        if (UE.PluginName == "ftp") {
-            /* auto it = serversSettings.find(UE.Name);
-            if (it == serversSettings.end() || it->second.empty()) { 
-                continue;
-            }*/
-            if (MaxThreadsStr.empty()) {
-                UE.MaxThreads = 1;
-            }
-        }
-        if (UE.PluginName == "directory" && MaxThreadsStr.empty()) {
+        if ((UE.PluginName == CORE_SCRIPT_FTP || UE.PluginName == CORE_SCRIPT_DIRECTORY) && MaxThreadsStr.empty()) {
             UE.MaxThreads = 1;
         }
 

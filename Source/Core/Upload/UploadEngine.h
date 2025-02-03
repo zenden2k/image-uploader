@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <string_view>
 #include <map>
 #include <random>
 
@@ -385,6 +386,11 @@ public:
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
     std::vector<std::string> builtInScripts() const;
+
+    inline static constexpr std::string_view CORE_SCRIPT_FTP = "ftp";
+    inline static constexpr std::string_view CORE_SCRIPT_SFTP = "sftp";
+    inline static constexpr std::string_view CORE_SCRIPT_WEBDAV = "webdav";
+    inline static constexpr std::string_view CORE_SCRIPT_DIRECTORY = "directory";
 
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;

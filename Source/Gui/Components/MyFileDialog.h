@@ -11,7 +11,7 @@ public:
     using FileFilter = std::pair<CString, CString>;
     using FileFilterArray = std::vector<FileFilter>;
     virtual ~IMyFileDialog();
-    virtual INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())=0;
+    virtual INT_PTR DoModal(HWND hWndParent)=0;
     virtual CString getFolderPath();
     virtual void setTitle(LPCWSTR title);
     virtual void setFileName(LPCWSTR fileName);
