@@ -92,6 +92,8 @@ std::string proxyUser;
 std::string proxyPassword;
 int maxRetries = MAX_RETRIES_PER_FILE;
 int maxRetriesPerAction = MAX_RETRIES_PER_ACTION;
+int thumbWidth = 0;
+int thumbHeight = 0;
 bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
@@ -380,6 +382,21 @@ int func() {
     serverProfile.setProfileName(login);
     serverProfile.setShortenLinks(false);
 
+    ImageUploadParams iup;
+    auto& thumb = iup.getThumbRef();
+    if (thumbWidth) {
+        thumb.Width = thumbWidth;
+        thumb.ResizeMode = ThumbCreatingParams::trByWidth;
+    }
+    if (thumbHeight) {
+        thumb.Height = thumbHeight;
+        thumb.ResizeMode = ThumbCreatingParams::trByHeight;
+    }
+    if (thumbWidth && thumbHeight) {
+        thumb.ResizeMode = ThumbCreatingParams::trByBoth;
+    }
+    serverProfile.setImageUploadParams(iup);
+
     ServerSettingsStruct& s = Settings.ServersSettings[uploadEngineData->Name][login];
 
     s.authData.Password = password;
@@ -635,15 +652,19 @@ int main(int argc, char *argv[]){
     
     program.add_argument("-r", "--retries")
         .help("Maximum number of attempts (per file)")
-        //.metavar("NUMBER")
-       // .default_value(MAX_RETRIES_PER_FILE)
         .store_into(maxRetries);
 
     program.add_argument("-a", "--retries_per_action")
         .help("Maximum number of attempts (per action)")
-        //.metavar("NUMBER")
-        //.default_value(MAX_RETRIES_PER_ACTION)
         .store_into(maxRetriesPerAction);
+
+    program.add_argument("-tw", "--thumb_width")
+        .help("thumbnail width (supported by some servers)")
+        .store_into(thumbWidth);
+
+    program.add_argument("-th", "--thumb_height")
+        .help("thumbnail height (supported by some servers)")
+        .store_into(thumbHeight);
 
     program.add_argument("-sp", "--server_param")
         .help("Set parameter of remote server (NAME:VALUE)")
@@ -832,7 +853,7 @@ int main(int argc, char *argv[]){
             if (it != std::string::npos) {
                 serverParameters[param.substr(0, it)] = param.substr(it + 1);
             } else {
-                throw std::invalid_argument(str(boost::format("Invalid server paramter '%s'") % param));
+                throw std::invalid_argument(str(boost::format("Invalid server parameter '%s'") % param));
             }
         }
     } catch (std::logic_error& e) {
