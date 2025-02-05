@@ -67,6 +67,7 @@ Before compiling IU install the following packages:
 ```
 sudo apt-get install g++ cmake ninja-build python3-pip
 pip3 install conan
+conan remote add zenden2k https://conan.svistunov.dev --index 0
 ```
 
 Configure and build the project:

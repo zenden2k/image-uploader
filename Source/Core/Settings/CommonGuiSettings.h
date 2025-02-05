@@ -31,7 +31,7 @@
 
 #include "EncodedPassword.h"
 
-#include "Core/Images/ImageConverter.h"
+#include "Core/Images/ImageParams.h"
 
 typedef std::map<SettingsString, ServerProfile> ServerProfilesMap;
 
