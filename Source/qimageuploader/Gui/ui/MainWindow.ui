@@ -149,7 +149,7 @@
   <customwidget>
    <class>UploadTreeView</class>
    <extends>QTreeView</extends>
-   <header>Gui/controls/uploadtreeview.h</header>
+   <header>Gui/controls/UploadTreeView.h</header>
   </customwidget>
  </customwidgets>
  <resources>
