@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-02-02 15:23+0300\n"
-"PO-Revision-Date: 2025-02-02 15:25+0300\n"
+"PO-Revision-Date: 2025-02-05 12:18+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -1900,7 +1900,7 @@ msgstr "Запуск программы при старте Windows"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:30
 msgid "Left button double-click"
-msgstr "Двойной клик левой кнопкой"
+msgstr "Двойной клик левой кнопкой:"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:31
 msgid "Left button single click:"

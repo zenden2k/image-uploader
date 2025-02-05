@@ -67,12 +67,12 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
         self.requires("megaio/3.5.2")
-        
+        self.requires("openssl/1.1.1w", force=True)
 
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
-            self.requires("openssl/1.1.1w", force=True)
+            pass
         else:
-            self.requires("openssl/3.3.2")
+            #self.requires("openssl/3.3.2")
             self.requires("libmediainfo/22.03")
             self.requires("dav1d/1.4.3", force=True)
         # self.requires("xz_utils/5.4.2")

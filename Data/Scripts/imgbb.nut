@@ -104,6 +104,9 @@ function UploadFile(FileName, options) {
         if (t != null) {
             WriteLog("error", "[imgbb.com] got error from server: \nResponse code:" + nm.responseCode() + "\n" + (("error" in t) ? t.error.message: ""));
         }
+        if (nm.responseCode() == 400) {
+            return ResultCode.FatalError;
+        }
         return ResultCode.Failure;
     }
 }
