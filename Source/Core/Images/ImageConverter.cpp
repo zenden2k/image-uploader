@@ -29,26 +29,6 @@
 
 #include "Func/WinUtils.h"
 
-ImageConvertingParams::ImageConvertingParams()
-{
-    StrokeColor = RGB(0, 0, 0);
-    SmartConverting = false;
-    AddLogo  = false;
-    AddText = false;
-    Format = 1;
-    Quality = 85;
-    SaveProportions = true;
-    ResizeMode = irmFit;
-    LogoPosition = 0;
-    LogoBlend = 0;
-    Text = W2U(APPNAME);
-    TextPosition = 5;
-    TextColor = 0x00ffffff;
-    Font = "Tahoma,12,,204";
-    PreserveExifInformation = true;
-    SkipAnimated = true;
-}
-
 ImageConverter::ImageConverter() : d_ptr(new ImageConverterPrivate())
 {
 

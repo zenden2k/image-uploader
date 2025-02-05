@@ -5,6 +5,7 @@
 //#include "Core/Utils/CoreUtils.h"
 
 #define APPNAME _T("Image Uploader")
+#define APPNAME_ "Image Uploader"
 
 // QString <-> std::string (utf-8) conversion macroses
 #define Q2U(str) str.toUtf8().data()

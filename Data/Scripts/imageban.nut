@@ -1,4 +1,4 @@
-function getThumbnailWidth(){
+function getThumbnailWidth(options){
     local result = "180";
     try{
         result = options.getParam("THUMBWIDTH");
@@ -24,7 +24,7 @@ function UploadFile(FileName, options){
     nm.addQueryParam("albmenu", "0");
     nm.addQueryParam("inf", "1");
     nm.addQueryParam("cat", "0");
-    nm.addQueryParam("prew", getThumbnailWidth());
+    nm.addQueryParam("prew", getThumbnailWidth(options));
     nm.addQueryParam("ttl", "0");
     nm.addQueryParam("ptext", "Увеличить");
     nm.addQueryParam("itext", "");
