@@ -8,6 +8,7 @@ QtGuiSettings::QtGuiSettings() : CommonGuiSettings() {
 
 void ImageUploadParams::bind(SettingsNode& n) {
 }
+#endif
 
 ThumbCreatingParams ImageUploadParams::getThumb()
 {
@@ -19,4 +20,4 @@ ThumbCreatingParams& ImageUploadParams::getThumbRef()
     return Thumb;
 }
 
-#endif
+
