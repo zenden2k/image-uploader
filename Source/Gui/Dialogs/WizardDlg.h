@@ -324,7 +324,6 @@ protected:
     bool DragndropEnabled;
     CStringList m_Paths;
     CWizardPage* Pages[5];
-    int screenshotIndex;
     CString m_bCurrentFunc;
     CMyEngineList* enginelist_;
     std::unique_ptr<WinServerIconCache> serverIconCache_;

@@ -8,6 +8,7 @@
 #include "atlheaders.h"
 
 namespace IuCommonFunctions {
+    extern int screenshotIndex;
     CString GetDataFolder();
 
     BOOL CreateTempFolder(CString& IUCommonTempFolder, CString& IUTempFolder);

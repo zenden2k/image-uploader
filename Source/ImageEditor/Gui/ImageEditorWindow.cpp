@@ -9,6 +9,7 @@
 #include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
+#include "Func/IuCommonFunctions.h"
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
@@ -1443,7 +1444,12 @@ bool ImageEditorWindow::OnSaveAs()
     }
     enableToolbarsIfNecessary(true);
     outFileName_ = dlg->getFile();
-    saveDocument(ClipboardFormat::None, true);
+
+    if (saveDocument(ClipboardFormat::None, true)) {
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        setSuggestedFileName(IuCommonFunctions::GenerateFileName(settings->ScreenshotSettings.FilenameTemplate, ++IuCommonFunctions::screenshotIndex,
+            CPoint(canvas_->currentDocument()->getWidth(), canvas_->currentDocument()->getHeight())));
+    }
     return true;
 }
 

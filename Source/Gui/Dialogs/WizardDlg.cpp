@@ -168,7 +168,6 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     enginelist_(enginelist)
 { 
     mainThreadId_ = GetCurrentThreadId();
-    screenshotIndex = 1;
     CurPage = -1;
     PrevPage = -1;
     NextPage = -1;
@@ -2155,7 +2154,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     ImageEditorWindow::DialogResult dialogResult = ImageEditorWindow::drCancel;
     CString suggestingFileName;
     if ( result ) {
-        suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+        suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
     }
 
     if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
@@ -2201,13 +2200,13 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 ImageUtils::Gdip_RemoveAlpha(*result, Color(255, 255, 255, 255));
             }
 
-            CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
+            CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
             try {
                 ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
             } catch (const std::exception& ex) {
                 LOG(ERROR) << ex.what();
             }
-                screenshotIndex++;
+            IuCommonFunctions::screenshotIndex++;
             if ( CopyToClipboard )
             {
                 CClientDC dc(m_hWnd);

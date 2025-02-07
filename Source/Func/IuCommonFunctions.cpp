@@ -11,6 +11,8 @@
 
 namespace IuCommonFunctions {
 
+int screenshotIndex = 1;
+
 CString GetDataFolder()
 {
     CString result = U2W(AppParams::instance()->dataDirectory());
