@@ -176,12 +176,9 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
         //m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
-
-
-    HICON ico = {};
     
-    LoadIconWithScaleDown(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight, &ico);
-    iconDropdown_ = ico;
+    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);
+
     m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
     m_ResizePresetIconButton.SetIcon(iconDropdown_);
 

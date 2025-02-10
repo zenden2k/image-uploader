@@ -419,6 +419,7 @@
 #define IDC_OPENSYSTEMCONNECTION        1080
 #define IDC_IGNOREALL                   1080
 #define IDC_DECODERESPONSEBUTTON        1080
+#define IDC_THUMBMACROSES               1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
