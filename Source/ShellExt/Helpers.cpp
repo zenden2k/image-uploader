@@ -207,7 +207,7 @@ bool IsVideoFile(LPCWSTR szFileName){
 
     CString formats(IU_VIDEOFILES_EXTENSIONS);
     int nTokenPos = 0;
-    CString separator(IU_VIDEOFILES_EXTENSIONS_SEPARATOR);
+    CString separator(IU_EXTENSIONS_LIST_SEPARATOR);
     CString strToken = formats.Tokenize(separator, nTokenPos);
 
     while (!strToken.IsEmpty()) {
