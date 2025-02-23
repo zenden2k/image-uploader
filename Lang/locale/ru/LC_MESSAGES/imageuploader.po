@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 19:21+0300\n"
-"PO-Revision-Date: 2025-02-10 19:23+0300\n"
+"POT-Creation-Date: 2025-02-23 16:31+0300\n"
+"PO-Revision-Date: 2025-02-23 16:33+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -152,7 +152,7 @@ msgstr "<без авторизации>"
 msgid "A new version is available:"
 msgstr "Доступна новая версия:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:250
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:248
 msgid "About Image Uploader"
 msgstr "О программе"
 
@@ -458,7 +458,7 @@ msgstr "Авторизация была выполнена успешно."
 msgid "Authenticaton:"
 msgstr "Авторизация:"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:247
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:245
 msgid "Author:"
 msgstr "Автор:"
 
@@ -918,7 +918,7 @@ msgstr "Автоматически копировать результаты в 
 msgid "Copy delete link"
 msgstr "Копировать ссылку на удаление"
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:287
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:285
 msgid "Copy e-mail"
 msgstr "Копировать e-mail"
 
@@ -2274,8 +2274,8 @@ msgid "Preparing image..."
 msgstr "Подготовка изображения..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:58
-msgid "Preserve EXIF data"
-msgstr "Сохранять EXIF (информация о камере, параметрах съемки, GPS и т.п.)"
+msgid "Preserve metadata (for ex. EXIF)"
+msgstr "Сохранять метаданные (например, EXIF)"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:146
 msgid "Preview"
@@ -3335,7 +3335,7 @@ msgstr "Позиция логотипа:"
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:248
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
 msgid "Website:"
 msgstr "Веб-сайт:"
 
@@ -3426,7 +3426,7 @@ msgstr ""
 msgid "extracting frames from video"
 msgstr "извлечение видеокадров"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:440
 msgid "file size"
 msgstr "размер файла"
 
@@ -3435,11 +3435,11 @@ msgstr "размер файла"
 msgid "folder \"%s\""
 msgstr "папка \"%s\""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
 msgid "image height"
 msgstr "высота изображения"
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:437
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
 msgid "image width"
 msgstr "ширина изображения"
 
@@ -3478,6 +3478,9 @@ msgstr "Переводчикам:"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "Preserve EXIF data"
+#~ msgstr "Сохранять EXIF (информация о камере, параметрах съемки, GPS и т.п.)"
 
 #~ msgid "Save as"
 #~ msgstr "Сохранить как"

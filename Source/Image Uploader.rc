@@ -382,11 +382,10 @@ CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
-    LTEXT           "build 1234\nUsing curl",IDC_IMAGEUPLOADERLABEL,158,25,101,20
+    LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,35,180,10
     CTEXT           "© 2007-2024 Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
-    CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,37,18,15,13
-    CTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,80,14,148,12
-    RTEXT           "VERSION",IDC_CURLINFOLABEL,77,25,68,9
+    CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,45,18,15,13
+    LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,87,14,148,12
     LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
     LTEXT           "https://svistunov.dev/imageuploader",IDC_SITELINK,95,108,173,8
     CTEXT           "image processing and uploading tool",IDC_STATIC,80,62,149,8
@@ -400,6 +399,7 @@ BEGIN
     LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
     LTEXT           "#",IDC_COMMITHASH,158,46,75,8
     CTEXT           "Icons by Icons8",IDC_ICONSBYLABEL,56,150,140,8
+    EDITTEXT        IDC_VERSIONEDIT,85,25,167,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
 END
 
 IDD_MAINDLG DIALOGEX 0, 0, 433, 266

@@ -215,7 +215,7 @@ To remove default field, pass an empty value.
 <li>Вложенные узлы (version >= 1.3.2)<br> 
 <code>RegExp</code> 
 <pre class="prettyprint">
-&lt;Action Type=&quot;upload&quot; Url=&quot;http://imgur.com/api/upload.xml&quot; PostParams=&quot;image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;&quot; RegExp='&amp;lt;original_image&amp;gt;(.*?)&amp;lt;\/original_image&amp;gt;([\s\S]*?)&amp;lt;small_thumbnail&gt;(.*?)&amp;lt;\/small_thumbnail&amp;gt;' AssignVars=&quot;Image:0;Thumb:2&quot;&gt;
+&lt;Action Type=&quot;upload&quot; Url=&quot;http://imgur.com/api/upload.xml&quot; PostParams=&quot;image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;&quot; RegExp='&amp;lt;original_image&amp;gt;(.*?)&amp;lt;\/original_image&amp;gt;([\s\S]*?)&amp;lt;small_thumbnail&amp;gt;(.*?)&amp;lt;\/small_thumbnail&amp;gt;' AssignVars=&quot;Image:0;Thumb:2&quot;&gt;
 	&lt;RegExp Pattern=&quot;&amp;lt;delete_page&amp;gt;(.*?)&amp;lt;\/delete_page&amp;gt;&quot; AssignVars=&quot;DeleteUrl:0;&quot;/&gt;
 &lt;/Action&gt;
 </pre>	
@@ -284,7 +284,7 @@ To remove default field, pass an empty value.
 &lt;Server Name=&quot;slil.ru&quot; FileHost=&quot;1&quot;&gt;
         &lt;Actions&gt;
              &lt;Action Type=&quot;upload&quot; Url=&quot;http://zalil.ru/upload/&quot; PostParams=&quot;file=%filename%;submit=Send&quot; 
-		RegExp=&apos;http://slil.ru/(\d*)&apos; AssignVars=&quot;File:0&quot;/&gt;
+		RegExp=&quot;http://slil.ru/(\d*)&quot; AssignVars=&quot;File:0&quot;/&gt;
         &lt;/Actions&gt;
         &lt;Result DownloadUrlTemplate=&quot;http://slil.ru/$(File)&quot;/&gt;
 &lt;/Server&gt;

@@ -24,21 +24,20 @@
 #include "atlheaders.h"
 #include <tchar.h>
 
-//#define VIDEO_DIALOG_FORMATS _T("Video files (avi, mpg, vob, wmv, flv, etc)\0*.avi;*.mpeg;*.mpg;*.mp2;*.divx;*.vob;*.flv;*.wmv;*.asf;*.mkv;*.mp4;*.ts;*.mov;*.mpeg2ts;*.3gp;\0All files\0*.*\0\0")
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
-//#define IMAGE_DIALOG_FORMATS _T("Image files (JPEG, GIF, PNG, etc)\0*.jpg;*.gif;*.png;*.bmp;*.tiff\0All files\0*.*\0\0")
 
 #define LOADICO(ico) LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(ico))
 
 bool IsVideoFile(LPCTSTR szFileName);
 
 CString PrepareVideoDialogFilters();
+CString PrepareAudioDialogFilters();
 
-LPTSTR fgetline(LPTSTR buf,int num,FILE *f);
+LPTSTR fgetline(LPTSTR buf, int num, FILE* f);
 
-LPCTSTR  CopyToStartOfW(LPCTSTR szString,LPCTSTR szPattern,LPTSTR szBuffer,int nBufferSize);
+LPCTSTR CopyToStartOfW(LPCTSTR szString, LPCTSTR szPattern, LPTSTR szBuffer, int nBufferSize);
 
-LPTSTR MoveToEndOfW(LPTSTR szString,LPTSTR szPattern);
+LPTSTR MoveToEndOfW(LPTSTR szString, LPTSTR szPattern);
 
 #endif
 

@@ -230,18 +230,16 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;
-    buildInfo.Format(_T("\u200EBuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
+    buildInfo.Format(_T("\u200Ebuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
     
 /*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");
 #endif*/
 
-    buildInfo  +=  CString(_T("\r\n")) + dateStr;
+    CString text = ver->FullVersion.c_str() + CString(_T(" ")) + buildInfo;
 
-    CString text = ver->FullVersion.c_str();
-
-    SetDlgItemText(IDC_CURLINFOLABEL, text);
-    SetDlgItemText(IDC_IMAGEUPLOADERLABEL, buildInfo);
+    SetDlgItemText(IDC_VERSIONEDIT, text);
+    SetDlgItemText(IDC_IMAGEUPLOADERLABEL, dateStr);
     CenterWindow(GetParent());
 
     TRC(IDC_AUTHORLABEL, "Author:");

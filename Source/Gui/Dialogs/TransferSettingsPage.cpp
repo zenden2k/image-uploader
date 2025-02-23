@@ -100,7 +100,9 @@ bool CTransferSettingsPage::apply()
     GuiTools::GetCheck(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX, Settings.ExecuteScript);
     CString scriptFile = GuiTools::GetDlgItemText(m_hWnd, IDC_SCRIPTFILENAMEEDIT);
 
-    if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile)){
+    if (scriptFile.IsEmpty()) {
+        Settings.ExecuteScript = false;
+    } else if (Settings.ExecuteScript && !WinUtils::FileExists(scriptFile)) {
         CString message1, message2;
         CString fieldTitle = GuiTools::GetDlgItemText(m_hWnd, IDC_EXECUTESCRIPTCHECKBOX);
         message1.Format(TR("Error in the field '%s':\n"), static_cast<LPCTSTR>(fieldTitle));

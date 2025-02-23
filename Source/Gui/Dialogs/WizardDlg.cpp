@@ -1888,8 +1888,8 @@ bool CWizardDlg::funcDownloadImages()
 bool CWizardDlg::funcMediaInfo()
 {
     IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
-        { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), _T("*.mp3;*.wav;*.wma;*.mid;*.asx") },
+        { CString(TR("Video files")) + _T(" (mp4, avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
+        { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), PrepareAudioDialogFilters() },
         { TR("All files"), _T("*.*") }
     };
 

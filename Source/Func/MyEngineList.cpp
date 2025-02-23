@@ -54,11 +54,11 @@ CString CMyEngineList::errorStr() const
 
 bool CMyEngineList::loadFromFile(const CString& filename)
 {
-    if (!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
-    {
+    std::string fileNameU8 = W2U(filename);
+    if (!IuCoreUtils::FileExists(fileNameU8)) {
         m_ErrorStr = "File not found.";
         return false;
     }
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    return CUploadEngineList::loadFromFile(WCstringToUtf8(filename), Settings->ServersSettings);
+    return CUploadEngineList::loadFromFile(fileNameU8, Settings->ServersSettings);
 }

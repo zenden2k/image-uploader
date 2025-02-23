@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-10 19:21+0300\n"
+"POT-Creation-Date: 2025-02-23 16:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,7 +138,7 @@ msgstr ""
 msgid "A new version is available:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:250
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:248
 msgid "About Image Uploader"
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Authenticaton:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:247
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:245
 msgid "Author:"
 msgstr ""
 
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Copy delete link"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:287
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:285
 msgid "Copy e-mail"
 msgstr ""
 
@@ -2221,7 +2221,7 @@ msgid "Preparing image..."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:58
-msgid "Preserve EXIF data"
+msgid "Preserve metadata (for ex. EXIF)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:146
@@ -3275,7 +3275,7 @@ msgstr ""
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:248
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
 msgid "Website:"
 msgstr ""
 
@@ -3363,7 +3363,7 @@ msgstr ""
 msgid "extracting frames from video"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:440
 msgid "file size"
 msgstr ""
 
@@ -3372,11 +3372,11 @@ msgstr ""
 msgid "folder \"%s\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
 msgid "image height"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:437
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
 msgid "image width"
 msgstr ""
 

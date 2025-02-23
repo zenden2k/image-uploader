@@ -375,8 +375,9 @@ LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID,
 
 void CThumbSettingsPage::ThumbTextCheckboxChange()
 {
-    bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK)==BST_CHECKED;
+    bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     ::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
+    thumbTextMacrosesButton_.EnableWindow(bChecked);
     params_.AddImageSize = bChecked;
     
 }

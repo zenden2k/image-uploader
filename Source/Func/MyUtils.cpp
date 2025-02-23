@@ -20,22 +20,33 @@
 
 #include "MyUtils.h"
 
+#include <set>
 #include <string>
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
 
-bool IsVideoFile(LPCTSTR szFileName)
-{
-    std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(IuCoreUtils::WstringToUtf8(szFileName)) );
-    const std::vector<std::string>& extensions = VideoUtils::instance().videoFilesExtensions;
-    return std::find(extensions.begin(), extensions.end(), ext) != extensions.end();
+bool IsVideoFile(LPCTSTR szFileName) {
+    std::vector<std::string>& v = VideoUtils::instance().videoFilesExtensions;
+    static const std::set<std::string> extensions(v.begin(), v.end());
+    const std::string ext = IuStringUtils::toLower(IuCoreUtils::ExtractFileExt(W2U(szFileName)));
+    return extensions.find(ext) != extensions.end();
 }
 
 CString PrepareVideoDialogFilters() {
     CString result;
     for (const auto& ex : VideoUtils::instance().videoFilesExtensions) {
+        result += _T("*.");
+        result += ex.c_str();
+        result += _T(";");
+    }
+    return result;
+}
+
+CString PrepareAudioDialogFilters() {
+    CString result;
+    for (const auto& ex : VideoUtils::instance().audioFilesExtensions) {
         result += _T("*.");
         result += ex.c_str();
         result += _T(";");

@@ -370,6 +370,7 @@
 #define IDC_CONNECTIONNAMEEDIT6         1045
 #define IDC_DOWNLOADURLEDIT             1045
 #define IDC_URLEDIT                     1045
+#define IDC_VERSIONEDIT                 1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_RADIO4                      1046
 #define IDC_BUTTON3                     1047

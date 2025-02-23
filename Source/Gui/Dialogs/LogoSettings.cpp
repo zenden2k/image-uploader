@@ -55,7 +55,7 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_TEXTSTROKECOLOR, "Stroke color:");
     TRC(IDC_SELECTFONT, "Font...");
     TRC(IDC_TEXTPOSITIONLABEL, "Text position:");
-    TRC(IDC_PRESERVE_EXIF, "Preserve EXIF data");
+    TRC(IDC_PRESERVE_EXIF, "Preserve metadata (for ex. EXIF)");
     TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
     SetWindowText(TR("Additional params"));    
 }

@@ -21,6 +21,4 @@
 #pragma warning(disable:4996)
 #pragma warning( disable: 4100 ) // unreferenced formal parameter
 
-constexpr auto IU_VIDEOFILES_EXTENSIONS = "asf;avi;mpeg;mpg;mp2;divx;vob;flv;wmv;mkv;mp4;ts;mov;mpeg2ts;3gp;mpeg1;mpeg2;mpeg4;mv4;rmvb;qt;hdmov;divx;m4v;ogv;m2v;webm";
-constexpr auto IU_VIDEOFILES_EXTENSIONS_SEPARATOR = ";";
 #endif

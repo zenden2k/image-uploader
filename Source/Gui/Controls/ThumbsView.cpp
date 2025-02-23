@@ -558,7 +558,7 @@ bool CThumbsView::StopBackgroundThread(bool wait)
         SignalStop();
         thumbQueueCondition_.notify_one();
         if (wait) {
-            MsgWaitForSingleObject(m_hThread, INFINITE);
+            WinUtils::MsgWaitForSingleObject(m_hThread, INFINITE);
         }
     }
     return isRunning;
