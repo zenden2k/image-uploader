@@ -33,14 +33,12 @@
     #include <WinSock.h>
     #include "Func/WinUtils.h"
 #else
-    #include <boost/filesystem.hpp>
     #ifdef __APPLE__
         #include <sys/uio.h>
     #else
-        #include <sys/io.h>
+        //#include <sys/io.h>
     #endif
     #include <sys/stat.h>
-
 #endif
 
 #include "Core/3rdpart/UriParser.h"

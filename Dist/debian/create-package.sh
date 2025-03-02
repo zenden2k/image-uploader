@@ -23,6 +23,7 @@ then
 	    amd64)  Architecture="amd64"                    ;;
 	    x86_64) Architecture="amd64"                   ;;
 	    sparc64)    Architecture="sparc64"                  ;;
+		aarch64) Architecture="arm64"                  ;;
 	* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
 	exit
 	;;

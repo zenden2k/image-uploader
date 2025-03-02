@@ -1,57 +1,51 @@
 #include "SystemUtils.h"
 
 #ifdef _WIN32
-#include "SystemUtils_win.h"
+    #include "SystemUtils_win.h"
 #else
-#include "SystemUtils_unix.h"
+    #include "SystemUtils_unix.h"
 #endif
 
-
-#ifndef _M_ARM64
-#define ENABLE_CPU_FEATURES_TEST
+#if defined(__x86_64__) || defined(_M_X64) || defined(i386) || defined(__i386__) || defined(__i386) || defined(_M_IX86)
+    #define ENABLE_CPU_FEATURES_TEST
 #endif
 
 #ifdef ENABLE_CPU_FEATURES_TEST
-// Useful link:
-// https://code.google.com/p/chromium/codesearch#chromium/src/base/cpu.cc&sq=package:chromium&type=cs
-#ifdef _WIN32
-#include <intrin.h>
-#define __xgetbv _xgetbv
-//  Windows
-#define cpuid(info,x)    __cpuidex(info,x,0)
+    // Useful link:
+    // https://code.google.com/p/chromium/codesearch#chromium/src/base/cpu.cc&sq=package:chromium&type=cs
+    #ifdef _WIN32
+        #include <intrin.h>
+        #define __xgetbv _xgetbv
+        //  Windows
+        #define cpuid(info,x)    __cpuidex(info,x,0)
+    #else
+        //  GCC Inline Assembly
+        void cpuid(int CPUInfo[4], int InfoType){
+            __asm__ __volatile__(
+                "cpuid":
+            "=a" (CPUInfo[0]),
+                "=b" (CPUInfo[1]),
+                "=c" (CPUInfo[2]),
+                "=d" (CPUInfo[3]) :
+                "a" (InfoType), "c" (0)
+                );
+        }
+        #if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4
+            static inline unsigned long long __xgetbv(unsigned int index){
+            unsigned int eax, edx;
+            __asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
+            return ((unsigned long long)edx << 32) | eax;
 
-#else
+            }
+        #else
+            #define __xgetbv() 0
+        #endif
+    #endif
+    #include <immintrin.h>
 
-//  GCC Inline Assembly
-void cpuid(int CPUInfo[4], int InfoType){
-    __asm__ __volatile__(
-        "cpuid":
-    "=a" (CPUInfo[0]),
-        "=b" (CPUInfo[1]),
-        "=c" (CPUInfo[2]),
-        "=d" (CPUInfo[3]) :
-        "a" (InfoType), "c" (0)
-        );
-}
-#if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 4
-static inline unsigned long long __xgetbv(unsigned int index){
-  unsigned int eax, edx;
-  __asm__ __volatile__("xgetbv" : "=a"(eax), "=d"(edx) : "c"(index));
-  return ((unsigned long long)edx << 32) | eax;
-
-}
- #else
-#define __xgetbv() 0
-#endif
-
-
-
-#endif
-#include <immintrin.h>
-#ifndef _XCR_XFEATURE_ENABLED_MASK
-#define _XCR_XFEATURE_ENABLED_MASK
-#endif
-
+    #ifndef _XCR_XFEATURE_ENABLED_MASK
+        #define _XCR_XFEATURE_ENABLED_MASK
+    #endif
 #endif
 
 namespace IuCoreUtils
