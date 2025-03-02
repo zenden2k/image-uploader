@@ -128,21 +128,23 @@ BUILD_TARGETS = [
         'deb_package_arch': 'amd64',
         'build_qt_gui': True,
         'run_tests': True,
-        'supported_os': 'Linux (amd64)'
+        'supported_os': 'Linux (amd64)',
+        'objcopy': 'objcopy'
     },
     {
         'os': "Linux",
         'compiler': "gcc",
         'build_type': "Release",
         'arch': 'aarch64',
-        'host_profile': 'linux_arm64_release',
+        'host_profile': '',
         'build_profile': 'default',
         'cmake_generator': 'Ninja Multi-Config', 
-        'cmake_args': [], # "-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"
+        'cmake_args': ["-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"], 
         'deb_package_arch': 'arm64',
         'build_qt_gui': False,
         'run_tests': False,
-        'supported_os': 'Linux (arm64)'
+        'supported_os': 'Linux (arm64)',
+        'objcopy': 'aarch64-linux-gnu-objcopy'
     },
 ]
 
@@ -279,7 +281,10 @@ def try_conan_host_profile(target, conan_profile_dir, profile_name):
         try_profile = conan_profile_dir + "/" + get_target_full_name(target).lower()
 
     if os.path.isfile(try_profile):
-        return os.path.abspath(try_profile)
+        if target["os"] == "Windows":
+            return os.path.abspath(try_profile)
+        else:
+            return try_profile
     elif profile_name: 
         return profile_name
     else:
@@ -572,9 +577,10 @@ for target in BUILD_TARGETS:
         command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
                    "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake",
                    # "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
-                    "-DCONAN_HOST_PROFILE=" + host_profile,
                     "-DCONAN_BUILD_PROFILE=" + build_profile
                 ]
+        if target.get("host_profile") != "":
+            command += ["-DCONAN_HOST_PROFILE=" + host_profile]
         if target.get("cmake_platform"):
             command += ["-A", target.get("cmake_platform")]
         if target.get("os") == "Linux":
@@ -699,7 +705,7 @@ for target in BUILD_TARGETS:
 
             json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
         elif target["os"] == "Linux":
-            args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch")]
+            args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch"), target.get("objcopy")]
             working_dir = repo_dir_abs + used_dist_dir + "debian/"
             print("Running command:", " ".join(args), "; working_dir="+working_dir)
             proc = subprocess.run(args, cwd=working_dir)
@@ -725,7 +731,7 @@ for target in BUILD_TARGETS:
        
             # Qt GUI
             if target.get("build_qt_gui"):
-                args = ["wsl", "-e", "/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch")]
+                args = ["wsl", "-e", "/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch"), target.get("objcopy")]
                 working_dir = repo_dir_abs + used_dist_dir + "debian/"
                 print("Running command:", " ".join(args), "; working_dir="+working_dir)
                 proc = subprocess.run(args, cwd=working_dir)

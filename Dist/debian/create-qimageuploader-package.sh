@@ -9,6 +9,11 @@ source <(\
 )
 AppVersion="${IU_APP_VER_CLEAN}.${IU_BUILD_NUMBER}"
 Architecture=$1
+ObjCopy=$2
+if [ -z "$ObjCopy" ]
+then
+	ObjCopy=objcopy
+fi
 
 if [ -z "$Architecture" ]
 then
@@ -44,7 +49,7 @@ sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
-objcopy --strip-debug --strip-unneeded ../../Build/bin/Release/qimageuploader ~/zenden2k-imageuploader/usr/bin/zenden2k-imageuploader
+$ObjCopy --strip-debug --strip-unneeded ../../Build/bin/Release/qimageuploader ~/zenden2k-imageuploader/usr/bin/zenden2k-imageuploader
 cp ../../Data/servers.xml ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/servers.xml
 cp ../../Data/Scripts/*.nut ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 cp ../../Data/Favicons/*.ico ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
