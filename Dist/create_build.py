@@ -59,7 +59,8 @@ RESULT_ARCH_MAPPING = {
 ALTERNATIVE_ARCH_DISPLAY_NAME = {
     'armv8': 'ARM64',
     'x86_64': "x86 64-bit",
-    'x86': 'x86 32-bit'
+    'x86': 'x86 32-bit',
+    'aarch64': 'ARM64'
 }
 
 BUILD_TARGETS = [
@@ -129,9 +130,23 @@ BUILD_TARGETS = [
         'run_tests': True,
         'supported_os': 'Linux (amd64)'
     },
+    {
+        'os': "Linux",
+        'compiler': "gcc",
+        'build_type': "Release",
+        'arch': 'aarch64',
+        'host_profile': 'linux_arm64_release',
+        'build_profile': 'default',
+        'cmake_generator': 'Ninja Multi-Config', 
+        'cmake_args': [], # "-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"
+        'deb_package_arch': 'arm64',
+        'build_qt_gui': False,
+        'run_tests': False,
+        'supported_os': 'Linux (arm64)'
+    },
 ]
 
-#BUILD_TARGETS = BUILD_TARGETS[0:1]
+BUILD_TARGETS = [BUILD_TARGETS[4]]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
