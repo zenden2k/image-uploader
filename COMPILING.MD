@@ -107,6 +107,7 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
 ## Prerequisites  (on Windows)
 
  * msbuild that is a part of Microsoft Visual Studio 2019 or newer (with x86/x64/ARM64 C++ compiler)
+ * Windows 10 SDK
  * ATL library for x86/x64/ARM64 platform (a part of Visual Studio)
  * python 3
  * git
@@ -136,6 +137,7 @@ conan remote add zenden2k https://conan.svistunov.dev --index 0
 You can install most of them by running the command 
 ```bash
 sudo apt-get install git g++ cmake ninja-build python3-pip doxygen gettext  autoconf automake libtool fakeroot qt5-default
+sudo apt-get install gcc-aarch64-linux-gnu g++-aarch64-linux-gnu binutils-aarch64-linux-gnu # for cross-compiling
 pip3 install conan==2.11.0
 ```
 Note that Ubuntu 20.04 has CMake v3.16 but the script requires >= v3.17.
