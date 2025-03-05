@@ -485,6 +485,31 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
+	<Server Name="imgspace.online" Types="image file" Authorize="2" MaxFileSize="100000000" WebsiteUrl="https://imgspace.online/" 
+			RegistrationUrl="https://imgspace.online/signup" PasswordLabel="API key">
+        <SupportedFormats>
+			<FormatGroup MaxFileSize="100000000" Authorized="1">
+				<Format MimeType="image/avif">*.avif</Format>
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+			</FormatGroup>	  
+		</SupportedFormats>
+		<Actions>
+            <Action Type="upload" Url="https://imgspace.online/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD)">
+				<Call Function="json" Arg1="image.image.url" AssignVars="ImageUrl:0;"/>
+				<Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="image.url_short" AssignVars="ViewUrl:0;"/>
+				<Call Function="json" Arg1="image.delete_url" AssignVars="DeleteUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)" />
+    </Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>
