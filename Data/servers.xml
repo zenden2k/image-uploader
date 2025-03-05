@@ -189,7 +189,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-    <Server Name="prntscr.com" Authorize="0" Type="image" Plugin="prntscr">
+    <Server Name="prntscr.com" Authorize="0" Type="image" Plugin="prntscr" WebsiteUrl="https://prnt.sc/">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
@@ -244,7 +244,7 @@
 		<Result DirectUrlTemplate="$(ShortUrl)" />
 	</Server2>
 	<!-- is.gd is not accessible in Russia (works with VPN) -->
-	<Server2 Name="is.gd" Debug="0" Type="urlshortening" DefaultForTypes="urlshortening">
+	<Server2 Name="is.gd" Debug="0" Type="urlshortening" DefaultForTypes="urlshortening" WebsiteUrl="https://is.gd/">
 		<Actions>
 			<Action Type="post" Url="https://is.gd/create.php?format=simple&amp;url=$(_ORIGINALURL|urlencode)" RegExp='^(.*?)$' AssignVars="ShortUrl:0;"/>
 		</Actions>
@@ -356,7 +356,7 @@
 		</Actions>
 		<Result DownloadUrlTemplate="$(FileId)"  DeleteUrl="$(DeleteUrl)"/>
 	</Server>
-	<Server Name="freeimage.host" Authorize="0" Type="image" Plugin="freeimage.host">
+	<Server Name="freeimage.host" Authorize="0" Type="image" Plugin="freeimage.host" WebsiteUrl="https://freeimage.host/">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
