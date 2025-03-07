@@ -165,7 +165,7 @@ bool CConnectionSettingsPage::apply()
     Settings.ConnectionSettings.ServerAddress = W2U(proxyAddress);
     Settings.ConnectionSettings.ProxyPort = GetDlgItemInt(IDC_PORTEDIT);
 
-    if (proxyAddress.IsEmpty() /* || Settings.ConnectionSettings.ProxyPort == 0*/) {
+    if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kUserProxy && proxyAddress.IsEmpty() /* || Settings.ConnectionSettings.ProxyPort == 0*/) {
         Settings.ConnectionSettings.UseProxy = ConnectionSettingsStruct::kNoProxy;
     }
     

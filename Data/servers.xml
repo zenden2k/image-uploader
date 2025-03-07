@@ -510,6 +510,26 @@
         </Actions>
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)" />
     </Server>
+	<Server Name="gifyu.com" MaxFileSize="50000000" WebsiteUrl="https://gifyu.com/" 
+			RegistrationUrl="https://gifyu.com/signup">
+        <SupportedFormats>
+			<FormatGroup MaxFileSize="50000000">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+			</FormatGroup>	  
+		</SupportedFormats>
+		<Actions>
+            <Action Type="upload" Url="https://gifyu.com/api/1/upload/?key=9aa9c4dedd20aeb9a63e41676e061820" PostParams="source=%filename%;">
+				<Call Function="json" Arg1="image.url" AssignVars="ImageUrl:0;"/>
+				<Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
+    </Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>
