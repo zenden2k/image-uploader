@@ -530,6 +530,15 @@
         </Actions>
         <Result ImageUrlTemplate="$(ImageUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" />
     </Server>
+	<Server Name="nitroflare.net" FileHost="1" Authorize="2" WebsiteUrl="https://nitroflare.net/" RegistrationUrl="https://nitroflare.net/register" PasswordLabel="User hash">
+		<Actions>
+			<Action Type="get" Url="https://nitroflare.net/plugins/fileupload/getServer" RegExp="(.+)" AssignVars="UploadUrl:0"/>
+            <Action Type="upload" Url="$(UploadUrl)" PostParams="files=%filename%;user=$(_PASSWORD);">
+				<Call Function="json" Arg1="files[0].url" AssignVars="FileUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(FileUrl)" />
+    </Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>
