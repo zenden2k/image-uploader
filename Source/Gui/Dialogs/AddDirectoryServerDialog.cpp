@@ -45,6 +45,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     TRC(IDC_CONNECTIONNAMELABEL, "Server name:");
     TRC(IDC_DIRECTORYLABEL, "Folder:");
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");

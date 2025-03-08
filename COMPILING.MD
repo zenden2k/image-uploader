@@ -4,6 +4,8 @@
 To build Image Uploader from source files you will need:
 - Git 		https://git-scm.com/downloads
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
+- Windows 10 SDK
+- ATL library for your platform (a part of Visual Studio)
 - CMake (tested with v3.24.0)    https://cmake.org/
 - Python 3    https://www.python.org/downloads/
 - Conan v2.x (C++ package manager; tested with v2.11.0)   https://conan.io/
@@ -41,9 +43,6 @@ The same you can achieve using `cmake-gui` utility.
 In cmake-gui you can see all compilation options and easily change them.
 
 If you want to build Image Uploader with separate FFmpeg libraries (`IU_ENABLE_FFMPEG=On` and `IU_FFMPEG_STANDALONE=On`), after building put them (avcodec.lib, avformat.lib, avutil.lib, swscale.lib) into `Contrib\Lib` directory and header files into `Contrib\Include` directory.
-
-If you want to build IU with Microsoft Edge Webview2 support (`IU_ENABLE_WEBVIEW2=On`), you should install package "Microsoft.Web.WebView2" using NuGet package manager (https://docs.microsoft.com/en-us/microsoft-edge/webview2/get-started/win32),
-then copy header files `(*.h)` to the "Contrib\Include" directory, and copy `*.lib` files to Contrib\Lib directory.
 
 Some examples, nevermind:
 
@@ -95,6 +94,8 @@ and pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
 
 # Build packages for all platforms at once
 
+To build the release I use a combination of Windows and WSL 2 (Ubuntu 20.04).
+
 Run on Windows:
 
 ```bash
@@ -113,7 +114,7 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * git
  * cmake
  * conan (version >= 2.0)
- * nuget
+ * nuget?
  * 7-Zip (7z.exe)
  * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+

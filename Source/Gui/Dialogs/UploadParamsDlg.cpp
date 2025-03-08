@@ -62,6 +62,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_THUMBRESIZELABEL, "Scaling:");
     TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Use default thumbnail settings");
     TRC(IDC_SHORTENLINKSCHECKBOX, "Shorten URLs");
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THUMBFORMATLABEL, "Format:");
     TRC(IDC_THUMBQUALITYLABEL, "Quality:");

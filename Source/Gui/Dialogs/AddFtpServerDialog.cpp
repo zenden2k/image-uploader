@@ -33,6 +33,7 @@ LRESULT CAddFtpServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDC_PASSWORDLABEL, "Password:");
     TRC(IDC_REMOTEDIRECTORYLABEL, "Remote directory:");
     TRC(IDC_DOWNLOADURLLABEL, "URL for downloading:");
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THEURLOFUPLOADEDLABEL, "URL for downloading will look like:");
     TRC(IDC_SERVERTYPELABEL, "Server type:");

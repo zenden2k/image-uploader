@@ -86,6 +86,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
     CString passwordLabelText = uploadEngineData->PasswordLabel.empty() ? CString(TR("Password:")) : CString(U2W(uploadEngineData->PasswordLabel)) + _T(":");
     SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
     TRC(IDC_LOGOUT, "Logout");
