@@ -539,6 +539,26 @@
         </Actions>
         <Result ImageUrlTemplate="$(FileUrl)" />
     </Server>
+	<Server Name="abyss.to" FileHost="1" Authorize="2" WebsiteUrl="https://abyss.to/" RegistrationUrl="https://abyss.to/register" PasswordLabel="User hash">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="video/ogg,video/theora">*.ogm,*.ogv</Format>
+				<Format MimeType="video/x-ms-wmv,application/vnd.ms-asf">*.wmv</Format>
+				<Format MimeType="video/mpeg">*.mpeg,*.mpg</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+				<Format MimeType="video/x-ms-asf">*.asx</Format>
+				<Format MimeType="video/mp4">*.mp4,*.m4v</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+				<Format MimeType="video/x-msvideo">*.avi</Format>
+			</FormatGroup>	  
+		</SupportedFormats>
+		<Actions>
+            <Action Type="upload" Url="https://up.hydrax.net/$(_PASSWORD)" PostParams="file=%filename%;">
+				<Call Function="json" Arg1="slug" AssignVars="Slug:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="https://short.icu/$(Slug)" />
+    </Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>
