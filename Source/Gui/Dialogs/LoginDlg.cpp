@@ -259,7 +259,10 @@ void CLoginDlg::Accept()
     li.Login = W2U(loginEditText);
 
     if ( li.Login.empty() ) {
-        LocalizedMessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
+        auto* uploadEngineData = serverProfile_.uploadEngineData();
+        std::string loginLabelText = (uploadEngineData && !uploadEngineData->LoginLabel.empty()) ? uploadEngineData->LoginLabel : _("Login");
+        std::string msg = str(IuStringUtils::FormatNoExcept(_("The field '%s' cannot be empty.")) % loginLabelText);
+        LocalizedMessageBox(U2WC(msg),TR("Error"), MB_ICONERROR);
         return;
     }
     std::string serverName = serverProfile_.serverName();

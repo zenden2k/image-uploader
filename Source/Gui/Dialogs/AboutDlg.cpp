@@ -242,6 +242,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, dateStr);
     CenterWindow(GetParent());
 
+    TRC(IDOK, "OK");
     TRC(IDC_AUTHORLABEL, "Author:");
     TRC(IDC_WEBSITELABEL, "Website:");
     

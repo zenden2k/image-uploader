@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-23 16:31+0300\n"
+"POT-Creation-Date: 2025-03-09 12:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -138,7 +138,7 @@ msgstr ""
 msgid "A new version is available:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:248
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:249
 msgid "About Image Uploader"
 msgstr ""
 
@@ -154,8 +154,8 @@ msgstr ""
 msgid "Account is not enabled"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:210
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:266
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:211
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:270
 msgid "Account with such name already exists."
 msgstr ""
 
@@ -171,7 +171,7 @@ msgstr ""
 msgid "Action:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:43
 msgid "Active connection"
 msgstr ""
 
@@ -315,12 +315,12 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:206
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
 #: ../Source/Gui/Dialogs/MainDlg.cpp:714
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:119
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:347
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1674
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1893
@@ -398,7 +398,7 @@ msgstr ""
 msgid "Are you sure you want to delete the file '%s' from the server?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:166
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:167
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
@@ -429,7 +429,7 @@ msgstr ""
 msgid "Audio files"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:318
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:322
 msgid "Authenticated succesfully."
 msgstr ""
 
@@ -437,7 +437,7 @@ msgstr ""
 msgid "Authenticaton:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:245
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
 msgid "Author:"
 msgstr ""
 
@@ -464,7 +464,7 @@ msgid "Autorization parameters"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:69
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:70
 msgid "Background color:"
 msgstr ""
 
@@ -519,8 +519,8 @@ msgstr ""
 msgid "By default"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:48
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:36
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:41
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:58
@@ -529,7 +529,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:90
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:251
 #: ../Source/Gui/Dialogs/InputDialog.cpp:53
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:89
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:90
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
@@ -539,7 +539,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/TextViewDlg.h:36
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:279
 msgid "Cancel"
 msgstr ""
@@ -699,7 +699,7 @@ msgstr ""
 msgid "Choose more servers..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:209
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:210
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:92
 msgid "Choose program"
 msgstr ""
@@ -835,8 +835,8 @@ msgstr ""
 msgid "Connection  name:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:89
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:255
 msgid "Connection name cannot be empty"
 msgstr ""
 
@@ -857,7 +857,7 @@ msgstr ""
 msgid "Contributors:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:51
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr ""
 
@@ -890,7 +890,7 @@ msgstr ""
 msgid "Copy delete link"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:285
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:286
 msgid "Copy e-mail"
 msgstr ""
 
@@ -949,12 +949,12 @@ msgstr ""
 msgid "Copy to the clipboard:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:112
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:331
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:113
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:332
 msgid "Could not add server."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:323
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:327
 msgid "Could not authenticate. Please try again."
 msgstr ""
 
@@ -1083,7 +1083,7 @@ msgstr ""
 msgid "Delete Profile"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:90
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:91
 msgid "Delete account"
 msgstr ""
 
@@ -1128,7 +1128,7 @@ msgstr ""
 msgid "Documentation"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:113
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:114
 #, c-format
 msgid "Don't have an account? Sign up on %s right now"
 msgstr ""
@@ -1137,8 +1137,8 @@ msgstr ""
 msgid "Don't resize"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:97
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:262
 msgid "Download URL cannot be empty."
 msgstr ""
 
@@ -1224,23 +1224,23 @@ msgid "Enter your text:"
 msgstr ""
 
 #: ../Source/Core/Upload/UploadTask.cpp:379
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:254
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:261
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:336
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:89
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:97
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:118
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:249
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:255
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:262
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:285
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:337
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:134
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:143
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:149
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:210
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:261
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:266
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:211
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:265
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:270
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:122
@@ -1260,13 +1260,13 @@ msgstr ""
 msgid "Error control"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:106
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:108
 #, c-format
 msgid "Error in the field '%s':\n"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:208
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:149
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:151
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:145
 #, c-format
 msgid "Error in the field '%s': value should be between %d and %d."
@@ -1314,7 +1314,7 @@ msgstr ""
 msgid "Exit"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:351
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
 msgid "Explicit"
 msgstr ""
 
@@ -1342,7 +1342,7 @@ msgstr ""
 msgid "Extracting video frames was stopped by user."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:46
 msgid "FTP"
 msgstr ""
 
@@ -1350,7 +1350,7 @@ msgstr ""
 msgid "Failed to load folder list."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:330
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:334
 msgid "Failed to logout."
 msgstr ""
 
@@ -1380,7 +1380,7 @@ msgstr ""
 msgid "File \"%s\" not found!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:107
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:109
 #, c-format
 msgid "File %s doesn't exist"
 msgstr ""
@@ -1500,7 +1500,7 @@ msgstr ""
 msgid "Flip vertical"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:162
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:163
 #, c-format
 msgid "Folder %s"
 msgstr ""
@@ -1543,7 +1543,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:59
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:111
 msgid "Format:"
 msgstr ""
@@ -1750,7 +1750,7 @@ msgstr ""
 msgid "Immediately begin uploading to the server"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:353
 msgid "Implicit"
 msgstr ""
 
@@ -1916,8 +1916,8 @@ msgstr ""
 msgid "Logging in..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:261
-msgid "Login cannot be empty"
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:263
+msgid "Login"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
@@ -1929,11 +1929,11 @@ msgstr ""
 msgid "Login:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:91
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 msgid "Logout"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:330
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:334
 msgid "Logout succesfully."
 msgstr ""
 
@@ -2021,7 +2021,7 @@ msgstr ""
 msgid "Next >"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:349
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:350
 msgid "No"
 msgstr ""
 
@@ -2061,10 +2061,15 @@ msgstr ""
 msgid "Number of frames:"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:245
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:48
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:37
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:42
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:57
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:58
 #: ../Source/Gui/Dialogs/InputDialog.cpp:54
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:89
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:80
@@ -2074,6 +2079,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
 #: ../Source/Gui/Dialogs/TextViewDlg.h:36
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
 msgid "OK"
 msgstr ""
 
@@ -2126,7 +2132,7 @@ msgstr ""
 msgid "Open system connection settings"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:122
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:123
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1091
 msgid "Open the website"
 msgstr ""
@@ -2237,11 +2243,11 @@ msgstr ""
 msgid "Print..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:284
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:285
 msgid "Private key file doesn't exist."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:40
 msgid "Private key file:"
 msgstr ""
 
@@ -2287,7 +2293,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:60
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:112
 msgid "Quality:"
 msgstr ""
@@ -2305,8 +2311,8 @@ msgstr ""
 msgid "Re-upload images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:115
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:334
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:116
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:335
 msgid "Reason:"
 msgstr ""
 
@@ -2348,7 +2354,7 @@ msgstr ""
 msgid "Remove from list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:139
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:140
 msgid "Remove this account from the list (not from the remote server)"
 msgstr ""
 
@@ -2405,12 +2411,12 @@ msgstr ""
 msgid "Rounding radius"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:46
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:47
 msgid "SFTP"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:72
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:99
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:100
 msgid "Same format as image"
 msgstr ""
 
@@ -2510,7 +2516,7 @@ msgstr ""
 msgid "Searching for picture files..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:41
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
 msgid "Secured connection:"
 msgstr ""
 
@@ -2526,7 +2532,7 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:374
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:375
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:153
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
@@ -2609,11 +2615,11 @@ msgstr ""
 msgid "Server to host your images"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:38
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
 msgid "Server type:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:248
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:249
 msgid "Server's name cannot be empty"
 msgstr ""
 
@@ -2733,7 +2739,7 @@ msgstr ""
 msgid "Show tray icon"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LoginDlg.cpp:101
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:102
 msgid "Sign in..."
 msgstr ""
 
@@ -2813,7 +2819,7 @@ msgstr ""
 msgid "Subtitles: "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
 msgstr ""
 
@@ -2833,11 +2839,11 @@ msgstr ""
 msgid "Table of clickable thumbnails"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:40
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:41
 msgid "Test connection"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:307
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Test failed"
 msgstr ""
 
@@ -2886,6 +2892,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:83
 msgid "Thanks to:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:264
+#, c-format
+msgid "The field '%s' cannot be empty."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:838
@@ -2938,7 +2949,7 @@ msgid "Thumbnail settings"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:52
-#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:69
 msgid "Thumbnail text:"
 msgstr ""
 
@@ -3007,8 +3018,8 @@ msgstr ""
 msgid "Type of arrow"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:38
 msgid "URL for downloading will look like:"
 msgstr ""
 
@@ -3271,11 +3282,11 @@ msgstr ""
 msgid "Watermark position:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:47
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:48
 msgid "WebDAV"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:247
 msgid "Website:"
 msgstr ""
 
@@ -3298,7 +3309,7 @@ msgstr ""
 msgid "Work in progress"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:354
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:355
 msgid "Yes"
 msgstr ""
 

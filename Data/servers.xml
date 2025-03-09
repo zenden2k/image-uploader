@@ -539,6 +539,34 @@
         </Actions>
         <Result ImageUrlTemplate="$(FileUrl)" />
     </Server>
+	<Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register">
+		<Actions>
+			<Action Type="get" Url="https://iimg.su" RegExp="csrf-token&quot;\s+content=&quot;(.+?)&quot;" AssignVars="Token:0"/>
+            <Action Type="upload" Url="https://iimg.su/upload" PostParams="file=%filename%;upload_file=true;_token=$(Token);">
+				<Call Function="json" Arg1="data.page_url" AssignVars="ViewUrl:0;"/>
+				<Call Function="json" Arg1="data.file_url" AssignVars="DirectUrl:0;"/>
+				<Call Function="json" Arg1="data.file_thumb_url" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
+    </Server>
+	<Server Name="1file.su" FileHost="1" WebsiteUrl="https://1file.su">
+		<Actions>
+			<Action Type="get" Url="https://1file.su" RegExp="_token&quot;\s+value=&quot;(.+?)&quot;" AssignVars="Token:0"/>
+            <Action Type="upload" Url="https://1file.su/upload-file" PostParams="_token=$(Token);files[]=%filename%;">
+				<Call Function="json" Arg1="files[0].url" AssignVars="ViewUrl:0;"/>
+				<Call Function="json" Arg1="files[0].thumbnailUrl" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="files[0].deleteUrl" AssignVars="DeleteUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
+    </Server>
+	<Server Name="linkme.ufanet.ru" Plugin="linkme.ufanet">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
+	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

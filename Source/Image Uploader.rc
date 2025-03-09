@@ -382,7 +382,7 @@ CAPTION "About Image Uploader"
 FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
-    LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,35,180,10
+    LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,39,180,10
     CTEXT           "© 2007-2024 Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,45,18,15,13
     LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,87,14,148,12
@@ -396,8 +396,8 @@ BEGIN
     LTEXT           "Sergey Svistunov (zenden2k@gmail.com)",IDC_AUTHORNAMELABEL,96,93,172,8
     CTEXT           "Found a bug?",IDC_FOUNDABUG,12,139,227,8
     EDITTEXT        IDC_MEMO,5,163,263,124,ES_MULTILINE | ES_AUTOHSCROLL | WS_VSCROLL | WS_HSCROLL
-    LTEXT           "Git Commit Hash:",IDC_STATIC,87,46,58,8
-    LTEXT           "#",IDC_COMMITHASH,158,46,75,8
+    LTEXT           "Git Commit Hash:",IDC_STATIC,87,50,58,8
+    LTEXT           "#",IDC_COMMITHASH,158,50,75,8
     CTEXT           "Icons by Icons8",IDC_ICONSBYLABEL,56,150,140,8
     EDITTEXT        IDC_VERSIONEDIT,85,25,167,12,ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER
 END
@@ -1920,7 +1920,6 @@ CAPTION "#file format check error"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "#these files cannot be uploaded",IDC_FILESCANNOTBEUPLOADED,8,8,281,8
-    LTEXT           "Static",IDC_ANIMATIONSTATIC,520,7,23,17,NOT WS_VISIBLE
     CONTROL         "",IDC_FILELIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,3,24,540,251
     PUSHBUTTON      "Skip selected",IDC_BUTTONSKIP,6,281,71,14
     PUSHBUTTON      "Skip all",IDC_BUTTONSKIPALL,79,281,74,14
