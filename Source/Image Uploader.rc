@@ -218,7 +218,7 @@ BEGIN
     GROUPBOX        "Получение информации о  файле",IDC_GETINFOABOUTFILELABEL,10,130,246,24,NOT WS_VISIBLE
     CONTROL         "Использовать AviInfo для файлов AVI (если установлен)",IDC_USEAVIINFO,
                     "Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,21,140,208,10
-    LTEXT           "Формат имени файла:",IDC_SNAPSHOTFILENAMELABEL,11,182,213,8
+    LTEXT           "Формат имени файла:",IDC_SNAPSHOTFILENAMELABEL,11,183,213,8
     EDITTEXT        IDC_SNAPSHOTFILENAMEEDIT,10,195,218,14,ES_AUTOHSCROLL
     LTEXT           "00",IDC_PARAMETERSHINTLABEL,15,211,225,61
 END

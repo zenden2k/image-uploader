@@ -45,7 +45,8 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     action2.Type = "upload";
     action2.Url = "https://example.com/upload";
     action2.PostParams = "someparam=1;file=%filename%;thumbwidth=$(_THUMBWIDTH);thumbheight=$(_THUMBHEIGHT);"
-        "rnd=$(_RAND16BITS);th=$(_THREADID);fname=$(_FILENAME);fnamenoext=$(_FILENAMEWITHOUTEXT);fileext=$(_FILEEXT)";
+        "rnd=$(_RAND16BITS);th=$(_THREADID);fname=$(_FILENAME);fnamenoext=$(_FILENAMEWITHOUTEXT);fileext=$(_FILEEXT);createthumb=$(_THUMBCREATE);"
+        "thumbtext=$(_THUMBADDTEXT);serverthumbs=$(_THUMBUSESERVER);";
     ActionFunc regExp(ActionFunc::FUNC_REGEXP);
     regExp.setArg(1,"https://example\\.com/(.+)");
     regExp.Required = true;
@@ -79,6 +80,9 @@ TEST_F(DefaultUploadEngineTest, doUpload)
         EXPECT_CALL(networkClient, addQueryParam("fname", displayName));
         EXPECT_CALL(networkClient, addQueryParam("fnamenoext", fileNameNoExt));
         EXPECT_CALL(networkClient, addQueryParam("fileext", fileExt));
+        EXPECT_CALL(networkClient, addQueryParam("createthumb", "1"));
+        EXPECT_CALL(networkClient, addQueryParam("thumbtext", "1"));
+        EXPECT_CALL(networkClient, addQueryParam("serverthumbs", "0"));
 
         EXPECT_CALL(networkClient, doUploadMultipartData());
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("https://example.com/file_with_const_size.png"));
@@ -90,6 +94,9 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     UploadParams uploadParams;
     uploadParams.thumbWidth = 160;
     uploadParams.thumbHeight = 120;
+    uploadParams.createThumbnail = true;
+    uploadParams.addTextOnThumb = true;
+    uploadParams.useServerSideThumbnail = false;
     int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("https://serv2.example.com/file_with_const_size.png", uploadParams.getDirectUrl());

@@ -37,7 +37,7 @@ function UploadFile(fileName, options) {
             local thumbUrl = doc2.find("#tabTorrent input.bblinks").at(0).attr("value");
             if (thumbUrl != "") {
                 local reg = CRegExp("\\](.+?)\\[/img\\]", "mi");
-                
+
                 if (reg.match(thumbUrl)) {
                     options.setThumbUrl(reg.getMatch(1));
                 }
@@ -48,8 +48,6 @@ function UploadFile(fileName, options) {
             } else {
                 WriteLog("error", "[linkme.ufanet.ru] Failed to obtain image URL");
             }
-
-
         }
     }
     return ResultCode.Failure;

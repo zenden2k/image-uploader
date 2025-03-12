@@ -156,6 +156,9 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
     m_Vars["_RAND16BITS"] = str(boost::format("%05d") % n);
     m_Vars["_THUMBWIDTH"] = std::to_string(params.thumbWidth);
     m_Vars["_THUMBHEIGHT"] = std::to_string(params.thumbHeight);
+    m_Vars["_THUMBCREATE"] = std::to_string(params.createThumbnail);
+    m_Vars["_THUMBADDTEXT"] = std::to_string(params.addTextOnThumb);
+    m_Vars["_THUMBUSESERVER"] = std::to_string(params.useServerSideThumbnail);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
     m_NetworkClient->enableResponseCodeChecking(false);
     m_NetworkClient->setLogger(this);

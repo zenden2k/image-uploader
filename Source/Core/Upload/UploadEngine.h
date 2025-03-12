@@ -289,8 +289,10 @@ public:
     std::string DeleteUrl;
 
     std::string ServerFileName;
-    std::string temp_;
     std::shared_ptr<UploadTask> task_;
+    bool createThumbnail = false;
+    bool useServerSideThumbnail = false;
+    bool addTextOnThumb = false;
 
     UploadParams() {
         apiVersion = 0;
@@ -306,12 +308,19 @@ public:
      */
     std::string getParam(const std::string& name)
     {
-        temp_.clear();
-        if(name == "THUMBWIDTH")
-            temp_= std::to_string(thumbWidth);
-        else if (name == "THUMBHEIGHT")
-            temp_ =  std::to_string(thumbHeight);
-        return temp_;
+        if (name == "THUMBWIDTH") {
+            return std::to_string(thumbWidth);
+        } else if (name == "THUMBHEIGHT") {
+            return std::to_string(thumbHeight);
+        } else if (name == "THUMBCREATE") {
+            return std::to_string(createThumbnail);
+        } else if (name == "THUMBADDTEXT") {
+            return std::to_string(addTextOnThumb);
+        } else if (name == "THUMBUSESERVER") {
+            return std::to_string(useServerSideThumbnail);
+        }
+
+        return {};
     }
 
     std::string getFolderID() { return folderId; }

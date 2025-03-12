@@ -160,6 +160,9 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
         uparams.thumbHeight = tcParams.Height;
     }
+    uparams.createThumbnail = imageUploadParams.CreateThumbs;
+    uparams.addTextOnThumb = tcParams.AddImageSize;
+    uparams.useServerSideThumbnail = imageUploadParams.UseServerThumbs;
 
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());

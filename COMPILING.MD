@@ -1,6 +1,5 @@
 # Building Image Uploader on Windows
 
-
 To build Image Uploader from source files you will need:
 - Git 		https://git-scm.com/downloads
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
