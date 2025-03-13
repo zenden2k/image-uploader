@@ -82,7 +82,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
     memoText += TR("Thanks to:") + CString("\r\n\r\n");
     memoText += TR("Contributors:") + CString("\r\n");
-    memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n\r\n";
+    memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n"
+                "johnyxpro\thttps://github.com/johnyxpro\r\n\r\n"
+        ;
    
     CString translatorName = TR("translator_name");
     if ( translatorName == "translator_name") {
@@ -105,41 +107,41 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(TR("Thanks to the authors of the following open-source libraries:"))+L"\r\n\r\n";
     // \u200E is Unicode Left-To-Right order mark
     // We need to use it to display URLs properly when RTL language is chosen
-    memoText += CString(L"WTL")+ L"\t\thttp://sourceforge.net/projects/wtl/\u200E\r\n";
-    memoText += CString(L"libcurl") + L"\t\thttp://curl.haxx.se/libcurl/\u200E\r\n";
+    memoText += CString(L"WTL")+ L"\t\thttps://sourceforge.net/projects/wtl/\u200E\r\n";
+    memoText += CString(L"libcurl") + L"\t\thttps://curl.se/\u200E\r\n";
 //#ifdef USE_OPENSSL
     memoText += CString(L"openssl") + L"\t\thttps://www.openssl.org\r\n";
 //#endif
-    memoText += CString(L"zlib") + L"\t\thttp://www.zlib.net\r\n";
+    memoText += CString(L"zlib") + L"\t\thttps://www.zlib.net/\r\n";
     memoText += CString(L"squirrel") + L"\t\thttp://squirrel-lang.org\r\n";
     memoText += CString(L"sqrat") + L"\t\thttp://scrat.sourceforge.net\r\n";
     memoText += CString(L"ffmpeg") + L"\t\thttps://www.ffmpeg.org\r\n";
     memoText += CString(L"MediaInfo") + L"\thttps://mediaarea.net/\u200E\r\n";
-    memoText += CString(L"pcre") + L"\t\thttp://www.pcre.org\r\n";
-    memoText += CString(L"pcre++") + L"\t\thttp://www.daemon.de/PCRE\r\n";
+    memoText += CString(L"pcre") + L"\t\thttps://www.pcre.org/\r\n";
+    memoText += CString(L"pcre++") + L"\t\thttps://www.daemon.de/projects/pcrepp/\r\n";
     
-    memoText += CString(L"tinyxml") + L"\t\thttp://sourceforge.net/projects/tinyxml/\u200E\r\n";
+    memoText += CString(L"tinyxml") + L"\t\thttps://sourceforge.net/projects/tinyxml/\u200E\r\n";
+    memoText += CString(L"tinyxml2") + L"\t\thttps://github.com/leethomason/tinyxml2\u200E\r\n";
     memoText += CString(L"gumbo parser") + L"\thttps://github.com/google/gumbo-parser\r\n";
     memoText += CString(L"gumbo-query") + L"\thttps://github.com/lazytiger/gumbo-query\r\n";
     memoText += CString(L"glog") + L"\t\thttps://github.com/google/glog\r\n";
     memoText += CString(L"libwebp") + L"\t\thttps://github.com/webmproject/libwebp\r\n";
 
 
-    memoText += CString(L"minizip") + L"\t\thttp://www.winimage.com/zLibDll/minizip.html\r\n";
+    memoText += CString(L"minizip") + L"\t\thttps://www.winimage.com/zLibDll/minizip.html\r\n";
     memoText += CString(L"jsoncpp") + L"\t\thttps://github.com/open-source-parsers/jsoncpp\r\n";
-    memoText += CString(L"Boost") + L"\t\thttp://www.boost.org\r\n";
-    memoText += CString(L"FastDelegate") + L"\thttp://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible\r\n";
-    memoText += CString(L"QColorQuantizer") + L"\thttp://www.codeguru.com/cpp/g-m/gdi/gdi/article.php/c3677/Better-GIFs-with-Octrees.htm\r\n";
-    memoText += CString(L"WTL Browser") + L"\thttp://www.codeproject.com/Articles/7147/WTL-Browser\r\n";
-    memoText += CString(L"CRegistry") + L"\t\thttp://www.codeproject.com/Articles/19/Registry-Class\r\n";
+    memoText += CString(L"Boost") + L"\t\thttps://www.boost.org/\r\n";
+    memoText += CString(L"FastDelegate") + L"\thttps://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible\r\n";
+    memoText += CString(L"WTL Browser") + L"\thttps://www.codeproject.com/Articles/7147/WTL-Browser\r\n";
+    memoText += CString(L"CRegistry") + L"\t\thttps://www.codeproject.com/Articles/19/Registry-Class\r\n";
     memoText += CString(L"TParser") + L"\t\thttps://rsdn.ru/article/files/Classes/tparser.xml\r\n";
     memoText += CString(L"CWinHotkeyCtrl") + L"\thttps://rsdn.ru/article/controls/WinHotkeyCtrl.xml\r\n";
-    memoText += CString(L"UTF-8 CPP") + L"\thttp://sourceforge.net/projects/utfcpp/\u200E\r\n";
-    memoText += CString(L"CUnzipper") + L"\thttp://www.codeproject.com/Articles/4288/Win-Wrapper-classes-for-Gilles-Volant-s-Zip-Unzi\r\n";
-    memoText += CString(L"CThread") + L"\t\thttp://www.viksoe.dk/code/thread.htm\r\n";
-    memoText += CString(L"CPropertyList") + L"\thttp://www.viksoe.dk/code/propertylist.htm\r\n";
-    memoText += CString(L"uriparser") + L"\t\thttp://uriparser.sourceforge.net/\u200E\r\n";
-    memoText += CString(L"GDI+ helper") + L"\thttp://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
+    memoText += CString(L"UTF-8 CPP") + L"\thttps://github.com/nemtrif/utfcpp\u200E\r\n";
+    memoText += CString(L"CUnzipper") + L"\thttps://www.codeproject.com/Articles/4288/Win-Wrapper-classes-for-Gilles-Volant-s-Zip-Unzi\r\n";
+    memoText += CString(L"CThread") + L"\t\thttps://viksoe.dk/code/thread.htm\r\n";
+    memoText += CString(L"CPropertyList") + L"\thttps://viksoe.dk/code/propertylist.htm\r\n";
+    memoText += CString(L"uriparser") + L"\t\thttps://uriparser.github.io/\u200E\r\n";
+    memoText += CString(L"GDI+ helper") + L"\thttps://www.codeproject.com/Articles/4969/GDI-and-MFC-memory-leak-detection\r\n";
     memoText += CString(L"xbbcode") + L"\t\thttps://github.com/patorjk/Extendible-BBCode-Parser\r\n";
     memoText += CString(L"entities.c") + L"\t\thttps://bitbucket.org/cggaertner/cstuff/\u200E\r\n";
     memoText += CString(L"base64") + L"\t\thttps://github.com/aklomp/base64/\u200E\r\n";
@@ -148,9 +150,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"c-ares") + L"\t\thttps://c-ares.haxx.se/\u200E\r\n";
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
     memoText += CString(L"WinToast") + L"\t\thttps://github.com/mohabouje/WinToast\r\n";
+    memoText += CString(L"xdgmime") + L"\t\thttps://gitlab.freedesktop.org/xdg/xdgmime\r\n\r\n";
             
-    memoText += CString(_T("Resources:\r\n")) +
-        _T("famfamfam icons\thttp://www.famfamfam.com/lab/icons/\u200E\r\n\r\n");
     memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Data file path:") + CString(_T("\r\n")) + IuCommonFunctions::GetDataFolder() + _T("\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
@@ -236,7 +237,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     buildInfo += _T(" (with OpenSSL)");
 #endif*/
 
-    CString text = ver->FullVersion.c_str() + CString(_T(" ")) + buildInfo;
+    CString text;
+    if (ver->FullVersion.find("nightly") == std::string::npos) {
+        text = _T("v");
+    }
+    text += ver->FullVersion.c_str();
+    text += _T(" ");
+    text += buildInfo;
 
     SetDlgItemText(IDC_VERSIONEDIT, text);
     SetDlgItemText(IDC_IMAGEUPLOADERLABEL, dateStr);
