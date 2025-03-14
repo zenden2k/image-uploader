@@ -14,15 +14,16 @@ function UploadFile(FileName, options){
         WriteLog("error", "imageban.ru: Login or Password cannot be empty.\r\nYou must set Login and Password in server settings.");
         return 0;
     }
-    
+
     local task = options.getTask().getFileTask();
     local displayName = task.getDisplayName();
+    local thumbUseServerText = (options.getParam("THUMBCREATE") == "1" && options.getParam("THUMBADDTEXT") == "1" && options.getParam("THUMBUSESERVER") == "1");
 
     nm.setUrl("https://imageban.ru/up");
     nm.addQueryHeader("User-Agent", "Shockwave Flash");
     nm.addQueryParam("compmenu", "0");
     nm.addQueryParam("albmenu", "0");
-    nm.addQueryParam("inf", "1");
+    nm.addQueryParam("inf", thumbUseServerText ? "1" : "0");
     nm.addQueryParam("cat", "0");
     nm.addQueryParam("prew", getThumbnailWidth(options));
     nm.addQueryParam("ttl", "0");
@@ -32,9 +33,8 @@ function UploadFile(FileName, options){
     nm.addQueryParam("rsize", "1");
     nm.addQueryParamFile("Filedata", FileName, displayName, "");
     nm.addQueryHeader("Cookie", "login="+login+"; pass="+md5(pass));
-    
     nm.doUploadMultipartData();
-    
+
     if (nm.responseCode() == 200) {
         local t = ParseJSON(nm.responseBody());
         if ("files" in t && t.files.len()) {
