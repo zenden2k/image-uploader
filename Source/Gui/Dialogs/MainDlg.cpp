@@ -25,6 +25,7 @@
 #include <boost/format.hpp>
 #include <shlobj.h>
 
+#include "Core/Utils/StringUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Func/CmdLine.h"
 #include "Func/SystemUtils.h"
@@ -39,20 +40,25 @@
 #include "Core/SearchByImage.h"
 #include "3rdpart/ShellPidl.h"
 #include "Gui/Components/MyFileDialog.h"
+#include "Core/WinServerIconCache.h"
 
-CMainDlg::CMainDlg():
+CMainDlg::CMainDlg(WinServerIconCache* iconCache):
     m_EditorProcess(nullptr),
     listChanged_(false),
     callbackLastCallTime_(0),
     callbackLastCallType_(false),
-    hotkeys_(nullptr)
+    hotkeys_(nullptr),
+    iconCache_(iconCache)
 {
 
 }
 
 LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    // register object for message filtering and idle updates
+    PageWnd = m_hWnd;
+    GuiTools::SetWindowPointer(m_hWnd, this);
+
+    // register object for message filtering
     CMessageLoop* pLoop = _Module.GetMessageLoop();
     ATLASSERT(pLoop != NULL);
     pLoop->AddMessageFilter(this);
@@ -60,7 +66,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     listChanged_ = false;
     callbackLastCallType_ = false;
     SetTimer(kStatusTimer, 500);
-    PageWnd = m_hWnd;
     TRC(IDC_ADDIMAGES, "Add Files");
     TRC(IDC_ADDVIDEO, "Import Video File");
     TRC(IDC_SCREENSHOT, "Screenshot");
@@ -84,12 +89,13 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     });
     UpdateStatusLabel();
 
-    ACCEL accels[]{
-        { FCONTROL | FSHIFT | FVIRTKEY, VkKeyScan('c'), MENUITEM_COPYFILEPATH},
+    ACCEL accels[] = {
+        { FCONTROL | FSHIFT | FVIRTKEY, static_cast<WORD>(VkKeyScan('c')), MENUITEM_COPYFILEPATH},
         { FALT | FVIRTKEY, VK_RETURN, MENUITEM_PROPERTIES},
+        { FVIRTKEY, VK_F2, MENUITEM_RENAME },
     };
 
-    hotkeys_.CreateAcceleratorTable(accels, ARRAY_SIZE(accels));
+    hotkeys_.CreateAcceleratorTable(accels, std::size(accels));
 
     WaitThreadStop.Create();
     WaitThreadStop.ResetEvent();
@@ -98,6 +104,7 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
 
 LRESULT CMainDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
+    GuiTools::ClearWindowPointer(m_hWnd);
     bHandled = FALSE;
     WaitThreadStop.Close();
     return 0;
@@ -151,9 +158,9 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     if(hti.iItem < 0) { // no item selected
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDIMAGES, TR("Add Images"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFILES, TR("Add Files"));
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFOLDER, TR("Add folder"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDIMAGES, TR("Add images..."));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFILES, TR("Add files..."));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_ADDFOLDER, TR("Add folder..."));
 
         CString pasteMenuItemTitle(TR("Paste"));
         pasteMenuItemTitle += _T("\t");
@@ -167,6 +174,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     }
     else
     {
+        auto* engineList = ServiceLocator::instance()->engineList();
+
         CString singleSelectedItem;
         bool isImage = false;
         if ( ThumbsView.GetSelectedCount() == 1 ) {
@@ -184,6 +193,9 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
             contextMenu.SetMenuDefaultItem(MENUITEM_VIEW, FALSE);
         }
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINDEFAULTVIEWER, TR("Show in default viewer"));
+        if (isVideoFile) {
+            contextMenu.SetMenuDefaultItem(MENUITEM_OPENINDEFAULTVIEWER, FALSE);
+        }
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENWITH, TR("Open with..."));
 
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
@@ -213,15 +225,36 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
 
             contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as"));
 
-            CString itemText;
-            itemText.Format(TR("Search by image (%s)"), _T("Google"));
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGITEM, itemText);
+            CMenu searchSubMenu;
+            searchSubMenu.CreatePopupMenu();
 
-            itemText.Format(TR("Search by image (%s)"), _T("Yandex"));
-            contextMenu.AppendMenu(MF_STRING, MENUITEM_SEARCHBYIMGYANDEX, itemText);
+            int i = 0;
+
+            for (const auto& engine : *engineList) {
+                if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+                    CString itemText = U2W(engine->Name);
+                    MENUITEMINFO mi;
+                    ZeroMemory(&mi, sizeof(mi));
+                    mi.cbSize = sizeof(mi);
+                    mi.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
+                    mi.fType = MFT_STRING;
+                    mi.wID = MENUITEM_SEARCHBYIMG_START + i;
+                    mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
+                    mi.cch = itemText.GetLength();
+                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name);
+
+                    if (mi.hbmpItem) {
+                        mi.fMask |= MIIM_BITMAP;
+                    }
+                    searchSubMenu.InsertMenuItem(i, true, &mi);
+                    //searchSubMenu.AppendMenu(MF_STRING, , itemText,);
+                    i++;
+                }
+            }
+            contextMenu.AppendMenu(0, searchSubMenu.Detach(), TR("Search by image") );
         }
 
-        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove"));
+        contextMenu.AppendMenu(MF_STRING, MENUITEM_DELETE, TR("Remove") + CString("\tDel"));
         contextMenu.AppendMenu(MF_STRING, MENUITEM_PROPERTIES, TR("Properties")+CString(_T("\tAlt+Enter")));
 
         contextMenu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
@@ -405,17 +438,15 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     LPCTSTR FileName = ThumbsView.GetFileName(nCurItem);
     if(!FileName) return FALSE;
     
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    // TODO: Edit this bullshit
-    CString EditorCmd = Settings.ImageEditorPath;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    CString EditorCmd = settings->ImageEditorPath;
     EditorCmd.Replace(_T("%1"), FileName);
     CString EditorCmdLine = WinUtils::ExpandEnvironmentStrings(EditorCmd);
     
-    TCHAR FilePathBuffer[256];
-    WinUtils::ExtractFilePath(FileName, FilePathBuffer, ARRAY_SIZE(FilePathBuffer));
-
     CCmdLine EditorLine(EditorCmdLine);
-
+    CString moduleName = EditorLine.ModuleName();
+    CString params = EditorLine.OnlyParams();
     SHELLEXECUTEINFO Sei;
     ZeroMemory(&Sei, sizeof(Sei));
     Sei.cbSize = sizeof(Sei);
@@ -423,12 +454,14 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
     Sei.hwnd = m_hWnd;
     Sei.lpVerb = _T("open");
 
-    Sei.lpFile = EditorLine.ModuleName();
-    Sei.lpParameters = EditorLine.OnlyParams();
+    Sei.lpFile = moduleName;
+    Sei.lpParameters = params;
     Sei.nShow = SW_SHOW;
 
     if (!::ShellExecuteEx(&Sei)) {
-        LOG(ERROR) << "Opening external editor failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(GetLastError());
+        DWORD lastError = GetLastError();
+        LOG(ERROR) << "Opening external editor failed." << std::endl
+                   << "Reason: " << WinUtils::ErrorCodeToString(lastError);
         return 0;
     }
 
@@ -439,7 +472,7 @@ LRESULT CMainDlg::OnEditExternal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
             WaitThreadStop.SetEvent();
             WaitForThread(9999);
         }
-        ThumbsView.OutDateThumb(nCurItem);
+        itemIndexThumbToBeUpdated_ = nCurItem;
         m_EditorProcess = Sei.hProcess;
         Release();
         Start();
@@ -478,6 +511,14 @@ DWORD CMainDlg::Run()
     Events[0] = m_EditorProcess;
     Events[1] = WaitThreadStop.m_hEvent;
     WaitForMultipleObjects(2, Events, FALSE, INFINITE);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this) || itemIndexThumbToBeUpdated_ < 0) {
+            return;
+        }
+        ThumbsView.OutDateThumb(itemIndexThumbToBeUpdated_);
+        itemIndexThumbToBeUpdated_ = -1;
+    }, true);
+
     WaitThreadStop.ResetEvent();
     return 0;
 }
@@ -525,7 +566,8 @@ LRESULT CMainDlg::OnOpenInFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
         // Files laying in another folders will be ignored.
         hr = SHOpenFolderAndSelectItems(folderPidl, list.size(), &list[0], 0);
         if (!SUCCEEDED(hr)) {
-            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr;
+            _com_error err(hr);
+            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr << std::endl << err.ErrorMessage();
         }
 
         // SHBindToParent does not allocate a new PIDL; 
@@ -749,16 +791,25 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 }
 
 LRESULT CMainDlg::OnSearchByImage(WORD, WORD wID, HWND, BOOL&) {
-    SearchByImage::SearchEngine se = SearchByImage::SearchEngine::seGoogle;
-    if (wID == MENUITEM_SEARCHBYIMGYANDEX) {
-        se = SearchByImage::SearchEngine::seYandex;
+    int serverIndex = wID - MENUITEM_SEARCHBYIMG_START;
+    int i = 0;
+    auto* engineList = ServiceLocator::instance()->engineList();
+    for (const auto& engine : *engineList) {
+        if (engine->hasType(CUploadEngineData::TypeSearchByImageServer)) {
+            if (i == serverIndex) {
+                CString fileName = getSelectedFileName();
+                if (!fileName.IsEmpty()) {
+                    auto uploadManager = ServiceLocator::instance()->uploadManager();
+                    ServerProfile searchProfile(engine->Name);
+                    CSearchByImageDlg dlg(uploadManager, searchProfile, fileName);
+                    dlg.DoModal(m_hWnd);
+                }
+                break;
+            }
+            i++;
+        }
     }
-    CString fileName = getSelectedFileName();
-    if (!fileName.IsEmpty()) {
-        auto uploadManager = ServiceLocator::instance()->uploadManager();
-        CSearchByImageDlg dlg(uploadManager, se, fileName);
-        dlg.DoModal(m_hWnd);
-    }
+    
     return 0;
 }
 
@@ -778,6 +829,42 @@ LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {
     return 0;
 }
 
+LRESULT CMainDlg::OnListViewEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    auto* di = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+    if (di->item.pszText) {
+        CString forbiddenCharacters { _T("\\/:*?\"<>|") };
+        CString fileName { di->item.pszText };
+        if (fileName.IsEmpty()) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name cannot be empty."), APPNAME, MB_ICONERROR);
+            return 0;
+        }
+        if (fileName.FindOneOf(forbiddenCharacters) != -1) {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name contains forbidden characters."), APPNAME, MB_ICONERROR);
+            return 0;
+        }
+        if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {
+            FileList[di->item.iItem].VirtualFileName = di->item.pszText;
+            return TRUE;
+        }    
+    }
+    return 0;
+}
+
+LRESULT CMainDlg::OnListViewBeginLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*bHandled*/) {
+    auto* di = reinterpret_cast<NMLVDISPINFO*>(pnmh);
+    if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {
+        // Select only file name without extension in the edit control
+        CEdit editControl = ThumbsView.GetEditControl();
+        CString fileName;
+        editControl.GetWindowText(fileName);
+        int endPos = fileName.ReverseFind(_T('.'));
+
+        editControl.SetSel(0, endPos);
+    }    
+
+    return 0;
+}
+
 void CMainDlg::UpdateStatusLabel() {
     int selectedItemsCount = ThumbsView.GetSelectedCount();
     int totalCount = ThumbsView.GetItemCount();
@@ -785,13 +872,13 @@ void CMainDlg::UpdateStatusLabel() {
 
     try {
         if (selectedItemsCount) {
-            std::string first = str(boost::format(boost::locale::ngettext("%d file selected", "%d files selected", selectedItemsCount)) % selectedItemsCount);
-            std::string second = str(boost::format(boost::locale::ngettext("%d file total", "%d files total", totalCount)) % totalCount);
+            std::string first = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file selected", "%d files selected", selectedItemsCount)) % selectedItemsCount);
+            std::string second = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file total", "%d files total", totalCount)) % totalCount);
 
             statusText = U2W(str(boost::format("%1%/%2%") % first % second));
         }
         else {
-            statusText = U2W(str(boost::format(boost::locale::ngettext("%d file", "%d files", totalCount)) % totalCount));
+            statusText = U2W(str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file", "%d files", totalCount)) % totalCount));
         }
     } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
@@ -809,5 +896,14 @@ LRESULT CMainDlg::OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndC
             WinUtils::DisplaySystemPrintDialogForImage(selectedFiles, m_hWnd);
         }
     }
+    return 0;
+}
+
+LRESULT CMainDlg::OnRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    int itemIndex = ThumbsView.GetNextItem(-1, LVNI_ALL | LVNI_FOCUSED | LVNI_SELECTED);
+    if (itemIndex < 0) {
+        return 0;
+    }
+    ThumbsView.EditLabel(itemIndex);
     return 0;
 }

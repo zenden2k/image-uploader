@@ -33,7 +33,7 @@
 #include "Core/Upload/AuthTask.h"
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
-
+#include "Core/AbstractServerIconCache.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -54,13 +54,27 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
         }
     }
     createNew_ = createNew;
-
-    NetworkClient_ = ServiceLocator::instance()->networkClientFactory()->create();
 }
 
 LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     CenterWindow(GetParent());
+    DoDataExchange(FALSE);
+    serverImage_.SubclassWindow(GetDlgItem(IDC_SERVERICON));
+
+    auto* myEngineList = dynamic_cast<CMyEngineList*>(ServiceLocator::instance()->engineList());
+    if (myEngineList) {
+        serverIcon_ = ServiceLocator::instance()->serverIconCache()->getBigIconForServer(m_UploadEngine->Name);
+        if (serverIcon_) {
+            int iconWidth = ::GetSystemMetrics(SM_CXICON);
+            int iconHeight = ::GetSystemMetrics(SM_CYICON);
+            serverImage_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
+            auto [serverBitmap, data] = ImageUtils::GetIconPixelData(serverIcon_);
+            if (serverBitmap && serverBitmap->GetLastStatus() == Gdiplus::Ok) {
+                serverImage_.loadImage(0, std::move(serverBitmap), 0, false, GetSysColor(COLOR_BTNFACE), false, true, false);
+            }
+        }
+    }
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
@@ -72,6 +86,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     SetDlgItemText(IDC_LOGINLABEL, loginLabelText);
     CString passwordLabelText = uploadEngineData->PasswordLabel.empty() ? CString(TR("Password:")) : CString(U2W(uploadEngineData->PasswordLabel)) + _T(":");
     SetDlgItemText(IDC_PASSWORDLABEL, passwordLabelText);
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_DELETEACCOUNTLABEL, "Delete account");
     TRC(IDC_LOGOUT, "Logout");
@@ -102,6 +117,14 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         signupLink_.ShowWindow(SW_SHOW);
     }
 
+    if (!m_UploadEngine->WebsiteUrl.empty()) {
+        websiteLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
+        websiteLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+        std::wstring linkText = TR("Open the website");
+        websiteLink_.SetLabel(linkText.c_str());
+        websiteLink_.SetHyperLink(U2W(m_UploadEngine->WebsiteUrl));
+        websiteLink_.ShowWindow(SW_SHOW);
+    }
     accountName_ = Utf8ToWCstring(li.Login);
 
     SetDlgItemText(IDC_LOGINEDIT, accountName_);
@@ -145,8 +168,7 @@ LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndC
         return 0;
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    std::map <std::string, ServerSettingsStruct>& ss = settings->ServersSettings[serverProfile_.serverName()];
-    ss.erase(WCstringToUtf8(accountName_));
+    settings->deleteProfile(serverProfile_.serverName(), W2U(accountName_));
 
     accountName_.Empty();
     EndDialog(ID_DELETEACCOUNT);
@@ -237,7 +259,10 @@ void CLoginDlg::Accept()
     li.Login = W2U(loginEditText);
 
     if ( li.Login.empty() ) {
-        LocalizedMessageBox(TR("Login cannot be empty"),TR("Error"), MB_ICONERROR);
+        auto* uploadEngineData = serverProfile_.uploadEngineData();
+        std::string loginLabelText = (uploadEngineData && !uploadEngineData->LoginLabel.empty()) ? uploadEngineData->LoginLabel : _("Login");
+        std::string msg = str(IuStringUtils::FormatNoExcept(_("The field '%s' cannot be empty.")) % loginLabelText);
+        LocalizedMessageBox(U2WC(msg),TR("Error"), MB_ICONERROR);
         return;
     }
     std::string serverName = serverProfile_.serverName();

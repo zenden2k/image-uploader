@@ -33,6 +33,7 @@
 #define IDD_SETTINGSDLG                 133
 #define IDD_GENERALSETTINGS             134
 #define IDD_UPLOADSETTINGSPAGE          135
+#define IDD_CONNECTIONSETTINGSPAGE      135
 #define IDD_RESULTSPANEL                136
 #define IDD_TRAYSETTINGSPAGE            137
 #define IDD_HOTKEYSETTINGSPAGE          138
@@ -66,7 +67,6 @@
 #define IDI_ADDITIONAL                  232
 #define IDI_CLOSE                       233
 #define IDI_WINDOW                      234
-#define IDR_PROGRESSGIF                 241
 #define IDB_BITMAP6                     242
 #define IDB_ICONUNDOPNG                 242
 #define IDI_ICONWINDOWS                 245
@@ -175,6 +175,21 @@
 #define IDI_ICONUPLOAD                  331
 #define IDI_ICON14                      332
 #define IDI_ICONSEPARATOR               332
+#define IDI_ICON15                      334
+#define IDI_ICONCONTROLS                334
+#define IDI_ICONEXTERNALLINK            336
+#define IDD_DIALOG1                     338
+#define IDD_TRANSFERSETTINGSPAGE        338
+#define IDD_SERVERSCHECKERDLG1          339
+#define IDD_FILEFORMATERRORDLG          339
+#define IDD_CURLDEBUGDLG                340
+#define IDD_NETWORKDEBUGDLG             340
+#define IDB_ICONROTATECW                342
+#define IDB_ICONROTATE                  343
+#define IDB_ICONROTATEFLIP              344
+#define IDB_ICONFLIPHORIZONTAL          345
+#define IDB_PNG13                       346
+#define IDB_ICONFLIPVERTICAL            346
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -303,6 +318,7 @@
 #define IDC_MENUITEMTITLEEDIT           1040
 #define IDC_FILENAMEEDIT                1040
 #define IDC_THUMBHEIGHT                 1040
+#define IDC_DEBUGDETAILS                1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -320,6 +336,7 @@
 #define IDC_SERVEREDIT                  1041
 #define IDC_UPDATEINFO2                 1041
 #define IDC_MANUALUPDATEINFO            1041
+#define IDC_WIDTHEDIT2                  1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -332,6 +349,7 @@
 #define IDC_NOPROXY                     1043
 #define IDC_SUMMARY                     1043
 #define IDC_SUMMARYRADIOBUTTON          1043
+#define IDC_JUSTURLRADIO                1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -341,6 +359,7 @@
 #define IDC_REMOTEDIRECTORYEDIT         1044
 #define IDC_USESYSTEMPROXY              1044
 #define IDC_FULLINFORADIOBUTTON         1044
+#define IDC_USELASTCODETYPERADIO        1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -351,6 +370,7 @@
 #define IDC_CONNECTIONNAMEEDIT6         1045
 #define IDC_DOWNLOADURLEDIT             1045
 #define IDC_URLEDIT                     1045
+#define IDC_VERSIONEDIT                 1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_RADIO4                      1046
 #define IDC_BUTTON3                     1047
@@ -359,6 +379,7 @@
 #define IDC_SERVERMENU                  1047
 #define IDC_NEWTHUMBNAIL                1047
 #define IDC_CLEARFILTERS                1047
+#define IDC_SAVETOFILEBTN               1047
 #define IDC_UPDOWN                      1048
 #define IDC_PROGRESS1                   1049
 #define IDC_UPLOADPROGRESS              1049
@@ -396,6 +417,10 @@
 #define IDC_SHOWLOG                     1080
 #define IDC_LOGOUT                      1080
 #define IDC_BROWSEPRIVATEKEYBUTTON      1080
+#define IDC_OPENSYSTEMCONNECTION        1080
+#define IDC_IGNOREALL                   1080
+#define IDC_DECODERESPONSEBUTTON        1080
+#define IDC_THUMBMACROSES               1080
 #define IDC_ABOUT                       1081
 #define IDC_HELPBUTTON                  1082
 #define IDC_SPIN1                       1083
@@ -476,6 +501,8 @@
 #define IDC_GENERATETEXTINENGLISHCHECKBOX 1142
 #define IDC_HEIGHTCHECKBOX              1142
 #define IDC_SKIPANIMATEDCHECKBOX        1142
+#define IDC_CHECKFILETYPESCHECKBOX      1142
+#define IDC_ACTIVECONNECTIONCHECKBOX    1142
 #define IDC_PXLABEL                     1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
@@ -604,6 +631,9 @@
 #define IDC_TESTCONNECTIONBTN           1263
 #define IDC_ADDBUTTON                   1263
 #define IDC_CHOOSESERVERS               1263
+#define IDC_IGNORE                      1263
+#define IDC_OPTIONSBUTTON               1263
+#define IDC_CLEARSERVERSETTINGS         1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -635,6 +665,7 @@
 #define IDC_CHECK5                      1273
 #define IDC_REMEMBERFILESERVERSETTINGS  1273
 #define IDC_ALLOWALTTABINIMAGEEDITOR    1273
+#define IDC_ENABLETOASTS                1273
 #define IDC_FOUNDABUG                   1274
 #define IDC_RESULTSLABEL                1274
 #define IDC_OUTPUTTEXT                  1275
@@ -685,6 +716,8 @@
 #define IDC_AUTHORLABEL                 1306
 #define IDC_URLSHORTENERPLACEHOLDER2    1306
 #define IDC_TEMPORARYSERVERPLACEHOLDER  1306
+#define IDC_SIGNUPLINK2                 1306
+#define IDC_WEBSITELINK                 1306
 #define IDC_EDIT                        1307
 #define IDC_WEBSITELABEL                1307
 #define IDC_SERVERGROUPBOX              1308
@@ -740,6 +773,19 @@
 #define IDC_CHOOSEMOREIMAGESERVERSLABEL2 1338
 #define IDC_CHOOSEMOREFILESERVERS       1338
 #define IDC_LABEL                       1339
+#define IDC_COLORSTATIC                 1340
+#define IDC_SERVERICON                  1341
+#define IDC_QUICKUPLOADLABEL            1342
+#define IDC_GENERATEDCODELABEL          1343
+#define IDC_CHECK6                      1344
+#define IDC_THUMBNAILSFORVIDEOCHECKBOX  1344
+#define IDC_FILESCANNOTBEUPLOADED       1345
+#define IDC_SECUREDCONNECTIONLABEL      1346
+#define IDC_SECUREDCONNECTIONCOMBOBOX   1347
+#define IDC_GROUPBOX                    1348
+#define IDC_TITLELABEL                  1349
+#define IDC_DEBUGLIST                   1350
+#define IDC_SPLITTER                    1351
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -785,9 +831,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        333
+#define _APS_NEXT_RESOURCE_VALUE        347
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1340
+#define _APS_NEXT_CONTROL_VALUE         1352
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

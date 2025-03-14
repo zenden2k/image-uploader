@@ -22,12 +22,9 @@ limitations under the License.
 
 #include <cassert>
 
-#ifdef _WIN32
-#include <atlheaders.h>
 #include <Shlobj.h>
-#endif
-#include "Core/SettingsManager.h"
 
+#include "Core/SettingsManager.h"
 #include "Func/MyUtils.h"
 #include "Func/CmdLine.h"
 #include "3rdpart/Registry.h"
@@ -41,10 +38,7 @@ limitations under the License.
 #include "Core/SearchByImage.h"
 #include "Func/Common.h"
 #include "StringConvert.h"
-
-#ifndef CheckBounds
-#define CheckBounds(n, a, b, d) {if ((n < a) || (n > b)) n = d; }
-#endif
+#include "Gui/Win7JumpList.h"
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
@@ -338,7 +332,6 @@ void WtlGuiSettings::FindDataFolder()
     }
 }
 
-
 void WtlGuiSettings::fixInvalidServers() {
     std::string defaultImageServer = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeImageServer);
     std::string defaultImageServerProfileName;
@@ -418,6 +411,25 @@ void WtlGuiSettings::fixInvalidServers() {
             }
         }
     }
+
+    ue = imageSearchServer.uploadEngineData();
+    if (!ue) {
+        std::string defaultServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeSearchByImageServer);
+        CUploadEngineData* uploadEngineData = engineList_->byName(defaultServerName);
+
+        if (uploadEngineData) {
+            imageSearchServer.setServerName(defaultServerName);
+            imageSearchServer.setProfileName("");
+        } else {
+            uploadEngineData = engineList_->firstEngineOfType(CUploadEngineData::TypeSearchByImageServer);
+            if (uploadEngineData) {
+                imageSearchServer.setServerName(uploadEngineData->Name);
+                imageSearchServer.setProfileName("");
+            } else {
+                LOG(ERROR) << "Unable to find any reverse image search servers in the server list";
+            }
+        }
+    }
 }
 
 WtlGuiSettings::WtlGuiSettings() : 
@@ -455,9 +467,11 @@ WtlGuiSettings::WtlGuiSettings() :
     UseTxtTemplate = false;
     GroupByFilename = false;
     UseDirectLinks = true;
+    TrayResult = trJustURL; 
     DropVideoFilesToTheList = false;
     CodeLang = 0;
     ConfirmOnExit = 1;
+    EnableToastNotifications = true;
    
     ExplorerContextMenu = false;
     ExplorerVideoContextMenu = true;
@@ -471,6 +485,8 @@ WtlGuiSettings::WtlGuiSettings() :
     RememberFileServer = true;
 
     AutomaticallyCheckUpdates = true;
+    CheckFileTypesBeforeUpload = true;
+    ShowPreviewForVideoFiles = true;
 
     ImageEditorPath = _T("mspaint.exe \"%1\"");
     AutoCopyToClipboard = false;
@@ -525,9 +541,9 @@ WtlGuiSettings::WtlGuiSettings() :
     ImageEditorSettings.StepForegroundColor = Gdiplus::Color(255, 255, 255);
     ImageEditorSettings.PenSize = 12;
     ImageEditorSettings.RoundingRadius = ImageEditorSettings.PenSize;
+    ImageEditorSettings.BlurRadius = 4.0f;
     ImageEditorSettings.AllowAltTab = true;
     ImageEditorSettings.AllowEditingInFullscreen = false;
-    ImageEditorSettings.SearchEngine = SearchByImage::SearchEngine::seYandex;
     WinUtils::StringToFont(_T("Arial,12,b,204"), &ImageEditorSettings.Font);
     ImageEditorSettings.ArrowType = 0; // default arrow
 
@@ -598,47 +614,8 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         }
     }
 
-    SimpleXmlNode searchEngineNode = settingsNode.GetChild("ImageEditor").GetChild("SearchEngine");
-    if (!searchEngineNode.IsNull()) {
-        std::string searchEngineName = searchEngineNode.Text();
-        if (!searchEngineName.empty()) {
-            ImageEditorSettings.SearchEngine = SearchByImage::searchEngineTypeFromString(searchEngineName);
-        }
-    }
 
     LoadConvertProfiles(settingsNode.GetChild("Image").GetChild("Profiles"));
-    LoadServerProfiles(settingsNode.GetChild("Uploading").GetChild("ServerProfiles"));
-
-    auto uploading = settingsNode.GetChild("Uploading");
-
-    ServerProfile oldImageServer, oldFileServer, oldQuickScreenshotServer, oldContextMenuServer;
-    // Load the old format of chosen servers (just reading)
-    LoadServerProfile(uploading.GetChild("Server"), oldImageServer);
-    LoadServerProfile(uploading.GetChild("FileServer"), oldFileServer);
-    LoadServerProfile(uploading.GetChild("QuickScreenshotServer"), oldQuickScreenshotServer);
-    LoadServerProfile(uploading.GetChild("ContextMenuServer"), oldContextMenuServer);
-    /*LoadServerProfile(uploading.GetChild("UrlShorteningServer"), oldUrlShorteningServer);
-    LoadServerProfile(uploading.GetChild("TemporaryServer"), oldTemporaryServer);*/
-
-    imageServer = oldImageServer;
-    fileServer = oldFileServer;
-    quickScreenshotServer = oldQuickScreenshotServer;
-    /*urlShorteningServer = oldUrlShorteningServer;
-    temporaryServer = oldTemporaryServer;*/
-
-    // Load the new format of chosen servers
-    LoadServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
-    LoadServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
-    LoadServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
-    LoadServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
-
-
-    PostLoadServerProfileGroup(imageServer);
-    PostLoadServerProfileGroup(fileServer);
-    PostLoadServerProfileGroup(contextMenuServer);
-    PostLoadServerProfileGroup(quickScreenshotServer);
-    PostLoadServerProfile(urlShorteningServer);
-    PostLoadServerProfile(temporaryServer);
 
     if (UploadBufferSize == 65536) {
         UploadBufferSize = 1024 * 1024;
@@ -667,13 +644,11 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
         AutoStartup = Reg2.ReadBool("AutoStartup", false);
     }
 
-    if (VideoSettings.Engine != VideoEngineDirectshow
-        && VideoSettings.Engine != VideoEngineDirectshow2
-        &&  VideoSettings.Engine != VideoEngineFFmpeg 
-        && VideoSettings.Engine != VideoEngineAuto) {
+    if (std::find(std::begin(VideoEngines), std::end(VideoEngines), VideoSettings.Engine) == std::end(VideoEngines)) {
         VideoSettings.Engine = VideoEngineAuto;
     }
-    if (!IsFFmpegAvailable()) {
+
+    if (VideoSettings.Engine == VideoEngineFFmpeg && !IsFFmpegAvailable()) {
         VideoSettings.Engine = VideoEngineDirectshow;
     }
 
@@ -687,17 +662,8 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 {
     CommonGuiSettings::PostSaveSettings(xml);
 
-    SimpleXmlNode searchEngineNode = xml.getRoot(rootName_).GetChild("Settings").GetChild("ImageEditor").GetChild("SearchEngine");
-    searchEngineNode.SetText(SearchByImage::searchEngineTypeToString(ImageEditorSettings.SearchEngine));
-
     SaveConvertProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Image").GetChild("Profiles"));
-    SaveServerProfiles(xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading").GetChild("ServerProfiles"));
 
-    SimpleXmlNode uploading = xml.getRoot(rootName_).GetChild("Settings").GetChild("Uploading");
-    SaveServerProfileGroup(uploading.GetChild("ServerGroup"), imageServer);
-    SaveServerProfileGroup(uploading.GetChild("FileServerGroup"), fileServer);
-    SaveServerProfileGroup(uploading.GetChild("QuickScreenshotServerGroup"), quickScreenshotServer);
-    SaveServerProfileGroup(uploading.GetChild("ContextMenuServerGroup"), contextMenuServer);
     /*SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
     SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);*/
     
@@ -785,6 +751,7 @@ void WtlGuiSettings::BindToManager() {
     //general.n_bind(AutoStartup);
     general.n_bind(ShowTrayIcon);
     general.n_bind(AutoCopyToClipboard);
+    general.n_bind(EnableToastNotifications);
     general.n_bind(AutoShowLog);
     general.n_bind(ImagesFolder);
     general.n_bind(VideoFolder);
@@ -817,14 +784,17 @@ void WtlGuiSettings::BindToManager() {
     imageEditor.nm_bind(ImageEditorSettings, StepBackgroundColor);
     imageEditor.nm_bind(ImageEditorSettings, PenSize);
     imageEditor.nm_bind(ImageEditorSettings, RoundingRadius);
+    imageEditor.nm_bind(ImageEditorSettings, BlurRadius);
     imageEditor.nm_bind(ImageEditorSettings, ArrowType);
     imageEditor.nm_bind(ImageEditorSettings, Font);
+    imageEditor.nm_bind(ImageEditorSettings, FillTextBackground);
+    imageEditor.nm_bind(ImageEditorSettings, InvertSelection);
+
     imageEditor.nm_bind(ImageEditorSettings, AllowAltTab);
     screenshot.nm_bind(ImageEditorSettings, AllowEditingInFullscreen);
     //screenshot.nm_bind(ImageEditorSettings, SearchEngine);
     SettingsNode& image = mgr_["Image"];
     image["CurrentProfile"].bind(CurrentConvertProfileName);
-    image.nm_bind(UploadProfile, KeepAsIs);
 
     /*SettingsNode& thumbnails = mgr_["Thumbnails"];
     thumbnails.nm_bind(ThumbSettings, FileName);
@@ -894,9 +864,11 @@ void WtlGuiSettings::BindToManager() {
     upload.n_bind(ExecuteScript);
     upload.n_bind(DeveloperMode);
     upload.n_bind(AutomaticallyCheckUpdates);
-
-    urlShorteningServer.bind(upload["UrlShorteningServer"]);
-    temporaryServer.bind(upload["TemporaryServer"]);
+    upload.n_bind(CheckFileTypesBeforeUpload);
+    upload.n_bind(ShowPreviewForVideoFiles);
+    upload.n_bind(TrayResult);
+    /*urlShorteningServer.bind(upload["UrlShorteningServer"]);
+    temporaryServer.bind(upload["TemporaryServer"]);*/
 
     ConvertProfiles["Default"] = ImageConvertingParams();
     CurrentConvertProfileName = "Default";
@@ -978,76 +950,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
         }
 }
 
-bool WtlGuiSettings::LoadServerProfiles(SimpleXmlNode root)
-{
-    std::vector<SimpleXmlNode> servers;
-    root.GetChilds("ServerProfile", servers);
 
-    for (size_t i = 0; i < servers.size(); i++) {
-        SimpleXmlNode serverProfileNode = servers[i];
-        std::string profileName = serverProfileNode.Attribute("ServerProfileId");
-        ServerProfile sp;
-        SettingsManager mgr;
-        sp.bind(mgr.root());
-
-        mgr.loadFromXmlNode(serverProfileNode);
-        ServerProfiles[Utf8ToWCstring(profileName)] = sp;
-    }
-    return true;
-}
-
-bool WtlGuiSettings::SaveServerProfiles(SimpleXmlNode root)
-{
-    for (ServerProfilesMap::iterator it = ServerProfiles.begin(); it != ServerProfiles.end(); ++it) {
-        SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfile");
-
-        std::string profileName = WCstringToUtf8(it->first);
-
-        //ServerProfile sp = ;
-        SettingsManager mgr;
-        it->second.bind(mgr.root());
-        mgr["@ServerProfileId"].bind(profileName);
-
-        mgr.saveToXmlNode(serverProfileNode);
-    }
-    return true;
-}
-
-void WtlGuiSettings::LoadServerProfile(SimpleXmlNode root, ServerProfile& profile) {
-    SettingsManager mgr;
-    profile.bind(mgr.root());
-    mgr.loadFromXmlNode(root);
-}
-
-bool WtlGuiSettings::LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
-    std::vector<SimpleXmlNode> servers;
-    root.GetChilds("ServerProfileItem", servers);
-    if (!servers.empty()) {
-        group.getItems().clear();
-        for (size_t i = 0; i < servers.size(); i++) {
-            SimpleXmlNode serverProfileNode = servers[i];
-            /*std::string profileName = serverProfileNode.Attribute("ServerProfileId");*/
-            ServerProfile sp;
-            SettingsManager mgr;
-            sp.bind(mgr.root());
-
-            mgr.loadFromXmlNode(serverProfileNode);
-            group.addItem(sp);
-        }
-    }
-    return true;
-}
-bool WtlGuiSettings::SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group) {
-    for (auto& item: group.getItems()) {
-        SimpleXmlNode serverProfileNode = root.CreateChild("ServerProfileItem");
-        SettingsManager mgr;
-        SettingsNode& image = mgr.root();
-        item.bind(image);
-
-        mgr.saveToXmlNode(serverProfileNode);
-    }
-    return true;
-}
 
 bool WtlGuiSettings::LoadConvertProfiles(SimpleXmlNode root)
 {
@@ -1140,6 +1043,9 @@ void WtlGuiSettings::Uninstall() {
     reg3.DeleteKey("Software\\Zenden.ws");
     CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
     DeleteFile(ShortcutName);
+
+    Win7JumpList jumplist;
+    jumplist.DeleteJumpList();
 }
 
 void WtlGuiSettings::EnableAutostartup(bool enable) {
@@ -1176,16 +1082,8 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     }
 }
 
-void WtlGuiSettings::PostLoadServerProfileGroup(ServerProfileGroup& profileGroup) {
-    for(auto& item: profileGroup.getItems()) {
-        PostLoadServerProfile(item);
-    }
-}
-
 void WtlGuiSettings::PostLoadServerProfile(ServerProfile& profile) {
-    if (!profile.profileName().empty() && ServersSettings[profile.serverName()].find(profile.profileName()) == ServersSettings[profile.serverName()].end()) {
-        profile.setProfileName("");
-    }
+    CommonGuiSettings::PostLoadServerProfile(profile);
 
     ThumbCreatingParams& th = profile.getImageUploadParamsRef().getThumbRef();
     if (!th.Width && !th.Height && th.Size) {

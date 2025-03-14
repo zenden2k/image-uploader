@@ -1,125 +1,126 @@
-﻿#include "UploadTaskWrappers.h"
+#include "UploadTaskWrappers.h"
+
+#include <boost/current_function.hpp>
 
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Upload/FileUploadTask.h"
-#include <boost/current_function.hpp>
 #include "Core/Upload/UrlShorteningTask.h"
 
 namespace ScriptAPI {;
 
-UploadTaskWrapperBase::UploadTaskWrapperBase()
+UploadTaskWrapper::UploadTaskWrapper()
 {
 }
 
-const std::string UploadTaskWrapperBase::role()
+std::string UploadTaskWrapper::role()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return UploadTask::EnumToString(task_->role());
 }
 
-void UploadTaskWrapperBase::setRole(const std::string& role)
+void UploadTaskWrapper::setRole(const std::string& role)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     task_->setRole(UploadTask::StringToEnumRole(role.c_str()));
 }
 
-const std::string UploadTaskWrapperBase::type()
+std::string UploadTaskWrapper::type()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return UploadTask::EnumToString(task_->type());
 }
 
 
-const std::string UploadTaskWrapperBase::getMimeType()
+std::string UploadTaskWrapper::getMimeType()
 {   
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->getMimeType();
 }
 
-int64_t UploadTaskWrapperBase::getDataLength()
+int64_t UploadTaskWrapper::getDataLength()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->getDataLength();
 }
 
-UploadTaskWrapper  UploadTaskWrapperBase::parentTask()
+UploadTaskWrapper UploadTaskWrapper::parentTask()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return UploadTaskWrapper(task_->parentTask());
 }
 
-UploadTaskWrapper UploadTaskWrapperBase::child(int index)
+UploadTaskWrapper UploadTaskWrapper::child(int index)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->child(index);
 }
 
-int UploadTaskWrapperBase::childCount()
+int UploadTaskWrapper::childCount()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->childCount();
 }
 
-UploadResult* UploadTaskWrapperBase::uploadResult()
+UploadResult* UploadTaskWrapper::uploadResult()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->uploadResult();
 }
 
-std::string UploadTaskWrapperBase::serverName() const
+std::string UploadTaskWrapper::serverName() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->serverName();
 }
 
-const std::string UploadTaskWrapperBase::profileName()
+std::string UploadTaskWrapper::profileName()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->serverProfile().profileName();
 }
 
-void UploadTaskWrapperBase::setStatusText(const std::string& status)
+void UploadTaskWrapper::setStatusText(const std::string& status)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     task_->setStatusText(status);
 }
 
-ServerProfile UploadTaskWrapperBase::serverProfile()
+ServerProfile UploadTaskWrapper::serverProfile()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->serverProfile();
 }
 
-void UploadTaskWrapperBase::setServerProfile(const ServerProfile& profile)
+void UploadTaskWrapper::setServerProfile(const ServerProfile& profile)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     task_->setServerProfile(profile);
 }
 
-std::string UploadTaskWrapperBase::toString()
+std::string UploadTaskWrapper::toString()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     return task_->toString();
 }
 
-void UploadTaskWrapperBase::addChildTask(UploadTaskWrapperBase* child)
+void UploadTaskWrapper::addChildTask(UploadTaskWrapper* child)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     task_->addChildTask(child->task_);
 }
 
-void UploadTaskWrapperBase::addTempFile(const std::string& fileName)
+void UploadTaskWrapper::addTempFile(const std::string& fileName)
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     task_->addTempFile(fileName);
 }
 
-bool UploadTaskWrapperBase::isNull()
+bool UploadTaskWrapper::isNull()
 {
     return !task_;
 }
 
-void UploadTaskWrapperBase::checkNull(const char* func) const
+void UploadTaskWrapper::checkNull(const char* func) const
 {
     if (!task_)
     {
@@ -127,14 +128,22 @@ void UploadTaskWrapperBase::checkNull(const char* func) const
     }
 }
 
-FileUploadTaskWrapper::FileUploadTaskWrapper()
-{
-
-}
 
 FileUploadTaskWrapper::FileUploadTaskWrapper(const std::string& fileName, const std::string& displayName)
 {
     task_.reset(new FileUploadTask(fileName, displayName));
+}
+
+
+FileUploadTaskWrapper::FileUploadTaskWrapper(FileUploadTask* task)
+    : UploadTaskWrapper(task)
+{
+}
+
+
+FileUploadTaskWrapper::FileUploadTaskWrapper(std::shared_ptr<FileUploadTask> task)
+    : UploadTaskWrapper(task)
+{
 }
 
 std::string FileUploadTaskWrapper::getFileName() const
@@ -209,6 +218,40 @@ std::string FileUploadTaskWrapper::originalFileName() const
     return fileTask->originalFileName();
 }
 
+
+bool FileUploadTaskWrapper::isImage() const{
+    checkNull(BOOST_CURRENT_FUNCTION);
+    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    if (!fileTask) {
+        LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
+                   << "this is not a FileUploadTask";
+        return false;
+    }
+    return fileTask->isImage();
+}
+
+bool FileUploadTaskWrapper::isVideo() const {
+    checkNull(BOOST_CURRENT_FUNCTION);
+    FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task_.get());
+    if (!fileTask) {
+        LOG(ERROR) << BOOST_CURRENT_FUNCTION << std::endl
+                   << "this is not a FileUploadTask";
+        return false;
+    }
+    return fileTask->isVideo();
+}
+
+UrlShorteningTaskWrapper::UrlShorteningTaskWrapper(UrlShorteningTask* task)
+    : UploadTaskWrapper(task)
+{
+}
+
+
+UrlShorteningTaskWrapper::UrlShorteningTaskWrapper(std::shared_ptr<UrlShorteningTask> task)
+    : UploadTaskWrapper(task)
+{
+}
+
 std::string UrlShorteningTaskWrapper::getUrl() const
 {
     checkNull(BOOST_CURRENT_FUNCTION);
@@ -233,7 +276,7 @@ void UrlShorteningTaskWrapper::setParentUrlType(const std::string& type)
     urlShorteningTask->setParentUrlType(UrlShorteningTask::StringToEnumParentUrlType(type.c_str())); 
 }
 
-const std::string UrlShorteningTaskWrapper::parentUrlType()
+std::string UrlShorteningTaskWrapper::parentUrlType()
 {
     checkNull(BOOST_CURRENT_FUNCTION);
     UrlShorteningTask* urlShorteningTask = dynamic_cast<UrlShorteningTask*>(task_.get());
@@ -243,22 +286,6 @@ const std::string UrlShorteningTaskWrapper::parentUrlType()
         return std::string();
     }
     return UrlShorteningTask::EnumToString(urlShorteningTask->parentUrlType());
-}
-
-UploadTaskWrapper::UploadTaskWrapper()
-{
-    //task_.reset(new 
-}
-
-UploadTaskWrapper::UploadTaskWrapper(const std::string& type)
-{
-    /*UploadTask::Type type = UploadTask::StringToEnumType(type);
-    UploadTask* task = 0;
-    switch (type)
-    {
-    case UploadTask::TypeUrl:
-        task = new UrlShorteningTask()
-    }*/
 }
 
 UploadTaskWrapper::UploadTaskWrapper(UploadTask* task)
@@ -273,11 +300,11 @@ UploadTaskWrapper::UploadTaskWrapper(std::shared_ptr<UploadTask> task)
     task_ = task;
 }
 
-
 void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
     using namespace Sqrat;
     RootTable& root = vm.GetRootTable();
     HSQUIRRELVM hvm = vm.GetVM();
+
     Class<ServerProfile> serverProfileClass(hvm, "ServerProfile");
     root.Bind("ServerProfile", serverProfileClass);
 
@@ -297,24 +324,24 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("setServerName", &UploadResult::setServerName)
         );
 
-    root.Bind("UploadTaskBase", Class<UploadTaskWrapperBase>(hvm, "UploadTaskBase").
-        Func("role", &UploadTaskWrapperBase::role).
-        Func("type", &UploadTaskWrapperBase::type).
-        Func("setRole", &UploadTaskWrapperBase::setRole).
-        Func("getMimeType", &UploadTaskWrapperBase::getMimeType).
-        Func("getDataLength", &UploadTaskWrapperBase::getDataLength).
-        Func("parentTask", &UploadTaskWrapperBase::parentTask).
-        Func("addTempFile", &UploadTaskWrapperBase::addTempFile).
-        Func("addChildTask", &UploadTaskWrapperBase::addChildTask).
-        Func("serverName", &UploadTaskWrapperBase::serverName).
-        Func("profileName", &UploadTaskWrapperBase::profileName).
-        Func("serverProfile", &UploadTaskWrapperBase::serverProfile).
-        Func("isNull", &UploadTaskWrapperBase::isNull).
-        Func("setStatusText", &UploadTaskWrapperBase::setStatusText).
-        Func("uploadResult", &UploadTaskWrapperBase::uploadResult)
+    root.Bind("UploadTaskWrapper", Class<UploadTaskWrapper>(hvm, "UploadTaskWrapper").
+        Func("role", &UploadTaskWrapper::role).
+        Func("type", &UploadTaskWrapper::type).
+        Func("setRole", &UploadTaskWrapper::setRole).
+        Func("getMimeType", &UploadTaskWrapper::getMimeType).
+        Func("getDataLength", &UploadTaskWrapper::getDataLength).
+        Func("parentTask", &UploadTaskWrapper::parentTask).
+        Func("addTempFile", &UploadTaskWrapper::addTempFile).
+        Func("addChildTask", &UploadTaskWrapper::addChildTask).
+        Func("serverName", &UploadTaskWrapper::serverName).
+        Func("profileName", &UploadTaskWrapper::profileName).
+        Func("serverProfile", &UploadTaskWrapper::serverProfile).
+        Func("isNull", &UploadTaskWrapper::isNull).
+        Func("setStatusText", &UploadTaskWrapper::setStatusText).
+        Func("uploadResult", &UploadTaskWrapper::uploadResult)
         );
 
-    root.Bind("FileUploadTask", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapperBase>(hvm, "FileUploadTask").
+    root.Bind("FileUploadTaskWrapper", DerivedClass<FileUploadTaskWrapper, UploadTaskWrapper>(hvm, "FileUploadTaskWrapper").
         Ctor().
         Ctor<const std::string&, const std::string&>().
         Func("getFileName", &FileUploadTaskWrapper::getFileName).
@@ -325,15 +352,53 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("originalFileName", &FileUploadTaskWrapper::originalFileName)
         );
 
-    root.Bind("UrlShorteningTask", DerivedClass<UrlShorteningTaskWrapper, FileUploadTaskWrapper>(hvm, "UrlShorteningTask").
+    root.Bind("UrlShorteningTaskWrapper", DerivedClass<UrlShorteningTaskWrapper, UploadTaskWrapper>(hvm, "UrlShorteningTaskWrapper").
         Func("getUrl", &UrlShorteningTaskWrapper::getUrl).
         Func("setParentUrlType", &UrlShorteningTaskWrapper::setParentUrlType).
         Func("parentUrlType", &UrlShorteningTaskWrapper::parentUrlType)
         );
 
-    DerivedClass<UploadTaskWrapper, UrlShorteningTaskWrapper> UploadTaskWrapperClass(hvm, "UploadTask");
-    root.Bind("UploadTask", UploadTaskWrapperClass);
+    root.Bind("UploadTaskUnion", Class<UploadTaskUnion>(hvm, "UploadTaskUnion")
+        .Ctor().Func("type", &UploadTaskUnion::type)
+        .Func("getTask", &UploadTaskUnion::getTask)
+        .Func("getFileTask", &UploadTaskUnion::getFileTask)
+        .Func("getUrlShorteningTask", &UploadTaskUnion::getUrlShorteningTask)
+    );
 }
 
+UploadTaskUnion::UploadTaskUnion(std::shared_ptr<UploadTask> task) : task_(task) {
+}
+
+UploadTaskUnion::UploadTaskUnion(UploadTask* task){
+    release_deleter<UploadTask> deleter;
+    deleter.release();
+    task_.reset(task, deleter);
+}
+
+
+std::string UploadTaskUnion::type() const{
+    return UploadTask::EnumToString(task_->type());
+}
+
+ScriptAPI::UploadTaskWrapper UploadTaskUnion::getTask() {
+    return task_;
+}
+
+ScriptAPI::FileUploadTaskWrapper UploadTaskUnion::getFileTask() {
+    auto res = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    if (!res) {
+        throw std::runtime_error("Pointer cast failed. It is not FileUploadTask");
+    }
+    return res;
+}
+
+
+ScriptAPI::UrlShorteningTaskWrapper UploadTaskUnion::getUrlShorteningTask() {
+    auto res = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
+    if (!res) {
+        throw std::runtime_error("Pointer cast failed. It is not UrlShorteningTask");
+    }
+    return res;
+}
 
 }

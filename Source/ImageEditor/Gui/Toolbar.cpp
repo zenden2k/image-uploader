@@ -1,5 +1,7 @@
 #include "Toolbar.h"
 
+#include <strsafe.h>
+
 #include "Core/Logging.h"
 #include "3rdpart/GdiplusH.h"
 #include "Gui/GuiTools.h"
@@ -200,19 +202,28 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
     if ( orientation_ == orHorizontal ) {
         penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
-        createHintForSliders(penSizeSlider_.m_hWnd, TR("Line thickness"));
+        createHintForControl(penSizeSlider_.m_hWnd, TR("Line thickness"));
         RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD|WS_VISIBLE);
+        pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | WS_VISIBLE | SS_NOTIFY);
         pixelLabel_.SetFont(systemFont_);
-        //createHintForSliders(pixelLabel_.m_hWnd, TR("Line thickness"));
+        createHintForControl(pixelLabel_, TR("Line thickness"));
 
         RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
         roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
-        createHintForSliders(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
+        createHintForControl(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
         //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD);
+        roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
         roundRadiusLabel_.SetFont(systemFont_);
-        //createHintForSliders(roundRadiusLabel_.m_hWnd, TR("Rounding radius"));
+        createHintForControl(roundRadiusLabel_, TR("Rounding radius"));
+
+        RECT blurRadiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+        blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
+        createHintForControl(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
+        //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+        
+        blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
+        blurRadiusLabel_.SetFont(systemFont_);
+        createHintForControl(blurRadiusLabel_, TR("Blur radius"));
 
         RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
@@ -226,7 +237,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
         RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD |  UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
         fontSizeUpDownCtrl_.SetRange(1, 100);
 
         RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
@@ -244,12 +255,21 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
         fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
         fillBackgroundCheckbox_.SetFont(systemFont_);
 
+        RECT invertSelectionCheckboxRect{ 0, 0, static_cast<LONG>(200 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+
+        invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
+        invertSelectionCheckbox_.SetFont(systemFont_);
+
         RECT arrowTypeComboRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST, 0, ID_ARROWTYPECOMBOBOX);
+        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
         arrowTypeCombobox_.SetFont(systemFont_);
-        arrowTypeCombobox_.AddString(TR("Arrow 1"));
-        arrowTypeCombobox_.AddString(TR("Arrow 2"));
+
+        createHintForControl(arrowTypeCombobox_, TR("Type of arrow"));
+        int itemIndex = arrowTypeCombobox_.AddString(_T(""));
+        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode1));
+        itemIndex = arrowTypeCombobox_.AddString(_T(""));
+        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
         RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
         applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
@@ -264,7 +284,8 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
 LRESULT Toolbar::OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
 {
-    if ( (HWND)lParam == penSizeSlider_.m_hWnd ||   (HWND)lParam == roundRadiusSlider_.m_hWnd ) {
+    if ( (HWND)lParam == penSizeSlider_.m_hWnd ||   (HWND)lParam == roundRadiusSlider_.m_hWnd
+        || (HWND)lParam == blurRadiusSlider_.m_hWnd) {
         ::SendMessage(GetParent(),uMsg, wParam, lParam);
     }
     return 0;
@@ -334,7 +355,7 @@ LRESULT Toolbar::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     int x = itemMargin_;
     int y = itemMargin_;
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(&gr, i);
+        SIZE s = CalcItemSize(&gr, i, x, y);
         drawItem(i, &gr, x, y);
 
         if ( orientation_ == orHorizontal ) {
@@ -443,19 +464,6 @@ LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& 
     return 0;
 }
 
-
-LRESULT Toolbar::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = true;
-    return ::SendMessage(GetParent(), uMsg, wParam, lParam);
-}
-
-LRESULT Toolbar::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-    bHandled = true;
-    return ::SendMessage(GetParent(), uMsg, wParam, lParam);
-}
-
 LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     int xPos = GET_X_LPARAM(lParam); 
@@ -529,14 +537,14 @@ LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index)
+SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y)
 {
     using namespace Gdiplus;
     SIZE res={0,0};
     Item &item = buttons_[index];
     
     if ( item.itemDelegate ) {
-        return item.itemDelegate->CalcItemSize(item,dpiScaleX_, dpiScaleY_);
+        return item.itemDelegate->CalcItemSize(item, x, y, dpiScaleX_, dpiScaleY_);
     }
 
     if (showButtonText_ && item.title.GetLength()) {
@@ -580,7 +588,7 @@ int Toolbar::AutoSize()
     Gdiplus::Graphics gr(dc);
 
     for (size_t i = 0; i < buttons_.size(); i++) {
-        SIZE s = CalcItemSize(&gr, i);
+        SIZE s = CalcItemSize(&gr, i, x, y);
         Item& item = buttons_[i];
         Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
         item.rect.left = x;
@@ -627,6 +635,24 @@ int Toolbar::AutoSize()
         ScreenToClient(&radiusSliderRect);
         roundRadiusLabel_.SetWindowPos(0, radiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE| SWP_NOZORDER);
 
+        RECT roundRadiusLabelRect;
+        roundRadiusLabel_.GetClientRect(&roundRadiusLabelRect);
+        roundRadiusLabel_.ClientToScreen(&roundRadiusLabelRect);
+        ScreenToClient(&roundRadiusLabelRect);
+
+        // Blur radius
+        blurRadiusSlider_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + 1 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        blurRadiusSlider_.SetRange(BLUR_RADIUS_PRECISION, Canvas::kMaxBlurRadius * BLUR_RADIUS_PRECISION);
+        RECT blurRadiusSliderRect;
+        blurRadiusSlider_.GetClientRect(&blurRadiusSliderRect);
+        blurRadiusSlider_.ClientToScreen(&blurRadiusSliderRect);
+        ScreenToClient(&blurRadiusSliderRect);
+        blurRadiusLabel_.SetWindowPos(0, blurRadiusSliderRect.right, buttonsRect_.bottom + static_cast<int>(3 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        RECT blurRadiusLabelRect;
+        blurRadiusLabel_.GetClientRect(&blurRadiusLabelRect);
+        blurRadiusLabel_.ClientToScreen(&blurRadiusLabelRect);
+        ScreenToClient(&blurRadiusLabelRect);
         //RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
         GuiTools::AutoSizeStaticControl(fontSizeLabel_);
@@ -638,8 +664,10 @@ int Toolbar::AutoSize()
         ScreenToClient(&fontSizeLabelRect);
 
         fontSizeEdit_.SetWindowPos(0, fontSizeLabelRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + static_cast<int>(2 * dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
-        fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
 
+        if (!fontSizeUpDownCtrl_.GetBuddy()) {
+            fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
+        }
         RECT upDownRect, rect;
         fontSizeUpDownCtrl_.GetWindowRect(&upDownRect);
         ScreenToClient(&upDownRect);
@@ -647,7 +675,8 @@ int Toolbar::AutoSize()
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
-        initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(8 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        initialValueLabel_.SetWindowPos(nullptr, upDownRect.right + static_cast<int>(38 * dpiScaleX_), buttonsRect_.bottom + (subpanelHeight_ - rect.bottom + rect.top) / 2, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        
         initialValueLabel_.GetWindowRect(&rect);
         ScreenToClient(&rect);
 
@@ -655,6 +684,8 @@ int Toolbar::AutoSize()
 
         // Moving fill background checkbox
         fillBackgroundCheckbox_.SetWindowPos(0, subpanelLeftOffset_ + static_cast<int>(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+
+        invertSelectionCheckbox_.SetWindowPos(0, blurRadiusLabelRect.right + static_cast<int>(6 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
         arrowTypeCombobox_.SetWindowPos(0, pixelLabelRect_.right+ int(3 * dpiScaleX_), static_cast<int>(buttonsRect_.bottom + dpiScaleY_), 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 
@@ -682,7 +713,7 @@ int Toolbar::AutoSize()
 void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 {
     using namespace Gdiplus;
-    SIZE size = CalcItemSize(gr, itemIndex);
+    SIZE size = CalcItemSize(gr, itemIndex, x, y);
     
     Item& item = buttons_[itemIndex];
 
@@ -758,14 +789,14 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
     }
 }
 
-void Toolbar::createHintForSliders(HWND slider, CString hint) {
+void Toolbar::createHintForControl(HWND slider, CString hint) {
     TOOLINFO ti = {};
     ti.cbSize   = sizeof(TOOLINFO);
     ti.uFlags   = TTF_SUBCLASS;
     ti.hwnd     = slider;
     ti.hinst    = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(hint.GetLength() + 1);
-    lstrcpy(textBuffer.get(), hint);
+    StringCchCopy(textBuffer.get(), hint.GetLength() + 1, hint);
     ti.lpszText = textBuffer.get();
     ::GetClientRect(slider, &ti.rect);
 
@@ -776,22 +807,30 @@ void Toolbar::CreateToolTipForItem(size_t index)
 {
     Item& item = buttons_[index];
 
-    if (item.hint.IsEmpty()) {
+    std::vector<std::pair<RECT, CString>> hints;
+
+    if (!item.hint.IsEmpty()) {
+        hints.emplace_back(item.rect, item.hint);
+    } else if (item.itemDelegate) {
+        hints = item.itemDelegate->getSubItemsHints();
+    } else {
         return;
     }
-    
-    TOOLINFO ti = {};
-    ti.cbSize   = sizeof(TOOLINFO);
-    ti.uFlags   = TTF_SUBCLASS;
-    ti.hwnd     = m_hWnd;
-    ti.hinst    = _Module.GetModuleInstance();
-    //CString textBuffer = item.hint;
-    auto textBuffer = std::make_unique<TCHAR[]>(item.hint.GetLength() + 1);
-    lstrcpy(textBuffer.get(), item.hint);
-    ti.lpszText = textBuffer.get();
-    ti.rect  = item.rect;
-    ti.uId = static_cast<UINT_PTR>(index);
-    tooltip_.AddTool(&ti);
+
+    for (const auto& hint : hints) {
+        TOOLINFO ti = {};
+        ti.cbSize = sizeof(TOOLINFO);
+        ti.uFlags = TTF_SUBCLASS;
+        ti.hwnd = m_hWnd;
+        ti.hinst = _Module.GetModuleInstance();
+        //CString textBuffer = item.hint;
+        auto textBuffer = std::make_unique<TCHAR[]>(hint.second.GetLength() + 1);
+        StringCchCopy(textBuffer.get(), hint.second.GetLength() + 1, hint.second);
+        ti.lpszText = textBuffer.get();
+        ti.rect = hint.first;
+        ti.uId = static_cast<UINT_PTR>(index);
+        tooltip_.AddTool(&ti);
+    }
 }
 
 void Toolbar::updateTooltipForItem(size_t index) {
@@ -846,8 +885,115 @@ LRESULT Toolbar::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     return 0;
 }
 
+SIZE Toolbar::getArrowComboBoxBitmapSize(HDC hdc) {
+    int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
+    int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+    return {
+        MulDiv(70, dpiX, USER_DEFAULT_SCREEN_DPI),
+        MulDiv(18, dpiY, USER_DEFAULT_SCREEN_DPI)
+    };
+}
+
+void Toolbar::setArrowComboboxMode(int itemIndex, int arrowType) {
+    arrowTypeCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(arrowType));
+}
+
+LRESULT Toolbar::OnMeasureItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    LPMEASUREITEMSTRUCT lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
+    CClientDC dc(m_hWnd);
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    if (wParam == ID_ARROWTYPECOMBOBOX) {
+        SIZE sz = getArrowComboBoxBitmapSize(dc);
+        int paddingY = /*/ MulDiv(2, dpiX, USER_DEFAULT_SCREEN_DPI)*/0;
+        lpmis->itemWidth = std::max<int>(MulDiv(200, dpiX, USER_DEFAULT_SCREEN_DPI), sz.cx);
+
+        if (lpmis->itemHeight < sz.cy + paddingY) {
+            lpmis->itemHeight = sz.cy + paddingY;
+        }
+
+        return TRUE;
+    }
+    return FALSE;
+}
+
+LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    using namespace Gdiplus;
+    LPDRAWITEMSTRUCT lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
+
+    if (wParam == ID_ARROWTYPECOMBOBOX) {
+        COLORREF clrBackground;
+        COLORREF clrForeground;
+        TEXTMETRIC tm;
+        int x;
+        int y;
+        HRESULT hr;
+        size_t itemLength, cch;
+   
+        if (lpdis->itemID == -1) { // Empty item
+            return FALSE;
+        }
+
+        auto arrowMode = static_cast<Arrow::ArrowMode>(lpdis->itemData);
+
+        // The colors depend on whether the item is selected.
+        clrForeground = SetTextColor(lpdis->hDC,
+            GetSysColor((lpdis->itemState & ODS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT));
+
+        clrBackground = SetBkColor(lpdis->hDC,
+            GetSysColor(lpdis->itemState & ODS_SELECTED ? COLOR_HIGHLIGHT : COLOR_WINDOW));
+
+        // Calculate the vertical and horizontal position.
+        GetTextMetrics(lpdis->hDC, &tm);
+        y = (lpdis->rcItem.bottom + lpdis->rcItem.top - tm.tmHeight) / 2;
+        x = LOWORD(GetDialogBaseUnits()) / 4;
+
+        itemLength = ::SendMessage(lpdis->hwndItem, CB_GETLBTEXTLEN, lpdis->itemID, 0);
+        if (itemLength == CB_ERR) {
+            return FALSE;
+        }
+        CString buf;
+        auto b = buf.GetBuffer(itemLength + 1);
+        // Get and display the text for the list item.
+        ::SendMessage(lpdis->hwndItem, CB_GETLBTEXT, lpdis->itemID, (LPARAM)b);
+        buf.ReleaseBuffer(itemLength);
+
+        SIZE bitmapSize = getArrowComboBoxBitmapSize(lpdis->hDC);
+        ExtTextOut(lpdis->hDC, bitmapSize.cx + 2 * x, y,
+            ETO_CLIPPED | ETO_OPAQUE, &lpdis->rcItem,
+            buf, buf.GetLength(), NULL);
+
+        {
+            Graphics gr(lpdis->hDC);
+            gr.SetPageUnit(Gdiplus::UnitPixel);
+            gr.SetSmoothingMode(SmoothingModeAntiAlias);
+            Color clr;
+            clr.SetFromCOLORREF(GetSysColor((lpdis->itemState & ODS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT));
+            
+            int bitmapY = (lpdis->rcItem.bottom + lpdis->rcItem.top) / 2;
+            Arrow::render(&gr, clr, 3, { 1, bitmapY }, { bitmapSize.cx + 1, bitmapY }, arrowMode);    
+        }
+
+        // Restore the previous colors.
+        SetTextColor(lpdis->hDC, clrForeground);
+        SetBkColor(lpdis->hDC, clrBackground);
+
+        // If the item has the focus, draw the focus rectangle.
+        if (lpdis->itemState & ODS_FOCUS) {
+            DrawFocusRect(lpdis->hDC, &lpdis->rcItem);
+        }
+
+        return TRUE;
+    }
+    return FALSE;
+}
+
 void Toolbar::showFillBackgroundCheckbox(bool show) {
     fillBackgroundCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
+}
+
+void Toolbar::showInvertSelectionCheckbox(bool show) {
+    invertSelectionCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }
 
 void Toolbar::showArrowTypeCombo(bool show) {
@@ -858,6 +1004,12 @@ LRESULT Toolbar::OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wI
     ::SendMessage(GetParent(), MTBM_FILLBACKGROUNDCHANGE, 0, 0);
     return 0;
 }
+
+LRESULT Toolbar::OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    ::SendMessage(GetParent(), MTBM_INVERTSELECTIONCHANGE, 0, 0);
+    return 0;
+}
+
 
 LRESULT Toolbar::OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     ::SendMessage(GetParent(), MTBM_ARROWTYPECHANGE, 0, 0);
@@ -877,6 +1029,10 @@ LRESULT Toolbar::OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID
 
 bool Toolbar::isFillBackgroundChecked() const {
     return fillBackgroundCheckbox_.GetCheck() == BST_CHECKED;
+}
+
+bool Toolbar::isInvertSelectionChecked() const {
+    return invertSelectionCheckbox_.GetCheck() == BST_CHECKED;
 }
 
 int Toolbar::getArrowType() const {
@@ -900,6 +1056,10 @@ void Toolbar::setFillBackgroundCheckbox(bool fill) {
     fillBackgroundCheckbox_.SetCheck(fill ? BST_CHECKED : BST_UNCHECKED);
 }
 
+void Toolbar::setInvertSelectionCheckbox(bool invert) {
+    invertSelectionCheckbox_.SetCheck(invert ? BST_CHECKED : BST_UNCHECKED);
+}
+
 void Toolbar::setShowButtonText(bool show) {
     showButtonText_ = show;
 }
@@ -907,4 +1067,5 @@ void Toolbar::setShowButtonText(bool show) {
 Toolbar::Orientation Toolbar::orientation() const {
     return orientation_;
 }
+
 }

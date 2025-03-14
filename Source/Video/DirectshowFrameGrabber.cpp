@@ -82,6 +82,12 @@ public:
 		BufferEvent = nullptr;
 		prev = 0;
     }
+
+    ~CSampleGrabberCB() {
+        if (BufferEvent) {
+            CloseHandle(BufferEvent);
+        }
+    }
     std::mutex mutex_;
     DirectshowFrameGrabberPrivate *directShowPrivate;
     //CImgSavingThread* SavingThread;
@@ -139,8 +145,9 @@ public:
      CComQIPtr<IObjectWithSite> pObjectWithSite;
      CSampleGrabberCB CB;
      NoDirectVobSub graphBuilderCallback;
-     VIDEOINFOHEADER vih;
-protected:
+     VIDEOINFOHEADER vih {};
+
+ protected:
      std::unique_ptr<DirectshowVideoFrame> currentFrame_; 
 };
 

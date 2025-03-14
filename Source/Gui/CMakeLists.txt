@@ -3,14 +3,12 @@ add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL)
 set(SRC_LIST 
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
+    ../3rdpart/wintoastlib.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
     ../Core/ScreenCapture/MonitorEnumerator.cpp
     ../Core/ScreenCapture/ScreenshotHelper.cpp
     ../Core/SearchByImage.cpp
-    ../Core/SearchByImageTask.cpp
-    ../Core/SearchGoogleImages.cpp
-    ../Core/SearchYandexImages.cpp
     ../Core/Settings/CommonGuiSettings.cpp
     ../Core/Settings/WtlGuiSettings.cpp
     ../Core/TempFileDeleter.cpp
@@ -25,6 +23,8 @@ set(SRC_LIST
     ../Core/Upload/Filters/SizeExceedFilter.cpp
     ../Core/Upload/Filters/UrlShorteningFilter.cpp
     ../Core/Upload/Filters/UserFilter.cpp
+    ../Core/AbstractServerIconCache.cpp
+    ../Core/WinServerIconCache.cpp
     ../Core/BackgroundTask.cpp
     ../Func/CmdLine.cpp
     ../Func/DefaultLogger.cpp
@@ -35,6 +35,8 @@ set(SRC_LIST
     Components/NewStyleFileDialog.cpp
     Components/NewStyleFileSaveDialog.cpp
     Components/DragndropOverlay.cpp
+    Components/WinToastHandler.cpp
+    Components/ParameterListAdapter.cpp
     Controls/HyperLinkControlAccessible.cpp
     Controls/ImageView.cpp
     Controls/ResultsListView.cpp
@@ -46,6 +48,7 @@ set(SRC_LIST
     GuiTools.cpp
     IconBitmapUtils.cpp
     WizardCommon.cpp
+    ScriptFunctionsImpl.cpp
     Dialogs/AboutDlg.cpp
     Dialogs/AddDirectoryServerDialog.cpp
     Dialogs/AddFtpServerDialog.cpp
@@ -76,7 +79,7 @@ set(SRC_LIST
     Dialogs/ServerFolderSelect.cpp
     Dialogs/ServerParamsDlg.cpp
     Dialogs/SettingsDlg.cpp
-    Dialogs/settingspage.cpp
+    Dialogs/SettingsPage.cpp
     Dialogs/ShortenUrlDlg.cpp
     Dialogs/SizeExceed.cpp
     Dialogs/StatusDlg.cpp
@@ -88,25 +91,31 @@ set(SRC_LIST
     Dialogs/UploadDlg.cpp
     Dialogs/UploadParamsDlg.cpp
     Dialogs/UploadSettings.cpp
-    Dialogs/UploadSettingsPage.cpp
+    Dialogs/ConnectionSettingsPage.cpp
+    Dialogs/TransferSettingsPage.cpp
     Dialogs/VideoGrabberPage.cpp
     Dialogs/VideoGrabberParams.cpp
     Dialogs/WebViewWindow.cpp
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
+    Dialogs/FileFormatCheckErrorDlg.cpp
+    Dialogs/NetworkDebugDlg.cpp
+    Models/FileFormatCheckErrorModel.cpp
+    Models/NetworkDebugModel.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
     Controls/IconButton.cpp
     Controls/LogListBox.cpp
     Controls/MyImage.cpp
-    Controls/PictureExWnd.cpp
     Controls/ServerSelectorControl.cpp
     Controls/MultiServerSelectorControl.cpp
     Controls/TabListBox.cpp
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
+    Controls/FileFormatErrorView.cpp
+    Controls/NetworkDebugListView.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -133,6 +142,7 @@ set(SRC_LIST
     ../ImageEditor/Gui/ImageEditorView.cpp
     ../ImageEditor/Gui/ImageEditorWindow.cpp
     ../ImageEditor/Gui/InputBoxControl.cpp
+    ../ImageEditor/Gui/CustomTrackBarControl.cpp
     ../ImageEditor/Gui/TextParamsWindow.cpp
     ../ImageEditor/Gui/Toolbar.cpp
     ../ImageEditor/DrawingTools/AbstractDrawingTool.cpp
@@ -148,11 +158,13 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
+    FileList.cpp
     ../ServerListTool/ServersCheckerDlg.cpp 
     ../ServerListTool/ServersChecker.cpp
     ../ServerListTool/ServersCheckerModel.cpp
     ../ServerListTool/Helpers.cpp
     ../ServerListTool/ServerListView.cpp
+    ../ServerListTool/CheckShortUrlTask.cpp
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
@@ -160,16 +172,15 @@ set(RESOURCE_LIST  "../Image Uploader.rc"
     
 set(HEADER_LIST 
     ../3rdpart/ShellPidl.h
+    ../3rdpart/wintoastlib.h
     ../Core/Images/ImageConverterPrivateBase.h
     ../Core/Images/ImageConverterPrivate_gdiplus.h
     ../Core/ScreenCapture/MonitorEnumerator.h
     ../Core/ScreenCapture/ScreenshotHelper.h
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
+    ../Core/Scripting/API/ScriptFunctionsImpl.h
     ../Core/SearchByImage.h
-    ../Core/SearchByImageTask.h
-    ../Core/SearchGoogleImages.h
-    ../Core/SearchYandexImages.h
     ../Core/Settings/CommonGuiSettings.h
     ../Core/Settings/WtlGuiSettings.h
     ../Core/TempFileDeleter.h
@@ -185,6 +196,8 @@ set(HEADER_LIST
     ../Core/Upload/Filters/SizeExceedFilter.h
     ../Core/Upload/Filters/UrlShorteningFilter.h
     ../Core/Upload/Filters/UserFilter.h
+    ../Core/AbstractServerIconCache.h
+    ../Core/WinServerIconCache.h
     ../Func/CmdLine.h
     ../Func/DefaultLogger.h
     ../Func/DefaultUploadErrorHandler.h
@@ -194,7 +207,9 @@ set(HEADER_LIST
     Components/MyFileDialog.h
     Components/NewStyleFileDialog.h
     Components/NewStyleFileSaveDialog.h
-    Components/DragndropOverlay.cpp
+    Components/DragndropOverlay.h
+    Components/WinToastHandler.h
+    Components/ParameterListAdapter.h
     Controls/HyperLinkControlAccessible.h
     Controls/ImageView.h
     Controls/ResultsListView.h
@@ -249,29 +264,34 @@ set(HEADER_LIST
     Dialogs/UploadDlg.h
     Dialogs/UploadParamsDlg.h
     Dialogs/UploadSettings.h
-    Dialogs/UploadSettingsPage.h
+    Dialogs/ConnectionSettingsPage.h
+    Dialogs/TransferSettingsPage.h
     Dialogs/VideoGrabberPage.h
     Dialogs/VideoGrabberParams.h
     Dialogs/WebViewWindow.h
     Dialogs/WelcomeDlg.h
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
+    Dialogs/FileFormatCheckErrorDlg.h
+    Dialogs/NetworkDebugDlg.cpp
+    Models/FileFormatCheckErrorModel.h
+    Models/NetworkDebugModel.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
     Controls/IconButton.h
     Controls/LogListBox.h
     Controls/MyImage.h
-    Controls/PictureExWnd.h
     Controls/ServerSelectorControl.h
     Controls/MultiServerSelectorControl.h
     Controls/TabListBox.h
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
+    Controls/FileFormatErrorView.h
+    Controls/NetworkDebugListView.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
-    ../3rdpart/QColorQuantizer.h
     ../3rdpart/Registry.h
     ../3rdpart/Unzipper.h
     ../3rdpart/vkCodes.h
@@ -298,6 +318,7 @@ set(HEADER_LIST
     ../ImageEditor/Gui/ImageEditorView.h
     ../ImageEditor/Gui/ImageEditorWindow.h
     ../ImageEditor/Gui/InputBoxControl.h
+    ../ImageEditor/Gui/CustomTrackBarControl.h
     ../ImageEditor/Gui/TextParamsWindow.h
     ../ImageEditor/Gui/Toolbar.h
     ../ImageEditor/DrawingTools/AbstractDrawingTool.h
@@ -313,10 +334,12 @@ set(HEADER_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.h
     ../ImageEditor/Helpers/FontEnumerator.h
     UploadListModel.h
+    FileList.h
     ../ServerListTool/ServersChecker.h
     ../ServerListTool/ServersCheckerModel.h
     ../ServerListTool/Helpers.h
     ../ServerListTool/ServerListView.h
+    ../ServerListTool/CheckShortUrlTask.h
     ../resource.h
 )
 	
@@ -326,7 +349,7 @@ if (IU_ENABLE_MEDIAINFO)
 endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
-source_group("Resource Files" FILES ${RESOURCE_LIST})
+#source_group("Resource Files" FILES ${RESOURCE_LIST})
 
 add_executable(GUI WIN32  
     ${SRC_LIST} ${HEADER_LIST} ${RESOURCE_LIST}
@@ -341,7 +364,7 @@ set(LIBS_LIST
 )
 
 if (IU_ENABLE_MEDIAINFO)
-	list(APPEND LIBS_LIST MediaInfoLib::MediaInfoLib)
+	list(APPEND LIBS_LIST mediainfo)
 endif()	
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
@@ -350,6 +373,16 @@ target_link_libraries(GUI PRIVATE iucore iuvideo
     ${LIBS_LIST} 
     ${COMMON_LIBS_LIST}
 )
+
+if (IU_ENABLE_WEBVIEW2)
+    set_target_properties(GUI PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    set_target_properties(GUI PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+    set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+   
+    #set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1") 
+    #target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
+    #target_link_libraries(GUI PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
+endif()
   
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 

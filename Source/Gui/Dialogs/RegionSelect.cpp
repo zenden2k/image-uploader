@@ -34,8 +34,7 @@ struct WindowsListItem
 
 std::vector<WindowsListItem> windowsList;
 
-
-BOOL CALLBACK EnumChildProc(HWND hwnd,    LPARAM lParam)
+BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam)
 {
     if(IsWindowVisible(hwnd)){
         EnumChildWindows(hwnd, EnumChildProc, 0);
@@ -50,8 +49,11 @@ BOOL CALLBACK EnumChildProc(HWND hwnd,    LPARAM lParam)
 
 BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam)
 {
-    if(IsWindowVisible(hwnd)) {
-        EnumChildWindows(hwnd, EnumChildProc, 0);
+    bool onlyTopWindows = lParam;
+    if(GuiTools::IsWindowVisibleOnScreen(hwnd)) {
+        if (!onlyTopWindows) {
+            EnumChildWindows(hwnd, EnumChildProc, 0);
+        }
         WindowsListItem newItem;
         newItem.handle = hwnd;
         GetWindowRect(hwnd, &newItem.rect);
@@ -60,13 +62,14 @@ BOOL CALLBACK RegionEnumWindowsProc(HWND hwnd,LPARAM lParam)
     return true;
 }
 
-HWND WindowUnderCursor(POINT pt, HWND exclude)
+HWND WindowUnderCursor(POINT pt, HWND exclude, bool onlyTopWindows = false)
 {
     if(windowsList.empty()) {
-        EnumWindows(RegionEnumWindowsProc, 0);
+        EnumWindows(RegionEnumWindowsProc, onlyTopWindows);
     }
     for (const auto& curItem : windowsList) {
-        if (::PtInRect(&curItem.rect, pt) && curItem.handle != exclude && IsWindowVisible(curItem.handle)) {
+        if (::PtInRect(&curItem.rect, pt) && curItem.handle != exclude && GuiTools::IsWindowVisibleOnScreen(curItem.handle)) {
+            //LOG(ERROR) << curItem.handle << " " << GuiTools::GetWindowText(curItem.handle) << " " << IsIconic(curItem.handle);
             return curItem.handle;
         }
     }
@@ -105,7 +108,6 @@ CRegionSelect::CRegionSelect()
     hSelWnd = nullptr;
     m_PrevWindowRect = { 0, 0, 0, 0 };
     m_btoolWindowTimerRunning = false;
-    Parent = nullptr;
     m_bPainted = false;
     m_DoubleBuffer = nullptr;
     gdipBm = nullptr;
@@ -114,6 +116,15 @@ CRegionSelect::CRegionSelect()
     m_bResult = false;
     m_brushColor = RGB(0, 0, 0);
     m_bPictureChanged = false;
+}
+
+void CRegionSelect::setSelectionMode(SelectionMode selMode, bool onlyTopWindows) {
+    m_SelectionMode = selMode;
+    onlyTopWindows_ = onlyTopWindows;
+}
+
+SelectionMode CRegionSelect::selectionMode() const {
+    return m_SelectionMode;
 }
 
 CRegionSelect::~CRegionSelect()
@@ -219,7 +230,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         POINT newP = point;
         ClientToScreen(&newP);
 
-        if ((hNewSelWnd = WindowUnderCursor(newP, m_hWnd)) == nullptr) {
+        if ((hNewSelWnd = WindowUnderCursor(newP, m_hWnd, onlyTopWindows_)) == nullptr) {
             hNewSelWnd = ::GetDesktopWindow();
         }
         else {

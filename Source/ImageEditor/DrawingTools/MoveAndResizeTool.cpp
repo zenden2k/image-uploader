@@ -260,14 +260,15 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
         if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
             &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
-            Canvas::UndoHistoryItem uhi;
-            uhi.type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
+            
+            auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
+            uhi->type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
             Canvas::UndoHistoryItemElement uhie;
             uhie.startPoint = originalStartPoint_;
             uhie.endPoint = originalEndPoint_;
             uhie.movableElement = currentElement_;
-            uhi.elements.push_back(uhie);
-            canvas_->addUndoHistoryItem(uhi);
+            uhi->elements.push_back(uhie);
+            canvas_->addUndoHistoryItem(std::move(uhi));
         }
 
         elementJustCreated_ = false;
@@ -297,6 +298,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     if ( isMoving_ ) {
         isMoving_ = false;
     }
+    canvas_->endManipulation();
 }
 
 void MoveAndResizeTool::render( Painter* gr ) {
@@ -348,10 +350,10 @@ void MoveAndResizeTool::createElement() {
             currentElement_ = new FilledEllipse(canvas_);
             break;
         case ElementType::etPixelateRectangle:
-            currentElement_ = new PixelateRectangle(canvas_, float(canvas_->getPixelateBlockSize()), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new PixelateRectangle(canvas_, /*float(canvas_->getPixelateBlockSize())*/canvas_->getBlurRadius(), startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y, canvas_->getInvertSelection());
             break;
         case ElementType::etBlurringRectangle:
-            currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
+            currentElement_ = new BlurringRectangle(canvas_, canvas_->getBlurRadius(), startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y, false, canvas_->getInvertSelection());
             break;
         case ElementType::etFilledRectangle:
             currentElement_ = new FilledRectangle(canvas_, startPoint_.x,startPoint_.y, endPoint_.x, endPoint_.y);
@@ -398,7 +400,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
 MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
     for (size_t i = 0; i < element->grips_.size(); i++) {
-        if ( abs (x - element->grips_[i].pt.x) <= MovableElement::kGripSize+2 &&  abs (y - element->grips_[i].pt.y) <= MovableElement::kGripSize+2 ) {
+        if ( abs (x - element->grips_[i].pt.x) <= element->gripWidth_ + 2 &&  abs (y - element->grips_[i].pt.y) <= element->gripHeight_ + 2 ) {
             return element->grips_[i];
         }
     }

@@ -16,16 +16,21 @@ LoginDialog::LoginDialog(ServerProfile& serverProfile, bool createNew, QWidget *
     ui->setupUi(this);
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
+    if (!Settings) {
+        return;
+    }
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
 	LoginInfo li = serverSettings ? serverSettings->authData: LoginInfo();
 	auto ued = serverProfile_.uploadEngineData();
-	QString loginLabelText = ued->LoginLabel.empty() ? tr("Login:") : U2Q(ued->LoginLabel) + ":";
-	ui->loginLabel->setText(loginLabelText);
-	QString passwordLabelText = ued->PasswordLabel.empty() ? tr("Password:") : U2Q(ued->PasswordLabel) +":";
-	ui->passwordLabel->setText(passwordLabelText);
-	ui->passwordLabel->setEnabled(ued->NeedPassword);
-	ui->passwordEdit->setEnabled(ued->NeedPassword);
+    if (ued) {
+        QString loginLabelText = ued->LoginLabel.empty() ? tr("Login:") : U2Q(ued->LoginLabel) + ":";
+        ui->loginLabel->setText(loginLabelText);
+        QString passwordLabelText = ued->PasswordLabel.empty() ? tr("Password:") : U2Q(ued->PasswordLabel) +":";
+        ui->passwordLabel->setText(passwordLabelText);
+        ui->passwordLabel->setEnabled(ued->NeedPassword);
+        ui->passwordEdit->setEnabled(ued->NeedPassword);
+    }
 	
 	accountName_ = U2Q(li.Login);
 
@@ -69,12 +74,13 @@ void LoginDialog::onAccept() {
 	}
 
 	accountName_ = buffer;
-	serverProfile_.setProfileName(Q2U(buffer));
+    serverProfile_.setProfileName(Q2U(buffer));
+    li.Login = Q2U(buffer);
 	li.Password = Q2U(ui->passwordEdit->text());
 	li.DoAuth = true;
 	//uploadEngineManager_->resetAuthorization(serverProfile_);
 
-    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_);
+    ServerSettingsStruct* serverSettings = Settings.getServerSettings(serverProfile_, true);
     if(serverSettings) {
         serverSettings->authData = li;
     }

@@ -59,7 +59,7 @@ class CLogListBox :
         int AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo, const CString& Time);
         LogListBoxItem* getItemFromIndex(int index) const;
         LRESULT OnKillFocus(HWND hwndNewFocus);
-        CIcon ErrorIcon, WarningIcon, InfoIcon;
+        CIconHandle ErrorIcon, WarningIcon, InfoIcon;
         CFont UnderlineFont, NormalFont, BoldFont;
         BOOL SubclassWindow(HWND hWnd);
         void Init();

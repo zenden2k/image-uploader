@@ -67,7 +67,7 @@ int _vscprintf(const char * format, va_list pargs) {
     return retval;
 }
 #endif
-static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
+void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
 {
     std::lock_guard<std::mutex> lock(squirrelOutputMutex);
     va_list vl;
@@ -77,6 +77,18 @@ static void printFunc(HSQUIRRELVM v, const SQChar* s, ...)
     vsnprintf(buffer.get(), len, s, vl);
     va_end(vl);
     squirrelOutput[v] += buffer.get();
+}
+
+void RegisterConstants(Sqrat::SqratVM& vm) {
+    using namespace Sqrat;
+
+    ConstTable(vm.GetVM()).Enum("ResultCode", Enumeration(vm.GetVM()).
+        Const("FatalError", static_cast<int>(ResultCode::FatalError)).
+        Const("TryAgain", static_cast<int>(ResultCode::TryAgain)).
+        Const("FatalServerError", static_cast<int>(ResultCode::FatalServerError)).
+        Const("Failure", static_cast<int>(ResultCode::Failure)).
+        Const("Success", static_cast<int>(ResultCode::Success))
+    );
 }
 
 void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
@@ -108,6 +120,7 @@ void RegisterNetworkClientClass(Sqrat::SqratVM& vm) {
         Func("getCurlInfoString", &INetworkClient::getCurlInfoString).
         Func("getCurlInfoInt", &INetworkClient::getCurlInfoInt).
         Func("getCurlInfoDouble", &INetworkClient::getCurlInfoDouble).
+        Func("getCurlResult", &INetworkClient::getCurlResult).
         Func("getCurlResultString", &INetworkClient::getCurlResultString).
         Func("setReferer", &INetworkClient::setReferer));
 }
@@ -208,14 +221,17 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
         Func("getEditUrl", &UploadParams::getEditUrl).
         Func("getServerFileName", &UploadParams::getServerFileName).
         Func("getTask", &UploadParams::getTask).
+        //Func("getFileTask", &UploadParams::getFileTask).
+        //Func("getUrlShorteningTask", &UploadParams::getUrlShorteningTask).
         Func("getParam", &UploadParams::getParam)
     );
-
 
     root.Bind("CFolderList", Class<CFolderList>(vm.GetVM(), "CFolderList").
         Func("AddFolder", &CFolderList::AddFolder).
         Func("AddFolderItem", &CFolderList::AddFolderItem).
-        Func("GetCount", &CFolderList::GetCount)
+        Func("GetCount", &CFolderList::GetCount).
+        Func("setParentFolder", &CFolderList::setParentFolder).
+        Func("parentFolder", &CFolderList::parentFolder)
     );
 
 
@@ -251,6 +267,7 @@ std::mutex vmServicesMutex;
 
 void RegisterClasses(Sqrat::SqratVM& vm) {
    // Sqrat::DefaultVM::Set(vm.GetVM());
+
     RegisterNetworkClientClass(vm);
     RegisterRegularExpressionClass(vm);
     RegisterUploadClasses(vm);
@@ -272,6 +289,7 @@ void RegisterAPI(Sqrat::SqratVM& vm)
     threadVm = vm.GetVM();
     //sq_setcompilererrorhandler(vm_.GetVM(), CompilerErrorHandler);
     sq_setprintfunc(vm.GetVM(), printFunc, printFunc);
+    RegisterConstants(vm);
     RegisterFunctions(vm);
     RegisterClasses(vm);
 }

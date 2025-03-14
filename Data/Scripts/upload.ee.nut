@@ -46,6 +46,11 @@ function UploadFile(FileName, options) {
                     options.setViewUrl(downloadUrl);
                     options.setDirectUrl(imageUrl);
                     options.setThumbUrl(thumbUrl);
+                    local reg2 = CRegExp("href=\"(.+\\?killcode=\\w+)\"", "i");
+                    if (reg2.match(nm.responseBody())) {
+                        options.setDeleteUrl(reg2.getMatch(1))
+                    }
+                    
                     return 1;
                 } 
             }

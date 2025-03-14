@@ -65,9 +65,10 @@ function TestConnection() {
     };
 }
 
-function UploadFile(FileName, options) {	
-    local newFilename = ExtractFileName(FileName);
-    newFilename = random() +"_"+newFilename;
+function UploadFile(FileName, options) {
+    local task = options.getTask().getFileTask();
+    local newFilename = task.getDisplayName();	
+    newFilename = GenerateRandomFilename(newFilename, 6);
     local ansiFileName = newFilename;
     local host = ServerParams.getParam("hostname");
     local folder = ServerParams.getParam("folder");
@@ -125,6 +126,9 @@ function GetServerParamList() {
         hostname = "Server ip or hostname [:port]"
         folder = "Remote folder"
         downloadPath = "Download path (ftp or http)",
-        privateKeyPath = "Private key path"
+        privateKeyPath = {
+            title = "Private key path",
+            type = "filename"
+        }
     }
 }

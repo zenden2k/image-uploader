@@ -83,7 +83,7 @@ void CWizardPage::ShowPrev(bool Show)
 }
 
 void CWizardPage::SetInitialFocus() {
-
+    ::SetFocus(PageWnd);
 }
 
 bool CWizardPage:: OnHide()

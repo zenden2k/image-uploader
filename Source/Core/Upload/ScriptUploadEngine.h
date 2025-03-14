@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _IU_SCRIPT_UPLOAD_ENGINE_H
-#define _IU_SCRIPT_UPLOAD_ENGINE_H
+#ifndef IU_SCRIPT_UPLOAD_ENGINE_H
+#define IU_SCRIPT_UPLOAD_ENGINE_H
 
 #include <vector>
 #include <string>
@@ -33,6 +33,7 @@
 #include "Core/Scripting/Script.h"
 #include "Core/Network/NetworkClient.h"
 #include "AdvancedUploadEngine.h"
+#include "Parameters/AbstractParameter.h"
 
 class CScriptUploadEngine : public CAdvancedUploadEngine, 
                             public Script,
@@ -49,7 +50,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int createFolder(const CFolderItem &parent, CFolderItem &folder) override;
         int modifyFolder(CFolderItem &folder) override;
         int getAccessTypeList(std::vector<std::string> &list) override;
-        int getServerParamList(std::map<std::string, std::string> &list) override;
+        int getServerParamList(ParameterList& list) override;
         int doLogin() override;
         int doLogout() override;
         bool supportsLogout() override;
@@ -71,7 +72,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         void PrintCallback(const std::string& output) override;
         int processAuthTask(std::shared_ptr<UploadTask> task);
         int processTestTask(std::shared_ptr<UploadTask> task);
-        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params);
+        int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params) override;
         int refreshToken();
         bool preLoad() override;
         bool postLoad() override;
@@ -80,7 +81,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         int checkAuth();
         bool needStop() override;
         bool newAuthMode_;
-        bool hasRefreshTokenFunc_;
+        bool hasRefreshTokenFunc_ = false;
         DISALLOW_COPY_AND_ASSIGN(CScriptUploadEngine);
 };
 #endif

@@ -2,13 +2,16 @@
 
 #include <QFileDialog>
 #include <QTemporaryFile>
+#include <QDesktopServices>
+#include <QDebug>
+
 #include "ui_FrameGrabberDlg.h"
 #include "Video/VideoGrabber.h"
 #include "Core/CommonDefs.h"
 #include "Video/QtImage.h"
 #include "Core/AppParams.h"
-#include <QDesktopServices>
-#include <QDebug>
+#include "Core/ServiceLocator.h"
+#include "Core/Settings/QtGuiSettings.h"
 
 Q_DECLARE_METATYPE(AbstractImage*)
 
@@ -17,25 +20,27 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui(new Ui::FrameGrabberDlg)
 {
     qRegisterMetaType<AbstractImage*>("AbstractImage*");
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     ui->setupUi(this);
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
-	ui->numOfFramesSpinBox->setValue(10);
+    ui->numOfFramesSpinBox->setValue(settings->VideoSettings.NumOfFrames);
 	ui->stopButton->setVisible(false);
 	ui->lineEdit->setText(fileName);
-    ui->comboBox->addItem("Auto", QVariant(int(VideoGrabber::veAuto)));
-#ifdef IU_ENABLE_FFMPEG
-    ui->comboBox->addItem("Avcodec", QVariant(int(VideoGrabber::veAvcodec)));
-#endif
+    for (const auto& engine: CommonGuiSettings::VideoEngines) {
+        QString name = QString::fromStdString(engine);
+        ui->comboBox->addItem(name, QVariant(name));
+    }
 
-#ifdef _WIN32
-    ui->comboBox->addItem("Directshow", QVariant(int(VideoGrabber::veDirectShow)));
-    ui->comboBox->addItem("Directshow2", QVariant(int(VideoGrabber::veDirectShow2)));
-#endif
+    int index = ui->comboBox->findData(QString::fromStdString(settings->VideoSettings.Engine));
+    if ( index != -1 ) {
+        ui->comboBox->setCurrentIndex(index);
+    }
+
     ui->progressRing->hide();
 	connect(ui->stopButton, &QPushButton::clicked, this, &FrameGrabberDlg::onStopButtonClicked);
     connect(ui->listWidget, &QListWidget::doubleClicked, this, &FrameGrabberDlg::itemDoubleClicked);
-
+    connect(this, &FrameGrabberDlg::finished, this, &FrameGrabberDlg::onFinished);
 }
 
 FrameGrabberDlg::~FrameGrabberDlg()
@@ -65,7 +70,7 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
         }
         if (!uniqueFileName.isEmpty()) {
             if (img.save(uniqueFileName)) {
-                QIcon ico(QPixmap::fromImage(img.scaledToWidth(150, Qt::SmoothTransformation)));
+                QIcon ico(QPixmap::fromImage(img/*.scaledToWidth(150, Qt::SmoothTransformation)*/));
                 
                 QMetaObject::invokeMethod(this, "frameGrabbedSlot", Qt::BlockingQueuedConnection,
                     Q_ARG(QString, timeString), Q_ARG(QString, uniqueFileName), Q_ARG(QIcon, ico));
@@ -90,7 +95,10 @@ void FrameGrabberDlg::on_grabButton_clicked()
 	ui->browseButton->setEnabled(false);
 
 	grabber_ = std::make_unique<VideoGrabber>();
-	grabber_->setVideoEngine(static_cast<VideoGrabber::VideoEngine>(ui->comboBox->currentData().toInt()));
+
+
+    grabber_->setVideoEngine(getVideoEngine());
+
     using namespace std::placeholders;
 	grabber_->setOnFrameGrabbed(std::bind(&FrameGrabberDlg::frameGrabbed, this, _1, _2, _3));
 	grabber_->setOnFinished(std::bind(&FrameGrabberDlg::onGrabFinished, this));
@@ -140,11 +148,55 @@ void FrameGrabberDlg::getGrabbedFrames(QStringList& fileNames) const {
     }
 }
 
-
 void FrameGrabberDlg::itemDoubleClicked(const QModelIndex& index) {
     QListWidgetItem* item = ui->listWidget->item(index.row());
     if (item) {
         QString fileName = item->data(Qt::UserRole).toString();
         QDesktopServices::openUrl("file:///" + fileName);
     }
+}
+
+void FrameGrabberDlg::onFinished()
+{
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    settings->VideoSettings.NumOfFrames = ui->numOfFramesSpinBox->value();
+    settings->VideoSettings.Engine = ui->comboBox->currentData().toString().toStdString();
+}
+
+void FrameGrabberDlg::closeEvent(QCloseEvent *event) {
+    event->accept();
+    reject();
+}
+
+VideoGrabber::VideoEngine FrameGrabberDlg::getVideoEngine() const {
+    auto settings = ServiceLocator::instance()->settings<QtGuiSettings>();
+    std::string videoEngine = ui->comboBox->currentData().toString().toStdString();
+
+    if (videoEngine == QtGuiSettings::VideoEngineAuto) {
+        if ( !settings->IsFFmpegAvailable() ) {
+            videoEngine = QtGuiSettings::VideoEngineDirectshow;
+        } else {
+            videoEngine = QtGuiSettings::VideoEngineFFmpeg;
+            QString fileName = ui->lineEdit->text();
+            QFileInfo info(fileName);
+            const QString fileExt(info.fileName());
+            if (fileExt == "wmv" || fileExt == "asf") {
+                videoEngine = QtGuiSettings::VideoEngineDirectshow;
+            }
+        }
+    }
+    VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
+#ifdef IU_ENABLE_FFMPEG
+    if (videoEngine == QtGuiSettings::VideoEngineFFmpeg) {
+        engine = VideoGrabber::veAvcodec;
+    } else
+#endif
+    if (videoEngine == QtGuiSettings::VideoEngineDirectshow) {
+        engine = VideoGrabber::veDirectShow;
+    } else if (videoEngine == QtGuiSettings::VideoEngineDirectshow2) {
+        engine = VideoGrabber::veDirectShow2;
+    } else if (videoEngine == QtGuiSettings::VideoEngineMediaFoundation) {
+        engine = VideoGrabber::veMediaFoundation;
+    }
+    return engine;
 }

@@ -54,7 +54,7 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     SetWindowText(TR("Add Menu Item"));
     TRC(IDC_MENUITEMLABEL, "Name:");
-
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     generateTitle();
     

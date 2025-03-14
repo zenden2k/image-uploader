@@ -20,11 +20,14 @@
 
 #pragma once
 
+#include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "myimage.h"
-#include <atlcrack.h>
+
+
 // CImageView
 
+class GdiPlusImage;
 struct CImageViewItem {
     CImageViewItem() {
         index = -1;
@@ -50,6 +53,7 @@ class CImageViewWindow :
 
          BEGIN_MSG_MAP(CImageView)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
             MSG_WM_KILLFOCUS(OnKillFocus)
             MSG_WM_ACTIVATE(OnActivate)
@@ -62,19 +66,23 @@ class CImageViewWindow :
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        CMyImage Img;
+
         LRESULT OnKillFocus(HWND hwndNewFocus);
         LRESULT OnKeyDown(TCHAR vk, UINT cRepeat, UINT flags);
         void setCallback(CImageViewCallback* callback);
         bool ViewImage(const CImageViewItem&, HWND Parent = NULL);
         LRESULT OnActivate(UINT state, BOOL fMinimized, HWND hwndActDeact);
         void MyCenterWindow(HWND hWndCenter, int width, int height);
+        void hide();
 protected:
     CImageViewCallback* callback_;
     CImageViewItem currentItem_;
     HWND currentParent_;
+    CMyImage imageControl_;
+    //CPictureExWnd animationControl_;
 };
 
 

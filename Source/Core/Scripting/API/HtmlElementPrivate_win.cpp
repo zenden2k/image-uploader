@@ -51,7 +51,7 @@ void HtmlElementPrivate::setValue(const std::string& value) {
         input->put_value(CComBSTR(IuCoreUtils::Utf8ToWstring(value).c_str()));
 }
 
-const std::string HtmlElementPrivate::getValue()
+std::string HtmlElementPrivate::getValue()
 {
     CComQIPtr<IHTMLInputElement>  input = disp_ ? CComQIPtr<IHTMLInputElement> (disp_) : CComQIPtr<IHTMLInputElement> (elem_);
     if ( !input ) {

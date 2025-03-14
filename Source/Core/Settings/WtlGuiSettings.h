@@ -17,7 +17,6 @@
 #define TRAY_SCREENSHOT_ADDTOWIZARD 3
 #define TRAY_SCREENSHOT_OPENINEDITOR 4
 
-
 class CFloatingWindow;
 
 struct ImageReuploaderSettingsStruct {
@@ -28,11 +27,12 @@ struct ImageEditorSettingsStruct {
     Gdiplus::Color ForegroundColor, BackgroundColor, StepForegroundColor, StepBackgroundColor;
     int PenSize;
     int RoundingRadius;
+    float BlurRadius;
     LOGFONT Font;
     bool AllowAltTab;
     bool AllowEditingInFullscreen;
-    SearchByImage::SearchEngine SearchEngine;
     bool FillTextBackground = false;
+    bool InvertSelection = false;
     int ArrowType;
 };
 
@@ -114,11 +114,18 @@ public:
     bool DropVideoFilesToTheList;
     bool ConfirmOnExit;
     bool AutomaticallyCheckUpdates;
-
+    bool EnableToastNotifications;
+    enum TrayResult {
+        trJustURL, trLastCodeType
+    };
+    int TrayResult;
     bool AutoCopyToClipboard;
     bool WatchClipboard;
     bool ParseSubDirs;
     bool ExplorerCascadedMenu;
+    bool CheckFileTypesBeforeUpload;
+    bool ShowPreviewForVideoFiles;
+
     CHotkeyList Hotkeys;
     bool Hotkeys_changed;
 
@@ -152,18 +159,12 @@ protected:
     bool LoadConvertProfile(const CString& name, SimpleXmlNode profileNode);
     bool SaveConvertProfiles(SimpleXmlNode root);
     void BindConvertProfile(SettingsNode& mgr, ImageConvertingParams &params);
-    bool LoadServerProfiles(SimpleXmlNode root);
-    bool SaveServerProfiles(SimpleXmlNode root);
 
-    void LoadServerProfile(SimpleXmlNode root, ServerProfile& profile);
-    bool LoadServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
-    bool SaveServerProfileGroup(SimpleXmlNode root, ServerProfileGroup& group);
     bool PostLoadSettings(SimpleXml &xml) override;
     bool PostSaveSettings(SimpleXml &xml) override;
     void RegisterShellExtension(bool Register);
 
-    void PostLoadServerProfile(ServerProfile& profile);
-    void PostLoadServerProfileGroup(ServerProfileGroup& profile);
+    void PostLoadServerProfile(ServerProfile& profile) override;
 
     void BindToManager();
 private:

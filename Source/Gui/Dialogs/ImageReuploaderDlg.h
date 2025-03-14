@@ -159,7 +159,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         std::vector<std::unique_ptr<DownloadItemData>> downloadItems_; 
         std::vector<std::unique_ptr<UploadItemData>> uploadItems_;
         std::mutex uploadItemsMutex_;
-
+        CFont descriptionLabelFont_;
         struct Match {
             int start;
             int length;

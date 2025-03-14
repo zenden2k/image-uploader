@@ -83,21 +83,25 @@ private:
 
 class BlurringRectangle: public MovableElement {
 public:
-    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false);
-    ~BlurringRectangle();
+    BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate = false, bool invertSelection = false);
+    ~BlurringRectangle() override;
     void setBlurRadius(float radius);
     float getBlurRadius() const;
     void render(Painter* gr) override;
     ElementType getType() const override;
+    void setInvertSelection(bool invert);
+    bool getInvertSelection() const;
+    RECT getPaintBoundingRect() override;
 protected:
     float blurRadius_;
     bool pixelate_;
+    bool invertSelection_;
     DISALLOW_COPY_AND_ASSIGN(BlurringRectangle);
 };
 
 class PixelateRectangle : public BlurringRectangle {
 public:
-    PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY);
+    PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY, bool invertSelection = false);
     ElementType getType() const override;
 protected:
     DISALLOW_COPY_AND_ASSIGN(PixelateRectangle);
@@ -140,8 +144,6 @@ public:
     DISALLOW_COPY_AND_ASSIGN(FilledRoundedRectangle);
 };
 
-
-
 class Arrow: public Line {
 public:
     enum class ArrowMode { Mode1, Mode2 };
@@ -150,6 +152,7 @@ public:
     void render(Painter* gr) override;
     RECT getPaintBoundingRect() override;
     ElementType getType() const override;
+    static void render(Painter* gr, Gdiplus::Color color, int penSize, POINT startPoint, POINT endPoint, ArrowMode mode);
     DISALLOW_COPY_AND_ASSIGN(Arrow);
 protected:
     ArrowMode mode_;

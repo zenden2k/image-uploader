@@ -286,6 +286,14 @@ bool CUpdateManager::internal_load_update(CString name)
     version["BuildDate"] = ver->BuildDate;
     version["CurlWithOpenSSL"] = ver->CurlWithOpenSSL;
     version["Is64Bit"] = sizeof(void*) == 8;
+#if defined(_M_ARM64)
+    version["Architecture"] = "ARM64";
+#elif defined(_M_X64)
+    version["Architecture"] = "x64";   
+#elif defined(_M_IX86)
+    version["Architecture"] = "x86"; 
+#endif
+
     ITranslator* translator = ServiceLocator::instance()->translator();
     if (translator != nullptr) {
         version["Language"] = translator->getCurrentLanguage();
@@ -327,7 +335,7 @@ bool CUpdateManager::internal_load_update(CString name)
 
     if (nm->responseCode() != 200 || tokens.empty() || tokens[0] != "text/xml")
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Update Engine"), _T("Error while loading package ") + localPackage.packageName() + CString(_T("\r\nHTTP response code: ")) + WinUtils::IntToStr(nm->responseCode()) + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm->errorString()).c_str(), CString("URL=") + url);
         return false;
     }
 
@@ -362,11 +370,11 @@ bool CUpdateManager::AreCoreUpdates() const
 }
 
 bool CUpdateManager::AreManualUpdates() const {
-    return m_manualUpdatesList.size() != 0;
+    return !m_manualUpdatesList.empty();
 }
 
 bool CUpdateManager::AreAutoUpdates() const {
-    return m_updateList.size() != 0;
+    return !m_updateList.empty();
 }
 
 bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
@@ -384,7 +392,7 @@ bool CUpdateManager::internal_do_update(CUpdateInfo& ui)
     
     if(nm_->responseCode() != 200)
     {
-        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(nm_->responseCode())).c_str() + _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
+        ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Update Engine"), TR("Error while updating component ") + ui.packageName() + CString(_T("\r\nHTTP response code: ")) + WinUtils::IntToStr(nm_->responseCode())+ _T("\r\n") + IuCoreUtils::Utf8ToWstring(nm_->errorString()).c_str(), CString("URL=") + ui.downloadUrl());
         return false;
     }
 
@@ -448,7 +456,7 @@ bool CUpdatePackage::LoadUpdateFromFile(const CString& filename)
     SimpleXmlNode root = m_xml.getRoot("UpdatePackage", false);
     if(root.IsNull()) return false;
 
-    CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
+    //CString packageName = IuCoreUtils::Utf8ToWstring(root.Attribute("Name")).c_str();
     m_TimeStamp =  root.AttributeInt("TimeStamp");
         
     int core=root.AttributeInt("CoreUpdate");
@@ -523,7 +531,7 @@ bool CUpdatePackage::doUpdate()
 
             }
         }
-        CString renameTo = copyTo + _T(".")+IuCoreUtils::Utf8ToWstring(IuCoreUtils::Int64ToString(rand()%10000)).c_str()+ _T(".old");
+        CString renameTo = copyTo + _T(".") + WinUtils::IntToStr(rand() % 10000) + _T(".old");
 
         CString buffer = U2W(IuCoreUtils::ExtractFilePath(W2U(copyTo)));
         std::vector<std::string> tokens;

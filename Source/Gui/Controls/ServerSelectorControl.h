@@ -27,6 +27,8 @@
 #include <functional>
 #include <memory>
 
+#include <boost/signals2.hpp>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/SettingsPage.h"
@@ -45,7 +47,7 @@ class CServerSelectorControl :
     public CDialogIndirectImpl<CServerSelectorControl>
 {
 public:
-    explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true);
+    explicit CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer = false, bool isChildWindow = true, bool showServerIcons = true);
 virtual ~CServerSelectorControl();
     enum { IDD = IDD_SERVERSELECTORCONTROL, IDC_LOGINMENUITEM = 4020, IDC_USERNAME_FIRST_ID = 20000, IDC_USERNAME_LAST_ID = 21000,
         IDC_ADD_ACCOUNT= 21001, IDC_NO_ACCOUNT = 21003
@@ -124,8 +126,6 @@ private:
     bool defaultServer_;
     std::vector<CString> menuOpenedUserNames_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
-    static const char kAddFtpServer[];
-    static const char kAddDirectoryAsServer[];
     int previousSelectedServerIndex;
     UploadEngineManager* uploadEngineManager_;
     bool isPopingUp_;
@@ -136,6 +136,10 @@ private:
     HGLOBAL hMyDlgTemplate_;
     std::function<void(CServerSelectorControl*)> onChangeCallback_;
     bool showEmptyItem_;
+    bool showServerIcons_;
+    boost::signals2::scoped_connection profileListChangedConnection_;
+
+    void profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers);
 };
 
 #endif

@@ -57,7 +57,7 @@ namespace WinUtils {
     CString GetModuleFullName(HMODULE module = NULL);
     CString GetAppFolder();
     CString GetAppFileName();
-    CString FormatWindowsErrorMessage(int idCode);
+    CString FormatWindowsErrorMessage(DWORD idCode);
     bool IsElevated();
     void DeleteDir2(LPCTSTR Dir);
     CString GetUniqFileName(const CString& filePath);
@@ -72,7 +72,7 @@ namespace WinUtils {
     }
 
     bool FontToString(LOGFONT const * lFont, CString &Result);
-    bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont);
+    bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont, HDC targetDc = nullptr);
 
     bool ExtractStrFromList(
         LPCTSTR szString /* Source string */,
@@ -97,7 +97,7 @@ namespace WinUtils {
     std::string AnsiToUtf8(const std::string &str, int codepage);
     std::string Utf8ToAnsi(const std::string &str, int codepage);
     CString GetProcessName(DWORD pid);
-    CString ErrorCodeToString(DWORD idCode);
+    CString ErrorCodeToString(DWORD idCode, HMODULE mod = NULL);
     CString ExpandEnvironmentStrings(const CString& s);
     void ArgvQuote(const std::wstring& Argument, std::wstring& CommandLine, bool Force);
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
@@ -105,13 +105,13 @@ namespace WinUtils {
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
     bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = {});
     bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
+    bool ShowFilesInFolder(const std::vector<CString>& files, HWND wnd);
     //SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds);
     time_t SystemTimeToTime(const SYSTEMTIME &s);
     bool CheckFileName(const CString& fileName);
     HRESULT IsElevated(/*__out_opt */ BOOL * pbElevated);
     CString TimestampToString(time_t t);
     BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg);
-//#endif
 };
 
 

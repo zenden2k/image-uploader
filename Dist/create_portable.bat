@@ -1,5 +1,5 @@
 @echo off
-set zipcmd="C:/Program Files/7-Zip/7z.exe"
+set zipcmd=7z
 set "IU_APP_VER="
 set "IU_BUILD_NUMBER="
 
@@ -44,6 +44,7 @@ for %%x in (
     %temp_dir%\Data\Scripts\Lang
     %temp_dir%\Data\Scripts\Utils
     %temp_dir%\Data\Scripts\UploadFilters
+    %temp_dir%\Data\Scripts\ImageSearch
     %temp_dir%\Data\Servers
     %temp_dir%\Data\Update
     %temp_dir%\Data\Utils
@@ -76,6 +77,8 @@ Copy "..\Data\templates.xml" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\template.txt" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Data\mime.cache" %temp_dir%\Data\
+if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
@@ -85,6 +88,8 @@ if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\Utils\*.nut" %temp_dir%\Data\Scripts\Utils\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\UploadFilters\*.nut" %temp_dir%\Data\Scripts\UploadFilters\
+if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Data\Scripts\ImageSearch\*.nut" %temp_dir%\Data\Scripts\ImageSearch\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Update\iu_core.xml" %temp_dir%\Data\Update\
 if ERRORLEVEL 1 goto CopyFailed

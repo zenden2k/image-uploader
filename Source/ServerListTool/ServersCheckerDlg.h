@@ -22,6 +22,7 @@
 #define IU_SERVERLISTTOOL_MAINDLG_H
 
 #include <map>
+
 #include "atlheaders.h"
 #include "resource.h"
 #include "Func/MyEngineList.h"
@@ -31,6 +32,8 @@
 #include "Helpers.h"
 #include "ServerListView.h"
 #include "Core/TaskDispatcher.h"
+#include "Gui/Controls/ProgressRingControl.h"
+
 //#include "Gui/Dialogs/WizardDlg.h"
 
 class UploadManager;
@@ -88,6 +91,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_CHECKFILESERVERS, checkFileServersCheckBox_)
         DDX_CONTROL_HANDLE(IDC_CHECKURLSHORTENERS, checkUrlShortenersCheckBox_)
         DDX_CONTROL(IDC_TOOLSERVERLIST, listView_)
+        DDX_CONTROL(IDC_ANIMATIONSTATIC, loadingAnimation_)
     END_DDX_MAP()
 
     // Handler prototypes (uncomment arguments if needed):
@@ -112,9 +116,8 @@ public:
 
     //void runInGuiThread(TaskRunnerTask&& task, bool async = false) override;
     //LRESULT OnListViewNMCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-
+private:
     int contextMenuItemId;
-    CImageList imageList_;
     CString sourceFileHash_;
     Helpers::MyFileInfo sourceFileInfo_;
     UploadEngineManager* uploadEngineManager_;
@@ -131,12 +134,15 @@ public:
     std::unique_ptr<ServersChecker> serversChecker_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     WtlGuiSettings* settings_;
-    bool OnNeedStop() const;
+    CProgressRingControl loadingAnimation_;
     void processFinished();
     void stop();
-    bool m_NeedStop;
     bool isRunning() const;
-   
+
+    /**
+     * @throws ValidationException
+     */
+    void validateSettings();
 };
 
 }

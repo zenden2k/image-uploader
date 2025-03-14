@@ -34,7 +34,7 @@ class CSearchByImageDlg :
     public CCustomDialogIndirectImpl<CSearchByImageDlg>
 {
     public:
-        explicit CSearchByImageDlg(UploadManager* uploadManager, SearchByImage::SearchEngine searchEngine, CString fileName);
+        explicit CSearchByImageDlg(UploadManager* uploadManager, const ServerProfile& searchEngine, CString fileName);
         ~CSearchByImageDlg();
         enum { IDD = IDD_SEARCHBYIMAGEDLG};
 
@@ -50,13 +50,14 @@ class CSearchByImageDlg :
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 private:
     CString fileName_;
-    std::shared_ptr<SearchByImageTask> seeker_;
+    std::shared_ptr<UploadSession> session_;
     bool cancelPressed_;
     std::atomic_bool finished_;
     CProgressRingControl wndAnimation_;
-    SearchByImage::SearchEngine searchEngine_;
+    ServerProfile searchEngine_;
     UploadManager* uploadManager_;
-    void onSeekerFinished(bool success, const std::string& msg);
+    CFont titleLabelFont_;
+    void onSeekerFinished(bool success, const CString& msg);
 };
 
 #endif // STATUSDLG_H

@@ -19,7 +19,7 @@ public:
 	void writeLog(ILogger::LogMsgType MsgType, QString Sender, QString  Msg, QString Info);
 protected:
 	std::unique_ptr<Ui::LogWindow> ui;
-    Q_INVOKABLE void writeLogInMainThread(QString msg);
+    Q_INVOKABLE void writeLogInMainThread(int msgType, QString msg);
 
 };
 

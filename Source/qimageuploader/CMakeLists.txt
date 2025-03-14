@@ -14,7 +14,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 SET(CMAKE_AUTORCC ON)
  
-set(CMAKE_CXX_STANDARD 14)
+#set(CMAKE_CXX_STANDARD 14)
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
@@ -31,7 +31,7 @@ endif()
 
 set(SOURCE_FILES 
     main.cpp
-    Gui/mainwindow.cpp
+    Gui/MainWindow.cpp
     Gui/FrameGrabberDlg.cpp
     Gui/ResultsWindow.cpp
     Gui/LogWindow.cpp
@@ -44,16 +44,24 @@ set(SOURCE_FILES
     QtUploadErrorHandler.cpp
     QtDefaultLogger.cpp
     QtScriptDialogProvider.cpp
+    QtScriptFunctionsImpl.cpp
     Gui/controls/ServerSelectorWidget.cpp
     Gui/controls/ProgressRingWidget.cpp
+    Gui/controls/UploadTreeView.cpp
+    Gui/controls/UploadTreeView.h
     ../Core/Settings/QtGuiSettings.cpp
+    ../Core/Settings/CommonGuiSettings.cpp
+    ../Core/AbstractServerIconCache.cpp
+    ../Core/AbstractServerIconCache.h
+    ../Core/QtServerIconCache.cpp
+    ../Core/QtServerIconCache.h
     ../Video/QtImage.cpp
-    Gui/ui/mainwindow.ui 
+    Gui/ui/MainWindow.ui
     Gui/ui/FrameGrabberDlg.ui
     Gui/ui/ResultsWindow.ui
     Gui/ui/LogWindow.ui
     Gui/ui/LoginDialog.ui
-	Gui/ui/AboutDialog.ui
+    Gui/ui/AboutDialog.ui
     qimageuploader.qrc
 )
 
@@ -65,11 +73,17 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 if(WIN32)
     target_link_libraries(${PROJECT_NAME} gdi32 dwmapi)
+    if (IU_ENABLE_WEBVIEW2)
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+        set_target_properties(${PROJECT_NAME} PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+    endif()
 endif()
 
 target_link_libraries(qimageuploader iucore iuvideo ${COMMON_LIBS_LIST})
 
 if(WIN32)
+
     add_custom_command(TARGET qimageuploader
         POST_BUILD
         COMMAND python "${CMAKE_SOURCE_DIR}/../Utils/Version/set_binary_version.py" "${CMAKE_SOURCE_DIR}/versioninfo.h" $<TARGET_FILE:qimageuploader> $<CONFIG>

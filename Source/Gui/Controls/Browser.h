@@ -846,7 +846,7 @@ public:
                 if (SUCCEEDED(hr)) 
                 { 
                     CString res = bstrHTMLText;
-                    return bstrHTMLText;
+                    return res;
                     /*int iLen = SysStringLen(bstrHTMLText), iRes; 
                     LPTSTR psz = new TCHAR[iLen+1]; 
                     ZeroMemory(psz, iLen+1); 

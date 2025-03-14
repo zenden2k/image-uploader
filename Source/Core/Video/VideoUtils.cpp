@@ -10,5 +10,6 @@ VideoUtils& VideoUtils::instance()
 } 
 
 VideoUtils::VideoUtils(){
-    IuStringUtils::Split(IU_VIDEOFILES_EXTENSIONS, IU_VIDEOFILES_EXTENSIONS_SEPARATOR, videoFilesExtensions, -1);
+    IuStringUtils::Split(IU_VIDEOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, videoFilesExtensions, -1);
+    IuStringUtils::Split(IU_AUDIOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, audioFilesExtensions, -1);
 }

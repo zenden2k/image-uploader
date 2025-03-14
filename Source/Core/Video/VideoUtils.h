@@ -8,6 +8,7 @@ class VideoUtils {
     public:
         static VideoUtils& instance();
         std::vector<std::string> videoFilesExtensions;
+        std::vector<std::string> audioFilesExtensions;
         VideoUtils(const VideoUtils&) = delete;
         VideoUtils& operator=(const VideoUtils&) = delete;
     private:  

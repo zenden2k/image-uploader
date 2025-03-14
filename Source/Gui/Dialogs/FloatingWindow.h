@@ -31,8 +31,8 @@
 #include "Gui/Components/trayicon.h"
 #include "SettingsDlg.h"
 #include "Core/Upload/UploadManager.h"
-#include "Core/Upload/UrlShorteningTask.h"
 #include "Core/Settings/WtlGuiSettings.h"
+
 // FloatingWindow
 
 constexpr int IDM_UPLOADFILES = 20001;
@@ -41,7 +41,7 @@ constexpr int IDM_SCREENSHOT = IDM_UPLOADFILES + 2;
 constexpr int IDM_SCREENSHOTDLG = IDM_UPLOADFILES + 3;
 constexpr int IDM_REGIONSCREENSHOT = IDM_UPLOADFILES + 4;
 constexpr int IDM_FULLSCREENSHOT = IDM_UPLOADFILES + 5;
-constexpr int IDM_WINDOWSCREENSHOT = IDM_UPLOADFILES + 6;
+constexpr int IDM_ACTIVEWINDOWSCREENSHOT = IDM_UPLOADFILES + 6;
 constexpr int IDM_WINDOWHANDLESCREENSHOT = IDM_UPLOADFILES + 7;
 constexpr int IDM_FREEFORMSCREENSHOT = IDM_UPLOADFILES + 8;
 constexpr int IDM_ADDFOLDERS = IDM_UPLOADFILES + 9;
@@ -68,12 +68,20 @@ constexpr int IDM_MONITOR_ALLMONITORS = IDM_REUPLOADIMAGES + 29;
 constexpr int IDM_MONITOR_CURRENTMONITOR = IDM_REUPLOADIMAGES + 30;
 constexpr int IDM_QUICKUPLOADFROMCLIPBOARD = IDM_UPLOADFILES + 31;
 constexpr int IDM_LASTREGIONSCREENSHOT = IDM_UPLOADFILES + 32;
+constexpr int IDM_TOPWINDOWSCREENSHOT = IDM_UPLOADFILES + 33;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_FIRST = IDM_REUPLOADIMAGES + 50;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_LAST = IDM_REUPLOADIMAGES + 50 + 25;
 
 constexpr int WM_CLOSETRAYWND = WM_USER + 2;
 constexpr int WM_RELOADSETTINGS = WM_USER + 3;
 
+namespace ImageUploader::Core::OutputGenerator {
+class XmlTemplateList;
+class XmlTemplateGenerator;
+struct UploadObject;
+}
+
+class UrlShorteningTask;
 
 class CFloatingWindow :
     public CWindowImpl<CFloatingWindow>, 
@@ -91,7 +99,7 @@ public:
     CIcon activeIcon_;
     bool m_bStopCapturingWindows;
     bool m_bIsUploading;
-    UploadTask* lastUploadedItem_;
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::UploadObject> lastUploadedItem_;
     std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
@@ -118,7 +126,8 @@ public:
         COMMAND_ID_HANDLER_EX(IDM_FULLSCREENSHOT, OnFullScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_WINDOWHANDLESCREENSHOT, OnWindowHandleScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_FREEFORMSCREENSHOT, OnFreeformScreenshot)
-        COMMAND_ID_HANDLER_EX(IDM_WINDOWSCREENSHOT, OnWindowScreenshot)
+        COMMAND_ID_HANDLER_EX(IDM_ACTIVEWINDOWSCREENSHOT, OnActiveWindowScreenshot)
+        COMMAND_ID_HANDLER_EX(IDM_TOPWINDOWSCREENSHOT, OnWindowScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_LASTREGIONSCREENSHOT, OnLastRegionScreenshot)
         COMMAND_ID_HANDLER_EX(IDM_ADDFOLDERS, OnAddFolder)
         COMMAND_ID_HANDLER_EX(IDM_SHOWAPPWINDOW, OnShowAppWindow)
@@ -171,8 +180,9 @@ public:
      LRESULT OnScreenshotDlg(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnFullScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-     LRESULT OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnActiveWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnWindowHandleScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnLastRegionScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnAddFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -220,10 +230,9 @@ public:
      UploadEngineManager* uploadEngineManager_;
      bool m_bFromHotkey;
      void OnFileFinished(UploadTask*  task, bool ok);
-     void ShowImageUploadedMessage(const CString& url);
+     void ShowImageUploadedMessage(UploadTask* task, const CString& url);
      void ShowScreenshotCopiedToClipboardMessage();
-     std::string source_file_name_;
-     std::string server_name_;
+
      int iconAnimationCounter_;
      std::shared_ptr<UploadSession> currentUploadSession_;
 
@@ -234,8 +243,9 @@ public:
      enum UploadType {
          utImage, utUrl, utShorteningImageUrl
      };
-     CWizardDlg* wizardDlg_;
+    CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
+    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
     static CString HotkeyToString(CString funcName, CString menuItemText);
 };

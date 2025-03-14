@@ -1,8 +1,9 @@
 #ifndef IU_CORE_BACKGROUNDTASK
 #define IU_CORE_BACKGROUNDTASK
 
-#include <boost/signals2.hpp>
+#include <atomic>
 #include <string>
+#include <boost/signals2.hpp>
 
 #include "TaskDispatcher.h"
 #include "Utils/CoreTypes.h"
@@ -21,8 +22,8 @@ public:
 	bool isInProgress() override;
 	DISALLOW_COPY_AND_ASSIGN(BackgroundTask);
 protected:
-	bool isRunning_ = false;
-	bool isCanceled_ = false;
+	std::atomic<bool> isRunning_ = false;
+    std::atomic<bool> isCanceled_ = false;
 };
 
 #endif

@@ -3,32 +3,36 @@
 #include "Func/WinUtils.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 namespace ServersListTool::Helpers {
 
-CString MyBytesToString(int64_t nBytes)
-{
-    return IuCoreUtils::FileSizeToString(nBytes).c_str();
-}
+CString GetFileInfo(CString fileName, MyFileInfo* mfi) {
+    std::string utf8FileName = W2U(fileName);
+    int64_t fileSize = IuCoreUtils::GetFileSize(utf8FileName);
+    std::string mimeType = IuCoreUtils::GetFileMimeTypeByContents(utf8FileName);
+    std::string result = str(IuStringUtils::FormatNoExcept("%1% (%2% bytes); %3%;") % IuCoreUtils::FileSizeToString(fileSize)
+        % fileSize % mimeType);
 
-CString GetFileInfo(CString fileName, MyFileInfo* mfi)
-{
-    int fileSize = static_cast<int>(IuCoreUtils::GetFileSize(W2U(fileName)));
-    CString result = MyBytesToString(fileSize) + _T("(") + WinUtils::IntToStr(fileSize) + _T(" bytes);");
-    CString mimeType = IuCoreUtils::GetFileMimeType(W2U(fileName)).c_str();
-    result += mimeType + _T(";");
-    if (mfi) mfi->mimeType = mimeType;
-    if (mimeType.Find(_T("image/")) >= 0) {
-        Gdiplus::Image pic(fileName);
-        int width = pic.GetWidth();
-        int height = pic.GetHeight();
-        if (mfi) {
-            mfi->width = width;
-            mfi->height = height;
-        }
-        result += WinUtils::IntToStr(width) + _T("x") + WinUtils::IntToStr(height);
+    CString wideMimeType = U2W(mimeType);
+
+    if (mfi) {
+        mfi->mimeType = wideMimeType;
     }
-    return result;
+
+    if (wideMimeType.Find(_T("image/")) >= 0) {
+        Gdiplus::Image pic(fileName);
+        if (pic.GetLastStatus() == Gdiplus::Ok) {
+            int width = pic.GetWidth();
+            int height = pic.GetHeight();
+            if (mfi) {
+                mfi->width = width;
+                mfi->height = height;
+            }
+            result += str(IuStringUtils::FormatNoExcept("%d x %d") % width % height);
+        }
+    }
+    return U2W(result);
 }
 
 }

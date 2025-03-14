@@ -39,6 +39,7 @@ class Document {
         void addAffectedSegments(const AffectedSegments& segments);
         void applyCrop(int cropX, int cropY, int cropWidth, int cropHeight);
         Gdiplus::Bitmap* getBitmap() const;
+        void updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm);
         void render(Painter* gr, Gdiplus::Rect rc);
         bool undo();
         int getWidth() const;
@@ -46,10 +47,11 @@ class Document {
         bool isNull() const;
         bool hasTransparentPixels() const;
         bool isSrcMultiFrame() const;
+        bool isInDrawingState() const;
     private:
         std::shared_ptr<Gdiplus::Bitmap> currentImage_;
         Gdiplus::Bitmap* originalImage_;
-        Painter* currentCanvas_;
+        std::unique_ptr<Painter> currentPainter_;
         std::vector<HistoryItem> history_;
         bool drawStarted_;
         AffectedSegments changedSegments_;

@@ -37,7 +37,7 @@ PenTool::PenTool( Canvas* canvas ): AbstractDrawingTool( canvas )  {
 }
 
 void PenTool::beginDraw( int x, int y ) {
-    canvas_->currentDocument()->beginDrawing();
+    canvas_->beginDocDrawing();
     oldPoint_.x = x;
     oldPoint_.y = y;
 }
@@ -67,7 +67,6 @@ void PenTool::endDraw( int x, int y ) {
 void PenTool::render( Painter* gr ) {
 
 }
-
 
 CursorType PenTool::getCursor(int x, int y)
 {

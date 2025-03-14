@@ -11,6 +11,11 @@ AppVersion="${IU_APP_VER_CLEAN}.${IU_BUILD_NUMBER}"
 echo ${AppVersion}
 
 Architecture=$1
+ObjCopy=$2
+if [ -z "$ObjCopy" ]
+then
+	ObjCopy=objcopy
+fi
 
 if [ -z "$Architecture" ]
 then
@@ -23,6 +28,7 @@ then
 	    amd64)  Architecture="amd64"                    ;;
 	    x86_64) Architecture="amd64"                   ;;
 	    sparc64)    Architecture="sparc64"                  ;;
+		aarch64) Architecture="arm64"                  ;;
 	* ) echo    "Your Architecture '$Architecture' -> ITS NOT SUPPORTED."   
 	exit
 	;;
@@ -42,7 +48,7 @@ mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #mkdir -p ./imgupload/usr/share/imgupload/Update/
 #set -e
 #objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/CLI/CLI ~/imgupload/usr/bin/imgupload
-objcopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI ~/imgupload/usr/bin/imgupload
+$ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI ~/imgupload/usr/bin/imgupload
 cp ../../Data/servers.xml ~/imgupload/usr/share/imgupload/servers.xml
 cp ../../Data/Scripts/*.nut ~/imgupload/usr/share/imgupload/Scripts/
 #cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml

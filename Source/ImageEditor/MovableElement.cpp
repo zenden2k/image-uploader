@@ -35,7 +35,9 @@ MovableElement::MovableElement(Canvas* canvas){
     color_ = Gdiplus::Color( 0, 0, 0 );
     penSize_ = 1;
     isSelected_ = false;
-    
+    auto [dpiX, dpiY] = canvas->getDpi();
+    gripWidth_ = dpiX * kGripSize;
+    gripHeight_ = dpiY * kGripSize;
     grips_.resize(8);
     canvas_ = canvas;
     isMoving_ = false;
@@ -71,8 +73,10 @@ void MovableElement::renderGrips(Painter* gr)
     }
 
     if ( (isSelected_ || getType() == ElementType::etCrop) && isResizable() ) {
-        int rectSize = kGripSize;
-        int halfSize = rectSize /2 ;
+        int rectSizeX = gripWidth_;
+        int rectSizeY = gripHeight_;
+        int halfSizeX = rectSizeX /2 ;
+        int halfSizeY = rectSizeY / 2;
         Gdiplus::Pen pen2( Color( 255,255, 255) );
         //pen.SetDashStyle(DashStyleDash);
         /*int x = getX();
@@ -87,8 +91,8 @@ void MovableElement::renderGrips(Painter* gr)
         for (size_t i = 0; i < grips_.size(); i++) {
             int x = grips_[i].pt.x;
             int y = grips_[i].pt.y;
-            gr->FillRectangle( &brush, x-halfSize, y-halfSize, rectSize, rectSize );
-            gr->DrawRectangle( &pen2, x-halfSize-1, y-halfSize-1, rectSize+1, rectSize+1 );
+            gr->FillRectangle( &brush, x-halfSizeX, y-halfSizeY, rectSizeX, rectSizeY );
+            gr->DrawRectangle( &pen2, x-halfSizeX-1, y-halfSizeY-1, rectSizeX+1, rectSizeY+1 );
         }
 
     }
@@ -146,7 +150,7 @@ int MovableElement::getY()
 
 RECT MovableElement::getPaintBoundingRect()
 {
-    int radius = (std::max<int>)(penSize_, kGripSize);
+    int radius = (std::max<int>)(penSize_, gripWidth_);
     if ( canvas_->hasBlurRectangles() ) {
         radius += static_cast<int>(canvas_->getBlurRadius());
     }

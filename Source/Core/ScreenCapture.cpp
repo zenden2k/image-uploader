@@ -205,7 +205,6 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
     RECT regionBoundingRect;
     CRgn screenRegion = CloneRegion(m_ScreenRegion);
     RECT screenBounds;
-
     GuiTools::GetScreenBounds(screenBounds);
     CRgn FullScreenRgn;
     FullScreenRgn.CreateRectRgnIndirect(&screenBounds);
@@ -217,7 +216,12 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
     screenRegion.GetRgnBox(&regionBoundingRect);
     int bmWidth = regionBoundingRect.right - regionBoundingRect.left;
     int bmHeight = regionBoundingRect.bottom  - regionBoundingRect.top;
-    
+
+    if (bmWidth <= 0 || bmHeight <=0) {
+        LOG(WARNING) << "Cannot make screenshot of empty region";
+        return {};
+    }
+
     CBitmap tempBm; // Temporary bitmap and device context
     CDC tempDC;    //  which were added to avoid artifacts with BitBlt
     HDC dc = GetDC( 0 );

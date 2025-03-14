@@ -25,23 +25,26 @@
 #include <cstdio>
 #include <filesystem>
 #include <map>
+#include <set>
 #include <string>
+#include <sstream>
 
 #ifdef _WIN32
     #include <WinSock.h>
     #include "Func/WinUtils.h"
 #else
-    #include <boost/filesystem.hpp>
     #ifdef __APPLE__
         #include <sys/uio.h>
     #else
-        #include <sys/io.h>
+        //#include <sys/io.h>
     #endif
     #include <sys/stat.h>
-
 #endif
 
 #include "Core/3rdpart/UriParser.h"
+#include "Core/3rdpart/xdgmime/xdgmime.h"
+#include "MimeTypeHelper.h"
+#include "StringUtils.h"
 
 #ifdef _WIN32
 
@@ -77,7 +80,7 @@ gettimeofday(struct timeval * tp, struct timezone * tzp)
 
 namespace IuCoreUtils {
 
-FILE * FopenUtf8(const char * filename, const char * mode)
+    FILE * FopenUtf8(const char * filename, const char * mode)
 {
 #ifdef _MSC_VER
     return _wfopen(Utf8ToWstring(filename).c_str(), Utf8ToWstring(mode).c_str());
@@ -359,11 +362,6 @@ std::string TimeStampToString(time_t t)
     return buf;
 }
 
-std::string Int64ToString(int64_t value)
-{
-    return std::to_string(value);
-}
-
 int64_t StringToInt64(const std::string& str)
 {
     return strtoll(str.c_str(), nullptr, 10);
@@ -415,25 +413,15 @@ std::string FileSizeToString(int64_t nBytes)
 
 std::string ToString(double value, int precision)
 {
-    char buffer[100];
-    sprintf(buffer, ("%0." + std::to_string(precision) + "f").c_str(), value);
-    return buffer;
+    std::ostringstream stream;
+    stream << std::fixed;
+    stream << std::setprecision(precision);
+    stream << value;
+    return stream.str();
 }
 
 std::string GetDefaultExtensionForMimeType(const std::string& mimeType) {
-	if (mimeType == "image/gif") {
-        return "gif";
-	}
-	if (mimeType == "image/png") {
-        return "png";
-	}
-	if (mimeType == "image/jpeg") {
-        return "jpg";
-    }
-	if (mimeType == "image/webp") {
-	    return "webp";
-    }
-    return {};
+    return MimeTypeHelper::getDefaultExtensionForMimeType(mimeType);
 }
 
 std::string ThreadIdToString(const std::thread::id& id)
@@ -472,6 +460,122 @@ bool RemoveFile(const std::string& utf8Filename) {
     } catch (const std::filesystem::filesystem_error&) {
     }
     return false;
+}
+
+void OnThreadExit(void (*func)()) {
+    class ThreadExiter
+    {
+        std::set<ThreadExitFunctionPointer> exitFuncs_;
+    public:
+        ThreadExiter() = default;
+        ThreadExiter(ThreadExiter const&) = delete;
+        void operator=(ThreadExiter const&) = delete;
+        ~ThreadExiter()
+        {
+            for(auto func: exitFuncs_) {
+                func();
+            }
+            exitFuncs_.clear();
+            /*while (!exit_funcs.empty())
+            {
+                exit_funcs.top()();
+                exit_funcs.pop();
+            }*/
+        }
+        void add(ThreadExitFunctionPointer func)
+        {
+            exitFuncs_.emplace(func);
+        }
+    };
+
+    thread_local ThreadExiter exiter;
+    exiter.add(func);
+}
+
+std::string GetFileMimeType(const std::string& fileName)
+{
+    const std::string DefaultMimeType = "application/octet-stream";
+    /* FILE* f = FopenUtf8(fileName.c_str(), "rb");
+    if (!f) {
+        return DefaultMimeType;
+    }
+    char buffer[256] {};
+    size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
+    fclose(f);
+    int resultPrio = 0;*/
+   
+    /*auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);*/
+    struct stat st;
+   
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    if (!mime) {
+        return DefaultMimeType;
+    }
+    std::string result = mime;
+    /* if (result == DefaultMimeType) {
+        return GetFileMimeTypeByName(fileName)
+    }*/
+
+    /* if (result == "image/x-png") {
+        result = "image/png";
+    } else if (result == "image/pjpeg") {
+        result = "image/jpeg";
+    } else if (result == "application/octet-stream") {
+        if (byBuff[0] == 'R' && byBuff[1] == 'I' && byBuff[2] == 'F' && byBuff[3] == 'F'
+            && byBuff[8] == 'W' && byBuff[9] == 'E' && byBuff[10] == 'B' && byBuff[11] == 'P') {
+            result = "image/webp";
+        }
+    }*/
+
+    return result;
+}
+
+std::string GetFileMimeTypeByName(const std::string& fileName) {
+    struct stat st;
+    auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    return mime;
+}
+
+std::string GetFileMimeTypeByContents(const std::string& fileName)
+{
+    const std::string DefaultMimeType = "application/octet-stream";
+    FILE* f = FopenUtf8(fileName.c_str(), "rb");
+    if (!f) {
+        return DefaultMimeType;
+    }
+    char buffer[256] {};
+    size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
+    fclose(f);
+    int resultPrio = 0;
+
+    auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);
+
+    if (!mime) {
+        return DefaultMimeType;
+    }
+    return mime;
+}
+
+std::string GenerateRandomFilename(const std::string& path, int suffixLen)
+{
+    if (!suffixLen) {
+        suffixLen = 8;
+    }
+    int i, len = path.length();
+    if (!len) {
+        return IuStringUtils::RandomString(suffixLen);
+    }
+    for (i = len - 1; i >= 0; i--) {
+        if (path[i] == '\\' || path[i] == '/') {
+            break;
+        }
+    }
+    std::string filename = path.substr(i + 1);
+    size_t dotPos = filename.find_last_of('.');
+    if (dotPos != std::string::npos) {
+        return path.substr(0, i + 1) + filename.substr(0, dotPos) + "_" + IuStringUtils::RandomString(suffixLen) + filename.substr(dotPos);
+    }
+    return path.substr(0, i + 1) + filename + "_" + IuStringUtils::RandomString(suffixLen);
 }
 
 } // end of namespace IuCoreUtils

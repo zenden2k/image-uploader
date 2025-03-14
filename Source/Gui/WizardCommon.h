@@ -37,6 +37,13 @@ constexpr int IDC_REUPLOADIMAGES = IU_IDC_CONST + 8;
 constexpr int IDC_SHORTENURL = IU_IDC_CONST + 9;
 constexpr int IDC_LASTREGIONSCREENSHOT = IU_IDC_CONST + 10;
 
+enum ScreenshotInitiator {
+    siDefault = 0,
+    siFromHotkey = 1,
+    siFromTray = 2,
+    siFromWelcomeDialog = 3
+};
+
 class CWizardDlg;
 class CWizardPage
 {

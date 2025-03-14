@@ -25,7 +25,7 @@ class InputBoxControl;
 
 enum class DrawingToolType {
     dtNone, dtPen, dtBrush, dtLine, dtArrow, dtRectangle, dtFilledRectangle, dtText, dtCrop, dtMove, dtSelection,
-    dtBlur, dtBlurrringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
+    dtBlur, dtBlurringRectangle, dtPixelateRectangle, dtColorPicker,dtRoundedRectangle, dtEllipse,
     dtFilledRoundedRectangle, dtFilledEllipse, dtMarker, dtStepNumber
 };
 
@@ -33,7 +33,7 @@ class Canvas {
     public:
         class Callback {
             public:
-                virtual void updateView(Canvas* canvas, Gdiplus::Rect rect) = 0;
+                virtual void updateView(Canvas* canvas, Gdiplus::Rect rect, bool fullRender) = 0;
                 virtual void canvasSizeChanged() = 0;
                 virtual ~Callback(){}
         }; 
@@ -41,9 +41,9 @@ class Canvas {
         enum class UndoHistoryItemType { uitDocumentChanged, uitElementAdded, uitElementRemoved, 
             uitElementPositionChanged, uitElementForegroundColorChanged, uitElementBackgroundColorChanged,
             uitPenSizeChanged, uitFontChanged, uitTextChanged, uitRoundingRadiusChanged, uitFillBackgroundChanged,
-            uitCropApplied
+            uitCropApplied, uitInvertSelectionChanged, uitBlurRadiusChanged, uitMultipleChanges
         };
-        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kDefaultStepFontSize = 14 };
+        enum { kMaxPenSize = 50, kMaxRoundingRadius = 50, kMaxBlurRadius = 10, kDefaultStepFontSize = 14 };
 
         struct UndoHistoryItemElement {
             MovableElement* movableElement;
@@ -51,7 +51,10 @@ class Canvas {
             POINT startPoint{};
             POINT endPoint{};
             Gdiplus::Color color;
-            int penSize; // pen size or rounding radius or fill background
+            union {
+                int penSize; // pen size or rounding radius or fill background
+                float floatVal;
+            };
             std::string rawText;
 
             UndoHistoryItemElement() {
@@ -66,9 +69,13 @@ class Canvas {
         };
 
         struct UndoHistoryItem {
+            UndoHistoryItem() = default;
+            DISALLOW_COPY_AND_ASSIGN(UndoHistoryItem);
             UndoHistoryItemType type;
             
             std::vector<UndoHistoryItemElement> elements;
+
+            std::vector<std::unique_ptr<UndoHistoryItem>> changes;
         };
 
         explicit Canvas( HWND parent );
@@ -118,16 +125,19 @@ class Canvas {
         void getElementsByType(ElementType elementType, std::vector<MovableElement*>& out) const;
         void setZoomFactor(float zoomFactor);
         Gdiplus::Bitmap* getBufferBitmap() const;
-        void addUndoHistoryItem(const UndoHistoryItem& item);
+        void addUndoHistoryItem(std::unique_ptr<UndoHistoryItem> item);
         std::shared_ptr<Gdiplus::Bitmap> getBitmapForExport();
     
         float getZoomFactor() const;
         MovableElement* getElementAtPosition(int x, int y, ElementType et = ElementType::etNone);
         int deleteElementsByType(ElementType elementType);
+        void deleteAllElements();
         int getWidth() const;
         int getHeigth() const;
         CursorType getCursor() const;
         bool undo();
+        bool undoItem(UndoHistoryItem& historyItem);
+        void rotate(Gdiplus::RotateFlipType angle);
         std::shared_ptr<InputBox> getInputBox( const RECT& rect ); 
         TextElement* getCurrentlyEditedTextElement() const;
         void setCurrentlyEditedTextElement(TextElement* textElement);
@@ -137,12 +147,14 @@ class Canvas {
         void updateView();
         void updateView( RECT boundingRect );
         bool addDrawingElementToDoc(DrawingElement* element);
+        void beginDocDrawing();
         void endDocDrawing();
         int deleteSelectedElements();
         float getBlurRadius() const;
         void setBlurRadius(float radius);
+        void beginBlurRadiusChanging();
+        void endBlurRadiusChanging(float radius);
         bool hasBlurRectangles() const;
-        int getPixelateBlockSize() const;
         void showOverlay(bool show);
         void selectionChanged();
         Gdiplus::Rect currentRenderingRect() const;
@@ -159,6 +171,9 @@ class Canvas {
         void setFillTextBackground(bool fill);
         bool getFillTextBackground() const;
 
+        void setInvertSelection(bool invert);
+        bool getInvertSelection() const;
+
         void setArrowMode(Arrow::ArrowMode arrowMode);
         Arrow::ArrowMode getArrowMode() const;
         Gdiplus::Graphics* getGraphicsDevice() const;
@@ -171,9 +186,15 @@ class Canvas {
         bool hasElementOfType(ElementType type) const;
 
         void setCropOnExport(bool crop);
+        bool getCropOnExport() const;
 
         void setDpi(float dpiX, float dpiY);
         std::pair<float, float> getDpi() const;
+
+        void beginManipulation();
+        void endManipulation();
+
+        bool manipulationStarted() const;
         boost::signals2::signal<void(int,int,int,int)> onCropChanged;
         boost::signals2::signal<void(int,int,int,int)> onCropFinished;
         boost::signals2::signal<void(DrawingToolType)> onDrawingToolChanged;
@@ -203,7 +224,6 @@ private:
         Document* doc_;
         std::unique_ptr<Gdiplus::Graphics> bufferedGr_;
         float blurRadius_;
-        int pixelateBlockSize_;
         int canvasWidth_, canvasHeight_;
         POINT oldPoint_;
         POINT leftMouseDownPoint_;
@@ -224,12 +244,13 @@ private:
             stepForegroundColor_, stepBackgroundColor_;
         bool stepColorsSet_;
         Gdiplus::Rect currentRenderingRect_;
-        std::stack<UndoHistoryItem> undoHistory_;
+        std::stack<std::unique_ptr<UndoHistoryItem>> undoHistory_;
         std::vector<MovableElement*> elementsToDelete_;
         int penSize_;
         int originalPenSize_;
         int roundingRadius_;
         int originalRoundingRadius_;
+        float originalBlurRadius_;
         bool canvasChanged_;
         bool fullRender_;
         int blurRectanglesCount_;
@@ -237,6 +258,7 @@ private:
         int nextNumber_; // next number for element StepNumber
         int stepFontSize_;
         bool fillTextBackground_;
+        bool invertSelection_;
         Arrow::ArrowMode arrowMode_;
         
         Gdiplus::Rect updatedRect_;
@@ -249,6 +271,7 @@ private:
         bool cropOnExport_;
         float dpiX_;
         float dpiY_;
+        bool manipulationStarted_;
 };
 
 }

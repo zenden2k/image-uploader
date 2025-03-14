@@ -61,7 +61,7 @@ class UploadTask {
         void setUploadManager(CFileQueueUploader* uploadManager);
 
         DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Role, (DefaultRole)(ThumbRole)(UrlShorteningRole));
-        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl)(TypeAuth)(TypeTest)(TypeFolder));
+        DEFINE_MEMBER_ENUM_WITH_STRING_CONVERSIONS(Type, (TypeFile)(TypeUrl)(TypeAuth)(TypeTest)(TypeFolder)(TypeSearchByImageUrl)(TypeSearchByImageFile));
         //enum Role { DefaultRole, ThumbRole, UrlShorteningRole };
         enum Status { StatusInQueue, StatusRunning, StatusStopped, StatusFinished, StatusFailure, StatusPostponed, StatusWaitingChildren };
         //typedef std::function<void(UploadTask*, bool)> TaskFinishedCallback;

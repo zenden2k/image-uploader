@@ -80,7 +80,7 @@ std::string ConvertToUtf8(const std::string &text, const std::string& codePage) 
     return text;
 }
 
-std::string GetFileMimeType(const std::string& name)
+/* std::string GetFileMimeType(const std::string& name)
 {
     std::string defaultType = "application/octet-stream";
     FILE* stream = popen(Utf8ToSystemLocale("file -b --mime-type '" + name + "'").c_str(), "r");
@@ -96,7 +96,7 @@ std::string GetFileMimeType(const std::string& name)
     pclose(stream);
     std::string result = IuStringUtils::Trim(output.str());
     return result;
-}
+}*/
 
 static int do_mkdir(const char *path, mode_t mode)
 {

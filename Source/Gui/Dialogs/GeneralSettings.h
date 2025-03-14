@@ -34,7 +34,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         enum { IDD = IDD_GENERALSETTINGS };
 
         virtual ~CGeneralSettings() = default;
-        bool Apply() override;
+        bool apply() override;
 
     protected:
         BEGIN_MSG_MAP(CGeneralSettings)
@@ -42,6 +42,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             COMMAND_HANDLER(IDC_VIEWLOG, BN_CLICKED, OnBnClickedViewLog)
             COMMAND_HANDLER(IDC_BROWSEBUTTON, BN_CLICKED, OnBnClickedBrowse)
+            COMMAND_HANDLER(IDC_CLEARSERVERSETTINGS, BN_CLICKED, OnBnClickedClearServerSettings)
         END_MSG_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -51,6 +52,7 @@ class CGeneralSettings : public CDialogImpl<CGeneralSettings>,
         LRESULT OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedViewLog(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnBnClickedClearServerSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         CComboBox langListCombo_;
         CToolTipCtrl toolTipCtrl_;

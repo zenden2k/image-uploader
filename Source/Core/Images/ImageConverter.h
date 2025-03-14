@@ -4,66 +4,16 @@
 #include <memory>
 #include <string>
 
+#include "ImageParams.h"
 #include "Thumbnail.h"
 #include "Core/Utils/CoreTypes.h"
 
 class AbstractImage;
 
-struct ImageConvertingParams
-{
-    enum ImageResizeMode { irmFit,  irmCrop, irmStretch };
-    ImageConvertingParams();
-
-    std::string strNewWidth, strNewHeight;
-    bool AddText;
-    std::string Text;
-    int Format;
-    int Quality;
-    bool SaveProportions;
-    std::string Font;
-    bool AddLogo;
-    int LogoPosition;
-    int LogoBlend;
-    int TextPosition;
-    bool SmartConverting;
-    std::string LogoFileName;
-    uint32_t TextColor, StrokeColor;
-    EnumWrapper<ImageResizeMode> ResizeMode;
-    bool PreserveExifInformation;
-    bool SkipAnimated;
-};
-
-
-struct ThumbCreatingParams
-{
-    enum ThumbFormatEnum { tfSameAsImageFormat = 0, tfJPEG, tfPNG, tfGIF, tfWebP, tfWebPLossless };
-    enum ThumbResizeEnum { trByWidth = 0, trByHeight, trByBoth };
-
-    unsigned int Quality;
-    std::string Text;
-    std::string TemplateName;
-    int Size;
-    int Width;
-    int Height;
-    bool DrawFrame;
-    bool AddImageSize;
-    uint32_t BackgroundColor;
-    EnumWrapper<ThumbFormatEnum> Format;
-    ThumbResizeEnum ResizeMode;
-
-    static const int DEFAULT_THUMB_WIDTH = 180;
-
-    ThumbCreatingParams() {
-        Quality = 95;
-        Size = 0;
-        Width = 0;
-        Height = 0;
-        DrawFrame = true;
-        AddImageSize = true;
-        BackgroundColor = 0;
-        Format = tfPNG;
-        ResizeMode = trByWidth; 
-    }
+struct SupposedFormat {
+    std::string fileName;
+    std::string mimeType;
+    int64_t fileSize = -1;
 };
 
 class ImageConverterPrivate;
@@ -82,6 +32,7 @@ class ImageConverter
         void setImageConvertingParams(const ImageConvertingParams& params);
         void setThumbCreatingParams(const ThumbCreatingParams& params);
         void setThumbnail(Thumbnail* thumb);
+        bool supposedOutputFormat(SupposedFormat& fileFormat);
         std::unique_ptr<AbstractImage> createThumbnail(AbstractImage* image, int64_t fileSize, int fileformat);
     protected:
         ImageConverterPrivate* d_ptr;

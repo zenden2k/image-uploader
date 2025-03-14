@@ -30,6 +30,8 @@ public:
     bool SaveSettings();
     void notifyChange();
     boost::signals2::signal<void(BasicSettings*)> onChange;
+    // The second argument is a vector of affected servers
+    boost::signals2::signal<void(BasicSettings*, const std::vector<std::string>&)> onProfileListChanged;
     unsigned int LastUpdateTime;
     int FileRetryLimit;
     int ActionRetryLimit;
@@ -50,6 +52,12 @@ public:
     std::string DeviceId;
 
     ServerSettingsStruct* getServerSettings(const ServerProfile& profile, bool create = false);
+
+    void deleteProfile(const std::string& serverName, const std::string& profileName);
+
+    // Delete account data (profiles)
+    void clearServerSettings();
+
 protected:
     SettingsManager mgr_;
     std::string fileName_;

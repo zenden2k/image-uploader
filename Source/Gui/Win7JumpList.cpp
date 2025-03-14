@@ -23,8 +23,11 @@ limitations under the License.
 #include <ShObjIdl.h>
 #include <propkey.h>
 #include <propvarutil.h>
+#include <ComDef.h>
+
 #include "resource.h"
 #include "Core/i18n/Translator.h"
+#include "Func/WinUtils.h"
 
 /*
 PCWSTR const c_rgpszFiles[] =
@@ -86,6 +89,11 @@ HRESULT Win7JumpList::CreateShellLink(PCWSTR pszArguments, PCWSTR pszTitle, int 
 							LOG(WARNING) << "Failed to set item icon, hr=" << hr;
 						}
 					}
+                    hr = psl->SetWorkingDirectory(WinUtils::GetAppFolder());
+                    if (FAILED(hr)) {
+                        _com_error err(hr);
+                        LOG(WARNING) << "Failed to set working directory, hr=" << hr << std::endl << err.ErrorMessage();
+                    }
 					// The title property is required on Jump List items provided as an IShellLink
 					// instance.  This value is used as the display name in the Jump List.
 					IPropertyStore *pps;

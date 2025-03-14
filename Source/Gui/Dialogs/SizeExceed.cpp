@@ -76,7 +76,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     //CString serverName = U2W(fileTask_->serverProfile().serverName());
 
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
+    fileExceedNameLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
     
     int64_t fileSize = IuCoreUtils::GetFileSize(W2U(m_szFileName));
     WCHAR buf2[25];
@@ -86,7 +86,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     CString params; 
     CString onlyFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_szFileName), 40);
     if (isImage) {
-        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.imageWidth_, img.imageHeight_, static_cast<LPCTSTR>(buf2));
+        params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.imageWidth(), img.imageHeight(), static_cast<LPCTSTR>(buf2));
     } else {
         params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(onlyFileName), static_cast<LPCTSTR>(buf2));
     }

@@ -32,7 +32,7 @@ CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory
     m_PrInfo.IsUploading = false;
     m_PrInfo.Total = 0;
     m_PrInfo.Uploaded = 0;
-    isFatalError_ = false;
+    isFatalServerError_ = false;
     m_NetworkClient = networkClientFactory->create();
 }
 
@@ -103,7 +103,7 @@ bool CUploader::UploadFile(const std::string& FileName, const std::string& displ
 }
 
 bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
-    isFatalError_ = false;
+    isFatalServerError_ = false;
     if (!m_CurrentEngine) {
         Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
         return false;
@@ -150,24 +150,25 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     task->setCurrentUploadEngine(m_CurrentEngine);
 
     UploadParams uparams;
-#ifdef _WIN32
+
     ImageUploadParams imageUploadParams = task->serverProfile().getImageUploadParams();
     ThumbCreatingParams& tcParams = imageUploadParams.getThumbRef();
 
     if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByWidth) {
         uparams.thumbWidth = tcParams.Width;
-    } if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
+    }
+    if (tcParams.ResizeMode == ThumbCreatingParams::trByBoth || tcParams.ResizeMode == ThumbCreatingParams::trByHeight) {
         uparams.thumbHeight = tcParams.Height;
     }
-    
-#else
-    uparams.thumbWidth = 180;
-#endif
+    uparams.createThumbnail = imageUploadParams.CreateThumbs;
+    uparams.addTextOnThumb = tcParams.AddImageSize;
+    uparams.useServerSideThumbnail = imageUploadParams.UseServerThumbs;
+
     /*if (task->type() == UploadTask::TypeFile) {
         FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task.get());
     }*/
     m_NetworkClient->setProgressCallback(std::bind(&CUploader::pluginProgressFunc, this, _1, _2, _3, _4, _5));
-    int EngineRes = 0;
+    ResultCode EngineRes = ResultCode::Failure;
     int retryLimit = task->retryLimit();
     if (!retryLimit) {
         retryLimit = m_CurrentEngine->RetryLimit();
@@ -180,34 +181,44 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
             Cleanup();
             return false;
         }
-        EngineRes = m_CurrentEngine->processTask(task, uparams);
+        EngineRes = static_cast<ResultCode>(m_CurrentEngine->processTask(task, uparams));
         task->setCurrentUploadEngine(nullptr);
 
-        if ( EngineRes == -1 ) {
-            isFatalError_ = true;
+        switch (EngineRes) {
+        case ResultCode::FatalServerError:
+            isFatalServerError_ = true;
             Cleanup();
             return false;
+        case ResultCode::TryAgain:
+            if (i == retryLimit) {
+                retryLimit++;
+            }
+            break;
+        case ResultCode::FatalError:
+            i = std::max(i, retryLimit - 1);
+            break;
+        default:
+            break;
         }
+
         i++;
         if (needStop())
         {
             Cleanup();
             return false;
         }
-        if (!EngineRes && i != retryLimit)
+        if (EngineRes < ResultCode::Success && i != retryLimit)
         {
-            Error(false, "", etRepeating, i, topLevelFileName);
+            Error(false, "", etRepeating, i, task.get(), topLevelFileName);
         }
-    }
-    while (!EngineRes && i < retryLimit);
+    } while (EngineRes < ResultCode::Success && i < retryLimit);
 
-    if (!EngineRes)
-    {
-        Error(true, "", etRetriesLimitReached, -1, topLevelFileName);
+    if (EngineRes == ResultCode::Failure || EngineRes == ResultCode::FatalError) {
+        Error(true, "", etRetriesLimitReached, -1, task.get(), topLevelFileName);
         Cleanup();
         return false;
     }
-    if (task->type() != UploadTask::TypeAuth && task->type() != UploadTask::TypeTest && task->type() != UploadTask::TypeFolder) {
+    if (task->type() == UploadTask::TypeFile || task->type() == UploadTask::TypeUrl) {
         UploadResult* result = task->uploadResult();
         result->directUrl = uparams.DirectUrl;
         result->downloadUrl = uparams.ViewUrl;
@@ -219,7 +230,7 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
 
         return !(result->directUrl.empty() && result->downloadUrl.empty() && result->editUrl.empty());
     } else {
-        return EngineRes;
+        return EngineRes == ResultCode::Success;
     }
 }
 
@@ -246,7 +257,7 @@ StatusType CUploader::GetStatus() const
 
 bool CUploader::isFatalError() const
 {
-    return isFatalError_;
+    return isFatalServerError_;
 }
 
 CAbstractUploadEngine* CUploader::getUploadEngine()
@@ -317,7 +328,7 @@ void CUploader::ErrorMessage(const ErrorInfo& error)
     }
 }
 
-void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, const std::string& topLevelFileName)
+void CUploader::Error(bool error, std::string message, ErrorType type, int retryIndex, UploadTask* uploadTask, const std::string& topLevelFileName)
 {
     ErrorInfo err;
     err.ActionIndex  = -1;
@@ -328,5 +339,8 @@ void CUploader::Error(bool error, std::string message, ErrorType type, int retry
     err.sender = "CUploader";
     err.RetryIndex = retryIndex;
     err.TopLevelFileName = topLevelFileName;
+    if (uploadTask) {
+        err.ServerName = uploadTask->serverName();
+    }
     ErrorMessage(err);
 }

@@ -102,7 +102,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     GuiTools::SetCheck(m_hWnd, IDC_SOURCECODERADIO, true );
     GuiTools::SetCheck(m_hWnd, IDC_PASTEHTMLONCTRLVCHECKBOX, settings->ImageReuploaderSettings.PasteHtmlOnCtrlV);
-    GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
+    descriptionLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_DESCRIPTION));
     HWND hWnd = GetDlgItem(IDC_ANIMATIONSTATIC);
     if (hWnd) {
         m_wndAnimation.SubclassWindow(hWnd);
@@ -249,13 +249,8 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
 
     auto* dit = static_cast<DownloadItemData*>(it.id);
     
-    auto* uploadItemData = new UploadItemData;
-    {
-        std::lock_guard<std::mutex> lk(uploadItemsMutex_);
-        uploadItems_.push_back(std::unique_ptr<UploadItemData>(uploadItemData));
-    }
+    auto uploadItemData = std::make_unique<UploadItemData>();
     uploadItemData->sourceUrl = it.url;
-
     uploadItemData->sourceIndex = dit->sourceIndex;
     uploadItemData->originalUrl = dit->originalUrl;
 
@@ -268,9 +263,15 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
     std::shared_ptr<FileUploadTask> fileUploadTask = std::make_shared<FileUploadTask>(localFileName, displayName);
     fileUploadTask->setServerProfile(serverProfile_);
     fileUploadTask->setIsImage(true);
-    fileUploadTask->setUserData(uploadItemData);
+    fileUploadTask->setUserData(uploadItemData.get());
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     fileUploadTask->setUrlShorteningServer(settings->urlShorteningServer);
+
+    {
+        std::lock_guard<std::mutex> lk(uploadItemsMutex_);
+        uploadItems_.push_back(std::move(uploadItemData));
+    }
+
     using namespace std::placeholders;
     fileUploadTask->addTaskFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileFinished, this, _1, _2));
     {
@@ -353,8 +354,9 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
             } else {
                 url = reg[1];
             }
+            auto& supportedExtensions = IuCommonFunctions::GetSupportedImageExtensions();
             std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(url) );
-            if (fileExt == "png" || fileExt == "jpg" || fileExt == "gif" || fileExt == "jpeg" || fileExt == "bmp" || fileExt == "webp") {
+            if (supportedExtensions.find(fileExt) != supportedExtensions.end()) {
                 Match match;
                 match.start = reg.get_match_start(0);
                 match.length = reg.get_match_end(0) - match.start + 1;

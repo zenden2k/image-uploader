@@ -55,7 +55,7 @@ class HtmlDocumentPrivate {
             return rootElement().querySelectorAll(query);
         }
 
-        const std::string getHTML() {
+        std::string getHTML() {
             return rootElement().getOuterHTML();
         }
         friend class HtmlElementPrivate;

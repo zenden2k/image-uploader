@@ -24,6 +24,8 @@
 #include <cstdarg>
 
 #include <ShObjIdl.h>
+#include <strsafe.h>
+#include <dwmapi.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
@@ -105,19 +107,20 @@ void EnableNextN(HWND Control, int n, bool Enable) {
 }
 
 bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
-    MENUITEMINFO MenuItem;
+    MENUITEMINFO MenuItem {};
 
     MenuItem.cbSize = sizeof(MenuItem);
     if(szTitle)
         MenuItem.fType = MFT_STRING;
     else MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
+    MenuItem.fMask = MIIM_FTYPE | MIIM_ID | MIIM_STRING;
     if(bm)
-        MenuItem.fMask |= MIIM_CHECKMARKS;
+        MenuItem.fMask |= MIIM_BITMAP;
     MenuItem.wID = id;
-    MenuItem.hbmpChecked = bm;
-    MenuItem.hbmpUnchecked = bm;
+    MenuItem.hbmpItem = bm;
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
+    MenuItem.cch = lstrlen(szTitle);
+
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem)!=0;
 }
 
@@ -482,7 +485,7 @@ HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
     ti.hwnd     = hwnd;
     ti.hinst    = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
-    lstrcpy(textBuffer.get(), text);
+    StringCchCopy(textBuffer.get(), text.GetLength() + 1, text);
     ti.lpszText = textBuffer.get();
     ti.rect  = clientRect;
 
@@ -502,7 +505,7 @@ void AddToolTip(HWND hwndTT, HWND hwnd, const CString& text) {
     ti.hwnd = hwnd;
     ti.hinst = _Module.GetModuleInstance();
     auto textBuffer = std::make_unique<TCHAR[]>(text.GetLength() + 1);
-    lstrcpy(textBuffer.get(), text);
+    StringCchCopy(textBuffer.get(), text.GetLength() + 1, text);
     ti.lpszText = textBuffer.get();
     ti.rect = clientRect;
 
@@ -627,4 +630,28 @@ BOOL SetClientRect(HWND hWnd, int x, int y)
     GetWindowRect(hWnd, &rect2);
     return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }
+
+BOOL IsWindowCloaked(HWND hwnd) {
+    BOOL isCloaked = FALSE;
+    return SUCCEEDED(DwmGetWindowAttribute(hwnd, DWMWA_CLOAKED,
+     &isCloaked, sizeof(isCloaked))) && isCloaked;
+}
+
+BOOL IsWindowVisibleOnScreen(HWND hwnd) {
+    return IsWindowVisible(hwnd) && !IsWindowCloaked(hwnd);
+}
+
+void SetWindowPointer(HWND hwnd, void* pthis) {
+    ::SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pthis));
+}
+
+bool CheckWindowPointer(HWND hwnd, void* pthis) {
+    return ::IsWindow(hwnd)
+        && ::GetWindowLongPtr(hwnd, GWLP_USERDATA) == reinterpret_cast<LONG_PTR>(pthis);
+}
+
+void ClearWindowPointer(HWND hwnd) {
+    ::SetWindowLongPtr(hwnd, GWLP_USERDATA, 0);
+}
+
 }

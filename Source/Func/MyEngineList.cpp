@@ -29,15 +29,12 @@ char CMyEngineList::DefaultServer[] = "default";
 
 char CMyEngineList::RandomServer[]  = "random";
 
-CMyEngineList::CMyEngineList()
-{
+CMyEngineList::CMyEngineList() {
 }
 
 CMyEngineList::~CMyEngineList()
 {
-    for ( const auto& it: serverIcons_) {
-        DestroyIcon(it.second);
-    }
+   
 }
 
 CUploadEngineData* CMyEngineList::byName(const CString& name)
@@ -57,68 +54,11 @@ CString CMyEngineList::errorStr() const
 
 bool CMyEngineList::loadFromFile(const CString& filename)
 {
-    if (!IuCoreUtils::FileExists(WCstringToUtf8(filename)))
-    {
+    std::string fileNameU8 = W2U(filename);
+    if (!IuCoreUtils::FileExists(fileNameU8)) {
         m_ErrorStr = "File not found.";
         return false;
     }
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
-    return CUploadEngineList::loadFromFile(WCstringToUtf8(filename), Settings->ServersSettings);
-}
-
-HICON CMyEngineList::getIconForServer(const std::string& name) {
-    const auto iconIt = serverIcons_.find(name);
-    if (iconIt != serverIcons_.end()) {
-        return iconIt->second;
-    }
-    
-    CUploadEngineData *ued = CUploadEngineList::byName(name);
-
-    HICON icon = nullptr;
-    CString serverName = Utf8ToWCstring(name);
-    serverName.Replace(_T("\\"), _T("_"));
-    serverName.Replace(_T("/"), _T("_"));
-    const CString dataFolder = IuCommonFunctions::GetDataFolder();
-    CString iconFileName = dataFolder  + _T("Favicons\\")+ serverName +_T(".ico");
-
-    if ( !WinUtils::FileExists(iconFileName) ) {
-        if (ued && !ued->PluginName.empty()) {
-            iconFileName = dataFolder + _T("Favicons\\") + Utf8ToWCstring(ued->PluginName) + _T(".ico");
-            if (!WinUtils::FileExists(iconFileName)) {
-                serverIcons_[name] = nullptr;
-                return nullptr;
-            }
-        } else {
-            serverIcons_[name] = nullptr;
-            return nullptr;
-        }
-    }
-
-    const int w = GetSystemMetrics(SM_CXSMICON);
-    const int h = GetSystemMetrics(SM_CYSMICON);
-
-    LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
-    
-    if (!icon) {
-        icon = static_cast<HICON>(LoadImage(nullptr, iconFileName, IMAGE_ICON, w, h, LR_LOADFROMFILE));
-    }
-    
-    if ( !icon ) {
-        return nullptr;
-    }
-    serverIcons_[name] = icon;
-    return icon;
-}
-
-CString CMyEngineList::getIconNameForServer(const std::string& name) {
-    CUploadEngineData *ued = CUploadEngineList::byName(name);
-    CString iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\")+Utf8ToWCstring(name).MakeLower()+_T(".ico");
-
-    if ( !WinUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty() ) {
-        iconFileName = IuCommonFunctions::GetDataFolder()+_T("Favicons\\") + Utf8ToWCstring(ued->PluginName).MakeLower() +_T(".ico");
-        if(!WinUtils::FileExists(iconFileName)) {
-            return {};
-        }
-    }
-    return U2W( IuCoreUtils::ExtractFileName(W2U(iconFileName)) );
+    return CUploadEngineList::loadFromFile(fileNameU8, Settings->ServersSettings);
 }

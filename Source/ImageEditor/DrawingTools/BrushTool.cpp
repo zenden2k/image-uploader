@@ -34,7 +34,7 @@ BrushTool::BrushTool( Canvas* canvas ) : AbstractDrawingTool( canvas ) {
 void BrushTool::beginDraw( int x, int y ) {
     Gdiplus::Region exclRegion(Gdiplus::Rect(0,0,canvas_->getWidth(), canvas_->getHeigth()));
     affectedRegion_.Exclude(&exclRegion);
-    canvas_->currentDocument()->beginDrawing();
+    canvas_->beginDocDrawing();
     oldPoint_.x = x;
     oldPoint_.y = y;
     startPoint_.x = x;

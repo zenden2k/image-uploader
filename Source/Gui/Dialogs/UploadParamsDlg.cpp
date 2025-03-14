@@ -20,6 +20,8 @@
 
 #include "UploadParamsDlg.h"
 
+#include <unordered_map>
+
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/GuiTools.h"
@@ -60,6 +62,7 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_THUMBRESIZELABEL, "Scaling:");
     TRC(IDC_DEFAULTTHUMBSETTINGSCHECKBOX, "Use default thumbnail settings");
     TRC(IDC_SHORTENLINKSCHECKBOX, "Shorten URLs");
+    TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     TRC(IDC_THUMBFORMATLABEL, "Format:");
     TRC(IDC_THUMBQUALITYLABEL, "Quality:");
@@ -69,12 +72,13 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     profileCombo_ = GetDlgItem(IDC_PROFILECOMBO);
     thumbTemplateCombo_ = GetDlgItem(IDC_THUMBTEMPLATECOMBO);
     //Fill profile combobox
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
+    profileCombo_.ResetContent();
+
 
     int selectedIndex = -1;
     int i = 0;
     for (auto it = Settings.ConvertProfiles.begin(); it != Settings.ConvertProfiles.end(); ++it) {
-        GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
+        profileCombo_.AddString(it->first);
         if (it->first == U2W(serverProfile_.getImageUploadParams().ImageProfileName)) {
 
             selectedIndex = i;
@@ -88,17 +92,16 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     std::vector<CString> files;
     CString folder = IuCommonFunctions::GetDataFolder()+_T("\\Thumbnails\\");
     WinUtils::GetFolderFileList(files, folder , _T("*.xml"));
-    for(size_t i=0; i<files.size(); i++) {
-        GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBTEMPLATECOMBO, 1, Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt( WCstringToUtf8( files[i]))) );
+    for (const auto& file : files) {
+        thumbTemplateCombo_.AddString(Utf8ToWCstring(IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(file))));
     }
-    SendDlgItemMessage(IDC_THUMBTEMPLATECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) U2W(params_.getThumbRef().TemplateName)); 
+    thumbTemplateCombo_.SelectString(-1, IuCoreUtils::Utf8ToWstring(params_.getThumbRef().TemplateName).c_str());
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 4, TR("Same format as image"),
-        _T("JPEG"), _T("PNG"), _T("GIF"));
+    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 6, TR("Same format as image"),
+        _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
 
-    GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBRESIZECOMBO, 2, 
-        TR("By width"), TR("By height"), TR("By larger side") );
-    SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, (int)params_.getThumbRef().ResizeMode,0);
+    ThumbCreatingParams& thumb = params_.getThumbRef();
+
 
     GuiTools::SetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
     GuiTools::SetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
@@ -113,14 +116,20 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     {
         GuiTools::EnableDialogItem(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, false);
     }
-    GuiTools::SetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX,params_.getThumbRef().AddImageSize);
+    GuiTools::SetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX, thumb.AddImageSize);
     GuiTools::SetCheck(m_hWnd, IDC_SHORTENLINKSCHECKBOX, serverProfile_.shortenLinks());
 
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.getThumbRef().Text) );
 
-    SetDlgItemText(IDC_WIDTHEDIT, WinUtils::IntToStr(params_.getThumbRef().Size));
-        SetDlgItemInt(IDC_THUMBQUALITYEDIT,  params_.getThumbRef().Quality);
-    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>( (params_.getThumbRef().Format)), 0);
+    if (thumb.Width && (thumb.ResizeMode == ThumbCreatingParams::trByWidth || thumb.ResizeMode == ThumbCreatingParams::trByBoth)) {
+        SetDlgItemInt(IDC_WIDTHEDIT, thumb.Width);
+    }
+    if (thumb.Height && (thumb.ResizeMode == ThumbCreatingParams::trByHeight || thumb.ResizeMode == ThumbCreatingParams::trByBoth)) {
+        SetDlgItemInt(IDC_HEIGHTEDIT, thumb.Height);
+    }
+
+    SetDlgItemInt(IDC_THUMBQUALITYEDIT, thumb.Quality);
+    SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_SETCURSEL, static_cast<int>(thumb.Format), 0);
 
     //GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.);
 
@@ -135,31 +144,49 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {    
     if (showImageProcessingParams_) {
+        ThumbCreatingParams& thumb = params_.getThumbRef();
         GuiTools::GetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
         GuiTools::GetCheck(m_hWnd, IDC_CREATETHUMBNAILS, params_.CreateThumbs);
         GuiTools::GetCheck(m_hWnd, IDC_USESERVERTHUMBNAILS, params_.UseServerThumbs);
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.UseDefaultThumbSettings);
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.UseDefaultSettings);
-        params_.getThumbRef().AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
-        params_.getThumbRef().Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
+        thumb.AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
+        thumb.Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
         
         int profileIndex = profileCombo_.GetCurSel();
         CString buf;
         profileCombo_.GetLBText(profileIndex, buf);
         params_.ImageProfileName = W2U(buf);
-        params_.getThumbRef().Size = GetDlgItemInt(IDC_WIDTHEDIT);
+        int thumbWidth = GetDlgItemInt(IDC_WIDTHEDIT);
+
+        int thumbHeight = GetDlgItemInt(IDC_HEIGHTEDIT);
+
+        if (!thumbWidth && !thumbHeight) {
+            thumbWidth = ThumbCreatingParams::DEFAULT_THUMB_WIDTH;
+        }
 
         CString buf2;
         profileIndex = thumbTemplateCombo_.GetCurSel();
         thumbTemplateCombo_.GetLBText(profileIndex, buf2);
-        ThumbCreatingParams& Thumb = params_.getThumbRef();
-        Thumb.TemplateName = W2U(buf2);
 
-        Thumb.ResizeMode = static_cast<ThumbCreatingParams::ThumbResizeEnum>(SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_GETCURSEL, 0, 0));
+        thumb.TemplateName = W2U(buf2);
+        thumb.Size = 0;
+        thumb.Width = thumbWidth;
+        thumb.Height = thumbHeight;
 
-        Thumb.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
-        Thumb.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
-        Thumb.BackgroundColor = ThumbBackground_.GetColor();
+        if (thumb.Width && thumb.Height) {
+            thumb.ResizeMode = ThumbCreatingParams::trByBoth;
+        }
+        else if (thumb.Height) {
+            thumb.ResizeMode = ThumbCreatingParams::trByHeight;
+        }
+        else {
+            thumb.ResizeMode = ThumbCreatingParams::trByWidth;
+        }
+
+        thumb.Format = static_cast<ThumbCreatingParams::ThumbFormatEnum>(SendDlgItemMessage(IDC_THUMBFORMATLIST, CB_GETCURSEL));
+        thumb.Quality = GetDlgItemInt(IDC_THUMBQUALITYEDIT);
+        thumb.BackgroundColor = ThumbBackground_.GetColor();
     }
     serverProfile_.setShortenLinks(GuiTools::GetCheck(m_hWnd, IDC_SHORTENLINKSCHECKBOX));
 
@@ -205,10 +232,8 @@ void CUploadParamsDlg::defaultSettingsCheckboxChanged() {
     GuiTools::EnableNextN(GetDlgItem(IDC_DEFAULTSETTINGSCHECKBOX), 17, !isChecked );
     
     if ( !isChecked ) {
-
         createThumbnailsCheckboxChanged();
         processImagesChanged();
-        
     }
 }
 
@@ -230,16 +255,16 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
 
     bool addThumbText = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
 
-    std::map<int, bool> enable;
+    std::unordered_map<int, bool> enable;
     enable[IDC_THUMBTEMPLATECOMBOLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBTEMPLATECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
-    //enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultSettings;
     enable[IDC_THUMBTEXTCHECKBOX] = !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBTEXT] = !useDefaultThumbnailSettings && addThumbText && !useDefaultSettings;
     enable[IDC_THUMBRESIZELABEL] = !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_WIDTHEDIT] = !useDefaultThumbnailSettings && !useDefaultSettings;
+    enable[IDC_HEIGHTEDIT] = !useDefaultThumbnailSettings && !useDefaultSettings;
+    enable[IDC_XLABEL] = !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_WIDTHEDITUNITS] = !useDefaultThumbnailSettings && !useDefaultSettings;
-    enable[IDC_THUMBRESIZECOMBO] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBFORMATLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBFORMATLIST] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_THUMBBACKGROUNDLABEL] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
@@ -249,12 +274,12 @@ void  CUploadParamsDlg::defaultThumbSettingsCheckboxChanged() {
     enable[IDC_THUMBQUALITYSPIN] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
     enable[IDC_PERCENTLABEL2] = !useServerThumbnails && !useDefaultThumbnailSettings && !useDefaultSettings;
 
-    for ( std::map<int,bool>::const_iterator it = enable.begin(); it != enable.end(); ++it) {
-        GuiTools::EnableDialogItem(m_hWnd, it->first, it->second);
+    for (auto [k,v]: enable) {
+        GuiTools::EnableDialogItem(m_hWnd, k, v);
     }
 }
 
-void  CUploadParamsDlg::thumbTextCheckboxChanged() {
+void CUploadParamsDlg::thumbTextCheckboxChanged() {
     bool createThumbnails = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_THUMBTEXTCHECKBOX);
     bool useDefaultThumbnailSettings = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX);
@@ -272,13 +297,6 @@ LRESULT CUploadParamsDlg::OnClickedUseServerThumbnailsCheckbox(WORD wNotifyCode,
 }
 
 void CUploadParamsDlg::useServerThumbnailsChanged() {
-    bool useServerThumbnails = GuiTools::IsChecked(m_hWnd, IDC_USESERVERTHUMBNAILS);
-
-    if ( useServerThumbnails ) {
-        // Select item 'resize by width'
-        SendDlgItemMessage(IDC_THUMBRESIZECOMBO, CB_SETCURSEL, 0, 0);
-    }
-
     defaultThumbSettingsCheckboxChanged();
 }
 

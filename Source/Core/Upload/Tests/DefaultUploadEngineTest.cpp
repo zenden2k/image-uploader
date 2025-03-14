@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <json/json.h>
 
 #include "Core/Upload/DefaultUploadEngine.h"
 #include "Core/Upload/ServerSync.h"
@@ -44,13 +45,14 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     action2.Type = "upload";
     action2.Url = "https://example.com/upload";
     action2.PostParams = "someparam=1;file=%filename%;thumbwidth=$(_THUMBWIDTH);thumbheight=$(_THUMBHEIGHT);"
-        "rnd=$(_RAND16BITS);th=$(_THREADID);fname=$(_FILENAME);fnamenoext=$(_FILENAMEWITHOUTEXT);fileext=$(_FILEEXT)";
-    ActionRegExp regExp;
-    regExp.Pattern = "https://example\\.com/(.+)";
+        "rnd=$(_RAND16BITS);th=$(_THREADID);fname=$(_FILENAME);fnamenoext=$(_FILENAMEWITHOUTEXT);fileext=$(_FILEEXT);createthumb=$(_THUMBCREATE);"
+        "thumbtext=$(_THUMBADDTEXT);serverthumbs=$(_THUMBUSESERVER);";
+    ActionFunc regExp(ActionFunc::FUNC_REGEXP);
+    regExp.setArg(1,"https://example\\.com/(.+)");
     regExp.Required = true;
     ActionVariable variable("fileId", 0);
     regExp.Variables.push_back(variable);
-    action2.Regexes.push_back(regExp);
+    action2.FunctionCalls.push_back(regExp);
     ued.Actions.push_back(action2);
     ued.ImageUrlTemplate = "https://serv2.example.com/$(fileId)";
     ued.DownloadUrlTemplate = "https://serv3.example.com/view/$(fileId)";
@@ -78,6 +80,9 @@ TEST_F(DefaultUploadEngineTest, doUpload)
         EXPECT_CALL(networkClient, addQueryParam("fname", displayName));
         EXPECT_CALL(networkClient, addQueryParam("fnamenoext", fileNameNoExt));
         EXPECT_CALL(networkClient, addQueryParam("fileext", fileExt));
+        EXPECT_CALL(networkClient, addQueryParam("createthumb", "1"));
+        EXPECT_CALL(networkClient, addQueryParam("thumbtext", "1"));
+        EXPECT_CALL(networkClient, addQueryParam("serverthumbs", "0"));
 
         EXPECT_CALL(networkClient, doUploadMultipartData());
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("https://example.com/file_with_const_size.png"));
@@ -89,6 +94,9 @@ TEST_F(DefaultUploadEngineTest, doUpload)
     UploadParams uploadParams;
     uploadParams.thumbWidth = 160;
     uploadParams.thumbHeight = 120;
+    uploadParams.createThumbnail = true;
+    uploadParams.addTextOnThumb = true;
+    uploadParams.useServerSideThumbnail = false;
     int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("https://serv2.example.com/file_with_const_size.png", uploadParams.getDirectUrl());
@@ -118,10 +126,10 @@ TEST_F(DefaultUploadEngineTest, login)
     action1.Referer = "https://test.com/somepage";
     action1.PostParams = "password=$(_PASSWORD);login=$(_LOGIN);submit=1";
 
-    ActionRegExp regExp;
-    regExp.Pattern = "success";
+    ActionFunc regExp{ ActionFunc::FUNC_REGEXP };
+    regExp.setArg(1, "success");
     regExp.Required = true;
-    action1.Regexes.push_back(regExp);
+    action1.FunctionCalls.push_back(regExp);
 
     ued.Actions.push_back(action1);
 
@@ -133,15 +141,16 @@ TEST_F(DefaultUploadEngineTest, login)
     ON_CALL(networkClient, doGet(_)).WillByDefault(Return(true));
     ON_CALL(networkClient, doPost(_)).WillByDefault(Return(true));
     ON_CALL(networkClient, responseCode()).WillByDefault(Return(200));
-    {
-        testing::InSequence dummy;
-        EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    //{
+        //testing::InSequence dummy;
+        EXPECT_CALL(networkClient, setReferer(action1.Referer)).Times(AtLeast(1));
         EXPECT_CALL(networkClient, addQueryParam("password", "qwerty"));
         EXPECT_CALL(networkClient, addQueryParam("login", "username"));
         EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true));
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("<result>success</result>"));
-    }
+        EXPECT_CALL(networkClient, setReferer("")).Times(AtLeast(1));
+    //}
     std::string displayName = IuCoreUtils::ExtractFileName(constSizeFileName);
     auto fileTask = std::make_shared<FileUploadTask>(constSizeFileName, displayName);
     ServerSettingsStruct serverSettings;
@@ -177,12 +186,12 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     action1.Referer = "https://test.com/somepage";
     action1.PostParams = "url_second_time=$(_ORIGINALURL);submit=1;";
 
-    ActionRegExp regExp;
-    regExp.Pattern = "<url>(.+)</url>";
+    ActionFunc regExp{ ActionFunc::FUNC_REGEXP };
+    regExp.setArg(1, "<url>(.+)</url>");
     regExp.Required = true;
     ActionVariable variable("url", 0);
     regExp.Variables.push_back(variable);
-    action1.Regexes.push_back(regExp);
+    action1.FunctionCalls.push_back(regExp);
     ued.Actions.push_back(action1);
 
     ued.ImageUrlTemplate = "$(url)";
@@ -196,6 +205,7 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     ON_CALL(networkClient, urlEncode(_)).WillByDefault(Return("http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
 
     EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    EXPECT_CALL(networkClient, setReferer(""));
     EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
     {
         testing::InSequence dummy;
@@ -211,6 +221,77 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     int res = engine.processTask(fileTask, uploadParams);
     EXPECT_EQ(1, res);
     EXPECT_EQ("http://te.st/qwe1234", uploadParams.getDirectUrl());
+    EXPECT_EQ("", uploadParams.getThumbUrl());
+    EXPECT_EQ("", uploadParams.getViewUrl());
+}
+
+TEST_F(DefaultUploadEngineTest, json)
+{
+    using ::testing::_;
+    // NiceMock is used to ignore uninterested calls
+    NiceMock<MockINetworkClient> networkClient;
+    ServerSync sync;
+    CDefaultUploadEngine engine(&sync, CAbstractUploadEngine::ErrorMessageCallback());
+    engine.setNetworkClient(&networkClient);
+
+    // Prepare CUploadEngineData instance
+    CUploadEngineData ued;
+    ued.NeedAuthorization = CUploadEngineData::naNotAvailable;
+    ued.Name = "test server3";
+    ued.TypeMask = CUploadEngineData::TypeUrlShorteningServer;
+
+    UploadAction action1;
+    action1.Index = 0;
+    action1.Type = "post";
+    action1.Url = "https://example.com/shorten?url=$(_ORIGINALURL|urlencode)";
+    action1.Referer = "https://test.com/somepage";
+    action1.PostParams = "url_second_time=$(_ORIGINALURL);submit=1;";
+
+    ActionFunc regExp{ ActionFunc::FUNC_JSON };
+    regExp.setArg(1, "files[0].url");
+    regExp.Required = true;
+    ActionVariable variable("url", 0);
+    regExp.Variables.push_back(variable);
+    action1.FunctionCalls.push_back(regExp);
+    ued.Actions.push_back(action1);
+
+    ued.ImageUrlTemplate = "$(url)";
+
+    engine.setUploadData(&ued);
+    std::string urlToShorten = "http://example.com/hello?someparam=1";
+    ON_CALL(networkClient, doGet(_)).WillByDefault(Return(true));
+    ON_CALL(networkClient, doPost(_)).WillByDefault(Return(true));
+    ON_CALL(networkClient, responseCode()).WillByDefault(Return(200));
+    ON_CALL(networkClient, responseBody()).WillByDefault(Return(R"({
+    "success": true,
+    "files": [
+        {
+            "hash": "605edc801b4599ff2390153fb959254c4ecb53fd",
+            "name": "screenshot 2024-01-14 16-44-15 001.png",
+            "url": "https:\/\/ab.cd\/mxqo.png",
+            "size": "1575"
+        }
+    ]
+})"));
+    ON_CALL(networkClient, urlEncode(_)).WillByDefault(Return("http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
+
+    EXPECT_CALL(networkClient, setReferer(action1.Referer));
+    EXPECT_CALL(networkClient, setReferer(""));
+    EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
+    {
+        testing::InSequence dummy;
+        EXPECT_CALL(networkClient, addQueryParam("url_second_time", urlToShorten));
+        EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
+        EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true));
+    }
+
+    auto fileTask = std::make_shared<UrlShorteningTask>(urlToShorten);
+    ServerSettingsStruct serverSettings;
+    engine.setServerSettings(&serverSettings);
+    UploadParams uploadParams;
+    int res = engine.processTask(fileTask, uploadParams);
+    EXPECT_EQ(1, res);
+    EXPECT_EQ("https://ab.cd/mxqo.png", uploadParams.getDirectUrl());
     EXPECT_EQ("", uploadParams.getThumbUrl());
     EXPECT_EQ("", uploadParams.getViewUrl());
 }

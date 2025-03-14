@@ -19,18 +19,15 @@ struct WebPPic {
 using namespace Gdiplus;
 
 std::unique_ptr<GdiPlusImage> WebpImageReader::readFromFile(const wchar_t* fileName) {
-    uint8_t* dataRaw = nullptr;
-    std::unique_ptr<uint8_t> data;
-    size_t dataSize = 0;
     try {
-        if (!ImageUtils::ExUtilReadFile(fileName, &dataRaw, &dataSize)) {
+        auto [data, dataSize] = ImageUtils::ExUtilReadFile(fileName);
+        if (!data) {
             return {};
         }
+        return readFromMemory(data.get(), dataSize);
     } catch (const std::exception&) {
         return {};
     }
-    data.reset(dataRaw);
-    return readFromMemory(dataRaw, dataSize);
 }
 
 std::unique_ptr<GdiPlusImage> WebpImageReader::readFromMemory(uint8_t* data, size_t size) {

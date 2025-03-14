@@ -22,11 +22,13 @@
 
 #include <boost/format.hpp>
 
+#include "Core/3rdpart/pcreplusplus.h"
 #include "Func/WinUtils.h"
 
 // CColorCodeDialog
 CColorCodeDialog::CColorCodeDialog(COLORREF color) : value_(color)
 {
+    updateValue(color);
 }
 
 CColorCodeDialog::~CColorCodeDialog()
@@ -36,17 +38,12 @@ CColorCodeDialog::~CColorCodeDialog()
 LRESULT CColorCodeDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     SetWindowText(TR("Color codes"));
-    TRC(IDCANCEL, "Close");
+    TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
     TRC(IDC_COPYHEXBUTTON, "Copy");
     TRC(IDC_COPYRGBBUTTON, "Copy");
-    BYTE r = GetRValue(value_);
-    BYTE g = GetGValue(value_);
-    BYTE b = GetBValue(value_);
-    std::wstring hexStr = str(boost::wformat(L"#%02x%02x%02x") % r % g % b);
-    std::wstring rgbStr = str(boost::wformat(L"rgb(%d, %d, %d)") % r % g % b);
-    SetDlgItemText(IDC_HEXEDIT, hexStr.c_str());
-    SetDlgItemText(IDC_RGBEDIT, rgbStr.c_str());
+    generateHexEditText();
+    generateRgbEditText();
     CenterWindow(GetParent());
     ::SetFocus(GetDlgItem(IDC_HEXEDIT));
     return 1;  // Do not Let the system set the focus
@@ -84,4 +81,100 @@ LRESULT CColorCodeDialog::OnBnClickedCopyRgbButton(WORD /*wNotifyCode*/, WORD /*
     CString val = GuiTools::GetWindowText(GetDlgItem(IDC_RGBEDIT));
     WinUtils::CopyTextToClipboard(val);
     return 0;
+}
+
+HBRUSH CColorCodeDialog::OnCtlColorStatic(CDCHandle dc, CStatic wndStatic) {
+    if (wndStatic.m_hWnd == GetDlgItem(IDC_COLORSTATIC)) {
+        return brush_;
+    } 
+
+    SetMsgHandled(FALSE);
+    return GetSysColorBrush(COLOR_BTNFACE);
+}
+
+void CColorCodeDialog::updateValue(COLORREF ref) {
+    value_ = ref;
+    if (brush_.m_hBrush) {
+        brush_.DeleteObject();
+    }
+    brush_.CreateSolidBrush(ref);
+    if (m_hWnd) {
+        ::InvalidateRect(GetDlgItem(IDC_COLORSTATIC), nullptr, TRUE);
+    }
+}
+
+LRESULT CColorCodeDialog::OnHexEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (GetFocus() != hWndCtl) {
+        return 0;
+    }
+    CString text = GuiTools::GetDlgItemText(m_hWnd, IDC_HEXEDIT);
+
+    text.Trim();
+    CString sub;
+    if (text.Left(1)  == _T("#")) {
+        sub = text.Mid(1);
+    } else {
+        sub = text;
+    }
+
+    if (sub.GetLength() == 3) {
+        sub.Format(_T("%c%c%c%c%c%c"), sub[0], sub[0], sub[1], sub[1], sub[2], sub[2]);
+    }
+
+    COLORREF crefColor = RGB(0, 0, 0);
+
+    if (sub.GetLength() == 6) {
+        LPCTSTR pszTmp = sub;
+
+        LPTSTR pStop;
+        INT nTmp = _tcstol(pszTmp, &pStop, 16);
+        INT nR = (nTmp & 0xFF0000) >> 16;
+        INT nG = (nTmp & 0xFF00) >> 8;
+        INT nB = nTmp & 0xFF;
+
+        crefColor = RGB(nR, nG, nB);
+    }
+    updateValue(crefColor);
+    generateRgbEditText();
+    return 0;
+}
+
+LRESULT CColorCodeDialog::OnRgbEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    if (GetFocus() != hWndCtl) {
+        return 0;
+    }
+    CString text = GuiTools::GetDlgItemText(m_hWnd, IDC_RGBEDIT);
+    text.Trim();
+
+    pcrepp::Pcre regexp(R"(rgb\((\d+), *(\d+), *(\d+)\))", "i");
+
+    COLORREF crefColor = RGB(0, 0, 0);
+
+    if (regexp.search(W2U(text))) {
+        int r = std::stoi(regexp.get_match(1));
+        int g = std::stoi(regexp.get_match(2));
+        int b = std::stoi(regexp.get_match(3));
+        crefColor = RGB(r, g, b);
+    }
+    
+    updateValue(crefColor);
+    generateHexEditText();
+
+    return 0;
+}
+
+void CColorCodeDialog::generateHexEditText() {
+    BYTE r = GetRValue(value_);
+    BYTE g = GetGValue(value_);
+    BYTE b = GetBValue(value_);
+    std::wstring hexStr = str(boost::wformat(L"#%02x%02x%02x") % r % g % b);
+    SetDlgItemText(IDC_HEXEDIT, hexStr.c_str());
+}
+
+void CColorCodeDialog::generateRgbEditText() {
+    BYTE r = GetRValue(value_);
+    BYTE g = GetGValue(value_);
+    BYTE b = GetBValue(value_);
+    std::wstring rgbStr = str(boost::wformat(L"rgb(%d, %d, %d)") % r % g % b);
+    SetDlgItemText(IDC_RGBEDIT, rgbStr.c_str());
 }

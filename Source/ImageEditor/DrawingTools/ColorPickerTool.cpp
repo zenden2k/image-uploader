@@ -42,13 +42,17 @@ void ColorPickerTool::continueDraw(int x, int y, DWORD flags)
 
 void ColorPickerTool::endDraw(int x, int y)
 {
+    bool oldValue = canvas_->getCropOnExport();
+    canvas_->setCropOnExport(false);
     auto bmp = canvas_->getBitmapForExport();
+    canvas_->setCropOnExport(oldValue);
     if (bmp) {
         Gdiplus::Color color;
         if (bmp->GetPixel(x, y, &color) == Gdiplus::Ok) {
             canvas_->setForegroundColor(color);
             canvas_->onForegroundColorChanged(color);
             canvas_->setPreviousDrawingTool();
+            // On this line "this" object has been already destroyed
         }
     }
 }
@@ -65,7 +69,10 @@ ImageEditor::CursorType ColorPickerTool::getCursor(int x, int y)
 
 void ColorPickerTool::rightButtonClick(int x, int y)
 {
+    bool oldValue = canvas_->getCropOnExport();
+    canvas_->setCropOnExport(false);
     auto bmp = canvas_->getBitmapForExport();
+    canvas_->setCropOnExport(oldValue);
     if (bmp) {
         Gdiplus::Color color;
         if (bmp->GetPixel(x, y, &color) == Gdiplus::Ok) {
@@ -73,6 +80,7 @@ void ColorPickerTool::rightButtonClick(int x, int y)
 
             canvas_->onBackgroundColorChanged(color);
             canvas_->setPreviousDrawingTool();
+            // On this line "this" object has been already destroyed
         }
     }
 }

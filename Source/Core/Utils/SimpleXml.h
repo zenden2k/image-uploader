@@ -2,7 +2,7 @@
 
     Image Uploader -  free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2024 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -27,7 +27,9 @@
 #include <functional>
 #include "CoreTypes.h"
 
-class TiXmlElement;
+namespace tinyxml2 {
+class XMLElement;
+}
 
 namespace Sqrat{
 class Array;
@@ -52,7 +54,7 @@ class SimpleXmlNode
         /*! @endcond */
         virtual ~SimpleXmlNode();
         
-        const std::string Attribute(const std::string& name) const;
+        std::string Attribute(const std::string& name) const;
         /*! @cond PRIVATE */
         SimpleXmlNode operator[](const std::string& name);
         bool GetAttribute(const std::string& name, std::string& value) const;
@@ -65,13 +67,22 @@ class SimpleXmlNode
         int64_t AttributeInt64(const std::string& name) const;
         /*! @endcond */
         bool AttributeBool(const std::string& name) const;
-        const std::string Name() const;
-        const std::string Text() const;
+        std::string Name() const;
+        std::string Text() const;
        
         // Write
         SimpleXmlNode CreateChild(const std::string& name);
         SimpleXmlNode GetChild(const std::string& name, bool create = true);
+
+        /**
+        *  Slow function (it iterates over children)
+         * @deprecated since 1.4.1
+         */
         SimpleXmlNode GetChildByIndex(int index);
+
+        /**
+        *  Slow function (it iterates over children)
+        */
         int GetChildCount();
         void SetAttribute(const std::string& name, const std::string& value);
         void SetAttributeString(const std::string& name, const std::string& value);
@@ -112,14 +123,14 @@ class SimpleXmlNode
         */
         Sqrat::Array GetChilds(const std::string& name);
     protected:
-        SimpleXmlNode(TiXmlElement *el);
+        SimpleXmlNode(tinyxml2::XMLElement *el);
     private:
         SimpleXmlNode_impl *impl_;
         friend class SimpleXml;
 };
 
 /**
-   A simple tiny wrapper of TinyXML library which covers all xml needs of the app.
+   A simple tiny wrapper of TinyXML-2 library which covers all xml needs of the app.
    Unlike TinyXML classes or some other wrappers I met over Internet, usage of this class doesn't imply
     pointer manipulations, exceptions handling or usage of iterators (I actually hate them)
 */
@@ -132,7 +143,7 @@ class SimpleXml
         bool LoadFromString(const std::string& string);
         bool SaveToFile(const std::string& fileName) const;
         SimpleXmlNode getRoot(const std::string& name, bool create = true);
-        const std::string ToString();
+        std::string ToString();
     private:
         SimpleXml_impl *impl_;
         //DISALLOW_COPY_AND_ASSIGN(SimpleXml);

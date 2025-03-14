@@ -47,7 +47,6 @@ CThumbSettingsPage::~CThumbSettingsPage()
 
 LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    TabBackgroundFix(m_hWnd);
     // Translating controls
 
     TRC(IDC_THUMBTEXTCHECKBOX, "Thumbnail text:");
@@ -80,6 +79,16 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
         thumbsCombo_.AddString(U2W(IuCoreUtils::ExtractFileNameNoExt(W2U(fileName))));
     }
 
+    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+        
+    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+
+    thumbTextMacrosesButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
+    thumbTextMacrosesButton_.SetIcon(iconDropdown_);
+
+    thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
+
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
     thumbsCombo_.SelectString(-1, U2W(params_.TemplateName));
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
@@ -100,7 +109,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     return 1;  // Let the system set the focus
 }
 
-bool CThumbSettingsPage::Apply()
+bool CThumbSettingsPage::apply()
 {
     WtlGuiSettings* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     params_.AddImageSize = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
@@ -259,7 +268,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         if (result) {
             auto* resultImg = dynamic_cast<GdiPlusImage*>(result.get());
             if (resultImg) {
-                img.loadImage(0, resultImg->getBitmap());
+                img.loadImage(0, std::shared_ptr<Image>(resultImg->releaseBitmap()));
             }
         }
     }
@@ -366,8 +375,9 @@ LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID,
 
 void CThumbSettingsPage::ThumbTextCheckboxChange()
 {
-    bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK)==BST_CHECKED;
+    bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     ::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
+    thumbTextMacrosesButton_.EnableWindow(bChecked);
     params_.AddImageSize = bChecked;
     
 }
@@ -419,5 +429,39 @@ LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND h
     ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), setHeight);
     
     showSelectedThumbnailPreview();
+    return 0;
+}
+
+LRESULT CThumbSettingsPage::OnThumbMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
+    const std::vector<std::pair<CString, CString>> items {
+        { _T("%width%"), TR("image width")},
+        { _T("%height%"), TR("image height") },
+        { _T("%size%"), TR("file size") },
+    };
+    RECT rc {};
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu macrosMenu;
+
+    int id = 1;
+    macrosMenu.CreatePopupMenu();
+
+    for (const auto& item : items) {
+        CString title = item.first + _T(" - ") + item.second;
+        macrosMenu.AppendMenu(MF_STRING, id++, title);
+    }
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+
+    int result = macrosMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_RETURNCMD | TPM_NONOTIFY, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+    if (result && (result - 1 < items.size())) {
+        thumbTextEdit_.ReplaceSel(items[result - 1].first, TRUE);
+    }
+
     return 0;
 }

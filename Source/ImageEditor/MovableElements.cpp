@@ -346,14 +346,14 @@ void TextElement::endEdit(bool save)
 
 void TextElement::saveToHistory() {
     if (originalRawText_ != inputBox_->getRawText()) {
-        Canvas::UndoHistoryItem uhi;
+        auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
         Canvas::UndoHistoryItemElement uhie;
-        uhi.type = Canvas::UndoHistoryItemType::uitTextChanged;
+        uhi->type = Canvas::UndoHistoryItemType::uitTextChanged;
         uhie.movableElement = this;
         uhie.rawText = originalRawText_;
-        uhi.elements.push_back(uhie);
+        uhi->elements.push_back(uhie);
 
-        canvas_->addUndoHistoryItem(uhi);
+        canvas_->addUndoHistoryItem(std::move(uhi));
         originalRawText_.clear();
     }
 }
@@ -623,8 +623,15 @@ Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode
 void Arrow::render(Painter* gr)
 {
     using namespace Gdiplus;
-    Gdiplus::Pen pen(/* color_*/color_, REAL(penSize_));
-    if (mode_ == ArrowMode::Mode1) {
+    render(gr, color_, penSize_, startPoint_, endPoint_, mode_);
+}
+
+void Arrow::render(Painter* gr, Gdiplus::Color color, int penSize, POINT startPoint, POINT endPoint, ArrowMode mode)
+{
+    using namespace Gdiplus;
+
+    Gdiplus::Pen pen(/* color_*/ color, REAL(penSize));
+    if (mode == ArrowMode::Mode1) {
         AdjustableArrowCap cap1(5, 3, true);
         cap1.SetBaseCap(LineCapTriangle);
         cap1.SetStrokeJoin(LineJoinRound);
@@ -632,20 +639,20 @@ void Arrow::render(Painter* gr)
         //pen.SetStartCap(LineCapRound);
         pen.SetCustomEndCap(&cap1);
 
-        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
-    }
-    else {
+        gr->DrawLine(&pen, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+    } else {
         pen.SetStartCap(LineCapRound);
         pen.SetEndCap(LineCapRound);
-        gr->DrawLine(&pen, startPoint_.x, startPoint_.y, endPoint_.x, endPoint_.y);
-        Gdiplus::Pen pen2(color_, REAL(penSize_));
+        gr->DrawLine(&pen, startPoint.x, startPoint.y, endPoint.x, endPoint.y);
+        Gdiplus::Pen pen2(color, REAL(penSize));
 
-        int head_length = penSize_ * 6;
-        int head_width = penSize_ * 4;
-        const auto dx = static_cast<float>(endPoint_.x - startPoint_.x);
-        const auto dy = static_cast<float>(endPoint_.y - startPoint_.y);
-        const auto length = std::sqrt(dx*dx + dy * dy);
-        if (head_length < 1 || length < head_length / 2.0) return;
+        int head_length = penSize * 6;
+        int head_width = penSize * 4;
+        const auto dx = static_cast<float>(endPoint.x - startPoint.x);
+        const auto dy = static_cast<float>(endPoint.y - startPoint.y);
+        const auto length = std::sqrt(dx * dx + dy * dy);
+        if (head_length < 1 || length < head_length / 2.0)
+            return;
         // ux,uy is a unit vector parallel to the line.
         const auto ux = dx / length;
         const auto uy = dy / length;
@@ -655,16 +662,16 @@ void Arrow::render(Painter* gr)
         const auto vy = ux;
 
         const auto half_width = 0.5f * head_width;
-        Point p1{ int(round(endPoint_.x - head_length * ux + half_width * vx)),
-                 int(round(endPoint_.y - head_length * uy + half_width * vy)) };
+        Point p1 { int(round(endPoint.x - head_length * ux + half_width * vx)),
+            int(round(endPoint.y - head_length * uy + half_width * vy)) };
 
-        Point p2{ int(round(endPoint_.x - head_length * ux - half_width * vx)),
-                int(round(endPoint_.y - head_length * uy - half_width * vy)) };
+        Point p2 { int(round(endPoint.x - head_length * ux - half_width * vx)),
+            int(round(endPoint.y - head_length * uy - half_width * vy)) };
 
         pen2.SetEndCap(LineCapRound);
         pen2.SetStartCap(LineCapRound);
-        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p1.X, p1.Y);
-        gr->DrawLine(&pen2, endPoint_.x, endPoint_.y, p2.X, p2.Y);
+        gr->DrawLine(&pen2, endPoint.x, endPoint.y, p1.X, p1.Y);
+        gr->DrawLine(&pen2, endPoint.x, endPoint.y, p2.X, p2.Y);
     }
 }
 
@@ -714,13 +721,15 @@ ElementType FilledRectangle::getType() const
     return ElementType::etBlurringRectangle;
 }
 
-BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY, bool pixelate) : MovableElement(canvas)
+BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX,int endY,
+    bool pixelate, bool invertSelection) : MovableElement(canvas)
 {
     blurRadius_ = blurRadius;
     isPenSizeUsed_ = false;
     isBackgroundColorUsed_ = false;
     isColorUsed_ = false;
     pixelate_ = pixelate;
+    invertSelection_ = invertSelection;
 } 
 
 BlurringRectangle::~BlurringRectangle()
@@ -732,9 +741,24 @@ void BlurringRectangle::setBlurRadius(float radius)
     blurRadius_ = radius;
 }
 
+void BlurringRectangle::setInvertSelection(bool invert) {
+    invertSelection_ = invert;
+}
+
+bool BlurringRectangle::getInvertSelection() const {
+    return invertSelection_;
+}
+
 float BlurringRectangle::getBlurRadius() const
 {
     return blurRadius_;
+}
+
+RECT BlurringRectangle::getPaintBoundingRect() {
+    if (invertSelection_) {
+        return { 0, 0, canvas_->getWidth(), canvas_->getHeigth() };
+    } 
+    return MovableElement::getPaintBoundingRect();
 }
 
 void BlurringRectangle::render(Painter* gr)
@@ -751,10 +775,12 @@ void BlurringRectangle::render(Painter* gr)
     if ( elRect.Width < 1 || elRect.Height < 1 ) {
         return;
     }
-    if ( !isMoving_ ) { // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
-        
+    // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
+    if ( !isMoving_ /* && !canvas_->manipulationStarted()*/) { 
+        Rect excludeRect = invertSelection_ ? elRect : Rect();
+        Rect applyRect = invertSelection_ ? canvasRect : elRect;
         if(pixelate_) {
-            ImageUtils::ApplyPixelateEffect(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
+            ImageUtils::ApplyPixelateEffect(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_ * 4.0 /*BLUR_RADIUS_PRECISION*/), excludeRect);
         }
         else {
 #if GDIPVER >= 0x0110 
@@ -768,7 +794,7 @@ void BlurringRectangle::render(Painter* gr)
 
             st = gr->DrawImage(background, &sourceRect, &matrix, &blur, 0, Gdiplus::UnitPixel);
 #else
-            ImageUtils::ApplyGaussianBlur(background, elRect.X, elRect.Y, elRect.Width, elRect.Height, int(blurRadius_));
+            ImageUtils::ApplyGaussianBlur(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, blurRadius_, excludeRect);
 #endif
         }
 
@@ -781,8 +807,8 @@ ImageEditor::ElementType BlurringRectangle::getType() const
 }
 
 
-PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY) 
-            : BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true)
+PixelateRectangle::PixelateRectangle(Canvas* canvas, float blurRadius, int startX, int startY, int endX, int endY, bool invertSelection)
+            : BlurringRectangle(canvas, blurRadius, startX, startY, endX, endY, true, invertSelection)
 {
 }
 
@@ -1024,7 +1050,6 @@ void StepNumber::setFontSize(int size) {
         int radius = recalcRadius();
         resize(radius * 2, radius * 2);
     }
-
 }
 
 }

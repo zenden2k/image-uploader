@@ -21,6 +21,9 @@
 #ifndef IU_FUNC_MY_ENGINE_LIST_H
 #define IU_FUNC_MY_ENGINE_LIST_H
 
+#include <future>
+#include <mutex>
+
 #include "atlheaders.h"
 #include "Library.h"
 
@@ -29,8 +32,18 @@
 class CMyEngineList: public CUploadEngineList
 {
     public:
+        struct ServerIconCacheItem {
+            HICON icon{};
+            HBITMAP bm{};
+
+            ServerIconCacheItem() = default;
+
+            ServerIconCacheItem(HICON i, HBITMAP b): icon(i), bm(b) {
+                
+            }
+        };
         CMyEngineList();
-        ~CMyEngineList();
+        ~CMyEngineList() override;
         CString errorStr() const;
 
         using CUploadEngineListBase::byName;
@@ -38,12 +51,10 @@ class CMyEngineList: public CUploadEngineList
 
         int getUploadEngineIndex(const CString& Name) const;
         bool loadFromFile(const CString& filename);
-        HICON getIconForServer(const std::string& name);
-        CString getIconNameForServer(const std::string& name);
+      
         static char DefaultServer[];
         static char RandomServer[];
     private:
-        std::map<std::string, HICON> serverIcons_;
         CString m_ErrorStr;
         DISALLOW_COPY_AND_ASSIGN(CMyEngineList);
 };

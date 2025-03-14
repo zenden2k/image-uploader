@@ -34,25 +34,34 @@
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
+#include "Core/OutputGenerator/AbstractOutputGenerator.h"
+#include "Core/OutputGenerator/OutputGeneratorFactory.h"
+#include "Core/OutputGenerator/XmlTemplateGenerator.h"
+#include "Func/IuCommonFunctions.h"
 
 namespace {
 
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
 {
-    MENUITEMINFO MenuItem;
+    MENUITEMINFO MenuItem {};
 
     MenuItem.cbSize = sizeof(MenuItem);
-    if (szTitle)
+    MenuItem.fMask = MIIM_FTYPE | MIIM_ID;
+    if (szTitle) {
         MenuItem.fType = MFT_STRING;
-    else
+        MenuItem.fMask |= MIIM_STRING;
+    } else {
         MenuItem.fType = MFT_SEPARATOR;
-    MenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_DATA;
-    if (bm)
-        MenuItem.fMask |= MIIM_CHECKMARKS;
+    }
+
+    if (bm) {
+        MenuItem.fMask |= MIIM_BITMAP;
+        MenuItem.hbmpItem = bm;
+    }
     MenuItem.wID = id;
-    MenuItem.hbmpChecked = bm;
-    MenuItem.hbmpUnchecked = bm;
+
     MenuItem.dwTypeData = const_cast<LPWSTR>(szTitle);
+    MenuItem.cch = lstrlen(szTitle);
     return InsertMenuItem(hMenu, pos, TRUE, &MenuItem) != 0;
 }
 
@@ -73,7 +82,6 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     m_bStopCapturingWindows = false;
     WM_TASKBARCREATED = RegisterWindowMessage(_T("TaskbarCreated"));
     m_bIsUploading = false;
-    lastUploadedItem_ = nullptr;
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
@@ -94,6 +102,8 @@ LRESULT CFloatingWindow::OnClose(void)
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
+    using namespace ImageUploader::Core::OutputGenerator;
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     /*int w = ::GetSystemMetrics(SM_CXSMICON);
     if ( w > 32 ) {
         w = 48;
@@ -112,6 +122,24 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION;
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
+
+     CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");
+    std::string userTemplateFile = settings->SettingsFolder + "user_templates.xml";
+    templateList_ = std::make_unique<XmlTemplateList>();
+    try {
+        templateList_->loadFromFile(W2U(XmlFileName));
+
+    } catch (const std::exception& e) {
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Floating Window Module"), U2W(e.what()));
+    }
+
+    if (IuCoreUtils::FileExists(userTemplateFile)) {
+        try {
+            templateList_->loadFromFile(userTemplateFile);
+        } catch (const std::exception& e) {
+            ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Floating Window Module"), U2W(e.what()));
+        }
+    }
     return 0;
 }
 
@@ -364,6 +392,11 @@ LRESULT CFloatingWindow::OnFreeformScreenshot(WORD wNotifyCode, WORD wID, HWND h
     return 0;
 }
 
+LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("topwindowscreenshot,") + (m_bFromHotkey ? CString(_T("1")) : CString(_T("2"))));
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     if (lastUrlShorteningTask_ && lastUrlShorteningTask_->isRunning()) {
         return false;
@@ -402,7 +435,7 @@ LRESULT CFloatingWindow::OnShowLastUploadResults(WORD wNotifyCode, WORD wID, HWN
     return 0;
 }
 
-LRESULT CFloatingWindow::OnWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+LRESULT CFloatingWindow::OnActiveWindowScreenshot(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     if (m_PrevActiveWindow)
         SetForegroundWindow(m_PrevActiveWindow);
@@ -499,7 +532,9 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             MyInsertMenu(TrayMenu, i++, IDM_LASTREGIONSCREENSHOT, HotkeyToString("lastregionscreenshot", TR("Capture Last Region")));
         }
         MyInsertMenu(TrayMenu, i++, IDM_FULLSCREENSHOT, HotkeyToString("fullscreenshot", TR("Capture the Entire Screen")));
-        MyInsertMenu(TrayMenu, i++, IDM_WINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_ACTIVEWINDOWSCREENSHOT, HotkeyToString("windowscreenshot", TR("Capture the Active Window")));
+        MyInsertMenu(TrayMenu, i++, IDM_TOPWINDOWSCREENSHOT, HotkeyToString("topwindowscreenshot", TR("Capture Selected Window")));
+
         MyInsertMenu(TrayMenu, i++, IDM_WINDOWHANDLESCREENSHOT, HotkeyToString("windowhandlescreenshot", TR("Capture Selected Object")));
         MyInsertMenu(TrayMenu, i++, IDM_FREEFORMSCREENSHOT, HotkeyToString("freeformscreenshot", TR("Freehand Capture")));
 
@@ -524,7 +559,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                     break;
                 }
             }
-            MENUITEMINFO monitorMenuItem;
+            MENUITEMINFO monitorMenuItem {};
             monitorMenuItem.cbSize = sizeof(monitorMenuItem);
             monitorMenuItem.fMask = MIIM_TYPE | MIIM_ID | MIIM_SUBMENU;
             monitorMenuItem.fType = MFT_STRING;
@@ -532,6 +567,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             monitorMenuItem.wID = 10001;
             CString title = TR("Choose monitor");
             monitorMenuItem.dwTypeData = const_cast<LPWSTR>(title.GetString());
+            monitorMenuItem.cch = title.GetLength();
             TrayMenu.InsertMenuItem(i++, true, &monitorMenuItem);
             MonitorsSubMenu.Detach();
         }
@@ -559,13 +595,14 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
            (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD ? MFS_CHECKED : 0),
            IDM_SCREENTSHOTACTION_ADDTOWIZARD, TR("Add to Wizard"));
 
-        MENUITEMINFO mi;
+        MENUITEMINFO mi {};
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_TYPE | MIIM_ID | MIIM_SUBMENU;
         mi.fType = MFT_STRING;
         mi.hSubMenu = SubMenu;
         mi.wID = 10000;
         CString title = TR("Screenshot Action");
+        mi.cch = title.GetLength();
         mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         TrayMenu.InsertMenuItem(i++, true, &mi);
 
@@ -573,7 +610,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, HotkeyToString("shortenurl",TR("Shorten a link")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, HotkeyToString("showmainwindow", TR("Show program's window")));
+        MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, HotkeyToString("showmainwindow", TR("Show program window")));
         MyInsertMenu(TrayMenu, i++, IDM_OPENSCREENSHOTSFOLDER, HotkeyToString("open_screenshot_folder", TR("Open screenshots folder")));
         if (lastUploadedItem_) {
             MyInsertMenu(TrayMenu, i++, IDM_SHOWLASTUPLOADRESULTS, TR("Show results of last upload"));
@@ -822,26 +859,14 @@ void CFloatingWindow::stopIconAnimation() {
 }
 
 void CFloatingWindow::showLastUploadedCode() {
-    std::vector<CUrlListItem> items;
-    CUrlListItem it;
+    using namespace ImageUploader::Core::OutputGenerator;
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    std::vector<UploadObject> items;
+
     if (lastUploadedItem_) {
-        UploadResult* uploadResult = lastUploadedItem_->uploadResult();
-        it.ImageUrl = Utf8ToWstring(uploadResult->directUrl).c_str();
-        it.ImageUrlShortened = Utf8ToWstring(uploadResult->directUrlShortened).c_str();
-        it.ThumbUrl = Utf8ToWstring(uploadResult->thumbUrl).c_str();
-        it.DownloadUrl = Utf8ToWstring(uploadResult->downloadUrl).c_str();
-        it.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        auto* fileTask = dynamic_cast<FileUploadTask*>(lastUploadedItem_);
-        if (fileTask) {
-            it.FileName = U2W(fileTask->getDisplayName());
-            it.FileIndex = fileTask->index();
-            it.ServerName = U2W(lastUploadedItem_->serverName());
-            items.push_back(it);
-            if (it.ImageUrl.IsEmpty() && it.DownloadUrl.IsEmpty())
-                return;
-            CResultsWindow rp(wizardDlg_, items, false);
-            rp.DoModal(m_hWnd);
-        } 
+        items.push_back(*lastUploadedItem_);
+        CResultsWindow resultsWindow_(wizardDlg_, items, false);
+        resultsWindow_.DoModal(m_hWnd);
     }
 }
 
@@ -873,8 +898,8 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
                 url = Utf8ToWstring(!uploadResult->downloadUrlShortened.empty() ? uploadResult->downloadUrlShortened : uploadResult->downloadUrl).c_str();
                 usedDirectLink = false;
             }
-            lastUploadedItem_ = task;
-            ShowImageUploadedMessage(url);
+
+            ShowImageUploadedMessage(task, url);
 
         } else {
             CString statusText = TR("Could not upload screenshot :(");
@@ -895,18 +920,54 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     return 0;
 }
 
-void CFloatingWindow::ShowImageUploadedMessage(const CString& url) {
-    WinUtils::CopyTextToClipboard(url);
-    CString trimmedUrl = WinUtils::TrimString(url, 70);
-    ShowBaloonTip(trimmedUrl + CString("\r\n")
-        + TR("(the link has been copied to the clipboard)")+ CString("\r\n") + TR("Click on this message to view details...") , 
+void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& url)
+{
+    using namespace ImageUploader::Core::OutputGenerator;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    auto obj = std::make_unique<UploadObject>();
+    obj->fillFromUploadResult(task->uploadResult(), task);
+
+    CString code;
+    CString message; 
+    if (settings->TrayResult == WtlGuiSettings::trJustURL) {
+        message = TR("(the link has been copied to the clipboard)");
+        code = url;
+    } else if (settings->TrayResult == WtlGuiSettings::trLastCodeType) {
+        GeneratorID generatorId = static_cast<GeneratorID>(settings->CodeLang);
+        //CodeLang lang = clBBCode;
+        CodeType codeType = static_cast<CodeType>(settings->CodeType);
+        OutputGeneratorFactory factory;
+        std::vector<UploadObject> objects { *obj };
+        auto generator = factory.createOutputGenerator(generatorId, codeType);
+        generator->setPreferDirectLinks(settings->UseDirectLinks);
+        generator->setItemsPerLine(settings->ThumbsPerLine);
+        generator->setGroupByFile(settings->GroupByFilename);    
+        generator->setShortenUrl(task->serverProfile().shortenLinks());
+
+        if (generatorId == gidXmlTemplate) {
+            int templateIndex = settings->CodeType - 4;
+            auto xmlTemplateGenerator = dynamic_cast<XmlTemplateGenerator*>(generator.get());
+            if (xmlTemplateGenerator) {
+                xmlTemplateGenerator->setTemplateIndex(templateIndex);
+            }
+        }
+
+        code = U2W(generator->generate(objects, settings->UseTxtTemplate));
+        message = TR("(the code has been copied to the clipboard)");
+    }
+    WinUtils::CopyTextToClipboard(code);
+    CString trimmedCode = WinUtils::TrimString(code, 70);
+
+    ShowBaloonTip(trimmedCode + CString("\r\n")
+            + message + CString("\r\n") + TR("Click on this message to view details..."), 
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
-    CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedUrl;
+    CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedCode;
     setStatusText(statusText, kStatusHideTimeout);
+    lastUploadedItem_ = std::move(obj);
 }
 
 void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
-    CString statusText = TR("Screenshot was saved to clipboard.");
+    CString statusText = TR("Screenshot has been copied to clipboard.");
     ShowBaloonTip(statusText, APPNAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
 }

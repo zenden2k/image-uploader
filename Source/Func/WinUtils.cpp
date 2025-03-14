@@ -3,6 +3,8 @@
 #include <sstream>
 
 #include <Aclapi.h>
+#include <ComDef.h>
+#include <strsafe.h>
 #include <TlHelp32.h>
 #include <Winhttp.h>
 #include <boost/format.hpp>
@@ -72,9 +74,9 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
         if (OpenClipboard(hwnd)) {
             HGLOBAL hglb = GetClipboardData(CF_UNICODETEXT);
             if (!hglb) {
-                if (OpenClipboard(hwnd)) {
+                //if (OpenClipboard(hwnd)) {
                     hglb = GetClipboardData(CF_TEXT);
-                }
+                //}
                
                 if (!hglb) {
                     if (raiseError) {
@@ -83,8 +85,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                     }
                 } else {
                     LPCSTR lpstr = static_cast<LPCSTR>(GlobalLock(hglb));
-                    text = lpstr;
-                    GlobalUnlock(hglb);
+                    if (lpstr) {
+                        text = lpstr;
+                        GlobalUnlock(hglb);
+                    }
                     CloseClipboard();
                     return true;
                 }
@@ -92,8 +96,10 @@ bool GetClipboardText(CString& text, HWND hwnd, bool raiseError)
                 return false;
             }
             LPCWSTR lpstr = static_cast<LPCWSTR>(GlobalLock(hglb));
-            text = lpstr;
-            GlobalUnlock(hglb);
+            if (lpstr) {
+                text = lpstr;
+                GlobalUnlock(hglb);
+            }
             CloseClipboard();
             return true;
         }
@@ -464,7 +470,7 @@ CString GetSystemSpecialPath(int csidl)
     return result;
 }
 
-CString FormatWindowsErrorMessage(int idCode)
+CString FormatWindowsErrorMessage(DWORD idCode)
 {
     LPVOID lpMsgBuf;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,NULL,
@@ -622,8 +628,8 @@ CString IntToStr(int n)
 bool NewBytesToString(int64_t nBytes, LPTSTR szBuffer, int nBufSize)
 {
     std::string res = IuCoreUtils::FileSizeToString(nBytes);
-    lstrcpyn(szBuffer, IuCoreUtils::Utf8ToWstring(res).c_str(), nBufSize);
-    return TRUE;
+    StringCchCopy(szBuffer, nBufSize, IuCoreUtils::Utf8ToWstring(res).c_str());
+    return true;
 }
 
 bool IsElevated() 
@@ -676,7 +682,8 @@ void DeleteDir2(LPCTSTR Dir)
     if (!Dir)
         return;
     TCHAR szBuffer[MAX_PATH];
-    lstrcpyn(szBuffer, Dir, MAX_PATH);
+    StringCchCopy(szBuffer, MAX_PATH, Dir);
+
     int nLen = lstrlen(szBuffer) - 1;
     if (nLen >= 0 && szBuffer[nLen] == _T('\\'))
         szBuffer[nLen] = 0;
@@ -714,7 +721,7 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
     WIN32_FIND_DATA wfd;
     ZeroMemory(&wfd, sizeof(wfd));
     HANDLE findfile = 0;
-    TCHAR szNameBuffer[MAX_PATH];
+
 
     for (;; )
     {
@@ -732,8 +739,8 @@ size_t GetFolderFileList(std::vector<CString>& list, CString folder, CString mas
         }
         if (lstrlen(wfd.cFileName) < 1)
             break;
-        lstrcpyn(szNameBuffer, wfd.cFileName, 254);
-        list.push_back(szNameBuffer);
+
+        list.emplace_back(wfd.cFileName);
     }
     // return TRUE;
 
@@ -784,7 +791,7 @@ bool FontToString(const LOGFONT * lFont, CString &Result)
     return true;
 }
 
-bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
+bool StringToFont(LPCTSTR szBuffer, LPLOGFONT lFont, HDC targetDc)
 {
     TCHAR szFontName[LF_FACESIZE] = _T("Ms Sans Serif");
 
@@ -818,9 +825,13 @@ bool StringToFont(LPCTSTR szBuffer,LPLOGFONT lFont)
 
     ZeroMemory(lFont,sizeof(LOGFONT));
     lstrcpy(lFont->lfFaceName,szFontName);
-    HDC dc = ::GetDC(0);
+    HDC dc = targetDc ? targetDc : ::GetDC(nullptr);
+
     lFont->lfHeight = -MulDiv(nFontSize, GetDeviceCaps(dc , LOGPIXELSY), 72);
-    ReleaseDC(0, dc);
+
+    if (!targetDc) {
+        ReleaseDC(nullptr, dc);
+    }
 
     lFont->lfItalic=bItalic;
     lFont->lfStrikeOut=bStrikeOut;
@@ -901,7 +912,8 @@ bool ExtractStrFromList(
     goto lbl_allok;
 
 lbl_copydef:
-    if(szDefString) lstrcpy(szBuffer, szDefString);
+    if(szDefString)
+        StringCchCopy(szBuffer, nSize, szDefString);
     return false;
 
 lbl_allok:
@@ -1296,12 +1308,21 @@ std::string chcp(const std::string &str, UINT codePageSrc, UINT codePageDst)
     return wstostr(strtows(str, codePageSrc), codePageDst);
 }
 
-CString ErrorCodeToString(DWORD idCode)
+CString ErrorCodeToString(DWORD idCode, HMODULE mod)
 {
     LPVOID lpMsgBuf;
-    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL,
-        idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL);
-    CString res = reinterpret_cast<LPCTSTR>(lpMsgBuf);
+    DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS;
+    if (mod != NULL) {
+        flags |= FORMAT_MESSAGE_FROM_HMODULE;
+    } else {
+        flags |= FORMAT_MESSAGE_FROM_SYSTEM;
+    }
+
+    if (!FormatMessage(flags, mod, idCode, 0, reinterpret_cast<LPTSTR>(&lpMsgBuf), 0, NULL)) {
+        LOG(WARNING) << _T("Failed to format message! Error code %d\n") << GetLastError();
+    }
+    
+    CString res = static_cast<LPCTSTR>(lpMsgBuf);
     // Free the buffer.
     LocalFree(lpMsgBuf);
     return res;
@@ -1412,8 +1433,59 @@ bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
     return true;
 }
 
+bool ShowFilesInFolder(const std::vector<CString>& files, HWND wnd) {
+    PIDLIST_ABSOLUTE folderPidl = nullptr;
+
+    CComPtr<IShellFolder> desktop; // namespace root for parsing the path
+    HRESULT hr = SHGetDesktopFolder(&desktop);
+
+    if (!SUCCEEDED(hr)) {
+        return false;
+    }
+
+    std::vector<LPCITEMIDLIST> list;
+    for (const auto& file : files) {
+        PIDLIST_RELATIVE newPIdL;
+        hr = desktop->ParseDisplayName(wnd, nullptr, const_cast<LPWSTR>(file.GetString()), nullptr, &newPIdL, nullptr);
+        if (SUCCEEDED(hr)) {
+            LPCITEMIDLIST relativePidl = nullptr;
+            CComPtr<IShellFolder> folder;
+
+            hr = SHBindToParent(newPIdL, IID_IShellFolder, reinterpret_cast<void**>(&folder), &relativePidl);
+            if (SUCCEEDED(hr)) {
+                list.push_back(relativePidl);
+                if (!folderPidl) {
+                    CComQIPtr<IPersistFolder2> persistFolder(folder);
+                    if (persistFolder) {
+                        persistFolder->GetCurFolder(&folderPidl);
+                    }
+                }
+            }
+        }
+    }
+    if (!list.empty() && folderPidl != nullptr) {
+        // Will be opened the parent folder of the first file.
+        // Files laying in another folders will be ignored.
+        hr = SHOpenFolderAndSelectItems(folderPidl, list.size(), &list[0], 0);
+        if (!SUCCEEDED(hr)) {
+            _com_error err(hr);
+            LOG(ERROR) << "Unable to open folder in shell, error code=" << hr << std::endl << err.ErrorMessage();
+        } else {
+            return true;
+        }
+
+        // SHBindToParent does not allocate a new PIDL; 
+        // it simply receives a pointer through this parameter.
+        // Therefore, we are not responsible for freeing this resource.
+        /*for (auto& pidl : list) {
+            SHFree(const_cast<LPITEMIDLIST>(pidl));
+        }*/
+    }
+    return false;
+}
+
 bool ShowFileInFolder(CString fileName, HWND wnd) {
-    SHELLEXECUTEINFO ShInfo;
+    /*SHELLEXECUTEINFO ShInfo;
 
     ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
     ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -1431,7 +1503,8 @@ bool ShowFileInFolder(CString fileName, HWND wnd) {
         }
         return false;
     }
-    return true;
+    return true;*/
+    return ShowFilesInFolder({ fileName }, wnd);
 }
 
 /*SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds) {

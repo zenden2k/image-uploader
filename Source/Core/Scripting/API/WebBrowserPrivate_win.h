@@ -148,18 +148,18 @@ public:
         }
     }
 
-    const std::string url() {
+    std::string url() {
         if ( webViewWindow_.m_hWnd) {
             return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.getUrl());
         } 
         return std::string();
     }
 
-    const std::string title() {
+    std::string title() {
         return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.getTitle());
     }
 
-    const std::string getDocumentContents() {
+    std::string getDocumentContents() {
         // TODO: not implemented
         return {};
         //return W2U(webViewWindow_.getDocumentContents());

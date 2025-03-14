@@ -11,7 +11,6 @@
 #define MyAppURL "https://svistunov.dev/imageuploader"
 #define MyAppExeName "Image Uploader.exe"
 ;#include ReadReg(HKEY_LOCAL_MACHINE,'Software\Sherlock Software\InnoTools\Downloader','ScriptPath','')
-#include "it_download.iss"
 
 
 [Setup]
@@ -23,6 +22,7 @@ AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName=Image Uploader {#MyAppVersion} Build {#IU_BUILD_NUMBER}
 UninstallDisplayName=Image Uploader {#MyAppVersion}
+UninstallDisplayIcon="{app}\{#MyAppExeName}"
 VersionInfoVersion={#IU_APP_VER_CLEAN}.{#IU_BUILD_NUMBER}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
@@ -60,7 +60,7 @@ Name: "hu"; MessagesFile: "Languages\Hungarian.isl"
 Name: "uk"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 Name: "ar"; MessagesFile: "Languages\Arabic.isl"
 [CustomMessages]
-InstallFFmpeg=Install FFmpeg library (better video formats support)
+InstallFFmpeg=Install FFmpeg library (for better video formats support)
 Additional=Additional
 ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 ru.Additional=Дополнительно
@@ -96,15 +96,18 @@ Source: "..\Data\servers.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; 
 Source: "..\Data\servers.xsd"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\template.txt"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\templates.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
+Source: "..\Data\mime.cache"; DestDir: "{code:GetDataFolder}\Image Uploader\"; Flags: ignoreversion
 Source: "..\Data\Favicons\*.ico"; DestDir: "{code:GetDataFolder}\Image Uploader\Favicons"; Flags: ignoreversion
 Source: "..\Data\Scripts\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts"; Flags: ignoreversion  
 Source: "..\Data\Scripts\Utils\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Utils"; Flags: ignoreversion  
 Source: "..\Data\Scripts\UploadFilters\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\UploadFilters"; Flags: ignoreversion  
+Source: "..\Data\Scripts\ImageSearch\*.nut"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\ImageSearch"; Flags: ignoreversion  
 Source: "..\Data\Scripts\Lang\*.json"; DestDir: "{code:GetDataFolder}\Image Uploader\Scripts\Lang"; Flags: ignoreversion
 Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Image Uploader\Thumbnails"; Flags: ignoreversion
 Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils"; Flags: ignoreversion
+;Source: "{tmp}\gdiplus.dll"; DestDir: "{app}"; Flags: external; 
 
 ;Flags: deleteafterinstall
 ;Source: "..\Data\Servers\*.xml"; DestDir: "{code:GetDataFolder}\Image Uploader\Servers"; Flags: ignoreversion
@@ -125,9 +128,9 @@ Source: "..\Build\Gui\Release\sw*.dll"; DestDir: "{app}"; Flags: ignoreversion; 
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}";
 
-Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}";
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon;
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon;
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; WorkingDir: "{app}"
+Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: quicklaunchicon; WorkingDir: "{app}"
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Parameters: "/afterinstall /language={language} {code:GetAdditionalRunParameters}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 
@@ -143,10 +146,12 @@ Type: files; Name: "{code:GetDataFolder}\Image Uploader\Favicons\*"
 Type: files; Name: "{code:GetDataFolder}\Image Uploader\Scripts\*"
 
 [Code]
+var
+  DownloadPage: TDownloadWizardPage;
+  
 function GetDataFolder(Param: String): String;
 begin
-       Result := ExpandConstant('{commonappdata}')
-      
+  Result := ExpandConstant('{commonappdata}')
 end;
 
 function MyRand(Param: string): string;
@@ -165,12 +170,12 @@ end;
 
 function GetIconFileName(Param: String): String;
 begin
-    Result := ExpandConstant('{app}') + '\Image Uploader.exe'; 
+  Result := ExpandConstant('{app}') + '\Image Uploader.exe'; 
 end;
 
 function GetAdditionalRunParameters(Param: String): String;
 begin
-    Result := '';
+  Result := '';
 end;
 
 function LoadLibraryA(lpLibFileName: PAnsiChar): THandle;
@@ -179,68 +184,63 @@ function GetProcAddress(Module: THandle; ProcName: PAnsiChar): Longword;
 external 'GetProcAddress@kernel32.dll stdcall';
 
 function IsWine: boolean;
-var  LibHandle  : THandle;
+var  
+  LibHandle: THandle;
 begin
   LibHandle := LoadLibraryA('ntdll.dll');
   Result:= GetProcAddress(LibHandle, 'wine_get_version')<> 0;
 end;
 
-procedure  InitializeWizard;
+function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
+begin
+  if Progress = ProgressMax then
+    Log(Format('Successfully downloaded file to {tmp}: %s', [FileName]));
+  Result := True;
+end;
+
+procedure InitializeWizard;
  var BtnImage: TBitmapImage;
   WelcomePage: TWizardPage; 
    BtnPanel: TPanel; 
 begin
-     ITD_Init;
-     ITD_SetOption('UI_AllowContinue','1');
-     ITD_DownloadAfter(wpReady);
+  DownloadPage := CreateDownloadPage(SetupMessage(msgWizardPreparing), SetupMessage(msgPreparingDesc), @OnDownloadProgress);
 end;
 
-function PrepareToInstall(var NeedsRestart: Boolean): String;
+function NextButtonClick(CurPageID: Integer): Boolean;
 begin
- 
+  if (CurPageID = wpReady) and IsWine then begin
+    DownloadPage.Clear;
+    DownloadPage.Add('https://svistunov.dev/files/gdiplus.dll', 'gdiplus.dll', 'f1da32183b3da19f75fa4ef0974a64895266b16d119bbb1da9fe63867dba0645');
+    DownloadPage.Show;
+    try
+      try
+        DownloadPage.Download;
+        Result := True;
+      except
+        SuppressibleMsgBox(AddPeriod(GetExceptionMessage), mbCriticalError, MB_OK, IDOK);
+        Result := False;
+      end;
+    finally
+      DownloadPage.Hide;
+    end;
+  end else
+    Result := True;
 end;
-
-procedure CurPageChanged(CurPageID: Integer);
-  var Version: TWindowsVersion;
-begin
-      if CurPageID = wpReady then begin
-      ITD_ClearFiles;
-    GetWindowsVersionEx(Version);
-   if (Version.NTPlatform and
-     (Version.Major = 5) 
-     and (Version.Minor <1 )) or IsWine()  
-     then
-  begin
-
-    ITD_AddFile('https://svistunov.dev/files/gdiplus.dll', expandconstant('{tmp}\gdiplus.dll'));
-    //http://dl.bintray.com/zenden/zenden-image-uploader/ffmpeg-1.2.12.zip
-  
-  end;
-
-
-end;
-end;
-
 
 procedure CurStepChanged(CurStep: TSetupStep);
-   var Version: TWindowsVersion;
-  ResultCode: integer;
-  Cmd: String;
+  var 
+    Version: TWindowsVersion;
+    ResultCode: integer;
+    Cmd: String;
 begin
-
- if CurStep=ssPostInstall then begin
- GetWindowsVersionEx(Version);
-   if (Version.NTPlatform and
-     (Version.Major = 5) 
-     and (Version.Minor <1 ) ) or  IsWine()   
-     then
+  if CurStep=ssPostInstall then 
   begin
-  filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
+    GetWindowsVersionEx(Version);
+    if IsWine() then
+    begin
+      filecopy(expandconstant('{tmp}\gdiplus.dll'),expandconstant('{app}\gdiplus.dll'),false);
+      RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Wine\DllOverrides',
+                          'gdiplus', 'native, builtin');
+    end;
   end;
-
-
-    if IsWine then
-    RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Wine\DllOverrides',
-    'gdiplus', 'native, builtin');
- end;
 end;

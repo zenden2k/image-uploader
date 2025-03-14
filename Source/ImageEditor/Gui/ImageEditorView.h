@@ -16,7 +16,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
 {
     public:
         typedef CScrollWindowImpl<CImageEditorView> TBase;
-        DECLARE_WND_CLASS(L"CImageEditorView")
+        DECLARE_WND_CLASS_EX(L"CImageEditorView", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
         CImageEditorView();
         ~CImageEditorView();
         BOOL PreTranslateMessage(MSG* pMsg);
@@ -44,7 +44,7 @@ class CImageEditorView : public CScrollWindowImpl<CImageEditorView>, public Imag
         //    LRESULT CommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
         //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
         void setCanvas(ImageEditor::Canvas *canvas);
-        void updateView(Canvas* canvas,  Gdiplus::Rect rect) override;
+        void updateView(Canvas* canvas, Gdiplus::Rect rect, bool fullRender) override;
     protected:
         
         LRESULT OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

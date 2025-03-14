@@ -16,7 +16,10 @@ class CFolderList
     public:
         /*! @cond PRIVATE */
         std::vector<CFolderItem> m_folderItems;
+        CFolderItem parent_;
         /*! @endcond */
+
+
 
         /**
         @since 1.3.2
@@ -28,6 +31,14 @@ class CFolderList
         /*! @endcond */
         void AddFolder(const std::string& title, const std::string& summary, const std::string& id, const std::string& parentid, int accessType);
         void AddFolderItem(const CFolderItem& item);
+
+        void setParentFolder(const CFolderItem& parent) {
+            parent_ = parent;
+        }
+
+        const CFolderItem& parentFolder() const {
+            return parent_;
+        }
 };
 
 #endif

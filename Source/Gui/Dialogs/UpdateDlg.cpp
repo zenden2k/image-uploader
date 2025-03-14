@@ -126,8 +126,8 @@ LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWn
            
             /*if (MessageBox(message, APPNAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
                 HINSTANCE hinst = ShellExecute(0, L"open", upd.downloadPage(), NULL, NULL, SW_SHOWNORMAL);
-                if (reinterpret_cast<int>(hinst) <= 32) {
-                    LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<int>(hinst);
+                if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
+                    LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<INT_PTR>(hinst);
                 }
             }
         }
@@ -137,32 +137,38 @@ LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWn
 
 void CUpdateDlg::CheckUpdates()
 {
-    m_listView.ShowWindow(SW_HIDE);
-    ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
     m_Checked = true;
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        m_listView.ShowWindow(SW_HIDE);
+        ::ShowWindow(GetDlgItem(IDC_UPDATEINFO), SW_SHOW);
+        SetDlgItemText(IDC_UPDATEINFO, TR("Checking for updates..."));
+    });
 
-    SetDlgItemText(IDC_UPDATEINFO, TR("Checking for updates..."));
     if (!m_UpdateManager.CheckUpdates()) {
-        TRC(IDCANCEL, "Close");
         m_Checked = false;
-        CString errorStr = TR("An error occured while receiving update information from server.");
-        errorStr += "\r\n";
-        errorStr += m_UpdateManager.ErrorString();
-        SetDlgItemText(IDC_UPDATEINFO, errorStr);
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+            TRC(IDCANCEL, "Close");
+            CString errorStr = TR("An error occured while receiving update information from server.");
+            errorStr += "\r\n";
+            errorStr += m_UpdateManager.ErrorString();
+            SetDlgItemText(IDC_UPDATEINFO, errorStr);
+        });
         return;
     }
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->LastUpdateTime = static_cast<int>(time(0));
-    if (m_UpdateManager.AreManualUpdates()) {
-        CString text2 = m_UpdateManager.generateReport(true);
-        CString message = TR("A new version is available:");
-        SetDlgItemText(IDC_MANUALUPDATEINFO, message + _T("\r\n") + text2);
-        ::ShowWindow(GetDlgItem(IDC_DOWNLOADBUTTON), SW_SHOW);
-    }
-    else {
-        SetDlgItemText(IDC_MANUALUPDATEINFO, TR("You are using the latest Image Uploader version."));
-    }
+
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        if (m_UpdateManager.AreManualUpdates()) {
+            CString text2 = m_UpdateManager.generateReport(true);
+            CString message = TR("A new version is available:");
+            SetDlgItemText(IDC_MANUALUPDATEINFO, message + _T("\r\n") + text2);
+            ::ShowWindow(GetDlgItem(IDC_DOWNLOADBUTTON), SW_SHOW);
+        } else {
+            SetDlgItemText(IDC_MANUALUPDATEINFO, TR("You are using the latest Image Uploader version."));
+        }
+    });
 
     if (m_UpdateManager.AreAutoUpdates()) {
         if (!m_UpdateManager.AreCoreUpdates() && !IsWindowVisible()) {
@@ -174,24 +180,32 @@ void CUpdateDlg::CheckUpdates()
             return;
         }
 
-        ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
-        TRC(IDOK, "Update components");
-        if (m_UpdateCallback)
-            m_UpdateCallback->UpdateAvailabilityChanged(true);
-
-        if (ShouldStop())
+        if (ShouldStop()) {
             return;
-
-        if (!IsWindowVisible())
-            SetTimer(kTimer, 2000, 0); // Show update dialog after 2 seconds
+        }
 
         CString text = m_UpdateManager.generateReport();
-        SetDlgItemText(IDC_UPDATEINFO, text);
+
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this, text] {
+            ::ShowWindow(GetDlgItem(IDOK), SW_SHOW);
+            TRC(IDOK, "Update components");
+            if (m_UpdateCallback) {
+                m_UpdateCallback->UpdateAvailabilityChanged(true);
+            }
+
+            if (!IsWindowVisible()) {
+                SetTimer(kTimer, 2000, nullptr); // Show update dialog after 2 seconds
+            }
+
+            SetDlgItemText(IDC_UPDATEINFO, text);
+        });
     }
     else {
-        TRC(IDCANCEL, "Close");
-        CString text = TR("No updates for Image Uploader's components are available");
-        SetDlgItemText(IDC_UPDATEINFO, text);
+        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+            TRC(IDCANCEL, "Close");
+            CString text = TR("No updates for Image Uploader's components are available");
+            SetDlgItemText(IDC_UPDATEINFO, text);
+        });
     }
 }
 

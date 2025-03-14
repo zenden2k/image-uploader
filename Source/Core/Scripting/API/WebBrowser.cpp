@@ -60,7 +60,7 @@ void CWebBrowser::setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Obj
 }
 
 
-const std::string CWebBrowser::getDocumentContents()
+std::string CWebBrowser::getDocumentContents()
 {
     return d_->getDocumentContents();
 }
@@ -71,12 +71,12 @@ bool CWebBrowser::setHtml(const std::string& html)
     return d_->setHtml(html);
 }
 
-const std::string CWebBrowser::runJavaScript(const std::string& code)
+std::string CWebBrowser::runJavaScript(const std::string& code)
 {
     return d_->runJavaScript(code);
 }
 
-const std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, Sqrat::Object args)
+std::string CWebBrowser::callJavaScriptFunction(const std::string& funcName, Sqrat::Object args)
 {
     return d_->callJavaScriptFunction(funcName, args);
 }
@@ -126,12 +126,12 @@ void CWebBrowser::setTitle(const std::string& title)
     d_->setTitle(title);
 }
 
-const std::string CWebBrowser::url()
+std::string CWebBrowser::url()
 {
     return d_->url();
 }
 
-const std::string CWebBrowser::title()
+std::string CWebBrowser::title()
 {
     return d_->title();
 }

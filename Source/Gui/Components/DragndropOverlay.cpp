@@ -14,23 +14,24 @@ LRESULT CDragndropOverlay::OnPaint(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 }
 
 LRESULT  CDragndropOverlay::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    CClientDC dc(m_hWnd);
     LOGFONT lf;
-    WinUtils::StringToFont(_T("Arial,15,b,204"), &lf);
+    WinUtils::StringToFont(_T("Arial,15,b,204"), &lf, dc);
     font_.CreateFontIndirect(&lf);
 
     CRect clientRect;
     GetClientRect(&clientRect);
-    CClientDC dc(m_hWnd);
+
     backBufferDc_.CreateCompatibleDC(dc);
     backBufferBm_.CreateCompatibleBitmap(dc, clientRect.Width(), clientRect.Height());
     oldBm_ = backBufferDc_.SelectBitmap(backBufferBm_);
 
     CRect firstRect = clientRect;
     firstRect.bottom /= 2;
-    items_.emplace_back(kAddToTheList, firstRect, TR("Add to the list"));
+    items_.emplace_back(ItemId::kAddToTheList, firstRect, TR("Add to the list"));
     CRect secondRect = clientRect;
     secondRect.top = firstRect.bottom;
-    items_.emplace_back(kImportVideoFile, secondRect, TR("Import Video File"));
+    items_.emplace_back(ItemId::kImportVideoFile, secondRect, TR("Import Video File"));
 
     updateBackBuffer();
     return 0;
@@ -67,9 +68,10 @@ void CDragndropOverlay::updateBackBuffer() {
             backBufferDc_.Rectangle(&item.rc);
             backBufferDc_.SelectBrush(oldBr);
         }
-        backBufferDc_.SetTextColor(RGB(255, 255, 255));
+        COLORREF oldTextColor = backBufferDc_.SetTextColor(RGB(255, 255, 255));
         backBufferDc_.SetBkMode(TRANSPARENT);
         backBufferDc_.DrawText(item.text, -1, &item.rc, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        backBufferDc_.SetTextColor(oldTextColor);
         index++;
     }
    
@@ -108,7 +110,7 @@ void CDragndropOverlay::dragMove(int x, int y) {
     }
 }
 
-CDragndropOverlay::ITEM_ID CDragndropOverlay::itemAtPos(int x, int y) {
+CDragndropOverlay::ItemId CDragndropOverlay::itemAtPos(int x, int y) {
     POINT pt{ x, y };
 
     int index = 0;
@@ -120,5 +122,5 @@ CDragndropOverlay::ITEM_ID CDragndropOverlay::itemAtPos(int x, int y) {
 
         index++;
     }
-    return kInvalid;
+    return ItemId::kInvalid;
 }

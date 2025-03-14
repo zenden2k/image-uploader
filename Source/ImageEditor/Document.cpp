@@ -35,6 +35,7 @@ Document::Document(int width, int height) {
 }
 
 Document::Document(const wchar_t* fileName) {
+    hasTransparentPixels_ = false;
     currentImage_ = ImageUtils::LoadImageFromFileWithoutLocking(fileName, &isSrcMultiFrame_);
     init();
     if ( currentImage_ ) {
@@ -53,15 +54,14 @@ Document::~Document()
     for (auto& i : history_) {
         delete[] i.data;
     }
-    delete currentCanvas_;
 }
 
 void Document::init() {
-    currentCanvas_ = nullptr;
+    currentPainter_.reset();
     drawStarted_ = false;
     originalImage_ = nullptr;
     if ( currentImage_ ) {
-        currentCanvas_ = new Gdiplus::Graphics( currentImage_.get() );
+        currentPainter_ = std::make_unique<Gdiplus::Graphics>( currentImage_.get() );
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
 }
@@ -75,8 +75,8 @@ void Document::beginDrawing(bool cloneImage) {
 }
 
 void Document::addDrawingElement(DrawingElement *element) {
-    currentCanvas_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
-    currentCanvas_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
+    currentPainter_->SetSmoothingMode( Gdiplus::SmoothingModeAntiAlias );
+    currentPainter_->SetInterpolationMode( Gdiplus::InterpolationModeHighQualityBicubic );
     AffectedSegments segments;
     element->getAffectedSegments( &segments );
     changedSegments_ += segments;
@@ -84,7 +84,7 @@ void Document::addDrawingElement(DrawingElement *element) {
         saveDocumentState( );
         changedSegments_.clear();
     }
-    element->render( currentCanvas_ );
+    element->render( currentPainter_.get());
 }
 
 void Document::endDrawing() {
@@ -104,9 +104,14 @@ Gdiplus::Bitmap* Document::getBitmap() const
     return currentImage_.get();
 }
 
+void Document::updateBitmap(std::shared_ptr<Gdiplus::Bitmap> bm) {
+    saveDocumentState(true);
+    currentImage_ = bm;
+    init();
+}
+
 void Document::saveDocumentState(bool full) {
     int pixelSize = 4;
-    typedef std::deque<RECT>::iterator iter;
     std::deque<RECT> rects;
     Gdiplus::Bitmap *srcImage = ( originalImage_ ) ? originalImage_: currentImage_.get();
     int srcImageWidth = srcImage->GetWidth();
@@ -134,12 +139,10 @@ void Document::saveDocumentState(bool full) {
 
         unsigned char* pImageData = imageData;
 
-
         {
-
             AffectedSegments outSegments(srcImageWidth, srcImageHeight);
 
-            for (iter it = rects.begin(); it != rects.end(); ++it) {
+            for (auto it = rects.begin(); it != rects.end(); ++it) {
                 int x = it->left;
                 int y = it->top;
                 if (x < 0 || y < 0) {
@@ -236,6 +239,7 @@ bool Document::undo() {
         /*std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(undoItem.width, undoItem.height);
         memcpy(bpSrc, pdata, undoItem.size);*/
         currentImage_ = undoItem.bmp;
+        init();
     } else {
         for (auto it = rects.begin(); it != rects.end(); ++it) {
             int x = it->left;
@@ -283,12 +287,11 @@ bool Document::hasTransparentPixels() const
 }
 
 Painter* Document::getGraphicsObject() const {
-    return currentCanvas_;
+    return currentPainter_.get();
 }
 
 void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     saveDocumentState(true);
-    using namespace Gdiplus;
     std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
     Gdiplus::Graphics gr(newBitmap.get());
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
@@ -297,6 +300,10 @@ void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
 
 bool Document::isSrcMultiFrame() const {
     return isSrcMultiFrame_;
+}
+
+bool Document::isInDrawingState() const {
+    return drawStarted_;
 }
 
 }

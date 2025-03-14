@@ -31,7 +31,8 @@
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
 {
-    br = CreateSolidBrush(RGB(255, 255, 255));
+    br = GetSysColorBrush(COLOR_WINDOW);
+    //CreateSolidBrush(RGB(255, 255, 255));
     QuickRegionPrint = false;
 }
 
@@ -43,6 +44,7 @@ LRESULT CWelcomeDlg::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     
 LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    PageWnd = m_hWnd;
     DoDataExchange(FALSE);
     using namespace std::placeholders;
     CClientDC dc(m_hWnd);
@@ -51,7 +53,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
     auto leftImage = createLeftImage();
-    LeftImage.loadImage(0, leftImage.get(), 1, false, RGB(255,255,255), true);
+    LeftImage.loadImage(0, std::move(leftImage), 1, false, RGB(255,255,255), true);
 
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
@@ -79,7 +81,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         return icon.m_hIcon;
     };
 
-    ListBox.Init();
+    ListBox.Init(GetSysColor(COLOR_WINDOW));
     ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
     
     ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
@@ -97,7 +99,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
     
-    ListBox.AddString(TR("Import Video File"), TR("Extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
+    ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 #ifdef IU_ENABLE_MEDIAINFO
     if(MediaInfoHelper::IsMediaInfoAvailable())
         ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
@@ -107,7 +109,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     HFONT font = GetFont();
     LOGFONT alf;
-    PageWnd = m_hWnd;
 
     bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
 
@@ -115,14 +116,13 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     {
         alf.lfWeight = FW_BOLD;
 
-        NewFont=CreateFontIndirect(&alf);
+        NewFont.CreateFontIndirect(&alf);
 
         SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-        HDC dc = ::GetDC(nullptr);
-        alf.lfHeight  =  - MulDiv(13, GetDeviceCaps(dc, LOGPIXELSY), 72);
-        ::ReleaseDC(nullptr, dc);
-        NewFont = CreateFontIndirect(&alf);
-        SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
+        
+        alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
+        font2_.CreateFontIndirect(&alf);
+        SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)font2_,MAKELPARAM(false, 0));
     }
 
     ShowNext(false);
@@ -218,7 +218,9 @@ LRESULT CWelcomeDlg::OnBnClickedSettings(WORD /*wNotifyCode*/, WORD /*wID*/, HWN
 
 LRESULT CWelcomeDlg::OnBnClickedRegionPrint(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    WizardDlg->executeFunc(_T("regionscreenshot"));    
+    CString func;
+    func.Format(_T("regionscreenshot,%d"), static_cast<int>(siFromWelcomeDialog));
+    WizardDlg->executeFunc(func);   
     return 0;
 }
 

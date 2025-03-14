@@ -34,7 +34,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Core/Logging.h"
 #include "Func/WinUtils.h"
-#include "3rdpart/QColorQuantizer.h"
+#include "Core/Images/ColorQuantizer.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Func/IuCommonFunctions.h"
@@ -173,7 +173,7 @@ std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
     return image;
 }
 
-void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radius) {
+void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float radius, Gdiplus::Rect exclude) {
     using namespace Gdiplus;
     Rect rc(x, y, w, h);
 
@@ -214,7 +214,16 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
         bufCur = buf;
         sourceCur = source;
         for (int i = 0; i < h; i++) {
-            memcpy(sourceCur, bufCur, myStride);
+            if (exclude.IsEmptyArea()) {
+                memcpy(sourceCur, bufCur, myStride);
+            } else {
+                for (int j = 0; j < w; j++) {
+                    if (!exclude.Contains(j, i)) {
+                        memcpy(sourceCur + j * 4, bufCur + j * 4, 4);
+                    }
+                }
+            }
+
             bufCur += myStride;
             sourceCur += stride;
         }
@@ -225,7 +234,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, int radiu
     }
 }
 
-void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize) {
+void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, int blockSize, Gdiplus::Rect exclude) {
     using namespace Gdiplus;
     Rect rc(xPos, yPos, w, h);
 
@@ -261,7 +270,9 @@ void ApplyPixelateEffect(Gdiplus::Bitmap* bm, int xPos, int yPos, int w, int h, 
                     }
                 }
                 uint32_t pixel = (alpha / numPixels << 24) + (red / numPixels << 16) +  (green / numPixels << 8) + blue / numPixels;
-
+                if (exclude.Contains(x, y)) {
+                    continue;
+                }
                 for (int i = x; i < maxX; i++) {
                     for (int j = y; j < maxY; j++) {
                         uint32_t* data = (uint32_t*)(source + j * stride + i*4);
@@ -534,7 +545,7 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
     return rc;
 }
 
-bool MySaveImage(Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
+bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
 {
     if (Format == -1) {
         Format = sifJPEG;
@@ -560,6 +571,10 @@ bool MySaveImage(Bitmap* img, const CString& szFilename, CString& szBuffer, Save
     }
     buffer2.Format(_T("%s%s.%s"), static_cast<LPCTSTR>(Folder ? userFolder : AppParams::instance()->tempDirectoryW()), static_cast<LPCTSTR>(szNameBuffer),
                     szImgTypes[Format]);
+    if (!img) {
+        szBuffer = buffer2;
+        return true;
+    }
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
     WinUtils::CreateFilePath(resultFilename);
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
@@ -598,7 +613,7 @@ CString GdiplusStatusToString(Gdiplus::Status statusID) {
 }
 
 std::unique_ptr<Bitmap> RemoveAlpha(Bitmap* bm, Color color) {
-    std::unique_ptr<Bitmap> res(new Bitmap(bm->GetWidth(), bm->GetHeight(), PixelFormat32bppARGB));
+    auto res = std::make_unique<Bitmap>(bm->GetWidth(), bm->GetHeight(), PixelFormat32bppARGB);
 
     if (res->GetLastStatus() != Ok) {
         return {};
@@ -640,8 +655,8 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
         eps.Parameter[0].NumberOfValues = 1;
         eps.Parameter[0].Value = &Quality;
     } else if (Format == sifGIF) { // GIF
-        QColorQuantizer quantizer;
-        quantizedImage.reset(quantizer.GetQuantized(img, QColorQuantizer::Octree, (Quality < 50) ? 16 : 256));
+        ColorQuantizer quantizer;
+        quantizedImage = quantizer.getQuantized(img, (Quality < 50) ? 16 : 256);
         if (quantizedImage) {
             img = quantizedImage.get();
         }
@@ -661,7 +676,7 @@ bool SaveImageToFile(Gdiplus::Bitmap* img, const CString& fileName, IStream* str
     }
 
     if (result != Ok) {
-        int lastError = GetLastError();
+        DWORD lastError = GetLastError();
         CString error = GdiplusStatusToString(result);
         if (result == Gdiplus::Win32Error) {
             error += L"\r\n" + WinUtils::FormatWindowsErrorMessage(lastError) + L"";
@@ -1300,13 +1315,13 @@ bool SaveImageFromCliboardDataUriFormat(const CString& clipboardText, CString& f
 }
 
 // Allocates storage for entire file 'file_name' and returns contents and size
-bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data_size) {
+std::pair<std::unique_ptr<uint8_t[]>, size_t> ExUtilReadFile(const wchar_t* file_name) {
 
     std::unique_ptr<uint8_t[]> file_data;
 
-    if (data == nullptr || data_size == nullptr) return 0;
-    *data = nullptr;
-    *data_size = 0;
+    if (file_name == nullptr) {
+        return {};
+    }
 
     FILE* in = _wfopen(file_name, L"rb");
     if (in == nullptr) {
@@ -1321,18 +1336,20 @@ bool ExUtilReadFile(const wchar_t* const file_name, uint8_t** data, size_t* data
     catch (std::exception &) {
         LOG(ERROR) << "Unable to allocate " << file_size << " bytes";
         fclose(in);
-        return false;
+        return {};
     }
-    if (file_data == nullptr) return false;
+    if (file_data == nullptr) {
+        fclose(in);
+        return {};
+    }
     int ok = (fread(file_data.get(), 1, file_size, in) == file_size);
     fclose(in);
 
     if (!ok) {
         throw IOException(str(boost::format("Could not read %d bytes of data from file") % file_size), IuCoreUtils::WstringToUtf8(file_name));
     }
-    *data = file_data.release();
-    *data_size = file_size;
-    return true;
+
+    return std::make_pair(std::move(file_data), file_size);
 }
 
 bool IsImageMultiFrame(Gdiplus::Image* img) {
@@ -1487,6 +1504,102 @@ CString ImageFormatGUIDToString(GUID guid) {
         return "wmf";
     }
     return "unknown";
+}
+
+/*
+Gdiplus::Bitmap* GetIconPixelData(HICON hIcon)
+{
+    ICONINFO iconInfo;
+    GetIconInfo(hIcon, &iconInfo);
+
+    BITMAP iconBmp;
+    GetObject(iconInfo.hbmColor, sizeof(BITMAP), &iconBmp);
+
+    Gdiplus::Bitmap* bitmap = new Gdiplus::Bitmap(iconBmp.bmWidth, iconBmp.bmHeight, PixelFormat32bppARGB);
+
+    bool hasAlpha = false;
+    {
+        // We have to read the raw pixels of the bitmap to get proper transparency information
+        // (not sure why, all we're doing is copying one bitmap into another)
+
+        Gdiplus::Bitmap colorBitmap(iconInfo.hbmColor, NULL);
+        Gdiplus::BitmapData bmpData;
+        Gdiplus::Rect bmBounds(0, 0, colorBitmap.GetWidth(), colorBitmap.GetHeight());
+
+        colorBitmap.LockBits(&bmBounds, Gdiplus::ImageLockModeRead, colorBitmap.GetPixelFormat(), &bmpData);
+        for (int y = 0; y < colorBitmap.GetHeight(); y++) {
+            byte* pixelBytes = (byte*)bmpData.Scan0 + y * bmpData.Stride;
+
+            for (int x = 0; x < colorBitmap.GetHeight(); x++) {
+                ARGB* pixel = (ARGB*)(pixelBytes + x * 4);
+                bitmap->SetPixel(x, y, Gdiplus::Color(*pixel));
+                hasAlpha = hasAlpha || (pixelBytes[3] > 0 && pixelBytes[3] < 255);
+            }
+        }
+
+        colorBitmap.UnlockBits(&bmpData);
+    }
+
+    if (!hasAlpha) {
+        // If there's no alpha transparency information, we need to use the mask
+        // to turn back on visible pixels
+
+        Gdiplus::Bitmap maskBitmap(iconInfo.hbmMask, NULL);
+        Gdiplus::Color cMask, cBitmap;
+        for (int y = 0; y < maskBitmap.GetHeight(); y++) {
+            for (int x = 0; x < maskBitmap.GetWidth(); x++) {
+                maskBitmap.GetPixel(x, y, &cBitmap);
+                cBitmap.SetValue(cBitmap.GetValue() | 0xFF000000); // turn alpha to opaque (i.e. 0xFF)
+                bitmap->SetPixel(x, y, cBitmap);
+            }
+        }
+    }
+    return bitmap;
+}*/
+
+std::pair<std::unique_ptr<Gdiplus::Bitmap>,std::unique_ptr<BYTE[]>> GetIconPixelData(HICON hIcon) {
+    if (hIcon == NULL){
+        return {};
+    }
+    ICONINFO icInfo = { 0 };
+
+    if (!::GetIconInfo(hIcon, &icInfo)) {
+        return {};
+    }
+
+    BITMAP bitmap;
+    GetObject(icInfo.hbmColor, sizeof(BITMAP), &bitmap);
+    std::unique_ptr<Bitmap> pBitmap;
+    std::unique_ptr<Bitmap> pWrapBitmap;
+    std::unique_ptr<BYTE[]> data;
+    if (bitmap.bmBitsPixel != 32) {
+        pBitmap.reset(Bitmap::FromHICON(hIcon));
+    } else {
+        pWrapBitmap.reset(Bitmap::FromHBITMAP(icInfo.hbmColor, NULL));
+        BitmapData bitmapData;
+        Rect rcImage(0, 0, pWrapBitmap->GetWidth(), pWrapBitmap->GetHeight());
+
+        if (pWrapBitmap->LockBits(&rcImage, ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData) == Ok) {
+            int absStride = std::abs(bitmapData.Stride);
+            size_t size = absStride * bitmapData.Height;
+            
+            data = std::make_unique<BYTE[]>(size);
+
+            for (int y = 0; y < bitmapData.Height; y++) {
+                BYTE* srcData = static_cast<BYTE*>(bitmapData.Scan0) + y* bitmapData.Stride;
+                memcpy(data.get() + y * absStride, srcData, bitmapData.Width * 4);
+            }
+
+            pBitmap = std::make_unique<Bitmap>(bitmapData.Width, bitmapData.Height, absStride,
+                PixelFormat32bppARGB, data.get());
+            pWrapBitmap->UnlockBits(&bitmapData);
+        }
+    }
+
+    DeleteObject(icInfo.hbmColor);
+    DeleteObject(icInfo.hbmMask);
+
+    return std::make_pair(std::move(pBitmap), std::move(data));
 }
 
 }

@@ -127,12 +127,15 @@ struct CurlInitializer {
     std::string certFileName;
 
     CurlInitializer() {
+#ifdef USE_OPENSSL
+        init_locks(); // init locks should be called BEFORE curl_global_init
+#endif
         curl_global_init(CURL_GLOBAL_ALL);
 #ifdef _WIN32
         wchar_t buffer[1024] = { 0 };
         if (GetModuleFileNameW(nullptr, buffer, 1024) != 0) {
             int len = lstrlenW(buffer);
-            for (int i = len; i >= 0; i--) {
+            for (int i = len - 1; i >= 0; i--) {
                 if (buffer[i] == '\\') {
                     buffer[i + 1] = 0;
                     break;
@@ -257,14 +260,10 @@ void NetworkClient::setMethod(const std::string &str)
     m_method = str;
 }
 
-bool  NetworkClient::_curl_init = false;
-
-std::mutex NetworkClient::_mutex;
-
 NetworkClient::NetworkClient()
 {
-    curl_init();
     static NetworkClientInternal::CurlInitializer initializer;
+    IuCoreUtils::OnThreadExit(&NetworkClient::clearThreadData);
     enableResponseCodeChecking_ = true;
     m_hOutFile = nullptr;
     chunkOffset_ = -1;
@@ -285,7 +284,6 @@ NetworkClient::NetworkClient()
     m_nUploadDataOffset = 0;
     treatErrorsAsWarnings_ = false;
     logger_ = nullptr;
-    proxyProvider_ = nullptr;
     curl_easy_setopt(curl_handle, CURLOPT_COOKIELIST, "");
     m_userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36";
 
@@ -301,6 +299,8 @@ NetworkClient::NetworkClient()
     curl_easy_setopt(curl_handle, CURLOPT_ENCODING, "");
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTFUNCTION, &set_sockopts);
     curl_easy_setopt(curl_handle, CURLOPT_SOCKOPTDATA, this);
+
+    //curl_easy_setopt(curl_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2);
 
     /*
     TODO: use new progress callbacks
@@ -387,8 +387,9 @@ bool NetworkClient::doUploadMultipartData()
     if (m_method.empty()) {
         setMethod("POST");
     }
-    private_apply_method();
+
     private_init_transfer();
+    private_apply_method();
     std::vector<FILE *> openedFiles;
 
     struct curl_httppost *formpost=nullptr;
@@ -405,12 +406,10 @@ bool NetworkClient::doUploadMultipartData()
                     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
                                         std::string fileName = it->value;
                     // Known bug in curl: https://github.com/curl/curl/issues/768
-                    if (/*curFileSize > LONG_MAX*/  true ) { 
+                    if (/*curFileSize > LONG_MAX*/  true ) {
+
                         std::string ansiFileName = UTF8_FILENAME(fileName);
-                        
-#if defined(_WIN32) && !defined(CURL_WIN32_UTF8_FILENAMES)
-                        //LOG(WARNING) << "Uploading files bigger than 2 GB via multipart/form-data with file names non representable in system locale is not supported";
-#endif
+
                         if (it->contentType.empty())
                             curl_formadd(&formpost,
                             &lastptr,
@@ -468,7 +467,7 @@ bool NetworkClient::doUploadMultipartData()
 bool NetworkClient::private_on_finish_request()
 {
     private_checkResponse();
-    private_cleanup_after();
+    cleanupAfter();
     private_parse_headers();
     if (curl_result != CURLE_OK)
     {
@@ -498,7 +497,7 @@ void NetworkClient::addQueryHeader(const std::string& name, const std::string& v
     m_QueryHeaders.emplace_back(name, value);
 }
 
-bool NetworkClient::doGet(const std::string & url)
+bool NetworkClient::doGet(const std::string &url)
 {
     if(!url.empty())
         setUrl(url);
@@ -593,11 +592,17 @@ void NetworkClient::private_init_transfer()
     if (proxyProvider_) {
         proxyProvider_->provideProxyForUrl(this, m_url);
     }
+    if (debugger_ && debugger_->isDebugEnabled()) {
+        curl_easy_setopt(curl_handle, CURLOPT_DEBUGFUNCTION, debug_callback);
+        curl_easy_setopt(curl_handle, CURLOPT_DEBUGDATA, this);
+        curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 1L);
+        debugger_->configureClient(this);
+    }
 }
 
 void NetworkClient::private_checkResponse()
 {
-    if ( !enableResponseCodeChecking_ && curl_result == CURLE_OK )  {
+    if (!enableResponseCodeChecking_ /* && curl_result == CURLE_OK*/) {
         return;
     }
     int code = responseCode();
@@ -627,20 +632,6 @@ void NetworkClient::private_checkResponse()
             (treatErrorsAsWarnings_ ? LOG(WARNING) : LOG(ERROR)) << errorDescr;
         }
     }
-}
-
-void NetworkClient::curl_init() {
-    std::lock_guard<std::mutex> guard(_mutex);
-    if (!_curl_init) {
-#ifdef USE_OPENSSL
-        NetworkClientInternal::init_locks(); // init locks should be called BEFORE curl_global_init
-        _curl_init = true;
-#endif
-    }
-}
-
-void NetworkClient::curl_cleanup()
-{
 }
 
 std::string NetworkClient::responseHeaderText()
@@ -692,11 +683,12 @@ std::string NetworkClient::responseHeaderByIndex(int index, std::string& name)
         name = m_ResponseHeaders[index].name;
         return m_ResponseHeaders[index].value;
     }
-    return std::string();
+    return {};
 }
 
 void NetworkClient::private_cleanup_before()
 {
+    m_nUploadDataOffset = 0;
     std::vector<CustomHeaderItem>::iterator it, end = m_QueryHeaders.end();
 
     bool add = true;
@@ -713,7 +705,7 @@ void NetworkClient::private_cleanup_before()
     curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 }
 
-void NetworkClient::private_cleanup_after()
+void NetworkClient::cleanupAfter()
 {
     m_currentActionType = ActionType::atNone;
     m_QueryHeaders.clear();
@@ -726,6 +718,7 @@ void NetworkClient::private_cleanup_after()
     m_OutFileName.clear();
     m_method.clear();
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(-1));
 
     m_uploadData.clear();
     m_uploadingFile = nullptr;
@@ -770,7 +763,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
         size_t wantsToRead = size * nmemb;
         // dont even try to remove "<>" brackets!!
         size_t canRead = std::min<>(m_uploadData.size() - m_nUploadDataOffset, wantsToRead);
-        memcpy(ptr, m_uploadData.data(), canRead);
+        memcpy(ptr, m_uploadData.data() + m_nUploadDataOffset, canRead);
         m_nUploadDataOffset += canRead;
         retcode = canRead;
     }
@@ -811,12 +804,17 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     if(!fileName.empty())
     {
         m_uploadingFile = IuCoreUtils::FopenUtf8(fileName.c_str(), "rb"); /* open file to upload */
-        if(!m_uploadingFile) 
-        {
-            LOG(ERROR)<< "Failed to open file '" << fileName << "'";
-            return false; /* can't continue */
+        if (fseek(m_uploadingFile, 0, SEEK_END) == 0) {
+            m_CurrentFileSize = IuCoreUtils::Ftell64(m_uploadingFile);
+            IuCoreUtils::Fseek64(m_uploadingFile, 0, SEEK_SET);
         }
-        m_CurrentFileSize = IuCoreUtils::GetFileSize(fileName);
+        else {
+            fclose(m_uploadingFile);
+            m_uploadingFile = nullptr;
+            //currentFileSize_ = NetworkClientInternal::GetBigFileSize(fileName);
+            return false;
+        }
+
         m_currentUploadDataSize = m_CurrentFileSize;
         if(m_CurrentFileSize < 0) {
             fclose(m_uploadingFile);
@@ -833,7 +831,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     }
     else
     {
-        m_nUploadDataOffset =0;
+        // FIXME: ignoring chunkSize_ and chunkOffset_
         m_uploadData = data;
         m_CurrentFileSize = data.length();
         m_currentUploadDataSize = m_CurrentFileSize;
@@ -841,15 +839,18 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     }
 
     private_init_transfer();
-    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
-    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
-    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, NULL);
     if (!private_apply_method()) {
         curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
     }
-    curl_easy_setopt(curl_handle,CURLOPT_POSTFIELDS, NULL);
+
+    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, read_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, private_seek_callback);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, this);
+
     curl_easy_setopt(curl_handle, CURLOPT_READDATA, this);
-    
+
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
     /*if (m_method != "PUT") {
         addQueryHeader("Content-Length", IuCoreUtils::Int64ToString(m_currentUploadDataSize));
     }*/
@@ -888,7 +889,7 @@ bool NetworkClient::private_apply_method()
 
 void NetworkClient::setReferer(const std::string &str)
 {
-    curl_easy_setopt(curl_handle, CURLOPT_REFERER, str.c_str());
+    curl_easy_setopt(curl_handle, CURLOPT_REFERER, !str.empty() ? str.c_str() : nullptr);
 }
 
 int NetworkClient::getCurlResult()
@@ -912,12 +913,12 @@ void NetworkClient::setUploadBufferSize(int size)
 
 void NetworkClient::setChunkOffset(double offset)
 {
-    chunkOffset_ = static_cast<uint64_t>(offset);
+    chunkOffset_ = static_cast<int64_t>(offset);
 }
 
 void NetworkClient::setChunkSize(double size)
 {
-    chunkSize_ = static_cast<uint64_t>(size);
+    chunkSize_ = static_cast<int64_t>(size);
 }
 
 void NetworkClient::setTreatErrorsAsWarnings(bool treat)
@@ -955,6 +956,10 @@ void NetworkClient::setLogger(Logger* logger) {
 
 void NetworkClient::setProxyProvider(std::shared_ptr<ProxyProvider> provider) {
     proxyProvider_ = provider;
+}
+
+void NetworkClient::setDebugger(std::shared_ptr<Debugger> debugger) {
+    debugger_ = debugger;
 }
 
 void NetworkClient::setCurlOption(int option, const std::string &value) {
@@ -1007,4 +1012,18 @@ void NetworkClient::setMaxDownloadSpeed(uint64_t speed) {
 
 NetworkClient::ActionType NetworkClient::currrentActionType() const {
     return m_currentActionType;
+}
+
+void NetworkClient::clearThreadData() {
+#ifdef USE_OPENSSL
+    OPENSSL_thread_stop();
+#endif
+}
+
+int NetworkClient::debug_callback(CURL* handle, curl_infotype type, char* data, size_t size, void* clientp) {
+    auto* pthis = static_cast<NetworkClient*>(clientp);
+    if (pthis->debugger_) {
+        return pthis->debugger_->debugCallback(pthis, type, data, size);
+    }
+    return 0;
 }

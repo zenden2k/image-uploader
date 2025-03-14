@@ -39,13 +39,17 @@
 #include "Gui/Dialogs/LangSelect.h"
 #include "versioninfo.h"
 #include "Core/Network/NetworkClientFactory.h"
+#include "Core/Network/NetworkDebugger.h"
 #include "Core/Scripting/ScriptsManager.h"
 #include "Core/Upload/Filters/UserFilter.h"
 #include "Core/Upload/Filters/ImageConverterFilter.h"
 #include "Core/Upload/Filters/SizeExceedFilter.h"
 #include "Core/Upload/Filters/UrlShorteningFilter.h"
+#include "Core/Upload/Filters/ImageSearchFilter.h"
 #include "Core/Upload/UploadEngineManager.h"
+#include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Gui/Helpers/LangHelper.h"
+#include "Video/MediaFoundationFrameGrabber.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -54,6 +58,7 @@
 CAppModule _Module;
 
 class Application {
+    CMessageLoop theLoop_;
     CLogWindow logWindow_;
     WtlGuiSettings settings_;
     CLang lang_;
@@ -67,10 +72,14 @@ class Application {
     std::unique_ptr<ImageConverterFilter> imageConverterFilter_;
     std::unique_ptr<SizeExceedFilter> sizeExceedFilter_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
+    std::shared_ptr<ImageSearchFilter> imageSearchFilter_;
     std::unique_ptr<UserFilter> userFilter_;
     std::shared_ptr<WtlScriptDialogProvider> scriptDialogProvider_;
     std::unique_ptr<TaskDispatcher> taskDispatcher_;
+    std::shared_ptr<NetworkDebugger> networkDebugger_;
+    MediaFoundationInitializer mediaFoundationInitializer_;
     CString commonTempFolder_, tempFolder_;
+
 public:
     Application() {
         srand(static_cast<unsigned>(time(nullptr)));
@@ -82,6 +91,7 @@ public:
         CScriptUploadEngine::DestroyScriptEngine();
         //ServiceLocator::instance()->setUploadManager(nullptr);
         logWindow_.DestroyWindow();
+        _Module.RemoveMessageLoop();
         // Remove temporary files
         IuCommonFunctions::ClearTempFolder(tempFolder_);
         std::vector<CString> folders;
@@ -95,6 +105,8 @@ public:
                 IuCommonFunctions::ClearTempFolder(commonTempFolder_ + _T("\\") + folder);
         }
 
+        xdg_mime_set_dirs(nullptr);
+        xdg_mime_shutdown();
         // deletes empty temp directory
         RemoveDirectory(commonTempFolder_);
     }
@@ -119,6 +131,8 @@ public:
         google::AddLogSink(myLogSink_.get());
         serviceLocator->setSettings(&settings_);
         serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
+
+        _Module.AddMessageLoop(&theLoop_);
         logWindow_.Create(nullptr);
         logWindow_.setLogger(logger_.get());
 
@@ -127,6 +141,19 @@ public:
     }
 
     void initServices() {
+        CString dataFolder = settings_.DataFolder;
+        if (dataFolder.Right(1) == "\\") {
+            dataFolder.Truncate(dataFolder.GetLength() - 1);
+        }
+        std::string dir = W2U(dataFolder);
+        char* cacheDir = strdup(dir.c_str());
+        if (cacheDir) {
+            const char* dirs[2]
+                = { cacheDir, nullptr };
+            xdg_mime_set_dirs(dirs);
+            free(cacheDir);
+        }
+
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
         serviceLocator->setTaskDispatcher(taskDispatcher_.get());
@@ -136,6 +163,8 @@ public:
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
         serviceLocator->setTranslator(&lang_);
+        networkDebugger_ = std::make_shared<NetworkDebugger>();
+        serviceLocator->setNetworkDebugger(networkDebugger_);
         scriptsManager_ = std::make_unique<ScriptsManager>(serviceLocator->networkClientFactory());
         engineList_ = std::make_unique<CMyEngineList>();
         serviceLocator->setEngineList(engineList_.get());
@@ -149,12 +178,14 @@ public:
         imageConverterFilter_ = std::make_unique<ImageConverterFilter>();
         sizeExceedFilter_ = std::make_unique<SizeExceedFilter>(engineList_.get(), uploadEngineManager_.get());
         urlShorteningFilter_ = std::make_shared<UrlShorteningFilter>();
+        imageSearchFilter_ = std::make_shared<ImageSearchFilter>();
         userFilter_ = std::make_unique<UserFilter>(scriptsManager_.get());
         
         uploadManager_->addUploadFilter(imageConverterFilter_.get());
         uploadManager_->addUploadFilter(userFilter_.get());
         uploadManager_->addUploadFilter(sizeExceedFilter_.get());
         uploadManager_->addUploadFilter(urlShorteningFilter_.get());
+        uploadManager_->addUploadFilter(imageSearchFilter_.get());
 
         serviceLocator->setUrlShorteningFilter(urlShorteningFilter_);
     }
@@ -218,9 +249,6 @@ public:
 
         GdiPlusInitializer gdiPlusInitializer;
         initServices();
-
-        CMessageLoop theLoop;
-        _Module.AddMessageLoop(&theLoop);
         
         CWizardDlg  dlgMain(logger_, engineList_.get(), uploadEngineManager_.get(), uploadManager_.get(), scriptsManager_.get(), &settings_);
         auto* serviceLocator = ServiceLocator::instance();
@@ -266,7 +294,7 @@ public:
             CString CurrentParam = CmdLine[i];
             if (CurrentParam.Left(10) == _T("/language=")) {
                 CString shortLanguageName = CurrentParam.Right(CurrentParam.GetLength() - 10);
-                auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+                auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
                 auto it = languageList.find(W2U(shortLanguageName));
 
@@ -342,11 +370,10 @@ public:
             dlgMain.ShowWindow(nCmdShow);
         }
 
-        int nRet = theLoop.Run();
+        int nRet = theLoop_.Run();
         if (dlgMain.m_hWnd) {
             dlgMain.DestroyWindow();
         }
-        _Module.RemoveMessageLoop();
 
         return nRet;
     }
@@ -392,7 +419,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     }
     _Module.Term();
 
-    
     OleUninitialize();
     //google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();

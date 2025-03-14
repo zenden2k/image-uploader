@@ -28,12 +28,13 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Core/Upload/AuthTask.h"
 #include "Gui/Controls/ProgressRingControl.h"
+#include "Gui/Controls/MyImage.h"
 
 class ServerProfile;
 class UploadEngineManager;
 // CLoginDlg
 
-class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>
+class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>, public CWinDataExchange<CLoginDlg>
 {
     public:
         CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool CreateNew = false );
@@ -42,7 +43,7 @@ class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>
         enum { ID_DELETEACCOUNT = 30 };
     protected:
         BEGIN_MSG_MAP(CLoginDlg)
-        MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_ID_HANDLER(IDC_DELETEACCOUNTLABEL, OnDeleteAccountClicked)
@@ -50,6 +51,11 @@ class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>
             COMMAND_ID_HANDLER(IDC_LOGOUT, OnLogoutClicked)
             COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange);
         END_MSG_MAP()
+
+        BEGIN_DDX_MAP(CLoginDlg)
+            //DDX_CONTROL_HANDLE(IDC_SERVERICON, serverImage_)
+            DDX_CONTROL(IDC_WEBSITELINK, websiteLink_)
+        END_DDX_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -69,15 +75,16 @@ class CLoginDlg : public CCustomDialogIndirectImpl<CLoginDlg>
 protected:
     ServerProfile& serverProfile_;
     CHyperLink deleteAccountLabel_;
-    CHyperLink signupLink_;
+    CHyperLink signupLink_, websiteLink_;
     CString accountName_;
     CButton loginButton_, logoutButton_;
+    CMyImage serverImage_;
+    CIcon serverIcon_;
     bool createNew_;
     bool ignoreExistingAccount_;
     bool serverSupportsBeforehandAuthorization_, serverSupportsLogout_;
     bool isAuthenticated_;
     void enableControls(bool enable);
-    std::unique_ptr<INetworkClient> NetworkClient_;
     CProgressRingControl wndAnimation_;
     UploadEngineManager* uploadEngineManager_;
     std::shared_ptr<AuthTask> currentTask_;

@@ -22,7 +22,6 @@ public:
 
     enum { IDD = IDD_ADDFTPSERVERDIALOG };
 
-
     BEGIN_MSG_MAP(CAddFtpServerDialog)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
@@ -63,7 +62,8 @@ protected:
     CUploadEngineList* uploadEngineList_;
     CString createdServerName_;
     CString createdServerLogin_;
-    CComboBox serverTypeComboBox_;
+    CComboBox serverTypeComboBox_, securedConectionCombobox_;
+    CButton activeConnectionCheckBox_;
     ServerListManager::ServerType serverType_;
     std::shared_ptr<TestConnectionTask> currentTask_;
     std::shared_ptr<UploadSession> uploadSession_;
@@ -74,6 +74,7 @@ protected:
     void onServerTypeChange();
     void addServer(bool test);
     void enableControls(bool enable);
+    void updateSecuredConnectionCombobox();
 };
 
 

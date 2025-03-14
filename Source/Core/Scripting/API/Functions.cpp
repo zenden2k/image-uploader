@@ -20,11 +20,16 @@
 
 #include "Functions.h"
 
+#include <iomanip>
+#include <sstream>
+#include <random>
+#include <json/json.h>
+
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "Core/Logging.h"
-#include <json/json.h>
+
 #include "Core/Network/NetworkClient.h"
 #ifdef _WIN32
     #include <windows.h>
@@ -40,10 +45,6 @@
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-#include <json/json.h>
-#include <sstream>
-#include <iomanip>
-#include <random>
 #include "Core/3rdpart/codepages.h"
 #include "Core/Utils/TextUtils.h"
 #include "ScriptAPI.h"
@@ -53,6 +54,7 @@
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Utils/SystemUtils.h"
+#include "ScriptFunctionsImpl.h"
 
 using namespace Sqrat;
 
@@ -60,7 +62,7 @@ namespace ScriptAPI {
 
 std::string GetScriptsDirectory()
 {
-    return AppParams::instance()->settingsDirectory() + "Scripts/";
+    return AppParams::instance()->dataDirectory() + "/Scripts/";
 }
 
 std::string GetAppLanguageFile()
@@ -85,7 +87,7 @@ Sqrat::Table GetAppVersion() {
     return res;
 }
 
-const std::string GetCurrentScriptFileName()
+std::string GetCurrentScriptFileName()
 {
     return GetScriptName(GetCurrentThreadVM());
 }
@@ -174,7 +176,7 @@ std::string Translate(const std::string& key, const std::string& originalText) {
     return originalText;
 }
 
-std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
+std::string AskUserCaptcha(INetworkClient* nm, const std::string& url)
 {
     return ServiceLocator::instance()->dialogProvider()->askUserCaptcha(nm, url);
 }
@@ -182,7 +184,6 @@ std::string AskUserCaptcha(NetworkClient* nm, const std::string& url)
 std::string InputDialog(const std::string& text, const std::string& defaultValue) {
     return ServiceLocator::instance()->dialogProvider()->inputDialog(text, defaultValue);
 }
-
 
 std::string GetFileMimeType(const std::string& filename)
 {
@@ -265,94 +266,8 @@ void DebugMessage(const std::string& msg, bool isResponseBody) {
     ServiceLocator::instance()->uploadErrorHandler()->DebugMessage(msg,isResponseBody);
 }
 
-std::string MessageBox( const std::string& message, const std::string &title,const std::string& buttons , const std::string& type) {
-#if defined(_WIN32) && !defined(IU_CLI)
-    UINT uButtons = MB_OK;
-    if ( buttons == "ABORT_RETRY_IGNORE") {
-        uButtons = MB_ABORTRETRYIGNORE;
-    } else if ( buttons == "CANCEL_TRY_CONTINUE") {
-        uButtons = MB_CANCELTRYCONTINUE;
-    } else if ( buttons == "OK_CANCEL") {
-        uButtons = MB_OKCANCEL;
-    } else if ( buttons == "RETRY_CANCEL") {
-        uButtons = MB_RETRYCANCEL;
-    } else if ( buttons == "YES_NO") {
-        uButtons = MB_YESNO;
-    }else if ( buttons == "YES_NO_CANCEL") {
-        uButtons = MB_YESNOCANCEL;
-    }
-    UINT icon = 0;
-    if ( type == "EXCLAMATION") {
-        icon = MB_ICONEXCLAMATION;
-    } else if ( type == "WARNING") {
-        icon = MB_ICONWARNING;
-    } else if ( type == "INFORMATION") {
-        icon = MB_ICONINFORMATION;
-    } else if ( type == "QUESTION") {
-        icon = MB_ICONQUESTION;
-    } else if ( type == "ERROR") {
-        icon = MB_ICONERROR;
-    } 
-    int res = ::MessageBox(GetActiveWindow(), IuCoreUtils::Utf8ToWstring(message).c_str(),  IuCoreUtils::Utf8ToWstring(title).c_str(), uButtons |icon );
-    if ( res == IDABORT ) {
-        return "ABORT";
-    } else if ( res == IDCANCEL ) {
-        return "CANCEL";
-    } else if ( res == IDCONTINUE ) {
-        return "CONTINUE";
-    } else if ( res == IDIGNORE ) {
-        return "IGNORE";
-    } else if ( res == IDNO ) {
-        return "NO";
-    } else if ( res == IDOK ) {
-        return "OK";
-    } else if ( res == IDYES ) {
-        return "YES";
-    }
-    else if ( res == IDRETRY ) {
-        return "TRY";
-    } else if ( res == IDTRYAGAIN ) {
-        return "TRY";
-    } 
-    return "";
-    
-#else
-    std::cerr<<"----------";
-#ifdef _WIN32
-    std::wcerr<<IuCoreUtils::Utf8ToWstring(title);
-#else
-    std::cerr<<IuCoreUtils::Utf8ToSystemLocale(title);
-#endif
-    std::cerr<<"----------"<<std::endl;
-#ifdef _WIN32
-    std::wcerr<<IuCoreUtils::Utf8ToWstring(message)<<std::endl;;
-#else
-    std::cerr<<IuCoreUtils::Utf8ToSystemLocale(message)<<std::endl;;
-#endif
-    if ( buttons.empty() || buttons == "OK") {
-            getc(stdin);
-            return "OK";
-    } else {
-        
-
-        std::vector<std::string> tokens;
-        std::map<char,std::string> buttonsMap;
-        IuStringUtils::Split(buttons,"_", tokens,10);
-        for(int i = 0; i< tokens.size(); i++ ) {
-            if ( i !=0 ) {
-                std::cerr<< "/";
-            }
-            buttonsMap[tokens[i][0]] = tokens[i];
-            std::cerr<< "("<<tokens[i][0]<<")"<<IuStringUtils::toLower(tokens[i]).c_str()+1;
-        }
-        std::cerr<<": ";
-        char res;
-        std::cin >> res;
-        res = toupper(res);
-        return buttonsMap[res];
-    }
-
-#endif
+std::string MessageBox(const std::string& message, const std::string& title, const std::string& buttons, const std::string& type) {
+    return ServiceLocator::instance()->dialogProvider()->messageBox(message, title, buttons, type);
 }
 
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj);
@@ -414,9 +329,6 @@ void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
 }
 
 Sqrat::Object parseJSONObj(const Json::Value& root) {
-    //SquirrelObject obj;
-
-    
     if (root.isArray()) {
         Sqrat::Array obj(GetCurrentThreadVM(), root.size());
         for(auto it = root.begin(); it != root.end(); ++it) {
@@ -504,27 +416,11 @@ int64_t ScriptGetFileSize(const std::string& filename) {
 }
 
 std::string GetAppLanguage() {
-#ifndef IU_CLI
-    ITranslator* translator = ServiceLocator::instance()->translator();
-    if ( !translator ) {
-        LOG(ERROR) << "No translator set";
-    } else {
-        return translator->getCurrentLanguage();
-    }
-#endif 
-    return "en";
+    return Impl::GetAppLanguageImpl();
 }
 
 std::string GetAppLocale() {
-#ifndef IU_CLI
-    ITranslator* translator = ServiceLocator::instance()->translator();
-    if (!translator) {
-        LOG(ERROR) << "No translator set";
-    } else {
-        return ServiceLocator::instance()->translator()->getCurrentLocale();
-    }
-#endif 
-    return "en_US";
+    return Impl::GetAppLocaleImpl();
 }
 
 std::string GetCurrentThreadId()
@@ -629,6 +525,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetTempDirectory", GetTempDirectory)
         .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
         .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)
+        .Func("GenerateRandomFilename", IuCoreUtils::GenerateRandomFilename)
+        .Func("RandomString", IuStringUtils::RandomString)
         .Func("CopyFile", IuCoreUtils::CopyFileToDest)
         .Func("CreateDirectory", IuCoreUtils::CreateDir)
         .Func("FileExists", IuCoreUtils::FileExists)

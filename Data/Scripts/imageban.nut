@@ -1,4 +1,4 @@
-function getThumbnailWidth(){
+function getThumbnailWidth(options){
     local result = "180";
     try{
         result = options.getParam("THUMBWIDTH");
@@ -15,18 +15,22 @@ function UploadFile(FileName, options){
         return 0;
     }
     
+    local task = options.getTask().getFileTask();
+    local displayName = task.getDisplayName();
+
     nm.setUrl("https://imageban.ru/up");
     nm.addQueryHeader("User-Agent", "Shockwave Flash");
     nm.addQueryParam("compmenu", "0");
     nm.addQueryParam("albmenu", "0");
+    nm.addQueryParam("inf", "1");
     nm.addQueryParam("cat", "0");
-    nm.addQueryParam("prew", getThumbnailWidth());
+    nm.addQueryParam("prew", getThumbnailWidth(options));
     nm.addQueryParam("ttl", "0");
     nm.addQueryParam("ptext", "Увеличить");
     nm.addQueryParam("itext", "");
     nm.addQueryParam("grad", "0");
     nm.addQueryParam("rsize", "1");
-    nm.addQueryParamFile("Filedata", FileName, ExtractFileName(FileName), "");
+    nm.addQueryParamFile("Filedata", FileName, displayName, "");
     nm.addQueryHeader("Cookie", "login="+login+"; pass="+md5(pass));
     
     nm.doUploadMultipartData();

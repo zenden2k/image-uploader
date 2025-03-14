@@ -13,8 +13,9 @@ class AffectedSegments;
 
 class MovableElement: public DrawingElement {
     public:
-        
-        enum { kGripSize = 6 ,kSelectRadius = 5};
+
+        // This is sizing handle dimension when DPI scale is 100%
+        enum { kGripSize = 6, kSelectRadius = 5};
 
         enum class GripPointType {gptNone, gptStartPoint, gptEndPoint};
 
@@ -61,6 +62,7 @@ class MovableElement: public DrawingElement {
         bool drawDashedRectangle_;
         bool drawDashedRectangleWhenSelected_;
         std::vector<Grip> grips_;
+        int gripWidth_, gripHeight_;
         
         POINT* getMaxPoint(Axis axis);
         POINT* getMinPoint(Axis axis);

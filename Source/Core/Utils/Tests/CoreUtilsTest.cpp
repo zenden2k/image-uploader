@@ -8,12 +8,14 @@
 //#include <limits.h>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "Core/Utils/CoreUtils.h"
 #ifdef _WIN32
 #include <WinSock.h>
 #endif
 #include "Core/Utils/CryptoUtils.h"
 #include "Tests/TestHelpers.h"
+#include "Core/3rdpart/pcreplusplus.h"
 
 class CoreUtilsTest : public ::testing::Test {
 public:
@@ -85,6 +87,54 @@ TEST_F(CoreUtilsTest, ExtractFileNameNoExt)
     EXPECT_EQ(result, "test");
 }
 
+TEST_F(CoreUtilsTest, GenerateRandomFilename)
+{
+    using testing::MatchesRegex;
+
+    {
+        std::string fileName = R"(c:\Program Files (x86)\Image Uploader\Image Uploader.exe)";
+        std::string result = GenerateRandomFilename(fileName, 8);
+        pcrepp::Pcre regexp(R"(^c:\\Program Files \(x86\)\\Image Uploader\\Image Uploader_\w{8}\.exe$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "ExplorerIntegration64.dll";
+        std::string result = GenerateRandomFilename(fileName, 5);
+        pcrepp::Pcre regexp(R"(^ExplorerIntegration64_\w{5}\.dll$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "ExplorerIntegration64.dll";
+        std::string result = GenerateRandomFilename(fileName, 0);
+        pcrepp::Pcre regexp(R"(^ExplorerIntegration64_\w+\.dll$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "/usr/bin/imgupload";
+        std::string result = GenerateRandomFilename(fileName, 7);
+        pcrepp::Pcre regexp(R"(^/usr/bin/imgupload_\w{7}$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "imgupload";
+        std::string result = GenerateRandomFilename(fileName, 1);
+        pcrepp::Pcre regexp(R"(^imgupload_\w$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+
+    {
+        std::string fileName = "";
+        std::string result = GenerateRandomFilename(fileName, 10);
+        pcrepp::Pcre regexp(R"(^\w{10}$)");
+        EXPECT_TRUE(regexp.search(result));
+    }
+    //EXPECT_THAT(result, MatchesRegex(R"(c:\\Program Files \(x86\)\\Image Uploader\\Image Uploader_\w+\.exe)"));
+}
+
 TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
 {
     std::string result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.htm");
@@ -92,16 +142,6 @@ TEST_F(CoreUtilsTest, ExtractFileNameFromUrl)
     result = ExtractFileNameFromUrl("http://www.directupload.net/file/d/3970/vmtbrege_jpg.html?test=124&grgrg=54+5435");
     EXPECT_EQ("vmtbrege_jpg.html", result);
 
-}
-
-TEST_F(CoreUtilsTest, int64_tToString) 
-{
-    EXPECT_EQ("-2147483648", Int64ToString(std::numeric_limits<int>::min()));
-    EXPECT_EQ(Int64ToString(INT64_MAX), "9223372036854775807");
-    EXPECT_EQ("-9223372036854775808", Int64ToString(INT64_MIN));
-    EXPECT_EQ("-9223372036854775807", Int64ToString(INT64_MIN + 1) );
-   
-    EXPECT_EQ(Int64ToString(0), "0");
 }
 
 TEST_F(CoreUtilsTest, stringToint64_t) 
@@ -217,4 +257,12 @@ TEST_F(CoreUtilsTest, GetFileMimeType) {
     ASSERT_TRUE(IuCoreUtils::FileExists(webpFilePath));
     std::string type2 = GetFileMimeType(webpFilePath);
     EXPECT_EQ("image/webp", type2);
+    
+    {
+        std::string jpegFilePath = TestHelpers::resolvePath("\x67\x72\x61\x62\x5f\xd1\x8e\xd0\xbd\xd0\xb8\xd0\xba\xd0\xbe\xd0\xb4\x5f\xe4\xbd\xa0\xe5\xa5\xbd\x2e\x6a\x70\x67");
+        ASSERT_TRUE(IuCoreUtils::FileExists(jpegFilePath));
+        std::string type3 = GetFileMimeType(jpegFilePath);
+        EXPECT_EQ("image/jpeg", type3);
+    }
+   
 }

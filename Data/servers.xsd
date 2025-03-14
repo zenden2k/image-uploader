@@ -7,6 +7,7 @@
             <xs:enumeration value="get" />
             <xs:enumeration value="upload" />
             <xs:enumeration value="login" />
+            <xs:enumeration value="openurl" />     
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="Bool">
@@ -28,6 +29,7 @@
             <xs:enumeration value="get" />
             <xs:enumeration value="image" />
             <xs:enumeration value="urlshortening" />
+            <xs:enumeration value="searchbyimage" />
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="ServerTypes">
@@ -38,7 +40,7 @@
                         <xs:restriction base="xs:token">
                             <xs:enumeration value="file"/>
                             <xs:enumeration value="image"/>
-                            <xs:enumeration value="urlsshortening"/>
+                            <xs:enumeration value="urlshortening"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:list>
@@ -54,7 +56,8 @@
                         <xs:restriction base="xs:token">
                             <xs:enumeration value="file"/>
                             <xs:enumeration value="image"/>
-                            <xs:enumeration value="urlsshortening"/>
+                            <xs:enumeration value="urlshortening"/>
+                            <xs:enumeration value="searchbyimage"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:list>
@@ -64,7 +67,7 @@
     </xs:simpleType>
     <xs:simpleType name="AssignVarsType">
         <xs:restriction base="xs:string">
-            <xs:pattern value="[A-z0-9_]+:\d+(;[A-z0-9_]+:\d+)*;?"/>
+            <xs:pattern value="([A-z0-9_]+:\d+)*(;[A-z0-9_]+:\d+)*;?"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="MinVersionType">
@@ -83,18 +86,43 @@
                 <xs:element name="Server" maxOccurs="unbounded" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="SupportedFormats" minOccurs="0">
+                                <xs:complexType mixed="true">
+                                    <xs:sequence>
+                                        <xs:element name="FormatGroup" maxOccurs="unbounded" minOccurs="1">
+                                            <xs:complexType mixed="true">
+                                                <xs:sequence>
+                                                    <xs:element name="Format" maxOccurs="unbounded" minOccurs="1">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:integer" name="MaxFileSize" use="optional"/>
+                                                                    <xs:attribute type="xs:string" name="MimeType" use="optional"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute type="xs:integer" name="MaxFileSize" use="optional"/>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
                             <xs:element name="Actions" minOccurs="0">
                                 <xs:complexType mixed="true">
                                     <xs:sequence>
                                         <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
                                             <xs:complexType mixed="true">
-                                                <xs:sequence>
+                                                <xs:choice maxOccurs="unbounded">
                                                     <xs:element name="RegExp" minOccurs="0">
                                                         <xs:complexType>
                                                             <xs:simpleContent>
                                                                 <xs:extension base="xs:string">
                                                                     <xs:attribute type="xs:string" name="Pattern"
                                                                                   use="required"/>
+                                                                    <xs:attribute type="xs:string" name="Data"
+                                                                                  use="optional"/>
                                                                     <xs:attribute type="AssignVarsType" name="AssignVars"
                                                                                   use="optional"/>
                                                                     <xs:attribute type="xs:byte" name="Required"
@@ -103,7 +131,23 @@
                                                             </xs:simpleContent>
                                                         </xs:complexType>
                                                     </xs:element>
-                                                </xs:sequence>
+                                                    <xs:element name="Call" minOccurs="0">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:string" name="Function"
+                                                                                  use="required"/>
+                                                                    <xs:attribute type="xs:string" name="Arg1"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="AssignVarsType" name="AssignVars"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="xs:byte" name="Required"
+                                                                                  use="optional" default="1"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
                                                 <xs:attribute type="ActionType" name="Type" use="optional"/>
                                                 <xs:attribute type="xs:string" name="Url" use="optional"/>
                                                 <xs:attribute type="xs:string" name="PostParams" use="optional"/>
@@ -142,9 +186,14 @@
                         <xs:attribute type="Bool" name="NeedPassword" use="optional"/>
                         <xs:attribute type="Bool" name="SupportsFolders" use="optional"/>
                         <xs:attribute type="xs:anyURI" name="RegistrationUrl" use="optional"/>
+                        <xs:attribute type="xs:anyURI" name="WebsiteUrl" use="optional"/>
                         <xs:attribute type="xs:byte" name="FileHost" use="optional"/>
                         <xs:attribute type="ServerType" name="Type" use="optional"/>
                         <xs:attribute type="ServerTypes" name="Types" use="optional"/>
+                        <xs:attribute type="xs:string" name="LoginLabel" use="optional"/>
+                        <xs:attribute type="xs:string" name="PasswordLabel" use="optional"/>
+                        <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/> 
+                        <xs:attribute type="Bool" name="UploadToTempServer" use="optional"/>    
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="Server2" maxOccurs="unbounded" minOccurs="0">
@@ -154,20 +203,48 @@
                                 <xs:complexType mixed="true">
                                     <xs:sequence>
                                         <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
-                                            <xs:complexType>
-                                                <xs:simpleContent>
-                                                    <xs:extension base="xs:string">
-                                                        <xs:attribute type="ActionType" name="Type" use="optional"/>
-                                                        <xs:attribute type="xs:string" name="Url" use="required"/>
-                                                        <xs:attribute type="xs:string" name="RegExp" use="optional"/>
-                                                        <xs:attribute type="AssignVarsType" name="AssignVars"
-                                                                      use="optional"/>
-                                                        <xs:attribute type="xs:string" name="PostParams"
-                                                                      use="optional"/>
-                                                        <xs:attribute type="xs:anyURI" name="Referer" use="optional"/>
-                                                        <xs:attribute type="CustomHeadersType" name="CustomHeaders" use="optional"/>
-                                                    </xs:extension>
-                                                </xs:simpleContent>
+                                            <xs:complexType mixed="true">
+                                                <xs:choice maxOccurs="unbounded">
+                                                    <xs:element name="RegExp" minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:string" name="Pattern"
+                                                                                  use="required"/>
+                                                                    <xs:attribute type="xs:string" name="Data"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="AssignVarsType" name="AssignVars"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="xs:byte" name="Required"
+                                                                                  use="optional" default="1"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                    <xs:element name="Call" minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:string" name="Function"
+                                                                                  use="required"/>
+                                                                    <xs:attribute type="xs:string" name="Arg1"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="AssignVarsType" name="AssignVars"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="xs:byte" name="Required"
+                                                                                  use="optional" default="1"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
+                                                <xs:attribute type="ActionType" name="Type" use="optional"/>
+                                                <xs:attribute type="xs:string" name="Url" use="required"/>
+                                                <xs:attribute type="xs:string" name="RegExp" use="optional"/>
+                                                <xs:attribute type="AssignVarsType" name="AssignVars" use="optional"/>
+                                                <xs:attribute type="xs:string" name="PostParams" use="optional"/>
+                                                <xs:attribute type="xs:anyURI" name="Referer" use="optional"/>
+                                                <xs:attribute type="CustomHeadersType" name="CustomHeaders" use="optional"/>
                                             </xs:complexType>
                                         </xs:element>
                                     </xs:sequence>
@@ -181,6 +258,7 @@
                                             <xs:attribute type="xs:string" name="ImageUrlTemplate" use="optional"/>
                                             <xs:attribute type="xs:string" name="ThumbUrlTemplate" use="optional"/>
                                             <xs:attribute type="xs:string" name="ViewUrlTemplate" use="optional"/>
+                                            <xs:attribute type="xs:string" name="DeleteUrl" use="optional"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
@@ -192,12 +270,16 @@
                         <xs:attribute type="AuthorizeType" name="Authorize" use="optional"/>
                         <xs:attribute type="Bool" name="SupportsFolders" use="optional"/>
                         <xs:attribute type="xs:anyURI" name="RegistrationUrl" use="optional"/>
+                        <xs:attribute type="xs:anyURI" name="WebsiteUrl" use="optional"/>
                         <xs:attribute type="ServerType" name="Type" use="optional"/>
                         <xs:attribute type="ServerTypes" name="Types" use="optional"/>
                         <xs:attribute type="xs:string" name="FileHost" use="optional"/>
                         <xs:attribute type="xs:string" name="Plugin" use="optional"/>
                         <xs:attribute type="xs:positiveInteger" name="MaxThreads" use="optional"/>
                         <xs:attribute type="Bool" name="NeedPassword" use="optional" default="0"/>
+                        <xs:attribute type="xs:string" name="LoginLabel" use="optional"/>
+                        <xs:attribute type="xs:string" name="PasswordLabel" use="optional"/>
+                        <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="Server3" maxOccurs="unbounded" minOccurs="0">
@@ -208,8 +290,8 @@
                                     <xs:sequence>
                                         <xs:element name="Action" maxOccurs="unbounded" minOccurs="0">
                                             <xs:complexType mixed="true">
-                                                <xs:sequence>
-                                                    <xs:element name="RegExp" minOccurs="0">
+                                                <xs:choice maxOccurs="unbounded">
+                                                    <xs:element name="RegExp" minOccurs="0" maxOccurs="unbounded">
                                                         <xs:complexType>
                                                             <xs:simpleContent>
                                                                 <xs:extension base="xs:string">
@@ -223,7 +305,23 @@
                                                             </xs:simpleContent>
                                                         </xs:complexType>
                                                     </xs:element>
-                                                </xs:sequence>
+                                                    <xs:element name="Call" minOccurs="0" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:simpleContent>
+                                                                <xs:extension base="xs:string">
+                                                                    <xs:attribute type="xs:string" name="Function"
+                                                                                  use="required"/>
+                                                                    <xs:attribute type="xs:string" name="Arg1"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="AssignVarsType" name="AssignVars"
+                                                                                  use="optional"/>
+                                                                    <xs:attribute type="xs:byte" name="Required"
+                                                                                  use="optional" default="1"/>
+                                                                </xs:extension>
+                                                            </xs:simpleContent>
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:choice>
                                                 <xs:attribute type="ActionType" name="Type" use="optional"/>
                                                 <xs:attribute type="xs:anyURI" name="Url" use="required"/>
                                                 <xs:attribute type="Bool" name="OnlyOnce" use="optional"/>
@@ -245,6 +343,8 @@
                                             <xs:attribute type="xs:string" name="ThumbUrlTemplate" use="optional"/>
                                             <xs:attribute type="xs:string" name="ViewUrlTemplate" use="optional"/>
                                             <xs:attribute type="xs:string" name="DownloadUrlTemplate" use="optional"/>
+                                            <xs:attribute type="xs:string" name="DirectUrlTemplate" use="optional"/>
+                                            <xs:attribute type="xs:string" name="DeleteUrl" use="optional"/>
                                         </xs:extension>
                                     </xs:simpleContent>
                                 </xs:complexType>
@@ -252,7 +352,10 @@
                         </xs:sequence>
                         <xs:attribute type="xs:string" name="Name" use="required"/>
                         <xs:attribute type="AuthorizeType" name="Authorize" use="optional"/>
+                        <xs:attribute type="xs:string" name="FileHost" use="optional"/>
                         <xs:attribute type="ServerType" name="Type" use="optional"/>
+                        <xs:attribute type="xs:anyURI" name="RegistrationUrl" use="optional"/>
+                        <xs:attribute type="xs:anyURI" name="WebsiteUrl" use="optional"/>
                         <xs:attribute type="xs:string" name="Plugin" use="optional"/>
                         <xs:attribute type="MinVersionType" name="MinVersion" use="optional"/>
                         <xs:attribute type="Bool" name="SupportsFolders" use="optional" default="0"/>
@@ -262,6 +365,10 @@
                         <xs:attribute type="xs:positiveInteger" name="MaxFileSize" use="optional"/>
                         <xs:attribute type="xs:string" name="UserAgent" use="optional"/>
                         <xs:attribute type="ServerTypes" name="Types" use="optional"/>
+                        <xs:attribute type="xs:string" name="LoginLabel" use="optional"/>
+                        <xs:attribute type="xs:string" name="PasswordLabel" use="optional"/>
+                        <xs:attribute type="xs:string" name="Engine" use="optional"/>
+                        <xs:attribute type="DefaultForTypes" name="DefaultForTypes" use="optional"/>
                     </xs:complexType>
                 </xs:element>
             </xs:choice>

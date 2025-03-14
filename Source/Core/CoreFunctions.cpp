@@ -6,11 +6,14 @@
 #ifdef _WIN32
 #include "DefaultProxyProvider.h"
 #endif
+#include "Core/Network/NetworkDebugger.h"
 
 namespace CoreFunctions {
 
 void ConfigureProxy(INetworkClient* nm)
 {
+    auto debugger = ServiceLocator::instance()->networkDebugger();
+    nm->setDebugger(debugger);
     BasicSettings& Settings = *ServiceLocator::instance()->basicSettings();
 #ifdef _WIN32
     if (Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy) {
@@ -31,6 +34,8 @@ void ConfigureProxy(INetworkClient* nm)
     }
     nm->setUploadBufferSize(Settings.UploadBufferSize);
     nm->setMaxUploadSpeed(Settings.MaxUploadSpeed*1024);
+    /* curl_easy_setopt(nm->getCurlHandle(), CURLOPT_STDERR, fopen("d:/curl_log.txt", "w"));
+    curl_easy_setopt(nm->getCurlHandle(), CURLOPT_VERBOSE, 1L);*/
 }
 
 }

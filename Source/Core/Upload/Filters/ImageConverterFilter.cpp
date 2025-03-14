@@ -11,7 +11,7 @@
 bool ImageConverterFilter::PreUpload(UploadTask* task)
 {
     auto* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (!fileTask) {
+    if (!fileTask || fileTask->type() == FileUploadTask::TypeSearchByImageFile) {
         return true;
     }
     if (task->parentTask())
@@ -55,9 +55,10 @@ bool ImageConverterFilter::PreUpload(UploadTask* task)
             {
                 TempFileDeleter* deleter = fileTask->tempFileDeleter();
                 deleter->addFile(convertedImageFileName);
+                std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getDisplayName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
+                fileTask->setDisplayName(virtualName);
             }
-            std::string virtualName = IuCoreUtils::ExtractFileNameNoExt(fileTask->getFileName()) + "." + IuCoreUtils::ExtractFileExt(convertedImageFileName);
-            fileTask->setDisplayName(virtualName);
+
             fileTask->setFileName(convertedImageFileName);
         } 
         if (genThumbs) {
@@ -88,6 +89,22 @@ bool ImageConverterFilter::PostUpload(UploadTask* task)
 {
     return true;
 }
+
+bool ImageConverterFilter::supposedOutputFormat(SupposedFormat& fileFormat, ServerProfile serverProfile) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    ImageUploadParams imageUploadParams = serverProfile.getImageUploadParams();
+    if (!imageUploadParams.ProcessImages) {
+        return false;
+    }
+    
+    auto& convertProfile = settings->ConvertProfiles[U2W(imageUploadParams.ImageProfileName)];
+    ImageConverter imageConverter;
+    imageConverter.setEnableProcessing(imageUploadParams.ProcessImages);
+    imageConverter.setImageConvertingParams(convertProfile);
+    return imageConverter.supposedOutputFormat(fileFormat);
+}
+
 /*
 void ImageConverterFilter::OnFileFinished(UploadTask* task, bool ok)
 {

@@ -50,9 +50,9 @@ CString trim(const CString& Str)
 // CLogListBox
 CLogListBox::CLogListBox()
 {
-    ErrorIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ERRORICON));
-    WarningIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONWARNING));
-    InfoIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONINFOBIG));
+    ErrorIcon.LoadIcon(MAKEINTRESOURCE(IDI_ERRORICON));
+    WarningIcon.LoadIcon(MAKEINTRESOURCE(IDI_ICONWARNING));
+    InfoIcon.LoadIcon(MAKEINTRESOURCE(IDI_ICONINFOBIG));
 }
 
 CLogListBox::~CLogListBox()
@@ -73,8 +73,8 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
     float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
 
     if (dis->itemAction & (ODA_DRAWENTIRE | ODA_SELECT)) {
-        dc.SetBkColor(GetSysColor(COLOR_WINDOW));
-        dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+        COLORREF oldBkColor = dc.SetBkColor(GetSysColor(COLOR_WINDOW));
+        COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
         CRect r(dis->rcItem);
         if (!(dis->itemState & ODS_SELECTED)) {
             CBrush br;
@@ -98,7 +98,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             SelectObject(dc.m_hDC, oldPen);
         }
 
-        SetBkMode(dc.m_hDC,TRANSPARENT);
+        int oldBkMode = SetBkMode(dc.m_hDC,TRANSPARENT);
 
         SIZE TimeLabelDimensions;
         auto oldFont = SelectObject(dc.m_hDC, NormalFont);
@@ -125,7 +125,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 
         POINT iconPos{ static_cast<int>(roundf(dpiScaleX_ * 5)), r.top + static_cast<int>(roundf(dpiScaleY_ * 5)) };
 
-        CIcon* ico = nullptr;
+        CIconHandle* ico = nullptr;
         switch (item->Type) {
             case ILogger::logError:
                 ico = &ErrorIcon;
@@ -141,6 +141,9 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             dc.DrawIcon(iconPos.x, iconPos.y, *ico);
         }
         SelectObject(dc.m_hDC, oldFont);
+        dc.SetBkColor(oldBkColor);
+        dc.SetTextColor(oldTextColor);
+        dc.SetBkMode(oldBkMode);
     }
 
     bHandled = true;

@@ -26,11 +26,31 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/StringUtils.h"
 #include "AppParams.h"
+#include "Core/BasicConstants.h"
 
+namespace {
+
+template <typename T>
+void SplitAssignVarsString(T & reg) {
+    std::vector<std::string> Vars;
+    IuStringUtils::Split(reg.AssignVars, ";", Vars);
+
+    for (auto it = Vars.begin(); it != Vars.end(); ++it) {
+        std::vector<std::string> NameAndValue;
+        IuStringUtils::Split(*it, ":", NameAndValue);
+        if (NameAndValue.size() == 2) {
+            ActionVariable AV;
+            AV.Name = NameAndValue[0];
+            AV.nIndex = atoi(NameAndValue[1].c_str());
+            reg.Variables.push_back(AV);
+        }
+    }
+}
+}
 CUploadEngineList::CUploadEngineList()
 {
-    m_EngineNumOfRetries = 3;
-    m_ActionNumOfRetries = 2;
+    m_EngineNumOfRetries = MAX_RETRIES_PER_FILE;
+    m_ActionNumOfRetries = MAX_RETRIES_PER_ACTION;
 }
 
 bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings) {
@@ -38,7 +58,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     if (!xml.LoadFromFile(filename))
         return false;
 
-    SimpleXmlNode root = xml.getRoot("ServerListTool");
+    SimpleXmlNode root = xml.getRoot("Servers");
 
     std::vector<SimpleXmlNode> childs;
     root.GetChilds("Server", childs);
@@ -90,29 +110,14 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
 
         UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
         UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
+        UE.WebsiteUrl = cur.Attribute("WebsiteUrl");
         UE.UserAgent = cur.Attribute("UserAgent");
         UE.PluginName = cur.Attribute("Plugin");
         UE.Engine = cur.Attribute("Engine");
         std::string MaxThreadsStr = cur.Attribute("MaxThreads");
         UE.MaxThreads = atoi(MaxThreadsStr.c_str());
 
-        if (UE.PluginName == "ftp") {
-            auto it = serversSettings.find(UE.Name);
-            if (it != serversSettings.end() && !it->second.empty()) {
-
-                std::string hostname = it->second.begin()->second.getParam("hostname");
-                if (hostname.empty() || hostname == "ftp.example.com") {
-                    //LOG(WARNING) << "Skipping server  "<< UE.Name;
-                    continue;
-                }
-            } else {
-                continue;
-            }
-            if (MaxThreadsStr.empty()) {
-                UE.MaxThreads = 1;
-            }
-        }
-        if (UE.PluginName == "directory" && MaxThreadsStr.empty()) {
+        if ((UE.PluginName == CORE_SCRIPT_FTP || UE.PluginName == CORE_SCRIPT_DIRECTORY) && MaxThreadsStr.empty()) {
             UE.MaxThreads = 1;
         }
 
@@ -122,7 +127,15 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             UE.MaxThreads = 1;
         }
         bool fileHost = cur.AttributeBool("FileHost");
-        UE.MaxFileSize = cur.AttributeInt("MaxFileSize");
+        std::string maxFileSize = cur.Attribute("MaxFileSize");
+        if (!maxFileSize.empty()) {
+            try {
+                UE.MaxFileSize = std::stoll(maxFileSize);
+            } catch (const std::exception&) {
+            }
+        }
+
+        UE.UploadToTempServer = cur.AttributeBool("UploadToTempServer");
 
         std::string typeString = cur.Attribute("Type");
 
@@ -157,6 +170,10 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             }
         }
         //            UE.ImageHost = (UE.TypeMask & CUploadEngineData::TypeImageServer);
+        SimpleXmlNode supportedFormatsNode = cur.GetChild("SupportedFormats", false);
+        if (!supportedFormatsNode.IsNull()) {
+            loadFormats(supportedFormatsNode, UE, UE.SupportedFormatGroups);
+        }
 
         std::vector<SimpleXmlNode> actions;
         cur["Actions"].GetChilds("Action", actions);
@@ -182,38 +199,46 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
             UA.CustomHeaders = actionNode.Attribute("CustomHeaders");
             UA.OnlyOnce = actionNode.AttributeBool("OnlyOnce");
 
-            ActionRegExp regexp;
-            regexp.Pattern = actionNode.Attribute("RegExp");
-            regexp.AssignVars = actionNode.Attribute("AssignVars");
-            regexp.Required = true;
-            UA.Regexes.push_back(regexp);
+            ActionFunc funcCall(ActionFunc::FUNC_REGEXP);
+            funcCall.setArg(1, actionNode.Attribute("RegExp"));
+            funcCall.AssignVars = actionNode.Attribute("AssignVars");
+            funcCall.Required = true;
+            UA.FunctionCalls.push_back(funcCall);
 
-            std::vector<SimpleXmlNode> regexpNodes;
-            actionNode.GetChilds("RegExp", regexpNodes);
-
-            for (auto& regexpNode : regexpNodes) {
-                ActionRegExp newRegexp;
-                newRegexp.Pattern = regexpNode.Attribute("Pattern");
-                newRegexp.AssignVars = regexpNode.Attribute("AssignVars");
-                newRegexp.Required = regexpNode.AttributeBool("Required");
-                newRegexp.Data = regexpNode.Attribute("Data");
-                UA.Regexes.push_back(newRegexp);
-            }
-
-            for (auto& reg : UA.Regexes) {
-                std::vector<std::string> Vars;
-                IuStringUtils::Split(reg.AssignVars, ";", Vars);
-
-                for (auto it = Vars.begin(); it != Vars.end(); ++it) {
-                    std::vector<std::string> NameAndValue;
-                    IuStringUtils::Split(*it, ":", NameAndValue);
-                    if (NameAndValue.size() == 2) {
-                        ActionVariable AV;
-                        AV.Name = NameAndValue[0];
-                        AV.nIndex = atoi(NameAndValue[1].c_str());
-                        reg.Variables.push_back(AV);
+            actionNode.each([&](int k, SimpleXmlNode& callNode) -> bool {
+                if (callNode.Name() == "RegExp") {
+                    ActionFunc newFuncCall(ActionFunc::FUNC_REGEXP);
+                    newFuncCall.setArg(1, callNode.Attribute("Pattern"));
+                    newFuncCall.AssignVars = callNode.Attribute("AssignVars");
+                    newFuncCall.Required = callNode.AttributeBool("Required");
+                    newFuncCall.setArg(0, callNode.Attribute("Data"));
+                    UA.FunctionCalls.push_back(newFuncCall);
+                } else if (callNode.Name() == "Call") {
+                    ActionFunc newFuncCall;
+                    newFuncCall.Func = callNode.Attribute("Function");
+                    newFuncCall.AssignVars = callNode.Attribute("AssignVars");
+                    newFuncCall.Required = callNode.AttributeBool("Required");
+                    std::vector<std::string> argumentsAttributeNames;
+                    callNode.GetAttributes(argumentsAttributeNames);
+                    std::string prefix { "Arg" };
+                    for (auto& name : argumentsAttributeNames) {
+                        if (!name.compare(0, prefix.size(), prefix)) {
+                            size_t index = std::stoi(name.substr(prefix.size()));
+                            std::string val;
+                            callNode.GetAttribute(name, val);
+                            newFuncCall.setArg(index, val);
+                        }
                     }
+                    UA.FunctionCalls.push_back(newFuncCall);
+                } else {
+                    LOG(ERROR) << "Unknown function: " << callNode.Name();
+                    return true;
                 }
+                return false;
+            });
+
+            for (auto& reg: UA.FunctionCalls) {
+                SplitAssignVarsString(reg);
             }
 
             UE.Actions.push_back(UA);
@@ -252,9 +277,33 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
     return true;
 }
 
-bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, std::unique_ptr<CUploadEngineData>& elem2)
+bool CUploadEngineList::compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2)
 {
     return IuStringUtils::stricmp(elem1->Name.c_str(), elem2->Name.c_str()) < 0;
+}
+
+void CUploadEngineList::loadFormats(SimpleXmlNode& node, CUploadEngineData& UE, std::vector<FileFormatGroup>& out)
+{
+    node.each([&](int k, SimpleXmlNode& groupNode) -> bool {
+        if (groupNode.Name() == "FormatGroup") {
+            FileFormatGroup group;
+            group.Authorized = groupNode.AttributeBool("Authorized");
+            group.MaxFileSize = groupNode.AttributeInt64("MaxFileSize");
+
+            groupNode.each([&](int k, SimpleXmlNode& formatNode) -> bool {
+                if (formatNode.Name() == "Format") {
+                    FileFormat format;
+                    IuStringUtils::Split(formatNode.Attribute("MimeType"), ",", format.MimeTypes);
+                    IuStringUtils::Split(formatNode.Text(), ",", format.FileNameWildcards);
+                    format.MaxFileSize = formatNode.AttributeInt64("MaxFileSize");
+                    group.Formats.push_back(std::move(format));
+                }
+                return false;
+            });
+            out.push_back(std::move(group));
+        }
+        return false;
+    });
 }
 
 void CUploadEngineList::setNumOfRetries(int Engine, int Action)

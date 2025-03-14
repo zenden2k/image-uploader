@@ -26,10 +26,12 @@
 #include "Gui/Dialogs/InputDialog.h"
 #include "Func/WinUtils.h"
 #include "Core/Settings/BasicSettings.h"
+#include "Core/Upload/Parameters/TextParameter.h"
+#include "Core/Upload/Parameters/ChoiceParameter.h"
 
 // CServerParamsDlg
-CServerParamsDlg::CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()),
-            serverProfile_(serverProfile)
+CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()), serverProfile_(serverProfile)
+        
 {
     focusOnLoginControl_ = focusOnLoginEdit;
     uploadEngineManager_ = uploadEngineManager;
@@ -90,15 +92,13 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     m_wndParamList.SubclassWindow(GetDlgItem(IDC_PARAMLIST));
     m_wndParamList.SetExtendedListStyle(PLS_EX_SHOWSELALWAYS | PLS_EX_SINGLECLICKEDIT);
 
+    parameterListAdapter_ = std::make_unique<ParameterListAdapter>(&m_paramNameList, &m_wndParamList);
+
     m_pluginLoader = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
     if (m_pluginLoader) {
         m_pluginLoader->getServerParamList(m_paramNameList);
 
-        for (auto it = m_paramNameList.begin(); it != m_paramNameList.end(); ++it) {
-            CString name = it->first.c_str();
-            CString humanName = it->second.c_str();
-            m_wndParamList.AddItem(PropCreateSimple(humanName, serverSettings  ? Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)]): CString()));
-        }
+        parameterListAdapter_->updateControl(serverSettings);
     }
     CString folderTitle = Utf8ToWCstring( serverProfile_.folderTitle());
 
@@ -120,16 +120,7 @@ LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         serverSettings->authData.Login = WCstringToUtf8(login);
         serverSettings->authData.Password = WCstringToUtf8(GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT));
 
-        for (const auto& [first, second]: m_paramNameList){
-            CString name = first.c_str();
-            CString humanName = second.c_str();
-
-            HPROPERTY pr = m_wndParamList.FindProperty(humanName);
-            CComVariant vValue;
-            pr->GetValue(&vValue);
-
-            serverSettings->params[WCstringToUtf8(name)] = WCstringToUtf8(vValue.bstrVal);
-        }
+        parameterListAdapter_->saveValues(serverSettings);
     } else {
         LOG(WARNING) << "No server settings for name=" << serverProfile_.serverName() << " login=" << serverProfile_.profileName();
     }
@@ -158,7 +149,6 @@ void CServerParamsDlg::doAuthChanged() {
     //::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), (IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory) && m_ue->NeedPassword);
 }
 
-
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
     serverProfile_.setProfileName(WCstringToUtf8(login));
@@ -176,6 +166,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     }
     CServerFolderSelect folderSelectDlg(serverProfile_, uploadEngineManager_);
     folderSelectDlg.m_SelectedFolder.id = serverProfile_.folderId();
+    folderSelectDlg.m_SelectedFolder.parentIds = serverProfile().parentIds();
 
     if ( folderSelectDlg.DoModal(m_hWnd) == IDOK ) {
         CFolderItem folder = folderSelectDlg.m_SelectedFolder;
@@ -185,10 +176,12 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
             serverProfile_.setFolderId(folder.getId());
             serverProfile_.setFolderTitle(folder.getTitle());
             serverProfile_.setFolderUrl(folder.viewUrl);
+            serverProfile_.setParentIds(folder.parentIds);
         } else {
             serverProfile_.setFolderId("");
             serverProfile_.setFolderTitle("");
             serverProfile_.setFolderUrl("");
+            serverProfile_.setParentIds({});
         }
 
         SetDlgItemText(IDC_FOLDERNAMELABEL, Utf8ToWCstring( folder.getTitle() ));
@@ -201,11 +194,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     m_pluginLoader->getServerParamList(m_paramNameList);
 
     if (serverSettings) {
-        for (const auto& it: m_paramNameList) {
-            CString name = it.first.c_str();
-            CString humanName = it.second.c_str();
-            m_wndParamList.AddItem(PropCreateSimple(humanName, Utf8ToWCstring(serverSettings->params[WCstringToUtf8(name)])));
-        }
+        parameterListAdapter_->updateControl(serverSettings);
     }
 
     return 0;
@@ -216,9 +205,16 @@ LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWn
         serverProfile_.setFolderId("");
         serverProfile_.setFolderTitle("");
         serverProfile_.setFolderUrl("");
+        serverProfile_.setParentIds({});
         SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("not selected") + CString(">")) );
-
     }
+    return 0;
+}
+
+LRESULT CServerParamsDlg::OnParamListBrowseFile(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    auto nmh = reinterpret_cast<NMPROPERTYITEM*>(pnmh);
+    parameterListAdapter_->browseFileDialog(nmh->prop);
+
     return 0;
 }
 

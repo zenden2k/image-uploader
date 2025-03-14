@@ -1,0 +1,3309 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: imageuploader\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-04 14:26+0300\n"
+"PO-Revision-Date: 2024-03-31 17:04+0300\n"
+"Last-Translator: \n"
+"Language-Team: Sung un Kim <riders1@naver.com> https://cafe.naver.com/"
+"riderskor\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.2.2\n"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:54
+msgid " Num of retries per file:"
+msgstr "파일당 재시도 수:"
+
+#: ../Source/Gui/Controls/HistoryTreeControl.cpp:205
+#: ../Source/Gui/Dialogs/MainDlg.cpp:795
+#, c-format
+msgid "%d file"
+msgid_plural "%d files"
+msgstr[0] ""
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:789
+#, c-format
+msgid "%d file selected"
+msgid_plural "%d files selected"
+msgstr[0] ""
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:790
+#, c-format
+msgid "%d file total"
+msgid_plural "%d files total"
+msgstr[0] ""
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
+msgid ""
+"%f% - name of videofile without extension, \n"
+"%fe% -  name of videofile, \n"
+"%ext% - extension, \n"
+"%y% - year, %m% - month, %d% - day\n"
+"%h% - hour, %n% - minute, %s% - second\n"
+" %i% - file counter,\n"
+"%cx% - width,  %cy% - height"
+msgstr ""
+"%f% - 확장자 없는 비디오 파일의 이름, \n"
+"%fe% -  비디오 파일의 이름, \n"
+"%ext% - 확장자, \n"
+"%y% - 년, %m% - 월, %d% - 일\n"
+"%h% - 시, %n% - 분, %s% - 초\n"
+" %i% - 파일 카운터,\n"
+"%cx% - 너비,  %cy% - 높이"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:43
+#, c-format
+msgid "%s - Quick Setup"
+msgstr "%s - 빠른 설정"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:833
+#, c-format
+msgid "%s - Updates available"
+msgstr "%s - 업데이트 사용 가능"
+
+#: ../Source/Gui/UploadListModel.cpp:105
+#, c-format
+msgid "%s of %s (%d%%) %s"
+msgstr "%s / %s (%d%%) %s"
+
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:57
+#, c-format
+msgid "%s server settings"
+msgstr "%s 서버 설정"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:94
+#, c-format
+msgid "%s translation:"
+msgstr "%s 번역:"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
+msgid ""
+"%y - year, %m - month, %d - day\n"
+"%h - hour, %n - minute, %s - seconds\n"
+" %i - image index,\n"
+"%width% - width of image,  %height% - height of image"
+msgstr ""
+"%y - 년, %m - 월, %d - 일\n"
+"%h - 시, %n - 분, %s - 초\n"
+" %i - 이미지  색인,\n"
+"%width% - 이미지 너비,  %height% - 이미지 높이"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:429
+msgid "&Upload"
+msgstr "업로드(&U)"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:382
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:383
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1286
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1287
+msgid "(edited)"
+msgstr "(편집)"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:855
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:902
+msgid "(the link has been copied to the clipboard)"
+msgstr "(링크가 클립보드에 복사되었습니다)"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
+msgid "< Back"
+msgstr "< 뒤로"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:557
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:862
+msgid "<no authentication>"
+msgstr "<인증 없음>"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:165
+msgid "A new version is available:"
+msgstr "새 버전을 사용할 수 있습니다:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:246
+msgid "About Image Uploader"
+msgstr "Image Uploader 정보"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2331
+msgid "About..."
+msgstr "정보..."
+
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
+msgid "Access:"
+msgstr "액세스:"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:602
+msgid "Account is not enabled"
+msgstr "계정을 사용할 수 없습니다"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:189
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:245
+msgid "Account with such name already exists."
+msgstr "같은 이름의 계정이 이미 있습니다."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:323
+msgid "Account..."
+msgstr "계정..."
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:45
+msgid "Action"
+msgstr "작업"
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:61
+msgid "Action:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:86
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
+msgid "Add"
+msgstr "추가"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:462
+msgid "Add FTP server..."
+msgstr "FTP 서버 추가..."
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
+msgid "Add FTP/SFTP server"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:770
+msgid "Add FTP/SFTP server..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:64 ../Source/Gui/Dialogs/MainDlg.cpp:155
+msgid "Add Files"
+msgstr "파일 추가"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:85
+msgid "Add Files..."
+msgstr "파일 추가..."
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:89
+msgid "Add Folder..."
+msgstr "폴더 추가..."
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:154
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:83
+msgid "Add Images"
+msgstr "이미지 추가"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:73
+msgid "Add Item"
+msgstr "항목 추가"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:55
+msgid "Add Menu Item"
+msgstr "메뉴 항목 추가"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:577
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:879
+msgid "Add account..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:216
+msgid "Add an item to the context menu of Windows Explorer"
+msgstr "Windows 탐색기의 컨텍스트 메뉴에 항목 추가"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:156
+msgid "Add folder"
+msgstr "폴더 추가"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
+msgid "Add item to video files' context menu"
+msgstr "비디오 파일의 컨텍스트 메뉴에 항목 추가"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:778
+msgid "Add local folder as new server..."
+msgstr "새 서버로 로컬 폴더 추가..."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:463
+msgid "Add local folder..."
+msgstr "로컬 폴더 추가..."
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:53
+msgid "Add text"
+msgstr "텍스트 추가"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:117
+msgid "Add text on thumbnail"
+msgstr "축소판에 텍스트 추가"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:48
+msgid "Add text to image"
+msgstr "이미지에 텍스트 추가"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:560
+msgid "Add to Wizard"
+msgstr "마법사에 추가"
+
+#: ../Source/Gui/Components/DragndropOverlay.cpp:31
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:863
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:864
+msgid "Add to the list"
+msgstr "목록에 추가"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:42
+msgid "Add video files to the list after Drag'n'Drop"
+msgstr "끌어다 놓은 후 목록에 비디오 파일 추가"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:44
+msgid "Add watermark"
+msgstr "워터마크 추가"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:44
+msgid "Adding directory as server"
+msgstr "서버에 디렉토리 추가"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:62
+msgid "Additional params"
+msgstr "추가 매개 변수"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
+msgid "Additional settings"
+msgstr "추가 설정"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:46
+msgid "Address:"
+msgstr "주소:"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:60
+msgid "Advice:"
+msgstr "팁:"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
+msgid "Aero only (Windows Vista or later)"
+msgstr "에어로 전용 (Windows Vista 또는 이상)"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:199
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:83
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:166
+#: ../Source/Gui/Dialogs/MainDlg.cpp:673
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:227
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:384
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1633
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1852
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1353
+msgid "All files"
+msgstr "모든 파일"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:556
+msgid "All files have been successfully uploaded."
+msgstr "모든 파일이 성공적으로 업로드되었습니다."
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:512
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:74
+msgid "All monitors"
+msgstr "모든 모니터"
+
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:38
+msgid "All the time"
+msgstr "항상"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
+msgid "Allow Alt+Tab in fullscreen editor"
+msgstr "전체 화면 편집기에서 Alt+Tab 키 허용"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
+msgid "Allow editing images in fullscreen mode"
+msgstr "전체 화면 모드에서 이미지 편집 허용"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
+msgid "Always copy captured image to clipboard"
+msgstr "항상 캡처한 이미지를 클립보드에 복사"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:476
+msgid "An error occured while extracting video frames."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:93
+msgid "An error occured while loading script."
+msgstr "스크립트를 로드하는 동안 오류가 발생했습니다."
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:151
+msgid "An error occured while receiving update information from server."
+msgstr "서버에서 업데이트 정보를 받는 동안 오류가 발생했습니다."
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1420
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1880
+msgid "Any file"
+msgstr "모든 파일"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:51
+msgid "Appearance options"
+msgstr "모양 옵션"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:86
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:75
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:269
+msgid "Apply"
+msgstr "적용"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:282
+msgid "Are you sure to place text and logo in the same position on image?"
+msgstr "이미지에 텍스트와 로고를 같은 위치에 배치하시겠습니까?"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1760
+msgid "Are you sure to quit?"
+msgstr "종료하시겠습니까?"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:415
+#, c-format
+msgid "Are you sure you want to delete profile '%s'?"
+msgstr "'%s' 프로필을 삭제하겠습니까?"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:144
+msgid ""
+"Are you sure you want to delete this account from Image Uploader's internal "
+"list?"
+msgstr "이미지 업로더의 내부 목록에서 이 계정을 삭제하시겠습니까?"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:354
+msgid "Are you sure?"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:909
+msgid "Arrow"
+msgstr "화살표"
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:265
+msgid "Arrow 1"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:266
+msgid "Arrow 2"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:41
+msgid "Ask confirmation on exit"
+msgstr "종료할 때 확인하기"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:43
+msgid "Attention! Global hotkeys are active only when tray icon is shown."
+msgstr "메모! 전역 단축키는 트레이 아이콘이 표시되는 경우에만 활성화됩니다."
+
+#: ../Source/Func/MediaInfoHelper.cpp:242
+#: ../Source/Func/MediaInfoHelper.cpp:247
+msgid "Audio"
+msgstr "오디오"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1851
+msgid "Audio files"
+msgstr "오디오 파일"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:297
+msgid "Authenticated succesfully."
+msgstr "성공적으로 인증."
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:31
+msgid "Authenticaton:"
+msgstr "인증:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:243
+msgid "Author:"
+msgstr "저자:"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:49
+msgid "Authorization on proxy"
+msgstr "프록시에 대한 권한 부여"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:252
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:50
+msgid "Authorize"
+msgstr "승인"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:86
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:251
+msgid "Auto"
+msgstr "자동"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:44
+msgid "Automatically check for updates"
+msgstr "자동으로 업데이트 확인"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:70
+msgid "Autorization parameters"
+msgstr "자동 매개 변수"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:69
+msgid "Background color:"
+msgstr "배경색:"
+
+#: ../Source/Core/Upload/UploadTask.cpp:370
+msgid "Begin upload"
+msgstr "업로드 시작"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:99
+msgid "Beta-testers:"
+msgstr "베타 테스터:"
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:220
+msgid "Blur radius"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:121
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:789
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:916
+msgid "Blurring rectangle"
+msgstr "흐린 사각형"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:95
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:102
+msgid "Bottom center"
+msgstr "아랫쪽 중앙"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:94
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:101
+msgid "Bottom left corner"
+msgstr "왼쪽 아랫쪽 모서리"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:96
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:103
+msgid "Bottom right corner"
+msgstr "오른쪽 아랫쪽 모서리"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
+msgid "Bring window to foreground when selected by mouse"
+msgstr "마우스로 선택한 창을 전경으로 가져오기"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:78
+msgid "Browse..."
+msgstr "찾아보기..."
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:906
+msgid "Brush"
+msgstr "브러시"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:403
+msgid "By default"
+msgstr "기본적으로"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:48
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:36
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:36
+#: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:41
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:58
+#: ../Source/Gui/Dialogs/HotkeyEditor.cpp:59
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:88
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:255
+#: ../Source/Gui/Dialogs/InputDialog.cpp:53
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:75
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
+#: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:48
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:64
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:46
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:84
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:74
+#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:273
+msgid "Cancel"
+msgstr "취소"
+
+#: ../Source/Video/DirectshowFrameGrabber.cpp:358
+#: ../Source/Video/DirectshowFrameGrabber2.cpp:274
+msgid ""
+"Cannot connect filters (format probably is not supported).\n"
+"Make sure you have the required codecs installed on your system."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:698
+msgid "Cannot copy file "
+msgstr "파일을 복사할 수 없음 "
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:687
+msgid "Cannot copy file: "
+msgstr "파일을 복사할 수 없음: "
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:184
+msgid "Cannot create registry key for extension: "
+msgstr ""
+
+#: ../Source/Gui/Controls/ThumbsView.cpp:300
+msgid "Cannot load thumbnail for image."
+msgstr "이미지의 축소판을 로드할 수 없습니다."
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:670
+#, c-format
+msgid ""
+"Cannot register global hotkey:\n"
+"%s.\n"
+" Maybe it is being used by another process."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:499
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
+msgid "Capture Last Region"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
+msgid "Capture Rectangular Region"
+msgstr "직사각 영역 캡처"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:497
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:48
+msgid "Capture Selected Area"
+msgstr "선택한 영역 캡처"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:503
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:51
+msgid "Capture Selected Object"
+msgstr "선택한 개체 캡처"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:50
+msgid "Capture Selected Window"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:502
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:47
+#: ../Source/Gui/Win7JumpList.cpp:243
+msgid "Capture the Active Window"
+msgstr "활성 창 캡처"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:501
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:46
+#: ../Source/Gui/Win7JumpList.cpp:235
+msgid "Capture the Entire Screen"
+msgstr "전체 화면 캡처"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
+msgid "Capture with shadow"
+msgstr "그림자와 캡처"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:51
+msgid "Cascaded context menu"
+msgstr "계단식 컨텍스트 메뉴"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
+msgid "Center"
+msgstr "가운데"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:152
+msgid "Change"
+msgstr "변경"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:507
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:802
+msgid "Change account settings"
+msgstr "계정 설정 변경"
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:43
+msgid ""
+"Change image processing settings or choose another server, so your image can "
+"be uploaded."
+msgstr ""
+"이미지를 업로드할 수 있도록 이미지 처리 설정을 변경하거나 다른 서버를 선택합"
+"니다."
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:43
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:107
+msgid "Change width:"
+msgstr "크기 조정할  너비:"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2333
+msgid "Check for Updates"
+msgstr "업데이트 확인"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:144
+msgid "Checking for updates..."
+msgstr "업데이트 확인 중.."
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:55
+msgid "Choose executable file"
+msgstr "실행 파일 선택"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1882
+msgid "Choose files"
+msgstr "파일 선택"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1733
+msgid "Choose folder"
+msgstr "폴더 선택"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:233
+msgid "Choose folder..."
+msgstr "폴더 선택..."
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1855
+msgid "Choose media file"
+msgstr "미디어 파일 선택"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:533
+msgid "Choose monitor"
+msgstr "모니터 선택"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:132
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:133
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:138
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:139
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1461
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1473
+msgid "Choose more servers..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:202
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:86
+msgid "Choose program"
+msgstr "프로그램 선택"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:560
+msgid "Choose server"
+msgstr "서버 선택"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:213
+msgid "Choose server for uploading images"
+msgstr "이미지를 업로드할 서버 선택"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:227
+msgid "Choose server..."
+msgstr "서버 선택..."
+
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
+msgid "Choose servers"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:387
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1636
+msgid "Choose video file"
+msgstr "비디오 파일 선택"
+
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:42
+msgid "Choose..."
+msgstr ""
+
+#: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
+#: ../Source/Gui/Dialogs/LogWindow.cpp:161
+msgid "Clear"
+msgstr "지우기"
+
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:35
+msgid "Clear History"
+msgstr "작업 내역 지우기"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
+msgid "Clear History..."
+msgstr "작업 내역 지우기..."
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:155
+msgid "Clear all"
+msgstr "모두 지우기"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:87
+msgid "Clear filters"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:121
+msgid "Clear list"
+msgstr "목록 지우기"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
+msgid "Clear window transparent corners"
+msgstr "창 투명 모서리 지우기"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
+msgid "Clear window's background"
+msgstr "창의 배경 지우기"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:118
+msgid "Click button \"Upload\" for starting process of uploading."
+msgstr "업로드 과정을 시작하려면 \"업로드\" 버튼을 클릭합니다."
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:902
+msgid "Click on this message to view details..."
+msgstr "자세한 내용을 보려면 이 메시지를 클릭하십시오..."
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:185
+msgid "Clickable thumbnails"
+msgstr "클릭 가능한 축소판"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:224
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:77
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:561
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:563
+#: ../Source/Gui/Dialogs/ResultsWindow.cpp:75
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:57
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:150
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:205
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:236
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:888
+msgid "Close"
+msgstr "닫기"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:113
+msgid "Code type:"
+msgstr "코드 유형:"
+
+#: ../Source/Gui/Dialogs/FolderAddDlg.cpp:31
+msgid "Collecting files..."
+msgstr "파일 수집 중..."
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:919
+msgid "Color chooser"
+msgstr "색상 선택기"
+
+#: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:40
+msgid "Color codes"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:42
+msgid "Colors"
+msgstr "색상"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:57
+msgid "Component name"
+msgstr "구성 요소 이름"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
+msgid "Components:"
+msgstr "구성 요소:"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:29
+msgid "Connection  name:"
+msgstr "연결 이름:"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:242
+msgid "Connection name cannot be empty"
+msgstr "연결 이름은 비워 둘 수 없습니다"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:42
+msgid "Connection settings"
+msgstr "연결 설정"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:53
+msgid "Context menu custom items:"
+msgstr "컨텍스트 메뉴 사용자 정의 항목:"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:210
+msgid "Continue"
+msgstr "계속"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:82
+msgid "Contributors:"
+msgstr "참여자:"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
+msgid "Convert UNC path \"\\\\\" to \"file://///\""
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:371
+msgid "Converting history"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
+#: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
+#: ../Source/Gui/Dialogs/LogWindow.cpp:118
+#: ../Source/Gui/Dialogs/MainDlg.cpp:202
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:879
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
+msgid "Copy"
+msgstr "복사"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:214
+msgid "Copy &as"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:192
+msgid "Copy URL"
+msgstr "URL 복사"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:929
+msgid "Copy URL  "
+msgstr "URL 복사 "
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:52
+msgid "Copy automatically results to clipboard"
+msgstr "자동으로 결과 클립보드에 복사"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:283
+msgid "Copy e-mail"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:311
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:956
+msgid "Copy folder's ID"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:205
+msgid "Copy full path"
+msgstr "전체 경로 복사"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:202
+msgid "Copy image"
+msgstr "이미지 복사"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:812
+msgid "Copy in data:URI format"
+msgstr "데이터헤서 복사:URI 형식"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:813
+msgid "Copy in data:URI format (html)"
+msgstr "데이터에서 복사:URI 형식(html)"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:552
+msgid "Copy to Clipboard"
+msgstr "클립보드로 복사"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:78
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:53
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:160
+msgid "Copy to clipboard"
+msgstr "클립보드로 복사"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:878
+#, c-format
+msgid "Copy to clipboard and close (%s)"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:112
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:318
+msgid "Could not add server."
+msgstr "서버를 추가할 수 없습니다."
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:302
+msgid "Could not authenticate. Please try again."
+msgstr "인증할 수 없습니다. 다시 시도하십시오."
+
+#: ../Source/Video/AvcodecFrameGrabber.cpp:202
+msgid "Could not find a video stream."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:416
+msgid "Could not find links in the given text!"
+msgstr "주어진 텍스트에서 링크를 찾을 수 없습니다!"
+
+#: ../Source/Func/UpdatePackage.cpp:412
+#, c-format
+msgid "Could not read package %s"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:895
+msgid "Could not save settings file. See error log for details."
+msgstr ""
+"설정 파일을 저장할 수 없습니다. 자세한 내용은 오류 로그를 참조하십시오."
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:880
+msgid "Could not upload screenshot :("
+msgstr "스크린 샷을 업로드 할 수 없음 :("
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:313
+#, c-format
+msgid ""
+"Couldn't load servers list file \"servers.xml\"!\n"
+"\n"
+"The reason is:  %s\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
+
+#: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:37
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:214
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:176
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:241
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:250
+msgid "Couldn't load thumbnail preset!"
+msgstr "축소판 사전 설정을 로드할 수 없습니다!"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:136
+msgid "Create Profile"
+msgstr "프로필 만들기"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:59
+msgid "Create a Copy"
+msgstr "복사본 만들기"
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:66
+msgid "Create folder"
+msgstr "폴더 만들기"
+
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:44
+msgid "Create folder (album)"
+msgstr "폴더 만들기(앨범)"
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:307
+msgid "Create nested folder"
+msgstr "중첩된 폴더 만들기"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:59
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:113
+msgid "Create thumbnails"
+msgstr "축소판 만들기"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:311
+msgid "Creating new thumbnail preset"
+msgstr "새 축소판 사전 설정 만들기"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
+msgid "Crop"
+msgstr "자르기"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:514
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:65
+msgid "Current monitor"
+msgstr "현재 모니터"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:346
+msgid "Current profile's changes weren't saved. Do you want to continue?"
+msgstr "현재 프로필의 변경 내용이 저장되지 않았습니다. 계속하시겠습니까?"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:237
+msgid "Cut"
+msgstr "잘라내기"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:153
+msgid "Data file path:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:89
+msgid "Date from:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:71
+msgid "Default server for other file types"
+msgstr "다른 파일 형식의 기본 서버"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:57
+msgid "Default server for uploading images"
+msgstr "이미지를 업로드할 기본 서버"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:54
+msgid "Default settings"
+msgstr "기본 설정"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
+msgid "Deinterlace"
+msgstr "디인터레이스"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:123
+msgid "Deinterlace video"
+msgstr "디인터레이스 비디오"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
+msgid "Delay when hiding window:"
+msgstr "창을 숨길 때 지연:"
+
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:167
+msgid "Delete"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:138
+msgid "Delete Profile"
+msgstr "프로필 삭제"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:76
+msgid "Delete account"
+msgstr "계정 삭제"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
+msgid "Delete file from server"
+msgstr "서버에서 파일 삭제"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:43
+msgid "Developer mode"
+msgstr "개발자 모드"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
+msgid "Directory to save screenshots:"
+msgstr "스크린 샷을 저장할 디렉토리:"
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:56
+msgid "Disable localization"
+msgstr "지역화 비활성화"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:57
+msgid "Display video file information on resulting picture"
+msgstr "결과 그림에 비디오 파일 정보 표시"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1758
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:329
+msgid "Do not ask again"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:34
+msgid "Do not launch new program's instance from tray"
+msgstr "트레이에서 새로운 프로그램의 인스턴스를 실행하지 마십시오"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:189
+msgid "Do nothing"
+msgstr "아무 것도 안 함"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2332
+msgid "Documentation"
+msgstr "설명서"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:99
+#, c-format
+msgid "Don't have an account? Sign up on %s right now"
+msgstr "계정이 없으십니까? 지금 %s에 가입하세요"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1102
+msgid "Don't resize"
+msgstr "크기 조정 안 함"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:250
+msgid "Download URL cannot be empty."
+msgstr "다운로드 URL은 비워 둘 수 없습니다."
+
+#: ../Source/Func/UpdatePackage.cpp:660
+#, c-format
+msgid "Downloaded %s of %s (%d %%)"
+msgstr "다운로드 %s / %s(%d %%)"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:553
+msgid "Downloaded: "
+msgstr "다운로드: "
+
+#: ../Source/Func/UpdatePackage.cpp:377
+msgid "Downloading file "
+msgstr "파일 다운로드 "
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
+msgid "Draw frame"
+msgstr "프레임 그리기"
+
+#: ../Source/Func/MediaInfoHelper.cpp:151
+msgid "Duration: "
+msgstr "재생 시간: "
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:190
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:295
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
+msgid "Edit"
+msgstr "편집"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:199
+msgid "Edit Profile"
+msgstr "프로필 편집"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:204
+msgid "Edit file on server"
+msgstr "서버에서 파일 편집"
+
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:46
+msgid "Edit folder"
+msgstr "폴더 편집"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:42
+msgid "Edit hotkey..."
+msgstr "단축키 편집..."
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:97
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:764
+msgid "Ellipse"
+msgstr "타원"
+
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:90
+msgid "Enter URLs (one http:// or ftp:// link per line)"
+msgstr "URL(http:// 또는 ftp:// 링크 한줄) 입력"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:324
+msgid "Enter account information"
+msgstr "계정 정보 입력"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:328
+msgid "Enter new profile name:"
+msgstr "새 프로필의 이름 입력:"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:311
+msgid "Enter new thumbnail preset name:"
+msgstr "새 축소판 사전 설정 이름 입력:"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:81
+msgid ""
+"Enter the text containing links to images (HTML, BBcode, or just plain text):"
+msgstr ""
+"이미지에 대한 링크가 포함된 텍스트를 입력합니다(HTML, BBcode 또는 일반 텍스트"
+"만)."
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:153
+msgid "Enter your account information"
+msgstr "계정 정보 입력"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:55
+msgid "Enter your text:"
+msgstr "텍스트 입력:"
+
+#: ../Source/Core/Upload/UploadTask.cpp:379
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:88
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:96
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:117
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:235
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:242
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:250
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:270
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:323
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:81
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:134
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:143
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:149
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:189
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:240
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:245
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:122
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:95
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:166
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:136
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:142
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:328
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:347
+msgid "Error"
+msgstr "오류"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:38
+msgid "Error control"
+msgstr "오류 제어"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:214
+#, c-format
+msgid "Error in the field '%s':\n"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:267
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:146
+#, c-format
+msgid "Error in the field '%s': value should be between %d and %d."
+msgstr "'%s' 필드의 오류: 값은 %d와 %d 사이여야 합니다."
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:91
+#, c-format
+msgid "Error in the field '%s': value should be greater than zero"
+msgstr "'%s' 필드의 오류: 값이 0보다 커야 합니다."
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:162
+msgid "Error log"
+msgstr "오류 로그"
+
+#: ../Source/Func/UpdatePackage.cpp:387
+msgid "Error while updating component "
+msgstr "구성 요소를 업데이트하는 동안 오류가 발생했습니다. "
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
+msgid "Error:"
+msgstr "오류:"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:561
+#, c-format
+msgid "Errors: %d"
+msgstr "오류: %d개"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:82
+msgid "Executables"
+msgstr "실행"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:58
+msgid "Execute Squirrel script for each task (file)"
+msgstr "각 작업(파일)에 대한 스쿼럴 스크립트 실행"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:211
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:394
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1746
+msgid "Exit"
+msgstr "종료"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:196
+msgid "Extract frames"
+msgstr "프레임 추출"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:215
+msgid "Extracting frame "
+msgstr "프레임 추출 "
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100
+msgid "Extracting frames from video"
+msgstr "비디오에서 프레임 추출"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:476
+msgid "Extracting video frames was finished."
+msgstr "비디오 프레임 추출이 완료되었습니다."
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:311
+msgid "Extracting video frames was stopped by user."
+msgstr "비디오 프레임 추출은 사용자가 중지했습니다."
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:43
+msgid "FTP"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:159
+msgid "Failed to load folder list."
+msgstr "폴더 목록을 로드하지 못했습니다."
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:309
+msgid "Failed to logout."
+msgstr ""
+
+#: ../Source/Video/VideoGrabber.cpp:73
+#, c-format
+msgid "Failed to open video file '%s'."
+msgstr ""
+
+#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:454
+msgid "Fetching filesystem..."
+msgstr ""
+
+#: ../Source/Gui/Controls/ResultsListView.cpp:21
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:94
+msgid "File"
+msgstr "파일"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:776
+#, c-format
+msgid "File \"%s\" is beeing uploaded to server %s.."
+msgstr "\"%s\" 파일이 %s 서버에 업로드되기 시작했습니다."
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:96
+#: ../Source/Video/VideoGrabber.cpp:59
+#, c-format
+msgid "File \"%s\" not found!"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:215
+#, c-format
+msgid "File %s doesn't exist"
+msgstr "%s 파일이 존재하지 않습니다"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:151
+#, c-format
+msgid ""
+"File doesn't exist:\n"
+"%s"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:100
+#, c-format
+msgid "File exceeds filesize limit of \"%s\" server (%s)."
+msgstr "파일이 \"%s\" 서버(%s)의 파일 크기 제한을 초과합니다."
+
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:194
+#, c-format
+msgid ""
+"File is not an image.\n"
+"Url: %s\n"
+"Mime-Type: %s"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:118
+msgid "File name cannot contains forbidden characters!"
+msgstr "파일 이름에는 금지된 문자를 포함할 수 없습니다!"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:806
+msgid "File not found."
+msgstr "파일을 찾을 수 없습니다。"
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:48
+msgid "File size exceeding"
+msgstr "파일 크기 초과"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:559
+msgid "File uploading was cancelled by user."
+msgstr "사용자가 파일 업로드를 취소했습니다."
+
+#: ../Source/Gui/Controls/ThumbsView.cpp:300
+msgid "File:"
+msgstr "파일:"
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:39
+msgid "File: "
+msgstr "파일: "
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:61
+msgid "Filename format:"
+msgstr "파일 이름 형식"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:51
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
+msgid "Filename:"
+msgstr "파일 이름:"
+
+#: ../Source/Func/MediaInfoHelper.cpp:136
+msgid "Filename: "
+msgstr "파일 이름: "
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:672
+msgid "Files"
+msgstr "파일"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
+msgid "Files total:"
+msgstr "파일 합계:"
+
+#: ../Source/Func/MediaInfoHelper.cpp:140
+msgid "Filesize: "
+msgstr "파일 크기: "
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:253
+msgid "Fill background"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:113
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:777
+msgid "Filled ellipse"
+msgstr "채워진 타원형"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:102
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:775
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:912
+msgid "Filled rectangle"
+msgstr "채워진 사각형"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:88
+msgid "Filters"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
+msgid "Finish"
+msgstr "마침"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:258
+msgid "Finish >"
+msgstr "완료 >"
+
+#: ../Source/Core/Upload/UploadTask.cpp:376
+#: ../Source/Gui/UploadListModel.cpp:161
+msgid "Finished"
+msgstr "완료"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:115
+msgid "First you have to select an item in the list."
+msgstr "먼저 목록에서 항목을 선택해야 합니다."
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
+msgid "Fit"
+msgstr "맞추기"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:161
+msgid "Folder "
+msgstr "폴더 "
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:63
+msgid "Folder for snapshots:"
+msgstr "스냅샷용 폴더:"
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:67
+msgid "Folder list"
+msgstr "폴더 목록"
+
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:97
+#, c-format
+msgid "Folder list on server %s for account '%s':"
+msgstr "'%s' 계정에 대한 %s 서버의 폴더 목록:"
+
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:35
+msgid "Folder name:"
+msgstr "폴더 이름:"
+
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:51
+msgid "Folder/album:"
+msgstr "폴더/앨범:"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:46
+msgid "Folder:"
+msgstr "폴더:"
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:228
+msgid "Font size:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:58
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:58
+msgid "Font..."
+msgstr "글꼴..."
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:41
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:60
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:105
+msgid "Format:"
+msgstr "형식:"
+
+#: ../Source/Gui/Dialogs/ResultsWindow.cpp:78
+msgid "Forum code (BBCode)"
+msgstr "포럼 코드(BBCode)"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:60
+msgid "Found a bug? Send it to the author"
+msgstr "버그를 발견했습니까? 저자에게 보내 주십시오"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:43
+msgid "Frame color:"
+msgstr "프레임 색상:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:56
+msgid "Frames layout"
+msgstr "프레임 레이아웃"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:504
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:49
+msgid "Freehand Capture"
+msgstr "자유형 캡처"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:91 ../Source/Gui/Win7JumpList.cpp:195
+msgid "From Clipboard"
+msgstr "클립보드에서"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:87
+msgid "From Web"
+msgstr "웹에서"
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:55
+msgid "Full information"
+msgstr "전체 정보"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:55
+msgid "General"
+msgstr "일반"
+
+#: ../Source/Func/ImageGenerator.cpp:45 ../Source/Func/ImageGenerator.cpp:95
+msgid "Generating image..."
+msgstr ""
+
+#: ../Source/3rdpart/ColorButton.cpp:227
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:24
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:31
+msgid "Get color's code..."
+msgstr ""
+
+#: ../Source/Func/ImageGenerator.cpp:28
+msgid "Getting info about file..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:47
+msgid "Global"
+msgstr "글로벌"
+
+#: ../Source/Gui/Dialogs/HotkeyEditor.cpp:61
+msgid "Global hotkey:"
+msgstr "전역 단축키:"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1045
+msgid "Go to signup page"
+msgstr "가입 페이지로 이동"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:441
+msgid "Grab"
+msgstr "잡기"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:44
+msgid "Gradient color 1:"
+msgstr "그라데이션 색상 1:"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:45
+msgid "Gradient color 2:"
+msgstr "그라데이션 색상 2:"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:909
+msgid "Group by filename"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ResultsWindow.cpp:79
+msgid "HTML code"
+msgstr "HTML 코드"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
+msgid "Height:"
+msgstr "높이:"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:297
+msgid "Help"
+msgstr "도움말"
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:160
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:396
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1748
+msgid "Hide"
+msgstr "숨기기"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:907
+msgid "Highlight"
+msgstr "강조"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:106
+msgid "History"
+msgstr "작업 내역"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:462
+msgid "History has been cleared successfully."
+msgstr "기록이 성공적으로 지워졌습니다."
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:54
+msgid "Horizontal interval:"
+msgstr "수평 간격:"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:64
+msgid "Hotkeys"
+msgstr "단축키"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:252
+msgid "I have an account on this server"
+msgstr "이 서버에 계정이 있습니다"
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:47
+msgid "Ignore"
+msgstr "무시"
+
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:85
+msgid "Image Downloader"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:333
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:581
+msgid "Image Editor"
+msgstr "이미지 편집기"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1591
+msgid "Image Editor  (%1%x%2%)"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1597
+msgid "Image Editor - %1% (%2%x%3%)"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:331
+msgid ""
+"Image Editor cannot deal with animated images. If you edit this file, "
+"animation will be lost. Do you wish to continue?"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
+msgid "Image Uploader Updates"
+msgstr "Image Uploader 업데이트"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:53
+msgid "Image processing"
+msgstr "이미지 처리"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
+msgid "Image processing settings..."
+msgstr "이미지 처리 설정..."
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:282
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:416
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:55
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:110
+msgid "Image settings"
+msgstr "이미지 설정"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:165
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:186
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1416
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1878
+msgid "Images"
+msgstr "이미지"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:39
+msgid "Images editor:"
+msgstr "이미지 편집기:"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+msgid "Images from web"
+msgstr "웹의 이미지"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:112
+msgid "Images per string:"
+msgstr "문자열 당 이미지:"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:876
+msgid "Images settings and choosing server"
+msgstr "이미지 설정 및 서버 선택"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:49
+msgid "Immediately begin uploading to the server"
+msgstr "즉시 서버에 업로드 시작"
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:251
+#: ../Source/Gui/Components/DragndropOverlay.cpp:34
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:494
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
+#: ../Source/Gui/Dialogs/MainDlg.cpp:65
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100 ../Source/Gui/Win7JumpList.cpp:259
+msgid "Import Video File"
+msgstr "비디오 파일 가져오기"
+
+#: ../Source/Core/Upload/UploadTask.cpp:382
+#: ../Source/Gui/UploadListModel.cpp:21
+msgid "In queue"
+msgstr "큐에서"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1734
+msgid "Including subdirectories"
+msgstr "하위 디렉터리 포함"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:164
+msgid "Info about last video"
+msgstr "마지막 동영상의 정보"
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:252
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:89
+msgid "Information about file"
+msgstr "파일에 대한 정보"
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:107
+#, c-format
+msgid "Information about file \"%s\" :"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:243
+msgid "Initial value:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:62
+msgid "Integration"
+msgstr "통합"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:52
+msgid "Integration in menu \"Send to\""
+msgstr "메뉴 \"보내기\"의 통합"
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:215
+msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
+msgstr "PrintScreen 및 Alt+PrintScreen 단축키 차단"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:36
+msgid "Interface language:"
+msgstr "인터페이스 언어 선택:"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:409
+#, c-format
+msgid ""
+"Invalid source URL: '%s'. Absolute URL is needed, including schema (http,"
+"https,etc)"
+msgstr ""
+"잘못된 소스 URL: '%s'. 스키마(http, https 등)를 포함하여 절대 URL이 필요합니"
+"다."
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:258
+msgid "Invert selection"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:83
+msgid "JPEG, PNG, GIF, BMP or any other file"
+msgstr "JPEG, PNG, GIF, BMP 또는 기타 파일"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
+msgid ""
+"Just drag-n-drop your files on Image Uploader's window and it will process "
+"them."
+msgstr "이미지 업로더의 창으로 파일을 끌어다 놓으면 처리됩니다."
+
+#: ../Source/Func/LangClass.cpp:104
+msgid "LAYOUT_DIRECTION"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:98
+msgid "Last Region"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:214
+#: ../Source/Gui/Dialogs/TraySettings.cpp:35
+msgid "Launch program on Windows startup"
+msgstr "Windows 시작시 프로그램 실행"
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:30
+msgid "Left button double-click"
+msgstr "왼쪽 버튼 더블 클릭"
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:31
+msgid "Left button single click:"
+msgstr "왼쪽 버튼 한 번 클릭:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:165
+msgid "Libraries:"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:908
+msgid "Line"
+msgstr "선"
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:205
+msgid "Line thickness"
+msgstr "선 두께"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:427
+msgid "Links"
+msgstr "링크"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:368
+#, c-format
+msgid "Links (%d)"
+msgstr "링크 (%d)"
+
+#: ../Source/Gui/Dialogs/ResultsWindow.cpp:81
+msgid "Links (URL)"
+msgstr "링크 (URL)"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:187
+msgid "Links to Images/Files"
+msgstr "이미지/파일에 대한 링크"
+
+#: ../Source/Gui/Controls/ThumbsView.cpp:300
+msgid "List of Images"
+msgstr "이미지 목록"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:80
+msgid "List of URLs"
+msgstr "URL 목록"
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:58
+msgid "Loading..."
+msgstr "로드 중..."
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:46
+msgid "Local"
+msgstr "로컬"
+
+#: ../Source/Gui/Dialogs/HotkeyEditor.cpp:60
+msgid "Local hotkey:"
+msgstr "로컬 단축키:"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:428
+msgid "Log"
+msgstr "로그"
+
+#: ../Source/Core/Upload/MegaNzUploadEngine.cpp:349
+msgid "Logging in..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:240
+msgid "Login cannot be empty"
+msgstr "로그인을 비워 둘 수 없습니다"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:71
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:211
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:256
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:50
+msgid "Login:"
+msgstr "로그인:"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:77
+msgid "Logout"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:309
+msgid "Logout succesfully."
+msgstr ""
+
+#: ../Source/Func/UpdatePackage.cpp:499
+msgid "MD5 check failed for file "
+msgstr "파일에 대한 MD5 검사 실패 "
+
+#: ../Source/Func/UpdatePackage.cpp:395
+msgid "MD5 check of the update package failed "
+msgstr "업데이트 패키지의 MD5 확인 실패 "
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
+msgid ""
+"MediaInfo.dll Not found! \n"
+"Getting technical information of media files will not be accessible."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:32
+msgid "Middle button click:"
+msgstr "가운데 버튼 클릭:"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:518
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:91
+msgid "Monitor"
+msgstr "모니터"
+
+#: ../Source/3rdpart/ColorButton.cpp:226
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:23
+#: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:30
+msgid "More colors..."
+msgstr "추가 색상.."
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:29
+msgid "Mouse clicks handlers"
+msgstr "마우스 클릭 핸들러"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:902
+msgid "Move"
+msgstr "이동"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:88
+msgid "Move Down"
+msgstr "아래로 이동"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:83
+msgid "Move Up"
+msgstr "위로 이동"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
+msgid "Multiple files"
+msgstr "여러 파일"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
+msgid "Name cannot be empty"
+msgstr "이름은 비워 둘 수 없습니다"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:56
+msgid "Name:"
+msgstr "이름:"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:328
+msgid "New Profile Name"
+msgstr "새 프로필 이름"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:949
+msgid "New folder"
+msgstr "새 폴더"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:397
+msgid "New profile"
+msgstr "새 프로필"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:177
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:673
+msgid "Next >"
+msgstr "다음 >"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:614
+msgid "No Folder Selected"
+msgstr "선택된 폴더 없음"
+
+#: ../Source/Gui/Dialogs/FolderAddDlg.cpp:118
+msgid "No files were found."
+msgstr "파일을 찾을 수 없습니다."
+
+#: ../Source/Gui/Dialogs/FolderAddDlg.cpp:118
+msgid "No pictures were found."
+msgstr "사진을 찾을 수 없습니다."
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:45
+msgid "No proxy (direct connection)"
+msgstr "프록시 없음(직접 연결)"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:206
+msgid "No updates for Image Uploader's components are available"
+msgstr "이미지 업로더의 구성 요소에 대한 업데이트는 사용할 수 없습니다"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:55
+msgid "Num of retries per action:"
+msgstr "작업당 재시도 수:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:52
+msgid "Number of columns:"
+msgstr "열 수:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
+msgid "Number of frames:"
+msgstr "프레임 수:"
+
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:37
+#: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:42
+#: ../Source/Gui/Dialogs/HotkeyEditor.cpp:58
+#: ../Source/Gui/Dialogs/InputDialog.cpp:54
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:51
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:39
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:65
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:47
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:85
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:73
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:45
+#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
+msgid "OK"
+msgstr "확인"
+
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:39
+msgid "Older than 30 days"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:90
+msgid "Open containing folder"
+msgstr "연결 폴더 열기"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:67
+msgid "Open download page"
+msgstr "다운로드 페이지 열기"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:190
+#: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:301
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:960
+msgid "Open in Web Browser"
+msgstr "웹 브라우저에서 열기"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:556
+msgid "Open in Wizard"
+msgstr "마법사에서 열기"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:191
+msgid "Open in external editor"
+msgstr "외부 편집기에서 열기"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:200
+#: ../Source/Gui/Dialogs/MainDlg.cpp:199
+msgid "Open in folder"
+msgstr "폴더에서 열기"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:544
+msgid "Open in the editor"
+msgstr "편집기에서 열기"
+
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:56
+msgid "Open screenshot in the editor"
+msgstr "편집기에서 스크린 샷 열기"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:577
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:204
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2335
+msgid "Open screenshots folder"
+msgstr "스크린 샷 폴더 열기"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:187
+msgid "Open with..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:166
+msgid "Options"
+msgstr "옵션"
+
+#: ../Source/Func/MediaInfoHelper.cpp:156
+msgid "Overall bitrate: "
+msgstr "전체 비트 레이트: "
+
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
+msgid "Parameters:"
+msgstr "매개 변수:"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:73
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:212
+#: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:258
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:49
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:51
+msgid "Password:"
+msgstr "비밀 번호:"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:488
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
+#: ../Source/Gui/Dialogs/MainDlg.cpp:158
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
+msgid "Paste"
+msgstr "붙여넣기"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:82
+msgid "Paste HTML from clipboard"
+msgstr "클립보드에서 HTML 붙여넣기"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:84
+msgid "Paste HTML on Ctrl+V"
+msgstr "Ctrl+V로 HTML 붙여넣기"
+
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:58
+msgid "Paste a link to shorten it:"
+msgstr "링크를 붙여넣은 후 단축:"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:126
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:790
+msgid "Pixelation"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:40
+msgid "Please choose period:"
+msgstr "기간을 선택하십시오:"
+
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
+msgid "Please enter an URL"
+msgstr "URL을 입력하십시오"
+
+#: ../Source/Func/WtlScriptDialogProvider.cpp:16
+msgid "Please enter the text you see in the image:"
+msgstr "이미지에 표시되는 텍스트를 입력하십시오."
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:35
+msgid ""
+"Please note that program needs to be restarted for new language settings to "
+"take affect."
+msgstr "새로 선택한 언어 설정을 적용하려면 이 프로그램을 다시 시작해야 합니다."
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:356
+#, c-format
+msgid "Please specify authentication settings for '%s' server!"
+msgstr "'%s' 서버에 대한 인증 설정을 지정하십시오!"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:371
+msgid "Please wait while your history is being converted..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:47
+msgid "Port:"
+msgstr "포트:"
+
+#: ../Source/Core/Upload/UploadTask.cpp:385
+msgid "Postponed"
+msgstr "연기"
+
+#: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:40
+msgid "Preparing image..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:60
+msgid "Preserve EXIF data"
+msgstr "EXIF 데이터 보존"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:167
+msgid "Preview"
+msgstr "미리보기"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:1115
+msgid "Preview Window"
+msgstr "미리보기 창"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:192
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:887
+msgid "Print..."
+msgstr "인쇄..."
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:270
+msgid "Private key file doesn't exist."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
+msgid "Private key file:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:56
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:111
+msgid "Process images before upload"
+msgstr "업로드하기 전에 이미지 처리"
+
+#: ../Source/Gui/Dialogs/FolderAddDlg.cpp:45
+msgid "Processing folder:"
+msgstr "처리 폴더:"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:514
+#, c-format
+msgid ""
+"Profile \"%s\" not found.\n"
+"It may be caused by a configuration error or usage of multiple versions of "
+"the application on the same computer."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:322
+msgid "Profile with such name already exists!"
+msgstr "이 이름의 프로필이 이미 존재합니다!"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:40
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:57
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:109
+msgid "Profile:"
+msgstr "프로필:"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:81
+msgid "Progress:"
+msgstr "진행 상황:"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:67 ../Source/Gui/Dialogs/MainDlg.cpp:225
+msgid "Properties"
+msgstr "속성"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:48
+msgid "Proxy type:"
+msgstr "+"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:42
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:61
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:106
+msgid "Quality:"
+msgstr "품질:"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:220
+msgid "Queued"
+msgstr "대기 중"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:491
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+msgid "Quick upload image from clipboard"
+msgstr "클립 보드에서 빠른 업로드 이미지"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:75
+msgid "Re-upload images"
+msgstr "이미지 다시 업로드"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:115
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:321
+msgid "Reason:"
+msgstr "이유:"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:87
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:762
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:911
+msgid "Rectangle"
+msgstr "사각형"
+
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:235
+msgid "Redo"
+msgstr "다시 실행"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:51
+msgid "Remember file server's settings in wizard"
+msgstr "마법사에서 파일 서버의 설정 기억"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:50
+msgid "Remember image server's settings in wizard"
+msgstr "마법사에서 이미지 서버의 설정 기억"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:34
+msgid "Remote directory:"
+msgstr "원격 디렉토리:"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:224
+msgid "Remove"
+msgstr "제거"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:78
+msgid "Remove Item"
+msgstr "항목 제거"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:165
+msgid "Remove all"
+msgstr "모두 제거"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:68
+msgid "Remove from list"
+msgstr "목록에서 제거"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:117
+msgid "Remove this account from the list (not from the remote server)"
+msgstr "목록에서 이 계정을 제거 (원격 서버가 아님)"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:50
+msgid "Resize mode:"
+msgstr "크기 조정 모드:"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
+msgid "Retrieve thumbnails from the Internet"
+msgstr "인터넷에서 축소판 검색"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:241
+msgid "Retry"
+msgstr "재시도"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:76
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:93 ../Source/Gui/Win7JumpList.cpp:203
+msgid "Reupload"
+msgstr "다시 업로드"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
+msgid "Reupload images"
+msgstr "이미지 다시 업로드"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:85
+msgid "Reuploading images in the text with preserving it's original markup"
+msgstr "원본 태그를 보존하여 텍스트와 이미지 다시 업로드합니다"
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:33
+msgid "Right button click:"
+msgstr "오른쪽 버튼 클릭:"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:92
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:108
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:763
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:776
+msgid "Rounded rectangle"
+msgstr "둥근 사각형"
+
+#: ../Source/ImageEditor/Gui/Toolbar.cpp:213
+msgid "Rounding radius"
+msgstr "라운딩 반경"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:44
+msgid "SFTP"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:73
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:99
+msgid "Same format as image"
+msgstr "이미지와 동일한 형식"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:691
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:877
+msgid "Save"
+msgstr "저장"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:137
+msgid "Save Profile"
+msgstr "프로필 저장"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:801
+msgid "Save as"
+msgstr "다른 이름으로 저장"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:200
+msgid "Save as..."
+msgstr "다른 이름으로 저장..."
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
+msgid "Save as:"
+msgstr "다른 이름으로 저장:"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1185
+msgid "Save changes?"
+msgstr "변경 내용을 저장하겠습니까?"
+
+#: ../Source/Func/ImageGenerator.cpp:114
+msgid "Saving image..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
+msgid "Saving parameters"
+msgstr "매개 변수 저장"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
+msgid "Scaling:"
+msgstr "크기 조정:"
+
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:53
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:96
+msgid "Screen Capture"
+msgstr "화면 캡처"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:496
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
+#: ../Source/Gui/Dialogs/MainDlg.cpp:66
+msgid "Screenshot"
+msgstr "스크린 샷"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
+msgid "Screenshot Action"
+msgstr "스크린 샷 작업"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:909
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2232
+msgid "Screenshot was saved to clipboard."
+msgstr "스크린 샷이 클립 보드에 저장되었습니다."
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:903
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
+msgid "Screenshot was uploaded"
+msgstr "스크린 샷이 업로드되었습니다"
+
+#: ../Source/Gui/Win7JumpList.cpp:211
+msgid "Screenshot..."
+msgstr "스크린 샷..."
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:50
+msgid "Script: "
+msgstr ""
+
+#: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:50
+msgid "Search by image"
+msgstr "이미지로 검색"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:217 ../Source/Gui/Dialogs/MainDlg.cpp:220
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:826
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:828
+#, c-format
+msgid "Search by image (%s)"
+msgstr "이미지별 검색(%s)"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:883
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1136
+#, c-format
+msgid "Search on %s"
+msgstr "%s에서 검색"
+
+#: ../Source/Gui/Dialogs/FolderAddDlg.cpp:31
+msgid "Searching for picture files..."
+msgstr "사진 파일 검색 중..."
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:97
+msgid "Select Region..."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:59
+msgid "Select action:"
+msgstr "작업 선택:"
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:120
+msgid "Select all"
+msgstr "모두 선택"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:371
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:153
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:130
+msgid "Select folder"
+msgstr "폴더 선택"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1326
+msgid "Select region"
+msgstr "영역 선택"
+
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:64
+msgid "Select..."
+msgstr "선택..."
+
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:104
+#, c-format
+msgid "Selected server: %s"
+msgstr ""
+
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:107
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1463
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1476
+#, c-format
+msgid "Selected servers: %d"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:160
+msgid "Server"
+msgstr "서버"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:30
+msgid "Server [:port]:"
+msgstr "서버 [:port]:"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:668
+msgid "Server and authentication settings"
+msgstr "서버 및 인증 설정"
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:67
+msgid "Server for other file types"
+msgstr "다른 파일 형식에 대한 서버"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:81
+msgid "Server for quick screenshot uploading"
+msgstr "빠른 스크린 샷을 업로드할 서버"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:104
+msgid "Server for temporary images"
+msgstr "임시 이미지용 서버"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:92
+msgid "Server for uploading from Explorer's context menu"
+msgstr "탐색기의 컨텍스트 메뉴에서 업로드할 서버"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:98
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:67
+msgid "Server for uploading images"
+msgstr "이미지 업로드용 서버"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:45
+msgid "Server name:"
+msgstr "서버 이름:"
+
+#: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:102
+msgid "Server not chosen"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1039
+msgid "Server settings"
+msgstr "서버 설정"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:814
+msgid "Server settings..."
+msgstr "서버 설정..."
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:119
+msgid "Server to host other file formats"
+msgstr "다른 파일 형식을 호스트하는 서버"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:114
+msgid "Server to host your images"
+msgstr "이미지를 호스팅하는 서버"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:38
+msgid "Server type:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:235
+msgid "Server's name cannot be empty"
+msgstr "서버 이름은 비워 둘 수 없습니다"
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:45
+msgid "Server: "
+msgstr "서버: "
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:56
+msgid "Servers"
+msgstr "서버"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
+msgid "Session total:"
+msgstr "세션 합계:"
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:183
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:105
+msgid "Settings"
+msgstr "설정"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:152
+msgid "Settings file path:"
+msgstr "설정 파일 경로:"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:76
+msgid "Settings have been saved."
+msgstr "설정이 저장되었습니다."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:94
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:88
+msgid "Settings..."
+msgstr "설정..."
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:47
+msgid "Shell context menu integration"
+msgstr "셸 컨텍스트 메뉴 통합"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:856
+msgid "Short URL"
+msgstr "짧은 URL"
+
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:56
+msgid "Shorten"
+msgstr "단축"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:895
+msgid "Shorten URL"
+msgstr "URL 단축"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:893
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1214
+#, c-format
+msgid "Shorten URL using %s"
+msgstr "%s 사용하여 URL 단축"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:64
+msgid "Shorten URLs"
+msgstr "URL 단축"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:94
+msgid "Shorten a link"
+msgstr "링크 단축"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
+msgid "Shorten a link from the clipboard"
+msgstr "클립보드에서 링크 단축"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:388
+#, c-format
+msgid "Shortening URL \"%s\" using %s"
+msgstr "%s 사용하여 URL \"%s\" 단축"
+
+#: ../Source/Gui/UploadListModel.cpp:177
+msgid "Shortening link..."
+msgstr ""
+
+#: ../Source/Gui/Win7JumpList.cpp:227
+msgid "Shot of Selected Region..."
+msgstr "선택한 영역의 샷..."
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2340
+msgid "Show Error Log"
+msgstr "오류 로그 표시"
+
+#: ../Source/Gui/Dialogs/GeneralSettings.cpp:40
+msgid "Show automatically log window in case of error"
+msgstr "오류 발생 시 자동으로 로그 창 표시"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:186
+msgid "Show in default viewer"
+msgstr "기본 뷰어에 표시"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:242
+msgid "Show log for this file"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:576
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
+msgid "Show program's window"
+msgstr "프로그램 창 표시"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:579
+msgid "Show results of last upload"
+msgstr "마지막 업로드 결과 표시"
+
+#: ../Source/Gui/Dialogs/TraySettings.cpp:28
+msgid "Show tray icon"
+msgstr "트레이 아이콘 표시"
+
+#: ../Source/Gui/Dialogs/LoginDlg.cpp:87
+msgid "Sign in..."
+msgstr "로그인..."
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
+msgid "Single file"
+msgstr "단일 파일"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:61
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:120
+msgid "Skip animated"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:45
+msgid "Skip image processing step if the image has right parameters"
+msgstr "이미지에 올바른 매개 변수가 있는 경우 이미지 처리 단계 건너뛰기"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:83
+msgid "Source URL (optional):"
+msgstr "소스 URL(선택 사항):"
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:79
+msgid "Source code"
+msgstr "소스 코드"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:600
+msgid "Specify account..."
+msgstr "계정 지정..."
+
+#: ../Source/Core/Upload/FileQueueUploaderPrivate.cpp:390
+msgid "Starting upload"
+msgstr ""
+
+#: ../Source/Gui/Controls/ResultsListView.cpp:22
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:58
+msgid "Status"
+msgstr "상태"
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:914
+msgid "Step"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:471
+#: ../Source/Gui/Dialogs/StatusDlg.cpp:87
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:669
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:181
+msgid "Stop"
+msgstr "중지"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
+msgid "Stop uploading"
+msgstr "업로드 중지"
+
+#: ../Source/Core/Upload/UploadTask.cpp:373
+msgid "Stopped"
+msgstr "중지"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:84
+msgid "Stretch"
+msgstr "늘이기"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:57
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:41
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:50
+msgid "Stroke color:"
+msgstr "스트로크 색상:"
+
+#: ../Source/Func/MediaInfoHelper.cpp:282
+msgid "Subtitles: "
+msgstr "자막: "
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:293
+msgid "Success"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:54
+msgid "Summary"
+msgstr "요약"
+
+#: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
+msgid "Summary:"
+msgstr "요약:"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:184
+msgid "Table of clickable thumbnails"
+msgstr "클릭 가능한 축소판 테이블"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:40
+msgid "Test connection"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:293
+msgid "Test failed"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:913
+msgid "Text"
+msgstr "텍스트"
+
+#: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:93
+msgid "Text Options"
+msgstr "텍스트 옵션"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:48
+msgid "Text Settings:"
+msgstr "텍스트 설정:"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:56
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:59
+msgid "Text color:"
+msgstr "택스트 색상:"
+
+#: ../Source/Gui/Dialogs/InputDialog.cpp:79
+msgid "Text contains forbidden characters!"
+msgstr "텍스트에는 금지된 문자가 포함되어 있습니다!"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:54
+msgid "Text on image"
+msgstr "이미지의 텍스트"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:59
+msgid "Text position:"
+msgstr "텍스트 위치:"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:51
+msgid "Text:"
+msgstr "텍스트:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:103
+msgid "Thanks to the authors of the following open-source libraries:"
+msgstr "도움 주신 다음 오픈 소스 라이브러리의 저자께 감사드립니다:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:81
+msgid "Thanks to:"
+msgstr "감사드립니다:"
+
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
+msgid "The short link has been copied to the clipboard!"
+msgstr "짧은 링크가 클립보드에 복사되었습니다!"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:121
+msgid "This means that the thumbnail will be created by site, not the program."
+msgstr "즉, 축소판이 프로그램이 아닌 사이트에 의해 생성됩니다."
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1060
+msgid "This server doesn't have any settings."
+msgstr "이 서버에는 설정이 없습니다."
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:57
+msgid "Threads number:"
+msgstr "스레드 번호:"
+
+#: ../Source/Gui/Controls/ResultsListView.cpp:23
+msgid "Thumbnail"
+msgstr "축소판"
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:55
+msgid "Thumbnail Preset Editor"
+msgstr "축소판 사전 설정 편집기"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
+msgid "Thumbnail Preset:"
+msgstr "축소판 사전 설정:"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:58
+msgid "Thumbnail settings"
+msgstr "축소판 설정"
+
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
+msgid "Thumbnail text:"
+msgstr "축소판 텍스트:"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:53
+msgid "Thumbnail width:"
+msgstr "축소판 너비:"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:116
+msgid "Thumbnail's size:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:112
+msgid "Thumbnails"
+msgstr "축소판"
+
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:54
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
+msgid "Timeout:"
+msgstr "제한 시간:"
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:46
+msgid "To all"
+msgstr "모두에게"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:92
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:99
+msgid "Top center"
+msgstr "윗쪽 중앙"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:91
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:98
+msgid "Top left corner"
+msgstr "왼쪽 윗쪽 모서리"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:93
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:100
+msgid "Top right corner"
+msgstr "오른쪽 윗쪽 모서리"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
+msgid "Total size:"
+msgstr "전체 크기:"
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:90
+msgid "Translators:"
+msgstr "번역:"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:63
+msgid "Tray icon"
+msgstr "트레이 아이콘"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:190
+msgid "Tray icon context menu"
+msgstr "트레이 아이콘 컨텍스트 메뉴"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
+msgid "URL for downloading will look like:"
+msgstr "다운로드 URL은 다음과 같습니다:"
+
+#: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:47
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:35
+msgid "URL for downloading:"
+msgstr "다운로드용 URL:"
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:1128
+msgid "URL shortening server"
+msgstr "URL 단축 서버"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
+msgid "URL:"
+msgstr ""
+
+#: ../Source/Gui/Controls/MyImage.cpp:178
+#: ../Source/Gui/Controls/ThumbsView.cpp:301
+msgid "Unable to load picture"
+msgstr "그림을 로드할 수 없음"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2200
+msgid "Unable to make screenshot!"
+msgstr "스크린 샷을 만들 수 없습니다!"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:859
+msgid "Unable to shorten the link..."
+msgstr "링크를 단축할 수 없음..."
+
+#: ../Source/Func/UpdatePackage.cpp:403
+#, c-format
+msgid "Unable to unpack archive %s"
+msgstr ""
+
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:920
+#: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
+msgid "Undo"
+msgstr "실행 취소"
+
+#: ../Source/Core/Upload/UploadTask.cpp:392
+msgid "Unknown status"
+msgstr "알 수 없는 상태"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:191
+msgid "Update components"
+msgstr "구성 요소 업데이트"
+
+#: ../Source/Func/UpdatePackage.cpp:420
+#, c-format
+msgid "Update finished. Updated %d of %d files "
+msgstr "업데이트 완료. %d /%d 파일 업데이트됨 "
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:56
+msgid "Upload Buffer Size:"
+msgstr "업로드 버퍼 크기:"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
+msgid "Upload History"
+msgstr "업로드 내역"
+
+#: ../Source/Gui/Win7JumpList.cpp:188
+msgid "Upload Images"
+msgstr "이미지 업로드"
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:71
+msgid "Upload failed! (retry limit reached)"
+msgstr "업로드 실패! (재시도 한도에 도달)"
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:69
+#, c-format
+msgid "Upload failed. Another retry (%d)..."
+msgstr "업로드 실패! 또 다른 재시도 (%d)..."
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:249
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:470
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
+msgid "Upload files"
+msgstr "파일 업로드"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:471
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
+msgid "Upload folder"
+msgstr "폴더 업로드"
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:248
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:191
+msgid "Upload images"
+msgstr "이미지 업로드"
+
+#: ../Source/Core/Settings/WtlGuiSettings.cpp:250
+msgid "Upload images only"
+msgstr "이미지만 업로드"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:426
+msgid "Upload progress"
+msgstr "업로드 진행률"
+
+#: ../Source/Gui/Dialogs/ResultsWindow.cpp:73
+msgid "Upload results"
+msgstr "업로드 결과"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:59
+msgid "Upload speed limit per thread:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:124
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:871
+#, c-format
+msgid "Upload to %s"
+msgstr "%s에 업로드"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:548
+#: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:869
+msgid "Upload to Web"
+msgstr "웹에 업로드"
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:338
+#, c-format
+msgid ""
+"Upload to server '%s' is impossible without account.\n"
+"You should sign Up on this server and specify your account details in "
+"program settings."
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:551
+msgid "Uploaded images: "
+msgstr "업로드된 이미지: "
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:61
+msgid "Uploading"
+msgstr "업로드"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:53
+msgid "Uploading errors"
+msgstr "업로드 오류"
+
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:878
+msgid "Uploading file on server"
+msgstr "서버에 파일 업로드"
+
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:562
+msgid "Uploading has been finished."
+msgstr "업로드가 완료되었습니다."
+
+#: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:65
+msgid "Uploading image..."
+msgstr "이미지 업로드 중..."
+
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:75
+msgid "Uploading module"
+msgstr "업로드 모듈"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:781
+msgid "Uploading screenshot"
+msgstr "스크린 샷 업로드"
+
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:55
+msgid "Url Shortener"
+msgstr "URL 단축기"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:63
+msgid "Use default thumbnail settings"
+msgstr "기본 축소판 설정 사용"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:903
+msgid "Use direct links"
+msgstr "직접 링크 사용"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
+msgid "Use old method of rectangular area selection"
+msgstr "이전 직사각형 영역 선택 방법 사용"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:43
+msgid "Use provided proxy"
+msgstr "제공된 프록시 사용"
+
+#: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:115
+msgid "Use server-side thumbnails"
+msgstr "서버 측의 축소판 사용"
+
+#: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:44
+msgid "Use system proxy settings"
+msgstr "시스템 프록시 설정 사용"
+
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:914
+msgid "Use template"
+msgstr "템플릿 사용"
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:89
+msgid "User name"
+msgstr "사용자 이름"
+
+#: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:55
+msgid "Vertical interval:"
+msgstr "수직 간격:"
+
+#: ../Source/Gui/Dialogs/SettingsDlg.cpp:60
+msgid "Video"
+msgstr "비디오"
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:121
+msgid "Video engine which is used to extract frames from a video file."
+msgstr "비디오 파일에서 프레임을 추출하는 데 사용되는 비디오 엔진입니다."
+
+#: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:383
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1632
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1850
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1879
+msgid "Video files"
+msgstr "비디오 파일"
+
+#: ../Source/Func/MediaInfoHelper.cpp:163
+msgid "Video: "
+msgstr "비디오: "
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:183
+#: ../Source/Gui/Dialogs/UploadDlg.cpp:239
+msgid "View"
+msgstr "보기"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:194
+msgid "View BBCode/HTML codes"
+msgstr "BBCode/HTML 코드 보기"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:103
+msgid "View Media File Information"
+msgstr "미디어 파일 정보 보기"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:860
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:881
+msgid "View log for details."
+msgstr "자세한 내용은 로그를 봅니다."
+
+#: ../Source/Core/Upload/UploadTask.cpp:388
+msgid "Waiting for child tasks"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:89
+msgid "Watch Clipboard for URLs"
+msgstr "URL에 대한 클립보드 보기"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:53
+msgid "Watermark"
+msgstr "워터마크"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:52
+msgid "Watermark position:"
+msgstr "워터마크 위치:"
+
+#: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:45
+msgid "WebDAV"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:244
+msgid "Website:"
+msgstr "웹사이트:"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:62
+msgid ""
+"Welcome to pictures Publishing Wizard, that will help you to upload your "
+"images, photos, video frames on Internet!"
+msgstr ""
+"인터넷에 이미지, 사진, 비디오 프레임을 업로드하는 데 도움이 되는 사진 게시 마"
+"법사를 시작합니다."
+
+#: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
+#: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
+msgid "Width:"
+msgstr "너비:"
+
+#: ../Source/Gui/Dialogs/IntegrationSettings.cpp:46
+msgid "Windows Explorer integration"
+msgstr "Windows 탐색기 통합"
+
+#: ../Source/Gui/Dialogs/UpdateDlg.cpp:169
+msgid "You are using the latest Image Uploader version."
+msgstr "최신 Image Uploader 버전을 사용하고 있습니다."
+
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:133
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:142
+#, c-format
+msgid "You have not selected \"%s\""
+msgstr "\"%s\"를 선택하지 않았습니다"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
+#: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:148
+#: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:121
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:117
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:141
+#, c-format
+msgid "You have not selected account for server \"%s\""
+msgstr "\"%s\" 서버에 대한 계정을 선택하지 않았습니다."
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:347
+msgid "You have not selected an file server"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:328
+msgid "You have not selected an image server"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
+#: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
+msgid "You have not selected server"
+msgstr "서버를 선택하지 않았습니다."
+
+#: ../Source/Gui/Dialogs/SizeExceed.cpp:136
+msgid "You have not selected server!"
+msgstr "서버를 선택하지 않았습니다!"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:96
+msgid "a pic of the whole screen or selected region"
+msgstr "전체 화면 또는 선택한 영역의 그림"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:105
+msgid "a tool for advanced users"
+msgstr "고급 사용자용 도구"
+
+#: ../Source/Gui/Dialogs/LogoSettings.cpp:49
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:108
+msgid "and/or height:"
+msgstr "및/또는      높이:"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:211
+msgid "data:URI"
+msgstr "데이터:URI"
+
+#: ../Source/Gui/Dialogs/MainDlg.cpp:212
+msgid "data:URI (HTML)"
+msgstr "데이터:URI(HTML)"
+
+#: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:135
+#, c-format
+msgid "folder \"%s\""
+msgstr "\"%s\" 폴더"
+
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
+msgid "msec"
+msgstr "밀리초"
+
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:105
+#: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:219
+msgid "not selected"
+msgstr "선택하지 않음"
+
+#: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:55
+#: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
+msgid "sec"
+msgstr "초"
+
+#: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
+msgid "to:"
+msgstr ""
+
+#: ../Source/Gui/Dialogs/AboutDlg.cpp:85
+msgid "translator_name"
+msgstr "Sung un Kim <riders1@naver.com> https://cafe.naver.com/riderskor"
+
+#: ../Source/Gui/Controls/HistoryTreeControl.cpp:203
+msgid "unknown server"
+msgstr ""
+
+#~ msgid "Open by Image Uploader"
+#~ msgstr "이미지 업로더로 열기"
+
+#~ msgid "Waiting response from server..."
+#~ msgstr "서버에서 응답을 기다리는 중..."
+
+#~ msgid "Creating folder \""
+#~ msgstr "폴더 만들기 \""
+
+#~ msgid "Sending file to server..."
+#~ msgstr "서버로 파일 보내기..."
+
+#~ msgid "Autorization on server..."
+#~ msgstr "서버에서 자동화..."
+
+#~ msgid "Performing action #%d..."
+#~ msgstr "작업 #%d 수행..."
+
+#~ msgid "Loading file..."
+#~ msgstr "파일 로드 중..."
+
+#~ msgid "Connecting codecs"
+#~ msgstr "코덱 연결"
+
+#~ msgid "Trying again to connect filters..."
+#~ msgstr "필터를 연결하기 위해 다시 시도중..."
+
+#~ msgid "Cannot connect filters (format probably is not supported)."
+#~ msgstr "필터를 연결할 수 없습니다(형식이 지원되지 않을 수 있음)."
+
+#~ msgid "Unable to load library MediaInfo.dll!"
+#~ msgstr "라이브러리 MediaInfo.dll을로드 할 수 없습니다"
+
+#~ msgid "Could not download the update file \\'"
+#~ msgstr "업데이트 파일을 다운로드할 수 없습니다 \\'"
+
+#~ msgid "Unable to unpack archive "
+#~ msgstr "아카이브의 압축을 풀 수 없음"
+
+#~ msgid "Could not read "
+#~ msgstr "읽을 수 없습니다. "
+
+#~ msgid "SCRIPT"
+#~ msgstr "스크립트"
+
+#~ msgid "not set"
+#~ msgstr "설정되지 않음"
+
+#~ msgid "New account..."
+#~ msgstr "새 계정..."
+
+#~ msgid "Libcurl version:"
+#~ msgstr "Libcurl 버전:"
+
+#~ msgid "FFmpeg version:"
+#~ msgstr "FFmpeg 버전:"
+
+#~ msgid "Convert UNC path \"\\\\ to \"\"file://///\"\"\""
+#~ msgstr "UNC 경로 \"\\\\를 \"\"file://///\"\"으로 변환\""
+
+#~ msgid "Add FTP server"
+#~ msgstr "FTP 서버 추가"
+
+#~ msgid "New FTP Connection"
+#~ msgstr "새 FTP 연결"
+
+#~ msgid "Current month"
+#~ msgstr "이번 달"
+
+#~ msgid "Time Period:"
+#~ msgstr "기간:"
+
+#~ msgid "File '%s' is not an image (Mime-Type: %s)."
+#~ msgstr "'%s' 파일은 이미지가 아닙니다(Mime-Type: %s)."
+
+#~ msgid "Add item to pictures' context menu"
+#~ msgstr "사진 컨텍스트 메뉴에 항목 추가"
+
+#~ msgid "Constrain proportions"
+#~ msgstr "비율 제한"
+
+#~ msgid "%1% files selected/%2% files total"
+#~ msgstr "전체 %2% 파일 중 %1% 파일 선택됨"
+
+#~ msgid "%d files"
+#~ msgstr "%d 파일"
+
+#~ msgid "Copy &as..."
+#~ msgstr "따로 복사..."
+
+#~ msgid "File \""
+#~ msgstr "파일 \""
+
+#~ msgid "\" not found!"
+#~ msgstr "\" 찾을 수 없습니다!"
+
+#~ msgid "Random server"
+#~ msgstr "임의의 서버"
+
+#~ msgid " (optional)"
+#~ msgstr "(선택 사항)"
+
+#~ msgid "Open links in new tab (HTML only)"
+#~ msgstr "새 탭에서 링크 열기(HTML만)"
+
+#~ msgid "This server doesn't support folders listing."
+#~ msgstr "이 서버는 폴더 목록을 지원하지 않습니다."
+
+#~ msgid "Capture selected region"
+#~ msgstr "선택한 영역 캡처"
+
+#~ msgid "Capture entire screen"
+#~ msgstr "전체 화면 캡처"
+
+#~ msgid "Capture current window"
+#~ msgstr "현재 창 캡처"
+
+#~ msgid "By width"
+#~ msgstr "너비별"
+
+#~ msgid "By height"
+#~ msgstr "높이별"
+
+#~ msgid "By larger side"
+#~ msgstr "큰 면에 의해"
+
+#~ msgid "File \"Data\\Thumb.png\" not found!"
+#~ msgstr "파일 \"Data\\Thumb.png\"를 찾을 수 없습니다!"
+
+#~ msgid "Program Settings"
+#~ msgstr "프로그램 설정"
+
+#~ msgid "Updates are available"
+#~ msgstr "업데이트를 사용할 수 있습니다"
+
+#~ msgid "Share"
+#~ msgstr "공유"
+
+#~ msgid "Selection"
+#~ msgstr "선택"
+
+#~ msgid "Blur"
+#~ msgstr "흐림"
+
+#~ msgid "Field"
+#~ msgstr "필드"
+
+#~ msgid "Value"
+#~ msgstr "값"
+
+#~ msgid "Unable to start process '%s'"
+#~ msgstr "'%s' 프로세스를 시작할 수 없음"

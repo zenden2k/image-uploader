@@ -1,4 +1,4 @@
-﻿#include "ServerProfile.h"
+#include "ServerProfile.h"
 
 #include "Core/SettingsManager.h"
 #include "Core/Settings/BasicSettings.h"
@@ -75,6 +75,14 @@ void ServerProfile::setShortenLinks(bool shorten)
     shortenLinks_ = shorten;
 }
 
+void ServerProfile::setParentIds(const std::vector<std::string> parentIds) {
+    parentIds_ = parentIds;
+}
+
+const std::vector<std::string>& ServerProfile::parentIds() const {
+    return parentIds_;
+}
+
 bool ServerProfile::isNull() const
 {
     return serverName_.empty();
@@ -105,6 +113,7 @@ void ServerProfile::bind(SettingsNode& serverNode)
     serverNode["@ProfileName"].bind(profileName_);
     serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
+    serverNode["@ParentIds"].bind(parentIds_);
 #ifdef _WIN32
     imageUploadParams.bind(serverNode);
 #endif

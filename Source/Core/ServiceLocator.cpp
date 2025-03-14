@@ -8,32 +8,24 @@ class UploadManager;
 class ServiceLocatorPrivate{
 public:
     ServiceLocatorPrivate() {
-        translator_ = nullptr;
-        engineList_ = nullptr;
-        programWindow_ = nullptr;
-        dialogProvider_ = nullptr;
-        uploadManager_ = nullptr;
-        myEngineList_ = nullptr;
-        taskRunner_ = nullptr;
-        logWindow_ = nullptr;
-        settings_ = nullptr;
-        taskDispatcher_ = nullptr;
     }
     std::shared_ptr<ILogger> logger_;
-    ITranslator* translator_;
-    CUploadEngineListBase* engineList_;
+    ITranslator* translator_ = nullptr;
+    CUploadEngineListBase* engineList_ = nullptr;
     CHistoryManager historyManager;
-    IProgramWindow* programWindow_;
+    IProgramWindow* programWindow_ = nullptr;
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
-    IDialogProvider* dialogProvider_;
-    ITaskRunner* taskRunner_;
-    UploadManager* uploadManager_;
-    CMyEngineList* myEngineList_;
-    CLogWindow* logWindow_;
-    BasicSettings* settings_;
+    IDialogProvider* dialogProvider_ = nullptr;
+    ITaskRunner* taskRunner_ = nullptr;
+    UploadManager* uploadManager_ = nullptr;
+    CMyEngineList* myEngineList_ = nullptr;
+    CLogWindow* logWindow_ = nullptr;
+    BasicSettings* settings_ = nullptr;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
     std::shared_ptr<UrlShorteningFilter> urlShorteningFilter_;
-    TaskDispatcher* taskDispatcher_;
+    TaskDispatcher* taskDispatcher_ = nullptr;
+    AbstractServerIconCache* serverIconCache_ = nullptr;
+    std::shared_ptr<NetworkDebugger> networkDebugger_;
 };
 
 
@@ -148,6 +140,15 @@ void ServiceLocator::setUrlShorteningFilter(std::shared_ptr<UrlShorteningFilter>
     d_ptr->urlShorteningFilter_ = filter;
 }
 
+void ServiceLocator::setNetworkDebugger(std::shared_ptr<NetworkDebugger> debugger) {
+    d_ptr->networkDebugger_ = debugger;
+}
+
+std::shared_ptr<NetworkDebugger> ServiceLocator::networkDebugger() const
+{
+    return d_ptr->networkDebugger_;
+}
+
 void ServiceLocator::setNetworkClientFactory(std::shared_ptr<INetworkClientFactory> factory) {
     d_ptr->networkClientFactory_ = factory;
 }
@@ -162,6 +163,18 @@ void ServiceLocator::setTaskDispatcher(TaskDispatcher* dispatcher) {
 
 TaskDispatcher* ServiceLocator::taskDispatcher() const {
     return d_ptr->taskDispatcher_;
+}
+
+
+void ServiceLocator::setServerIconCache(AbstractServerIconCache* cache)
+{
+    d_ptr->serverIconCache_ = cache;
+}
+
+
+AbstractServerIconCache* ServiceLocator::serverIconCache() const
+{
+    return d_ptr->serverIconCache_;
 }
 
 ServiceLocator* ServiceLocator::instance() {

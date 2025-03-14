@@ -25,6 +25,11 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
     CString sourceFileW = U2W(sourceFile);
     CString imageFile = sourceFileW;
     auto srcImg = ImageUtils::LoadImageFromFileExtended(sourceFileW);
+
+    if (!srcImg) {
+        LOG(ERROR) << "ImageConverter: unable to load source file " << sourceFileW;
+        return false;
+    }
     Bitmap* bm = srcImg->getBitmap();
 
     if (!bm) {
@@ -583,6 +588,29 @@ std::unique_ptr<Gdiplus::Brush> ImageConverterPrivate::CreateBrushFromString(con
         }
     }
     return std::make_unique<SolidBrush>(0);
+}
+
+
+bool ImageConverterPrivate::supposedOutputFormat(SupposedFormat& file){
+    if (!processingEnabled_) {
+        return false;
+    }
+
+    CString resultFileName;
+    ImageUtils::SaveImageFormat fileformat;
+    if (m_imageConvertingParams.Format < 1 || !processingEnabled_)
+        fileformat = ImageUtils::GetFormatByFileName(U2W(file.fileName));
+    else
+        fileformat = static_cast<ImageUtils::SaveImageFormat>(m_imageConvertingParams.Format - 1);
+
+    // We don't actually save anything, we just ask for the output file name.
+    if (ImageUtils::MySaveImage(nullptr, IuCommonFunctions::GenerateFileName(L"img%md5.jpg", 1, CPoint()), resultFileName, fileformat, m_imageConvertingParams.Quality)) {
+        file.fileName = W2U(resultFileName);
+        file.mimeType = IuCoreUtils::GetFileMimeTypeByName(file.fileName);
+        file.fileSize = 0;
+        return true;
+    }
+    return false;
 }
 
 void ImageConverterPrivate::calcCropSize(int srcWidth, int srcHeight, CRect targetRect, CRect& destRect, CRect& srcRect) {

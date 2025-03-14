@@ -1,5 +1,17 @@
+function _RegReplace(str, pattern, replace_with) {
+    local resultStr = str;	
+    local res;
+    local start = 0;
+    
+    while( (res = resultStr.find(pattern,start)) != null ) {	
+        resultStr = resultStr.slice(0,res) +replace_with+ resultStr.slice(res + pattern.len());
+        start = res + replace_with.len();
+    }
+    return resultStr;
+} 
+
 function UploadFile(FileName, options) {
-    nm.setUrl("https://fastpic.ru/upload?api=1");
+    nm.setUrl("https://fastpic.org/upload?api=1");
     //nm.addQueryHeader("User-Agent","FPUploader");
     nm.addQueryParam("method", "file");
 	nm.addQueryParamFile("file1", FileName, ExtractFileName(FileName), "");
@@ -20,11 +32,12 @@ function UploadFile(FileName, options) {
                 if(statusNode.Text()=="ok"){
                     local imgUrlNode = root.GetChild("imagepath", false);
                     local thumbUrlNode = root.GetChild("thumbpath", false);
-                    local viewUrl = root.GetChild("viewurl", false);
-
+                    local viewUrl = root.GetChild("viewfullurl", false);
                     options.setDirectUrl(imgUrlNode.Text());
                     options.setThumbUrl(thumbUrlNode.Text());	
-                    options.setViewUrl(viewUrl.Text());	
+                    local viewUrlStr = viewUrl.Text();
+                    viewUrlStr = _RegReplace(viewUrlStr, "fastpic.org/view/", "fastpic.org/fullview/");    
+                    options.setViewUrl(viewUrlStr);	
                     return 1; 
                 } else {
                     local errorNode = root.GetChild("error", false);

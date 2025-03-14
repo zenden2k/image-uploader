@@ -1,5 +1,5 @@
 function UploadFile(FileName, options) {
-    local apiKey = ServerParams.getParam("Login");
+    local apiKey = ServerParams.getParam("Password");
     if (apiKey == "") {
         WriteLog("error", "[vgy.me] Cannot proceed without API key.");
         return -1;

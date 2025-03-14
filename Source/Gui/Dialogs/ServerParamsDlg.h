@@ -27,6 +27,8 @@
 #include "Core/Upload/UploadEngine.h"
 #include "Core/Upload/ScriptUploadEngine.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Core/Upload/Parameters/AbstractParameter.h"
+#include "Gui/Components/ParameterListAdapter.h"
 
 class ServerProfile;
 class UploadEngineManager;
@@ -36,7 +38,7 @@ class CServerParamsDlg :
     public CDialogResize<CServerParamsDlg>    
 {
     public:
-        CServerParamsDlg(ServerProfile  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
+        CServerParamsDlg(const ServerProfile&  serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit = false);
         ~CServerParamsDlg();
         enum { IDD = IDD_SERVERPARAMSDLG };
 
@@ -47,6 +49,7 @@ class CServerParamsDlg :
             COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
             COMMAND_HANDLER(IDC_BROWSESERVERFOLDERS, BN_CLICKED, OnBrowseServerFolders)
             COMMAND_HANDLER(IDC_LOGINEDIT, EN_CHANGE, OnLoginEditChange)
+            NOTIFY_HANDLER(IDC_PARAMLIST, PIN_BROWSE, OnParamListBrowseFile)
             CHAIN_MSG_MAP(CDialogResize<CServerParamsDlg>)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
@@ -66,16 +69,18 @@ class CServerParamsDlg :
         LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnParamListBrowseFile(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         ServerProfile serverProfile() const;
     protected:
         CPropertyListCtrl m_wndParamList;
-        std::map<std::string,std::string> m_paramNameList;
+        ParameterList m_paramNameList;
         CUploadEngineData *m_ue;
         bool focusOnLoginControl_;
         CAdvancedUploadEngine *m_pluginLoader;
         CString oldLogin_;
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;
+        std::unique_ptr<ParameterListAdapter> parameterListAdapter_;
         void doAuthChanged();
 };
 

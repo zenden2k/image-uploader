@@ -64,8 +64,6 @@ bool IULaunchCopy(CString additionalParams=_T(""));
 
 void IU_RunElevated(CString params);
 
-DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds);
-
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 

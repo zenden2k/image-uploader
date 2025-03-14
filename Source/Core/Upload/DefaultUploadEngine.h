@@ -31,6 +31,7 @@
 
 class FileUploadTask;
 class UrlShorteningTask;
+class SearchByImageUrlTask;
 class ServerSync;
 
 class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::Logger
@@ -54,6 +55,7 @@ class CDefaultUploadEngine: public CAbstractUploadEngine, public NetworkClient::
         void UploadError(bool error, const std::string& errorStr, UploadAction* m_CurrentAction, bool writeToBuffer = true);
         bool doUploadFile(std::shared_ptr<FileUploadTask> task, UploadParams& params);
         bool doUploadUrl(std::shared_ptr<UrlShorteningTask> task, UploadParams& params);
+        bool doSearchImageByUrl(std::shared_ptr<SearchByImageUrlTask> task, UploadParams& params);
         void prepareUpload(UploadParams& params);
         bool executeActions();
 

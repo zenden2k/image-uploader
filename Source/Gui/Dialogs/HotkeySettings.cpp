@@ -37,7 +37,6 @@ CHotkeySettingsPage::~CHotkeySettingsPage()
 LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    TabBackgroundFix(m_hWnd);
     m_HotkeyList.m_hWnd = GetDlgItem(IDC_HOTKEYLIST);
     TRC(IDC_EDITHOTKEY, "Edit hotkey...");
     TRC(IDC_ATTENTION, "Attention! Global hotkeys are active only when tray icon is shown.");
@@ -74,7 +73,7 @@ LRESULT CHotkeySettingsPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hW
     EndDialog(wID);
     return 0;
 }
-bool CHotkeySettingsPage::Apply()
+bool CHotkeySettingsPage::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     if (!(settings->Hotkeys == hotkeyList)) {
@@ -129,6 +128,14 @@ LRESULT CHotkeySettingsPage::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lPar
     {
         ClientPoint.x = 0;
         ClientPoint.y = 0;
+
+        int nCurItem = m_HotkeyList.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+        if (nCurItem >= 0) {
+            CRect rc;
+            if (m_HotkeyList.GetItemRect(nCurItem, &rc, LVIR_BOUNDS)) {
+                ClientPoint = rc.CenterPoint();
+            }
+        }
         ScreenPoint = ClientPoint;
         ::ClientToScreen(hwnd, &ScreenPoint);
     }
@@ -187,11 +194,12 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Screenshot"),_T("screenshotdlg"), IDM_SCREENSHOTDLG);
     AddItem(TR("Capture Rectangular Region"),_T("regionscreenshot"), IDM_REGIONSCREENSHOT, false);
     AddItem(TR("Capture the Entire Screen"),_T("fullscreenshot"), IDM_FULLSCREENSHOT, false);
-    AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_WINDOWSCREENSHOT, false);
+    AddItem(TR("Capture the Active Window"),_T("windowscreenshot"), IDM_ACTIVEWINDOWSCREENSHOT, false);
     AddItem(TR("Capture Selected Object"),_T("windowhandlescreenshot"), IDM_WINDOWHANDLESCREENSHOT, false);
+    AddItem(TR("Capture Selected Window"), _T("topwindowscreenshot"), IDM_TOPWINDOWSCREENSHOT, false);
     AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
     AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT, false);
-    AddItem(TR("Show program's window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
+    AddItem(TR("Show program window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
     AddItem(TR("Paste"),_T("paste"), IDM_PASTEFROMCLIPBOARD,true,0x56, MOD_CONTROL); // Ctrl+V keyboard shortcut

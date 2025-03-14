@@ -1,8 +1,11 @@
 #include "DefaultUploadErrorHandler.h"
 
+#include <strsafe.h>
+
 #ifdef IU_WTL_APP
 #include "Gui/Dialogs/TextViewDlg.h"
 #endif
+
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
@@ -91,7 +94,8 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
             CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), hwndParent);
             CString fileName;
             fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
-            lstrcpy(fd.m_szFileName, fileName);
+            StringCchCopy(fd.m_szFileName, ARRAY_SIZE(fd.m_szFileName), fileName);
+
             if (fd.DoModal() == IDOK) {
                 FILE* f = _tfopen(fd.m_szFileName, _T("wb"));
                 if (f) {

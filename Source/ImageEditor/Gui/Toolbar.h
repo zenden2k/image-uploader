@@ -4,8 +4,10 @@
 #include "atlheaders.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
+#include "CustomTrackBarControl.h"
 #include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreTypes.h"
 
@@ -16,8 +18,11 @@ constexpr UINT MTBM_FILLBACKGROUNDCHANGE = WM_USER + 403;
 constexpr UINT MTBM_ARROWTYPECHANGE = WM_USER + 404;
 constexpr UINT MTBM_APPLY = WM_USER + 405; // Crop
 constexpr UINT MTBM_CANCEL = WM_USER + 406;
+constexpr UINT MTBM_INVERTSELECTIONCHANGE = WM_USER + 407;
 
 namespace ImageEditor {
+
+constexpr float BLUR_RADIUS_PRECISION = 4.0f;
 
 class Toolbar : public CWindowImpl<Toolbar> {
 public:
@@ -25,8 +30,11 @@ public:
     enum Orientation { orHorizontal, orVertical };
     enum ItemState { isNormal, isHover, isDown, isDropDown };
     enum ItemType { itButton, itComboButton, itTinyCombo };
-    enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 300 };
-    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON, ID_CANCELOPERATIONBUTTON};
+    enum { kTinyComboDropdownTimer = 42, kSubpanelWidth = 360 };
+    enum {ID_FONTSIZEEDITCONTROL = 12001, ID_STEPINITIALVALUE, ID_FILLBACKGROUNDCHECKBOX, ID_ARROWTYPECOMBOBOX, ID_APPLYBUTTON,
+        ID_CANCELOPERATIONBUTTON, ID_INVERTSELECTIONCHECKBOX
+    };
+
     class ToolbarItemDelegate;
     struct Item {
         CString title;
@@ -58,16 +66,17 @@ public:
     class ToolbarItemDelegate {
     public:
         virtual ~ToolbarItemDelegate() {}
-        virtual SIZE CalcItemSize(Item& item, float dpiScaleX, float dpiScaleY) = 0;
+        virtual SIZE CalcItemSize(Item& item, int x, int y, float dpiScaleX, float dpiScaleY) = 0;
         virtual void DrawItem(Item& item, Gdiplus::Graphics* gr, int, int y, float dpiScaleX, float dpiScaleY) = 0;
         virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
+        virtual std::vector<std::pair<RECT, CString>> getSubItemsHints() { return {}; };
     };
 
     explicit Toolbar(Orientation orientation); 
     ~Toolbar() override;
     bool Create(HWND parent, bool topMost = false, bool child = false);
     int addButton(const Item& item);
-    DECLARE_WND_CLASS(L"ImageEditor_Toolbar");
+    DECLARE_WND_CLASS_EX(L"ImageEditor_Toolbar", CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE);
     int getItemAtPos(int clientX, int clientY) const;
     int getItemIndexByCommand(int command) const;
     Item* getItem(int index);
@@ -81,9 +90,12 @@ public:
     void setStepInitialValue(int value);
     int getStepInitialValue() const;
     void showFillBackgroundCheckbox(bool show);
+    void showInvertSelectionCheckbox(bool show);
     void setFillBackgroundCheckbox(bool fill);
     void showArrowTypeCombo(bool show);
     bool isFillBackgroundChecked() const;
+    bool isInvertSelectionChecked() const;
+    void setInvertSelectionCheckbox(bool invert);
     int getArrowType() const;
     void setArrowType(int type);
     void setMovable(bool value);
@@ -100,16 +112,17 @@ public:
         MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
         MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
-        MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
-        MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
         MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
         MESSAGE_HANDLER(WM_HSCROLL, OnHScroll)
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(WM_CLOSE, OnClose)
+        MESSAGE_HANDLER(WM_MEASUREITEM, OnMeasureItem)
+        MESSAGE_HANDLER(WM_DRAWITEM, OnDrawItem)
         COMMAND_HANDLER(ID_FONTSIZEEDITCONTROL, EN_CHANGE, OnFontSizeEditControlChange)
         COMMAND_HANDLER(ID_STEPINITIALVALUE, EN_CHANGE, OnStepInitialValueChange)
         COMMAND_HANDLER(ID_FILLBACKGROUNDCHECKBOX, BN_CLICKED, OnFillBackgroundCheckboxClicked)
+        COMMAND_HANDLER(ID_INVERTSELECTIONCHECKBOX, BN_CLICKED, OnInvertSelectionCheckboxClicked)
         COMMAND_HANDLER(ID_ARROWTYPECOMBOBOX, CBN_SELCHANGE, OnArrowTypeComboChange)
         COMMAND_ID_HANDLER(ID_APPLYBUTTON, OnApplyButtonClicked)
         COMMAND_ID_HANDLER(ID_CANCELOPERATIONBUTTON, OnCancelOperationButtonClicked)
@@ -132,23 +145,24 @@ public:
     LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnKeyDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    LRESULT OnKeyUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFontSizeEditControlChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnStepInitialValueChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnMeasureItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnDrawItem(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnFillBackgroundCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+    LRESULT OnInvertSelectionCheckboxClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index);
+    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y);
     int AutoSize();
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);
-    CTrackBarCtrl  penSizeSlider_;
-    CTrackBarCtrl  roundRadiusSlider_;
+    CCustomTrackBarControl penSizeSlider_;
+    CTrackBarCtrl  roundRadiusSlider_, blurRadiusSlider_;
     CStatic pixelLabel_;
-    CStatic roundRadiusLabel_;
+    CStatic roundRadiusLabel_, blurRadiusLabel_;
     CStatic fontSizeLabel_;
     CEdit fontSizeEdit_;
     CUpDownCtrl fontSizeUpDownCtrl_;
@@ -156,6 +170,7 @@ public:
     CEdit initialValueEdit_;
     CButton testButton_;
     CButton fillBackgroundCheckbox_;
+    CButton invertSelectionCheckbox_;
     CComboBox arrowTypeCombobox_;
     CButton applyButton_;
     CButton cancelOperationButton_;
@@ -189,7 +204,10 @@ protected:
     Gdiplus::TextRenderingHint textRenderingHint_;
     bool movable_;
     bool showButtonText_;
-    void createHintForSliders(HWND slider, CString hint);
+    std::vector<std::unique_ptr<Gdiplus::Bitmap>> arrowTypeBitmaps_;
+    void createHintForControl(HWND slider, CString hint);
+    SIZE getArrowComboBoxBitmapSize(HDC dc);
+    void setArrowComboboxMode(int itemIndex, int arrowType);
 };
 
 }

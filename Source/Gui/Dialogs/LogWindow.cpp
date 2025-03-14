@@ -49,8 +49,19 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     DlgResize_Init();
     MsgList.SubclassWindow(GetDlgItem(IDC_MSGLIST));
 
+    CMessageLoop* pLoop = _Module.GetMessageLoop();
+	ATLASSERT(pLoop != NULL);
+	pLoop->AddMessageFilter(this);
+
     return 1;  // Let the system set the focus
 } 
+
+LRESULT CLogWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    CMessageLoop* pLoop = _Module.GetMessageLoop();
+    ATLASSERT(pLoop != NULL);
+    pLoop->RemoveMessageFilter(this);
+    return 0;
+}
 
 BOOL CLogWindow::PreTranslateMessage(MSG* pMsg)
 {
@@ -68,19 +79,20 @@ void CLogWindow::WriteLogImpl(const DefaultLogger::LogEntry& entry)
     auto* settings = ServiceLocator::instance()->basicSettings();
     MsgList.AddString(entry.MsgType, entry.Sender.c_str(), entry.Msg.c_str(), entry.Info.c_str(), entry.Time.c_str());
     if (entry.MsgType == ILogger::logError && settings->AutoShowLog) {
-        Show();
+        Show(false);
     }
 }
 
-void CLogWindow::Show()
+void CLogWindow::Show(bool setActive)
 {
     if (!IsWindowVisible()) {
         ShowWindow(SW_SHOW);
+        setActive = true;
     }
-    SetForegroundWindow(m_hWnd);
-    ::SetActiveWindow(m_hWnd);
-    //BringWindowToTop();
-    //SetWindowPos(HWND_TOPMOST, 0,0,0,0, SWP_NOSIZE | SWP_NOMOVE);
+    if (setActive) {
+        SetForegroundWindow(m_hWnd);
+        ::SetActiveWindow(m_hWnd);
+    }
 }
 
 LRESULT CLogWindow::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)

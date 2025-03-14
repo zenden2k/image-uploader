@@ -23,6 +23,8 @@
 #include <cctype>
 #include <cstdio>
 #include <algorithm>
+#include <random>
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -206,6 +208,60 @@ std::string Join(const std::vector<std::string>& strings, const std::string& del
         }
     }
     return result.str();
+}
+
+boost::format FormatNoExcept(const std::string& str) {
+    using namespace boost::io;
+
+    boost::format fmter(str);
+    fmter.exceptions(no_error_bits);
+    //fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit | bad_format_string_bit));
+    return fmter;
+}
+
+bool Match(char const* needle, char const* haystack)
+{
+    for (; *needle != '\0'; ++needle) {
+        switch (*needle) {
+        case '?':
+            if (*haystack == '\0')
+                return false;
+            ++haystack;
+            break;
+        case '*': {
+            if (needle[1] == '\0')
+                return true;
+            size_t max = strlen(haystack);
+            for (size_t i = 0; i < max; i++)
+                if (Match(needle + 1, haystack + i))
+                    return true;
+            return false;
+        }
+        default:
+            if (*haystack != *needle)
+                return false;
+            ++haystack;
+        }
+    }
+    return *haystack == '\0';
+}
+
+std::string RandomString(std::size_t length)
+{
+    const std::string CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    std::random_device random_device;
+    std::mt19937 generator(random_device());
+    std::uniform_int_distribution<> distribution(0, CHARACTERS.size() - 1);
+
+    std::string random_string;
+    random_string.reserve(length);
+
+    for (std::size_t i = 0; i < length; ++i) {
+        random_string += CHARACTERS[distribution(generator)];
+    }
+
+    return random_string;
 }
 
 }

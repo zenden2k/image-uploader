@@ -30,20 +30,22 @@
 #include "Gui/Controls/hyperlinkcontrol.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/WizardCommon.h"
 
 #define IDC_FULLSCREEN WM_USER + 219
 #define IDC_VIEWSETTINGS WM_USER + 220
 #define IDC_SCRACTIVEWINDOW WM_USER + 221
 #define IDC_FREEFORMREGION WM_USER + 222
 #define IDC_HWNDSREGION WM_USER + 223
-
+#define IDC_TOPWINDOWREGION WM_USER + 224
 
 class CScreenshotDlg : 
     public /*aero::*/CCustomDialogIndirectImpl<CScreenshotDlg>,
-    public CWinDataExchange<CScreenshotDlg>
+    public CWinDataExchange<CScreenshotDlg>,
+    public CDialogResize<CScreenshotDlg>
 {
     public:
-        CScreenshotDlg();
+        explicit CScreenshotDlg(bool enableLastRegionScreenshot);
         ~CScreenshotDlg() = default;
         ScreenCapture::CaptureMode captureMode() const;
         enum { IDD = IDD_SCREENSHOTDLG };
@@ -61,8 +63,22 @@ class CScreenshotDlg :
             COMMAND_HANDLER(IDC_REGIONSELECT, BN_CLICKED, OnBnClickedRegionselect)
             COMMAND_HANDLER(IDC_FREEFORMREGION, BN_CLICKED, OnBnClickedFreeFormRegion)
             COMMAND_HANDLER(IDC_HWNDSREGION, BN_CLICKED, OnBnClickedWindowHandlesRegion)
+            COMMAND_HANDLER(IDC_TOPWINDOWREGION, BN_CLICKED, OnBnClickedTopWindowRegion)
+            COMMAND_HANDLER(IDC_LASTREGIONSCREENSHOT, BN_CLICKED, OnBnClickedLastRegion)
+            CHAIN_MSG_MAP(CDialogResize<CScreenshotDlg>)
         END_MSG_MAP()
-    
+
+        BEGIN_DLGRESIZE_MAP(CScreenshotDlg)
+            DLGRESIZE_CONTROL(IDC_COMMANDBOX, DLSZ_SIZE_X | DLSZ_SIZE_Y)
+            DLGRESIZE_CONTROL(IDC_DELAYLABEL,  DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DELAYEDIT, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_DELAYSPIN, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_GROUPBOX, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_SECLABEL, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_OPENSCREENSHOTINEDITORCHECKBOX, DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_MONITORSCOMBOBOX, DLSZ_MOVE_Y)
+        END_DLGRESIZE_MAP()
+
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -80,11 +96,14 @@ class CScreenshotDlg :
         LRESULT OnClickedFullscreenCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;
         ScreenCapture::CaptureMode m_CaptureMode;
         CComboBox m_monitorCombobox;
+        bool enableLastRegionScreenshot_ = false;
 };
 
 #endif // SCREENSHOTDLG_H

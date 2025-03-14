@@ -35,11 +35,11 @@
 class CurlShare;
 
 /**
-@brief  HTTP/FTP client (libcurl wrapper).
+@brief Network client (libcurl wrapper).
 
 Note: After each completed request, most of the options are set to default values.
 
-In scripts: nm - a global instance of NetworkClient
+In .nut scripts: "nm" is a global instance of NetworkClient
 */
 class NetworkClient: public INetworkClient
 {
@@ -235,8 +235,12 @@ class NetworkClient: public INetworkClient
 
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
-
+        void setDebugger(std::shared_ptr<Debugger> debugger) override;
         ActionType currrentActionType() const;
+
+        static void clearThreadData();
+
+        void cleanupAfter() override;
         /*! @endcond */
     private:
 
@@ -275,17 +279,17 @@ class NetworkClient: public INetworkClient
         size_t private_read_callback(void *ptr, size_t size, size_t nmemb, void *stream);
         static int private_seek_callback(void *userp, curl_off_t offset, int origin);
         static int set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose);
+        static int debug_callback(CURL* handle, curl_infotype type, char* data, size_t size, void* clientp);
         bool private_apply_method();
         void private_parse_headers();
         void private_cleanup_before();
-        void private_cleanup_after();
         bool private_on_finish_request();
         void private_init_transfer();
         void private_checkResponse();
+       
+        
         public:
         /*! @cond PRIVATE */
-        static void curl_init();
-        static void curl_cleanup();
         static void closeFileList(std::vector<FILE *>& files);
         /*! @endcond */
         protected:
@@ -323,8 +327,7 @@ class NetworkClient: public INetworkClient
         CurlShare* curlShare_;
         Logger * logger_;
         std::shared_ptr<ProxyProvider> proxyProvider_;
-        static std::mutex _mutex;
-        static bool _curl_init;
+        std::shared_ptr<Debugger> debugger_;
 };
 
 #endif

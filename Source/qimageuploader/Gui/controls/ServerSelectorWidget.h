@@ -27,7 +27,7 @@ class ServerSelectorWidget : public QGroupBox
 	void setServersMask(int mask);
 	void setShowFilesizeLimits(bool show);
 	void updateServerList();
-	ServerProfile serverProfile() const;
+    const ServerProfile& serverProfile() const;
 	enum ServerMaskEnum { smAll = 0xffff, smImageServers = 0x1, smFileServers = 0x2, smUrlShorteners = 0x4 };
 
 public slots:
@@ -35,6 +35,7 @@ public slots:
 	void accountButtonClicked(bool checked);
 	void noAccountSelected();
 	void addAccountClicked();
+    void fillServerIcons();
 protected:
 	QLabel* titleLabel, *accountLabel, *accountIcon;
 	QToolButton* accountButton;
@@ -48,10 +49,7 @@ protected:
 	bool showFileSizeLimits;
 	void serverChanged();
 	void updateAccountButtonMenu();
-
-	
-
-
+    void updateAccountButton();
 };
 
 #endif

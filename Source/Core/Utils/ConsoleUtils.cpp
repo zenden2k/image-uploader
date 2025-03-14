@@ -11,7 +11,6 @@
 
 #include "Core/Utils/CoreUtils.h"
 
-
 ConsoleUtils::ConsoleUtils() {
 #if _WIN32
     supportsEscapeCodes_ = false;

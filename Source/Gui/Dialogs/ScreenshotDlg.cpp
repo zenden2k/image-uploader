@@ -28,27 +28,44 @@
 using namespace ScreenCapture;
 
 // CScreenshotDlg
-CScreenshotDlg::CScreenshotDlg() : m_CaptureMode(cmFullScreen)
+CScreenshotDlg::CScreenshotDlg(bool enableLastRegionScreenshot)
+    : m_CaptureMode(cmFullScreen)
+    , enableLastRegionScreenshot_(enableLastRegionScreenshot)
 {
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
 }
 
 LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CommandBox.SubclassWindow(GetDlgItem(IDC_COMMANDBOX));
-    RECT ClientRect;
+    CRect ClientRect;
     GetClientRect(&ClientRect);
     CenterWindow(GetParent());
 
+    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
+    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
+
+    auto loadBigIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconBigWidth, iconBigHeight);
+        return icon.m_hIcon;
+    };
+
     CommandBox.m_bHyperLinks = false;
-    CommandBox.Init();
-    CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, LOADICO(IDI_SCREENSHOT));
-    CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW,LOADICO(IDI_WINDOW));
-    CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT,LOADICO(IDI_ICONREGION));
-    CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION,LOADICO(IDI_FREEFORM));
-    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION,LOADICO(IDI_ICONWINDOWS));
-    
+    CommandBox.Init(GetSysColor(COLOR_WINDOW));
+    CommandBox.AddString(TR("Capture the Entire Screen"), _T(" "), IDC_FULLSCREEN, loadBigIcon(IDI_SCREENSHOT));
+    CommandBox.AddString(TR("Capture the Active Window"), _T(" "), IDC_SCRACTIVEWINDOW, loadBigIcon(IDI_WINDOW));
+    CommandBox.AddString(TR("Capture Selected Area"), _T(" "), IDC_REGIONSELECT, loadBigIcon(IDI_ICONREGION));
+    CommandBox.AddString(TR("Freehand Capture"), _T(" "), IDC_FREEFORMREGION, loadBigIcon(IDI_FREEFORM));
+    CommandBox.AddString(TR("Capture Selected Window"), _T(" "), IDC_TOPWINDOWREGION, loadBigIcon(IDI_ICONWINDOWS));
+    CommandBox.AddString(TR("Capture Selected Object"), _T(" "), IDC_HWNDSREGION, loadBigIcon(IDI_ICONCONTROLS));
+
+    if (enableLastRegionScreenshot_) {
+        CommandBox.AddString(TR("Capture Last Region"), _T(" "), IDC_LASTREGIONSCREENSHOT, loadBigIcon(IDI_ICONLASTREGION));
+    }
+
     SetWindowText(TR("Screen Capture"));
     TRC(IDC_DELAYLABEL, "Timeout:");
     TRC(IDC_SECLABEL, "sec");
@@ -56,6 +73,11 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, settings->ScreenshotSettings.OpenInEditor);
     SetDlgItemInt(IDC_DELAYEDIT, settings->ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
+
+    CRect commandBoxRect;
+    CommandBox.GetClientRect(commandBoxRect);
+    int newHeight = ClientRect.Height() + std::max(0, CommandBox.desiredHeight() - commandBoxRect.Height());
+    GuiTools::SetClientRect(m_hWnd, ClientRect.Width(), newHeight);
 
     m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
 
@@ -156,7 +178,17 @@ LRESULT CScreenshotDlg::OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WOR
     m_CaptureMode = cmWindowHandles;
     return EndDialog(IDOK);
 }
+
+LRESULT CScreenshotDlg::OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    m_CaptureMode = cmTopWindowHandles;
+    return EndDialog(IDOK);
+}
         
+LRESULT CScreenshotDlg::OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    m_CaptureMode = cmLastRegion;
+    return EndDialog(IDOK);
+}
+
 CaptureMode CScreenshotDlg::captureMode() const
 {
     return m_CaptureMode;

@@ -12,6 +12,7 @@
 #include "ServerListTool/Helpers.h"
 #include "Core/ServiceLocator.h"
 #include "Core/TaskDispatcher.h"
+#include "CheckShortUrlTask.h"
 
 namespace ServersListTool {
 
@@ -22,17 +23,18 @@ ServersChecker::ServersChecker(ServersCheckerModel* model, UploadManager* upload
     checkImageServers_(true),
     checkFileServers_(true),
     checkURLShorteners_(true),
-    networkClientFactory_(std::move(networkClientFactory))
-
+    networkClientFactory_(std::move(networkClientFactory)),
+    linksToCheck_(0)
 {
     needStop_ = false;
     isRunning_ = false;
     using namespace std::placeholders;
     fileDownloader_ = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
-    fileDownloader_->setOnFileFinishedCallback(std::bind(&ServersChecker::OnFileFinished, this, _1, _2, _3));
+    fileDownloader_->setOnFileFinishedCallback(std::bind(&ServersChecker::onFileFinished, this, _1, _2, _3));
 }
 
 bool ServersChecker::start(const std::string& testFileName, const std::string& testUrl) {
+    linksToCheck_ = 0;
     BasicSettings& Settings = *ServiceLocator::instance()->settings<BasicSettings>();
     GetFileInfo(U2W(testFileName), &m_sourceFileInfo);
     srcFileHash_ = IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(testFileName);
@@ -113,8 +115,10 @@ bool ServersChecker::start(const std::string& testFileName, const std::string& t
         }
     }
     if (taskCount) {
+        isRunning_ = true;
         uploadManager_->addSession(uploadSession_);
     } else {
+        isRunning_ = false;
         processFinished();
     }
     return true;
@@ -128,7 +132,10 @@ void ServersChecker::stop() {
     if (uploadSession_) {
         uploadSession_->stop();
     }
-
+    std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+    for (auto& task : scheduledTasks_) {
+        task->cancel();
+    }
 }
 
 bool ServersChecker::isRunning() const {
@@ -159,11 +166,10 @@ void ServersChecker::setOnFinishedCallback(std::function<void()> callback) {
     onFinishedCallback_ = std::move(callback);
 }
 
-
-void ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
+void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader::DownloadFileListItem it)
 {
-    int serverId = reinterpret_cast<int>(it.id) / 10;
-    int fileId = reinterpret_cast<int>(it.id) % 10;
+    int serverId = reinterpret_cast<size_t>(it.id) / 10;
+    int fileId = reinterpret_cast<size_t>(it.id) % 10;
 
     ServerData& serverData = *model_->getDataByIndex(serverId);
     serverData.filesChecked++;
@@ -184,10 +190,9 @@ void ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
 
         CString report = GetFileInfo(fileName, &mfi);
 
-        CString mimeType = Utf8ToWCstring(IuCoreUtils::GetFileMimeType(WCstringToUtf8((fileName))));
         if (fileId < 2) // is thumb or image
         {
-            if (mimeType.Find(_T("image/")) >= 0) {
+            if (mfi.mimeType.Find(_T("image/")) >= 0) {
                 if (fileId == 0 && (mfi.width != m_sourceFileInfo.width || mfi.height != m_sourceFileInfo.height))
                     serverData.stars[fileId] = 0;
                 else
@@ -200,44 +205,40 @@ void ServersChecker::OnFileFinished(bool ok, int /*statusCode*/, CFileDownloader
     if (serverData.fileToCheck == 0) {
         serverData.finished = true;
     }
-    MarkServer(serverId);
+
+    markServer(serverId);
+
+    --linksToCheck_;
+    processFinished();
 }
 
 void ServersChecker::checkShortUrl(UploadTask* task) {
-    auto client = networkClientFactory_->create();
     UrlShorteningTask* urlTask = dynamic_cast<UrlShorteningTask*>(task);
     if (!urlTask) {
         return;
     }
     UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
-    ServerData& data = *model_->getDataByIndex(userData->rowIndex);
+    ServerData* data = model_->getDataByIndex(userData->rowIndex);
 
-    client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-
-    bool ok = false;
-    std::string targetUrl = task->uploadResult()->directUrl;
-    int i = 0; //counter for limiting max redirects
-    if (!targetUrl.empty()) {
-        int responseCode = 0;
-        do {
-            client->setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
-            client->doGet(targetUrl);
-            responseCode = client->responseCode();
-            targetUrl = client->responseHeaderByName("Location");
-            i++;
-        } while (i < 6 && !targetUrl.empty() && (responseCode == 302 || responseCode == 301) && targetUrl != urlTask->getUrl());
-
-        if (!targetUrl.empty() && targetUrl == urlTask->getUrl()) {
-            data.setStrMark("Good link");
-            //m_ListView.SetItemText(userData->rowIndex, 3, _T("Good link"));
-            ok = true;
+    auto checkTask = std::make_shared<CheckShortUrlTask>(networkClientFactory_, task->uploadResult()->directUrl, urlTask->getUrl());
+    checkTask->onTaskFinished.connect([this, rowIndex = userData->rowIndex, data](auto* task, bool ok) {
+        if (ok) {
+            data->setStrMark("Good link");
         }
+        ++data->filesChecked;
+        data->stars[0] = ok ? 5 : 0;
+        data->finished = true;
+        markServer(rowIndex);
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        auto it = std::remove_if(scheduledTasks_.begin(), scheduledTasks_.end(), [task](auto&& a) { return a.get() == task; });
+        scheduledTasks_.erase(it, scheduledTasks_.end());
+    });
+    {
+        std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
+        scheduledTasks_.push_back(checkTask);
     }
 
-    data.filesChecked++;
-    data.stars[0] = ok ? 5 : 0;
-    data.finished = true;
-    MarkServer(userData->rowIndex);
+    ServiceLocator::instance()->taskDispatcher()->postTask(checkTask);
 }
 
 void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
@@ -250,9 +251,9 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
         return;
     }
     if (ok) {
-        DWORD endTime = GetTickCount() - userData->startTime;
+        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         UploadResult* result = task->uploadResult();
-        data.timeElapsed = endTime;
+        data.timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - userData->startTime).count();
 
         if (task->type() == UploadTask::TypeFile) {
             std::string imgUrl = result->getDirectUrl();
@@ -260,6 +261,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             std::string viewUrl = result->getDownloadUrl();
             int nFilesToCheck = 0;
             if (!imgUrl.empty()) {
+                ++linksToCheck_;
                 fileDownloader_->addFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
                 nFilesToCheck++;
                 data.setDirectUrl(imgUrl);
@@ -274,6 +276,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
 
             if (!thumbUrl.empty()) {
                 nFilesToCheck++;
+                ++linksToCheck_;
                 fileDownloader_->addFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
 
                 data.setThumbUrl(thumbUrl);
@@ -287,6 +290,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
 
             if (!viewUrl.empty()) {
                 nFilesToCheck++;
+                ++linksToCheck_;
                 fileDownloader_->addFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
                 data.setViewUrl(viewUrl);
             } else {
@@ -321,31 +325,32 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
     } else {
         data.finished = true;
     }
-    MarkServer(i);
+    markServer(i);
 }
 
 void ServersChecker::onSessionFinished(UploadSession* session) {
-    processFinished();
+    isRunning_ = false;
     LOG(INFO) << "Uploader has finished";
+    processFinished();
 }
 
 void ServersChecker::onTaskStatusChanged(UploadTask* task) {
     CUploadEngineData* ue = task->serverProfile().uploadEngineData();
     UploadTaskUserData* userData = static_cast<UploadTaskUserData*>(task->userData());
-    int i = userData->rowIndex;
+    size_t i = userData->rowIndex;
     if (task->status() == UploadTask::StatusRunning) {
-        userData->startTime = GetTickCount();
+        userData->startTime = std::chrono::steady_clock::now();
         ServerData* data = model_->getDataByIndex(i);
         data->setStatusText(task->type() == UploadTask::TypeUrl ? "Shortening link..." : "Uploading file...");
         model_->notifyRowChanged(i);
-    } else if (task->status() == UploadTask::StatusFinished) {
+    } /*else if (task->status() == UploadTask::StatusFinished) {
 
     } else if (task->status() == UploadTask::StatusFailure) {
 
-    }
+    }*/
 }
 
-void ServersChecker::MarkServer(int id)
+void ServersChecker::markServer(size_t id)
 {
     ServerData& serverData = *model_->getDataByIndex(id);
     if (serverData.finished) {
@@ -355,8 +360,7 @@ void ServersChecker::MarkServer(int id)
         if (count) mark = sum / count;
 
         CString timeLabel;
-        int endTime = serverData.timeElapsed;
-        timeLabel.Format(_T("%02d:%02d"), (int)(endTime / 60000), (int)(endTime / 1000 % 60));
+        timeLabel.Format(_T("%02d:%02d"), (int)(serverData.timeElapsed / 60000), (int)(serverData.timeElapsed / 1000 % 60));
         serverData.setTimeStr(W2U(timeLabel));
 
         if (mark == 5) {
@@ -377,14 +381,13 @@ void ServersChecker::MarkServer(int id)
     ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         model_->notifyRowChanged(id);
     });
-
-
 }
 
 void ServersChecker::processFinished() {
-    isRunning_ = false;
-    if (onFinishedCallback_) {
-        onFinishedCallback_();
+    if (!isRunning_ && (!linksToCheck_ || !fileDownloader_ || !fileDownloader_->isRunning())) {
+        if (onFinishedCallback_) {
+            onFinishedCallback_();
+        }
     }
 }
 

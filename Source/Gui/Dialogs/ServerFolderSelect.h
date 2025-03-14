@@ -39,9 +39,11 @@
 #define ID_EDITFOLDER 10001
 #define ID_OPENINBROWSER 10002
 #define ID_CREATENESTEDFOLDER 10003
+#define ID_COPYFOLDERID 10004
 
 class UploadEngineManager;
 class ServerProfile;
+struct TreeItemData;
 
 class CServerFolderSelect : 
     public CCustomDialogIndirectImpl<CServerFolderSelect>,
@@ -62,7 +64,11 @@ class CServerFolderSelect :
         COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
         COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
+        COMMAND_HANDLER(ID_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
         NOTIFY_HANDLER(IDC_FOLDERTREE, NM_DBLCLK, OnFolderlistLbnDblclk)
+        NOTIFY_HANDLER(IDC_FOLDERTREE, TVN_ITEMEXPANDING, OnFolderTreeItemExpanding)
+        NOTIFY_HANDLER(IDC_FOLDERTREE, TVN_DELETEITEM, OnFolderTreeDeleteItem)
+
         CHAIN_MSG_MAP(CDialogResize<CServerFolderSelect>)
     END_MSG_MAP()
 
@@ -88,10 +94,12 @@ class CServerFolderSelect :
     LRESULT OnBnClickedNewfolderbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnEditFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+    LRESULT OnCopyFolderId(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+    LRESULT OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     void onTaskFinished(UploadTask* task, bool success);
     void OnLoadFinished();
-    CImageList m_PlaceSelectorImageList;
+    CImageListManaged folderTreeViewImageList;
     CFolderItem m_SelectedFolder;
 protected:
     CProgressRingControl m_wndAnimation;
@@ -102,8 +110,9 @@ protected:
     CFolderItem m_newFolder;
     std::shared_ptr<UploadSession> uploadSession_;
     std::vector<std::string> m_accessTypeList;
-    std::map<std::wstring,HTREEITEM> m_FolderMap;
+    std::map<std::string,HTREEITEM> m_FolderMap;
     std::atomic_bool stopSignal;
+    std::atomic<int> sessionsRunning_;
     CTreeViewCtrl m_FolderTree;
     ServerProfile& serverProfile_;
     //IU_PLUGIN_FolderItem * m_folderItems;
@@ -111,13 +120,18 @@ protected:
     std::unique_ptr<INetworkClient> m_NetworkClient;
     std::shared_ptr<FolderTask> currentTask_;
     void BlockWindow(bool Block);
-    void NewFolder(const CString& parentFolderId);
-    void refreshList();
+    void NewFolder(const CFolderItem& parentFolder);
+    void refreshList(const std::string& parentFolderId);
     //CString m_sNewFolderName, m_sNewFolderDescription;
+    void onSessionFinished(UploadSession*);
+    void onInitialLoadTaskFinished(UploadTask* task, bool success);
+    void loadInitialTree();
+    void getListTaskFinished(FolderTask* task, bool success);
+
     bool isRunning_;
 public:   
 
-    void BuildFolderTree(std::vector<CFolderItem> &list,const CString& parentFolderId);
+    void BuildFolderTree(TreeItemData* treeItemData, const std::vector<CFolderItem> &list,const std::string& parentFolderId);
 };
 
 #endif // SERVERFOLDERSELECT_H

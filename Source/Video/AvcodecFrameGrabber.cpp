@@ -93,7 +93,7 @@ protected:
     const AVCodec* pCodec;
     AVFrame* pFrame;
     AVFrame* pFrameRGB;
-    AVPacket packet;
+    AVPacket packet {};
     AVFormatContext* ic;
     uint8_t* buffer;
     int frameFinished;
@@ -103,7 +103,6 @@ protected:
     int allocatedFrameWidth_;
     int allocatedFrameHeight_;
     size_t allocatedBufferSize_;
-    uint64_t fileSize_;
     bool NeedStop;
     bool SeekToKeyFrame;
     bool seekByBytes;
@@ -149,7 +148,7 @@ public:
     static bool isImageCodec(AVCodecID codec)
     {
         return codec == AV_CODEC_ID_PNG
-            || codec == AV_CODEC_ID_MJPEG;
+            /* || codec == AV_CODEC_ID_MJPEG*/;
     }
 
     static void checkReturnCode(int code, const std::string& msg) {

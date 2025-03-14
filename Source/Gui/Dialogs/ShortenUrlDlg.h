@@ -58,7 +58,7 @@ class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
+        HBRUSH OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
         void OnFileFinished(UploadTask*  task, bool ok);
         void OnQueueFinished(UploadSession* session);
         bool ParseBuffer(const CString& text);
@@ -80,6 +80,7 @@ class CShortenUrlDlg : public CCustomDialogIndirectImpl <CShortenUrlDlg>,
         std::vector<std::shared_ptr<CUploadEngineData>> uploadEngineDataVector;
         std::shared_ptr<UploadSession> uploadSession_;
         bool isRunning_;
+        CFont resultsLabelFont_;
 };
 
 

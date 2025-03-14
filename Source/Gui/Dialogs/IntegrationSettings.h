@@ -38,7 +38,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         enum { IDD = IDD_INTEGRATIONSETTINGS };
 
         CIntegrationSettings(UploadEngineManager *uploadEngineManager);
-        bool Apply() override;
+        bool apply() override;
 
         struct ListItemData {
             ServerProfile serverProfile;

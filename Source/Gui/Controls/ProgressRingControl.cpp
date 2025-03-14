@@ -48,16 +48,9 @@ CProgressRingControl::~CProgressRingControl()
 LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& bHandled)
 {
     using namespace Gdiplus;
-    PAINTSTRUCT ps;
-    HDC hdc;
+    CPaintDC dc(m_hWnd);
     bHandled = true;
-    if (!wParam) {
-        BeginPaint(&ps);
-        hdc = ps.hdc;
-    } else {
-        hdc = BeginPaint(&ps);
-    }
-   
+
     CRect clientRect;
     GetClientRect(&clientRect);
     HBRUSH sysBr = GetSysColorBrush(COLOR_BTNFACE);
@@ -75,11 +68,7 @@ LRESULT CProgressRingControl::OnPaint(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
     Pen p(&lgBrush, penSize);
     graphics.DrawArc(&p, 2, 2, 2 + arcWidth, 2 + arcWidth, static_cast<REAL>(timerCounter_), 180);
 
-    
-    BitBlt(hdc, 0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);
-    if (!wParam) {
-        EndPaint(&ps);
-    }
+    dc.BitBlt(0, 0, backBufferWidth_, backBufferHeight_, backBufferDc_, 0, 0, SRCCOPY);
     bHandled = true;
     return 0;
 }

@@ -18,8 +18,8 @@
 
 */
 
-#ifndef _IU_ADVANCED_UPLOAD_ENGINE_H
-#define _IU_ADVANCED_UPLOAD_ENGINE_H
+#ifndef IU_ADVANCED_UPLOAD_ENGINE_H
+#define IU_ADVANCED_UPLOAD_ENGINE_H
 
 #include <vector>
 #include <string>
@@ -30,6 +30,7 @@
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Upload/FolderList.h"
 #include "Core/Network/NetworkClient.h"
+#include "Parameters/AbstractParameter.h"
 
 class CAdvancedUploadEngine : public CAbstractUploadEngine
 {
@@ -43,7 +44,7 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         virtual int createFolder(const CFolderItem &parent, CFolderItem &folder)=0;
         virtual int modifyFolder(CFolderItem &folder)=0;
         virtual int getAccessTypeList(std::vector<std::string> &list)=0;
-        virtual int getServerParamList(std::map<std::string, std::string> &list)=0;
+        virtual int getServerParamList(ParameterList& list) = 0;
         virtual int doLogin()=0;
         virtual int doLogout()=0;
         virtual bool isAuthenticated() = 0;

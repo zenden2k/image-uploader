@@ -25,19 +25,19 @@
 #include "ScreenshotSettingsPage.h"
 #include "ThumbSettingsPage.h"
 #include "GeneralSettings.h"
-#include "UploadSettingsPage.h"
+#include "ConnectionSettingsPage.h"
+#include "TransferSettingsPage.h"
 #include "VideoGrabberParams.h"
 #include "IntegrationSettings.h"
 #include "DefaultServersSettings.h"
 #include "Gui/GuiTools.h"
 
 // CSettingsDlg
-CSettingsDlg::CSettingsDlg(int Page, UploadEngineManager* uploadEngineManager)
+CSettingsDlg::CSettingsDlg(SettingsPage Page, UploadEngineManager* uploadEngineManager):
+    PageToShow(Page), uploadEngineManager_(uploadEngineManager)
 {
-    CurPage = -1;
-    PageToShow = Page;
+    CurPage = spNone;
     memset(&Pages, 0, sizeof(Pages));
-    uploadEngineManager_ = uploadEngineManager;
     backgroundBrush_.CreateSysColorBrush(COLOR_BTNFACE);
 }
 
@@ -45,7 +45,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 {
     // center the dialog on the screen
     CenterWindow();
-    saveStatusLabel_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
+    saveStatusLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SAVESTATUSLABEL));
 
     HWND parent = GetParent();
     if(!parent || !::IsWindowVisible(parent))
@@ -59,6 +59,7 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     m_SettingsPagesListBox.AddString(TR("Thumbnails"));
     m_SettingsPagesListBox.AddString(TR("Screen Capture"));
     m_SettingsPagesListBox.AddString(TR("Video"));
+    m_SettingsPagesListBox.AddString(TR("Connection"));
     m_SettingsPagesListBox.AddString(TR("Uploading"));
     m_SettingsPagesListBox.AddString(TR("Integration"));
     m_SettingsPagesListBox.AddString(TR("Tray icon"));
@@ -79,29 +80,13 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     
     m_SettingsPagesListBox.SetCurSel(PageToShow);
     ShowPage(PageToShow);
-    return 0;  // Let the system set the focus
+    return 0; 
 }
 
 LRESULT CSettingsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    for (int i = 0; i < SettingsPageCount; i++) {
-        try {
-            if (Pages[i] && !Pages[i]->Apply()) {
-                ShowPage(i);
-                return 0;
-            }
-        } catch (ValidationException& ex) {
-            ShowPage(i);
-            if (ex.errors_.size()) {
-                LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
-                if (ex.errors_[0].Control) {
-                    ::SetFocus(ex.errors_[0].Control);
-                }
-            }
-
-            return 0;
-            // If some tab cannot apply changes - do not close dialog
-        }
+    if (!apply()) {
+        return 0;  // If some tab cannot apply changes - do not close dialog
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->SaveSettings();
@@ -132,16 +117,7 @@ LRESULT CSettingsDlg::OnTimer(UINT, WPARAM, LPARAM, BOOL&)
     return 0;
 }
 
-void CSettingsDlg::CloseDialog(int nVal)
-{
-    if(CurPage >= 0)
-        Pages[CurPage]->OnHide();
-    
-    DestroyWindow();
-    ::PostQuitMessage(nVal);
-}
-
-bool CSettingsDlg::ShowPage(int idPage)
+bool CSettingsDlg::ShowPage(SettingsPage idPage)
 {
     if(idPage< 0 || idPage> SettingsPageCount-1) return false;
 
@@ -153,7 +129,9 @@ bool CSettingsDlg::ShowPage(int idPage)
     if(Pages[idPage]) 
         ::ShowWindow(Pages[idPage]->PageWnd, SW_SHOW);
 
-    if(CurPage != -1 && Pages[CurPage]) ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
+    if (CurPage != spNone && Pages[CurPage]) {
+        ::ShowWindow(Pages[CurPage]->PageWnd, SW_HIDE);
+    }
     CurPage = idPage;
 
     m_SettingsPagesListBox.SetCurSel(CurPage);
@@ -162,14 +140,48 @@ bool CSettingsDlg::ShowPage(int idPage)
 
 LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
+    if (!apply()) {
+        return 0;
+    }
+    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
+    SetTimer(kStatusLabelTimer, 3000);
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->SaveSettings();
+    return 0;
+}
+
+bool CSettingsDlg::apply()  {
+    for (int i = 0; i < SettingsPageCount; i++) {
+        const auto& page = Pages[i];
+        if (!page) {
+            continue;
+        }
+        page->clearErrors();
+        if (!page->validate()) {
+            ShowPage(static_cast<SettingsPage>(i));
+            const auto& errors = page->errors();
+            if (!errors.empty()) {
+                CString msg;
+                for (const auto& error : errors) {
+                    msg += error.Message;
+                    msg += _T("\r\n");
+                }
+                LocalizedMessageBox(msg, TR("Error"), MB_ICONERROR);
+                if (errors[0].Control) {
+                    ::SetFocus(errors[0].Control);
+                }
+            }
+            return false;
+        }
+    }
     for (int i = 0; i < SettingsPageCount; i++) {
         try {
-            if (Pages[i] && !Pages[i]->Apply()) {
-                ShowPage(i);
-                return 0;
+            if (Pages[i] && !Pages[i]->apply()) {
+                ShowPage(static_cast<SettingsPage>(i));
+                return false;
             }
         } catch (ValidationException& ex) {
-            ShowPage(i);
+            ShowPage(static_cast<SettingsPage>(i));
             if (!ex.errors_.empty()) {
                 LocalizedMessageBox(ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
                 if (ex.errors_[0].Control) {
@@ -177,15 +189,11 @@ LRESULT CSettingsDlg::OnApplyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                 }
             }
 
-            return 0;
+            return false;
             // If some tab cannot apply changes - do not close dialog
         }
     }
-    GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, true);
-    SetTimer(kStatusLabelTimer, 3000);
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    settings->SaveSettings();
-    return 0;
+    return true;
 }
 
 template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args) {
@@ -195,7 +203,7 @@ template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND 
     return dlg;
 }
 
-bool CSettingsDlg::CreatePage(int pageId)
+bool CSettingsDlg::CreatePage(SettingsPage pageId)
 {
     RECT rc = { 150,3,636,400 };
     auto createObject = [&]() -> std::unique_ptr<CSettingsPage> {
@@ -212,8 +220,10 @@ bool CSettingsDlg::CreatePage(int pageId)
                 return createPageObject<CScreenshotSettingsPagePage>(m_hWnd, rc);
             case spVideo:
                 return createPageObject<CVideoGrabberParams>(m_hWnd, rc);
+            case spConnection:
+                return createPageObject<CConnectionSettingsPage>(m_hWnd, rc);
             case spUploading:
-                return createPageObject<CUploadSettingsPage>(m_hWnd, rc);
+                return createPageObject<CTransferSettingsPage>(m_hWnd, rc);
             case spIntegration:
                 return createPageObject<CIntegrationSettings>(m_hWnd, rc, uploadEngineManager_);
             case spTrayIcon:
@@ -232,23 +242,23 @@ bool CSettingsDlg::CreatePage(int pageId)
     WINDOWPLACEMENT wp;
     ::GetWindowPlacement(GetDlgItem(IDC_TABCONTROL), &wp);
     TabCtrl_AdjustRect(GetDlgItem(IDC_TABCONTROL),FALSE, &wp.rcNormalPosition);     
-    ::SetWindowPos(Pages[pageId]->PageWnd, 0, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom, 0);
+    ::SetWindowPos(Pages[pageId]->PageWnd, m_SettingsPagesListBox, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left + wp.rcNormalPosition.right, -wp.rcNormalPosition.top + wp.rcNormalPosition.bottom, 0);
 
-    Pages[pageId]->FixBackground();
+    Pages[pageId]->fixBackground();
     return true;
 }
 
 LRESULT CSettingsDlg::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     int Index = TabCtrl_GetCurSel(GetDlgItem(idCtrl));
-    ShowPage(Index);
+    ShowPage(static_cast<SettingsPage>(Index));
     return 0;
 }
 
 LRESULT CSettingsDlg::OnSettingsPagesSelChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     int iPageIndex = m_SettingsPagesListBox.GetCurSel();
-    ShowPage(iPageIndex);
+    ShowPage(static_cast<SettingsPage>(iPageIndex));
 
     return 0;
 }

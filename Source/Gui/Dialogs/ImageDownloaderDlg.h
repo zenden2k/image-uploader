@@ -76,7 +76,7 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         virtual BOOL PreTranslateMessage(MSG* pMsg) override;
         bool BeginDownloading();
         static bool LinksAvailableInText(CString text);
-        void ParseBuffer(CString text, bool OnlyImages);
+        size_t ParseBuffer(CString text, bool OnlyImages);
         void OnQueueFinished();
         bool OnFileFinished(bool ok, int statusCode, const DownloadTask::DownloadItem& it);
         void clipboardUpdated();

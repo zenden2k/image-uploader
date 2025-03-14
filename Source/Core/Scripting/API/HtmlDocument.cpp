@@ -68,7 +68,7 @@ Sqrat::Array HtmlDocument::querySelectorAll(const std::string& query)
     return d_->querySelectorAll(query);
 }
 
-const std::string HtmlDocument::getHTML()
+std::string HtmlDocument::getHTML()
 {
     return d_->getHTML();
 }

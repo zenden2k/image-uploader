@@ -12,6 +12,7 @@
 #include "Core/AppParams.h"
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/LoginDialog.h"
+#include "Core/AbstractServerIconCache.h"
 
 ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineManager, bool defaultServer,
                                            QWidget* parent) : QGroupBox(parent) {
@@ -42,11 +43,11 @@ ServerSelectorWidget::ServerSelectorWidget(UploadEngineManager* uploadEngineMana
 
     accountLayout->addItem(horizontalSpacer);
 
-
     grid->addLayout(accountLayout, 0, 1);
     connect(serverListComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(comboBoxIndexChanged(int)));
     connect(accountButton, &QPushButton::clicked, this, &ServerSelectorWidget::accountButtonClicked);
     updateServerList();
+    updateAccountButton();
     updateAccountButtonMenu();
 }
 
@@ -60,6 +61,7 @@ void ServerSelectorWidget::setServerProfile(const ServerProfile& serverProfile) 
     int itemIndex = serverListComboBox->findData(U2Q(serverProfile.serverName()));
     if (itemIndex != -1) {
         serverListComboBox->setCurrentIndex(itemIndex);
+        updateAccountButton();
     }
 }
 
@@ -76,8 +78,10 @@ void ServerSelectorWidget::setShowFilesizeLimits(bool show) {
 }
 
 void ServerSelectorWidget::updateServerList() {
+    auto serviceLocator = ServiceLocator::instance();
     serverListComboBox->clear();
-    auto* myEngineList = ServiceLocator::instance()->engineList();
+    //auto* serverIconCache = serviceLocator->serverIconCache();
+    auto* myEngineList = serviceLocator->engineList();
 
     int addedItems = 0;
     std::string selectedServerName = serverProfile_.serverName();
@@ -93,7 +97,7 @@ void ServerSelectorWidget::updateServerList() {
             continue;
         }
         if (addedItems) {
-            serverListComboBox->addItem(line);
+            serverListComboBox->insertSeparator(addedItems);
         }
         for (int i = 0; i < myEngineList->count(); i++) {
             CUploadEngineData* ue = myEngineList->byIndex(i);
@@ -117,14 +121,14 @@ void ServerSelectorWidget::updateServerList() {
 
             QString iconPath = QDir(dataDir).filePath("Favicons/" + U2Q(ue->Name).toLower() + ".ico");
 
-            QIcon ico;
-            if (QFile::exists(iconPath)) {
+            //QIcon ico = serverIconCache->getIconForServer(ue->Name);
+            /*if (QFile::exists(iconPath)) {
                 ico = QIcon(iconPath);
 
             }
             if (ico.isNull()) {
                 ico = QIcon(":/res/server.png");
-            }
+            }*/
             /*HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;
             if (hImageIcon) {
@@ -135,7 +139,7 @@ void ServerSelectorWidget::updateServerList() {
             if (showFileSizeLimits && ue->MaxFileSize > 0) {
                 displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
             }
-            serverListComboBox->addItem(ico, U2Q(displayName), U2Q(ue->Name));
+            serverListComboBox->addItem(QIcon(), U2Q(displayName), U2Q(ue->Name));
             /*if (ue->Name == selectedServerName) {
                 selectedIndex = itemIndex;
             }*/
@@ -158,7 +162,7 @@ void ServerSelectorWidget::comboBoxIndexChanged(int index) {
     }
 }
 
-ServerProfile ServerSelectorWidget::serverProfile() const {
+const ServerProfile& ServerSelectorWidget::serverProfile() const {
     return serverProfile_;
 }
 
@@ -166,10 +170,12 @@ void ServerSelectorWidget::serverChanged() {
     QVariant data = serverListComboBox->currentData();
     QString serverName = data.toString();
     serverProfile_.setServerName(Q2U(serverName));
+    serverProfile_.setProfileName({});
     auto ued = serverProfile_.uploadEngineData();
     if (ued) {
         accountButton->setVisible(ued->NeedAuthorization != CUploadEngineData::naNotAvailable);
     }
+    updateAccountButton();
     updateAccountButtonMenu();
 }
 
@@ -187,7 +193,7 @@ void ServerSelectorWidget::accountButtonClicked(bool /*checked*/) {
     else {
         LoginDialog dlg(serverProfile_, false, this);
         if (dlg.exec() == QDialog::Accepted) {
-            accountButton->setText(dlg.accountName());
+            updateAccountButton();
             updateAccountButtonMenu();
         }
     }
@@ -211,14 +217,17 @@ void ServerSelectorWidget::updateAccountButtonMenu() {
         connect(userAction, &QAction::triggered, [accountName, this]
         {
             serverProfile_.setProfileName(accountName);
-            accountButton->setText(U2Q(accountName));
+            updateAccountButton();
         });
         accountButtonMenu_->addAction(userAction);
     }
 
-    QAction* viewCodeAction = new QAction(tr("<without account>"), accountButtonMenu_.get());
-    connect(viewCodeAction, &QAction::triggered, this, &ServerSelectorWidget::noAccountSelected);
-    accountButtonMenu_->addAction(viewCodeAction);
+    auto ued = serverProfile_.uploadEngineData();
+    if (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory) {
+        QAction* withoutAccountAction = new QAction(tr("<without account>"), accountButtonMenu_.get());
+        connect(withoutAccountAction, &QAction::triggered, this, &ServerSelectorWidget::noAccountSelected);
+        accountButtonMenu_->addAction(withoutAccountAction);
+    }
 
     accountButtonMenu_->addSeparator();
     QAction* addAccountAction = new QAction(tr("Add account..."), accountButtonMenu_.get());
@@ -229,7 +238,8 @@ void ServerSelectorWidget::updateAccountButtonMenu() {
 
 void ServerSelectorWidget::noAccountSelected() {
     serverProfile_.setProfileName(std::string());
-    accountButton->setText(tr("<without account>"));
+    //accountButton->setText(tr("<without account>"));
+    updateAccountButton();
 }
 
 void ServerSelectorWidget::addAccountClicked() {
@@ -238,15 +248,48 @@ void ServerSelectorWidget::addAccountClicked() {
 
     LoginDialog dlg(serverProfileCopy, true, this);
     if (dlg.exec() == QDialog::Accepted) {
-        serverProfileCopy.setProfileName(Q2U(dlg.accountName()));
+        std::string accountNameUtf8 = Q2U(dlg.accountName());
+        serverProfileCopy.setProfileName(accountNameUtf8);
         serverProfileCopy.setFolderId(std::string());
         serverProfileCopy.setFolderTitle(std::string());
         serverProfileCopy.setFolderUrl(std::string());
 
         serverProfile_ = serverProfileCopy;
-
-        accountButton->setText(dlg.accountName());
+        /*auto settings = ServiceLocator::instance()->basicSettings();
+        ServerSettingsStruct& sss = settings->ServersSettings[serverProfile_.serverName()][accountNameUtf8];
+        sss.authData.DoAuth = true;
+        sss.authData.Login = accountNameUtf8;
+        sss.authData.Password = dlg.*/
+        updateAccountButton();
         updateAccountButtonMenu();
     }
+}
 
+void ServerSelectorWidget::fillServerIcons() {
+    auto* serverIconCache = ServiceLocator::instance()->serverIconCache();
+    int count = serverListComboBox->count();
+    for (int i = 0; i < count; i++) {
+        QString s = serverListComboBox->itemData(i).toString();
+        std::string serverName = s.toStdString();
+
+        QIcon ico = serverIconCache->getIconForServer(serverName);
+        serverListComboBox->setItemIcon(i, ico);
+    }
+}
+
+void ServerSelectorWidget::updateAccountButton() {
+    QString buttonText;
+    if (!serverProfile_.profileName().empty()){
+        buttonText = U2Q(serverProfile_.profileName());
+    } else {
+        auto ued = serverProfile_.uploadEngineData();
+
+        if (ued && ued->NeedAuthorization != CUploadEngineData::naObligatory) {
+            buttonText = tr("<without account>");
+        } else {
+            buttonText = tr("choose account...");
+        }
+    }
+
+    accountButton->setText(buttonText);
 }

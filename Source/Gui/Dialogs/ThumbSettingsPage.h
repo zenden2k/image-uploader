@@ -53,13 +53,14 @@ public:
         COMMAND_HANDLER_EX(IDC_WIDTHCHECKBOX, BN_CLICKED, OnWidthEditChange) 
         COMMAND_HANDLER_EX(IDC_HEIGHTEDIT, EN_CHANGE, OnWidthEditChange) 
         COMMAND_HANDLER_EX(IDC_WIDTHEDIT, EN_CHANGE, OnWidthEditChange)
+        COMMAND_HANDLER_EX(IDC_THUMBMACROSES, BN_CLICKED, OnThumbMacrosButtonClicked)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        bool Apply() override;
+        bool apply() override;
     protected:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -71,6 +72,8 @@ public:
         void ThumbTextCheckboxChange();
         LRESULT OnThumbComboChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnBnClickedNewThumbnail(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnThumbMacrosButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+
         void showSelectedThumbnailPreview();
         bool CreateNewThumbnail();
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
@@ -80,8 +83,9 @@ public:
         bool m_CatchFormChanges;
         CColorButton ThumbBackground;
         CComboBox thumbsCombo_;
-
-
+        CButton thumbTextMacrosesButton_;
+        CIcon iconDropdown_;
+        CEdit thumbTextEdit_;
 };
 
 #endif // IU_GUI_DIALOGS_THUMBSETTINGSPAGE_H

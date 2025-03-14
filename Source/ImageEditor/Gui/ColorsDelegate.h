@@ -13,8 +13,9 @@ namespace ImageEditor {
         enum {kOffset = 7, kSquareSize = 16, kPadding = 3};
 
         ColorsDelegate(Toolbar* toolbar, int itemIndex, Canvas* canvas);
-        SIZE CalcItemSize(Toolbar::Item& item, float dpiScaleX, float dpiScaleY) override;
+        SIZE CalcItemSize(Toolbar::Item& item, int x, int y, float dpiScaleX, float dpiScaleY) override;
         void DrawItem(Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY) override;
+        std::vector<std::pair<RECT, CString>> getSubItemsHints() override;
         void setForegroundColor(Gdiplus::Color color );
         void setBackgroundColor(Gdiplus::Color color);
         Gdiplus::Color getForegroundColor() const;
@@ -43,7 +44,8 @@ namespace ImageEditor {
         void OnForegroundButtonSelChanged(COLORREF color, BOOL valid );
 
         void OnBackgroundButtonSelChanged(COLORREF color, BOOL valid );
-
+        Gdiplus::Rect getForegroundRect(int x, int y, float dpiScaleX, float dpiScaleY) const;
+        Gdiplus::Rect getSwapColorsRect(int x, int y, float dpiScaleX, float dpiScaleY) const;
     };
 }
 

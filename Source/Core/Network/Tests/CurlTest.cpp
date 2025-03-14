@@ -33,5 +33,6 @@ TEST_F(CurlTest, CurlTest) {
 #endif
     EXPECT_NE(data->features & CURL_VERSION_HTTPS_PROXY, 0);
     EXPECT_TRUE(data->ssl_version != nullptr);
+    //EXPECT_NE(data->features & CURL_VERSION_HTTP2, 0);
 }
 

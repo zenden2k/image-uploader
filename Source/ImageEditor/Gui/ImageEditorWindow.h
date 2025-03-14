@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <map>
+#include <unordered_map>
 
 #include "atlheaders.h"
 #include "resource.h"
@@ -25,15 +26,17 @@ class ConfigurationProvider;
 class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>, CMessageFilter
 {
 public:
-    DECLARE_WND_CLASS(_T("ImageEditorWindow"))
+    DECLARE_WND_CLASS_EX(_T("ImageEditorWindow"), CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS, COLOR_APPWORKSPACE)
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
-        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_SEARCHBYIMAGEINGOOGLE,
-        ID_SEARCHBYIMAGEINYANDEX,
+        ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE,
+        ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS,
+        ID_SEARCHBYIMAGE_START = 1400,
+        ID_SEARCHBYIMAGE_END = 1499,
+        ID_DELETESELECTED,
         ID_PEN = 1600, 
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
-    
     };
 
     enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
@@ -90,7 +93,7 @@ public:
         MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
         MESSAGE_HANDLER( WM_KEYUP, OnKeyUp )
         MESSAGE_HANDLER( WM_SIZE, OnSize )
-        MESSAGE_HANDLER( WM_PAINT, OnPaint )
+        //MESSAGE_HANDLER( WM_PAINT, OnPaint )
         MESSAGE_HANDLER( WM_HSCROLL, OnHScroll )
         //MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
         MESSAGE_HANDLER( WM_ACTIVATEAPP, OnActivateApp )
@@ -99,11 +102,13 @@ public:
         MESSAGE_HANDLER(MTBM_FONTSIZECHANGE, OnFontSizeChanged )
         MESSAGE_HANDLER(MTBM_STEPINITIALVALUECHANGE, OnStepInitialValueChange )
         MESSAGE_HANDLER(MTBM_FILLBACKGROUNDCHANGE, OnFillBackgroundChange )
+        MESSAGE_HANDLER(MTBM_INVERTSELECTIONCHANGE, OnInvertSelectionChange)
         MESSAGE_HANDLER(MTBM_ARROWTYPECHANGE, OnArrowTypeChange )
         MESSAGE_HANDLER(MTBM_APPLY, OnApplyOperation)
         MESSAGE_HANDLER(MTBM_CANCEL, OnCancelOperation)
         MESSAGE_HANDLER( TextParamsWindow::TPWM_FONTCHANGED, OnTextParamWindowFontChanged);
 
+        COMMAND_ID_HANDLER(IDOK, OnClickedOK)
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
         COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
@@ -119,11 +124,16 @@ public:
         COMMAND_ID_HANDLER(ID_UNSELECTALL, OnUnselectAll)
         COMMAND_ID_HANDLER(ID_PRINTIMAGE, OnPrintImage)
         COMMAND_ID_HANDLER(ID_SEARCHBYIMAGE, OnSearchByImage)
-        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINGOOGLE, OnSearchByImage)
-        COMMAND_ID_HANDLER(ID_SEARCHBYIMAGEINYANDEX, OnSearchByImage)
-        MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+        COMMAND_RANGE_HANDLER(ID_SEARCHBYIMAGE_START, ID_SEARCHBYIMAGE_END, OnSearchByImage)
+        COMMAND_ID_HANDLER(ID_DELETESELECTED, OnDeleteSelected)
+        COMMAND_ID_HANDLER(ID_ROTATECLOCKWISE, OnRotateClockwise)
+        COMMAND_ID_HANDLER(ID_ROTATECOUNTERCLOCKWISE, OnRotateCounterClockwise)
+        COMMAND_ID_HANDLER(ID_FLIPVERTICAL, OnFlipVertical)
+        COMMAND_ID_HANDLER(ID_FLIPHORIZONTAL, OnFlipHorizontal)
+        COMMAND_ID_HANDLER(ID_MOREACTIONS, OnMoreActionsClicked)
+
+        //MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
-        
         REFLECT_NOTIFICATIONS()
         /*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
         CHAIN_MSG_MAP(CFrameWindowImpl<CMainFrame>)*/
@@ -168,10 +178,19 @@ public:
         LRESULT OnFontSizeChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnStepInitialValueChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnFillBackgroundChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnInvertSelectionChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnArrowTypeChange(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnApplyOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
         LRESULT OnCancelOperation(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+        LRESULT OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnRotateClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnRotateCounterClockwise(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnFlipVertical(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -179,7 +198,7 @@ public:
         std::map<int, DrawingToolType> menuItems_;
         std::map<DrawingToolType, SubMenuItem> subMenuItems_;
         std::map<int,int> selectedSubMenuItems_;
-        std::map<DrawingToolHotkey, DrawingToolType> drawingToolsHotkeys_;
+        std::unordered_map<DrawingToolHotkey, int> drawingToolsHotkeys_;
         DialogResult dialogResult_;
         WindowDisplayMode displayMode_;
         DrawingToolType initialDrawingTool_;
@@ -191,6 +210,7 @@ public:
         CString serverName_;
         int prevPenSize_;
         int prevRoundingRadius_;
+        float prevBlurRadius_;
         CIcon icon_;
         CIcon iconSmall_;
         std::unique_ptr<ColorsDelegate> colorsDelegate_;
@@ -199,13 +219,14 @@ public:
         HWND cropToolTip_;
         int imageQuality_;
         bool allowAltTab_;
-        SearchByImage::SearchEngine searchEngine_;
+        ServerProfile searchEngine_;
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         std::wstring windowTitle_;
         ConfigurationProvider* configurationProvider_; 
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
         HMODULE richeditLib_;
+        CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);
@@ -216,7 +237,7 @@ public:
         void updateRoundingRadiusSlider();
         void updateSearchButton();
         void updateFontSizeControls();
-        std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource);
+        std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource, bool resize = false);
         void EndDialog(DialogResult dr);
         void init();
         bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None, bool saveAs = false);
@@ -236,11 +257,13 @@ public:
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
         void showApplyButtons();
-
+        
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible
          */
         void repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect);
+
+        void showMoreActionsDropdownMenu(Toolbar::Item* item);
 };
 
 class ConfigurationProvider {
@@ -249,10 +272,11 @@ public:
         penSize_ = 12;
         roundingRadius_ = 5;
         allowAltTab_ = false; 
-        searchEngine_ = SearchByImage::SearchEngine::seGoogle;
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
         arrowMode_ = 0;
+        invertSelection_ = false;
+        blurRadius_ = 1.0f;
     }
     virtual ~ConfigurationProvider() = default;
     virtual void saveConfiguration() {}
@@ -270,13 +294,16 @@ public:
     int penSize() const { return penSize_;}
     void setRoundingRadius(int radius) { roundingRadius_ = radius; }
     int roundingRadius() const { return roundingRadius_;}
+    void setBlurRadius(float radius) { blurRadius_ = radius; }
+    float blurRadius() const { return blurRadius_; }
+
     bool allowAltTab() const  {  return allowAltTab_; } 
     void setFont(const LOGFONT& font) { font_ = font; }
     LOGFONT font() const { return font_; }
-    void setSearchEngine(SearchByImage::SearchEngine se) {
+    void setSearchEngine(const ServerProfile& se) {
         searchEngine_ = se;
     }
-    SearchByImage::SearchEngine searchEngine() const {
+    const ServerProfile& searchEngine() const{
         return searchEngine_;
     }
     void setFillTextBackground(bool fill) {
@@ -284,6 +311,13 @@ public:
     }
     bool fillTextBackground() const {
         return fillTextBackground_;
+    }
+
+    void setInvertSelection(bool invert) {
+        invertSelection_ = invert;
+    }
+    bool invertSelection() const {
+        return invertSelection_;
     }
     void setArrowMode(int mode) {
         arrowMode_ = mode;
@@ -296,11 +330,13 @@ protected:
         stepForegroundColor_, stepBackgroundColor_;
     int penSize_;
     int roundingRadius_;
+    float blurRadius_;
     int arrowMode_;
     LOGFONT font_;
     bool allowAltTab_;
-    SearchByImage::SearchEngine searchEngine_;
+    ServerProfile searchEngine_;
     bool fillTextBackground_;
+    bool invertSelection_;
 };
 
 }

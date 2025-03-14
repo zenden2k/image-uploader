@@ -58,6 +58,7 @@ CUploadDlg::~CUploadDlg()
 
 LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     uploadProgressBar_ = GetDlgItem(IDC_UPLOADPROGRESS);
     imageViewWindow_.Create(m_hWnd);
@@ -96,10 +97,11 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     commonProgressLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     commonPercentLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(Settings.CodeLang));
+    using namespace ImageUploader::Core::OutputGenerator;
+    resultsWindow_->SetPage(static_cast<CodeLang>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
-    return 1;  
+    return FALSE;  
 }
 
 bool CUploadDlg::startUpload() {
@@ -132,7 +134,11 @@ bool CUploadDlg::startUpload() {
 
     int rowIndex = 0;
     for (int i = 0; i < n; i++) {
-        CString FileName = MainDlg->FileList[i].FileName;
+        const auto& item = MainDlg->FileList[i];
+        if (item.isSkipped()) {
+            continue;
+        }
+        CString FileName = item.FileName;
         std::string fileNameUtf8 = WCstringToUtf8(FileName);
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
@@ -214,20 +220,34 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     }
 
     bool menuItemEnabled = false;
+    bool enableCopyLinkMenuItem = false;
+    bool enableCopyViewLinkMenuItem = false;
+    bool enableCopyThumbLinkMenuItem = false;
+    bool enableCopyDeleteLinkMenuItem = false;
     bool isImage = false;
     if (nCurItem >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
         if (item) {
             isImage = IuCommonFunctions::IsImage(item->fileName());
             if (!uploadSession_->isRunning()) {
-
                 isImage = IuCommonFunctions::IsImage(item->fileName());
                 auto task = uploadSession_->getTask(nCurItem);
                 if (task) {
                     auto status = task->status();
                     if (status != UploadTask::StatusFinished && status != UploadTask::StatusRunning) {
                         menuItemEnabled = true;
+                    } else if (status == UploadTask::StatusFinished) {
+                        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+                        if (nCurItem < urlList_.size()) {
+                            auto& obj = urlList_[nCurItem];
+                            enableCopyLinkMenuItem = !obj.uploadResult.getDirectUrl().empty()
+                                || !obj.uploadResult.getDownloadUrl().empty();
+                            enableCopyViewLinkMenuItem = !obj.uploadResult.getDownloadUrl().empty();
+                            enableCopyThumbLinkMenuItem = !obj.uploadResult.getThumbUrl().empty();
+                            enableCopyDeleteLinkMenuItem = !obj.uploadResult.deleteUrl.empty();
+                        }
                     }
+
                 }
             }
         }
@@ -239,9 +259,24 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         menu.AppendMenu(MF_STRING, ID_VIEWIMAGE, TR("View"));
     }
     menu.AppendMenu(MF_STRING, ID_RETRYUPLOAD, TR("Retry"));
+    menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
+
     menu.AppendMenu(MF_STRING, ID_SHOWLOGFORTHISFILE, TR("Show log for this file"));
     menu.SetMenuDefaultItem(ID_VIEWIMAGE, FALSE);
-    menu.EnableMenuItem(ID_RETRYUPLOAD, menuItemEnabled ? MF_ENABLED : MF_GRAYED);
+
+    menu.AppendMenu(MF_SEPARATOR);
+    menu.AppendMenu(MF_STRING, ID_COPYLINK, TR("Copy link"));
+    menu.EnableMenuItem(ID_COPYLINK, enableCopyLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYVIEWLINK, TR("Copy link to view page"));
+    menu.EnableMenuItem(ID_COPYVIEWLINK, enableCopyViewLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYTHUMBLINK, TR("Copy link to thumbnail"));
+    menu.EnableMenuItem(ID_COPYTHUMBLINK, enableCopyThumbLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
+    menu.AppendMenu(MF_STRING, ID_COPYDELETELINK, TR("Copy delete link"));
+    menu.EnableMenuItem(ID_COPYDELETELINK, enableCopyDeleteLinkMenuItem ? MF_ENABLED : MF_DISABLED);
+
     menu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
     return 0;
 }
@@ -309,7 +344,7 @@ bool CUploadDlg::OnShow()
     resultsWindow_->SetCodeType(newcode);
     resultsWindow_->SetPage(static_cast<CResultsPanel::TabPage>(settings->CodeLang));
 
-    ::SetFocus(GetDlgItem(IDC_CODEEDIT));
+    //::SetFocus(GetDlgItem(IDC_CODEEDIT));
     alreadyShortened_ = false;
     backgroundThreadStarted();
     startUpload();
@@ -376,9 +411,11 @@ void CUploadDlg::TotalUploadProgress(int CurPos, int Total, int FileProgress)
 }
 
 void CUploadDlg::OnFolderUsed(UploadTask* task) {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([task, this] {
-        resultsWindow_->AddServer(task->serverProfile());
-    });
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = this->m_hWnd, profile = task->serverProfile(), this] {
+        if (::IsWindow(wnd)) {
+            resultsWindow_->AddServer(profile);
+        }
+    }, true);
 }
 
 void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
@@ -393,7 +430,6 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
 
 void CUploadDlg::createToolbar()
 {
-   
     DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
@@ -404,12 +440,12 @@ void CUploadDlg::createToolbar()
         return toolbarImageList_.AddIcon(icon);
     };
 
-    if (GuiTools::Is32BPP()) {
+    //if (GuiTools::Is32BPP()) {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 0, 6);
-    }
-    else {
+    //}
+    /*else {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
-    }
+    }*/
 
     RECT placeholderRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_TOOLBARPLACEHOLDER);
     RECT rc = { 0, 0, 100, 24 };
@@ -483,6 +519,10 @@ void CUploadDlg::viewImage(int itemIndex) {
     }
 }
 
+void CUploadDlg::SetInitialFocus() {
+    resultsWindow_->SetFocus();
+}
+
 LRESULT CUploadDlg::OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
     if (nCurItem >= 0) {
@@ -537,89 +577,70 @@ void CUploadDlg::showUploadProgressTab() {
 }
 
 // This callback is being executed in worker thread
-void CUploadDlg::onSessionFinished(UploadSession* session)
-{
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
-        onSessionFinished_UiThread(session);
-    });
-}
-
-// This function is being executed in UI thread
-void CUploadDlg::onSessionFinished_UiThread(UploadSession* session) {
-    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+void CUploadDlg::onSessionFinished(UploadSession* session) {
     int successFileCount = session->finishedTaskCount(UploadTask::StatusFinished);
     int failedFileCount = session->finishedTaskCount(UploadTask::StatusFailure);
     int totalFileCount = session->taskCount();
-    KillTimer(kEnableNextButtonTimer);
-    CString progressLabelText;
-    if (successFileCount == totalFileCount) {
-        progressLabelText = TR("All files have been successfully uploaded.");
-    } else {
-        if (CancelByUser) {
-            progressLabelText = TR("File uploading was cancelled by user.");
+
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, successFileCount, failedFileCount, totalFileCount, this] {
+        if (!::IsWindow(wnd)) {
+            return;
+        }
+        auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+        KillTimer(kEnableNextButtonTimer);
+        CString progressLabelText;
+        if (successFileCount == totalFileCount) {
+            progressLabelText = TR("All files have been successfully uploaded.");
+        } else {
+            if (CancelByUser) {
+                progressLabelText = TR("File uploading was cancelled by user.");
+            } else if (failedFileCount) {
+                progressLabelText.Format(TR("Errors: %d"), failedFileCount);
+                progressLabelText = CString(TR("Uploading has been finished.")) + _T(" ") + progressLabelText;
+            }
+        }
+
+        SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
+        resultsWindow_->UpdateOutput(true);
+        updateTotalProgress();
+        if (failedFileCount * 100 / totalFileCount >= 50) {
+            uploadProgressBar_.SetState(PBST_ERROR);
         } else if (failedFileCount) {
-            progressLabelText.Format(TR("Errors: %d"), failedFileCount);
-            progressLabelText = CString(TR("Uploading has been finished.")) + _T(" ") + progressLabelText;
+            uploadProgressBar_.SetState(PBST_PAUSED);
         }
-    }
-
-    SetDlgItemText(IDC_COMMONPROGRESS2, progressLabelText);
-    resultsWindow_->UpdateOutput(true);
-    updateTotalProgress();
-    if (failedFileCount * 100 / totalFileCount >= 50) {
-        uploadProgressBar_.SetState(PBST_ERROR);
-    }
-    else if (failedFileCount) {
-        uploadProgressBar_.SetState(PBST_PAUSED);
-    }
-    ThreadTerminated();
-    if (successFileCount == totalFileCount) {
-        if (settings->AutoCopyToClipboard) {
-            resultsWindow_->copyResultsToClipboard();
+        ThreadTerminated();
+        if (successFileCount == totalFileCount) {
+            if (settings->AutoCopyToClipboard) {
+                resultsWindow_->copyResultsToClipboard();
+            }
+            showUploadResultsTab();
         }
-        showUploadResultsTab();
-    }
+    }, true);
 }
-
 
 // This callback is being executed in worker thread
 void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
 {
     FileUploadTask* fileTask = dynamic_cast<FileUploadTask*>(task);
-    if (!fileTask)
-    {
-        return;
-    }
-    auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
+    //auto* taskDispatcher = ServiceLocator::instance()->taskRunner();
 
-    if (fileTask->role() == UploadTask::DefaultRole && ok) {
+    if (fileTask && fileTask->role() == UploadTask::DefaultRole /* && ok*/) {
         UploadListItem* fps = static_cast<UploadListItem*>(task->userData());
         if (!fps)
         {
             return;
         }
-        CUrlListItem item;
-        UploadResult* uploadResult = task->uploadResult();
-        item.ImageUrl = Utf8ToWCstring(uploadResult->directUrl);
-        //item.FileIndex = fileTask->fileIndex();
-        item.ImageUrlShortened = Utf8ToWCstring(uploadResult->directUrlShortened);
-        item.FileName = Utf8ToWCstring(fileTask->getDisplayName());
-        item.DownloadUrl = Utf8ToWCstring(uploadResult->downloadUrl);
-        item.DownloadUrlShortened = Utf8ToWCstring(uploadResult->downloadUrlShortened);
-        item.ThumbUrl = Utf8ToWCstring(uploadResult->thumbUrl);
-        item.FileIndex = task->index();
-        item.ServerName = U2W(task->serverName());
+        ImageUploader::Core::OutputGenerator::UploadObject item;
+        item.fillFromUploadResult(task->uploadResult(), task);
+
+        item.fileIndex = task->index();
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            urlList_[fps->tableRow] = item;
+            urlList_[fps->tableRow] = std::move(item);
         }
 
-        /*taskDispatcher->runInGuiThread([this] { 
-            updateTotalProgress(); 
-        });*/
-        
-        //TotalUploadProgress(uploadSession_->finishedTaskCount(UploadTask::StatusFinished), uploadSession_->taskCount(), 0);
-    } else if (fileTask->role() == UploadTask::UrlShorteningRole && ok) {
+    }
+    if (task->role() == UploadTask::UrlShorteningRole && ok) {
         UploadTask* parentTask = task->parentTask();
         UploadListItem* fps = static_cast<UploadListItem*>(parentTask->userData());
         if (!fps) {
@@ -627,28 +648,29 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         }
         {
             std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
-            auto& row = urlList_[fps->tableRow];
-            row.ImageUrlShortened = U2W(parentTask->uploadResult()->getDirectUrlShortened());
-            row.DownloadUrlShortened = U2W(parentTask->uploadResult()->getDownloadUrlShortened());
-        }
-        
+            auto& row = urlList_[fps->tableRow]; 
+            row.uploadResult.directUrlShortened = parentTask->uploadResult()->getDirectUrlShortened();
+            row.uploadResult.downloadUrlShortened = parentTask->uploadResult()->getDownloadUrlShortened();
+        }   
     }
-    //taskDispatcher->runInGuiThread([&] {
-        GenerateOutput();
-    //});
+
+    // No need to use runInGuiThread() here because update of the output is postponed and triggers by timer
+    GenerateOutput();
 }
 
 void CUploadDlg::onChildTaskAdded(UploadTask* child)
 {
-    auto* dispatcher = ServiceLocator::instance()->taskRunner();
-    if (!backgroundThreadStarted_)
-    {
-        dispatcher->runInGuiThread([&] {
-            backgroundThreadStarted();
-        });
-    }
     using namespace std::placeholders;
     child->addTaskFinishedCallback(std::bind(&CUploadDlg::onTaskFinished, this, _1, _2));
+    auto* dispatcher = ServiceLocator::instance()->taskRunner();
+    if (!backgroundThreadStarted_) {
+        dispatcher->runInGuiThread([wnd = this->m_hWnd, this] {
+            if (GuiTools::CheckWindowPointer(wnd, this)) {
+                backgroundThreadStarted();
+            }
+        }, true);
+    }
+   
 }
 
 void CUploadDlg::backgroundThreadStarted()
@@ -684,6 +706,65 @@ LRESULT CUploadDlg::OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCt
     if (nCurItem >= 0) {
         UploadListItem* item = uploadListModel_->getDataByIndex(nCurItem);
         WizardDlg->showLogWindowForFileName(item->fileName());
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            std::string url = obj.uploadResult.directUrl.length() ? obj.uploadResult.directUrl : obj.uploadResult.downloadUrl;
+            WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.getDownloadUrl().empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.getDownloadUrl()));
+            }
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.getThumbUrl().empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.getThumbUrl()));
+            }
+        }
+    }
+    return 0;
+}
+
+LRESULT CUploadDlg::OnCopyDeleteLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int nCurItem = uploadListView_.GetNextItem(-1, LVNI_ALL | LVNI_SELECTED);
+    if (nCurItem >= 0) {
+        std::lock_guard<std::mutex> lk(resultsWindow_->outputMutex());
+        if (nCurItem < urlList_.size()) {
+            auto& obj = urlList_[nCurItem];
+
+            if (!obj.uploadResult.deleteUrl.empty()) {
+                WinUtils::CopyTextToClipboard(Utf8ToWCstring(obj.uploadResult.deleteUrl));
+            }
+        }
     }
     return 0;
 }

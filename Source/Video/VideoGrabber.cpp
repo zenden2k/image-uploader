@@ -27,6 +27,7 @@
 #ifdef _WIN32
 #include "DirectshowFrameGrabber.h"
 #include "DirectshowFrameGrabber2.h"
+#include "MediaFoundationFrameGrabber.h"
 #endif
 #include "AbstractVideoFrame.h"
 #ifdef IU_ENABLE_FFMPEG
@@ -38,11 +39,12 @@
 
 class VideoGrabberRunnable {
 public:
-    explicit VideoGrabberRunnable(VideoGrabber* videoGrabber)
+    explicit VideoGrabberRunnable(VideoGrabber* videoGrabber, bool logErrors)
     {
         videoGrabber_ = videoGrabber;
         canceled_ = false;
         isRunning_ = false;
+        logErrors_ = logErrors;
     }
 
     virtual ~VideoGrabberRunnable() = default;
@@ -69,11 +71,12 @@ public:
         }
         try {
             if (!grabber->open(videoGrabber_->fileName_)) {
-
+                isRunning_ = false;
                 throw std::runtime_error(str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
             }
         } catch (const std::exception& ex) {
-            LOG(ERROR) << ex.what();
+            (logErrors_ ? LOG(ERROR) : LOG(WARNING)) << "File: " << videoGrabber_->fileName_ << std::endl
+                                   << ex.what();
 
             if ( videoGrabber_->onFinished_ ) {
                 videoGrabber_->onFinished_(false);
@@ -99,10 +102,10 @@ public:
                     frame = grabber->grabCurrentFrame();
                 }
             } catch (const std::exception& ex) {
-                LOG(WARNING) << ex.what();
+                LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl <<ex.what();
             }
             if (!frame) {
-                LOG(WARNING) <<"grabber->grabCurrentFrame returned NULL";
+                LOG(WARNING) << "File: " << videoGrabber_->fileName_ << std::endl << "grabber->grabCurrentFrame returned NULL";
                 continue;
             }
             int64_t sampleTime = frame->getTime();
@@ -132,9 +135,12 @@ protected:
     VideoGrabber* videoGrabber_;
     std::atomic<bool> canceled_;
     std::atomic<bool> isRunning_;
+    bool logErrors_;
 };
 
-VideoGrabber::VideoGrabber()
+VideoGrabber::VideoGrabber(bool async, bool logErrors)
+    : async_(async)
+    , logErrors_(logErrors)
 {
     videoEngine_ = veAuto;
     frameCount_ = 5;
@@ -148,11 +154,15 @@ void VideoGrabber::grab(const std::string& fileName) {
      if ( !IuCoreUtils::FileExists(fileName) ) {
          return;
      }
-     std::string ext = IuCoreUtils::ExtractFileExt(fileName);
+     //std::string ext = IuCoreUtils::ExtractFileExt(fileName);
      fileName_ = fileName;
-     worker_ = std::make_unique<VideoGrabberRunnable>(this);
-     std::thread t1(&VideoGrabberRunnable::run, worker_.get());
-     t1.detach();
+     worker_ = std::make_unique<VideoGrabberRunnable>(this, logErrors_);
+     if (async_) {
+         std::thread t1(&VideoGrabberRunnable::run, worker_.get());
+         t1.detach();
+     } else {
+         worker_->run();
+     }
  }
 
 void VideoGrabber::abort() {
@@ -193,9 +203,12 @@ std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
     #endif
     if (videoEngine_ == veDirectShow2) {
         grabber = std::make_unique<DirectshowFrameGrabber2>();
+    } else if (videoEngine_ == veMediaFoundation) {
+        grabber = std::make_unique<MediaFoundationFrameGrabber>();
     }
     else {
         grabber = std::make_unique<DirectshowFrameGrabber>();
+
     }
 #elif defined(IU_ENABLE_FFMPEG)
     grabber.reset(new AvcodecFrameGrabber());

@@ -22,6 +22,8 @@
 
 #include "Core/Utils/StringUtils.h"
 #include "Core/Upload/ServerSync.h"
+#include "Core/Upload/FileUploadTask.h"
+#include "Core/Upload/UrlShorteningTask.h"
 
 CUploadEngineData::CUploadEngineData()
 {
@@ -36,11 +38,59 @@ CUploadEngineData::CUploadEngineData()
     RetryLimit = 0;
     MaxThreads = 0;
     TypeMask = 0;
+    UploadToTempServer = false;
 }
 
 bool CUploadEngineData::hasType(ServerType type) const
 {
     return (TypeMask & type) == type;
+}
+
+bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized) const {
+    if (this->SupportedFormatGroups.empty()) {
+        return true;
+    }
+    for (const auto& group : this->SupportedFormatGroups) {
+        if (group.MaxFileSize > 0 && fileSize > group.MaxFileSize) {
+            continue;
+        }
+        if (group.Authorized && !authorized) {
+            continue;
+        }
+        for (const auto& format : group.Formats) {
+            if (format.MaxFileSize > 0 && fileSize > format.MaxFileSize) {
+                continue;
+            }
+            bool mimeMatches = false;
+            bool fileNameMatches = false;
+            if (!format.MimeTypes.empty()) {
+                for (const auto& type : format.MimeTypes) {
+                    if (IuStringUtils::Match(type.c_str(), mimeType.c_str())) {
+                        mimeMatches = true;
+                        break;
+                    }
+                }
+                if (!mimeMatches) {
+                    continue;
+                }
+            }
+            if (!format.FileNameWildcards.empty()) {
+                for (const auto& wildcard : format.FileNameWildcards) {
+                    if (IuStringUtils::Match(wildcard.c_str(), fileName.c_str())) {
+                        fileNameMatches = true;
+                        break;
+                    }
+                }
+                if (!fileNameMatches) {
+                    continue;
+                }
+            }
+            if (mimeMatches || fileNameMatches) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std::string& serverType) {
@@ -52,6 +102,8 @@ CUploadEngineData::ServerType CUploadEngineData::ServerTypeFromString(const std:
         return TypeTextServer;
     } else if (serverType == "urlshortening"){
         return TypeUrlShorteningServer;
+    } else if (serverType == "searchbyimage") {
+        return TypeSearchByImageServer;
     }
     return TypeInvalid;
 }
@@ -148,6 +200,11 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
         return it->second;
     }
     return {};
+}
+
+std::vector<std::string> CUploadEngineListBase::builtInScripts() const {
+    auto keys = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
+    return std::vector<std::string>(keys.begin(), keys.end());
 }
 
 void CUploadEngineListBase::removeServer(const std::string& name) {
@@ -277,3 +334,18 @@ ServerSync* CAbstractUploadEngine::serverSync() const
 }
 
 const std::string CFolderItem::NewFolderMark = "_iu_create_folder_";
+
+ScriptAPI::UploadTaskUnion UploadParams::getTask() {
+    return task_;
+}
+
+/*/ ScriptAPI::FileUploadTaskWrapper UploadParams::getFileTask()
+{
+    auto fileTask = std::dynamic_pointer_cast<FileUploadTask>(task_);
+    return fileTask;
+}
+
+ScriptAPI::UrlShorteningTaskWrapper UploadParams::getUrlShorteningTask() {
+    auto urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task_);
+    return urlShorteningTask;
+}*/

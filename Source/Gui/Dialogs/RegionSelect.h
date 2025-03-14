@@ -39,11 +39,13 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
 {
     public:
         CRegionSelect();
-        ~CRegionSelect();
+        ~CRegionSelect() override;
 
         bool wasImageEdited() const;
         std::shared_ptr<ScreenCapture::CScreenshotRegion> region() const;
         bool Execute(HBITMAP screenshot, int width, int height, HMONITOR monitor = nullptr);
+        void setSelectionMode(SelectionMode selMode, bool onlyTopWindows = false);
+        SelectionMode selectionMode() const;
 
         DECLARE_WND_CLASS(_T("CRegionSelect"))
 
@@ -99,7 +101,6 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         bool m_bSaveAsRegion;
         bool m_btoolWindowTimerRunning;
         HPEN pen;
-        HWND Parent;
         HCURSOR CrossCursor ;
         bool m_bPainted;
         HCURSOR HandCursor ;
@@ -132,6 +133,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         ScreenCapture::CWindowHandlesRegion m_SelectedWindowsRegion;
         int lineType;
         CRect m_screenBounds;
+        bool onlyTopWindows_ = false;
 };
 
 extern CRegionSelect RegionSelect;

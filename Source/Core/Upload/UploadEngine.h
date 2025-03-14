@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <string>
+#include <string_view>
 #include <map>
 #include <random>
 
@@ -54,15 +55,39 @@ struct ActionVariable
     }
 };
 
-struct ActionRegExp {
-    std::string Pattern;
-    std::string Data;
+
+struct ActionFunc {
+    static constexpr auto FUNC_REGEXP = "regexp";
+    static constexpr auto FUNC_JSON = "json";
+    std::string Func;
     std::string AssignVars;
+    std::vector<std::string> Arguments;
     std::vector<ActionVariable> Variables;
     bool Required;
 
-    ActionRegExp() : Required(true) {
+    ActionFunc() : Required(true) {
+
+    }
+
+    ActionFunc(std::string functionName): Func(std::move(functionName)), Required(true){
         
+    }
+
+    void setArg(size_t index, const std::string& value) {
+        if (index > 100) {
+            LOG(ERROR) << "Function call has too many arguments: " << index << " (max 100)";
+            return;
+        }
+        if (Arguments.size() < index + 1) {
+            Arguments.resize(index + 1);
+        }
+        Arguments[index] = value;
+    }
+    std::string getArg(size_t index) const {
+        if (index < Arguments.size()) {
+            return Arguments[index];
+        }
+        return {};
     }
 };
 
@@ -79,7 +104,8 @@ struct UploadAction
     std::string Type;
    // std::string RegExp;
 
-    std::vector<ActionRegExp> Regexes;
+    //std::vector<ActionRegExp> Regexes;
+    std::vector<ActionFunc> FunctionCalls;
     int RetryLimit;
     //int NumOfTries;
 
@@ -92,27 +118,43 @@ struct UploadAction
     }
 };
 
+struct FileFormat {
+    std::vector<std::string> MimeTypes;
+    std::vector<std::string> FileNameWildcards;
+    int64_t MaxFileSize;
+};
+
+struct FileFormatGroup {
+    std::vector<FileFormat> Formats;
+    int64_t MaxFileSize = 0;
+    bool Authorized = false;
+};
+
 /**
 CFolderItem class
 */
 class CFolderItem
 {
 public:
+    enum ItemCount { icUnknown = -1, icNoChildren = 0 };
+
     CFolderItem()
     {
         accessType = 0;
-        itemCount = -1;
+        itemCount = icUnknown;
     }
 
     /*! @cond PRIVATE */
     static const std::string NewFolderMark;
 
-
+    
     std::string title;
     std::string summary;
     std::string id;
     std::string parentid;
     std::string viewUrl;
+    std::vector<std::string> parentIds;
+
     int accessType;
     int itemCount;
     /*! @endcond */
@@ -159,7 +201,7 @@ public:
      * Login
      * Password
      * 
-     * Custom parameters which should be visible in server settings dialog, should have the same name as in GetServerParamList. 
+     * Custom parameters which should be visible in server settings dialog, should have the same name as in \ref GetServerParamList. 
      */
     std::string getParam(const std::string& name)
     {
@@ -191,7 +233,7 @@ typedef std::map <std::string, std::map <std::string, ServerSettingsStruct>> Ser
 class CUploadEngineData
 {
     public:
-        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8};
+        enum ServerType { TypeInvalid = 0, TypeImageServer = 1, TypeFileServer = 2 , TypeUrlShorteningServer = 4, TypeTextServer = 8, TypeSearchByImageServer = 16};
         enum NeedAuthorizationEnum { naNotAvailable = 0, naAvailable, naObligatory };
 
         std::string Name;
@@ -206,18 +248,22 @@ class CUploadEngineData
         bool NeedPassword;
         int64_t MaxFileSize;
         std::string RegistrationUrl;
+        std::string WebsiteUrl;
         std::string CodedLogin;
         std::string CodedPassword;
         std::string ThumbUrlTemplate, ImageUrlTemplate, DownloadUrlTemplate, DeleteUrlTemplate, EditUrlTemplate;
         std::vector<UploadAction> Actions;
+        std::vector<FileFormatGroup> SupportedFormatGroups;
         std::string LoginLabel, PasswordLabel;
         std::string UserAgent;
         std::string Engine;
         int RetryLimit;
         //int NumOfTries;
         int MaxThreads;
+        bool UploadToTempServer;
         int TypeMask;
         bool hasType(ServerType type) const;
+        bool supportsFileFormat(const std::string& fileName, const std::string& mimeType, int64_t fileSize, bool authorized = false) const;
         CUploadEngineData();
 
         static ServerType ServerTypeFromString(const std::string& serverType);
@@ -243,8 +289,10 @@ public:
     std::string DeleteUrl;
 
     std::string ServerFileName;
-    std::string temp_;
-    ScriptAPI::UploadTaskWrapper task_;
+    std::shared_ptr<UploadTask> task_;
+    bool createThumbnail = false;
+    bool useServerSideThumbnail = false;
+    bool addTextOnThumb = false;
 
     UploadParams() {
         apiVersion = 0;
@@ -260,12 +308,19 @@ public:
      */
     std::string getParam(const std::string& name)
     {
-        temp_.clear();
-        if(name == "THUMBWIDTH")
-            temp_= std::to_string(thumbWidth);
-        else if (name == "THUMBHEIGHT")
-            temp_ =  std::to_string(thumbHeight);
-        return temp_;
+        if (name == "THUMBWIDTH") {
+            return std::to_string(thumbWidth);
+        } else if (name == "THUMBHEIGHT") {
+            return std::to_string(thumbHeight);
+        } else if (name == "THUMBCREATE") {
+            return std::to_string(createThumbnail);
+        } else if (name == "THUMBADDTEXT") {
+            return std::to_string(addTextOnThumb);
+        } else if (name == "THUMBUSESERVER") {
+            return std::to_string(useServerSideThumbnail);
+        }
+
+        return {};
     }
 
     std::string getFolderID() { return folderId; }
@@ -318,7 +373,20 @@ public:
     }
 
     std::string getServerFileName() const { return ServerFileName; }
-    ScriptAPI::UploadTaskWrapper getTask() { return task_; }
+    ScriptAPI::UploadTaskUnion getTask();
+    /* ScriptAPI::FileUploadTaskWrapper getFileTask();
+    ScriptAPI::UrlShorteningTaskWrapper getUrlShorteningTask();*/
+};
+
+/**
+ * Task result code
+ */
+enum class ResultCode {
+    FatalError = -3,
+    TryAgain = -2,
+    FatalServerError = -1,
+    Failure = 0,
+    Success = 1
 };
 
 class CUploadEngineListBase
@@ -335,8 +403,15 @@ public:
     int getRandomFileServer();
     int getUploadEngineIndex(const std::string& Name) const;
     std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator begin() const;
-    std::vector< std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
+    std::vector<std::unique_ptr<CUploadEngineData>>::const_iterator end() const;
     std::string getDefaultServerNameForType(CUploadEngineData::ServerType serverType) const;
+    std::vector<std::string> builtInScripts() const;
+
+    inline static constexpr std::string_view CORE_SCRIPT_FTP = "ftp";
+    inline static constexpr std::string_view CORE_SCRIPT_SFTP = "sftp";
+    inline static constexpr std::string_view CORE_SCRIPT_WEBDAV = "webdav";
+    inline static constexpr std::string_view CORE_SCRIPT_DIRECTORY = "directory";
+
 protected:
     std::vector<std::unique_ptr<CUploadEngineData>> m_list;
     std::map<CUploadEngineData::ServerType, std::string> m_defaultServersForType;

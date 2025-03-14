@@ -29,7 +29,7 @@ int UploadTreeModel::columnCount(const QModelIndex &parent) const
 QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
-        return QVariant();
+        return {};
 
     InternalItem * obj = reinterpret_cast<InternalItem*>(index.internalPointer());
 
@@ -42,19 +42,31 @@ QVariant UploadTreeModel::data(const QModelIndex &index, int role) const
             ico = QIcon(":/icons/res/transfer_inactive.png");
         else if(obj->task->status() == UploadTask::StatusRunning)
             ico = QIcon(":/icons/res/transfer.png");
-        else return QVariant();
+        else return {};
         return ico;
     }
-    if (role != Qt::DisplayRole)
-        return QVariant();
+    if (role == Qt::ForegroundRole && index.column()==1 && obj->task){
+        if(obj->task->status()== UploadTask::StatusFinished){
+            return QBrush(QColor(Qt::darkGreen));
+        }
+    }
 
-    if(!obj) return QVariant();
+    if (role == Qt::UserRole && index.column() == 0 && obj->task) {
+        std::string directUrl = obj->task->uploadResult()->getDirectUrl();
+        std::string viewUrl = obj->task->uploadResult()->getDownloadUrl();
+        return directUrl.empty() ? QString::fromStdString(viewUrl) : QString::fromStdString(directUrl);
+    }
+
+    if (role != Qt::DisplayRole)
+        return {};
+
+    if(!obj) return {};
 
     QString result;
     if(index.column() == 0)
     {
-        if ( obj->task ) {
-            result = U2Q(obj->task->title());
+        if (obj->task ) {
+            result = U2Q(obj->task->title());  
         } else if ( obj->session) {
 
             result = QString(tr("Session %1 (%2 files)").arg(obj->index + 1).arg(obj->session->taskCount()));
@@ -118,7 +130,7 @@ QVariant UploadTreeModel::headerData(int section, Qt::Orientation orientation,
         return headerLabels[section];
     }
 
-    return QVariant();
+    return {};
 }
 
 QModelIndex UploadTreeModel::index(int row, int column, const QModelIndex &parent) const
@@ -217,17 +229,21 @@ int UploadTreeModel::rowCount(const QModelIndex &parent) const
 
 void UploadTreeModel::setupModelData(UploadManager *uploadManager)
 {
+    if (m_uploadManager == uploadManager) {
+        return;
+    }
+
     m_uploadManager = uploadManager;
     using namespace std::placeholders;
     m_uploadManager->setOnTaskAddedCallback(std::bind(&UploadTreeModel::data_OnChildAdded, this, _1));
     //m_uploadManager->OnChildAdded.bind(this, &UploadTreeModel::data_OnChildAdded);
     m_uploadManager->setOnSessionAddedCallback(std::bind(&UploadTreeModel::OnSessionAdded, this, _1));
     //m_uploadManager->OnU.bind(this,  &UploadTreeModel::data_OnUploadProgress);
-     
+
     /*connect(uploadManager, SIGNAL(OnChildAdded(UploadTask*,UploadTask*)), this, SLOT(data_OnChildAdded(UploadTask*,UploadTask*))/, Qt::BlockingQueuedConnection*);
-    connect(uploadManager, SIGNAL(OnUploadProgress(UploadTask*,InfoProgress)), this, SLOT(data_OnUploadProgress(UploadTask*,InfoProgress)));
-    connect(uploadManager, SIGNAL(OnStatusChanged(UploadTask*,QString)), this, SLOT(data_OnStatusChanged(UploadTask*,QString)));
-    */
+        connect(uploadManager, SIGNAL(OnUploadProgress(UploadTask*,InfoProgress)), this, SLOT(data_OnUploadProgress(UploadTask*,InfoProgress)));
+        connect(uploadManager, SIGNAL(OnStatusChanged(UploadTask*,QString)), this, SLOT(data_OnStatusChanged(UploadTask*,QString)));
+        */
     //emit dataChanged();
 }
 
@@ -380,4 +396,24 @@ void UploadTreeModel::recalcObjMap()
 UploadTreeModel::InternalItem* UploadTreeModel::getInternalItem(const QModelIndex &index) {
 	InternalItem * item = reinterpret_cast<InternalItem*>(index.internalPointer());
 	return item;
+}
+
+void UploadTreeModel::reset() {
+    if (m_uploadManager) {
+        int sessionCount = m_uploadManager->sessionCount();
+        for( int i = 0; i < sessionCount; i++ ) {
+            const auto& session = m_uploadManager->session(i);
+
+            InternalItem * item = reinterpret_cast<InternalItem*>(session->userData());
+            delete item;
+
+            int childCount = session->taskCount();
+            for ( int j = 0; j < childCount; j++ ) {
+                const auto& task = session->getTask(j);
+                InternalItem * item = reinterpret_cast<InternalItem*>(task->userData());
+                delete item;
+            }
+
+        }
+    }
 }

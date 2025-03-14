@@ -42,7 +42,9 @@ int CAdvancedUploadEngine::processFolderTask(std::shared_ptr<UploadTask> task) {
     if (folderTask->operationType() == FolderOperationType::foGetFolders) {
         return getFolderList(folderTask->folderList());
     } else if (folderTask->operationType() == FolderOperationType::foCreateFolder) {
-        return createFolder(CFolderItem(), folderTask->folder());
+        CFolderItem parent;
+        parent.setId(folderTask->folder().getParentId());
+        return createFolder(parent, folderTask->folder());
     } else if (folderTask->operationType() == FolderOperationType::foModifyFolder) {
         return modifyFolder(folderTask->folder());
     } else {
@@ -58,11 +60,12 @@ int CAdvancedUploadEngine::processTask(std::shared_ptr<UploadTask> task, UploadP
     if (res == -2) {
         // Clear authorization flag and try again
         serverSync_->resetAuthorization();
-        res = doProcessTask(task, params);
+    }
+    /*  res = doProcessTask(task, params);
         if (res == -2) {
             return -1;
         }
-    }
+    }*/
     return res;
 }
 

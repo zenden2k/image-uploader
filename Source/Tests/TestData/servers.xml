@@ -2,16 +2,36 @@
 <Servers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="servers.xsd">
 	<Server Name="radikal.ru" MaxFileSize="10000000" Debug="0" Authorize="1" Plugin="radikal">
+		<SupportedFormats>
+			<FormatGroup>
+				<Format MimeType="image/jpeg" MaxFileSize="3000000">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="image/tiff">*.tiff</Format>
+			</FormatGroup>
+			<FormatGroup>
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+				<Format MimeType="video/mpeg">*.mpeg,*.vob</Format>
+				<Format MimeType="video/x-msvideo">*.avi</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+				<Format MimeType="video/x-matroska">*.mkv</Format>
+				<Format MimeType="video/x-flv">*.flv</Format>
+				<Format MimeType="video/x-ms-wmv">*.wmv</Format>
+			</FormatGroup>		 
+		</SupportedFormats>
 		<Actions>
 			<Action Type="login" Url="http://radikal.ru/Auth/Login" PostParams="Login=$(_LOGIN);Password=$(_PASSWORD);IsRemember=true;ReturnUrl=/;" OnlyOnce="1"/>
 			<Action Type="upload" Url="http://radikal.ru/api3/rest/uplimg/prepared" PostParams="RESPTYPE=xml;FROMOBJECT=22;MAXSIZEIMG=1024;MAXSIZEIMGPREV=$(_THUMBWIDTH);ISINSCRIMGPREV=true;INSCRIMGPREV=Увеличить;IDALBUM=noall;COMMENTIMG=;URLFORIMG=;TAGS=;ISPUBLIC=false;Filename=$(_FILENAME);Filedata=%filename%;Upload=Submit Query" RegExp='&lt;ImgPreviewUrl&gt;(.*?)&lt;([\s\S]*?)&lt;ImgUrl&gt;(.*?)&lt;' AssignVars="Image:2;Thumb:0" Referer="http://radikal.ru/Content/Clients/FotoFlashApplet3.swf?v=13"/>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)"/>
 	</Server>
-	<Server Name="fastpic.ru" MaxFileSize="5000000" Debug="1" DefaultForTypes="image" MinVersion="1.3.3">
+	<Server Name="fastpic.ru" MaxFileSize="10737418240" Debug="1" DefaultForTypes="image" MinVersion="1.3.3">
 		<Actions>
 			<Action Type="upload" Url="http://fastpic.ru/upload?api=1" PostParams="method=file;file1=%filename%;check_thumb=size;uploading=1;orig_rotate=0;thumb_size=$(_THUMBWIDTH)" RegExp='&lt;imagepath&gt;(.*?)&lt;\/imagepath&gt;([\s\S]*?)&lt;thumbpath&gt;(.*?)&lt;\/thumbpath&gt;' AssignVars="Image:0;Thumb:2">
 				<RegExp Pattern="&lt;viewurl&gt;(.*?)&lt;\/viewurl&gt;" AssignVars="DownloadUrl:0;"/>
+				<Call Function="json" Arg0="test" AssignVars="DownloadUrl:0;"/>
 			</Action>
 		</Actions>
 		<Result ImageUrlTemplate="$(Image)" ThumbUrlTemplate="$(Thumb)" DownloadUrl="$(DownloadUrl)" />

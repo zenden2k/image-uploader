@@ -10,6 +10,8 @@
 #include "Core/FileDownloader.h"
 #include "CustomTreeControl.h"
 
+constexpr auto WM_APP_MY_THUMBLOADED = WM_USER + 2000;
+
 class INetworkClientFactory;
 
 struct HistoryTreeItem
@@ -18,6 +20,8 @@ struct HistoryTreeItem
     HBITMAP thumbnail;
     bool ThumbnailRequested;
     std::string thumbnailSource;
+    TreeItem* treeItem = nullptr;
+
     HistoryTreeItem() :hi(nullptr), thumbnail(nullptr), ThumbnailRequested(false){
         
     }
@@ -42,10 +46,12 @@ class CHistoryTreeControl :
     public:
         CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory);
         ~CHistoryTreeControl();
-        DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListViewCtrl::GetWndClassName())
+        //DECLARE_WND_SUPERCLASS(_T("CHistoryTreeControl"), CListBox/**/CListViewCtrl*/::GetWndClassName())
 
         BEGIN_MSG_MAP(CHistoryTreeControl)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_GETDLGCODE, OnGetDlgCode)
+            MESSAGE_HANDLER(WM_APP_MY_THUMBLOADED, OnThumbLoaded)
             CHAIN_MSG_MAP(CCustomTreeControlImpl<CHistoryTreeControl>)
         END_MSG_MAP()
 
@@ -60,12 +66,14 @@ class CHistoryTreeControl :
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnThumbLoaded(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void DrawTreeItem(HDC dc, RECT rc, UINT itemState,  TreeItem* item) override;
         DWORD OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         DWORD OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lpNMCustomDraw*/);
         bool LoadThumbnail(HistoryTreeItem* ItemID);
         LRESULT OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) override;
-
+        LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
         bool downloading_enabled_;

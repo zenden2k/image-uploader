@@ -31,12 +31,28 @@
 #include "Gui/Dialogs/AddDirectoryServerDialog.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Core/AbstractServerIconCache.h"
 
-const char CServerSelectorControl::kAddFtpServer[]=("<add_ftp_server>");
-const char CServerSelectorControl::kAddDirectoryAsServer[]=("<add_directory_as_server>");
-const TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
+namespace {
+
+constexpr char kAddFtpServer[] = "<add_ftp_server>";
+constexpr char kAddDirectoryAsServer[] = "<add_directory_as_server>";
+constexpr TCHAR MENU_EXIT_NOTIFY[] = _T("MENU_EXIT_NOTIFY"), MENU_EXIT_COMMAND_ID[] = _T("MENU_EXIT_COMMAND_ID");
+
+// Why not 'strdup' function ?
+// Because strdup requires usage of free() function.
+char* DuplicateString(const char* str) {
+    size_t len = strlen(str);
+    char* res = new char[len + 1];
+    memcpy(res, str, len);
+    res[len] = '\0';
+    return res;
+}
+
+}
+
 // CServerSelectorControl
-CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow)
+CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow, bool showServerIcons)
 {
     showDefaultServerItem_ = false;
     serversMask_ = smImageServers | smFileServers;
@@ -51,6 +67,9 @@ CServerSelectorControl::CServerSelectorControl(UploadEngineManager* uploadEngine
     hMyDlgTemplate_ = nullptr;
     isPopingUp_ = false;
     showEmptyItem_ = false;
+    showServerIcons_ = showServerIcons;
+    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+    profileListChangedConnection_ = settings->onProfileListChanged.connect([this](auto&& settings, auto&& servers) { profileListChanged(settings, servers); } );
 }
 
 CServerSelectorControl::~CServerSelectorControl()
@@ -87,7 +106,7 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     userPictureControl_ = GetDlgItem(IDC_USERICON);
     int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-    CIcon iconUser;
+    CIconHandle iconUser;
     //iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
     iconUser.LoadIcon(MAKEINTRESOURCE(IDI_ICONUSER));
 
@@ -185,7 +204,7 @@ void CServerSelectorControl::addAccount()
         serverProfileCopy.setFolderId("");
         serverProfileCopy.setFolderTitle("");
         serverProfileCopy.setFolderUrl("");
-
+        serverProfileCopy.setParentIds({});
         serverProfile_ = serverProfileCopy;
         updateInfoLabel();
         notifyChange();
@@ -253,13 +272,14 @@ void CServerSelectorControl::serverChanged() {
                     serverProfile_.setFolderId(s.defaultFolder.getId());
                     serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
                     serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
+                    serverProfile_.setParentIds(s.defaultFolder.parentIds);
                 } else {
                     serverProfile_.setProfileName("");
                     serverProfile_.setFolderId("");
                     serverProfile_.setFolderTitle("");
                     serverProfile_.setFolderUrl("");
+                    serverProfile_.setParentIds({});
                 }
-                
             }
         }
  
@@ -372,19 +392,20 @@ void CServerSelectorControl::notifyServerListChanged()
 
 void CServerSelectorControl::updateServerList()
 {
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    auto iconCache = ServiceLocator::instance()->serverIconCache();
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
+    if (showServerIcons_) {
+        DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+        comboBoxImageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK | rtlStyle, 0, 6);
+    }
     
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     if (showEmptyItem_) {
-        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(strdup("")));
+        serverComboBox_.AddItem(_T(""), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("")));
     }
     if ( showDefaultServerItem_ ) {
-        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>( strdup("default") ));
+        serverComboBox_.AddItem(TR("By default"), -1, -1, 0, reinterpret_cast<LPARAM>(DuplicateString("default") ));
     }
 
     //CIcon hImageIcon = NULL, hFileIcon = NULL;
@@ -420,10 +441,13 @@ void CServerSelectorControl::updateServerList()
             if ( !ue->hasType(CUploadEngineData::TypeUrlShorteningServer) && (currentLoopMask & smUrlShorteners) ) {
                 continue;
             }
-            HICON hImageIcon = myEngineList->getIconForServer(ue->Name);
             int nImageIndex = -1;
-            if ( hImageIcon ) {
-                nImageIndex = comboBoxImageList_.AddIcon( hImageIcon);
+            if (showServerIcons_) {
+                HICON hImageIcon = iconCache->getIconForServer(ue->Name);
+
+                if (hImageIcon) {
+                    nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
+                }
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
@@ -440,11 +464,13 @@ void CServerSelectorControl::updateServerList()
     }
     if (serversMask_ != smUrlShorteners ) {
         serverComboBox_.AddItem(line, -1, -1, 0,  0 );
-        serverComboBox_.AddItem(  TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddFtpServer ) );
-        serverComboBox_.AddItem(  TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>( kAddDirectoryAsServer ) );
+        serverComboBox_.AddItem(TR("Add FTP server..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddFtpServer));
+        serverComboBox_.AddItem(TR("Add local folder..."), -1, -1, 1, reinterpret_cast<LPARAM>(kAddDirectoryAsServer));
     }
 
-    serverComboBox_.SetImageList( comboBoxImageList_ );
+    if (showServerIcons_) {
+        serverComboBox_.SetImageList(comboBoxImageList_);
+    }
     serverComboBox_.SetCurSel( selectedIndex );
     serverChanged();
 }
@@ -474,6 +500,8 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = settings->ServersSettings[serverProfile_.serverName()];
+    HICON userIcon = LoadIcon(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONUSER));
+    CBitmap bmp = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
 
     if (!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
         bool addedSeparator = false;
@@ -483,6 +511,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             mi.wID = IDC_LOGINMENUITEM;
             CString name = TR("Change account settings");
             mi.dwTypeData = const_cast<LPWSTR>(name.GetString());
+            mi.cch = name.GetLength();
             sub.InsertMenuItem(i++, true, &mi);
         }
         else {
@@ -492,8 +521,6 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         menuOpenedUserNames_.clear();
 
         int command = IDC_USERNAME_FIRST_ID;
-        HICON userIcon = LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(IDI_ICONUSER));
-
         for (auto it = serverUsers.begin(); it != serverUsers.end(); ++it) {
             CString login = Utf8ToWCstring(it->first);
             if (!login.IsEmpty())/*&& it->second.authData.DoAuth**/ {
@@ -515,8 +542,8 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
                 mi.wID = command;
 
                 mi.dwTypeData = const_cast<LPWSTR>(login.GetString());
-
-                mi.hbmpItem = WinUtils::IsVistaOrLater() ? iconBitmapUtils_->HIconToBitmapPARGB32(userIcon) : HBMMENU_CALLBACK;
+                mi.cch = login.GetLength();
+                mi.hbmpItem = bmp;
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;
                 }
@@ -536,6 +563,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
             CString text = TR("<no authentication>");
 
             mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
+            mi.cch = text.GetLength();
             sub.InsertMenuItem(i++, true, &mi);
         }
 
@@ -556,7 +584,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         CString text = TR("Add account...");
 
         mi.dwTypeData = const_cast<LPWSTR>(text.GetString());
-
+        mi.cch = text.GetLength();
 
         sub.InsertMenuItem(i++, true, &mi);
         sub.SetMenuDefaultItem(0,TRUE);
@@ -597,10 +625,10 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
         copy.setProfileName(WCstringToUtf8(dlg.accountName()));
         if(Utf8ToWCstring(UserName) != dlg.accountName())
         {
-            
             copy.setFolderId("");
             copy.setFolderTitle("");
             copy.setFolderUrl("");
+            serverProfile_.setParentIds({});
             serverProfile_ = copy;
             //iuPluginManager.UnloadPlugins();
             //_EngineList->DestroyCachedEngine(WCstringToUtf8(serverProfile_.serverName()), WCstringToUtf8(serverProfile_.profileName()));
@@ -617,6 +645,7 @@ LRESULT CServerSelectorControl::OnNoAccountClicked(WORD wNotifyCode, WORD wID, H
     serverProfile_.setFolderId("");
     serverProfile_.setFolderTitle("");
     serverProfile_.setFolderUrl("");
+    serverProfile_.setParentIds({});
     updateInfoLabel();
     notifyChange();
     return 0;
@@ -646,6 +675,19 @@ void CServerSelectorControl::createSettingsButton() {
     settingsButtonImageList_.AddIcon(ico);
     settingsButtonToolbar_.SetImageList(settingsButtonImageList_);
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);
+}
+
+void CServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {
+    if (!serverProfile_.profileName().empty()) {
+        ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile_);
+        if (!serverSettings) {
+            serverProfile_.setProfileName({});
+            serverProfile_.setParentIds({});
+            serverProfile_.clearFolderInfo();
+        }
+    }
+
+    updateInfoLabel();
 }
 
 void CServerSelectorControl::setShowImageProcessingParams(bool show) {
@@ -680,7 +722,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     serverProfile_.setFolderId(serverSettings ? serverSettings->defaultFolder.getId() : std::string());
     serverProfile_.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle() : std::string());
     serverProfile_.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl : std::string());
-
+    serverProfile_.setParentIds(serverSettings ? serverSettings->defaultFolder.parentIds : std::vector<std::string>());
     notifyChange();
     updateInfoLabel();
     return 0;

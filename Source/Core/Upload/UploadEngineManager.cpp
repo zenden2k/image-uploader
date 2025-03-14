@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 Image Uploader -  free application for uploading images/files to the Internet
 

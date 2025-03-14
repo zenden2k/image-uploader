@@ -25,7 +25,7 @@
 #include <boost/format.hpp>
 
 #include "Core/Utils/CoreUtils.h"
-#include "Func/Common.h"
+#include "Core/Utils/StringUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Gui/GuiTools.h"
 #include "Func/IuCommonFunctions.h"
@@ -35,6 +35,8 @@
 #include "Core/AppParams.h"
 #include "Func/MyEngineList.h"
 #include "Core/i18n/Translator.h"
+#include "Core/AbstractServerIconCache.h"
+#include "Core/TaskDispatcher.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
@@ -55,10 +57,7 @@ CHistoryTreeControl::~CHistoryTreeControl()
     }
 }
 
-void CHistoryTreeControl::CreateDownloader()
-{
-    using namespace std::placeholders;
-
+void CHistoryTreeControl::CreateDownloader() {
     if(!m_FileDownloader) {
         m_FileDownloader = std::make_unique<CFileDownloader>(networkClientFactory_, AppParams::instance()->tempDirectory());
         m_FileDownloader->setOnConfigureNetworkClientCallback([this](auto* nm) { OnConfigureNetworkClient(nm); });
@@ -78,6 +77,11 @@ LRESULT CHistoryTreeControl::OnCreate(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 LRESULT CHistoryTreeControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
     abortLoadingThreads();
+    return 0;
+}
+
+LRESULT CHistoryTreeControl::OnThumbLoaded(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    Invalidate();
     return 0;
 }
 
@@ -123,6 +127,7 @@ void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoE
     it2->hi = it;
     it2->thumbnail = nullptr;
     it2->ThumbnailRequested = false;
+    it2->treeItem = item;
 }
 
 DWORD CHistoryTreeControl::OnItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW lpNMCustomDraw)
@@ -137,6 +142,9 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
 
 HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
+    if (!res || res->level() != 1) {
+        return nullptr;
+    }
     auto* item = static_cast<HistoryTreeItem*> (res->userData());
     return item ? item->hi : nullptr;
 }
@@ -201,9 +209,14 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         serverName = ses->entry(0).serverName;
     }
     if (serverName.empty()) {
-        serverName = tr("unknown server");
+        serverName = _("unknown server");
     }
-    std::string filesText = str(boost::format(boost::locale::ngettext("%d file", "%d files", ses->entriesCount())) % ses->entriesCount());
+    std::string filesText;
+    try {
+        filesText = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%d file", "%d files", ses->entriesCount())) % ses->entriesCount());
+    } catch (const std::exception& e) {
+        LOG(ERROR) << e.what();
+    }
     std::string lowText = serverName + " (" + filesText + ")";
     CString text = Utf8ToWCstring(label);
 
@@ -211,7 +224,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect calcRect;
 
     dc.SetBkMode(TRANSPARENT);
-    dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+    COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
     CBrush backgroundBrush;
 
     DWORD color = RGB(255, 255, 255);
@@ -306,6 +319,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     }
 
     dc.SelectFont(oldFont);
+    dc.SetTextColor(oldTextColor);
 
     int itemHeight = std::max<int>(textRect.Height() + kPaddingY * 2, 16);
 
@@ -367,9 +381,10 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     HFONT oldFont = dc.SelectFont(listboxFont);
 
     CBrush br;
+    COLORREF oldTextColor {};
     if (draw) {
         dc.SetBkMode(TRANSPARENT);
-        dc.SetTextColor(RGB(0, 0, 0));
+        oldTextColor = dc.SetTextColor(RGB(0, 0, 0));
     }
 
     CBrush backgroundBrush;
@@ -440,9 +455,11 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     urlRect.top += filenameHeight + 3;
 
     CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
-    dc.SetTextColor(RGB(166, 166, 166));
+    
     if (draw) {
+        dc.SetTextColor(RGB(166, 166, 166));
         dc.DrawText(url, url.GetLength(), &urlRect, DT_LEFT);
+        dc.SetTextColor(oldTextColor);
     }
     dc.SelectFont(oldFont);
 
@@ -451,10 +468,8 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     }
 }
 
-HICON CHistoryTreeControl::getIconForServer(const CString& serverName)
-{
-    auto* engineList = ServiceLocator::instance()->myEngineList();
-    return engineList->getIconForServer(W2U(serverName));
+HICON CHistoryTreeControl::getIconForServer(const CString& serverName) {
+    return ServiceLocator::instance()->serverIconCache()->getIconForServer(W2U(serverName));
 }
 
 bool CHistoryTreeControl::IsItemAtPos(int x, int y, bool &isRoot)
@@ -615,13 +630,12 @@ bool CHistoryTreeControl::LoadThumbnail(HistoryTreeItem * item)
             int64_t fileSize = IuCoreUtils::GetFileSize(W2U(filename));
             WCHAR buf2[25];
             WinUtils::NewBytesToString(fileSize, buf2, 25);
-            WCHAR FileExt[25];
-            lstrcpy(FileExt, WinUtils::GetFileExt(Filename));
+            CString FileExt = WinUtils::GetFileExt(Filename);
             if(!lstrcmpi(FileExt, _T("jpg"))) 
-                lstrcpy(FileExt,_T("JPEG"));
+                FileExt = _T("JPEG");
             if(IuCommonFunctions::IsImage(filename) && bm)
             {
-                Buffer.Format( _T("%s %dx%d (%s)"), static_cast<LPCTSTR>(FileExt), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
+                Buffer.Format( _T("%s %dx%d (%s)"), FileExt.GetString(), (int)bm->GetWidth(), (int)bm->GetHeight(), (LPCTSTR)buf2);
             }
             else
             {
@@ -647,6 +661,14 @@ LRESULT CHistoryTreeControl::OnDblClick(UINT uMsg, WPARAM wParam, LPARAM lParam,
         }
     }
     return CCustomTreeControlImpl<CHistoryTreeControl>::OnDblClick(uMsg, wParam, lParam, bHandled);
+}
+
+LRESULT CHistoryTreeControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    if (wParam != VK_TAB && wParam != VK_ESCAPE) {
+        return DLGC_WANTALLKEYS;
+    }
+    return 0;
 }
 
 HBITMAP CHistoryTreeControl::GetItemThumbnail(HistoryTreeItem* item)
@@ -691,8 +713,7 @@ void CHistoryTreeControl::DownloadThumb(HistoryTreeItem * it)
         std::string thumbUrl = it->hi->thumbUrl;
         if(thumbUrl.empty()) return ;
         std::string cacheFile = ServiceLocator::instance()->localFileCache()->get(thumbUrl);
-        if(!cacheFile.empty() && IuCoreUtils::FileExists(cacheFile))
-        {
+        if(!cacheFile.empty()) {
             it->thumbnailSource = cacheFile;
             m_thumbLoadingQueueMutex.lock();
             m_thumbLoadingQueue.push_back(it);
@@ -724,9 +745,16 @@ DWORD CHistoryTreeControl::Run()
             // Try downloading it
             DownloadThumb(it);    
         }
-        else
-        {
-            Invalidate();
+        else {
+            /* ServiceLocator::instance()->taskRunner()->runInGuiThread([this, treeItem = it->treeItem] {
+                RECT rc {};
+                if (GetItemRect(FindVisibleItemIndex(treeItem), &rc) != LB_ERR) {
+                    InvalidateRect(&rc);
+                }
+            },
+            true);*/
+           
+            PostMessage(WM_APP_MY_THUMBLOADED, 0, 0);
         }
     }
     m_bIsRunning = false;

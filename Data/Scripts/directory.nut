@@ -1,4 +1,4 @@
-function reg_replace(str, pattern, replace_with) {
+function _Replace(str, pattern, replace_with) {
     local resultStr = str;
     local res;
     local start = 0;
@@ -13,8 +13,9 @@ function reg_replace(str, pattern, replace_with) {
 }
 
 function  UploadFile(FileName, options) {
-    local newFilename = ExtractFileName(FileName);
-    local directory = ServerParams.getParam("directory");
+    local task = options.getTask().getFileTask();
+    local newFilename = task.getDisplayName();
+    local directory = ServerParams.getParam("directory") + "/";
     local convertUncPath = 0;
     try {
         convertUncPath = ServerParams.getParam("convertUncPath").tointeger();
@@ -40,17 +41,17 @@ function  UploadFile(FileName, options) {
     }
     local encodedFileName = newFilename;
     if (downloadUrl.find("://") != null) {
-        encodedFileName = reg_replace(nm.urlEncode(newFilename), "%2E", ".");
+        encodedFileName = _Replace(nm.urlEncode(newFilename), "%2E", ".");
     }
 
     options.setDirectUrl(downloadUrl + encodedFileName);
 
     if (downloadUrl.find("\\\\") == 0) {
-        local convertedUrl = "file:///" + reg_replace(downloadUrl, "\\"," / ") + reg_replace(nm.urlEncode(newFilename)," % 2E",".");
+        downloadUrl = downloadUrl.slice(2);
+        local convertedUrl = "file://" + _Replace(downloadUrl, "\\", "/") + _Replace(nm.urlEncode(newFilename), "%2E", ".");
         if (convertUncPath == 1) {
             options.setDirectUrl(convertedUrl);
         } else {
-
             options.setViewUrl(convertedUrl);
         }
     }
@@ -60,8 +61,15 @@ function  UploadFile(FileName, options) {
 
 function GetServerParamList() {
     return {
-        directory = "Directory"
+        directory = {
+            title = "Directory",
+            type = "filename",
+            directory = true
+        },
         downloadUrl = "Download path (ftp or http)",
-        convertUncPath = "Convert UNC path \"\\\\\" to file://///"
+        convertUncPath = {
+            title = "Convert UNC path \"\\\\\" to file://",
+            type = "boolean",
+        }
     }
 }

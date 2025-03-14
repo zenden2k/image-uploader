@@ -45,6 +45,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         enum { IDD = IDD_UPLOADDLG };
         enum {
             IDC_UPLOADPROCESSTAB = 14000, IDC_UPLOADRESULTSTAB, ID_RETRYUPLOAD, ID_VIEWIMAGE, ID_SHOWLOGFORTHISFILE,
+            ID_COPYLINK, ID_COPYVIEWLINK, ID_COPYTHUMBLINK, ID_COPYDELETELINK,
             kEnableNextButtonTimer = 5,
             kProgressTimer = 6,
         };
@@ -58,6 +59,10 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             COMMAND_ID_HANDLER(ID_RETRYUPLOAD, OnRetryUpload)
             COMMAND_ID_HANDLER(ID_VIEWIMAGE, OnViewImage)
             COMMAND_ID_HANDLER(ID_SHOWLOGFORTHISFILE, OnShowLogForThisFile)
+            COMMAND_ID_HANDLER(ID_COPYLINK, OnCopyLink)
+            COMMAND_ID_HANDLER(ID_COPYVIEWLINK, OnCopyViewLink)
+            COMMAND_ID_HANDLER(ID_COPYTHUMBLINK, OnCopyThumbLink)
+            COMMAND_ID_HANDLER(ID_COPYDELETELINK, OnCopyDeleteLink)
             NOTIFY_HANDLER(IDC_UPLOADTABLE, NM_DBLCLK, OnUploadTableDoubleClick)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             REFLECT_NOTIFICATIONS()
@@ -72,7 +77,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
         int ThreadTerminated(void);
-        std::vector<CUrlListItem> urlList_;
+        std::vector<ImageUploader::Core::OutputGenerator::UploadObject> urlList_;
         bool OnShow() override;
         bool OnNext() override;
         bool OnHide() override;
@@ -96,16 +101,21 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         LRESULT OnRetryUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnViewImage(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnShowLogForThisFile(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnCopyDeleteLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
         void showUploadResultsTab();
         void showUploadProgressTab();
         void onSessionFinished(UploadSession* session);
-        void onSessionFinished_UiThread(UploadSession* session);
         void onTaskFinished(UploadTask* task, bool ok);
         void onChildTaskAdded(UploadTask* child);
         void backgroundThreadStarted();
         void createToolbar();
         void updateTotalProgress();
         void viewImage(int itemIndex);
+        void SetInitialFocus() override;
         int currentTab_;
         CResultsListView uploadListView_;
         bool isEnableNextButtonTimerRunning_;

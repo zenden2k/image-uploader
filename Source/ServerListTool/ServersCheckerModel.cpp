@@ -5,10 +5,12 @@
 namespace ServersListTool {
 
 ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList_(engineList) {
+    auto builtInScripts = engineList_->builtInScripts();
+
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);
-        if (ued->PluginName == "ftp" || ued->PluginName == "sftp" || ued->PluginName == "webdav" 
-            || ued->PluginName == "directory") {
+        
+        if (std::find(builtInScripts.begin(), builtInScripts.end(), ued->PluginName) != builtInScripts.end()) {
             continue;
         }
         auto sd = std::make_unique<ServerData>();
@@ -76,10 +78,10 @@ std::string ServersCheckerModel::getItemText(int row, int column) const {
     } else if (column == 6) {
         return serverData.timeStr();
     }
-    return std::string();
+    return {};
 }
 
-unsigned long ServersCheckerModel::getItemColor(int row) const {
+uint32_t ServersCheckerModel::getItemColor(int row) const {
     const ServerData& serverData = *items_[row];
     return serverData.color;
 }

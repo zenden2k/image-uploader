@@ -252,18 +252,34 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
     }
     folderList_ = &FolderList;
     if (ensureNodesFetched()) {
-        FolderList.AddFolder("/", "", std::string("/"), "", 0);
-        MegaNode *root = megaApi_->getRootNode();
-        MegaNodeList *list = megaApi_->getChildren(root);
+        std::string parentId = FolderList.parentFolder().getId();
+        
+        if (parentId.empty()) {
+            FolderList.AddFolder("/", "", std::string("/"), "", 0);
+        } else {
+            MegaNode* parent = megaApi_->getNodeByPath(parentId.c_str());
+            if (parent) {
+                MegaNodeList* list = megaApi_->getChildren(parent);
 
-        for (int i = 0; i < list->size(); i++) {
-            MegaNode *node = list->get(i);
-            if (node->isFolder()) {
-                FolderList.AddFolder(node->getName(), "", std::string("/")+node->getName(), "/", 0);
+                if (list) {
+                    for (int i = 0; i < list->size(); i++) {
+                        MegaNode* node = list->get(i);
+                        if (node->isFolder()) {
+                            std::string nodeId = parentId;
+
+                            // nodeId cannot be empty at this line, so we can avoid checking for emptiness here.
+                            if (nodeId.back() != '/') { 
+                                nodeId.append("/");
+                            }
+                            nodeId += node->getName();
+                            FolderList.AddFolder(node->getName(), "", nodeId, parentId, 0);
+                        }
+                    }
+                }
+                delete list;
+                delete parent;
             }
         }
-        delete list;
-        delete root;
     }
     
     return fetchNodesSuccess_ ? 1 : 0;
@@ -338,7 +354,8 @@ int CMegaNzUploadEngine::getAccessTypeList(std::vector<std::string>& list) {
     return 1;
 }
 
-int CMegaNzUploadEngine::getServerParamList(std::map<std::string, std::string>& list) {
+int CMegaNzUploadEngine::getServerParamList(ParameterList& list)
+{
     return 0;
 }
 
@@ -346,7 +363,7 @@ int CMegaNzUploadEngine::doLogin() {
     loginFinished_ = false;
     loginSuccess_ = false;
     if (currentTask_) {
-        currentTask_->setStatusText(tr("Logging in..."));
+        currentTask_->setStatusText(_("Logging in..."));
     }
     megaApi_->login(m_ServersSettings->authData.Login.c_str(), m_ServersSettings->authData.Password.c_str());
     while (!loginFinished_ && !needStop()) {
@@ -451,7 +468,7 @@ bool CMegaNzUploadEngine::ensureNodesFetched() {
         fetchNodesFinished_ = false;
         fetchNodesSuccess_ = false;
         if (currentTask_) {
-            currentTask_->setStatusText(tr("Fetching filesystem..."));
+            currentTask_->setStatusText(_("Fetching filesystem..."));
         }
         megaApi_->fetchNodes();
         while (!fetchNodesFinished_ && !needStop()) {

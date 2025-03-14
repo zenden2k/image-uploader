@@ -387,7 +387,7 @@ void FileQueueUploaderPrivate::run()
         engine->serverSync()->incrementThreadCount();
         uploader.setUploadEngine(engine);
         uploader.setOnNeedStopCallback(std::bind(&FileQueueUploaderPrivate::onNeedStopHandler, this));
-        it->setStatusText(tr("Starting upload"));
+        it->setStatusText(_("Starting upload"));
         bool dec = false;
         try {
             res = uploader.Upload(it);

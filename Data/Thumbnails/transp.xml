@@ -31,7 +31,7 @@
 	<Operation Type="blt" Rect="0;$(Height)-17; 65; 17" SourceRect="0;94;65;17" />
 	<Operation Type="blt" Rect="$(Width)-7;$(Height)-17;7; 17" SourceRect="157;111-17;7;17" />
 	<Operation Type="blt" Rect="2;2;29; 29" Source="image" SourceRect="135;82;29;29" />
-	 <Operation Type="text" Rect="65;$(Height)-17; $(Width)-2-65;17" Brush="gradient:#920D567D #9206AEFF vert" 
+	 <Operation Type="text" Rect="30;$(Height)-17; $(Width)-2-30;17" Brush="gradient:#920D567D #9206AEFF vert" 
 		TextColors="#4C000000+$(TextColor) #a5000000+$(StrokeColor)"  Condition="$(DrawText)" />
     
     </Drawing>

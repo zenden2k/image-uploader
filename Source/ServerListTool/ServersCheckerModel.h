@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <atomic>
+#include <chrono>
 #include <string>
 #include <vector>
 #include <functional>
@@ -19,13 +21,13 @@ namespace ServersListTool {
 
 class ServerData {
 public:
-    bool skip;
-    int stars[3]; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
-    unsigned long color;
-    int fileToCheck;
-    int filesChecked;
-    int timeElapsed;
-    bool finished;
+    std::atomic_bool skip;
+    int stars[10]; // 0 - direct url, 1 - thumbnail url, 2 - download (view) url
+    uint32_t color;
+    std::atomic<int> fileToCheck;
+    std::atomic<int> filesChecked;
+    std::chrono::milliseconds::rep timeElapsed;
+    std::atomic_bool finished;
     CUploadEngineData* ued;
     int serverType;
 protected:
@@ -39,18 +41,16 @@ protected:
     std::string timeStr_;
     std::string strMark_;
 
-
     mutable std::mutex dataMutex;
-
 public:
 
-    ServerData() {
+    ServerData(): finished(false) {
         memset(stars, 0, sizeof(stars));
         color = 0;
         fileToCheck = 0;
         timeElapsed = 0;
         filesChecked = 0;
-        finished = false;
+
         skip = false;
         ued = nullptr;
         serverType = 0;
@@ -187,7 +187,7 @@ public:
     ServersCheckerModel(CMyEngineList* engineList);
     ~ServersCheckerModel();
     std::string getItemText(int row, int column) const;
-    unsigned long getItemColor(int row) const;
+    uint32_t getItemColor(int row) const;
     size_t getCount() const;
     void notifyRowChanged(size_t row);
     ServerData* getDataByIndex(size_t row);

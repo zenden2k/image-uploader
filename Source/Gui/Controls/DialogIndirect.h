@@ -25,6 +25,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
+#include "Func/WinUtils.h"
 
 template <class T, class TBase = CWindow>
 class ATL_NO_VTABLE CDialogIndirectImpl : public CDialogImplBaseT< TBase >
@@ -92,6 +93,10 @@ public:
 
         size_t sizeDlg = ::SizeofResource(hInst, res);
         m_hDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
+        if (!m_hDlgTemplate) {
+            MessageBox(WinUtils::FormatWindowsErrorMessage(GetLastError()), APPNAME, MB_ICONERROR);
+            return nullptr;
+        }
         auto pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(m_hDlgTemplate));
         ::memcpy(pMyDlgTemplate, dit, sizeDlg);
 

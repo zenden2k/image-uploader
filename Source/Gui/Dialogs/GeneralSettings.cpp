@@ -42,6 +42,9 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_DROPVIDEOFILESTOTHELIST, "Add video files to the list after Drag'n'Drop");
     TRC(IDC_DEVELOPERMODE, "Developer mode");
     TRC(IDC_CHECKUPDATES, "Automatically check for updates");
+    TRC(IDC_ENABLETOASTS, "Enable Toast notifications (Windows 8+)");
+    TRC(IDC_THUMBNAILSFORVIDEOCHECKBOX, "Show preview for video files in file list");
+    TRC(IDC_CLEARSERVERSETTINGS, "Clear server settings");
     SetDlgItemText(IDC_IMAGEEDITORPATH, settings->ImageEditorPath);
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
@@ -54,7 +57,7 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_BROWSEBUTTON), TR("Choose executable file"));
 
-    auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+    auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
     std::string selectedLocale = W2U(settings->Language);
  
@@ -73,6 +76,9 @@ LRESULT CGeneralSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     GuiTools::SetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST, settings->DropVideoFilesToTheList);
     GuiTools::SetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
     GuiTools::SetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
+    GuiTools::SetCheck(m_hWnd, IDC_ENABLETOASTS, settings->EnableToastNotifications);
+    GuiTools::SetCheck(m_hWnd, IDC_THUMBNAILSFORVIDEOCHECKBOX, settings->ShowPreviewForVideoFiles);
+    GuiTools::EnableDialogItem(m_hWnd, IDC_THUMBNAILSFORVIDEOCHECKBOX, WtlGuiSettings::IsFFmpegAvailable());
     return 1;  // Let the system set the focus
 }
 
@@ -101,7 +107,7 @@ LRESULT CGeneralSettings::OnBnClickedBrowse(WORD /*wNotifyCode*/, WORD /*wID*/, 
 }
 
     
-bool CGeneralSettings::Apply()
+bool CGeneralSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     int index = langListCombo_.GetCurSel();
@@ -117,10 +123,11 @@ bool CGeneralSettings::Apply()
     
     settings->AutoShowLog = SendDlgItemMessage(IDC_AUTOSHOWLOG,  BM_GETCHECK )==BST_CHECKED;
     settings->ConfirmOnExit = SendDlgItemMessage(IDC_CONFIRMONEXIT, BM_GETCHECK)==BST_CHECKED;
+    settings->ShowPreviewForVideoFiles = SendDlgItemMessage(IDC_THUMBNAILSFORVIDEOCHECKBOX, BM_GETCHECK)==BST_CHECKED;
     settings->DropVideoFilesToTheList = GuiTools::GetCheck(m_hWnd, IDC_DROPVIDEOFILESTOTHELIST);
     GuiTools::GetCheck(m_hWnd, IDC_DEVELOPERMODE, settings->DeveloperMode);
     GuiTools::GetCheck(m_hWnd, IDC_CHECKUPDATES, settings->AutomaticallyCheckUpdates);
-    
+    GuiTools::GetCheck(m_hWnd, IDC_ENABLETOASTS, settings->EnableToastNotifications);
     return true;
 }
 
@@ -136,5 +143,26 @@ LRESULT CGeneralSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         free(static_cast<char*>(langListCombo_.GetItemDataPtr(i)));
     }
     langListCombo_.ResetContent();
+    return 0;
+}
+
+LRESULT CGeneralSettings::OnBnClickedClearServerSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    auto builtInScripts = ServiceLocator::instance()->engineList()->builtInScripts();
+
+    // 'Directory' server type has no account
+    auto newEnd = std::remove_if(builtInScripts.begin(), builtInScripts.end(), [](auto&& s) { return s == "directory"; });
+    builtInScripts.erase(newEnd, builtInScripts.end());
+
+    std::string msg = str(boost::format(
+        _("All account data will be deleted, including logins, passwords and other settings. "
+          "The following server types' settings will also be deleted: %s.")
+        )
+        % IuStringUtils::Join(builtInScripts, ", ")
+    );
+    if (GuiTools::LocalizedMessageBox(m_hWnd, U2WC(msg), APPNAME, MB_OKCANCEL | MB_ICONWARNING) == IDOK) {
+        BasicSettings* settings = ServiceLocator::instance()->basicSettings();
+        settings->clearServerSettings();
+        settings->SaveSettings();
+    }
     return 0;
 }

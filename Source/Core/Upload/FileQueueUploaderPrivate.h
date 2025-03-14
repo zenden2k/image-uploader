@@ -36,7 +36,6 @@ public:
     bool canAcceptUploadTask(UploadTask* task) override;
     std::map<std::string, ServerThreadsInfo> serverThreads_;
     std::recursive_mutex serverThreadsMutex_;
-    int fileCount;
     bool useMutex_;
 
 };

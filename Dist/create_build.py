@@ -15,16 +15,19 @@ from contextlib import contextmanager
 IS_RELEASE = False
 TEST_MODE = False
 BUILD_DOCS = True
-OUTDIR = "Packages"
+OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
 DEFAULT_GIT_BRANCH = "master"
+PARALLEL_JOBS = "6"
 
 # --- Script requirements ---
 # git
 # cmake
 # conan
 # msbuild (you should run this script from Visual Studio Developer Command Prompt)
+# nuget
+# 7zip (7z.exe)
 # WSL 2 & Ubuntu 20.04+
 # -- On WSL2 --
 # conan 
@@ -38,7 +41,9 @@ DEFAULT_GIT_BRANCH = "master"
 CMAKE_GENERATOR_VS2019 = "Visual Studio 16 2019";
 CMAKE_GENERATOR_VS2022 = "Visual Studio 17 2022";
 
-DEFAULT_BUILD_PROFILE = "windows_vs2022_x64"
+DEFAULT_BUILD_PROFILE = "default"
+#DEFAULT_BUILD_PROFILE = "windows_vs2022_x64"
+
 NUGET_ARCH_MAPPING = {
     'armv8': 'arm64',
     'x86_64': "x64",
@@ -54,7 +59,8 @@ RESULT_ARCH_MAPPING = {
 ALTERNATIVE_ARCH_DISPLAY_NAME = {
     'armv8': 'ARM64',
     'x86_64': "x86 64-bit",
-    'x86': 'x86 32-bit'
+    'x86': 'x86 32-bit',
+    'aarch64': 'ARM64'
 }
 
 BUILD_TARGETS = [
@@ -63,7 +69,7 @@ BUILD_TARGETS = [
         'compiler': "VS2019",
         'build_type': "Release",
         'arch': 'x86',
-        'host_profile': '',
+        'host_profile': 'windows_vs2019_x86_release',
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "Win32", 
@@ -72,14 +78,15 @@ BUILD_TARGETS = [
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
         'run_tests': True,
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
+        'supported_os': 'Windows 7/8/10/11'
     },  
     {
         'os': "Windows",
         'compiler': "VS2019",
         'build_type': "Release",
         'arch': 'x86_64',
-        'host_profile': '',
+        'host_profile': 'windows_vs2019_x64_release',
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "x64",
@@ -88,9 +95,10 @@ BUILD_TARGETS = [
         'enable_webview2': True,
         'shell_ext_arch': 'Win32',
         'shell_ext_64bit_arch': 'x64',
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
         'installer_arch': 'x64',
         'run_tests': True,
+        'supported_os': 'Windows 7/8/10/11 (64 bit)'
     }, 
     {
         'os': "Windows",
@@ -104,8 +112,9 @@ BUILD_TARGETS = [
         'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_LIBHEIF_WITH_DAV1D=Off"],
         'enable_webview2': True,
         'shell_ext_64bit_arch': 'ARM64',
-        'ffmpeg_standalone' : True,
+        'ffmpeg_standalone' : False,
         'installer_arch': 'arm64',
+        'supported_os': 'Windows 10/11 (ARM64)'
     },
     {
         'os': "Linux",
@@ -119,10 +128,27 @@ BUILD_TARGETS = [
         'deb_package_arch': 'amd64',
         'build_qt_gui': True,
         'run_tests': True,
+        'supported_os': 'Linux (amd64)',
+        'objcopy': 'objcopy'
+    },
+    {
+        'os': "Linux",
+        'compiler': "gcc",
+        'build_type': "Release",
+        'arch': 'aarch64',
+        'host_profile': '',
+        'build_profile': 'default',
+        'cmake_generator': 'Ninja Multi-Config', 
+        'cmake_args': ["-DCMAKE_TOOLCHAIN_FILE=../Conan/Toolchains/aarch64-linux-gnu.toolchain.cmake"], 
+        'deb_package_arch': 'arm64',
+        'build_qt_gui': False,
+        'run_tests': False,
+        'supported_os': 'Linux (arm64)',
+        'objcopy': 'aarch64-linux-gnu-objcopy'
     },
 ]
 
-#BUILD_TARGETS = BUILD_TARGETS[0:1]
+#BUILD_TARGETS = [BUILD_TARGETS[4]]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
@@ -151,7 +177,7 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
         json_builds_data = {
 
         }
-    last_commit_hash = json_builds_data.get("last_commit_hash");
+    last_commit_hash = json_builds_data.get("last_commit_hash")
 
     json_builds_data["last_commit_hash"] = version_header_defines['IU_COMMIT_HASH']
     
@@ -180,6 +206,8 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
     git_output = subprocess.check_output(['wsl', '-e', '/bin/bash', "git_rev.sh", arg, "HEAD"],cwd=source_dir + "/Dist/").decode("utf-8").strip()
     git_output = re.sub( r",\s*}", "}", git_output )
     git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
+    git_output = git_output.replace("\"cloaked\"", "cloaked");
+    git_output = git_output.replace("\"Upload settings\"", "Upload settings");
     print(git_output)
     commits = json.loads(git_output)
 
@@ -212,7 +240,8 @@ def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subp
         "path": relativePath,
         "subproduct": subproduct,
         "sha256": hash,
-        "size": os.path.getsize(path)
+        "size": os.path.getsize(path),
+        "supported_os": target.get("supported_os"),
     }
     dictionary["files"] += [file]
     with open(jsonfile, "w") as outfile:
@@ -252,7 +281,10 @@ def try_conan_host_profile(target, conan_profile_dir, profile_name):
         try_profile = conan_profile_dir + "/" + get_target_full_name(target).lower()
 
     if os.path.isfile(try_profile):
-        return os.path.abspath(try_profile)
+        if target["os"] == "Windows":
+            return os.path.abspath(try_profile)
+        else:
+            return try_profile
     elif profile_name: 
         return profile_name
     else:
@@ -288,8 +320,8 @@ def check_conan_version(args):
 
     if res:
         conan_major_version = int(res.group(1))
-        if conan_major_version != 1:
-            print("Only Conan 1.x is supported.")
+        if conan_major_version < 2:
+            print("Only Conan 2.x is supported.")
             sys.exit(1)
     else:
         print("Warning: Unknown Conan version")
@@ -322,6 +354,8 @@ def generate_version_header(filename, inc_version):
             elif define_name == "IU_APP_VER":
                 if IS_RELEASE:
                     result[define_name] = result[define_name].replace("-nightly", "")
+                else:
+                    result[define_name] = now.strftime("%Y%m%d-nightly")
                 out_text += "#define {} \"{}\"\n".format(define_name, str( result[define_name] ))
             elif define_name == "IU_BUILD_DATE":
                 now = datetime.datetime.now()
@@ -433,19 +467,19 @@ if not os.path.exists(repo_dir):
         print("Git clone failed to directory " + repo_dir)
 
 git_commit_message = subprocess.check_output("git log -1 --pretty=%B").decode("utf-8").strip() 
-
 if not os.path.exists(VERSION_HEADER_FILE):
     shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
 
 version_file_abs_path = os.path.abspath(VERSION_HEADER_FILE)
-version_header_defines = generate_version_header(VERSION_HEADER_FILE, True)
+generate_version_header(VERSION_HEADER_FILE, True)
 repo_dir_abs = os.path.abspath(repo_dir)
 shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/" + VERSION_HEADER_FILE)
-app_ver = version_header_defines["IU_APP_VER"]
-build_number = version_header_defines["IU_BUILD_NUMBER"]
+
 dist_directory = os.path.dirname(os.path.realpath(__file__))
 #with cwd(repo_dir):
-generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
+version_header_defines = generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
+app_ver = version_header_defines["IU_APP_VER"]
+build_number = version_header_defines["IU_BUILD_NUMBER"]
 
 proc = subprocess.run("wsl -e /bin/bash generate_mo.sh", cwd=repo_dir_abs + "/Lang/")
 if proc.returncode !=0:
@@ -502,7 +536,8 @@ for target in BUILD_TARGETS:
         if os.path.islink(link_path):
             os.unlink(link_path)
         os.symlink(build_dir_path_abs, link_path)
-        if target.get("enable_webview2"):
+        #if target.get("enable_webview2"):
+        if False:
             proc = subprocess.run(["nuget", "install", "Microsoft.Web.WebView2", "-Version", "1.0.1823.32", "-ExcludeVersion", "-NonInteractive","-OutputDirectory", "packages"])
             if proc.returncode !=0:
                 print("Nuget WebView2 install failed")
@@ -540,10 +575,12 @@ for target in BUILD_TARGETS:
         #cmake ..\Source -G "Visual Studio 16 2019" -A Win32 -DCMAKE_BUILD_TYPE=Debug -DIU_HOST_PROFILE=vs2019_x86_debug -DIU_BUILD_PROFILE=vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On 
         build_type = target.get("build_type")
         command = ["cmake", "../Repo/Source", "-G", target.get("cmake_generator"), "-DCMAKE_BUILD_TYPE=" + build_type, 
-                    "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
-                    "-DIU_HOST_PROFILE=" + host_profile,
-                    "-DIU_BUILD_PROFILE=" + build_profile
+                   "-DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake",
+                   # "-DCMAKE_CONFIGURATION_TYPES:STRING="+build_type,
+                    "-DCONAN_BUILD_PROFILE=" + build_profile
                 ]
+        if target.get("host_profile") != "":
+            command += ["-DCONAN_HOST_PROFILE=" + host_profile]
         if target.get("cmake_platform"):
             command += ["-A", target.get("cmake_platform")]
         if target.get("os") == "Linux":
@@ -563,7 +600,7 @@ for target in BUILD_TARGETS:
             print("Generate failed")
             exit(1)
 
-        command = ["cmake", "--build", ".", "--config", target.get("build_type")]
+        command = ["cmake", "--build", ".", "-j", PARALLEL_JOBS, "--config", target.get("build_type")]
         if target.get("os") == "Linux":
             command =  ['wsl', '-e'] + command
             
@@ -588,7 +625,7 @@ for target in BUILD_TARGETS:
             #ext_native_arch = 
             if target.get("shell_ext_arch"):
                 # /p:Configuration="Release optimized";Platform=Win32
-                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
+                command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform=" + target["shell_ext_arch"]]
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
                 if proc.returncode !=0:
@@ -596,7 +633,7 @@ for target in BUILD_TARGETS:
                     exit(1)
             
             if target.get("shell_ext_64bit_arch"):
-                command = ["msbuild", "..\Repo\Source\ShellExt\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
+                command = ["msbuild", "..\\Repo\\Source\\ShellExt\\ExplorerIntegration.sln", "/p:Configuration=ReleaseOptimized;Platform="+target["shell_ext_64bit_arch"]]
                 print("Running command:", " ".join(command))
                 proc = subprocess.run(command)
                 if proc.returncode !=0:
@@ -621,7 +658,7 @@ for target in BUILD_TARGETS:
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
 
             # Creating CLI archive (imgupload)
             command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
@@ -639,7 +676,7 @@ for target in BUILD_TARGETS:
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7z archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
 
             # Creating installer for Windows
             print("Running command:", repo_dir_abs + used_dist_dir + r"create_portable.bat")
@@ -668,7 +705,7 @@ for target in BUILD_TARGETS:
 
             json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
         elif target["os"] == "Linux":
-            args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch")]
+            args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch"), target.get("objcopy")]
             working_dir = repo_dir_abs + used_dist_dir + "debian/"
             print("Running command:", " ".join(args), "; working_dir="+working_dir)
             proc = subprocess.run(args, cwd=working_dir)
@@ -694,7 +731,7 @@ for target in BUILD_TARGETS:
        
             # Qt GUI
             if target.get("build_qt_gui"):
-                args = ["wsl", "-e", "/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch")]
+                args = ["wsl", "-e", "/bin/bash", "create-qimageuploader-package.sh", target.get("deb_package_arch"), target.get("objcopy")]
                 working_dir = repo_dir_abs + used_dist_dir + "debian/"
                 print("Running command:", " ".join(args), "; working_dir="+working_dir)
                 proc = subprocess.run(args, cwd=working_dir)

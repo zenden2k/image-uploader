@@ -1,6 +1,7 @@
 
 set(SRC_LIST Network/NetworkClient.cpp
 	Network/NetworkClientFactory.cpp
+	Network/NetworkDebugger.cpp
     Upload/DefaultUploadEngine.cpp
     Upload/FileUploadTask.cpp
     Upload/ScriptUploadEngine.cpp
@@ -11,17 +12,26 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UrlShorteningTask.cpp
     Upload/TestConnectionTask.cpp
     Upload/FolderTask.cpp
+    Upload/SearchByImageUrlTask.cpp
+    Upload/SearchByImageFileTask.cpp
+    Upload/TempImageUploadTask.cpp
     Utils/CoreUtils.cpp
     Utils/CryptoUtils.cpp
     Utils/SimpleXml.cpp
     Utils/StringUtils.cpp
     Utils/ConsoleUtils.cpp
+    Utils/MimeTypeHelper.cpp
     3rdpart/pcreplusplus.cpp
-    3rdpart/tinystr.cpp
-    3rdpart/tinyxml.cpp
-    3rdpart/tinyxmlerror.cpp
-    3rdpart/tinyxmlparser.cpp
-    OutputCodeGenerator.cpp
+    OutputGenerator/OutputGeneratorFactory.cpp
+    OutputGenerator/AbstractOutputGenerator.cpp
+    OutputGenerator/AbstractCodeGenerator.cpp
+    OutputGenerator/BBCodeGenerator.cpp
+    OutputGenerator/HTMLGenerator.cpp
+    OutputGenerator/MarkdownGenerator.cpp
+    OutputGenerator/PlainTextGenerator.cpp
+    OutputGenerator/JSONGenerator.cpp
+    OutputGenerator/XmlTemplateList.cpp
+    OutputGenerator/XmlTemplateGenerator.cpp
     UploadEngineList.cpp
     SettingsManager.cpp
     AppParams.cpp
@@ -42,6 +52,12 @@ set(SRC_LIST Network/NetworkClient.cpp
     Upload/UploadManager.cpp
     Upload/UploadSession.cpp
     Upload/AdvancedUploadEngine.cpp
+    Upload/Parameters/AbstractParameter.cpp
+    Upload/Parameters/TextParameter.cpp
+    Upload/Parameters/ChoiceParameter.cpp
+    Upload/Parameters/BooleanParameter.cpp
+    Upload/Parameters/FileNameParameter.cpp
+    Upload/Parameters/ParameterFactory.cpp
     ServiceLocator.cpp
     Settings/BasicSettings.cpp
     Logging/MyLogSink.cpp
@@ -63,8 +79,17 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/GumboQuery/QueryUtil.cpp
     3rdpart/GumboQuery/Selection.cpp
     3rdpart/GumboQuery/Selector.cpp
+    3rdpart/xdgmime/xdgmime.c
+    3rdpart/xdgmime/xdgmimeglob.c
+    3rdpart/xdgmime/xdgmimeint.c
+    3rdpart/xdgmime/xdgmimemagic.c
+    3rdpart/xdgmime/xdgmimealias.c
+    3rdpart/xdgmime/xdgmimeparent.c
+    3rdpart/xdgmime/xdgmimecache.c
+    3rdpart/xdgmime/xdgmimeicon.c
     Scripting/API/Process.cpp
     Upload/Filters/UrlShorteningFilter.cpp
+    Upload/Filters/ImageSearchFilter.cpp
     Upload/Filters/UserFilter.cpp
     LocalFileCache.cpp
     Utils/SystemUtils.cpp
@@ -76,10 +101,14 @@ set(SRC_LIST Network/NetworkClient.cpp
     3rdpart/htmlentities.cpp
     Video/VideoUtils.cpp
     Images/AbstractImage.cpp
+    FileTypeCheckTask.cpp
 )
 
-set(HEADER_LIST Network/NetworkClient.h
+set(HEADER_LIST
+    BasicConstants.h
+    Network/NetworkClient.h
 	Network/NetworkClientFactory.h
+    Network/NetworkDebugger.h
     Upload/DefaultUploadEngine.h
     Upload/FileUploadTask.h
     Upload/ScriptUploadEngine.h
@@ -90,18 +119,43 @@ set(HEADER_LIST Network/NetworkClient.h
     Upload/TestConnectionTask.h
     Upload/UrlShorteningTask.h
     Upload/FolderTask.h
+    Upload/SearchByImageUrlTask.h
+    Upload/SearchByImageFileTask.h
+    Upload/TempImageUploadTask.h
+    Upload/Parameters/AbstractParameter.h
+    Upload/Parameters/TextParameter.h
+    Upload/Parameters/ChoiceParameter.h
+    Upload/Parameters/BooleanParameter.h
+    Upload/Parameters/FileNameParameter.h
+    Upload/Parameters/ParameterFactory.h
     Utils/CoreUtils.h
     Utils/CryptoUtils.h
     Utils/SimpleXml.h
     Utils/StringUtils.h
     Utils/ConsoleUtils.h
     Utils/IOException.h
+    Utils/MimeTypeHelper.h
     3rdpart/pcreplusplus.h
-    3rdpart/tinystr.h
-    3rdpart/tinyxml.h
     3rdpart/utf8.h
     3rdpart/UriParser.h
-    OutputCodeGenerator.h
+    3rdpart/xdgmime/xdgmime.h
+    3rdpart/xdgmime/xdgmimealias.h
+    3rdpart/xdgmime/xdgmimecache.h
+    3rdpart/xdgmime/xdgmimeglob.h
+    3rdpart/xdgmime/xdgmimeicon.h
+    3rdpart/xdgmime/xdgmimeint.h
+    3rdpart/xdgmime/xdgmimemagic.h
+    3rdpart/xdgmime/xdgmimeparent.h 
+    OutputGenerator/OutputGeneratorFactory.h
+    OutputGenerator/AbstractOutputGenerator.h
+    OutputGenerator/AbstractCodeGenerator.h
+    OutputGenerator/BBCodeGenerator.h
+    OutputGenerator/HTMLGenerator.h
+    OutputGenerator/MarkdownGenerator.h
+    OutputGenerator/PlainTextGenerator.h
+    OutputGenerator/JSONGenerator.h
+    OutputGenerator/XmlTemplateList.h
+    OutputGenerator/XmlTemplateGenerator.h
     UploadEngineList.h
     SettingsManager.h
     AppParams.h
@@ -144,6 +198,7 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/GumboQuery/Selector.h
     Scripting/API/Process.h
     Upload/Filters/UrlShorteningFilter.h
+    Upload/Filters/ImageSearchFilter.h
     Upload/Filters/UserFilter.h
     LocalFileCache.h
     Utils/SystemUtils.h
@@ -155,12 +210,15 @@ set(HEADER_LIST Network/NetworkClient.h
     3rdpart/htmlentities.h
     Video/VideoUtils.h
     i18n/Translator.h
+    FileTypeCheckTask.h
+    IFileList.h
 )
     
 if(WIN32)
     list(APPEND SRC_LIST 
         Utils/Utils_win.cpp
         Utils/CryptoUtils_win.cpp
+        Utils/IOUtf8_win.cpp
         DefaultProxyProvider.cpp 
         3rdpart/CodePages.cpp 
         Scripting/API/HtmlDocument.cpp
@@ -175,6 +233,7 @@ if(WIN32)
         ../3rdpart/Registry.cpp
         ../3rdpart/Unzipper.cpp
         ../3rdpart/MemberFunctionCallback.cpp
+        3rdpart/xdgmime/ports/fnmatch.c
         ../Gui/Dialogs/WebViewWindow.cpp
         ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
@@ -184,8 +243,9 @@ if(WIN32)
         Images/WebpImageReader.cpp
         Images/HeifImageReader.cpp
         Images/ImageLoader.cpp
-        ../3rdpart/QColorQuantizer.cpp
         Images/GdiPlusImage.cpp
+        Images/ColorQuantizer.cpp
+        Images/OctreeColorQuantizer.cpp
         ../Func/GdiPlusInitializer.cpp
     )
     
@@ -193,7 +253,8 @@ if(WIN32)
         list(APPEND SRC_LIST  ../Gui/Controls/Webview2BrowserView.cpp)
     endif()
 
-    list(APPEND HEADER_LIST 
+    list(APPEND HEADER_LIST
+        COMInitializer.h
         DefaultProxyProvider.h 
         3rdpart/CodePages.h 
         Scripting/API/HtmlDocument.h
@@ -218,7 +279,9 @@ if(WIN32)
         Images/HeifImageReader.h
         Images/AbstractImageReader.h
         Images/ImageLoader.h
-        ../3rdpart/QColorQuantizer.h
+        Images/ColorQuantizer.h
+        Images/OctreeColorQuantizer.h
+        Utils/IOUtf8_win.h
     )
 else()
     list(APPEND SRC_LIST  
@@ -229,7 +292,11 @@ endif()
 if(IU_ENABLE_MEGANZ)
     list(APPEND SRC_LIST Upload/MegaNzUploadEngine.cpp)
     list(APPEND HEADER_LIST Upload/MegaNzUploadEngine.h)
-endif() 
+endif()
+
+if(WIN32)   
+	include_directories(${CMAKE_SOURCE_DIR}/Core/3rdpart/xdgmime/ports)
+endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
@@ -237,17 +304,18 @@ add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
 
 target_link_libraries(iucore PUBLIC
     CURL::libcurl
-    Boost::Boost 
+    boost::boost 
     uriparser::uriparser 
     ZLIB::ZLIB 
-    jsoncpp::jsoncpp 
+    JsonCpp::JsonCpp
     glog::glog 
-    PCRE::PCRE
+    pcre::pcre
     squirrel::squirrel 
     squirrel::sqstdlib 
     gumbo-parser::gumbo-parser 
-    base64::base64
+    aklomp::base64
     SQLite::SQLite3
+    tinyxml2::tinyxml2
     ${COMMON_LIBS_LIST}
 )
 
@@ -259,7 +327,7 @@ if (IU_ENABLE_MEGANZ)
 endif()
 
 if (IU_USE_OPENSSL)
-    target_link_libraries(iucore PUBLIC OpenSSL::OpenSSL)
+    target_link_libraries(iucore PUBLIC openssl::openssl)
 endif()
 
 if (IU_ENABLE_SFTP)
@@ -268,28 +336,29 @@ if (IU_ENABLE_SFTP)
 endif()
 
 if (WIN32)
-    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon)
+    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)
-#    SUPPORTS ONLY DYNAMIC LIBRARIES :(
-#    find_program(NUGET_EXE NAMES nuget)
-#    if(NOT NUGET_EXE)
-#        message("NUGET.EXE not found.")
-#        message(FATAL_ERROR "Please install this executable, and run CMake again.")
-#    endif()
+    set_target_properties(iucore PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    set_target_properties(iucore PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+    set_target_properties(iucore PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
 
-#    exec_program(${NUGET_EXE} ARGS install "Microsoft.Web.WebView2" -Version 1.0.1774.30 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages RETURN_VALUE varrr)
-#    message("Var")
-#    message(${varrr})
-#    exec_program(${NUGET_EXE} ARGS install "Microsoft.Windows.ImplementationLibrary" -Version 1.0.230411.1 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages) 
-#    target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
-#    target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
-    target_link_libraries(iucore PUBLIC WebView2LoaderStatic.lib version.lib)
+    #find_program(NUGET_EXE NAMES nuget)
+    #if(NOT NUGET_EXE)
+    #    message("NUGET.EXE not found.")
+    #    message(FATAL_ERROR "Please install this executable, and run CMake again.")
+    #endif()
+    #execute_process(COMMAND ${NUGET_EXE} install "Microsoft.Web.WebView2" -Version 1.0.2592.51 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
+    #  execute_process(COMMAND ${NUGET_EXE} install "Microsoft.Windows.ImplementationLibrary" -Version 1.0.240122.1 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages) 
+    #  set_target_properties(iucore PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    #   target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
+    #  target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
+    #    target_link_libraries(iucore PUBLIC WebView2LoaderStatic.lib version.lib)
 endif()
 
-if(MSVC)
-    target_compile_options(iucore PRIVATE "/MP")
-endif()
+#if(MSVC)
+#    target_compile_options(iucore PRIVATE "/MP")
+#endif()
 
 set_target_properties(iucore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

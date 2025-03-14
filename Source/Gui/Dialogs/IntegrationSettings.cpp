@@ -29,6 +29,7 @@
 #include "Core/Utils/CryptoUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Func/MyEngineList.h"
+#include "Core/AbstractServerIconCache.h"
 
 // CIntegrationSettings
 CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)
@@ -119,7 +120,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     return 1;  // Let the system set the focus
 }
 
-bool CIntegrationSettings::Apply()
+bool CIntegrationSettings::apply()
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu; 
@@ -167,7 +168,7 @@ bool CIntegrationSettings::Apply()
                     itemId.Replace(L":",L"_");
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
-
+                    auto iconCache = ServiceLocator::instance()->serverIconCache();
                     if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
@@ -175,7 +176,7 @@ bool CIntegrationSettings::Apply()
                         Reg2.WriteString( "FolderId", Utf8ToWCstring(lid->serverProfile.folderId() ) );
                         Reg2.WriteString( "FolderTitle", Utf8ToWCstring(lid->serverProfile.folderTitle()) );
                         Reg2.WriteString( "FolderUrl", Utf8ToWCstring(lid->serverProfile.folderUrl()) );
-                        CString icon = myEngineList->getIconNameForServer(lid->serverProfile.serverName());
+                        CString icon = U2W(iconCache->getIconNameForServer(lid->serverProfile.serverName()));
                         CUploadEngineData * ued = lid->serverProfile.uploadEngineData();
                         if ( ued ) {
                             Reg2.WriteDword( "ServerTypeMask", static_cast<DWORD>(ued->TypeMask) );

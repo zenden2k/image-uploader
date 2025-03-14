@@ -26,10 +26,13 @@
 #include "Core/Scripting/API/ScriptAPI.h"
 #include "Core/Upload/FileUploadTask.h"
 #include "Core/Upload/UrlShorteningTask.h"
+#include "Core/Upload/SearchByImageFileTask.h"
 #include "Core/Upload/ServerSync.h"
 #include "Core/ThreadSync.h"
 #include "AuthTask.h"
 #include "FolderTask.h"
+#include "Parameters/TextParameter.h"
+#include "Parameters/ParameterFactory.h"
 
 namespace {
 
@@ -37,6 +40,10 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
     int res = 0;
 
     Sqrat::Table t;
+    if (!obj) {
+        LOG(WARNING) << "Invalid result type";
+        return { 0, t };
+    }
 
     if (obj->GetType() == OT_INTEGER) {
         res = obj->Cast<int>();
@@ -47,6 +54,42 @@ std::pair<int, Sqrat::Table> GetOperationResult(Sqrat::SharedPtr<Sqrat::Object> 
         LOG(WARNING) << "Invalid result type";
     }
     return {res, t};
+}
+
+void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& list) {
+    list.clear();
+    Sqrat::Object::iterator it;
+    while (tbl->Next(it)) {
+        Sqrat::Object obj(it.getValue(), tbl->GetVM());
+        if (obj.GetType() == OT_STRING) {
+            // The old way to declare a parameter
+            auto newParam = std::make_unique<TextParameter>(it.getName());
+            std::string value = obj.Cast<std::string>();
+            newParam->setTitle(value);
+            list.push_back(std::move(newParam));
+        } else if (obj.GetType() == OT_TABLE) {
+            // The new way to declare a parameter (in a nested table)
+            Sqrat::Table table(it.getValue(), tbl->GetVM());
+            try {
+                if (!table.HasKey("title")) {
+                    throw std::runtime_error("Parameter's declaration should have 'title' key.");
+                }
+                std::string title = ScriptAPI::GetValue(table.GetValue<std::string>("title"));
+                std::string typeStr;
+
+                if (table.HasKey("type")) {
+                    typeStr = ScriptAPI::GetValue(table.GetValue<std::string>("type"));
+                }
+                auto newParam = SqTableToParameter(it.getName(), typeStr, table);
+                if (newParam) {
+                    newParam->setTitle(title);
+                    list.push_back(std::move(newParam));
+                }
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << ex.what();
+            }
+        }
+    }
 }
 
 }
@@ -187,7 +230,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         if (task->type() == UploadTask::TypeFile) {
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function UploadFile not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function UploadFile not found in script")); 
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -198,7 +241,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string("Function ShortenUrl not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function ShortenUrl not found in script")); 
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -208,24 +251,38 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             if ( ival > 0 ) {
                 ival = !params.DirectUrl.empty();
             }
+        } else if (task->type() == UploadTask::TypeSearchByImageFile) {
+            auto searchTask = std::dynamic_pointer_cast<SearchByImageFileTask>(task);
+            Function func(vm_.GetRootTable(), "SearchByImage");
+            if (func.IsNull()) {
+                Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function SearchByImage not found in the script"));
+                currentTask_ = nullptr;
+                return -1;
+            }
+            std::string fileName = searchTask->getFileName();
+            auto [status, table] = GetOperationResult(func.Evaluate<Object>(fileName.c_str(), &params));
+            /*SharedPtr<int> ivalPtr*/ ival = status;
+            /* if (ival > 0) {
+                ival = !params.DirectUrl.empty();
+            }*/
         }
     }
     catch (NetworkClient::AbortedException & ) {
         throw;
     }
     catch (ServerSyncException& e) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
         ival = -1; // fatal error
     }
-	catch (const Sqrat::Exception& e) {
+	/*catch (const Sqrat::Exception& e) {
     	if (!strcmp(e.what(), "unauthorized_exception")) {
             ival = -2;
     	} else {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
     	}
-    }
+    }*/
     catch (std::exception & e) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::uploadFile\r\n" + std::string(e.what()));
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
     }
     
     FlushSquirrelOutput();
@@ -307,7 +364,7 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
     return 1;
 }
 
-int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& list)
+int CScriptUploadEngine::getServerParamList(ParameterList& list)
 {
     using namespace Sqrat;
 
@@ -327,19 +384,9 @@ int CScriptUploadEngine::getServerParamList(std::map<std::string, std::string>& 
             return -1;
         }
 
-        Sqrat::Array::iterator it;
-        list.clear();
-        
-        while (arr->Next(it))
-        {
-            std::string t = Sqrat::Object(it.getValue(), vm_.GetVM()).Cast<std::string>();
-            /*if ( t ) */{
-                //std::string title = t;
-                list[it.getName()] =  std::move(t);
-            }
-        }
+        SqTableToParameterList(arr, list);
     }
-    catch (std::exception& e)
+    catch (const std::exception& e)
     {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::getServerParamList\r\n" + std::string(e.what()));
     }
@@ -411,6 +458,7 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
         checkCallingThread();
         Function func(vm_.GetRootTable(), "ModifyFolder");
         if (func.IsNull()) {
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::modifyFolder\r\n" + std::string("Function ModifyFolder not found in script"));
             return 0;
         }
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&folder));
@@ -442,6 +490,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
         if (func.IsNull()) {
             return -1;
         }
+        //FolderList.setParentFolder(parent);
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&FolderList));
         ival = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {

@@ -21,13 +21,17 @@
 #include "DefaultUploadEngine.h"
 
 #include <boost/format.hpp>
+#include <json/json.h>
 
 #include "Core/3rdpart/pcreplusplus.h"
 #include "UrlShorteningTask.h"
 #include "FileUploadTask.h"
+#include "SearchByImageUrlTask.h"
+#include "SearchByImageFileTask.h"
 #include "Core/Utils/StringUtils.h"
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
+#include "Core/Utils/DesktopUtils.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
 {
@@ -54,6 +58,10 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
             res = doUploadFile(std::dynamic_pointer_cast<FileUploadTask>(task), params);
         } else if (task->type() == UploadTask::TypeUrl) {
             res = doUploadUrl(std::dynamic_pointer_cast<UrlShorteningTask>(task), params);
+        } else if (task->type() == UploadTask::TypeSearchByImageFile) {
+            res = doUploadFile(std::dynamic_pointer_cast<SearchByImageFileTask>(task), params);
+        } else if (task->type() == UploadTask::TypeSearchByImageUrl) {
+            res = doSearchImageByUrl(std::dynamic_pointer_cast<SearchByImageUrlTask>(task), params);
         } else {
             UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
         }
@@ -123,6 +131,17 @@ bool  CDefaultUploadEngine::doUploadUrl(std::shared_ptr<UrlShorteningTask> task,
     return true;
 }
 
+bool CDefaultUploadEngine::doSearchImageByUrl(std::shared_ptr<SearchByImageUrlTask> task, UploadParams& params) {
+    prepareUpload(params);
+    m_Vars["_IMAGEURL"] = task->url();
+    bool actionsExecuteResult = executeActions();
+    if (!actionsExecuteResult) {
+        return false;
+    }
+
+    return true;
+}
+
 void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
     m_Vars.clear();
     if ( m_UploadData->NeedAuthorization ) {
@@ -137,6 +156,9 @@ void CDefaultUploadEngine::prepareUpload(UploadParams& params) {
     m_Vars["_RAND16BITS"] = str(boost::format("%05d") % n);
     m_Vars["_THUMBWIDTH"] = std::to_string(params.thumbWidth);
     m_Vars["_THUMBHEIGHT"] = std::to_string(params.thumbHeight);
+    m_Vars["_THUMBCREATE"] = std::to_string(params.createThumbnail);
+    m_Vars["_THUMBADDTEXT"] = std::to_string(params.addTextOnThumb);
+    m_Vars["_THUMBUSESERVER"] = std::to_string(params.useServerSideThumbnail);
     m_Vars["_THREADID"] = IuCoreUtils::ThreadIdToString(std::this_thread::get_id());
     m_NetworkClient->enableResponseCodeChecking(false);
     m_NetworkClient->setLogger(this);
@@ -215,7 +237,7 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         return ReadServerResponse(Action);
     }
     catch (std::exception& ex) {
-        std::cerr<<ex.what()<<std::endl;
+        LOG(ERROR) << ex.what() << std::endl;
         return false;
     }
 }
@@ -253,75 +275,119 @@ bool CDefaultUploadEngine::reg_single_match(const std::string& pattern, const st
 
 bool CDefaultUploadEngine::ParseAnswer(UploadAction& Action, const std::string& Body)
 {
-    if (!Action.Regexes.empty() && m_UploadData->Debug) {
+    std::string DebugVars;
+    if (!Action.FunctionCalls.empty() && m_UploadData->Debug) {
         DebugMessage(Body, true);
     }
-    std::string DebugVars;
-    for (auto& actionRegExp : Action.Regexes)
+
+    auto assignVars = [&](ActionFunc& actionRegExp, auto callback) {
+        if (actionRegExp.Variables.empty()) {
+            DebugVars += "Variables list is empty!\r\n";
+        }
+
+        for (size_t i = 0; i < actionRegExp.Variables.size(); i++) {
+            ActionVariable& v = actionRegExp.Variables[i];
+            std::string temp;
+            temp = callback(v.nIndex);
+            if (!v.Name.empty()) {
+                if (v.Name[0] == '_')
+                {
+                    serverSync_->setConstVar(v.Name, temp);
+                }
+                else
+                {
+                    m_Vars[v.Name] = temp;
+                }
+                DebugVars += v.Name + " = " + temp + "\r\n";
+            }
+
+        }
+    };
+    for (auto& actionRegExp : Action.FunctionCalls)
     {
-        if (!actionRegExp.Pattern.empty()) {
+        if (!actionRegExp.getArg(1).empty()) {
             std::string codePage;
             if (reg_single_match("text/html;\\s+charset=([\\w-]+)", Body, codePage)) {
                 IuCoreUtils::ConvertToUtf8(Body, codePage);
             }
             const std::string* data = &Body;
             std::string dataSrc;
-            if (!actionRegExp.Data.empty())
+            if (!actionRegExp.getArg(0).empty())
             {
-                dataSrc = ReplaceVars(actionRegExp.Data);
+                dataSrc = ReplaceVars(actionRegExp.getArg(0));
                 data = &dataSrc;
             }
-            try {
-                pcrepp::Pcre reg(actionRegExp.Pattern, "imc");
+            // TODO: rewrite
+            if (actionRegExp.Func == ActionFunc::FUNC_REGEXP) {
+                try {
+                    pcrepp::Pcre reg(actionRegExp.getArg(1), "imc");
 
-                DebugVars += "Regex: " + actionRegExp.Pattern + "\r\n\r\n";
-                if (reg.search(*data)) {
-                    //reg.matches();
-                    if (actionRegExp.Variables.empty()) {
-                        DebugVars += "Variables list is empty!\r\n";
-                    }
-
-                    for (size_t i = 0; i < actionRegExp.Variables.size(); i++) {
-                        ActionVariable& v = actionRegExp.Variables[i];
-                        std::string temp;
-                        temp = reg.get_match(1 + v.nIndex);
-                        if (!v.Name.empty() ) {
-                            if (v.Name[0] == '_')
-                            {
-                                serverSync_->setConstVar(v.Name, temp);
-                            } else
-                            {
-                                m_Vars[v.Name] = temp;
-                            }
-                            DebugVars += v.Name + " = " + temp + "\r\n";
+                    DebugVars += "Regex: " + actionRegExp.getArg(1) + "\r\n\r\n";
+                    if (reg.search(*data)) {
+                        assignVars(actionRegExp, [&](int index) {
+                            return reg.get_match(1 + index);
+                        });
+                    } else {
+                        if (m_UploadData->Debug) {
+                            DebugVars += "NO MATCHES FOUND!\r\n";
                         }
 
+                        if (actionRegExp.Required) {
+                            if (m_UploadData->Debug) {
+                                DebugMessage(DebugVars);
+                            }
+
+                            UploadError(false, "Cannot obtain the necessary information from server response.", &Action);
+                            return false; // ERROR! Current action failed!
+                        }
                     }
                 }
-                else {
+                catch (const std::exception& e) {
+                    UploadError(true, std::string("Regular expression error:") + e.what(), &Action, false);
+                }
+                DebugVars += "\r\n";
+            }
+            else if (actionRegExp.Func == ActionFunc::FUNC_JSON) {
+                Json::Value root;
+
+                Json::Reader reader;
+                reader.parse(*data, root, false);
+                Json::Path jsonPath(ReplaceVars(actionRegExp.getArg(1)), Json::PathArgument());
+                std::string result;
+                const auto& resolved = jsonPath.resolve(root);
+                if (resolved.isString()) {
+                    result = resolved.asCString();
+                } else {
+                    std::stringstream sstr;
+                    sstr << resolved;
+                    result = sstr.str();
+                }
+
+                if (!resolved.isNull()) {
+                    assignVars(actionRegExp, [&result](int index) -> std::string {
+                        if (index == 0) {
+                            return result;
+                        }
+                        return {};
+                    });
+                } else {
                     if (m_UploadData->Debug) {
                         DebugVars += "NO MATCHES FOUND!\r\n";
                     }
 
-                    if (actionRegExp.Required)
-                    {
-                        if (m_UploadData->Debug)
-                        {
+                    if (actionRegExp.Required) {
+                        if (m_UploadData->Debug) {
                             DebugMessage(DebugVars);
                         }
-                      
+
                         UploadError(false, "Cannot obtain the necessary information from server response.", &Action);
                         return false; // ERROR! Current action failed!
                     }
-                   
                 }
-               
+                
             }
-            catch (const std::exception& e) {
-                UploadError(true, std::string("Regular expression error:") + e.what(), &Action, false);
-            }
-            DebugVars += "\r\n";
-        }
+        } 
+        
     }
 
     if (!DebugVars.empty() && m_UploadData->Debug) {
@@ -342,6 +408,11 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
             return true;
         }
     }
+
+    defer<void>([this] {
+        m_NetworkClient->setReferer({});
+        m_NetworkClient->cleanupAfter();
+    });
 
     if (!Action.Description.empty())
         SetStatus(stUserDescription, Action.Description);
@@ -398,7 +469,9 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
     else
     if (Action.Type == "get")
         Result = DoGetAction(Current);
-
+    else if (Action.Type == "openurl") {
+        Result = DesktopUtils::ShellOpenUrl(Current.Url);
+    }
     if (Action.OnlyOnce)
     {
         if (Result)

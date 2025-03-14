@@ -34,6 +34,8 @@
 #include "Core/Network/NetworkClientFactory.h"
 #include "Core/DownloadTask.h"
 #include "Core/3rdpart/UriParser.h"
+#include "Core/Images/ImageLoader.h"
+#include "Core/Utils/MimeTypeHelper.h"
 
 namespace {
 
@@ -55,9 +57,10 @@ bool ExtractLinks(CString text, std::vector<CString>& result) {
 }
 
 // CImageDownloaderDlg
-CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg *wizardDlg, const CString &initialBuffer) {
+CImageDownloaderDlg::CImageDownloaderDlg(CWizardDlg* wizardDlg, const CString& initialBuffer)
+    : m_InitialBuffer(initialBuffer)
+{
     m_WizardDlg = wizardDlg;
-    m_InitialBuffer = initialBuffer;
     m_retCode = 0;
     m_nFilesCount = 0;
     m_nFileDownloaded = 0;
@@ -92,8 +95,9 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     if(!m_InitialBuffer.IsEmpty())
     {
-        ParseBuffer(m_InitialBuffer, false);
-        BeginDownloading(); 
+        if (ParseBuffer(m_InitialBuffer, false) != 0) {
+            BeginDownloading(); 
+        }
     } else {
         CString text;
         if (WinUtils::GetClipboardText(text, m_hWnd)) {
@@ -156,43 +160,46 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
             ais.VirtualFileName = WinUtils::myExtractFileName(ais.RealFileName);
         }
         bool add = true;
-        if(!IuCommonFunctions::IsImage(ais.RealFileName))
-        {
-            std::string mimeType = IuCoreUtils::GetFileMimeType(W2U(ais.RealFileName));
-            if (mimeType.find("image/") != std::string::npos)
-            {
-                CString ext = U2W(IuCoreUtils::GetDefaultExtensionForMimeType(mimeType));
-                if(!ext.IsEmpty())
-                {
-                    CString newFileName = ais.RealFileName + _T(".") + ext;
-                    MoveFile(ais.RealFileName, newFileName);
-                    ais.RealFileName = newFileName;
-                    if (CString(WinUtils::GetFileExt(ais.VirtualFileName)).MakeLower() != ext) {
-                        ais.VirtualFileName += _T(".") + ext;
+        std::string u8FileName = W2U(ais.RealFileName);
+        std::string mimeType = IuCoreUtils::GetFileMimeTypeByContents(u8FileName);
+
+        bool isImage = mimeType.find("image/") != std::string::npos;
+        /* if (!isImage) {
+            mimeType = IuCoreUtils::GetFileMimeType(u8FileName);
+            isImage = mimeType.find("image/") != std::string::npos;
+        }*/
+
+        if (isImage) {
+            CString ext = U2W(MimeTypeHelper::getDefaultExtensionForMimeType(mimeType));
+            if (!ext.IsEmpty()) {
+                CString newFileName = ais.RealFileName + _T(".") + ext;
+                MoveFile(ais.RealFileName, newFileName);
+                ais.RealFileName = newFileName;
+                if (CString(WinUtils::GetFileExt(ais.VirtualFileName)).MakeLower() != ext) {
+                    if (!ais.VirtualFileName.IsEmpty() && ais.VirtualFileName[ais.VirtualFileName.GetLength() - 1] != '.') {
+                        ais.VirtualFileName += _T(".");
                     }
+                    ais.VirtualFileName += ext;
                 }
             }
-            else 
-            {
-                add = false;
-                
-                std::wstring url = IuCoreUtils::Utf8ToWstring(it.url);
-                std::wstring mimeTypeW = IuCoreUtils::Utf8ToWstring(mimeType);
-                std::wstring errorStr = str(boost::wformat(TR("File is not an image.\nUrl: %s\nMime-Type: %s")) % url % mimeTypeW);
-                ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr.c_str());
-            }
+        } else {
+            add = false;
+
+            std::wstring url = IuCoreUtils::Utf8ToWstring(it.url);
+            std::wstring mimeTypeW = IuCoreUtils::Utf8ToWstring(mimeType);
+            std::wstring errorStr = str(boost::wformat(TR("File is not an image.\nUrl: %s\nMime-Type: %s")) % url % mimeTypeW);
+            ServiceLocator::instance()->logger()->write(ILogger::logError, _T("Image Downloader"), errorStr.c_str());
         }
+
         if (add) {
             if (m_WizardDlg) {
                 SendMessage(m_WizardDlg->m_hWnd, WM_MY_ADDIMAGE, reinterpret_cast<WPARAM>(&ais), 0);
             } else {
                 m_downloadedFiles.push_back(ais.RealFileName);
             }
-            m_nSuccessfullDownloads++;
+            ++m_nSuccessfullDownloads;
             
         }
-           
-
     }
     m_nFileDownloaded++;
     SendDlgItemMessage(IDC_DOWNLOADFILESPROGRESS, PBM_SETPOS,  m_nFileDownloaded);
@@ -272,7 +279,7 @@ bool CImageDownloaderDlg::LinksAvailableInText(CString text)
     return !links.empty();
 }
 
-void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
+size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
 {
     CString text = GuiTools::GetWindowText(GetDlgItem(IDC_FILEINFOEDIT));
 
@@ -280,7 +287,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
     if (buffer.Find(_T("\n")) == -1) {
         // Text contains just one link
         uriparser::Uri uri(IuCoreUtils::WstringToUtf8(buffer.GetString()));
-        if (uri.isValid()) {
+        if (uri.isValid() && !uri.scheme().empty()) {
             std::string ext = IuCoreUtils::ExtractFileExt(uri.path());
             if (ext.empty() || IuCommonFunctions::IsImage(U2W(uri.path()))) {
                 if (!text.IsEmpty() && text.Right(1) != _T("\n")) {
@@ -288,7 +295,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
                 }
                 text += buffer + _T("\r\n");
                 SetDlgItemText(IDC_FILEINFOEDIT, text);
-                return;
+                return 1;
             }
         }
     }
@@ -306,6 +313,7 @@ void CImageDownloaderDlg::ParseBuffer(CString buffer,bool OnlyImages)
         }
     }
     SetDlgItemText(IDC_FILEINFOEDIT, text);
+    return links.size();
 }
 
 void CImageDownloaderDlg::clipboardUpdated()

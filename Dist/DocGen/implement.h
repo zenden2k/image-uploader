@@ -1,10 +1,10 @@
 /**
 @file
 @section Implement Functions to implement
-You have to implement at least one function — <code>UploadFile</code>.<br>
-If your service supports authentication, you have to implement <code>Authenticate</code> function.
-If you want to support album listing/creating/modifying, you have to implement also <code>GetFolderList</code>, <code>CreateFolder</code>, 
-<code>ModifyFolder</code>, <code>GetFolderAccessTypeList</code></i>.</p>
+You have to implement at least one function — \ref UploadFile.<br>
+If your service supports authentication, you have to implement \ref Authenticate function.
+If you want to support album listing/creating/modifying, you have to implement also \ref GetFolderList, \ref CreateFolder, 
+ \ref ModifyFolder, \ref GetFolderAccessTypeList</i>.</p>
 */
 
 /**
@@ -33,17 +33,43 @@ array GetFolderAccessTypeList();
 
 /**
 @code{.nut}
-function GetServerParamList()
-{
-	return 
-	{
+function GetServerParamList() {
+	return {
 		useWebdav = "Use WebDav",
-		token = "Token",
-		enableOAuth ="enableOAuth",
-		tokenType = "tokenType",
-		PrevLogin = "PrevLogin",
-		OAuthLogin = "OAuthLogin"
-		
+		someOption = {
+			title = "Some option",
+			type = "text"
+		},
+		useOAuth = {
+			title = "Use OAUth",
+			type = "boolean"
+		},
+		expiration = {
+            title = "Expiration",
+            type = "choice",
+            items = [
+                {
+                    id = "",
+                    label = Never"
+                },
+                {
+                    id = "PT5M",
+                    label = "15 minutes"
+                },
+                {
+                    id = "PT30M",
+                    label = "30 minutes"
+                },
+                {
+                    id = "PT1H",
+                    label = "1 hour"
+                }
+			]
+		},
+		privateKeyPath = {
+            title = "Private key path",
+            type = "filename"
+        } 
 	};
 }
 @endcode

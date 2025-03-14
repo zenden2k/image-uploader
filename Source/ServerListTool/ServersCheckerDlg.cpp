@@ -1,7 +1,6 @@
 #include "ServersCheckerDlg.h"
 
 #include "Gui/Dialogs/LogWindow.h"
-#include "3rdpart/GdiplusH.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
@@ -12,14 +11,10 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Func/WebUtils.h"
 
 namespace ServersListTool
 {
-
-struct TaskDispatcherMessageStruct {
-    TaskRunnerTask callback;
-    bool async;
-};
 
 CServersCheckerDlg::CServersCheckerDlg(WtlGuiSettings* settings, UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, CMyEngineList* engineList,
                     std::shared_ptr<INetworkClientFactory> factory) :
@@ -29,53 +24,33 @@ CServersCheckerDlg::CServersCheckerDlg(WtlGuiSettings* settings, UploadEngineMan
     uploadManager_ = uploadManager;
     engineList_ = engineList;
     contextMenuItemId = -1;
-    m_NeedStop = false;
 }
 
 LRESULT CServersCheckerDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    auto basicSettings = ServiceLocator::instance()->settings<BasicSettings>();
-    //ServiceLocator::instance()->setTaskRunner(this);
     CenterWindow(); // center the dialog on the screen
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     DoDataExchange(FALSE);
 
     // set icons
-    /*icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
+    icon_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
     SetIcon(icon_, TRUE);
     iconSmall_ = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON), LR_DEFAULTCOLOR));
     SetIcon(iconSmall_, FALSE);
-    */
+    
     listView_.Init();
 
     withAccountsRadioButton_.SetCheck(BST_CHECKED);
     checkImageServersCheckBox_.SetCheck(BST_CHECKED);
     listView_.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER);
 
-    /*CString testFileName = WinUtils::GetAppFolder() + "testfile.jpg";
-    CString testURL = "https://github.com/zenden2k/image-uploader/issues";
-    if (xml.LoadFromFile(WCstringToUtf8((WinUtils::GetAppFolder() + "servertool.xml")))) {
-        SimpleXmlNode root = xml.getRoot("ServerListTool");
-        std::string name = root.Attribute("FileName");
-        if (!name.empty()) {
-            testFileName = Utf8ToWstring(name).c_str();
-        }
-        std::string url = root.Attribute("URL");
-        if (!url.empty()) {
-            testURL = Utf8ToWstring(url).c_str();
-        }
-    }*/
-    //basicSettings->MaxThreads = 10;
-
     SetDlgItemText(IDC_TOOLFILEEDIT, U2W(settings_->testFileName));
     SetDlgItemText(IDC_TESTURLEDIT, U2W(settings_->testUrl));
 
     serversChecker_ = std::make_unique<ServersChecker>(&model_, uploadManager_, networkClientFactory_);
     serversChecker_->setOnFinishedCallback(std::bind(&CServersCheckerDlg::processFinished, this));
-    imageList_.Create(16, 16, ILC_COLOR32 | ILC_MASK, 0, 6);
-    listView_.SetImageList(imageList_, LVSIL_NORMAL);
     return TRUE;
 }
 
@@ -131,21 +106,40 @@ LRESULT CServersCheckerDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM l
     return 0;
 }
 
-LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+void CServersCheckerDlg::validateSettings() {
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
     if (!WinUtils::FileExists(fileName)) {
-        MessageBox(CString(_T("Test file not found.")) + _T("\r\n") + fileName, APPNAME, MB_ICONERROR);
-        return 0;
+        throw ValidationException(CString(_T("Test file not found.")) + _T("\r\n") + fileName);
     }
 
+    bool checkUrlShorteners = checkUrlShortenersCheckBox_.GetCheck() == BST_CHECKED;
+    CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
+    if (checkUrlShorteners ){
+        if (url.IsEmpty()) {
+            throw ValidationException(_T("URL should not be empty!"));
+        }
+        if (!WebUtils::IsValidUrl(url)) {
+            throw ValidationException(_T("Invalid URL"));
+        }
+    }
+}
+
+LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    try {
+        validateSettings();
+    } catch (const ValidationException& ex) {
+        GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, APPNAME, MB_ICONERROR);
+        return 0;
+    }
+    CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));
+    std::string utf8FileName = W2U(fileName);
     sourceFileHash_ = U2W(IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)));
     CString report = _T("Source file: ") + GetFileInfo(fileName, &sourceFileInfo_);
     SetDlgItemText(IDC_TOOLSOURCEFILE, report);
     ::EnableWindow(GetDlgItem(IDOK), false);
     ::EnableWindow(GetDlgItem(IDCANCEL), false);
     GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, true);
-    m_NeedStop = false;
 
     bool useAccounts = withAccountsRadioButton_.GetCheck() == BST_CHECKED || alwaysWithAccountsRadioButton_.GetCheck() == BST_CHECKED;
     bool onlyAccs = alwaysWithAccountsRadioButton_.GetCheck() == BST_CHECKED;
@@ -161,19 +155,12 @@ LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
     serversChecker_->setUseAccounts(useAccounts);
     model_.resetData();
 
-    if (!WinUtils::FileExists(fileName)) {
-        LOG(ERROR) << "File not found " << fileName;
-        processFinished();
-        return -1;
-    }
     CString url = GuiTools::GetWindowText(GetDlgItem(IDC_TESTURLEDIT));
-    if (checkUrlShorteners && url.IsEmpty()) {
-        LOG(ERROR) << "URL should not be empty!";
-        processFinished();
-        return -1;
-    }
-
-    serversChecker_->start(W2U(fileName), W2U(url));
+    std::string utf8Url = W2U(url);
+    settings_->testFileName = utf8FileName;
+    settings_->testUrl = utf8Url;
+    loadingAnimation_.ShowWindow(SW_SHOW);
+    serversChecker_->start(utf8FileName, utf8Url);
     return 0;
 }
 
@@ -221,7 +208,6 @@ LRESULT CServersCheckerDlg::OnBrowseButton(WORD /*wNotifyCode*/, WORD wID, HWND 
 
 void CServersCheckerDlg::stop()
 {
-    m_NeedStop = true;
     serversChecker_->stop();
 }
 
@@ -230,17 +216,14 @@ bool CServersCheckerDlg::isRunning() const
     return serversChecker_->isRunning();
 }
 
-bool CServersCheckerDlg::OnNeedStop() const
-{
-    return m_NeedStop;
-}
-
 void CServersCheckerDlg::processFinished() {
-    ::EnableWindow(GetDlgItem(IDOK), true);
-    ::EnableWindow(GetDlgItem(IDCANCEL), true);
-    GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+        ::EnableWindow(GetDlgItem(IDOK), true);
+        ::EnableWindow(GetDlgItem(IDCANCEL), true);
+        GuiTools::ShowDialogItem(m_hWnd, IDC_STOPBUTTON, false);
+        loadingAnimation_.ShowWindow(SW_HIDE);
+    });
 }
-
 
 LRESULT CServersCheckerDlg::OnErrorLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -255,8 +238,10 @@ LRESULT CServersCheckerDlg::OnSkipAll(WORD /*wNotifyCode*/, WORD wID, HWND /*hWn
         ServerData* sd = model_.getDataByIndex(i);
         if (sd) {
             sd->skip = !sd->skip;
+            model_.notifyRowChanged(i);
         }
     }
+
     listView_.Invalidate();
     return 0;
 }

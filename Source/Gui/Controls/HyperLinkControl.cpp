@@ -56,14 +56,6 @@ CHyperLinkControl::CHyperLinkControl()
     handCursor_ = LoadCursor(nullptr, IDC_HAND); // Loading "Hand" cursor into memory
     arrowCursor_ = LoadCursor(nullptr, IDC_ARROW);
     SetThemeClassList ( L"globals" );
-    HDC hdc = ::GetDC(nullptr);
-    if (hdc) {
-        dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
-        dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
-        ::ReleaseDC(nullptr, hdc);
-    } else {
-        dpiX = dpiY = 96.0;
-    }
 }
 
 CHyperLinkControl::~CHyperLinkControl()
@@ -169,6 +161,17 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    auto scaleX = [dpiX](int x) {
+        return MulDiv(x, dpiX, 96);
+    };
+
+    auto scaleY = [dpiY](int y) {
+        return MulDiv(y, dpiY, 96);
+    };
+
     SIZE tipDimensions = GetTextDimensions(dc, szTip, NormalFont);
     int szTipWidth = szTip ? tipDimensions.cx : 0;
     SIZE titleDimensions = GetTextDimensions(dc, szTitle, BoldFont);
@@ -176,12 +179,12 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
 
     if (szTip) {
         if (SubItemRightY != -1) {
-            BottomY += ScaleY(12);
+            BottomY += scaleY(12);
         }
         item.ItemRect.left = 5;
-        item.ItemRect.top = BottomY + (m_bHyperLinks ? ScaleY(15) : ScaleY(10));
-        item.ItemRect.right = ScaleX(10) + item.ItemRect.left + item.iconWidth + TitleWidth + 1/*ClientRect.right*/;
-        int height = std::max<int>(tipDimensions.cy + titleDimensions.cy + ScaleY(3), item.iconHeight);
+        item.ItemRect.top = BottomY + (m_bHyperLinks ? scaleY(15) : scaleY(10));
+        item.ItemRect.right = scaleX(10) + item.ItemRect.left + item.iconWidth + TitleWidth + 1/*ClientRect.right*/;
+        int height = std::max<int>(tipDimensions.cy + titleDimensions.cy + scaleY(3), item.iconHeight);
         item.ItemRect.bottom = item.ItemRect.top + height;
 
         BottomY = item.ItemRect.bottom;
@@ -194,22 +197,22 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
             if (SubItemRightY == -1) {
                 SubItemRightY = 35;
             } else {
-                SubItemRightY += ScaleY(20);
+                SubItemRightY += scaleY(20);
             }
         }
         if (LineBreak) {
             SubItemRightY = 35;
-            BottomY += ScaleY(20);
+            BottomY += scaleY(20);
         }
         {
             item.ItemRect.left = SubItemRightY;
-            item.ItemRect.top = BottomY + ((BottomY > 1) ? ScaleY(6) : 0);
+            item.ItemRect.top = BottomY + ((BottomY > 1) ? scaleY(6) : 0);
         }
         if (!m_bHyperLinks) {
-            item.ItemRect.top += ScaleY(5);
+            item.ItemRect.top += scaleY(5);
         }
-        item.ItemRect.right = 1 + GetTextWidth(dc, szTitle, NormalFont) + ScaleX(23) + item.ItemRect.left;
-        item.ItemRect.bottom = item.ItemRect.top + ScaleY(20);
+        item.ItemRect.right = 1 + GetTextWidth(dc, szTitle, NormalFont) + scaleX(23) + item.ItemRect.left;
+        item.ItemRect.bottom = item.ItemRect.top + scaleY(20);
         SubItemRightY += item.ItemRect.right - item.ItemRect.left;
     }
     Items.Add(item);
@@ -415,6 +418,19 @@ void CHyperLinkControl::CreateDoubleBuffer() {
 
 LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    CPaintDC paintDc(m_hWnd);
+
+    int dpiX = paintDc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = paintDc.GetDeviceCaps(LOGPIXELSY);
+
+    auto scaleX = [dpiX](int x) {
+        return MulDiv(x, dpiX, 96);
+    };
+
+    auto scaleY = [dpiY](int y) {
+        return MulDiv(y, dpiY, 96);
+    };
+
     RECT rc;
     GetClientRect(&rc);
     CRect r(rc);
@@ -435,7 +451,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             continue;
         }
         bool isHighlighted = static_cast<size_t>(selectedItemIndex_) == i || hoverItemIndex_ == i;
-        dc.SetTextColor(RGB(0,0,0));
+        COLORREF oldTextColor = dc.SetTextColor(RGB(0,0,0));
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
@@ -449,10 +465,10 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
                 GuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
             }
 
-            TextRect.left += item.iconWidth + ScaleX(5);
+            TextRect.left += item.iconWidth + scaleX(5);
             if(!m_bHyperLinks){
-                TextRect.left +=ScaleX(20);
-                TextRect.right +=ScaleX(20);
+                TextRect.left +=scaleX(20);
+                TextRect.right +=scaleX(20);
             }
             HFONT oldFont;
             if (isHighlighted && m_bHyperLinks) {
@@ -482,7 +498,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             }
             dc.SetTextColor(RGB(100,100,100));
 
-            ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top + TextDims.cy + ScaleY(3), ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
+            ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top + TextDims.cy + scaleY(3), ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 
             dc.SetBkMode(TRANSPARENT);
             if(m_bHyperLinks){
@@ -504,12 +520,11 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
             dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon, iconSmallWidth, iconSmallHeight);
                 
-            dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + ScaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
+            dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + scaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
         }
+        dc.SetTextColor(oldTextColor);
     }
-
-    CPaintDC paintDc(m_hWnd);
 
     paintDc.BitBlt(0, 0, rc.right - rc.left, rc.bottom - rc.top, dcMem_, 0, 0, SRCCOPY);
     return 0;
@@ -613,6 +628,18 @@ int CHyperLinkControl::selectedItemIndex() const {
     return selectedItemIndex_;
 }
 
+int CHyperLinkControl::desiredHeight() const {
+    CClientDC dc(m_hWnd);
+
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+    auto scaleY = [dpiY](int y) {
+        return MulDiv(y, dpiY, USER_DEFAULT_SCREEN_DPI);
+    };
+
+    return BottomY + scaleY(3);
+}
+
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)
 {
     bool SubItem = false;
@@ -655,12 +682,4 @@ LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam,
         }
     } 
     return retFlags;
-}
-
-int CHyperLinkControl::ScaleX(int x) const 
-{  
-    return MulDiv(x, dpiX, 96); 
-}
-int CHyperLinkControl::ScaleY(int y) const { 
-    return MulDiv(y, dpiY, 96);
 }

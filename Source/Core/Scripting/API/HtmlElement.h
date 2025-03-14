@@ -35,18 +35,18 @@ public:
     HtmlElement();
     HtmlElement(HtmlElementPrivate* pr);
 
-    const std::string getAttribute(const std::string& name);
+    std::string getAttribute(const std::string& name);
     void setAttribute(const std::string& name, const std::string& value);
     void removeAttribute(const std::string& name);
-    const std::string getId();
+    std::string getId();
     void setId(const std::string& id);
-    const std::string getInnerHTML();
+    std::string getInnerHTML();
     void setInnerHTML(const std::string& html);
-    const std::string getInnerText();
+    std::string getInnerText();
     void setInnerText(const std::string& text);
-    const std::string getOuterHTML();
+    std::string getOuterHTML();
     void setOuterHTML(const std::string& html);
-    const std::string getOuterText();
+    std::string getOuterText();
     void setOuterText(const std::string& text);
     /**
     Set value of an input element.
@@ -58,8 +58,8 @@ public:
     /**
     Get value of an input element.
     */
-    const std::string getValue();
-    const std::string getTagName();
+    std::string getValue();
+    std::string getTagName();
     HtmlElement getParentElement();
     void scrollIntoView();
     void click();

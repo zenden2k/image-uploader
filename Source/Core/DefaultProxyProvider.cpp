@@ -214,20 +214,5 @@ bool DefaultProxyProvider::obtainProxyConfig() {
 }
 
 CString DefaultProxyProvider::proxyForUrlErrorToString(DWORD errorCode) const {
-    std::map<DWORD, const wchar_t*> errorMap = {
-        { ERROR_IO_PENDING, L"ERROR_IO_PENDING"},
-        { ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR, L"ERROR_WINHTTP_AUTO_PROXY_SERVICE_ERROR" },
-        { ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT, L"ERROR_WINHTTP_BAD_AUTO_PROXY_SCRIPT" },
-        { ERROR_WINHTTP_INCORRECT_HANDLE_TYPE, L"ERROR_WINHTTP_INCORRECT_HANDLE_TYPE" },
-        { ERROR_WINHTTP_INVALID_URL, L"ERROR_WINHTTP_INVALID_URL" },
-        { ERROR_WINHTTP_OPERATION_CANCELLED, L"ERROR_WINHTTP_OPERATION_CANCELLED" },
-        { ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT, L"ERROR_WINHTTP_UNABLE_TO_DOWNLOAD_SCRIPT" },
-        { ERROR_WINHTTP_UNRECOGNIZED_SCHEME, L"ERROR_WINHTTP_UNRECOGNIZED_SCHEME" },
-        { ERROR_NOT_ENOUGH_MEMORY, L"ERROR_NOT_ENOUGH_MEMORY" } 
-    };
-    auto it = errorMap.find(errorCode);
-    if (it != errorMap.end()) {
-        return it->second;
-    }
-    return WinUtils::ErrorCodeToString(errorCode);
+    return WinUtils::ErrorCodeToString(errorCode, GetModuleHandle(_T("winhttp.dll")));
 }

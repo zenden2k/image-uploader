@@ -40,7 +40,7 @@ bool UploadFilterScript::preUpload(UploadTask* task)
         if (func.IsNull()) {
             return true;
         }
-        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskWrapper(task), 0));
+        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskUnion(task), 0));
         FlushSquirrelOutput();
         return res;
     }
@@ -63,7 +63,7 @@ bool UploadFilterScript::postUpload(UploadTask* task)
         if (func.IsNull()) {
             return true;
         }
-        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskWrapper(task), 0));
+        bool res = ScriptAPI::GetValue(func.Evaluate<bool>(ScriptAPI::UploadTaskUnion(task), 0));
         FlushSquirrelOutput();
         return res;
     }

@@ -511,6 +511,8 @@ public:
       GetItemRect(idx, &rc);
       if( (m_dwExtStyle & PLS_EX_CATEGORIZED) != 0 ) rc.left += CATEGORY_INDENT;
       rc.left += m_iMiddle + 1;
+      rc.bottom--;
+      //rc.top += 2;
    }
 
    BOOL _SpawnInplaceWindow(IProperty* prop, int idx)
@@ -524,7 +526,8 @@ public:
       // Create a new editor window
       RECT rcValue = { 0 };
       _GetInPlaceRect(idx, rcValue);
-      ::InflateRect(&rcValue, 0, -1);
+      
+      //::InflateRect(&rcValue, 0, -1);
       m_hwndInplace = prop->CreateInplaceControl(m_hWnd, rcValue);
       if( m_hwndInplace != NULL ) {
          // Activate the new editor window
@@ -994,7 +997,7 @@ public:
 
    void MeasureItem(LPMEASUREITEMSTRUCT lpMIS)
    {
-      lpMIS->itemHeight = m_di.tmText.tmHeight + 3;
+      lpMIS->itemHeight = m_di.tmText.tmHeight + 7;
    }
 
    void DrawItem(LPDRAWITEMSTRUCT lpDIS)

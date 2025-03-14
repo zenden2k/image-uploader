@@ -9,13 +9,17 @@ set(SRC_LIST
    ../Core/Utils/Tests/CryptoUtilsTest.cpp
    ../Core/Utils/Tests/StringUtilsTest.cpp
    ../Core/Utils/Tests/TextUtilsTest.cpp
+   ../Core/Utils/Tests/SimpleXmlTest.cpp
    ../Core/Upload/Tests/UploadEngineListTest.cpp
+   ../Core/Upload/Tests/UploadEngineDataTest.cpp
    ../Core/Upload/Tests/ScriptUploadEngineTest.cpp
    ../Core/Upload/Tests/DefaultUploadEngineTest.cpp
    ../Core/3rdpart/GumboQuery/Tests/GumboTest.cpp
    ../Core/DownloadTaskTest.cpp
    ../Core/Network/Tests/NetworkClientTest.cpp
    ../Core/Network/Tests/CurlTest.cpp
+   ../CLI/ConsoleScriptFunctionsImpl.cpp
+   ../Core/Settings/CliSettings.cpp
 )
 if(WIN32)
     list(APPEND SRC_LIST 
@@ -31,15 +35,20 @@ if(WIN32)
         ../Core/Images/Thumbnail.cpp
         ../Core/3rdpart/parser.cpp
         ../Func/MyUtils.cpp
-        ../3rdpart/QColorQuantizer.cpp
-		../Core/FileDownloader.cpp
+        ../Core/FileDownloader.cpp
         ../Core/FileDownloaderTest.cpp
         ../Video/Tests/VideoGrabberTest.cpp
-        ../Core/Settings/CliSettings.cpp
     )
+   
 endif()
 
 add_executable(Tests ${SRC_LIST})
+
+if (IU_ENABLE_WEBVIEW2)
+    set_target_properties(Tests PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    set_target_properties(Tests PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+    set_target_properties(Tests PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+endif()
 
 set_target_properties(Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/Tests/)
 if(WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
@@ -56,7 +65,7 @@ else()
     #list(APPEND LIBS_LIST icuuc icui18n gtest)
 endif()
 
-target_link_libraries(Tests iucore iuvideo GTest::GTest ${COMMON_LIBS_LIST})
+target_link_libraries(Tests iucore iuvideo GTest::gtest GTest::gmock ${COMMON_LIBS_LIST}) 
 
 if (NOT CMAKE_CROSSCOMPILING)
 	include(GoogleTest)

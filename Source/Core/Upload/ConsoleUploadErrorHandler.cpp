@@ -40,14 +40,14 @@ void ConsoleUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
         }
     }
 
-    std::cerr << IuCoreUtils::Utf8ToSystemLocale(infoText) << std::endl;
+    std::cerr << std::endl << IuCoreUtils::Utf8ToSystemLocale(infoText) << std::endl;
     std::cerr << IuCoreUtils::Utf8ToSystemLocale(errorMsg) << std::endl;
     std::cerr << "---------------------" << std::endl;
 }
 
 void ConsoleUploadErrorHandler::DebugMessage(const std::string& msg, bool isResponseBody) {
 #ifdef _WIN32
-    std::wcerr << IuCoreUtils::Utf8ToWstring(msg) << std::endl;;
+    std::wcerr << IuCoreUtils::Utf8ToWstring(msg) << std::endl;
 #else
     std::cerr << IuCoreUtils::Utf8ToSystemLocale(msg) << std::endl;
 #endif

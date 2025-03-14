@@ -49,7 +49,6 @@ CVideoGrabberPage::CVideoGrabberPage(UploadEngineManager* uploadEngineManager)
 {
 	Terminated = true;
     grabbedFramesCount = 0;
-    originalGrabInfoLabelWidth_ = 0;
     uploadEngineManager_ = uploadEngineManager;
     ThumbsView.SetDeletePhysicalFiles(true);
     NumOfFrames = 0;
@@ -79,32 +78,32 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 
     TRC(IDC_PATHTOFILELABEL, "Filename:");
     TRC(IDCANCEL, "Stop");
-    TRC(IDC_DEINTERLACE, "Deinterlace");
     TRC(IDC_FRAMELABEL, "Number of frames:");
-    TRC(IDC_MULTIPLEFILES, "Multiple files");
-    TRC(IDC_SAVEASONE, "Single file");
+    TRC(IDC_MULTIPLEFILES, "multiple files");
+    TRC(IDC_SAVEASONE, "single file (mosaic)");
     TRC(IDC_SAVEAS, "Save as:");
     TRC(IDC_GRAB, "Grab");
-    TRC(IDC_GRABBERPARAMS, "Settings...");
     TRC(IDC_FILEINFOBUTTON, "Information about file");
-    openInFolderLink_.SetLabel(TR("Open containing folder"));
-    openInFolderLink_.SubclassWindow(GetDlgItem(IDC_OPENFOLDER));
-    openInFolderLink_.m_dwExtendedStyle |= HLINK_COMMANDBUTTON | HLINK_UNDERLINEHOVER; 
-    openInFolderLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+    TRC(IDC_OPTIONSBUTTON, "Options");
 
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineAuto);
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow);
-    videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineDirectshow2);
-    if (WtlGuiSettings::IsFFmpegAvailable()) {
-        videoEngineCombo_.AddString(WtlGuiSettings::VideoEngineFFmpeg);
+    optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
+
+    videoEngines_ = CommonGuiSettings::VideoEngines;
+
+    // Sort video engines alphabetically
+    std::sort(videoEngines_.begin(), videoEngines_.end(), [](auto& l, auto& r) {
+        int res = IuStringUtils::stricmp(l.c_str(), r.c_str());
+        return res < 0;
+    });
+
+    int i = 0;
+    for (const auto& engine : videoEngines_) {
+        if (Settings.VideoSettings.Engine == engine) {
+            currentVideoEngine = i;
+        }
+        i++;
     }
 
-    int itemIndex = videoEngineCombo_.FindStringExact(0, Settings.VideoSettings.Engine);
-    if ( itemIndex == CB_ERR){
-        itemIndex = 0;
-    }
-    
-    videoEngineCombo_.SetCurSel(itemIndex);
     fileEdit_.SetWindowText(fileName_);
 
     bool check = true;
@@ -117,10 +116,9 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     ThumbsView.SubclassWindow(GetDlgItem(IDC_THUMBLIST));
     ThumbsView.Init();
 
-    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
+    /*toolTipCtrl_ = GuiTools::CreateToolTipForWindow(GetDlgItem(IDC_VIDEOENGINECOMBO),
         TR("Video engine which is used to extract frames from a video file."));
-
-    GuiTools::AddToolTip(toolTipCtrl_, GetDlgItem(IDC_DEINTERLACE), TR("Deinterlace video"));
+    */
     return 1;  // Let the system set the focus
 }
 
@@ -157,10 +155,9 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     Terminated = false;
 
     ::ShowWindow(GetDlgItem(IDC_FRAMELABEL), SW_HIDE);
-    ::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_NUMOFFRAMESEDIT), SW_HIDE);
     ::ShowWindow(GetDlgItem(IDC_UPDOWN), SW_HIDE);
-    ::ShowWindow(GetDlgItem(IDC_VIDEOENGINECOMBO), SW_HIDE);
+    optionsButton_.ShowWindow(SW_HIDE);
 
     ::ShowWindow(GetDlgItem(IDCANCEL), SW_SHOW);
 
@@ -168,11 +165,6 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     ::EnableWindow(GetDlgItem(IDC_FILEEDIT), 0);
     ::EnableWindow(GetDlgItem(IDC_SELECTVIDEO), 0);
     ::ShowWindow(GetDlgItem(IDC_PROGRESSBAR), SW_SHOW);
-
-    int videoEngineIndex = videoEngineCombo_.GetCurSel();
-    CString buf;
-    videoEngineCombo_.GetLBText(videoEngineIndex, buf);
-    settings->VideoSettings.Engine = buf;
 
     SetNextCaption(TR("Next >"));
     EnableNext(false);
@@ -188,18 +180,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames*10));
     CanceledByUser = false;
 
-    openInFolderLink_.ShowWindow(SW_HIDE);
-
-    if ( originalGrabInfoLabelWidth_ ) {
-        RECT grabInfoLabelRect;
-        ::GetClientRect(GetDlgItem(IDC_GRABINFOLABEL), &grabInfoLabelRect);
-        SetDlgItemText(IDC_GRABINFOLABEL, L"");
-        ::SetWindowPos(GetDlgItem(IDC_GRABINFOLABEL), nullptr, 0, 0, originalGrabInfoLabelWidth_, grabInfoLabelRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
-        ::InvalidateRect(GetDlgItem(IDC_GRABINFOLABEL), 0, true);
-    }
-
     snapshotsFolder.Empty();
-    openInFolderLink_.SetToolTipText(_T(""));
 
     GrabBitmaps(fileName);
 
@@ -214,7 +195,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
 
     SetGrabbingStatusText(CString(TR("Extracting frame ")) + title);
 
-    if (SendDlgItemMessage(IDC_DEINTERLACE, BM_GETCHECK) == BST_CHECKED)
+    if (deinterlace_)
     {
         int iwidth = bm->GetWidth();
         int iheight = bm->GetHeight();
@@ -251,7 +232,6 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
         if (snapshotsFolder.IsEmpty()) {
             snapshotsFolder = AppParams::instance()->tempDirectoryW();
         }
-        ServiceLocator::instance()->taskRunner()->runInGuiThread([this] { openInFolderLink_.SetToolTipText(snapshotsFolder); });
     }
 
     CString wOutDir;
@@ -287,20 +267,6 @@ bool CVideoGrabberPage::SetGrabbingStatusText(LPCTSTR String)
 
 int CVideoGrabberPage::ThreadTerminated()
 {
-    int left = GuiTools::GetWindowLeft(openInFolderLink_.m_hWnd);
-    RECT grabInfoLabelRect;
-    HWND grabInfoLabelHwnd = GetDlgItem(IDC_GRABINFOLABEL);
-    ::GetClientRect(grabInfoLabelHwnd, &grabInfoLabelRect);
-    ::SetWindowPos(grabInfoLabelHwnd, NULL, 0,0,left,grabInfoLabelRect.bottom, SWP_NOMOVE|SWP_NOZORDER);
-    if ( !originalGrabInfoLabelWidth_ ) {
-        originalGrabInfoLabelWidth_ = grabInfoLabelRect.right;
-    }
-    ::InvalidateRect(grabInfoLabelHwnd, 0, true);
-
-    if (IuCoreUtils::DirectoryExists(W2U(snapshotsFolder))) {
-        openInFolderLink_.ShowWindow(SW_SHOW);
-    }
-
     Terminated = true;
 
     ::EnableWindow(GetDlgItem(IDC_GRAB), 1);
@@ -311,10 +277,9 @@ int CVideoGrabberPage::ThreadTerminated()
         SetGrabbingStatusText(TR("Extracting video frames was stopped by user."));
 
     ::ShowWindow(GetDlgItem(IDC_FRAMELABEL), SW_SHOW);
-    ::ShowWindow(GetDlgItem(IDC_DEINTERLACE), SW_SHOW);
     ::ShowWindow(GetDlgItem(IDC_NUMOFFRAMESEDIT), SW_SHOW);
     ::ShowWindow(GetDlgItem(IDC_UPDOWN), SW_SHOW);
-    ::ShowWindow(GetDlgItem(IDC_VIDEOENGINECOMBO), SW_SHOW);
+    optionsButton_.ShowWindow(SW_SHOW);
     CheckEnableNext();
     ::EnableWindow(GetDlgItem(IDC_FILEEDIT), 1);
     ::EnableWindow(GetDlgItem(IDC_SELECTVIDEO), 1);
@@ -344,7 +309,7 @@ LRESULT CVideoGrabberPage::OnBnClickedMultiplefiles(WORD /*wNotifyCode*/, WORD /
 void CVideoGrabberPage::SavingMethodChanged(void)
 {
     BOOL check = SendDlgItemMessage(IDC_MULTIPLEFILES, BM_GETCHECK);
-    ::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS), !check);
+    //::EnableWindow(GetDlgItem(IDC_GRABBERPARAMS), !check);
 }
 
 int CVideoGrabberPage::GenPicture(CString& outFileName)
@@ -355,24 +320,22 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 	std::vector<ImageGeneratorTask::FileItem> items;
 	for (int i = 0; i < n; i++) {
 		buf[0] = _T('\0');
-		CString fileName = ThumbsView.GetFileName(i);
+		LPCTSTR fileName = ThumbsView.GetFileName(i);
 		ThumbsView.GetItemText(i, 0, buf, 256);
 		items.emplace_back(fileName, buf);
 	}
 	CString mediaFile = GuiTools::GetDlgItemText(m_hWnd, IDC_FILEEDIT);
 	auto task = std::make_shared<ImageGeneratorTask>(items, ThumbsView.maxwidth, ThumbsView.maxheight, mediaFile);
-	
-	task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
+
+    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([task, mainDlg](BackgroundTask*, BackgroundTaskResult taskResult) {
 		if (taskResult == BackgroundTaskResult::Success && !task->outFileName().IsEmpty()) {
 			mainDlg->AddToFileList(task->outFileName(), L"", true, nullptr, true);
 		}
-
 	});
 	CStatusDlg dlg(task);
 	if (dlg.DoModal(m_hWnd) == IDOK) {
 		return 1;
 	}
-
 	return 0;
 }
 
@@ -398,7 +361,7 @@ LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*
 int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString videoEngine = settings->VideoSettings.Engine;
+    std::string videoEngine = settings->VideoSettings.Engine;
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
         if ( !settings->IsFFmpegAvailable() ) {
@@ -411,14 +374,6 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
             }
         }
     }
-
-    settings->VideoSettings.NumOfFrames = NumOfFrames;
-
-    videoGrabber_ = std::make_unique<VideoGrabber>();
-    videoGrabber_->setFrameCount(NumOfFrames);
-    using namespace std::placeholders;
-    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
-    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
 #ifdef IU_ENABLE_FFMPEG
     if (videoEngine == WtlGuiSettings::VideoEngineFFmpeg) {
@@ -429,7 +384,17 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
         engine = VideoGrabber::veDirectShow;
     } else if (videoEngine == WtlGuiSettings::VideoEngineDirectshow2) {
         engine = VideoGrabber::veDirectShow2;
+    } else if (videoEngine == WtlGuiSettings::VideoEngineMediaFoundation) {
+        engine = VideoGrabber::veMediaFoundation;
     }
+
+    settings->VideoSettings.NumOfFrames = NumOfFrames;
+
+    videoGrabber_ = std::make_unique<VideoGrabber>();
+    videoGrabber_->setFrameCount(NumOfFrames);
+    using namespace std::placeholders;
+    videoGrabber_->setOnFrameGrabbed(std::bind(&CVideoGrabberPage::OnFrameGrabbed, this, _1, _2, _3));
+    videoGrabber_->setOnFinished(std::bind(&CVideoGrabberPage::OnFrameGrabbingFinished, this, _1));
 
     videoGrabber_->setVideoEngine(engine);
     videoGrabber_->grab(W2U(szFile));
@@ -475,6 +440,38 @@ void CVideoGrabberPage::OnFrameGrabbingFinished(bool success)
     if (!CanceledByUser) {
         SetGrabbingStatusText(success ? TR("Extracting video frames was finished."): TR("An error occured while extracting video frames."));
     }
+}
+
+void CVideoGrabberPage::optionsButtonClicked() {
+    RECT rc {};
+    optionsButton_.GetWindowRect(&rc);
+    POINT menuOrigin { rc.left, rc.bottom };
+
+    CMenu videoEngineMenu;
+    videoEngineMenu.CreatePopupMenu();
+    int i = 0;
+    for (const auto& engine : videoEngines_) {
+        videoEngineMenu.AppendMenu(
+            MF_STRING | MFT_RADIOCHECK | (currentVideoEngine == i ? MF_CHECKED : MF_UNCHECKED),
+            ID_VIDEOENGINEFIRST + i, U2W(engine)
+        );
+        i++;
+    }
+
+    CMenu popupMenu;
+    popupMenu.CreatePopupMenu();
+    popupMenu.AppendMenu(MF_STRING, videoEngineMenu, TR("Video backend"));
+    popupMenu.AppendMenu(MF_STRING | (deinterlace_ ? MF_CHECKED : MF_UNCHECKED), ID_DEINTERLACE, TR("Deinterlace"));
+    popupMenu.AppendMenu(MF_STRING, ID_VIDEOSETTINGS, TR("Additional options..."));
+    popupMenu.AppendMenu(MF_SEPARATOR);
+    bool enableOpenFolderMenuItem = IuCoreUtils::DirectoryExists(W2U(snapshotsFolder)); 
+    popupMenu.AppendMenu(MF_STRING | (enableOpenFolderMenuItem ? MF_ENABLED : MF_DISABLED), ID_OPENFOLDER, TR("Open containing folder"));
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+    popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
 }
 
 void CVideoGrabberPage::CheckEnableNext()
@@ -524,8 +521,9 @@ bool CVideoGrabberPage::OnNext()
     return true;
 }
 
-LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& /*bHandled*/)
+LRESULT CVideoGrabberPage::OnLvnItemDelete(int /*idCtrl*/, LPNMHDR pNMHDR, BOOL& bHandled)
 {
+    bHandled = FALSE;
     CheckEnableNext();
     return 0;
 }
@@ -583,5 +581,31 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 
 LRESULT CVideoGrabberPage::OnOpenFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     WinUtils::ShellOpenFileOrUrl(snapshotsFolder, m_hWnd);
+    return 0;
+}
+
+LRESULT CVideoGrabberPage::OnBnClickedOptions(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    optionsButtonClicked();
+    return 0;
+}
+
+LRESULT CVideoGrabberPage::OnBnDropdownOptions(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    optionsButtonClicked();
+    return 0;
+}
+
+LRESULT CVideoGrabberPage::OnDeinterlace(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    deinterlace_ = !deinterlace_;
+    return 0;
+}
+
+LRESULT CVideoGrabberPage::OnMenuVideoEngine(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int index = wID - ID_VIDEOENGINEFIRST;
+    if (index < 0 || index >= videoEngines_.size()) {
+        return 0;
+    }
+    currentVideoEngine = index;
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    settings->VideoSettings.Engine = videoEngines_[index];
     return 0;
 }

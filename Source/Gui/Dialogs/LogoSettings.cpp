@@ -43,8 +43,6 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_RESIZEBYWIDTH, "Change width:");
     TRC(IDC_YOURLOGO, "Add watermark");
     TRC(IDC_SMARTCONVERTING, "Skip image processing step if the image has right parameters");
-    //TRC(IDC_SAVEPROPORTIONS, "Constrain proportions");
-    //TRC(IDC_YOURLOGO, "Add watermark");
     TRC(IDC_YOURTEXT, "Add text to image");
     TRC(IDC_XLABEL, "and/or height:");
     TRC(IDC_RESIZEMODELABEL, "Resize mode:");
@@ -57,7 +55,7 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_TEXTSTROKECOLOR, "Stroke color:");
     TRC(IDC_SELECTFONT, "Font...");
     TRC(IDC_TEXTPOSITIONLABEL, "Text position:");
-    TRC(IDC_PRESERVE_EXIF, "Preserve EXIF data");
+    TRC(IDC_PRESERVE_EXIF, "Preserve metadata (for ex. EXIF)");
     TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
     SetWindowText(TR("Additional params"));    
 }
@@ -71,13 +69,14 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     convert_profiles_ = settings->ConvertProfiles;
-    TabBackgroundFix(m_hWnd);
     // Translating controls
     TranslateUI();
     RECT rc = {13, 20, 290, 95};
     img.Create(GetDlgItem(IDC_LOGOGROUP), rc);
     img.ShowWindow(SW_HIDE);
     img.loadImage(nullptr);
+
+    profileCombobox_ = GetDlgItem(IDC_PROFILECOMBO);
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_RESIZEMODECOMBO, 3, TR("Fit"), TR("Center"), TR("Stretch"));
     // Items order should be the same as ImageUtils::SaveImageFormat
@@ -202,7 +201,7 @@ LRESULT CLogoSettings::OnBnClickedThumbfont(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
 
-bool CLogoSettings::Apply()
+bool CLogoSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CString saveToProfile = CurrentProfileName;
@@ -305,20 +304,24 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
 }
 
 void CLogoSettings::UpdateProfileList() {
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_RESETCONTENT);
+    profileCombobox_.ResetContent();
 
     bool found = false;
-    for (auto it = convert_profiles_.begin(); it != convert_profiles_.end(); ++it) {
-        GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, it->first);
-        if (it->first == CurrentProfileName) found = true;
+    for (auto it: convert_profiles_) {
+        profileCombobox_.AddString(it.first);
+        if (it.first == CurrentProfileName) {
+            found = true;
+        }
     }
-    if (!found) GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),
-                       reinterpret_cast<LPARAM>(CurrentProfileName.GetString()));
+    if (!found) {
+        profileCombobox_.AddString(CurrentProfileName);
+    }
+
+    profileCombobox_.SelectString(-1, CurrentProfileName);
 }
 
- LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
- {
+LRESULT CLogoSettings::OnSaveProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
+{
     CInputDialog dlg(TR("New Profile Name"), TR("Enter new profile name:"), CurrentProfileOriginalName);
     if(dlg.DoModal(m_hWnd)==IDOK)
     {
@@ -331,7 +334,7 @@ void CLogoSettings::UpdateProfileList() {
          UpdateProfileList();
     }
     return 0;
- }
+}
 
 LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
@@ -349,7 +352,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     return 0;
 }
 
-void CLogoSettings::ShowParams(const CString profileName)
+void CLogoSettings::ShowParams(const CString& profileName)
 {
     if (CurrentProfileName == profileName) {
         return;

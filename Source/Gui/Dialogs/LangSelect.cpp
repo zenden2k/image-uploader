@@ -35,7 +35,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     
     boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
-    auto languageList{ LangHelper::getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
+    auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
 
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     std::string selectedLocale = W2U(settings->Language);

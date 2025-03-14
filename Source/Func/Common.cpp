@@ -130,20 +130,6 @@ void IU_RunElevated(CString params)
     ::ShellExecuteEx(&TempInfo);
 }
 
-DWORD MsgWaitForSingleObject(HANDLE pHandle, DWORD dwMilliseconds)
-{
-    while ((MsgWaitForMultipleObjects(1, &pHandle, FALSE, dwMilliseconds,
-                                      /*QS_ALLEVENTS*/ QS_SENDMESSAGE)) != WAIT_OBJECT_0)
-    {
-        MSG msg;
-        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-    }
-    return 1;
-}
 /*
 CString GetUniqFileName(const CString& filePath)
 {

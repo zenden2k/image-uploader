@@ -31,6 +31,8 @@
 #include "Func/WinUtils.h"
 #include "ClearHistoryDlg.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Core/ServiceLocator.h"
+#include "Core/TaskDispatcher.h"
 
 namespace {
 
@@ -59,7 +61,7 @@ SYSTEMTIME GregorianDateToSystemTime(const boost::gregorian::date& d) {
 CHistoryWindow::CHistoryWindow(CWizardDlg* wizardDlg) :
     m_treeView(ServiceLocator::instance()->networkClientFactory())
 {
-    delayed_closing_ = false;
+    delayedClosing_ = false;
     wizardDlg_ = wizardDlg;
     delayedLoad_ = false;
 }
@@ -70,6 +72,7 @@ CHistoryWindow::~CHistoryWindow()
 
 LRESULT CHistoryWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    GuiTools::SetWindowPointer(m_hWnd, this);
     CenterWindow();
     DlgResize_Init();
     dateFromPicker_ = GetDlgItem(IDC_DATEFROMPICKER);
@@ -123,7 +126,7 @@ BOOL CHistoryWindow::PreTranslateMessage(MSG* pMsg)
 LRESULT CHistoryWindow::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    delayed_closing_ = true;
+    delayedClosing_ = true;
     if(!m_treeView.isRunning())
     {
         settings->HistorySettings.EnableDownloading = SendDlgItemMessage(IDC_DOWNLOADTHUMBS, BM_GETCHECK) == BST_CHECKED;
@@ -151,35 +154,47 @@ void CHistoryWindow::Show()
 LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     HWND hwnd = reinterpret_cast<HWND>(wParam);  
-    POINT ClientPoint, ScreenPoint;
+    POINT clientPoint, screenPoint;
+
     if(hwnd != GetDlgItem(IDC_HISTORYTREE)) return 0;
     
-    TreeItem* item = m_treeView.selectedItem();
-    if (!item) return 0;
-
+    TreeItem* item{};
+    int itemIndex = -1;
     if(lParam == -1) 
     {
-        ClientPoint.x = 0;
-        ClientPoint.y = 0;
-        int itemIndex = m_treeView.GetCurSel();
+        clientPoint.x = 0;
+        clientPoint.y = 0;
+        itemIndex = m_treeView.GetCurSel();
         if (itemIndex >= 0) {
             CRect rc; 
             if (m_treeView.GetItemRect(itemIndex, &rc) != LB_ERR) {
-                ClientPoint = rc.CenterPoint();
+                clientPoint = rc.CenterPoint();
             }
         }
         
-        ScreenPoint = ClientPoint;
-        ::ClientToScreen(hwnd, &ScreenPoint);
+        screenPoint = clientPoint;
+        ::ClientToScreen(hwnd, &screenPoint);
+        item = m_treeView.selectedItem();
     }
     else
     {
-        ScreenPoint.x = GET_X_LPARAM(lParam);
-        ScreenPoint.y = GET_Y_LPARAM(lParam);
-        ClientPoint = ScreenPoint;
-        ::ScreenToClient(hwnd, &ClientPoint);
+        screenPoint.x = GET_X_LPARAM(lParam);
+        screenPoint.y = GET_Y_LPARAM(lParam);
+
+        clientPoint = screenPoint;
+        ::ScreenToClient(hwnd, &clientPoint);
+        BOOL outside = FALSE;
+        itemIndex = m_treeView.ItemFromPoint(clientPoint, outside);
+        if (outside) {
+            return 0;
+        }
+
+        item = m_treeView.GetItem(itemIndex);
     }
-   
+
+    if (!item) {
+        return 0;
+    }
     bool isSessionItem = item->level()==0;
     
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
@@ -189,27 +204,30 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     {
         menu.AppendMenu(MF_STRING, ID_OPENINBROWSER, TR("Open in Web Browser"));
         menu.SetMenuDefaultItem(ID_OPENINBROWSER, FALSE);
-        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy URL"));
+        menu.AppendMenu(MF_STRING, ID_COPYTOCLIPBOARD, TR("Copy link") + CString(_T("\tCtrl+C")));
+        menu.AppendMenu(MF_STRING, ID_COPYVIEWLINK, TR("Copy link to view page"));
+        menu.EnableMenuItem(ID_COPYVIEWLINK, historyItem->viewUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        menu.AppendMenu(MF_STRING, ID_COPYTHUMBLINK, TR("Copy link to thumbnail"));
+        menu.EnableMenuItem(ID_COPYTHUMBLINK, historyItem->thumbUrl.empty() ? MF_DISABLED : MF_ENABLED);
     }
     menu.AppendMenu(MF_STRING, ID_VIEWBBCODE, TR("View BBCode/HTML codes"));
-    if(!isSessionItem)
-    {
-        if(!historyItem->localFilePath.empty() && 
-            IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(historyItem->localFilePath)))
-        {
-            menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
-        }
-        if (!historyItem->editUrl.empty())
-        {
-            menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Edit file on server"));
-        }
-        if (!historyItem->deleteUrl.empty())
-        {
-            menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server"));
-        }
+
+    if (!isSessionItem) {
+        bool fileExists = !historyItem->localFilePath.empty() && 
+            IuCoreUtils::DirectoryExists(IuCoreUtils::ExtractFilePath(historyItem->localFilePath));
+
+        menu.AppendMenu(MF_STRING, ID_OPENFOLDER, TR("Open in folder"));
+        menu.EnableMenuItem(ID_OPENFOLDER, fileExists ? MF_ENABLED : MF_DISABLED);
+
+        menu.AppendMenu(MF_STRING, ID_EDITFILEONSERVER, TR("Edit file on server"));
+        menu.EnableMenuItem(ID_EDITFILEONSERVER, historyItem->editUrl.empty() ? MF_DISABLED : MF_ENABLED);
+
+        menu.AppendMenu(MF_STRING, ID_DELETEFILEONSERVER, TR("Delete file from server")+CString(_T("\tDelete")));
+        menu.EnableMenuItem(ID_DELETEFILEONSERVER, historyItem->deleteUrl.empty() ? MF_DISABLED : MF_ENABLED);
     }
     
-    menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, ScreenPoint.x, ScreenPoint.y, m_hWnd);
+    menu.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, screenPoint.x, screenPoint.y, m_hWnd);
     return 0;
 }
 
@@ -274,44 +292,85 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
     std::string url = historyItem->directUrl.length()?historyItem->directUrl:historyItem->viewUrl;
     WinUtils::CopyTextToClipboard(Utf8ToWCstring(url));
     return 0;
 }
 
-CUrlListItem fromHistoryItem(const HistoryItem& historyItem)
+LRESULT CHistoryWindow::OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) {
+        return 0;
+    }
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+
+    if (!historyItem->viewUrl.empty()) {
+        WinUtils::CopyTextToClipboard(Utf8ToWCstring(historyItem->viewUrl));
+    }
+    return 0;
+}
+
+LRESULT CHistoryWindow::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    TreeItem* item = m_treeView.selectedItem();
+    if (!item) {
+        return 0;
+    }
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+
+    if (!historyItem->thumbUrl.empty()) {
+        WinUtils::CopyTextToClipboard(Utf8ToWCstring(historyItem->thumbUrl));
+    }
+    return 0;
+}
+
+ImageUploader::Core::OutputGenerator::UploadObject fromHistoryItem(const HistoryItem& historyItem)
 {
-    CUrlListItem it;
-    it.ImageUrl = Utf8ToWstring(historyItem.directUrl).c_str();
-    it.ImageUrlShortened = Utf8ToWstring(historyItem.directUrlShortened).c_str();
-    it.ThumbUrl =  Utf8ToWstring(historyItem.thumbUrl).c_str();
-    it.DownloadUrl = Utf8ToWstring(historyItem.viewUrl).c_str();
-    it.DownloadUrlShortened = Utf8ToWstring(historyItem.viewUrlShortened).c_str();
-    it.FileName = Utf8ToWstring(historyItem.displayName).c_str();
-    it.ServerName = U2W(historyItem.serverName);
-    it.FileIndex = historyItem.sortIndex;
+    ImageUploader::Core::OutputGenerator::UploadObject it;
+    it.uploadResult.directUrl = historyItem.directUrl;
+    it.uploadResult.directUrlShortened = historyItem.directUrlShortened;
+    it.uploadResult.thumbUrl = historyItem.thumbUrl;
+    it.uploadResult.downloadUrl = historyItem.viewUrl;
+    it.uploadResult.downloadUrlShortened = historyItem.viewUrlShortened;
+    it.uploadResult.editUrl = historyItem.editUrl;
+    it.uploadResult.deleteUrl = historyItem.deleteUrl;
+    it.displayFileName = historyItem.displayName;
+    it.uploadResult.serverName = historyItem.serverName;
+    it.fileIndex = historyItem.sortIndex;
     return it;
 }
 
 LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
+    using namespace ImageUploader::Core::OutputGenerator;
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    std::vector<CUrlListItem> items;
+    std::vector<UploadObject> items;
 
     if(item->level()==0)
     {
         auto* ses = static_cast<CHistorySession*>(item->userData());
         for(int i=0; i<ses->entriesCount(); i++)
         {
-            CUrlListItem it  =fromHistoryItem(ses->entry(i));
+            UploadObject it = fromHistoryItem(ses->entry(i));
             items.push_back(it);
         }
     }
     else
     {
         HistoryItem* hit = CHistoryTreeControl::getItemData(item);
-        CUrlListItem it  = fromHistoryItem(*hit);
+        if (!hit) {
+            return 0;
+        }
+        ImageUploader::Core::OutputGenerator::UploadObject it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
     CResultsWindow rp(wizardDlg_, items, false);
@@ -324,6 +383,9 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
     std::string fileName  = historyItem->localFilePath;
     if(fileName.empty()) return 0;
     std::string directory = IuCoreUtils::ExtractFilePath(fileName);
@@ -343,6 +405,9 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
     WinUtils::ShellOpenFileOrUrl(U2W(historyItem->editUrl), m_hWnd);
     return 0;
 }
@@ -351,8 +416,18 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    if (LocalizedMessageBox(TR("Are you sure?"), APPNAME, MB_ICONQUESTION|MB_YESNO) == IDYES) {
-        HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return 0;
+    }
+    if (historyItem->deleteUrl.empty()) {
+        return 0;
+    }
+    std::string message = str(
+        boost::format(_("Are you sure you want to delete the file '%s' from the server?"))
+        % historyItem->displayName
+    );
+    if (LocalizedMessageBox(U2W(message), TR("Deleting the file from the server"), MB_ICONQUESTION|MB_YESNO) == IDYES) {
         DesktopUtils::ShellOpenUrl(historyItem->deleteUrl);
     }
     
@@ -408,27 +483,36 @@ void CHistoryWindow::LoadHistory()
 
 void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
     HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    if (!historyItem) {
+        return;
+    }
     std::string url = historyItem->directUrl.length() ? historyItem->directUrl : historyItem->viewUrl;
     WinUtils::ShellOpenFileOrUrl(U2W(url), m_hWnd);
 }
 
 void CHistoryWindow::threadsFinished()
 {
-    m_wndAnimation.ShowWindow(SW_HIDE);
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([wnd = m_hWnd, this] {
+        if (!GuiTools::CheckWindowPointer(wnd, this)) {
+            return;
+        }
+        m_wndAnimation.ShowWindow(SW_HIDE);
     
-    if (delayedLoad_) {
-        SendMessage(WM_MY_OPENHISTORYFILE);        
-    }
-    else if(delayed_closing_)
-    {
-        EndDialog(0);
-        return;
-    }
-    m_treeView.EnableWindow(true);
-    ::EnableWindow(GetDlgItem(IDCANCEL), true);
-    ::EnableWindow(GetDlgItem(IDOK), true);
-    ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), true);
-    ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
+        if (delayedLoad_) {
+            SendMessage(WM_MY_OPENHISTORYFILE);        
+        }
+        else if(delayedClosing_)
+        {
+            EndDialog(0);
+            return;
+        }
+        m_treeView.EnableWindow(true);
+        ::EnableWindow(GetDlgItem(IDCANCEL), true);
+        ::EnableWindow(GetDlgItem(IDOK), true);
+        ::EnableWindow(GetDlgItem(IDC_CLEARFILTERS), true);
+        ::EnableWindow(GetDlgItem(IDC_CLEARHISTORYBTN), true);
+    },
+    true);
 }
 
 void CHistoryWindow::threadsStarted()
@@ -498,6 +582,24 @@ LRESULT CHistoryWindow::OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     initSearchForm();
     LoadHistory();
     return 0;
+}
+
+LRESULT CHistoryWindow::OnHistoryTreeVkeyToItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+{
+    bool isCtrlPressed = (GetKeyState(VK_CONTROL) & 0x80) != 0;
+    bool isShiftPressed = (GetKeyState(VK_SHIFT) & 0x80) != 0;
+    bool isMenuPressed = (GetKeyState(VK_MENU) & 0x80) != 0;
+    WORD vKey = LOWORD(wParam);
+    if (vKey == VK_DELETE && !isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_DELETEFILEONSERVER, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    else if (vKey == _T('C') && isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_COPYTOCLIPBOARD, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    else if (vKey == VK_RETURN && !isCtrlPressed && !isShiftPressed && !isMenuPressed) {
+        SendMessage(WM_COMMAND, MAKEWPARAM(ID_OPENINBROWSER, BN_CLICKED), reinterpret_cast<LPARAM>(m_hWnd));
+    }
+    return -1;
 }
 
 void CHistoryWindow::initSearchForm() {

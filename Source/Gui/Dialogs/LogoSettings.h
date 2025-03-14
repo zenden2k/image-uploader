@@ -39,7 +39,7 @@ class CLogoSettings :
 {
 public:
     CLogoSettings();
-    virtual ~CLogoSettings();
+    ~CLogoSettings() override;
     enum { IDD = IDD_LOGOSETTINGS };
 
     BEGIN_MSG_MAP(CLogoSettings)
@@ -67,6 +67,7 @@ public:
             COMMAND_HANDLER(IDC_EDITYOURTEXT, EN_CHANGE, OnProfileEditedCommand)
             COMMAND_HANDLER(IDC_TEXTPOSITION, CBN_SELCHANGE, OnProfileEditedCommand)
             COMMAND_HANDLER(IDC_LOGOEDIT, EN_CHANGE, OnProfileEditedCommand)
+            COMMAND_HANDLER(IDC_SKIPANIMATEDCHECKBOX, BN_CLICKED, OnProfileEditedCommand)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
 protected:
@@ -89,9 +90,9 @@ protected:
     //LogoParams *params;
     LOGFONT lf, ThumbFont;
     CString CurrentProfileOriginalName;
-    bool Apply() override;
+    bool apply() override;
     void ShowParams(const ImageConvertingParams& params);
-    void ShowParams(const CString profileName);
+    void ShowParams(const CString& profileName);
     bool SaveParams(ImageConvertingParams& params);
     std::map<CString, ImageConvertingParams> convert_profiles_;
     CImageListManaged profileEditToolbarImagelist_;
@@ -107,6 +108,7 @@ protected:
     void ProfileChanged();
     bool m_CatchChanges;
     bool m_ProfileChanged;
+    CComboBox profileCombobox_;
 public:
     void TranslateUI();
 };

@@ -18,7 +18,7 @@ void BackgroundTask::run() {
 	BackgroundTaskResult result = BackgroundTaskResult::Failed;
 	defer<void> d([&] { // Run at function exit
 		isRunning_ = false;
-		onTaskFinished(this, result);
+        onTaskFinished(this, result);
 	});
 	if (isCanceled_) {
 		result = BackgroundTaskResult::Canceled;

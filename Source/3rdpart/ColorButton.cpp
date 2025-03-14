@@ -951,6 +951,7 @@ BOOL CColorButton::Picker ()
                 }
                 CColorCodeDialog dlg(m_clrCurrent);
                 if (dlg.DoModal(parent) == IDOK ) {
+                    m_clrCurrent = dlg.getValue();
                     fOked = TRUE;
                 }
                 else {

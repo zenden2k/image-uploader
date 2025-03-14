@@ -187,29 +187,24 @@ TEST_F(UtilsTest, GetImageInfo) {
 
 TEST_F(UtilsTest, ExUtilReadFile) {
     std::string fileName = TestHelpers::resolvePath("file_with_const_size.png");
-    uint8_t* data;
-    size_t size;
     ASSERT_TRUE(IuCoreUtils::FileExists(fileName));
-    EXPECT_TRUE(ExUtilReadFile(U2W(fileName), &data, &size));
-    EXPECT_EQ(14830, size);
-    std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data, size);
-    EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
 
-    delete[] data;
-
-    data = nullptr;
-    size = 0;
-
-    EXPECT_TRUE(ExUtilReadFile(U2W(TestHelpers::resolvePath("file_with_zero_size.dat")), &data, &size));
-    EXPECT_EQ(0, size);
-    EXPECT_TRUE(data != nullptr);
-    delete[] data;
+    {
+        auto [data, size] = ExUtilReadFile(U2W(fileName));
+        EXPECT_TRUE(!!data);
+        EXPECT_EQ(14830, size);
+        std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data.get(), size);
+        EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
+    }
+    {
+        auto [data, size] = ExUtilReadFile(U2W(TestHelpers::resolvePath("file_with_zero_size.dat")));
+        EXPECT_EQ(0, size);
+        EXPECT_TRUE(!!data);
+    }
 }
 
 TEST_F(UtilsTest, ExUtilReadFileExceptions) {
-    uint8_t* data = nullptr;
-    size_t size = 0;
-    EXPECT_THROW(ExUtilReadFile(U2W(TestHelpers::resolvePath("notexistingfile5734533345.png")), &data, &size), IOException);
+    EXPECT_THROW(ExUtilReadFile(U2W(TestHelpers::resolvePath("notexistingfile5734533345.png"))), IOException);
 }
 
 TEST_F(UtilsTest, StringToColor) {
