@@ -299,6 +299,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 
     helpButton_ = GetDlgItem(IDC_HELPBUTTON);
     helpButton_.SetIcon(helpButtonIcon_);
+    helpButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     headBitmap_ = GetDlgItem(IDC_HEADBITMAP);
 
@@ -2362,31 +2363,7 @@ bool CWizardDlg::funcExit(bool force) {
 
 LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-    RECT rc;
-    ::GetWindowRect(hWndCtl, &rc );
-    POINT menuOrigin = {rc.left,rc.bottom};
-
-    CMenu popupMenu;
-    popupMenu.CreatePopupMenu();
-    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
-    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")));
-    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
-    popupMenu.AppendMenu(MF_SEPARATOR, 99998,_T(""));
-    popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
-    popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
-    popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, TR("Network Debugger"));
-#ifndef NDEBUG
-
-    popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
-#endif
-    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
-
-    TPMPARAMS excludeArea;
-    ZeroMemory(&excludeArea, sizeof(excludeArea));
-    excludeArea.cbSize = sizeof(excludeArea);
-    excludeArea.rcExclude = rc;
-    popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN|TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
-
+    showHelpButtonMenu(hWndCtl);
     return 0;
 }
 
@@ -2490,6 +2467,11 @@ LRESULT CWizardDlg::OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hW
     return 0;
 }
 
+LRESULT CWizardDlg::OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
+    showHelpButtonMenu(GetDlgItem(IDC_HELPBUTTON));
+    return 0;
+}
+
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
     dlg.DoModal(m_hWnd);
@@ -2565,4 +2547,31 @@ bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const S
     }
 
     return true;
+}
+
+void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
+    RECT rc;
+    ::GetWindowRect(hWndCtl, &rc);
+    POINT menuOrigin = { rc.left, rc.bottom };
+
+    CMenu popupMenu;
+    popupMenu.CreatePopupMenu();
+    popupMenu.AppendMenu(MF_STRING, IDC_ABOUT, TR("About..."));
+    popupMenu.AppendMenu(MF_STRING, IDC_DOCUMENTATION, TR("Documentation") + CString(_T("\tF1")));
+    popupMenu.AppendMenu(MF_STRING, IDC_UPDATESLABEL, TR("Check for Updates"));
+    popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
+    popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
+    popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+    popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, TR("Network Debugger"));
+#ifndef NDEBUG
+
+    popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
+#endif
+    popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));
+
+    TPMPARAMS excludeArea;
+    ZeroMemory(&excludeArea, sizeof(excludeArea));
+    excludeArea.cbSize = sizeof(excludeArea);
+    excludeArea.rcExclude = rc;
+    popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
 }

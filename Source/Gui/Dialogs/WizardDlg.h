@@ -125,6 +125,7 @@ public:
         COMMAND_HANDLER_EX(IDC_NEXT, BN_CLICKED, OnNextBnClicked)
         COMMAND_HANDLER(IDC_ABOUT, BN_CLICKED, OnBnClickedAbout)
         COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpbutton)
+        NOTIFY_HANDLER(IDC_HELPBUTTON, BCN_DROPDOWN, OnBnDropdownHelpButton)
         COMMAND_ID_HANDLER(IDC_DOCUMENTATION, OnDocumentation)
         COMMAND_ID_HANDLER(IDC_SHOWLOG, OnShowLog)
         REFLECT_NOTIFICATIONS()
@@ -155,6 +156,8 @@ public:
     LRESULT OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+
     void CloseDialog(int nVal);
     bool CreatePage(WizardPageId PageID);
     void setSessionImageServer(const ServerProfileGroup& server);
@@ -277,6 +280,7 @@ public:
     void endAddFiles();
     void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
     bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer); 
+    void showHelpButtonMenu(HWND control);
 
 protected:
     bool acceptsDragnDrop() const;
