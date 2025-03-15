@@ -157,8 +157,8 @@ public:
         ServiceLocator* serviceLocator = ServiceLocator::instance();
         taskDispatcher_ = std::make_unique<TaskDispatcher>(3);
         serviceLocator->setTaskDispatcher(taskDispatcher_.get());
-
-        auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_);
+        engineList_ = std::make_unique<CMyEngineList>();
+        auto uploadErrorHandler = std::make_shared<DefaultUploadErrorHandler>(logger_, engineList_.get());
         serviceLocator->setUploadErrorHandler(uploadErrorHandler);
         scriptDialogProvider_ = std::make_shared<WtlScriptDialogProvider>();
         serviceLocator->setDialogProvider(scriptDialogProvider_.get());
@@ -166,7 +166,7 @@ public:
         networkDebugger_ = std::make_shared<NetworkDebugger>();
         serviceLocator->setNetworkDebugger(networkDebugger_);
         scriptsManager_ = std::make_unique<ScriptsManager>(serviceLocator->networkClientFactory());
-        engineList_ = std::make_unique<CMyEngineList>();
+
         serviceLocator->setEngineList(engineList_.get());
         serviceLocator->setMyEngineList(engineList_.get());
         settings_.setEngineList(engineList_.get());

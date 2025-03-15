@@ -63,7 +63,7 @@ BackgroundTaskResult FileTypeCheckTask::doJob()
             ServerSettingsStruct* sss = settings->getServerSettings(serverProfile, false);
             bool isAuthorized = !serverProfile.profileName().empty() && sss && sss->authData.DoAuth && !sss->authData.Login.empty();
            
-            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::toLower(onlyName), sf.mimeType, sf.fileSize, isAuthorized)) {
+            if (uploadEngineData && !uploadEngineData->supportsFileFormat(IuStringUtils::ToLower(onlyName), sf.mimeType, sf.fileSize, isAuthorized)) {
                 badItems++;
                 if (badItems > MAX_BAD_ITEMS) {
                     message_ += "\n..."; 

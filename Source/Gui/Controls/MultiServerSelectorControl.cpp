@@ -27,6 +27,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Dialogs/ServerProfileGroupSelectDialog.h"
+#include "Func/MyEngineList.h"
 
 // CMultiServerSelectorControl
 CMultiServerSelectorControl::CMultiServerSelectorControl(UploadEngineManager* uploadEngineManager, bool defaultServer, bool isChildWindow) {
@@ -99,11 +100,12 @@ void CMultiServerSelectorControl::setServersMask(int mask) {
 }
 
 void CMultiServerSelectorControl::updateInfoLabel() {
+    auto* engineList = ServiceLocator::instance()->myEngineList();
     std::wstring text;
     if (serverProfileGroup_.getCount() == 0) {
         text = TR("Server not chosen");
     } else if (serverProfileGroup_.getCount() == 1) {
-        text = str(boost::wformat(TR("Selected server: %s")) % IuCoreUtils::Utf8ToWstring(serverProfileGroup_.getByIndex(0).serverName()));
+        text = str(boost::wformat(TR("Selected server: %s")) % IuCoreUtils::Utf8ToWstring(engineList->getServerDisplayName(serverProfileGroup_.getByIndex(0).uploadEngineData())));
     }
     else {
         text = str(boost::wformat(TR("Selected servers: %d")) % serverProfileGroup_.getCount());

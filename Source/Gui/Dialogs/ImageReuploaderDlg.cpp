@@ -355,7 +355,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
                 url = reg[1];
             }
             auto& supportedExtensions = IuCommonFunctions::GetSupportedImageExtensions();
-            std::string fileExt = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt(url) );
+            std::string fileExt = IuStringUtils::ToLower( IuCoreUtils::ExtractFileExt(url) );
             if (supportedExtensions.find(fileExt) != supportedExtensions.end()) {
                 Match match;
                 match.start = reg.get_match_start(0);

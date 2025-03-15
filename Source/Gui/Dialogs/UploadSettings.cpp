@@ -151,6 +151,11 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
 
+    CClientDC dc(m_hWnd);
+    const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+
+
     //CClientDC dc(HWND_DESKTOP);
     // Get color depth (minimum requirement is 32-bits for alpha blended images).
     //int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
@@ -224,16 +229,17 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         CurrentToolbar.Create(m_hWnd,i?Toolbar2Rect:Toolbar1Rect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD |WS_TABSTOP| TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
         
         CurrentToolbar.SetButtonStructSize();
-        CurrentToolbar.SetButtonSize(30,18);
+
         CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
         
         CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON, TBSTATE_ENABLED, 2, _T(""), 0);
         
         CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, _T(""), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON, TBSTATE_ENABLED, 2, _T(""), 0);
         
         CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
+        CurrentToolbar.SetButtonSize(MulDiv(20, dpiX, USER_DEFAULT_SCREEN_DPI), MulDiv(24, dpiY, USER_DEFAULT_SCREEN_DPI));
         CurrentToolbar.AutoSize();
         CurrentToolbar.SetWindowPos(i == 0 ? GetDlgItem(IDC_IMAGESERVERGROUPBOX) : Toolbar.m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         SIZE toolbarSize;
@@ -338,7 +344,7 @@ bool CUploadSettings::OnNext()
         if (ue->NeedAuthorization == CUploadEngineData::naObligatory && sessionImageServer.profileName().empty())
         { 
             CString errorMsg;
-            errorMsg.Format(TR("Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(ue->Name));
+            errorMsg.Format(TR("Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(m_EngineList->getServerDisplayName(ue)));
             GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
             return false;
         }
@@ -356,7 +362,7 @@ bool CUploadSettings::OnNext()
         if (ue2->NeedAuthorization == CUploadEngineData::naObligatory && sessionFileServer.profileName().empty())
         {
             CString errorMsg;
-            errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(ue2->Name)));
+            errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(m_EngineList->getServerDisplayName(ue2))));
             GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
             return false;
         }
@@ -582,8 +588,13 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
+    CUploadEngineData* uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
+    if (!uploadEngine) {
+        LOG(ERROR) << "uploadEngine cannot be NULL";
+        return;
+    }
 
-    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(serverProfile.serverName()) : TR("Choose server");
+    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(m_EngineList->getServerDisplayName(uploadEngine)) : TR("Choose server");
 
     ZeroMemory(&bi, sizeof(bi));
     bi.cbSize = sizeof(bi);
@@ -599,12 +610,6 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
         CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2, true);
         return;
     }
-
-    CUploadEngineData * uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
-	if (!uploadEngine) {
-		LOG(ERROR) << "uploadEngine cannot be NULL";
-		return;
-	}
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* res = Settings->getServerSettings(serverProfile);
@@ -710,7 +715,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeImageServer)) continue;
                 mi.wID = (isImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
-                CString name  = Utf8ToWCstring(ued->Name); 
+                CString name = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
                 mi.cch = name.GetLength();
                 mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
@@ -747,7 +752,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeFileServer)) continue;
             mi.wID = (isImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
             CUploadEngineData* ued = m_EngineList->byIndex(i);
-            CString name  = Utf8ToWCstring(ued->Name); 
+            CString name  = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
             mi.cch = name.GetLength();
             mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);

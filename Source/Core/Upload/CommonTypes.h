@@ -23,8 +23,9 @@
 
 #include "Core/Utils/CoreUtils.h"
 
-struct InfoProgress
-{
+class CUploadEngineData;
+
+struct InfoProgress {
     int64_t Uploaded, Total;
     bool IsUploading;
     void clear()
@@ -52,6 +53,7 @@ struct ErrorInfo
     };
     std::string error;
     std::string Url;
+    CUploadEngineData* uploadEngineData = nullptr;
     std::string ServerName;
     std::string FileName;
     std::string TopLevelFileName; 

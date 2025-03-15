@@ -123,7 +123,8 @@ int main(int argc, char *argv[])
     auto logger = std::make_shared<QtDefaultLogger>(logWindow.get());
     auto myLogSink_ = std::make_unique<MyLogSink>(logger.get());
     google::AddLogSink(myLogSink_.get());
-    auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get());
+    auto engineList = std::make_unique<CUploadEngineList>();
+    auto errorHandler = std::make_shared<QtUploadErrorHandler>(logger.get(), engineList.get());
 	QtScriptDialogProvider dlgProvider;
     auto serviceLocator = ServiceLocator::instance();
     serviceLocator->setTranslator(&translator);
@@ -167,7 +168,7 @@ settingsDir.mkpath(settingsFolder);
     }
 
     Settings.LoadSettings(AppParams::instance()->settingsDirectory()/*, "qimageuploader.xml"*/);
-	auto engineList = std::make_unique<CUploadEngineList>();
+
 	if (!engineList->loadFromFile(AppParams::instance()->dataDirectory() + "servers.xml", Settings.ServersSettings)) {
 		QMessageBox::warning(nullptr, "Failure", "Unable to load servers.xml");
 	}

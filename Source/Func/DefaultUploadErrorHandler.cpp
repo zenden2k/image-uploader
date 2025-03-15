@@ -9,9 +9,11 @@
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
+#include "Core/Upload/UploadEngine.h"
 
-DefaultUploadErrorHandler::DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger):
-    logger_(std::move(logger))
+DefaultUploadErrorHandler::DefaultUploadErrorHandler(std::shared_ptr<ILogger> logger, CUploadEngineListBase* engineList)
+    : logger_(std::move(logger))
+    , engineList_(engineList)
 {
     responseFileIndex_ = 0;
 }
@@ -39,7 +41,7 @@ void DefaultUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo)
         infoText += TR("File: ") + Utf8ToWCstring(errorInfo.FileName) + _T("\n");
 
     if (!errorInfo.ServerName.empty()) {
-        CString serverName = Utf8ToWCstring(errorInfo.ServerName);
+        CString serverName = Utf8ToWCstring(errorInfo.uploadEngineData ? engineList_->getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName);
         if (!errorInfo.sender.empty())
             serverName += _T(" (") + Utf8ToWCstring(errorInfo.sender) + _T(")");
         infoText += TR("Server: ") + serverName + _T("\n");

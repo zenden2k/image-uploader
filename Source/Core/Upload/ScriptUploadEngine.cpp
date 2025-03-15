@@ -614,6 +614,7 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     ei.sender = "CScriptUploadEngine";
     if (m_UploadData) {
         ei.ServerName = m_UploadData->Name;
+        ei.uploadEngineData = m_UploadData;
     }
     if (currentTask_) {
         ei.FileName = currentTask_->toString();

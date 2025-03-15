@@ -142,11 +142,20 @@ int stricmp(const char* s1, const char* s2)
 #endif
 }
 
-std::string toLower(const std::string& str)
+std::string ToLower(const std::string& str)
 {
     std::string s1 = str;
     for (size_t i = 0; i < s1.length(); i++)
         s1[i] = static_cast<char>(::tolower(s1[i]));
+    // std::string s1;
+    // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
+    return s1;
+}
+
+std::string ToUpper(const std::string& str) {
+    std::string s1 = str;
+    for (size_t i = 0; i < s1.length(); i++)
+        s1[i] = static_cast<char>(::toupper(s1[i]));
     // std::string s1;
     // std::transform(str.begin(), str.end(), std::back_inserter(s1), std::tolower);
     return s1;

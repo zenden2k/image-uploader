@@ -179,7 +179,7 @@ std::string DefaultProxyProvider::extractProxyForUrlFromList(const std::string& 
                 proxies["http"] = tokenTrimmed;
                 defaultProxy = tokenTrimmed;
             } else {
-                std::string protocol = IuStringUtils::toLower(tokenTrimmed.substr(0, it));
+                std::string protocol = IuStringUtils::ToLower(tokenTrimmed.substr(0, it));
                 proxies[protocol] = tokenTrimmed.substr(it + 1);
             }
         }

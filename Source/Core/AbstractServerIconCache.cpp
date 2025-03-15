@@ -13,7 +13,7 @@ std::string StrToLower(const std::string& str) {
     s.MakeLower();
     return IuCoreUtils::WstringToUtf8(s.GetString());
 #else
-    return IuStringUtils::toLower(str);
+    return IuStringUtils::ToLower(str);
 #endif
 }
 }
@@ -26,12 +26,21 @@ std::string AbstractServerIconCache::getIconNameForServer(const std::string& nam
 
     std::string iconFileName = iconsDir_ + StrToLower(serverName) + ".ico";
 
-    if (!IuCoreUtils::FileExists(iconFileName) && ued && !ued->PluginName.empty()) {
-        iconFileName = iconsDir_ + StrToLower(ued->PluginName) + ".ico";
-        if (!IuCoreUtils::FileExists(iconFileName)) {
-            return {};
+    if (!IuCoreUtils::FileExists(iconFileName)) {
+        if (ued && !ued->PluginName.empty()) {
+            iconFileName = iconsDir_ + StrToLower(ued->PluginName) + ".ico";
+            if (!IuCoreUtils::FileExists(iconFileName)) {
+                iconFileName.clear();
+            }
+        } else {
+            iconFileName.clear();
         }
     }
+
+    if (iconFileName.empty()) {
+        iconFileName = iconsDir_ + "default.ico";
+    }
+
     if (returnFullPath) {
         return iconFileName;
     } else {

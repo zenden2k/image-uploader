@@ -341,6 +341,7 @@ void CUploader::Error(bool error, std::string message, ErrorType type, int retry
     err.TopLevelFileName = topLevelFileName;
     if (uploadTask) {
         err.ServerName = uploadTask->serverName();
+        err.uploadEngineData = uploadTask->serverProfile().uploadEngineData();
     }
     ErrorMessage(err);
 }

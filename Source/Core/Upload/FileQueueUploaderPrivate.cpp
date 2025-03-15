@@ -375,6 +375,8 @@ void FileQueueUploaderPrivate::run()
             ei.ServerName = serverName;
             ei.messageType = ErrorInfo::mtError;
             ei.sender = "Uploader";
+            ei.uploadEngineData = it->serverProfile().uploadEngineData();
+
             if (topLevelFileTask) {
                 ei.TopLevelFileName = topLevelFileTask->getFileName();
             }
@@ -398,6 +400,8 @@ void FileQueueUploaderPrivate::run()
                 ei.ServerName = serverName;
                 ei.messageType = ErrorInfo::mtError;
                 ei.sender = "Uploader";
+                ei.uploadEngineData = it->serverProfile().uploadEngineData();
+
                 if (topLevelFileTask) {
                     ei.TopLevelFileName = topLevelFileTask->getFileName();
                 }

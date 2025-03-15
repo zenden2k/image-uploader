@@ -54,10 +54,11 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_BROWSESERVERFOLDERS, "Select...");
     TRC(IDC_PARAMETERSLABEL, "Parameters:");
     DlgResize_Init();
-    CString WindowTitle;
-    CString serverName = Utf8ToWCstring(m_ue->Name);
-    WindowTitle.Format(TR("%s server settings"), serverName.GetString());
-    SetWindowText(WindowTitle);
+    auto* engineList = ServiceLocator::instance()->engineList();
+    CString windowTitle;
+    CString serverDisplayName = Utf8ToWCstring(engineList->getServerDisplayName(m_ue));
+    windowTitle.Format(TR("%s server settings"), serverDisplayName.GetString());
+    SetWindowText(windowTitle);
     GuiTools::ShowDialogItem(m_hWnd, IDC_BROWSESERVERFOLDERS, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, m_ue->SupportsFolders);
     GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERNAMELABEL, m_ue->SupportsFolders);

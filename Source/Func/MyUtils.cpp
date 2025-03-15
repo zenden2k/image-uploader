@@ -30,7 +30,7 @@
 bool IsVideoFile(LPCTSTR szFileName) {
     std::vector<std::string>& v = VideoUtils::instance().videoFilesExtensions;
     static const std::set<std::string> extensions(v.begin(), v.end());
-    const std::string ext = IuStringUtils::toLower(IuCoreUtils::ExtractFileExt(W2U(szFileName)));
+    const std::string ext = IuStringUtils::ToLower(IuCoreUtils::ExtractFileExt(W2U(szFileName)));
     return extensions.find(ext) != extensions.end();
 }
 

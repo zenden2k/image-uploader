@@ -5,11 +5,16 @@
 
 #include "Core/Upload/UploadErrorHandler.h"
 
+class CUploadEngineListBase;
+
 class ConsoleUploadErrorHandler : public IUploadErrorHandler {
 public:
-    ConsoleUploadErrorHandler() = default;
+    ConsoleUploadErrorHandler(CUploadEngineListBase* engineList = nullptr);
     void ErrorMessage(const ErrorInfo& errorInfo) override;
     void DebugMessage(const std::string& msg, bool isResponseBody) override;
+
+private:
+    CUploadEngineListBase* engineList_;
 };
 
 #endif

@@ -451,7 +451,7 @@ void CServerSelectorControl::updateServerList()
             }
             char *serverName = new char[ue->Name.length() + 1];
             lstrcpyA( serverName, ue->Name.c_str() );
-            std::string displayName = ue->Name;
+            std::string displayName = myEngineList->getServerDisplayName(ue);
             if (showFileSizeLimits_ && ue->MaxFileSize > 0) {
                 displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
             }

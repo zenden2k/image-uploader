@@ -661,11 +661,11 @@ void NetworkClient::private_parse_headers()
 
 std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
-    std::string lowerName = IuStringUtils::toLower(name);
+    std::string lowerName = IuStringUtils::ToLower(name);
     std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
     
     for(it = m_ResponseHeaders.begin(); it!=end; ++it) {
-        if (IuStringUtils::toLower(it->name) == lowerName) {
+        if (IuStringUtils::ToLower(it->name) == lowerName) {
             return it->value;
         }
     }

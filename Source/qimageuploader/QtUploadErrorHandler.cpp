@@ -4,9 +4,10 @@
 #include <QDebug>
 #include "Core/CommonDefs.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Upload/UploadEngine.h"
 
-QtUploadErrorHandler::QtUploadErrorHandler(ILogger* logger) {
-    logger_ = logger;
+QtUploadErrorHandler::QtUploadErrorHandler(ILogger* logger, CUploadEngineListBase *engineList): logger_(logger),
+    engineList_(engineList) {
     responseFileIndex_ = 0;
 }
 
@@ -19,7 +20,8 @@ void QtUploadErrorHandler::ErrorMessage(const ErrorInfo& errorInfo) {
         infoText += QString::fromUtf8(_("File: ").str().c_str()) + U2Q(errorInfo.FileName) + "\n";
 
     if (!errorInfo.ServerName.empty()) {
-        QString serverName = U2Q(errorInfo.ServerName);
+        std::string serverNameU8 = (errorInfo.uploadEngineData && engineList_) ? engineList_->getServerDisplayName(errorInfo.uploadEngineData) : errorInfo.ServerName;
+        QString serverName = U2Q(serverNameU8);
         if (!errorInfo.sender.empty())
             serverName += "(" + U2Q(errorInfo.sender) + ")";
         infoText += QString::fromUtf8(_("Server: ").str().c_str()) + serverName + "\n";

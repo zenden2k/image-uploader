@@ -161,7 +161,7 @@ CUploadEngineData* getServerByName(const std::string& name)
     CUploadEngineData* uploadEngineData = list->byName(serverName);
     if (!uploadEngineData) {
         for (int i = 0; i < list->count(); i++) {
-            if ((IuStringUtils::toLower(list->byIndex(i)->Name).find(IuStringUtils::toLower((name)))) != std::string::npos)
+            if ((IuStringUtils::ToLower(list->byIndex(i)->Name).find(IuStringUtils::ToLower((name)))) != std::string::npos)
                 return list->byIndex(i);
         }
     }
@@ -325,7 +325,7 @@ int func() {
         xdg_mime_set_dirs(nullptr);
         xdg_mime_shutdown();
     });
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     serviceLocator->setNetworkClientFactory(std::make_shared<NetworkClientFactory>());
@@ -463,7 +463,7 @@ void PrintServerParamList()
     }
 
     ServerProfile profile(ued->Name);
-    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>();
+    auto uploadErrorHandler = std::make_shared<ConsoleUploadErrorHandler>(list.get());
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setUploadErrorHandler(uploadErrorHandler);
     auto networkClientFactory = std::make_shared<NetworkClientFactory>();

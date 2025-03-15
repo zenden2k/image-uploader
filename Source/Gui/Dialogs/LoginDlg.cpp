@@ -129,7 +129,10 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     SetDlgItemText(IDC_LOGINEDIT, accountName_);
     SetDlgItemText(IDC_PASSWORDEDIT, Utf8ToWCstring(li.Password));
-    SetDlgItemText(IDC_LOGINFRAME, Utf8ToWCstring(m_UploadEngine->Name));
+    if (myEngineList) {
+        SetDlgItemText(IDC_LOGINFRAME, Utf8ToWCstring(myEngineList->getServerDisplayName(m_UploadEngine)));
+    }
+
     ::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT),m_UploadEngine->NeedPassword);
     ::EnableWindow(GetDlgItem(IDC_PASSWORDLABEL),m_UploadEngine->NeedPassword);
 

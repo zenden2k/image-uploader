@@ -16,7 +16,7 @@ std::string BooleanParameter::getValueAsString() const {
 }
 
 void BooleanParameter::setValue(const std::string& val) {
-    std::string lower = IuStringUtils::toLower(val);
+    std::string lower = IuStringUtils::ToLower(val);
     if (val == "1" || lower == "true") {
         value_ = true;
     } else {

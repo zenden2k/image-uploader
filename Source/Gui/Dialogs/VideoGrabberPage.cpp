@@ -368,7 +368,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
             videoEngine = WtlGuiSettings::VideoEngineDirectshow;
         } else {
             videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
-            std::string ext = IuStringUtils::toLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
+            std::string ext = IuStringUtils::ToLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
             if ( ext == "wmv" || ext == "asf" ) {
                 videoEngine = WtlGuiSettings::VideoEngineDirectshow;
             }

@@ -421,7 +421,7 @@
 	<Server Name="fileditch.com" FileHost="1" Plugin="fileditch" WebsiteUrl="https://fileditch.com">
 		<Actions>
 		</Actions>
-		<Result ImageUrlTemplate="stub" />
+		<Result DownloadUrlTemplate="stub" />
 	</Server>
 	<Server Name="imgsrc.ru" Plugin="imgsrc.ru" Authorize="2" SupportsFolders="1" WebsiteUrl="https://imgsrc.ru" RegistrationUrl="https://imgsrc.ru/main/join.php">
 		<Actions>
@@ -553,7 +553,7 @@
 				<Call Function="json" Arg1="files[0].url" AssignVars="FileUrl:0;"/>
 			</Action>
         </Actions>
-        <Result ImageUrlTemplate="$(FileUrl)" />
+        <Result DownloadUrlTemplate="$(FileUrl)" />
     </Server>
 	<Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register">
 		<Actions>

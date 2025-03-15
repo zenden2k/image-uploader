@@ -212,6 +212,21 @@ void CUploadEngineListBase::removeServer(const std::string& name) {
         [name](auto& x) { return x->Name == name; }));
 }
 
+
+std::string CUploadEngineListBase::getServerDisplayName(const CUploadEngineData* data) const
+{
+    if (!data) {
+        return {};
+    }
+    std::string serverName = data->Name;
+    auto builtInScriptList = builtInScripts();
+
+    if (std::find(builtInScriptList.begin(), builtInScriptList.end(), data->PluginName) != builtInScriptList.end()) {
+        serverName = IuStringUtils::Replace(serverName, "(" + data->PluginName + ")", "[" + IuStringUtils::ToUpper(data->PluginName) + "]");
+    }
+    return serverName;
+}
+
 /* CAbstractUploadEngine */
 
 CAbstractUploadEngine::~CAbstractUploadEngine()

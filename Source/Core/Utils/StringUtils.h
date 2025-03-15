@@ -37,8 +37,9 @@ namespace IuStringUtils
     std::string Join(const std::vector<std::string>& strings, const std::string& delim);
     std::string Tail(std::string const& source, size_t length);
 
-    // Current version of toLower works only with ASCII strings
-    std::string toLower(const std::string& str);
+    // Current version of ToLower and ToUpper works only with ASCII strings
+    std::string ToLower(const std::string& str);
+    std::string ToUpper(const std::string& str);
 
     //  The stricmp() function compares the two strings s1 and s2, 
     //  ignoring the case of the characters. It returns an integer less than, 

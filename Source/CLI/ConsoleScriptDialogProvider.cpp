@@ -57,7 +57,7 @@ std::string ConsoleScriptDialogProvider::messageBox(const std::string& message, 
                 std::cerr << "/";
             }
             buttonsMap[tokens[i][0]] = tokens[i];
-            std::cerr << "(" << tokens[i][0] << ")" << IuStringUtils::toLower(tokens[i]).c_str() + 1;
+            std::cerr << "(" << tokens[i][0] << ")" << IuStringUtils::ToLower(tokens[i]).c_str() + 1;
         }
         std::cerr << ": ";
         char res;
