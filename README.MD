@@ -26,11 +26,11 @@ It can upload to more than [20 image hostings sites](https://svistunov.dev/image
 It is also possible to specify your own output format template.
 
 ### Grabbing frames from a video clip
-Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV. Image Uploader can utilize codecs installed on the system (it is recommended to use K-lite Codec Pack). If you do not have codecs installed or prefer not to clutter the system with them, the program can use the FFmpeg library, which is included with the program (in the portable version, or when using the installer, you need to check the corresponding option).
+Image Uploader can grab frames from various types of video formats, e.g. AVI, MPG, VOB, WMV, MKV. It can use both the codecs installed on your system and the codecs distributed with the program.
 
 The extracted frames can be individually uploaded to the selected hosting service or combined into a single mosaic image.
 
-Image Uploader is available in the following languages: English, Russian, Swedish, Romanian, Turkish, Serbian, Hrvatski, Farsi
+Image Uploader is available in multiple languages: English, Russian, Swedish, Romanian, Ukrainian,  Turkish, Serbian, Hrvatski, Farsi, Arabic, Korean.
 
 ## Console utility
 

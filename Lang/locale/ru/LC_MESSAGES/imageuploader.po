@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-09 12:07+0300\n"
-"PO-Revision-Date: 2025-03-09 12:09+0300\n"
+"PO-Revision-Date: 2025-03-15 15:19+0300\n"
 "Last-Translator: \n"
 "Language-Team: zenden2k@gmail.com\n"
 "Language: ru\n"
@@ -1878,7 +1878,7 @@ msgid ""
 "Just drag-n-drop your files on Image Uploader's window and it will process "
 "them."
 msgstr ""
-"Просто перетащите изображения или видео-файл в окно программы и программа "
+"Просто перетащите изображения или видеофайл в окно программы и программа "
 "обработает их."
 
 #: ../Source/Func/LangClass.cpp:104
@@ -3356,8 +3356,8 @@ msgid ""
 "images, photos, video frames on Internet!"
 msgstr ""
 "Добро пожаловать в мастер публикации изображений, который поможет вам "
-"разместить ваши фотографии, изображения, снимки экрана, кадры из видео-"
-"файлов в Интернете!"
+"разместить ваши фотографии, изображения, снимки экрана, кадры из видеофайлов "
+"в Интернете!"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54

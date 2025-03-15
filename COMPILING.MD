@@ -58,15 +58,18 @@ cmake ..\Source -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_BUILD_TYPE=Release -
 
 # Building on Ubuntu (CLI and Qt GUI)
 
-Use the same approach with Conan to build imgupload on Linux.
+Use the same approach with Conan to build imgupload on Ubuntu 20.04.
 
 Before compiling IU install the following packages:
 
 ```
-sudo apt-get install g++ cmake ninja-build python3-pip
+sudo apt-get install g++ git ninja-build python3-pip # cmake
 pip3 install conan
 conan remote add zenden2k https://conan.svistunov.dev --index 0
 ```
+
+Note that Ubuntu 20.04 has CMake v3.16 but the project requires >= v3.17.
+You can install the latest binary distribution from the official website https://cmake.org/
 
 Configure and build the project:
 
@@ -172,7 +175,7 @@ sqrat		    http://scrat.sourceforge.net (patched version)
 
 ffmpeg          https://www.ffmpeg.org
 
-tinyxml         http://sourceforge.net/projects/tinyxml/
+tinyxml2        https://github.com/leethomason/tinyxml2
 
 gumbo           https://github.com/google/gumbo-parser
 
@@ -195,6 +198,8 @@ libheif         https://github.com/strukturag/libheif
 WinToast        https://github.com/mohabouje/WinToast
 
 argparse        https://github.com/p-ranav/argparse
+
+xdgmime         https://gitlab.freedesktop.org/xdg/xdgmime
 
 DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK
 

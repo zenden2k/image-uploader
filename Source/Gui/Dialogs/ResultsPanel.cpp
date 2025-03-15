@@ -130,7 +130,7 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     rc.bottom -= static_cast<LONG>(dpiScaleY_ * 4);
     rc.left = static_cast<LONG>(dpiScaleX_ * 8);
     rc.right -= static_cast<LONG>(dpiScaleX_ * 8);
-    Toolbar.Create(m_hWnd,rc,_T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST |TBSTYLE_CUSTOMERASE|TBSTYLE_FLAT| CCS_NORESIZE/*|*/|CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
+    Toolbar.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE /*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
     //TabBackgroundFix(Toolbar.m_hWnd);
     
     Toolbar.SetButtonStructSize();
@@ -473,49 +473,6 @@ void CResultsPanel::AddServer(const ServerProfile& server)
     m_Servers.push_back(server);
     //return 0;
 }
-LRESULT CResultsPanel::OnResulttoolbarNMCustomDraw(LPNMHDR pnmh)
-{
-    auto* lpNMCustomDraw = reinterpret_cast<LPNMTBCUSTOMDRAW>(pnmh);
-    HDC dc = lpNMCustomDraw->nmcd.hdc;
-    RECT toolbarRect = lpNMCustomDraw->nmcd.rc;
-    //HTHEME hTheme = OpenThemeData(m_hWnd, _T("TAB"));
-    RECT rc;
-    GetClientRect(&rc);
-
-
-    // Check if the application is themed
-
-    if (IsAppThemed()) {
-        //rc.top-=10;
-
-        //m_wndTab.GetWindowRect(&rc);
-
-        // Get the tab control DC
-
-        //  HDC hDC = m_wndTab.GetDC();
-
-        // Create a compatible DC
-
-        HDC hDCMem = ::CreateCompatibleDC(dc);
-        HBITMAP hBmp = ::CreateCompatibleBitmap(dc, rc.right - rc.left, rc.bottom - rc.top);
-        HBITMAP hBmpOld = static_cast<HBITMAP>(::SelectObject(hDCMem, hBmp));
-
-        // Tell the tab control to paint in our DC
-
-        /* m_wndTab.*/
-        SendMessage(WM_PRINTCLIENT, reinterpret_cast<WPARAM>(hDCMem), PRF_ERASEBKGND | PRF_CLIENT | PRF_NONCLIENT);
-
-        ::MapWindowPoints(Toolbar.m_hWnd, m_hWnd, reinterpret_cast<LPPOINT>(&toolbarRect), 2);
-        BitBlt(dc, 0, 0, toolbarRect.right - toolbarRect.left, toolbarRect.bottom - toolbarRect.top, hDCMem, toolbarRect.left, toolbarRect.top,SRCCOPY);
-
-        SelectObject(hDCMem, hBmpOld);
-        DeleteObject(hBmp);
-        DeleteDC(hDCMem);
-    }
-
-    return CDRF_DODEFAULT; // Default handler
-}
-
 
 void CResultsPanel::setEngineList(CMyEngineList* EngineList)
 {

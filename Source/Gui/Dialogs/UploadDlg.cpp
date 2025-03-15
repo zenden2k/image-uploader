@@ -454,7 +454,7 @@ void CUploadDlg::createToolbar()
     rc.bottom = rc.top + GuiTools::dlgY(16);
     rc.left = GuiTools::dlgX(6);
     rc.right -= GuiTools::dlgX(6);
-    toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_CUSTOMERASE | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+    toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
 
     toolbar_.SetButtonStructSize();
     toolbar_.SetButtonSize(30, 18);

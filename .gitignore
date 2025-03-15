@@ -35,3 +35,8 @@ Dist/versioninfo.h
 /Dist/Releases/
 /Dist/Build_Release_Temp/
 /Dist/Libs/
+CMakeLists.txt.user
+/Source/CMakeUserPresets.json
+/Data/qimageuploader.xml
+/*.lnk
+/notes.txt

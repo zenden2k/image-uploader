@@ -583,6 +583,12 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
+	<Server Name="0x0.st" FileHost="1" MaxFileSize="536870912" UserAgent="curl/7.54.1" WebsiteUrl="https://0x0.st">
+        <Actions>
+            <Action Type="upload" Url="https://0x0.st" PostParams="file=%filename%" RegExp="(https://0x0.st/.+)" AssignVars="Link:0"/>
+        </Actions>
+        <Result ImageUrlTemplate="$(Link)"/>
+    </Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

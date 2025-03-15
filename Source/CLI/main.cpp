@@ -583,7 +583,7 @@ int main(int argc, char *argv[]){
 
     argparse::ArgumentParser program("imgupload", appVersion.FullVersion);
     program.add_argument("-s", "--server")
-        .help("Server name")
+        .help("Choose server by name")
         .required()
         .metavar("NAME")
         .store_into(serverName);
@@ -674,7 +674,7 @@ int main(int argc, char *argv[]){
        // .nargs(argparse::nargs_pattern::at_least_one);
 
     program.add_argument("-pl", "--param_list")
-        .help("Print server parameter list and exit")
+        .help("Print server parameter list and exits")
         .action([=](const auto& s) {
             PrintServerParamList();
             std::exit(0);
