@@ -101,11 +101,11 @@ IDR_ISHELLCONTEXTMENU   REGISTRY                "IShellContextMenu.rgs"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICONINFO            ICON                    "Res\\icon-info-16px.ico"
+IDI_ICONINFO            ICON                    "..\\Res\\icon-info.ico"
 
-IDI_ICONMOVIE           ICON                    "Res\\icon-movie-16px.ico"
+IDI_ICONMOVIE           ICON                    "..\\Res\\grabmovie.ico"
 
-IDI_ICONUPLOAD          ICON                    "Res\\icon-upload-16px.ico"
+IDI_ICONUPLOAD          ICON                    "..\\Res\\icon_upload.ico"
 
 IDI_ICONMAIN            ICON                    "..\\Res\\new-icon.ico"
 

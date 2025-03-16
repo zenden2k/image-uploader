@@ -192,57 +192,62 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 // CIShellContextMenu 
 HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
-	bool ExplorerCascadedMenu = true;
-	// #ifdef _WIN64
-	bool ExplorerContextMenu= true;
-//#else 
-	//bool ExplorerContextMenu= false;
-//#endif
-	bool ExplorerVideoContextMenu= true;
-	CRegistry Reg;
-	Reg.SetRootKey(HKEY_CURRENT_USER);
-	if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
-	{
-		ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
-	//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-		ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
-		/*CString lang = Reg.ReadString(_T("Language"));
+    bool ExplorerCascadedMenu = true;
+    // #ifdef _WIN64
+    bool ExplorerContextMenu = true;
+    //#else
+    //bool ExplorerContextMenu= false;
+    //#endif
+    bool ExplorerVideoContextMenu = true;
+    CRegistry Reg;
+    Reg.SetRootKey(HKEY_CURRENT_USER);
+    if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false)) {
+        ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
+        //	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+        ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
+        /*CString lang = Reg.ReadString(_T("Language"));
 		//MessageBox(0, lang,0,0);
 		if(lang != Lang.GetLanguageName())
 		{
 			Lang.LoadLanguage(lang);
 		}*/
-	}
-	#ifdef _WIN64
-		else 
-		{	
-			Reg.SetWOW64Flag(KEY_WOW64_32KEY);
-			if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
-			{
-				ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"));
-			//	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
-				ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
-				CString lang = Reg.ReadString(_T("Language"));
-				//MessageBox(0, lang,0,0);
-				/*if (lang != Lang.GetLanguageName())
+    }
+#ifdef _WIN64
+    else {
+        Reg.SetWOW64Flag(KEY_WOW64_32KEY);
+        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false)) {
+            ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"));
+            //	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
+            ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
+            CString lang = Reg.ReadString(_T("Language"));
+            //MessageBox(0, lang,0,0);
+            /*if (lang != Lang.GetLanguageName())
 				{
 					Lang.LoadLanguage(lang);
 				}*/
-			}
-		}
-	#endif
+        }
+    }
+#endif
 
-	UINT currentCommandID = idCmdFirst;
-	if ((uFlags & 0x000F) != CMF_NORMAL  && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)
-		return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
+    UINT currentCommandID = idCmdFirst;
+    if ((uFlags & 0x000F) != CMF_NORMAL && (uFlags & CMF_VERBSONLY) == 0 && (uFlags & CMF_EXPLORE) == 0)
+        return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID);
 
-	m_nCommands.clear(); // Clearing internal map of commands
-	
-	HMENU PopupMenu;
-	bool UseBitmaps = true;
-	CString StartMenuFolder = GetStartMenuPath();
-	if(m_FileList.GetCount() == 1 && !lstrcmpi(m_FileList[0], StartMenuFolder))
-		UseBitmaps = false;
+    m_nCommands.clear(); // Clearing internal map of commands
+
+    HMENU PopupMenu;
+    bool UseBitmaps = true;
+    CString StartMenuFolder = GetStartMenuPath();
+    bool isDirectory = false;
+
+    if (m_FileList.GetCount() == 1) {
+        DWORD atrr = GetFileAttributes(m_FileList[0]);
+        isDirectory = atrr & FILE_ATTRIBUTE_DIRECTORY;
+
+        if (!lstrcmpi(m_FileList[0], StartMenuFolder)) {
+            UseBitmaps = false;
+        }
+    }
 	UINT subIndex = indexMenu;
 	if(ExplorerCascadedMenu)
 		PopupMenu = CreatePopupMenu();
@@ -286,7 +291,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	}
 
 
-	if(ExplorerVideoContextMenu&&  m_FileList.GetCount()==1 && Helpers::IsVideoFile( m_FileList[0]))
+	if (ExplorerVideoContextMenu && m_FileList.GetCount() == 1 && !isDirectory && Helpers::IsVideoFile(m_FileList[0]))
 	{
 		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO, stringsReader_.getString(_T("ImportVideoFile"), _T("Import Video File")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONMOVIE);
 		if(m_bMediaInfoInstalled)

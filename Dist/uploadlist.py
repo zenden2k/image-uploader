@@ -1,4 +1,4 @@
-import requests, sys, shutil
+import os, requests, sys, shutil
 
 #REMOTE_URL = 'http://mywebsitev2.test:81/update-server-list'
 REMOTE_URL = 'https://svistunov.dev/update-server-list'
@@ -10,11 +10,14 @@ if len(sys.argv) < 2:
 filename = sys.path[0] + '/favicons'
 shutil.make_archive(filename, 'zip', DATA_DIR + 'Favicons')
 
-files = {
-    'file': open(DATA_DIR + 'servers.xml','rb'),
-    'icons': open(filename + '.zip','rb'),
-}
-values = {'password': sys.argv[1]}
+with open(DATA_DIR + 'servers.xml','rb') as file_servers_xml, open(filename + '.zip','rb') as icons_zip:
+    files = {
+        'file': file_servers_xml,
+        'icons': icons_zip,
+    }
+    values = {'password': sys.argv[1]}
 
-r = requests.post(REMOTE_URL, files=files, data=values,  headers={'Accept': 'application/json'})
-print(r.text)
+    r = requests.post(REMOTE_URL, files=files, data=values,  headers={'Accept': 'application/json'})
+    print(r.text)
+
+os.remove(filename + '.zip')

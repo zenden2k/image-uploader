@@ -832,10 +832,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\res\new-icon.ico" />
-    <Image Include="Res\icon-info-16px.ico" />
-    <Image Include="Res\icon-movie-16px.ico" />
-    <Image Include="Res\icon-upload-16px.ico" />
-    <Image Include="..\res\icon_main.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

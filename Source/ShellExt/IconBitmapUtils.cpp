@@ -129,14 +129,18 @@ HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon)
     std::map<UINT, HBITMAP>::iterator bitmap_it = bitmaps.lower_bound(uIcon);
     if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
         return bitmap_it->second;
+
     int w = GetSystemMetrics(SM_CXSMICON);
     int h = GetSystemMetrics(SM_CYSMICON);
-    if ( w > 16 ) {
+    /* if (w > 16) {
         w = 32;
         h = 32;
-    }
-    HICON hIcon = (HICON)LoadImage(hInst, MAKEINTRESOURCE(uIcon), IMAGE_ICON, w, h, LR_DEFAULTCOLOR);
-    if (!hIcon)
+    }*/
+
+    HICON hIcon {};
+
+    HRESULT hr = LoadIconWithScaleDown(hInst, MAKEINTRESOURCE(uIcon), w, h, &hIcon);
+    if (FAILED(hr) || !hIcon)
         return NULL;
 
     if (pfnBeginBufferedPaint == NULL || pfnEndBufferedPaint == NULL || pfnGetBufferedPaintBits == NULL)
