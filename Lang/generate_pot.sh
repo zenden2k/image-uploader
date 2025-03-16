@@ -1,2 +1,6 @@
 #!/bin/bash
 find ../Source/ -type d \( -path  "../Source/qimageuploader" -o -path  "../Source/QtIUHelper" -\) -prune -o -type f \( -iname \*.cpp -o -iname \*.h \)  -print | xargs -d '\n' xgettext   --from-code=UTF-8 --default-domain=imageuploader --keyword=_ --keyword=tr --keyword=TR --keyword=TRC:2 --keyword=TR_CONST --language=C++ --sort-output --package-name=imageuploader --copyright-holder="Sergey Svistunov <zenden2k@gmail.com>" -o imageuploader.pot
+for PO_FILE in locale/*/LC_MESSAGES/imageuploader.po
+do
+    msgmerge -U --previous --backup=- "$PO_FILE" imageuploader.pot
+done
