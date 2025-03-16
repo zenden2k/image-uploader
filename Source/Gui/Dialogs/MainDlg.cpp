@@ -220,8 +220,8 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if (isImageFile && !singleSelectedItem.IsEmpty()) {
             CMenu subMenu;
             subMenu.CreatePopupMenu();
-            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, TR("data:URI"));
-            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, TR("data:URI (HTML)"));
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURI, _T("data:URI"));
+            subMenu.AppendMenu(MFT_STRING, MENUITEM_COPYFILEASDATAURIHTML, _T("data:URI (HTML)"));
 
             contextMenu.AppendMenu(0, subMenu.Detach(), TR("Copy &as"));
 

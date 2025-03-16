@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 16:57+0300\n"
+"POT-Creation-Date: 2025-03-16 18:07+0300\n"
 "PO-Revision-Date: 2023-01-09 18:20+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3493,14 +3493,6 @@ msgstr "Részletes beállítások hozzáértők számára"
 msgid "and/or height:"
 msgstr "és/vagy magasság:"
 
-#: ../Source/Gui/Dialogs/MainDlg.cpp:223
-msgid "data:URI"
-msgstr "adatként: URI"
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:224
-msgid "data:URI (HTML)"
-msgstr "adatként: URI (HTML)"
-
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 #, fuzzy
 #| msgid "Extracting frames from video"
@@ -3569,6 +3561,12 @@ msgstr "LaMoLa"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "Véletlen szerver"
+
+#~ msgid "data:URI"
+#~ msgstr "adatként: URI"
+
+#~ msgid "data:URI (HTML)"
+#~ msgstr "adatként: URI (HTML)"
 
 #~ msgid "Add folder"
 #~ msgstr "Mappa hozzáadása"

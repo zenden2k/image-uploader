@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 16:57+0300\n"
+"POT-Creation-Date: 2025-03-16 18:07+0300\n"
 "PO-Revision-Date: 2023-01-09 18:22+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -3486,14 +3486,6 @@ msgstr "ett verktyg för avancerade användare"
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:114
 msgid "and/or height:"
 msgstr "och/eller höjd:"
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:223
-msgid "data:URI"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:224
-msgid "data:URI (HTML)"
-msgstr ""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 #, fuzzy

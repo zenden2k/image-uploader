@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 17:01+0300\n"
+"POT-Creation-Date: 2025-03-16 18:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -3359,14 +3359,6 @@ msgstr ""
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:47
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:114
 msgid "and/or height:"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:223
-msgid "data:URI"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:224
-msgid "data:URI (HTML)"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102

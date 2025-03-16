@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 16:57+0300\n"
+"POT-Creation-Date: 2025-03-16 18:07+0300\n"
 "PO-Revision-Date: 2025-03-16 12:29+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
@@ -3493,14 +3493,6 @@ msgstr "Pentru utilizatori avansaţi"
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:114
 msgid "and/or height:"
 msgstr "şi/sau înălţimi:"
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:223
-msgid "data:URI"
-msgstr ""
-
-#: ../Source/Gui/Dialogs/MainDlg.cpp:224
-msgid "data:URI (HTML)"
-msgstr ""
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 #, fuzzy
