@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-16 18:07+0300\n"
-"PO-Revision-Date: 2025-03-16 12:29+0000\n"
+"PO-Revision-Date: 2025-03-16 17:17+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ro/>\n"
@@ -1568,10 +1568,9 @@ msgid "Flip vertical"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:163
-#, fuzzy, c-format
-#| msgid "Folder "
+#, c-format
 msgid "Folder %s"
-msgstr "Dosar "
+msgstr "Dosar %s"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:62
 msgid "Folder for snapshots:"
