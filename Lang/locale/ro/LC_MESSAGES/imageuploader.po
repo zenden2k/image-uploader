@@ -3,16 +3,17 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-03-04 14:26+0300\n"
-"PO-Revision-Date: 2024-03-08 18:04+0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-03-16 12:29+0000\n"
+"Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
+"Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
+"image-uploader/ro/>\n"
 "Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n==0 || (n!=1 && n%100>=1 && "
-"n%100<=19) ? 1 : 2);\n"
-"X-Generator: Poedit 3.2.2\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2;\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ../Source/Gui/Dialogs/UploadSettingsPage.cpp:54
 msgid " Num of retries per file:"
@@ -3087,7 +3088,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:244
 msgid "Website:"
-msgstr ""
+msgstr "Site web:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:62
 msgid ""
@@ -3184,7 +3185,7 @@ msgstr "s"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 msgid "to:"
-msgstr ""
+msgstr "până la:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:85
 msgid "translator_name"
