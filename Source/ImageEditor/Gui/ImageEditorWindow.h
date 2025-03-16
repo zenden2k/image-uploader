@@ -80,7 +80,7 @@ public:
     /**
      * Set server name which is being displayed on upload button
      */
-    void setServerName(const CString & serverName);
+    void setServerDisplayName(const CString & serverName);
     void setAskBeforeClose(bool ask);
 
     DialogResult DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode = wdmAuto);
@@ -207,7 +207,7 @@ public:
         bool showAddToWizardButton_;
         bool askBeforeClose_;
         CString suggestedFileName_;
-        CString serverName_;
+        CString serverDisplayName_;
         int prevPenSize_;
         int prevRoundingRadius_;
         float prevBlurRadius_;

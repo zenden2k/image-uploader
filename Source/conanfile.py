@@ -80,7 +80,7 @@ class ImageUploaderRecipe(ConanFile):
         # Add base64 dependency only for Windows
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0")
-            self.requires("libheif/1.13.0")
+            self.requires("libheif/1.13.0") # v1.16.2 is broken (not loading avif files)
  
         #    
         #if self.settings.os != "Windows":  # we need cmake 3.19 in other platforms

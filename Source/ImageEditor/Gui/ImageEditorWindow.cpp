@@ -318,9 +318,9 @@ Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
     return canvas_ ? canvas_->lastAppliedCrop() : Gdiplus::Rect();
 }
 
-void ImageEditorWindow::setServerName(const CString & serverName)
+void ImageEditorWindow::setServerDisplayName(const CString & serverName)
 {
-    serverName_ = serverName;
+    serverDisplayName_ = serverName;
 }
 
 void ImageEditorWindow::setAskBeforeClose(bool ask)
@@ -901,10 +901,10 @@ void ImageEditorWindow::createToolbars()
     }
     if ( showUploadButton_ ) {
         CString fullUploadButtonText, uploadButtonText;
-        if ( serverName_.IsEmpty() ) {
+        if ( serverDisplayName_.IsEmpty() ) {
             fullUploadButtonText = uploadButtonText = TR("Upload to Web");
         } else {
-            fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverName_));
+            fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverDisplayName_));
             uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
         }
         horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));

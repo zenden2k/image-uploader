@@ -2165,7 +2165,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         imageEditor.setInitialDrawingTool((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) ? ImageEditor::DrawingToolType::dtCrop : ImageEditor::DrawingToolType::dtBrush);
         imageEditor.showUploadButton(fromTray);
         if ( fromTray ) {
-            imageEditor.setServerName(Utf8ToWCstring(Settings.quickScreenshotServer.getByIndex(0).serverName()));
+            imageEditor.setServerDisplayName(Utf8ToWCstring(enginelist_->getServerDisplayName(Settings.quickScreenshotServer.getByIndex(0).uploadEngineData())));
         }
         imageEditor.setSuggestedFileName(suggestingFileName);
         dialogResult = imageEditor.DoModal(m_hWnd, monitor, ((mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || mode == cmFullScreen) ? ImageEditorWindow::wdmFullscreen : ImageEditorWindow::wdmAuto);

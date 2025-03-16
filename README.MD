@@ -49,3 +49,11 @@ https://svistunov.dev/imageuploader-cli
 ## Building from source
 
 See [COMPILING.MD](COMPILING.MD)
+
+# Contribution
+
+## Internationalization
+
+Help learning Image Uploader speak multiple languages. The project's i18n is based on the GNU Gettext localization model. We use [Weblate](https://hosted.weblate.org/projects/image-uploader/) for translations. 
+
+
