@@ -1,62 +1,61 @@
 {
-  "dropbox": {
-    "please_allow": "Please allow Image Uploader to connect to your Dropbox account (click the Allow button in a running browser), and then click OK."
-  },
-  "yandexdisk": {
-    "confirmation": {
-      "text": "Please enter your Yandex account in the just opened browser, access your Yandex.Dis and copy the subject code.\r\n"
+    "dropbox": {
+        "please_allow": "Please allow Image Uploader to connect to your Dropbox account (click the Allow button in a running browser), and then click OK."
     },
-    "privacy": {
-      "public": "For everyone",
-      "private": "Private"
+    "yandexdisk": {
+        "confirmation": {
+            "text": "Please enter your Yandex account in the just opened browser, access your Yandex.Dis and copy the subject code.\r\n"
+        },
+        "privacy": {
+            "public": "For everyone",
+            "private": "Private"
+        }
+    },
+    "googledrive": {
+        "oauth": {
+            "success": "Authorization was successful! ",
+            "failed": "Failed to get a confirmation code",
+            "title": "Authorization"
+        }
+    },
+    "vk": {
+        "privacy": {
+            "all_users": "All users",
+            "friends_only": "Only friends",
+            "friends_and_friends_of_friends": "Friends and friends of friends",
+            "just_me": "Only me"
+        },
+        "browser": {
+            "title": "Authorization on vk.com"
+        },
+        "errors": {
+            "no_albums": "There is not a single album in your profile."
+        },
+        "default_album_desc": "Images loaded using the Image Uploader program"
+    },
+    "flickr": {
+        "confirmation": {
+            "text": "Please allow Image Uploader to connect to your Flickr account (click the Allow button in a running browser), and then click OK."
+        },
+        "verification": "Enter confirmation code:"
+    },
+    "imgbb": {
+        "expiration": "Expiration (anonymously)",
+        "expiration_authorized": "Expiration in minutes (with an account)",
+        "never": "Never"
+    },
+    "ftp": {
+        "server": "Server IP or host name [:port]",
+        "download_path": "Download path (http)",
+        "secure_connection": "Secure connection (SSL/TLS)",
+        "active_connection_port": "Port of active connection",
+        "remote_dir": "Remote directory",
+        "secure_connection_no": "No",
+        "secure_connection_explicit": "Explicit",
+        "secure_connection_implicit": "Implicit"
+    },
+    "chevereto": {
+        "expiration": "Expiration through",
+        "never": "Never"
     }
-  },
-  "googledrive": {
-    "oauth": {
-      "success": "Authorization was successful! ",
-      "failed": "Failed to get a confirmation code",
-      "title": "Authorization"
-    }
-  },
-  "vk": {
-    "privacy": {
-      "all_users": "All users",
-      "friends_only": "Only friends",
-      "friends_and_friends_of_friends": "Friends and friends of friends",
-      "just_me": "Only me"
-    },
-    "browser": {
-      "title": "Authorization on vk.com"
-    },
-    "errors": {
-      "no_albums": "There is not a single album in your profile."
-    },
-    "default_album_desc": "Images loaded using the Image Uploader program"
-  },
-  "flickr": {
-    "confirmation": {
-      "text": "Please allow Image Uploader to connect to your Flickr account (click the Allow button in a running browser), and then click OK."
-    },
-    "verification": "Enter confirmation code:"
-  },
-  "imgbb": {
-    "expiration": "Expiration (anonymously)",
-    "expiration_authorized": "Expiration in minutes (with an account)",
-    "never": "Never"
-  },
-  "ftp": {
-    "server": "IP server or host name [:port]",
-    "download_path": "Download path (http)",
-    "secure_connection": "Secure connection (SSL/TLS)",
-    "active_connection_port": "Port of active connection",
-    "remote_dir": "Remote directory",
-    "secure_connection_no": "No",
-    "secure_connection_explicit": "Explicit",
-    "secure_connection_implicit": "Implicit"
-  },
-  "webdav": {},
-  "chevereto": {
-    "expiration": "Expiration through",
-    "never": "Never"
-  }
 }
