@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-16 17:19+0000\n"
+"PO-Revision-Date: 2025-03-17 15:04+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ro/>\n"
@@ -828,7 +828,7 @@ msgstr "Schiţe cu marire prin click"
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:236
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:926
 msgid "Close"
-msgstr "Inchide"
+msgstr "Închide"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:92
 msgid "Code type:"

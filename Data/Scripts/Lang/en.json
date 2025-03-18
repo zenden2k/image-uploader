@@ -4,16 +4,16 @@
     },
     "yandexdisk": {
         "confirmation": {
-            "text": "Please enter your Yandex account in the just opened browser, access your Yandex.Dis and copy the subject code.\r\n"
+            "text": "You need to need to sign in to your Yandex.Disk account\nin web browser which just have opened and then copy\nconfirmation code into the text field below.\n\nPlease enter confirmation code:\n"
         },
         "privacy": {
-            "public": "For everyone",
+            "public": "Public",
             "private": "Private"
         }
     },
     "googledrive": {
         "oauth": {
-            "success": "Authorization was successful! ",
+            "success": "Authorization was successful! You can now close this page.",
             "failed": "Failed to get a confirmation code",
             "title": "Authorization"
         }

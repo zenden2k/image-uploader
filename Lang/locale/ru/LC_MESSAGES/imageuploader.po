@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-16 14:46+0000\n"
+"PO-Revision-Date: 2025-03-18 15:28+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ru/>\n"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.11-dev\n"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
@@ -3148,7 +3148,7 @@ msgstr "История загрузок"
 
 #: ../Source/Gui/Win7JumpList.cpp:196
 msgid "Upload Images"
-msgstr "Загрузить изображения..."
+msgstr "Загрузить изображения"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:73
 msgid "Upload failed! (retry limit reached)"
