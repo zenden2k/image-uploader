@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 18:07+0300\n"
+"POT-Creation-Date: 2025-03-18 18:24+0300\n"
 "PO-Revision-Date: 2025-03-16 14:46+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
@@ -14,10 +14,6 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.11-dev\n"
-
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
-msgid " Num of retries per file:"
-msgstr "Кол-во попыток загрузки файла:"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
@@ -79,7 +75,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr "%s - быстрая настройка"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:872
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:873
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - Доступны обновления"
@@ -93,11 +89,6 @@ msgstr "%s из %s (%d%%) %s"
 #, c-format
 msgid "%s server settings"
 msgstr "Параметры сервера %s"
-
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:98
-#, c-format
-msgid "%s translation:"
-msgstr "%s перевод:"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:118
 #, c-format
@@ -139,7 +130,7 @@ msgstr "(код был скопирован в буфер обмена)"
 msgid "(the link has been copied to the clipboard)"
 msgstr "(адрес был скопирован в буфер обмена)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:418
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:419
 msgid "< Back"
 msgstr "< Назад"
 
@@ -156,7 +147,7 @@ msgstr "Доступна новая версия:"
 msgid "About Image Uploader"
 msgstr "О программе"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2559
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2560
 msgid "About..."
 msgstr "О программе..."
 
@@ -338,8 +329,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:347
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1675
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1894
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1676
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1895
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1422
 msgid "All files"
 msgstr "Все файлы"
@@ -381,8 +372,8 @@ msgstr "Ошибка при загрузке скрипта."
 msgid "An error occured while receiving update information from server."
 msgstr "Ошибка при получении данных об обновлениях."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1457
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1922
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1458
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1923
 msgid "Any file"
 msgstr "Любые файлы"
 
@@ -402,7 +393,7 @@ msgstr ""
 "Вы действительно хотите поместить текст и логотип в одном месте на "
 "изображении?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1802
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1803
 msgid "Are you sure to quit?"
 msgstr "Вы действительно хотите выйти из программы?"
 
@@ -446,7 +437,7 @@ msgstr ""
 msgid "Audio"
 msgstr "Аудио"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1893
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1894
 msgid "Audio files"
 msgstr "Аудио файлы"
 
@@ -680,7 +671,7 @@ msgstr "Изменение ширины:"
 msgid "Check file types before upload"
 msgstr "Проверять типы файлов перед загрузкой"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2561
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2562
 msgid "Check for Updates"
 msgstr "Проверить обновления"
 
@@ -697,12 +688,12 @@ msgstr "Проверка обновлений..."
 msgid "Choose executable file"
 msgstr "Выберите исполняемый файл"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1924
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1925
 msgid "Choose files"
 msgstr "Выберите файлы"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1775
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1776
 msgid "Choose folder"
 msgstr "Выбор папки"
 
@@ -710,7 +701,7 @@ msgstr "Выбор папки"
 msgid "Choose folder..."
 msgstr "Выберите папку..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1897
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1898
 msgid "Choose media file"
 msgstr "Выберите медиафайл"
 
@@ -750,7 +741,7 @@ msgid "Choose servers"
 msgstr "Выбрать серверы"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:350
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1678
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1679
 msgid "Choose video file"
 msgstr "Выберите видеофайл"
 
@@ -889,7 +880,7 @@ msgstr "Контрибьюторам:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "Преобразовывать UNC-путь \"\\\\\" в \"file://\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:391
 msgid "Converting history"
 msgstr "Конвертирование истории"
 
@@ -906,8 +897,10 @@ msgstr "Копировать"
 msgid "Copy &as"
 msgstr "Копировать как"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:405
-msgid "Copy URL  "
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:408
+#, fuzzy
+#| msgid "Copy URL  "
+msgid "Copy URL of %1%->%2%"
 msgstr "Копировать ссылку на альбом (папку) "
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
@@ -999,7 +992,7 @@ msgstr "Не найдено ссылок на изображения!"
 msgid "Could not read package %s"
 msgstr "Невозможно прочесть архив %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:934
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:935
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "Не удалось сохранить файл с настройками. Для подробностей смотрите журнал "
@@ -1009,7 +1002,7 @@ msgstr ""
 msgid "Could not upload screenshot :("
 msgstr "Не удалось загрузить снимок :("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:327
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:328
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1146,7 +1139,7 @@ msgstr "Отключить локализацию"
 msgid "Display video file information on resulting picture"
 msgstr "Отобразить информацию о видеофайле на картинке"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1800
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1801
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:342
 msgid "Do not ask again"
 msgstr "Больше не спрашивать"
@@ -1159,13 +1152,14 @@ msgstr "Не запускать новые копии программы из т
 msgid "Do nothing"
 msgstr "Нет действия"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2560
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2561
 msgid "Documentation"
 msgstr "Документация"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:114
-#, c-format
-msgid "Don't have an account? Sign up on %s right now"
+#, fuzzy, c-format
+#| msgid "Don't have an account? Sign up on %s right now"
+msgid "Don't have an account? Sign up on %s right now!"
 msgstr "У вас нет учетной записи? Зарегистрируйтесь на %s прямо сейчас!"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1155
@@ -1344,8 +1338,8 @@ msgstr "Выполнять Squirrel-скрипт для каждой задач�
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:239
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:621
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:413
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:414
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1789
 msgid "Exit"
 msgstr "Выход"
 
@@ -1684,8 +1678,8 @@ msgid "Help"
 msgstr "Помощь"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:172
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:415
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:416
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
 msgid "Hide"
 msgstr "Скрыть"
 
@@ -1769,8 +1763,8 @@ msgstr "Параметры изображений"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1455
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1920
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1456
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1921
 msgid "Images"
 msgstr "Изображения"
 
@@ -1786,7 +1780,7 @@ msgstr "Изображения из Web"
 msgid "Images per string:"
 msgstr "Картинок в строке:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:915
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
 msgid "Images settings and choosing server"
 msgstr "Параметры изображений и выбор сервера"
 
@@ -1812,7 +1806,7 @@ msgstr "Импорт видео"
 msgid "In queue"
 msgstr "В очереди"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1776
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1777
 msgid "Including subdirectories"
 msgstr "Включая поддиректории"
 
@@ -1873,8 +1867,12 @@ msgid "Just URL"
 msgstr "Только URL"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
+#, fuzzy
+#| msgid ""
+#| "Just drag-n-drop your files on Image Uploader's window and it will "
+#| "process them."
 msgid ""
-"Just drag-n-drop your files on Image Uploader's window and it will process "
+"Just drag and drop your files into the program window, and it will process "
 "them."
 msgstr ""
 "Просто перетащите изображения или видеофайл в окно программы и программа "
@@ -1898,7 +1896,9 @@ msgid "Launch program on Windows startup"
 msgstr "Запуск программы при старте Windows"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:30
-msgid "Left button double-click"
+#, fuzzy
+#| msgid "Left button double-click"
+msgid "Left button double-click:"
 msgstr "Двойной клик левой кнопкой:"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:31
@@ -1993,7 +1993,7 @@ msgstr "Проверка MD5 не удалась для файла "
 msgid "MD5 check of the update package failed "
 msgstr "Проверка MD5 не удалась для пакета обновления "
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:409
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:410
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2050,7 +2050,7 @@ msgid "Name:"
 msgstr "Название:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2565
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2566
 msgid "Network Debugger"
 msgstr "Сетевой отладчик"
 
@@ -2067,7 +2067,7 @@ msgid "New profile"
 msgstr "Новый профиль"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:169
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:707
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:708
 msgid "Next >"
 msgstr "Далее >"
 
@@ -2102,6 +2102,12 @@ msgstr "Не задано"
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:26
 msgid "Num of retries per action:"
 msgstr "Кол-во попыток для одной операции:"
+
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
+#, fuzzy
+#| msgid " Num of retries per file:"
+msgid "Num of retries per file:"
+msgstr "Кол-во попыток загрузки файла:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:51
 msgid "Number of columns:"
@@ -2174,7 +2180,7 @@ msgstr "Открыть скриншот в редакторе"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2563
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2564
 msgid "Open screenshots folder"
 msgstr "Открыть папку со снимками"
 
@@ -2262,7 +2268,7 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Вы не задали параметры авторизации на сервере '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:391
 msgid "Please wait while your history is being converted..."
 msgstr "Пожалуйста, подождите, пока ваша история будет сконвертирована..."
 
@@ -2286,7 +2292,7 @@ msgstr "Сохранять метаданные (например, EXIF)"
 msgid "Preview"
 msgstr "Предпросмотр"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:551
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:555
 msgid "Preview Window"
 msgstr "Окно предпросмотра"
 
@@ -2312,7 +2318,7 @@ msgstr "Обрабатывать изображения"
 msgid "Processing folder:"
 msgstr "Обрабатывается каталог:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:533
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:534
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2535,7 +2541,7 @@ msgid "Screenshot Action"
 msgstr "Действие со снимком"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2272
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2273
 msgid "Screenshot has been copied to clipboard."
 msgstr "Скриншот был скопирован в буфер обмена."
 
@@ -2580,13 +2586,15 @@ msgstr "Защищ. соединение:"
 msgid "Select Region..."
 msgstr "Выбрать область..."
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
-msgid "Select action:"
-msgstr "Выберите действие:"
-
 #: ../Source/Gui/Dialogs/LogWindow.cpp:132
 msgid "Select all"
 msgstr "Выделить всё"
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
+#, fuzzy
+#| msgid "Select action:"
+msgid "Select an action:"
+msgstr "Выберите действие:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:375
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:153
@@ -2762,7 +2770,7 @@ msgstr "Снимок выбранной области..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2570
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2571
 msgid "Show Error Log"
 msgstr "Показать журнал ошибок"
 
@@ -3099,7 +3107,7 @@ msgstr "URL:"
 msgid "Unable to load picture"
 msgstr "Невозможно загрузить изображение"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2241
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2242
 msgid "Unable to make screenshot!"
 msgstr "Невозможно сделать скриншот!"
 
@@ -3217,7 +3225,7 @@ msgstr "Загрузка"
 msgid "Uploading errors"
 msgstr "Ошибки загрузки"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:917
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
 msgid "Uploading file on server"
 msgstr "Загрузка файлов на сервер"
 
@@ -3258,7 +3266,9 @@ msgid "Use old method of rectangular area selection"
 msgstr "Использовать старый способ выбора области экрана"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
-msgid "Use provided proxy"
+#, fuzzy
+#| msgid "Use provided proxy"
+msgid "Use provided proxy:"
 msgstr "Использовать следующие настройки прокси:"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
@@ -3296,9 +3306,9 @@ msgid "Video backend"
 msgstr "Видео бэкенд"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:346
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1674
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1892
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1921
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1675
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1893
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1922
 msgid "Video files"
 msgstr "Видео файлы"
 
@@ -3350,9 +3360,13 @@ msgid "Website:"
 msgstr "Веб-сайт:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
+#, fuzzy
+#| msgid ""
+#| "Welcome to pictures Publishing Wizard, that will help you to upload your "
+#| "images, photos, video frames on Internet!"
 msgid ""
-"Welcome to pictures Publishing Wizard, that will help you to upload your "
-"images, photos, video frames on Internet!"
+"Welcome to the pictures publishing wizard, which will help you upload your "
+"images, photos, and video frames to the Internet!"
 msgstr ""
 "Добро пожаловать в мастер публикации изображений, который поможет вам "
 "разместить ваши фотографии, изображения, снимки экрана, кадры из видеофайлов "
@@ -3367,7 +3381,7 @@ msgstr "Ширина:"
 msgid "Windows Explorer integration"
 msgstr "Интеграция с проводником Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2449
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2450
 msgid "Work in progress"
 msgstr "В процессе работы"
 
@@ -3478,6 +3492,9 @@ msgstr "translator_name"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 msgid "unknown server"
 msgstr "неизвестный сервер"
+
+#~ msgid "%s translation:"
+#~ msgstr "%s перевод:"
 
 #~ msgid "data:URI"
 #~ msgstr "data:URI"

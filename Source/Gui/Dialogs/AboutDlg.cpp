@@ -95,7 +95,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
         CString trans;
         CLang lang;
-        trans.Format(TR("%s translation:"), (LPCTSTR)U2W(translator->getLanguageDisplayName()));
+        trans.Format(_T("%s:"), (LPCTSTR)U2W(translator->getLanguageDisplayName()));
         translatorName.Replace(_T("\n"), _T("\r\n"));
         memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
     } 

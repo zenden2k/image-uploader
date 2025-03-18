@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-16 18:07+0300\n"
+"POT-Creation-Date: 2025-03-18 18:24+0300\n"
 "PO-Revision-Date: 2023-01-09 18:23+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -11,10 +11,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.2.2\n"
-
-#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
-msgid " Num of retries per file:"
-msgstr "Dosya başına tekrar sayısı"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
@@ -74,7 +70,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr "%s - Hızlı Kurulum"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:872
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:873
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - Güncellemeler mevcut"
@@ -88,11 +84,6 @@ msgstr "%s - %s (%d%%) %s"
 #, c-format
 msgid "%s server settings"
 msgstr "%s sunucu ayarları"
-
-#: ../Source/Gui/Dialogs/AboutDlg.cpp:98
-#, c-format
-msgid "%s translation:"
-msgstr "%s Çeviri:"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:118
 #, c-format
@@ -135,7 +126,7 @@ msgstr "(Bağlantı panoya kopyalandı)"
 msgid "(the link has been copied to the clipboard)"
 msgstr "(Bağlantı panoya kopyalandı)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:418
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:419
 msgid "< Back"
 msgstr "<Geri"
 
@@ -152,7 +143,7 @@ msgstr ""
 msgid "About Image Uploader"
 msgstr "Image Uploader Hakkında"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2559
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2560
 msgid "About..."
 msgstr "Hakkında..."
 
@@ -342,8 +333,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:347
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1675
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1894
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1676
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1895
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1422
 msgid "All files"
 msgstr "Tüm dosyalar"
@@ -387,8 +378,8 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr "Sunucudan güncelleme bilgisi alırken bir hata oluştu."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1457
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1922
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1458
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1923
 msgid "Any file"
 msgstr "Herhangi bir dosya"
 
@@ -408,7 +399,7 @@ msgstr ""
 "Filigran ve metni resim üzerinde aynı konuma yerleştirmek istediğinizden "
 "emin misiniz?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1802
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1803
 msgid "Are you sure to quit?"
 msgstr "Çıkmak istediğinize emin misiniz?"
 
@@ -451,7 +442,7 @@ msgstr ""
 msgid "Audio"
 msgstr "Ses"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1893
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1894
 msgid "Audio files"
 msgstr "Ses dosyaları"
 
@@ -689,7 +680,7 @@ msgstr "Genişlik değiştir:"
 msgid "Check file types before upload"
 msgstr "Yükleme öncesi işlem"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2561
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2562
 msgid "Check for Updates"
 msgstr "Güncellemeleri kontrol et"
 
@@ -708,12 +699,12 @@ msgstr "Güncellemeler kontrol ediliyor..."
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1924
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1925
 msgid "Choose files"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1775
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1776
 msgid "Choose folder"
 msgstr ""
 
@@ -721,7 +712,7 @@ msgstr ""
 msgid "Choose folder..."
 msgstr "Klasörü seç..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1897
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1898
 msgid "Choose media file"
 msgstr ""
 
@@ -761,7 +752,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:350
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1678
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1679
 msgid "Choose video file"
 msgstr ""
 
@@ -910,7 +901,7 @@ msgstr "Katkıda Bulunanlar"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "UNC yolunu \"\\\\ > \"\"file://\"\" olarak dönüştür\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:391
 msgid "Converting history"
 msgstr ""
 
@@ -929,8 +920,10 @@ msgstr "Kopyala"
 msgid "Copy &as"
 msgstr "Farklı kopyala&..."
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:405
-msgid "Copy URL  "
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:408
+#, fuzzy
+#| msgid "Copy URL  "
+msgid "Copy URL of %1%->%2%"
 msgstr "Link Kopyala"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
@@ -1030,7 +1023,7 @@ msgstr "Verilen metinde link bulunamadı!"
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:934
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:935
 msgid "Could not save settings file. See error log for details."
 msgstr "Ayarlar dosyası kaydedilemedi. Detay için hata günlüğüne bakınız."
 
@@ -1038,7 +1031,7 @@ msgstr "Ayarlar dosyası kaydedilemedi. Detay için hata günlüğüne bakınız
 msgid "Could not upload screenshot :("
 msgstr "Ekran görüntüsü yüklenemedi"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:327
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:328
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1180,7 +1173,7 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr "Video dosyasının bilgilerini resim üzerinde göster"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1800
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1801
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:342
 msgid "Do not ask again"
 msgstr ""
@@ -1193,13 +1186,14 @@ msgstr "Yeni programı tepsi simgesinden başlatma"
 msgid "Do nothing"
 msgstr "Hiçbir Şey Yapma"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2560
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2561
 msgid "Documentation"
 msgstr "Belgeler"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:114
-#, c-format
-msgid "Don't have an account? Sign up on %s right now"
+#, fuzzy, c-format
+#| msgid "Don't have an account? Sign up on %s right now"
+msgid "Don't have an account? Sign up on %s right now!"
 msgstr "Bir hesabınız yokmu? Hemen %s kaydolun"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1155
@@ -1379,8 +1373,8 @@ msgstr "Her görev(dosya) için Squirrel komutunu çalıştır."
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:239
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:621
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:413
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1788
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:414
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1789
 msgid "Exit"
 msgstr "Çıkış"
 
@@ -1716,8 +1710,8 @@ msgid "Help"
 msgstr "Yardım"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:172
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:415
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1790
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:416
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1791
 msgid "Hide"
 msgstr "Gizle"
 
@@ -1801,8 +1795,8 @@ msgstr "Görüntü ayarları"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:58
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1455
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1920
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1456
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1921
 msgid "Images"
 msgstr "Resim"
 
@@ -1818,7 +1812,7 @@ msgstr "Web'den Resim"
 msgid "Images per string:"
 msgstr "Satır başına link:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:915
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
 msgid "Images settings and choosing server"
 msgstr "Resim ayarları ve sunucu seçimi"
 
@@ -1844,7 +1838,7 @@ msgstr "Video Ekle"
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1776
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1777
 msgid "Including subdirectories"
 msgstr "Alt dizinler dahil"
 
@@ -1909,8 +1903,12 @@ msgid "Just URL"
 msgstr "Link listesi"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
+#, fuzzy
+#| msgid ""
+#| "Just drag-n-drop your files on Image Uploader's window and it will "
+#| "process them."
 msgid ""
-"Just drag-n-drop your files on Image Uploader's window and it will process "
+"Just drag and drop your files into the program window, and it will process "
 "them."
 msgstr ""
 "Dosyalarınızı Image Uploader'ın penceresine Sürükle-Bırak yaparak ta "
@@ -1936,7 +1934,9 @@ msgid "Launch program on Windows startup"
 msgstr "Windows başlangıcında programı başlat"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:30
-msgid "Left button double-click"
+#, fuzzy
+#| msgid "Left button double-click"
+msgid "Left button double-click:"
 msgstr "Sol buton çift tıklama :"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:31
@@ -2033,7 +2033,7 @@ msgstr "Dosya MD5 kontrolü başarısız"
 msgid "MD5 check of the update package failed "
 msgstr "Güncelleştirme paketi MD5 kontrolü başarısız oldu"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:409
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:410
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2090,7 +2090,7 @@ msgid "Name:"
 msgstr "Ad:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2565
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2566
 msgid "Network Debugger"
 msgstr ""
 
@@ -2107,7 +2107,7 @@ msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:169
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:707
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:708
 msgid "Next >"
 msgstr "İleri >"
 
@@ -2142,6 +2142,12 @@ msgstr ""
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:26
 msgid "Num of retries per action:"
 msgstr "Dosya başına eylem  sayısı"
+
+#: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
+#, fuzzy
+#| msgid " Num of retries per file:"
+msgid "Num of retries per file:"
+msgstr "Dosya başına tekrar sayısı"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:51
 msgid "Number of columns:"
@@ -2214,7 +2220,7 @@ msgstr "Hızlı çekimi düzenleyicide aç"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2563
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2564
 msgid "Open screenshots folder"
 msgstr "Hızlı çekim klasörünü aç"
 
@@ -2304,7 +2310,7 @@ msgstr "Yeni dil ayarlarının etkili olması için programı yeniden başlatın
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Lütfen '%s' sunucusu için hesap bilgilerinizi belirtin!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:390
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:391
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
@@ -2328,7 +2334,7 @@ msgstr ""
 msgid "Preview"
 msgstr "Önizleme"
 
-#: ../Source/Gui/Dialogs/ResultsPanel.cpp:551
+#: ../Source/Gui/Dialogs/ResultsPanel.cpp:555
 msgid "Preview Window"
 msgstr "Önizleme Penceresi"
 
@@ -2354,7 +2360,7 @@ msgstr "Yükleme öncesi işlem"
 msgid "Processing folder:"
 msgstr "İşlem klasörü:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:533
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:534
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2577,7 +2583,7 @@ msgid "Screenshot Action"
 msgstr "Ekran Yakalama Eylemi"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2272
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2273
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to clipboard."
@@ -2626,13 +2632,15 @@ msgstr "Eylem seç:"
 msgid "Select Region..."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
-msgid "Select action:"
-msgstr "Eylem seç:"
-
 #: ../Source/Gui/Dialogs/LogWindow.cpp:132
 msgid "Select all"
 msgstr ""
+
+#: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
+#, fuzzy
+#| msgid "Select action:"
+msgid "Select an action:"
+msgstr "Eylem seç:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:375
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:153
@@ -2808,7 +2816,7 @@ msgstr "Seçilen Bölgeyi Yakala..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2570
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2571
 msgid "Show Error Log"
 msgstr "Hata Günlüğünü Göster"
 
@@ -3164,7 +3172,7 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "Resim yüklenemiyor"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2241
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2242
 msgid "Unable to make screenshot!"
 msgstr ""
 
@@ -3281,7 +3289,7 @@ msgstr "Yükleme"
 msgid "Uploading errors"
 msgstr "Yükleme hataları"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:917
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
 msgid "Uploading file on server"
 msgstr "Sunucu üzerine dosya yükleme"
 
@@ -3324,7 +3332,7 @@ msgid "Use old method of rectangular area selection"
 msgstr "Eski yöntem diktörtgen alan seçimini kullan"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
-msgid "Use provided proxy"
+msgid "Use provided proxy:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
@@ -3362,9 +3370,9 @@ msgid "Video backend"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:346
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1674
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1892
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1921
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1675
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1893
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1922
 msgid "Video files"
 msgstr "Video dosyaları"
 
@@ -3416,9 +3424,13 @@ msgid "Website:"
 msgstr "Web Sayfası:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
+#, fuzzy
+#| msgid ""
+#| "Welcome to pictures Publishing Wizard, that will help you to upload your "
+#| "images, photos, video frames on Internet!"
 msgid ""
-"Welcome to pictures Publishing Wizard, that will help you to upload your "
-"images, photos, video frames on Internet!"
+"Welcome to the pictures publishing wizard, which will help you upload your "
+"images, photos, and video frames to the Internet!"
 msgstr ""
 "Yayımlama Sihirbazına Hoş Geldiniz,bu görüntülerinizi, fotoğraflarınızı ve "
 "video karelerinizi internete yüklemenize yardımcı olacaktır."
@@ -3432,7 +3444,7 @@ msgstr "Genişlik:"
 msgid "Windows Explorer integration"
 msgstr "Explorer Menü Entegrasyonu"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2449
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2450
 #, fuzzy
 #| msgid "Upload progress"
 msgid "Work in progress"
@@ -3559,6 +3571,9 @@ msgstr "Tahir YILMAZ"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "Rasgele sunucu"
+
+#~ msgid "%s translation:"
+#~ msgstr "%s Çeviri:"
 
 #~ msgid "Add folder"
 #~ msgstr "Klasör ekle"

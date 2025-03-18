@@ -396,13 +396,17 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     for(size_t i=0; i<m_Servers.size(); i++)
     {
-        CUploadEngineData *ue = m_Servers[i].uploadEngineData();
-        if(!ue) continue;
-        CString folderTitle = Utf8ToWCstring(m_Servers[i].folderTitle());
-        CString folderUrl = Utf8ToWCstring(m_Servers[i].folderUrl());
-
-        if(folderTitle.IsEmpty() || folderUrl.IsEmpty()) continue;
-        CString title = TR("Copy URL  ") + Utf8ToWCstring(ue->Name)+ _T("->")+folderTitle;
+        const auto& server = m_Servers[i];
+        CUploadEngineData* ue = server.uploadEngineData();
+        if (!ue) {
+            continue;
+        }
+        CString folderTitle = Utf8ToWCstring(server.folderTitle());
+        if (server.folderTitle().empty() || server.folderUrl().empty()) {
+            continue;
+        }
+        std::string titleU8 = str(IuStringUtils::FormatNoExcept(_("Copy URL of %1%->%2%")) % ue->Name % server.folderTitle());
+        CString title = U2WC(titleU8);
         mi.wID = IDC_COPYFOLDERURL + i;
         mi.dwTypeData = const_cast<LPWSTR>(title.GetString());
         mi.cch = title.GetLength();

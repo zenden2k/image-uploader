@@ -27,7 +27,7 @@ LRESULT CTraySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     TRC(IDC_SHOWTRAYICON, "Show tray icon");
     TRC(IDC_MOUSEREACTIONGROUP, "Mouse clicks handlers");
-    TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL, "Left button double-click");
+    TRC(IDC_LEFTBUTTONDOUBLECLICKLABEL, "Left button double-click:");
     TRC(IDC_LEFTBUTTONCLICKLABEL, "Left button single click:");
     TRC(IDC_MIDDLEBUTTONCLICKLABEL, "Middle button click:");
     TRC(IDC_RIGHTBUTTONCLICKLABEL, "Right button click:");

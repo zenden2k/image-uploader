@@ -22,7 +22,7 @@ void CTransferSettingsPage::TranslateUI()
 {
     TRC(IDC_AUTOCOPYTOCLIPBOARD, "Copy automatically results to clipboard");
     TRC(IDC_UPLOADERRORLABEL, "Uploading errors");
-    TRC(IDC_RETRIES1LABEL, " Num of retries per file:");
+    TRC(IDC_RETRIES1LABEL, "Num of retries per file:");
     TRC(IDC_RETRIES2LABEL, "Num of retries per action:");
     TRC(IDC_MAXTHREADSLABEL, "Threads number:");
     TRC(IDC_EXECUTESCRIPTCHECKBOX, "Execute Squirrel script for each task (file)");

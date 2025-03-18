@@ -310,7 +310,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         WinToast* toast = WinToast::instance();
 
         toast->setAppName(APPNAME);
-        toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
+        //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
+        toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
         
         const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);

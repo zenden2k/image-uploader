@@ -20,7 +20,7 @@ CConnectionSettingsPage::~CConnectionSettingsPage()
 void CConnectionSettingsPage::TranslateUI()
 {
     TRC(IDC_CONNECTIONSETTINGS, "Connection settings");
-    TRC(IDC_USEPROXYSERVER, "Use provided proxy");
+    TRC(IDC_USEPROXYSERVER, "Use provided proxy:");
     TRC(IDC_USESYSTEMPROXY, "Use system proxy settings");
     TRC(IDC_NOPROXY, "No proxy (direct connection)");
     TRC(IDC_ADDRESSLABEL, "Address:");
