@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-18 15:28+0000\n"
+"PO-Revision-Date: 2025-03-18 16:27+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ru/>\n"
@@ -898,10 +898,8 @@ msgid "Copy &as"
 msgstr "Копировать как"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:408
-#, fuzzy
-#| msgid "Copy URL  "
 msgid "Copy URL of %1%->%2%"
-msgstr "Копировать ссылку на альбом (папку) "
+msgstr "Копировать ссылку на альбом (папку) %1%->%2%"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
 msgid "Copy automatically results to clipboard"
@@ -1157,8 +1155,7 @@ msgid "Documentation"
 msgstr "Документация"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:114
-#, fuzzy, c-format
-#| msgid "Don't have an account? Sign up on %s right now"
+#, c-format
 msgid "Don't have an account? Sign up on %s right now!"
 msgstr "У вас нет учетной записи? Зарегистрируйтесь на %s прямо сейчас!"
 
@@ -1867,15 +1864,11 @@ msgid "Just URL"
 msgstr "Только URL"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
-#, fuzzy
-#| msgid ""
-#| "Just drag-n-drop your files on Image Uploader's window and it will "
-#| "process them."
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
 msgstr ""
-"Просто перетащите изображения или видеофайл в окно программы и программа "
+"Просто перетащите изображения или видеофайл в окно программы, и программа "
 "обработает их."
 
 #: ../Source/Func/LangClass.cpp:104
@@ -1896,8 +1889,6 @@ msgid "Launch program on Windows startup"
 msgstr "Запуск программы при старте Windows"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:30
-#, fuzzy
-#| msgid "Left button double-click"
 msgid "Left button double-click:"
 msgstr "Двойной клик левой кнопкой:"
 
@@ -2104,8 +2095,6 @@ msgid "Num of retries per action:"
 msgstr "Кол-во попыток для одной операции:"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
-#, fuzzy
-#| msgid " Num of retries per file:"
 msgid "Num of retries per file:"
 msgstr "Кол-во попыток загрузки файла:"
 
@@ -2591,8 +2580,6 @@ msgid "Select all"
 msgstr "Выделить всё"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
-#, fuzzy
-#| msgid "Select action:"
 msgid "Select an action:"
 msgstr "Выберите действие:"
 
@@ -3266,8 +3253,6 @@ msgid "Use old method of rectangular area selection"
 msgstr "Использовать старый способ выбора области экрана"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
-#, fuzzy
-#| msgid "Use provided proxy"
 msgid "Use provided proxy:"
 msgstr "Использовать следующие настройки прокси:"
 
@@ -3360,10 +3345,6 @@ msgid "Website:"
 msgstr "Веб-сайт:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
-#, fuzzy
-#| msgid ""
-#| "Welcome to pictures Publishing Wizard, that will help you to upload your "
-#| "images, photos, video frames on Internet!"
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
