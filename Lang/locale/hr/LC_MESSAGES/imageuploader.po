@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/hr/>\n"
@@ -1209,7 +1209,7 @@ msgstr "Nacrtaj okvir"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr "Trajanje:"
+msgstr "Trajanje: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
@@ -1376,7 +1376,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:196
 msgid "Extracting frame "
-msgstr "Izdvajanje ..."
+msgstr "Izdvajanje "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
@@ -1472,7 +1472,7 @@ msgstr "Datoteka:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
 msgid "File: "
-msgstr "Datoteka:"
+msgstr "Datoteka: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
@@ -1487,7 +1487,7 @@ msgstr "Datoteka:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr "Ime:"
+msgstr "Ime: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:713
 msgid "Files"
@@ -1499,7 +1499,7 @@ msgstr "Ukupno datoteka:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr "Veličina:"
+msgstr "Veličina: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:255
 msgid "Fill background"
@@ -2216,7 +2216,7 @@ msgstr "Opcije"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr "Ukupna brzina prijenosa:"
+msgstr "Ukupna brzina prijenosa: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Parameters:"
@@ -2703,7 +2703,7 @@ msgstr ""
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
 msgid "Server: "
-msgstr "Poslužitelj:"
+msgstr "Poslužitelj: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
 msgid "Servers"
@@ -2897,7 +2897,7 @@ msgstr "Boja ruba:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr "Natpisi:"
+msgstr "Natpisi: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
