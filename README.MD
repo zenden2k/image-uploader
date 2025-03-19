@@ -1,4 +1,5 @@
-[![Build Image Uploader](https://github.com/zenden2k/image-uploader/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/zenden2k/image-uploader/actions/workflows/main.yml)
+[![Build Image Uploader](https://github.com/zenden2k/image-uploader/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/zenden2k/image-uploader/actions/workflows/main.yml) 
+[![translation progress](https://hosted.weblate.org/widget/image-uploader/image-uploader/svg-badge.svg)](https://hosted.weblate.org/engage/image-uploader/)
 
 # Image Uploader
 
