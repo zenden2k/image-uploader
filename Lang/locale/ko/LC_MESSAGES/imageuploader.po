@@ -3,16 +3,16 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2024-03-31 17:04+0300\n"
-"Last-Translator: \n"
-"Language-Team: Sung un Kim <riders1@naver.com> https://cafe.naver.com/"
-"riderskor\n"
+"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
+"image-uploader/ko/>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 3.2.2\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
@@ -1871,10 +1871,6 @@ msgid "Just URL"
 msgstr "URL 목록"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
-#, fuzzy
-#| msgid ""
-#| "Just drag-n-drop your files on Image Uploader's window and it will "
-#| "process them."
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
@@ -3388,16 +3384,11 @@ msgid "Website:"
 msgstr "웹사이트:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
-#, fuzzy
-#| msgid ""
-#| "Welcome to pictures Publishing Wizard, that will help you to upload your "
-#| "images, photos, video frames on Internet!"
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
-msgstr ""
-"인터넷에 이미지, 사진, 비디오 프레임을 업로드하는 데 도움이 되는 사진 게시 마"
-"법사를 시작합니다."
+msgstr "인터넷에 이미지, 사진, 비디오 프레임을 업로드하는 데 도움이 되는 사진 게시 "
+"마법사를 시작합니다."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
