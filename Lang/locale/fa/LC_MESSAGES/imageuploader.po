@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/fa/>\n"
@@ -72,7 +72,7 @@ msgstr ""
 #: ../Source/Gui/UploadListModel.cpp:105
 #, c-format
 msgid "%s of %s (%d%%) %s"
-msgstr "%s из %s (%d%%) %s"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
 #, c-format
