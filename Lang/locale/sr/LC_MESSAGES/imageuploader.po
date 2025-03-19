@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/sr/>\n"
@@ -1203,7 +1203,7 @@ msgstr "Нацртај оквир"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr "Трајност:"
+msgstr "Трајност: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
@@ -1370,7 +1370,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:196
 msgid "Extracting frame "
-msgstr "Екстрактовање фрејма"
+msgstr "Екстрактовање фрејма "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
@@ -1481,7 +1481,7 @@ msgstr "Датотека:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr "Име:"
+msgstr "Име: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:713
 msgid "Files"
@@ -1493,7 +1493,7 @@ msgstr ""
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr "Величина:"
+msgstr "Величина: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:255
 msgid "Fill background"
@@ -2209,7 +2209,7 @@ msgstr "Опције"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr "Општи битрејт:"
+msgstr "Општи битрејт: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Parameters:"
@@ -2888,7 +2888,7 @@ msgstr "Боја удара:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr "Титлови:"
+msgstr "Титлови: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
@@ -3329,7 +3329,7 @@ msgstr "Видео датотеке"
 
 #: ../Source/Func/MediaInfoHelper.cpp:163
 msgid "Video: "
-msgstr "Видео:"
+msgstr "Видео: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:192
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:259
