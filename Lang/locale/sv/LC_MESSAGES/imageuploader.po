@@ -3,14 +3,16 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2023-01-09 18:22+0300\n"
-"Last-Translator: \n"
-"Language-Team: \n"
+"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/image-uploader/"
+"image-uploader/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.2.2\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.11-dev\n"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
@@ -1901,10 +1903,6 @@ msgid "Just URL"
 msgstr "URL-lista"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
-#, fuzzy
-#| msgid ""
-#| "Just drag-n-drop your files on Image Uploader's window and it will "
-#| "process them."
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
@@ -3421,10 +3419,6 @@ msgid "Website:"
 msgstr "Webbplats:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
-#, fuzzy
-#| msgid ""
-#| "Welcome to pictures Publishing Wizard, that will help you to upload your "
-#| "images, photos, video frames on Internet!"
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
