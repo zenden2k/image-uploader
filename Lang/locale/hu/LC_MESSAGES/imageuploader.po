@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Hungarian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/hu/>\n"
@@ -575,11 +575,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:739
 msgid "Cannot copy file "
-msgstr "Nem lehet másolni a fájlt"
+msgstr "Nem lehet másolni a fájlt "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:728
 msgid "Cannot copy file: "
-msgstr "Nem lehet másolni a fájlt:"
+msgstr "Nem lehet másolni a fájlt: "
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:178
 msgid "Cannot create registry key for extension: "
@@ -1212,11 +1212,11 @@ msgstr "%s letöltve a %s fájlból (%d %%)"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:555
 msgid "Downloaded: "
-msgstr "Letöltve:"
+msgstr "Letöltve: "
 
 #: ../Source/Func/UpdatePackage.cpp:385
 msgid "Downloading file "
-msgstr "Fájl letöltése"
+msgstr "Fájl letöltése "
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
@@ -1224,7 +1224,7 @@ msgstr "Keret rajzolás"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr "Időtartam:"
+msgstr "Időtartam: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
@@ -1352,7 +1352,7 @@ msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:395
 msgid "Error while updating component "
-msgstr "Hiba az összetevő frissítése közben"
+msgstr "Hiba az összetevő frissítése közben "
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
 msgid "Error:"
@@ -1393,7 +1393,7 @@ msgstr "Képkockák kibontása"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:196
 msgid "Extracting frame "
-msgstr "Képkivágás"
+msgstr "Képkivágás "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
@@ -1489,7 +1489,7 @@ msgstr "Fájl:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
 msgid "File: "
-msgstr "Fájl:"
+msgstr "Fájl: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
@@ -1504,7 +1504,7 @@ msgstr "Fájlnév:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr "Fájl név:"
+msgstr "Fájl név: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:713
 msgid "Files"
@@ -1516,7 +1516,7 @@ msgstr "Összes fájl:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr "Fájl méret:"
+msgstr "Fájl méret: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:255
 msgid "Fill background"
@@ -2023,11 +2023,11 @@ msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:507
 msgid "MD5 check failed for file "
-msgstr "MD5 fájl ellenőrzés sikertelen"
+msgstr "MD5 fájl ellenőrzés sikertelen "
 
 #: ../Source/Func/UpdatePackage.cpp:403
 msgid "MD5 check of the update package failed "
-msgstr "MD5 frissítési csomag ellenőrzése sikertelen"
+msgstr "MD5 frissítési csomag ellenőrzése sikertelen "
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:410
 msgid ""
@@ -2244,7 +2244,7 @@ msgstr "Beállítások"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr "Teljes bitráta:"
+msgstr "Teljes bitráta: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Parameters:"
@@ -2733,7 +2733,7 @@ msgstr "A szerver neve nem lehet üres"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
 msgid "Server: "
-msgstr "Szerver:"
+msgstr "Szerver: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
 msgid "Servers"
@@ -2929,7 +2929,7 @@ msgstr "Körvonal színe:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr "Feliratok:"
+msgstr "Feliratok: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
@@ -3198,7 +3198,7 @@ msgstr ""
 #: ../Source/Func/UpdatePackage.cpp:428
 #, c-format
 msgid "Update finished. Updated %d of %d files "
-msgstr "A frissítés befejeződött. %d frissítve a %d fájlból"
+msgstr "A frissítés befejeződött. %d frissítve a %d fájlból "
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:32
 msgid "Upload Buffer Size:"
@@ -3276,7 +3276,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:553
 msgid "Uploaded images: "
-msgstr "Feltöltött képek:"
+msgstr "Feltöltött képek: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:63
 msgid "Uploading"
@@ -3377,7 +3377,7 @@ msgstr "Videó fájlok"
 
 #: ../Source/Func/MediaInfoHelper.cpp:163
 msgid "Video: "
-msgstr "Videó:"
+msgstr "Videó: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:192
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:259
