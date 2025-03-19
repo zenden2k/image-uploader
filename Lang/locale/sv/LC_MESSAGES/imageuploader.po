@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-18 18:24+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/sv/>\n"
@@ -1212,11 +1212,11 @@ msgstr "%s av %s (%d %%) nerladdat"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:555
 msgid "Downloaded: "
-msgstr "Nerladdat:"
+msgstr "Nerladdat: "
 
 #: ../Source/Func/UpdatePackage.cpp:385
 msgid "Downloading file "
-msgstr "Laddar ner fil"
+msgstr "Laddar ner fil "
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
@@ -1224,7 +1224,7 @@ msgstr "Rita ram"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr "Varaktighet:"
+msgstr "Varaktighet: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
@@ -1351,7 +1351,7 @@ msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:395
 msgid "Error while updating component "
-msgstr "Fel vid komponentuppdatering"
+msgstr "Fel vid komponentuppdatering "
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
 msgid "Error:"
@@ -1392,7 +1392,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:196
 msgid "Extracting frame "
-msgstr "Extraherar bildruta"
+msgstr "Extraherar bildruta "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
@@ -1488,7 +1488,7 @@ msgstr "Fil:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
 msgid "File: "
-msgstr "Fil:"
+msgstr "Fil: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
@@ -1503,7 +1503,7 @@ msgstr "Filnamn:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr "Filnamn:"
+msgstr "Filnamn: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:713
 msgid "Files"
@@ -1515,7 +1515,7 @@ msgstr "Antal filer:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr "Filstorlek:"
+msgstr "Filstorlek: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:255
 msgid "Fill background"
@@ -2023,11 +2023,11 @@ msgstr ""
 
 #: ../Source/Func/UpdatePackage.cpp:507
 msgid "MD5 check failed for file "
-msgstr "MD5-kontroll misslyckades"
+msgstr "MD5-kontroll misslyckades "
 
 #: ../Source/Func/UpdatePackage.cpp:403
 msgid "MD5 check of the update package failed "
-msgstr "MD5-kontroll av uppdateringspaketet misslyckades"
+msgstr "MD5-kontroll av uppdateringspaketet misslyckades "
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:410
 msgid ""
@@ -2244,7 +2244,7 @@ msgstr "Alternativ"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr "Övergripande bithastighet:"
+msgstr "Övergripande bithastighet: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Parameters:"
@@ -2929,7 +2929,7 @@ msgstr "Linjefärg:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr "Undertexter:"
+msgstr "Undertexter: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
@@ -3195,7 +3195,7 @@ msgstr ""
 #: ../Source/Func/UpdatePackage.cpp:428
 #, c-format
 msgid "Update finished. Updated %d of %d files "
-msgstr "Uppdatering slutförd. %d av %d filer uppdaterade"
+msgstr "Uppdatering slutförd. %d av %d filer uppdaterade "
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:32
 msgid "Upload Buffer Size:"
@@ -3274,7 +3274,7 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:553
 msgid "Uploaded images: "
-msgstr "Uppladdade bilder:"
+msgstr "Uppladdade bilder: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:63
 msgid "Uploading"
