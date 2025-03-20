@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-20 08:31+0300\n"
-"PO-Revision-Date: 2025-03-20 05:43+0000\n"
+"PO-Revision-Date: 2025-03-20 08:02+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Serbian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/sr/>\n"
@@ -228,22 +228,16 @@ msgid "Add an item to the context menu of Windows Explorer"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:162
-#, fuzzy
-#| msgid "Add Files..."
 msgid "Add files..."
 msgstr "Додај датотеке..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:163
-#, fuzzy
-#| msgid "Add Folder..."
 msgid "Add folder..."
 msgstr "Додај фасциклу..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:161
-#, fuzzy
-#| msgid "Add Files..."
 msgid "Add images..."
-msgstr "Додај датотеке..."
+msgstr "Додај слике..."
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:51
 msgid "Add item to video files' context menu"
@@ -292,10 +286,8 @@ msgid "Adding directory as server"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:465
-#, fuzzy
-#| msgid "Additional settings"
 msgid "Additional options..."
-msgstr "Додатне поставке"
+msgstr "Додатне поставке..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:60
 msgid "Additional params"
@@ -614,10 +606,8 @@ msgstr "Ухвати одабран објекат"
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:62
-#, fuzzy
-#| msgid "Capture the Active Window"
 msgid "Capture Selected Window"
-msgstr "Ухвати актини прозор"
+msgstr ""
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:535
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
@@ -677,10 +667,8 @@ msgstr "Провера ажурирања"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:30
 #: ../Source/Core/FileTypeCheckTask.cpp:36
-#, fuzzy
-#| msgid "Checking for updates..."
 msgid "Checking file formats..."
-msgstr "Провера ажурирања..."
+msgstr ""
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:144
 msgid "Checking for updates..."
@@ -748,10 +736,8 @@ msgid "Choose video file"
 msgstr ""
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:45
-#, fuzzy
-#| msgid "Choose folder..."
 msgid "Choose..."
-msgstr "Одабир фасцикле..."
+msgstr "Одабир..."
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:153
