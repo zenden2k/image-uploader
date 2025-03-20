@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-20 08:31+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ko/>\n"
@@ -1744,8 +1744,6 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:916
-#, fuzzy
-#| msgid "Images settings and choosing server"
 msgid "Image Settings and Server Selection"
 msgstr "이미지 설정 및 서버 선택"
 
@@ -3244,8 +3242,6 @@ msgid "Uploading"
 msgstr "업로드"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:918
-#, fuzzy
-#| msgid "Uploading file on server"
 msgid "Uploading Files to Server"
 msgstr "서버에 파일 업로드"
 
