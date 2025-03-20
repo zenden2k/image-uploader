@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 18:24+0300\n"
+"POT-Creation-Date: 2025-03-20 08:31+0300\n"
 "PO-Revision-Date: 2025-03-19 04:39+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Persian <https://hosted.weblate.org/projects/image-uploader/"
@@ -1739,6 +1739,12 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
+#, fuzzy
+#| msgid "Images settings and choosing server"
+msgid "Image Settings and Server Selection"
+msgstr "تنظیمات تصاویر و انتخاب سرور"
+
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
 msgid "Image Uploader Updates"
 msgstr "بروزرسانی برنامه"
@@ -1777,10 +1783,6 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:91
 msgid "Images per string:"
 msgstr "تصاویر در هر استرینگ:"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
-msgid "Images settings and choosing server"
-msgstr "تنظیمات تصاویر و انتخاب سرور"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
 msgid "Immediately begin uploading to the server"
@@ -3216,13 +3218,15 @@ msgstr ""
 msgid "Uploading"
 msgstr "اپلود"
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
+#, fuzzy
+#| msgid "Uploading file on server"
+msgid "Uploading Files to Server"
+msgstr "اپلود فایل به سرور"
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:24
 msgid "Uploading errors"
 msgstr "خطاهای اپلود"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
-msgid "Uploading file on server"
-msgstr "اپلود فایل به سرور"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:599
 msgid "Uploading has been finished."

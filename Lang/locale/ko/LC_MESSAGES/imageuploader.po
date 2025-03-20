@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 18:24+0300\n"
+"POT-Creation-Date: 2025-03-20 08:31+0300\n"
 "PO-Revision-Date: 2025-03-19 04:26+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -1743,6 +1743,12 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
+#, fuzzy
+#| msgid "Images settings and choosing server"
+msgid "Image Settings and Server Selection"
+msgstr "이미지 설정 및 서버 선택"
+
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
 msgid "Image Uploader Updates"
 msgstr "Image Uploader 업데이트"
@@ -1781,10 +1787,6 @@ msgstr "웹의 이미지"
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:91
 msgid "Images per string:"
 msgstr "문자열 당 이미지:"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
-msgid "Images settings and choosing server"
-msgstr "이미지 설정 및 서버 선택"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
 msgid "Immediately begin uploading to the server"
@@ -3241,13 +3243,15 @@ msgstr "업로드된 이미지: "
 msgid "Uploading"
 msgstr "업로드"
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
+#, fuzzy
+#| msgid "Uploading file on server"
+msgid "Uploading Files to Server"
+msgstr "서버에 파일 업로드"
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:24
 msgid "Uploading errors"
 msgstr "업로드 오류"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
-msgid "Uploading file on server"
-msgstr "서버에 파일 업로드"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:599
 msgid "Uploading has been finished."
@@ -3387,8 +3391,9 @@ msgstr "웹사이트:"
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
-msgstr "인터넷에 이미지, 사진, 비디오 프레임을 업로드하는 데 도움이 되는 사진 게시 "
-"마법사를 시작합니다."
+msgstr ""
+"인터넷에 이미지, 사진, 비디오 프레임을 업로드하는 데 도움이 되는 사진 게시 마"
+"법사를 시작합니다."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54

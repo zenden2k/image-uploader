@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-18 18:24+0300\n"
+"POT-Creation-Date: 2025-03-20 08:31+0300\n"
 "PO-Revision-Date: 2025-03-18 16:27+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
@@ -1731,6 +1731,12 @@ msgstr ""
 "Editorul de imagini nu poate face față imaginilor animate. Dacă editați "
 "acest fișier, animația se va pierde. Doriți să continuați?"
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
+#, fuzzy
+#| msgid "Images settings and choosing server"
+msgid "Image Settings and Server Selection"
+msgstr "Parametrii imaginilor şi selectarea serverului"
+
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
 msgid "Image Uploader Updates"
 msgstr "Actualizare Image Uploader"
@@ -1769,10 +1775,6 @@ msgstr "Imagini din Web"
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:91
 msgid "Images per string:"
 msgstr "Nr.de imagini în linie:"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:916
-msgid "Images settings and choosing server"
-msgstr "Parametrii imaginilor şi selectarea serverului"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
 msgid "Immediately begin uploading to the server"
@@ -3201,13 +3203,15 @@ msgstr "Imagini încărcate: "
 msgid "Uploading"
 msgstr "Incarcare"
 
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
+#, fuzzy
+#| msgid "Uploading file on server"
+msgid "Uploading Files to Server"
+msgstr "Încărcarea fişierelor pe server"
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:24
 msgid "Uploading errors"
 msgstr "Erori in procesul incarcarii"
-
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:918
-msgid "Uploading file on server"
-msgstr "Încărcarea fişierelor pe server"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:599
 msgid "Uploading has been finished."
