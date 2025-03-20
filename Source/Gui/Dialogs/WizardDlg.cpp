@@ -913,9 +913,9 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     Gdiplus::Font font(L"Arial", 12, FontStyleBold);
 
     if(PageID == 3)
-        gr.DrawString(TR("Images settings and choosing server"), -1, &font, bounds, &format, &br2);
+        gr.DrawString(TR("Image Settings and Server Selection"), -1, &font, bounds, &format, &br2);
     else if(PageID==4)
-        gr.DrawString(TR("Uploading file on server"), -1, &font, bounds, &format, &br2);
+        gr.DrawString(TR("Uploading Files to Server"), -1, &font, bounds, &format, &br2);
 
     HBITMAP bmp = nullptr;
     BackBuffer->GetHBITMAP(Color(255,255,255), &bmp);

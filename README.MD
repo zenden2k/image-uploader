@@ -10,7 +10,7 @@ Official website: https://svistunov.dev/imageuploader
 
 [![Download Image Uploader](./Pics/download_btn.png)](https://svistunov.dev/imageuploader_downloads)
 
-Supported operating systems: Windows 7/8/10/11 or newer
+Supported operating systems: Windows 7/8/8.1/10/11 or newer
 
 Image Uploader [version 1.3.2](https://github.com/zenden2k/image-uploader/releases/tag/1.3.2-release) was the last supported release for Windows XP and Windows Vista.
 
