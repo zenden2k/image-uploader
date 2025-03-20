@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-20 08:31+0300\n"
-"PO-Revision-Date: 2025-03-20 05:43+0000\n"
+"PO-Revision-Date: 2025-03-20 08:02+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ro/>\n"
@@ -2941,10 +2941,8 @@ msgid "The field '%s' cannot be empty."
 msgstr ""
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:838
-#, fuzzy
-#| msgid "Server's name cannot be empty"
 msgid "The file name cannot be empty."
-msgstr "Numele fisierului nu poate fi gol"
+msgstr "Numele fisierului nu poate fi gol."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:842
 msgid "The file name contains forbidden characters."
@@ -3429,10 +3427,8 @@ msgid "image height"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
-#, fuzzy
-#| msgid "Change width:"
 msgid "image width"
-msgstr "lăţimea"
+msgstr "lăţimea imaginii"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "msec"
