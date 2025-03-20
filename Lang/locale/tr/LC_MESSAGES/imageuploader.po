@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-20 08:31+0300\n"
-"PO-Revision-Date: 2025-03-19 04:26+0000\n"
+"PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/tr/>\n"
@@ -1776,8 +1776,6 @@ msgid ""
 msgstr ""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:916
-#, fuzzy
-#| msgid "Images settings and choosing server"
 msgid "Image Settings and Server Selection"
 msgstr "Resim ayarları ve sunucu seçimi"
 
@@ -3286,8 +3284,6 @@ msgid "Uploading"
 msgstr "Yükleme"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:918
-#, fuzzy
-#| msgid "Uploading file on server"
 msgid "Uploading Files to Server"
 msgstr "Sunucu üzerine dosya yükleme"
 
