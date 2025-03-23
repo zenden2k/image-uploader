@@ -1,10 +1,10 @@
 {
     "dropbox": {
-        "please_allow": "Please allow Image Uploader to connect to your Dropbox account (click the Allow button in a running browser), and then click OK."
+        "please_allow": "Please allow Image Uploader to connect to your Dropbox account by clicking the Allow button in your browser, then click OK."
     },
     "yandexdisk": {
         "confirmation": {
-            "text": "You need to need to sign in to your Yandex.Disk account\nin web browser which just have opened and then copy\nconfirmation code into the text field below.\n\nPlease enter confirmation code:\n"
+            "text": "You need to sign in to your Yandex.Disk account\nin the web browser that has just opened, then copy\nthe confirmation code into the text field below.\n\nPlease enter the confirmation code:\n"
         },
         "privacy": {
             "public": "Public",
@@ -31,13 +31,13 @@
         "errors": {
             "no_albums": "There is not a single album in your profile."
         },
-        "default_album_desc": "Images loaded using the Image Uploader program"
+        "default_album_desc": "Images uploaded using the Image Uploader application"
     },
     "flickr": {
         "confirmation": {
-            "text": "Please allow Image Uploader to connect to your Flickr account (click the Allow button in a running browser), and then click OK."
+            "text": "Please allow Image Uploader to connect to your Flickr account by clicking the Allow button in the browser, then click OK."
         },
-        "verification": "Enter confirmation code:"
+        "verification": "Please enter the confirmation code:"
     },
     "imgbb": {
         "expiration": "Expiration (anonymously)",
@@ -55,7 +55,7 @@
         "secure_connection_implicit": "Implicit"
     },
     "chevereto": {
-        "expiration": "Expiration through",
+        "expiration": "Expiration",
         "never": "Never"
     }
 }
