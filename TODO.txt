@@ -5,3 +5,4 @@
 - Fix log window buttons moving when RTL is on
 - Fix function names in docs (CSelection etc.)
 - File name conflict when uploading to Yandex.disk
+- Upgrade to Squirrel 3.2

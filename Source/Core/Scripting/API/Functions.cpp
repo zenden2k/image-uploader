@@ -74,8 +74,8 @@ std::string GetAppLanguageFile()
     return IuCoreUtils::ExtractFileNameNoExt(languageFile);
 }
 
-Sqrat::Table GetAppVersion() {
-    Sqrat::Table res(GetCurrentThreadVM());
+SQInteger GetAppVersion(HSQUIRRELVM vm) {
+    Sqrat::Table res(vm);
     auto version = AppParams::instance()->GetAppVersion();
     if (version) {
         res.SetValue("Major", static_cast<SQInteger>(version->Major));
@@ -84,45 +84,56 @@ Sqrat::Table GetAppVersion() {
         res.SetValue("Build", static_cast<SQInteger>(version->Build));
     }
     res.SetValue("Gui", AppParams::instance()->isGui());
-    return res;
+    Sqrat::PushVar(vm, res);
+    return 1;
 }
 
-std::string GetCurrentScriptFileName()
-{
-    return GetScriptName(GetCurrentThreadVM());
+SQInteger GetCurrentScriptFileName(HSQUIRRELVM vm) {
+    std::string res = GetScriptName(vm);
+    Sqrat::PushVar(vm, res);
+    return 1;
 }
 
-Sqrat::Object IncludeScript(const std::string& filename)
-{    
-    if ( filename.empty() ) {
-        LOG(ERROR) << "include() failed: empty file name";
-        return Sqrat::Object();
-    }
-    std::string absolutePath;
-    if ( filename[0] == '/' || (filename.length()>1 && filename[1]==':' ) ) {
-        absolutePath = filename;
-    } else {
-        std::string dir = IuCoreUtils::ExtractFilePath(GetCurrentScriptFileName());
-        if (dir.empty())
-        {
-            dir = GetScriptsDirectory();
+SQInteger IncludeScript(HSQUIRRELVM vm) {
+    try {
+        Sqrat::Var<std::string> filenameVar(vm, 2);
+        if (filenameVar.value.empty()) {
+            throw Sqrat::Exception("include() requires non-empty filename string");
         }
-        absolutePath = dir  + filename;
-    }
 
-    if ( !IuCoreUtils::FileExists(absolutePath) ) {
-        LOG(ERROR) << "include() failed: file \"" + absolutePath + "\" not found.";
-        return Sqrat::Object();
+        std::string absolutePath;
+        const auto& filename = filenameVar.value;
+
+        if (filename[0] == '/' || (filename.length() > 1 && filename[1] == ':')) {
+            absolutePath = filename;
+        } else {
+            std::string dir = IuCoreUtils::ExtractFilePath(GetScriptName(vm));
+            if (dir.empty()) {
+                dir = GetScriptsDirectory();
+            }
+            absolutePath = dir + filename;
+        }
+
+        if (!IuCoreUtils::FileExists(absolutePath)) {
+            throw Sqrat::Exception("include() failed: file \"" + absolutePath + "\" not found");
+        }
+
+        std::string scriptText;
+        if (!IuCoreUtils::ReadUtf8TextFile(absolutePath, scriptText)) {
+            throw Sqrat::Exception("include() failed: could not read file \"" + absolutePath + "\"");
+        }
+
+        Sqrat::Script script(vm);
+        script.CompileString(scriptText, IuCoreUtils::ExtractFileName(absolutePath));
+        script.Run();
+
+        Sqrat::PushVar(vm, script);
+        return 1;
+    } catch (const Sqrat::Exception& e) {
+        return sq_throwerror(vm, e.what());
+    } catch (const std::exception& e) {
+        return sq_throwerror(vm, ("include() error: " + std::string(e.what())).c_str());
     }
-    std::string scriptText;
-    if ( !IuCoreUtils::ReadUtf8TextFile(absolutePath, scriptText) ) {
-        LOG(ERROR) << "include() failed: could not read file \"" + absolutePath + "\".";
-        return Sqrat::Object();
-    }
-    Sqrat::Script squirrelScript(GetCurrentThreadVM());
-    squirrelScript.CompileString(scriptText, IuCoreUtils::ExtractFileName(absolutePath));
-    squirrelScript.Run();
-    return squirrelScript;
 }
 
 Json::Value* translationRoot = 0;
@@ -210,14 +221,18 @@ std::string scriptUtf8ToAnsi(const std::string& str, int codepage )
 #endif
 }
 
-void WriteLog(const std::string& type, const std::string& message) {
+SQInteger WriteLog(HSQUIRRELVM vm) {
+    Sqrat::Var<std::string> typeStr(vm, 2);
+    Sqrat::Var<std::string> message(vm, 3);
+
     ILogger::LogMsgType msgType = ILogger::logWarning;
-    if ( type == "error" ) {
+    if ( typeStr.value == "error" ) {
         msgType = ILogger::logError;
-    } else if (type == "info") {
+    } else if (typeStr.value == "info") {
         msgType = ILogger::logInformation;
     }
-    ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message, "Script: " + IuCoreUtils::ExtractFileName(GetCurrentScriptFileName()), GetCurrentTopLevelFileName());
+    ServiceLocator::instance()->logger()->write(msgType, "Script Engine", message.value, "Script: " + IuCoreUtils::ExtractFileName(GetScriptName(vm)), GetCurrentTopLevelFileName());
+    return 0;
 }
 
 std::string md5(const std::string& data)
@@ -275,37 +290,40 @@ void parseJSONObj(const Json::Value& root, Sqrat::Table& obj);
 
 template<class T,class V> void setObjValues(T key, Json::Value::const_iterator it, V &obj) {
     using namespace Json;
-    Sqrat::Array newArr;
-    Sqrat::Table newObj;
 
     try {
         switch (it->type()) {
         case nullValue:
             obj.SetValue(key, Sqrat::Object());
             break;
-        case intValue:      ///< signed integer value
+        case intValue:      // signed integer value
             obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
             break;
-        case uintValue:     ///< unsigned integer value
+        case uintValue:     // unsigned integer value
             obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
             break;
-        case realValue:
+        case realValue:  // double value
             obj.SetValue(key, it->asFloat());
-            break;    ///< double value
-        case stringValue:   ///< UTF-8 string value
+            break;  
+        case stringValue:   // UTF-8 string value
             obj.SetValue(key, it->asString().data());
             break;
-        case booleanValue:  ///< bool value
+        case booleanValue:  // bool value
             obj.SetValue(key, it->asBool());
             break;
-        case arrayValue:    ///< array value (ordered list)
+        case arrayValue: { // array value (ordered list)
+            Sqrat::Array newArr(obj.GetVM());
             parseJSONObj(*it, newArr);
             obj.SetValue(key, newArr);
+        }
             break;
-        case objectValue:
+        case objectValue: {
+            Sqrat::Table newObj(obj.GetVM());
             parseJSONObj(*it, newObj);
             obj.SetValue(key, newObj);
             break;
+        }
+            
         }
     } catch (std::logic_error & ex) {
         LOG(WARNING) << "setObjValue()" << std::endl << ex.what();
@@ -313,7 +331,7 @@ template<class T,class V> void setObjValues(T key, Json::Value::const_iterator i
 }
 
 void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
-    obj = Sqrat::Array (GetCurrentThreadVM(), root.size());
+    obj = Sqrat::Array(obj.GetVM(), root.size());
     for(auto it = root.begin(); it != root.end(); ++it) {
         int key = it.key().asInt();
         setObjValues(key, it, obj);
@@ -321,23 +339,23 @@ void parseJSONObj(const Json::Value& root, Sqrat::Array& obj) {
 }
 
 void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
-    obj = Sqrat::Table (GetCurrentThreadVM());
+    //obj = Sqrat::Table (o);
     for(auto it = root.begin(); it != root.end(); ++it) {
         std::string key = it.key().asString();
-        setObjValues(key.data(), it, obj);
+        setObjValues(key.c_str(), it, obj);
     }
 }
 
-Sqrat::Object parseJSONObj(const Json::Value& root) {
+Sqrat::Object parseJSONObj(const Json::Value& root, HSQUIRRELVM vm) {
     if (root.isArray()) {
-        Sqrat::Array obj(GetCurrentThreadVM(), root.size());
+        Sqrat::Array obj(vm, root.size());
         for(auto it = root.begin(); it != root.end(); ++it) {
             int key = it.key().asInt();
             setObjValues(key, it, obj);
         }
         return Sqrat::Object(obj);
     } else {
-        Sqrat::Table obj(GetCurrentThreadVM());
+        Sqrat::Table obj(vm);
         for(auto it = root.begin(); it != root.end(); ++it) {
             std::string key = it.key().asString();
             setObjValues(key.data(), it, obj);
@@ -346,14 +364,18 @@ Sqrat::Object parseJSONObj(const Json::Value& root) {
     }
 }
 
-Sqrat::Object ParseJSON(const std::string& json) {
+SQInteger ParseJSON(HSQUIRRELVM vm) {
+    Sqrat::Var<std::string> jsonStr(vm, 2); // 2 = first argument (not 'this')
+
     Json::Value root;
     Json::Reader reader;
-    Sqrat::Object sq;
-    if ( reader.parse(json, root, false) ) {
-        return parseJSONObj(root);
+    if (reader.parse(jsonStr.value, root, false)) {
+        Sqrat::Object obj = parseJSONObj(root, vm);
+        Sqrat::PushVar(vm, obj);
+        return 1;
     }
-    return sq;
+    sq_pushnull(vm);
+    return 1;
 }
 
 Json::Value sqValueToJson(const Sqrat::Object& obj ) {
@@ -376,7 +398,7 @@ Json::Value sqValueToJson(const Sqrat::Object& obj ) {
     return Json::Value(Json::nullValue);
 }
 Json::Value sqObjToJson(const Sqrat::Object& obj ) {
-    HSQUIRRELVM vm = GetCurrentThreadVM();
+    HSQUIRRELVM vm = obj.GetVM();
     Json::Value res;
     Sqrat::Object::iterator it;
 
@@ -436,29 +458,31 @@ int random()
     return dist(generator);
 }
 
-std::string ExtractFileName(const std::string& path)
-{
-    std::string res = IuCoreUtils::ExtractFileName(path);
-    return res;
+std::string ExtractFileName(const std::string& path) {
+    return IuCoreUtils::ExtractFileName(path);
 }
 
-std::string GetFileExtension(const std::string& path)
-{
-    std::string res = IuCoreUtils::ExtractFileExt(path);
-    return res;
+std::string GetFileExtension(const std::string& path) {
+    return IuCoreUtils::ExtractFileExt(path);
 }
 
-Sqrat::Table GetImageInfo(const std::string& fileName) {
-    Sqrat::Table obj(GetCurrentThreadVM());
+SQInteger GetImageInfo(HSQUIRRELVM vm) {
+    Sqrat::Table tbl(vm);
+    Sqrat::Var<const SQChar*> strVar(vm, 2); // 2 = first argument (not 'this')
+    if (!strVar.value) { 
+        return sq_throwerror(vm, "Expected a string argument!");
+    }
+
     int width = 0, height = 0;
-#ifdef _WIN32    
-    ImageUtils::ImageInfo ii = ImageUtils::GetImageInfo(U2W(fileName));
+#ifdef _WIN32
+    ImageUtils::ImageInfo ii = ImageUtils::GetImageInfo(U2W(strVar.value));
     width = ii.width;
     height = ii.height;
 #endif
-    obj.SetValue("Width", width);
-    obj.SetValue("Height", height);
-    return obj;
+    tbl.SetValue("Width", width);
+    tbl.SetValue("Height", height);
+    Sqrat::PushVar(vm, tbl);
+    return 1;
 }
 
 std::string GetDeviceId() {
@@ -480,20 +504,7 @@ std::string GetDeviceName() {
 #endif
     return res;
 }
-/*
-void DebugMessage(const std::string& message, bool isServerResponseBody)
-{
-#ifdef IU_CLI
-    #ifdef _WIN32
-        std::wcerr << IuCoreUtils::Utf8ToWstring(message);
-    #else
-        std::cerr << IuCoreUtils::Utf8ToSystemLocale(message);
-    #endif
-#else
-    DefaultErrorHandling::DebugMessage(message, isServerResponseBody);
-#endif
-}
-*/
+
 void RegisterFunctions(Sqrat::SqratVM& vm)
 {
     Sqrat::RootTable& root = vm.GetRootTable();
@@ -501,9 +512,9 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
     root
         .Func("GetScriptsDirectory", GetScriptsDirectory)
         .Func("GetAppLanguageFile", GetAppLanguageFile)
-        .Func("include", IncludeScript)
+        .SquirrelFunc("include", IncludeScript)
         .Func("Translate", Translate)
-        .Func("GetAppVersion", GetAppVersion)
+        .SquirrelFunc("GetAppVersion", GetAppVersion)
         .Func("random", random)
         .Func("Random", random)
         .Func("sleep", sleep)
@@ -519,7 +530,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetFileMimeType", GetFileMimeType)
         .Func("JsonEscapeString", JsonEscapeString)
         .Func("ShellOpenUrl", DesktopUtils::ShellOpenUrl)
-        .Func("ParseJSON", ParseJSON)
+        .SquirrelFunc("ParseJSON", ParseJSON)
         .Func("ToJSON", ToJSON)
         .Func("GetFileContents", IuCoreUtils::GetFileContents)
         .Func("GetTempDirectory", GetTempDirectory)
@@ -539,9 +550,9 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
 
         .Func("GetFileSize", ScriptGetFileSize)    
         .Func("GetFileSizeDouble", ScriptGetFileSize)
-        .Func("GetImageInfo", GetImageInfo)
-        .Func("WriteLog", WriteLog)    
-        .Func("GetCurrentScriptFileName", GetCurrentScriptFileName)
+        .SquirrelFunc("GetImageInfo", GetImageInfo)
+        .SquirrelFunc("WriteLog", WriteLog)    
+        .SquirrelFunc("GetCurrentScriptFileName", GetCurrentScriptFileName)
         .Func("GetCurrentThreadId", GetCurrentThreadId)
         .Func("MessageBox", MessageBox)   
         .Func("GetDeviceId", GetDeviceId)  

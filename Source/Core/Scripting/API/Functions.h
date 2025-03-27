@@ -21,7 +21,7 @@ and <a href="http://www.squirrel-lang.org/doc/sqstdlib3.html">documentation of t
 //! Namespace containing functions and classes available in squirrel scripts
 namespace ScriptAPI {
     /* @cond PRIVATE */
-    Sqrat::Object  IncludeScript(const std::string& filename);
+    Sqrat::Object IncludeScript(const std::string& filename);
     void RegisterFunctions(Sqrat::SqratVM& vm);
     
     void RegisterShortTranslateFunctions(Sqrat::SqratVM& vm);

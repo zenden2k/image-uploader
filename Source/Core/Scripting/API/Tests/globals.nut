@@ -25,3 +25,27 @@ local expected = "{\n   \"a\" : \n   {\n      \"aa\" : \"test\"\n   },\n   \"b\"
 local actual = ToJSON(t2);
 //expect_eq(expected.len(), actual.len());
 expect_streq(expected, actual);
+
+
+function ParseJSONTest() {
+    // you can put a double quotation mark inside a verbatim string by doubling it
+    local jsonStr = @"
+    {
+        ""employees"":[
+        {""firstName"":""John"", ""lastName"":""Doe""},
+        {""firstName"":""Anna"", ""lastName"":""Smith""},
+        {""firstName"":""Peter"", ""lastName"":""Jones""}
+        ]
+    }
+    ";
+
+    local tbl = ParseJSON(jsonStr);
+    expect_streq("Smith", tbl.employees[1].lastName);
+    expect_streq("John", tbl.employees[0].firstName);
+    expect_eq(3, tbl.employees.len());
+
+    expect_eq(null, ParseJSON("&-----<>"));
+    expect_eq(null, ParseJSON(""));
+}
+
+ParseJSONTest();
