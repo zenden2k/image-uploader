@@ -56,6 +56,18 @@ For ARM64:
 cmake ..\Source -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=../Conan/profiles/vs2019_arm64_release -DCONAN_BUILD_PROFILE=../Conan/Profiles/vs2022_x64 -DIU_ENABLE_FFMPEG=On -DIU_ENABLE_WEBVIEW2=On -DIU_FFMPEG_STANDALONE=On -DIU_ENABLE_MEDIAINFO=Off
 ```
 
+## Running Tests in Visual Studio IDE
+
+Go to Tools -> Options -> Test Adapter for Google Test -> General
+
+Set Additional test execution parameters:
+
+```
+--gtest_filter=-NetworkClientTest.*
+```
+
+Save settings, then open Test ->Test explorer and run all the tests.
+
 # Building on Ubuntu (CLI and Qt GUI)
 
 Use the same approach with Conan to build imgupload on Ubuntu 20.04.

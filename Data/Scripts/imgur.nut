@@ -6,17 +6,36 @@
 
 const CLIENT_ID = "11681f18f30e0f2";
 
+function _GetClientId() {
+    local userClientId = ServerParams.getParam("clientId");
+    return userClientId == "" ? CLIENT_ID : userClientId;
+}
+
+function _GetClientSecret() {
+    local userClientSecret = ServerParams.getParam("clientSecret");
+    return userClientSecret == "" ? "b3686e5a9c3387a3c50fd05db1a8513ec71c3004": userClientSecret;
+}
+
 function GetAuthorizationString() {
     local token = ServerParams.getParam("token");
     local tokenType = ServerParams.getParam("tokenType");
     if (token == "") {
-        return "Client-ID " + CLIENT_ID;
+        return "Client-ID " + _GetClientId();
     }
     return "Bearer" + " " + token;
 }
 
 function IsAuthenticated() {
     return ServerParams.getParam("token") != "" ? 1 : 0;
+}
+
+function DoLogout() {
+    ServerParams.setParam("token", "");
+    ServerParams.setParam("expiresIn", "");
+    ServerParams.setParam("refreshToken", "");
+    ServerParams.setParam("tokenType", "");
+    ServerParams.setParam("tokenTime", "");
+    return 1;
 }
 
 function checkResponse(except = false) {
@@ -27,7 +46,6 @@ function checkResponse(except = false) {
             ServerParams.setParam("expiresIn", "");
             ServerParams.setParam("refreshToken", "");
             ServerParams.setParam("tokenType", "");
-            ServerParams.setParam("prevLogin", "");
             ServerParams.setParam("tokenTime", "");
             if (except) {
                 throw "unauthorized_exception";
@@ -70,8 +88,8 @@ function RefreshToken() {
             // Refresh access token
             nm.setUrl("https://api.imgur.com/oauth2/token");
             nm.addQueryParam("refresh_token", refreshToken); 
-            nm.addQueryParam("client_id", CLIENT_ID); 
-            nm.addQueryParam("client_secret", "b3686e5a9c3387a3c50fd05db1a8513ec71c3004"); 
+            nm.addQueryParam("client_id", _GetClientId()); 
+            nm.addQueryParam("client_secret", _GetClientSecret()); 
             nm.addQueryParam("grant_type", "refresh_token"); 
             nm.doPost("");
             if (checkResponse()) {
@@ -112,10 +130,10 @@ function Authenticate()  {
         return 1;
     } 
     local login = ServerParams.getParam("Login");
-    local url = "https://api.imgur.com/oauth2/authorize?client_id=" + nm.urlEncode(CLIENT_ID) +"&response_type=token&state=token";
+    local url = "https://api.imgur.com/oauth2/authorize?client_id=" + nm.urlEncode(_GetClientId()) +"&response_type=token&state=token";
     ShellOpenUrl(url);
     
-    local confirmCode = InputDialog(tr("imgur.confirmation.text", "You need to need to sign in to your Imgur account\r\n in web browser which just have opened and then\r\n copy confirmation code into the text field below.\r\nPlease enter confirmation code:"),"");
+    local confirmCode = InputDialog(tr("imgur.confirmation.text", "You need to sign in to your Imgur account in the web browser that has just opened, then copy the confirmation code into the text field below. Please enter the confirmation code:"),"");
     
     if ( confirmCode == "" ) {
         WriteLog("error", "Cannot authenticate without confirm code");
@@ -171,12 +189,9 @@ function UploadFile(FileName, options) {
     }
 }
 
-/*function GetServerParamList(){
+function GetServerParamList() {
     return {
-        token = "token",
-        tokenType = "tokenType",
-        expiresIn = "expiresIn",
-        refreshToken = "refreshToken",
-        tokenTime = "tokenTime"
-    }
-}*/
+        clientId = "Client ID",
+        clientSecret = "Client Secret"
+    };
+}
