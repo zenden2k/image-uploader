@@ -36,8 +36,8 @@ class CUploadEngineList : public CUploadEngineListBase {
         void setNumOfRetries(int Engine, int Action);
         bool addServer(const CUploadEngineData& data);
     protected:
-        int m_EngineNumOfRetries;
-        int m_ActionNumOfRetries;
+        int m_EngineNumOfRetries = 0;
+        int m_ActionNumOfRetries = 0;
     private:
         DISALLOW_COPY_AND_ASSIGN(CUploadEngineList);
         bool static compareEngines(const std::unique_ptr<CUploadEngineData>& elem1, const std::unique_ptr<CUploadEngineData>& elem2);

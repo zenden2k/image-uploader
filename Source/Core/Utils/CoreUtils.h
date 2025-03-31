@@ -123,5 +123,17 @@ namespace IuCoreUtils
 
     using ThreadExitFunctionPointer = void(*)();
     void OnThreadExit(ThreadExitFunctionPointer func);
+
+    template <typename T>
+    auto Coalesce(T&& t) { return t; }
+
+    template <typename T1, typename... Ts>
+    auto Coalesce(T1&& t1, Ts&&... ts)
+    {
+        if (t1) {
+            return t1;
+        }
+        return Coalesce(std::forward<Ts>(ts)...);
+    }
 };
 #endif

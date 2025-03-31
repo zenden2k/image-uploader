@@ -148,7 +148,6 @@ bool CUploadDlg::startUpload() {
         for (const auto& item: serverProfileGroup.getItems()) {
             
             auto task = std::make_shared<FileUploadTask>(fileNameUtf8, displayName);
-
             task->setIndex(/*rowIndex++*/i);
             //task->setFileIndex(i);
             task->setIsImage(isImage);

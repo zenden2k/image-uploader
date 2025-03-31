@@ -9,12 +9,12 @@ class ScriptsManager;
 class BasicSettings;
 class CUploadEngineList;
 class UrlShorteningFilter;
+class BasicSettings;
 
-class UploadManager : public CFileQueueUploader
-{
+class UploadManager : public CFileQueueUploader {
 public:
     UploadManager(UploadEngineManager* uploadEngineManager, CUploadEngineList* engineList, ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
-        std::shared_ptr<INetworkClientFactory> networkClientFactory, int threadCount);
+        std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int threadCount);
     ~UploadManager();
     bool shortenLinksInSession(std::shared_ptr<UploadSession> session, UrlShorteningFilter* filter);
 protected:

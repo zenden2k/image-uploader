@@ -35,13 +35,13 @@ class UploadFilter;
 class NetworkClient;
 class INetworkClientFactory;
 class FileQueueUploaderPrivate;
+class BasicSettings;
 
-class CFileQueueUploader
-{
+class CFileQueueUploader {
     public:
         CFileQueueUploader(UploadEngineManager* uploadEngineManager, 
             ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, 
-            std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads = 3);
+            std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int maxThreads = 3);
         void addSingleTask(std::shared_ptr<UploadTask> uploadTask);
         void addSession(std::shared_ptr<UploadSession> uploadSession);
         void addTaskToQueue(std::shared_ptr<UploadTask> task);

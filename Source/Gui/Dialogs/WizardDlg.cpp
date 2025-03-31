@@ -194,6 +194,8 @@ void CWizardDlg::settingsChanged(BasicSettings* settingsBase) {
         }
     }
 
+    enginelist_->setNumOfRetries(settings->FileRetryLimit, settings->ActionRetryLimit);
+
     if (!(m_hotkeys == Settings.Hotkeys)) {
         UnRegisterLocalHotkeys();
         RegisterLocalHotkeys();

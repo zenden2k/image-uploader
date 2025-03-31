@@ -172,7 +172,7 @@ public:
         settings_.setEngineList(engineList_.get());
         uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList_.get(), uploadErrorHandler, serviceLocator->networkClientFactory());
         uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList_.get(), scriptsManager_.get(),
-            uploadErrorHandler, serviceLocator->networkClientFactory(), settings_.MaxThreads);
+            uploadErrorHandler, serviceLocator->networkClientFactory(), &settings_, settings_.MaxThreads);
         serviceLocator->setUploadManager(uploadManager_.get());
 
         imageConverterFilter_ = std::make_unique<ImageConverterFilter>();

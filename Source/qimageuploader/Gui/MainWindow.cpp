@@ -49,7 +49,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     auto uploadErrorHandler = serviceLocator->uploadErrorHandler();
     uploadEngineManager_ = std::make_unique<UploadEngineManager>(engineList, uploadErrorHandler, networkClientFactory);
     uploadManager_ = std::make_unique<UploadManager>(uploadEngineManager_.get(), engineList, scriptsManager_.get(), uploadErrorHandler,
-                                       networkClientFactory, 3);
+                                       networkClientFactory, settings, 3);
     std::string dataDirectory = AppParams::instance()->dataDirectory();
     std::string iconsDir = dataDirectory + "Favicons/";
     serverIconCache_ = std::make_unique<QtServerIconCache>(engineList, iconsDir);

@@ -14,6 +14,7 @@
 class CUploader;
 class CAbstractUploadEngine;
 class CFileQueueUploader;
+class BasicSettings;
 
 struct ServerThreadsInfo {
     //int maxThreads;
@@ -42,7 +43,7 @@ public:
 class FileQueueUploaderPrivate : public  TaskAcceptorBase {
 public:
     FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, ScriptsManager* scriptsManager,
-        std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads
+        std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int maxThreads
         );
     virtual ~FileQueueUploaderPrivate();
     
@@ -94,6 +95,7 @@ protected:
     ScriptsManager* scriptsManager_; 
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     std::shared_ptr<INetworkClientFactory> networkClientFactory_;
+    BasicSettings* settings_;
     std::function<void(CFileQueueUploader*)> onQueueFinishedCallback_;
     std::function<void(UploadSession*)> onSessionAddedCallback_;
     std::function<void(UploadTask*)> onTaskAddedCallback_;

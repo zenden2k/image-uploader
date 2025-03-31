@@ -29,8 +29,9 @@
 #include "Core/Network/NetworkClient.h"
 #include "Core/Upload/UploadEngine.h"
 
-class CUploader
-{
+class BasicSettings;
+
+class CUploader {
     public:
         explicit CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory);
         ~CUploader();
@@ -38,8 +39,8 @@ class CUploader
         bool setUploadEngine(CAbstractUploadEngine* UploadEngine);
         CAbstractUploadEngine * getUploadEngine();
         
-        bool UploadFile(const std::string & FileName, const std::string& displayFileName);
-        bool Upload(std::shared_ptr<UploadTask> task);
+        bool UploadFile(const std::string& FileName, const std::string& displayFileName, int maxRetries);
+        bool Upload(std::shared_ptr<UploadTask> task, int maxRetries);
         void stop();
         bool needStop();
         std::shared_ptr<UploadTask> currentTask() const;

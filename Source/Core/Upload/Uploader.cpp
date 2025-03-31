@@ -23,6 +23,7 @@
 #include <cmath>
 
 #include "Core/Upload/FileUploadTask.h"
+#include "Core/BasicConstants.h"
 
 CUploader::CUploader(std::shared_ptr<INetworkClientFactory> networkClientFactory)
 {
@@ -98,11 +99,13 @@ int CUploader::pluginProgressFunc (INetworkClient* nc, double dltotal, double dl
     return 0;
 }
 
-bool CUploader::UploadFile(const std::string& FileName, const std::string& displayFileName) {
-    return Upload(std::make_shared<FileUploadTask>(FileName, displayFileName));
+bool CUploader::UploadFile(const std::string& FileName, const std::string& displayFileName, int maxRetries)
+{
+    return Upload(std::make_shared<FileUploadTask>(FileName, displayFileName), maxRetries);
 }
 
-bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
+bool CUploader::Upload(std::shared_ptr<UploadTask> task, int maxRetries)
+{
     isFatalServerError_ = false;
     if (!m_CurrentEngine) {
         Error(true, "Cannot proceed: m_CurrentEngine is NULL!");
@@ -169,10 +172,8 @@ bool CUploader::Upload(std::shared_ptr<UploadTask> task) {
     }*/
     m_NetworkClient->setProgressCallback(std::bind(&CUploader::pluginProgressFunc, this, _1, _2, _3, _4, _5));
     ResultCode EngineRes = ResultCode::Failure;
-    int retryLimit = task->retryLimit();
-    if (!retryLimit) {
-        retryLimit = m_CurrentEngine->RetryLimit();
-    }
+    int retryLimit = IuCoreUtils::Coalesce(task->retryLimit(), maxRetries, m_CurrentEngine->RetryLimit(), MAX_RETRIES_PER_FILE);
+
     int i = 0;
     do
     {

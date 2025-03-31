@@ -65,6 +65,13 @@ set(SOURCE_FILES
     qimageuploader.qrc
 )
 
+
+if(WIN32)
+    list(APPEND SOURCE_FILES
+        ../Func/GdiPlusInitializer.cpp
+    )
+endif()
+
 add_executable(qimageuploader ${OPTIONS} ${SOURCE_FILES} ${RESOURCE_LIST})
  
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
@@ -72,7 +79,7 @@ target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} gdi32 dwmapi)
+    target_link_libraries(${PROJECT_NAME} gdi32 dwmapi gdiplus)
     if (IU_ENABLE_WEBVIEW2)
         set_target_properties(${PROJECT_NAME} PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
         set_target_properties(${PROJECT_NAME} PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")

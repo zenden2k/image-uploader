@@ -11,11 +11,10 @@
 
 UploadManager::UploadManager(UploadEngineManager* uploadEngineManager, 
    CUploadEngineList* engineList, ScriptsManager* scriptsManager,
-    std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int threadCount) :
-CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, threadCount)
+    std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int threadCount)
+    : CFileQueueUploader(uploadEngineManager, scriptsManager, uploadErrorHandler, networkClientFactory, settings, threadCount)
 {
     uploadEngineManager_ = uploadEngineManager;
-    BasicSettings* settings = ServiceLocator::instance()->basicSettings();
     using namespace std::placeholders;
     settingsChangedConnection_ = settings->onChange.connect(std::bind(&UploadManager::settingsChanged, this, _1));
 }

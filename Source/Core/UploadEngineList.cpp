@@ -49,8 +49,6 @@ void SplitAssignVarsString(T & reg) {
 }
 CUploadEngineList::CUploadEngineList()
 {
-    m_EngineNumOfRetries = MAX_RETRIES_PER_FILE;
-    m_ActionNumOfRetries = MAX_RETRIES_PER_ACTION;
 }
 
 bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettingsMap& serversSettings) {

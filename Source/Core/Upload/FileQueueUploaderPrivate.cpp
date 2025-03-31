@@ -12,6 +12,7 @@
 #include "Core/Upload/UploadFilter.h"
 #include "Core/CommonDefs.h"
 #include "Core/i18n/Translator.h"
+#include "Core/Settings/BasicSettings.h"
 
 TaskAcceptorBase::TaskAcceptorBase(bool useMutex)
 {
@@ -62,7 +63,9 @@ bool TaskAcceptorBase::canAcceptUploadTask(UploadTask* task)
 }
 
 FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUploader, UploadEngineManager* uploadEngineManager, 
-    ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, std::shared_ptr<INetworkClientFactory> networkClientFactory, int maxThreads) {
+    ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
+    std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int maxThreads)
+{
     threadCount_ = maxThreads;
     stopSignal_ = false;
     isRunning_ = false;
@@ -73,6 +76,7 @@ FileQueueUploaderPrivate::FileQueueUploaderPrivate(CFileQueueUploader* queueUplo
     uploadErrorHandler_ = uploadErrorHandler;
     //autoStart_ = true;
     networkClientFactory_ = networkClientFactory;
+    settings_ = settings;
     runningThreadsCount_ = 0;
     start();
 }
@@ -392,7 +396,7 @@ void FileQueueUploaderPrivate::run()
         it->setStatusText(_("Starting upload"));
         bool dec = false;
         try {
-            res = uploader.Upload(it);
+            res = uploader.Upload(it, settings_->FileRetryLimit);
 
             it->setUploadSuccess(res);
             if (!res && uploader.isFatalError()) {
