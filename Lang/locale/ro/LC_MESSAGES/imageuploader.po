@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 08:31+0300\n"
+"POT-Creation-Date: 2025-03-31 14:31+0300\n"
 "PO-Revision-Date: 2025-03-20 08:02+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Romanian <https://hosted.weblate.org/projects/image-uploader/"
@@ -639,11 +639,6 @@ msgstr "Centrare"
 msgid "Change"
 msgstr "Schimbă"
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
-msgid "Change account settings"
-msgstr "Modifică setările contului"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:43
 msgid ""
 "Change image processing settings or choose another server, so your image can "
@@ -1202,6 +1197,13 @@ msgstr "Editarea albumului"
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:41
 msgid "Edit hotkey..."
 msgstr "Editeaza..."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
+#, fuzzy
+#| msgid "View log for details."
+msgid "Edit login credentials..."
+msgstr "Vizualizați jurnalul pentru detalii."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:777
@@ -3463,6 +3465,9 @@ msgstr "Mishunika, Adrianis, Sergey Svistunov"
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 msgid "unknown server"
 msgstr "server necunoscut"
+
+#~ msgid "Change account settings"
+#~ msgstr "Modifică setările contului"
 
 #~ msgid "%s translation:"
 #~ msgstr "%s traducere:"

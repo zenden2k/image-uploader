@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 08:31+0300\n"
+"POT-Creation-Date: 2025-03-31 14:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -623,11 +623,6 @@ msgstr ""
 msgid "Change"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
-msgid "Change account settings"
-msgstr ""
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:43
 msgid ""
 "Change image processing settings or choose another server, so your image can "
@@ -1174,6 +1169,11 @@ msgstr ""
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:41
 msgid "Edit hotkey..."
+msgstr ""
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
+msgid "Edit login credentials..."
 msgstr ""
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94

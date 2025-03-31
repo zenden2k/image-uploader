@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 08:31+0300\n"
+"POT-Creation-Date: 2025-03-31 14:31+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Arabic <https://hosted.weblate.org/projects/image-uploader/"
@@ -654,11 +654,6 @@ msgstr "مركز"
 msgid "Change"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
-msgid "Change account settings"
-msgstr "تغيير اعدادات الحساب"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:43
 msgid ""
 "Change image processing settings or choose another server, so your image can "
@@ -1242,6 +1237,13 @@ msgstr "تحرير المجلد"
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:41
 msgid "Edit hotkey..."
 msgstr "تحرير مفتاح نشط..."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
+#, fuzzy
+#| msgid "View log for details."
+msgid "Edit login credentials..."
+msgstr "عرض السجل للتفاصيل."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:777
@@ -3557,6 +3559,9 @@ msgstr "translator_name"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "خادم عشوائي"
+
+#~ msgid "Change account settings"
+#~ msgstr "تغيير اعدادات الحساب"
 
 #~ msgid "%s translation:"
 #~ msgstr "%s الترجمة:"

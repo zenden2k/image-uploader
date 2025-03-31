@@ -248,8 +248,10 @@ AbstractVideoFrame* MediaFoundationFrameGrabber::grabCurrentFrame() {
         }
 
         assert(cbBitmapData == (pitch * format_.imageHeightPels));
-        LONGLONG time = pos_ / 10000000;
-        currentFrame_ = std::make_unique<MFVideoFrame>(pBitmapData, cbBitmapData, time, format_.imageWidthPels, format_.imageHeightPels);
+        if (cbBitmapData == pitch * format_.imageHeightPels) {
+            LONGLONG time = pos_ / 10000000;
+            currentFrame_ = std::make_unique<MFVideoFrame>(pBitmapData, cbBitmapData, time, format_.imageWidthPels, format_.imageHeightPels);
+        }    
     } else {
         hr = MF_E_END_OF_STREAM;
     }

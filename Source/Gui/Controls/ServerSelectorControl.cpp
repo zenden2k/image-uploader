@@ -509,7 +509,7 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
         int i = 0;
         if (!serverUsers.empty() && !serverProfile_.profileName().empty()) {
             mi.wID = IDC_LOGINMENUITEM;
-            CString name = TR("Change account settings");
+            CString name = TR("Edit login credentials...");
             mi.dwTypeData = const_cast<LPWSTR>(name.GetString());
             mi.cch = name.GetLength();
             sub.InsertMenuItem(i++, true, &mi);

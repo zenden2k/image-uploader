@@ -58,15 +58,15 @@ cmake ..\Source -G "Visual Studio 16 2019" -A ARM64 -DCMAKE_BUILD_TYPE=Release -
 
 ## Running Tests in Visual Studio IDE
 
-Go to Tools -> Options -> Test Adapter for Google Test -> General
+Open *Tools* -> *Options* -> *Test Adapter for Google Test* -> *General*
 
-Set Additional test execution parameters:
+Set *Additional test execution parameters*:
 
 ```
 --gtest_filter=-NetworkClientTest.*
 ```
 
-Save settings, then open Test ->Test explorer and run all the tests.
+Save settings, then open *Test* -> *Test explorer* and run all the tests.
 
 # Building on Ubuntu (CLI and Qt GUI)
 

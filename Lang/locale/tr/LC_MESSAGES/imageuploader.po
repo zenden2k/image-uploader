@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-20 08:31+0300\n"
+"POT-Creation-Date: 2025-03-31 14:31+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/image-uploader/"
@@ -658,11 +658,6 @@ msgstr "Ortala"
 msgid "Change"
 msgstr ""
 
-#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
-#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
-msgid "Change account settings"
-msgstr "Hesap ayarlarını değiştir"
-
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:43
 msgid ""
 "Change image processing settings or choose another server, so your image can "
@@ -1249,6 +1244,13 @@ msgstr "Klasörü düzenle"
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:41
 msgid "Edit hotkey..."
 msgstr "Kısayolu düzenle..."
+
+#: ../Source/Gui/Controls/ServerSelectorControl.cpp:512
+#: ../Source/Gui/Dialogs/UploadSettings.cpp:830
+#, fuzzy
+#| msgid "View log for details."
+msgid "Edit login credentials..."
+msgstr "Ayrıntılar için günlüğü görüntüle."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:777
@@ -3565,6 +3567,9 @@ msgstr "Tahir YILMAZ"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "Rasgele sunucu"
+
+#~ msgid "Change account settings"
+#~ msgstr "Hesap ayarlarını değiştir"
 
 #~ msgid "%s translation:"
 #~ msgstr "%s Çeviri:"
