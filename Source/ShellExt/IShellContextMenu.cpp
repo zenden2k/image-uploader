@@ -290,13 +290,16 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		}
 	}
 
-
-	if (ExplorerVideoContextMenu && m_FileList.GetCount() == 1 && !isDirectory && Helpers::IsVideoFile(m_FileList[0]))
-	{
-		MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_IMPORTVIDEO, stringsReader_.getString(_T("ImportVideoFile"), _T("Import Video File")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONMOVIE);
-		if(m_bMediaInfoInstalled)
-			MyInsertMenu(PopupMenu, subIndex++, currentCommandID++,MENUITEM_MEDIAINFO, stringsReader_.getString(_T("InformationAboutFile"), _T("Information about file")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONINFO);
-	}
+	if (ExplorerVideoContextMenu && m_FileList.GetCount() == 1 && !isDirectory){
+        bool isVideoFile = Helpers::IsVideoFile(m_FileList[0]);
+        bool IsAudioFile = Helpers::IsAudioFile(m_FileList[0]);
+        if (isVideoFile) {
+            MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_IMPORTVIDEO, stringsReader_.getString(_T("ImportVideoFile"), _T("Import Video File")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONMOVIE);
+        }
+        if (m_bMediaInfoInstalled && (isVideoFile || IsAudioFile)) {
+            MyInsertMenu(PopupMenu, subIndex++, currentCommandID++, MENUITEM_MEDIAINFO, stringsReader_.getString(_T("InformationAboutFile"), _T("Information about file")), idCmdFirst, CString(), UseBitmaps, 0, ExplorerCascadedMenu ? 0 : IDI_ICONINFO);
+        }
+    }
 	if ( !ExplorerCascadedMenu ) {
 		MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 		separatorInserted = true;

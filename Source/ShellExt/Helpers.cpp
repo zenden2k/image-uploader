@@ -65,8 +65,8 @@ bool IsImage(LPCWSTR szFileName) {
     if (lstrlen(szExt) <= 0) {
         return false;
     }
-    std::wstring extensions[]{
-        L"jpg", L"jpeg", L"png", L"bmp", L"gif", L"tif", L"tiff", L"webp"
+    static const std::wstring extensions[]{
+        L"jpg", L"jpeg", L"png", L"bmp", L"gif", L"tif", L"tiff", L"webp", L"heic", L"avif", L"heic", L"heif"
     };
     for (const auto& ext: extensions) {
         if (!lstrcmpiW(ext.c_str(), szExt)) {
@@ -201,23 +201,60 @@ CString FindDataFolder() {
     return DataFolder;
 }
 
-bool IsVideoFile(LPCWSTR szFileName){
+bool IsFileOfType(LPCWSTR szFileName, const std::unordered_set<std::string>& extensionsSet) {
+    if (!szFileName) {
+        return false;
+    }
     CString extension = GetFileExt(szFileName);
-    extension.MakeLower();
 
-    CString formats(IU_VIDEOFILES_EXTENSIONS);
-    int nTokenPos = 0;
-    CString separator(IU_EXTENSIONS_LIST_SEPARATOR);
-    CString strToken = formats.Tokenize(separator, nTokenPos);
-
-    while (!strToken.IsEmpty()) {
-        strToken = formats.Tokenize(separator, nTokenPos);
-        if (extension == strToken) {
-            return true;
-        }
+    if (extension.IsEmpty()) {
+        return false;
     }
 
-    return false;
+    extension.MakeLower();
+    std::string extensionA(CW2A(extension, CP_UTF8));
+    return extensionsSet.find(extensionA) != extensionsSet.end();
 }
+
+void Split(const std::string& str, const std::string& delimiters, std::vector<std::string>& tokens, int maxCount)
+{
+    // Skip delimiters at beginning.
+    std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+    // Find first "non-delimiter".
+    std::string::size_type pos = str.find_first_of(delimiters, lastPos);
+    int counter = 0;
+    while (std::string::npos != pos || std::string::npos != lastPos) {
+        counter++;
+        if (counter == maxCount) {
+            tokens.emplace_back(str.substr(lastPos, str.length()));
+            break;
+        } else
+            // Found a token, add it to the vector.
+            tokens.emplace_back(str.substr(lastPos, pos - lastPos));
+        // Skip delimiters.  Note the "not_of"
+        lastPos = str.find_first_not_of(delimiters, pos);
+        // Find next "non-delimiter"
+        pos = str.find_first_of(delimiters, lastPos);
+    }
+}
+
+VideoUtils& VideoUtils::instance()
+{
+    static VideoUtils theSingleInstance;
+    return theSingleInstance;
+}
+
+VideoUtils::VideoUtils()
+{
+    std::vector<std::string> extensions;
+   
+    Split(IU_VIDEOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
+    videoFilesExtensionsSet.insert(extensions.begin(), extensions.end());
+    extensions.clear();
+
+    Split(IU_AUDIOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
+    audioFilesExtensionsSet.insert(extensions.begin(), extensions.end());
+}
+
 
 }
