@@ -514,7 +514,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.Quality = 85;
     ScreenshotSettings.WindowHidingDelay = 450;
     ScreenshotSettings.Delay = 1;
-    ScreenshotSettings.brushColor = RGB(255, 0, 0);
+    ScreenshotSettings.BrushColor = RGB(255, 0, 0);
     ScreenshotSettings.ShowForeground = false;
     ScreenshotSettings.FilenameTemplate = _T("screenshot %y-%m-%d %h-%n-%s %i");
     ScreenshotSettings.CopyToClipboard = false;
@@ -523,6 +523,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.RemoveBackground = false;
     ScreenshotSettings.OpenInEditor = true;
     ScreenshotSettings.UseOldRegionScreenshotMethod = false;
+    ScreenshotSettings.CaptureCursor = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
@@ -771,8 +772,9 @@ void WtlGuiSettings::BindToManager() {
     screenshot.nm_bind(ScreenshotSettings, RemoveBackground);
     screenshot.nm_bind(ScreenshotSettings, RemoveCorners);
     screenshot.nm_bind(ScreenshotSettings, CopyToClipboard);
-    screenshot.nm_bind(ScreenshotSettings, brushColor);
+    screenshot.nm_bind(ScreenshotSettings, BrushColor);
     screenshot.nm_bind(ScreenshotSettings, WindowHidingDelay);
+    screenshot.nm_bind(ScreenshotSettings, CaptureCursor);
     screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
     screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
     screenshot.nm_bind(ScreenshotSettings, MonitorMode);

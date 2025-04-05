@@ -503,7 +503,9 @@
 #define IDC_SKIPANIMATEDCHECKBOX        1142
 #define IDC_CHECKFILETYPESCHECKBOX      1142
 #define IDC_ACTIVECONNECTIONCHECKBOX    1142
+#define IDC_CAPTURECURSORCHECKBOX       1142
 #define IDC_PXLABEL                     1143
+#define IDC_CAPTURECURSORCHECKBOX2      1143
 #define IDC_TABCONTROL                  1144
 #define IDC_LANGUAGELABEL               1145
 #define IDC_PORTEDIT                    1146
@@ -786,6 +788,7 @@
 #define IDC_TITLELABEL                  1349
 #define IDC_DEBUGLIST                   1350
 #define IDC_SPLITTER                    1351
+#define IDC_HORLINESTATIC               1352
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -833,7 +836,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        347
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1352
+#define _APS_NEXT_CONTROL_VALUE         1353
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

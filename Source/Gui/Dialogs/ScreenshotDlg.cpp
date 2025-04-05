@@ -70,7 +70,10 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     TRC(IDC_DELAYLABEL, "Timeout:");
     TRC(IDC_SECLABEL, "sec");
     TRC(IDC_OPENSCREENSHOTINEDITORCHECKBOX, "Open screenshot in the editor");
+    TRC(IDC_CAPTURECURSORCHECKBOX, "Capture cursor");
+
     GuiTools::SetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX, settings->ScreenshotSettings.OpenInEditor);
+    GuiTools::SetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX, settings->ScreenshotSettings.CaptureCursor);
     SetDlgItemInt(IDC_DELAYEDIT, settings->ScreenshotSettings.Delay);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
 
@@ -198,6 +201,7 @@ LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->ScreenshotSettings.OpenInEditor = GuiTools::GetCheck(m_hWnd, IDC_OPENSCREENSHOTINEDITORCHECKBOX);
+    settings->ScreenshotSettings.CaptureCursor = GuiTools::GetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX);
     settings->ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
 
     const int itemIndex = m_monitorCombobox.GetCurSel();

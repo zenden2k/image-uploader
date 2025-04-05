@@ -2083,7 +2083,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     engine.setMonitorMode(monitorMode, monitor);
     if(mode == cmFullScreen)
     {  
-        engine.captureScreen();
+        engine.captureScreen(Settings.ScreenshotSettings.CaptureCursor);
         result = engine.capturedBitmap();
     }
     else if (mode == cmActiveWindow)
@@ -2094,7 +2094,8 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         engine.setDelay(Delay);
         CActiveWindowRegion winRegion;
         winRegion.setWindowCapturingFlags(wcfFlags);
-        winRegion.SetWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
+        winRegion.setWindowHidingDelay(Settings.ScreenshotSettings.WindowHidingDelay);
+        winRegion.setDrawCursor(Settings.ScreenshotSettings.CaptureCursor);
         engine.captureRegion(&winRegion);
         result = engine.capturedBitmap();
     } else if (mode == cmLastRegion) {
@@ -2102,10 +2103,11 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             LOG(ERROR) << "Last region is empty!";
         }
         else {
+            lastScreenshotRegion_->setDrawCursor(Settings.ScreenshotSettings.CaptureCursor);
             engine.captureRegion(lastScreenshotRegion_.get());
             result = engine.capturedBitmap();
         }
-    } else if (engine.captureScreen()) {
+    } else if (engine.captureScreen(Settings.ScreenshotSettings.CaptureCursor && mode != cmWindowHandles)) {
         if (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) {
             result = engine.capturedBitmap();
         } else {
@@ -2129,21 +2131,24 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 HBITMAP gdiBitmap = 0;
                 res->GetHBITMAP(Color(255, 255, 255), &gdiBitmap);
                 if (RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor)) {
-                    if (RegionSelect.wasImageEdited() || (mode != cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/))
+                    bool needDrawCursor;
+                    if (RegionSelect.wasImageEdited() || (mode != cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/)) {
                         engine.setSource(gdiBitmap);
-
+                        needDrawCursor = false;
+                    }
                     else {
                         engine.setSource(0);
+                        needDrawCursor = Settings.ScreenshotSettings.CaptureCursor;
                     }
 
-                    engine.setDelay(0);
                     auto rgn = RegionSelect.region();
                     if (rgn) {
                         auto* whr = dynamic_cast<CWindowHandlesRegion*>(rgn.get());
                         if (whr) {
-                            whr->SetWindowHidingDelay(static_cast<int>(Settings.ScreenshotSettings.WindowHidingDelay * 1.2));
+                            whr->setWindowHidingDelay(static_cast<int>(Settings.ScreenshotSettings.WindowHidingDelay * 1.2));
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
+                        rgn->setDrawCursor(needDrawCursor);
                         engine.captureRegion(rgn.get());
                         result = engine.capturedBitmap();
                         DeleteObject(gdiBitmap);

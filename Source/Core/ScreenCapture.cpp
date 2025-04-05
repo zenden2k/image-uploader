@@ -236,7 +236,7 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
                   bmHeight, src, regionBoundingRect.left, regionBoundingRect.top, SRCCOPY | CAPTUREBLT)) {
         return {};
     }
-
+    drawCursor(tempDC, regionBoundingRect.left, regionBoundingRect.top);
     auto resultBm = std::make_shared<Bitmap>(bmWidth, bmHeight, PixelFormat32bppARGB);
     Graphics gr( resultBm.get() );
 
@@ -272,7 +272,7 @@ void CWindowHandlesRegion::init() {
     m_PreserveShadow = true;
 }
 
-void CWindowHandlesRegion::SetWindowHidingDelay(int delay)
+void CWindowHandlesRegion::setWindowHidingDelay(int delay)
 {
     m_WindowHidingDelay = delay;
 }
@@ -881,7 +881,7 @@ CScreenCaptureEngine::CScreenCaptureEngine()
     monitor_ = NULL;
 }
 
-bool CScreenCaptureEngine::captureScreen()
+bool CScreenCaptureEngine::captureScreen(bool drawCursor)
 {
     CRect screenBounds;
     GuiTools::GetScreenBounds(screenBounds);
@@ -904,6 +904,7 @@ bool CScreenCaptureEngine::captureScreen()
     }
 
     CRectRegion capturingRegion(captureRect.left, captureRect.top, captureRect.Width(), captureRect.Height());
+    capturingRegion.setDrawCursor(drawCursor);
     return captureRegion(&capturingRegion);
 }
 
@@ -1052,6 +1053,35 @@ std::shared_ptr<Gdiplus::Bitmap> CActiveWindowRegion::GetImage(HDC src)
     Clear();
     AddWindow(GetForegroundWindow(), true);
     return CWindowHandlesRegion::GetImage(src);
+}
+
+void CScreenshotRegion::drawCursor(HDC dc, int offsetX, int offsetY) const {
+    if (!drawCursor_) {
+        return;
+    }
+
+    CURSORINFO cursorInfo {};
+    cursorInfo.cbSize = sizeof(cursorInfo);
+
+    if (GetCursorInfo(&cursorInfo)) {
+        if (cursorInfo.hCursor && (cursorInfo.flags & CURSOR_SHOWING)) {
+            ICONINFO iconInfo {};
+            if (GetIconInfo(cursorInfo.hCursor, &iconInfo)) {
+                DrawIconEx(dc, cursorInfo.ptScreenPos.x - iconInfo.xHotspot - offsetX,
+                    cursorInfo.ptScreenPos.y - iconInfo.yHotspot - offsetY,
+                    cursorInfo.hCursor, 0, 0, 0, NULL, DI_NORMAL
+                );
+
+                if (iconInfo.hbmColor) {
+                    DeleteObject(iconInfo.hbmColor);
+                }
+
+                if (iconInfo.hbmMask) {
+                    DeleteObject(iconInfo.hbmMask);
+                }
+            }
+        }
+    }
 }
 
 }

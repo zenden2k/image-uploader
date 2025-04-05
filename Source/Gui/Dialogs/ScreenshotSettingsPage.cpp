@@ -60,6 +60,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_AEROONLY, "Aero only (Windows Vista or later)");
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
+    TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
     
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
@@ -87,6 +88,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_SETCHECK, Settings.ScreenshotSettings.RemoveBackground);
 
     GuiTools::SetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD, Settings.ScreenshotSettings.UseOldRegionScreenshotMethod);
+    GuiTools::SetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX2, Settings.ScreenshotSettings.CaptureCursor);
 
     int Quality = Settings.ScreenshotSettings.Quality;
     int Format = Settings.ScreenshotSettings.Format;
@@ -139,7 +141,9 @@ bool CScreenshotSettingsPagePage::apply()
     Settings.ScreenshotSettings.RemoveCorners = SendDlgItemMessage(IDC_REMOVECORNERS, BM_GETCHECK)!=0;
     Settings.ScreenshotSettings.AddShadow = SendDlgItemMessage(IDC_ADDSHADOW, BM_GETCHECK)!=0;
     Settings.ScreenshotSettings.RemoveBackground = SendDlgItemMessage(IDC_REMOVEBACKGROUND, BM_GETCHECK)!=0;
-    Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD );
+    Settings.ScreenshotSettings.UseOldRegionScreenshotMethod = GuiTools::GetCheck(m_hWnd, IDC_USEOLDREGIONSCREENSHOTMETHOD);
+    Settings.ScreenshotSettings.CaptureCursor = GuiTools::GetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX2);
+
     Settings.ImageEditorSettings.AllowAltTab = GuiTools::GetCheck(m_hWnd, IDC_ALLOWALTTABINIMAGEEDITOR);
     Settings.ImageEditorSettings.AllowEditingInFullscreen = GuiTools::GetCheck(m_hWnd, IDC_ALLOWFULLSCREENEDITORCHECK);
 

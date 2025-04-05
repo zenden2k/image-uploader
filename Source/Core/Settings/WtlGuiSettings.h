@@ -48,7 +48,7 @@ struct ScreenshotSettingsStruct {
     int WindowHidingDelay;
     bool ShowForeground;
     bool CopyToClipboard;
-    COLORREF brushColor;
+    COLORREF BrushColor;
     CString FilenameTemplate;
     CString Folder;
     bool RemoveCorners;
@@ -56,6 +56,7 @@ struct ScreenshotSettingsStruct {
     bool RemoveBackground;
     bool OpenInEditor; // only from screenshot dlg
     bool UseOldRegionScreenshotMethod;
+    bool CaptureCursor;
     int MonitorMode;
 };
 

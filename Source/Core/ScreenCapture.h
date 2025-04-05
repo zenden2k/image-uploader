@@ -54,8 +54,16 @@ public:
         return false;
     }
 
+    void setDrawCursor(bool draw) {
+        drawCursor_ = draw;
+    }
+
+
 protected:
     bool m_bFromScreen;
+    bool drawCursor_ = false;
+
+    void drawCursor(HDC dc, int offsetX, int offsetY) const;
 };
 
 class CRectRegion : public CScreenshotRegion {
@@ -83,7 +91,7 @@ public:
     void AddWindow(HWND wnd, bool Include);
     void RemoveWindow(HWND wnd);
     void Clear();
-    void SetWindowHidingDelay(int delay);
+    void setWindowHidingDelay(int delay);
     void setWindowCapturingFlags(WindowCapturingFlags flags);
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
@@ -126,7 +134,7 @@ class CScreenCaptureEngine {
 public:
     CScreenCaptureEngine();
     ~CScreenCaptureEngine() = default;
-    bool captureScreen();
+    bool captureScreen(bool drawCursor);
     void setSource(HBITMAP src);
     bool captureRegion(CScreenshotRegion* region);
     void setDelay(int msec);

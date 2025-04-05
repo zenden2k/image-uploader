@@ -505,7 +505,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR 
     memDC2.CreateCompatibleDC(dstDC);
     HBITMAP oldBm = memDC2.SelectBitmap(m_bmScreenShot);
 
-    setDrawingParams(settings->ScreenshotSettings.brushColor, 3);
+    setDrawingParams(settings->ScreenshotSettings.BrushColor, 3);
     Down = false;
     Start.x = -1;
     Start.y = -1;
