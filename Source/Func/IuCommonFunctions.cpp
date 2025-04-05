@@ -1,7 +1,6 @@
 #include "IuCommonFunctions.h"
 
 #include <random>
-#include <set>
 
 #include "WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
@@ -210,7 +209,7 @@ CString GenerateFileName(const CString& templateStr, int index, const CPoint& si
     return result;
 }
 
-const std::set<std::string> supportedImageExtensions = { "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif","tif", "tiff", "webp", "heic", "heif", "avif"};
+const std::unordered_set<std::string> supportedImageExtensions = { "jpg", "jpeg", "jpe", "jif", "jfif", "png", "bmp", "gif","tif", "tiff", "webp", "heic", "heif", "avif"};
 
 bool IsImage(LPCTSTR szFileName)
 {
@@ -226,7 +225,7 @@ bool IsImage(LPCTSTR szFileName)
     return supportedImageExtensions.find(W2U(find)) != supportedImageExtensions.end();
 }
 
-const std::set<std::string>& GetSupportedImageExtensions() {
+const std::unordered_set<std::string>& GetSupportedImageExtensions() {
     return supportedImageExtensions;
 }
 

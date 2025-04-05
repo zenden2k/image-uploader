@@ -1,7 +1,7 @@
 #ifndef IU_FUNC_IUCOMMONFUNCTIONS_H
 #define IU_FUNC_IUCOMMONFUNCTIONS_H
 
-#include <set>
+#include <unordered_set>
 #include <string>
 
 
@@ -20,7 +20,7 @@ namespace IuCommonFunctions {
 
     CString FindDataFolder();
 
-    const std::set<std::string>& GetSupportedImageExtensions();
+    const std::unordered_set<std::string>& GetSupportedImageExtensions();
 
     CString PrepareFileDialogImageFilter();
 };

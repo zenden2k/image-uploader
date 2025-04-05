@@ -35,6 +35,10 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}/Source
       run: cp versioninfo.h.dist versioninfo.h
+    - name: Install cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.31.6'
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
@@ -84,6 +88,10 @@ jobs:
       shell: bash
       working-directory: ${{github.workspace}}/Source
       run: cp versioninfo.h.dist versioninfo.h
+    - name: Install cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '3.31.6'
     - name: Get Conan
       uses: turtlebrowser/get-conan@main
       with:
