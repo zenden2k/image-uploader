@@ -45,7 +45,6 @@ set(SRC_LIST
     Dialogs/FolderAddDlg.cpp
     Dialogs/SearchByImageDlg.cpp
     Win7JumpList.cpp
-    GuiTools.cpp
     IconBitmapUtils.cpp
     WizardCommon.cpp
     ScriptFunctionsImpl.cpp
@@ -220,7 +219,6 @@ set(HEADER_LIST
     Dialogs/SearchByImageDlg.h
     Dialogs/ColorCodeDialog.h
     Win7JumpList.h
-    GuiTools.h
     IconBitmapUtils.h
     WizardCommon.h
     Dialogs/AboutDlg.h

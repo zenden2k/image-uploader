@@ -110,7 +110,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     if (!m_UploadEngine->RegistrationUrl.empty()) {
         signupLink_.SubclassWindow(GetDlgItem(IDC_SIGNUPLINK));
         signupLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-        signupLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+        signupLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(signupLink_);
         std::wstring linkText = str(boost::wformat(TR("Don't have an account? Sign up on %s right now!")) % IuCoreUtils::Utf8ToWstring(m_UploadEngine->Name));
         signupLink_.SetLabel(linkText.c_str());
         signupLink_.SetHyperLink(U2W(m_UploadEngine->RegistrationUrl));
@@ -119,7 +119,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
 
     if (!m_UploadEngine->WebsiteUrl.empty()) {
         websiteLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
-        websiteLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+        websiteLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(websiteLink_);
         std::wstring linkText = TR("Open the website");
         websiteLink_.SetLabel(linkText.c_str());
         websiteLink_.SetHyperLink(U2W(m_UploadEngine->WebsiteUrl));
@@ -139,7 +139,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     deleteAccountLabel_.SubclassWindow(GetDlgItem(IDC_DELETEACCOUNTLABEL));
     deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
 //    deleteAccountLabel_.SetLabel(deleteAccountLabelText);
-    deleteAccountLabel_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+    deleteAccountLabel_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(deleteAccountLabel_);
     deleteAccountLabel_.SetToolTipText(TR("Remove this account from the list (not from the remote server)"));
 
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);

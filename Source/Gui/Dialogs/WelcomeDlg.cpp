@@ -196,6 +196,8 @@ LRESULT CWelcomeDlg::OnBnClickedAddimages(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 LRESULT CWelcomeDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwndChild)
 {
+    SetTextColor(hdc, GetSysColor(COLOR_WINDOWTEXT)); 
+    SetBkColor(hdc, GetSysColor(COLOR_WINDOW));    
     return reinterpret_cast<LRESULT>(static_cast<HBRUSH>(br)); // Returning brush solid filled with COLOR_WINDOW color
 }
 

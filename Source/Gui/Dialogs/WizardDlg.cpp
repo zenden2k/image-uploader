@@ -1455,7 +1455,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
     CComPtr<IFileOpenDialog> pDlg;
 
-    CString filterBuffer = CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)");
+    CString filterBuffer = TR("Images");
     CString imageFilter = IuCommonFunctions::PrepareFileDialogImageFilter();
     CString anyFileStr = TR("Any file");
     COMDLG_FILTERSPEC aFileTypes[] = {
@@ -1673,8 +1673,8 @@ bool CWizardDlg::importVideoFile(const CString& fileName, int prevPage) {
 
 bool CWizardDlg::funcImportVideo()
 {
-    IMyFileDialog::FileFilterArray filters = {
-        {CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(),},
+    IMyFileDialog::FileFilterArray filters {
+        {TR("Video files"), PrepareVideoDialogFilters(),},
         {TR("All files"), _T("*.*")}
     };
 
@@ -1891,9 +1891,9 @@ bool CWizardDlg::funcDownloadImages()
 #ifdef IU_ENABLE_MEDIAINFO
 bool CWizardDlg::funcMediaInfo()
 {
-    IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (mp4, avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
-        { CString(TR("Audio files")) + _T(" (mp3, wma, wav ...)"), PrepareAudioDialogFilters() },
+    IMyFileDialog::FileFilterArray filters {
+        { TR("Video files"), PrepareVideoDialogFilters(), },
+        { TR("Audio files"), PrepareAudioDialogFilters() },
         { TR("All files"), _T("*.*") }
     };
 
@@ -1920,8 +1920,8 @@ bool CWizardDlg::funcMediaInfo()
 bool CWizardDlg::funcAddFiles()
 {
     IMyFileDialog::FileFilterArray filters { 
-        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), IuCommonFunctions::PrepareFileDialogImageFilter() },
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
+        { TR("Images"), IuCommonFunctions::PrepareFileDialogImageFilter() },
+        { TR("Video files"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };
     auto fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));

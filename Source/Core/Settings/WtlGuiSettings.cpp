@@ -42,8 +42,6 @@ limitations under the License.
 
 #define SETTINGS_FILE_NAME _T("settings.xml")
 
-COLORREF WtlGuiSettings::DefaultLinkColor = RGB(0x0C, 0x32, 0x50);
-
 namespace {
 // Do not edit this array
 std::string MouseClickCommandIndexToString[] = { "", "contextmenu", "addimages", "addimages", "addfolder",

@@ -39,20 +39,58 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         /* if (lpdis->itemState & ODS_FOCUS) {
             dc.DrawFocusRect(roundedRect);
         } else {*/
-            pen.CreatePen(PS_SOLID, 1, 0xC5C5C5);
+            pen.CreatePen(PS_SOLID, 1, GetSysColor(COLOR_HIGHLIGHT));
             oldPen = dc.SelectPen(pen);
             dc.RoundRect(roundedRect, CPoint(2, 2));
         //}
         CRect rc(lpdis->rcItem);
         rc.DeflateRect(4,4);
 
-        TRIVERTEX vertexFocused[2] = { {rc.left, rc.top, 0xF500, 0xF200, 0xE200, 0x0000},   
-                                {rc.right, rc.bottom, 0xEF00, 0xD000, 0x7700, 0x0000}};
-        TRIVERTEX vertexUnfocused[2] = { { rc.left, rc.top, 0xF800, 0xF600, 0xEB00, 0x0000 },
-            { rc.right, rc.bottom, 0xF400, 0xDE00, 0xA000, 0x0000 } };
+        COLORREF baseColor = GetSysColor(COLOR_HIGHLIGHT);
 
-        GRADIENT_RECT gradientrc = {0, 1};
-        dc.GradientFill(lpdis->itemState & ODS_FOCUS ? vertexFocused : vertexUnfocused, 2, &gradientrc, 1, GRADIENT_FILL_RECT_V);
+        // Extract RGB components
+        BYTE r = GetRValue(baseColor);
+        BYTE g = GetGValue(baseColor);
+        BYTE b = GetBValue(baseColor);
+
+        // Convert to TRIVERTEX format (16-bit per channel)
+        auto to16 = [](BYTE x) -> USHORT {
+            return (USHORT)((x << 8) | x); // duplicate 8 bits: 0xA0 => 0xA0A0
+        };
+
+        // Slight lightening/darkening for gradient effect
+        int lighten = 20;
+        int darken = -30;
+
+        // Clamp and adjust function
+        auto adjust = [](int val, int delta) -> BYTE {
+            int res = val + delta;
+            if (res < 0)
+                res = 0;
+            if (res > 255)
+                res = 255;
+            return (BYTE)res;
+        };
+
+        // Create TRIVERTEX array for gradient
+        TRIVERTEX vertex[2] = {
+            { rc.left, rc.top,
+                to16(adjust(r, lighten)),
+                to16(adjust(g, lighten)),
+                to16(adjust(b, lighten)),
+                0 },
+
+            { rc.right, rc.bottom,
+                to16(adjust(r, darken)),
+                to16(adjust(g, darken)),
+                to16(adjust(b, darken)),
+                0 }
+        };
+
+        GRADIENT_RECT gRect = { 0, 1 };
+
+        // Draw vertical gradient
+        dc.GradientFill(vertex, 2, &gRect, 1, GRADIENT_FILL_RECT_V);
         dc.SelectPen(oldPen);
     }
     else
@@ -62,7 +100,9 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
         dc.FillRect(&lpdis->rcItem,br);
     }
 
-    DrawText(dc, buf, lstrlen(buf), &lpdis->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+    COLORREF oldColor = dc.SetTextColor(GetSysColor((lpdis->itemState & ODS_SELECTED)? COLOR_HIGHLIGHTTEXT: COLOR_WINDOWTEXT));
+    dc.DrawText(buf, lstrlen(buf), &lpdis->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE | DT_NOPREFIX);
+    dc.SetTextColor(oldColor);
     return 0;
 }
 

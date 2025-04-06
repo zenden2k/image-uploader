@@ -224,16 +224,23 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     CRect calcRect;
 
     dc.SetBkMode(TRANSPARENT);
-    COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
+   
+    
     CBrush backgroundBrush;
 
-    DWORD color = RGB(255, 255, 255);
-    if (itemState & CDIS_SELECTED)
-        color = RGB(159, 213, 255);
+    DWORD color = GetSysColor(COLOR_WINDOW);
+    DWORD textColor = (itemState & CDIS_SELECTED) ? GetSysColor(COLOR_HIGHLIGHTTEXT) : GetSysColor(COLOR_WINDOWTEXT);
+
+    if (itemState & CDIS_SELECTED) {
+        color = GetSysColor(COLOR_HIGHLIGHT);
+    }
+    COLORREF grayColor = GuiTools::IsColorBright(color) ? GetSysColor(COLOR_GRAYTEXT) : RGB(210, 210, 210);
     backgroundBrush.CreateSolidBrush(color);
     if (draw)
         dc.FillRect(&invRC, backgroundBrush);
+    COLORREF oldTextColor = dc.SetTextColor(grayColor);
     dc.DrawText(text, text.GetLength(), &calcRect, DT_CALCRECT);
+
     calcRect.OffsetRect(rc.left, rc.top);
 
     if (draw) {
@@ -242,9 +249,7 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
         dateRect.top += kPaddingY;
         dateRect.bottom -= kPaddingY;
         //dateRect.OffsetRect(400,0);        
-        dc.SetTextColor(RGB(144, 144, 144));
         dc.DrawText(text, text.GetLength(), &dateRect, DT_RIGHT | DT_VCENTER);
-        dc.SetTextColor(GetSysColor(COLOR_WINDOWTEXT));
     }
 
     int curX = 0;
@@ -253,14 +258,14 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     gradientLineRect.bottom--;
     gradientLineRect.top = gradientLineRect.bottom;
     if (draw) {
-        GuiTools::FillRectGradient(hdc, gradientLineRect, RGB(200, 200, 200), RGB(255, 255, 255), true);
+        COLORREF bgColor = GetSysColor(COLOR_WINDOW); 
+        GuiTools::FillRectGradient(hdc, gradientLineRect, GuiTools::IsColorBright(bgColor) ? GetSysColor(COLOR_GRAYTEXT): RGB(210,210,210), bgColor, true);
     }
 
     calcRect = rc;
-
+    dc.SetTextColor(textColor);
     CString lowTextW = Utf8ToWCstring(lowText);
     dc.DrawText(lowTextW, lowTextW.GetLength(), &calcRect, DT_CALCRECT);
-
     if (draw) {
         bool isItemExpanded = item->IsExpanded();
         //(GetItemState(item,TVIS_EXPANDED)&TVIS_EXPANDED);    
@@ -382,16 +387,21 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
     CBrush br;
     COLORREF oldTextColor {};
+
+    COLORREF textColor = GetSysColor((itemState & CDIS_SELECTED) ? COLOR_HIGHLIGHTTEXT : COLOR_WINDOWTEXT);
+
     if (draw) {
         dc.SetBkMode(TRANSPARENT);
-        oldTextColor = dc.SetTextColor(RGB(0, 0, 0));
+        oldTextColor = dc.SetTextColor(textColor);
     }
 
     CBrush backgroundBrush;
-    backgroundBrush.CreateSolidBrush(RGB(255, 255, 255));
+    backgroundBrush.CreateSolidBrush(GetSysColor(COLOR_WINDOW));
 
     CBrush selectedBrush;
-    selectedBrush.CreateSolidBrush(0x9fd5ff);
+    selectedBrush.CreateSolidBrush(GetSysColor(COLOR_HIGHLIGHT));
+    COLORREF itemBgColor = (itemState & CDIS_SELECTED) ? GetSysColor(COLOR_HIGHLIGHT) : GetSysColor(COLOR_WINDOW);
+    COLORREF grayColor = GuiTools::IsColorBright(itemBgColor) ? GetSysColor(COLOR_GRAYTEXT) : RGB(210, 210, 210);
 
     if (draw) {
         CRect rc2 = rc;
@@ -410,7 +420,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
         //dc.FillRect(&rc2, backgroundBrush);
     }
 
-    br.CreateSolidBrush(RGB(159, 213, 255));
+    br.CreateSolidBrush(GetSysColor(COLOR_3DSHADOW));
     RECT thumbRect;
     thumbRect.left = rc.left + kPaddingX;
     thumbRect.top = rc.top + kPaddingY;
@@ -456,8 +466,8 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
     CString url = it2 ? Utf8ToWCstring(it2->directUrl.length() ? it2->directUrl : it2->viewUrl) : CString();
     
-    if (draw) {
-        dc.SetTextColor(RGB(166, 166, 166));
+    if (draw) {  
+        dc.SetTextColor(grayColor);
         dc.DrawText(url, url.GetLength(), &urlRect, DT_LEFT);
         dc.SetTextColor(oldTextColor);
     }

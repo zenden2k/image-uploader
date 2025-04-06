@@ -30,6 +30,7 @@
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
+#include "3rdpart/GdiplusH.h"
 
 namespace GuiTools
 {
@@ -652,6 +653,183 @@ bool CheckWindowPointer(HWND hwnd, void* pthis) {
 
 void ClearWindowPointer(HWND hwnd) {
     ::SetWindowLongPtr(hwnd, GWLP_USERDATA, 0);
+}
+
+COLORREF GetDefaultHyperlinkColor(HWND hwnd) {
+    COLORREF color = 0;
+
+    // Try to open theme data for hyperlinks
+    HTHEME hTheme = OpenThemeData(hwnd, L"Hyperlink");
+    if (hTheme) {
+        if (SUCCEEDED(GetThemeColor(hTheme, 0, 0, TMT_TEXTCOLOR, &color))) {
+            CloseThemeData(hTheme);
+            return color;
+        }
+        CloseThemeData(hTheme);
+    }
+
+    // Fallback to system-defined color
+    return GetSysColor(COLOR_HOTLIGHT);
+}
+
+bool IsColorBright(COLORREF color) {
+    int r = GetRValue(color);
+    int g = GetGValue(color);
+    int b = GetBValue(color);
+
+    double brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    return brightness > 128;
+}
+
+COLORREF AdjustColorBrightness(COLORREF color, int delta) {
+    auto clamp = [](int val) -> BYTE {
+        return (BYTE)(val < 0 ? 0 : (val > 255 ? 255 : val)); // Clamp values between 0 and 255
+    };
+
+    // Extract color components
+    int r = GetRValue(color);
+    int g = GetGValue(color);
+    int b = GetBValue(color);
+
+    // Calculate brightness (perceptual formula)
+    double brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    // Calculate adjustment factors based on each channel's contribution to brightness
+    double rFactor = 0.299 / brightness;
+    double gFactor = 0.587 / brightness;
+    double bFactor = 0.114 / brightness;
+
+    // If the color is light, decrease brightness; if dark, increase brightness
+    int direction = brightness > 160 ? -1 : +1;
+
+    // Adjust the components with respect to their contribution to brightness
+    r += direction * delta * rFactor;
+    g += direction * delta * gFactor;
+    b += direction * delta * bFactor;
+
+    return RGB(clamp(r), clamp(g), clamp(b)); // Return the color with clamped values
+}
+
+HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
+    CClientDC dc(wnd);
+    const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    const float dpiXScale = dpiX / 96.0f;
+    const float dpiYScale = dpiY / 96.0f;
+
+    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+
+    const COLORREF sysTextColor = ::GetSysColor(COLOR_BTNTEXT);
+    const Gdiplus::Color arrowColor(
+        GetRValue(sysTextColor),
+        GetGValue(sysTextColor),
+        GetBValue(sysTextColor));
+
+    Gdiplus::Bitmap bmp(iconWidth, iconHeight, PixelFormat32bppARGB);
+    Gdiplus::Graphics graphics(&bmp);
+
+    graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
+    graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
+     
+    // Calculate base dimensions
+    const float baseSize = std::min(iconWidth, iconHeight) * 0.5f;
+    float arrowWidth, arrowHeight;
+    float left, top;
+    // Set different proportions based on orientation
+    if (orientation == ARROW_LEFT || orientation == ARROW_RIGHT) {
+        // Horizontally flattened arrows (width = 70% of height)
+        arrowHeight = baseSize;
+        arrowWidth = arrowHeight * 0.7f;
+        left = (iconWidth - arrowWidth) / 2 + dpiXScale * (orientation == ARROW_LEFT ? -0.8f : 0.8f);
+        top = (iconHeight - arrowHeight) / 2;
+    } else {
+        // Vertically flattened arrows (height = 70% of width)
+        arrowWidth = baseSize;
+        arrowHeight = arrowWidth * 0.7f;
+        left = (iconWidth - arrowWidth) / 2;
+        top = (iconHeight - arrowHeight) / 2 + dpiYScale * (orientation == ARROW_DOWN ? -0.8f : 0.8f);
+    }
+
+    // Configure triangle points for each orientation
+    Gdiplus::PointF points[3];
+
+    switch (orientation) {
+    case ARROW_UP:
+        points[0] = { left + arrowWidth / 2, top }; // Top center
+        points[1] = { left, top + arrowHeight }; // Bottom left
+        points[2] = { left + arrowWidth, top + arrowHeight }; // Bottom right
+        break;
+
+    case ARROW_LEFT:
+        points[0] = { left, top + arrowHeight / 2 }; // Middle left
+        points[1] = { left + arrowWidth, top }; // Top right
+        points[2] = { left + arrowWidth, top + arrowHeight }; // Bottom right
+        break;
+
+    case ARROW_RIGHT:
+        points[0] = { left + arrowWidth, top + arrowHeight / 2 }; // Middle right
+        points[1] = { left, top }; // Top left
+        points[2] = { left, top + arrowHeight }; // Bottom left
+        break;
+
+    case ARROW_DOWN:
+    default:
+        points[0] = { left, top + arrowHeight * 0.25f }; // Upper left
+        points[1] = { left + arrowWidth, top + arrowHeight * 0.25f }; // Upper right
+        points[2] = { left + arrowWidth / 2, top + arrowHeight }; // Bottom center
+        break;
+    }
+        
+    Gdiplus::SolidBrush brush(arrowColor);
+    graphics.FillPolygon(&brush, points, 3);
+
+    HICON hIcon = nullptr;
+    bmp.GetHICON(&hIcon);
+
+    return hIcon;
+}
+
+HICON GetMenuArrowIcon() {
+    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+    CWindowDC dcScreen(nullptr);
+    CDC dcMem;
+    dcMem.CreateCompatibleDC(dcScreen);
+
+    BITMAPINFO bmi = { 0 };
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = iconWidth;
+    bmi.bmiHeader.biHeight = -iconHeight; // Top-down
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 32;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    void* pBits = nullptr;
+    CBitmap bmpColor;
+    bmpColor.CreateDIBSection(dcMem, &bmi, DIB_RGB_COLORS, &pBits, nullptr, 0);
+
+    CBitmapHandle hOldBmp = dcMem.SelectBitmap(bmpColor);
+
+    dcMem.FillSolidRect(0, 0, iconWidth, iconHeight, RGB(0, 0, 0));
+
+    CRect rc(0, 0, iconWidth, iconHeight);
+    dcMem.DrawFrameControl(rc, DFC_MENU, DFCS_MENUARROW);
+
+    CBitmap bmpMask;
+    bmpMask.CreateBitmap(iconWidth, iconHeight, 1, 1, nullptr);
+
+    ICONINFO ii = { 0 };
+    ii.fIcon = TRUE;
+    ii.hbmColor = bmpColor;
+    ii.hbmMask = bmpMask;
+    HICON hIcon = ::CreateIconIndirect(&ii);
+
+    dcMem.SelectBitmap(hOldBmp);
+    return hIcon;
 }
 
 }

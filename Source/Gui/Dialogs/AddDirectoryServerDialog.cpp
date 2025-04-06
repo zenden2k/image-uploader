@@ -52,7 +52,7 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
 
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
    
-    presetButtonIcon_ = static_cast<HICON>(LoadImage(GetModuleHandle(0), MAKEINTRESOURCE(IDI_DROPDOWN), IMAGE_ICON, 16, 16, 0));
+    presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON));
     SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
     presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));

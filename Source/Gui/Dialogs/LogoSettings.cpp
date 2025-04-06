@@ -159,7 +159,7 @@ LRESULT CLogoSettings::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 LRESULT CLogoSettings::OnBnClickedLogobrowse(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), },
+        { TR("Images"), _T("*.jpg;*.gif;*.png;*.bmp;*.tiff"), },
         { TR("All files"), _T("*.*") }
     };
 

@@ -175,16 +175,17 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
         iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
         m_PlaceSelectorImageList.AddIcon(iconFolder);
 
-        CIcon iconSeparator;
-        iconSeparator.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSEPARATOR), iconWidth, iconHeight);
+        CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, GuiTools::ARROW_RIGHT); //GuiTools::GetMenuArrowIcon();
+       // iconSeparator.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSEPARATOR), iconWidth, iconHeight);
         m_PlaceSelectorImageList.AddIcon(iconSeparator);
 
         //m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
     }
     
-    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);
+    //iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);  
 
     m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
+    iconDropdown_ = GuiTools::CreateDropDownArrowIcon(m_ResizePresetIconButton);
     m_ResizePresetIconButton.SetIcon(iconDropdown_);
 
     m_ShorteningServerButton.m_hWnd = GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON);
@@ -203,6 +204,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     m_profileEditToolbarImageList.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_profileEditToolbarImageList.AddIcon(iconEdit_);
+
     m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
     m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 

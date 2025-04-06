@@ -93,5 +93,19 @@ namespace GuiTools
     // The function checks if the window exists and belongs to the current class.
     bool CheckWindowPointer(HWND hwnd, void* pthis);
     void ClearWindowPointer(HWND hwnd);
+
+    COLORREF GetDefaultHyperlinkColor(HWND hwnd);
+
+    bool IsColorBright(COLORREF color);
+    COLORREF AdjustColorBrightness(COLORREF color, int delta);
+    enum ArrowOrientation {
+        ARROW_DOWN, // ▼
+        ARROW_UP, // ▲
+        ARROW_LEFT, // ◀
+        ARROW_RIGHT // ▶
+    };
+    HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation = ARROW_DOWN);
+
+    HICON GetMenuArrowIcon();
 }
 #endif

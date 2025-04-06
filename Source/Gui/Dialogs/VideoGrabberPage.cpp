@@ -342,8 +342,8 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 LRESULT CVideoGrabberPage::OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
+    IMyFileDialog::FileFilterArray filters {
+        { TR("Video files"), PrepareVideoDialogFilters()},
         { TR("All files"), _T("*.*") }
     };
 
@@ -364,15 +364,7 @@ int CVideoGrabberPage::GrabBitmaps(const CString& szFile )
     std::string videoEngine = settings->VideoSettings.Engine;
 
     if (videoEngine == WtlGuiSettings::VideoEngineAuto) {
-        if ( !settings->IsFFmpegAvailable() ) {
-            videoEngine = WtlGuiSettings::VideoEngineDirectshow;
-        } else {
-            videoEngine = WtlGuiSettings::VideoEngineFFmpeg;
-            std::string ext = IuStringUtils::ToLower( IuCoreUtils::ExtractFileExt( W2U(szFile) ) );
-            if ( ext == "wmv" || ext == "asf" ) {
-                videoEngine = WtlGuiSettings::VideoEngineDirectshow;
-            }
-        }
+        videoEngine = settings->IsFFmpegAvailable() ? WtlGuiSettings::VideoEngineFFmpeg : WtlGuiSettings::VideoEngineDirectshow2;
     }
     VideoGrabber::VideoEngine engine = VideoGrabber::veAuto;
 #ifdef IU_ENABLE_FFMPEG

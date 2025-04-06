@@ -52,7 +52,7 @@ CHyperLinkControl::CHyperLinkControl()
     hoverItemIndex_ = -1;
     CursorHand = false;
     m_bHyperLinks = true;
-    m_BkColor = RGB(0, 0, 0);
+    m_BkColor = GetSysColor(COLOR_WINDOW);
     handCursor_ = LoadCursor(nullptr, IDC_HAND); // Loading "Hand" cursor into memory
     arrowCursor_ = LoadCursor(nullptr, IDC_ARROW);
     SetThemeClassList ( L"globals" );
@@ -451,7 +451,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             continue;
         }
         bool isHighlighted = static_cast<size_t>(selectedItemIndex_) == i || hoverItemIndex_ == i;
-        COLORREF oldTextColor = dc.SetTextColor(RGB(0,0,0));
+        COLORREF oldTextColor = dc.SetTextColor(GetSysColor(COLOR_BTNTEXT));
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
@@ -496,7 +496,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             } else {
                 oldFont = dc.SelectFont(GetFont());
             }
-            dc.SetTextColor(RGB(100,100,100));
+            dc.SetTextColor(GetSysColor(COLOR_GRAYTEXT));
 
             ExtTextOutW(dc.m_hDC, TextRect.left, item.ItemRect.top + TextDims.cy + scaleY(3), ETO_CLIPPED, &TextRect, item.szTip, wcslen(item.szTip), 0);
 

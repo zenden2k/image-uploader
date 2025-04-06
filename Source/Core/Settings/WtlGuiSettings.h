@@ -130,7 +130,6 @@ public:
     CHotkeyList Hotkeys;
     bool Hotkeys_changed;
 
-    static COLORREF DefaultLinkColor;
     bool QuickUpload;
     bool UseTxtTemplate;
     bool GroupByFilename;

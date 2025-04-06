@@ -88,12 +88,12 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 
     accountLink_.SubclassWindow(GetDlgItem(IDC_ACCOUNTINFO));
     accountLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
-    accountLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+    accountLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(accountLink_);
     accountLink_.SetToolTipText(TR("User name"));
 
     imageProcessingParamsLink_.SubclassWindow(GetDlgItem(IDC_IMAGEPROCESSINGPARAMS));
     imageProcessingParamsLink_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
-    imageProcessingParamsLink_.m_clrLink = WtlGuiSettings::DefaultLinkColor;
+    imageProcessingParamsLink_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(imageProcessingParamsLink_);
     CString linkLabel = showImageProcessingParams_ ? TR("Image processing settings...") : TR("Settings...");
     imageProcessingParamsLink_.SetLabel(linkLabel);
     imageProcessingParamsLink_.SetToolTipText(linkLabel);
