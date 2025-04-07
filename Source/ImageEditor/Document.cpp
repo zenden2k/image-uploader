@@ -31,7 +31,7 @@ namespace ImageEditor {
 Document::Document(int width, int height) {
     hasTransparentPixels_ = false;
     currentImage_ = std::make_shared<Gdiplus::Bitmap>( width, height, PixelFormat32bppARGB );
-    init();
+    init(true);
 }
 
 Document::Document(const wchar_t* fileName) {
@@ -56,12 +56,15 @@ Document::~Document()
     }
 }
 
-void Document::init() {
+void Document::init(bool clear) {
     currentPainter_.reset();
     drawStarted_ = false;
     originalImage_ = nullptr;
     if ( currentImage_ ) {
         currentPainter_ = std::make_unique<Gdiplus::Graphics>( currentImage_.get() );
+        if (clear) {
+            currentPainter_->Clear(Gdiplus::Color::Transparent);
+        }
         changedSegments_ = AffectedSegments(getWidth(), getHeight());
     }
 }
@@ -294,6 +297,7 @@ void Document::applyCrop(int cropX, int cropY, int cropWidth, int cropHeight) {
     saveDocumentState(true);
     std::shared_ptr<Gdiplus::Bitmap> newBitmap = std::make_shared<Gdiplus::Bitmap>(cropWidth, cropHeight);
     Gdiplus::Graphics gr(newBitmap.get());
+    gr.Clear(Gdiplus::Color::Transparent);
     gr.DrawImage(currentImage_.get(), 0, 0, cropX, cropY, cropWidth, cropHeight, UnitPixel);
     currentImage_ = newBitmap;
 }

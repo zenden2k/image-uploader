@@ -174,7 +174,6 @@
 #define IDI_ICON13                      331
 #define IDI_ICONUPLOAD                  331
 #define IDI_ICON14                      332
-#define IDI_ICONSEPARATOR               332
 #define IDI_ICON15                      334
 #define IDI_ICONCONTROLS                334
 #define IDI_ICONEXTERNALLINK            336

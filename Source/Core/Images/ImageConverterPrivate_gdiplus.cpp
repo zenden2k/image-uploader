@@ -124,6 +124,7 @@ bool ImageConverterPrivate::convert(const std::string& sourceFile)
         BackBuffer.reset(new Bitmap(static_cast<int>(round(newwidth)), static_cast<int>(round(newheight))));
 
         Graphics gr(BackBuffer.get());
+        gr.Clear(Gdiplus::Color::Transparent);
         if (fileformat == ImageUtils::sifJPEG || fileformat == ImageUtils::sifGIF) {
             gr.Clear(Color(255, 255, 255, 255));
         }
@@ -393,6 +394,7 @@ std::unique_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     m_Vars["Height"] = std::to_string(RealThumbHeight);
     auto ThumbBuffer = std::make_unique<Bitmap>(RealThumbWidth, RealThumbHeight, &g1);
     Graphics thumbgr(ThumbBuffer.get());
+    thumbgr.Clear(Gdiplus::Color::Transparent);
     thumbgr.SetPageUnit(UnitPixel);
 
     if (fileformat == 0 || fileformat == 2)

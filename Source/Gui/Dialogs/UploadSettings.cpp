@@ -185,7 +185,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     //iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);  
 
     m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
-    iconDropdown_ = GuiTools::CreateDropDownArrowIcon(m_ResizePresetIconButton);
+    iconDropdown_ = GuiTools::CreateDropDownArrowIcon(m_ResizePresetIconButton, GuiTools::ARROW_DOWN);
     m_ResizePresetIconButton.SetIcon(iconDropdown_);
 
     m_ShorteningServerButton.m_hWnd = GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON);

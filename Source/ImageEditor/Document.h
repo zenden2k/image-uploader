@@ -57,7 +57,7 @@ class Document {
         AffectedSegments changedSegments_;
         bool hasTransparentPixels_;
         bool isSrcMultiFrame_ = false;
-        void init();
+        void init(bool clear = false);
         void saveDocumentState(bool full = false);
         void checkTransparentPixels();
         

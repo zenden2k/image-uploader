@@ -873,6 +873,7 @@ void Canvas::createDoubleBuffer() {
 //    delete buffer_;
     buffer_ = std::make_shared<Gdiplus::Bitmap>(canvasWidth_, canvasHeight_, PixelFormat32bppARGB);
     bufferedGr_ = std::make_unique<Gdiplus::Graphics>( buffer_.get() );
+    bufferedGr_->Clear(Gdiplus::Color::Transparent);
 }
 
 void Canvas::setCursor(CursorType cursorType)

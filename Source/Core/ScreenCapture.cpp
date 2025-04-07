@@ -615,6 +615,7 @@ bool AddBorderShadow(Bitmap* input, bool roundedShadowCorners, Bitmap** out)
     {
         Bitmap* bmpResult = new Bitmap(resultWidth, resultHeight, PixelFormat32bppARGB);
         Graphics g(bmpResult);
+        g.Clear(Gdiplus::Color::Transparent);
         g.DrawImage(topLeftShadow.get(), 0, 0);
         g.DrawImage(topRightShadow.get(), resultWidth - topRightShadow->GetWidth(), 0);
         g.DrawImage(bottomLeftShadow.get(), 0, resultHeight - bottomLeftShadow->GetHeight());

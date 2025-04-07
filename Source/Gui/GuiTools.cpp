@@ -712,11 +712,11 @@ COLORREF AdjustColorBrightness(COLORREF color, int delta) {
 }
 
 HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
-    CClientDC dc(wnd);
+    /* CClientDC dc(wnd);
     const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
     const float dpiXScale = dpiX / 96.0f;
-    const float dpiYScale = dpiY / 96.0f;
+    const float dpiYScale = dpiY / 96.0f;*/
 
     const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
@@ -725,61 +725,53 @@ HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
     const Gdiplus::Color arrowColor(
         GetRValue(sysTextColor),
         GetGValue(sysTextColor),
-        GetBValue(sysTextColor));
+        GetBValue(sysTextColor)
+    );
 
     Gdiplus::Bitmap bmp(iconWidth, iconHeight, PixelFormat32bppARGB);
     Gdiplus::Graphics graphics(&bmp);
 
     graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
     graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
-     
-    // Calculate base dimensions
-    const float baseSize = std::min(iconWidth, iconHeight) * 0.5f;
-    float arrowWidth, arrowHeight;
-    float left, top;
-    // Set different proportions based on orientation
+    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf); // Align to pixel centers
+
+    const int baseSize = std::min(iconWidth, iconHeight) / 2;
+    int arrowWidth, arrowHeight;
+    int left, top;
+
     if (orientation == ARROW_LEFT || orientation == ARROW_RIGHT) {
-        // Horizontally flattened arrows (width = 70% of height)
         arrowHeight = baseSize;
-        arrowWidth = arrowHeight * 0.7f;
-        left = (iconWidth - arrowWidth) / 2 + dpiXScale * (orientation == ARROW_LEFT ? -0.8f : 0.8f);
+        arrowWidth = std::roundf(arrowHeight * 0.7f);
+        left = std::roundf((iconWidth - arrowWidth) * 0.6f);
         top = (iconHeight - arrowHeight) / 2;
     } else {
-        // Vertically flattened arrows (height = 70% of width)
         arrowWidth = baseSize;
-        arrowHeight = arrowWidth * 0.7f;
+        arrowHeight = std::roundf(arrowWidth * 0.7f);
         left = (iconWidth - arrowWidth) / 2;
-        top = (iconHeight - arrowHeight) / 2 + dpiYScale * (orientation == ARROW_DOWN ? -0.8f : 0.8f);
+        top = std::roundf((iconHeight - arrowHeight) * 0.4f);
     }
 
-    // Configure triangle points for each orientation
-    Gdiplus::PointF points[3];
-
+    Gdiplus::Point points[3];
     switch (orientation) {
     case ARROW_UP:
-        points[0] = { left + arrowWidth / 2, top }; // Top center
-        points[1] = { left, top + arrowHeight }; // Bottom left
-        points[2] = { left + arrowWidth, top + arrowHeight }; // Bottom right
+        points[0] = { left + arrowWidth / 2, top };
+        points[1] = { left, top + arrowHeight };
+        points[2] = { left + arrowWidth, top + arrowHeight };
         break;
-
-    case ARROW_LEFT:
-        points[0] = { left, top + arrowHeight / 2 }; // Middle left
-        points[1] = { left + arrowWidth, top }; // Top right
-        points[2] = { left + arrowWidth, top + arrowHeight }; // Bottom right
-        break;
-
-    case ARROW_RIGHT:
-        points[0] = { left + arrowWidth, top + arrowHeight / 2 }; // Middle right
-        points[1] = { left, top }; // Top left
-        points[2] = { left, top + arrowHeight }; // Bottom left
-        break;
-
     case ARROW_DOWN:
-    default:
-        points[0] = { left, top + arrowHeight * 0.25f }; // Upper left
-        points[1] = { left + arrowWidth, top + arrowHeight * 0.25f }; // Upper right
-        points[2] = { left + arrowWidth / 2, top + arrowHeight }; // Bottom center
+        points[0] = { left, top + arrowHeight / 4 };
+        points[1] = { left + arrowWidth, top + arrowHeight / 4 };
+        points[2] = { left + arrowWidth / 2, top + arrowHeight };
+        break;
+    case ARROW_LEFT:
+        points[0] = { left, top + arrowHeight / 2 };
+        points[1] = { left + arrowWidth, top };
+        points[2] = { left + arrowWidth, top + arrowHeight };
+        break;
+    case ARROW_RIGHT:
+        points[0] = { left + arrowWidth, top + arrowHeight / 2 };
+        points[1] = { left, top };
+        points[2] = { left, top + arrowHeight };
         break;
     }
         

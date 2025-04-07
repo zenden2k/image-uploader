@@ -1681,8 +1681,6 @@ IDI_ICONLOG             ICON                    "res\\icon_log.ico"
 
 IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
 
-IDI_ICONSEPARATOR       ICON                    "res\\icon_separator.ico"
-
 IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
 
 IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
