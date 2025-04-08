@@ -163,68 +163,49 @@ Copy `versioninfo.h` to the `Dist` directory. Edit this file and set the values 
  
 Run `python create_build.py` from Visual Studio Developer Command Prompt.
 
-# Image Uploader is using the following libraries:
+# 📒 Licenses of used libraries and code
 
-WTL             http://sourceforge.net/projects/wtl/
+## Libraries
 
-libcurl         http://curl.haxx.se/libcurl/ 
+- [WTL](https://sourceforge.net/projects/wtl/) under [Microsoft Public License](https://opensource.org/license/ms-pl-html)
+- [libcurl](https://curl.se/) under [CURL license (MIT/X inspired)](https://curl.se/docs/copyright.html)
+- [openssl](https://www.openssl.org) under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- [zlib](zlib.net) under [zLib license](https://zlib.net/zlib_license.html)
+- [Boost](https://www.boost.org) under [Boost Software License](https://www.boost.org/LICENSE_1_0.txt)
+- [Qt](https://www.qt.io/) under [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.html#license-text)
+- [pcre](https://www.pcre.org) under BSD license
+- [pcre++](https://www.daemon.de/projects/pcrepp/) (modified) under [LGPLv2.1](https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt)
+- [squirrel](http://squirrel-lang.org) (modified) under [MIT License](https://opensource.org/license/mit)
+- [sqrat](https://scrat.sourceforge.net) (modified) under [zlib License](https://scrat.sourceforge.net/#license)
+- [ffmpeg](https://www.ffmpeg.org) under LGPL-2.1-or-later license
+- [tinyxml2](https://github.com/leethomason/tinyxml2) under [zLib license](https://zlib.net/zlib_license.html)
+- [gumbo](https://github.com/google/gumbo-parser) under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) 
+- [gumbo-query](https://github.com/lazytiger/gumbo-query) under [MIT License](https://opensource.org/license/mit)
+- [minizip](https://www.winimage.com/zLibDll/minizip.html) under [zLib license](https://zlib.net/zlib_license.html)
+- [jsoncpp](https://github.com/open-source-parsers/jsoncpp) under [MIT License](https://opensource.org/license/mit)
+- [glog](https://github.com/google/glog) under [BSD-3-Clause license](https://opensource.org/license/BSD-3-clause)
+- [libwebp](https://github.com/webmproject/libwebp) under [BSD-3-Clause license](https://opensource.org/license/BSD-3-clause)
+- [base64](https://github.com/aklomp/base64) under [BSD-2-Clause license](https://opensource.org/license/bsd-2-clause)
+- [UTF8-CPP](https://github.com/nemtrif/utfcpp) under [Boost Software License 1.0](https://opensource.org/license/bsl-1-0)
+- [libheif](https://github.com/strukturag/libheif) under [LGPL-3.0](https://www.gnu.org/licenses/lgpl-3.0.html#license-text)
+- [WinToast](https://github.com/mohabouje/WinToast) under [MIT License](https://opensource.org/license/mit)
+- [argparse](https://github.com/p-ranav/argparse) under [MIT License](https://opensource.org/license/mit)
+- [xdgmime](https://gitlab.freedesktop.org/xdg/xdgmime) under LGPL License
+- [dotenv-cpp](https://github.com/laserpants/dotenv-cpp) under [BSD-3-Clause license](https://opensource.org/license/BSD-3-clause)
 
-openssl         https://www.openssl.org
-
-zlib            http://www.zlib.net
-
-Boost           http://www.boost.org
-
-Qt              https://www.qt.io/
-
-pcre            http://www.pcre.org
-
-pcre++          http://www.daemon.de/PCRE (patched version)
-
-squirrel        http://squirrel-lang.org (patched version)
-
-sqrat		    http://scrat.sourceforge.net (patched version)
-
-ffmpeg          https://www.ffmpeg.org
-
-tinyxml2        https://github.com/leethomason/tinyxml2
-
-gumbo           https://github.com/google/gumbo-parser
-
-gumbo-query     https://github.com/lazytiger/gumbo-query
-
-minizip         http://www.winimage.com/zLibDll/minizip.html
-
-jsoncpp         https://github.com/open-source-parsers/jsoncpp
-
-glog            https://github.com/google/glog
-
-libwebp         https://github.com/webmproject/libwebp
-
-base64          https://github.com/aklomp/base64
-
-UTF8-CPP        http://utfcpp.sourceforge.net/ 
-
-libheif         https://github.com/strukturag/libheif 
-
-WinToast        https://github.com/mohabouje/WinToast
-
-argparse        https://github.com/p-ranav/argparse
-
-xdgmime         https://gitlab.freedesktop.org/xdg/xdgmime
-
-DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK
+DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK 7.1
 
 **Libraries for building Mega.nz:**
 
-Mega SDK        https://github.com/meganz/sdk
-
-Crypto++        https://www.cryptopp.com/
-
-c-ares          https://c-ares.haxx.se/
-
-libuv           https://github.com/libuv/libuv
+- [Mega SDK](https://github.com/meganz/sdk) under [BSD-2-Clause license](https://opensource.org/license/bsd-2-clause)
+- [Crypto++](https://www.cryptopp.com/) under [Boost Software License 1.0](https://opensource.org/license/bsl-1-0)
+- [c-ares](https://c-ares.org/) under [MIT License](https://opensource.org/license/mit)
+- [libuv](https://github.com/libuv/libuv) under [MIT License](https://opensource.org/license/mit)
 
 **Libraries for building tests:**
 
-Google Mock     https://github.com/abseil/googletest
+- [Google Mock](https://github.com/google/googletest) under [BSD-3-Clause license](https://opensource.org/license/BSD-3-clause)
+
+## Resources
+
+Free icons by [Icons8](https://icons8.com)
