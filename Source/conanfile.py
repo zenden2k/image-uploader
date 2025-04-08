@@ -8,7 +8,7 @@ class ImageUploaderRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
     default_options = {
         "libcurl/*:with_libssh2": True,
-        "libcurl/*:with_libidn": True,
+#        "libcurl/*:with_libidn": True,
         "ffmpeg/*:shared": False,
 		"ffmpeg/*:disable_all_encoders": True,
 		"ffmpeg/*:disable_all_muxers": True,
