@@ -1,5 +1,5 @@
-appKey <- "973quph3jxdgqoe";
-appSecret <- "wloizpn331cc8zd";
+appKey <- GetEnvDecode("IU_DROPBOX_APP_KEY");
+appSecret <- GetEnvDecode("IU_DROPBOX_APP_SECRET");
 accessType <- "app_folder";
 
 redirectUri <- "https://oauth.vk.com/blank.html";

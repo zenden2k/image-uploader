@@ -23,9 +23,8 @@
 
 #include <string>
 
-namespace IuCoreUtils {
+namespace IuCoreUtils::CryptoUtils {
 
-namespace CryptoUtils {
     std::string CalcMD5Hash(const void* data, size_t size);
     std::string CalcMD5HashFromString(const std::string &data);
     std::string CalcMD5HashFromFile(const std::string& filename);
@@ -45,8 +44,7 @@ namespace CryptoUtils {
     std::string Base64EncodeRaw(const char* bytes, unsigned int len);
     std::string Base64Decode(const std::string& data);
     bool Base64EncodeFile(const std::string& fileName, std::string& result);
-};
-
+    std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr);
 };
 
 #endif // IU_CORE_UTILS_CRYPTOUTILS_H

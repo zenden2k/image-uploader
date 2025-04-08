@@ -54,6 +54,7 @@
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Core/3rdpart/termcolor.hpp"
 #include "Core/BasicConstants.h"
+#include "Core/3rdpart/dotenv.h"
 
 #ifdef _WIN32
     #include <cstdio>
@@ -803,6 +804,7 @@ int main(int argc, char *argv[]){
     params->setDataDirectory(dataFolder);
     params->setSettingsDirectory(settingsFolder);
     params->setIsGui(false);
+    dotenv::init(dotenv::Preserve, (dataFolder + ".env").c_str());
 #ifdef _WIN32
     TCHAR ShortPath[1024];
     GetTempPath(ARRAY_SIZE(ShortPath), ShortPath);

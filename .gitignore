@@ -40,3 +40,4 @@ CMakeLists.txt.user
 /Data/qimageuploader.xml
 /*.lnk
 /notes.txt
+.env

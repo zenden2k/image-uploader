@@ -50,6 +50,7 @@ mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/CLI/CLI ~/imgupload/usr/bin/imgupload
 $ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI ~/imgupload/usr/bin/imgupload
 cp ../../Data/servers.xml ~/imgupload/usr/share/imgupload/servers.xml
+cp ../../Data/.env ~/imgupload/usr/share/imgupload/.env
 cp ../../Data/Scripts/*.nut ~/imgupload/usr/share/imgupload/Scripts/
 #cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml
 

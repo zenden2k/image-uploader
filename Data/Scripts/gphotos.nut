@@ -1,5 +1,5 @@
-﻿const CLIENT_ID = "327179857936-lcpkeaoidkl5cru001tpvv2mudi5ok7g.apps.googleusercontent.com";
-const CLIENT_SECRET = "49GuU_mFjyY-9zjCNB3E0FV7";
+﻿CLIENT_ID <-  GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_ID");
+CLIENT_SECRET <- GetEnvDecode("IU_GOOGLE_PHOTOS_CLIENT_SECRET");
 
 function _RegReplace(str, pattern, replace_with) {
     local resultStr = str;	

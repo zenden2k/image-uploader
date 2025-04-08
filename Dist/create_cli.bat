@@ -26,6 +26,8 @@ Copy "..\Data\servers.xml" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\mime.cache" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Data\.env" %temp_dir%\Data\
+if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\
 Copy "..\Data\Update\iu_servers*.xml" %temp_dir%\Data\Update\
 

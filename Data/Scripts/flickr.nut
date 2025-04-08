@@ -1,5 +1,5 @@
-﻿appKey <- "2fbf2be64367abf2515f8b5494a5bc43";
-appSecret <- "116fdf4bcac0cf76";
+﻿appKey <-  GetEnvDecode("IU_FLICKR_APP_KEY");
+appSecret <- GetEnvDecode("IU_FLICKR_APP_SECRET");
 accessType <- "app_folder";
 
 authStep1Url <- "https://www.flickr.com/services/oauth/request_token";

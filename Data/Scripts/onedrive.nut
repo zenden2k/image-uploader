@@ -1,7 +1,7 @@
 redirectUri <- "https://login.microsoftonline.com/common/oauth2/nativeclient";
 redirectUrlEscaped <- "https:\\/\\/login\\.microsoftonline\\.com\\/common\\/oauth2\\/nativeclient";
 code <- "";
-clientId <- "a6cf69e8-63c8-444a-a73f-97228fa01ae3";
+clientId <- GetEnvDecode("IU_ONE_DRIVE_CLIENT_ID");
 
 function min(a,b) {
     return (a < b) ?  a : b;

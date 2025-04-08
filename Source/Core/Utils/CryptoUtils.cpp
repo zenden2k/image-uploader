@@ -23,6 +23,12 @@
 #include <cmath>
 #include <libbase64.h>
 
+#include <openssl/evp.h>
+#include <openssl/conf.h>
+#include <openssl/err.h>
+#include <openssl/bio.h>
+#include <openssl/buffer.h>
+
 #include "Core/Upload/CommonTypes.h"
 
 namespace IuCoreUtils::CryptoUtils {
@@ -92,6 +98,50 @@ bool Base64EncodeFile(const std::string& fileName, std::string& result) {
     result.resize(total_len);
     //encoded_cur += outlen;
     return true;
+}
+
+std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr) {
+    const std::vector<unsigned char> key(keyStr.begin(), keyStr.end());
+    if (key.size() != 16) {
+        throw std::runtime_error("Key must be 16 bytes for AES-128");
+    }
+
+    std::string base64Str = Base64Decode(base64cipher);
+    std::vector<unsigned char> cipherData(base64Str.begin(), base64Str.end());
+
+    if (cipherData.size() <= 16) {
+        throw std::runtime_error("Ciphertext too short (no IV)");
+    }
+
+    std::vector<unsigned char> iv(cipherData.begin(), cipherData.begin() + 16);
+    std::vector<unsigned char> encrypted(cipherData.begin() + 16, cipherData.end());
+
+    EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new();
+    if (!ctx) {
+        throw std::runtime_error("EVP_CIPHER_CTX_new failed");
+    }
+
+    int len;
+    std::vector<unsigned char> plaintext(encrypted.size() + 16);
+
+    if (1 != EVP_DecryptInit_ex(ctx, EVP_aes_128_cbc(), nullptr, key.data(), iv.data())) {
+        throw std::runtime_error("EVP_DecryptInit_ex failed");
+    }
+
+    if (1 != EVP_DecryptUpdate(ctx, plaintext.data(), &len, encrypted.data(), encrypted.size())) {
+        throw std::runtime_error("EVP_DecryptUpdate failed");
+    }
+
+    int plaintext_len = len;
+
+    if (1 != EVP_DecryptFinal_ex(ctx, plaintext.data() + len, &len)) {
+        throw std::runtime_error("EVP_DecryptFinal_ex failed");
+    }
+
+    plaintext_len += len;
+    EVP_CIPHER_CTX_free(ctx);
+
+    return std::string(plaintext.begin(), plaintext.begin() + plaintext_len);
 }
 
 }

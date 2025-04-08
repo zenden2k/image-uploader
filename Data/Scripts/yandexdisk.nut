@@ -13,8 +13,8 @@ if (ServerParams.getParam("useWebdav") == "") {
 login <- "";
 enableOAuth <- true;
 baseUrl <-"https://cloud-api.yandex.net/v1/disk/resources/";
-clientId <- "a49c34035aa8418d9a77ff24e0660719";
-clientSecret <- "f9496665e3494022a00b7dbe9a5f0d9e";
+clientId <-  GetEnvDecode("IU_YANDEX_DISK_CLIENT_ID");
+clientSecret <- GetEnvDecode("IU_YANDEX_DISK_SECRET");
 
 function _RegexSimple(data, regStr, start) {
     local ex = regexp(regStr);

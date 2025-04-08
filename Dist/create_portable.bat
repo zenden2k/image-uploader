@@ -79,6 +79,8 @@ Copy "..\Data\template.txt" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\mime.cache" %temp_dir%\Data\
 if ERRORLEVEL 1 goto CopyFailed
+Copy "..\Data\.env" %temp_dir%\Data\
+if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Favicons\*.ico" %temp_dir%\Data\Favicons\
 if ERRORLEVEL 1 goto CopyFailed
 Copy "..\Data\Scripts\*.nut" %temp_dir%\Data\Scripts\

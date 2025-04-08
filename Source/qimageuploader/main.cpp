@@ -22,6 +22,8 @@
 #include "Core/Settings/QtGuiSettings.h"
 #include "Video/QtImage.h"
 #include "Core/i18n/Translator.h"
+#include "Core/3rdpart/dotenv.h"
+
 #ifdef _WIN32
     #include "Func/GdiPlusInitializer.h"
     #include "Video/MediaFoundationFrameGrabber.h"
@@ -162,8 +164,10 @@ settingsDir.mkpath(settingsFolder);
     qDebug() << "Data directory:" << dataFolder;
     qDebug() << "Settings directory:" << settingsFolder;
     AppParams* params = AppParams::instance();
-    params->setDataDirectory(Q2U(dataFolder));
+    std::string dataFolderU8 = Q2U(dataFolder);
+    params->setDataDirectory(dataFolderU8);
     params->setSettingsDirectory(Q2U(settingsFolder));
+    dotenv::init(dotenv::Preserve, (dataFolderU8 + ".env").c_str());
 
     QTemporaryDir dir;
     if (dir.isValid()) {

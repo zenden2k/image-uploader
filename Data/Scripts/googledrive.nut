@@ -1,5 +1,5 @@
-clientSecret <- "65ie-G5nWqGMv_THtY3z2snZ";
-clientId <- "162038470312-dn0kut9j7l0cd9lt32r09j0c841goei9.apps.googleusercontent.com";
+clientSecret <- GetEnvDecode("IU_GOOGLE_DRIVE_CLIENT_SECRET");
+clientId <- GetEnvDecode("IU_GOOGLE_DRIVE_CLIENT_ID");
 
 function _GetAuthorizationString() {
     return ServerParams.getParam("tokenType") + " " + ServerParams.getParam("token");

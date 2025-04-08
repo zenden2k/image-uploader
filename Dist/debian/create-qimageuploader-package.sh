@@ -51,6 +51,7 @@ mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 mkdir -p ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
 $ObjCopy --strip-debug --strip-unneeded ../../Build/bin/Release/qimageuploader ~/zenden2k-imageuploader/usr/bin/zenden2k-imageuploader
 cp ../../Data/servers.xml ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/servers.xml
+cp ../../Data/.env ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/.env
 cp ../../Data/Scripts/*.nut ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/
 cp ../../Data/Favicons/*.ico ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Favicons/
 

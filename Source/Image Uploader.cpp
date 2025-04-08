@@ -50,6 +50,7 @@
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "Gui/Helpers/LangHelper.h"
 #include "Video/MediaFoundationFrameGrabber.h"
+#include "Core/3rdpart/dotenv.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
@@ -146,6 +147,8 @@ public:
             dataFolder.Truncate(dataFolder.GetLength() - 1);
         }
         std::string dir = W2U(dataFolder);
+
+        dotenv::init(dotenv::Preserve, (dir + "/.env").c_str());
         char* cacheDir = strdup(dir.c_str());
         if (cacheDir) {
             const char* dirs[2]

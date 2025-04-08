@@ -25,6 +25,7 @@
 #include <random>
 #include <json/json.h>
 
+#include "Core/BasicConstants.h"
 #include "Core/AppParams.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Scripting/Squirrelnc.h"
@@ -55,6 +56,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Utils/SystemUtils.h"
 #include "ScriptFunctionsImpl.h"
+#include "Core/3rdpart/dotenv.h"
 
 using namespace Sqrat;
 
@@ -505,6 +507,21 @@ std::string GetDeviceName() {
     return res;
 }
 
+std::string GetEnvDecode(const std::string& name) {
+    std::string res = dotenv::getenv(name.c_str());
+
+    if (res.rfind("ENC:", 0) == 0) {
+        static const std::string keyStr = IuCoreUtils::CryptoUtils::Base64Decode(ENV_A_E_K);
+        try {
+            res = IuCoreUtils::CryptoUtils::DecryptAES(res.substr(4), keyStr);
+        } catch (const std::exception& e) {
+            LOG(ERROR) << "Error while decoding variable " << name << ": " << e.what() << std::endl;
+            return {};
+        }
+    }
+
+    return res;
+}
 void RegisterFunctions(Sqrat::SqratVM& vm)
 {
     Sqrat::RootTable& root = vm.GetRootTable();
@@ -547,7 +564,6 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetAppLanguage", GetAppLanguage)
         .Func("GetAppLocale", GetAppLocale)
         .Func("HtmlEntitiesDecode", IuTextUtils::DecodeHtmlEntities)
-
         .Func("GetFileSize", ScriptGetFileSize)    
         .Func("GetFileSizeDouble", ScriptGetFileSize)
         .SquirrelFunc("GetImageInfo", GetImageInfo)
@@ -556,7 +572,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetCurrentThreadId", GetCurrentThreadId)
         .Func("MessageBox", MessageBox)   
         .Func("GetDeviceId", GetDeviceId)  
-        .Func("GetDeviceName", GetDeviceName);    
+        .Func("GetDeviceName", GetDeviceName)    
+        .Func("GetEnvDecode", GetEnvDecode);    
 
     using namespace IuCoreUtils;
     root

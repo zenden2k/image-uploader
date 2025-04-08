@@ -436,6 +436,8 @@ namespace ScriptAPI {
     * @param type message severity (possible values: "error", "warning", "info")
     */
     void WriteLog(const std::string& type, const std::string& message);
+
+    std::string GetEnvDecode(const std::string& name);
 }
 
 #endif
