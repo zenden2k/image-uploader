@@ -85,6 +85,8 @@ public:
             return;
         }
 
+        videoGrabber_->streamInfo_ = grabber->getInfo();
+
         int64_t duration = grabber->duration();
         int64_t step = duration / ( videoGrabber_->frameCount_ + 1 );
         int successFrameCount = 0;
@@ -191,6 +193,10 @@ void VideoGrabber::setOnFrameGrabbed(FrameGrabbedCallback cb) {
 
 void VideoGrabber::setOnFinished(FinishCallback cb) {
     onFinished_ = std::move(cb);
+}
+
+std::optional<AbstractFrameGrabber::StreamInfo> VideoGrabber::getInfo() const {
+    return streamInfo_;
 }
 
 std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {

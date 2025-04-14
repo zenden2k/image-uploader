@@ -108,6 +108,7 @@ protected:
     bool seekByBytes;
     std::unique_ptr<AvcodecVideoFrame> currentFrame_;
     int64_t duration_;
+    std::unique_ptr<AvcodecFrameGrabber::StreamInfo> streamInfo_;
     static bool initialized_;
 public:
     friend class AvcodecFrameGrabber;
@@ -212,6 +213,10 @@ public:
         if (pCodec == nullptr) {
             throw FrameGrabberException("Couldn't find video codec.");
         }
+        streamInfo_ = std::make_unique<AvcodecFrameGrabber::StreamInfo>();
+        streamInfo_->width = pars->width;
+        streamInfo_->height = pars->height;
+        streamInfo_->codecName = pCodec->name;
 
         pCodecCtx = avcodec_alloc_context3(pCodec);
 
@@ -502,4 +507,11 @@ AbstractVideoFrame* AvcodecFrameGrabber::grabCurrentFrame() {
 
 int64_t AvcodecFrameGrabber::duration() {
     return d_ptr->duration_;
+}
+
+std::optional<AbstractFrameGrabber::StreamInfo> AvcodecFrameGrabber::getInfo() {
+    if (!d_ptr->streamInfo_) {
+        return {};
+    }
+    return *d_ptr->streamInfo_;
 }

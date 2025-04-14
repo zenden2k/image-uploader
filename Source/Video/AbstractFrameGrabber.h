@@ -1,6 +1,7 @@
 #ifndef ABSTRACTFRAMEGRABBER_H
 #define ABSTRACTFRAMEGRABBER_H
 
+#include <optional>
 #include <string>
 #include "AbstractVideoFrame.h"
 #include "Core/Utils/CoreTypes.h"
@@ -8,6 +9,11 @@
 class AbstractFrameGrabber
 {
 public:
+    struct StreamInfo {
+        int width = 0;
+        int height = 0;
+        std::string codecName;
+    };
     AbstractFrameGrabber() = default;
     virtual ~AbstractFrameGrabber();
 
@@ -25,6 +31,8 @@ public:
     virtual int64_t duration()=0;
     std::string error() const;
     virtual void abort();
+    virtual std::optional<StreamInfo> getInfo();
+
 protected:
     std::string error_;
 private:

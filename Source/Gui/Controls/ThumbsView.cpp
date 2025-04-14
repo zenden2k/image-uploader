@@ -257,6 +257,7 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     std::shared_ptr<GdiPlusImage> grabbedFrame;
     bool isImage = img || IuCommonFunctions::IsImage(filename);
     bool isVideo = settings->ShowPreviewForVideoFiles && IsVideoFile(filename);
+    std::optional<AbstractFrameGrabber::StreamInfo> videoInfo;
     if (isVideo) {
         VideoGrabber grabber(false, false);
         grabber.setVideoEngine(VideoGrabber::veAvcodec);
@@ -275,8 +276,9 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         } catch (const std::exception& ex) {
             LOG(WARNING) << ex.what();
         }
+        videoInfo = grabber.getInfo();
     }
-
+    
     CString srcImageFormat;
 
     if (isImage || isVideo)
@@ -406,7 +408,13 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
                 if (IuCommonFunctions::IsImage(filename) && bm) {
                     Buffer.Format(_T("%s %dx%d (%s)"), srcImageFormat.MakeUpper().GetString(), imgwidth, imgheight, buf2.GetString());
                 } else if (isVideo) {
-                    Buffer.Format(TR("VIDEO %s"), buf2);
+                    if (videoInfo) {
+                        CString codecName { U2WC(videoInfo->codecName) };
+                        codecName.MakeUpper();
+                        Buffer.Format(_T("%s (%s)"), codecName.GetString(), /* videoInfo->width, videoInfo->height, */ buf2.GetString());
+                    } else {
+                        Buffer.Format(TR("VIDEO %s"), buf2.GetString());
+                    }
                 } else {
                     Buffer = buf2;
                 }
