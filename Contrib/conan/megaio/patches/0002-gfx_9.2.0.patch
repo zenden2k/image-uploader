@@ -1,0 +1,48 @@
+ include/megaapi.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/megaapi.h b/include/megaapi.h
+index 05cb44025..cb1bae3bd 100644
+--- a/include/megaapi.h
++++ b/include/megaapi.h
+@@ -178,7 +178,7 @@ public:
+      * @param path Path of the file that is going to be processed
+      * @return True if the implementation is able to manage the file, false otherwise.
+      */
+-    virtual bool readBitmap(const char* path);
++    virtual bool readBitmap(const std::string& path);
+ 
+     /**
+      * @brief Returns the width of the image
+ src/gfx/external.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gfx/external.cpp b/src/gfx/external.cpp
+index df5904946..a3e15f586 100644
+--- a/src/gfx/external.cpp
++++ b/src/gfx/external.cpp
+@@ -33,7 +33,7 @@ bool GfxProviderExternal::readbitmap(const LocalPath& localname, int /*size*/)
+ {
+     if(!processor) return false;
+ 
+-    bool result = processor->readBitmap(localname.platformEncoded().c_str());
++    bool result = processor->readBitmap(localname.platformEncoded());
+     if(!result) return false;
+ 
+     w = processor->getWidth();
+ src/megaapi.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/megaapi.cpp b/src/megaapi.cpp
+index b299fc850..fafade5c6 100644
+--- a/src/megaapi.cpp
++++ b/src/megaapi.cpp
+@@ -6345,7 +6345,7 @@ void MegaLogger::log(const char* /*time*/, int /*loglevel*/, const char* /*sourc
+ 
+ }
+ 
+-bool MegaGfxProcessor::readBitmap(const char* /*path*/)
++bool MegaGfxProcessor::readBitmap(const std::string& /*path*/)
+ {
+     return false;
+ }
