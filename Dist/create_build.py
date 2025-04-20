@@ -109,7 +109,7 @@ BUILD_TARGETS = [
         'build_profile': DEFAULT_BUILD_PROFILE,
         'cmake_generator': CMAKE_GENERATOR_VS2019,
         'cmake_platform': "ARM64", 
-        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off"], # "-DIU_LIBHEIF_WITH_DAV1D=Off"
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=On", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off"], # "-DIU_LIBHEIF_WITH_DAV1D=Off"
         'enable_webview2': True,
         'shell_ext_64bit_arch': 'ARM64',
         'ffmpeg_standalone' : False,
