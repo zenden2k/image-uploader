@@ -113,7 +113,7 @@ class MegaioConan(ConanFile):
        
     def package(self):
         copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
-        copy(self, pattern="*.h", src=os.path.join(self.source_folder, "sdk/include"), dst=os.path.join(self.package_folder, "include"))
+        copy(self, pattern="*.h", src=os.path.join(self.source_folder, "sdk-9.2.0/include"), dst=os.path.join(self.package_folder, "include"))
         copy(self, pattern="*.a", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
         copy(self, pattern="*.so", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
         copy(self, pattern="*.lib", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
@@ -121,7 +121,13 @@ class MegaioConan(ConanFile):
         copy(self, pattern="*.dylib", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["SDKlib"]
+        self.cpp_info.libs = ["ccronexpr"]
+
+        if self.settings.build_type == "Debug":
+            self.cpp_info.libs.append("SDKlibd")
+        else:
+            self.cpp_info.libs.append("SDKlib")
+
         if self.options.with_mediainfo:
             self.cpp_info.defines.append("USE_MEDIAINFO")
         
