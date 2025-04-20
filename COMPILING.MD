@@ -28,7 +28,7 @@ cd Build
 The recommended way is to pass conan profile to the `cmake` command.
 
 ```bash
-cmake <path_to_imageuploader_source>\Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=default -DCONAN_BUILD_PROFILE=default 
+cmake <path_to_imageuploader_source>\Source -G "Visual Studio 17 2022" -A Win32 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCONAN_HOST_PROFILE=default -DCONAN_BUILD_PROFILE=default 
 ```
 
 If you are cross-compiling (from Windows x64 to x86) and want to build FFmpeg libraries from Conan repository then you should use two profiles (`-DCONAN_HOST_PROFILE=windows_vs2019_x86_release -DCONAN_BUILD_PROFILE=windows_vs2019_x64_release`)

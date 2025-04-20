@@ -45,20 +45,23 @@ class ImageUploaderRecipe(ConanFile):
             self.options["libheif/*"].with_dav1d = False
             self.options["ffmpeg/*"].with_libdav1d = False
             self.options["ffmpeg/*"].with_libsvtav1 = False
-            self.options["megaio/*"].UseMediainfo = False
+            self.options["megaio/*"].with_mediainfo = False
+        #if self.settings.os == "Windows":
+        #   self.options["qt/*"].qtimageformats = True    
+            
 #    def validate(self):
 #        if self.info.settings.os == "Macos" and self.info.settings.arch == "armv8":
 #            raise ConanInvalidConfiguration("ARM v8 not supported")
 
     def requirements(self):
         self.requires("boost/1.78.0")
-        self.requires("libcurl/8.12.1", force=True)
+        self.requires("libcurl/8.12.1")
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")
-        self.requires("zlib/1.3.1", force=True)
+        self.requires("zlib/1.3.1")
         self.requires("minizip/1.3.1")
         self.requires("jsoncpp/1.9.6")
-        self.requires("sqlite3/3.36.0")
+        self.requires("sqlite3/3.49.1")
         self.requires("base64/0.4.0")
         self.requires("glog/0.6.0@zenden2k/stable")
         self.requires("libwebp/1.4.0", force=True)
@@ -67,7 +70,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("squirrel/3.0.0")
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
-        self.requires("megaio/3.5.2")
+        self.requires("megaio/9.2.0")
         self.requires("openssl/1.1.1w", force=True)
 
         if self.settings.os == "Windows" and self.settings.arch == "armv8":
@@ -78,10 +81,10 @@ class ImageUploaderRecipe(ConanFile):
             self.requires("dav1d/1.4.3", force=True)
         # self.requires("xz_utils/5.4.2")
 
-        # Add base64 dependency only for Windows
         if self.settings.os == "Windows":
             self.requires("base-classes/1.0.0")
-            self.requires("libheif/1.13.0") # v1.16.2 is broken (not loading avif files)
+            self.requires("libheif/1.13.0@zenden2k/stable") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
+            #self.requires("qt/5.15.16")
  
         #    
         #if self.settings.os != "Windows":  # we need cmake 3.19 in other platforms

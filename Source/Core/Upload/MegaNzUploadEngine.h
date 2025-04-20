@@ -40,6 +40,8 @@ namespace mega
 {
 class MegaApi;
 class MegaProxy;
+class MegaCancelToken;
+class MegaGfxProvider;
 }
 
 class CMegaNzUploadEngine : public CAdvancedUploadEngine {
@@ -64,6 +66,7 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         **/
         bool supportsBeforehandAuthorization() override;
+        void stop() override;
         friend class MyListener;
     protected:
         DISALLOW_COPY_AND_ASSIGN(CMegaNzUploadEngine);
@@ -71,6 +74,7 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
         std::unique_ptr<mega::MegaApi> megaApi_;
 #ifdef _WIN32
         std::unique_ptr<MyGfxProcessor> proc_;
+        std::unique_ptr<mega::MegaGfxProvider> gfxProvider_;
 #endif
         std::unique_ptr<MyListener> listener_;
         CFolderList* folderList_;
@@ -80,6 +84,7 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
             fetchNodesFinished_, fetchNodesSuccess_, uploadFinished_, uploadSuccess_, exportFinished_, exportSuccess_,
             createFolderFinished_, createFolderSuccess_,renameFolderFinished_, renameFolderSuccess_;
         std::string publicLink_;
+        std::unique_ptr<mega::MegaCancelToken> cancelToken_;
         bool ensureNodesFetched();
 
 };

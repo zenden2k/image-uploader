@@ -52,7 +52,7 @@ public:
     bool readBitmap(const std::string& path) override;
     int getWidth() override;
     int getHeight() override;
-    int getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) override;
+    int getBitmapDataSize(int width, int height, int px, int py, int rw, int rh, int hint) override;
     bool getBitmapData(char *bitmapData, size_t size) override;
     void freeBitmap() override;
 
@@ -98,7 +98,7 @@ int MyGfxProcessor::getHeight() {
     return 0;
 }
 
-int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int rw, int rh) {
+int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int rw, int rh, int hint) {
     using namespace Gdiplus;
     if (!bitmap_) {
         return 0;
@@ -128,9 +128,9 @@ int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int
         return 0;
     }
 
-    // Saving image in JPEG format to memory stream
+    // Saving image to memory stream
     try {
-        if (ImageUtils::SaveImageToFile(resultBmp.get(), CString(), istream_, ImageUtils::sifJPEG, 85)) {
+        if (ImageUtils::SaveImageToFile(resultBmp.get(), CString(), istream_, hint == GFX_HINT_FORMAT_PNG ? ImageUtils::sifPNG : ImageUtils::sifJPEG, 85)) {
             hr = GetHGlobalFromStream(istream_, &hGlobal_);
             if (FAILED(hr)) {
                 return 0;
@@ -206,7 +206,8 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     folderList_ = nullptr;
 #ifdef _WIN32
     proc_ = std::make_unique<MyGfxProcessor>();
-    megaApi_ = std::make_unique<MegaApi>(APP_KEY, proc_.get(), static_cast<const char *>(nullptr)/*AppParams::instance()->tempDirectory().c_str()*/, USER_AGENT);
+    gfxProvider_.reset(MegaGfxProvider::createExternalInstance(proc_.get()));
+    megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppParams::instance()->tempDirectory().c_str(), USER_AGENT);
 #else 
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif
@@ -259,7 +260,8 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
         } else {
             MegaNode* parent = megaApi_->getNodeByPath(parentId.c_str());
             if (parent) {
-                MegaNodeList* list = megaApi_->getChildren(parent);
+                cancelToken_.reset(mega::MegaCancelToken::createInstance());
+                MegaNodeList* list = megaApi_->getChildren(parent, 1, cancelToken_.get());
 
                 if (list) {
                     for (int i = 0; i < list->size(); i++) {
@@ -365,6 +367,7 @@ int CMegaNzUploadEngine::doLogin() {
     if (currentTask_) {
         currentTask_->setStatusText(_("Logging in..."));
     }
+
     megaApi_->login(m_ServersSettings->authData.Login.c_str(), m_ServersSettings->authData.Password.c_str());
     while (!loginFinished_ && !needStop()) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -431,8 +434,8 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
 
         uploadFinished_ = false;
         uploadSuccess_ = false;
-
-        megaApi_->startUpload(fileTask_->getFileName().c_str(), root.get(),newFileName.c_str());
+        cancelToken_.reset(mega::MegaCancelToken::createInstance());
+        megaApi_->startUpload(fileTask_->getFileName().c_str(), root.get(), newFileName.c_str(), MegaApi::INVALID_CUSTOM_MOD_TIME, nullptr, false, false, cancelToken_.get());
         while (!uploadFinished_ && !needStop()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
@@ -460,6 +463,13 @@ bool CMegaNzUploadEngine::supportsSettings()
 bool CMegaNzUploadEngine::supportsBeforehandAuthorization()
 {
     return false;
+}
+
+
+void CMegaNzUploadEngine::stop() {
+    if (cancelToken_) {
+        cancelToken_->cancel();
+    }
 }
 
 bool CMegaNzUploadEngine::ensureNodesFetched() {
@@ -570,7 +580,7 @@ void MyListener::onTransferFinish(MegaApi* api, MegaTransfer *transfer, MegaErro
         engine_->exportSuccess_ = false;
         engine_->uploadSuccess_ = true;
         if (!engine_->needStop()) {
-            api->exportNode(node.get());
+            api->exportNode(node.get(), 0, false, false);
         }
     }
 
