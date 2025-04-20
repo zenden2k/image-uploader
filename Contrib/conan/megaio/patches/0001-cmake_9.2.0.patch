@@ -2,7 +2,7 @@
  1 file changed, 53 insertions(+), 139 deletions(-)
 
 diff --git a/cmake/modules/sdklib_libraries.cmake b/cmake/modules/sdklib_libraries.cmake
-index b50d1b7ca..63fb68f02 100644
+index b50d1b7ca..ecb7555fe 100644
 --- a/cmake/modules/sdklib_libraries.cmake
 +++ b/cmake/modules/sdklib_libraries.cmake
 @@ -1,152 +1,66 @@
@@ -164,7 +164,7 @@ index b50d1b7ca..63fb68f02 100644
 -        endif()
 +    if(USE_FREEIMAGE)
 +        find_package(FreeImage CONFIG REQUIRED)
-+        target_link_libraries(SDKlib PRIVATE FreeImage::FreeImage)
++        target_link_libraries(SDKlib PUBLIC freeimage::freeimage)
 +    endif()
  
 -        if(USE_LIBUV)
@@ -186,8 +186,8 @@ index b50d1b7ca..63fb68f02 100644
 -            set(HAVE_PDFIUM 1)
 -        endif()
 +    if(USE_LIBUV)
-+        find_package(libuv CONFIG REQUIRED)
-+        target_link_libraries(SDKlib PRIVATE libuv::uv)
++        find_package(libuv REQUIRED)
++        target_link_libraries(SDKlib PUBLIC uv)
 +        set(HAVE_LIBUV 1)
 +    endif()
  
@@ -199,13 +199,13 @@ index b50d1b7ca..63fb68f02 100644
 -        endif()
 +    if(USE_PDFIUM)
 +        find_package(PDFium CONFIG REQUIRED)
-+        target_link_libraries(SDKlib PRIVATE PDFium::PDFium)
++        target_link_libraries(SDKlib PRIVATE pdfium::pdfium)
 +        set(HAVE_PDFIUM 1)
 +    endif()
  
 +    if(USE_READLINE)
 +        find_package(Readline REQUIRED)
-+        target_link_libraries(SDKlib PRIVATE Readline::Readline)
++        target_link_libraries(SDKlib PRIVATE readline::readline)
 +    else()
 +        set(NO_READLINE 1)
      endif()

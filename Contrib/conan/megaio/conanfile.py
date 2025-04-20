@@ -40,8 +40,8 @@ class MegaioConan(ConanFile):
         "with_libuv": False,
         "with_qt": False,
         "with_pdfium": False,
-        "with_readline" : False,
-        "libcurl/*:with_libssh2": True
+        "with_readline" : False
+#        "libcurl/*:with_libssh2": True
     }
     generators = "CMakeDeps"
     requires = [
@@ -72,7 +72,6 @@ class MegaioConan(ConanFile):
         tc.cache_variables["ENABLE_CHAT"] = 1 if self.options.enable_chat else 0
         tc.cache_variables["USE_FFMPEG"] = 1 if self.options.with_ffmpeg else 0
         tc.cache_variables["USE_LIBUV"] = 1 if self.options.with_libuv else 0
-        tc.cache_variables["USE_QT"] = 1 if self.options.with_qt else 0
         tc.cache_variables["USE_PDFIUM"] = 1 if self.options.with_pdfium else 0    
         tc.cache_variables["USE_READLINE"] = 1 if self.options.with_readline else 0    
         tc.cache_variables["ENABLE_QT_BINDINGS"] = 1 if self.options.with_qt else 0
@@ -110,6 +109,9 @@ class MegaioConan(ConanFile):
 
         if self.options.with_readline:
            self.requires("readline/[>=8.1]")
+
+        if self.options.with_pdfium:
+           self.requires("pdfium/[>=95.0.4629]")
        
     def package(self):
         copy(self, "LICENSE", src=self.source_folder, dst=os.path.join(self.package_folder, "licenses"))
@@ -127,6 +129,9 @@ class MegaioConan(ConanFile):
             self.cpp_info.libs.append("SDKlibd")
         else:
             self.cpp_info.libs.append("SDKlib")
+
+        if self.options.with_freeimage:
+            self.cpp_info.libs.append("libgfxworker")
 
         if self.options.with_mediainfo:
             self.cpp_info.defines.append("USE_MEDIAINFO")

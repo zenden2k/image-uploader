@@ -45,7 +45,7 @@ class ImageUploaderRecipe(ConanFile):
             self.options["libheif/*"].with_dav1d = False
             self.options["ffmpeg/*"].with_libdav1d = False
             self.options["ffmpeg/*"].with_libsvtav1 = False
-            self.options["megaio/*"].UseMediainfo = False
+            self.options["megaio/*"].with_mediainfo = False
         #if self.settings.os == "Windows":
         #   self.options["qt/*"].qtimageformats = True    
             
