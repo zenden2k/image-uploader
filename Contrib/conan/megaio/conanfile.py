@@ -123,16 +123,16 @@ class MegaioConan(ConanFile):
         copy(self, pattern="*.dylib", src=self.build_folder, dst=os.path.join(self.package_folder, "lib"), keep_path=False)
 
     def package_info(self):
-        self.cpp_info.libs = ["ccronexpr"]
-
         if self.settings.build_type == "Debug":
             self.cpp_info.libs.append("SDKlibd")
         else:
             self.cpp_info.libs.append("SDKlib")
+   
+        self.cpp_info.libs.append("ccronexpr")     
 
         if self.options.with_freeimage:
             self.cpp_info.libs.append("libgfxworker")
-
+ 
         if self.options.with_mediainfo:
             self.cpp_info.defines.append("USE_MEDIAINFO")
         
