@@ -1,0 +1,85 @@
+ include/mega/utils.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/include/mega/utils.h b/include/mega/utils.h
+index 43485c332..14224afe8 100644
+--- a/include/mega/utils.h
++++ b/include/mega/utils.h
+@@ -33,10 +33,12 @@
+ #undef SSIZE_MAX
+ #include "mega/mega_utf8proc.h"
+ #undef SSIZE_MAX
+-
++#ifndef _WIN32
+ // Include ICU headers
+ #include <unicode/uchar.h>
+-
++#else
++using UChar32 = int32_t;
++#endif
+ namespace mega {
+ std::string toNodeHandle(handle nodeHandle);
+ std::string toNodeHandle(NodeHandle nodeHandle);
+ src/utils.cpp | 49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/src/utils.cpp b/src/utils.cpp
+index c95b08fd5..9b23be8e9 100644
+--- a/src/utils.cpp
++++ b/src/utils.cpp
+@@ -3124,6 +3124,55 @@ std::set<std::string>::iterator getTagPosition(std::set<std::string>& tokens,
+         });
+ }
+ 
++#ifdef _WIN32
++constexpr auto U_FOLD_CASE_DEFAULT = 0;
++UChar32 u_foldCase(UChar32 c, uint32_t /*options*/) {
++     // Prepare input data (might be a surrogate pair)
++    wchar_t inputBuffer[2] = {0};
++    int inputLength = 1;
++
++    // Check if the input character requires a surrogate pair
++    if (c >= 0x10000 && c <= 0x10FFFF) {
++        // Convert UTF-32 to UTF-16 surrogate pair
++        inputBuffer[0] = static_cast<wchar_t>(0xD800 + ((c - 0x10000) >> 10)); // High surrogate
++        inputBuffer[1] = static_cast<wchar_t>(0xDC00 + ((c - 0x10000) & 0x3FF)); // Low surrogate
++        inputLength = 2;
++    } else {
++        inputBuffer[0] = static_cast<wchar_t>(c);
++    }
++
++    // Output buffer (enough for 4 UTF-16 characters)
++    wchar_t outputBuffer[4] = {0};
++
++    // Perform case folding using Win32 API
++    int result = LCMapStringEx(
++        LOCALE_NAME_INVARIANT,
++        LCMAP_LOWERCASE,
++        inputBuffer,
++        inputLength,
++        outputBuffer,
++        4,
++        nullptr,
++        nullptr,
++        0
++    );
++
++    // If successful, convert the result back to UTF-32
++    if (result > 0) {
++        // Only process the first character of the result (even if multiple characters are returned)
++        if (result >= 2 && IS_HIGH_SURROGATE(outputBuffer[0])) {
++            // Combine surrogate pair into a single UTF-32 character
++            return 0x10000 + ((outputBuffer[0] - 0xD800) << 10) + (outputBuffer[1] - 0xDC00);
++        } else {
++            // Regular character (not a surrogate pair)
++            return static_cast<char32_t>(outputBuffer[0]);
++        }
++    }
++
++    // On failure, return the original character
++    return c;
++}
++#endif
+ bool foldCaseAccentEqual(uint32_t codePoint1, uint32_t codePoint2, bool stripAccents)
+ {
+     // 8 is big enough decompose one unicode point
