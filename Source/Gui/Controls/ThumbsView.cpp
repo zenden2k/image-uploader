@@ -258,17 +258,18 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
     bool isImage = img || IuCommonFunctions::IsImage(filename);
     bool isVideo = settings->ShowPreviewForVideoFiles && IsVideoFile(filename);
     std::optional<AbstractFrameGrabber::StreamInfo> videoInfo;
-    if (isVideo) {
+
+    if (isVideo && CommonGuiSettings::IsFFmpegAvailable()) {
         VideoGrabber grabber(false, false);
         grabber.setVideoEngine(VideoGrabber::veAvcodec);
         grabber.setFrameCount(1);
         grabber.setOnFrameGrabbed([&](const std::string&, int64_t, std::shared_ptr<AbstractImage> frame) {
             grabbedFrame = std::dynamic_pointer_cast<GdiPlusImage>(frame);
             if (!grabbedFrame) {
-                LOG(WARNING) << "Frame is not an instace of GdiPlusImage";
+                LOG(WARNING) << "Frame is not an instance of GdiPlusImage";
                 return;
             } 
-            img = grabbedFrame->getBitmap();
+            img = grabbedFrame->releaseBitmap();
         });
 
         try {
@@ -278,10 +279,10 @@ bool CThumbsView::LoadThumbnail(int itemId, ThumbsViewItem* tvi, Gdiplus::Image 
         }
         videoInfo = grabber.getInfo();
     }
-    
+  
     CString srcImageFormat;
 
-    if (isImage || isVideo)
+    if (isImage || (isVideo && img))
     {
         if (img) {
             imgwidth = img->GetWidth();

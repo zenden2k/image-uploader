@@ -67,12 +67,16 @@
 #include "StatusDlg.h"
 #include "3rdpart/wintoastlib.h"
 #include "Gui/Components/WinToastHandler.h"
-#include "ServerListTool/ServersCheckerDlg.h"
+#ifdef IU_ENABLE_SERVERS_CHECKER
+    #include "ServerListTool/ServersCheckerDlg.h"
+#endif
 #include "Core/WinServerIconCache.h"
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 #include "Gui/Dialogs/ScreenshotDlg.h"
-#include "Gui/Dialogs/NetworkDebugDlg.h"
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
+    #include "Gui/Dialogs/NetworkDebugDlg.h"
+#endif
 
 using namespace Gdiplus;
 namespace
@@ -504,12 +508,12 @@ bool CWizardDlg::ParseCmdLine()
             return true;
         }
     }
-
+#ifdef IU_ENABLE_SERVERS_CHECKER
     if (CmdLine.IsOption(_T("serverschecker"))) {
         ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
         dlg.DoModal(m_hWnd);
     }
-
+#endif
     for(size_t i=0; i<CmdLine.GetCount(); i++)
     {
         CString CurrentParam = CmdLine[i];
@@ -670,10 +674,11 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     if (WinToast::isCompatible() && WinToast::instance()->isInitialized()) {
         WinToast::instance()->clear();
     }
-
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
     if (networkDebugDlg_) {
         networkDebugDlg_->DestroyWindow();
     }
+#endif
     bHandled = false;
     return 0;
 }
@@ -2464,6 +2469,7 @@ LRESULT CWizardDlg::OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     return TRUE;
 }
 
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
 LRESULT CWizardDlg::OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
 
     if (!networkDebugDlg_) {
@@ -2474,17 +2480,20 @@ LRESULT CWizardDlg::OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hW
 
     return 0;
 }
+#endif
 
 LRESULT CWizardDlg::OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     showHelpButtonMenu(GetDlgItem(IDC_HELPBUTTON));
     return 0;
 }
 
+#ifdef IU_ENABLE_SERVERS_CHECKER
 LRESULT CWizardDlg::OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     ServersListTool::CServersCheckerDlg dlg(&Settings, uploadEngineManager_, uploadManager_, enginelist_, std::make_shared<NetworkClientFactory>());
     dlg.DoModal(m_hWnd);
     return 0;
 }
+#endif
 
 bool CWizardDlg::acceptsDragnDrop() const {
     if (!IsWindowEnabled() || !DragndropEnabled) {
@@ -2570,9 +2579,11 @@ void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
     popupMenu.AppendMenu(MF_SEPARATOR, 99998, _T(""));
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSCREENSHOTS_FOLDER, TR("Open screenshots folder"));
     popupMenu.AppendMenu(MF_SEPARATOR, 99999, _T(""));
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
     popupMenu.AppendMenu(MF_STRING, IDM_NETWORKDEBUGGER, TR("Network Debugger"));
-#ifndef NDEBUG
+#endif
 
+#if defined(IU_ENABLE_SERVERS_CHECKER) && !defined(NDEBUG)
     popupMenu.AppendMenu(MF_STRING, IDM_OPENSERVERSCHECKER, _T("Servers Checker"));
 #endif
     popupMenu.AppendMenu(MF_STRING, IDC_SHOWLOG, TR("Show Error Log") + CString(_T("\tCtrl+Shift+L")));

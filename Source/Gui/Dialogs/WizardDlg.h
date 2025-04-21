@@ -64,7 +64,9 @@ class Win7JumpList;
 class WtlGuiSettings;
 class CFloatingWindow;
 class WinServerIconCache;
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
 class CNetworkDebugDlg;
+#endif
 
 class CWizardDlg : 
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
@@ -116,8 +118,12 @@ public:
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
+#ifdef IU_ENABLE_SERVERS_CHECKER
         COMMAND_HANDLER(IDM_OPENSERVERSCHECKER, BN_CLICKED, OnServersCheckerClicked)
+#endif
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
         COMMAND_HANDLER(IDM_NETWORKDEBUGGER, BN_CLICKED, OnNetworkDebuggerClicked)
+#endif
         
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
         COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
@@ -149,13 +155,17 @@ public:
     LRESULT OnDocumentation(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnShowLog(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnOpenScreenshotFolderClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+#ifdef IU_ENABLE_SERVERS_CHECKER
     LRESULT OnServersCheckerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+#endif
     LRESULT OnEnableDropTarget(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnAppCommand(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnQueryEndSession(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
     LRESULT OnNetworkDebuggerClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+#endif
     LRESULT OnBnDropdownHelpButton(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
 
     void CloseDialog(int nVal);
@@ -335,7 +345,9 @@ protected:
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
     std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
+#endif
 };
 
 

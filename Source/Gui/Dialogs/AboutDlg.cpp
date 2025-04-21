@@ -224,10 +224,15 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 #ifdef IU_LIBHEIF_WITH_DAV1D
     memoText += CString(L"IU_LIBHEIF_WITH_DAV1D\r\n");
 #endif
+#ifdef IU_ENABLE_SERVERS_CHECKER
+    memoText += CString(L"IU_ENABLE_SERVERS_CHECKER\r\n");
+#endif
+#ifdef IU_ENABLE_NETWORK_DEBUGGER
+    memoText += CString(L"IU_ENABLE_NETWORK_DEBUGGER\r\n");
+#endif
 #ifdef IU_STATIC_RUNTIME
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");
 #endif
-
     SetDlgItemText(IDC_MEMO, memoText);
    
     CString buildInfo;

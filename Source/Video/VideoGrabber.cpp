@@ -65,11 +65,11 @@ public:
             isRunning_ = false;
             return;
         }
-        auto grabber = videoGrabber_->createGrabber();
-        if ( !grabber ) {
-            return;
-        }
+        std::unique_ptr<AbstractFrameGrabber> grabber;
+
         try {
+            grabber = videoGrabber_->createGrabber();
+
             if (!grabber->open(videoGrabber_->fileName_)) {
                 isRunning_ = false;
                 throw std::runtime_error(str(boost::format(_("Failed to open video file '%s'.")) % videoGrabber_->fileName_));
@@ -200,24 +200,19 @@ std::optional<AbstractFrameGrabber::StreamInfo> VideoGrabber::getInfo() const {
 }
 
 std::unique_ptr<AbstractFrameGrabber> VideoGrabber::createGrabber() {
-    std::unique_ptr<AbstractFrameGrabber> grabber;
 #ifdef _WIN32
     #ifdef IU_ENABLE_FFMPEG
     if ( videoEngine_ == veAvcodec ) {
-        grabber = std::make_unique<AvcodecFrameGrabber>();
+        return std::make_unique<AvcodecFrameGrabber>();
     } else
     #endif
     if (videoEngine_ == veDirectShow2) {
-        grabber = std::make_unique<DirectshowFrameGrabber2>();
+        return std::make_unique<DirectshowFrameGrabber2>();
     } else if (videoEngine_ == veMediaFoundation) {
-        grabber = std::make_unique<MediaFoundationFrameGrabber>();
-    }
-    else {
-        grabber = std::make_unique<DirectshowFrameGrabber>();
-
+        return std::make_unique<MediaFoundationFrameGrabber>();
     }
 #elif defined(IU_ENABLE_FFMPEG)
-    grabber.reset(new AvcodecFrameGrabber());
+    return std::make_unique<AvcodecFrameGrabber>();
 #endif
-    return grabber;
+    throw std::runtime_error("Cannot create video grabber");
 }

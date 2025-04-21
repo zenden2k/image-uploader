@@ -87,7 +87,8 @@ class MegaioConan(ConanFile):
     def requirements(self):
         self.requires("sqlite3/[>=3.46.0]")
         self.requires("libsodium/[>=1.0.18]")
-        self.requires("icu/[>=73.2]")
+        if self.settings.os != "Windows":
+            self.requires("icu/[>=73.2]")
         self.requires("libcurl/[>=8.6.0]")
         self.requires("cryptopp/[>=8.9.0]")
 

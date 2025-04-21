@@ -8,3 +8,5 @@ patches:
       base_path: "sdk-9.2.0"
     - patch_file: "patches/0002-gfx_9.2.0.patch"
       base_path: "sdk-9.2.0"
+    - patch_file: "patches/0003-no_icu_9.2.0.patch"
+      base_path: "sdk-9.2.0"

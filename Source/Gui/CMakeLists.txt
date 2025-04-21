@@ -99,9 +99,7 @@ set(SRC_LIST
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
     Dialogs/FileFormatCheckErrorDlg.cpp
-    Dialogs/NetworkDebugDlg.cpp
     Models/FileFormatCheckErrorModel.cpp
-    Models/NetworkDebugModel.cpp
     Controls/CustomEditControl.cpp
     Controls/HistoryTreeControl.cpp
     Controls/HyperLinkControl.cpp
@@ -114,7 +112,6 @@ set(SRC_LIST
     Controls/ThumbsView.cpp
     Controls/WTLBrowserView.cpp
     Controls/FileFormatErrorView.cpp
-    Controls/NetworkDebugListView.cpp
     Helpers/LangHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
@@ -158,12 +155,6 @@ set(SRC_LIST
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
     FileList.cpp
-    ../ServerListTool/ServersCheckerDlg.cpp 
-    ../ServerListTool/ServersChecker.cpp
-    ../ServerListTool/ServersCheckerModel.cpp
-    ../ServerListTool/Helpers.cpp
-    ../ServerListTool/ServerListView.cpp
-    ../ServerListTool/CheckShortUrlTask.cpp
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
@@ -271,9 +262,7 @@ set(HEADER_LIST
     Dialogs/WizardDlg.h
     Dialogs/ServerProfileGroupSelectDialog.h
     Dialogs/FileFormatCheckErrorDlg.h
-    Dialogs/NetworkDebugDlg.cpp
     Models/FileFormatCheckErrorModel.h
-    Models/NetworkDebugModel.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -286,7 +275,6 @@ set(HEADER_LIST
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
     Controls/FileFormatErrorView.h
-    Controls/NetworkDebugListView.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
@@ -333,17 +321,43 @@ set(HEADER_LIST
     ../ImageEditor/Helpers/FontEnumerator.h
     UploadListModel.h
     FileList.h
-    ../ServerListTool/ServersChecker.h
-    ../ServerListTool/ServersCheckerModel.h
-    ../ServerListTool/Helpers.h
-    ../ServerListTool/ServerListView.h
-    ../ServerListTool/CheckShortUrlTask.h
     ../resource.h
 )
 	
 if (IU_ENABLE_MEDIAINFO) 
 	list (APPEND SRC_LIST ../Func/MediaInfoHelper.cpp  Dialogs/MediaInfoDlg.cpp)
 	list (APPEND HEADER_LIST ../Func/MediaInfoHelper.h  Dialogs/MediaInfoDlg.h)
+endif()
+
+if (IU_ENABLE_SERVERS_CHECKER) 
+	list (APPEND SRC_LIST
+        ../ServerListTool/ServersCheckerDlg.cpp 
+        ../ServerListTool/ServersChecker.cpp
+        ../ServerListTool/ServersCheckerModel.cpp
+        ../ServerListTool/Helpers.cpp
+        ../ServerListTool/ServerListView.cpp
+        ../ServerListTool/CheckShortUrlTask.cpp
+    )
+	list (APPEND HEADER_LIST
+        ../ServerListTool/ServersChecker.h
+        ../ServerListTool/ServersCheckerModel.h
+        ../ServerListTool/Helpers.h
+        ../ServerListTool/ServerListView.h
+        ../ServerListTool/CheckShortUrlTask.h
+    )
+endif()
+
+if (IU_ENABLE_NETWORK_DEBUGGER) 
+	list (APPEND SRC_LIST
+        Dialogs/NetworkDebugDlg.cpp
+        Models/NetworkDebugModel.cpp
+        Controls/NetworkDebugListView.cpp
+    )
+	list (APPEND HEADER_LIST
+        Dialogs/NetworkDebugDlg.h
+        Models/NetworkDebugModel.h
+        Controls/NetworkDebugListView.h
+    )
 endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})

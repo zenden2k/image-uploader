@@ -1,11 +1,11 @@
- cmake/modules/sdklib_libraries.cmake | 192 ++++++++++-------------------------
- 1 file changed, 53 insertions(+), 139 deletions(-)
+ cmake/modules/sdklib_libraries.cmake | 198 +++++++++++------------------------
+ 1 file changed, 59 insertions(+), 139 deletions(-)
 
 diff --git a/cmake/modules/sdklib_libraries.cmake b/cmake/modules/sdklib_libraries.cmake
-index b50d1b7ca..ecb7555fe 100644
+index b50d1b7ca..24eb2289d 100644
 --- a/cmake/modules/sdklib_libraries.cmake
 +++ b/cmake/modules/sdklib_libraries.cmake
-@@ -1,152 +1,66 @@
+@@ -1,152 +1,72 @@
  macro(load_sdklib_libraries)
 +	#find_package(PkgConfig REQUIRED)
  
@@ -128,15 +128,21 @@ index b50d1b7ca..ecb7555fe 100644
 +    find_package(libsodium CONFIG REQUIRED)
 +    find_package(SQLite3 CONFIG REQUIRED)
 +    find_package(CURL CONFIG REQUIRED)
-+    find_package(ICU REQUIRED)
++	
++	if(NOT WIN32)
++		find_package(ICU REQUIRED)
++	endif()
 +
 +    target_link_libraries(SDKlib PUBLIC
 +        cryptopp::cryptopp
 +        libsodium::libsodium
-+        icu::icu
 +        CURL::libcurl
 +        SQLite::SQLite3
 +    )
++	
++	if(NOT WIN32)
++		target_link_libraries(SDKlib PUBLIC icu::icu)
++	endif()
 +
 +    if(USE_OPENSSL)
 +        find_package(OpenSSL REQUIRED)

@@ -89,7 +89,9 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     optionsButton_.SetButtonStyle(BS_SPLITBUTTON);
 
     videoEngines_ = CommonGuiSettings::VideoEngines;
-
+    if (!CommonGuiSettings::IsFFmpegAvailable()) {
+        videoEngines_.erase(std::remove(videoEngines_.begin(), videoEngines_.end(), CommonGuiSettings::VideoEngineFFmpeg), videoEngines_.end());
+    }
     // Sort video engines alphabetically
     std::sort(videoEngines_.begin(), videoEngines_.end(), [](auto& l, auto& r) {
         int res = IuStringUtils::stricmp(l.c_str(), r.c_str());
