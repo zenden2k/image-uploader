@@ -117,6 +117,61 @@ BUILD_TARGETS = [
         'supported_os': 'Windows 10/11 (ARM64)'
     },
     {
+        'os': "Windows",
+        'compiler': "VS2019",
+        'build_type': "Release",
+        'arch': 'x86',
+        'host_profile': 'windows_vs2019_x86_release',
+        'build_profile': DEFAULT_BUILD_PROFILE,
+        'cmake_generator': CMAKE_GENERATOR_VS2019,
+        'cmake_platform': "Win32", 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=Off", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off", "-DIU_ENABLE_SERVERS_CHECKER=Off", "-DIU_ENABLE_NETWORK_DEBUGGER=On"],
+        'enable_webview2': True,
+        'shell_ext_arch': 'Win32',
+        'shell_ext_64bit_arch': 'x64',
+        'run_tests': True,
+        'ffmpeg_standalone' : False,
+        'supported_os': 'Windows 7/8/10/11',
+        'lite': True
+    },  
+    {
+        'os': "Windows",
+        'compiler': "VS2019",
+        'build_type': "Release",
+        'arch': 'x86_64',
+        'host_profile': 'windows_vs2019_x64_release',
+        'build_profile': DEFAULT_BUILD_PROFILE,
+        'cmake_generator': CMAKE_GENERATOR_VS2019,
+        'cmake_platform': "x64",
+       # "-DIU_FFMPEG_STANDALONE=On", 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=Off", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off", "-DIU_ENABLE_SERVERS_CHECKER=Off", "-DIU_ENABLE_NETWORK_DEBUGGER=On"],
+        'enable_webview2': True,
+        'shell_ext_arch': 'Win32',
+        'shell_ext_64bit_arch': 'x64',
+        'ffmpeg_standalone' : False,
+        'installer_arch': 'x64',
+        'run_tests': True,
+        'supported_os': 'Windows 7/8/10/11 (64 bit)',
+        'lite': True
+    }, 
+    {
+        'os': "Windows",
+        'compiler': "VS2019",
+        'build_type': "Release",
+        'arch': 'armv8',
+        'host_profile': 'windows_vs2019_arm64_release',
+        'build_profile': DEFAULT_BUILD_PROFILE,
+        'cmake_generator': CMAKE_GENERATOR_VS2019,
+        'cmake_platform': "ARM64", 
+        'cmake_args': ["-DIU_ENABLE_FFMPEG=Off", "-DIU_ENABLE_MEDIAINFO=Off", "-DIU_ENABLE_MEGANZ=Off", "-DIU_ENABLE_SERVERS_CHECKER=Off", "-DIU_ENABLE_NETWORK_DEBUGGER=On"], # "-DIU_LIBHEIF_WITH_DAV1D=Off"
+        'enable_webview2': True,
+        'shell_ext_64bit_arch': 'ARM64',
+        'ffmpeg_standalone' : False,
+        'installer_arch': 'arm64',
+        'supported_os': 'Windows 10/11 (ARM64)',
+        'lite': True
+    },
+    {
         'os': "Linux",
         'compiler': "gcc",
         'build_type': "Release",
@@ -656,33 +711,36 @@ for target in BUILD_TARGETS:
             if proc.returncode !=0:
                 print("Create archive failed")
                 exit(1)
-
+            appname_suffix = " Lite" if target.get("lite") else ""
+            output_filename_suffix = "-lite" if target.get("lite") else ""
             file_from = r"output\image-uploader-" + app_ver + "-build-" + build_number+ "-openssl-portable.7z"
           
-            filename =  "image-uploader-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target) + ".7z"
+            filename =  "image-uploader-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target) + ".7z"
             file_to = package_os_dir + "\\" +filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI)")
+            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
 
-            # Creating CLI archive (imgupload)
-            command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
-            print("Running command:", command)
-            proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
-            if proc.returncode !=0:
-                print("Create archive failed")
-                exit(1)
+            if not target.get("lite"):
+                # Creating CLI archive (imgupload)
+                command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
+                print("Running command:", command)
+                proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
+                if proc.returncode !=0:
+                    print("Create archive failed")
+                    exit(1)
 
-            file_from = r"output\imgupload-{version}-build-{build}-cli.7z".format(version=app_ver,build=build_number ); 
-            filename = "image-uploader-cli-{version}-build-{build}-{arch}.7z".format(version=app_ver,
-                                                                                    build=build_number,
-                                                                                    arch=get_out_arch_name(target))
-            file_to = package_os_dir +"\\"+filename
-            print("Copy file from:", file_from)
-            print("Copy file to:", file_to)
-            shutil.copyfile(file_from, file_to)
-            json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (CLI)")
+                file_from = r"output\imgupload-{version}-build-{build}-cli.7z".format(version=app_ver,build=build_number ); 
+                filename = "image-uploader-cli-{version}-build-{build}{suffix}-{arch}.7z".format(version=app_ver,
+                                                                                        build=build_number,
+                                                                                        suffix=output_filename_suffix,
+                                                                                        arch=get_out_arch_name(target))
+                file_to = package_os_dir +"\\"+filename
+                print("Copy file from:", file_from)
+                print("Copy file to:", file_to)
+                shutil.copyfile(file_from, file_to)
+                json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (CLI" + appname_suffix +")")
 
             # Creating installer for Windows
             print("Running command:", repo_dir_abs + used_dist_dir + r"create_portable.bat")
@@ -703,13 +761,13 @@ for target in BUILD_TARGETS:
 
             # Copying installer
             file_from = r"Installer\image-uploader-" + app_ver + "-build-" + build_number+ "-setup.exe"
-            filename = "image-uploader-" + app_ver + "-build-" + build_number + "-" + get_out_arch_name(target)+"-setup.exe"
+            filename = "image-uploader-" + app_ver + "-build-" + build_number + output_filename_suffix + "-" + get_out_arch_name(target)+"-setup.exe"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
             shutil.copyfile(file_from, file_to)
 
-            json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI)")
+            json_data = add_output_file(json_data, target, json_file_path, "Installer", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
         elif target["os"] == "Linux":
             args = ["wsl", "-e", "/bin/bash", "create-package.sh", target.get("deb_package_arch"), target.get("objcopy")]
             working_dir = repo_dir_abs + used_dist_dir + "debian/"
