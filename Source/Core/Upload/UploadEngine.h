@@ -121,7 +121,7 @@ struct UploadAction
 struct FileFormat {
     std::vector<std::string> MimeTypes;
     std::vector<std::string> FileNameWildcards;
-    int64_t MaxFileSize;
+    int64_t MaxFileSize = 0;
 };
 
 struct FileFormatGroup {
