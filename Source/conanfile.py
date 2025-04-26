@@ -46,6 +46,9 @@ class ImageUploaderRecipe(ConanFile):
             self.options["ffmpeg/*"].with_libdav1d = False
             self.options["ffmpeg/*"].with_libsvtav1 = False
             self.options["megaio/*"].with_mediainfo = False
+
+        #if self.settings.os != "Windows" or self.settings.arch == "x86_64":
+        self.options["libcurl/*"].with_libidn = True
         #if self.settings.os == "Windows":
         #   self.options["qt/*"].qtimageformats = True    
             
@@ -70,6 +73,7 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("squirrel/3.0.0")
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
+        self.requires("libidn2/2.3.8", force=True)
 
         self.requires("openssl/1.1.1w", force=True)
 
