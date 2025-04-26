@@ -47,8 +47,8 @@ class ImageUploaderRecipe(ConanFile):
             self.options["ffmpeg/*"].with_libsvtav1 = False
             self.options["megaio/*"].with_mediainfo = False
 
-        #if self.settings.os != "Windows" or self.settings.arch == "x86_64":
-        self.options["libcurl/*"].with_libidn = True
+        if self.settings.os != "Windows" or self.settings.arch != "armv8":
+            self.options["libcurl/*"].with_libidn = True
         #if self.settings.os == "Windows":
         #   self.options["qt/*"].qtimageformats = True    
             
@@ -73,7 +73,8 @@ class ImageUploaderRecipe(ConanFile):
         self.requires("squirrel/3.0.0")
         self.requires("tinyxml2/10.0.0", force=True)
         self.requires("ffmpeg/5.1.3")
-        self.requires("libidn2/2.3.8", force=True)
+        if self.settings.os != "Windows" or self.settings.arch != "armv8":
+            self.requires("libidn2/2.3.8", force=True)
 
         self.requires("openssl/1.1.1w", force=True)
 
@@ -90,10 +91,6 @@ class ImageUploaderRecipe(ConanFile):
             self.requires("base-classes/1.0.0")
             self.requires("libheif/1.13.0@zenden2k/stable") # v1.16.2 is broken (not loading avif files), v1.19.5 requires cpp20
             #self.requires("qt/5.15.16")
- 
-        #    
-        #if self.settings.os != "Windows":  # we need cmake 3.19 in other platforms
-        #    self.tool_requires("cmake/3.19.8")
 
     def layout(self):
         # We make the assumption that if the compiler is msvc the
