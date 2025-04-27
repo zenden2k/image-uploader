@@ -35,34 +35,42 @@ std::string ServerProfile::serverName() const {
     return serverName_;
 }
 
+CFolderItem ServerProfile::folder() const {
+    return folder_;
+}
+
+void ServerProfile::setFolder(const CFolderItem& folder) {
+    folder_ = folder;
+}
+
 std::string ServerProfile::folderTitle() const
 {
-    return folderTitle_;
+    return folder_.getTitle();
 }
 
 void ServerProfile::setFolderTitle(const std::string& newTitle)
 {
-    folderTitle_ = newTitle;
+    folder_.setTitle(newTitle);
 }
 
 std::string ServerProfile::folderId() const
 {
-    return folderId_;
+    return folder_.getId();
 }
 
 void ServerProfile::setFolderId(const std::string& newId)
 {
-    folderId_ = newId;
+    folder_.setId(newId);
 }
 
 std::string ServerProfile::folderUrl() const
 {
-    return folderUrl_;
+    return folder_.getViewUrl();
 }
 
 void ServerProfile::setFolderUrl(const std::string& newUrl)
 {
-    folderUrl_ = newUrl;
+    folder_.setViewUrl(newUrl);
 }
 
 bool ServerProfile::shortenLinks() const
@@ -76,11 +84,11 @@ void ServerProfile::setShortenLinks(bool shorten)
 }
 
 void ServerProfile::setParentIds(const std::vector<std::string> parentIds) {
-    parentIds_ = parentIds;
+    folder_.parentIds = parentIds;
 }
 
 const std::vector<std::string>& ServerProfile::parentIds() const {
-    return parentIds_;
+    return folder_.parentIds;
 }
 
 bool ServerProfile::isNull() const
@@ -90,9 +98,7 @@ bool ServerProfile::isNull() const
 
 void ServerProfile::clearFolderInfo()
 {
-    folderUrl_.clear();
-    folderTitle_.clear();
-    folderId_.clear();
+    folder_ = {};
 }
 
 ServerProfile ServerProfile::deepCopy()
@@ -107,13 +113,13 @@ ServerProfile ServerProfile::deepCopy()
 void ServerProfile::bind(SettingsNode& serverNode)
 {
     serverNode["@Name"].bind(serverName_);
-    serverNode["@FolderId"].bind(folderId_);
-    serverNode["@FolderTitle"].bind(folderTitle_);
-    serverNode["@FolderUrl"].bind(folderUrl_);
+    serverNode["@FolderId"].bind(folder_.id);
+    serverNode["@FolderTitle"].bind(folder_.title);
+    serverNode["@FolderUrl"].bind(folder_.viewUrl);
     serverNode["@ProfileName"].bind(profileName_);
     serverNode["@UseDefaultSettings"].bind(UseDefaultSettings);
     serverNode["@ShortenLinks"].bind(shortenLinks_);
-    serverNode["@ParentIds"].bind(parentIds_);
+    serverNode["@ParentIds"].bind(folder_.parentIds);
 #ifdef _WIN32
     imageUploadParams.bind(serverNode);
 #endif

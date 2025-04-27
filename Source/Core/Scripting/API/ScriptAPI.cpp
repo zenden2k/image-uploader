@@ -209,6 +209,7 @@ void RegisterUploadClasses(Sqrat::SqratVM& vm) {
 
     root.Bind("CIUUploadParams", Class<UploadParams>(vm.GetVM(), "CIUUploadParams").
         Func("getFolderID", &UploadParams::getFolderID).
+        Func("getFolder", &UploadParams::getFolder).
         Func("setDirectUrl", &UploadParams::setDirectUrl).
         Func("getDirectUrl", &UploadParams::getDirectUrl).
         Func("setThumbUrl", &UploadParams::setThumbUrl).

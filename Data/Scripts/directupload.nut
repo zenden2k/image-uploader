@@ -73,11 +73,15 @@ function _AnonymousUpload(fileName, options) {
 
 function UploadFile(fileName, options) {
     local login = ServerParams.getParam("Login");
+
     if (login == "") {
         return _AnonymousUpload(fileName, options);
     }
 
+    local task = options.getTask().getFileTask();
+    local album = options.getFolder();
     local albumId = options.getFolderID();
+    local thumbAddText = options.getParam("THUMBADDTEXT").tointeger() && options.getParam("THUMBCREATE").tointeger();
 
     if (albumId == "") {
         WriteLog("error", "[directupload.eu] You should choose an album before uploading into account.");
@@ -85,16 +89,21 @@ function UploadFile(fileName, options) {
     }
     local mimeType = GetFileMimeType(fileName);
     local fname = ExtractFileName(fileName);
-    nm.setReferer(BASE_HOST + "/");
-    nm.setUrl(BASE_HOST + "/index.php?mode=user&act=s_upload2");
-    nm.addQueryParam("gal_id", albumId);
+    nm.setReferer("");
+    nm.addQueryHeader("Origin", BASE_HOST);
+    nm.addQueryHeader("Pragma", "no-cache");
+    nm.setUrl(BASE_HOST + "/api/upload_http_usrmulti.php");
+
     /*if (albumId == "") {
         nm.addQueryParam("new_gallery_name", "New album");
     }*/
-    nm.addQueryParam("standard_galerie", "");
-    nm.addQueryParamFile("img_files[]", fileName, fname, mimeType);
-    nm.addQueryParam("image_link[]", "Die Bild-URL bitte hier einfÃ¼gen.");
-    nm.addQueryParam("upload_typ", "file");
+
+    nm.addQueryParam("file", "data:" + mimeType +";base64," + Base64Encode(GetFileContents(fileName)));
+    nm.addQueryParam("filename", task.getDisplayName());
+    nm.addQueryParam("showtext", thumbAddText? "1" : "0");
+    nm.addQueryParam("gal_id", albumId);
+    nm.addQueryParam("gal_nm", album.getTitle());
+    nm.addQueryParam("st_g", "0");
     nm.doUploadMultipartData();
 
     if (nm.responseCode() != 200) {
@@ -102,15 +111,16 @@ function UploadFile(fileName, options) {
         return 0;
     }
 
-    local doc = Document(nm.responseBody());
-    local imgIdTag = doc.find("input[name=\"img_id[]\"]");
-    local imgId = imgIdTag.attr("value");
+    local imgId = nm.responseBody();
 
-    nm.setUrl(BASE_HOST + "/index.php?mode=user&act=s_upload3");
+    nm.setUrl(BASE_HOST + "/index.php?mode=user&act=m_upload2");
     nm.addQueryParam("img_id[]", imgId);
-    nm.addQueryParam("img_comments[]", "");
-    nm.addQueryParam("image_tags[]", "");
-    nm.doUploadMultipartData();
+    nm.addQueryParam("file_name[]", task.getDisplayName());
+    nm.addQueryParam("img_resize", "0");
+    nm.addQueryParam("showtext", thumbAddText? "1" : "0");  
+    nm.addQueryParam("gal_id", albumId);
+    nm.addQueryParam("new_gallery_name", album.getTitle());
+    nm.doPost("");
 
     if (nm.responseCode() != 200) {
         WriteLog("error", "[directupload.eu] Failed to upload file on step 3, response code=" + nm.responseCode());
@@ -126,8 +136,7 @@ function UploadFile(fileName, options) {
         thumbUrl = arr[0][2];
         options.setViewUrl(viewUrl);
         options.setThumbUrl(thumbUrl);
-        options.setDirectUrl(arr[1][2]);
-        
+        options.setDirectUrl(arr[1][2]);    
         return 1;
     } else {
         WriteLog("error", "[directupload.eu] Failed to obtain data from server's response.");

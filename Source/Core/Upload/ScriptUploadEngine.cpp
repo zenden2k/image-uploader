@@ -217,11 +217,11 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         }
     }
    
-    params.folderId = task->serverProfile().folderId();
+    params.setFolder(task->serverProfile().folder());
     params.task_ = task;
     int ival = 0;
 
-    if (!params.folderId.empty() && task->onFolderUsed_) {
+    if (!params.getFolderID().empty() && task->onFolderUsed_) {
         task->onFolderUsed_(task.get());
     }
     try {

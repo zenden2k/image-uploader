@@ -478,19 +478,13 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
         bool newAuth = ss ? ss->authData.DoAuth : false;
         serverProfile.setProfileName(WCstringToUtf8(dlg.accountName()));
         if(UserName != newUserName || newAuth != prevAuthEnabled) {
-            serverProfile.setFolderId("");
-            serverProfile.setFolderTitle("");
-            serverProfile.setFolderUrl("");
-            serverProfile.setParentIds({});
+            serverProfile.clearFolderInfo();
         }
             
         UpdateAllPlaceSelectors();
     } else if (dlgResult == CLoginDlg::ID_DELETEACCOUNT) {
-        serverProfile.setFolderId("");
-        serverProfile.setFolderTitle("");
-        serverProfile.setFolderUrl("");
+        serverProfile.clearFolderInfo();
         serverProfile.setProfileName("");
-        serverProfile.setParentIds({});
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -528,19 +522,13 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
                 if (serverSettings) {
                     serverSettings->defaultFolder = as.m_SelectedFolder;
                 }
-                serverProfile.setFolderId(as.m_SelectedFolder.id);
-                serverProfile.setFolderTitle(as.m_SelectedFolder.title);
-                serverProfile.setFolderUrl(as.m_SelectedFolder.viewUrl);
-                serverProfile.setParentIds(as.m_SelectedFolder.parentIds);
+                serverProfile.setFolder(as.m_SelectedFolder);
             }
             else {
                 if (serverSettings) {
                     serverSettings->defaultFolder = CFolderItem();
                 }
-                serverProfile.setFolderId("");
-                serverProfile.setFolderTitle("");
-                serverProfile.setFolderUrl("");
-                serverProfile.setParentIds({});
+                serverProfile.clearFolderInfo();
             }
             UpdateAllPlaceSelectors();
         }
@@ -1256,10 +1244,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
          sp.setProfileName("");
      }
      ServerSettingsStruct* ss = Settings.getServerSettings(sp);
-     sp.setFolderId(ss ? ss->defaultFolder.getId() : std::string());
-     sp.setFolderTitle(ss ? ss->defaultFolder.getTitle(): std::string());
-     sp.setFolderUrl(ss ? ss->defaultFolder.viewUrl: std::string());
-     sp.setParentIds(ss ? ss->defaultFolder.parentIds : std::vector<std::string>());
+     sp.setFolder(ss ? ss->defaultFolder : CFolderItem ());
  }
 
 void CUploadSettings::updateUrlShorteningCheckboxLabel()
@@ -1364,10 +1349,7 @@ LRESULT CUploadSettings::OnUserNameMenuItemClick(WORD wNotifyCode, WORD wID, HWN
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile);
 
-    serverProfile.setFolderId(serverSettings ? serverSettings->defaultFolder.getId(): std::string());
-    serverProfile.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle(): std::string());
-    serverProfile.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl: std::string());
-    serverProfile.setParentIds(serverSettings ? serverSettings->defaultFolder.parentIds : std::vector<std::string>());
+    serverProfile.setFolder(serverSettings ? serverSettings->defaultFolder : CFolderItem());
     /*if(UserName != ss.authData.Login || ss.authData.DoAuth!=prevAuthEnabled)
     {
         serverProfile.setFolderId("");
@@ -1393,10 +1375,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
     //ServerSettingsStruct & ss = ImageServer ? sessionImageServer_.serverSettings() : sessionFileServer_.serverSettings();
     if (dlgResult  != IDCANCEL) {
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
-        serverProfileCopy.setFolderId("");
-        serverProfileCopy.setFolderTitle("");
-        serverProfileCopy.setFolderUrl("");
-        serverProfileCopy.setParentIds({});
+        serverProfileCopy.clearFolderInfo();
         serverProfile = serverProfileCopy;
         UpdateAllPlaceSelectors();
     } 
@@ -1408,10 +1387,7 @@ LRESULT CUploadSettings::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWn
     bool ImageServer = (wID % 2)!=0;
     ServerProfile & serverProfile = ImageServer? getSessionImageServerItem() : getSessionFileServerItem();
     serverProfile.setProfileName("");
-    serverProfile.setFolderId("");
-    serverProfile.setFolderTitle("");
-    serverProfile.setFolderUrl("");
-    serverProfile.setParentIds({});
+    serverProfile.clearFolderInfo();
     UpdateAllPlaceSelectors();
     return 0;
 }

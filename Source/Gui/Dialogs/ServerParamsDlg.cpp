@@ -174,15 +174,9 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
     
 
         if(!folder.id.empty()){
-            serverProfile_.setFolderId(folder.getId());
-            serverProfile_.setFolderTitle(folder.getTitle());
-            serverProfile_.setFolderUrl(folder.viewUrl);
-            serverProfile_.setParentIds(folder.parentIds);
+            serverProfile_.setFolder(folder);
         } else {
-            serverProfile_.setFolderId("");
-            serverProfile_.setFolderTitle("");
-            serverProfile_.setFolderUrl("");
-            serverProfile_.setParentIds({});
+            serverProfile_.clearFolderInfo();
         }
 
         SetDlgItemText(IDC_FOLDERNAMELABEL, Utf8ToWCstring( folder.getTitle() ));
@@ -203,10 +197,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
 
 LRESULT CServerParamsDlg::OnLoginEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     if ( ::GetFocus() == hWndCtl ) {
-        serverProfile_.setFolderId("");
-        serverProfile_.setFolderTitle("");
-        serverProfile_.setFolderUrl("");
-        serverProfile_.setParentIds({});
+        serverProfile_.clearFolderInfo();
         SetDlgItemText(IDC_FOLDERNAMELABEL,  (CString("<") + TR("not selected") + CString(">")) );
     }
     return 0;

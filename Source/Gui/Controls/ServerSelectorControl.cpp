@@ -201,10 +201,7 @@ void CServerSelectorControl::addAccount()
     if (dlg.DoModal(m_hWnd) != IDCANCEL)
     {
         serverProfileCopy.setProfileName(WCstringToUtf8(dlg.accountName()));
-        serverProfileCopy.setFolderId("");
-        serverProfileCopy.setFolderTitle("");
-        serverProfileCopy.setFolderUrl("");
-        serverProfileCopy.setParentIds({});
+        serverProfileCopy.clearFolderInfo();
         serverProfile_ = serverProfileCopy;
         updateInfoLabel();
         notifyChange();
@@ -269,16 +266,10 @@ void CServerSelectorControl::serverChanged() {
                 if ( it!= ss.end() ) {
                     ServerSettingsStruct & s = it->second;
                     serverProfile_.setProfileName(s.authData.Login);
-                    serverProfile_.setFolderId(s.defaultFolder.getId());
-                    serverProfile_.setFolderTitle(s.defaultFolder.getTitle());
-                    serverProfile_.setFolderUrl(s.defaultFolder.viewUrl);
-                    serverProfile_.setParentIds(s.defaultFolder.parentIds);
+                    serverProfile_.setFolder(s.defaultFolder);
                 } else {
                     serverProfile_.setProfileName("");
-                    serverProfile_.setFolderId("");
-                    serverProfile_.setFolderTitle("");
-                    serverProfile_.setFolderUrl("");
-                    serverProfile_.setParentIds({});
+                    serverProfile_.clearFolderInfo();
                 }
             }
         }
@@ -642,10 +633,7 @@ LRESULT CServerSelectorControl::OnLoginMenuItemClicked(WORD wNotifyCode, WORD wI
 LRESULT CServerSelectorControl::OnNoAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     serverProfile_.setProfileName("");
-    serverProfile_.setFolderId("");
-    serverProfile_.setFolderTitle("");
-    serverProfile_.setFolderUrl("");
-    serverProfile_.setParentIds({});
+    serverProfile_.clearFolderInfo();
     updateInfoLabel();
     notifyChange();
     return 0;
@@ -719,10 +707,7 @@ LRESULT CServerSelectorControl::OnUserNameMenuItemClick(WORD wNotifyCode, WORD w
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
 
-    serverProfile_.setFolderId(serverSettings ? serverSettings->defaultFolder.getId() : std::string());
-    serverProfile_.setFolderTitle(serverSettings ? serverSettings->defaultFolder.getTitle() : std::string());
-    serverProfile_.setFolderUrl(serverSettings ? serverSettings->defaultFolder.viewUrl : std::string());
-    serverProfile_.setParentIds(serverSettings ? serverSettings->defaultFolder.parentIds : std::vector<std::string>());
+    serverProfile_.setFolder(serverSettings ? serverSettings->defaultFolder : CFolderItem {});
     notifyChange();
     updateInfoLabel();
     return 0;

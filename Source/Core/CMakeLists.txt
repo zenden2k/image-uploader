@@ -113,6 +113,7 @@ set(HEADER_LIST
     Upload/FileUploadTask.h
     Upload/ScriptUploadEngine.h
     Upload/UploadEngine.h
+    Upload/FolderItem.h
     Upload/Uploader.h
     Upload/UploadTask.h
     Upload/AuthTask.h

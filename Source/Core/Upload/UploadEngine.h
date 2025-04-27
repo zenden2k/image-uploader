@@ -31,6 +31,7 @@
 #include "Core/Network/NetworkClient.h"
 #include "CommonTypes.h"
 #include "Core/Scripting/API/UploadTaskWrappers.h"
+#include "FolderItem.h"
 
 class ServerSync;
 
@@ -128,52 +129,6 @@ struct FileFormatGroup {
     std::vector<FileFormat> Formats;
     int64_t MaxFileSize = 0;
     bool Authorized = false;
-};
-
-/**
-CFolderItem class
-*/
-class CFolderItem
-{
-public:
-    enum ItemCount { icUnknown = -1, icNoChildren = 0 };
-
-    CFolderItem()
-    {
-        accessType = 0;
-        itemCount = icUnknown;
-    }
-
-    /*! @cond PRIVATE */
-    static const std::string NewFolderMark;
-
-    
-    std::string title;
-    std::string summary;
-    std::string id;
-    std::string parentid;
-    std::string viewUrl;
-    std::vector<std::string> parentIds;
-
-    int accessType;
-    int itemCount;
-    /*! @endcond */
-    std::string getTitle() const { return title;}
-    std::string getSummary() const { return summary;}
-    std::string getId() const { return (id);}
-    std::string getParentId() const { return (parentid);}
-    int getItemCount() const { return itemCount; }
-    int getAccessType() const { return accessType; }
-    std::string getViewUrl() const { return (viewUrl); }
-
-    void setTitle(const std::string& str) { title = (str); }
-    void setViewUrl(const std::string& str) { viewUrl = (str); }
-
-    void setSummary(const std::string& str) { summary = (str); }
-    void setId(const std::string& str) { id = (str); }
-    void setParentId(const std::string& str) { parentid = (str); }
-    void setAccessType(const int type) {  accessType=type; }
-    void setItemCount(const int count) {  itemCount=count; }    
 };
 
 /**
@@ -280,7 +235,7 @@ public:
     int thumbHeight;
     std::string serverName;
     std::string data;
-    std::string folderId;
+    CFolderItem folder;
     std::string DirectUrl;
 
     std::string ThumbUrl;
@@ -299,12 +254,20 @@ public:
         thumbWidth = 0;
         thumbHeight = 0;
     }
+
+    void setFolder(const CFolderItem& fld)
+    {
+        folder = fld;
+    }
     /*! @endcond */
 
     /**
      *  Possible parameters:
      *    THUMBWIDTH
-     *    THUMBHEIGHT 
+     *    THUMBHEIGHT
+     *    THUMBCREATE
+     *    THUMBADDTEXT
+     *    THUMBUSESERVER
      */
     std::string getParam(const std::string& name)
     {
@@ -323,7 +286,11 @@ public:
         return {};
     }
 
-    std::string getFolderID() { return folderId; }
+    CFolderItem getFolder() const {
+        return folder;
+    }
+
+    std::string getFolderID() { return folder.getId(); }
     void setDirectUrl(const std::string& url) { DirectUrl = url;}
     void setThumbUrl(const std::string& url) { ThumbUrl = url;}
     void setViewUrl(const std::string& url) { ViewUrl = url;}

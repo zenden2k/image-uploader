@@ -3,6 +3,7 @@
 
 #pragma once
 #include "Core/Images/ImageConverter.h"
+#include "FolderItem.h"
 
 class CUploadEngineData;
 class ServerSettingsStruct;
@@ -56,6 +57,9 @@ public:
     void setServerName(const std::string& newServerName);
     std::string serverName() const;
 
+    CFolderItem folder() const;
+    void setFolder(const CFolderItem& folder);
+
     std::string folderTitle() const;
     void setFolderTitle(const std::string& newTitle);
     std::string folderId() const;
@@ -84,11 +88,8 @@ protected:
     std::string serverName_;
     std::string profileName_;
     ImageUploadParams imageUploadParams;
-    std::string folderTitle_;
-    std::string folderId_;
-    std::string folderUrl_;
+    CFolderItem folder_;
     bool shortenLinks_;
-    std::vector<std::string> parentIds_;
     friend class CommonGuiSettings;
 };
 

@@ -77,6 +77,7 @@ class MegaioConan(ConanFile):
         tc.cache_variables["ENABLE_QT_BINDINGS"] = 1 if self.options.with_qt else 0
         tc.cache_variables["ENABLE_SDKLIB_EXAMPLES"] = 0
         tc.cache_variables["ENABLE_SDKLIB_TESTS"] = 0
+        tc.cache_variables["ENABLE_SDKLIB_WERROR"] = 0
         tc.generate()
 
     def build(self):

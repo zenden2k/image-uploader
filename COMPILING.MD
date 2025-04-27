@@ -90,8 +90,8 @@ git clone https://github.com/zenden2k/image-uploader.git
 cd image-uploader
 mkdir Build
 cd Build
-cmake ../Source  -G "Ninja Multi-Config" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake -DCMAKE_CONFIGURATION_TYPES:STRING=Release -DCMAKE_TRY_COMPILE_CONFIGURATION:STRING=Release
-cmake --build . --config Release
+cmake ../Source  -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=conan_provider.cmake
+cmake --build .
 ```
 
 If you want to compile qimageuploader (GUI) you have to install Qt 5 dev libraries before compiling:
