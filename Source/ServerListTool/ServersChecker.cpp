@@ -11,7 +11,6 @@
 #include "Core/Utils/CryptoUtils.h"
 #include "ServerListTool/Helpers.h"
 #include "Core/ServiceLocator.h"
-#include "Core/TaskDispatcher.h"
 #include "CheckShortUrlTask.h"
 
 namespace ServersListTool {
@@ -177,7 +176,7 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
     CString fileName = Utf8ToWstring(it.fileName).c_str();
 
     if (!ok) {
-        serverData.stars[fileId] = 0;
+        serverData.stars[fileId] = 1;
         serverData.setLinkInfo(fileId, "Cannot download file");
     }
     if (IuCoreUtils::CryptoUtils::CalcMD5HashFromFile(W2U(fileName)) == srcFileHash_) {
@@ -194,10 +193,10 @@ void ServersChecker::onFileFinished(bool ok, int /*statusCode*/, CFileDownloader
         {
             if (mfi.mimeType.Find(_T("image/")) >= 0) {
                 if (fileId == 0 && (mfi.width != m_sourceFileInfo.width || mfi.height != m_sourceFileInfo.height))
-                    serverData.stars[fileId] = 0;
+                    serverData.stars[fileId] = 2;
                 else
                     serverData.stars[fileId] = fileId == 0 ? 4 : 5;
-            } else serverData.stars[fileId] = 0;
+            } else serverData.stars[fileId] = 1;
         } else serverData.stars[fileId] = 5;
 
         serverData.setLinkInfo(fileId, W2U(report));
@@ -226,7 +225,7 @@ void ServersChecker::checkShortUrl(UploadTask* task) {
             data->setStrMark("Good link");
         }
         ++data->filesChecked;
-        data->stars[0] = ok ? 5 : 0;
+        data->stars[0] = ok ? 5 : 1;
         data->finished = true;
         markServer(rowIndex);
         std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
@@ -305,7 +304,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             data.fileToCheck = nFilesToCheck;
             fileDownloader_->start();
             if (nFilesToCheck)
-                data.setStatusText( "Checking links");
+                data.setStatusText("Checking links");
             else {
                 data.finished = true;
             }
@@ -313,7 +312,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             std::string shortURL = result->getDirectUrl();
             if (!shortURL.empty()) {
                 data.setDirectUrl(shortURL);
-                data.setStatusText( "Checking short link");
+                data.setStatusText("Checking short link");
                 checkShortUrl(task);
             } else {
                 data.finished = true;
@@ -354,10 +353,15 @@ void ServersChecker::markServer(size_t id)
 {
     ServerData& serverData = *model_->getDataByIndex(id);
     if (serverData.finished) {
-        int sum = serverData.stars[0] + serverData.stars[1] + serverData.stars[2];
         int mark = 0;
+        std::vector<int> v;
+        std::copy_if(std::begin(serverData.stars), std::end(serverData.stars), std::back_inserter(v), [](int i) { return i > 0; });
+
+        auto it = std::min_element(v.begin(), v.end());
         int count = serverData.filesChecked;
-        if (count) mark = sum / count;
+        if (count && it != v.end()) {
+            mark = *it;
+        }
 
         CString timeLabel;
         timeLabel.Format(_T("%02d:%02d"), (int)(serverData.timeElapsed / 60000), (int)(serverData.timeElapsed / 1000 % 60));
@@ -366,21 +370,21 @@ void ServersChecker::markServer(size_t id)
         if (mark == 5) {
             serverData.setStrMark("EXCELLENT");
             serverData.color = RGB(0, 255, 50);
-
         } else if (mark >= 4) {
-            serverData.setStrMark("OK");
+            serverData.setStrMark("GOOD");
             serverData.color = RGB(145, 213, 0);
-            //m_ListView.SetItemText(id*2,2,CString());
+        } else if (mark > 1) {
+            serverData.setStrMark("ACCEPTABLE");
+            serverData.color = RGB(245, 233, 66);
         } else {
             serverData.setStrMark("FAILED");
             serverData.color = RGB(198, 0, 0);
-            //m_CheckedServersMap[id].failed = true;
         }
     }
 
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
+    //ServiceLocator::instance()->taskRunner()->runInGuiThread([&] {
         model_->notifyRowChanged(id);
-    });
+    //});
 }
 
 void ServersChecker::processFinished() {
