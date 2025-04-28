@@ -534,14 +534,13 @@ git_commit_message = subprocess.check_output("git log -1 --pretty=%B").decode("u
 if not os.path.exists(VERSION_HEADER_FILE):
     shutil.copyfile("../Source/versioninfo.h.dist", VERSION_HEADER_FILE)
 
-  
-
 version_file_abs_path = os.path.abspath(VERSION_HEADER_FILE)
 env_file_abs_path = os.path.abspath(ENV_FILE)
 
 generate_version_header(VERSION_HEADER_FILE, True)
 repo_dir_abs = os.path.abspath(repo_dir)
 shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/" + VERSION_HEADER_FILE)
+shutil.copyfile(curl_ca_bundle, repo_dir + "/Dist/curl-ca-bundle.crt")
 shutil.copyfile("../Data/" + ENV_FILE, repo_dir + "/Data/" + ENV_FILE)  
 
 dist_directory = os.path.dirname(os.path.realpath(__file__))
