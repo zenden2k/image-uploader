@@ -35,6 +35,8 @@ Dist/versioninfo.h
 /Dist/Releases/
 /Dist/Build_Release_Temp/
 /Dist/Libs/
+/Dist/curl-ca-bundle.crt
+/Dist/certdata.txt
 CMakeLists.txt.user
 /Source/CMakeUserPresets.json
 /Data/qimageuploader.xml

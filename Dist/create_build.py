@@ -20,6 +20,7 @@ APP_NAME = "Zenden2k Image Uploader"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
 DEFAULT_GIT_BRANCH = "master"
 PARALLEL_JOBS = "6"
+DOWNLOAD_CA_BUNDLE = True
 
 # --- Script requirements ---
 # git
@@ -489,6 +490,13 @@ check_conan_version(['conan', '--version'])
 #check_conan_version(['wsl', '-e', 'conan', '--version'])
 check_program(["wsl", "-e", "cmake","--version"])
 check_program(["wsl", "-e", "git","--version"])
+
+if DOWNLOAD_CA_BUNDLE:
+    proc = subprocess.run(["wsl", "-e", "./mk-ca-bundle.pl", "curl-ca-bundle.crt"])
+    if proc.returncode != 0:
+        print("Failed to download curl-ca-bundle")
+        exit(1)
+
 curl_ca_bundle = os.path.abspath("curl-ca-bundle.crt")
 
 if not os.path.exists:
