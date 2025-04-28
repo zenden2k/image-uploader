@@ -13,6 +13,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Gui/Dialogs/HistoryWindow.h"
+#include "Core/Utils/Win32Exception.h"
 
 namespace WinUtils {
 
@@ -1411,9 +1412,8 @@ bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass)
     return !proxy_address.IsEmpty();
 }
 
-bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
+bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory, bool throwOnError) {
     SHELLEXECUTEINFO ShInfo;
-
     ZeroMemory(&ShInfo, sizeof(SHELLEXECUTEINFO));
     ShInfo.cbSize = sizeof(SHELLEXECUTEINFO);
     ShInfo.nShow = SW_SHOWNORMAL;
@@ -1426,7 +1426,11 @@ bool ShellOpenFileOrUrl(CString path, HWND wnd, CString directory) {
     if (ShellExecuteEx(&ShInfo) == FALSE) {
         DWORD error = GetLastError();
         if (error != ERROR_CANCELLED) {
-            LOG(ERROR) << "ShellExecuteEx failed. " << std::endl << WinUtils::FormatWindowsErrorMessage(error);
+            CString errorMessage = WinUtils::FormatWindowsErrorMessage(error);
+            if (throwOnError) {
+                throw Win32Exception(errorMessage);
+            }
+            LOG(ERROR) << "ShellExecuteEx failed. " << std::endl << errorMessage;
         }
         return false;
     }

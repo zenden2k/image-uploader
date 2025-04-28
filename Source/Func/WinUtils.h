@@ -5,6 +5,7 @@
 #include <string>
 
 #include "atlheaders.h"
+#include "Core/Utils/Win32Exception.h"
 
 namespace Gdiplus {
     class Bitmap;
@@ -103,7 +104,10 @@ namespace WinUtils {
     bool GetProxyInfo(CString& proxy_address, CString& proxy_bypass);
     std::string TextToClipboardHtmlFormat(const char* html, int length, const std::string& base_url = std::string());
     bool DisplaySystemPrintDialogForImage(const std::vector<CString>& files, HWND hwnd = NULL);
-    bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = {});
+    /**
+     * @throws Win32Exception
+     */
+    bool ShellOpenFileOrUrl(CString path, HWND wnd = nullptr, CString directory = {}, bool throwOnError = false);
     bool ShowFileInFolder(CString fileName, HWND wnd = nullptr);
     bool ShowFilesInFolder(const std::vector<CString>& files, HWND wnd);
     //SYSTEMTIME SystemTimeAdd(const SYSTEMTIME& s, double seconds);

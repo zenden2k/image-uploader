@@ -49,7 +49,10 @@ namespace IuStringUtils
     int stricmp(const char *s1, const char *s2);
     std::string ConvertUnixLineEndingsToWindows(const std::string& text);
     size_t LengthOfUtf8String(const std::string &utf8_string);
+    boost::format FormatNoExcept(const char* str);
     boost::format FormatNoExcept(const std::string& str);
+    boost::wformat FormatWideNoExcept(const wchar_t* str);
+    boost::wformat FormatWideNoExcept(const std::wstring& str);
     bool Match(char const* needle, char const* haystack);
     std::string RandomString(std::size_t length);
 };

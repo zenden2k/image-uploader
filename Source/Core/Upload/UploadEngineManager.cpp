@@ -93,13 +93,17 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         delete plugin;
         ServerSync* serverSync = getServerSync(serverProfile);
         CAbstractUploadEngine::ErrorMessageCallback errorCallback(std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
+        if (!ue->Engine.empty()) {
 #ifdef IU_ENABLE_MEGANZ
-        if (ue->Engine == "MegaNz") {
-            result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
-        } 
-		else
+            if (ue->Engine == "MegaNz") {
+                result = new CMegaNzUploadEngine(serverSync, serverSettings, errorCallback);
+            }
 #endif
-		{
+            if (!result) {
+                LOG(ERROR) << "There is no built-in upload engine named '" << ue->Engine << "'.";
+                return nullptr;
+            }
+        } else {
             result = new CDefaultUploadEngine(serverSync, errorCallback);
         }
         result->setServerSettings(serverSettings);

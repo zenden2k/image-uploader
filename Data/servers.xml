@@ -324,7 +324,7 @@
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
 	<Server Name="mega.nz" Authorize="2" Engine="MegaNz" FileHost="1" SupportsFolders="1" RegistrationUrl="https://mega.nz/register" 
-			WebsiteUrl="https://mega.io/" MaxThreads="1">
+			WebsiteUrl="https://mega.io/" MaxThreads="1" LoginLabel="Email">
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

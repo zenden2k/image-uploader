@@ -798,6 +798,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.hbmpItem = 0;
         sub.InsertMenuItem(menuItemCount++, true, &mi);    
 
+        sub.AppendMenu(MFT_STRING, IDC_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
         sub.SetMenuDefaultItem(isImageServer ? 
             (IDC_IMAGESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionImageServerItem().serverName()))) :
             (IDC_FILESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionFileServerItem().serverName()))), FALSE);
@@ -1494,9 +1495,26 @@ LRESULT CUploadSettings::OnOpenWebsite(WORD wNotifyCode, WORD wID, HWND hWndCtl,
 
     CUploadEngineData* ue = serverProfile.uploadEngineData();
     if (ue && !ue->WebsiteUrl.empty()) {
-        WinUtils::ShellOpenFileOrUrl(U2W(ue->WebsiteUrl), m_hWnd);
+        WinUtils::ShellOpenFileOrUrl(U2WC(ue->WebsiteUrl), m_hWnd);
     }
     return  0;
+}
+
+LRESULT CUploadSettings::OnOpenServersFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    const std::wstring folder = IuCoreUtils::Utf8ToWstring(settings->SettingsFolder + "Servers\\");
+    try {
+        WinUtils::ShellOpenFileOrUrl(folder.c_str(), m_hWnd, {}, true);
+    } catch (const Win32Exception& ex) {
+        const std::wstring msg = str(
+            IuStringUtils::FormatWideNoExcept(TR("Cannot open folder '%1%'.\n%2%"))
+            % folder
+            % ex.getMessage().GetString()
+        );
+        GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
+    }
+
+    return 0;
 }
 
 void CUploadSettings::updateMoreImageServersLink() {

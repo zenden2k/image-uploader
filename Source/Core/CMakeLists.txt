@@ -283,6 +283,7 @@ if(WIN32)
         Images/ColorQuantizer.h
         Images/OctreeColorQuantizer.h
         Utils/IOUtf8_win.h
+        Utils/Win32Exception.h
     )
 else()
     list(APPEND SRC_LIST  

@@ -219,13 +219,29 @@ std::string Join(const std::vector<std::string>& strings, const std::string& del
     return result.str();
 }
 
-boost::format FormatNoExcept(const std::string& str) {
+boost::format FormatNoExcept(const char* str) {
     using namespace boost::io;
 
     boost::format fmter(str);
     fmter.exceptions(no_error_bits);
     //fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit | bad_format_string_bit));
     return fmter;
+}
+
+boost::format FormatNoExcept(const std::string& str) {
+    return FormatNoExcept(str.c_str());
+}
+
+boost::wformat FormatWideNoExcept(const wchar_t* str) {
+    using namespace boost::io;
+
+    boost::wformat fmter(str);
+    fmter.exceptions(no_error_bits);
+    return fmter;
+}
+
+boost::wformat FormatWideNoExcept(const std::wstring& str) {
+    return FormatWideNoExcept(str.c_str());
 }
 
 bool Match(char const* needle, char const* haystack)
