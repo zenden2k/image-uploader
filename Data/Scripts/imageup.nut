@@ -1,4 +1,5 @@
 const BASE_HOST = "https://imageup.ru";
+const CURLOPT_FOLLOWLOCATION = 52;
 
 function Authenticate() { 
     local login = ServerParams.getParam("Login");
@@ -13,12 +14,11 @@ function Authenticate() {
     nm.addQueryParam("password", password);
     nm.addQueryParam("autologin", "on");
     nm.setUrl(BASE_HOST + "/login.html");
+    nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 0);
     nm.doPost("");
-    
-    if (nm.responseCode() == 200) {
-        if (nm.responseBody().find("Добро пожаловать на сайт") != null) {
-            return 1;
-        }
+    nm.setCurlOptionInt(CURLOPT_FOLLOWLOCATION, 1);
+    if (nm.responseCode() == 301 || nm.responseCode() == 302 || nm.responseBody().find("Добро пожаловать") != null) {
+        return 1;
     }
     WriteLog("error", "[imageup.ru] authentication failed.");
     

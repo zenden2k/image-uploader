@@ -120,7 +120,12 @@ function _UploadToAccount(fileName, options) {
             }   
         }
     } else {
-        WriteLog("error", "[mirrorcreator.com] API error: " + nm.responseCode());
+        local errorMessage = "[mirrorcreator.com] API error: " + nm.responseCode();
+        local t = ParseJSON(nm.responseBody());
+        if (t && "message" in t) {
+            errorMessage += "\n" + t.message;
+        }
+        WriteLog("error", errorMessage);
     }
     return 0;
 }

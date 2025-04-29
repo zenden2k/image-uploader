@@ -384,7 +384,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0xCC
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,216,293,52,15
     LTEXT           "#date",IDC_IMAGEUPLOADERLABEL,87,39,180,10
-    CTEXT           "© 2007-2024 Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
+    CTEXT           "© 2007-2025 Sergey Svistunov. All rights reserved.",IDC_STATIC,52,72,189,11
     CONTROL         "",IDC_STATICLOGO,"Static",SS_BITMAP,45,18,15,13
     LTEXT           "Image Uploader",IDC_IMAGEUPLOADERLABEL2,87,14,148,12
     LTEXT           "#Website:",IDC_WEBSITELABEL,31,108,57,8
@@ -2056,7 +2056,7 @@ BEGIN
             VALUE "FileDescription", "Image Uploader"
             VALUE "FileVersion", "1.3.3.0"
             VALUE "InternalName", "Image Uploader"
-            VALUE "LegalCopyright", "© 2007-2024 Sergey Svistunov (https://svistunov.dev)"
+            VALUE "LegalCopyright", "© 2007-2025 Sergey Svistunov (https://svistunov.dev)"
             VALUE "OriginalFilename", "Image Uploader.exe"
             VALUE "ProductName", "Image Uploader"
             VALUE "ProductVersion", "1.3.3.0"

@@ -29,7 +29,9 @@
 #include <boost/version.hpp>
 #include <webp/decode.h>
 #include <libheif/heif_version.h>
-
+#ifdef IU_ENABLE_MEGANZ
+#include <mega/version.h>
+#endif
 #include "Core/AppParams.h"
 #ifdef IU_ENABLE_MEDIAINFO
 #include "Func/MediaInfoHelper.h"
@@ -167,11 +169,11 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText +=  CString(L"Target platform: ") + targetPlatform + _T("\r\n\r\n");
     memoText += TR("Libraries:")+ CString("\r\n");
     memoText +=  IuCoreUtils::Utf8ToWstring( curl_version()).c_str() + CString("\r\n");
-    CString boostVersion = CString(BOOST_LIB_VERSION);
+    CString boostVersion { BOOST_LIB_VERSION };
     boostVersion.Replace(L'_', L'.');
     CString versionLabel;
-    versionLabel.Format(_T("%s version: "), _T("Boost"));
-    memoText += versionLabel + boostVersion + CString("\r\n");
+    versionLabel.Format(_T("Boost: v%s\r\n"), boostVersion.GetString());
+    memoText += versionLabel;
     
     int webpVersion = WebPGetDecoderVersion();
     CString webpVersionStr;
@@ -186,8 +188,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         memoText += FFMPEG_VERSION + CString("\r\n");
     }*/
 #ifdef IU_ENABLE_MEDIAINFO
-    memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n\r\n");
+    memoText += MediaInfoHelper::GetLibraryVersion() + _T("\r\n");
 #endif
+#ifdef IU_ENABLE_MEGANZ
+    memoText += str(IuStringUtils::FormatWideNoExcept(L"MEGA SDK: v%d.%d.%d\r\n") % MEGA_MAJOR_VERSION % MEGA_MINOR_VERSION % MEGA_MICRO_VERSION).c_str();
+#endif
+    memoText += _T("\r\n");
+
     SYSTEMTIME systime;
     memset(&systime, 0, sizeof(systime));
     int fieldNum = sscanf_s(ver->BuildDate.c_str(), "%hu.%hu.%hu", &systime.wDay, &systime.wMonth, &systime.wYear);
