@@ -244,31 +244,144 @@ boost::wformat FormatWideNoExcept(const std::wstring& str) {
     return FormatWideNoExcept(str.c_str());
 }
 
-bool Match(char const* needle, char const* haystack)
+inline auto ToFolded(char ch, int opts) {
+    return (opts & FoldCase) ? std::tolower(static_cast<unsigned char>(ch)) : ch;
+}
+
+bool MatchBracket(std::string_view& pattern, char ch, int opts)
 {
-    for (; *needle != '\0'; ++needle) {
-        switch (*needle) {
-        case '?':
-            if (*haystack == '\0')
-                return false;
-            ++haystack;
-            break;
-        case '*': {
-            if (needle[1] == '\0')
-                return true;
-            size_t max = strlen(haystack);
-            for (size_t i = 0; i < max; i++)
-                if (Match(needle + 1, haystack + i))
-                    return true;
-            return false;
+    bool inverted = false;
+    if (pattern.empty())
+        return false;
+
+    if (pattern[0] == '!' || pattern[0] == '^') {
+        inverted = true;
+        pattern.remove_prefix(1);
+    }
+
+    bool matched = false;
+    while (!pattern.empty() && pattern[0] != ']') {
+        char start = pattern[0];
+        pattern.remove_prefix(1);
+
+        if (!pattern.empty() && start == '\\' && !(opts & NoEscape)) {
+            start = pattern[0];
+            pattern.remove_prefix(1);
         }
-        default:
-            if (*haystack != *needle)
+
+        char end = start;
+        if (!pattern.empty() && pattern[0] == '-') {
+            pattern.remove_prefix(1);
+            if (pattern.empty())
                 return false;
-            ++haystack;
+
+            end = pattern[0];
+            pattern.remove_prefix(1);
+            if (end == '\\' && !(opts & NoEscape)) {
+                if (pattern.empty())
+                    return false;
+                end = pattern[0];
+                pattern.remove_prefix(1);
+            }
+        }
+
+        start = ToFolded(start, opts);
+        end = ToFolded(end, opts);
+        char folded = ToFolded(ch, opts);
+
+        if (folded >= start && folded <= end) {
+            matched = true;
         }
     }
-    return *haystack == '\0';
+
+    if (pattern.empty())
+        return false;
+    pattern.remove_prefix(1);
+    return matched != inverted;
+}
+
+int PatternMatch(std::string_view pat, std::string_view str, int opts) {
+    while (!pat.empty()) {
+        char pc = pat[0];
+        pat.remove_prefix(1);
+        pc = ToFolded(pc, opts);
+
+        switch (pc) {
+        case '?':
+            if (str.empty())
+                return NoMatch;
+            if ((opts & FileName) && str[0] == '/')
+                return NoMatch;
+            if ((opts & Period) && str[0] == '.' && (str.length() == 1 || ((opts & FileName) && str[1] == '/')))
+                return NoMatch;
+            str.remove_prefix(1);
+            break;
+
+        case '\\':
+            if (!(opts & NoEscape) && !pat.empty()) {
+                pc = pat[0];
+                pat.remove_prefix(1);
+                pc = ToFolded(pc, opts);
+            }
+            if (str.empty() || ToFolded(str[0], opts) != pc)
+                return NoMatch;
+            str.remove_prefix(1);
+            break;
+
+        case '*':
+            if ((opts & Period) && !str.empty() && str[0] == '.' && (str.length() == 1 || ((opts & FileName) && str[1] == '/')))
+                return NoMatch;
+
+            while (!pat.empty() && (pat[0] == '?' || pat[0] == '*')) {
+                if (((opts & FileName) && !str.empty() && str[0] == '/') || (pat[0] == '?' && str.empty()))
+                    return NoMatch;
+                if (pat[0] == '?')
+                    str.remove_prefix(1);
+                pat.remove_prefix(1);
+            }
+
+            if (pat.empty())
+                return 0;
+
+            if (!str.empty()) {
+                auto next_pat = pat;
+                char next_pc = next_pat[0];
+                if (!(opts & NoEscape) && next_pc == '\\') {
+                    next_pat.remove_prefix(1);
+                    if (next_pat.empty())
+                        return NoMatch;
+                    next_pc = next_pat[0];
+                }
+                next_pc = ToFolded(next_pc, opts);
+
+                for (size_t i = 0; i < str.length(); ++i) {
+                    if ((pat[0] == '[' || ToFolded(str[i], opts) == next_pc) && PatternMatch(pat, str.substr(i), opts & ~Period) == 0)
+                        return 0;
+                    if ((opts & FileName) && str[i] == '/')
+                        break;
+                }
+            }
+            return NoMatch;
+
+        case '[':
+            if (str.empty())
+                return NoMatch;
+            if ((opts & Period) && str[0] == '.' && (str.length() == 1 || ((opts & FileName) && str[1] == '/')))
+                return NoMatch;
+
+            if (!MatchBracket(pat, str[0], opts))
+                return NoMatch;
+            str.remove_prefix(1);
+            break;
+
+        default:
+            if (str.empty() || pc != ToFolded(str[0], opts))
+                return NoMatch;
+            str.remove_prefix(1);
+        }
+    }
+
+    return str.empty() || ((opts & LeadingDir) && str == "/") ? 0 : NoMatch;
 }
 
 std::string RandomString(std::size_t length)

@@ -53,7 +53,20 @@ namespace IuStringUtils
     boost::format FormatNoExcept(const std::string& str);
     boost::wformat FormatWideNoExcept(const wchar_t* str);
     boost::wformat FormatWideNoExcept(const std::wstring& str);
-    bool Match(char const* needle, char const* haystack);
+
+    constexpr auto NoMatch = 1; 
+    constexpr auto FileName = 0x1; 
+    constexpr auto NoEscape = 0x2; 
+    constexpr auto Period = 0x4; 
+    constexpr auto LeadingDir = 0x8;
+    constexpr auto FoldCase = 0x10;
+
+    int PatternMatch(std::string_view pat, std::string_view str, int opts);
+
+    inline bool Match(std::string_view needle, std::string_view haystack) {
+        return PatternMatch(needle, haystack, 0) == 0;
+    }
+
     std::string RandomString(std::size_t length);
 };
 

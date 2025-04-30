@@ -234,7 +234,7 @@ if(WIN32)
         ../3rdpart/Registry.cpp
         ../3rdpart/Unzipper.cpp
         ../3rdpart/MemberFunctionCallback.cpp
-        3rdpart/xdgmime/ports/fnmatch.c
+        3rdpart/xdgmime/ports/fnmatch.cpp
         ../Gui/Dialogs/WebViewWindow.cpp
         ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
@@ -257,7 +257,8 @@ if(WIN32)
     list(APPEND HEADER_LIST
         COMInitializer.h
         DefaultProxyProvider.h 
-        3rdpart/CodePages.h 
+        3rdpart/CodePages.h
+        3rdpart/xdgmime/ports/fnmatch.h
         Scripting/API/HtmlDocument.h
         Scripting/API/COMUtils.h
         Scripting/API/HtmlDocumentPrivate_win.h
