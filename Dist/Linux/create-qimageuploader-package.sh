@@ -34,7 +34,7 @@ fi
 
 
 echo "Detected Architecture : $Architecture"
-mkdir ../../Build/Debian/
+mkdir ../../Build/Linux/
 rm -rf ~/zenden2k-imageuploader/
 mkdir -p ~/zenden2k-imageuploader/DEBIAN
 cp control_qimageuploader ~/zenden2k-imageuploader/DEBIAN/control
@@ -64,4 +64,4 @@ chmod -R 0755 ~/zenden2k-imageuploader/
 chmod -x ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/Scripts/*.nut
 chmod -x ~/zenden2k-imageuploader/usr/share/zenden2k-imageuploader/servers.xml
  
-fakeroot dpkg-deb --build ~/zenden2k-imageuploader/ "../../Build/Debian/zenden2k-imageuploader-qt_${AppVersion}_${Architecture}.deb"
+fakeroot dpkg-deb --build ~/zenden2k-imageuploader/ "../../Build/Linux/zenden2k-imageuploader-qt_${AppVersion}_${Architecture}.deb"
