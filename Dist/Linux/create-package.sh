@@ -35,13 +35,9 @@ then
 	esac
 	echo "Detected Architecture : $Architecture"
 fi
-mkdir ../../Build/Debian/
+mkdir ../../Build/Linux/
 rm -rf ~/imgupload/
-mkdir -p ~/imgupload/DEBIAN
-cp control_ ~/imgupload/DEBIAN/control
-cp dirs ~/imgupload/DEBIAN/dirs
 mkdir -p ~/imgupload/usr/bin
-sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" ~/imgupload/DEBIAN/control
 mkdir -p ~/imgupload/usr/share/imgupload/
 mkdir -p ~/imgupload/usr/share/imgupload/Scripts/
 #rm ./imgupload/usr/share/imgupload/Scripts/*
@@ -63,4 +59,10 @@ chmod -R 0755 ~/imgupload/
 chmod -x ~/imgupload/usr/share/imgupload/Scripts/*.nut
 chmod -x ~/imgupload/usr/share/imgupload/servers.xml
 
-fakeroot dpkg-deb --build ~/imgupload/ "../../Build/Debian/imgupload_${AppVersion}_${Architecture}.deb"
+tar -cJf "../../Build/Linux/imgupload-${AppVersion}-${Architecture}.tar.xz" ~/imgupload/
+
+mkdir -p ~/imgupload/DEBIAN
+cp control_ ~/imgupload/DEBIAN/control
+cp dirs ~/imgupload/DEBIAN/dirs
+sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" ~/imgupload/DEBIAN/control
+fakeroot dpkg-deb --build ~/imgupload/ "../../Build/Linux/imgupload_${AppVersion}_${Architecture}.deb"
