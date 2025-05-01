@@ -822,7 +822,7 @@ for target in BUILD_TARGETS:
                     print("Failed to create debian package for Qt GUI")
                     exit(1)
 
-                file_from = r"Debian\zenden2k-imageuploader-qt_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+                file_from = r"Linux\zenden2k-imageuploader-qt_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                                 build_number=build_number,
                                                                                                 arch=target.get("deb_package_arch")
                 )
