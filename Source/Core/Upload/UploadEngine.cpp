@@ -65,7 +65,7 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
             bool fileNameMatches = false;
             if (!format.MimeTypes.empty()) {
                 for (const auto& type : format.MimeTypes) {
-                    if (IuStringUtils::Match(type.c_str(), mimeType.c_str())) {
+                    if (IuStringUtils::Match(type, mimeType)) {
                         mimeMatches = true;
                         break;
                     }
@@ -76,7 +76,7 @@ bool CUploadEngineData::supportsFileFormat(const std::string& fileName, const st
             }
             if (!format.FileNameWildcards.empty()) {
                 for (const auto& wildcard : format.FileNameWildcards) {
-                    if (IuStringUtils::Match(wildcard.c_str(), fileName.c_str())) {
+                    if (IuStringUtils::Match(wildcard, fileName)) {
                         fileNameMatches = true;
                         break;
                     }
