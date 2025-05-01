@@ -59,7 +59,7 @@ chmod -R 0755 ~/imgupload/
 chmod -x ~/imgupload/usr/share/imgupload/Scripts/*.nut
 chmod -x ~/imgupload/usr/share/imgupload/servers.xml
 
-tar -cJf "../../Build/Linux/imgupload-${AppVersion}-${Architecture}.tar.xz" -C ~/imgupload .
+tar -cJf "../../Build/Linux/imgupload-${AppVersion}-${Architecture}.tar.xz" -C ~/imgupload *
 
 mkdir -p ~/imgupload/DEBIAN
 cp control_ ~/imgupload/DEBIAN/control
