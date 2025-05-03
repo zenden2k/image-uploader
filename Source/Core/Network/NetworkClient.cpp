@@ -613,7 +613,7 @@ void NetworkClient::private_checkResponse()
             errorDescr = errorLogIdString_ + "\r\n";
         }
 
-        errorDescr += "Request failed, URL: '" + m_url + "'. \r\n";
+        errorDescr += "Request failed\r\nURL: '" + m_url + "'\r\n";
 
         if (curl_result != CURLE_OK) {
             errorDescr += getCurlResultString() + "\r\n";

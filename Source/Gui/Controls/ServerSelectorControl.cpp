@@ -20,6 +20,8 @@
 
 #include "ServerSelectorControl.h"
 
+#include <strsafe.h>
+
 #include "Gui/Dialogs/WizardDlg.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ServerParamsDlg.h"
@@ -285,7 +287,9 @@ void CServerSelectorControl::serverChanged() {
 
 void CServerSelectorControl::updateInfoLabel() {
     int serverComboElementIndex = serverComboBox_.GetCurSel();
-    std::string serverName = reinterpret_cast<char*>( serverComboBox_.GetItemData(serverComboElementIndex) );
+    DWORD_PTR itemData = serverComboBox_.GetItemData(serverComboElementIndex);
+
+    std::string serverName { itemData == CB_ERR ? "" : reinterpret_cast<const char*>(itemData) };
     currentUserName_.Empty();
 
     bool showServerParams = (serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer );
@@ -440,17 +444,23 @@ void CServerSelectorControl::updateServerList()
                     nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
                 }
             }
-            char *serverName = new char[ue->Name.length() + 1];
-            lstrcpyA( serverName, ue->Name.c_str() );
+            size_t bufferSize = ue->Name.length() + 1;
+            char* serverName = new char[bufferSize];
+            StringCchCopyA(serverName, bufferSize, ue->Name.c_str());
+
             std::string displayName = myEngineList->getServerDisplayName(ue);
             if (showFileSizeLimits_ && ue->MaxFileSize > 0) {
                 displayName += " (" + IuCoreUtils::FileSizeToString(ue->MaxFileSize) + ")";
             }
             int itemIndex = serverComboBox_.AddItem(U2W(displayName), nImageIndex, nImageIndex, 1, reinterpret_cast<LPARAM>(serverName));
-            if ( ue->Name == selectedServerName ){
-                selectedIndex = itemIndex;
+            if (itemIndex == -1) {
+                delete[] serverName;
+            } else {
+                if (ue->Name == selectedServerName) {
+                    selectedIndex = itemIndex;
+                }
+                addedItems++;
             }
-            addedItems++;
         }
     }
     if (serversMask_ != smUrlShorteners ) {

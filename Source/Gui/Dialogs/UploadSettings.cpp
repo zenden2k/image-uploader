@@ -574,30 +574,31 @@ void CUploadSettings::UpdateToolbarIcons()
 void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 {
     TBBUTTONINFO bi;
-    CToolBarCtrl& CurrentToolbar = ImageServer ? Toolbar: FileServerSelectBar;
+    CToolBarCtrl& currentToolbar = ImageServer ? Toolbar: FileServerSelectBar;
 
 //    int nServerIndex = ImageServer? m_nImageServer: m_nFileServer;
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     CUploadEngineData* uploadEngine = ServiceLocator::instance()->engineList()->byName(serverProfile.serverName());
-    if (!uploadEngine) {
-        LOG(ERROR) << "uploadEngine cannot be NULL";
-        return;
-    }
 
-    CString serverTitle = (!serverProfile.isNull()) ? Utf8ToWCstring(m_EngineList->getServerDisplayName(uploadEngine)) : TR("Choose server");
+    CString serverTitle = (!serverProfile.isNull() && uploadEngine) ? Utf8ToWCstring(m_EngineList->getServerDisplayName(uploadEngine)) : TR("Choose server");
 
     ZeroMemory(&bi, sizeof(bi));
     bi.cbSize = sizeof(bi);
     bi.dwMask = TBIF_TEXT;
     bi.pszText = const_cast<LPWSTR>(serverTitle.GetString());
-    CurrentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
+    currentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
     if(serverProfile.isNull())
     { 
-        CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
-        CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
-        CurrentToolbar.HideButton(IDC_SELECTFOLDER, true);
-        CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2, true);
+        currentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
+        currentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
+        currentToolbar.HideButton(IDC_SELECTFOLDER, true);
+        currentToolbar.HideButton(IDC_TOOLBARSEPARATOR2, true);
+        return;
+    }
+
+    if (!uploadEngine) {
+        LOG(ERROR) << "uploadEngine cannot be NULL";
         return;
     }
 
@@ -610,9 +611,9 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     LoginInfo& li = serverSettings.authData;
     CString login = WinUtils::TrimString(Utf8ToWCstring(li.Login),23);
     
-    CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
-    CurrentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!uploadEngine->NeedAuthorization);
-    CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!uploadEngine->NeedAuthorization);
+    currentToolbar.SetImageList(m_PlaceSelectorImageList);
+    currentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!uploadEngine->NeedAuthorization);
+    currentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!uploadEngine->NeedAuthorization);
     
     bool ShowLoginButton = !login.IsEmpty() && li.DoAuth;
     if(!ShowLoginButton)
@@ -624,17 +625,17 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 
     }
     bi.pszText = const_cast<LPWSTR>(login.GetString());
-    CurrentToolbar.SetButtonInfo(IDC_LOGINTOOLBUTTON+ImageServer, &bi);
+    currentToolbar.SetButtonInfo(IDC_LOGINTOOLBUTTON+ImageServer, &bi);
 
     bool ShowFolderButton = uploadEngine->SupportsFolders && ShowLoginButton;
 
-    CurrentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
-    CurrentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
+    currentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
+    currentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
         
     CString title = WinUtils::TrimString(Utf8ToWCstring(serverProfile.folderTitle()), 27);
     if(title.IsEmpty()) title = TR("No Folder Selected");
     bi.pszText = const_cast<LPWSTR>(title.GetString());
-    CurrentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
+    currentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
     
 }
 void CUploadSettings::UpdateAllPlaceSelectors()

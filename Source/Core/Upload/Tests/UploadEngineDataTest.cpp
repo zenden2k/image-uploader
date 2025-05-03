@@ -50,6 +50,26 @@ TEST_F(UploadEngineDataTest, supportsFileFormatSimpleOne) {
     EXPECT_FALSE(ued.supportsFileFormat("test.mp4", "application/octet-stream", TEST_FILE_SIZE, false));
 }
 
+TEST_F(UploadEngineDataTest, supportsFileFormatMaxFileSize)
+{
+    const auto TEST_FILE_SIZE = 50000;
+    // Prepare CUploadEngineData instance
+    CUploadEngineData ued;
+    ued.Name = "test server";
+    ued.TypeMask = CUploadEngineData::TypeFileServer;
+    ued.MaxFileSize = 20000;
+
+    FileFormatGroup gr;
+    FileFormat format1;
+    format1.MimeTypes = { "video/mp4" };
+    format1.FileNameWildcards = { "*" };
+    gr.MaxFileSize = 60000;
+    gr.Formats.push_back(format1);
+    ued.SupportedFormatGroups.push_back(gr);
+    EXPECT_FALSE(ued.supportsFileFormat("test.mp4", "video/mp4", TEST_FILE_SIZE, false));
+    EXPECT_FALSE(ued.supportsFileFormat("test.txt", "video/mp4", TEST_FILE_SIZE, false));
+    EXPECT_TRUE(ued.supportsFileFormat("test.mp4", "video/mp4", 15000, false));
+}
 TEST_F(UploadEngineDataTest, supportsFileFormatAnotherSimple)
 {
     const auto TEST_FILE_SIZE = 50000;
