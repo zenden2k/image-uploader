@@ -2,6 +2,38 @@
 #
 # https://svistunov.dev/imageuploader
 
+1.4.2.5314 (2025-05-04)
+[+] Screenshot: Added cursor capture
+[+] Added 'Options' dropdown button on the video grabber page
+[+] Added 'Capture last region' in the screenshot dialog
+[+] Added 'Clear server settings' button to General Settings
+[+] Added Network debugger
+[+] Added macros dropdown button on the thumbnail settings page
+[+] Added 'imgspace.online', 'gifyu.com', 'nitroflare.net', 'iimg.su', '1file.su', 'linkme.ufanet.ru', '0x0.st' hosting
+[+] Added support for using server-side thumbnails text setting in modules: imageban.ru, fastpic.org
+[+] Added ability to set custom app secrets for imgur.com
+[+] Added more video and audio file extensions
+[+] Added codec name display for video files in the file list
+[+] Added 'Open servers folder' item to the server list popup menu
+[+] Added support for Internationalized Domain Names (IDN)
+[+] CLI: Added --retries and --retries_per_action options
+[+] CLI: Added a way to pass thumbnail dimensions to the server
+[~] Fixed passive FTP connection issue
+[~] Image Editor: Fixed suggested file format
+[~] Fixed: Do not hide FTP servers
+[~] CLI: Improved stderr/stdout output
+[~] Fixed screenshot counter increment
+[~] Fixed missing website URL for some hostings
+[~] Fixed system proxy option not saving
+[~] Fixed black toolbar in Upload Wizard's page on Wine
+[~] Changed FTP server icon and added default icon for servers
+[~] Shell extension: Updated icons
+[~] Fixed crash in Media Foundation backend
+[~] Fixed FileRetryLimit change being ignored
+[~] GUI: Now uses system colors for some controls
+[~] API secrets are now stored in .env file
+[~] Fixed upload on 'imageup.ru'
+
 1.4.1.5219 (2024-12-21)
 [+] Tree view of folders/albums on the server
 [+] Added homepage link and sign up link for every hosting
