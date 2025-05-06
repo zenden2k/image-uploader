@@ -117,9 +117,9 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Image Uploader\Utils";
 ;Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 ;Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 #if IU_ARCH != "arm64"
-Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist; BeforeInstall: ShellExtBeforeInstall
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
 #endif
-Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}"; Flags: skipifsourcedoesntexist; BeforeInstall: ShellExtBeforeInstall
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}"; Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
 
 #ifdef IU_FFMPEG_STANDALONE
 Source: "..\Build\Gui\Release\av*.dll"; DestDir: "{app}"; Flags: ignoreversion; Tasks: installffmpeg;
@@ -167,8 +167,10 @@ var
   dest: String;
 begin
   dest := ExpandConstant(CurrentFileName) + '.' + IntToStr(Random(100000)) + '.old';
-  RenameFile(ExpandConstant(CurrentFileName), dest);
-  DeleteFile(dest)
+  if not RenameFile(ExpandConstant(CurrentFileName), dest) then
+    dest := CurrentFileName;
+  if not DeleteFile(dest) then
+    RestartReplace(dest, '');
 end;
 
 function GetIconFileName(Param: String): String;

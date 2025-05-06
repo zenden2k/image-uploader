@@ -82,21 +82,17 @@ class CommonGuiSettings : public BasicSettings {
         CString m_SettingsDir;
         bool ShowTrayIcon = false;
         bool ShowTrayIcon_changed = false;
-        bool AutoStartup;
-        bool AutoStartup_changed;
-        int ThumbsPerLine;
-        TCHAR m_szLang[64];
+        bool AutoStartup = false;
+        bool AutoStartup_changed = false;
+        int ThumbsPerLine = 4;
 
         MediaInfoSettingsStruct MediaInfoSettings;
-
         HistorySettingsStruct HistorySettings;
 
         int CodeLang;
         int CodeType;
 
-        bool UseProxyServer;
-        bool IsPortable;
-
+        bool IsPortable = true;
         CString VideoFolder, ImagesFolder;
 
         std::map<CString, ImageConvertingParams> ConvertProfiles;
