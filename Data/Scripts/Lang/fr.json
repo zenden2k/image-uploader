@@ -1,1 +1,66 @@
-{}
+{
+    "ftp": {
+        "server": "IP du serveur ou nom d'hôte [:port]",
+        "download_path": "Chemin de téléchargement (http)",
+        "secure_connection": "Connexion sécurisée (SSL/TLS)",
+        "active_connection_port": "Port de connexion actif",
+        "remote_dir": "Répertoire distant",
+        "secure_connection_no": "Non",
+        "secure_connection_explicit": "Explicite",
+        "secure_connection_implicit": "Implicite"
+    },
+    "dropbox": {
+        "please_allow": "Veuillez autoriser Image Uploader à se connecter à votre compte Dropbox en cliquant sur le bouton Autoriser dans votre navigateur, puis cliquez sur OK."
+    },
+    "yandexdisk": {
+        "privacy": {
+            "public": "Public",
+            "private": "Privé"
+        },
+        "confirmation": {
+            "text": "Vous devez vous connecter à votre compte Yandex.Disk\ndans le navigateur web qui vient de s'ouvrir, puis copiez\nle code de confirmation dans le champ de texte ci-dessous.\n\nVeuillez saisir le code de confirmation :\n"
+        }
+    },
+    "googledrive": {
+        "oauth": {
+            "success": "Autorisation a réussi ! Vous pouvez désormais fermer cette page.",
+            "failed": "Impossible d'obtenir un code de confirmation",
+            "title": "Autorisation"
+        }
+    },
+    "vk": {
+        "privacy": {
+            "all_users": "Tous les utilisateurs",
+            "friends_only": "Seulement les amis",
+            "friends_and_friends_of_friends": "Amis et amis d'amis",
+            "just_me": "Seulement moi"
+        },
+        "browser": {
+            "title": "Autorisation sur vk.com"
+        },
+        "errors": {
+            "no_albums": "Il n'y a pas un seul album dans votre profil."
+        },
+        "default_album_desc": "Images chargées à l'aide de l'application Image Uploader"
+    },
+    "flickr": {
+        "confirmation": {
+            "text": "Veuillez autoriser Image Uploader à se connecter à votre compte Flickr en cliquant sur le bouton Autoriser dans le navigateur, puis cliquez sur OK."
+        },
+        "verification": "Veuillez entrer le code de confirmation :"
+    },
+    "imgbb": {
+        "expiration": "Expiration (anonymement)",
+        "expiration_authorized": "Expiration en minutes (avec un compte)",
+        "never": "Jamais"
+    },
+    "chevereto": {
+        "expiration": "Expiration",
+        "never": "Jamais"
+    },
+    "imgur": {
+        "confirmation": {
+            "text": "Connectez-vous à votre compte Imgur dans le navigateur web qui vient de s'ouvrir, puis copiez le code de confirmation dans le champ ci-dessous. Veuillez saisir le code de confirmation :"
+        }
+    }
+}
