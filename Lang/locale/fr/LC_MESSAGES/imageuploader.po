@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-04-28 16:17+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2025-05-05 21:37+0200\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: fr\n"
@@ -16,38 +16,41 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Poedit 2.2\n"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:80
 msgid ""
 "\"%1%\": server %2% doesn't support this type of file (%3% %4% with '.%5%' "
 "extension)\n"
 msgstr ""
+"\"%1%\" : serveur %2% ne supporte pas ce type de fichier (%3% %4% avec "
+"l'extension '.%5%')\n"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:79
 msgid "\"%1%\": server %2% doesn't support this type of file (%3% %4%)\n"
-msgstr ""
+msgstr "\"%1%\": serveur %2% ne supporte pas ce type de fichiers (%3% %4%)\n"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:216
 #: ../Source/Gui/Dialogs/MainDlg.cpp:881
 #, c-format
 msgid "%d file"
 msgid_plural "%d files"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d fichier"
+msgstr[1] "%d fichiers"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:875
 #, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d fichier sélectionné"
+msgstr[1] "%d fichiers sélectionnés"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:876
 #, c-format
 msgid "%d file total"
 msgid_plural "%d files total"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d fichier total"
+msgstr[1] "%d fichiers total"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:59
 msgid ""
@@ -59,33 +62,40 @@ msgid ""
 " %i% - file counter,\n"
 "%cx% - width,  %cy% - height"
 msgstr ""
+"%f% - nom du fichier vidéo sans extension,\n"
+"%fe% -  nom du fichier vidéo,\n"
+"%ext% - extension,\n"
+"%y% - année, %m% - mois, %d% - jour\n"
+"%h% - heure, %n% - minute, %s% - seconde\n"
+"%i% - compteur de fichiers,\n"
+"%cx% - largeur,  %cy% - hauteur"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:44
 #, c-format
 msgid "%s - Quick Setup"
-msgstr ""
+msgstr "%s - Recherche rapide"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:880
 #, c-format
 msgid "%s - Updates available"
-msgstr ""
+msgstr "%s - Mises à jour disponibles"
 
 #: ../Source/Gui/UploadListModel.cpp:105
 #, c-format
 msgid "%s of %s (%d%%) %s"
-msgstr ""
+msgstr "%s de %s (%d%%) %s"
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:60
 #, c-format
 msgid "%s server settings"
-msgstr ""
+msgstr "%s paramètres du serveur"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:118
 #, c-format
 msgid "%u error has not been fixed."
 msgid_plural "%u errors have not been fixed."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%u erreur n'a pas été corrigée."
+msgstr[1] "%u erreurs n'ont pas été corrigées."
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:54
 msgid ""
@@ -94,208 +104,212 @@ msgid ""
 " %i - image index,\n"
 "%width% - width of image,  %height% - height of image"
 msgstr ""
+"%y - année, %m - mois, %d - jour\n"
+"%h - heure, %n - minute, %s - secondes\n"
+"%i - index de l'image,\n"
+"%largeur% - largeur de l'image,  %hauteur% - hauteur de l'image"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:456
 msgid "&Upload"
-msgstr ""
+msgstr "&Charger"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:379
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:380
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1328
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1329
 msgid "(edited)"
-msgstr ""
+msgstr "(édité)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:956
 msgid "(the code has been copied to the clipboard)"
-msgstr ""
+msgstr "(le code a été copié dans le presse-papiers)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:880
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:933
 msgid "(the link has been copied to the clipboard)"
-msgstr ""
+msgstr "(le lien a été copié dans le presse-papiers)"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:425
 msgid "< Back"
-msgstr ""
+msgstr "< Retour"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:554
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:884
 msgid "<no authentication>"
-msgstr ""
+msgstr "<aucune authentification>"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:165
 msgid "A new version is available:"
-msgstr ""
+msgstr "Une nouvelle version est disponible :"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:261
 msgid "About Image Uploader"
-msgstr ""
+msgstr "À propos d'Image Uploader"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2576
 msgid "About..."
-msgstr ""
+msgstr "À propos de..."
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:37
 msgid "Access:"
-msgstr ""
+msgstr "Accès:"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:623
 msgid "Account is not enabled"
-msgstr ""
+msgstr "Compte n'est pas activé"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:214
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:273
 msgid "Account with such name already exists."
-msgstr ""
+msgstr "Un compte avec ce nom existe déjà."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:318
 msgid "Account..."
-msgstr ""
+msgstr "Compte..."
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:44
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:63
 msgid "Action:"
-msgstr ""
+msgstr "Action :"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:43
 msgid "Active connection"
-msgstr ""
+msgstr "Connexion active"
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:88
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:83
 msgid "Add"
-msgstr ""
+msgstr "Ajouter"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:458
 msgid "Add FTP server..."
-msgstr ""
+msgstr "Ajouter un serveur FTP..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:28
 msgid "Add FTP/SFTP server"
-msgstr ""
+msgstr "Ajouter un serveur FTP/SFTP"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:786
 msgid "Add FTP/SFTP server..."
-msgstr ""
+msgstr "Ajouter un serveur FTP/SFTP..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:69
 msgid "Add Files"
-msgstr ""
+msgstr "Ajouter Fichiers"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:87
 msgid "Add Files..."
-msgstr ""
+msgstr "Ajouter Fichiers..."
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:91
 msgid "Add Folder..."
-msgstr ""
+msgstr "Ajouter Dossier..."
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:85
 msgid "Add Images"
-msgstr ""
+msgstr "Ajouter images"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:74
 msgid "Add Item"
-msgstr ""
+msgstr "Ajouter un élément"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:55
 msgid "Add Menu Item"
-msgstr ""
+msgstr "Ajouter un élément de menu"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:575
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:902
 msgid "Add account..."
-msgstr ""
+msgstr "Ajouter un compte..."
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:217
 msgid "Add an item to the context menu of Windows Explorer"
-msgstr ""
+msgstr "Ajouter un élément au menu contextuel de l'Explorateur Windows"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:162
 msgid "Add files..."
-msgstr ""
+msgstr "Ajouter fichiers..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:163
 msgid "Add folder..."
-msgstr ""
+msgstr "Ajouter dossier..."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:161
 msgid "Add images..."
-msgstr ""
+msgstr "Ajouter images..."
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:51
 msgid "Add item to video files' context menu"
-msgstr ""
+msgstr "Ajouter un élément au menu contextuel des fichiers vidéo"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:795
 msgid "Add local folder as new server..."
-msgstr ""
+msgstr "Ajouter un dossier local comme nouveau serveur..."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:459
 msgid "Add local folder..."
-msgstr ""
+msgstr "Ajouter un dossier local..."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:53
 msgid "Add text"
-msgstr ""
+msgstr "Ajouter du texte"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:123
 msgid "Add text on thumbnail"
-msgstr ""
+msgstr "Ajouter du texte sur la vignette"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:46
 msgid "Add text to image"
-msgstr ""
+msgstr "Ajouter du texte à l'image"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:596
 msgid "Add to Wizard"
-msgstr ""
+msgstr "Ajouter à l'assistant"
 
 #: ../Source/Gui/Components/DragndropOverlay.cpp:31
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:899
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:900
 msgid "Add to the list"
-msgstr ""
+msgstr "Ajouter à la liste"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:42
 msgid "Add video files to the list after Drag'n'Drop"
-msgstr ""
+msgstr "Ajouter des fichiers vidéo à la liste après glisser-déposer"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:44
 msgid "Add watermark"
-msgstr ""
+msgstr "Ajouter un filigrane"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:44
 msgid "Adding directory as server"
-msgstr ""
+msgstr "Ajouter un répertoire comme serveur"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:459
 msgid "Additional options..."
-msgstr ""
+msgstr "Options additionnelles..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:60
 msgid "Additional params"
-msgstr ""
+msgstr "Params additionnels"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:41
 msgid "Additional settings"
-msgstr ""
+msgstr "Paramètres additionnels"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:26
 msgid "Address:"
-msgstr ""
+msgstr "Adresse:"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:62
 msgid "Advice:"
-msgstr ""
+msgstr "Conseil:"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:60
 msgid "Aero only (Windows Vista or later)"
-msgstr ""
+msgstr "Aero seulement (Windows Vista ou version ultérieure)"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:157
 #, c-format
@@ -303,6 +317,9 @@ msgid ""
 "All account data will be deleted, including logins, passwords and other "
 "settings. The following server types' settings will also be deleted: %s."
 msgstr ""
+"Toutes les données du compte seront supprimées, y compris les identifiants, "
+"mots de passe et autres paramètres. Les paramètres des types de serveur "
+"suivants seront également supprimés : %s."
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
@@ -316,198 +333,205 @@ msgstr ""
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1902
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1422
 msgid "All files"
-msgstr ""
+msgstr "Tous les fichiers"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:592
 msgid "All files have been successfully uploaded."
-msgstr ""
+msgstr "Tous les fichiers ont été chargés avec succès."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:98
 msgid "All monitors"
-msgstr ""
+msgstr "Tous les moniteurs"
 
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:38
 msgid "All the time"
-msgstr ""
+msgstr "Tout le temps"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:56
 msgid "Allow Alt+Tab in fullscreen editor"
-msgstr ""
+msgstr "Autoriser Alt+Tab dans l'éditeur plein écran"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:62
 msgid "Allow editing images in fullscreen mode"
-msgstr ""
+msgstr "Autoriser l'édition d'images en mode plein écran"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:51
 msgid "Always copy captured image to clipboard"
-msgstr ""
+msgstr "Copiez toujours l'image capturée dans le presse-papiers"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
 msgid "An error occured while extracting video frames."
-msgstr ""
+msgstr "Une erreur est survenue lors de l'extraction des images vidéo."
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:102
 msgid "An error occured while loading script."
-msgstr ""
+msgstr "Une erreur est survenue lors du chargement du script."
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:151
 msgid "An error occured while receiving update information from server."
 msgstr ""
+"Une erreur est survenue lors de la réception des infos de mise à jour du "
+"serveur."
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1465
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1930
 msgid "Any file"
-msgstr ""
+msgstr "N'importe quel fichier"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:50
 msgid "Appearance options"
-msgstr ""
+msgstr "Options d'apparence"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:89
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:275
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:279
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr ""
+"Êtes-vous sûr de placer le texte et le logo à la même position sur l'image?"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1810
 msgid "Are you sure to quit?"
-msgstr ""
+msgstr "Êtes-vous sûr de quitter?"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:412
 #, c-format
 msgid "Are you sure you want to delete profile '%s'?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer le profil '%s'?"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:427
 #, c-format
 msgid "Are you sure you want to delete the file '%s' from the server?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir supprimer le fichier '%s' du serveur?"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:170
 msgid ""
 "Are you sure you want to delete this account from Image Uploader's internal "
 "list?"
 msgstr ""
+"Êtes-vous sûr de vouloir supprimer ce compte de la liste interne d'Image "
+"Uploader?"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:947
 msgid "Arrow"
-msgstr ""
+msgstr "Flèche"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:41
 msgid "Ask confirmation on exit"
-msgstr ""
+msgstr "Demander une confirmation en quittant"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:105
 msgid "At least one mouse command should not be empty"
-msgstr ""
+msgstr "Au moins une commande de souris ne doit pas être vide"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:42
 msgid "Attention! Global hotkeys are active only when tray icon is shown."
 msgstr ""
+"Attention ! Les raccourcis clavier globaux sont actifs que si l'icône de la "
+"barre d'état est affichée."
 
 #: ../Source/Func/MediaInfoHelper.cpp:242
 #: ../Source/Func/MediaInfoHelper.cpp:247
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1901
 msgid "Audio files"
-msgstr ""
+msgstr "Fichiers audio"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:325
 msgid "Authenticated succesfully."
-msgstr ""
+msgstr "Authentifié avec succès."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:31
 msgid "Authenticaton:"
-msgstr ""
+msgstr "Authentification:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:258
 msgid "Author:"
-msgstr ""
+msgstr "Auteur :"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:29
 msgid "Authorization on proxy"
-msgstr ""
+msgstr "Autorisation par proxy"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:52
 msgid "Authorize"
-msgstr ""
+msgstr "Autoriser"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:83
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:262
 msgid "Auto"
-msgstr ""
+msgstr "Auto"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:44
 msgid "Automatically check for updates"
-msgstr ""
+msgstr "Recherche auto des mises à jour"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:84
 msgid "Autorization parameters"
-msgstr ""
+msgstr "Paramètres d’autorisation"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:53
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:70
 msgid "Background color:"
-msgstr ""
+msgstr "Couleur d’arrière-plan :"
 
 #: ../Source/Core/Upload/UploadTask.cpp:370
 msgid "Begin upload"
-msgstr ""
+msgstr "Commencer chargement"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:103
 msgid "Beta-testers:"
-msgstr ""
+msgstr "Beta-testeurs:"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:221
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:226
 msgid "Blur radius"
-msgstr ""
+msgstr "Rayon de flou"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:118
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:802
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:954
 msgid "Blurring rectangle"
-msgstr ""
+msgstr "Rectangle flou"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:92
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:99
 msgid "Bottom center"
-msgstr ""
+msgstr "Au centre en bas"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:91
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:98
 msgid "Bottom left corner"
-msgstr ""
+msgstr "Coin bas gauche"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:93
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:100
 msgid "Bottom right corner"
-msgstr ""
+msgstr "Coin bas droit"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:53
 msgid "Bring window to foreground when selected by mouse"
-msgstr ""
+msgstr "Amener fenêtre au 1er plan si elle est choisie par la souris"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:47
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:77
 msgid "Browse..."
-msgstr ""
+msgstr "Parcourir…"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:944
 msgid "Brush"
-msgstr ""
+msgstr "Brosse"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:399
 msgid "By default"
-msgstr ""
+msgstr "Par défaut"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:49
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:37
@@ -532,7 +556,7 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:279
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: ../Source/Video/DirectshowFrameGrabber.cpp:365
 #: ../Source/Video/DirectshowFrameGrabber2.cpp:285
@@ -540,28 +564,33 @@ msgid ""
 "Cannot connect filters (format probably is not supported).\n"
 "Make sure you have the required codecs installed on your system."
 msgstr ""
+"Impossible de connecter les filtres (format n'est probablement pas "
+"supporté).\n"
+"Assurez-vous que les codecs requis sont installés sur votre système."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:739
 msgid "Cannot copy file "
-msgstr ""
+msgstr "Impossible de copier le fichier "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:728
 msgid "Cannot copy file: "
-msgstr ""
+msgstr "Impossible de copier le fichier : "
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:176
 msgid "Cannot create registry key for extension: "
-msgstr ""
+msgstr "Impossible de créer une clé de registre pour l'extension: "
 
 #: ../Source/Gui/Controls/ThumbsView.cpp:332
 msgid "Cannot load thumbnail for image."
-msgstr ""
+msgstr "Impossible de charger la vignette de l’image."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1510
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
 msgstr ""
+"Impossible d'ouvrir le dossier '%1%'.\n"
+"%2%"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:707
 #, c-format
@@ -570,121 +599,126 @@ msgid ""
 "%s.\n"
 " Maybe it is being used by another process."
 msgstr ""
+"Impossible d'enregistrer le raccourci clavier global :\n"
+"%s.\n"
+"Il est peut-être utilisé par un autre processus."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:532
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:66
 msgid "Capture Last Region"
-msgstr ""
+msgstr "Capturer la dernière région"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 msgid "Capture Rectangular Region"
-msgstr ""
+msgstr "Capturer une région rectangulaire"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:530
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:60
 msgid "Capture Selected Area"
-msgstr ""
+msgstr "Capturer la zone choisie"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:538
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:63
 msgid "Capture Selected Object"
-msgstr ""
+msgstr "Capturer l'objet choisi"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:62
 msgid "Capture Selected Window"
-msgstr ""
+msgstr "Capturer la fenêtre choisie"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:73
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:63
 msgid "Capture cursor"
-msgstr ""
+msgstr "Capturer le curseur"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:535
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:59
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
-msgstr ""
+msgstr "Capturer la fenêtre active"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:534
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:196
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:58
 #: ../Source/Gui/Win7JumpList.cpp:243
 msgid "Capture the Entire Screen"
-msgstr ""
+msgstr "Capturez tout l'écran"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:55
 msgid "Capture with shadow"
-msgstr ""
+msgstr "Capturer avec l'ombre"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:52
 msgid "Cascaded context menu"
-msgstr ""
+msgstr "Menu contextuel en cascade"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:81
 msgid "Center"
-msgstr ""
+msgstr "Centre"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:151
 msgid "Change"
-msgstr ""
+msgstr "Modifier"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:43
 msgid ""
 "Change image processing settings or choose another server, so your image can "
 "be uploaded."
 msgstr ""
+"Changer les paramètres de traitement de l'image ou choisir un autre serveur "
+"pour que votre image puisse être chargée."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:43
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:113
 msgid "Change width:"
-msgstr ""
+msgstr "Changer la largeur :"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:33
 msgid "Check file types before upload"
-msgstr ""
+msgstr "Vérifiez les types de fichiers avant de charger"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2578
 msgid "Check for Updates"
-msgstr ""
+msgstr "Recherche des mises à jour"
 
 #: ../Source/Core/FileTypeCheckTask.cpp:30
 #: ../Source/Core/FileTypeCheckTask.cpp:36
 msgid "Checking file formats..."
-msgstr ""
+msgstr "Vérification des formats de fichiers..."
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:144
 msgid "Checking for updates..."
-msgstr ""
+msgstr "Recherche des mises à jour…"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:58
 msgid "Choose executable file"
-msgstr ""
+msgstr "Choisir le fichier exécutable"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1932
 msgid "Choose files"
-msgstr ""
+msgstr "Choisir les fichiers"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1783
 msgid "Choose folder"
-msgstr ""
+msgstr "Choisir un dossier"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:243
 msgid "Choose folder..."
-msgstr ""
+msgstr "Choisir dossier..."
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1905
 msgid "Choose media file"
-msgstr ""
+msgstr "Choisir un fichier multimédia"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:568
 msgid "Choose monitor"
-msgstr ""
+msgstr "Choisir le moniteur"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:138
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:139
@@ -693,92 +727,93 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1523
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1535
 msgid "Choose more servers..."
-msgstr ""
+msgstr "Choisir plus de serveurs..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:210
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:92
 msgid "Choose program"
-msgstr ""
+msgstr "Choisir le programme"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:50
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:587
 msgid "Choose server"
-msgstr ""
+msgstr "Choisir le serveur"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:214
 msgid "Choose server for uploading images"
-msgstr ""
+msgstr "Choisir le serveur pour charger des images"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:237
 msgid "Choose server..."
-msgstr ""
+msgstr "Choisir le serveur..."
 
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:82
 msgid "Choose servers"
-msgstr ""
+msgstr "Choisir les serveurs"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1686
 msgid "Choose video file"
-msgstr ""
+msgstr "Choisir le fichier vidéo"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:45
 msgid "Choose..."
-msgstr ""
+msgstr "Choisir..."
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:153
 #: ../Source/Gui/Dialogs/LogWindow.cpp:173
 msgid "Clear"
-msgstr ""
+msgstr "Effacer"
 
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:35
 msgid "Clear History"
-msgstr ""
+msgstr "Effacer l’historique"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:102
 msgid "Clear History..."
-msgstr ""
+msgstr "Effacer l’historique..."
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
 msgid "Clear all"
-msgstr ""
+msgstr "Effacer tout"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:90
 msgid "Clear filters"
-msgstr ""
+msgstr "Effacer les filtres"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:133
 msgid "Clear list"
-msgstr ""
+msgstr "Effacer liste"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:28
 msgid "Clear log"
-msgstr ""
+msgstr "Effacer le journal"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:47
 msgid "Clear server settings"
-msgstr ""
+msgstr "Effacer les paramètres du serveur"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:57
 msgid "Clear window transparent corners"
-msgstr ""
+msgstr "Coins transparents de fenêtre claire"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:59
 msgid "Clear window's background"
-msgstr ""
+msgstr "Effacer l'arrière-plan de la fenêtre"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:124
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr ""
+"Cliquez sur le bouton \"Charger\" pour démarrer le processus de chargement."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 msgid "Click on this message to view details..."
-msgstr ""
+msgstr "Cliquez sur ce message pour voir les détails..."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:164
 msgid "Clickable thumbnails"
-msgstr ""
+msgstr "Vignettes cliquables"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:96
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:220
@@ -793,73 +828,73 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:236
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:926
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:92
 msgid "Code type:"
-msgstr ""
+msgstr "Type de code :"
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:32
 msgid "Collecting files..."
-msgstr ""
+msgstr "Collecte de fichiers..."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:957
 msgid "Color chooser"
-msgstr ""
+msgstr "Sélecteur de couleurs"
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:40
 msgid "Color codes"
-msgstr ""
+msgstr "Codes couleurs"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:42
 msgid "Colors"
-msgstr ""
+msgstr "Couleurs"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:57
 msgid "Component name"
-msgstr ""
+msgstr "Nom du composant"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:68
 msgid "Components:"
-msgstr ""
+msgstr "Composants:"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:62
 msgid "Connection"
-msgstr ""
+msgstr "Connexion"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:29
 msgid "Connection  name:"
-msgstr ""
+msgstr "Connexion  nom:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:89
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:255
 msgid "Connection name cannot be empty"
-msgstr ""
+msgstr "Nom de la connexion ne peut être vide"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:22
 msgid "Connection settings"
-msgstr ""
+msgstr "Paramètres de connexion"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:54
 msgid "Context menu custom items:"
-msgstr ""
+msgstr "Éléments personnalisés du menu contextuel :"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:26
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:211
 msgid "Continue"
-msgstr ""
+msgstr "Continuer"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:84
 msgid "Contributors:"
-msgstr ""
+msgstr "Contributeurs:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:51
 msgid "Convert UNC path \"\\\\\" to \"file://\""
-msgstr ""
+msgstr "Convertir le chemin UNC \"\\\\\" en \"fichier://\""
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:397
 msgid "Converting history"
-msgstr ""
+msgstr "Conversion de l'historique"
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
@@ -868,112 +903,114 @@ msgstr ""
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:915
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
 msgid "Copy"
-msgstr ""
+msgstr "Copier"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:226
 msgid "Copy &as"
-msgstr ""
+msgstr "Copier &sous"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:408
 msgid "Copy URL of %1%->%2%"
-msgstr ""
+msgstr "Copier l'URL de %1%->%2%"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:23
 msgid "Copy automatically results to clipboard"
-msgstr ""
+msgstr "Copie auto des résultats dans le presse-papiers"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:276
 msgid "Copy delete link"
-msgstr ""
+msgstr "Copier supprimer le lien"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:303
 msgid "Copy e-mail"
-msgstr ""
+msgstr "Copier e-mail"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:376
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:979
 msgid "Copy folder's ID"
-msgstr ""
+msgstr "Copier l'ID du dossier"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:217
 msgid "Copy full path"
-msgstr ""
+msgstr "Copier le chemin complet"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:214
 msgid "Copy image"
-msgstr ""
+msgstr "Copier l'Image"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:825
 msgid "Copy in data:URI format"
-msgstr ""
+msgstr "Copier dans les données : format URI"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:826
 msgid "Copy in data:URI format (html)"
-msgstr ""
+msgstr "Copier dans les données : format URI (html)"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:207
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:267
 msgid "Copy link"
-msgstr ""
+msgstr "Copier le lien"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:211
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:273
 msgid "Copy link to thumbnail"
-msgstr ""
+msgstr "Copier le lien vers la vignette"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:208
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:270
 msgid "Copy link to view page"
-msgstr ""
+msgstr "Copier le lien pour afficher la page"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:588
 msgid "Copy to Clipboard"
-msgstr ""
+msgstr "Copier dans le presse-papiers"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:78
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:53
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:139
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Copier dans le presse-papiers"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:914
 #, c-format
 msgid "Copy to clipboard and close (%s)"
-msgstr ""
+msgstr "Copier vers le presse-papiers et fermer (%s)"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:30
 msgid "Copy to the clipboard:"
-msgstr ""
+msgstr "Copier dans le presse-papiers :"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:113
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:332
 msgid "Could not add server."
-msgstr ""
+msgstr "Impossible d'ajouter le serveur."
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:330
 msgid "Could not authenticate. Please try again."
-msgstr ""
+msgstr "Impossible de s'authentifier. Veuillez réessayer."
 
 #: ../Source/Video/AvcodecFrameGrabber.cpp:202
 msgid "Could not find a video stream."
-msgstr ""
+msgstr "Impossible de trouver un flux vidéo."
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:418
 msgid "Could not find links in the given text!"
-msgstr ""
+msgstr "Impossible de trouver des liens dans le texte donné !"
 
 #: ../Source/Func/UpdatePackage.cpp:420
 #, c-format
 msgid "Could not read package %s"
-msgstr ""
+msgstr "Impossible de lire le package %s"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:942
 msgid "Could not save settings file. See error log for details."
 msgstr ""
+"Impossible d'enregistrer le fichier de paramètres. Voir le journal des "
+"erreurs pour plus de détails."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:905
 msgid "Could not upload screenshot :("
-msgstr ""
+msgstr "Impossible de charger la capture d'écran :("
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:334
 #, c-format
@@ -984,6 +1021,11 @@ msgid ""
 "\n"
 "Do you wish to continue?"
 msgstr ""
+"Impossible de charger le fichier de liste de serveurs \"servers.xml\" !\n"
+"\n"
+"Raison : %s\n"
+"\n"
+"Souhaitez-vous continuer ?"
 
 #: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:214
@@ -991,238 +1033,242 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:250
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:259
 msgid "Couldn't load thumbnail preset!"
-msgstr ""
+msgstr "Impossible de charger le préréglage de vignettes !"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:133
 msgid "Create Profile"
-msgstr ""
+msgstr "Créer un Profil"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:58
 msgid "Create a Copy"
-msgstr ""
+msgstr "Créer une copie"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:81
 msgid "Create folder"
-msgstr ""
+msgstr "Créer un dossier"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:44
 msgid "Create folder (album)"
-msgstr ""
+msgstr "Créer un dossier (album)"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:371
 msgid "Create nested folder"
-msgstr ""
+msgstr "Créer un dossier imbriqué"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:59
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:119
 msgid "Create thumbnails"
-msgstr ""
+msgstr "Créer des vignettes"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:320
 msgid "Creating new thumbnail preset"
-msgstr ""
+msgstr "Création d'un nouveau préréglage de vignettes"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:943
 msgid "Crop"
-msgstr ""
+msgstr "Recadrer"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:549
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:89
 msgid "Current monitor"
-msgstr ""
+msgstr "Moniteur actuel"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:343
 msgid "Current profile's changes weren't saved. Do you want to continue?"
 msgstr ""
+"Les modifications du profil actuel n'ont pas été enregistrées. Voulez-vous "
+"continuer ?"
 
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:237
 msgid "Cut"
-msgstr ""
+msgstr "Couper"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:156
 msgid "Data file path:"
-msgstr ""
+msgstr "Chemin du fichier de données :"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:92
 msgid "Date from:"
-msgstr ""
+msgstr "Date du :"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:30
 msgid "Decode response"
-msgstr ""
+msgstr "Décoder la réponse"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:71
 msgid "Default server for other file types"
-msgstr ""
+msgstr "Serveur par défaut pour d'autres types de fichiers"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:57
 msgid "Default server for uploading images"
-msgstr ""
+msgstr "Serveur par défaut pour charger des images"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:54
 msgid "Default settings"
-msgstr ""
+msgstr "Paramètres par défaut"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:458
 msgid "Deinterlace"
-msgstr ""
+msgstr "Désentrelacé"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:50
 msgid "Delay when hiding window:"
-msgstr ""
+msgstr "Délai lors du masquage de la fenêtre :"
 
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:167
 msgid "Delete"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:135
 msgid "Delete Profile"
-msgstr ""
+msgstr "Supprimer le profil"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:91
 msgid "Delete account"
-msgstr ""
+msgstr "Supprimer le compte"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:226
 msgid "Delete file from server"
-msgstr ""
+msgstr "Supprimer le fichier du serveur"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:430
 msgid "Deleting the file from the server"
-msgstr ""
+msgstr "Suppression du fichier du serveur"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:43
 msgid "Developer mode"
-msgstr ""
+msgstr "Mode développeur"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:48
 msgid "Directory to save screenshots:"
-msgstr ""
+msgstr "Répertoire pour enregistrer les captures d'écran :"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:56
 msgid "Disable localization"
-msgstr ""
+msgstr "Désactiver la localisation"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:56
 msgid "Display video file information on resulting picture"
-msgstr ""
+msgstr "Afficher les infos du fichier vidéo sur l'image obtenue"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1808
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:342
 msgid "Do not ask again"
-msgstr ""
+msgstr "Ne redemandez plus"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:34
 msgid "Do not launch new program's instance from tray"
-msgstr ""
+msgstr "Aucune instance d'1 nouveau programme depuis la barre système"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:188
 msgid "Do nothing"
-msgstr ""
+msgstr "Ne rien faire"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2577
 msgid "Documentation"
-msgstr ""
+msgstr "Documentation"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:114
 #, c-format
 msgid "Don't have an account? Sign up on %s right now!"
-msgstr ""
+msgstr "Vous n'avez pas de compte ? Inscrivez vous sur %s maintenant !"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1146
 msgid "Don't resize"
-msgstr ""
+msgstr "Ne pas redimensionner"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:97
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:262
 msgid "Download URL cannot be empty."
-msgstr ""
+msgstr "L'URL de téléchargement ne peut pas être vide."
 
 #: ../Source/Func/UpdatePackage.cpp:668
 #, c-format
 msgid "Downloaded %s of %s (%d %%)"
-msgstr ""
+msgstr "Téléchargé %s de %s (%d %%)"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:555
 msgid "Downloaded: "
-msgstr ""
+msgstr "Téléchargé: "
 
 #: ../Source/Func/UpdatePackage.cpp:385
 msgid "Downloading file "
-msgstr ""
+msgstr "Téléchargement du fichier "
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:46
 msgid "Draw frame"
-msgstr ""
+msgstr "Cadre de dessin"
 
 #: ../Source/Func/MediaInfoHelper.cpp:151
 msgid "Duration: "
-msgstr ""
+msgstr "Durée: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:202
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:357
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:57
 msgid "Edit"
-msgstr ""
+msgstr "Éditer"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:209
 msgid "Edit Profile"
-msgstr ""
+msgstr "Éditer le profil"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:223
 msgid "Edit file on server"
-msgstr ""
+msgstr "Éditer le fichier sur le serveur"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:46
 msgid "Edit folder"
-msgstr ""
+msgstr "Modifier le dossier"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:41
 msgid "Edit hotkey..."
-msgstr ""
+msgstr "Éditer raccourci..."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:503
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:821
 msgid "Edit login credentials..."
-msgstr ""
+msgstr "Éditer les identifiants de connexion..."
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:94
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:777
 msgid "Ellipse"
-msgstr ""
+msgstr "Ellipse"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:45
 msgid "Enable Toast notifications (Windows 8+)"
-msgstr ""
+msgstr "Activer les notifications Toast (Windows 8+)"
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:92
 msgid "Enter URLs (one http:// or ftp:// link per line)"
-msgstr ""
+msgstr "Entrez les URL (un lien http:// ou ftp:// par ligne)"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:319
 msgid "Enter account information"
-msgstr ""
+msgstr "Entrez les infos du compte"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:325
 msgid "Enter new profile name:"
-msgstr ""
+msgstr "Entrez le nouveau nom du profil :"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:320
 msgid "Enter new thumbnail preset name:"
-msgstr ""
+msgstr "Entrez le nouveau nom prédéfini de vignette :"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:81
 msgid ""
 "Enter the text containing links to images (HTML, BBcode, or just plain text):"
 msgstr ""
+"Entrez le texte contenant des liens vers des images (HTML, BBcode ou "
+"simplement du texte brut) :"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:154
 msgid "Enter your account information"
-msgstr ""
+msgstr "Entrez les infos de votre compte"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:53
 msgid "Enter your text:"
-msgstr ""
+msgstr "Entrez votre texte:"
 
 #: ../Source/Core/Upload/UploadTask.cpp:379
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:89
@@ -1256,16 +1302,16 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:358
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1514
 msgid "Error"
-msgstr ""
+msgstr "Erreur"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:38
 msgid "Error control"
-msgstr ""
+msgstr "Contrôle d'erreur"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:108
 #, c-format
 msgid "Error in the field '%s':\n"
-msgstr ""
+msgstr "Erreur dans le champ '%s' :\n"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:208
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:151
@@ -1273,40 +1319,41 @@ msgstr ""
 #, c-format
 msgid "Error in the field '%s': value should be between %d and %d."
 msgstr ""
+"Erreur dans le champ '%s' : la valeur doit être comprise entre %d et %d."
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:90
 #, c-format
 msgid "Error in the field '%s': value should be greater than zero"
-msgstr ""
+msgstr "Erreur dans le champ '%s' : la valeur doit être supérieure à zéro"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:174
 msgid "Error log"
-msgstr ""
+msgstr "Journal d'erreurs"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:21
 msgid "Error while file format checking"
-msgstr ""
+msgstr "Erreur de vérification du format de fichier"
 
 #: ../Source/Func/UpdatePackage.cpp:395
 msgid "Error while updating component "
-msgstr ""
+msgstr "Erreur de mise à jour du composant "
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:93
 msgid "Error:"
-msgstr ""
+msgstr "Erreur :"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:597
 #, c-format
 msgid "Errors: %d"
-msgstr ""
+msgstr "Erreurs: %d"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:88
 msgid "Executables"
-msgstr ""
+msgstr "Exécutables"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:28
 msgid "Execute Squirrel script for each task (file)"
-msgstr ""
+msgstr "Exécuter le script Squirrel pour chaque tâche (fichier)"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:239
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:621
@@ -1314,78 +1361,78 @@ msgstr ""
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:420
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1796
 msgid "Exit"
-msgstr ""
+msgstr "Quitter"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:352
 msgid "Explicit"
-msgstr ""
+msgstr "Explicite"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:23
 msgid "Extension"
-msgstr ""
+msgstr "Extension"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:208
 msgid "Extract frames"
-msgstr ""
+msgstr "Extraire les cadres"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:198
 msgid "Extracting frame "
-msgstr ""
+msgstr "Extraction du cadre "
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:76
 msgid "Extracting frames from video"
-msgstr ""
+msgstr "Extraction d'images d'une vidéo"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:435
 msgid "Extracting video frames was finished."
-msgstr ""
+msgstr "L'extraction des images vidéo est terminée."
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:279
 msgid "Extracting video frames was stopped by user."
-msgstr ""
+msgstr "L'extraction des images vidéo a été arrêtée par l'utilisateur."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:46
 msgid "FTP"
-msgstr ""
+msgstr "FTP"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:227
 msgid "Failed to load folder list."
-msgstr ""
+msgstr "Échec du chargement de la liste des dossiers."
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:337
 msgid "Failed to logout."
-msgstr ""
+msgstr "Échec de la déconnexion."
 
 #: ../Source/Video/VideoGrabber.cpp:75
 #, c-format
 msgid "Failed to open video file '%s'."
-msgstr ""
+msgstr "Échec d'ouverture du fichier vidéo '%s'."
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:481
 msgid "Fetching filesystem..."
-msgstr ""
+msgstr "Récupération du système de fichiers..."
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:20
 #: ../Source/Gui/Controls/ResultsListView.cpp:21
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:94
 msgid "File"
-msgstr ""
+msgstr "Fichier"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:813
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
-msgstr ""
+msgstr "Le fichier \"%s\" est en cours de chargement sur le serveur %s.."
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:96
 #: ../Source/Video/VideoGrabber.cpp:61
 #, c-format
 msgid "File \"%s\" not found!"
-msgstr ""
+msgstr "Fichier \"%s\" introuvable !"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:109
 #, c-format
 msgid "File %s doesn't exist"
-msgstr ""
+msgstr "Fichier %s n'existe pas"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:151
 #, c-format
@@ -1393,11 +1440,13 @@ msgid ""
 "File doesn't exist:\n"
 "%s"
 msgstr ""
+"Le fichier n'existe pas :\n"
+"%s"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:100
 #, c-format
 msgid "File exceeds filesize limit of \"%s\" server (%s)."
-msgstr ""
+msgstr "Le fichier dépasse la taille limite \"%s\" serveur (%s)."
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:190
 #, c-format
@@ -1406,141 +1455,144 @@ msgid ""
 "Url: %s\n"
 "Mime-Type: %s"
 msgstr ""
+"Le fichier n'est pas une image.\n"
+"Url : %s\n"
+"Type MIME : %s"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:120
 msgid "File name cannot contains forbidden characters!"
-msgstr ""
+msgstr "Le nom du fichier ne peut pas contenir de caractères interdits!"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:48
 msgid "File size exceeding"
-msgstr ""
+msgstr "Taille du fichier dépassant"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:595
 msgid "File uploading was cancelled by user."
-msgstr ""
+msgstr "Chargement du fichier a été annulé par l'utilisateur."
 
 #: ../Source/Gui/Controls/ThumbsView.cpp:332
 msgid "File:"
-msgstr ""
+msgstr "Fichier:"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:41
 msgid "File: "
-msgstr ""
+msgstr "Fichier: "
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:60
 msgid "Filename format:"
-msgstr ""
+msgstr "Format du nom de fichier :"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:94
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:79
 msgid "Filename:"
-msgstr ""
+msgstr "Nom du fichier :"
 
 #: ../Source/Func/MediaInfoHelper.cpp:136
 msgid "Filename: "
-msgstr ""
+msgstr "Nom du fichier: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:713
 msgid "Files"
-msgstr ""
+msgstr "Fichiers"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:98
 msgid "Files total:"
-msgstr ""
+msgstr "Taille totale :"
 
 #: ../Source/Func/MediaInfoHelper.cpp:140
 msgid "Filesize: "
-msgstr ""
+msgstr "Taille du fichier: "
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:255
 msgid "Fill background"
-msgstr ""
+msgstr "Remplir l'arrière-plan"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:110
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:790
 msgid "Filled ellipse"
-msgstr ""
+msgstr "Ellipse remplie"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:99
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:788
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:950
 msgid "Filled rectangle"
-msgstr ""
+msgstr "Rectangle rempli"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:91
 msgid "Filters"
-msgstr ""
+msgstr "Filtres"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 msgid "Finish"
-msgstr ""
+msgstr "Terminer"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:292
 msgid "Finish >"
-msgstr ""
+msgstr "Terminer >"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
 #: ../Source/Gui/UploadListModel.cpp:161
 msgid "Finished"
-msgstr ""
+msgstr "Terminé"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:114
 msgid "First you have to select an item in the list."
-msgstr ""
+msgstr "Vous devez d’abord sélectionner un élément dans la liste."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:81
 msgid "Fit"
-msgstr ""
+msgstr "En forme"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1769
 msgid "Flip horizontal"
-msgstr ""
+msgstr "Retourner horizontalement"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1770
 msgid "Flip vertical"
-msgstr ""
+msgstr "Retourner verticalement"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:163
 #, c-format
 msgid "Folder %s"
-msgstr ""
+msgstr "Dossier \"%s\""
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:62
 msgid "Folder for snapshots:"
-msgstr ""
+msgstr "Dossier pour les instantanés :"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:82
 msgid "Folder list"
-msgstr ""
+msgstr "Liste des dossiers"
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:106
 #, c-format
 msgid "Folder list on server %s for account '%s':"
-msgstr ""
+msgstr "Liste des dossiers sur le serveur %s pour le compte '%s':"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:35
 msgid "Folder name:"
-msgstr ""
+msgstr "Nom du dossier:"
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:53
 msgid "Folder/album:"
-msgstr ""
+msgstr "Dossier/album:"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:46
 msgid "Folder:"
-msgstr ""
+msgstr "Dossier:"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:230
 msgid "Font size:"
-msgstr ""
+msgstr "Taille de la Police:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:56
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:52
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:57
 msgid "Font..."
-msgstr ""
+msgstr "Police..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:41
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:44
@@ -1548,185 +1600,187 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:67
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:111
 msgid "Format:"
-msgstr ""
+msgstr "Format:"
 
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:79
 msgid "Forum code (BBCode)"
-msgstr ""
+msgstr "Code du forum (BBCode)"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:62
 msgid "Found a bug? Send a bug report to the author."
-msgstr ""
+msgstr "Vous avez trouvé un bug ? Envoyez un rapport à son auteur."
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:43
 msgid "Frame color:"
-msgstr ""
+msgstr "Couleur du cadre :"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:55
 msgid "Frames layout"
-msgstr ""
+msgstr "Disposition des cadres"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:61
 msgid "Freehand Capture"
-msgstr ""
+msgstr "Capture à main levée"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:93 ../Source/Gui/Win7JumpList.cpp:203
 msgid "From Clipboard"
-msgstr ""
+msgstr "Depuis le Presse-papiers"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:89
 msgid "From Web"
-msgstr ""
+msgstr "Depuis le Web"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:55
 msgid "Full information"
-msgstr ""
+msgstr "Infos complètes"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:56
 msgid "General"
-msgstr ""
+msgstr "Général"
 
 #: ../Source/Func/ImageGenerator.cpp:45 ../Source/Func/ImageGenerator.cpp:95
 msgid "Generating image..."
-msgstr ""
+msgstr "Génération d'image..."
 
 #: ../Source/3rdpart/ColorButton.cpp:227
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:25
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:32
 msgid "Get color's code..."
-msgstr ""
+msgstr "Obtenez le code couleur..."
 
 #: ../Source/Func/ImageGenerator.cpp:28
 msgid "Getting info about file..."
-msgstr ""
+msgstr "Obtention d'infos sur le fichier..."
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:46
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:61
 msgid "Global hotkey:"
-msgstr ""
+msgstr "Raccourci clavier global :"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1080
 msgid "Go to signup page"
-msgstr ""
+msgstr "Aller à la page d'inscription"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:85
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:400
 msgid "Grab"
-msgstr ""
+msgstr "Saisir"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:44
 msgid "Gradient color 1:"
-msgstr ""
+msgstr "Dégradé de couleur 1 :"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:45
 msgid "Gradient color 2:"
-msgstr ""
+msgstr "Dégradé de couleur 2 :"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:383
 msgid "Group by filename"
-msgstr ""
+msgstr "Grouper par nom de fichier"
 
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:80
 msgid "HTML code"
-msgstr ""
+msgstr "Code Html"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
 msgid "Height:"
-msgstr ""
+msgstr "Hauteur :"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:313
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:172
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:422
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1798
 msgid "Hide"
-msgstr ""
+msgstr "Masquer"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:945
 msgid "Highlight"
-msgstr ""
+msgstr "Souligner"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:108
 msgid "History"
-msgstr ""
+msgstr "Historique"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:546
 msgid "History has been cleared successfully."
-msgstr ""
+msgstr "L'historique a été effacé avec succès."
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:53
 msgid "Horizontal interval:"
-msgstr ""
+msgstr "Intervalle horizontal :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:66
 msgid "Hotkeys"
-msgstr ""
+msgstr "Raccourcis clavier"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:253
 msgid "I have an account on this server"
-msgstr ""
+msgstr "J'ai un compte sur ce serveur"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:27
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:47
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorer"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:28
 msgid "Ignore all"
-msgstr ""
+msgstr "Ignorer tout"
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:87
 msgid "Image Downloader"
-msgstr ""
+msgstr "Téléchargeur d'images"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:346
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:593
 msgid "Image Editor"
-msgstr ""
+msgstr "Éditeur d'images"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1668
 msgid "Image Editor  (%1%x%2%)"
-msgstr ""
+msgstr "Éditeur d'images  (%1%x%2%)"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1674
 msgid "Image Editor - %1% (%2%x%3%)"
-msgstr ""
+msgstr "Éditeur d'images - %1% (%2%x%3%)"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:344
 msgid ""
 "Image Editor cannot deal with animated images. If you edit this file, "
 "animation will be lost. Do you wish to continue?"
 msgstr ""
+"Éditeur d'images ne peut pas gérer les images animées. Si vous modifiez ce "
+"fichier, l'animation sera perdue. Voulez-vous continuer?"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:923
 msgid "Image Settings and Server Selection"
-msgstr ""
+msgstr "Paramètres d'image et sélection du serveur"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:55
 msgid "Image Uploader Updates"
-msgstr ""
+msgstr "Mises à jour du chargeur d'images"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:53
 msgid "Image processing"
-msgstr ""
+msgstr "Traitement d'image"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:97
 msgid "Image processing settings..."
-msgstr ""
+msgstr "Paramètres de traitement d'image..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:279
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:413
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:55
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:116
 msgid "Image settings"
-msgstr ""
+msgstr "Paramètres d'image"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
@@ -1734,27 +1788,27 @@ msgstr ""
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1463
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1928
 msgid "Images"
-msgstr ""
+msgstr "Images"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:39
 msgid "Images editor:"
-msgstr ""
+msgstr "Éditeur d'images :"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
 msgid "Images from web"
-msgstr ""
+msgstr "Images du Web"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:91
 msgid "Images per string:"
-msgstr ""
+msgstr "Images par chaîne :"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:50
 msgid "Immediately begin uploading to the server"
-msgstr ""
+msgstr "Commencer immédiatement à charger sur le serveur"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:353
 msgid "Implicit"
-msgstr ""
+msgstr "Implicite"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
@@ -1763,51 +1817,51 @@ msgstr ""
 #: ../Source/Gui/Dialogs/MainDlg.cpp:70
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102 ../Source/Gui/Win7JumpList.cpp:267
 msgid "Import Video File"
-msgstr ""
+msgstr "Importer un fichier vidéo"
 
 #: ../Source/Core/Upload/UploadTask.cpp:382
 #: ../Source/Gui/UploadListModel.cpp:21
 msgid "In queue"
-msgstr ""
+msgstr "File d’attente"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1784
 msgid "Including subdirectories"
-msgstr ""
+msgstr "Inclure des sous-répertoires"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:143
 msgid "Info about last video"
-msgstr ""
+msgstr "Informations sur la dernière vidéo"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:244
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:52
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:86
 msgid "Information about file"
-msgstr ""
+msgstr "Informations sur le fichier"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:107
 #, c-format
 msgid "Information about file \"%s\" :"
-msgstr ""
+msgstr "Infos sur le fichier \"%s\" :"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:245
 msgid "Initial value:"
-msgstr ""
+msgstr "Valeur initiale :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:64
 msgid "Integration"
-msgstr ""
+msgstr "Intégration"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:53
 msgid "Integration in menu \"Send to\""
-msgstr ""
+msgstr "Intégration dans le menu \"Envoyer vers\""
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:216
 msgid "Intercept PrintScreen and Alt+PrintScreen hotkeys"
-msgstr ""
+msgstr "Intercepter les raccourcis clavier Impr. écran et Alt+Impr. écran"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:36
 msgid "Interface language:"
-msgstr ""
+msgstr "Langue de l'interface :"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:411
 #, c-format
@@ -1815,112 +1869,116 @@ msgid ""
 "Invalid source URL: '%s'. Absolute URL is needed, including schema (http,"
 "https,etc)"
 msgstr ""
+"URL source invalide: '%s'. Une URL absolue est requise, y compris le schéma "
+"(http, https, etc.)"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:260
 msgid "Invert selection"
-msgstr ""
+msgstr "Inverser la sélection"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:85
 msgid "JPEG, PNG, GIF, BMP or any other file"
-msgstr ""
+msgstr "JPEG, PNG, GIF, BMP ou tout autre fichier"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:31
 msgid "Just URL"
-msgstr ""
+msgstr "Juste l'URL"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:63
 msgid ""
 "Just drag and drop your files into the program window, and it will process "
 "them."
 msgstr ""
+"Glissez et déposez simplement vos fichiers dans la fenêtre du programme, et "
+"il les traitera."
 
 #: ../Source/Func/LangClass.cpp:104
 msgid "LAYOUT_DIRECTION"
-msgstr ""
+msgstr "DIRECTION_DE_LA_MISE_EN_PLACE"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100
 msgid "Last Region"
-msgstr ""
+msgstr "Dernière région"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:32
 msgid "Last code type selected"
-msgstr ""
+msgstr "Dernier type de code choisi"
 
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:215
 #: ../Source/Gui/Dialogs/TraySettings.cpp:35
 msgid "Launch program on Windows startup"
-msgstr ""
+msgstr "Lancer le programme au démarrage de Windows"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:30
 msgid "Left button double-click:"
-msgstr ""
+msgstr "Double-clic sur le bouton gauche:"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:31
 msgid "Left button single click:"
-msgstr ""
+msgstr "Clic simple sur le bouton gauche :"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:168
 msgid "Libraries:"
-msgstr ""
+msgstr "Bibliothèques:"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:946
 msgid "Line"
-msgstr ""
+msgstr "Ligne"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:205
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:209
 msgid "Line thickness"
-msgstr ""
+msgstr "Épaisseur de ligne"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:462
 msgid "Links"
-msgstr ""
+msgstr "Liens"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:402
 #, c-format
 msgid "Links (%d)"
-msgstr ""
+msgstr "Liens (%d)"
 
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:82
 msgid "Links (URL)"
-msgstr ""
+msgstr "Liens (URL)"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:166
 msgid "Links to Images/Files"
-msgstr ""
+msgstr "Liens vers des Images/Fichiers"
 
 #: ../Source/Gui/Controls/ThumbsView.cpp:332
 msgid "List of Images"
-msgstr ""
+msgstr "Liste des images"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:80
 msgid "List of URLs"
-msgstr ""
+msgstr "Liste des URL"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:58
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:570
 msgid "Loading..."
-msgstr ""
+msgstr "Chargement..."
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:45
 msgid "Local"
-msgstr ""
+msgstr "Local"
 
 #: ../Source/Gui/Dialogs/HotkeyEditor.cpp:60
 msgid "Local hotkey:"
-msgstr ""
+msgstr "Raccourci clavier local :"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:463
 msgid "Log"
-msgstr ""
+msgstr "Journal"
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:368
 msgid "Logging in..."
-msgstr ""
+msgstr "Journalisation dans..."
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:266
 msgid "Login"
-msgstr ""
+msgstr "Connexion"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:32
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:30
@@ -1929,143 +1987,145 @@ msgstr ""
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:257
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:50
 msgid "Login:"
-msgstr ""
+msgstr "Connexion:"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:92
 msgid "Logout"
-msgstr ""
+msgstr "Déconnexion"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:337
 msgid "Logout succesfully."
-msgstr ""
+msgstr "Déconnexion réussie."
 
 #: ../Source/Func/UpdatePackage.cpp:507
 msgid "MD5 check failed for file "
-msgstr ""
+msgstr "Échec de la vérification MD5 du fichier "
 
 #: ../Source/Func/UpdatePackage.cpp:403
 msgid "MD5 check of the update package failed "
-msgstr ""
+msgstr "Échec de la vérification MD5 du package de mise à jour "
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:416
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
 msgstr ""
+"MediaInfo.dll introuvable !\n"
+"Impossible d'obtenir des infos techniques sur les fichiers multimédias."
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:32
 msgid "Middle button click:"
-msgstr ""
+msgstr "Clic du bouton du milieu :"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:21
 msgid "Mime-type"
-msgstr ""
+msgstr "Type MIME"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:553
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:115
 msgid "Monitor"
-msgstr ""
+msgstr "Moniteur"
 
 #: ../Source/3rdpart/ColorButton.cpp:226
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:24
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:31
 msgid "More colors..."
-msgstr ""
+msgstr "Plus de couleurs..."
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:29
 msgid "Mouse clicks handlers"
-msgstr ""
+msgstr "Gestion des clics de souris"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:940
 msgid "Move"
-msgstr ""
+msgstr "Déplacer"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:89
 msgid "Move Down"
-msgstr ""
+msgstr "Vers le bas"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:84
 msgid "Move Up"
-msgstr ""
+msgstr "Vers le haut"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:19
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:23
 msgid "N"
-msgstr ""
+msgstr "N"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:69
 msgid "Name cannot be empty"
-msgstr ""
+msgstr "Le nom ne peut être vide"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:56
 msgid "Name:"
-msgstr ""
+msgstr "Nom :"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2583
 msgid "Network Debugger"
-msgstr ""
+msgstr "Débogueur réseau"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:325
 msgid "New Profile Name"
-msgstr ""
+msgstr "Nouveau nom de profil"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:972
 msgid "New folder"
-msgstr ""
+msgstr "Nouveau dossier"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:394
 msgid "New profile"
-msgstr ""
+msgstr "Nouveau profil"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:715
 msgid "Next >"
-msgstr ""
+msgstr "Suivant >"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:350
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:635
 msgid "No Folder Selected"
-msgstr ""
+msgstr "Aucun dossier sélectionné"
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:120
 msgid "No files were found."
-msgstr ""
+msgstr "Aucun fichier n'a été trouvé."
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:120
 msgid "No pictures were found."
-msgstr ""
+msgstr "Aucune image n'a été trouvée."
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:25
 msgid "No proxy (direct connection)"
-msgstr ""
+msgstr "Aucun proxy (connexion directe)"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:206
 msgid "No updates for Image Uploader's components are available"
-msgstr ""
+msgstr "Aucune mise à jour des composants d'Image Uploader n'est disponible"
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:99
 msgid "None"
-msgstr ""
+msgstr "Aucune"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:26
 msgid "Num of retries per action:"
-msgstr ""
+msgstr "Nombre de tentatives par action:"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:25
 msgid "Num of retries per file:"
-msgstr ""
+msgstr "Nombre de tentatives par fichier:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:51
 msgid "Number of columns:"
-msgstr ""
+msgstr "Nombre de colonnes :"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:81
 msgid "Number of frames:"
-msgstr ""
+msgstr "Nombre de cadres :"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:257
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:48
@@ -2087,82 +2147,82 @@ msgstr ""
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:39
 msgid "Older than 30 days"
-msgstr ""
+msgstr "Vieux de plus de 30 jours"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:462
 msgid "Open containing folder"
-msgstr ""
+msgstr "Ouvrir dossier contenant"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:67
 msgid "Open download page"
-msgstr ""
+msgstr "Ouvrir la page de téléchargement"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:205
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:364
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:983
 msgid "Open in Web Browser"
-msgstr ""
+msgstr "Ouvrir dans le navigateur Web"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
 msgid "Open in Wizard"
-msgstr ""
+msgstr "Ouvrir dans l'assistant"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:203
 msgid "Open in external editor"
-msgstr ""
+msgstr "Ouvrir dans un éditeur externe"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:220
 #: ../Source/Gui/Dialogs/MainDlg.cpp:211
 msgid "Open in folder"
-msgstr ""
+msgstr "Ouvrir dans le dossier"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
 msgid "Open in the editor"
-msgstr ""
+msgstr "Ouvrir dans l'éditeur"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:72
 msgid "Open screenshot in the editor"
-msgstr ""
+msgstr "Ouvrir la capture d'écran dans l'éditeur"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:614
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:203
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2580
 msgid "Open screenshots folder"
-msgstr ""
+msgstr "Ouvrir le dossier des captures d'écran"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:801
 msgid "Open servers folder"
-msgstr ""
+msgstr "Ouvrir le dossier serveurs"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:91
 msgid "Open system connection settings"
-msgstr ""
+msgstr "Ouvrir paramètres de connexion du système"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:123
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1087
 msgid "Open the website"
-msgstr ""
+msgstr "Ouvrir le Site Web"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:199
 msgid "Open with..."
-msgstr ""
+msgstr "Ouvrir avec..."
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:145
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
-msgstr ""
+msgstr "Options"
 
 #: ../Source/Func/MediaInfoHelper.cpp:156
 msgid "Overall bitrate: "
-msgstr ""
+msgstr "Débit binaire global: "
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:55
 msgid "Parameters:"
-msgstr ""
+msgstr "Paramètres:"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:33
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:31
@@ -2171,104 +2231,107 @@ msgstr ""
 #: ../Source/Gui/Dialogs/QuickSetupDlg.cpp:259
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:51
 msgid "Password:"
-msgstr ""
+msgstr "Mot de passe :"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:521
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:205
 #: ../Source/Gui/Dialogs/MainDlg.cpp:165
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
-msgstr ""
+msgstr "Coller"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:82
 msgid "Paste HTML from clipboard"
-msgstr ""
+msgstr "Coller le HTML du presse-papiers"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:84
 msgid "Paste HTML on Ctrl+V"
-msgstr ""
+msgstr "Coller HTML par Ctrl+V"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:58
 msgid "Paste a link to shorten it:"
-msgstr ""
+msgstr "Collez un lien pour le raccourcir :"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:123
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:803
 msgid "Pixelation"
-msgstr ""
+msgstr "Pixelation"
 
 #: ../Source/Gui/Dialogs/ClearHistoryDlg.cpp:40
 msgid "Please choose period:"
-msgstr ""
+msgstr "Veuillez choisir la période:"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:108
 msgid "Please enter an URL"
-msgstr ""
+msgstr "Veuillez saisir une URL"
 
 #: ../Source/Func/WtlScriptDialogProvider.cpp:16
 msgid "Please enter the text you see in the image:"
-msgstr ""
+msgstr "Veuillez saisir le texte que vous voyez dans l'image:"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:35
 msgid ""
 "Please note that program needs to be restarted for new language settings to "
 "take affect."
 msgstr ""
+"Veuillez noter que le programme doit être redémarré pour que les nouveaux "
+"paramètres de langue prennent effet."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:367
 #, c-format
 msgid "Please specify authentication settings for '%s' server!"
 msgstr ""
+"Veuillez spécifier les paramètres d'authentification pour le serveur '%s' !"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:397
 msgid "Please wait while your history is being converted..."
-msgstr ""
+msgstr "Veuillez patienter pendant la conversion de votre historique..."
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:27
 msgid "Port:"
-msgstr ""
+msgstr "Port :"
 
 #: ../Source/Core/Upload/UploadTask.cpp:385
 msgid "Postponed"
-msgstr ""
+msgstr "Reporté"
 
 #: ../Source/Core/Upload/Filters/ImageConverterFilter.cpp:40
 msgid "Preparing image..."
-msgstr ""
+msgstr "Préparation de l'image..."
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:58
 msgid "Preserve metadata (for ex. EXIF)"
-msgstr ""
+msgstr "Conserver les métadonnées (par ex. EXIF)"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:146
 msgid "Preview"
-msgstr ""
+msgstr "Aperçu"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:555
 msgid "Preview Window"
-msgstr ""
+msgstr "Aperçu de la fenêtre"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:204
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:924
 msgid "Print..."
-msgstr ""
+msgstr "Imprimer..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:285
 msgid "Private key file doesn't exist."
-msgstr ""
+msgstr "Le fichier de clé privée n'existe pas."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:40
 msgid "Private key file:"
-msgstr ""
+msgstr "Fichier de clé privée :"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:56
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:117
 msgid "Process images before upload"
-msgstr ""
+msgstr "Traiter les images avant de les charger"
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:46
 msgid "Processing folder:"
-msgstr ""
+msgstr "Dossier de traitement :"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:540
 #, c-format
@@ -2277,28 +2340,31 @@ msgid ""
 "It may be caused by a configuration error or usage of multiple versions of "
 "the application on the same computer."
 msgstr ""
+"Profil \"%s\" introuvable.\n"
+"Cela peut être dû à une erreur de configuration ou à l'utilisation de "
+"plusieurs versions de l'application sur le même ordinateur."
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:331
 msgid "Profile with such name already exists!"
-msgstr ""
+msgstr "Un profil portant ce nom existe déjà !"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:40
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:57
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:115
 msgid "Profile:"
-msgstr ""
+msgstr "Profil:"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:82
 msgid "Progress:"
-msgstr ""
+msgstr "Progression :"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:72 ../Source/Gui/Dialogs/MainDlg.cpp:258
 msgid "Properties"
-msgstr ""
+msgstr "Propriétés"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:28
 msgid "Proxy type:"
-msgstr ""
+msgstr "Type de proxy :"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:42
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:42
@@ -2306,344 +2372,345 @@ msgstr ""
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:68
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:112
 msgid "Quality:"
-msgstr ""
+msgstr "Qualité:"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:220
 msgid "Queued"
-msgstr ""
+msgstr "File d’attente"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:524
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 msgid "Quick upload image from clipboard"
-msgstr ""
+msgstr "Chargement rapide d'une image depuis le presse-papiers"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:75
 msgid "Re-upload images"
-msgstr ""
+msgstr "Re-charger les images"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:116
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:335
 msgid "Reason:"
-msgstr ""
+msgstr "Raison:"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:84
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:775
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:949
 msgid "Rectangle"
-msgstr ""
+msgstr "Rectangle"
 
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:235
 msgid "Redo"
-msgstr ""
+msgstr "Rétablir"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:51
 msgid "Remember file server's settings in wizard"
-msgstr ""
+msgstr "Mémoriser les paramètres du serveur de fichiers dans l'assistant"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:50
 msgid "Remember image server's settings in wizard"
-msgstr ""
+msgstr "Mémoriser les paramètres du serveur d'images dans l'assistant"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:34
 msgid "Remote directory:"
-msgstr ""
+msgstr "Répertoire distant:"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:257
 msgid "Remove"
-msgstr ""
+msgstr "Retirer"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:79
 msgid "Remove Item"
-msgstr ""
+msgstr "Retirer l'élément"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:172
 msgid "Remove all"
-msgstr ""
+msgstr "Retirer tout"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
 msgid "Remove from list"
-msgstr ""
+msgstr "Retirez de la liste"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:143
 msgid "Remove this account from the list (not from the remote server)"
-msgstr ""
+msgstr "Retirez ce compte de la liste (pas du serveur distant)"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:48
 msgid "Resize mode:"
-msgstr ""
+msgstr "Mode redimensionnement :"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:101
 msgid "Retrieve thumbnails from the Internet"
-msgstr ""
+msgstr "Récupérer des vignettes sur Internet"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:260
 msgid "Retry"
-msgstr ""
+msgstr "Réessayer"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:76
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:95 ../Source/Gui/Win7JumpList.cpp:211
 msgid "Reupload"
-msgstr ""
+msgstr "Recharger"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
 msgid "Reupload images"
-msgstr ""
+msgstr "Recharger les images"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:85
 msgid "Reuploading images in the text with preserving it's original markup"
 msgstr ""
+"Recharger les images dans le texte en préservant leur balisage d'origine"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:33
 msgid "Right button click:"
-msgstr ""
+msgstr "Clic sur le bouton droit :"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1767
 msgid "Rotate clockwise (90°)"
-msgstr ""
+msgstr "Rotation dans le sens horaire (90°)"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1768
 msgid "Rotate counter clockwise (-90°)"
-msgstr ""
+msgstr "Rotation dans le sens antihoraire (-90°)"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:922
 msgid "Rotate or flip"
-msgstr ""
+msgstr "Rotation ou retournement"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:89
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:105
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:776
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:789
 msgid "Rounded rectangle"
-msgstr ""
+msgstr "Rectangle arrondi"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:213
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:217
 msgid "Rounding radius"
-msgstr ""
+msgstr "Rayon de l'arrondi"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:47
 msgid "SFTP"
-msgstr ""
+msgstr "SFTP"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:72
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:100
 msgid "Same format as image"
-msgstr ""
+msgstr "Même format que l'image"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:732
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:913
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:134
 msgid "Save Profile"
-msgstr ""
+msgstr "Enregistrer le profil"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:212
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:814
 msgid "Save as..."
-msgstr ""
+msgstr "Enregistrer sous..."
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:84
 msgid "Save as:"
-msgstr ""
+msgstr "Enregistrer sous:"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1238
 msgid "Save changes?"
-msgstr ""
+msgstr "Enregistrer les modifications ?"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:184
 msgid "Save log file"
-msgstr ""
+msgstr "Enregistrer le fichier journal"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:29
 msgid "Save to file"
-msgstr ""
+msgstr "Enregistrer dans un fichier"
 
 #: ../Source/Func/ImageGenerator.cpp:114
 msgid "Saving image..."
-msgstr ""
+msgstr "Sauvegarde de l'image..."
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:52
 msgid "Saving parameters"
-msgstr ""
+msgstr "Sauvegarde des paramètres"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:62
 msgid "Scaling:"
-msgstr ""
+msgstr "Mise à l'échelle :"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:69
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:60
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:98
 msgid "Screen Capture"
-msgstr ""
+msgstr "Capture d'écran"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:529
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 #: ../Source/Gui/Dialogs/MainDlg.cpp:71
 msgid "Screenshot"
-msgstr ""
+msgstr "Capturer écran"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:604
 msgid "Screenshot Action"
-msgstr ""
+msgstr "Action de capture d'écran"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:970
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2285
 msgid "Screenshot has been copied to clipboard."
-msgstr ""
+msgstr "La capture d'écran a été copiée dans le Presse-papier."
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:963
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:964
 msgid "Screenshot was uploaded"
-msgstr ""
+msgstr "Capture d'écran a été chargée"
 
 #: ../Source/Gui/Win7JumpList.cpp:219
 msgid "Screenshot..."
-msgstr ""
+msgstr "Capture d'écran..."
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:52
 msgid "Script: "
-msgstr ""
+msgstr "Script: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:254
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:53
 msgid "Search by image"
-msgstr ""
+msgstr "Recherche par image"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:845
 #, c-format
 msgid "Search by image (%s)"
-msgstr ""
+msgstr "Recherche par image (%s)"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:919
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1175
 #, c-format
 msgid "Search on %s"
-msgstr ""
+msgstr "Rechercher sur %s"
 
 #: ../Source/Gui/Dialogs/FolderAddDlg.cpp:32
 msgid "Searching for picture files..."
-msgstr ""
+msgstr "Recherche de fichiers image..."
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:42
 msgid "Secured connection:"
-msgstr ""
+msgstr "Connexion sécurisée :"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:99
 msgid "Select Region..."
-msgstr ""
+msgstr "Sélectionné région..."
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:132
 msgid "Select all"
-msgstr ""
+msgstr "Sélectionner toutes"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:61
 msgid "Select an action:"
-msgstr ""
+msgstr "Sélectionnez une action :"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:375
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:157
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:129
 msgid "Select folder"
-msgstr ""
+msgstr "Sélectionner dossier"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1395
 msgid "Select region"
-msgstr ""
+msgstr "Sélectionné région"
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:54
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:63
 msgid "Select..."
-msgstr ""
+msgstr "Sélectionné..."
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:108
 #, c-format
 msgid "Selected server: %s"
-msgstr ""
+msgstr "Serveur sélectionné : %s"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:111
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1525
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1538
 #, c-format
 msgid "Selected servers: %d"
-msgstr ""
+msgstr "Serveurs sélectionnés : %d"
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:24
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:116
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:160
 msgid "Server"
-msgstr ""
+msgstr "Serveur"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:30
 msgid "Server [:port]:"
-msgstr ""
+msgstr "Serveur [:port]:"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:665
 msgid "Server and authentication settings"
-msgstr ""
+msgstr "Paramètres du serveur et d'authentification"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:67
 msgid "Server for other file types"
-msgstr ""
+msgstr "Serveur pour d'autres types de fichiers"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:81
 msgid "Server for quick screenshot uploading"
-msgstr ""
+msgstr "Serveur pour le chargement rapide de captures d'écran"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:104
 msgid "Server for temporary images"
-msgstr ""
+msgstr "Serveur pour images temporaires"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:92
 msgid "Server for uploading from Explorer's context menu"
-msgstr ""
+msgstr "Serveur de chargement depuis le menu contextuel de l'Explorateur"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:98
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:67
 msgid "Server for uploading images"
-msgstr ""
+msgstr "Serveur pour charger des images"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:45
 msgid "Server name:"
-msgstr ""
+msgstr "Nom du serveur :"
 
 #: ../Source/Gui/Controls/MultiServerSelectorControl.cpp:106
 msgid "Server not chosen"
-msgstr ""
+msgstr "Serveur non choisi"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:834
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1067
 msgid "Server settings..."
-msgstr ""
+msgstr "Paramètres du Serveur..."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:125
 msgid "Server to host other file formats"
-msgstr ""
+msgstr "Serveur pour héberger d’autres formats de fichier"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:120
 msgid "Server to host your images"
-msgstr ""
+msgstr "Serveur pour héberger vos images"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:39
 msgid "Server type:"
-msgstr ""
+msgstr "Type de serveur :"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:249
 msgid "Server's name cannot be empty"
-msgstr ""
+msgstr "Le nom du serveur ne peut être vide"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:47
 msgid "Server: "
-msgstr ""
+msgstr "Serveur: "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:57
 msgid "Servers"
-msgstr ""
+msgstr "Serveurs"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:97
 msgid "Session total:"
-msgstr ""
+msgstr "Session Totale:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:619
@@ -2651,153 +2718,154 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:79
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:107
 msgid "Settings"
-msgstr ""
+msgstr "Paramètres"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:155
 msgid "Settings file path:"
-msgstr ""
+msgstr "Chemin du fichier de paramètres :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:78
 msgid "Settings have been saved."
-msgstr ""
+msgstr "Les paramètres ont été enregistrés."
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:97
 msgid "Settings..."
-msgstr ""
+msgstr "Paramètres..."
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:48
 msgid "Shell context menu integration"
-msgstr ""
+msgstr "Intégration du menu contextuel du shell"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:881
 msgid "Short URL"
-msgstr ""
+msgstr "URL courte"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:56
 msgid "Shorten"
-msgstr ""
+msgstr "Raccourcir"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:367
 msgid "Shorten URL"
-msgstr ""
+msgstr "Raccourcir l'URL"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:365
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1256
 #, c-format
 msgid "Shorten URL using %s"
-msgstr ""
+msgstr "Raccourcir l'URL en utilisant %s"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:64
 msgid "Shorten URLs"
-msgstr ""
+msgstr "Raccourcir les URL"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:611
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:96
 msgid "Shorten a link"
-msgstr ""
+msgstr "Raccourcir un lien"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 msgid "Shorten a link from the clipboard"
-msgstr ""
+msgstr "Raccourcir un lien depuis presse-papiers"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:421
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
-msgstr ""
+msgstr "Raccourcir l'URL \"%s\" à l'aide de %s"
 
 #: ../Source/Gui/UploadListModel.cpp:177
 msgid "Shortening link..."
-msgstr ""
+msgstr "Lien de raccourcissement..."
 
 #: ../Source/Gui/Win7JumpList.cpp:235
 msgid "Shot of Selected Region..."
-msgstr ""
+msgstr "Prise de vue d'une région choisie..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2589
 msgid "Show Error Log"
-msgstr ""
+msgstr "Afficher le journal des erreurs"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:40
 msgid "Show automatically log window in case of error"
-msgstr ""
+msgstr "Affichage auto de la fenêtre de journal en cas d'erreur"
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:195
 msgid "Show in default viewer"
-msgstr ""
+msgstr "Afficher dans la visionneuse par défaut"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:263
 msgid "Show log for this file"
-msgstr ""
+msgstr "Afficher le journal de ce fichier"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:46
 msgid "Show preview for video files in file list"
-msgstr ""
+msgstr "Afficher l'aperçu des fichiers vidéo dans la liste des fichiers"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:613
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 msgid "Show program window"
-msgstr ""
+msgstr "Afficher la fenêtre du programme"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:616
 msgid "Show results of last upload"
-msgstr ""
+msgstr "Afficher les résultats du dernier transfert"
 
 #: ../Source/Gui/Dialogs/TraySettings.cpp:28
 msgid "Show tray icon"
-msgstr ""
+msgstr "Afficher l'icône de la barre d'état"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:102
 msgid "Sign in..."
-msgstr ""
+msgstr "Se connecter..."
 
 #: ../Source/Gui/Controls/FileFormatErrorView.cpp:22
 msgid "Size"
-msgstr ""
+msgstr "Taille"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:24
 msgid "Skip all"
-msgstr ""
+msgstr "Ignorer tout"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:59
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:126
 msgid "Skip animated"
-msgstr ""
+msgstr "Ignorer l'animation"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:45
 msgid "Skip image processing step if the image has right parameters"
 msgstr ""
+"Ignorer l'étape de traitement de l'image si l'image a les bons paramètres"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:23
 msgid "Skip selected"
-msgstr ""
+msgstr "Ignorer sélectionné"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:83
 msgid "Source URL (optional):"
-msgstr ""
+msgstr "Source URL (optionnel):"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:79
 msgid "Source code"
-msgstr ""
+msgstr "Code Source"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:621
 msgid "Specify account..."
-msgstr ""
+msgstr "Spécifier le compte..."
 
 #: ../Source/Core/Upload/FileQueueUploaderPrivate.cpp:396
 msgid "Starting upload"
-msgstr ""
+msgstr "Démarrage du chargement"
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:22
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:58
 msgid "Status"
-msgstr ""
+msgstr "Statut"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:952
 msgid "Step"
-msgstr ""
+msgstr "Étape"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:473
 #: ../Source/Gui/Dialogs/StatusDlg.cpp:87
@@ -2805,348 +2873,349 @@ msgstr ""
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:80
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:175
 msgid "Stop"
-msgstr ""
+msgstr "Stop"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:629
 msgid "Stop uploading"
-msgstr ""
+msgstr "Stopper le chargement"
 
 #: ../Source/Core/Upload/UploadTask.cpp:373
 msgid "Stopped"
-msgstr ""
+msgstr "Stoppé"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:81
 msgid "Stretch"
-msgstr ""
+msgstr "Étirée"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:55
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:41
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:50
 msgid "Stroke color:"
-msgstr ""
+msgstr "Couleur du trait :"
 
 #: ../Source/Func/MediaInfoHelper.cpp:282
 msgid "Subtitles: "
-msgstr ""
+msgstr "Sous-titres: "
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Success"
-msgstr ""
+msgstr "Succès"
 
 #: ../Source/Gui/Dialogs/MediaInfoDlg.cpp:54
 msgid "Summary"
-msgstr ""
+msgstr "Sommaire"
 
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:36
 msgid "Summary:"
-msgstr ""
+msgstr "Sommaire:"
 
 #: ../Source/ImageEditor/Gui/ColorsDelegate.cpp:81
 msgid "Swap colors"
-msgstr ""
+msgstr "Échanger les couleurs"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:163
 msgid "Table of clickable thumbnails"
-msgstr ""
+msgstr "Tableau des vignettes cliquables"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:41
 msgid "Test connection"
-msgstr ""
+msgstr "Test de la connexion"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:308
 msgid "Test failed"
-msgstr ""
+msgstr "Échec du test"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:27
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:951
 msgid "Text"
-msgstr ""
+msgstr "Texte"
 
 #: ../Source/ImageEditor/Gui/TextParamsWindow.cpp:93
 msgid "Text Options"
-msgstr ""
+msgstr "Options du texte"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:48
 msgid "Text Settings:"
-msgstr ""
+msgstr "Paramètre du texte:"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:54
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:49
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:58
 msgid "Text color:"
-msgstr ""
+msgstr "Couleur du texte :"
 
 #: ../Source/Gui/Dialogs/InputDialog.cpp:79
 msgid "Text contains forbidden characters!"
-msgstr ""
+msgstr "Le texte contient des caractères interdits !"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:180
 msgid "Text files"
-msgstr ""
+msgstr "Fichiers texte"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:52
 msgid "Text on image"
-msgstr ""
+msgstr "Texte sur image"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:57
 msgid "Text position:"
-msgstr ""
+msgstr "Position du texte :"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:51
 msgid "Text:"
-msgstr ""
+msgstr "Texte:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:107
 msgid "Thanks to the authors of the following open-source libraries:"
-msgstr ""
+msgstr "Merci aux auteurs des bibliothèques open source suivantes :"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:83
 msgid "Thanks to:"
-msgstr ""
+msgstr "Merci à :"
 
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:267
 #, c-format
 msgid "The field '%s' cannot be empty."
-msgstr ""
+msgstr "Le champ '%s' ne peut pas être vide."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:838
 msgid "The file name cannot be empty."
-msgstr ""
+msgstr "Le nom du fichier ne peut être vide."
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:842
 msgid "The file name contains forbidden characters."
-msgstr ""
+msgstr "Le nom du fichier contient des caractères interdits."
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:202
 msgid "The short link has been copied to the clipboard!"
-msgstr ""
+msgstr "Le lien court a été copié dans le presse-papiers !"
 
 #: ../Source/Gui/Dialogs/FileFormatCheckErrorDlg.cpp:22
 msgid "These files cannot be uploaded to chosen servers:"
-msgstr ""
+msgstr "Ces fichiers ne peuvent pas être chargés sur les serveurs choisis :"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:127
 msgid "This means that the thumbnail will be created by site, not the program."
 msgstr ""
+"Cela signifie que la vignette sera créée par site et non par programme."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1104
 msgid "This server doesn't have any settings."
-msgstr ""
+msgstr "Ce serveur n'a aucun paramètre."
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:24
 msgid "Thread"
-msgstr ""
+msgstr "Fil"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:27
 msgid "Threads number:"
-msgstr ""
+msgstr "Nombre de fils :"
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:23
 msgid "Thumbnail"
-msgstr ""
+msgstr "Vignette"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:55
 msgid "Thumbnail Preset Editor"
-msgstr ""
+msgstr "Éditeur de préréglages de vignettes"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:56
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:61
 msgid "Thumbnail Preset:"
-msgstr ""
+msgstr "Préréglage vignette :"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:58
 msgid "Thumbnail settings"
-msgstr ""
+msgstr "Paramètres vignette"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:52
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:69
 msgid "Thumbnail text:"
-msgstr ""
+msgstr "Texte de la vignette :"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:52
 msgid "Thumbnail width:"
-msgstr ""
+msgstr "Largeur vignette :"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:122
 msgid "Thumbnail's size:"
-msgstr ""
+msgstr "Taille de la vignette :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:118
 msgid "Thumbnails"
-msgstr ""
+msgstr "Vignettes"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:25
 msgid "Time"
-msgstr ""
+msgstr "Heure"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:70
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Timeout:"
-msgstr ""
+msgstr "Délai d’attente:"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:46
 msgid "To all"
-msgstr ""
+msgstr "À tous"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:96
 msgid "Top center"
-msgstr ""
+msgstr "Centre supérieur"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:88
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:95
 msgid "Top left corner"
-msgstr ""
+msgstr "Coin supérieur gauche"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:90
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:97
 msgid "Top right corner"
-msgstr ""
+msgstr "Coin supérieur droit"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:99
 msgid "Total size:"
-msgstr ""
+msgstr "Taille totale:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:94
 msgid "Translators:"
-msgstr ""
+msgstr "Traducteurs :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:65
 msgid "Tray icon"
-msgstr ""
+msgstr "Icône de la barre d'état"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:189
 msgid "Tray icon context menu"
-msgstr ""
+msgstr "Menu contextuel de l'icône de la barre d'état"
 
 #: ../Source/Gui/Controls/NetworkDebugListView.cpp:26
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: ../Source/ImageEditor/Gui/Toolbar.cpp:268
 msgid "Type of arrow"
-msgstr ""
+msgstr "Type de flèche"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:50
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:38
 msgid "URL for downloading will look like:"
-msgstr ""
+msgstr "L'URL de téléchargement ressemblera à :"
 
 #: ../Source/Gui/Dialogs/AddDirectoryServerDialog.cpp:47
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:35
 msgid "URL for downloading:"
-msgstr ""
+msgstr "URL de téléchargement :"
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:116
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:86
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1172
 msgid "URL shortening server"
-msgstr ""
+msgstr "Serveur de réduction d'URL"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:95
 msgid "URL:"
-msgstr ""
+msgstr "URL:"
 
 #: ../Source/Gui/Controls/MyImage.cpp:176
 #: ../Source/Gui/Controls/ThumbsView.cpp:333
 msgid "Unable to load picture"
-msgstr ""
+msgstr "Impossible de charger l'image"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2254
 msgid "Unable to make screenshot!"
-msgstr ""
+msgstr "Impossible de faire une capture d'écran !"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:884
 msgid "Unable to shorten the link..."
-msgstr ""
+msgstr "Impossible de raccourcir le lien..."
 
 #: ../Source/Func/UpdatePackage.cpp:411
 #, c-format
 msgid "Unable to unpack archive %s"
-msgstr ""
+msgstr "Impossible de déballer l'archive %s"
 
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:959
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:234
 msgid "Undo"
-msgstr ""
+msgstr "Rétablir"
 
 #: ../Source/Core/Upload/UploadTask.cpp:392
 msgid "Unknown status"
-msgstr ""
+msgstr "Statut inconnu"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:191
 msgid "Update components"
-msgstr ""
+msgstr "Mettre à jour les composants"
 
 #: ../Source/Func/UpdatePackage.cpp:428
 #, c-format
 msgid "Update finished. Updated %d of %d files "
-msgstr ""
+msgstr "Mise à jour terminée. Mise à jour de %d fichiers sur %d "
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:32
 msgid "Upload Buffer Size:"
-msgstr ""
+msgstr "Taille du tampon de chargement :"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:100
 msgid "Upload History"
-msgstr ""
+msgstr "Historique de chargement"
 
 #: ../Source/Gui/Win7JumpList.cpp:196
 msgid "Upload Images"
-msgstr ""
+msgstr "Charger des images"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:73
 msgid "Upload failed! (retry limit reached)"
-msgstr ""
+msgstr "Échec du chargement ! (limite de tentatives atteinte)"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:71
 #, c-format
 msgid "Upload failed. Another retry (%d)..."
-msgstr ""
+msgstr "Chargement a échoué. Une autre tentative (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:503
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:191
 msgid "Upload files"
-msgstr ""
+msgstr "Charger des fichiers"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:504
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
 msgid "Upload folder"
-msgstr ""
+msgstr "Chargement du dossier"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:240
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:190
 msgid "Upload images"
-msgstr ""
+msgstr "Charger des images"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:242
 msgid "Upload images only"
-msgstr ""
+msgstr "Charger seulement des images"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:461
 msgid "Upload progress"
-msgstr ""
+msgstr "Progression du chargement"
 
 #: ../Source/Gui/Dialogs/ResultsWindow.cpp:74
 msgid "Upload results"
-msgstr ""
+msgstr "Chargement des résultats"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:33
 msgid "Upload speed limit per thread:"
-msgstr ""
+msgstr "Limite de vitesse d'envoi par fil :"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:124
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:907
 #, c-format
 msgid "Upload to %s"
-msgstr ""
+msgstr "Charger sur %s"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:905
 msgid "Upload to Web"
-msgstr ""
+msgstr "Charger sur le Web"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:349
 #, c-format
@@ -3155,183 +3224,188 @@ msgid ""
 "You should sign Up on this server and specify your account details in "
 "program settings."
 msgstr ""
+"Le chargement vers le serveur '%s' est impossible sans compte.\n"
+"Vous devez vous inscrire sur ce serveur et spécifier les détails de votre "
+"compte dans les paramètres du programme."
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:553
 msgid "Uploaded images: "
-msgstr ""
+msgstr "Images chargées : "
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:63
 msgid "Uploading"
-msgstr ""
+msgstr "Envoi en cours"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:925
 msgid "Uploading Files to Server"
-msgstr ""
+msgstr "Chargement de fichiers vers serveur"
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:24
 msgid "Uploading errors"
-msgstr ""
+msgstr "Erreurs de chargement"
 
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:598
 msgid "Uploading has been finished."
-msgstr ""
+msgstr "Le transfert est terminé."
 
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:78
 msgid "Uploading image..."
-msgstr ""
+msgstr "Chargement de l'image..."
 
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:29
 msgid "Uploading initiated from tray"
-msgstr ""
+msgstr "Chargement lancé depuis la barre d'état"
 
 #: ../Source/Func/DefaultUploadErrorHandler.cpp:77
 msgid "Uploading module"
-msgstr ""
+msgstr "Chargement du module"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:818
 msgid "Uploading screenshot"
-msgstr ""
+msgstr "Chargement d'une capture d'écran"
 
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:55
 msgid "Url Shortener"
-msgstr ""
+msgstr "Raccourcisseur d'URL"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:63
 msgid "Use default thumbnail settings"
-msgstr ""
+msgstr "Utiliser les paramètres des vignettes par défaut"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:376
 msgid "Use direct links"
-msgstr ""
+msgstr "Utiliser des liens directs"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:61
 msgid "Use old method of rectangular area selection"
-msgstr ""
+msgstr "Utiliser l'ancienne méthode de sélection de zone rectangulaire"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:23
 msgid "Use provided proxy:"
-msgstr ""
+msgstr "Utiliser le proxy fourni :"
 
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:60
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:121
 msgid "Use server-side thumbnails"
-msgstr ""
+msgstr "Utiliser les vignettes côté serveur"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:24
 msgid "Use system proxy settings"
-msgstr ""
+msgstr "Utiliser les paramètres du proxy système"
 
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:389
 msgid "Use template"
-msgstr ""
+msgstr "Utiliser le modèle"
 
 #: ../Source/Gui/Controls/ServerSelectorControl.cpp:92
 msgid "User name"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: ../Source/Gui/Controls/ThumbsView.cpp:417
 #, c-format
 msgid "VIDEO %s"
-msgstr ""
+msgstr "VIDÉO %s"
 
 #: ../Source/Gui/Dialogs/VideoGrabberParams.cpp:54
 msgid "Vertical interval:"
-msgstr ""
+msgstr "Intervalle vertical :"
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:61
 msgid "Video"
-msgstr ""
+msgstr "Vidéo"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:457
 msgid "Video backend"
-msgstr ""
+msgstr "Backend vidéo"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1682
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1900
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1929
 msgid "Video files"
-msgstr ""
+msgstr "Fichiers vidéo"
 
 #: ../Source/Func/MediaInfoHelper.cpp:163
 msgid "Video: "
-msgstr ""
+msgstr "Video: "
 
 #: ../Source/Gui/Dialogs/MainDlg.cpp:192
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:258
 msgid "View"
-msgstr ""
+msgstr "Afficher"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:214
 msgid "View BBCode/HTML codes"
-msgstr ""
+msgstr "Afficher les codes BBCode/HTML"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:105
 msgid "View Media File Information"
-msgstr ""
+msgstr "Afficher les infos du fichier multimédia"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:885
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:906
 msgid "View log for details."
-msgstr ""
+msgstr "Voir le journal pour plus de détails."
 
 #: ../Source/Core/Upload/UploadTask.cpp:388
 msgid "Waiting for child tasks"
-msgstr ""
+msgstr "En attente des tâches enfants"
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:91
 msgid "Watch Clipboard for URLs"
-msgstr ""
+msgstr "Surveiller les URL dans le presse-papiers"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:51
 msgid "Watermark"
-msgstr ""
+msgstr "Filigrane"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:50
 msgid "Watermark position:"
-msgstr ""
+msgstr "Position du filigrane :"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:48
 msgid "WebDAV"
-msgstr ""
+msgstr "WebDAV"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:259
 msgid "Website:"
-msgstr ""
+msgstr "Site Web :"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:64
 msgid ""
 "Welcome to the pictures publishing wizard, which will help you upload your "
 "images, photos, and video frames to the Internet!"
 msgstr ""
+"Bienvenue dans l'assistant de publication d'images, qui vous aidera à "
+"télécharger vos images, photos et cadres vidéo sur Internet !"
 
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:47
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:54
 msgid "Width:"
-msgstr ""
+msgstr "Largeur :"
 
 #: ../Source/Gui/Dialogs/IntegrationSettings.cpp:47
 msgid "Windows Explorer integration"
-msgstr ""
+msgstr "Intégration de l'Explorateur Windows"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:2462
 msgid "Work in progress"
-msgstr ""
+msgstr "Travail en progression"
 
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:355
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:169
 msgid "You are using the latest Image Uploader version."
-msgstr ""
+msgstr "Vous utilisez la dernière version d'Image Uploader."
 
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:133
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:142
 #, c-format
 msgid "You have not selected \"%s\""
-msgstr ""
+msgstr "Vous n'avez pas sélectionné \"%s\""
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:80
 #: ../Source/Gui/Dialogs/DefaultServersSettings.cpp:148
@@ -3340,89 +3414,89 @@ msgstr ""
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:141
 #, c-format
 msgid "You have not selected account for server \"%s\""
-msgstr ""
+msgstr "Vous n'avez pas sélectionné de compte pour le serveur \"%s\""
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:358
 msgid "You have not selected an file server"
-msgstr ""
+msgstr "Vous n'avez pas choisi de serveur de fichiers"
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:339
 msgid "You have not selected an image server"
-msgstr ""
+msgstr "Vous n'avez choisi aucun serveur d'images"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:74
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:113
 msgid "You have not selected server"
-msgstr ""
+msgstr "Vous n'avez pas sélectionné de serveur"
 
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 msgid "You have not selected server!"
-msgstr ""
+msgstr "Vous n'avez pas sélectionné de serveur !"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:98
 msgid "a pic of the whole screen or selected region"
-msgstr ""
+msgstr "une photo de tout l'écran ou de la région sélectionnée"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:107
 msgid "a tool for advanced users"
-msgstr ""
+msgstr "un outil pour utilisateurs avancés"
 
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:47
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:114
 msgid "and/or height:"
-msgstr ""
+msgstr "et/ou hauteur :"
 
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:102
 msgid "extracting frames from video"
-msgstr ""
+msgstr "extraire des images d'une vidéo"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:440
 msgid "file size"
-msgstr ""
+msgstr "taille du fichier"
 
 #: ../Source/Gui/Dialogs/ContextMenuItemDlg.cpp:135
 #, c-format
 msgid "folder \"%s\""
-msgstr ""
+msgstr "dossier \"%s\""
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:439
 msgid "image height"
-msgstr ""
+msgstr "hauteur de l'image"
 
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:438
 msgid "image width"
-msgstr ""
+msgstr "largeur de l'image"
 
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:46
 msgid "msec"
-msgstr ""
+msgstr "msec"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:82
 msgid "multiple files"
-msgstr ""
+msgstr "multiples fichiers"
 
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:106
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:201
 msgid "not selected"
-msgstr ""
+msgstr "non sélectionné"
 
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "sec"
-msgstr ""
+msgstr "sec"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:83
 msgid "single file (mosaic)"
-msgstr ""
+msgstr "fichier unique (mosaïque)"
 
 #: ../Source/Gui/Dialogs/HistoryWindow.cpp:93
 msgid "to:"
-msgstr ""
+msgstr "vers:"
 
 #: ../Source/Gui/Dialogs/AboutDlg.cpp:89
 msgid "translator_name"
-msgstr ""
+msgstr "largo"
 
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 msgid "unknown server"
-msgstr ""
+msgstr "serveur inconnu"
