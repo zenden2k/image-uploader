@@ -83,10 +83,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     bool IsLastVideo = false;
 #ifdef IU_ENABLE_MEDIAINFO
     if (MediaInfoHelper::IsMediaInfoAvailable()) {
-        CVideoGrabberPage *vg = WizardDlg->getPage<CVideoGrabberPage>(CWizardDlg::wpVideoGrabberPage);
-
-        if (vg && !vg->fileName_.IsEmpty())
-            IsLastVideo = true;
+        IsLastVideo = !WizardDlg->getLastVideoFile().IsEmpty(); 
     }
 #endif
 	resultsWindow_->EnableMediaInfo(IsLastVideo);

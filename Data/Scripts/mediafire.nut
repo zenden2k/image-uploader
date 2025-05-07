@@ -159,7 +159,7 @@ function _Check(folderkey, filebase, filesize, filehash) {
 
 function _ChunkedUpload(sessionToken, folderId, FileName, fileNameBase, fileSize, fileHash, options) {
     local chunkSize = _Check(folderId, fileNameBase, fileSize, fileHash).tointeger();
-    local chunkCount = ceil(fileSize.tofloat() / chunkSize);
+    local chunkCount = ceil(fileSize.tofloat() / chunkSize).tointeger();
     local lastChunk = chunkCount - 1;
    
     for (local i = 0; i < chunkCount; i++) {

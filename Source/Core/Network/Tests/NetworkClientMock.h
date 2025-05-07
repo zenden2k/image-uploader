@@ -63,9 +63,9 @@ class MockINetworkClient : public INetworkClient {
   MOCK_METHOD1(setOutputFile,
       void(const std::string &str));
   MOCK_METHOD1(setChunkOffset,
-      void(double offset));
+      void(int64_t offset));
   MOCK_METHOD1(setChunkSize,
-      void(double size));
+      void(int64_t size));
   MOCK_METHOD0(getCurlResult,
       int());
   MOCK_METHOD0(getCurlHandle,

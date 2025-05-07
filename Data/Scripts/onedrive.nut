@@ -358,9 +358,13 @@ function UploadFile(FileName, options) {
         return code;
     } else {
         local t = ParseJSON(nm.responseBody());
+        if (!("uploadUrl" in t)) {
+            WriteLog("error", "onedrive: Failed to obtain upload URL.");
+            return 0;
+        }
         local uploadUrl = t.uploadUrl;
         local fileSize = GetFileSize(FileName).tointeger();
-        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE);
+        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE).tointeger();
 
         for ( local i = 0; i < chunkCount; i++) {
             local offset = i * CHUNK_SIZE;

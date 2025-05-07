@@ -201,7 +201,7 @@ class NetworkClient: public INetworkClient
         Set the byte offset of current chunk, relative to the beginning of the full file.
         @since 1.3.0
         */
-        void setChunkOffset(double offset) override;
+        void setChunkOffset(int64_t offset) override;
 
 		/**
 		@since 1.3.3
@@ -214,7 +214,7 @@ class NetworkClient: public INetworkClient
         Sets size of current chunk.
         @since 1.3.0
         */
-        void setChunkSize(double size) override;
+        void setChunkSize(int64_t size) override;
         /*! @cond PRIVATE */
         void setTreatErrorsAsWarnings(bool treat) override;
         /*! @endcond */

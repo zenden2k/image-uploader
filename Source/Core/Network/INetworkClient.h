@@ -94,8 +94,8 @@ class INetworkClient {
         virtual void clearProxy(){};
         virtual void setReferer(const std::string &str){}
         virtual void setOutputFile(const std::string &str) {}
-        virtual void setChunkOffset(double offset) {}
-        virtual void setChunkSize(double size){}
+        virtual void setChunkOffset(int64_t offset) { }
+        virtual void setChunkSize(int64_t size) { }
         virtual int getCurlResult(){ return 0; /* CURLE_OK */ }
         virtual CURL* getCurlHandle() { return nullptr;  }
         virtual void setCurlShare(CurlShare* share) {}

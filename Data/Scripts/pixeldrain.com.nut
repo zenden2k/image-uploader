@@ -1,6 +1,9 @@
 const BASE_URL = "https://pixeldrain.com";
-const CURLOPT_USERNAME = 10173;
-const CURLOPT_PASSWORD = 10174;
+//const CURLOPT_USERNAME = 10173;
+//const CURLOPT_PASSWORD = 10174;
+const CURLOPT_HTTPAUTH = 107;
+const CURLOPT_USERPWD = 10005;
+const CURLAUTH_BASIC = 1;
 
 function UploadFile(FileName, options) {
     local name = ExtractFileName(FileName);
@@ -17,7 +20,8 @@ function UploadFile(FileName, options) {
     nm.setMethod("PUT");
 
     if (apiKey.len()) {
-        nm.setCurlOption(CURLOPT_PASSWORD, apiKey);
+        nm.setCurlOptionInt(CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+        nm.setCurlOption(CURLOPT_USERPWD, ":" + apiKey);
     }
 
     nm.doUpload(FileName, "");

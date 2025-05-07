@@ -20,6 +20,7 @@ set(SRC_LIST
    ../Core/Network/Tests/CurlTest.cpp
    ../CLI/ConsoleScriptFunctionsImpl.cpp
    ../Core/Settings/CliSettings.cpp
+   ../Core/Network/Tests/NetworkClientMock.h
 )
 if(WIN32)
     list(APPEND SRC_LIST 

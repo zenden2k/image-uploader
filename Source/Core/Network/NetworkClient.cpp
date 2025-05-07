@@ -750,7 +750,7 @@ size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb
    
     if (m_uploadingFile) {
         int64_t pos = IuCoreUtils::Ftell64(m_uploadingFile);
-        if (pos >= chunkOffset_ + m_currentUploadDataSize) {
+        if (chunkOffset_ != -1 && pos >= chunkOffset_ + m_currentUploadDataSize) {
             return 0;
         }
         retcode = fread(ptr, size, nmemb, m_uploadingFile);
@@ -911,14 +911,14 @@ void NetworkClient::setUploadBufferSize(int size)
     m_UploadBufferSize = size;
 }
 
-void NetworkClient::setChunkOffset(double offset)
+void NetworkClient::setChunkOffset(int64_t offset)
 {
-    chunkOffset_ = static_cast<int64_t>(offset);
+    chunkOffset_ = offset;
 }
 
-void NetworkClient::setChunkSize(double size)
+void NetworkClient::setChunkSize(int64_t size)
 {
-    chunkSize_ = static_cast<int64_t>(size);
+    chunkSize_ = size;
 }
 
 void NetworkClient::setTreatErrorsAsWarnings(bool treat)

@@ -174,7 +174,7 @@ function UploadFile(FileName, options) {
     local fileId="";
     
     if ( fileSize > 150000000 ) {
-        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE);
+        local chunkCount = ceil(fileSize.tofloat() / CHUNK_SIZE).tointeger();
         local session = null;
         local offset = 0;
         
@@ -182,7 +182,7 @@ function UploadFile(FileName, options) {
         for(local i = 0; i < chunkCount; i++ ) {
             for ( local j =0; j < 2; j++ ) {
                 try {
-                    nm.setChunkOffset(offset.tofloat());
+                    nm.setChunkOffset(offset);
                 } catch ( ex ) {
                     WriteLog("error", "Your Image Uploader version does not support chunked uploads for big files. \r\nPlease update to the latest version");
                     return 0;
