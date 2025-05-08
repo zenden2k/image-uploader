@@ -1,10 +1,15 @@
 #include "ScreenRecorderWindow.h"
+
+#include <ctime>
+
 #include "Core/Logging.h"
 #include "Core/i18n/Translator.h"
 #include "Gui/GuiTools.h"
 #include "Core/Images/Utils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
+#include "Core/TaskDispatcher.h"
+#include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 ScreenRecorderWindow::ScreenRecorderWindow():
@@ -50,7 +55,31 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         toolbar_.ShowWindow(SW_SHOW);
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    screenRecorder_ = std::make_unique<ScreenRecorder>(W2U(settings->ScreenRecordingSettings.FFmpegCLIPath), W2U(settings->ScreenRecordingSettings.OutDirectory), captureRect_);
+    CString folder = settings->ScreenRecordingSettings.OutDirectory;
+
+    if (folder.IsEmpty()) {
+        folder = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
+    }
+
+    time_t now = time(nullptr);
+    tm timeStruct;
+    localtime_s(&timeStruct, &now);
+
+    CString fileName;
+    fileName.Format(
+        _T("%scapture %04d-%02d-%02d %02d-%02d-%02d.mp4"),
+        folder.GetString(),
+        timeStruct.tm_year + 1900, 
+        timeStruct.tm_mon + 1, 
+        timeStruct.tm_mday,
+        timeStruct.tm_hour, 
+        timeStruct.tm_min, 
+        timeStruct.tm_sec
+    );
+
+    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::rbFFmpeg) {
+        screenRecorder_ = std::make_unique<FFmpegScreenRecorder>(W2U(settings->ScreenRecordingSettings.FFmpegCLIPath), W2U(fileName), captureRect_);
+    }
     screenRecorder_->start();
     screenRecorder_->addStatusChangeCallback([this](auto status) { statusChangeCallback(status); });
     updateTimeLabel();
@@ -247,7 +276,7 @@ void TimeDelegate::setText(CString text) {
     }
 }
 
-SIZE TimeDelegate::CalcItemSize(ImageEditor::Toolbar::Item& item, float dpiScaleX, float dpiScaleY) {
+SIZE TimeDelegate::CalcItemSize(ImageEditor::Toolbar::Item& item, int x, int y, float dpiScaleX, float dpiScaleY) {
     SIZE sz = { 120 * dpiScaleX, 25 * dpiScaleY };
     return sz;
 }
@@ -255,7 +284,7 @@ SIZE TimeDelegate::CalcItemSize(ImageEditor::Toolbar::Item& item, float dpiScale
 void TimeDelegate::DrawItem(ImageEditor::Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY) {
     using namespace Gdiplus;
     SolidBrush brush(Gdiplus::Color(0, 0, 0));
-    SIZE sz = CalcItemSize(item, dpiScaleX, dpiScaleY);
+    SIZE sz = CalcItemSize(item, x, y, dpiScaleX, dpiScaleY);
     StringFormat format;
     format.SetLineAlignment(StringAlignmentCenter);
     format.SetAlignment(StringAlignmentCenter);

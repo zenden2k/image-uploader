@@ -201,33 +201,34 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     iconSizeX_ = static_cast<int>(kIconSize * dpiScaleX_);
     iconSizeY_ = static_cast<int>(kIconSize * dpiScaleY_);
     font_ = std::make_unique<Gdiplus::Font>(hdc, systemFont_);
-    subpanelHeight_ = static_cast<int>(27 * dpiScaleY_);
-    subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
-    RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
-    if ( orientation_ == orHorizontal ) {
-        penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD|WS_VISIBLE|TBS_NOTICKS);
-        createHintForControl(penSizeSlider_.m_hWnd, TR("Line thickness"));
-        RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | WS_VISIBLE | SS_NOTIFY);
-        pixelLabel_.SetFont(systemFont_);
-        createHintForControl(pixelLabel_, TR("Line thickness"));
+    if (createSubPanel_) {
+        subpanelHeight_ = static_cast<int>(27 * dpiScaleY_);
+        subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
+        RECT sliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+        if (orientation_ == orHorizontal) {
+            penSizeSlider_.Create(m_hWnd, sliderRect, 0, WS_CHILD | WS_VISIBLE | TBS_NOTICKS);
+            createHintForControl(penSizeSlider_.m_hWnd, TR("Line thickness"));
+            RECT pixelLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+            pixelLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | WS_VISIBLE | SS_NOTIFY);
+            pixelLabel_.SetFont(systemFont_);
+            createHintForControl(pixelLabel_, TR("Line thickness"));
 
-        RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_ ) };
-        roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD|TBS_NOTICKS);
-        createHintForControl(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
-        //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
-        roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
-        roundRadiusLabel_.SetFont(systemFont_);
-        createHintForControl(roundRadiusLabel_, TR("Rounding radius"));
+            RECT radiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+            roundRadiusSlider_.Create(m_hWnd, radiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
+            createHintForControl(roundRadiusSlider_.m_hWnd, TR("Rounding radius"));
+            //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+            roundRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
+            roundRadiusLabel_.SetFont(systemFont_);
+            createHintForControl(roundRadiusLabel_, TR("Rounding radius"));
 
-        RECT blurRadiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
-        blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
-        createHintForControl(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
-        //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
+            RECT blurRadiusSliderRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
+            blurRadiusSlider_.Create(m_hWnd, blurRadiusSliderRect, 0, WS_CHILD | TBS_NOTICKS);
+            createHintForControl(blurRadiusSlider_.m_hWnd, TR("Blur radius"));
+            //RECT radiusLabelRect = { 0, 0, static_cast<LONG>(45 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 5 * dpiScaleY_) };
 
-        blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
-        blurRadiusLabel_.SetFont(systemFont_);
-        createHintForControl(blurRadiusLabel_, TR("Blur radius"));
+            blurRadiusLabel_.Create(m_hWnd, pixelLabelRect, L"px", WS_CHILD | SS_NOTIFY);
+            blurRadiusLabel_.SetFont(systemFont_);
+            createHintForControl(blurRadiusLabel_, TR("Blur radius"));
 
             RECT fontSizeLabelRect = { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 2 * dpiScaleY_) };
 
@@ -241,45 +242,45 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
             RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-        fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
-        fontSizeUpDownCtrl_.SetRange(1, 100);
+            fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+            fontSizeUpDownCtrl_.SetRange(1, 100);
 
-            RECT initialValueLabelRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
+            RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
             initialValueLabel_.Create(m_hWnd, initialValueLabelRect, TR("Initial value:"), WS_CHILD);
             initialValueLabel_.SetFont(systemFont_);
 
-            RECT initialValueEditRect{ 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT initialValueEditRect { 0, 0, static_cast<LONG>(40 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
             initialValueEdit_.Create(m_hWnd, initialValueEditRect, _T(""), WS_CHILD | ES_NUMBER | ES_AUTOHSCROLL, WS_EX_CLIENTEDGE, ID_STEPINITIALVALUE);
             initialValueEdit_.SetFont(systemFont_);
 
-            RECT fillBackgroundCheckboxRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT fillBackgroundCheckboxRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
             fillBackgroundCheckbox_.Create(m_hWnd, fillBackgroundCheckboxRect, TR("Fill background"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_FILLBACKGROUNDCHECKBOX);
             fillBackgroundCheckbox_.SetFont(systemFont_);
 
-        RECT invertSelectionCheckboxRect{ 0, 0, static_cast<LONG>(200 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT invertSelectionCheckboxRect { 0, 0, static_cast<LONG>(200 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
-        invertSelectionCheckbox_.SetFont(systemFont_);
+            invertSelectionCheckbox_.Create(m_hWnd, invertSelectionCheckboxRect, TR("Invert selection"), WS_CHILD | BS_CHECKBOX | BS_AUTOCHECKBOX, 0, ID_INVERTSELECTIONCHECKBOX);
+            invertSelectionCheckbox_.SetFont(systemFont_);
 
-        RECT arrowTypeComboRect{ 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT arrowTypeComboRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
 
-        arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
-        arrowTypeCombobox_.SetFont(systemFont_);
+            arrowTypeCombobox_.Create(m_hWnd, arrowTypeComboRect, _T(""), WS_CHILD | CBS_DROPDOWNLIST | CBS_OWNERDRAWFIXED | CBS_HASSTRINGS, 0, ID_ARROWTYPECOMBOBOX);
+            arrowTypeCombobox_.SetFont(systemFont_);
 
-        createHintForControl(arrowTypeCombobox_, TR("Type of arrow"));
-        int itemIndex = arrowTypeCombobox_.AddString(_T(""));
-        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode1));
-        itemIndex = arrowTypeCombobox_.AddString(_T(""));
-        setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
+            createHintForControl(arrowTypeCombobox_, TR("Type of arrow"));
+            int itemIndex = arrowTypeCombobox_.AddString(_T(""));
+            setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode1));
+            itemIndex = arrowTypeCombobox_.AddString(_T(""));
+            setArrowComboboxMode(itemIndex, static_cast<int>(Arrow::ArrowMode::Mode2));
 
-            RECT applyButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT applyButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
             applyButton_.Create(m_hWnd, applyButtonRect, TR("Apply"), WS_CHILD | BS_PUSHBUTTON, 0, ID_APPLYBUTTON);
             applyButton_.SetFont(systemFont_);
 
-            RECT cancelButtonRect{ 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
+            RECT cancelButtonRect { 0, 0, static_cast<LONG>(83 * dpiScaleX_), static_cast<LONG>(22 * dpiScaleY_) };
             cancelOperationButton_.Create(m_hWnd, cancelButtonRect, TR("Cancel"), WS_CHILD | BS_PUSHBUTTON, 0, ID_CANCELOPERATIONBUTTON);
             cancelOperationButton_.SetFont(systemFont_);
         }

@@ -689,10 +689,6 @@ void CThumbsView::SetOnItemCountChanged(ItemCountChangedCallback&& callback) {
     callback_ = std::move(callback);
 }
 
-void CThumbsView::setDoubleClickCallback(DoubleClickCallback&& callback) {
-    doubleClickCallback_ = std::move(callback);
-}
-
 LRESULT CThumbsView::OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled) {
     NMLVCUSTOMDRAW* pLVCD = reinterpret_cast<NMLVCUSTOMDRAW*>(pnmh);
     if (CDDS_PREPAINT == pLVCD->nmcd.dwDrawStage) {

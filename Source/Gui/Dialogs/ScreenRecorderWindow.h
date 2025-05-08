@@ -15,7 +15,7 @@ public:
    // enum { kOffset = 7, kSquareSize = 16, kPadding = 3 };
 
     TimeDelegate(ImageEditor::Toolbar* toolbar, int itemIndex);
-    SIZE CalcItemSize(ImageEditor::Toolbar::Item& item, float dpiScaleX, float dpiScaleY) override;
+    SIZE CalcItemSize(ImageEditor::Toolbar::Item& item, int x, int y, float dpiScaleX, float dpiScaleY) override;
     void DrawItem(ImageEditor::Toolbar::Item& item, Gdiplus::Graphics* gr, int x, int y, float dpiScaleX, float dpiScaleY) override;
     void setText(CString text);
 protected:

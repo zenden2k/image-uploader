@@ -134,7 +134,6 @@ public:
 
         //MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         COMMAND_ID_HANDLER(ID_RECORDSCREEN, OnRecordScreen)
-        MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         REFLECT_NOTIFICATIONS()
         /*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)

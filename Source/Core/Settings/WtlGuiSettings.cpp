@@ -526,12 +526,15 @@ WtlGuiSettings::WtlGuiSettings() :
 
     ScreenRecordingSettings.FFmpegCLIPath = WinUtils::GetAppFolder() + LR"(ffmpeg.exe)";
 
-    CString videoRecordsDirectory;
+   /* CString videoRecordsDirectory;
     PWSTR picturesPath;
     if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Pictures, 0, nullptr, &picturesPath))) {
         videoRecordsDirectory = CString(picturesPath) + _T("\\");
-    }
-    ScreenRecordingSettings.OutDirectory = videoRecordsDirectory;
+    }*/
+    ScreenRecordingSettings.Backend = ScreenRecordingStruct::rbFFmpeg;
+    CString dir = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
+    CString capturesDir = dir + _T("\\Captures\\");
+    ScreenRecordingSettings.OutDirectory = WinUtils::IsDirectory(capturesDir) ? capturesDir : dir;
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 

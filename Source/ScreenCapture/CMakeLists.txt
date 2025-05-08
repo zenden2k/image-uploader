@@ -1,10 +1,12 @@
 set(SRC_LIST    
     ScreenRecorder/ScreenRecorder.cpp
+    ScreenRecorder/FFmpegScreenRecorder.cpp
     ScreenRecorder/ArgsBuilder/FFmpegInputArgs.cpp
 )
 
 set(HEADER_LIST 
     ScreenRecorder/ScreenRecorder.h
+    ScreenRecorder/FFmpegScreenRecorder.h
     ScreenRecorder/ArgsBuilder/FFmpegArgsBuilder.h
     ScreenRecorder/ArgsBuilder/FFmpegArgs.h
     ScreenRecorder/ArgsBuilder/FFmpegInputArgs.h

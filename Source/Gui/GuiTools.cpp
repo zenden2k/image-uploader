@@ -36,6 +36,12 @@
 #include "Core/i18n/Translator.h"
 #include "3rdpart/GdiplusH.h"
 
+// Hack: initguid.h must be included before oleacc.h but oleacc.h
+#undef INITGUID
+#include <InitGuid.h>
+DEFINE_GUID(CLSID_AccPropServices, 0xb5f8350b, 0x0548, 0x48b1, 0xa6, 0xee, 0x88, 0xbd, 0x00, 0xb4, 0xa5, 0xe7);
+DEFINE_GUID(PROPID_ACC_NAME, 0x608d3df8, 0x8128, 0x4aa7, 0xa4, 0x28, 0xf5, 0x5e, 0x49, 0x26, 0x72, 0x91);
+
 namespace GuiTools
 {
 int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item) {
@@ -686,45 +692,11 @@ bool IsColorBright(COLORREF color) {
     return brightness > 128;
 }
 
+
 COLORREF AdjustColorBrightness(COLORREF color, int delta) {
     auto clamp = [](int val) -> BYTE {
         return (BYTE)(val < 0 ? 0 : (val > 255 ? 255 : val)); // Clamp values between 0 and 255
     };
-
-// Hack: initguid.h must be included before oleacc.h but oleacc.h
-#undef INITGUID
-#include <InitGuid.h>
-DEFINE_GUID(CLSID_AccPropServices, 0xb5f8350b, 0x0548, 0x48b1, 0xa6, 0xee, 0x88, 0xbd, 0x00, 0xb4, 0xa5, 0xe7);
-DEFINE_GUID(PROPID_ACC_NAME, 0x608d3df8, 0x8128, 0x4aa7, 0xa4, 0x28, 0xf5, 0x5e, 0x49, 0x26, 0x72, 0x91);
-
-CComPtr<IAccPropServices> pAccPropServices;
-
-// Run when the UI is created.
-void SetControlAccessibleName(HWND hwnd, const WCHAR* name) {
-    HRESULT hr = S_OK;
-    if ( !pAccPropServices) {
-        hr = pAccPropServices.CoCreateInstance(CLSID_AccPropServices, nullptr, CLSCTX_INPROC);
-    }
-
-    if (SUCCEEDED(hr)) {
-        // Now set the name on the control. This gets exposed through UIA
-        // as the element's Name property.
-        pAccPropServices->SetHwndPropStr(hwnd, OBJID_CLIENT, CHILDID_SELF, Name_Property_GUID, name);
-    }
-}
-
-
-// Run when the UI is destroyed.
-void ClearControlAccessibleName(HWND hwnd) {
-    if (pAccPropServices) {
-        // Clear the custom accessible name set earlier on the control.
-        MSAAPROPID props[] = { Name_Property_GUID };
-
-        pAccPropServices->ClearHwndProps(hwnd, OBJID_CLIENT, CHILDID_SELF, props, ARRAYSIZE(props));
-    }
-}
-
-};
 
     // Extract color components
     int r = GetRValue(color);
@@ -749,6 +721,35 @@ void ClearControlAccessibleName(HWND hwnd) {
 
     return RGB(clamp(r), clamp(g), clamp(b)); // Return the color with clamped values
 }
+
+CComPtr<IAccPropServices> pAccPropServices;
+
+// Run when the UI is created.
+void SetControlAccessibleName(HWND hwnd, const WCHAR* name)
+{
+    HRESULT hr = S_OK;
+    if (!pAccPropServices) {
+        hr = pAccPropServices.CoCreateInstance(CLSID_AccPropServices, nullptr, CLSCTX_INPROC);
+    }
+
+    if (SUCCEEDED(hr)) {
+        // Now set the name on the control. This gets exposed through UIA
+        // as the element's Name property.
+        pAccPropServices->SetHwndPropStr(hwnd, OBJID_CLIENT, CHILDID_SELF, Name_Property_GUID, name);
+    }
+}
+
+// Run when the UI is destroyed.
+void ClearControlAccessibleName(HWND hwnd)
+{
+    if (pAccPropServices) {
+        // Clear the custom accessible name set earlier on the control.
+        MSAAPROPID props[] = { Name_Property_GUID };
+
+        pAccPropServices->ClearHwndProps(hwnd, OBJID_CLIENT, CHILDID_SELF, props, ARRAYSIZE(props));
+    }
+}
+
 
 HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
     /* CClientDC dc(wnd);

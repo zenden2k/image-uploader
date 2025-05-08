@@ -87,13 +87,6 @@ LRESULT CMainDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
         UpdateStatusLabel();
     });
 
-    ThumbsView.setDoubleClickCallback([this](CThumbsView*, int itemIndex) {
-        LPCTSTR fileName = ThumbsView.GetFileName(itemIndex);
-        if (IsVideoFile(fileName)) {
-            openInDefaultProgram(fileName);
-        }
-    });
-
     UpdateStatusLabel();
 
     ACCEL accels[] = {
@@ -606,7 +599,6 @@ void CMainDlg::openInDefaultProgram(CString fileName) {
                 LOG(ERROR) << "Opening default application failed." << std::endl << "Reason: " << WinUtils::ErrorCodeToString(lastError);
             }
 
-            return 0;
         }
     }
 }

@@ -465,9 +465,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 
     accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
 
-
-    accelerators_ = CreateAcceleratorTable(&accels[0], accels.size());
-
     //RECT rc;
     GetClientRect(&rc);
     /*HWND m_hWndClient = */m_view.Create(m_hWnd, rc, _T("ImageEditor_Canvas"), WS_CHILD | WS_VISIBLE /*| WS_CLIPSIBLINGS | WS_CLIPCHILDREN*/, 0);

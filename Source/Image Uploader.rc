@@ -132,6 +132,8 @@ IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.pn
 
 IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
 
+IDB_ICONRECORD          PNG                     "res\\ImageEditor\\icon_record.png"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

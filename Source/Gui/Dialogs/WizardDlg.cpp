@@ -1190,7 +1190,7 @@ bool CWizardDlg::HandleDropFiledescriptors(IDataObject *pDataObj)
                         if(FileWasSaved) // Additing received file to program
                         {
                             if(IsVideoFile(OutFileName) && !(enableDragndropOverlay_
-                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::kAddToTheList))
+                                && dragndropOverlaySelectedItem_ == CDragndropOverlay::ItemId::kAddToTheList))
                             {
 
                                 ShowPage(wpVideoGrabberPage, CurPage, (Pages[2])? 2 : 3);
@@ -1819,9 +1819,34 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 void CWizardDlg::CloseWizard(bool force)
 {
-    if(CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit)
-        if(LocalizedMessageBox(TR("Are you sure to quit?"),APPNAME, MB_YESNO|MB_ICONQUESTION) != IDYES) return ;
-
+    if(!force && CurPage!= wpWelcomePage && CurPage!= wpUploadPage && Settings.ConfirmOnExit) {
+        int buttonPressed{};
+        CTaskDialog dlg;
+        CString verText = TR("Do not ask again");
+        dlg.SetVerificationText(verText);
+        CString contentText = TR("Are you sure to quit?");
+        dlg.SetContentText(contentText);
+        CString windowTitle = APPNAME;
+        dlg.SetWindowTitle(windowTitle);
+        dlg.SetCommonButtons(TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
+        // From the official Win32 style guide: don't use the question mark icon to ask questions. Don't routinely replace
+        // question mark icons with warning icons. Replace a question mark icon with a warning icon only if the question
+        // has significant consequences. Otherwise, use no icon.
+        //dlg.SetMainIcon(TD_WARNING_ICON);
+        DWORD flags = TDF_POSITION_RELATIVE_TO_WINDOW | TDF_ALLOW_DIALOG_CANCELLATION;
+        if (ServiceLocator::instance()->translator()->isRTL()) {
+            flags |= TDF_RTL_LAYOUT;
+        }
+        dlg.ModifyFlags(0, flags);
+        BOOL verificationFlagChecked = FALSE;
+        int res = dlg.DoModal(m_hWnd, &buttonPressed, nullptr, &verificationFlagChecked);
+        if (verificationFlagChecked) {
+            Settings.ConfirmOnExit = false;
+        }
+        if (SUCCEEDED(res) && buttonPressed != IDYES) {
+            return;
+        }
+    }
     CloseDialog(0);
 }
 
@@ -1916,9 +1941,9 @@ bool CWizardDlg::funcMediaInfo()
 #endif
 bool CWizardDlg::funcAddFiles()
 {
-    IMyFileDialog::FileFilterArray filters = {
-        { CString(TR("Images")) + _T(" (jpeg, bmp, png, gif ...)"), IuCommonFunctions::PrepareFileDialogImageFilter() },
-        { CString(TR("Video files")) + _T(" (avi, mpg, vob, wmv ...)"), PrepareVideoDialogFilters(), },
+    IMyFileDialog::FileFilterArray filters {
+        { TR("Images"), IuCommonFunctions::PrepareFileDialogImageFilter() },
+        { TR("Video files"), PrepareVideoDialogFilters(), },
         { TR("Any file"), _T("*.*") }
     };
     auto fileDialog(MyFileDialogFactory::createFileDialog(m_hWnd, Settings.ImagesFolder, TR("Choose files"), filters, true));
@@ -2051,9 +2076,14 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
     wcfFlags.RemoveBackground =     Settings.ScreenshotSettings.RemoveBackground;
     wcfFlags.RemoveCorners = Settings.ScreenshotSettings.RemoveCorners;
-    int WindowHidingDelay = (needToShow||m_bScreenshotFromTray==2)? Settings.ScreenshotSettings.WindowHidingDelay: 0;
+    int WindowHidingDelay = (needToShow || screenshotInitiator_ == siFromTray) ? Settings.ScreenshotSettings.WindowHidingDelay : 0;
+    int Delay = WindowHidingDelay;
 
-    engine.setDelay(WindowHidingDelay);
+    if (screenshotInitiator_ != siFromHotkey && screenshotInitiator_ != siFromWelcomeDialog) {
+        Delay += Settings.ScreenshotSettings.Delay * 1000;
+    }
+
+    engine.setDelay(Delay);
     MonitorMode monitorMode = static_cast<MonitorMode>(Settings.ScreenshotSettings.MonitorMode);
     HMONITOR monitor = nullptr;
     if (mode == cmLastRegion) {
@@ -2119,21 +2149,20 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
             RegionSelect.setSelectionMode(selMode, onlyTopWindows);
             std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
-            if(res)
-            {
-                HBITMAP gdiBitmap=0;
-                res->GetHBITMAP(Color(255,255,255), &gdiBitmap);
-                if(RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor))
-                {
-                    if(RegionSelect.wasImageEdited() || (mode!=cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/) )
-                    engine.setSource(gdiBitmap);
-
-                    else{
+            if (res) {
+                HBITMAP gdiBitmap = 0;
+                res->GetHBITMAP(Color(255, 255, 255), &gdiBitmap);
+                if (RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), monitor)) {
+                    bool needDrawCursor;
+                    if (RegionSelect.wasImageEdited() || (mode != cmWindowHandles /*|| !Settings.ScreenshotSettings.ShowForeground*/)) {
+                        engine.setSource(gdiBitmap);
+                        needDrawCursor = false;
+                    }
+                    else {
                         engine.setSource(0);
                         needDrawCursor = Settings.ScreenshotSettings.CaptureCursor;
                     }
 
-                    engine.setDelay(0);
                     auto rgn = RegionSelect.region();
                     if (rgn) {
                         auto* whr = dynamic_cast<CWindowHandlesRegion*>(rgn.get());
@@ -2141,6 +2170,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                             whr->setWindowHidingDelay(static_cast<int>(Settings.ScreenshotSettings.WindowHidingDelay * 1.2));
                             whr->setWindowCapturingFlags(wcfFlags);
                         }
+                        rgn->setDrawCursor(needDrawCursor);
                         engine.captureRegion(rgn.get());
                         result = engine.capturedBitmap();
                         DeleteObject(gdiBitmap);
@@ -2189,7 +2219,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         }
         else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard) {
-                floatWnd_->ShowScreenshotCopiedToClipboardMessage();
+                showScreenshotCopiedToClipboardMessage(imageEditor.getResultingBitmap());
             }
             CanceledByUser = true;
         }
@@ -2222,7 +2252,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             {
                 CClientDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
-                    if (m_bScreenshotFromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
+                    if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
                         && dialogResult == ImageEditorWindow::drCancel) {
                         showScreenshotCopiedToClipboardMessage(result);
                         Result = false;
@@ -2253,7 +2283,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
 
     m_bShowAfter  = false;
-    if(Result || needToShow)
+    if(Result || needToShow )
     {
         if(needToShow || (!fromTray ||Settings.TrayIconSettings.TrayScreenshotAction!= TRAY_SCREENSHOT_ADDTOWIZARD))
         {

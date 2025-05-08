@@ -61,6 +61,11 @@ struct ScreenshotSettingsStruct {
 };
 
 struct ScreenRecordingStruct {
+    enum RecordingBackend {
+        rbDirectX,
+        rbFFmpeg
+    } Backend;
+
     CString FFmpegCLIPath;
     CString Preset;
     CString OutDirectory;

@@ -80,10 +80,8 @@ public:
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
-    using DoubleClickCallback = std::function<void(CThumbsView*, int index)>;
 
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
-    void setDoubleClickCallback(DoubleClickCallback&& callback);
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     int maxwidth,maxheight;
