@@ -185,13 +185,15 @@
 #define IDD_FILEFORMATERRORDLG          339
 #define IDD_CURLDEBUGDLG                340
 #define IDD_NETWORKDEBUGDLG             340
+#define IDD_SCREENRECORDSETTTINGSPAGE   341
+#define IDD_SCREENRECORDINGSETTTINGSPAGE 341
+#define IDD_SCREENRECORDINGSETTINGSPAGE 341
 #define IDB_ICONROTATECW                342
 #define IDB_ICONROTATE                  343
 #define IDB_ICONROTATEFLIP              344
 #define IDB_ICONFLIPHORIZONTAL          345
 #define IDB_PNG13                       346
 #define IDB_ICONFLIPVERTICAL            346
-#define IDB_PNG14                       347
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -321,6 +323,7 @@
 #define IDC_FILENAMEEDIT                1040
 #define IDC_THUMBHEIGHT                 1040
 #define IDC_DEBUGDETAILS                1040
+#define IDC_OUTFOLDEREDIT               1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -339,6 +342,7 @@
 #define IDC_UPDATEINFO2                 1041
 #define IDC_MANUALUPDATEINFO            1041
 #define IDC_WIDTHEDIT2                  1041
+#define IDC_FFMPEGPATHEDIT              1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -791,6 +795,13 @@
 #define IDC_DEBUGLIST                   1350
 #define IDC_SPLITTER                    1351
 #define IDC_HORLINESTATIC               1352
+#define IDC_BACKENDLABEL                1353
+#define IDC_BACKENDCOMBO                1354
+#define IDC_OUTFOLDERLABEL              1355
+#define IDC_OUTFOLDERBROWSEBUTTON       1356
+#define IDC_OUTFOLDERBROWSEBUTTON2      1357
+#define IDC_FFMPEGPATHBROWSEBUTTON      1357
+#define IDC_FFMPEGPATHLABEL             1358
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -838,7 +849,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        348
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1353
+#define _APS_NEXT_CONTROL_VALUE         1359
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

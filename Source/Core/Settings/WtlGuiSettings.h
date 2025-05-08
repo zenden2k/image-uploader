@@ -60,17 +60,6 @@ struct ScreenshotSettingsStruct {
     int MonitorMode;
 };
 
-struct ScreenRecordingStruct {
-    enum RecordingBackend {
-        rbDirectX,
-        rbFFmpeg
-    } Backend;
-
-    CString FFmpegCLIPath;
-    CString Preset;
-    CString OutDirectory;
-};
-
 inline std::string myToString(const CHotkeyList& value) {
     return IuCoreUtils::WstringToUtf8((LPCTSTR)value.toString());
 }
@@ -116,7 +105,6 @@ public:
     bool RememberImageServer;
     bool RememberFileServer;
     ScreenshotSettingsStruct ScreenshotSettings;
-    ScreenRecordingStruct ScreenRecordingSettings;
     ImageReuploaderSettingsStruct ImageReuploaderSettings;
     TrayIconSettingsStruct TrayIconSettings;
     CString ImageEditorPath;

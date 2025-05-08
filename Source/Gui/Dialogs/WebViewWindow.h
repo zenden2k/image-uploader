@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "atlheaders.h"
-#include "resource.h"       // main symbols
+//#include "resource.h"       // main symbols
 
 #include "3rdpart/thread.h"
 

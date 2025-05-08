@@ -55,7 +55,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         toolbar_.ShowWindow(SW_SHOW);
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    CString folder = settings->ScreenRecordingSettings.OutDirectory;
+    CString folder = U2W(settings->ScreenRecordingSettings.OutDirectory);
 
     if (folder.IsEmpty()) {
         folder = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
@@ -67,7 +67,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     CString fileName;
     fileName.Format(
-        _T("%scapture %04d-%02d-%02d %02d-%02d-%02d.mp4"),
+        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d.mp4"),
         folder.GetString(),
         timeStruct.tm_year + 1900, 
         timeStruct.tm_mon + 1, 
@@ -77,8 +77,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         timeStruct.tm_sec
     );
 
-    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::rbFFmpeg) {
-        screenRecorder_ = std::make_unique<FFmpegScreenRecorder>(W2U(settings->ScreenRecordingSettings.FFmpegCLIPath), W2U(fileName), captureRect_);
+    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
+        screenRecorder_ = std::make_unique<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
     }
     screenRecorder_->start();
     screenRecorder_->addStatusChangeCallback([this](auto status) { statusChangeCallback(status); });

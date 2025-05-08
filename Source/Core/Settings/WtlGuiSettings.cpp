@@ -524,17 +524,11 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.CaptureCursor = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
-    ScreenRecordingSettings.FFmpegCLIPath = WinUtils::GetAppFolder() + LR"(ffmpeg.exe)";
+    ScreenRecordingSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
 
-   /* CString videoRecordsDirectory;
-    PWSTR picturesPath;
-    if (SUCCEEDED(SHGetKnownFolderPath(FOLDERID_Pictures, 0, nullptr, &picturesPath))) {
-        videoRecordsDirectory = CString(picturesPath) + _T("\\");
-    }*/
-    ScreenRecordingSettings.Backend = ScreenRecordingStruct::rbFFmpeg;
     CString dir = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
-    CString capturesDir = dir + _T("\\Captures\\");
-    ScreenRecordingSettings.OutDirectory = WinUtils::IsDirectory(capturesDir) ? capturesDir : dir;
+    CString capturesDir = dir + _T("Captures\\");
+    ScreenRecordingSettings.OutDirectory = W2U(WinUtils::IsDirectory(capturesDir) ? capturesDir : dir);
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 
@@ -787,10 +781,6 @@ void WtlGuiSettings::BindToManager() {
     screenshot.nm_bind(ScreenshotSettings, OpenInEditor);
     screenshot.nm_bind(ScreenshotSettings, UseOldRegionScreenshotMethod);
     screenshot.nm_bind(ScreenshotSettings, MonitorMode);
-
-    SettingsNode& screenRecording = mgr_["ScreenRecording"];
-    screenRecording.nm_bind(ScreenRecordingSettings, FFmpegCLIPath);
-    screenRecording.nm_bind(ScreenRecordingSettings, Preset);
 
     SettingsNode& imageEditor = mgr_["ImageEditor"];
     imageEditor.nm_bind(ImageEditorSettings, ForegroundColor);
