@@ -183,7 +183,7 @@ public:
 
     void ShowUpdateMessage(const CString& msg) override;
 
-    void runInGuiThread(TaskRunnerTask&& task, bool async) override;
+    void runInGuiThread(TaskRunnerTask task, bool async) override;
 
     template<class T> T* getPage(WizardPageId id) {
         if (id < 0 || id >= ARRAY_SIZE(Pages)) {

@@ -9,7 +9,6 @@
 #include <functional>
 
 #include "atlheaders.h"
-#include <boost/process.hpp>
 
 #include <boost/signals2.hpp>
 

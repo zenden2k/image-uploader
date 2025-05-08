@@ -573,7 +573,9 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     }
     ShowWindow(SW_HIDE);
     if ( parent ) {
+        ::SetForegroundWindow(parent);
         ::SetActiveWindow(parent);
+        ::SetFocus(parent); 
     }
     loop.RemoveMessageFilter(this);
     DestroyWindow();

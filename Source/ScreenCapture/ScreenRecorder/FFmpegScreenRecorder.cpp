@@ -5,9 +5,13 @@
 #include <chrono>
 #include <fstream>
 
-#include <boost/process.hpp>
+
+#include <boost/process/v2/process.hpp>
+#include <boost/process/v2/stdio.hpp>
+#include <boost/process/v2/execute.hpp>
+//#include <boost/process.hpp>
 #include <boost/asio.hpp>
-#include <boost/process/windows.hpp>
+//#include <boost/process/windows.hpp>
 #include <boost/format.hpp>
 
 
@@ -19,6 +23,28 @@
 #include "VideoCodecs/NvencVideoCodec.h"
 #include "VideoCodecs/X264VideoCodec.h"
 
+void async_wait_future(
+    boost::asio::io_context& io,
+    std::future<int> fut,
+    std::function<void(int)> callback)
+{
+    auto timer = std::make_shared<boost::asio::steady_timer>(io);
+    timer->expires_after(std::chrono::milliseconds(10));
+
+    timer->async_wait([timer, &io, fut = std::move(fut), callback](auto ec) mutable {
+        if (fut.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
+            try {
+                callback(fut.get());
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << ex.what();
+            }
+
+        } else {
+            async_wait_future(io, std::move(fut), callback);
+        }
+    });
+}
+
 FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect)
                                     : ScreenRecorder(outFile, rect),
                                     ffmpegPath_(std::move(ffmpegPath)) {
@@ -26,9 +52,7 @@ FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string o
 }
 
 FFmpegScreenRecorder::~FFmpegScreenRecorder() {
-    /*if (thread_.joinable()) {
-        thread_.join();
-    }*/
+    timerCtx_.stop();
 }
 
 void FFmpegScreenRecorder::start() {
@@ -119,49 +143,65 @@ void FFmpegScreenRecorder::start() {
 }
 
 std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish) {
-    namespace bp = boost::process;
+    namespace bp = boost::process::v2;
+    namespace asio = boost::asio;
+
     std::string command = ffmpegPath_;
 
     return std::async(std::launch::async, [&, command, args, onFinish] { 
         try {
-            boost::asio::io_service ios;
-            std::vector<char> buf;
 
-            std::future<std::string> data;
-            inStream_ = std::make_unique<bp::opstream>();
+            asio::readable_pipe rp(ctx_);
 
-            child_ = std::make_unique<bp::child>(command, args, bp::std_in < *inStream_.get(),
-                bp::std_out > bp::null, //so it can be written without anything
-                bp::std_err > data,
-                ios,
-                ::boost::process::windows::create_no_window);
+            inStream_ = std::make_unique<asio::writable_pipe>(ctx_);
 
-            ios.run();
+            bp::process child(ctx_, command, args, bp::process_stdio {  *inStream_.get(), rp, { /* err to default */ } } /*,
+                ::boost::process::windows::create_no_window*/);
+            //ios.run();
+            //isRunning_ = true;
+            std::string output;
 
-            child_->wait(); // reap PID
-            int result = child_->exit_code();
+            /*boost::system::error_code ec;
+            rp.read(asio::dynamic_buffer(output), ec);
+            assert(ec == asio::error::eof);*/
+
+            asio::async_read(
+                rp,
+                asio::dynamic_buffer(output),
+                [&output](const boost::system::error_code& ec, std::size_t bytes_read) {
+                    if (!ec) {
+                        LOG(WARNING) << "FFmpeg output: " << output << std::endl;
+                    }
+                }
+            );
+
+            //ctx_.run();
+            child.wait(); // reap PID
+            int result = child.exit_code();
             if (result != 0) {
-                LOG(ERROR) << "Exit code:"<<  result << std::endl << data.get();
+                LOG(ERROR) << "Exit code:" << result << std::endl << output;
             }
-
+            inStream_.reset();
             if (onFinish) {
                 onFinish(result);
             }
+
             return result;
             //LOG(ERROR) << result << std::endl << std::string(buf.data(), buf.size());
             //LOG(ERROR) << result << std::endl << std::string(buf.data(), buf.size());
         }
-        catch (const bp::process_error& ex) {
+        /*catch (const bp::process_error& ex) {
+            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what()) << std::endl;
+        }*/
+        catch (const std::exception& ex) {
             LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what()) << std::endl;
         }
-        catch (const std::exception& ex) {
-            LOG(ERROR) << ex.what() << std::endl;
-        }
-
+        inStream_.reset();
+        isRunning_ = false;
         if (onFinish) {
             onFinish(1);
         }
-
+        
         return 1;
     });
 
@@ -182,67 +222,94 @@ void FFmpegScreenRecorder::sendStopSignal() {
     if (!isRunning()) {
         return;
     }
-    *inStream_ << "q" << std::endl;
-}
 
-void FFmpegScreenRecorder::stop() {
-    sendStopSignal();
+    std::string data = "q\n";
+    namespace asio = boost::asio;
 
-
-    future_.wait();
-
-    if (parts_.empty()) {
-        return;
-    }
-
-    if (parts_.size() == 1) {
-        try {
-            std::filesystem::rename(std::filesystem::u8path(currentOutFilePath_), std::filesystem::u8path(outFilePath_));
-        } catch (const std::exception& ex) {
-            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
-        }
-        changeStatus(Status::Finished);
-    } else {
-        std::string tempFile = std::tmpnam(nullptr);
-        std::ofstream f(/*std::filesystem::u8path*/(tempFile), std::ios::out);
-
-        if (!f) {
-            LOG(ERROR) << "Failed to create temp file " << tempFile;
-            //throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);
-        } else {
-            for(const auto& item: parts_) {
-                f << "file '" << item << "'" << std::endl;
-            }
-        }
-        f.close();
-
-        changeStatus(Status::RunningConcatenation);
-
-        auto future = launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", outFilePath_ }, [this](int res) {
-            changeStatus(Status::Finished);
-            if (res == 0) {
-                cleanupAfter();
+    asio::async_write(
+        *inStream_,
+        asio::buffer(data),
+        [&](boost::system::error_code ec, std::size_t n) {
+            if (!ec) {
+                inStream_->close();
+            } else {
+                LOG(ERROR) << "Pipe write error: " << ec.message() << "\n";
             }
         });
+}
 
-        /*if (future.get() != 0) {
+void FFmpegScreenRecorder::stop() {  
+    auto cb = [&](int) {
+        if (parts_.empty()) {
+            changeStatus(Status::Finished);
+            return;
+        }
+
+        if (parts_.size() == 1) {
+            try {
+                std::filesystem::rename(std::filesystem::u8path(currentOutFilePath_), std::filesystem::u8path(outFilePath_));
+            } catch (const std::exception& ex) {
+                LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
+            }
+            changeStatus(Status::Finished);
+        } else {
+            std::string tempFile = std::tmpnam(nullptr);
+            std::ofstream f(/*std::filesystem::u8path*/ (tempFile), std::ios::out);
+
+            if (!f) {
+                LOG(ERROR) << "Failed to create temp file " << tempFile;
+                //throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);
+            } else {
+                for (const auto& item : parts_) {
+                    f << "file '" << item << "'" << std::endl;
+                }
+            }
+            f.close();
+
+            changeStatus(Status::RunningConcatenation);
+
+            auto future = launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", outFilePath_ }, [this](int res) {
+                changeStatus(Status::Finished);
+                if (res == 0) {
+                    cleanupAfter();
+                }
+            });
+
+            /*if (future.get() != 0) {
             LOG(ERROR) << "Failed to concatenate " << parts_.size() << " video files";
         }*/
-    }
+        }
+    };
+
+    sendStopSignal();
+    async_wait_future(timerCtx_, std::move(future_), cb);
+
+    std::thread([&] {
+        timerCtx_.run();
+    }).detach();
 }
 
 void FFmpegScreenRecorder::cancel() {
+    if (!isRunning()) {
+        return;
+    }
+
     sendStopSignal();
 
-    future_.wait();
-    cleanupAfter();
-    try {
-        std::filesystem::remove(std::filesystem::u8path(outFilePath_));
-    }
-    catch (const std::exception& ) {
-        //LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());
-    }
-    changeStatus(Status::Canceled);
+    //future_.wait();
+    async_wait_future(timerCtx_, std::move(future_), [&](int) {
+        cleanupAfter();
+        try {
+            std::filesystem::remove(std::filesystem::u8path(outFilePath_));
+        } catch (const std::exception&) {
+            //LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());
+        }
+        changeStatus(Status::Canceled);
+    });
+
+    std::thread([&] {
+        timerCtx_.run();
+    }).detach();
 }
 
 void FFmpegScreenRecorder::pause() {

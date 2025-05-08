@@ -18,7 +18,7 @@ What if sender instance that sent the message gets destroyed before receiver pro
 class ITaskRunner {
 public:
     virtual ~ITaskRunner(){}
-    virtual void runInGuiThread(TaskRunnerTask&& task, bool async = false) = 0;
+    virtual void runInGuiThread(TaskRunnerTask task, bool async = false) = 0;
 };
 
 class Task {

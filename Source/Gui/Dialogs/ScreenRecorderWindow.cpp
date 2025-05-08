@@ -134,11 +134,14 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, CR
     }
     ShowWindow(SW_HIDE);
     if (parent) {
-        ::SetActiveWindow(parent);
+        ::SetForegroundWindow(parent);
+        ::SetActiveWindow(parent); 
+        ::SetFocus(parent); 
     }
-    loop.RemoveMessageFilter(this);
+
     DestroyWindow();
-   
+    loop.RemoveMessageFilter(this);
+
     return dialogResult_;
 }
 
@@ -189,7 +192,8 @@ LRESULT ScreenRecorderWindow::onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
     if (screenRecorder_->status() == ScreenRecorder::Status::Canceled 
         || screenRecorder_->status() == ScreenRecorder::Status::Invalid
         || screenRecorder_->status() == ScreenRecorder::Status::Finished
-        ) {
+        || !screenRecorder_->isRunning() 
+    ) {
         endDialog(drCancel);
     } else {
         screenRecorder_->cancel();

@@ -192,6 +192,7 @@ Run `python create_build.py` from Visual Studio Developer Command Prompt.
 - [argparse](https://github.com/p-ranav/argparse) under [MIT License](https://opensource.org/license/mit)
 - [xdgmime](https://gitlab.freedesktop.org/xdg/xdgmime) under LGPL License
 - [dotenv-cpp](https://github.com/laserpants/dotenv-cpp) under [BSD-3-Clause license](https://opensource.org/license/BSD-3-clause)
+- [Simple-Web-Server](https://github.com/eidheim/Simple-Web-Server) under [MIT License](https://opensource.org/license/mit)
 
 DirectShow BaseClasses (strmbasd.lib, strmbase.lib) - part of Windows SDK 7.1
 

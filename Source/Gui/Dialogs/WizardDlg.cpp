@@ -2427,7 +2427,7 @@ LRESULT CWizardDlg::OnBnClickedHelpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     return 0;
 }
 
-void CWizardDlg::runInGuiThread(TaskRunnerTask&& task, bool async) {
+void CWizardDlg::runInGuiThread(TaskRunnerTask task, bool async) {
     if (async) {
         std::lock_guard<std::mutex> lk(scheduledTasksMutex_);
         scheduledTasks_.push_back(std::move(task));
