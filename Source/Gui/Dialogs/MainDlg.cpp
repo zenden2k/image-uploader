@@ -41,7 +41,9 @@
 #include "3rdpart/ShellPidl.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/WinServerIconCache.h"
-#include "MediaInfoDlg.h"
+#ifdef IU_ENABLE_MEDIAINFO
+    #include "MediaInfoDlg.h"
+#endif
 
 CMainDlg::CMainDlg(WinServerIconCache* iconCache):
     m_EditorProcess(nullptr),
@@ -209,10 +211,11 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if (isVideoFile) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_EXTRACTFRAMES, TR("Extract frames"));
         }
+#ifdef IU_ENABLE_MEDIAINFO
         if (isVideoFile || isAudioFile) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_FILEINFO, TR("Information about file"));
         }
-       
+#endif       
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINFOLDER, TR("Open in folder"));
         contextMenu.AppendMenu(MF_STRING, MENUITEM_SAVEAS, TR("Save as..."));
 
@@ -831,11 +834,13 @@ LRESULT CMainDlg::OnExtractFramesFromSelectedFile(WORD, WORD, HWND, BOOL&) {
 }
 
 LRESULT CMainDlg::OnFileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+#ifdef IU_ENABLE_MEDIAINFO
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         CMediaInfoDlg dlg;
         dlg.ShowInfo(m_hWnd, fileName);
     }
+#endif
     return 0;
 }
 
