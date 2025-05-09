@@ -38,6 +38,32 @@ public:
     {
         return std::make_unique<NvencVideoCodec>("NVenc: Mp4 (HEVC, AAC)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
     }
+
+     std::vector<std::pair<std::string, std::string>> presets() const override
+    {
+        return {
+            { "0", "default" }, // default
+            { "1", "slow" }, // hq 2 passes
+            { "2", "medium" }, // hq 1 pass
+            { "3", "fast" }, // hp 1 pass
+            { "4", "hp" }, // high performance
+            { "5", "hq" }, // high quality
+            { "6", "bd" }, // Blu-ray disc encoding
+            { "7", "ll" }, // low latency
+            { "8", "llhq" }, // low latency high quality
+            { "9", "llhp" }, // low latency high performance
+            { "10", "lossless" }, // lossless encoding
+            { "11", "losslesshp" }, // lossless high performance
+            { "12", "p1" }, // fastest (lowest quality)
+            { "13", "p2" }, // faster (lower quality)
+            { "14", "p3" }, // fast (low quality)
+            { "15", "p4" }, // medium (default)
+            { "16", "p5" }, // slow (good quality)
+            { "17", "p6" }, // slower (better quality)
+            { "18", "p7" } // slowest (best quality)
+        };
+    }
+
 private:
     std::string ffmpegCodecName_;
 };

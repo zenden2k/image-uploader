@@ -637,7 +637,7 @@ int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType
 BOOL SetClientRect(HWND hWnd, int x, int y)
 {
     RECT rect = {0,0,x,y}, rect2;
-    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), (BOOL)GetMenu(hWnd), GetWindowLong(hWnd, GWL_EXSTYLE));
+    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), GetMenu(hWnd) == NULL, GetWindowLong(hWnd, GWL_EXSTYLE));
     GetWindowRect(hWnd, &rect2);
     return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }

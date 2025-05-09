@@ -32,6 +32,59 @@ IDB_ICONROTATEFLIP      PNG                     "res\\ImageEditor\\icon_rotate_f
 
 IDB_ICONFLIPHORIZONTAL  PNG                     "res\\ImageEditor\\icon_flip_horizontal.png"
 
+IDB_ICONPLAY            PNG                     "res\\icon_play.png"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SCREENRECORDINGSETTINGSPAGE DIALOGEX 0, 0, 272, 269
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CTEXT           "#backend",IDC_BACKENDLABEL,7,8,111,10
+    COMBOBOX        IDC_BACKENDCOMBO,123,7,142,59,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "#out folder",IDC_OUTFOLDERLABEL,7,26,191,8
+    EDITTEXT        IDC_OUTFOLDEREDIT,7,38,193,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "#browse",IDC_OUTFOLDERBROWSEBUTTON,204,38,61,14
+    LTEXT           "#ffmpeg path",IDC_FFMPEGPATHLABEL,7,59,192,8
+    EDITTEXT        IDC_FFMPEGPATHEDIT,7,71,193,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "#browse",IDC_FFMPEGPATHBROWSEBUTTON,204,71,61,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_SCREENRECORDINGSETTINGSPAGE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 265
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 262
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SCREENRECORDINGSETTINGSPAGE AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Neutral (Default) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -133,6 +186,12 @@ IDB_ICONPRINT           PNG                     "res\\ImageEditor\\icon_print.pn
 IDB_ICONFLIPVERTICAL    PNG                     "res\\ImageEditor\\icon_flip_vertical.png"
 
 IDB_ICONRECORD          PNG                     "res\\ImageEditor\\icon_record.png"
+
+IDB_ICONPAUSE           PNG                     "res\\icon_pause.png"
+
+IDB_ICONOK              PNG                     "res\\icon_ok.png"
+
+IDB_ICONCANCEL          PNG                     "res\\icon_cancel.png"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1163,21 +1222,6 @@ BEGIN
     EDITTEXT        IDC_ACTIONRETRYLIMIT,210,179,28,13,ES_AUTOHSCROLL | ES_NUMBER
 END
 
-IDD_SCREENRECORDINGSETTINGSPAGE DIALOGEX 0, 0, 272, 269
-STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_SYSMENU
-EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    CTEXT           "#backend",IDC_BACKENDLABEL,7,8,111,10
-    COMBOBOX        IDC_BACKENDCOMBO,123,7,142,59,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "#out folder",IDC_OUTFOLDERLABEL,7,26,191,8
-    EDITTEXT        IDC_OUTFOLDEREDIT,7,38,193,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "#browse",IDC_OUTFOLDERBROWSEBUTTON,204,38,61,14
-    LTEXT           "#ffmpeg path",IDC_FFMPEGPATHLABEL,7,57,192,8
-    EDITTEXT        IDC_FFMPEGPATHEDIT,7,71,193,14,ES_AUTOHSCROLL
-    PUSHBUTTON      "#browse",IDC_FFMPEGPATHBROWSEBUTTON,204,71,61,14
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1599,14 +1643,6 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 262
     END
-
-    IDD_SCREENRECORDINGSETTINGSPAGE, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 265
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 262
-    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -1709,6 +1745,8 @@ IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
 IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
 
 IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
+
+IDI_ICONRECORD          ICON                    "res\\icon_record.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1897,11 +1935,6 @@ BEGIN
 END
 
 IDD_WIZARDDLG AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
-
-IDD_SCREENRECORDINGSETTINGSPAGE AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

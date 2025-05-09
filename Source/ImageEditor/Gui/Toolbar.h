@@ -69,6 +69,7 @@ public:
         virtual void DrawItem(Item& item, Gdiplus::Graphics* gr, int, int y, float dpiScaleX, float dpiScaleY) = 0;
         virtual void OnClick(int x, int y, float dpiScaleX, float dpiScaleY){};
         virtual std::vector<std::pair<RECT, CString>> getSubItemsHints() { return {}; };
+        virtual bool needClick() { return true; };
     };
 
     explicit Toolbar(Orientation orientation, bool createSubPanel = true);

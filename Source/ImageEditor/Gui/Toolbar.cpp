@@ -443,6 +443,8 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 {
     int xPos = GET_X_LPARAM(lParam);
     int yPos = GET_Y_LPARAM(lParam);
+    bool moveParent = moveParent_;
+
     if ( selectedItemIndex_ != -1 ) {
         Item& item = buttons_[selectedItemIndex_];
         if ( item.type == Toolbar::itComboButton && xPos >  static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)  ) {
@@ -454,15 +456,15 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
                 SetTimer(kTinyComboDropdownTimer, 600);
                 item.state = isDown;
             }
-        }
-        else {
+        } else {
             item.state = isDown;
         }
 
+        moveParent = moveParent && item.itemDelegate && !item.itemDelegate->needClick();
+
         InvalidateRect(&item.rect, false);
     }
-
-    if (moveParent_) {
+    if (moveParent) {
         ReleaseCapture();
         SendMessage(GetParent(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
     }

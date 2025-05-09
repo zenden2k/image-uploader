@@ -105,6 +105,7 @@
 #define IDD_CLEARHISTORYDLG             271
 #define IDB_PNG2                        272
 #define IDD_SEARCHBYIMAGEDLG            272
+#define IDB_ICONPLAY                    272
 #define IDB_PNG3                        273
 #define IDB_DROPDOWNICONPNG             273
 #define IDD_COLORCODEDIALOG             273
@@ -194,6 +195,12 @@
 #define IDB_ICONFLIPHORIZONTAL          345
 #define IDB_PNG13                       346
 #define IDB_ICONFLIPVERTICAL            346
+#define IDB_ICONPAUSE                   348
+#define IDB_ICONOK                      349
+#define IDB_PNG14                       350
+#define IDB_ICONCANCEL                  350
+#define IDI_ICONRECORD                  351
+#define IDB_PNG15                       352
 #define IDC_ADDIMAGES                   1000
 #define IDC_TOOLSERVERLIST              1000
 #define IDC_ADDVIDEO                    1001
@@ -847,7 +854,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        348
+#define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
 #define _APS_NEXT_CONTROL_VALUE         1359
 #define _APS_NEXT_SYMED_VALUE           128

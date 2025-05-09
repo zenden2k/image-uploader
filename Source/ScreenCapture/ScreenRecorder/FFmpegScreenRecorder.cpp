@@ -1,19 +1,19 @@
 #include "FFmpegScreenRecorder.h"
 
-
 #include <filesystem>
 #include <chrono>
 #include <fstream>
 
-
 #include <boost/process/v2/process.hpp>
 #include <boost/process/v2/stdio.hpp>
 #include <boost/process/v2/execute.hpp>
+#ifdef _WIN32
+#include <boost/process/v2/windows/default_launcher.hpp>
+#endif
 //#include <boost/process.hpp>
 #include <boost/asio.hpp>
 //#include <boost/process/windows.hpp>
 #include <boost/format.hpp>
-
 
 #include "ArgsBuilder/FFmpegArgsBuilder.h"
 #include "Core/Logging.h"
@@ -22,7 +22,8 @@
 #include "Sources/GDIGrabSource.h"
 #include "VideoCodecs/NvencVideoCodec.h"
 #include "VideoCodecs/X264VideoCodec.h"
-
+#include "Core/TaskDispatcher.h"
+/*
 void async_wait_future(
     boost::asio::io_context& io,
     std::future<int> fut,
@@ -43,11 +44,13 @@ void async_wait_future(
             async_wait_future(io, std::move(fut), callback);
         }
     });
-}
+}*/
 
 FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect)
-                                    : ScreenRecorder(outFile, rect),
-                                    ffmpegPath_(std::move(ffmpegPath)) {
+     : ScreenRecorder(outFile, rect)
+    , ffmpegPath_(std::move(ffmpegPath))
+   // , taskDispatcher_(taskDispatcher)
+{
     
 }
 
@@ -81,7 +84,13 @@ void FFmpegScreenRecorder::start() {
     FFmpegSettings settings;
 
     settings.source = "gdigrab";
-    settings.codec = "x264";//
+    //settings.codec = "h264_nvenc"; 
+    settings.codec = "x264"; 
+
+    if (settings.codec == "h264_nvenc") {
+        settings.source = "ddagrab";
+    }
+
     settings.width = captureRect_.Width() & ~1;
     settings.height = captureRect_.Height() & ~1;
     settings.offsetX = captureRect_.left;
@@ -96,18 +105,23 @@ void FFmpegScreenRecorder::start() {
     auto& output = argsBuilder.addOutputFile(currentOutFilePath_);
     //auto outputArgs = argsBuilder.
 
-    GDIGrabSource gdigrab;
-    gdigrab.apply(settings, input, argsBuilder.globalArgs());
+    if (settings.source == "ddagrab") {
+        auto ddagrabSource = std::make_unique<DDAGrabSource>();
+        ddagrabSource->apply(settings, input, argsBuilder.globalArgs());
+    } else {
+        GDIGrabSource gdigrab;
+        gdigrab.apply(settings, input, argsBuilder.globalArgs());
+    }
 
-    /*auto ddagrabSource = std::make_unique<DDAGrabSource>();
-    ddagrabSource->apply(settings, input, argsBuilder.globalArgs());*/
-   
-    /*auto nvenc = NvencVideoCodec::createH264();
-    nvenc->apply(settings, output);**/
+    if (settings.codec == "h264_nvenc" ) {
+        auto nvenc = NvencVideoCodec::createH264();
+        nvenc->apply(settings, output);
+    } else if (settings.codec == "x264") {
+        auto x264 = std::make_unique<X264VideoCodec>();
+        x264->apply(settings, output);
+    }
+    /***/
         
-    auto x264 = std::make_unique<X264VideoCodec>();
-    x264->apply(settings, output);
-
     std::vector<std::string> args = argsBuilder.getArgs();
 
     std::string s;
@@ -132,13 +146,18 @@ void FFmpegScreenRecorder::start() {
             "-cq:v", "20", outFilePath_
     };*/
 
-
+    if (isRunning()) {
+        return;
+    }
     changeStatus(Status::Recording);
+    if (isRunning()) {
+        return;
+    }
     future_ = launchFFmpeg(args, [this](int res) {
         if (res == 0) {
             parts_.push_back(currentOutFilePath_);
         }
-        changeStatus(Status::Paused);
+        changeStatus(res == 0 ? Status::Paused : Status::Failed);
     });
 }
 
@@ -147,53 +166,64 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
     namespace asio = boost::asio;
 
     std::string command = ffmpegPath_;
-
-    return std::async(std::launch::async, [&, command, args, onFinish] { 
+    isRunning_ = true;
+    return std::async(std::launch::async, [this, command, args, onFinish] {
+        std::string output;
+        std::string errOutput;
+        boost::asio::io_context ctx_;
         try {
+            asio::readable_pipe outPipe(ctx_);
+            asio::readable_pipe errPipe(ctx_);
 
-            asio::readable_pipe rp(ctx_);
-
-            inStream_ = std::make_unique<asio::writable_pipe>(ctx_);
-
-            bp::process child(ctx_, command, args, bp::process_stdio {  *inStream_.get(), rp, { /* err to default */ } } /*,
-                ::boost::process::windows::create_no_window*/);
-            //ios.run();
-            //isRunning_ = true;
-            std::string output;
-
-            /*boost::system::error_code ec;
-            rp.read(asio::dynamic_buffer(output), ec);
-            assert(ec == asio::error::eof);*/
-
+            inStream_ = std::make_shared<asio::writable_pipe>(ctx_);
+#ifdef _WIN32
+            bp::windows::default_launcher dl;
+            dl.creation_flags |= CREATE_NO_WINDOW;
+            bp::process child { dl(ctx_, command, args, bp::process_stdio { *inStream_, outPipe, errPipe }) };
+#else
+            bp::process child(ctx_, command, args, bp::process_stdio { *inStream_, outPipe, errPipe });
+#endif
+   
+            auto db = asio::dynamic_buffer(output);
             asio::async_read(
-                rp,
-                asio::dynamic_buffer(output),
-                [&output](const boost::system::error_code& ec, std::size_t bytes_read) {
-                    if (!ec) {
-                        LOG(WARNING) << "FFmpeg output: " << output << std::endl;
+                outPipe,
+                db,
+                [&](const boost::system::error_code& ec, std::size_t bytes_read) {
+                    if (ec == asio::error::eof || !ec) {
+                        //LOG(INFO) << "STDOUT: " << output << std::endl;
+                    } else if (ec != asio::error::broken_pipe) {
+                        LOG(ERROR) << "Error reading stdout: " << IuCoreUtils::SystemLocaleToUtf8(ec.message()) << std::endl;
                     }
-                }
-            );
+                });
+            auto db2 = asio::dynamic_buffer(errOutput);
+            asio::async_read(
+                errPipe,
+                db2,
+                [&](const boost::system::error_code& ec, std::size_t bytes_read) {
+                    if (ec == asio::error::eof || !ec) {
+                        //LOG(INFO) << "STDERR: " << output << std::endl;
+                    } else if (ec != asio::error::broken_pipe) {
+                        LOG(ERROR) << "Error reading stderr: " << IuCoreUtils::SystemLocaleToUtf8(ec.message()) << std::endl;
+                    }
+                });
 
-            //ctx_.run();
+            ctx_.run();
+
             child.wait(); // reap PID
             int result = child.exit_code();
             if (result != 0) {
-                LOG(ERROR) << "Exit code:" << result << std::endl << output;
+                LOG(ERROR) << "Exit code:" << result << std::endl
+                           << output;
             }
             inStream_.reset();
+            isRunning_ = false;
+
             if (onFinish) {
                 onFinish(result);
             }
 
             return result;
-            //LOG(ERROR) << result << std::endl << std::string(buf.data(), buf.size());
-            //LOG(ERROR) << result << std::endl << std::string(buf.data(), buf.size());
-        }
-        /*catch (const bp::process_error& ex) {
-            LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what()) << std::endl;
-        }*/
-        catch (const std::exception& ex) {
+        } catch (const std::exception& ex) {
             LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what()) << std::endl;
         }
         inStream_.reset();
@@ -204,18 +234,18 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
         
         return 1;
     });
-
 }
 
 bool FFmpegScreenRecorder::isRunning() const {
-    if (!future_.valid()) {
+    return isRunning_;
+    /* if (!future_.valid()) {
         return false;
     }
     using namespace std::chrono_literals;
     auto status = future_.wait_for(0ms);
 
     // Print status.
-    return status != std::future_status::ready;
+    return status != std::future_status::ready;*/
 }
 
 void FFmpegScreenRecorder::sendStopSignal() {
@@ -223,25 +253,26 @@ void FFmpegScreenRecorder::sendStopSignal() {
         return;
     }
 
-    std::string data = "q\n";
+
     namespace asio = boost::asio;
 
     asio::async_write(
         *inStream_,
-        asio::buffer(data),
+        asio::buffer(stopData_),
         [&](boost::system::error_code ec, std::size_t n) {
             if (!ec) {
                 inStream_->close();
             } else {
-                LOG(ERROR) << "Pipe write error: " << ec.message() << "\n";
+                LOG(WARNING) << "Pipe write error: " << IuCoreUtils::SystemLocaleToUtf8(ec.message()) << "\n";
             }
-        });
+        }
+    );
 }
 
 void FFmpegScreenRecorder::stop() {  
     auto cb = [&](int) {
         if (parts_.empty()) {
-            changeStatus(Status::Finished);
+            changeStatus(Status::Canceled);
             return;
         }
 
@@ -267,8 +298,8 @@ void FFmpegScreenRecorder::stop() {
             f.close();
 
             changeStatus(Status::RunningConcatenation);
-
-            auto future = launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", outFilePath_ }, [this](int res) {
+           
+            future_ = launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", outFilePath_ }, [this](int res) {
                 changeStatus(Status::Finished);
                 if (res == 0) {
                     cleanupAfter();
@@ -282,22 +313,30 @@ void FFmpegScreenRecorder::stop() {
     };
 
     sendStopSignal();
-    async_wait_future(timerCtx_, std::move(future_), cb);
+    //async_wait_future(timerCtx_, std::move(future_), cb);
 
-    std::thread([&] {
-        timerCtx_.run();
+    std::thread([this, cb] {
+        //future.wait();
+        try {
+            if (future_.valid()) {
+                cb(future_.get());
+            } else {
+                cb(0);
+            }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
+
+        //timerCtx_.run();
     }).detach();
 }
 
 void FFmpegScreenRecorder::cancel() {
-    if (!isRunning()) {
-        return;
+    if (isRunning()) {
+        sendStopSignal();
     }
 
-    sendStopSignal();
-
-    //future_.wait();
-    async_wait_future(timerCtx_, std::move(future_), [&](int) {
+    auto cb = [&](int) {
         cleanupAfter();
         try {
             std::filesystem::remove(std::filesystem::u8path(outFilePath_));
@@ -305,15 +344,33 @@ void FFmpegScreenRecorder::cancel() {
             //LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());
         }
         changeStatus(Status::Canceled);
-    });
+    };
+    std::thread([this, cb] {
+        //future.wait();
+        try {
+            if (future_.valid()) {
+                cb(future_.get());
+            } else {
+                cb(0);
+            }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << ex.what();
+        }
+
+        //timerCtx_.run();
+    }).detach();
+        
+    /*});
 
     std::thread([&] {
         timerCtx_.run();
-    }).detach();
+    }).detach();*/
 }
 
 void FFmpegScreenRecorder::pause() {
-    sendStopSignal();
+    if (status_ == Status::Recording && isRunning()) {
+        sendStopSignal();
+    }
 }
 
 void FFmpegScreenRecorder::cleanupAfter() {

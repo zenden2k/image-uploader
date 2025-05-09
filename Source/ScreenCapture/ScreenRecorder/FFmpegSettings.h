@@ -7,10 +7,11 @@ class FFmpegSettings
 public:
     std::string source;
     std::string codec;
+
     std::string preset;
     std::string outDirectory;
     bool showCursor = true;
-    int quality = 20;
+    int quality = 80;
     int framerate = 30;
 
     int offsetX = 0;

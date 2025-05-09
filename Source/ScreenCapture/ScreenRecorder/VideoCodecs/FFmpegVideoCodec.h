@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 class FFmpegOutputArgs;
 class FFmpegSettings;
@@ -26,6 +27,11 @@ public:
 
     std::string description() const {
         return description_;
+    }
+
+    virtual std::vector<std::pair<std::string,std::string>> presets() const
+    {
+        return {};
     }
 
     virtual void apply(const FFmpegSettings& settings, FFmpegOutputArgs& outputArgs) = 0;

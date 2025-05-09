@@ -29,9 +29,24 @@ public:
             .addArg("crf", crf)
             .addArg("r", Settings.framerate)
             .addArg("pix_fmt", /*Settings.X264.PixelFormat*/ "yuv420p")
-            .addArg("preset", /*Settings.X264.Preset*/"ultrafast")
+            .addArg("preset", Settings.preset.empty() ? "fast" : Settings.preset)
             .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
+    }
 
+    std::vector<std::pair<std::string, std::string>> presets() const override
+    {
+        return {
+            { "ultrafast", "ultrafast" },
+            { "superfast", "superfast" },
+            { "veryfast", "veryfast" },
+            { "faster", "faster" },
+            { "fast", "fast" },
+            { "medium", "medium" },
+            { "slow", "slow" },
+            { "slower", "slower" },
+            { "veryslow", "veryslow" },
+            { "placebo", "placebo" }
+        };
     }
 
     private:
