@@ -156,11 +156,6 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
-    ../ServerListTool/ServersCheckerDlg.cpp
-    ../ServerListTool/ServersChecker.cpp
-    ../ServerListTool/ServersCheckerModel.cpp
-    ../ServerListTool/Helpers.cpp
-    ../ServerListTool/ServerListView.cpp
     FileList.cpp
 )
 

@@ -577,10 +577,10 @@ shutil.copyfile(src_xml_file, new_build_dir + '/' + ("iu_serversinfo.xml" if IS_
 #        os.symlink(dist_directory, repo_dir_abs + "/Dist_Test")
 #    used_dist_dir = "/Dist_Test/"
 
-for target in BUILD_TARGETS:
+for idx, target in enumerate(BUILD_TARGETS):
     target_full_name = get_target_full_name(target)
     #directory_name = target_full_name
-    build_dir_path = COMMON_BUILD_FOLDER + "/Build_" + target_full_name
+    build_dir_path = COMMON_BUILD_FOLDER + "/Build_" + target_full_name + "_" + str(idx)
     if not os.path.exists(build_dir_path):
         try:
             os.mkdir(build_dir_path)
