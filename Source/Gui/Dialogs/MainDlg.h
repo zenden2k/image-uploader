@@ -46,6 +46,7 @@ public:
         // Menu for files
         MENUITEM_VIEW, MENUITEM_OPENINDEFAULTVIEWER, MENUITEM_EDIT, MENUITEM_EDITINEXTERNALEDITOR, MENUITEM_PRINT,
         MENUITEM_EXTRACTFRAMES,
+        MENUITEM_FILEINFO,
         MENUITEM_OPENINFOLDER,
         MENUITEM_SAVEAS,
         MENUITEM_COPYFILETOCLIPBOARD,
@@ -80,6 +81,7 @@ public:
         COMMAND_ID_HANDLER(MENUITEM_SAVEAS, OnSaveAs)
         COMMAND_ID_HANDLER(MENUITEM_PRINT, OnPrintImages)
 		COMMAND_ID_HANDLER(MENUITEM_EXTRACTFRAMES, OnExtractFramesFromSelectedFile)
+        COMMAND_ID_HANDLER(MENUITEM_FILEINFO, OnFileInfo)
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURI, OnCopyFileAsDataUri)
         COMMAND_ID_HANDLER(MENUITEM_COPYFILEASDATAURIHTML, OnCopyFileAsDataUriHtml)
 		COMMAND_ID_HANDLER(MENUITEM_COPYFILEPATH, OnCopyFilePath)
@@ -133,6 +135,7 @@ public:
     LRESULT OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnSearchByImage(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnExtractFramesFromSelectedFile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+	LRESULT OnFileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 	LRESULT OnPrintImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnRename(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

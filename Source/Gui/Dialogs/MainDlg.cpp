@@ -41,6 +41,7 @@
 #include "3rdpart/ShellPidl.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/WinServerIconCache.h"
+#include "MediaInfoDlg.h"
 
 CMainDlg::CMainDlg(WinServerIconCache* iconCache):
     m_EditorProcess(nullptr),
@@ -185,6 +186,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         CString fileName = FileList[hti.iItem].FileName;
         bool isImageFile = IuCommonFunctions::IsImage(fileName);
         bool isVideoFile = IsVideoFile(fileName);
+        bool isAudioFile = IsAudioFile(fileName);
 
         CMenu contextMenu;
         contextMenu.CreatePopupMenu();
@@ -207,7 +209,10 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if (isVideoFile) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_EXTRACTFRAMES, TR("Extract frames"));
         }
-
+        if (isVideoFile || isAudioFile) {
+            contextMenu.AppendMenu(MF_STRING, MENUITEM_FILEINFO, TR("Information about file"));
+        }
+       
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINFOLDER, TR("Open in folder"));
         contextMenu.AppendMenu(MF_STRING, MENUITEM_SAVEAS, TR("Save as..."));
 
@@ -823,6 +828,15 @@ LRESULT CMainDlg::OnExtractFramesFromSelectedFile(WORD, WORD, HWND, BOOL&) {
 		WizardDlg->importVideoFile(fileName, 2);
 	}
 	return 0;
+}
+
+LRESULT CMainDlg::OnFileInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    CString fileName = getSelectedFileName();
+    if (!fileName.IsEmpty()) {
+        CMediaInfoDlg dlg;
+        dlg.ShowInfo(m_hWnd, fileName);
+    }
+    return 0;
 }
 
 LRESULT CMainDlg::OnTimer(UINT, WPARAM wParam, LPARAM, BOOL&) {

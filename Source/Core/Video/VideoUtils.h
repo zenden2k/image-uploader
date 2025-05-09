@@ -3,12 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <set>
 
 class VideoUtils {
     public:
         static VideoUtils& instance();
-        std::vector<std::string> videoFilesExtensions;
-        std::vector<std::string> audioFilesExtensions;
+        std::set<std::string> videoFilesExtensionsSet;
+        std::set<std::string> audioFilesExtensionsSet;
         VideoUtils(const VideoUtils&) = delete;
         VideoUtils& operator=(const VideoUtils&) = delete;
     private:  

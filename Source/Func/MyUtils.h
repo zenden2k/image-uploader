@@ -21,14 +21,27 @@
 #ifndef IU_FUNC_MYUTILS_H
 #define IU_FUNC_MYUTILS_H
 
+#include <set>
 #include "atlheaders.h"
 #include <tchar.h>
+#include "Core/Video/VideoUtils.h"
 
 #define VIDEO_FORMATS _T("avi\0mpg\0mpeg\0vob\0divx\0flv\0wmv\0asf\0mkv\0mov\0ts\0mp2\0mp4\0") _T("3gp\0rm\0mpeg2ts\0\0")
 
 #define LOADICO(ico) LoadIcon(GetModuleHandle(0), MAKEINTRESOURCE(ico))
 
-bool IsVideoFile(LPCTSTR szFileName);
+bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet);
+
+
+inline bool IsVideoFile(LPCWSTR szFileName)
+{
+    return IsFileOfType(szFileName, VideoUtils::instance().videoFilesExtensionsSet);
+}
+
+inline bool IsAudioFile(LPCWSTR szFileName)
+{
+    return IsFileOfType(szFileName, VideoUtils::instance().audioFilesExtensionsSet);
+}
 
 CString PrepareVideoDialogFilters();
 CString PrepareAudioDialogFilters();

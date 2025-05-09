@@ -23,20 +23,29 @@
 #include <set>
 #include <string>
 
+#include "Func/WinUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Core/Video/VideoUtils.h"
 
-bool IsVideoFile(LPCTSTR szFileName) {
-    std::vector<std::string>& v = VideoUtils::instance().videoFilesExtensions;
-    static const std::set<std::string> extensions(v.begin(), v.end());
-    const std::string ext = IuStringUtils::ToLower(IuCoreUtils::ExtractFileExt(W2U(szFileName)));
-    return extensions.find(ext) != extensions.end();
+bool IsFileOfType(LPCWSTR szFileName, const std::set<std::string>& extensionsSet) {
+    if (!szFileName) {
+        return false;
+    }
+    CString extension = WinUtils::GetFileExt(szFileName);
+
+    if (extension.IsEmpty()) {
+        return false;
+    }
+
+    extension.MakeLower();
+    std::string extensionA(CW2A(extension, CP_UTF8));
+    return extensionsSet.find(extensionA) != extensionsSet.end();
 }
 
 CString PrepareVideoDialogFilters() {
     CString result;
-    for (const auto& ex : VideoUtils::instance().videoFilesExtensions) {
+    for (const auto& ex : VideoUtils::instance().videoFilesExtensionsSet) {
         result += _T("*.");
         result += ex.c_str();
         result += _T(";");
@@ -46,7 +55,7 @@ CString PrepareVideoDialogFilters() {
 
 CString PrepareAudioDialogFilters() {
     CString result;
-    for (const auto& ex : VideoUtils::instance().audioFilesExtensions) {
+    for (const auto& ex : VideoUtils::instance().audioFilesExtensionsSet) {
         result += _T("*.");
         result += ex.c_str();
         result += _T(";");

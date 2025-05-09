@@ -49,7 +49,6 @@ void async_wait_future(
 FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect)
      : ScreenRecorder(outFile, rect)
     , ffmpegPath_(std::move(ffmpegPath))
-   // , taskDispatcher_(taskDispatcher)
 {
     
 }
@@ -74,8 +73,6 @@ void FFmpegScreenRecorder::start() {
      
     currentOutFilePath_ = str(boost::format("%s_part%02d.%s") % fileNoExt_ % parts_.size() % ext);
 
-    //LOG(ERROR) << outFilePath_;
-    //return;
     /*std::string filterComplex = str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d") % captureRect_.Width() % captureRect_.Height()
         % captureRect_.left % captureRect_.top);*/
 
@@ -305,10 +302,6 @@ void FFmpegScreenRecorder::stop() {
                     cleanupAfter();
                 }
             });
-
-            /*if (future.get() != 0) {
-            LOG(ERROR) << "Failed to concatenate " << parts_.size() << " video files";
-        }*/
         }
     };
 
@@ -316,7 +309,6 @@ void FFmpegScreenRecorder::stop() {
     //async_wait_future(timerCtx_, std::move(future_), cb);
 
     std::thread([this, cb] {
-        //future.wait();
         try {
             if (future_.valid()) {
                 cb(future_.get());
@@ -326,8 +318,6 @@ void FFmpegScreenRecorder::stop() {
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
         }
-
-        //timerCtx_.run();
     }).detach();
 }
 
@@ -356,15 +346,7 @@ void FFmpegScreenRecorder::cancel() {
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
         }
-
-        //timerCtx_.run();
     }).detach();
-        
-    /*});
-
-    std::thread([&] {
-        timerCtx_.run();
-    }).detach();*/
 }
 
 void FFmpegScreenRecorder::pause() {
