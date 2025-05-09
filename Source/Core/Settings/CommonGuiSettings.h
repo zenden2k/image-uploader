@@ -53,6 +53,17 @@ struct VideoSettingsStruct {
 #endif
 };
 
+struct ScreenRecordingStruct {
+    inline static const std::string ScreenRecordingBackendFFmpeg = "FFmpeg";
+    inline static const std::string ScreenRecordingBackendDirectX = "DirectX";
+
+    std::string Backend;
+
+    std::string FFmpegCLIPath;
+    //std::string Preset;
+    std::string OutDirectory;
+};
+
 #ifndef IU_QT
 struct MediaInfoSettingsStruct {
     int InfoType; // 0 - short summary, 1 - full info
@@ -76,6 +87,7 @@ class CommonGuiSettings : public BasicSettings {
         ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;
         ServerProfilesMap ServerProfiles;
         VideoSettingsStruct VideoSettings;
+        ScreenRecordingStruct ScreenRecordingSettings;
 #ifndef IU_QT
         CString Language;
         CString DataFolder;
@@ -126,6 +138,13 @@ class CommonGuiSettings : public BasicSettings {
 #endif
             VideoEngineFFmpeg,
             VideoEngineAuto
+        };
+
+        inline static std::vector<std::string> ScreenRecordingBackends = {
+#ifdef _WIN32
+            ScreenRecordingStruct::ScreenRecordingBackendDirectX,
+#endif
+            ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
         };
 
         static bool IsFFmpegAvailable();

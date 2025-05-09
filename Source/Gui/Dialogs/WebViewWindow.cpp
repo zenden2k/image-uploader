@@ -4,6 +4,7 @@
 
 #include "Gui/GuiTools.h"
 #include "Core/Utils/CoreUtils.h"
+#include "resource.h"   
 
 #ifdef IU_ENABLE_WEBVIEW2
 #include "Gui/Controls/Webview2BrowserView.h"

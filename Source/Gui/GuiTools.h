@@ -39,7 +39,7 @@ namespace GuiTools
     void ShowDialogItem(HWND dlg, int itemId, bool show);
     void EnableDialogItem(HWND dlg, int itemId, bool enable);
     void RemoveWindowStyleEx(HWND hWnd, DWORD styleEx);
-    
+
     // Converts pixels to Win32 dialog units
     int dlgX(int WidthInPixels);
     int dlgY(int HeightInPixels);
@@ -107,5 +107,8 @@ namespace GuiTools
     HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation = ARROW_DOWN);
 
     HICON GetMenuArrowIcon();
+
+    void SetControlAccessibleName(HWND hwnd, const WCHAR* name);
+    void ClearControlAccessibleName(HWND hwnd);
 }
 #endif

@@ -37,7 +37,7 @@ struct ThumbsViewItem
 {
     CString FileName;
     BOOL ThumbOutDate;
-    bool ThumbnailRequested; 
+    bool ThumbnailRequested;
     //CBitmap Image;
     bool ThumbLoaded;
     int Index;
@@ -57,7 +57,7 @@ public:
     CThumbsView();
     ~CThumbsView() override;
     DECLARE_WND_SUPERCLASS(_T("CThumbsView"), CListViewCtrl::GetWndClassName())
-    
+
     BEGIN_MSG_MAP(CThumbsView)
         MESSAGE_HANDLER(WM_MBUTTONUP, OnMButtonUp)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -80,6 +80,7 @@ public:
     LRESULT OnCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnDoubleClick(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     using ItemCountChangedCallback = std::function<void(CThumbsView*, bool)>;
+
     void SetOnItemCountChanged(ItemCountChangedCallback&& callback);
     CAutoCriticalSection ImageListCS;
     LRESULT OnMButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -97,7 +98,7 @@ public:
     int GetImageIndex(int ItemIndex) const;
     CImageViewWindow ImageView;
     DWORD Run();
-    void ViewSelectedImage();
+    bool ViewSelectedImage();
     bool ExtendedView;
     void OutDateThumb(int nIndex);
     bool StopBackgroundThread(bool wait = false);
@@ -134,3 +135,4 @@ protected:
 
 
 #endif // THUMBSVIEW_H
+

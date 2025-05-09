@@ -10,6 +10,13 @@ VideoUtils& VideoUtils::instance()
 } 
 
 VideoUtils::VideoUtils(){
-    IuStringUtils::Split(IU_VIDEOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, videoFilesExtensions, -1);
-    IuStringUtils::Split(IU_AUDIOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, audioFilesExtensions, -1);
+    std::vector<std::string> extensions;
+
+    IuStringUtils::Split(IU_VIDEOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
+    videoFilesExtensionsSet.insert(extensions.begin(), extensions.end());
+    extensions.clear();
+
+    IuStringUtils::Split(IU_AUDIOFILES_EXTENSIONS, IU_EXTENSIONS_LIST_SEPARATOR, extensions, -1);
+    audioFilesExtensionsSet.insert(extensions.begin(), extensions.end());
+
 }

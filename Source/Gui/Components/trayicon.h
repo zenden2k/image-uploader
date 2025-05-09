@@ -44,7 +44,7 @@ public:
 	//	hIcon 		- The icon to display
 	// 	nID		- The resource ID of the context menu
 	/// returns true on success
-	bool InstallIcon(LPCTSTR lpszToolTip, HICON hIcon, HMENU menu)
+        bool InstallIcon(LPCTSTR lpszToolTip, HICON hIcon, HMENU menu = NULL, const GUID* pGuid = nullptr)
 	{
 		T* pT = static_cast<T*>(this);
 		// Fill in the data		
@@ -52,6 +52,10 @@ public:
 		//m_nid.uID = nID;
 		m_nid.hIcon = hIcon;
 		m_nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+        if (pGuid) {
+            m_nid.uFlags |= NIF_GUID;
+            m_nid.guidItem = *pGuid;
+        }
 		m_nid.uCallbackMessage = WM_TRAYICON;
 		_tcscpy(m_nid.szTip, lpszToolTip);
 //		 m_hTrayIconMenu = menu;

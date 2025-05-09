@@ -57,7 +57,7 @@ class ImageUploaderRecipe(ConanFile):
 #            raise ConanInvalidConfiguration("ARM v8 not supported")
 
     def requirements(self):
-        self.requires("boost/1.78.0")
+        self.requires("boost/1.87.0")
         self.requires("libcurl/8.12.1")
         self.requires("pcre/8.45")
         self.requires("uriparser/0.9.8")

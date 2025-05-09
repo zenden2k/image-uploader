@@ -68,7 +68,7 @@ class WinServerIconCache;
 class CNetworkDebugDlg;
 #endif
 
-class CWizardDlg : 
+class CWizardDlg :
     public CCustomDialogIndirectImpl<CWizardDlg>, public CUpdateUI<CWizardDlg>,
         public CMessageFilter, public CIdleHandler, public IDropTarget, public CRegionSelectCallback,
         public CUpdateDlg::CUpdateDlgCallback,
@@ -86,11 +86,11 @@ public:
     struct AddImageStruct
     {
         CString RealFileName, VirtualFileName;
-        bool show; 
+        bool show;
     };
 
-    CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist, 
-        UploadEngineManager* uploadEngineManager, UploadManager* uploadManager, 
+    CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* enginelist,
+        UploadEngineManager* uploadEngineManager, UploadManager* uploadManager,
         ScriptsManager* scriptsManager, WtlGuiSettings* settings);
     ~CWizardDlg() override;
 
@@ -124,7 +124,7 @@ public:
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
         COMMAND_HANDLER(IDM_NETWORKDEBUGGER, BN_CLICKED, OnNetworkDebuggerClicked)
 #endif
-        
+
         COMMAND_HANDLER(ID_PASTE, 1, OnPaste)
         COMMAND_RANGE_HANDLER(ID_HOTKEY_BASE, ID_HOTKEY_BASE +100, OnLocalHotkey);
         COMMAND_HANDLER_EX(IDC_PREV, BN_CLICKED, OnPrevBnClicked)
@@ -183,7 +183,7 @@ public:
 
     void ShowUpdateMessage(const CString& msg) override;
 
-    void runInGuiThread(TaskRunnerTask&& task, bool async) override;
+    void runInGuiThread(TaskRunnerTask task, bool async) override;
 
     template<class T> T* getPage(WizardPageId id) {
         if (id < 0 || id >= ARRAY_SIZE(Pages)) {
@@ -231,9 +231,10 @@ public:
     bool funcOpenScreenshotFolder();
     bool funcFromClipboard(bool fromCmdLine = false);
     bool funcExit(bool force = false);
+    bool funcRecordScreen();
     // end of functions
     bool executeFunc(CString funcName, bool fromCmdLine = false);
-
+    void executeFuncLater(CString funcName);
     bool importVideoFile(const CString& fileName, int prevPage = 0);
     bool queryDropFiledescriptors(IDataObject* pDataObj, bool* enableOverlay = nullptr);
     bool HandleDropFiledescriptors(IDataObject *pDataObj);
@@ -289,7 +290,7 @@ public:
     void beginAddFiles();
     void endAddFiles();
     void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
-    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer); 
+    bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer);
     void showHelpButtonMenu(HWND control);
 
 protected:
@@ -298,12 +299,13 @@ protected:
     CIcon hIconSmall;
     CHotkeyList m_hotkeys;
     CFolderAdd FolderAdd;
-   
+
     UploadManager* uploadManager_;
     UploadEngineManager* uploadEngineManager_;
     ScriptsManager* scriptsManager_;
 	std::unique_ptr<Win7JumpList> win7JumpList_;
     HwndScopedWrapper aboutButtonToolTip_;
+    CString funcToExecuteLater_;
     CButton helpButton_;
     CIcon helpButtonIcon_;
     CStatic headBitmap_;
@@ -348,6 +350,7 @@ protected:
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
 #endif
+    CRect screenRecordRect_;
 };
 
 

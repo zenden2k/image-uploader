@@ -26,11 +26,21 @@
 #include <ShObjIdl.h>
 #include <strsafe.h>
 #include <dwmapi.h>
+#include <initguid.h>
+#include <oleacc.h>
+#include <objbase.h>
+#include <uiautomation.h>
 
 #include "Func/WinUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
 #include "3rdpart/GdiplusH.h"
+
+// Hack: initguid.h must be included before oleacc.h but oleacc.h
+#undef INITGUID
+#include <InitGuid.h>
+DEFINE_GUID(CLSID_AccPropServices, 0xb5f8350b, 0x0548, 0x48b1, 0xa6, 0xee, 0x88, 0xbd, 0x00, 0xb4, 0xa5, 0xe7);
+DEFINE_GUID(PROPID_ACC_NAME, 0x608d3df8, 0x8128, 0x4aa7, 0xa4, 0x28, 0xf5, 0x5e, 0x49, 0x26, 0x72, 0x91);
 
 namespace GuiTools
 {
@@ -126,7 +136,7 @@ bool InsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm){
 }
 
 void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF finish, bool Horizontal) {
-        RECT rectFill;          
+        RECT rectFill;
         float fStep;            //The size of each band in pixels
         HBRUSH hBrush;
         int i;  // Loop index
@@ -138,7 +148,7 @@ void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF fi
 
         if(!Horizontal)
             fStep = (FillRect.bottom - FillRect.top) / 256.0f;
-        else 
+        else
             fStep = (FillRect.right - FillRect.left) / 256.0f;
 
         if( fStep < 1)
@@ -146,7 +156,7 @@ void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF fi
             fStep = 1;
             if(!Horizontal)
                 n = FillRect.bottom - FillRect.top;
-            else 
+            else
                 n = (FillRect.right - FillRect.left);
         }
 
@@ -157,15 +167,15 @@ void FillRectGradient(HDC hdc, const RECT& FillRect, COLORREF start, COLORREF fi
         b = static_cast<float>(GetBValue(finish)-GetBValue(start))/(n-1);
 
         //Begin paint
-        for (i = 0; i < n; i++) 
+        for (i = 0; i < n; i++)
         {
             // Horizontal or vertical gradient
             if(!Horizontal)
                 SetRect(&rectFill, FillRect.left, int((i * fStep)+FillRect.top),
-                FillRect.right+1, int(FillRect.top+(i+1) * fStep)); 
-            else 
+                FillRect.right+1, int(FillRect.top+(i+1) * fStep));
+            else
                 SetRect(&rectFill, static_cast<int>(FillRect.left+(i * fStep)), FillRect.top,
-                int(FillRect.left+((i+1) * fStep)), FillRect.bottom+1); 
+                int(FillRect.left+((i+1) * fStep)), FillRect.bottom+1);
             if(i == n-1)
                 c = finish;
             else
@@ -469,12 +479,12 @@ HRGN CloneRegion(HRGN source)
 }
 
 HWND CreateToolTipForWindow(HWND hwnd, const CString& text) {
-    HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL, 
-        WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, 
-        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 
+    HWND hwndTT = ::CreateWindowEx(WS_EX_TOPMOST, TOOLTIPS_CLASS, NULL,
+        WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         hwnd, NULL, _Module.GetModuleInstance(),NULL);
 
-    ::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0, 
+    ::SetWindowPos(hwndTT, HWND_TOPMOST, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
     RECT clientRect;
@@ -518,7 +528,7 @@ CHARFORMAT LogFontToCharFormat(const LOGFONT & lf)
 {
     CHARFORMAT cf;
     cf.cbSize = sizeof(CHARFORMAT);
-    cf.dwMask =  CFM_FACE | CFM_SIZE | CFM_CHARSET 
+    cf.dwMask =  CFM_FACE | CFM_SIZE | CFM_CHARSET
         | CFM_BOLD | CFM_ITALIC | CFM_UNDERLINE | CFM_STRIKEOUT | CFM_OFFSET;
     cf.dwEffects = 0;
 
@@ -590,13 +600,13 @@ HICON LoadSmallIcon(int resourceId) {
     int iconHeight =  ::GetSystemMetrics(SM_CYSMICON);
     if ( iconWidth > 16 ) {
         iconWidth = 48;
-    } 
-    
+    }
+
     if ( iconHeight > 16 ) {
         iconHeight = 48;
-    } 
+    }
 
-    return static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId), 
+    return static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(resourceId),
         IMAGE_ICON, iconWidth, iconHeight, LR_DEFAULTCOLOR));
 }
 
@@ -627,7 +637,7 @@ int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType
 BOOL SetClientRect(HWND hWnd, int x, int y)
 {
     RECT rect = {0,0,x,y}, rect2;
-    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), (BOOL)GetMenu(hWnd), GetWindowLong(hWnd, GWL_EXSTYLE));
+    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), GetMenu(hWnd) == NULL, GetWindowLong(hWnd, GWL_EXSTYLE));
     GetWindowRect(hWnd, &rect2);
     return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
 }
@@ -682,6 +692,7 @@ bool IsColorBright(COLORREF color) {
     return brightness > 128;
 }
 
+
 COLORREF AdjustColorBrightness(COLORREF color, int delta) {
     auto clamp = [](int val) -> BYTE {
         return (BYTE)(val < 0 ? 0 : (val > 255 ? 255 : val)); // Clamp values between 0 and 255
@@ -710,6 +721,35 @@ COLORREF AdjustColorBrightness(COLORREF color, int delta) {
 
     return RGB(clamp(r), clamp(g), clamp(b)); // Return the color with clamped values
 }
+
+CComPtr<IAccPropServices> pAccPropServices;
+
+// Run when the UI is created.
+void SetControlAccessibleName(HWND hwnd, const WCHAR* name)
+{
+    HRESULT hr = S_OK;
+    if (!pAccPropServices) {
+        hr = pAccPropServices.CoCreateInstance(CLSID_AccPropServices, nullptr, CLSCTX_INPROC);
+    }
+
+    if (SUCCEEDED(hr)) {
+        // Now set the name on the control. This gets exposed through UIA
+        // as the element's Name property.
+        pAccPropServices->SetHwndPropStr(hwnd, OBJID_CLIENT, CHILDID_SELF, Name_Property_GUID, name);
+    }
+}
+
+// Run when the UI is destroyed.
+void ClearControlAccessibleName(HWND hwnd)
+{
+    if (pAccPropServices) {
+        // Clear the custom accessible name set earlier on the control.
+        MSAAPROPID props[] = { Name_Property_GUID };
+
+        pAccPropServices->ClearHwndProps(hwnd, OBJID_CLIENT, CHILDID_SELF, props, ARRAYSIZE(props));
+    }
+}
+
 
 HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
     /* CClientDC dc(wnd);
@@ -774,7 +814,7 @@ HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
         points[2] = { left, top + arrowHeight };
         break;
     }
-        
+
     Gdiplus::SolidBrush brush(arrowColor);
     graphics.FillPolygon(&brush, points, 3);
 

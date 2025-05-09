@@ -29,9 +29,6 @@
 #include "Core/Logging.h"
 #include "Core/Scripting/Squirrelnc.h"
 #include "HtmlDocument.h"
-#if defined(_WIN32) && !defined(IU_CLI) && !defined(IU_SERVERLISTTOOL)
-#include "Gui/Dialogs/WizardDlg.h"
-#endif
 #include "3rdpart/Registry.h"
 #include "Func/WinUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"

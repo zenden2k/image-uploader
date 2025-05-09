@@ -54,6 +54,8 @@ public:
     ULONG __stdcall Release();*/
     HRESULT CheckAlive();
     HRESULT ValidateChildId(VARIANT &varChildId);
+    HRESULT GetNextItem(VARIANT varStart, VARIANT* pvarEndUpAt);
+    HRESULT GetPrevItem(VARIANT varStart, VARIANT* pvarEndUpAt);
 private:
     HRESULT Initialize(_In_ CHyperLinkControl* control);
     CHyperLinkControl* control_;

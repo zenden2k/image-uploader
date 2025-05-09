@@ -20,7 +20,7 @@
 namespace ImageEditor {
 
 class ColorsDelegate;
-                                                                                               
+
 class ConfigurationProvider;
 
 class ImageEditorWindow : public CWindowImpl<ImageEditorWindow>, CMessageFilter
@@ -33,8 +33,8 @@ public:
         ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS,
         ID_SEARCHBYIMAGE_START = 1400,
         ID_SEARCHBYIMAGE_END = 1499,
-        ID_DELETESELECTED,
-        ID_PEN = 1600, 
+        ID_DELETESELECTED, ID_RECORDSCREEN,
+        ID_PEN = 1600,
         ID_BRUSH, ID_MARKER,ID_BLUR, ID_BLURRINGRECTANGLE, ID_PIXELATERECTANGLE, ID_LINE, ID_ARROW, ID_RECTANGLE,  ID_ROUNDEDRECTANGLE, ID_ELLIPSE,
         ID_FILLEDRECTANGLE, ID_FILLEDROUNDEDRECTANGLE, ID_FILLEDELLIPSE, ID_COLORPICKER, ID_CROP , ID_SELECTION,ID_TEXT, ID_STEPNUMBER, ID_MOVE /* ID_MOVE should be last */
     };
@@ -58,7 +58,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -112,11 +112,11 @@ public:
         COMMAND_ID_HANDLER(ID_APP_EXIT, OnFileExit)
         COMMAND_RANGE_HANDLER( ID_PEN, ID_MOVE, OnMenuItemClick)
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
-        COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )    
-        COMMAND_ID_HANDLER( ID_ADDTOWIZARD, OnClickedAddToWizard )    
-        COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )    
-        COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )    
-        COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )    
+        COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )
+        COMMAND_ID_HANDLER( ID_ADDTOWIZARD, OnClickedAddToWizard )
+        COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )
+        COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )
+        COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )
         COMMAND_ID_HANDLER( ID_SAVEAS, OnClickedSaveAs )
         COMMAND_ID_HANDLER( ID_COPYBITMAPTOCLIBOARD, OnClickedCopyToClipboard )
         COMMAND_ID_HANDLER(ID_COPYBITMAPTOCLIBOARDASDATAURI, OnClickedCopyToClipboardAsDataUri)
@@ -133,6 +133,7 @@ public:
         COMMAND_ID_HANDLER(ID_MOREACTIONS, OnMoreActionsClicked)
 
         //MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
+        COMMAND_ID_HANDLER(ID_RECORDSCREEN, OnRecordScreen)
         MESSAGE_HANDLER( WM_ENABLE, OnEnable )
         REFLECT_NOTIFICATIONS()
         /*CHAIN_MSG_MAP(CUpdateUI<CMainFrame>)
@@ -191,6 +192,7 @@ public:
         LRESULT OnFlipHorizontal(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -222,7 +224,7 @@ public:
         ServerProfile searchEngine_;
         std::shared_ptr<Gdiplus::Bitmap> resultingBitmap_;
         std::wstring windowTitle_;
-        ConfigurationProvider* configurationProvider_; 
+        ConfigurationProvider* configurationProvider_;
         TextParamsWindow textParamsWindow_;
         HACCEL accelerators_;
         HMODULE richeditLib_;
@@ -257,7 +259,7 @@ public:
         void enableToolbarsIfNecessary(bool enable);
         void updateWindowTitle();
         void showApplyButtons();
-        
+
         /**
          * Reposition toolbar in full screen mode so it becomes fully visible
          */
@@ -271,7 +273,7 @@ public:
     ConfigurationProvider() {
         penSize_ = 12;
         roundingRadius_ = 5;
-        allowAltTab_ = false; 
+        allowAltTab_ = false;
         memset(&font_, 0, sizeof(font_));
         fillTextBackground_ = false;
         arrowMode_ = 0;
@@ -297,7 +299,7 @@ public:
     void setBlurRadius(float radius) { blurRadius_ = radius; }
     float blurRadius() const { return blurRadius_; }
 
-    bool allowAltTab() const  {  return allowAltTab_; } 
+    bool allowAltTab() const  {  return allowAltTab_; }
     void setFont(const LOGFONT& font) { font_ = font; }
     LOGFONT font() const { return font_; }
     void setSearchEngine(const ServerProfile& se) {
@@ -326,7 +328,7 @@ public:
         return arrowMode_;
     }
 protected:
-    Gdiplus::Color foregroundColor_, backgroundColor_, 
+    Gdiplus::Color foregroundColor_, backgroundColor_,
         stepForegroundColor_, stepBackgroundColor_;
     int penSize_;
     int roundingRadius_;
@@ -341,3 +343,4 @@ protected:
 
 }
 #endif
+

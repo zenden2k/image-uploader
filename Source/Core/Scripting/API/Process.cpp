@@ -2,6 +2,7 @@
 
 #undef environ
 #include <algorithm>
+#include <boost/current_function.hpp>
 #include <boost/process.hpp>
 #include "Core/Logging.h"
 #include "Core/Utils/CoreUtils.h"
@@ -14,6 +15,7 @@
 #include <boost/winapi/show_window.hpp>
 #include <boost/winapi/basic_types.hpp>
 #endif
+
 namespace ScriptAPI {
 
 namespace bp = ::boost::process;

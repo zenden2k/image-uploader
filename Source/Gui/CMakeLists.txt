@@ -1,6 +1,6 @@
 add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL)
 
-set(SRC_LIST 
+set(SRC_LIST
     "../Image Uploader.cpp"
     ../3rdpart/ShellPidl.cpp
     ../3rdpart/wintoastlib.cpp
@@ -75,6 +75,7 @@ set(SRC_LIST
     Dialogs/ResultsWindow.cpp
     Dialogs/ScreenshotDlg.cpp
     Dialogs/ScreenshotSettingsPage.cpp
+    Dialogs/ScreenRecordingSettingsPage.cpp
     Dialogs/ServerFolderSelect.cpp
     Dialogs/ServerParamsDlg.cpp
     Dialogs/SettingsDlg.cpp
@@ -98,6 +99,7 @@ set(SRC_LIST
     Dialogs/WelcomeDlg.cpp
     Dialogs/WizardDlg.cpp
     Dialogs/ServerProfileGroupSelectDialog.cpp
+    Dialogs/ScreenRecorderWindow.cpp
     Dialogs/FileFormatCheckErrorDlg.cpp
     Models/FileFormatCheckErrorModel.cpp
     Controls/CustomEditControl.cpp
@@ -154,13 +156,18 @@ set(SRC_LIST
     ../ImageEditor/DrawingTools/VectorElementTool.cpp
     ../ImageEditor/Helpers/FontEnumerator.cpp
     UploadListModel.cpp
+    ../ServerListTool/ServersCheckerDlg.cpp
+    ../ServerListTool/ServersChecker.cpp
+    ../ServerListTool/ServersCheckerModel.cpp
+    ../ServerListTool/Helpers.cpp
+    ../ServerListTool/ServerListView.cpp
     FileList.cpp
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
     "../res/image uploader.exe.manifest")
-    
-set(HEADER_LIST 
+
+set(HEADER_LIST
     ../3rdpart/ShellPidl.h
     ../3rdpart/wintoastlib.h
     ../Core/Images/ImageConverterPrivateBase.h
@@ -238,6 +245,7 @@ set(HEADER_LIST
     Dialogs/ResultsWindow.h
     Dialogs/ScreenshotDlg.h
     Dialogs/ScreenshotSettingsPage.h
+    Dialogs/ScreenRecordingSettingsPage.cpp
     Dialogs/ServerFolderSelect.h
     Dialogs/ServerParamsDlg.h
     Dialogs/SettingsDlg.h
@@ -263,6 +271,7 @@ set(HEADER_LIST
     Dialogs/ServerProfileGroupSelectDialog.h
     Dialogs/FileFormatCheckErrorDlg.h
     Models/FileFormatCheckErrorModel.h
+    Dialogs/ScreenRecorderWindow.h
     Controls/CustomEditControl.h
     Controls/HistoryTreeControl.h
     Controls/HyperLinkControl.h
@@ -323,15 +332,15 @@ set(HEADER_LIST
     FileList.h
     ../resource.h
 )
-	
-if (IU_ENABLE_MEDIAINFO) 
+
+if (IU_ENABLE_MEDIAINFO)
 	list (APPEND SRC_LIST ../Func/MediaInfoHelper.cpp  Dialogs/MediaInfoDlg.cpp)
 	list (APPEND HEADER_LIST ../Func/MediaInfoHelper.h  Dialogs/MediaInfoDlg.h)
 endif()
 
-if (IU_ENABLE_SERVERS_CHECKER) 
+if (IU_ENABLE_SERVERS_CHECKER)
 	list (APPEND SRC_LIST
-        ../ServerListTool/ServersCheckerDlg.cpp 
+        ../ServerListTool/ServersCheckerDlg.cpp
         ../ServerListTool/ServersChecker.cpp
         ../ServerListTool/ServersCheckerModel.cpp
         ../ServerListTool/Helpers.cpp
@@ -347,7 +356,7 @@ if (IU_ENABLE_SERVERS_CHECKER)
     )
 endif()
 
-if (IU_ENABLE_NETWORK_DEBUGGER) 
+if (IU_ENABLE_NETWORK_DEBUGGER)
 	list (APPEND SRC_LIST
         Dialogs/NetworkDebugDlg.cpp
         Models/NetworkDebugModel.cpp
@@ -363,13 +372,13 @@ endif()
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 #source_group("Resource Files" FILES ${RESOURCE_LIST})
 
-add_executable(GUI WIN32  
+add_executable(GUI WIN32
     ${SRC_LIST} ${HEADER_LIST} ${RESOURCE_LIST}
 )
 
 set_target_properties(GUI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/GUI/)
 
-set(LIBS_LIST 
+set(LIBS_LIST
     gdiplus Ws2_32 dwmapi wininet IPHLPAPI
     Secur32 Netapi32 Winhttp Userenv Psapi uxtheme Urlmon
     minizip::minizip
@@ -377,12 +386,12 @@ set(LIBS_LIST
 
 if (IU_ENABLE_MEDIAINFO)
 	list(APPEND LIBS_LIST mediainfo)
-endif()	
+endif()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(GUI PRIVATE iucore iuvideo
-    ${LIBS_LIST} 
+target_link_libraries(GUI PRIVATE iucore iuvideo iucapture
+    ${LIBS_LIST}
     ${COMMON_LIBS_LIST}
 )
 
@@ -390,12 +399,12 @@ if (IU_ENABLE_WEBVIEW2)
     set_target_properties(GUI PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
     set_target_properties(GUI PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
     set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
-   
-    #set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1") 
+
+    #set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
     #target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
     #target_link_libraries(GUI PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
 endif()
-  
+
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 
 if (WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
