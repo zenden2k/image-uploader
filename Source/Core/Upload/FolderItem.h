@@ -18,7 +18,7 @@ public:
     }
 
     /*! @cond PRIVATE */
-    inline static const std::string NewFolderMark = "_iu_create_folder_";
+    inline static const std::string NewFolderMark = "{B94534ED-CE67-478B-A757-8D452CB70F0E}";
 
     std::string title;
     std::string summary;

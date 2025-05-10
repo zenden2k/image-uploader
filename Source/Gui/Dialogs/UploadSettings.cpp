@@ -992,12 +992,14 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
     bool ImageServer = (wID % 2)!=0;
     ServerProfile & serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
 
-    CScriptUploadEngine *m_pluginLoader = uploadEngineManager_->getScriptUploadEngine(serverProfile);
-    if(!m_pluginLoader) return 0;
+    auto uploadEngine = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
+    if (!uploadEngine) {
+        return 0;
+    }
 
     std::vector<std::string> accessTypeList;
 
-    m_pluginLoader->getAccessTypeList(accessTypeList);
+    uploadEngine->getAccessTypeList(accessTypeList);
     CFolderItem newFolder;
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();

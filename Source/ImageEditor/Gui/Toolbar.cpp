@@ -428,7 +428,7 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
     /*int xPos = GET_X_LPARAM(lParam);
     int yPos = GET_Y_LPARAM(lParam); */
     trackMouse_ = false;
-    if ( selectedItemIndex_ != -1 ) {
+    if (selectedItemIndex_ >= 0 && selectedItemIndex_ < buttons_.size()) {
         buttons_[selectedItemIndex_].state = isNormal;
 
         InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
@@ -1090,6 +1090,12 @@ Toolbar::Orientation Toolbar::orientation() const {
 
 void Toolbar::setMoveParent(bool move) {
     moveParent_ = move;
+}
+
+
+void Toolbar::update() {
+    AutoSize();
+    Invalidate();
 }
 
 }

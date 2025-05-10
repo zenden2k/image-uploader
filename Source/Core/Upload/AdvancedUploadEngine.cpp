@@ -88,6 +88,33 @@ bool CAdvancedUploadEngine::supportsBeforehandAuthorization()
     return false;
 }
 
+
+bool CAdvancedUploadEngine::createNewFolderIfNeeded(std::shared_ptr<UploadTask> task) {
+    CFolderItem parent;
+    std::string folderID;
+    std::lock_guard<std::mutex> guard(serverSync_->folderMutex());
+    CFolderItem& newFolder = m_ServersSettings->newFolder;
+    ServerProfile& serverProfile = task->serverProfile();
+    if (serverProfile.folderId() == CFolderItem::NewFolderMark) {
+        serverProfile.setFolderId(newFolder.getId());
+        serverProfile.setFolderTitle(newFolder.getTitle());
+
+        if (newFolder.getId() == CFolderItem::NewFolderMark) {
+            SetStatus(stCreatingFolder, newFolder.title);
+            if (createFolder(parent, newFolder)) {
+                folderID = newFolder.id;
+                task->serverProfile().setFolderId(folderID);
+                m_ServersSettings->setParam("FolderID", folderID);
+                m_ServersSettings->setParam("FolderUrl", newFolder.viewUrl);
+                return true;
+            } else {
+                folderID.clear();
+            }
+        }
+    }
+    return false;
+}
+
 void CAdvancedUploadEngine::log(ErrorInfo::MessageType mt, const std::string& error)
 {
     ErrorInfo ei;

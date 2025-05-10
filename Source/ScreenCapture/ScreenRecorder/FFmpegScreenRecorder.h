@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory>
+//#include <boost/shared_ptr.hpp>
+//#include <boost/enable_shared_from_this.hpp>
 #include <boost/asio.hpp>
 #include <boost/process/v2/process.hpp>
 
@@ -7,7 +10,9 @@
 
 class TaskDispatcher;
 
-class FFmpegScreenRecorder : public ScreenRecorder {
+class FFmpegScreenRecorder : public ScreenRecorder,
+                             public std::enable_shared_from_this<FFmpegScreenRecorder>
+{
 public:
     FFmpegScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect);
     ~FFmpegScreenRecorder() override;
@@ -23,8 +28,7 @@ private:
     std::string fileNoExt_;
     std::string currentOutFilePath_;
     std::vector<std::string> parts_;
-    std::future<int> future_;
-    boost::asio::io_context timerCtx_;
+    std::shared_future<int> future_;
     TaskDispatcher* taskDispatcher_;
     void sendStopSignal();
     std::future<int> launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish);

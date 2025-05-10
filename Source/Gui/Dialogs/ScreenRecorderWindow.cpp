@@ -68,7 +68,9 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     icon_.LoadIconMetric(IDI_ICONRECORD, LIM_SMALL);
 
-    InstallIcon(TR("Image Uploader Screen Recorder"), icon_, NULL, &ScreenRecorderGUID);
+    if (!InstallIcon(TR("Image Uploader (screen recording)"), icon_, NULL, &ScreenRecorderGUID)) {
+        LOG(WARNING) << "Failed to create tray icon!";
+    }
 
     NOTIFYICONDATA nid;
     ZeroMemory(&nid, sizeof(nid));
@@ -83,6 +85,14 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     if (folder.IsEmpty()) {
         folder = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
+    }
+
+    if (!WinUtils::IsDirectory(folder)) {
+        LOG(INFO) << "Creating folder " << folder;
+        if (!WinUtils::CreateFolder(folder)) {
+            std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Failed to create the directory '%s'.")) % folder);
+            GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
+        }
     }
 
     time_t now = time(nullptr);
@@ -102,10 +112,18 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     );
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
-        screenRecorder_ = std::make_unique<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
+        screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
     }
+
+    screenRecorder_->addStatusChangeCallback(
+        ScreenRecorder::StatusChangeSignal::slot_type(
+            std::bind(&ScreenRecorderWindow::statusChangeCallback, this, std::placeholders::_1)
+        )
+        .track(shared_from_this())
+    );
+
     screenRecorder_->start();
-    statusChangeConnection_ = screenRecorder_->addStatusChangeCallback([this](auto status) { statusChangeCallback(status); });
+
     updateTimeLabel();
     SetTimer(kTimer, 100);
     return 0;
@@ -307,7 +325,8 @@ LRESULT ScreenRecorderWindow::onTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
 }
 
 void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
-    ServiceLocator::instance()->taskRunner()->runInGuiThread([this, wnd = this->m_hWnd, status] {
+    auto self = shared_from_this();
+    ServiceLocator::instance()->taskRunner()->runInGuiThread([this, self, wnd = this->m_hWnd, status] {
         if (!GuiTools::CheckWindowPointer(wnd, this)) {
             return;
         }
@@ -343,7 +362,7 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
             item->title = newTitle;
             item->hint = newTitle;
             item->icon = status == ScreenRecorder::Status::Paused ? iconResume_ : iconPause_;
-            toolbar_.AutoSize();
+            toolbar_.update();
         }
 
     }, true);

@@ -30,6 +30,8 @@ public:
     Status status() const;
     std::string outFileName() const;
 
+    using StatusChangeSignal = boost::signals2::signal<void(Status)>;
+
     template<typename F>
     boost::signals2::connection addStatusChangeCallback(F&& f) {
         return onStatusChange_.connect(std::forward<F>(f));
@@ -42,7 +44,7 @@ protected:
     std::string outFilePath_;
 
     std::atomic<Status> status_{ Status::Invalid };
-    boost::signals2::signal<void(Status)> onStatusChange_;
+    StatusChangeSignal onStatusChange_;
 };
 
 

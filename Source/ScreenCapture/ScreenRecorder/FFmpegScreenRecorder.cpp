@@ -50,11 +50,16 @@ FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string o
      : ScreenRecorder(outFile, rect)
     , ffmpegPath_(std::move(ffmpegPath))
 {
-    
 }
 
 FFmpegScreenRecorder::~FFmpegScreenRecorder() {
-    timerCtx_.stop();
+    if (future_.valid()) {
+        try {
+            future_.wait();
+        } catch (const std::exception& ex) {
+            LOG(WARNING) << ex.what();
+        }
+    }
 }
 
 void FFmpegScreenRecorder::start() {
@@ -147,9 +152,7 @@ void FFmpegScreenRecorder::start() {
         return;
     }
     changeStatus(Status::Recording);
-    if (isRunning()) {
-        return;
-    }
+
     future_ = launchFFmpeg(args, [this](int res) {
         if (res == 0) {
             parts_.push_back(currentOutFilePath_);
@@ -164,6 +167,7 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
 
     std::string command = ffmpegPath_;
     isRunning_ = true;
+    //auto self = shared_from_this();
     return std::async(std::launch::async, [this, command, args, onFinish] {
         std::string output;
         std::string errOutput;
@@ -234,22 +238,21 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
 }
 
 bool FFmpegScreenRecorder::isRunning() const {
-    return isRunning_;
-    /* if (!future_.valid()) {
+    //return isRunning_;
+    if (!future_.valid()) {
         return false;
     }
     using namespace std::chrono_literals;
     auto status = future_.wait_for(0ms);
 
     // Print status.
-    return status != std::future_status::ready;*/
+    return status != std::future_status::ready;
 }
 
 void FFmpegScreenRecorder::sendStopSignal() {
     if (!isRunning()) {
         return;
     }
-
 
     namespace asio = boost::asio;
 
@@ -266,20 +269,21 @@ void FFmpegScreenRecorder::sendStopSignal() {
     );
 }
 
-void FFmpegScreenRecorder::stop() {  
-    auto cb = [&](int) {
-        if (parts_.empty()) {
-            changeStatus(Status::Canceled);
+void FFmpegScreenRecorder::stop() {
+    auto self = shared_from_this();
+    auto cb = [self](int) {
+        if (self->parts_.empty()) {
+            self->changeStatus(Status::Canceled);
             return;
         }
 
-        if (parts_.size() == 1) {
+        if (self->parts_.size() == 1) {
             try {
-                std::filesystem::rename(std::filesystem::u8path(currentOutFilePath_), std::filesystem::u8path(outFilePath_));
+                std::filesystem::rename(std::filesystem::u8path(self->currentOutFilePath_), std::filesystem::u8path(self->outFilePath_));
             } catch (const std::exception& ex) {
                 LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
             }
-            changeStatus(Status::Finished);
+            self->changeStatus(Status::Finished);
         } else {
             std::string tempFile = std::tmpnam(nullptr);
             std::ofstream f(/*std::filesystem::u8path*/ (tempFile), std::ios::out);
@@ -288,18 +292,18 @@ void FFmpegScreenRecorder::stop() {
                 LOG(ERROR) << "Failed to create temp file " << tempFile;
                 //throw IOException("Failed to create output file: " + std::string(strerror(errno)), filenameUtf8);
             } else {
-                for (const auto& item : parts_) {
+                for (const auto& item : self->parts_) {
                     f << "file '" << item << "'" << std::endl;
                 }
             }
             f.close();
 
-            changeStatus(Status::RunningConcatenation);
+            self->changeStatus(Status::RunningConcatenation);
            
-            future_ = launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", outFilePath_ }, [this](int res) {
-                changeStatus(Status::Finished);
+            self->future_ = self->launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", self->outFilePath_ }, [self](int res) {
+                self->changeStatus(Status::Finished);
                 if (res == 0) {
-                    cleanupAfter();
+                    self->cleanupAfter();
                 }
             });
         }
@@ -308,10 +312,10 @@ void FFmpegScreenRecorder::stop() {
     sendStopSignal();
     //async_wait_future(timerCtx_, std::move(future_), cb);
 
-    std::thread([this, cb] {
+    std::thread([self, cb] {
         try {
-            if (future_.valid()) {
-                cb(future_.get());
+            if (self->future_.valid()) {
+                cb(self->future_.get());
             } else {
                 cb(0);
             }
@@ -326,20 +330,21 @@ void FFmpegScreenRecorder::cancel() {
         sendStopSignal();
     }
 
-    auto cb = [&](int) {
-        cleanupAfter();
+    auto self = shared_from_this();
+
+    auto cb = [self](int) {
+        self->cleanupAfter();
         try {
-            std::filesystem::remove(std::filesystem::u8path(outFilePath_));
+            std::filesystem::remove(std::filesystem::u8path(self->outFilePath_));
         } catch (const std::exception&) {
             //LOG(WARNING) << IuCoreUtils::Utf8ToWstring(ex.what());
         }
-        changeStatus(Status::Canceled);
+        self->changeStatus(Status::Canceled);
     };
-    std::thread([this, cb] {
-        //future.wait();
+    std::thread([self, cb] {
         try {
-            if (future_.valid()) {
-                cb(future_.get());
+            if (self->future_.valid()) {
+                cb(self->future_.get());
             } else {
                 cb(0);
             }

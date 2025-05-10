@@ -78,6 +78,8 @@ class CMegaNzUploadEngine : public CAdvancedUploadEngine {
 #endif
         std::unique_ptr<MyListener> listener_;
         CFolderList* folderList_;
+        CFolderItem* newFolder_ {};
+        const CFolderItem* parentFolder_ {};
         std::unique_ptr<mega::MegaProxy> proxy_;
         std::shared_ptr<FileUploadTask> fileTask_;
         std::atomic<bool> loginFinished_, loginSuccess_,

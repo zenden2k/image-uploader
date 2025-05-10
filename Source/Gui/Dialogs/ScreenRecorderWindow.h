@@ -5,7 +5,7 @@
 
 #include <memory>
 #include <boost/signals2.hpp>
-
+#include <boost/enable_shared_from_this.hpp>
 #include "atlheaders.h"
 #include "resource.h"
 #include "ImageEditor/Gui/Toolbar.h"
@@ -29,10 +29,12 @@ protected:
     std::unique_ptr<Gdiplus::Font> font_;
 };
 
-class ScreenRecorderWindow : public CWindowImpl<ScreenRecorderWindow>,
+class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorderWindow>,
+                             public CWindowImpl<ScreenRecorderWindow>,
                              public CMessageFilter,
-                             public CTrayIconImpl<ScreenRecorderWindow> {
-public:
+                             public CTrayIconImpl<ScreenRecorderWindow>
+{
+ public:
     DECLARE_WND_CLASS(_T("ScreenRecorderWindow"))
 
     ScreenRecorderWindow();
@@ -97,10 +99,9 @@ private:
     CString outFileName_;
     ImageEditor::Toolbar toolbar_;
     std::unique_ptr<TimeDelegate> timeDelegate_;
-    std::unique_ptr<ScreenRecorder> screenRecorder_;
+    std::shared_ptr<ScreenRecorder> screenRecorder_;
     void statusChangeCallback(ScreenRecorder::Status status);
     ScreenRecorder::Status previousStatus_ = ScreenRecorder::Status::Invalid;
-    boost::signals2::scoped_connection statusChangeConnection_;
     unsigned int elapsedTime_ = 0;
     bool cancelRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;

@@ -57,6 +57,8 @@ class CAdvancedUploadEngine : public CAbstractUploadEngine
         Beforehand authorization - obtain access token only once then use it for all requests (before upload)
         **/
         virtual bool supportsBeforehandAuthorization();
+
+        virtual bool createNewFolderIfNeeded(std::shared_ptr<UploadTask> task);
     protected:
         void log(ErrorInfo::MessageType mt, const std::string& error);
         virtual int doProcessTask(std::shared_ptr<UploadTask> task, UploadParams& params);

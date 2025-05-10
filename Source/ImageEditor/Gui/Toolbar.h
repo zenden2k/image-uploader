@@ -102,6 +102,7 @@ public:
     void setShowButtonText(bool show);
     Orientation orientation() const;
     void setMoveParent(bool move);
+    void update();
 
     BEGIN_MSG_MAP(Toolbar)
         MESSAGE_HANDLER( WM_CREATE, OnCreate )

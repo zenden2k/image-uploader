@@ -71,8 +71,15 @@ public:
 	{
 		if (!m_bInstalled)
 			return false;
+        GUID emptyGuid = { 0 };
+
+        if (memcmp(&m_nid.guidItem, &emptyGuid, sizeof(GUID)) != 0) {
+            m_nid.uFlags = NIF_GUID;
+        } else {
+            m_nid.uFlags = 0;
+        }
 		// Remove
-		m_nid.uFlags = 0;
+
 		return Shell_NotifyIcon(NIM_DELETE, &m_nid) ? true : false;
 	}
 

@@ -2320,13 +2320,14 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
 }
 
 bool CWizardDlg::funcRecordScreen() {
-    ScreenRecorderWindow screenRecorderWindow;
+    auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
+
     bool isVisible = IsWindowVisible();
     ShowWindow(SW_HIDE);
-    if (screenRecorderWindow.doModal(m_hWnd, screenRecordRect_) == ScreenRecorderWindow::drSuccess) {
+    if (screenRecorderWindow->doModal(m_hWnd, screenRecordRect_) == ScreenRecorderWindow::drSuccess) {
         CreatePage(wpMainPage);
         CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
-        mainDlg->AddToFileList(screenRecorderWindow.outFileName());
+        mainDlg->AddToFileList(screenRecorderWindow->outFileName());
         mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
         mainDlg->ThumbsView.SelectLastItem();
         mainDlg->ThumbsView.SetFocus();

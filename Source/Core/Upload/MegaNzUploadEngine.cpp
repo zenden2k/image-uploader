@@ -18,11 +18,10 @@
 
 */
 
-#ifdef IU_ENABLE_MEGANZ
-
 #include "MegaNzUploadEngine.h"
 
 #include <chrono>
+#include <cassert>
 #include <thread>
 
 #include <megaapi.h>
@@ -312,10 +311,14 @@ int CMegaNzUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
             log(ErrorInfo::mtError, "Unable to find parent folder");
             return 0;
         }
+        newFolder_ = &folder;
+        parentFolder_ = &parent;
         megaApi_->createFolder(folder.getTitle().c_str(), parentNode.get());
         while (!createFolderFinished_ && !needStop()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
+        newFolder_ = nullptr;
+        parentFolder_ = nullptr;
         return createFolderSuccess_ ? 1 : 0;
     }
     return 0;
@@ -409,8 +412,12 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     }
 
     if (ensureNodesFetched()) {
+        createNewFolderIfNeeded(task);
         publicLink_.clear();
-        fileTask_ = std::dynamic_pointer_cast<FileUploadTask>(task); 
+        fileTask_ = std::dynamic_pointer_cast<FileUploadTask>(task);
+        if (!fileTask_) {
+            return 0;
+        }
         std::unique_ptr<MegaNode> root;
         std::string folderId = fileTask_->serverProfile().folderId();
         if (folderId.empty()) {
@@ -531,15 +538,26 @@ void MyListener::onRequestFinish(MegaApi* api, MegaRequest *request, MegaError* 
     case MegaRequest::TYPE_CREATE_FOLDER:
     {
         if (e->getErrorCode() == MegaError::API_OK) {
-            engine_->createFolderSuccess_ = true;
             MegaHandle handle = request->getNodeHandle();
             std::unique_ptr<MegaNode> node(api->getNodeByHandle(handle));
             if (node) {
-                engine_->createFolderSuccess_ = true;
+                const char* nodeName = node->getName();
+                if (nodeName) {
+                    assert(engine_->parentFolder_ && engine_->newFolder_);
+                    std::string id = engine_->parentFolder_->getId();
+                    if (id.empty() || id.back() != '/') {
+                        id += "/";
+                    }
+                    id += nodeName;
+                    engine_->newFolder_->setId(id);
+                    engine_->createFolderSuccess_ = true;
+                }
             }
         } else {
             engine_->log(ErrorInfo::mtError, "Unable to create folder: " + std::string(e->getErrorString()));
         }
+        engine_->newFolder_ = nullptr;
+        engine_->parentFolder_ = nullptr;
         engine_->createFolderFinished_ = true;
     }
     break;
@@ -632,4 +650,3 @@ void MyListener::onNodesUpdate(MegaApi* api, MegaNodeList *nodes)
 
     //std::cout << "***** There are " << nodes->size() << " new or updated node/s in your account" << std::endl;
 }
-#endif
