@@ -46,6 +46,8 @@ void async_wait_future(
     });
 }*/
 
+constexpr auto FFMPEG_RETURN_CODE_NO_OUTPUT = -22;
+
 FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect)
      : ScreenRecorder(outFile, rect)
     , ffmpegPath_(std::move(ffmpegPath))
@@ -72,7 +74,7 @@ void FFmpegScreenRecorder::start() {
         std::string fileDir = IuCoreUtils::ExtractFilePath(outFilePath_);
         std::string fileNoExt = IuCoreUtils::ExtractFileNameNoExt(outFilePath_);
         std::filesystem::path outDirPath(fileDir);
-        std::filesystem::path fileNoExtPath = outDirPath / (fileNoExt + std::to_string(time(nullptr)));
+        std::filesystem::path fileNoExtPath = outDirPath / fileNoExt;
         fileNoExt_ = fileNoExtPath.make_preferred().string();
     }
      
@@ -154,10 +156,10 @@ void FFmpegScreenRecorder::start() {
     changeStatus(Status::Recording);
 
     future_ = launchFFmpeg(args, [this](int res) {
-        if (res == 0) {
+        if (res == 0 && IuCoreUtils::FileExists(currentOutFilePath_)) {
             parts_.push_back(currentOutFilePath_);
         }
-        changeStatus(res == 0 ? Status::Paused : Status::Failed);
+        changeStatus((res == 0 || res == FFMPEG_RETURN_CODE_NO_OUTPUT) ? Status::Paused : Status::Failed);
     });
 }
 
@@ -212,9 +214,18 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
 
             child.wait(); // reap PID
             int result = child.exit_code();
+
             if (result != 0) {
-                LOG(ERROR) << "Exit code:" << result << std::endl
-                           << output;
+                bool warning = false;
+                int actualResultCode = result;
+
+                if (result == FFMPEG_RETURN_CODE_NO_OUTPUT) {
+                    //result = 0;
+                    warning = true;
+                }
+                (warning ? LOG(WARNING) : LOG(ERROR)) << "Exit code:" << actualResultCode << std::endl
+                                  << errOutput << std::endl
+                    << result << std::endl << output;
             }
             inStream_.reset();
             isRunning_ = false;
@@ -301,7 +312,7 @@ void FFmpegScreenRecorder::stop() {
             self->changeStatus(Status::RunningConcatenation);
            
             self->future_ = self->launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", self->outFilePath_ }, [self](int res) {
-                self->changeStatus(Status::Finished);
+                self->changeStatus(res == 0 ? Status::Finished : Status::Failed);
                 if (res == 0) {
                     self->cleanupAfter();
                 }
@@ -313,12 +324,16 @@ void FFmpegScreenRecorder::stop() {
     //async_wait_future(timerCtx_, std::move(future_), cb);
 
     std::thread([self, cb] {
+        int res = 0;
         try {
             if (self->future_.valid()) {
-                cb(self->future_.get());
-            } else {
-                cb(0);
+                res = self->future_.get();
             }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << "Future error: " << ex.what();
+        }
+        try {
+            cb(res);
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
         }
@@ -342,12 +357,16 @@ void FFmpegScreenRecorder::cancel() {
         self->changeStatus(Status::Canceled);
     };
     std::thread([self, cb] {
+        int res = 0;
         try {
             if (self->future_.valid()) {
-                cb(self->future_.get());
-            } else {
-                cb(0);
+                res = self->future_.get();
             }
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << "Future error: " << ex.what();
+        }
+        try {
+            cb(res);
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
         }

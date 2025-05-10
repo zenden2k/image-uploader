@@ -41,6 +41,9 @@
 
 namespace {
 
+// {D1D66B08-9987-46BC-A7AE-3CF84677F885}
+static const GUID MainTrayIconBaseGUID = { 0xd1d66b08, 0x9987, 0x46bc, { 0xa7, 0xae, 0x3c, 0xf8, 0x46, 0x77, 0xf8, 0x85 } };
+
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
 {
     MENUITEMINFO MenuItem {};
@@ -112,15 +115,24 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
     }
     int h = w;*/
     activeIcon_ = GuiTools::LoadSmallIcon(IDI_ICONTRAYACTIVE);
-    m_hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
+    m_hIconSmall.LoadIconMetric(IDR_MAINFRAME, LIM_SMALL);
 
     RegisterHotkeys();
-    InstallIcon(APPNAME, m_hIconSmall, /*TrayMenu*/ 0);
+
+    auto trayIconGUID = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
+    //LOG(ERROR) << WinUtils::GUIDToString(*trayIconGUID);
+    if (!InstallIcon(APPNAME, m_hIconSmall, NULL, trayIconGUID ? &trayIconGUID.value() : nullptr)) {
+        LOG(WARNING) << "Failed to create tray icon!";
+    }
     NOTIFYICONDATA nid;
     ZeroMemory(&nid, sizeof(nid));
     nid.cbSize = NOTIFYICONDATA_V2_SIZE;
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION;
+    if (trayIconGUID) {
+        nid.uFlags = NIF_GUID;
+        nid.guidItem = *trayIconGUID;
+    }
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
 
      CString XmlFileName = IuCommonFunctions::GetDataFolder() + _T("templates.xml");

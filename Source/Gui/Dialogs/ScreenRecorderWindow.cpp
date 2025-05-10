@@ -10,11 +10,18 @@
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Core/TaskDispatcher.h"
 #include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
-
-// {45CE8BB0-4973-4560-88DF-72A7CC407FF9}
-static const GUID ScreenRecorderGUID = { 0x45ce8bb0, 0x4973, 0x4560, { 0x88, 0xdf, 0x72, 0xa7, 0xcc, 0x40, 0x7f, 0xf9 } };
+#include "Core/Utils/CryptoUtils.h"
 
 constexpr auto PANEL_HEIGHT = 40;
+
+/*
+namespace {
+
+// {45CE8BB0-4973-4560-88DF-72A7CC407FF9}
+static const GUID ScreenRecorderBaseGUID = { 0x45ce8bb0, 0x4973, 0x4560, { 0x88, 0xdf, 0x72, 0xa7, 0xcc, 0x40, 0x7f, 0xf9 } };
+
+}
+*/
 
 ScreenRecorderWindow::ScreenRecorderWindow():
         dialogResult_(drCancel),
@@ -64,12 +71,23 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-   // LoadIconMetric(hInst, MAKEINTRESOURCE(IDI_SMALL), LIM_SMALL, &(nid.hIcon));
-
     icon_.LoadIconMetric(IDI_ICONRECORD, LIM_SMALL);
+    GUID* guid = nullptr;
+    
+    // Use GUID for uniquely identifying the system tray icon.
+    // Generating fake GUID ensures that the icon is consistently identified across sessions, even if the app is restarted from a different folder.
+    // Note: On Windows 7, using the same GUID but from a different path (folder) might fail to add the icon due to strict path checks.
+    // On Windows 10/11, GUID is considered the unique identifier, and the icon can be added even from a different path.
+    // trayIconGuid_ = WinUtils::GenerateFakeUUIDv4();
+    // guid = &trayIconGuid_;
 
-    if (!InstallIcon(TR("Image Uploader (screen recording)"), icon_, NULL, &ScreenRecorderGUID)) {
+    CString iconTitle = TR("Image Uploader (screen recording)");
+    if (!InstallIcon(iconTitle, icon_, NULL, guid)) {
         LOG(WARNING) << "Failed to create tray icon!";
+        /*guid = nullptr;
+        if (!InstallIcon(iconTitle, icon_, NULL)) {
+            LOG(WARNING) << "Failed to create tray icon again. I give up.";
+        }*/
     }
 
     NOTIFYICONDATA nid;
@@ -77,8 +95,10 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     nid.cbSize = sizeof(NOTIFYICONDATA);
     nid.hWnd = m_hWnd;
     nid.uVersion = NOTIFYICON_VERSION_4;
-    nid.uFlags = NIF_GUID;
-    nid.guidItem = ScreenRecorderGUID;
+    if (guid){
+        nid.uFlags = NIF_GUID;
+        nid.guidItem = trayIconGuid_;
+    }
     Shell_NotifyIcon(NIM_SETVERSION, &nid);
 
     CString folder = U2W(settings->ScreenRecordingSettings.OutDirectory);

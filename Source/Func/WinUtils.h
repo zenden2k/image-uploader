@@ -1,6 +1,7 @@
 #ifndef FUNC_WINUTILS_H
 #define FUNC_WINUTILS_H
 
+#include <optional>
 #include <vector>
 #include <string>
 
@@ -116,7 +117,8 @@ namespace WinUtils {
     HRESULT IsElevated(/*__out_opt */ BOOL * pbElevated);
     CString TimestampToString(time_t t);
     BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg);
-};
-
+    std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID);
+    CString GUIDToString(const GUID& guid);
+}
 
 #endif

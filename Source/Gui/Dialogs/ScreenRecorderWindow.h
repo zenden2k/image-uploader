@@ -105,6 +105,7 @@ private:
     unsigned int elapsedTime_ = 0;
     bool cancelRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;
+    GUID trayIconGuid_;
 }; 
 
 #endif

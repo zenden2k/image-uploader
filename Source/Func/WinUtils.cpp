@@ -8,6 +8,8 @@
 #include <TlHelp32.h>
 #include <Winhttp.h>
 #include <boost/format.hpp>
+#include <wincrypt.h>
+
 #include "3rdpart/GdiplusH.h"
 #include "3rdpart/Registry.h"
 #include "Core/Utils/CoreUtils.h"
@@ -1626,6 +1628,63 @@ BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg) {
     else {
         return FALSE;
     }
+}
+
+std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID) {
+    std::string utf8Path = W2U(WinUtils::GetAppFileName());
+
+    // Concatenate the base GUID and the UTF-8 application path
+    std::string input(reinterpret_cast<const char*>(&baseGUID), sizeof(GUID));
+    input += utf8Path;
+
+    // Initialize CryptoAPI
+    HCRYPTPROV hProv = 0;
+    HCRYPTHASH hHash = 0;
+    BYTE hash[20]; // SHA-1 produces a 20-byte digest
+    DWORD hashLen = sizeof(hash);
+
+    if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
+        // Failed to acquire crypto context
+        return {};
+    }
+
+    if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash)) {
+        CryptReleaseContext(hProv, 0);
+        return {};
+    }
+
+    if (!CryptHashData(hHash, reinterpret_cast<const BYTE*>(input.data()), static_cast<DWORD>(input.size()), 0)) {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return {};
+    }
+
+    if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashLen, 0) || hashLen < sizeof(GUID)) {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        return {};
+    }
+
+    CryptDestroyHash(hHash);
+    CryptReleaseContext(hProv, 0);
+
+    // Use the first 16 bytes of the SHA-1 hash as the GUID
+    GUID guid;
+    memcpy(&guid, hash, sizeof(GUID));
+
+    // Set version to 4 (UUIDv4 = 0100xxxx in Data3)
+    guid.Data3 = (guid.Data3 & 0x0FFF) | (4 << 12);
+
+    // Set variant to RFC 4122 (10xxxxxx in Data4[0])
+    guid.Data4[0] = (guid.Data4[0] & 0x3F) | 0x80;
+
+    return guid;
+}
+
+CString GUIDToString(const GUID& guid) {
+    TCHAR guidStr[39];
+    StringFromGUID2(guid, guidStr, std::size(guidStr));
+    return guidStr;
 }
 
 }
