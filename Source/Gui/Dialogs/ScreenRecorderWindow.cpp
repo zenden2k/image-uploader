@@ -135,6 +135,10 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
     }
 
+    if (!screenRecorder_) {
+        return -1;
+    }
+
     screenRecorder_->addStatusChangeCallback(
         ScreenRecorder::StatusChangeSignal::slot_type(
             std::bind(&ScreenRecorderWindow::statusChangeCallback, this, std::placeholders::_1)

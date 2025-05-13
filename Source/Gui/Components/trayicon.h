@@ -25,10 +25,14 @@ private:
 	CNotifyIconData m_nid;
 	bool m_bInstalled;
 	UINT m_nDefault;
+    bool m_useGuid;
 
 public:	
 	UINT WM_TRAYICON;
-	CTrayIconImpl() : m_bInstalled(false), m_nDefault(0)
+    CTrayIconImpl()
+        : m_bInstalled(false)
+        , m_nDefault(0)
+        , m_useGuid(false)
 	{
 		WM_TRAYICON = ::RegisterWindowMessage(_T("WM_TRAYICON"));
 	}
@@ -53,6 +57,7 @@ public:
 		m_nid.hIcon = hIcon;
 		m_nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
         if (pGuid) {
+            m_useGuid = true;
             m_nid.uFlags |= NIF_GUID;
             m_nid.guidItem = *pGuid;
         }
@@ -71,9 +76,8 @@ public:
 	{
 		if (!m_bInstalled)
 			return false;
-        GUID emptyGuid = { 0 };
 
-        if (memcmp(&m_nid.guidItem, &emptyGuid, sizeof(GUID)) != 0) {
+        if (m_useGuid) {
             m_nid.uFlags = NIF_GUID;
         } else {
             m_nid.uFlags = 0;
@@ -90,6 +94,9 @@ public:
         m_nid.hWnd = pT->m_hWnd;
         m_nid.hIcon = hIcon;
         m_nid.uFlags = NIF_ICON;
+        if (m_useGuid) {
+            m_nid.uFlags |= NIF_GUID;
+        } 
         m_nid.uCallbackMessage = WM_TRAYICON;
         return Shell_NotifyIcon(NIM_MODIFY, &m_nid) != FALSE;
 	}
@@ -102,6 +109,9 @@ public:
 			return FALSE;
 		// Fill the structure
 		m_nid.uFlags = NIF_TIP;
+        if (m_useGuid) {
+            m_nid.uFlags |= NIF_GUID;
+        } 
 		_tcscpy(m_nid.szTip, pszTooltipText);
 		// Set
 		return Shell_NotifyIcon(NIM_MODIFY, &m_nid) ? true : false;
@@ -115,10 +125,14 @@ public:
         T* pT = static_cast<T*>(this);
         NOTIFYICONDATA nid;
         ZeroMemory(&nid, sizeof(nid));
-        nid.cbSize = NOTIFYICONDATA_V2_SIZE;
+        nid.cbSize = /*NOTIFYICONDATA_V2_SIZE*/sizeof(NOTIFYICONDATA);
         nid.hWnd = pT->m_hWnd;
         nid.uTimeout = timeout;
         nid.uFlags = NIF_INFO;
+        if (m_useGuid) {
+            nid.uFlags |= NIF_GUID;
+            nid.guidItem = m_nid.guidItem;
+        } 
         nid.dwInfoFlags = NIIF_INFO;
         lstrcpyn(nid.szInfo, text, ARRAY_SIZE(nid.szInfo) - 1);
         lstrcpyn(nid.szInfoTitle, title, ARRAY_SIZE(nid.szInfoTitle) - 1);
