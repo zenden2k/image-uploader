@@ -29,7 +29,7 @@
 
 CLang::CLang()
 {
-    locale_ = "en_US";
+    localeName_ = "en_US";
     language_ = "en";
     isRTL_ = false;
 }
@@ -45,25 +45,27 @@ bool CLang::LoadLanguage(LPCTSTR Lang)
     gen.add_messages_path(path);
     gen.add_messages_domain("imageuploader");
 
+    std::string langA = W2U(Lang);
+    std::locale locale;
+
     try {
-        std::locale::global(gen(W2U(Lang) + ".UTF-8"));
-    }
-    catch (const std::exception& ex) {
+        locale = gen(langA + ".UTF-8");
+        std::locale::global(locale);
+    } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-  
-    locale_ = Lang;
-    int ipos = locale_.Find(_T('_'));
-    if (ipos >= 0) {
-        language_ = locale_.Mid(0, ipos);
+    
+    localeName_ = Lang;
+    if (std::has_facet<boost::locale::info>(locale)) {
+        language_ = U2WC(std::use_facet<boost::locale::info>(locale).language());
     } else {
-        language_ = locale_;
+        language_ = Lang;
     }
 
-    auto locales = LangHelper::instance()->getLocaleList();
-    auto it = locales.find(W2U(locale_));
+    const auto& locales = LangHelper::instance()->getLocaleList();
+    auto it = locales.find(langA);
 
-    m_sLang = it == locales.end() ? locale_ : U2W(it->second);
+    m_sLang = it == locales.end() ? localeName_ : U2W(it->second);
 
     return true;
 }
@@ -80,7 +82,7 @@ CString CLang::getLanguage() const
 
 CString CLang::getLocale() const
 {
-    return locale_;
+    return localeName_;
 }
 #ifndef IU_SHELLEXT
 std::string CLang::getCurrentLanguage() {
@@ -88,7 +90,7 @@ std::string CLang::getCurrentLanguage() {
 }
 
 std::string CLang::getCurrentLocale() {
-    return W2U(locale_);
+    return W2U(localeName_);
 }
 
 std::string CLang::translate(const char* str) {

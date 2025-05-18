@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <map>
 
+#include <windows.h>
+
 #include "Core/Utils/CoreUtils.h"
 
 LangHelper::LangHelper() {

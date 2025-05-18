@@ -71,7 +71,7 @@ class CLang
         CString m_Directory;
         CString m_sLang;
         std::vector<CString> LanguagesList;
-        CString locale_;
+        CString localeName_;
         CString language_;
         CString currentLanguageFile_;
         bool isRTL_;
