@@ -892,16 +892,16 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,205,155,50,14
 END
 
-IDD_INPUTDIALOG DIALOGEX 0, 0, 263, 128
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_INPUTDIALOG DIALOGEX 0, 0, 263, 153
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "title"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    LTEXT           "Description",IDC_DESCRIPTIONLABEL,6,7,251,24
-    EDITTEXT        IDC_VALUEEDIT,6,89,251,13,ES_AUTOHSCROLL
-    PUSHBUTTON      "OK",IDOK,148,109,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,207,109,50,14
-    LTEXT           "",IDC_IMAGE,6,39,251,42
+    LTEXT           "Description",IDC_DESCRIPTIONLABEL,6,7,251,55
+    EDITTEXT        IDC_VALUEEDIT,6,116,251,13,ES_AUTOHSCROLL
+    PUSHBUTTON      "OK",IDOK,148,134,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,207,134,50,14
+    LTEXT           "",IDC_IMAGE,6,68,251,42
 END
 
 IDD_IMAGEREUPLOADER DIALOGEX 0, 0, 367, 387
@@ -1522,7 +1522,7 @@ BEGIN
         LEFTMARGIN, 6
         RIGHTMARGIN, 257
         TOPMARGIN, 7
-        BOTTOMMARGIN, 123
+        BOTTOMMARGIN, 148
     END
 
     IDD_IMAGEREUPLOADER, DIALOG
@@ -1645,118 +1645,6 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\new-icon.ico"
-
-IDI_GRAB                ICON                    "res\\grabmovie.ico"
-
-IDI_SCREENSHOT          ICON                    "res\\screen.ico"
-
-IDI_IMAGES              ICON                    "res\\images.ico"
-
-IDI_ICONSETTINGS        ICON                    "res\\icon-settings.ico"
-
-IDI_ICONINFO            ICON                    "res\\icon-info.ico"
-
-IDI_ICONREGION          ICON                    "res\\icon-region.ico"
-
-IDI_CLIPBOARD           ICON                    "res\\icon-clipboard.ico"
-
-IDI_ERRORICON           ICON                    "res\\Error.ico"
-
-IDI_ICONWARNING         ICON                    "res\\Warning.ico"
-
-IDI_ADDITIONAL          ICON                    "res\\icon_additional.ico"
-
-IDI_CLOSE               ICON                    "res\\icon-close.ico"
-
-IDI_WINDOW              ICON                    "res\\icon-window.ico"
-
-IDI_ICONWINDOWS         ICON                    "res\\icon-windows.ico"
-
-IDI_FREEFORM            ICON                    "res\\icon-freeform.ico"
-
-IDI_ICONADD             ICON                    "res\\icon-add.ico"
-
-IDI_ICONADDFOLDER       ICON                    "res\\icon-addfolder.ico"
-
-IDI_ICONWEB             ICON                    "res\\icon-web.ico"
-
-IDI_DROPDOWN            ICON                    "res\\icon_dropdown.ico"
-
-IDI_ICONEDIT            ICON                    "res\\icon_edit.ico"
-
-IDI_ICONWHITEPAGE       ICON                    "res\\icon_whitepage.ico"
-
-IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
-
-IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
-
-IDI_ICONRELOAD          ICON                    "res\\icon-reload.ico"
-
-IDI_ICONLINK            ICON                    "res\\icon-link.ico"
-
-IDI_ICONADDITEM         ICON                    "res\\icon_additem.ico"
-
-IDI_ICONDELETEITEM      ICON                    "res\\icon_deleteitem.ico"
-
-IDI_ICONUSER            ICON                    "res\\icon-user.ico"
-
-IDI_ICONFOLDER2         ICON                    "res\\icon_folder2.ico"
-
-IDI_ICONUP              ICON                    "res\\icon_up.ico"
-
-IDI_ICONDOWN            ICON                    "res\\icon_down.ico"
-
-IDI_ICONBOLD            ICON                    "res\\ImageEditor\\icon_bold.ico"
-
-IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.ico"
-
-IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
-
-IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
-
-IDI_ICONTRAYACTIVE      ICON                    "res\\icon_main_active.ico"
-
-IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico"
-
-IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
-
-IDI_ICONLASTREGION      ICON                    "res\\icon-lastregion.ico"
-
-IDI_ICONDELETEBIG       ICON                    "res\\icon_delete_big.ico"
-
-IDI_ICONSETTINGSGEAR    ICON                    "res\\icon_settings_gear.ico"
-
-IDI_ICONPREVIEW         ICON                    "res\\icon_preview.ico"
-
-IDI_ICONLOG             ICON                    "res\\icon_log.ico"
-
-IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
-
-IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
-
-IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
-
-IDI_ICONRECORD          ICON                    "res\\icon_record.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Cursor
-//
-
-IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
-
-IDC_CROSSHAIRCURSOR     CURSOR                  "res\\ImageEditor\\cursor_crosshair.cur"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1938,6 +1826,118 @@ IDD_WIZARDDLG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\new-icon.ico"
+
+IDI_GRAB                ICON                    "res\\grabmovie.ico"
+
+IDI_SCREENSHOT          ICON                    "res\\screen.ico"
+
+IDI_IMAGES              ICON                    "res\\images.ico"
+
+IDI_ICONSETTINGS        ICON                    "res\\icon-settings.ico"
+
+IDI_ICONINFO            ICON                    "res\\icon-info.ico"
+
+IDI_ICONREGION          ICON                    "res\\icon-region.ico"
+
+IDI_CLIPBOARD           ICON                    "res\\icon-clipboard.ico"
+
+IDI_ERRORICON           ICON                    "res\\Error.ico"
+
+IDI_ICONWARNING         ICON                    "res\\Warning.ico"
+
+IDI_ADDITIONAL          ICON                    "res\\icon_additional.ico"
+
+IDI_CLOSE               ICON                    "res\\icon-close.ico"
+
+IDI_WINDOW              ICON                    "res\\icon-window.ico"
+
+IDI_ICONWINDOWS         ICON                    "res\\icon-windows.ico"
+
+IDI_FREEFORM            ICON                    "res\\icon-freeform.ico"
+
+IDI_ICONADD             ICON                    "res\\icon-add.ico"
+
+IDI_ICONADDFOLDER       ICON                    "res\\icon-addfolder.ico"
+
+IDI_ICONWEB             ICON                    "res\\icon-web.ico"
+
+IDI_DROPDOWN            ICON                    "res\\icon_dropdown.ico"
+
+IDI_ICONEDIT            ICON                    "res\\icon_edit.ico"
+
+IDI_ICONWHITEPAGE       ICON                    "res\\icon_whitepage.ico"
+
+IDI_ICONSAVE            ICON                    "res\\icon_save.ico"
+
+IDI_ICONHISTORY         ICON                    "res\\icon_history.ico"
+
+IDI_ICONRELOAD          ICON                    "res\\icon-reload.ico"
+
+IDI_ICONLINK            ICON                    "res\\icon-link.ico"
+
+IDI_ICONADDITEM         ICON                    "res\\icon_additem.ico"
+
+IDI_ICONDELETEITEM      ICON                    "res\\icon_deleteitem.ico"
+
+IDI_ICONUSER            ICON                    "res\\icon-user.ico"
+
+IDI_ICONFOLDER2         ICON                    "res\\icon_folder2.ico"
+
+IDI_ICONUP              ICON                    "res\\icon_up.ico"
+
+IDI_ICONDOWN            ICON                    "res\\icon_down.ico"
+
+IDI_ICONBOLD            ICON                    "res\\ImageEditor\\icon_bold.ico"
+
+IDI_ICONITALIC          ICON                    "res\\ImageEditor\\icon_italic.ico"
+
+IDI_ICONUNDERLINE       ICON                    "res\\ImageEditor\\icon_underline.ico"
+
+IDI_ICON_MAIN_OLD       ICON                    "res\\icon_main_old.ico"
+
+IDI_ICONTRAYACTIVE      ICON                    "res\\icon_main_active.ico"
+
+IDI_ICON_HELP_DROPDOWN  ICON                    "res\\icon_help_dropdown_big.ico"
+
+IDI_ICONINFOBIG         ICON                    "res\\icon-infobig.ico"
+
+IDI_ICONLASTREGION      ICON                    "res\\icon-lastregion.ico"
+
+IDI_ICONDELETEBIG       ICON                    "res\\icon_delete_big.ico"
+
+IDI_ICONSETTINGSGEAR    ICON                    "res\\icon_settings_gear.ico"
+
+IDI_ICONPREVIEW         ICON                    "res\\icon_preview.ico"
+
+IDI_ICONLOG             ICON                    "res\\icon_log.ico"
+
+IDI_ICONUPLOAD          ICON                    "res\\icon_upload.ico"
+
+IDI_ICONCONTROLS        ICON                    "res\\icon-controls.ico"
+
+IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
+
+IDI_ICONRECORD          ICON                    "res\\icon_record.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_COLORPICKERCURSOR   CURSOR                  "res\\ImageEditor\\colorpicker.cur"
+
+IDC_CROSSHAIRCURSOR     CURSOR                  "res\\ImageEditor\\cursor_crosshair.cur"
 
 #endif    // Russian (Russia) resources
 /////////////////////////////////////////////////////////////////////////////

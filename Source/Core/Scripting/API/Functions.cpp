@@ -21,6 +21,7 @@
 #include "Functions.h"
 
 #include <iomanip>
+#include <optional>
 #include <sstream>
 #include <random>
 #include <json/json.h>
@@ -138,48 +139,66 @@ SQInteger IncludeScript(HSQUIRRELVM vm) {
     }
 }
 
-Json::Value* translationRoot = 0;
-
 void CleanUpFunctions() {
-    delete translationRoot;
-    translationRoot = nullptr;
 }
 
-bool LoadScriptTranslation() {
-    if ( !translationRoot ) {
-        translationRoot = new Json::Value();
-        std::string absolutePath = GetScriptsDirectory() + "Lang/" + GetAppLocale() + ".json";
+class ScriptTranslator {
+public:
+    explicit ScriptTranslator(const std::string& locale) {
+        std::string absolutePath = GetScriptsDirectory() + "Lang/" + locale + ".json";
         std::string jsonText;
-        if ( !IuCoreUtils::ReadUtf8TextFile(absolutePath, jsonText) ) {
-            return false;
+        if (!IuCoreUtils::ReadUtf8TextFile(absolutePath, jsonText)) {
+            return;
         }
-        
-        Json::Reader reader;
-        return reader.parse(jsonText, *translationRoot, false);
-    } else {
-        return true;
-    }
-}
 
-std::string Translate(const std::string& key, const std::string& originalText) {
-    if ( LoadScriptTranslation() ) {
+        Json::Reader reader;
+        reader.parse(jsonText, translationRoot_, false);
+    }
+
+    bool loaded() const {
+        return !translationRoot_.isNull();
+    }
+
+    std::optional<std::string> translate(const std::string& key) {
+        if (!loaded()) {
+            return {};
+        }
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
-        Json::Value root = *translationRoot;
+        Json::Value& root = translationRoot_;
         int count = tokens.size();
-        for ( int i = 0; i < count; i++ ) {
+        for (int i = 0; i < count; i++) {
             std::string token = tokens[i];
-            if ( !root.isMember(token) ) {
+            if (!root.isMember(token)) {
                 break;
             }
             root = root[token];
-            if ( root.type() != Json::objectValue && i+1 != count ) {
+            if (root.type() != Json::objectValue && i + 1 != count) {
                 break;
             }
-            if ( i+1 == count && root.type() == Json::stringValue  ) {
+            if (i + 1 == count && root.type() == Json::stringValue) {
                 return root.asString();
             }
         }
+        return {};
+    }
+
+private:
+    Json::Value translationRoot_;
+};
+
+std::string Translate(const std::string& key, const std::string& originalText) {
+    static ScriptTranslator scriptTranslator(GetAppLocale());
+    static ScriptTranslator englishScriptTranslator("en");
+
+    auto result = scriptTranslator.translate(key);
+    if (result) {
+        return *result;
+    }
+
+    result = englishScriptTranslator.translate(key);
+    if (result) {
+        return *result;
     }
 
     auto translator = ServiceLocator::instance()->translator();
@@ -187,6 +206,25 @@ std::string Translate(const std::string& key, const std::string& originalText) {
         return translator->translate(originalText.c_str());
     } 
     return originalText;
+}
+
+SQInteger ScriptTranslate(HSQUIRRELVM vm) {
+    try {
+        Sqrat::Var<std::string> key(vm, 2);
+        Sqrat::Var<std::string> originalText(vm, 3);
+        if (key.value.empty()) {
+            throw Sqrat::Exception("ScriptTranslate() requires non-empty first argument");
+        }
+
+        std::string result = Translate(key.value, originalText.value);
+
+        Sqrat::PushVar(vm, result);
+        return 1;
+    } catch (const Sqrat::Exception& e) {
+        return sq_throwerror(vm, e.what());
+    } catch (const std::exception& e) {
+        return sq_throwerror(vm, ("ScriptTranslate() error: " + std::string(e.what())).c_str());
+    }
 }
 
 std::string AskUserCaptcha(INetworkClient* nm, const std::string& url)
@@ -530,7 +568,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetScriptsDirectory", GetScriptsDirectory)
         .Func("GetAppLanguageFile", GetAppLanguageFile)
         .SquirrelFunc("include", IncludeScript)
-        .Func("Translate", Translate)
+        .SquirrelFunc("Translate", ScriptTranslate)
         .SquirrelFunc("GetAppVersion", GetAppVersion)
         .Func("random", random)
         .Func("Random", random)
@@ -602,8 +640,8 @@ void RegisterShortTranslateFunctions(Sqrat::SqratVM& vm) {
     Sqrat::RootTable& root = vm.GetRootTable();
 
     Function func(root, "tr");
-    if ( func.IsNull() ) {
-        root.Func("tr", Translate);
+    if (func.IsNull()) {
+        root.SquirrelFunc("tr", ScriptTranslate);
     }
 }
 

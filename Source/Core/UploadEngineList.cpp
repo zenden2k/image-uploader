@@ -86,7 +86,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
         }
 
         UE.Name = cur.Attribute("Name");
-#ifdef NDEBUG
+//#ifdef NDEBUG
         std::string serverMinVersion = cur.Attribute("MinVersion");
         if (!serverMinVersion.empty()) {
             std::vector<std::string> tokens;
@@ -105,7 +105,7 @@ bool CUploadEngineList::loadFromFile(const std::string& filename, ServerSettings
                 }
             }
         }
-#endif
+//#endif
         UE.SupportsFolders = cur.AttributeBool("SupportsFolders");
         UE.RegistrationUrl = cur.Attribute("RegistrationUrl");
         UE.WebsiteUrl = cur.Attribute("WebsiteUrl");

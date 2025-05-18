@@ -47,6 +47,7 @@ CInputDialog::CInputDialog(const CString& title, const CString& descr, const CSt
 
 LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+    DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     SetWindowText(title_);
     SetDlgItemText(IDC_DESCRIPTIONLABEL, description_);
     SetDlgItemText(IDC_VALUEEDIT, value_);
@@ -63,10 +64,21 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         GetWindowRect(&rc);
         imgControl.SetWindowPos(0, 0, 0, img.GetWidth() + 2, imgHeight + 2, SWP_NOMOVE);
         imgControl.loadImage(image_);
-        SetWindowPos(0, 0, 0, rc.right - rc.left, rc.bottom - rc.top + imgHeight, SWP_NOMOVE);
+        /*SetWindowPos(0, 0, 0, rc.right - rc.left, rc.bottom - rc.top + imgHeight, SWP_NOMOVE);
         OffsetControl(GetDlgItem(IDC_VALUEEDIT), imgHeight );
         OffsetControl(GetDlgItem(IDCANCEL), imgHeight );
-        OffsetControl(GetDlgItem(IDOK), imgHeight );
+        OffsetControl(GetDlgItem(IDOK), imgHeight );*/
+    } else {
+        imgControl.ShowWindow(SW_HIDE);
+        CRect temp { 0, 0, 100, 100 }; 
+        MapDialogRect(&temp); 
+
+        CRect rc;
+        GetClientRect(&rc);
+
+        m_ptMinTrackSize.x = rc.Width();
+        m_ptMinTrackSize.y = temp.Height();
+        GuiTools::SetClientRect(m_hWnd, rc.Width(), temp.Height());
     }
     CenterWindow(GetParent());
     return 0;  // Let the system set the focus

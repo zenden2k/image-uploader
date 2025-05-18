@@ -30,7 +30,8 @@
 // CInputDialog
 
 class CInputDialog :
-    public CCustomDialogIndirectImpl<CInputDialog>
+    public CCustomDialogIndirectImpl<CInputDialog>,
+    public CDialogResize<CInputDialog>
 {
     public:
         CInputDialog(const CString& title, const CString& descr, const CString& defaultValue = _T(""), const CString& image = _T(""));
@@ -40,7 +41,15 @@ class CInputDialog :
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+            CHAIN_MSG_MAP(CDialogResize<CInputDialog>)
         END_MSG_MAP()
+
+        BEGIN_DLGRESIZE_MAP(CInputDialog)
+            DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_X | DLSZ_MOVE_Y)
+            DLGRESIZE_CONTROL(IDC_VALUEEDIT, DLSZ_MOVE_Y | DLSZ_SIZE_X)
+            DLGRESIZE_CONTROL(IDC_IMAGE, DLSZ_MOVE_Y)
+        END_DLGRESIZE_MAP()
 
         CString getValue() const;
         void setForbiddenCharacters(CString chars);
