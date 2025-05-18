@@ -8,14 +8,14 @@ If you want to support album listing/creating/modifying, you have to implement a
 */
 
 /**
-Required function for server Type="image" or Type="file".
-@return 1 - success,<br>
-0 - fail<br/>
--1 - fail and abort upload  (for example, authorization failed, this value supported since v.1.3.1)
+This is a required function for server with Type="image" or Type="file".
+@return ResultCode.Success(1) - success,<br>
+ResultCode.Failure(0) - fail<br/>
+ResultCode.FatalServerError(-1) - abort upload to this server (for example, authorization failed, this value supported since v.1.3.1)
+ResultCode.FatalError(-3) - abort upload of current task
 */
 int UploadFile(string pathToFile, UploadParams params);
 
-int ShortenUrl(string url, UploadParams params);
 int GetFolderList(CFolderList folderList);
 int CreateFolder(CFolderItem parent, CFolderItem folder);
 int ModifyFolder(CFolderItem folder);
@@ -101,3 +101,4 @@ int RefreshToken();
 */
 int DoLogout();
 
+int ShortenUrl(string url, UploadParams params);

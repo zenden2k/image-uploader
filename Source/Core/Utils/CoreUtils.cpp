@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <filesystem>
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 #include <sstream>
@@ -492,9 +493,11 @@ void OnThreadExit(void (*func)()) {
     exiter.add(func);
 }
 
-std::string GetFileMimeType(const std::string& fileName)
-{
-    const std::string DefaultMimeType = "application/octet-stream";
+std::mutex xdgMimeMutex;
+constexpr auto DefaultMimeType = "application/octet-stream";
+
+std::string GetFileMimeType(const std::string& fileName) {
+    std::lock_guard<std::mutex> lk(xdgMimeMutex);
     /* FILE* f = FopenUtf8(fileName.c_str(), "rb");
     if (!f) {
         return DefaultMimeType;
@@ -531,14 +534,16 @@ std::string GetFileMimeType(const std::string& fileName)
 }
 
 std::string GetFileMimeTypeByName(const std::string& fileName) {
+    std::lock_guard<std::mutex> lk(xdgMimeMutex);
     struct stat st;
     auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
+    if (!mime) {
+        return DefaultMimeType;
+    }
     return mime;
 }
 
-std::string GetFileMimeTypeByContents(const std::string& fileName)
-{
-    const std::string DefaultMimeType = "application/octet-stream";
+std::string GetFileMimeTypeByContents(const std::string& fileName) {
     FILE* f = FopenUtf8(fileName.c_str(), "rb");
     if (!f) {
         return DefaultMimeType;
@@ -547,7 +552,7 @@ std::string GetFileMimeTypeByContents(const std::string& fileName)
     size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
     fclose(f);
     int resultPrio = 0;
-
+    std::lock_guard<std::mutex> lk(xdgMimeMutex);
     auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);
 
     if (!mime) {

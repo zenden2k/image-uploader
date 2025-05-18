@@ -1,3 +1,4 @@
+const UPLOAD_URL = "http://example.com/upload.php";
 test <- "example"; // global variable
 
 // This is the function that performs the upload of the file
@@ -6,17 +7,25 @@ test <- "example"; // global variable
 // @return int - success(1), failure(0)
 
 function UploadFile(pathToFile, options) {
-    nm.setUrl("http://example.com/upload.php");
-    nm.addQueryParamFile("file", pathToFile, ExtractFileName(pathToFile),"");
+    local task = options.getTask().getFileTask();
+    nm.setUrl(UPLOAD_URL);
+    nm.addQueryParamFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.addQueryParam("submit", "Upload file!");
     nm.doUploadMultipartData();
 
-    local response = nm.responseBody(); // 'local' it's like javascript's 'var' but only for local variables
-    local directUrl = _RegexSimple(response, "\\[IMG\\](.+)\\[/IMG\\]",0);
+    if (nm.responseCode() != 200) {
+        return ResultCode.Failure;
+    }
+
+    local directUrl = _RegexSimple(nm.responseBody(), "\\[IMG\\](.+)\\[/IMG\\]",0);
     
+    if (directUrl == "") {
+        return ResultCode.Failure;
+    }
+
     options.setDirectUrl(directUrl);
 
-    return 1; //SUCCESS
+    return ResultCode.Success;
 }
 
 // Helper function that simplifies working with regular expressions
@@ -42,7 +51,7 @@ function _RegexSimple(data,regStr,start) {
 // @return int - success(1), failure(0) 
 function Authenticate() {
     // TODO: Your code
-    return 1; //SUCCESS
+    return ResultCode.Success;
 }
 
 
@@ -53,7 +62,7 @@ function Authenticate() {
 //
 function GetFolderList(list) {
     // TODO: Your code
-    return 1; //SUCCESS
+    return ResultCode.Success;
 }
  
  
@@ -64,7 +73,7 @@ function GetFolderList(list) {
 //
 function CreateFolder(parentAlbum,album) {
     // TODO: Your code
-    return 1; //SUCCESS
+    return ResultCode.Success;
 }
  
 // Modify a folder or an album (update name, description)
@@ -73,7 +82,7 @@ function CreateFolder(parentAlbum,album) {
 //
 function ModifyFolder(album) {
     // TODO: Your code
-    return 1; //SUCCESS
+    return ResultCode.Success;
 }
  
 // A function that returns a list of types of access restrictions to an album:
