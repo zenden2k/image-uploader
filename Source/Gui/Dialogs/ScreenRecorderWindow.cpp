@@ -27,6 +27,7 @@ ScreenRecorderWindow::ScreenRecorderWindow():
         dialogResult_(drCancel),
         toolbar_(ImageEditor::Toolbar::orHorizontal, false) {
     transparentColor_ = RGB(255, 50, 56);
+    memset(&trayIconGuid_, 0, sizeof(GUID));
 }
 
 ScreenRecorderWindow::~ScreenRecorderWindow() {
@@ -369,7 +370,6 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
             status == ScreenRecorder::Status::Canceled
             || status == ScreenRecorder::Status::Failed
             || status == ScreenRecorder::Status::Paused
-            || status == ScreenRecorder::Status::Finished
         ) {
             if (status == ScreenRecorder::Status::Failed) {
                 GuiTools::LocalizedMessageBox(wnd, TR("An error occurred during screen recording. For details, please check the error log."), TR("Error"), MB_ICONERROR);

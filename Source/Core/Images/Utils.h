@@ -10,7 +10,8 @@
 namespace ImageUtils {
 
 enum SaveImageFormat {
-    sifJPEG,
+    sifUknown = -1,
+    sifJPEG = 0,
     sifPNG,
     sifGIF,
     sifWebp,

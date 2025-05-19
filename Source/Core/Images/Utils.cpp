@@ -547,7 +547,7 @@ Rect MeasureDisplayString(Graphics& graphics, CString text, RectF boundingRect, 
 
 bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString& szBuffer, SaveImageFormat Format, int Quality, LPCTSTR Folder)
 {
-    if (Format == -1) {
+    if (Format == sifUknown) {
         Format = sifJPEG;
     } else if (Format == sifDetectByExtension) {
         Format = GetFormatByFileName(szFilename);

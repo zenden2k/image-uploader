@@ -267,6 +267,10 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
     DWORD kbSize = static_cast<DWORD>(sizeof(my_blob) + password.length());
 
     kb = static_cast<my_blob*>(malloc(kbSize));
+    if (!kb) {
+        err = 1;
+        goto Exit;
+    }
     kb->header.bType = PLAINTEXTKEYBLOB;
     kb->header.bVersion = CUR_BLOB_VERSION;
     kb->header.reserved = 0;

@@ -68,10 +68,6 @@ void GetCheck(HWND dlg, int id, bool& check) {
     check = ::SendDlgItemMessage(dlg, id,BM_GETCHECK, 0, 0) == BST_CHECKED;
 }
 
-bool GetCheck(HWND dlg, int id) {
-    return ::SendDlgItemMessage(dlg, id,BM_GETCHECK, 0, 0) == BST_CHECKED;
-}
-
 void SetCheck(HWND dlg, int id, bool check) {
     ::SendDlgItemMessage(dlg, id,BM_SETCHECK, check, 0);
 }

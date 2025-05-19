@@ -147,10 +147,10 @@ LRESULT CGeneralSettings::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 }
 
 LRESULT CGeneralSettings::OnBnClickedClearServerSettings(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    auto builtInScripts = ServiceLocator::instance()->engineList()->builtInScripts();
+    auto builtInScripts = CUploadEngineListBase::builtInScripts();
 
     // 'Directory' server type has no account
-    auto newEnd = std::remove_if(builtInScripts.begin(), builtInScripts.end(), [](auto&& s) { return s == "directory"; });
+    auto newEnd = std::remove_if(builtInScripts.begin(), builtInScripts.end(), [](auto&& s) { return s == CUploadEngineListBase::CORE_SCRIPT_DIRECTORY; });
     builtInScripts.erase(newEnd, builtInScripts.end());
 
     std::string msg = str(boost::format(

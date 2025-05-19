@@ -413,7 +413,7 @@ void UploadTask::uploadProgress(InfoProgress progress)
     }
     progress_.uploaded = progress.Uploaded;
     progress_.totalUpload = progress.Total;
-    progress_.isUploading = progress.IsUploading;
+    progress_.isUploading = true;
 
     struct timeval tp;
     gettimeofday(&tp, NULL);

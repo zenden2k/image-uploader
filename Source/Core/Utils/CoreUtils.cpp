@@ -402,8 +402,7 @@ std::string FileSizeToString(int64_t nBytes)
         postfix= "MB";
         number= (double)nBytes / 1048576.0;
         precision = 1;
-    }
-    else if(nBytes>=1073741824)
+    } else /*if (nBytes >= 1073741824)*/
     {
         postfix= "GB";
         precision = 1;

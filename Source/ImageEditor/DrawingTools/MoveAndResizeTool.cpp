@@ -198,7 +198,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
             }
         }
         
-        if ( currentElement_ && currentElement_->getType() == ElementType::etCrop) {
+        if (currentElement_->getType() == ElementType::etCrop) {
             canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();

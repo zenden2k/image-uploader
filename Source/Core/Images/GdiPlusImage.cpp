@@ -10,7 +10,9 @@
 
 using namespace Gdiplus;
 
-GdiPlusImage::GdiPlusImage() {
+GdiPlusImage::GdiPlusImage()
+    : bm_(nullptr)
+{
     init();
 }
 

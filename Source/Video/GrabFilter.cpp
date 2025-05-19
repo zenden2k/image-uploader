@@ -104,11 +104,13 @@ HRESULT CGrabFilter::NonDelegatingQueryInterface(const IID& riid, void** ppv) {
     if (riid == IID_IMediaPosition || riid == IID_IMediaSeeking) {
         if (m_pPosition == nullptr){
             HRESULT hr = S_OK;
-            m_pPosition = new CPosPassThru(NAME("Dump Pass Through"),
-                (IUnknown *)GetOwner(),
-                (HRESULT *)&hr, m_grab->m_inputPin);
-            if (m_pPosition == nullptr)
+            try {
+                m_pPosition = new CPosPassThru(NAME("Dump Pass Through"),
+                    (IUnknown*)GetOwner(),
+                    (HRESULT*)&hr, m_grab->m_inputPin);
+            } catch (const std::bad_alloc&) {
                 return E_OUTOFMEMORY;
+            }
 
             if (FAILED(hr)){
                 delete m_pPosition;

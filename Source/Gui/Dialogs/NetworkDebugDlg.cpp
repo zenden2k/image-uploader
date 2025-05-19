@@ -205,7 +205,7 @@ bool CNetworkDebugDlg::showText(const std::string& src)
 {
     std::wstring s = IuCoreUtils::Utf8ToWstring(src);
     bool hexDump = false;
-    for (int i = 0; i < 10, i < s.length(); i++) {
+    for (int i = 0; i < 10 && i < s.length(); i++) {
         if (!iswprint(s[i]) && !iswspace(s[i])) {
             hexDump = true;
             break;

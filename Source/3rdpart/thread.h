@@ -183,7 +183,7 @@ public:
       if( !Creates(ThreadProc, (LPVOID) static_cast<T*>(this), iPriority ) ) return FALSE;
       return TRUE;
    }
-   virtual void Stop()
+   void Stop()
    {
       if( !SignalStop() ) return;
       WaitForThread();

@@ -3,7 +3,9 @@
 namespace ServersListTool {
 
 CheckShortUrlTask::CheckShortUrlTask(std::shared_ptr<INetworkClientFactory> factory, std::string url, std::string shortUrl)
-    : factory_(std::move(factory))
+    : isCanceled_(false)
+    , isInProgress_(false)
+    , factory_(std::move(factory))
     , url_(std::move(url))
     , shortUrl_(std::move(shortUrl))
 {

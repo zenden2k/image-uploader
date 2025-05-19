@@ -294,7 +294,7 @@ void CServerSelectorControl::updateInfoLabel() {
 
     bool showServerParams = (serverName != CMyEngineList::DefaultServer && serverName != CMyEngineList::RandomServer );
 
-    if (  !showServerParams ) {
+    if (!showServerParams) {
         GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERLABEL, showServerParams );
         GuiTools::ShowDialogItem(m_hWnd, IDC_FOLDERICON, showServerParams );
         GuiTools::ShowDialogItem(m_hWnd, IDC_ACCOUNTINFO, showServerParams );
@@ -310,7 +310,7 @@ void CServerSelectorControl::updateInfoLabel() {
         return;
     }
 
-    showServerParams = showServerParams && (uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization);
+    showServerParams = uploadEngineData->UsingPlugin || uploadEngineData->NeedAuthorization;
     
     CString accountInfoText;
     BasicSettings* settings = ServiceLocator::instance()->basicSettings();

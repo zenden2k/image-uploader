@@ -81,7 +81,7 @@ class CommonGuiSettings : public BasicSettings {
         CommonGuiSettings();
         ~CommonGuiSettings();
 
-        bool UseDirectLinks;
+        bool UseDirectLinks = true;
 
         ServerProfile urlShorteningServer, temporaryServer, imageSearchServer;
         ServerProfileGroup imageServer, fileServer, quickScreenshotServer, contextMenuServer;

@@ -96,7 +96,7 @@ protected:
     AVPacket packet {};
     AVFormatContext* ic;
     uint8_t* buffer;
-    int frameFinished;
+    bool frameFinished;
     int headerlen;
     struct SwsContext* img_convert_ctx;
     int numBytes;
@@ -126,7 +126,7 @@ public:
         videoStream = 0;
         pFormatCtx = nullptr;
         pCodec = nullptr;
-        frameFinished = 0;
+        frameFinished = false;
         ic = nullptr;
         headerlen = 0;
         duration_ = 0;

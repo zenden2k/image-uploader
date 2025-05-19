@@ -337,8 +337,6 @@ template<class T,class V> void setObjValues(T key, Json::Value::const_iterator i
             obj.SetValue(key, Sqrat::Object());
             break;
         case intValue:      // signed integer value
-            obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
-            break;
         case uintValue:     // unsigned integer value
             obj.SetValue(key, static_cast<SQInteger>(it->asInt64()));
             break;

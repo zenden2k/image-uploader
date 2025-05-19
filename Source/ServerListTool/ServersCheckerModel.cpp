@@ -5,7 +5,7 @@
 namespace ServersListTool {
 
 ServersCheckerModel::ServersCheckerModel(CMyEngineList* engineList) : engineList_(engineList) {
-    auto builtInScripts = engineList_->builtInScripts();
+    auto builtInScripts = CUploadEngineListBase::builtInScripts();
 
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);

@@ -55,7 +55,7 @@ std::string AbstractCodeGenerator::generateCodeForItem(const UploadObject& item,
         }
         return res;
     } else if (codeType_ == ctImages) {
-        if (index && codeType_ == ctImages) {
+        if (index) {
             res += lineSeparator();
             res += lineSeparator();
         }

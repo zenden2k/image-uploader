@@ -29,7 +29,11 @@ namespace GuiTools
     int AddComboBoxItem(HWND hDlg, int itemId, LPCTSTR item);
     bool AddComboBoxItems(HWND hDlg, int itemId, int itemCount, ...);
     void GetCheck(HWND dlg, int id, bool& check);
-    bool GetCheck(HWND dlg, int id);
+    bool IsChecked(HWND dlg, int id);
+
+    inline bool GetCheck(HWND dlg, int id) {
+        return IsChecked(dlg, id);
+    }
     void SetCheck(HWND dlg, int id, bool check);
     [[nodiscard]] HFONT MakeLabelBold(HWND Label);
     void EnableNextN(HWND Control, int n, bool Enable);
@@ -60,8 +64,6 @@ namespace GuiTools
 
     int ScreenBPP();
     BOOL Is32BPP();
-
-    bool IsChecked(HWND dlg, int id);
 
     RECT AutoSizeStaticControl(HWND control);
 

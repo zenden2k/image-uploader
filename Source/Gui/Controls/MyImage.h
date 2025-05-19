@@ -86,7 +86,7 @@ private:
     unique_c_ptr<Gdiplus::PropertyItem> propertyItem_;
     std::shared_ptr<Gdiplus::Image> animatedImage_;
     CEvent pauseEvent_, exitEvent_;
-    bool paused_;
+    bool paused_ = false;
     int framePosition_ = 0;
     Gdiplus::Rect destRect_;
     void initAnimation();

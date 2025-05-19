@@ -164,6 +164,9 @@ BOOL IU_CreateFolder(LPCTSTR szFolder)
 
     // recursively create from the top down
     TCHAR* szPath = _tcsdup(szFolder);
+    if (!szPath) {
+        return FALSE;
+    }
     TCHAR* p = _tcsrchr(szPath, '\\');
 
     if (p)
@@ -244,6 +247,9 @@ void EncodeString(LPCTSTR szSource, CString& Result, LPSTR code)
 BOOL IU_CreateFilePath(LPCTSTR szFilePath)
 {
     TCHAR* szPath = _tcsdup(szFilePath);
+    if (!szPath) {
+        return FALSE;
+    }
     TCHAR* p = _tcsrchr(szPath, '\\');
 
     BOOL bRes = FALSE;

@@ -311,6 +311,10 @@ std::unique_ptr<AbstractImage> ImageConverterPrivate::createThumbnail(AbstractIm
     GdiPlusImage* image = dynamic_cast<GdiPlusImage*>(abstractImg);
     assert(image);
     assert(thumbnailTemplate_);
+
+    if (!image) {
+        return {};
+    }
     const Thumbnail::ThumbnailData* data = thumbnailTemplate_->getData();
     CWindowDC dc(nullptr);
     int newwidth = image->getWidth();

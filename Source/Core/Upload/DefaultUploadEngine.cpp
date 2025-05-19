@@ -67,7 +67,7 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
         }
     } catch(std::exception& ex) {
         UploadError(ErrorInfo::mtError, ex.what(), 0, false);
-        res = false;
+        res = 0;
     }
     if (!res && fatalError_)
     {

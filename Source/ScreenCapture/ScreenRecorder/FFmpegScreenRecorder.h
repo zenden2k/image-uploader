@@ -29,10 +29,8 @@ private:
     std::string currentOutFilePath_;
     std::vector<std::string> parts_;
     std::shared_future<int> future_;
-    TaskDispatcher* taskDispatcher_;
     void sendStopSignal();
     std::future<int> launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish);
     void cleanupAfter();
     const std::string stopData_ = "q\n";
-
 };

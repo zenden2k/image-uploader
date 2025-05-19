@@ -272,7 +272,8 @@ void NetworkDebugModel::saveToFile(const std::string& fileName) {
     }
 }
 
-std::string NetworkDebugModel::getCell(const NetworkDebugModelData& modelData, int row, int column) const {
+std::string NetworkDebugModel::getCell(const NetworkDebugModelData& modelData, int /*row*/, int column) const
+{
     if (column == NetworkDebugModelNS::COLUMN_N) {
         // return std::to_string(row + 1);
     } else if (column == NetworkDebugModelNS::COLUMN_THREAD_ID) {

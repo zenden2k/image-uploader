@@ -296,7 +296,14 @@ void FFmpegScreenRecorder::stop() {
             }
             self->changeStatus(Status::Finished);
         } else {
-            std::string tempFile = std::tmpnam(nullptr);
+            const char* tempFileName = std::tmpnam(nullptr);
+
+            if (!tempFileName) {
+                LOG(ERROR) << "Failed to generate temp file path.";
+                return;
+            }
+
+            const std::string tempFile = tempFileName;
             std::ofstream f(/*std::filesystem::u8path*/ (tempFile), std::ios::out);
 
             if (!f) {

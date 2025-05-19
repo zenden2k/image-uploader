@@ -76,6 +76,9 @@ Canvas::Canvas( HWND parent ) {
     stepInitialValue_ = 1;
     fillTextBackground_ = false;
     cropOnExport_ = true;
+    invertSelection_ = false;
+    arrowMode_ = Arrow::ArrowMode::Mode1;
+    manipulationStarted_ = false;
     dpiX_ = 1.0f;
     dpiY_ = 1.0f;
     createDoubleBuffer();
@@ -509,7 +512,11 @@ void Canvas::setFont(LOGFONT font, DWORD changeMask)
             uhie.color = elementsOnCanvas_[i]->getColor();
             uhie.pos = i;
             uhie.movableElement = elementsOnCanvas_[i];*/
-            dynamic_cast<TextElement*>(elementsOnCanvas_[i])->setFont(font, changeMask);
+            auto textItem = dynamic_cast<TextElement*>(elementsOnCanvas_[i]);
+            if (textItem) {
+                textItem->setFont(font, changeMask);
+            }
+
             /*uhi.elements.push_back(uhie);
             updatedElementsCount++;*/
         }
@@ -1197,7 +1204,10 @@ bool Canvas::undoItem(UndoHistoryItem& item) {
         int itemCount = item.elements.size();
         for (int i = itemCount - 1; i >= 0; i--) {
             if (item.elements[i].movableElement->getType() == ElementType::etBlurringRectangle || item.elements[i].movableElement->getType() == ElementType::etPixelateRectangle) {
-                dynamic_cast<BlurringRectangle*>(item.elements[i].movableElement)->setBlurRadius(item.elements[i].floatVal);
+                auto blurRectangleItem = dynamic_cast<BlurringRectangle*>(item.elements[i].movableElement);
+                if (blurRectangleItem) {
+                    blurRectangleItem->setBlurRadius(item.elements[i].floatVal);
+                }
             }
         }
         result = true;
@@ -1385,8 +1395,9 @@ Gdiplus::Rect Canvas::lastCrop() const {
     for (const auto& el: elementsOnCanvas_) {
         if (el->getType() == ElementType::etCrop) {
             auto crop = dynamic_cast<Crop*>(el);
-
-            return Gdiplus::Rect(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight());
+            if (crop) {
+                return Gdiplus::Rect(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight());
+            }
         }
     }
     return lastAppliedCrop();
@@ -1396,8 +1407,10 @@ void Canvas::setStepFontSize(int fontSize) {
     stepFontSize_ = fontSize;
     for ( const auto& el: elementsOnCanvas_) {
         if (el->getType() == ElementType::etStepNumber) {
-            dynamic_cast<StepNumber*>(el)->setFontSize(fontSize);
-            
+            auto stepItem = dynamic_cast<StepNumber*>(el);
+            if (stepItem) {
+                stepItem->setFontSize(fontSize);
+            }
         }
     }
     updateView();

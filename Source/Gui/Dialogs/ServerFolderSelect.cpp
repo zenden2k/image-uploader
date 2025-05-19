@@ -185,7 +185,7 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
         return;
     } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) { 
         // Modifying an existing folder
-        m_FolderOperationType = FolderOperationType::foModifyFolder;
+        m_FolderOperationType = FolderOperationType::foGetFolders;
         m_newFolder.setId(folderTask->folder().getId());
         m_SelectedFolder = m_newFolder;
         refreshList(folderTask->folder().parentid);

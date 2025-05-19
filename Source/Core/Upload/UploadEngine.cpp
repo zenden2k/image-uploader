@@ -205,14 +205,21 @@ std::string CUploadEngineListBase::getDefaultServerNameForType(CUploadEngineData
     return {};
 }
 
-std::vector<std::string> CUploadEngineListBase::builtInScripts() const {
+std::vector<std::string> CUploadEngineListBase::builtInScripts() {
     auto keys = { CORE_SCRIPT_FTP, CORE_SCRIPT_SFTP, CORE_SCRIPT_WEBDAV, CORE_SCRIPT_DIRECTORY };
     return std::vector<std::string>(keys.begin(), keys.end());
 }
 
 void CUploadEngineListBase::removeServer(const std::string& name) {
-    m_list.erase(std::remove_if(m_list.begin(), m_list.end(),
-        [name](auto& x) { return x->Name == name; }));
+    m_list.erase(
+        std::remove_if(
+            m_list.begin(), m_list.end(),
+            [&name](const auto& x) {
+                return x->Name == name;
+            }
+        ),
+        m_list.end()
+   );
 }
 
 

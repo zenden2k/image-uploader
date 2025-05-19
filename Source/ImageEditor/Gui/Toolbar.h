@@ -177,7 +177,7 @@ public:
     CButton applyButton_;
     CButton cancelOperationButton_;
     CToolTipCtrl tooltip_;
-    bool roundedBorder_;
+    bool roundedBorder_ = true;
 protected:
     Orientation orientation_;
     std::vector<Item> buttons_;
