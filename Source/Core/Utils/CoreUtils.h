@@ -102,6 +102,11 @@ namespace IuCoreUtils
     bool PutFileContents(const std::string& utf8Filename, const std::string& content);
     std::string GetFileContents(const std::string& filename);
 
+    /**
+     * @throws std::system_error, std::out_of_range, std::runtime_error
+     */
+    std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead = false);
+
     // This function retrieves the size of the specified file, in bytes.
     // It supports large files; filename must be utf8 encoded
     int64_t GetFileSize(const std::string& utf8Filename);

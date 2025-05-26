@@ -24,6 +24,8 @@
 #include <locale>
 #include <cstdio>
 #include <filesystem>
+#include <fstream>
+#include <system_error>
 #include <map>
 #include <mutex>
 #include <set>
@@ -350,6 +352,43 @@ std::string GetFileContents(const std::string& filename) {
     }
     fclose(stream);
     return data;
+}
+
+std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead) {
+    namespace fs = std::filesystem;
+
+    fs::path filepath = fs::u8path(filename); 
+
+    std::ifstream file(filepath, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory), "Failed to open file: " + filename);
+    }
+
+    file.seekg(0, std::ios::end);
+    const int64_t fileSize = file.tellg();
+    if (offset < 0 || offset > fileSize) {
+        throw std::out_of_range("Invalid file offset");
+    }
+
+    if (size == 0) {
+        return {};
+    }
+
+    size_t bytesAvailable = static_cast<size_t>(fileSize - offset);
+    if (!allowPartialRead && size > bytesAvailable) {
+        throw std::out_of_range("Requested size exceeds available data");
+    }
+    size_t read_size = (allowPartialRead) ? std::min(size, bytesAvailable) : size;
+
+    file.seekg(offset, std::ios::beg);
+    std::string buffer(read_size, '\0');
+    file.read(buffer.data(), read_size);
+
+    if (!file) {
+        throw std::runtime_error("Failed to read the requested amount of data");
+    }
+
+    return buffer;
 }
 
 std::string TimeStampToString(time_t t)

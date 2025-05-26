@@ -165,19 +165,19 @@ public:
         }
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
-        Json::Value& root = translationRoot_;
+        const Json::Value* root = &translationRoot_;
         int count = tokens.size();
         for (int i = 0; i < count; i++) {
             std::string token = tokens[i];
-            if (!root.isMember(token)) {
+            if (!root->isMember(token)) {
                 break;
             }
-            root = root[token];
-            if (root.type() != Json::objectValue && i + 1 != count) {
+            root = &(*root)[token];
+            if (root->type() != Json::objectValue && i + 1 != count) {
                 break;
             }
-            if (i + 1 == count && root.type() == Json::stringValue) {
-                return root.asString();
+            if (i + 1 == count && root->type() == Json::stringValue) {
+                return root->asString();
             }
         }
         return {};
@@ -475,6 +475,15 @@ int64_t ScriptGetFileSize(const std::string& filename) {
     return IuCoreUtils::GetFileSize(filename);
 }
 
+std::string GetFileContentsEx(const std::string& filename, SQInteger offset, SQInteger size, bool allowPartialRead) {
+    try {
+        return IuCoreUtils::GetFileContentsEx(filename, offset, static_cast<size_t>(size), allowPartialRead);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in GetFileContentsEx:" << std::endl << e.what();
+    }
+    return {};
+}
+
 std::string GetAppLanguage() {
     return Impl::GetAppLanguageImpl();
 }
@@ -586,6 +595,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .SquirrelFunc("ParseJSON", ParseJSON)
         .Func("ToJSON", ToJSON)
         .Func("GetFileContents", IuCoreUtils::GetFileContents)
+        .Func("GetFileContentsEx", GetFileContentsEx)
         .Func("GetTempDirectory", GetTempDirectory)
         .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
         .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)

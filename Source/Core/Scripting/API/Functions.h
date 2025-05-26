@@ -236,6 +236,11 @@ namespace ScriptAPI {
     std::string GetFileContents(const std::string& filename);
 
     /**
+     * @since 1.4.3
+     */
+    std::string GetFileContentsEx(const std::string& filename, SQInteger offset, SQInteger size, bool allowPartialRead);
+
+    /**
      *  URL-encodes string. This function is convenient when encoding a string to be used in a query part of a URL.
      *
      *  Use NetworkClient's nm.urlEncode() when possible instead.
