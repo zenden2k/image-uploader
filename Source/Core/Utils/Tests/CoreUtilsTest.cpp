@@ -248,6 +248,61 @@ TEST_F(CoreUtilsTest, GetFileContents)
     EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
 }
 
+TEST_F(CoreUtilsTest, GetFileContentsEx_Basic)
+{
+    ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
+    {
+        std::string data = GetFileContentsEx(constSizeFileName, 100, 1000);
+        EXPECT_EQ(1000, data.size());
+        std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data.data(), data.size());
+        EXPECT_EQ("920a5642b048c0b04e05591f1e314218", hash);
+    }
+    {
+        std::string data = GetFileContentsEx(constSizeFileName, 0, constSizeFileSize);
+        EXPECT_EQ(constSizeFileSize, data.size());
+        std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data.data(), data.size());
+        EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
+    }
+    {
+        std::string data = GetFileContentsEx(constSizeFileName, 5000, constSizeFileSize, true);
+        EXPECT_EQ(constSizeFileSize - 5000, data.size());
+        std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(data.data(), data.size());
+        EXPECT_EQ("6855f0ede7f43f04b46869655823c513", hash);
+    }
+    {
+        std::string data = GetFileContentsEx(constSizeFileName, 5000, 0);
+        EXPECT_EQ(0, data.size());
+    }
+    {
+        std::string data = GetFileContentsEx(constSizeFileName, 0, 0);
+        EXPECT_EQ(0, data.size());
+    }
+}
+
+TEST_F(CoreUtilsTest, GetFileContentsEx_Errors)
+{
+    const std::string zeroSizeFile = TestHelpers::resolvePath("file_with_zero_size.dat");
+    EXPECT_THROW(GetFileContentsEx(TestHelpers::resolvePath("not_existing_file226546546343"), 100, 1000), std::system_error);
+
+    // with allowPartialRead = false
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, 0, constSizeFileSize + 1), std::out_of_range);
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, constSizeFileSize - 10, 100), std::out_of_range);
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, -100, 100), std::out_of_range);
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, -1, 0), std::out_of_range);
+    EXPECT_THROW(GetFileContentsEx(zeroSizeFile, 0, 100), std::out_of_range);
+    EXPECT_NO_THROW(GetFileContentsEx(zeroSizeFile, 0, 0));
+    EXPECT_THROW(GetFileContentsEx(zeroSizeFile, 100, 100), std::out_of_range);
+
+    // with allowPartialRead = true
+    EXPECT_NO_THROW(GetFileContentsEx(constSizeFileName, 0, constSizeFileSize + 1, true));
+    EXPECT_NO_THROW(GetFileContentsEx(constSizeFileName, constSizeFileSize - 10, 100, true));
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, -100, 100, true), std::out_of_range);
+    EXPECT_THROW(GetFileContentsEx(constSizeFileName, -1, 0, true), std::out_of_range);
+    EXPECT_NO_THROW(GetFileContentsEx(zeroSizeFile, 0, 0, true));
+    EXPECT_NO_THROW(GetFileContentsEx(zeroSizeFile, 0, 100, true));
+    EXPECT_THROW(GetFileContentsEx(zeroSizeFile, 100, 100, true), std::out_of_range);
+}
+
 TEST_F(CoreUtilsTest, GetFileMimeType) {
     ASSERT_TRUE(IuCoreUtils::FileExists(constSizeFileName));
     std::string type = GetFileMimeType(constSizeFileName);

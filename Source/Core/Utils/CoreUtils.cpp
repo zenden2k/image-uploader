@@ -374,15 +374,15 @@ std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_
         return {};
     }
 
-    size_t bytesAvailable = static_cast<size_t>(fileSize - offset);
+    const uint64_t bytesAvailable = static_cast<uint64_t>(fileSize - offset);
     if (!allowPartialRead && size > bytesAvailable) {
         throw std::out_of_range("Requested size exceeds available data");
     }
-    size_t read_size = (allowPartialRead) ? std::min(size, bytesAvailable) : size;
+    const uint64_t readSize = allowPartialRead ? std::min(static_cast<uint64_t>(size), bytesAvailable) : static_cast<uint64_t>(size);
 
     file.seekg(offset, std::ios::beg);
-    std::string buffer(read_size, '\0');
-    file.read(buffer.data(), read_size);
+    std::string buffer(readSize, '\0');
+    file.read(buffer.data(), readSize);
 
     if (!file) {
         throw std::runtime_error("Failed to read the requested amount of data");
