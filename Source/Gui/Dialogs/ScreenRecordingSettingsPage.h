@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "atlheaders.h"
 #include "resource.h"     
 #include "settingspage.h"
@@ -16,6 +18,8 @@ public:
     CScreenRecordingSettingsPage();
     virtual ~CScreenRecordingSettingsPage() = default;
     enum { IDD = IDD_SCREENRECORDINGSETTINGSPAGE };
+    enum SubPage { spNone = -1, spDirectXSettings = 0, spFFmpegSettings };
+    inline static constexpr auto SUBPAGES_COUNT = 2;
 
     BEGIN_MSG_MAP(CScreenRecordingSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -36,10 +40,15 @@ public:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     bool apply() override;
     void TranslateUI();
+    void showSubPage(SubPage page);
     LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedFFmpegBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     CEdit outFolderEditControl_, ffmpegPathEditControl_;
     CComboBox backendCombobox_;
+    std::unique_ptr<CSettingsPage> subPages_[SUBPAGES_COUNT];
     WtlGuiSettings* settings_;
+    SubPage curPage_ = spNone;
+
+
 };
 

@@ -190,6 +190,7 @@
 #define IDD_SCREENRECORDINGSETTTINGSPAGE 341
 #define IDD_SCREENRECORDINGSETTINGSPAGE 341
 #define IDB_ICONROTATECW                342
+#define IDD_FFMPEGSETTINGS              342
 #define IDB_ICONROTATE                  343
 #define IDB_ICONROTATEFLIP              344
 #define IDB_ICONFLIPHORIZONTAL          345
@@ -270,6 +271,7 @@
 #define IDC_LEFTBUTTONCLICKCOMBO        1026
 #define IDC_COMBO2                      1026
 #define IDC_FONTSIZECOMBO               1026
+#define IDC_AUDIOBITRATECOMBO           1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
@@ -331,6 +333,7 @@
 #define IDC_THUMBHEIGHT                 1040
 #define IDC_DEBUGDETAILS                1040
 #define IDC_OUTFOLDEREDIT               1040
+#define IDC_VIDEOBITRATEEDIT            1040
 #define IDC_SELECTVIDEO                 1041
 #define IDC_STROKECOLOR                 1041
 #define IDC_LOGINBUTTON                 1041
@@ -363,6 +366,7 @@
 #define IDC_SUMMARY                     1043
 #define IDC_SUMMARYRADIOBUTTON          1043
 #define IDC_JUSTURLRADIO                1043
+#define IDC_VIDEOQUALITYRADIO           1043
 #define IDC_RADIO2                      1044
 #define IDC_SAVEASONE                   1044
 #define IDC_HEIGHTRADIO                 1044
@@ -373,6 +377,7 @@
 #define IDC_USESYSTEMPROXY              1044
 #define IDC_FULLINFORADIOBUTTON         1044
 #define IDC_USELASTCODETYPERADIO        1044
+#define IDC_VIDEOBITRATELABEL           1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -809,6 +814,20 @@
 #define IDC_OUTFOLDERBROWSEBUTTON2      1357
 #define IDC_FFMPEGPATHBROWSEBUTTON      1357
 #define IDC_FFMPEGPATHLABEL             1358
+#define IDC_VIDEOCODECLABEL             1359
+#define IDC_VIDEOCODECCOMBO             1360
+#define IDC_VIDEOQUALITYSLIDER          1361
+#define IDC_AUDIOCODECLABEL             1362
+#define IDC_VIDEOCODECPRESETLABEL       1363
+#define IDC_VIDEOCODECPRESETCOMBO       1364
+#define IDC_VIDEOQUALITYPERCENTLABEL    1365
+#define IDC_LOWQUALITYLABEL             1366
+#define IDC_HIGHQUALITYLABEL            1367
+#define IDC_AUDIOCODECCOMBO2            1368
+#define IDC_AUDIOCODECCOMBO             1368
+#define IDC_BITRATELABEL                1369
+#define IDC_AUDIOBITRATELABEL           1369
+#define IDC_SUBPAGEPLACEHOLDER          1370
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -856,7 +875,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1359
+#define _APS_NEXT_CONTROL_VALUE         1371
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

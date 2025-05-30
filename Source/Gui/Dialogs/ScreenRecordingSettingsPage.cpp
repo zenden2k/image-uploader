@@ -7,6 +7,7 @@
 #include "Gui/Components/MyFileDialog.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "FFmpegSettingsPage.h"
 
 CScreenRecordingSettingsPage::CScreenRecordingSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -19,7 +20,62 @@ void CScreenRecordingSettingsPage::TranslateUI() {
     TRC(IDC_FFMPEGPATHLABEL, "FFmpeg executable path:");
     TRC(IDC_FFMPEGPATHBROWSEBUTTON, "Browse...");
 }
-    
+
+template <typename T, typename... Args>
+std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args)
+{
+    auto dlg = std::make_unique<T>(std::forward<Args>(args)...);
+    dlg->Create(hWnd, rc);
+    dlg->PageWnd = dlg->m_hWnd;
+    return dlg;
+}
+void CScreenRecordingSettingsPage::showSubPage(SubPage pageId) {
+    if (pageId < 0 || pageId >= std::size(subPages_)) {
+        return;
+    }
+
+    if (!subPages_[pageId]) {
+        RECT rc = { 150, 3, 636, 400 };
+        auto createObject = [&]() -> std::unique_ptr<CSettingsPage> {
+            switch (pageId) {
+            case spFFmpegSettings:
+                return createPageObject<CFFmpegSettingsPage>(m_hWnd, rc);
+            default:
+                LOG(ERROR) << "No such page " << pageId;
+                return {};
+            }
+        };
+
+        std::unique_ptr<CSettingsPage> page = createObject();
+        if (!page) {
+            return;
+        }
+        subPages_[pageId] = std::move(page);
+
+        WINDOWPLACEMENT wp;
+        HWND placeholder = GetDlgItem(IDC_SUBPAGEPLACEHOLDER);
+        ::GetWindowPlacement(placeholder, &wp);
+        ::SetWindowPos(subPages_[pageId]->PageWnd, placeholder, wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left + wp.rcNormalPosition.right, -wp.rcNormalPosition.top + wp.rcNormalPosition.bottom, 0);
+
+        subPages_[pageId]->fixBackground();
+    }
+
+    if (!subPages_[pageId]) {
+        return;
+    }
+
+    HWND wnd = subPages_[pageId]->PageWnd;
+
+    if (wnd) {
+        ::ShowWindow(wnd, SW_SHOW);
+    }
+
+    if (curPage_ != spNone && subPages_[curPage_]) {
+        ::ShowWindow(subPages_[curPage_]->PageWnd, SW_HIDE);
+    }
+    curPage_ = pageId;
+}
+
 LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     TranslateUI();
     DoDataExchange(FALSE);
@@ -32,6 +88,8 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
         }
     }
     backendCombobox_.SetCurSel(backendComboIndex);
+
+    showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
     ffmpegPathEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FFmpegCLIPath));

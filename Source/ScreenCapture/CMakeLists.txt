@@ -1,12 +1,14 @@
 set(SRC_LIST    
     ScreenRecorder/ScreenRecorder.cpp
     ScreenRecorder/FFmpegScreenRecorder.cpp
+    ScreenRecorder/FFmpegOptionsManager.cpp
     ScreenRecorder/ArgsBuilder/FFmpegInputArgs.cpp
 )
 
 set(HEADER_LIST 
     ScreenRecorder/ScreenRecorder.h
     ScreenRecorder/FFmpegScreenRecorder.h
+    ScreenRecorder/FFmpegOptionsManager.h
     ScreenRecorder/ArgsBuilder/FFmpegArgsBuilder.h
     ScreenRecorder/ArgsBuilder/FFmpegArgs.h
     ScreenRecorder/ArgsBuilder/FFmpegInputArgs.h
@@ -14,6 +16,7 @@ set(HEADER_LIST
     ScreenRecorder/VideoCodecs/FFmpegVideoCodec.h
     ScreenRecorder/VideoCodecs/NvencVideoCodec.h
     ScreenRecorder/VideoCodecs/X264VideoCodec.h
+    ScreenRecorder/VideoCodecs/VP9VideoCodec.h
     ScreenRecorder/FFmpegSettings.h
     ScreenRecorder/Sources/FFmpegSource.h
     ScreenRecorder/Sources/DDAGrabSource.h

@@ -20,8 +20,7 @@ public:
     }
     //public override FFmpegAudioArgsProvider AudioArgsProvider = > FFmpegAudioItem.Aac;
 
-    void apply(const FFmpegSettings& Settings, FFmpegOutputArgs& outputArgs) override
-    {
+    void apply(const FFmpegSettings& Settings, FFmpegOutputArgs& outputArgs) override {
         // quality: 51 (lowest) to 0 (highest)
         int crf = (51 * (100 - Settings.quality)) / 99;
 
@@ -33,8 +32,7 @@ public:
             .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
     }
 
-    std::vector<std::pair<std::string, std::string>> presets() const override
-    {
+    std::vector<std::pair<std::string, std::string>> presets() const override {
         return {
             { "ultrafast", "ultrafast" },
             { "superfast", "superfast" },
@@ -50,5 +48,4 @@ public:
     }
 
     private:
-    std::string ffmpegCodecName_;
 };
