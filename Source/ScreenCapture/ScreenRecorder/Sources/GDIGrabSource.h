@@ -2,11 +2,13 @@
 
 #include "FFmpegSource.h"
 #include "../ArgsBuilder/FFmpegInputArgs.h"
-#include "../FFmpegSettings.h"
+#include "../FFmpegOptions.h"
 
 class GDIGrabSource: public FFmpegSource {
 public:
-    void apply(const FFmpegSettings& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
+    inline static constexpr auto SOURCE_ID = "gdigrab";
+
+    void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
         inputArgs.addArg("f", "gdigrab");
         inputArgs.addArg("framerate", settings.framerate);
         inputArgs.addArg("offset_x", settings.offsetX);

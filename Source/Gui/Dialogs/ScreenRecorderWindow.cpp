@@ -122,7 +122,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     CString fileName;
     fileName.Format(
-        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d.mp4"),
+        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d"),
         folder.GetString(),
         timeStruct.tm_year + 1900, 
         timeStruct.tm_mon + 1, 
@@ -133,7 +133,21 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     );
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
-        screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
+        FFmpegOptions options;
+
+        options.source = "gdigrab";
+        //settings.codec = "h264_nvenc";
+        options.codec = settings->ScreenRecordingSettings.VideoCodecId;
+        options.preset = settings->ScreenRecordingSettings.VideoPresetId;
+        options.quality = settings->ScreenRecordingSettings.VideoQuality;
+        options.bitrate = settings->ScreenRecordingSettings.VideoBitrate;
+        options.useQuality = settings->ScreenRecordingSettings.UseQuality;
+
+        if (options.codec == "h264_nvenc") {
+            options.source = "ddagrab";
+        }
+
+        screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_, std::move(options));
     }
 
     if (!screenRecorder_) {

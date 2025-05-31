@@ -53,6 +53,7 @@ struct VideoSettingsStruct {
 #endif
 };
 
+
 struct ScreenRecordingStruct {
     inline static const std::string ScreenRecordingBackendFFmpeg = "FFmpeg";
     inline static const std::string ScreenRecordingBackendDirectX = "DirectX";
@@ -62,6 +63,11 @@ struct ScreenRecordingStruct {
     std::string FFmpegCLIPath;
     //std::string Preset;
     std::string OutDirectory;
+
+    int VideoQuality = 70;
+    int VideoBitrate = 3000; // kbps
+    bool UseQuality = true;
+    std::string VideoCodecId = "x264", VideoPresetId;
 };
 
 #ifndef IU_QT

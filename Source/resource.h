@@ -378,6 +378,7 @@
 #define IDC_FULLINFORADIOBUTTON         1044
 #define IDC_USELASTCODETYPERADIO        1044
 #define IDC_VIDEOBITRATELABEL           1044
+#define IDC_VIDEOBITRATERADIO           1044
 #define IDC_EDIT2                       1045
 #define IDC_TRANSPARENCY                1045
 #define IDC_QUALITY                     1045
@@ -828,6 +829,9 @@
 #define IDC_BITRATELABEL                1369
 #define IDC_AUDIOBITRATELABEL           1369
 #define IDC_SUBPAGEPLACEHOLDER          1370
+#define IDC_VIDEOBITRATESPIN            1371
+#define IDC_VIDEOKBPSLABEL              1372
+#define IDC_VIDEOBITRATEUNITSLABEL      1372
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -875,7 +879,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1371
+#define _APS_NEXT_CONTROL_VALUE         1373
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

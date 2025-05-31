@@ -99,6 +99,53 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
 
 bool CScreenRecordingSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
+
+        for (int i = 0; i < std::size(subPages_); i++) {
+            const auto& page = subPages_[i];
+            if (!page) {
+                continue;
+            }
+            page->clearErrors();
+
+            if (!page->validate()) {
+                showSubPage(static_cast<SubPage>(i));
+                const auto& errors = page->errors();
+                if (!errors.empty()) {
+                    CString msg;
+                    for (const auto& error : errors) {
+                        msg += error.Message;
+                        msg += _T("\r\n");
+                    }
+                    GuiTools::LocalizedMessageBox(m_hWnd, msg, TR("Error"), MB_ICONERROR);
+                    if (errors[0].Control) {
+                        ::SetFocus(errors[0].Control);
+                    }
+                }
+                return false;
+            }
+        }
+
+        for (int i = 0; i < std::size(subPages_); i++) {
+            try {
+                if (subPages_[i] && !subPages_[i]->apply()) {
+                    showSubPage(static_cast<SubPage>(i));
+                    return false;
+                }
+            } catch (ValidationException& ex) {
+                showSubPage(static_cast<SubPage>(i));
+                if (!ex.errors_.empty()) {
+                    GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, TR("Error"), MB_ICONERROR);
+                    if (ex.errors_[0].Control) {
+                        ::SetFocus(ex.errors_[0].Control);
+                    }
+                }
+
+                return false;
+                // If some tab cannot apply changes - do not close dialog
+            }
+        }
+
+
         int backendComboIndex_ = backendCombobox_.GetCurSel();
         if (backendComboIndex_ >= 0 && backendComboIndex_ < settings_->ScreenRecordingBackends.size()) {
             settings_->ScreenRecordingSettings.Backend = settings_->ScreenRecordingBackends[backendComboIndex_];

@@ -221,11 +221,20 @@ std::string Join(const std::vector<std::string>& strings, const std::string& del
 
 boost::format FormatNoExcept(const char* str) {
     using namespace boost::io;
+    try {
+        boost::format fmter(str);
+        fmter.exceptions(no_error_bits);
+        //fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit | bad_format_string_bit));
+        return fmter;
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << "boost::format exception" << std::endl << ex.what();
+    }
 
-    boost::format fmter(str);
+    boost::format fmter("");
     fmter.exceptions(no_error_bits);
     //fmter.exceptions(all_error_bits ^ (too_many_args_bit | too_few_args_bit | bad_format_string_bit));
     return fmter;
+
 }
 
 boost::format FormatNoExcept(const std::string& str) {
@@ -234,8 +243,15 @@ boost::format FormatNoExcept(const std::string& str) {
 
 boost::wformat FormatWideNoExcept(const wchar_t* str) {
     using namespace boost::io;
+    try {
+        boost::wformat fmter(str);
+        fmter.exceptions(no_error_bits);
+        return fmter;
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << "boost::wformat exception" << std::endl << ex.what();
+    }
 
-    boost::wformat fmter(str);
+    boost::wformat fmter(L"");
     fmter.exceptions(no_error_bits);
     return fmter;
 }

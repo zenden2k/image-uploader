@@ -17,7 +17,7 @@ set(HEADER_LIST
     ScreenRecorder/VideoCodecs/NvencVideoCodec.h
     ScreenRecorder/VideoCodecs/X264VideoCodec.h
     ScreenRecorder/VideoCodecs/VP9VideoCodec.h
-    ScreenRecorder/FFmpegSettings.h
+    ScreenRecorder/FFmpegOptions.h
     ScreenRecorder/Sources/FFmpegSource.h
     ScreenRecorder/Sources/DDAGrabSource.h
     ScreenRecorder/Sources/GDIGrabSource.h

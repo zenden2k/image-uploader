@@ -2,7 +2,7 @@
 
 #include <string>
 
-class FFmpegSettings
+class FFmpegOptions
 {
 public:
     std::string source;
@@ -12,6 +12,9 @@ public:
     std::string outDirectory;
     bool showCursor = true;
     int quality = 80;
+    int bitrate = 3000;
+    bool useQuality = true;
+
     int framerate = 30;
 
     int offsetX = 0;

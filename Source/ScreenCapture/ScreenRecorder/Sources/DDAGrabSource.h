@@ -4,11 +4,13 @@
 
 #include "FFmpegSource.h"
 #include "../ArgsBuilder/FFmpegInputArgs.h"
-#include "../FFmpegSettings.h"
+#include "../FFmpegOptions.h"
 
 class DDAGrabSource: public FFmpegSource {
 public:
-    void apply(const FFmpegSettings& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
+    inline static constexpr auto SOURCE_ID = "ddagrab";
+
+    void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
         bool hwEncoder = settings.codec.find("_nvenc") != std::string::npos;
 
         if (hwEncoder) {

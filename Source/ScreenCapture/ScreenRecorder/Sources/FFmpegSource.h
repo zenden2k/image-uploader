@@ -1,8 +1,8 @@
 #pragma once
 
 class FFmpegInputArgs;
-class FFmpegSettings;
+class FFmpegOptions;
 
 class FFmpegSource {
-    virtual void apply(const FFmpegSettings& settings, FFmpegInputArgs& outputArgs, GlobalFFmpegArgs& args) = 0;
+    virtual void apply(const FFmpegOptions& settings, FFmpegInputArgs& outputArgs, GlobalFFmpegArgs& args) = 0;
 };
