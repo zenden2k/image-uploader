@@ -44,6 +44,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_LOWQUALITYLABEL, lowQualityLabel_)
         DDX_CONTROL_HANDLE(IDC_HIGHQUALITYLABEL, highQualityLabel_)
         DDX_CONTROL_HANDLE(IDC_VIDEOBITRATEUNITSLABEL, videoBitrateUnitsLabel_)
+        DDX_CONTROL_HANDLE(IDC_AUDIOSOURCECOMBO, audioSourceCombobox_)
     END_DDX_MAP()
 
     // Handler prototypes:
@@ -56,7 +57,8 @@ public:
     LRESULT OnVideoCodecChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     CEdit videoBitrateEditControl_;
-    CComboBox videoSourceComboBox_, videoCodecComboBox_, audioCodecComboBox_, videoCodecPresetComboBox_, audioBitrateComboBox_;
+    CComboBox videoSourceComboBox_, videoCodecComboBox_, videoCodecPresetComboBox_;
+    CComboBox audioSourceCombobox_, audioBitrateComboBox_, audioCodecComboBox_;
     CTrackBarCtrl videoQualityTrackBar_;
     CStatic videoQualityPercentLabel_, lowQualityLabel_, highQualityLabel_, videoBitrateUnitsLabel_;
     CUpDownCtrl videoBitrateUpDownControl_;
@@ -67,7 +69,7 @@ private:
     std::unique_ptr<FFMpegOptionsManager> ffmpegOptionsManager_;
 
     // first = CodecId, second = CodecName
-    FFMpegOptionsManager::IdNameArray videoCodecs_, videoCodecPresets_, videoSources_;
+    FFMpegOptionsManager::IdNameArray videoCodecs_, videoCodecPresets_, videoSources_, audioSources_;
 
     std::string currentVideoCodecId_;
     std::optional<FFMpegOptionsManager::VideoCodecInfo> codecInfo_;

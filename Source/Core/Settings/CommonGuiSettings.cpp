@@ -220,4 +220,5 @@ void FFMpegSettingsStruct::bind(SettingsNode& node) {
     node.n_bind(VideoSourceId);
     node.n_bind(VideoCodecId);
     node.n_bind(VideoPresetId);
+    node.n_bind(AudioSourceId);
 }

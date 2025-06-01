@@ -22,6 +22,7 @@ void CFFmpegSettingsPage::TranslateUI() {
     TRC(IDC_VIDEOCODECPRESETLABEL, "Preset:");
     TRC(IDC_AUDIOCODECLABEL, "Audio codec:");
     TRC(IDC_AUDIOBITRATELABEL, "Bitrate:");
+    TRC(IDC_AUDIOSOURCELABEL, "Audio source:");
 }
     
 void CFFmpegSettingsPage::updateVideoQualityLabel() {
@@ -84,7 +85,7 @@ void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, cons
         int selectedIndex = -1;
         for (const auto& preset : videoCodecPresets_) {
             int index = videoCodecPresetComboBox_.AddString(U2WC(preset.second));
-            if (index >= 0 && presetId == preset.second) {
+            if (index >= 0 && presetId == preset.first) {
                 selectedIndex = index;
             }
         }
@@ -105,8 +106,18 @@ LRESULT CFFmpegSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
             selectedItemIndex = index;
         }
     }
-
     videoSourceComboBox_.SetCurSel(selectedItemIndex);
+
+    audioSources_ = ffmpegOptionsManager_->getAudioSources();
+    audioSources_.insert(audioSources_.begin(), { "", tr("None") });
+    selectedItemIndex = -1;
+    for (const auto& source : audioSources_) {
+        int index = audioSourceCombobox_.AddString(U2WC(source.second));
+        if (source.first == recordingSettings.AudioSourceId) {
+            selectedItemIndex = index;
+        }
+    }
+    audioSourceCombobox_.SetCurSel(selectedItemIndex);
 
     videoQualityTrackBar_.SetPos(recordingSettings.VideoQuality);
     updateVideoQualityLabel();
@@ -178,6 +189,12 @@ bool CFFmpegSettingsPage::apply() {
         if (videoSourceIndex >= 0 && videoSourceIndex < videoSources_.size()) {
             recordingSettings.VideoSourceId = videoSources_[videoSourceIndex].first;
         }
+
+        int audioSourceIndex = audioSourceCombobox_.GetCurSel();
+        if (audioSourceIndex >= 0 && audioSourceIndex < audioSources_.size()) {
+            recordingSettings.AudioSourceId = audioSources_[audioSourceIndex].first;
+        }
+
         return true;
     }
 

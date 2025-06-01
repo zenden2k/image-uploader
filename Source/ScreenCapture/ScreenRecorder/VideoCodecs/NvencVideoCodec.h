@@ -30,15 +30,15 @@ public:
             .addArg("tune", "ll") // low latency
             .addArg("pixel_format", "yuv444p")
             .addArg("preset", Settings.preset.empty() ? defaultPreset() : Settings.preset)
-            .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
+            .addArg("movflags", "+faststart");
     }
 
     static std::unique_ptr<NvencVideoCodec> createH264() {
-        return std::make_unique<NvencVideoCodec>("H.264 (NVenc)", "h264_nvenc", "Encode to Mp4: H.264 with AAC audio using NVenc");
+        return std::make_unique<NvencVideoCodec>("H.264 (NVENC)", "h264_nvenc", "Encode to Mp4: H.264 with AAC audio using NVenc");
     }
 
     static std::unique_ptr<NvencVideoCodec> createHevc() {
-        return std::make_unique<NvencVideoCodec>("HEVC (NVenc)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
+        return std::make_unique<NvencVideoCodec>("HEVC (NVENC)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
     }
 
     std::vector<std::pair<std::string, std::string>> presets() const override {
@@ -66,7 +66,7 @@ public:
     }
 
     std::string defaultPreset() const override {
-        return "fast";
+        return "3";
     }
 
 private:

@@ -26,12 +26,15 @@ public:
     std::unique_ptr<FFmpegSource> createSource(const std::string& sourceId);
     IdNameArray getVideoCodecs();
     IdNameArray getVideoSources();
+    IdNameArray getAudioSources();
 
     static std::string findFFmpegExecutable();
 
 private:
     using VideoCodecFactoryFunc = std::function<std::unique_ptr<FFmpegVideoCodec>()>;
-    using VideoSourceFactoryFunc = std::function<std::unique_ptr<FFmpegSource>(const std::string& param)>;
+    using SourceFactoryFunc = std::function<std::unique_ptr<FFmpegSource>(const std::string& param)>;
     std::map<std::string, VideoCodecFactoryFunc> videoCodecFactories_;
-    std::map<std::string, VideoSourceFactoryFunc> videoSourceFactories_;
+    std::map<std::string, SourceFactoryFunc> videoSourceFactories_;
+    std::map<std::string, SourceFactoryFunc> audioSourceFactories_;
+
 };

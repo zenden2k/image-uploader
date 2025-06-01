@@ -120,6 +120,16 @@ void FFmpegScreenRecorder::start() {
 
     videoSource->apply(options_, input, argsBuilder.globalArgs());
 
+    if (!options_.audioSource.empty()) {
+        auto audioSource = optionsManager_.createSource(options_.audioSource);
+
+        if (!audioSource) {
+            LOG(ERROR) << "Failed to create audio source " << options_.audioSource;
+            return;
+        }
+
+        audioSource->apply(options_, input, argsBuilder.globalArgs());
+    }
 
     codec->apply(options_, output);
 

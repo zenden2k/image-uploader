@@ -18,7 +18,7 @@
 #include "atlheaders.h"
 #include <dshow.h>
 
-FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices()
+FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices(const IID& inputCategory)
 {
     FFMpegOptionsManager::IdNameArray result;
     CComPtr<ICreateDevEnum> pDevEnum;
@@ -29,7 +29,7 @@ FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices()
     }
 
     CComPtr<IEnumMoniker> pEnum;
-    hr = pDevEnum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory, &pEnum, 0);
+    hr = pDevEnum->CreateClassEnumerator(inputCategory, &pEnum, 0);
     if (hr == S_FALSE) {
         return result;
     } else if (FAILED(hr)) {
@@ -55,6 +55,10 @@ FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices()
                 id = W2U(varDevicePath.bstrVal);
             }
 
+            if (id.empty()) {
+                id = name;
+            }
+
             result.push_back({ "[directshow]" + id, name.empty() ? id : name });
         }
         pMoniker.Release(); 
@@ -72,7 +76,12 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
 
     videoSourceFactories_[GDIGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<GDIGrabSource>(); };
     videoSourceFactories_[DDAGrabSource::SOURCE_ID] = [](const std::string & param) { return std::make_unique<DDAGrabSource>(); };
+
+#ifdef _WIN32
     videoSourceFactories_[DirectShowSource::SOURCE_ID] = [](const std::string& deviceId) { return std::make_unique<DirectShowSource>(deviceId); };
+    audioSourceFactories_[DirectShowSource::SOURCE_ID] = [](const std::string& deviceId) { return std::make_unique<FFmpegSource>("DirectShow (fake)", true); };
+#endif
+
 }
 
 std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVideoCodecInfo(const std::string& codecId) {
@@ -142,10 +151,33 @@ FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoSources() {
     std::sort(result.begin(), result.end(), compareFunc);
 
 #ifdef _WIN32
-    IdNameArray inputDevices = GetDirectshowVideoInputDevices();
-
+    IdNameArray inputDevices = GetDirectshowVideoInputDevices(CLSID_VideoInputDeviceCategory);
     std::sort(inputDevices.begin(), inputDevices.end(), compareFunc);
+    result.insert(result.end(), inputDevices.begin(), inputDevices.end());
+#endif
 
+    return result;
+}
+
+FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getAudioSources() {
+    IdNameArray result;
+
+    auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
+        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+    };
+
+    for (const auto& [sourceId, v] : audioSourceFactories_) {
+        auto source = createSource(sourceId);
+        if (!source || source->hidden()) {
+            continue;
+        }
+        result.push_back(std::make_pair(sourceId, source->name()));
+    }
+    std::sort(result.begin(), result.end(), compareFunc);
+
+#ifdef _WIN32
+    IdNameArray inputDevices = GetDirectshowVideoInputDevices(CLSID_AudioInputDeviceCategory);
+    std::sort(inputDevices.begin(), inputDevices.end(), compareFunc);
     result.insert(result.end(), inputDevices.begin(), inputDevices.end());
 #endif
 

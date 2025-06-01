@@ -14,7 +14,8 @@ public:
     {
 
     }
-    virtual void apply(const FFmpegOptions& settings, FFmpegInputArgs& outputArgs, GlobalFFmpegArgs& args) = 0;
+    virtual void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& args) {
+    };
 
     std::string name() const {
         return name_;

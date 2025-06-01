@@ -6,7 +6,7 @@ class FFmpegOptions
 {
 public:
     std::string source;
-    std::string audioDevice;
+    std::string audioSource;
 
     std::string codec;
 

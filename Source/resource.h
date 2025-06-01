@@ -834,6 +834,9 @@
 #define IDC_VIDEOBITRATEUNITSLABEL      1372
 #define IDC_VIDEOSOURCELABEL            1373
 #define IDC_VIDEOSOURCECOMBO            1374
+#define IDC_AUDIOSOURCELABEL            1375
+#define IDC_VIDEOSOURCECOMBO2           1376
+#define IDC_AUDIOSOURCECOMBO            1376
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003

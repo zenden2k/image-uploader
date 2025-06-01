@@ -149,6 +149,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.quality = ffmpegSettings.VideoQuality;
             options.bitrate = ffmpegSettings.VideoBitrate;
             options.useQuality = ffmpegSettings.UseQuality;
+            options.audioSource = ffmpegSettings.AudioSourceId;
 
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
                 options.source = DDAGrabSource::SOURCE_ID;
