@@ -7,6 +7,9 @@
 #include <boost/process/v2/process.hpp>
 
 #include "ScreenRecorder.h"
+#include "FFmpegOptions.h"
+#include "FFMpegOptionsManager.h"
+
 
 class TaskDispatcher;
 
@@ -14,7 +17,7 @@ class FFmpegScreenRecorder : public ScreenRecorder,
                              public std::enable_shared_from_this<FFmpegScreenRecorder>
 {
 public:
-    FFmpegScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect);
+    FFmpegScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect, FFmpegOptions options);
     ~FFmpegScreenRecorder() override;
     void start() override;
     void stop() override;
@@ -33,4 +36,6 @@ private:
     std::future<int> launchFFmpeg(const std::vector<std::string>& args, std::function<void(int)> onFinish);
     void cleanupAfter();
     const std::string stopData_ = "q\n";
+    FFmpegOptions options_;
+    FFMpegOptionsManager optionsManager_;
 };

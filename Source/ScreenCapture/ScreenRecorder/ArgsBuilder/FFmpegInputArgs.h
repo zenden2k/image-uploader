@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "FFmpegArgs.h"
 
 class FFmpegInputArgs: public FFmpegArgs<FFmpegInputArgs>
@@ -21,6 +23,11 @@ public:
     FFmpegInputArgs& setAudioFrequency(int Frequency);
     FFmpegInputArgs& setAudioChannels(int Channels);
     FFmpegInputArgs& disableVideo();
+
+    void setSourceApplied(const std::string& sourceId);
+    bool isSourceApplied(const std::string& sourceId) const;
+
 private:
     std::string input_;
+    std::unordered_set<std::string> appliedSources_;
 };

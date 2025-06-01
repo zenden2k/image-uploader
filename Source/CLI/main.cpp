@@ -64,6 +64,7 @@
     #include "Func/IuCommonFunctions.h"
     #include "Func/GdiPlusInitializer.h"
     #include "Func/UpdatePackage.h"
+    #include "Core/COMInitializer.h"
 #else
     #include <sys/stat.h>
     #include <sys/time.h>
@@ -800,6 +801,10 @@ int main(int argc, char *argv[]){
 #endif
 
 #endif
+
+#ifdef _WIN32
+    COMInitializer comInitializer(COM_MULTI_THREADED);
+#endif
     AppParams* params = AppParams::instance();
     params->setDataDirectory(dataFolder);
     params->setSettingsDirectory(settingsFolder);
@@ -886,5 +891,6 @@ int main(int argc, char *argv[]){
 #ifdef _WIN32
     //SetConsoleOutputCP(oldcp);
 #endif
+
     return res;
 }

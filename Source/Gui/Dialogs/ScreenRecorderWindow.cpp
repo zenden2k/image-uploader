@@ -11,6 +11,8 @@
 #include "Core/TaskDispatcher.h"
 #include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
 #include "Core/Utils/CryptoUtils.h"
+#include "ScreenCapture/ScreenRecorder/VideoCodecs/NvencVideoCodec.h"
+#include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -122,7 +124,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     CString fileName;
     fileName.Format(
-        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d.mp4"),
+        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d"),
         folder.GetString(),
         timeStruct.tm_year + 1900, 
         timeStruct.tm_mon + 1, 
@@ -133,7 +135,30 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     );
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
-        screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_);
+        std::string ffmpegCLIPath = settings->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath;
+        if (ffmpegCLIPath.empty()) {
+            ffmpegCLIPath = FFMpegOptionsManager::findFFmpegExecutable();
+        }
+        if (!ffmpegCLIPath.empty()) {
+            FFmpegOptions options;
+            const auto& ffmpegSettings = settings->ScreenRecordingSettings.FFmpegSettings;
+
+            options.source = ffmpegSettings.VideoSourceId;
+            options.codec = ffmpegSettings.VideoCodecId;
+            options.preset = ffmpegSettings.VideoPresetId;
+            options.quality = ffmpegSettings.VideoQuality;
+            options.bitrate = ffmpegSettings.VideoBitrate;
+            options.useQuality = ffmpegSettings.UseQuality;
+            options.audioSource = ffmpegSettings.AudioSourceId;
+
+            /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
+                options.source = DDAGrabSource::SOURCE_ID;
+            }*/
+
+            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), captureRect_, std::move(options));
+        } else {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
+        }
     }
 
     if (!screenRecorder_) {

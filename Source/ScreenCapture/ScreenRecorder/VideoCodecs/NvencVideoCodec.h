@@ -4,13 +4,16 @@
 
 #include "FFmpegVideoCodec.h"
 #include "ScreenCapture/ScreenRecorder/ArgsBuilder/FFmpegOutputArgs.h"
-#include "ScreenCapture/ScreenRecorder/FFmpegSettings.h"
+#include "ScreenCapture/ScreenRecorder/FFmpegOptions.h"
 
 class NvencVideoCodec: public FFmpegVideoCodec
 {
 public:
+    inline static auto H264_CODEC_ID = "h264_nvenc";
+    inline static auto HEVC_CODEC_ID = "hevc_nvenc";
+
     NvencVideoCodec(std::string name, std::string fFmpegCodecName, std::string description)
-        : FFmpegVideoCodec(std::move(name), ".mp4", std::move(description)),
+        : FFmpegVideoCodec(std::move(name), "mp4", std::move(description), true, false),
         ffmpegCodecName_(std::move(fFmpegCodecName))
     {
     }
@@ -20,27 +23,25 @@ public:
     }
     //public override FFmpegAudioArgsProvider AudioArgsProvider = > FFmpegAudioItem.Aac;
 
-    void apply(const FFmpegSettings& Settings, FFmpegOutputArgs& outputArgs) override
-    {
+    void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {
         outputArgs.addArg("c:v", ffmpegCodecName_)
             .addArg("cq:v", 20)
+            .addArg("b:v", std::to_string(Settings.bitrate) + "k")
+            .addArg("tune", "ll") // low latency
             .addArg("pixel_format", "yuv444p")
-            .addArg("preset", "fast")
-            .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
+            .addArg("preset", Settings.preset.empty() ? defaultPreset() : Settings.preset)
+            .addArg("movflags", "+faststart");
     }
 
-    static std::unique_ptr<NvencVideoCodec> createH264()
-    {
-        return std::make_unique<NvencVideoCodec>("NVenc: Mp4 (H.264, AAC)", "h264_nvenc", "Encode to Mp4: H.264 with AAC audio using NVenc");
+    static std::unique_ptr<NvencVideoCodec> createH264() {
+        return std::make_unique<NvencVideoCodec>("H.264 (NVENC)", "h264_nvenc", "Encode to Mp4: H.264 with AAC audio using NVenc");
     }
 
-    static std::unique_ptr<NvencVideoCodec> createHevc()
-    {
-        return std::make_unique<NvencVideoCodec>("NVenc: Mp4 (HEVC, AAC)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
+    static std::unique_ptr<NvencVideoCodec> createHevc() {
+        return std::make_unique<NvencVideoCodec>("HEVC (NVENC)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
     }
 
-     std::vector<std::pair<std::string, std::string>> presets() const override
-    {
+    std::vector<std::pair<std::string, std::string>> presets() const override {
         return {
             { "0", "default" }, // default
             { "1", "slow" }, // hq 2 passes
@@ -62,6 +63,10 @@ public:
             { "17", "p6" }, // slower (better quality)
             { "18", "p7" } // slowest (best quality)
         };
+    }
+
+    std::string defaultPreset() const override {
+        return "3";
     }
 
 private:

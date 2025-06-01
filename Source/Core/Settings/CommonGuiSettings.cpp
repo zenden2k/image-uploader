@@ -34,7 +34,7 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
     HistorySettings.HistoryConverted = false;
 #endif
     ScreenRecordingSettings.Backend = ScreenRecordingStruct::ScreenRecordingBackendFFmpeg;
-    ScreenRecordingSettings.FFmpegCLIPath = "ffmpeg";
+    //ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = "ffmpeg";
 }
 
 CommonGuiSettings::~CommonGuiSettings() {
@@ -194,8 +194,9 @@ void CommonGuiSettings::BindToManager() {
 
     SettingsNode& screenRecording = mgr_["ScreenRecording"];
     screenRecording.nm_bind(ScreenRecordingSettings, Backend);
-    screenRecording.nm_bind(ScreenRecordingSettings, FFmpegCLIPath);
     screenRecording.nm_bind(ScreenRecordingSettings, OutDirectory);
+
+    ScreenRecordingSettings.FFmpegSettings.bind(screenRecording["FFmpeg"]);
 }
 
 bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {
@@ -211,5 +212,13 @@ bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {
 }
 
 
-
-
+void FFMpegSettingsStruct::bind(SettingsNode& node) {
+    node.n_bind(FFmpegCLIPath);
+    node.n_bind(VideoQuality);
+    node.n_bind(VideoBitrate);
+    node.n_bind(UseQuality);
+    node.n_bind(VideoSourceId);
+    node.n_bind(VideoCodecId);
+    node.n_bind(VideoPresetId);
+    node.n_bind(AudioSourceId);
+}

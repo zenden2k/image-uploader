@@ -10,9 +10,8 @@
 #ifdef _WIN32
 #include <boost/process/v2/windows/default_launcher.hpp>
 #endif
-//#include <boost/process.hpp>
+
 #include <boost/asio.hpp>
-//#include <boost/process/windows.hpp>
 #include <boost/format.hpp>
 
 #include "ArgsBuilder/FFmpegArgsBuilder.h"
@@ -20,8 +19,7 @@
 #include "Core/Utils/CoreUtils.h"
 #include "Sources/DDAGrabSource.h"
 #include "Sources/GDIGrabSource.h"
-#include "VideoCodecs/NvencVideoCodec.h"
-#include "VideoCodecs/X264VideoCodec.h"
+#include "VideoCodecs/FFmpegVideoCodec.h"
 #include "Core/TaskDispatcher.h"
 /*
 void async_wait_future(
@@ -48,9 +46,10 @@ void async_wait_future(
 
 constexpr auto FFMPEG_RETURN_CODE_NO_OUTPUT = -22;
 
-FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect)
+FFmpegScreenRecorder::FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect, FFmpegOptions options)
      : ScreenRecorder(outFile, rect)
     , ffmpegPath_(std::move(ffmpegPath))
+    , options_(std::move(options))
 {
 }
 
@@ -68,9 +67,21 @@ void FFmpegScreenRecorder::start() {
     if (isRunning()) {
         return;
     }
+
+    auto codec = optionsManager_.createVideoCodec(options_.codec);
+
+    if (!codec) {
+        LOG(ERROR) << "Failed to create codec " << options_.codec;
+        return;
+    }
     std::string ext = IuCoreUtils::ExtractFileExt(outFilePath_);
-    if (fileNoExt_.empty()) {
-        
+
+    if (ext.empty()) {
+        ext = codec->extension();
+        outFilePath_ += "." + ext;
+    }
+
+    if (fileNoExt_.empty()) { 
         std::string fileDir = IuCoreUtils::ExtractFilePath(outFilePath_);
         std::string fileNoExt = IuCoreUtils::ExtractFileNameNoExt(outFilePath_);
         std::filesystem::path outDirPath(fileDir);
@@ -83,47 +94,45 @@ void FFmpegScreenRecorder::start() {
     /*std::string filterComplex = str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d") % captureRect_.Width() % captureRect_.Height()
         % captureRect_.left % captureRect_.top);*/
 
+
     FFMpegArgsBuilder argsBuilder;
 
-    FFmpegSettings settings;
-
-    settings.source = "gdigrab";
-    //settings.codec = "h264_nvenc"; 
-    settings.codec = "x264"; 
-
-    if (settings.codec == "h264_nvenc") {
-        settings.source = "ddagrab";
-    }
-
-    settings.width = captureRect_.Width() & ~1;
-    settings.height = captureRect_.Height() & ~1;
-    settings.offsetX = captureRect_.left;
-    settings.offsetY = captureRect_.top;
+    options_.width = captureRect_.Width() & ~1;
+    options_.height = captureRect_.Height() & ~1;
+    options_.offsetX = captureRect_.left;
+    options_.offsetY = captureRect_.top;
 
     argsBuilder.globalArgs()
         .addArg("-hide_banner")
         .addArg("thread_queue_size", 1024)
         .addArg("rtbufsize", "256M");
 
-    auto& input = argsBuilder.addInputFile(settings.source == "gdigrab" ? "desktop" : "");
+    auto& input = argsBuilder.addInputFile(options_.source == GDIGrabSource::SOURCE_ID ? "desktop" : "");
     auto& output = argsBuilder.addOutputFile(currentOutFilePath_);
     //auto outputArgs = argsBuilder.
 
-    if (settings.source == "ddagrab") {
-        auto ddagrabSource = std::make_unique<DDAGrabSource>();
-        ddagrabSource->apply(settings, input, argsBuilder.globalArgs());
-    } else {
-        GDIGrabSource gdigrab;
-        gdigrab.apply(settings, input, argsBuilder.globalArgs());
+    auto videoSource = optionsManager_.createSource(options_.source);
+
+    if (!videoSource) {
+        LOG(ERROR) << "Failed to create video source " << options_.source;
+        return;
     }
 
-    if (settings.codec == "h264_nvenc" ) {
-        auto nvenc = NvencVideoCodec::createH264();
-        nvenc->apply(settings, output);
-    } else if (settings.codec == "x264") {
-        auto x264 = std::make_unique<X264VideoCodec>();
-        x264->apply(settings, output);
+    videoSource->apply(options_, input, argsBuilder.globalArgs());
+
+    if (!options_.audioSource.empty()) {
+        auto audioSource = optionsManager_.createSource(options_.audioSource);
+
+        if (!audioSource) {
+            LOG(ERROR) << "Failed to create audio source " << options_.audioSource;
+            return;
+        }
+
+        audioSource->apply(options_, input, argsBuilder.globalArgs());
     }
+
+    codec->apply(options_, output);
+
     /***/
         
     std::vector<std::string> args = argsBuilder.getArgs();

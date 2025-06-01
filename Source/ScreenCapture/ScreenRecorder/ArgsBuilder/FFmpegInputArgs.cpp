@@ -30,3 +30,11 @@ FFmpegInputArgs& FFmpegInputArgs::setAudioChannels(int Channels) {
 FFmpegInputArgs& FFmpegInputArgs::disableVideo() {
     return addArg("-vn");
 }
+
+void FFmpegInputArgs::setSourceApplied(const std::string& sourceId) {
+    appliedSources_.insert(sourceId);
+}
+
+bool FFmpegInputArgs::isSourceApplied(const std::string& sourceId) const {
+    return appliedSources_.find(sourceId) != appliedSources_.end();
+}

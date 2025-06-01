@@ -524,7 +524,7 @@ WtlGuiSettings::WtlGuiSettings() :
     ScreenshotSettings.CaptureCursor = false;
     ScreenshotSettings.MonitorMode = -1/*kAllMonitors*/;
 
-    ScreenRecordingSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
+    //ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(WinUtils::GetAppFolder() + LR"(ffmpeg.exe)");
 
     CString dir = WinUtils::GetSystemSpecialPath(CSIDL_MYVIDEO);
     CString capturesDir = dir + _T("Captures\\");

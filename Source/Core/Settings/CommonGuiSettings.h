@@ -53,15 +53,29 @@ struct VideoSettingsStruct {
 #endif
 };
 
+struct FFMpegSettingsStruct {
+    std::string FFmpegCLIPath;
+
+    int VideoQuality = 70;
+    int VideoBitrate = 3000; // kbps
+    bool UseQuality = true;
+    std::string VideoCodecId = "x264", VideoPresetId;
+    std::string VideoSourceId = "gdigrab";
+    std::string AudioSourceId = "gdigrab";
+
+    void bind(SettingsNode& n);
+};
+
 struct ScreenRecordingStruct {
     inline static const std::string ScreenRecordingBackendFFmpeg = "FFmpeg";
     inline static const std::string ScreenRecordingBackendDirectX = "DirectX";
 
     std::string Backend;
 
-    std::string FFmpegCLIPath;
+   
     //std::string Preset;
     std::string OutDirectory;
+    FFMpegSettingsStruct FFmpegSettings;
 };
 
 #ifndef IU_QT
