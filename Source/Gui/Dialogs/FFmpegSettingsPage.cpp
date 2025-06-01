@@ -13,6 +13,7 @@ CFFmpegSettingsPage::CFFmpegSettingsPage() {
 }
 
 void CFFmpegSettingsPage::TranslateUI() {
+    TRC(IDC_VIDEOSOURCELABEL, "Video source:");
     TRC(IDC_VIDEOCODECLABEL, "Video codec:");
     TRC(IDC_VIDEOQUALITYRADIO, "Quality:");
     TRC(IDC_LOWQUALITYLABEL, "low quality (0)");
@@ -74,9 +75,7 @@ void CFFmpegSettingsPage::videoCodecChanged(const std::string& currentPresetId) 
     }
 }
 
-void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, const std::string& currentPresetId)
-{
-
+void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, const std::string& currentPresetId) {
     if (codecInfo_) {
         videoCodecPresets_ = codecInfo_->Presets;
         const std::string presetId = currentPresetId.empty() ? codecInfo_->DefaultPresetId : currentPresetId;
@@ -96,7 +95,19 @@ void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, cons
 LRESULT CFFmpegSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     TranslateUI();
     DoDataExchange(FALSE);
-    const auto& recordingSettings = settings_->ScreenRecordingSettings;
+    const auto& recordingSettings = settings_->ScreenRecordingSettings.FFmpegSettings;
+
+    videoSources_ = ffmpegOptionsManager_->getVideoSources();
+    int selectedItemIndex = -1;
+    for (const auto& source : videoSources_) {
+        int index = videoSourceComboBox_.AddString(U2WC(source.second));
+        if (source.first == recordingSettings.VideoSourceId) {
+            selectedItemIndex = index;
+        }
+    }
+
+    videoSourceComboBox_.SetCurSel(selectedItemIndex);
+
     videoQualityTrackBar_.SetPos(recordingSettings.VideoQuality);
     updateVideoQualityLabel();
 
@@ -113,15 +124,15 @@ LRESULT CFFmpegSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     videoRadioChanged();
 
     videoCodecs_ = ffmpegOptionsManager_->getVideoCodecs();
-    int selectedCodecIndex = -1;
+    selectedItemIndex = -1;
     for (const auto& codec : videoCodecs_) {
         int index = videoCodecComboBox_.AddString(U2WC(codec.second));
         if (codec.first == recordingSettings.VideoCodecId) {
-            selectedCodecIndex = index;
+            selectedItemIndex = index;
         }
     }
 
-    videoCodecComboBox_.SetCurSel(selectedCodecIndex);
+    videoCodecComboBox_.SetCurSel(selectedItemIndex);
     videoCodecChanged(recordingSettings.VideoPresetId);
 
     return 1;  // Let the system set the focus
@@ -147,7 +158,7 @@ LRESULT CFFmpegSettingsPage::OnVideoCodecChanged(WORD wNotifyCode, WORD wID, HWN
 
 bool CFFmpegSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
-        auto& recordingSettings = settings_->ScreenRecordingSettings;
+        auto& recordingSettings = settings_->ScreenRecordingSettings.FFmpegSettings;
 
         recordingSettings.VideoQuality = videoQualityTrackBar_.GetPos();
         recordingSettings.VideoBitrate = videoBitrateUpDownControl_.GetPos32();
@@ -161,6 +172,11 @@ bool CFFmpegSettingsPage::apply() {
         int videoPresetIndex = videoCodecPresetComboBox_.GetCurSel();
         if (videoPresetIndex >= 0 && videoPresetIndex < videoCodecPresets_.size()) {
             recordingSettings.VideoPresetId = videoCodecPresets_[videoPresetIndex].first;
+        }
+
+        int videoSourceIndex = videoSourceComboBox_.GetCurSel();
+        if (videoSourceIndex >= 0 && videoSourceIndex < videoSources_.size()) {
+            recordingSettings.VideoSourceId = videoSources_[videoSourceIndex].first;
         }
         return true;
     }

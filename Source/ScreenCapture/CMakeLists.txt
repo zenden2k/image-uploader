@@ -21,6 +21,7 @@ set(HEADER_LIST
     ScreenRecorder/Sources/FFmpegSource.h
     ScreenRecorder/Sources/DDAGrabSource.h
     ScreenRecorder/Sources/GDIGrabSource.h
+    ScreenRecorder/Sources/DirectShowSource.h
 )
     
 if(WIN32)

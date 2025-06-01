@@ -111,13 +111,15 @@ void FFmpegScreenRecorder::start() {
     auto& output = argsBuilder.addOutputFile(currentOutFilePath_);
     //auto outputArgs = argsBuilder.
 
-    if (options_.source == DDAGrabSource::SOURCE_ID) {
-        auto ddagrabSource = std::make_unique<DDAGrabSource>();
-        ddagrabSource->apply(options_, input, argsBuilder.globalArgs());
-    } else {
-        GDIGrabSource gdigrab;
-        gdigrab.apply(options_, input, argsBuilder.globalArgs());
+    auto videoSource = optionsManager_.createSource(options_.source);
+
+    if (!videoSource) {
+        LOG(ERROR) << "Failed to create video source " << options_.source;
+        return;
     }
+
+    videoSource->apply(options_, input, argsBuilder.globalArgs());
+
 
     codec->apply(options_, output);
 

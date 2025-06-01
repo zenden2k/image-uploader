@@ -10,6 +10,10 @@ class DDAGrabSource: public FFmpegSource {
 public:
     inline static constexpr auto SOURCE_ID = "ddagrab";
 
+    DDAGrabSource(): FFmpegSource("ddagrab")
+    {
+    }
+
     void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
         bool hwEncoder = settings.codec.find("_nvenc") != std::string::npos;
 

@@ -11,6 +11,8 @@
 #include "Core/TaskDispatcher.h"
 #include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
 #include "Core/Utils/CryptoUtils.h"
+#include "ScreenCapture/ScreenRecorder/VideoCodecs/NvencVideoCodec.h"
+#include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -133,21 +135,29 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     );
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
-        FFmpegOptions options;
-
-        options.source = "gdigrab";
-        //settings.codec = "h264_nvenc";
-        options.codec = settings->ScreenRecordingSettings.VideoCodecId;
-        options.preset = settings->ScreenRecordingSettings.VideoPresetId;
-        options.quality = settings->ScreenRecordingSettings.VideoQuality;
-        options.bitrate = settings->ScreenRecordingSettings.VideoBitrate;
-        options.useQuality = settings->ScreenRecordingSettings.UseQuality;
-
-        if (options.codec == "h264_nvenc") {
-            options.source = "ddagrab";
+        std::string ffmpegCLIPath = settings->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath;
+        if (ffmpegCLIPath.empty()) {
+            ffmpegCLIPath = FFMpegOptionsManager::findFFmpegExecutable();
         }
+        if (!ffmpegCLIPath.empty()) {
+            FFmpegOptions options;
+            const auto& ffmpegSettings = settings->ScreenRecordingSettings.FFmpegSettings;
 
-        screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(settings->ScreenRecordingSettings.FFmpegCLIPath, W2U(fileName), captureRect_, std::move(options));
+            options.source = ffmpegSettings.VideoSourceId;
+            options.codec = ffmpegSettings.VideoCodecId;
+            options.preset = ffmpegSettings.VideoPresetId;
+            options.quality = ffmpegSettings.VideoQuality;
+            options.bitrate = ffmpegSettings.VideoBitrate;
+            options.useQuality = ffmpegSettings.UseQuality;
+
+            /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
+                options.source = DDAGrabSource::SOURCE_ID;
+            }*/
+
+            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), captureRect_, std::move(options));
+        } else {
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
+        }
     }
 
     if (!screenRecorder_) {

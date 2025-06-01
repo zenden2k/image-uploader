@@ -92,7 +92,7 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
-    ffmpegPathEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FFmpegCLIPath));
+    ffmpegPathEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath));
 
     return 1;  // Let the system set the focus
 }
@@ -152,7 +152,7 @@ bool CScreenRecordingSettingsPage::apply() {
         }
 
         settings_->ScreenRecordingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
-        settings_->ScreenRecordingSettings.FFmpegCLIPath = W2U(GuiTools::GetWindowText(ffmpegPathEditControl_));
+        settings_->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(GuiTools::GetWindowText(ffmpegPathEditControl_));
        
         return true;
     }

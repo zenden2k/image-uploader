@@ -8,6 +8,9 @@ class GDIGrabSource: public FFmpegSource {
 public:
     inline static constexpr auto SOURCE_ID = "gdigrab";
 
+    GDIGrabSource(): FFmpegSource("gdigrab") {
+    }
+
     void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
         inputArgs.addArg("f", "gdigrab");
         inputArgs.addArg("framerate", settings.framerate);
