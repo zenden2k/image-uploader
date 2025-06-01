@@ -18,8 +18,7 @@
 #include "atlheaders.h"
 #include <dshow.h>
 
-FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices(const IID& inputCategory)
-{
+FFMpegOptionsManager::IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
     FFMpegOptionsManager::IdNameArray result;
     CComPtr<ICreateDevEnum> pDevEnum;
     HRESULT hr = pDevEnum.CoCreateInstance(CLSID_SystemDeviceEnum);
@@ -38,29 +37,47 @@ FFMpegOptionsManager::IdNameArray GetDirectshowVideoInputDevices(const IID& inpu
     }
 
     CComPtr<IMoniker> pMoniker;
+    CComPtr<IMalloc> pMalloc;
+    CoGetMalloc(1, &pMalloc);
     while (pEnum->Next(1, &pMoniker, nullptr) == S_OK) {
+        std::string id, name;
+        CComPtr<IBindCtx> pBindCtx;
+
         CComPtr<IPropertyBag> pPropBag;
+        LPOLESTR varDeviceDisplayName {};
+        hr = CreateBindCtx(0, &pBindCtx);
+
+        if (SUCCEEDED(hr)) {
+            hr = pMoniker->GetDisplayName(pBindCtx, nullptr, &varDeviceDisplayName);
+            if (SUCCEEDED(hr) && varDeviceDisplayName) {
+                id = W2U(varDeviceDisplayName);
+                pMalloc->Free(varDeviceDisplayName);
+            }
+        }
+
         hr = pMoniker->BindToStorage(nullptr, nullptr, IID_IPropertyBag, (void**)&pPropBag);
         if (SUCCEEDED(hr)) {
-            std::string id, name;
             CComVariant varName;
+            
             hr = pPropBag->Read(L"FriendlyName", &varName, nullptr);
             if (SUCCEEDED(hr) && varName.vt == VT_BSTR) {
                 name = W2U(varName.bstrVal);
             }
+            /*if (id.empty()) {
+                CComVariant varDevicePath;
+                hr = pPropBag->Read(L"DevicePath", &varDevicePath, nullptr);
+                if (SUCCEEDED(hr) && varDevicePath.vt == VT_BSTR) {
+                    id = W2U(varDevicePath.bstrVal);
+                }
+            }*/
+        }
 
-            CComVariant varDevicePath;
-            hr = pPropBag->Read(L"DevicePath", &varDevicePath, nullptr);
-            if (SUCCEEDED(hr) && varDevicePath.vt == VT_BSTR) {
-                id = W2U(varDevicePath.bstrVal);
-            }
+        id = IuStringUtils::Replace(id, ":", "_");
 
-            if (id.empty()) {
-                id = name;
-            }
-
+        if (!id.empty()) {
             result.push_back({ "[directshow]" + id, name.empty() ? id : name });
         }
+
         pMoniker.Release(); 
     }
     return result;
@@ -151,7 +168,7 @@ FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoSources() {
     std::sort(result.begin(), result.end(), compareFunc);
 
 #ifdef _WIN32
-    IdNameArray inputDevices = GetDirectshowVideoInputDevices(CLSID_VideoInputDeviceCategory);
+    IdNameArray inputDevices = GetDirectshowInputDevices(CLSID_VideoInputDeviceCategory);
     std::sort(inputDevices.begin(), inputDevices.end(), compareFunc);
     result.insert(result.end(), inputDevices.begin(), inputDevices.end());
 #endif
@@ -176,7 +193,7 @@ FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getAudioSources() {
     std::sort(result.begin(), result.end(), compareFunc);
 
 #ifdef _WIN32
-    IdNameArray inputDevices = GetDirectshowVideoInputDevices(CLSID_AudioInputDeviceCategory);
+    IdNameArray inputDevices = GetDirectshowInputDevices(CLSID_AudioInputDeviceCategory);
     std::sort(inputDevices.begin(), inputDevices.end(), compareFunc);
     result.insert(result.end(), inputDevices.begin(), inputDevices.end());
 #endif

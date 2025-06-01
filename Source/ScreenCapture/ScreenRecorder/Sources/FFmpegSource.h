@@ -14,6 +14,8 @@ public:
     {
 
     }
+
+    virtual ~FFmpegSource() = default;
     virtual void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& args) {
     };
 

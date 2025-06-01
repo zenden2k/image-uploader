@@ -19,6 +19,8 @@ public:
     {
     }
 
+    virtual ~FFmpegVideoCodec() = default;
+
     std::string name() const {
         return name_;
     }

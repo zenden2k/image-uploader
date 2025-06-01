@@ -22,19 +22,17 @@ public:
         if (!settings.source.empty()) {
             const auto [id, deviceId] = parseSourceId(settings.source);
             if (!deviceId.empty()) {
-                std::string deviceStr = deviceId.rfind("\\", 0) == 0 ? "@device_pnp_" + deviceId_ : deviceId;
-                input = "video=" + deviceStr + "";
+                input = "video=" + deviceId + "";
             }
         }
 
         if (!settings.audioSource.empty()) {
             const auto [id, deviceId] = parseSourceId(settings.audioSource);
             if (!deviceId.empty()) {
-                std::string deviceStr = deviceId.rfind("\\", 0) == 0 ? "@device_pnp_" + deviceId_ : deviceId;
                 if (!input.empty()) {
                     input += ":";
                 }
-                input += "audio=" + deviceStr;
+                input += "audio=" + deviceId;
                 globalArgs.addArg("audio_buffer_size", 80);
             }
         }
