@@ -4,7 +4,6 @@
 #include "WizardDlg.h"
 #include "Gui/GuiTools.h"
 #include "Func/WinUtils.h"
-#include "Gui/Components/MyFileDialog.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "FFmpegSettingsPage.h"
@@ -17,8 +16,7 @@ void CScreenRecordingSettingsPage::TranslateUI() {
     TRC(IDC_BACKENDLABEL, "Backend:");
     TRC(IDC_OUTFOLDERLABEL, "Video recordings folder:");
     TRC(IDC_OUTFOLDERBROWSEBUTTON, "Browse...");
-    TRC(IDC_FFMPEGPATHLABEL, "FFmpeg executable path:");
-    TRC(IDC_FFMPEGPATHBROWSEBUTTON, "Browse...");
+    TRC(IDC_FRAMERATELABEL, "Frame rate:");
 }
 
 template <typename T, typename... Args>
@@ -92,7 +90,9 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     showSubPage(static_cast<SubPage>(backendComboIndex));
 
     outFolderEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.OutDirectory));
-    ffmpegPathEditControl_.SetWindowText(U2W(settings_->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath));
+
+    frameRateUpDownControl_.SetRange(1, 60);
+    frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
 
     return 1;  // Let the system set the focus
 }
@@ -145,14 +145,15 @@ bool CScreenRecordingSettingsPage::apply() {
             }
         }
 
-
+        auto& recodingSettings = settings_->ScreenRecordingSettings;
         int backendComboIndex_ = backendCombobox_.GetCurSel();
         if (backendComboIndex_ >= 0 && backendComboIndex_ < settings_->ScreenRecordingBackends.size()) {
-            settings_->ScreenRecordingSettings.Backend = settings_->ScreenRecordingBackends[backendComboIndex_];
+            recodingSettings.Backend = settings_->ScreenRecordingBackends[backendComboIndex_];
         }
 
-        settings_->ScreenRecordingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
-        settings_->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = W2U(GuiTools::GetWindowText(ffmpegPathEditControl_));
+        recodingSettings.OutDirectory = W2U(GuiTools::GetWindowText(outFolderEditControl_));
+
+        recodingSettings.FrameRate = frameRateUpDownControl_.GetPos();
        
         return true;
     }
@@ -173,31 +174,5 @@ LRESULT CScreenRecordingSettingsPage::OnBnClickedBrowseButton(WORD /*wNotifyCode
         return true;
     }
     
-    return 0;
-}
-
-LRESULT CScreenRecordingSettingsPage::OnBnClickedFFmpegBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    IMyFileDialog::FileFilterArray filters = {
-        {
-            CString(TR("Executables")),
-            _T("*.exe;*.com;*.bat;*.cmd;"),
-        },
-        { TR("All files"), _T("*.*") }
-    };
-
-    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
-    CString fileName = GuiTools::GetWindowText(ffmpegPathEditControl_);
-
-    if (fileName.IsEmpty()) {
-        fileName = _T("ffmpeg.exe");
-    }
-
-    dlg->setFileName(fileName);
-
-
-    if (dlg->DoModal(m_hWnd) == IDOK) {
-        ffmpegPathEditControl_.SetWindowText(dlg->getFile());
-        return 0;
-    }
     return 0;
 }

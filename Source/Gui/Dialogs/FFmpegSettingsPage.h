@@ -24,18 +24,21 @@ public:
     BEGIN_MSG_MAP(CFFmpegSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_HSCROLL, OnHScroll)
+        COMMAND_HANDLER(IDC_FFMPEGPATHBROWSEBUTTON, BN_CLICKED, OnBnClickedFFmpegBrowseButton)
         COMMAND_HANDLER(IDC_VIDEOQUALITYRADIO, BN_CLICKED, OnVideoRadioClicked)
         COMMAND_HANDLER(IDC_VIDEOBITRATELABEL, BN_CLICKED, OnVideoRadioClicked)
         COMMAND_HANDLER(IDC_VIDEOCODECCOMBO, CBN_SELCHANGE, OnVideoCodecChanged)
+        COMMAND_HANDLER(IDC_AUDIOCODECCOMBO, CBN_SELCHANGE, OnAudioCodecChanged)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CFFmpegSettingsPage)
+        DDX_CONTROL_HANDLE(IDC_FFMPEGPATHEDIT, ffmpegPathEditControl_)
         DDX_CONTROL_HANDLE(IDC_VIDEOSOURCECOMBO, videoSourceComboBox_)
         DDX_CONTROL_HANDLE(IDC_VIDEOCODECCOMBO, videoCodecComboBox_)
         DDX_CONTROL_HANDLE(IDC_AUDIOCODECCOMBO, audioCodecComboBox_)
         DDX_CONTROL_HANDLE(IDC_VIDEOCODECPRESETCOMBO, videoCodecPresetComboBox_)
         DDX_CONTROL_HANDLE(IDC_VIDEOBITRATEEDIT, videoBitrateEditControl_)
-        DDX_CONTROL_HANDLE(IDC_AUDIOBITRATECOMBO, audioBitrateComboBox_)
+        DDX_CONTROL_HANDLE(IDC_AUDIOQUALITYCOMBO, audioQualityComboBox_)
         DDX_CONTROL_HANDLE(IDC_VIDEOQUALITYSLIDER, videoQualityTrackBar_)
         DDX_CONTROL_HANDLE(IDC_VIDEOQUALITYPERCENTLABEL, videoQualityPercentLabel_)
         DDX_CONTROL_HANDLE(IDC_VIDEOBITRATESPIN, videoBitrateUpDownControl_)
@@ -55,10 +58,12 @@ public:
     LRESULT OnHScroll(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnVideoRadioClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnVideoCodecChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnAudioCodecChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnBnClickedFFmpegBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
-    CEdit videoBitrateEditControl_;
+    CEdit ffmpegPathEditControl_, videoBitrateEditControl_;
     CComboBox videoSourceComboBox_, videoCodecComboBox_, videoCodecPresetComboBox_;
-    CComboBox audioSourceCombobox_, audioBitrateComboBox_, audioCodecComboBox_;
+    CComboBox audioSourceCombobox_, audioQualityComboBox_, audioCodecComboBox_;
     CTrackBarCtrl videoQualityTrackBar_;
     CStatic videoQualityPercentLabel_, lowQualityLabel_, highQualityLabel_, videoBitrateUnitsLabel_;
     CUpDownCtrl videoBitrateUpDownControl_;
@@ -69,15 +74,18 @@ private:
     std::unique_ptr<FFMpegOptionsManager> ffmpegOptionsManager_;
 
     // first = CodecId, second = CodecName
-    FFMpegOptionsManager::IdNameArray videoCodecs_, videoCodecPresets_, videoSources_, audioSources_;
+    IdNameArray videoCodecs_, videoSources_, audioSources_, audioCodecs_;
 
     std::string currentVideoCodecId_;
     std::optional<FFMpegOptionsManager::VideoCodecInfo> codecInfo_;
+    std::optional<FFMpegOptionsManager::AudioCodecInfo> audioCodecInfo_;
     bool apply() override;
     void TranslateUI();
     void updateVideoQualityLabel();
     void videoRadioChanged();
     void videoCodecChanged(const std::string& currentPresetId = {});
+    void audioCodecChanged(const std::string& quality = {}, const std::string& currentPresetId = {});
     void fillVideoCodecPresets(const std::string& codecId, const std::string& currentPresetId);
+    void fillAudioCodecQualities(const std::string& codecId, const std::string& currentQuality);
 };
 

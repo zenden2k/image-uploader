@@ -26,6 +26,8 @@ public:
             }
         }
 
+        bool hasAudio = false;
+
         if (!settings.audioSource.empty()) {
             const auto [id, deviceId] = parseSourceId(settings.audioSource);
             if (!deviceId.empty()) {
@@ -33,16 +35,20 @@ public:
                     input += ":";
                 }
                 input += "audio=" + deviceId;
-                globalArgs.addArg("audio_buffer_size", 80);
+                hasAudio = true;
             }
         }
 
         if (input.empty()) {
             return;
         }
-        inputArgs.addArg("f", "dshow")
-            .addArg("i", input);
+        inputArgs.addArg("f", "dshow");
+           
+        if (hasAudio) {
+            inputArgs.addArg("audio_buffer_size", 80);
+        }
 
+        inputArgs.addArg("i", input);
         inputArgs.setSourceApplied(SOURCE_ID);
     }
 

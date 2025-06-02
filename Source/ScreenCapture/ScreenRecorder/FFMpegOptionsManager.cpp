@@ -9,6 +9,8 @@
 #include "VideoCodecs/X264VideoCodec.h"
 #include "VideoCodecs/NvencVideoCodec.h"
 #include "VideoCodecs/VP9VideoCodec.h"
+#include "AudioCodecs/AacAudioCodec.h"
+#include "AudioCodecs/Mp3AudioCodec.h"
 #include "Sources/DDAGrabSource.h"
 #include "Sources/GDIGrabSource.h"
 
@@ -18,8 +20,8 @@
 #include "atlheaders.h"
 #include <dshow.h>
 
-FFMpegOptionsManager::IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
-    FFMpegOptionsManager::IdNameArray result;
+IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
+    IdNameArray result;
     CComPtr<ICreateDevEnum> pDevEnum;
     HRESULT hr = pDevEnum.CoCreateInstance(CLSID_SystemDeviceEnum);
     if (FAILED(hr)) {
@@ -99,6 +101,8 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
     audioSourceFactories_[DirectShowSource::SOURCE_ID] = [](const std::string& deviceId) { return std::make_unique<FFmpegSource>("DirectShow (fake)", true); };
 #endif
 
+    audioCodecFactories_[AacAudioCodec::CODEC_ID] = [] { return std::make_unique<AacAudioCodec>(); };
+    audioCodecFactories_[Mp3AudioCodec::CODEC_ID] = [] { return std::make_unique<Mp3AudioCodec>(); };
 }
 
 std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVideoCodecInfo(const std::string& codecId) {
@@ -111,6 +115,21 @@ std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVid
     info.CodecName = codec->name();
     info.Presets = codec->presets();
     info.DefaultPresetId = codec->defaultPreset();
+    info.CanUseBitrate = codec->canUseBitrate();
+    info.CanUseQuality = codec->canUseQuality();
+    return info;
+}
+
+std::optional<FFMpegOptionsManager::AudioCodecInfo> FFMpegOptionsManager::getAudioCodecInfo(const std::string& codecId) {
+    auto codec = createAudioCodec(codecId);
+    if (!codec) {
+        return {};
+    }
+    AudioCodecInfo info;
+    info.CodecId = codecId;
+    info.CodecName = codec->name();
+    info.Qualities = codec->qualities();
+    info.DefaultQuality = codec->defaultQuality();
     info.CanUseBitrate = codec->canUseBitrate();
     info.CanUseQuality = codec->canUseQuality();
     return info;
@@ -134,7 +153,15 @@ std::unique_ptr<FFmpegSource> FFMpegOptionsManager::createSource(const std::stri
     return {};
 }
 
-FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoCodecs() {
+std::unique_ptr<AudioCodec> FFMpegOptionsManager::createAudioCodec(const std::string& codecId) {
+    auto it = audioCodecFactories_.find(codecId);
+    if (it != audioCodecFactories_.end()) {
+        return it->second();
+    }
+    return {};
+}
+
+IdNameArray FFMpegOptionsManager::getVideoCodecs() {
     IdNameArray result;
 
     for (const auto& [codecId, v] : videoCodecFactories_) {
@@ -151,7 +178,24 @@ FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoCodecs() {
     return result;
 }
 
-FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoSources() {
+IdNameArray FFMpegOptionsManager::getAudioCodecs() {
+    IdNameArray result;
+
+    for (const auto& [codecId, v] : audioCodecFactories_) {
+        auto codec = createAudioCodec(codecId);
+        if (!codec) {
+            continue;
+        }
+        result.push_back(std::make_pair(codecId, codec->name()));
+    }
+    std::sort(result.begin(), result.end(), [](const auto& a, const auto& b) {
+        return IuStringUtils::stricmp(a.second.c_str(), b.second.c_str()) < 0;
+    });
+
+    return result;
+}
+
+IdNameArray FFMpegOptionsManager::getVideoSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {
@@ -176,7 +220,7 @@ FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getVideoSources() {
     return result;
 }
 
-FFMpegOptionsManager::IdNameArray FFMpegOptionsManager::getAudioSources() {
+IdNameArray FFMpegOptionsManager::getAudioSources() {
     IdNameArray result;
 
     auto compareFunc = [](const IdNamePair& a, const IdNamePair& b) {

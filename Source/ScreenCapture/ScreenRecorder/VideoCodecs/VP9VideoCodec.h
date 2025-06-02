@@ -16,10 +16,6 @@ public:
     {
     }
 
-    FFmpegAudioArgsProvider* audioArgsProvider() override {
-        return {};
-    }
-
     //public override FFmpegAudioArgsProvider AudioArgsProvider => FFmpegAudioItem.Opus;
 
     void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {

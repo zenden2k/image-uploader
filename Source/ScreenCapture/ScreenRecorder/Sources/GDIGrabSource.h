@@ -12,11 +12,12 @@ public:
     }
 
     void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
-        inputArgs.addArg("f", "gdigrab");
-        inputArgs.addArg("framerate", settings.framerate);
-        inputArgs.addArg("offset_x", settings.offsetX);
-        inputArgs.addArg("offset_y", settings.offsetY);
-        inputArgs.addArg("video_size", std::to_string(settings.width) + "x" + std::to_string(settings.height));
-        inputArgs.addArg("draw_mouse", settings.showCursor);
+        inputArgs.addArg("f", "gdigrab")
+            .addArg("framerate", settings.framerate)
+            .addArg("offset_x", settings.offsetX)
+            .addArg("offset_y", settings.offsetY)
+            .addArg("video_size", std::to_string(settings.width) + "x" + std::to_string(settings.height))
+            .addArg("draw_mouse", settings.showCursor)
+            .addArg("i", "desktop");
     }
 }; 

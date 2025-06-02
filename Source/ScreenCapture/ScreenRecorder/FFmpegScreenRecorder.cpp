@@ -20,6 +20,7 @@
 #include "Sources/DDAGrabSource.h"
 #include "Sources/GDIGrabSource.h"
 #include "VideoCodecs/FFmpegVideoCodec.h"
+#include "AudioCodecs/AudioCodec.h"
 #include "Core/TaskDispatcher.h"
 /*
 void async_wait_future(
@@ -107,7 +108,7 @@ void FFmpegScreenRecorder::start() {
         .addArg("thread_queue_size", 1024)
         .addArg("rtbufsize", "256M");
 
-    auto& input = argsBuilder.addInputFile(options_.source == GDIGrabSource::SOURCE_ID ? "desktop" : "");
+    auto& input = argsBuilder.addInputFile("");
     auto& output = argsBuilder.addOutputFile(currentOutFilePath_);
     //auto outputArgs = argsBuilder.
 
@@ -133,6 +134,14 @@ void FFmpegScreenRecorder::start() {
 
     codec->apply(options_, output);
 
+    if (!options_.audioCodec.empty()) {
+        auto audioCodec = optionsManager_.createAudioCodec(options_.audioCodec);
+        if (!audioCodec) {
+            LOG(ERROR) << "Failed to create audio codec " << options_.audioCodec;
+            return;
+        }
+        audioCodec->apply(options_, output);
+    }
     /***/
         
     std::vector<std::string> args = argsBuilder.getArgs();

@@ -143,6 +143,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             FFmpegOptions options;
             const auto& ffmpegSettings = settings->ScreenRecordingSettings.FFmpegSettings;
 
+            options.framerate = settings->ScreenRecordingSettings.FrameRate;
             options.source = ffmpegSettings.VideoSourceId;
             options.codec = ffmpegSettings.VideoCodecId;
             options.preset = ffmpegSettings.VideoPresetId;
@@ -150,6 +151,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.bitrate = ffmpegSettings.VideoBitrate;
             options.useQuality = ffmpegSettings.UseQuality;
             options.audioSource = ffmpegSettings.AudioSourceId;
+            options.audioCodec = ffmpegSettings.AudioCodecId;
+            options.audioQuality = ffmpegSettings.AudioQuality;
 
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
                 options.source = DDAGrabSource::SOURCE_ID;

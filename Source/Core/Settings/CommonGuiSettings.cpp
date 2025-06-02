@@ -195,6 +195,7 @@ void CommonGuiSettings::BindToManager() {
     SettingsNode& screenRecording = mgr_["ScreenRecording"];
     screenRecording.nm_bind(ScreenRecordingSettings, Backend);
     screenRecording.nm_bind(ScreenRecordingSettings, OutDirectory);
+    screenRecording.nm_bind(ScreenRecordingSettings, FrameRate);
 
     ScreenRecordingSettings.FFmpegSettings.bind(screenRecording["FFmpeg"]);
 }
@@ -221,4 +222,6 @@ void FFMpegSettingsStruct::bind(SettingsNode& node) {
     node.n_bind(VideoCodecId);
     node.n_bind(VideoPresetId);
     node.n_bind(AudioSourceId);
+    node.n_bind(AudioCodecId);
+    node.n_bind(AudioQuality);
 }

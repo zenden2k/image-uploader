@@ -2,6 +2,9 @@
 
 #include <string>
 
+using IdNamePair = std::pair<std::string, std::string>;
+using IdNameArray = std::vector<std::pair<std::string, std::string>>;
+
 class FFmpegOptions
 {
 public:
@@ -9,6 +12,7 @@ public:
     std::string audioSource;
 
     std::string codec;
+    std::string audioCodec;
 
     std::string preset;
     std::string outDirectory;
@@ -18,6 +22,7 @@ public:
     bool useQuality = true;
 
     int framerate = 30;
+    std::string audioQuality;
 
     int offsetX = 0;
     int offsetY = 0;

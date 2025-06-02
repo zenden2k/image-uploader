@@ -272,6 +272,7 @@
 #define IDC_COMBO2                      1026
 #define IDC_FONTSIZECOMBO               1026
 #define IDC_AUDIOBITRATECOMBO           1026
+#define IDC_AUDIOQUALITYCOMBO           1026
 #define IDC_CHECK4                      1027
 #define IDC_TEXTPOSITION                1027
 #define IDC_SAVEPROPORTIONS             1027
@@ -390,6 +391,7 @@
 #define IDC_DOWNLOADURLEDIT             1045
 #define IDC_URLEDIT                     1045
 #define IDC_VERSIONEDIT                 1045
+#define IDC_FRAMERATEEDIT               1045
 #define IDC_GRABINFOLABEL               1046
 #define IDC_RADIO4                      1046
 #define IDC_BUTTON3                     1047
@@ -445,6 +447,7 @@
 #define IDC_SPIN1                       1083
 #define IDC_THUMBPERLINESPIN            1083
 #define IDC_THUMBWIDTHSPIN              1083
+#define IDC_FRAMERATESPIN               1083
 #define IDC_HEADBITMAP                  1084
 #define IDC_SPEEDLABEL                  1085
 #define IDC_LEFTLABEL                   1086
@@ -828,6 +831,7 @@
 #define IDC_AUDIOCODECCOMBO             1368
 #define IDC_BITRATELABEL                1369
 #define IDC_AUDIOBITRATELABEL           1369
+#define IDC_AUDIOQUALITYLABEL           1369
 #define IDC_SUBPAGEPLACEHOLDER          1370
 #define IDC_VIDEOBITRATESPIN            1371
 #define IDC_VIDEOKBPSLABEL              1372
@@ -835,6 +839,7 @@
 #define IDC_VIDEOSOURCELABEL            1373
 #define IDC_VIDEOSOURCECOMBO            1374
 #define IDC_AUDIOSOURCELABEL            1375
+#define IDC_FRAMERATELABEL              1375
 #define IDC_VIDEOSOURCECOMBO2           1376
 #define IDC_AUDIOSOURCECOMBO            1376
 #define IDR_bottomLeftShadow            15001
@@ -884,7 +889,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1375
+#define _APS_NEXT_CONTROL_VALUE         1376
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

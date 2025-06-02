@@ -17,14 +17,9 @@ public:
     {
     }
 
-    FFmpegAudioArgsProvider* audioArgsProvider() override {
-        return {};
-    }
-
     std::string defaultPreset() const override {
         return "fast";
     }
-    //public override FFmpegAudioArgsProvider AudioArgsProvider = > FFmpegAudioItem.Aac;
 
     void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {
         outputArgs.addArg("vcodec", "libx264");

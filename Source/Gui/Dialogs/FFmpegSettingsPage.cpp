@@ -6,6 +6,7 @@
 #include "Func/WinUtils.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "ScreenCapture/ScreenRecorder/FFMpegOptionsManager.h"
+#include "Gui/Components/MyFileDialog.h"
 
 CFFmpegSettingsPage::CFFmpegSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -13,6 +14,8 @@ CFFmpegSettingsPage::CFFmpegSettingsPage() {
 }
 
 void CFFmpegSettingsPage::TranslateUI() {
+    TRC(IDC_FFMPEGPATHLABEL, "FFmpeg executable path:");
+    TRC(IDC_FFMPEGPATHBROWSEBUTTON, "Browse...");
     TRC(IDC_VIDEOSOURCELABEL, "Video source:");
     TRC(IDC_VIDEOCODECLABEL, "Video codec:");
     TRC(IDC_VIDEOQUALITYRADIO, "Quality:");
@@ -21,7 +24,7 @@ void CFFmpegSettingsPage::TranslateUI() {
     TRC(IDC_VIDEOBITRATELABEL, "Bitrate:");
     TRC(IDC_VIDEOCODECPRESETLABEL, "Preset:");
     TRC(IDC_AUDIOCODECLABEL, "Audio codec:");
-    TRC(IDC_AUDIOBITRATELABEL, "Bitrate:");
+    TRC(IDC_AUDIOQUALITYLABEL, "Quality:");
     TRC(IDC_AUDIOSOURCELABEL, "Audio source:");
 }
     
@@ -76,14 +79,26 @@ void CFFmpegSettingsPage::videoCodecChanged(const std::string& currentPresetId) 
     }
 }
 
+void CFFmpegSettingsPage::audioCodecChanged(const std::string& quality, const std::string& currentPresetId /*= {}*/) {
+    int index = audioCodecComboBox_.GetCurSel();
+    if (index < 0 || index >= audioCodecs_.size()) {
+        return;
+    }
+
+    const std::string codecId = audioCodecs_[index].first;
+    audioCodecInfo_ = ffmpegOptionsManager_->getAudioCodecInfo(codecId);
+
+    fillAudioCodecQualities(codecId, quality);
+}
+
 void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, const std::string& currentPresetId) {
+    videoCodecPresetComboBox_.ResetContent();
     if (codecInfo_) {
-        videoCodecPresets_ = codecInfo_->Presets;
+        const auto& videoCodecPresets = codecInfo_->Presets;
         const std::string presetId = currentPresetId.empty() ? codecInfo_->DefaultPresetId : currentPresetId;
        
-        videoCodecPresetComboBox_.ResetContent();
         int selectedIndex = -1;
-        for (const auto& preset : videoCodecPresets_) {
+        for (const auto& preset : videoCodecPresets) {
             int index = videoCodecPresetComboBox_.AddString(U2WC(preset.second));
             if (index >= 0 && presetId == preset.first) {
                 selectedIndex = index;
@@ -93,10 +108,29 @@ void CFFmpegSettingsPage::fillVideoCodecPresets(const std::string& codecId, cons
     }
 }
 
+void CFFmpegSettingsPage::fillAudioCodecQualities(const std::string& codecId, const std::string& currentQuality) {
+    audioQualityComboBox_.ResetContent();
+    if (audioCodecInfo_) {
+        const auto& audioCodecQualities = audioCodecInfo_->Qualities;
+        const std::string presetId = currentQuality.empty() ? audioCodecInfo_->DefaultQuality : currentQuality;
+
+        int selectedIndex = -1;
+        for (const auto& preset : audioCodecQualities) {
+            int index = audioQualityComboBox_.AddString(U2WC(preset.second));
+            if (index >= 0 && presetId == preset.first) {
+                selectedIndex = index;
+            }
+        }
+        audioQualityComboBox_.SetCurSel(selectedIndex);
+    }
+}
+
 LRESULT CFFmpegSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     TranslateUI();
     DoDataExchange(FALSE);
     const auto& recordingSettings = settings_->ScreenRecordingSettings.FFmpegSettings;
+
+    ffmpegPathEditControl_.SetWindowText(U2W(recordingSettings.FFmpegCLIPath));
 
     videoSources_ = ffmpegOptionsManager_->getVideoSources();
     int selectedItemIndex = -1;
@@ -146,6 +180,21 @@ LRESULT CFFmpegSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     videoCodecComboBox_.SetCurSel(selectedItemIndex);
     videoCodecChanged(recordingSettings.VideoPresetId);
 
+    // Audio
+    audioCodecs_ = ffmpegOptionsManager_->getAudioCodecs();
+    audioCodecs_.insert(audioCodecs_.begin(), { "", tr("None") });
+
+    selectedItemIndex = -1;
+    for (const auto& codec : audioCodecs_) {
+        int index = audioCodecComboBox_.AddString(U2WC(codec.second));
+        if (codec.first == recordingSettings.AudioCodecId) {
+            selectedItemIndex = index;
+        }
+    }
+
+    audioCodecComboBox_.SetCurSel(selectedItemIndex);
+    audioCodecChanged(recordingSettings.AudioQuality);
+
     return 1;  // Let the system set the focus
 }
 
@@ -167,9 +216,16 @@ LRESULT CFFmpegSettingsPage::OnVideoCodecChanged(WORD wNotifyCode, WORD wID, HWN
     return 0;
 }
 
+LRESULT CFFmpegSettingsPage::OnAudioCodecChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    audioCodecChanged();
+    return 0;
+}
+
 bool CFFmpegSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
         auto& recordingSettings = settings_->ScreenRecordingSettings.FFmpegSettings;
+
+        recordingSettings.FFmpegCLIPath = W2U(GuiTools::GetWindowText(ffmpegPathEditControl_));
 
         recordingSettings.VideoQuality = videoQualityTrackBar_.GetPos();
         recordingSettings.VideoBitrate = videoBitrateUpDownControl_.GetPos32();
@@ -180,10 +236,13 @@ bool CFFmpegSettingsPage::apply() {
             recordingSettings.VideoCodecId = videoCodecs_[videoCodecIndex].first;
         }
 
-        int videoPresetIndex = videoCodecPresetComboBox_.GetCurSel();
-        if (videoPresetIndex >= 0 && videoPresetIndex < videoCodecPresets_.size()) {
-            recordingSettings.VideoPresetId = videoCodecPresets_[videoPresetIndex].first;
+        if (codecInfo_) {
+            int videoPresetIndex = videoCodecPresetComboBox_.GetCurSel();
+            if (videoPresetIndex >= 0 && videoPresetIndex < codecInfo_->Presets.size()) {
+                recordingSettings.VideoPresetId = codecInfo_->Presets[videoPresetIndex].first;
+            }
         }
+
 
         int videoSourceIndex = videoSourceComboBox_.GetCurSel();
         if (videoSourceIndex >= 0 && videoSourceIndex < videoSources_.size()) {
@@ -195,8 +254,47 @@ bool CFFmpegSettingsPage::apply() {
             recordingSettings.AudioSourceId = audioSources_[audioSourceIndex].first;
         }
 
+        int audioCodecIndex = audioCodecComboBox_.GetCurSel();
+        if (audioCodecIndex >= 0 && audioCodecIndex < audioCodecs_.size()) {
+            recordingSettings.AudioCodecId = audioCodecs_[audioCodecIndex].first;
+        }
+
+        if (audioCodecInfo_) {
+            int audioQualityIndex = audioQualityComboBox_.GetCurSel();
+            if (audioQualityIndex >= 0 && audioQualityIndex < audioCodecInfo_->Qualities.size()) {
+                recordingSettings.AudioQuality = audioCodecInfo_->Qualities[audioQualityIndex].first;
+            }
+        }
+
+
         return true;
     }
 
     return false;
+}
+
+LRESULT CFFmpegSettingsPage::OnBnClickedFFmpegBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    IMyFileDialog::FileFilterArray filters = {
+        {
+            CString(TR("Executables")),
+            _T("*.exe;*.com;*.bat;*.cmd;"),
+        },
+        { TR("All files"), _T("*.*") }
+    };
+
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, WinUtils::GetAppFolder(), CString(), filters, false);
+    CString fileName = GuiTools::GetWindowText(ffmpegPathEditControl_);
+
+    if (fileName.IsEmpty()) {
+        fileName = _T("ffmpeg.exe");
+    }
+
+    dlg->setFileName(fileName);
+
+    if (dlg->DoModal(m_hWnd) == IDOK) {
+        ffmpegPathEditControl_.SetWindowText(dlg->getFile());
+        return 0;
+    }
+    return 0;
 }

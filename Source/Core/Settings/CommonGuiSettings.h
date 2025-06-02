@@ -61,7 +61,9 @@ struct FFMpegSettingsStruct {
     bool UseQuality = true;
     std::string VideoCodecId = "x264", VideoPresetId;
     std::string VideoSourceId = "gdigrab";
-    std::string AudioSourceId = "gdigrab";
+    std::string AudioSourceId;
+    std::string AudioCodecId;
+    std::string AudioQuality;
 
     void bind(SettingsNode& n);
 };
@@ -72,7 +74,7 @@ struct ScreenRecordingStruct {
 
     std::string Backend;
 
-   
+    int FrameRate = 30;
     //std::string Preset;
     std::string OutDirectory;
     FFMpegSettingsStruct FFmpegSettings;

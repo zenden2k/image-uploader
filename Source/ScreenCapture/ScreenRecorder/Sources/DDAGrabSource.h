@@ -21,8 +21,8 @@ public:
             inputArgs.addArg("init_hw_device", "d3d11va");
         }
 
-        std::string filterComplex = boost::str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d") % settings.width % settings.height
-            % settings.offsetX % settings.offsetY);
+        std::string filterComplex = boost::str(boost::format("ddagrab=video_size=%dx%d:offset_x=%d:offset_y=%d:framerate=%d") % settings.width % settings.height
+            % settings.offsetX % settings.offsetY % settings.framerate);
 
         if (!hwEncoder) {
             filterComplex += ",hwdownload,format=bgra";

@@ -18,11 +18,6 @@ public:
     {
     }
 
-    FFmpegAudioArgsProvider* audioArgsProvider() override {
-        return {};
-    }
-    //public override FFmpegAudioArgsProvider AudioArgsProvider = > FFmpegAudioItem.Aac;
-
     void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {
         outputArgs.addArg("c:v", ffmpegCodecName_)
             .addArg("cq:v", 20)

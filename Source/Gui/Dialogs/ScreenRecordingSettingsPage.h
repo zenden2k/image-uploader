@@ -24,13 +24,12 @@ public:
     BEGIN_MSG_MAP(CScreenRecordingSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDC_OUTFOLDERBROWSEBUTTON, BN_CLICKED, OnBnClickedBrowseButton)
-        COMMAND_HANDLER(IDC_FFMPEGPATHBROWSEBUTTON, BN_CLICKED, OnBnClickedFFmpegBrowseButton)
     END_MSG_MAP()
         
     BEGIN_DDX_MAP(CScreenRecordingSettingsPage)
         DDX_CONTROL_HANDLE(IDC_BACKENDCOMBO, backendCombobox_)
         DDX_CONTROL_HANDLE(IDC_OUTFOLDEREDIT, outFolderEditControl_)
-        DDX_CONTROL_HANDLE(IDC_FFMPEGPATHEDIT, ffmpegPathEditControl_)
+        DDX_CONTROL_HANDLE(IDC_FRAMERATESPIN, frameRateUpDownControl_)
     END_DDX_MAP()
 
     // Handler prototypes:
@@ -39,15 +38,19 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     bool apply() override;
-    void TranslateUI();
-    void showSubPage(SubPage page);
+
     LRESULT OnBnClickedBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedFFmpegBrowseButton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    CEdit outFolderEditControl_, ffmpegPathEditControl_;
+    CEdit outFolderEditControl_;
     CComboBox backendCombobox_;
+    CUpDownCtrl frameRateUpDownControl_;
+
+private:
     std::unique_ptr<CSettingsPage> subPages_[SUBPAGES_COUNT];
     WtlGuiSettings* settings_;
     SubPage curPage_ = spNone;
+
+    void TranslateUI();
+    void showSubPage(SubPage page);
 
 
 };
