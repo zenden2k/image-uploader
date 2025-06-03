@@ -17,7 +17,7 @@ class FFmpegScreenRecorder : public ScreenRecorder,
                              public std::enable_shared_from_this<FFmpegScreenRecorder>
 {
 public:
-    FFmpegScreenRecorder(std::string ffmpegPath, std::string outDirectory, CRect rect, FFmpegOptions options);
+    FFmpegScreenRecorder(std::string ffmpegPath, std::string outFile, CRect rect, FFmpegOptions options);
     ~FFmpegScreenRecorder() override;
     void start() override;
     void stop() override;

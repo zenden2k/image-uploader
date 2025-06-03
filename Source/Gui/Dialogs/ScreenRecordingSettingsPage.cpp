@@ -7,6 +7,7 @@
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "FFmpegSettingsPage.h"
+#include "DXGISettingsPage.h"
 
 CScreenRecordingSettingsPage::CScreenRecordingSettingsPage() {
     settings_ = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -38,6 +39,8 @@ void CScreenRecordingSettingsPage::showSubPage(SubPage pageId) {
             switch (pageId) {
             case spFFmpegSettings:
                 return createPageObject<CFFmpegSettingsPage>(m_hWnd, rc);
+            case spDirectXSettings:
+                return createPageObject<CDXGISettingsPage>(m_hWnd, rc);
             default:
                 LOG(ERROR) << "No such page " << pageId;
                 return {};
@@ -95,6 +98,15 @@ LRESULT CScreenRecordingSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPA
     frameRateUpDownControl_.SetPos(settings_->ScreenRecordingSettings.FrameRate);
 
     return 1;  // Let the system set the focus
+}
+
+LRESULT CScreenRecordingSettingsPage::OnBackendChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    int backendIndex = backendCombobox_.GetCurSel();
+
+    if (backendIndex >= 0 && backendIndex < std::size(subPages_)) {
+        showSubPage(static_cast<SubPage>(backendIndex));
+    }
+    return 0;
 }
 
 bool CScreenRecordingSettingsPage::apply() { 

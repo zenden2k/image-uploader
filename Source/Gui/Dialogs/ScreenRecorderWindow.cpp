@@ -10,9 +10,7 @@
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Core/TaskDispatcher.h"
 #include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
-#include "Core/Utils/CryptoUtils.h"
-#include "ScreenCapture/ScreenRecorder/VideoCodecs/NvencVideoCodec.h"
-#include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
+#include "ScreenCapture/ScreenRecorder/DXGIScreenRecorder.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -162,8 +160,22 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         } else {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
         }
-    }
+    } else if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendDirectX) {  
+            DXGIOptions options;
+            const auto& dxgiSettings = settings->ScreenRecordingSettings.DXGISettings;
 
+            options.framerate = settings->ScreenRecordingSettings.FrameRate;
+            options.codec = dxgiSettings.VideoCodecId;
+            options.preset = dxgiSettings.VideoPresetId;
+            options.quality = dxgiSettings.VideoQuality;
+            options.bitrate = dxgiSettings.VideoBitrate;
+            options.useQuality = dxgiSettings.UseQuality;
+            options.audioSource = dxgiSettings.AudioSourceId;
+            options.audioCodec = dxgiSettings.AudioCodecId;
+            options.audioBitrate = dxgiSettings.AudioBitrate;
+
+            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), captureRect_, std::move(options));
+    }
     if (!screenRecorder_) {
         return -1;
     }
@@ -291,6 +303,7 @@ LRESULT ScreenRecorderWindow::onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPA
 LRESULT ScreenRecorderWindow::onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     if (screenRecorder_->status() == ScreenRecorder::Status::Canceled 
         || screenRecorder_->status() == ScreenRecorder::Status::Invalid
+        || screenRecorder_->status() == ScreenRecorder::Status::Failed
         || screenRecorder_->status() == ScreenRecorder::Status::Finished
         //|| !screenRecorder_->isRunning() 
     ) {

@@ -77,6 +77,7 @@ set(SRC_LIST
     Dialogs/ScreenshotSettingsPage.cpp
     Dialogs/ScreenRecordingSettingsPage.cpp
     Dialogs/FFmpegSettingsPage.cpp
+    Dialogs/DXGISettingsPage.cpp
     Dialogs/ServerFolderSelect.cpp
     Dialogs/ServerParamsDlg.cpp
     Dialogs/SettingsDlg.cpp
@@ -243,6 +244,7 @@ set(HEADER_LIST
     Dialogs/ScreenshotSettingsPage.h
     Dialogs/ScreenRecordingSettingsPage.h
     Dialogs/FFmpegSettingsPage.h
+    Dialogs/DXGISettingsPage.h
     Dialogs/ServerFolderSelect.h
     Dialogs/ServerParamsDlg.h
     Dialogs/SettingsDlg.h

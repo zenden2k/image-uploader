@@ -68,6 +68,20 @@ struct FFMpegSettingsStruct {
     void bind(SettingsNode& n);
 };
 
+struct DXGISettingsStruct {
+    int VideoQuality = 70;
+    int VideoBitrate = 3000; // kbps
+    bool UseQuality = true;
+    std::string VideoCodecId = "{34363248-0000-0010-8000-00AA00389B71}"; //h.264
+    std::string VideoPresetId;
+    std::string VideoSourceId;
+    std::string AudioSourceId;
+    std::string AudioCodecId = "{00001610-0000-0010-8000-00AA00389B71}"; //aac
+    int AudioBitrate = 192;
+
+    void bind(SettingsNode& n);
+};
+
 struct ScreenRecordingStruct {
     inline static const std::string ScreenRecordingBackendFFmpeg = "FFmpeg";
     inline static const std::string ScreenRecordingBackendDirectX = "DirectX";
@@ -78,6 +92,7 @@ struct ScreenRecordingStruct {
     //std::string Preset;
     std::string OutDirectory;
     FFMpegSettingsStruct FFmpegSettings;
+    DXGISettingsStruct DXGISettings;
 };
 
 #ifndef IU_QT

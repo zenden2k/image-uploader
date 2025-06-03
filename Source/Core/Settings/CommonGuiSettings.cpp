@@ -198,6 +198,7 @@ void CommonGuiSettings::BindToManager() {
     screenRecording.nm_bind(ScreenRecordingSettings, FrameRate);
 
     ScreenRecordingSettings.FFmpegSettings.bind(screenRecording["FFmpeg"]);
+    ScreenRecordingSettings.DXGISettings.bind(screenRecording["DirectX"]);
 }
 
 bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {
@@ -224,4 +225,16 @@ void FFMpegSettingsStruct::bind(SettingsNode& node) {
     node.n_bind(AudioSourceId);
     node.n_bind(AudioCodecId);
     node.n_bind(AudioQuality);
+}
+
+void DXGISettingsStruct::bind(SettingsNode& node) {
+    node.n_bind(VideoQuality);
+    node.n_bind(VideoBitrate);
+    node.n_bind(UseQuality);
+    node.n_bind(VideoSourceId);
+    node.n_bind(VideoCodecId);
+    node.n_bind(VideoPresetId);
+    node.n_bind(AudioSourceId);
+    node.n_bind(AudioCodecId);
+    node.n_bind(AudioBitrate);
 }

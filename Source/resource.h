@@ -192,6 +192,8 @@
 #define IDB_ICONROTATECW                342
 #define IDD_FFMPEGSETTINGS              342
 #define IDB_ICONROTATE                  343
+#define IDD_FFMPEGSETTINGS1             343
+#define IDD_DXGISETTINGS                343
 #define IDB_ICONROTATEFLIP              344
 #define IDB_ICONFLIPHORIZONTAL          345
 #define IDB_PNG13                       346
@@ -354,6 +356,7 @@
 #define IDC_MANUALUPDATEINFO            1041
 #define IDC_WIDTHEDIT2                  1041
 #define IDC_FFMPEGPATHEDIT              1041
+#define IDC_AUDIOVIDEOBITRATEEDIT       1041
 #define IDC_DONE                        1042
 #define IDC_LOGINBUTTON2                1042
 #define IDC_VIDEOSNAPSHOTSFOLDEREDIT    1042
@@ -837,7 +840,10 @@
 #define IDC_VIDEOKBPSLABEL              1372
 #define IDC_VIDEOBITRATEUNITSLABEL      1372
 #define IDC_VIDEOSOURCELABEL            1373
+#define IDC_AUDIOBITRATESPIN            1373
 #define IDC_VIDEOSOURCECOMBO            1374
+#define IDC_VIDEOBITRATEUNITSLABEL2     1374
+#define IDC_AUDIOBITRATEUNITSLABEL2     1374
 #define IDC_AUDIOSOURCELABEL            1375
 #define IDC_FRAMERATELABEL              1375
 #define IDC_VIDEOSOURCECOMBO2           1376
