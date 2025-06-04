@@ -11,6 +11,7 @@
 #include "ImageEditor/Gui/Toolbar.h"
 #include "ScreenCapture/ScreenRecorder/ScreenRecorder.h"
 #include "Gui/Components/trayicon.h"
+#include "Gui/Dialogs/ScreenRecordingDlg.h"
 
 class TimeDelegate : public ImageEditor::Toolbar::ToolbarItemDelegate {
 public:
@@ -66,7 +67,7 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
 
     const int kTimer = 1;
 
-    DialogResult doModal(HWND parent, CRect captureRect);
+    DialogResult doModal(HWND parent, const ScreenRecordingRuntimeParams& params);
     BOOL PreTranslateMessage(MSG* pMsg) override;
     CString outFileName() const;
 private:
@@ -106,6 +107,7 @@ private:
     bool cancelRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;
     GUID trayIconGuid_;
+    ScreenRecordingRuntimeParams screenRecordingParams_;
 }; 
 
 #endif

@@ -58,7 +58,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
 
-    TRC(IDC_SELECTOPTION, "Select an action:");
     TRC(IDC_SOVET, "Advice:");
     TRC(IDC_SOVET2, "Just drag and drop your files into the program window, and it will process them.");
     TRC(IDC_WELCOMEMSG, "Welcome to the pictures publishing wizard, which will help you upload your images, photos, and video frames to the Internet!");
@@ -98,6 +97,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
+    ListBox.AddString(TR("Screen Recording..."), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONRECORD), true, 0, true);
 
     ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 #ifdef IU_ENABLE_MEDIAINFO
@@ -115,11 +115,6 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if(ok)
     {
         alf.lfWeight = FW_BOLD;
-
-        NewFont.CreateFontIndirect(&alf);
-
-        SendDlgItemMessage(IDC_SELECTOPTION,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
-
         alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
         font2_.CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)font2_,MAKELPARAM(false, 0));
@@ -178,6 +173,11 @@ std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
 LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     WizardDlg->executeFunc(_T("screenshotdlg"));
+    return 0;
+}
+
+LRESULT CWelcomeDlg::OnBnClickedRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    WizardDlg->executeFunc(_T("screenrecordingdlg"));
     return 0;
 }
 

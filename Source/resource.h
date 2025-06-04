@@ -195,6 +195,8 @@
 #define IDD_FFMPEGSETTINGS1             343
 #define IDD_DXGISETTINGS                343
 #define IDB_ICONROTATEFLIP              344
+#define IDD_SCREENSHOTDLG1              344
+#define IDD_SCREENRECODINGDLG           344
 #define IDB_ICONFLIPHORIZONTAL          345
 #define IDB_PNG13                       346
 #define IDB_ICONFLIPVERTICAL            346
@@ -662,6 +664,7 @@
 #define IDC_IGNORE                      1263
 #define IDC_OPTIONSBUTTON               1263
 #define IDC_CLEARSERVERSETTINGS         1263
+#define IDC_REGIONSELECTBUTTON          1263
 #define IDC_THUMBBACKGROUNDLABEL        1264
 #define IDC_DELETEITEM                  1264
 #define IDC_COPYRGBBUTTON               1264
@@ -849,6 +852,7 @@
 #define IDC_FRAMERATELABEL              1375
 #define IDC_VIDEOSOURCECOMBO2           1376
 #define IDC_AUDIOSOURCECOMBO            1376
+#define IDC_ADAPTERLABEL                1376
 #define IDR_bottomLeftShadow            15001
 #define IDR_bottomRightShadow           15002
 #define IDR_bottomShadow                15003
@@ -896,7 +900,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        353
 #define _APS_NEXT_COMMAND_VALUE         32821
-#define _APS_NEXT_CONTROL_VALUE         1376
+#define _APS_NEXT_CONTROL_VALUE         1377
 #define _APS_NEXT_SYMED_VALUE           128
 #endif
 #endif

@@ -75,6 +75,7 @@
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
 #include "Gui/Dialogs/ScreenshotDlg.h"
+#include "Gui/Dialogs/ScreenRecordingDlg.h"
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     #include "Gui/Dialogs/NetworkDebugDlg.h"
 #endif
@@ -1638,6 +1639,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcImportVideo();
     else if (funcName == _T("screenshotdlg"))
         return funcScreenshotDlg();
+    else if (funcName == _T("screenrecordingdlg"))
+        return funcScreenRecordingDlg();
     else if (funcName == _T("regionscreenshot"))
         return funcRegionScreenshot();
     else if (funcName == _T("regionscreenshot_dontshow"))
@@ -1722,6 +1725,20 @@ bool CWizardDlg::funcScreenshotDlg()
     if(dlg.DoModal(m_hWnd) != IDOK) return false;
 
     CommonScreenshot(dlg.captureMode());
+    m_bShowWindow = true;
+    return true;
+}
+
+bool CWizardDlg::funcScreenRecordingDlg()
+{
+    CScreenRecordingDlg dlg;
+
+    if (dlg.DoModal(m_hWnd) != IDOK) {
+        return false;
+    }
+
+    startScreenRecording(dlg.recordingParams());
+
     m_bShowWindow = true;
     return true;
 }
@@ -2036,6 +2053,26 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
 }
 
+void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params) {
+    auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
+
+    bool isVisible = IsWindowVisible();
+    ShowWindow(SW_HIDE);
+    if (screenRecorderWindow->doModal(m_hWnd, params) == ScreenRecorderWindow::drSuccess) {
+        CreatePage(wpMainPage);
+        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
+        mainDlg->AddToFileList(screenRecorderWindow->outFileName());
+        mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
+        mainDlg->ThumbsView.SelectLastItem();
+        mainDlg->ThumbsView.SetFocus();
+
+        ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
+    }
+    /*if (isVisible)*/ {
+        ShowWindow(SW_SHOW);
+    }
+}
+
 LRESULT CWizardDlg::OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CreateUpdateDlg();
@@ -2203,7 +2240,8 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
             Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
 
             if (!lastCrop.IsEmptyArea()) {
-                screenRecordRect_ = CRect(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
+                screenRecordingParams_ = {};
+                screenRecordingParams_.selectedRegion = CRect(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
@@ -2214,7 +2252,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
              CanceledByUser = true;
              //needToShow = false;
              ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
-                funcRecordScreen();
+                startScreenRecording(screenRecordingParams_);
              }, true);
         }
         else {
@@ -2317,27 +2355,6 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
             }
         }
     }
-}
-
-bool CWizardDlg::funcRecordScreen() {
-    auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
-
-    bool isVisible = IsWindowVisible();
-    ShowWindow(SW_HIDE);
-    if (screenRecorderWindow->doModal(m_hWnd, screenRecordRect_) == ScreenRecorderWindow::drSuccess) {
-        CreatePage(wpMainPage);
-        CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
-        mainDlg->AddToFileList(screenRecorderWindow->outFileName());
-        mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
-        mainDlg->ThumbsView.SelectLastItem();
-        mainDlg->ThumbsView.SetFocus();
-
-        ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
-    }
-    /*if (isVisible)*/ {
-        ShowWindow(SW_SHOW);
-    }
-    return true;
 }
 
 bool CWizardDlg::funcWindowHandleScreenshot()

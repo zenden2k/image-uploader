@@ -89,6 +89,8 @@ struct ScreenRecordingStruct {
     std::string Backend;
 
     int FrameRate = 30;
+    int Delay = 0;
+    bool CaptureCursor = true;
     //std::string Preset;
     std::string OutDirectory;
     FFMpegSettingsStruct FFmpegSettings;

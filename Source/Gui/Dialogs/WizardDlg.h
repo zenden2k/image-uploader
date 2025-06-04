@@ -41,6 +41,7 @@
 #include "Gui/Components/DragndropOverlay.h"
 #include "Gui/WizardCommon.h"
 #include "Gui/Dialogs/RegionSelect.h"
+#include "Gui/Dialogs/ScreenRecordingDlg.h"
 
 class WinToastHandler;
 constexpr int ID_PASTE = 9888;
@@ -211,6 +212,7 @@ public:
     bool funcAddImages(bool AnyFiles = false);
     bool funcImportVideo();
     bool funcScreenshotDlg();
+    bool funcScreenRecordingDlg();
     bool funcRegionScreenshot(bool ShowAfter = true);
     bool funcFullScreenshot();
     bool funcWindowHandleScreenshot();
@@ -244,6 +246,7 @@ public:
 
     bool CanShowWindow() override;
     void UpdateAvailabilityChanged(bool Available) override;
+    void startScreenRecording(const ScreenRecordingRuntimeParams& params);
 
     //    IUnknown methods
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -350,7 +353,7 @@ protected:
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
 #endif
-    CRect screenRecordRect_;
+    ScreenRecordingRuntimeParams screenRecordingParams_;
 };
 
 

@@ -860,4 +860,19 @@ HICON GetMenuArrowIcon() {
     return hIcon;
 }
 
+HICON GetWindowIcon(HWND hwnd) {
+    HICON hIcon {};
+    //hIcon  = (HICON)SendMessage(hwnd, WM_GETICON, ICON_BIG, 0);
+
+    if (!hIcon) {
+        hIcon = (HICON)SendMessage(hwnd, WM_GETICON, ICON_SMALL, 0);
+    }
+
+    if (!hIcon) {
+        hIcon = (HICON)GetClassLongPtr(hwnd, GCLP_HICON);
+    }
+
+    return hIcon;
+}
+
 }

@@ -112,5 +112,7 @@ namespace GuiTools
 
     void SetControlAccessibleName(HWND hwnd, const WCHAR* name);
     void ClearControlAccessibleName(HWND hwnd);
-}
+
+    HICON GetWindowIcon(HWND hwnd);
+    }
 #endif

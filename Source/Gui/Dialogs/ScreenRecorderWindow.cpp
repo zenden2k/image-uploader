@@ -72,7 +72,12 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
-    icon_.LoadIconMetric(IDI_ICONRECORD, LIM_SMALL);
+    icon_.LoadIconMetric(IDI_ICONRECORD, LIM_LARGE);
+    iconSmall_.LoadIconMetric(IDI_ICONRECORD, LIM_SMALL);
+
+    SetIcon(icon_, TRUE);
+    SetIcon(iconSmall_, FALSE);
+
     GUID* guid = nullptr;
     
     // Use GUID for uniquely identifying the system tray icon.
@@ -83,7 +88,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     // guid = &trayIconGuid_;
 
     CString iconTitle = TR("Image Uploader (screen recording)");
-    if (!InstallIcon(iconTitle, icon_, NULL, guid)) {
+    if (!InstallIcon(iconTitle, iconSmall_, NULL, guid)) {
         LOG(WARNING) << "Failed to create tray icon!";
         /*guid = nullptr;
         if (!InstallIcon(iconTitle, icon_, NULL)) {
@@ -151,7 +156,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioSource = ffmpegSettings.AudioSourceId;
             options.audioCodec = ffmpegSettings.AudioCodecId;
             options.audioQuality = ffmpegSettings.AudioQuality;
-
+            options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
+            //options.outputIdx = screenRecordingParams_.monitorIndex;
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
                 options.source = DDAGrabSource::SOURCE_ID;
             }*/
@@ -173,8 +179,9 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioSources = dxgiSettings.AudioSources;
             options.audioCodec = dxgiSettings.AudioCodecId;
             options.audioBitrate = dxgiSettings.AudioBitrate;
+            options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
 
-            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), captureRect_, std::move(options));
+            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), screenRecordingParams_.selectedWindow, captureRect_, screenRecordingParams_.monitor, std::move(options));
     }
     if (!screenRecorder_) {
         return -1;
@@ -199,15 +206,16 @@ LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
-ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, CRect captureRect) {
-    if (captureRect.IsRectEmpty()) {
+ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, const ScreenRecordingRuntimeParams& params) {
+    /*if (captureRect.IsRectEmpty()) {
         LOG(ERROR) << "Capture rectangle is empty";
         return drCancel;
-    }
+    }*/
     CWindowDC hdc(nullptr);
     int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
     int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
-
+    screenRecordingParams_ = params;
+    CRect captureRect = params.selectedRegion;
     captureRect.right = captureRect.left + (captureRect.Width() & ~1);
     captureRect.bottom = captureRect.top + (captureRect.Height() & ~1);
 

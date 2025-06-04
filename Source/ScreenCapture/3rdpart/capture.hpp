@@ -686,7 +686,7 @@ public:
         {
             D3D_DRIVER_TYPE_HARDWARE,
             D3D_DRIVER_TYPE_WARP,
-            D3D_DRIVER_TYPE_REFERENCE,
+            D3D_DRIVER_TYPE_REFERENCE
         };
         UINT NumDriverTypes = ARRAYSIZE(DriverTypes);
 
@@ -707,7 +707,7 @@ public:
         // Create device
         for (UINT DriverTypeIndex = 0; DriverTypeIndex < NumDriverTypes; ++DriverTypeIndex)
         {
-            hr = D3D11CreateDevice(g, DriverTypes[DriverTypeIndex], nullptr, D3D11_CREATE_DEVICE_VIDEO_SUPPORT, FeatureLevels, NumFeatureLevels,
+            hr = D3D11CreateDevice(g, g ? D3D_DRIVER_TYPE_UNKNOWN : DriverTypes[DriverTypeIndex], nullptr, D3D11_CREATE_DEVICE_VIDEO_SUPPORT, FeatureLevels, NumFeatureLevels,
                 D3D11_SDK_VERSION, &device, &FeatureLevel, &context);
             if (SUCCEEDED(hr))
             {
