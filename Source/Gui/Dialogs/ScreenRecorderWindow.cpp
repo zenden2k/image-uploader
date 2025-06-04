@@ -208,6 +208,9 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, CR
     int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
     int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
 
+    captureRect.right = captureRect.left + (captureRect.Width() & ~1);
+    captureRect.bottom = captureRect.top + (captureRect.Height() & ~1);
+
     captureRect_ = captureRect;
 
     DWORD initialWindowStyle = WS_POPUP | WS_CLIPCHILDREN;

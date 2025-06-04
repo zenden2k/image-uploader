@@ -25,12 +25,14 @@ DXGIOptionsManager::DXGIOptionsManager() {
         { GuidToStr(MFVideoFormat_HEVC), "HEVC" },
         { GuidToStr(MFVideoFormat_VP80), "VP8" },
         { GuidToStr(MFVideoFormat_VP90), "VP9" },
+        { GuidToStr(MFVideoFormat_WMV3), "WMV" },
     };
 
     audioCodecs_ = {
         { GuidToStr(MFAudioFormat_AAC), "AAC" },
         { GuidToStr(MFAudioFormat_MP3), "MP3" },
         { GuidToStr(MFAudioFormat_FLAC), "FLAC" },
+        //{ GuidToStr(MFAudioFormat_WMAudioV9), "WMA" },
         //{ GuidToStr(MFAudioFormat_Vorbis), "Vorbis" },
     };
 

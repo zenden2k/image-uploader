@@ -29,7 +29,7 @@ std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args)
     return dlg;
 }
 void CScreenRecordingSettingsPage::showSubPage(SubPage pageId) {
-    if (pageId < 0 || pageId >= std::size(subPages_)) {
+    if (curPage_ == pageId || pageId < 0 || pageId >= std::size(subPages_)) {
         return;
     }
 

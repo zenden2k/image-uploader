@@ -859,7 +859,7 @@ public:
         return 1;
     }
 
-    bool Prepare(UINT Output = 0)
+    bool Prepare(UINT Output, HRESULT& hr)
     {
     // Get DXGI device
         CComPtr<IDXGIDevice> lDxgiDevice;
@@ -868,7 +868,7 @@ public:
             return 0;
 
         // Get DXGI adapter
-        HRESULT hr = 0;
+        //HRESULT hr = 0;
 
         CComPtr<IDXGIAdapter> lDxgiAdapter;
         hr = lDxgiDevice->GetParent(
@@ -1284,7 +1284,7 @@ struct VectorStreamX2 : public IMFByteStream
 
 
 
-inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
+inline std::pair<int,HRESULT> DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
 {
     HRESULT hr = S_OK;
     struct AUDIOIN
@@ -1470,10 +1470,12 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     int wi = 0, he = 0;
     if (dp.HasVideo)
     {
-        if (FAILED(cap.CreateDirect3DDevice(dp.ad)))
-            return -1;
-        if (!cap.Prepare(dp.nOutput))
-            return -2;
+        hr = cap.CreateDirect3DDevice(dp.ad);
+        if (FAILED(hr))
+            return { -1, hr };
+        hr = 0;
+        if (!cap.Prepare(dp.nOutput, hr))
+            return { -2, hr };
         if (cap.InHDR)
             dp.VIDEO_ENCODING_FORMAT = MFVideoFormat_HEVC;
         wi = cap.lOutputDuplDesc.ModeDesc.Width;
@@ -1511,7 +1513,8 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     }
     else
         hr = MFCreateSinkWriterFromURL(dp.f.c_str(), NULL, attrs, &pSinkWriter);
-    if (FAILED(hr)) return -3;
+    if (FAILED(hr))
+        return { -3, hr };
 
 
     CComPtr<IMFMediaType> pMediaTypeOutVideo;
@@ -1520,7 +1523,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     if (dp.HasVideo && !dp.Framer)
     {
         hr = MFCreateMediaType(&pMediaTypeOutVideo);
-        if (FAILED(hr)) return -4;
+        if (FAILED(hr)) return {-4, hr};
 
         pMediaTypeOutVideo->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
 
@@ -1552,7 +1555,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
 
 */
         hr = pSinkWriter->AddStream(pMediaTypeOutVideo, &OutVideoStreamIndex);
-        if (FAILED(hr)) return -5;
+        if (FAILED(hr)) return {-5, hr};
     }
 
     // Audio
@@ -1675,10 +1678,10 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     if (dp.HasAudio)
     {
         hr = MFCreateMediaType(&pMediaTypeOutAudio);
-        if (FAILED(hr)) return -6;
+        if (FAILED(hr)) return {-6,hr};
 
         hr = pMediaTypeOutAudio->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
-        if (FAILED(hr)) return -7;
+        if (FAILED(hr)) return {-7, hr};
 
 
         // pcm
@@ -1702,14 +1705,14 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
             pMediaTypeOutAudio->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, dp.ABR*1000 / 8);
         }
 
-/*        // wma
-        if (vp.AUDIO_TYPE == MFAudioFormat_WMAudioV9)
+        // wma
+        if (dp.AUDIO_ENCODING_FORMAT == MFAudioFormat_WMAudioV9)
         {
-            pMediaTypeOutAudio->SetGUID(MF_MT_SUBTYPE, vp.AUDIO_TYPE);
-            pMediaTypeOutAudio->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, vp.AUDIO_CHANNELS);
-            pMediaTypeOutAudio->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, vp.AUDIO_SAMPLE_RATE);
+            pMediaTypeOutAudio->SetGUID(MF_MT_SUBTYPE, dp.AUDIO_ENCODING_FORMAT);
+            pMediaTypeOutAudio->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, dp.NCH);
+            pMediaTypeOutAudio->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, dp.SR);
         }
-*/
+
         // aac
         if (dp.AUDIO_ENCODING_FORMAT == MFAudioFormat_AAC || dp.AUDIO_ENCODING_FORMAT == MFAudioFormat_FLAC)
         {
@@ -1721,14 +1724,14 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
         }
 
         hr = pSinkWriter->AddStream(pMediaTypeOutAudio, &OutAudioStreamIndex);
-        if (FAILED(hr)) return -8;
+        if (FAILED(hr)) return {-8, hr};
     }
 
 
 
     hr = MFCreateMediaType(&pMediaTypeVideoIn);
     if (FAILED(hr)) 
-        return -9;
+        return {-9, hr};
     pMediaTypeVideoIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
 
     MFSetAttributeSize(pMediaTypeVideoIn, MF_MT_FRAME_SIZE, wi,he);
@@ -1789,7 +1792,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     if (dp.HasVideo && !dp.Framer)
     {
         hr = pSinkWriter->SetInputMediaType(OutVideoStreamIndex, pMediaTypeVideoIn, NULL);
-        if (FAILED(hr)) return -10;
+        if (FAILED(hr)) return {-10, hr};
 
 
         if (cap.InHDR != DXGI_FORMAT_UNKNOWN)
@@ -1797,7 +1800,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
             // Now put the real value
             pMediaTypeVideoIn->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB10);
             hr = pSinkWriter->SetInputMediaType(OutVideoStreamIndex, pMediaTypeVideoIn, NULL);
-            if (FAILED(hr)) return -10;
+            if (FAILED(hr)) return {-10, hr};
         }
 
         CComPtr<ICodecAPI> ca;
@@ -1848,7 +1851,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     if (dp.HasAudio)
     {
         hr = MFCreateMediaType(&pMediaTypeAudioIn);
-        if (FAILED(hr)) return -11;
+        if (FAILED(hr)) return {-11, hr};
 
         pMediaTypeAudioIn->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio);
         pMediaTypeAudioIn->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM);
@@ -1860,7 +1863,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
         pMediaTypeAudioIn->SetUINT32(MF_MT_AUDIO_AVG_BYTES_PER_SECOND, (UINT32)(dp.SR * BA));
 
         hr = pSinkWriter->SetInputMediaType(OutAudioStreamIndex, pMediaTypeAudioIn, NULL);
-        if (FAILED(hr)) return -12;
+        if (FAILED(hr)) return {-12, hr};
     }
 
 
@@ -1872,7 +1875,7 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     {
         if (pSinkWriter)
             hr = pSinkWriter->BeginWriting();
-        if (FAILED(hr)) return -13;
+        if (FAILED(hr)) return {-13, hr};
     }
 
     const LONG cbWidth = multi * wi;
@@ -2106,7 +2109,8 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
                 bool C = false;
                 for (int i = 0; i < 10; i++)
                 {
-                    if (cap.Prepare(dp.nOutput))
+                    HRESULT hr2 = 0;
+                    if (cap.Prepare(dp.nOutput, hr2))
                     {
                         C = true;
                         break;
@@ -2337,6 +2341,6 @@ inline int DesktopCapture(DESKTOPCAPTUREPARAMS& dp)
     if (pSinkWriter)
         hr = pSinkWriter->Finalize();
     if (FAILED(hr))
-        return -14;
-	return 0;
+        return { -14, hr };
+    return { 0, S_OK };
 }
