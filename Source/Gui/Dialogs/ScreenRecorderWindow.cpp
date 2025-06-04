@@ -170,7 +170,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.quality = dxgiSettings.VideoQuality;
             options.bitrate = dxgiSettings.VideoBitrate;
             options.useQuality = dxgiSettings.UseQuality;
-            options.audioSource = dxgiSettings.AudioSourceId;
+            options.audioSources = dxgiSettings.AudioSources;
             options.audioCodec = dxgiSettings.AudioCodecId;
             options.audioBitrate = dxgiSettings.AudioBitrate;
 

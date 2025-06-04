@@ -75,7 +75,7 @@ struct DXGISettingsStruct {
     std::string VideoCodecId = "{34363248-0000-0010-8000-00AA00389B71}"; //h.264
     std::string VideoPresetId;
     std::string VideoSourceId;
-    std::string AudioSourceId;
+    std::vector<std::string> AudioSources;
     std::string AudioCodecId = "{00001610-0000-0010-8000-00AA00389B71}"; //aac
     int AudioBitrate = 192;
 

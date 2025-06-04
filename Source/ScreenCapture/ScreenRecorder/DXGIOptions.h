@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 using IdNamePair = std::pair<std::string, std::string>;
 using IdNameArray = std::vector<std::pair<std::string, std::string>>;
@@ -9,7 +10,7 @@ class DXGIOptions
 {
 public:
     std::string source;
-    std::string audioSource;
+    std::vector<std::string> audioSources;
 
     std::string codec;
     std::string audioCodec;

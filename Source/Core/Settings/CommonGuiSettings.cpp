@@ -234,7 +234,7 @@ void DXGISettingsStruct::bind(SettingsNode& node) {
     node.n_bind(VideoSourceId);
     node.n_bind(VideoCodecId);
     node.n_bind(VideoPresetId);
-    node.n_bind(AudioSourceId);
+    node.n_bind(AudioSources);
     node.n_bind(AudioCodecId);
     node.n_bind(AudioBitrate);
 }

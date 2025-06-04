@@ -71,13 +71,12 @@ DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, CRect rect, DXGIOpti
 
     dp_->HasAudio = false;
 
-    if (!options_.audioSource.empty()) {
-        auto audioSourceInfo = optionsManager_.getAudioSourceInfo(options_.audioSource);
+    for (const auto& audioSource : options_.audioSources) {
+        auto audioSourceInfo = optionsManager_.getAudioSourceInfo(audioSource);
         if (audioSourceInfo) {
-            int numChannels = audioSourceInfo->NumChannels;
-            std::vector<int> vec(numChannels);
+            std::vector<int> vec(audioSourceInfo->NumChannels);
             std::iota(vec.begin(), vec.end(), 0);
-            dp_->AudioFrom.push_back({ IuCoreUtils::Utf8ToWstring(options_.audioSource), std::move(vec) });
+            dp_->AudioFrom.push_back({ IuCoreUtils::Utf8ToWstring(audioSource), std::move(vec) });
             dp_->HasAudio = true;
         }
     }

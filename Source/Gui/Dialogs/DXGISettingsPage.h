@@ -28,7 +28,7 @@ public:
         COMMAND_HANDLER(IDC_VIDEOBITRATELABEL, BN_CLICKED, OnVideoRadioClicked)
         COMMAND_HANDLER(IDC_VIDEOCODECCOMBO, CBN_SELCHANGE, OnVideoCodecChanged)
         COMMAND_HANDLER(IDC_AUDIOCODECCOMBO, CBN_SELCHANGE, OnAudioCodecChanged)
-    END_MSG_MAP()
+        END_MSG_MAP()
         
     BEGIN_DDX_MAP(CDXGISettingsPage)
         DDX_CONTROL_HANDLE(IDC_VIDEOCODECCOMBO, videoCodecComboBox_)
@@ -42,7 +42,7 @@ public:
         DDX_CONTROL_HANDLE(IDC_LOWQUALITYLABEL, lowQualityLabel_)
         DDX_CONTROL_HANDLE(IDC_HIGHQUALITYLABEL, highQualityLabel_)
         DDX_CONTROL_HANDLE(IDC_VIDEOBITRATEUNITSLABEL, videoBitrateUnitsLabel_)
-        DDX_CONTROL_HANDLE(IDC_AUDIOSOURCECOMBO, audioSourceCombobox_)
+        DDX_CONTROL_HANDLE(IDC_AUDIOSOURCESLISTVIEW, audioSourcesListView_)
         DDX_CONTROL_HANDLE(IDC_AUDIOCODECCOMBO, audioCodecComboBox_)
         DDX_CONTROL_HANDLE(IDC_AUDIOBITRATESPIN, audioBitrateUpDownControl_)
     END_DDX_MAP()
@@ -59,7 +59,8 @@ public:
 
     CEdit videoBitrateEditControl_;
     CComboBox videoCodecComboBox_, videoCodecPresetComboBox_;
-    CComboBox audioSourceCombobox_, audioCodecComboBox_;
+    CListViewCtrl audioSourcesListView_;
+    CComboBox audioCodecComboBox_;
     CTrackBarCtrl videoQualityTrackBar_;
     CStatic videoQualityPercentLabel_, lowQualityLabel_, highQualityLabel_, videoBitrateUnitsLabel_;
     CUpDownCtrl videoBitrateUpDownControl_, audioBitrateUpDownControl_;

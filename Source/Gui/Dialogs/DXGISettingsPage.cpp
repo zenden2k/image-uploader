@@ -110,19 +110,23 @@ LRESULT CDXGISettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     TranslateUI();
     DoDataExchange(FALSE);
     const auto& recordingSettings = settings_->ScreenRecordingSettings.DXGISettings;
-
-    int selectedItemIndex = -1;
-
+    audioSourcesListView_.AddColumn(TR(""), 0);
+    audioSourcesListView_.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
+    audioSourcesListView_.SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT, LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
     audioSources_ = optionsManager_->getAudioSources();
-    audioSources_.insert(audioSources_.begin(), { "", tr("None") });
-    selectedItemIndex = -1;
+    //audioSources_.insert(audioSources_.begin(), { "", tr("None") });
+    int selectedItemIndex = -1;
+    int i = 0;
     for (const auto& source : audioSources_) {
-        int index = audioSourceCombobox_.AddString(U2WC(source.second));
-        if (source.first == recordingSettings.AudioSourceId) {
-            selectedItemIndex = index;
+        CString str = U2W(source.second);
+        int index = audioSourcesListView_.AddItem(i++, 0, str);
+         //= audioSourceCombobox_.AddString(U2WC(source.second));
+        if (std::find(recordingSettings.AudioSources.begin(), recordingSettings.AudioSources.end(), source.first) != recordingSettings.AudioSources.end()) {
+            audioSourcesListView_.SetCheckState(index, TRUE);
+            //selectedItemIndex = index;
         }
     }
-    audioSourceCombobox_.SetCurSel(selectedItemIndex);
+    //audioSourceCombobox_.SetCurSel(selectedItemIndex);
 
     videoQualityTrackBar_.SetPos(recordingSettings.VideoQuality);
     updateVideoQualityLabel();
@@ -219,10 +223,16 @@ bool CDXGISettingsPage::apply() {
             }
         }
 
-        int audioSourceIndex = audioSourceCombobox_.GetCurSel();
+        recordingSettings.AudioSources.clear();
+        for (int i = 0; i < audioSources_.size(); i++) {
+            if (audioSourcesListView_.GetCheckState(i)) {
+                recordingSettings.AudioSources.push_back(audioSources_[i].first);
+            }
+        }
+        /* int audioSourceIndex = audioSourceCombobox_.GetCurSel();
         if (audioSourceIndex >= 0 && audioSourceIndex < audioSources_.size()) {
             recordingSettings.AudioSourceId = audioSources_[audioSourceIndex].first;
-        }
+        }*/
 
         int audioCodecIndex = audioCodecComboBox_.GetCurSel();
         if (audioCodecIndex >= 0 && audioCodecIndex < audioCodecs_.size()) {

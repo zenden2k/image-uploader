@@ -221,6 +221,7 @@
 #define IDC_CONTEXTMENUITEMSLIST        1002
 #define IDC_UPLOADTABLE                 1002
 #define IDC_TOOLBROWSEBUTTON            1002
+#define IDC_AUDIOSOURCESLISTVIEW        1002
 #define IDC_KEEPASIS                    1003
 #define IDC_TOOLSOURCEFILE              1003
 #define IDC_KEEPPROPORTIONS             1004
