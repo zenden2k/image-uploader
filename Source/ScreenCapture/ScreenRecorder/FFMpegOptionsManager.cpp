@@ -8,7 +8,10 @@
 #include "Core/Utils/StringUtils.h"
 #include "VideoCodecs/X264VideoCodec.h"
 #include "VideoCodecs/NvencVideoCodec.h"
+#include "VideoCodecs/QsvVideoCodec.h"
+#include "VideoCodecs/AmfVideoCodec.h"
 #include "VideoCodecs/VP9VideoCodec.h"
+#include "VideoCodecs/GifVideoCodec.h"
 #include "AudioCodecs/AacAudioCodec.h"
 #include "AudioCodecs/Mp3AudioCodec.h"
 #include "Sources/DDAGrabSource.h"
@@ -92,6 +95,11 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
     videoCodecFactories_[VP9VideoCodec::CODEC_ID] = [] { return std::make_unique<VP9VideoCodec>(); };
     videoCodecFactories_[NvencVideoCodec::H264_CODEC_ID] = [] { return NvencVideoCodec::createH264(); };
     videoCodecFactories_[NvencVideoCodec::HEVC_CODEC_ID] = [] { return NvencVideoCodec::createHevc(); };
+    videoCodecFactories_[QsvVideoCodec::H264_CODEC_ID] = [] { return QsvVideoCodec::createH264(); };
+    videoCodecFactories_[QsvVideoCodec::HEVC_CODEC_ID] = [] { return QsvVideoCodec::createHevc(); };
+    videoCodecFactories_[AmfVideoCodec::H264_CODEC_ID] = [] { return AmfVideoCodec::createH264(); };
+    videoCodecFactories_[AmfVideoCodec::HEVC_CODEC_ID] = [] { return AmfVideoCodec::createHevc(); };
+    videoCodecFactories_[GifVideoCodec::CODEC_ID] = [] { return std::make_unique<GifVideoCodec>(); };
 
     videoSourceFactories_[GDIGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<GDIGrabSource>(); };
     videoSourceFactories_[DDAGrabSource::SOURCE_ID] = [](const std::string & param) { return std::make_unique<DDAGrabSource>(); };

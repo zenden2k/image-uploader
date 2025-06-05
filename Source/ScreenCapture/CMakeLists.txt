@@ -17,8 +17,11 @@ set(HEADER_LIST
     ScreenRecorder/ArgsBuilder/FFmpegOutputArgs.h
     ScreenRecorder/VideoCodecs/FFmpegVideoCodec.h
     ScreenRecorder/VideoCodecs/NvencVideoCodec.h
+    ScreenRecorder/VideoCodecs/QsvVideoCodec.h
+    ScreenRecorder/VideoCodecs/AmfVideoCodec.h
     ScreenRecorder/VideoCodecs/X264VideoCodec.h
     ScreenRecorder/VideoCodecs/VP9VideoCodec.h
+    ScreenRecorder/VideoCodecs/GifVideoCodec.h
     ScreenRecorder/AudioCodecs/AacAudioCodec.h
     ScreenRecorder/AudioCodecs/Mp3AudioCodec.h
     ScreenRecorder/Sources/FFmpegSource.h

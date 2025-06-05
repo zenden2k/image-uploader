@@ -53,7 +53,7 @@ public:
     }
 
     virtual void apply(const FFmpegOptions& settings, FFmpegOutputArgs& outputArgs) = 0;
-private:
+protected:
     std::string name_;
     std::string extension_;
     std::string description_;

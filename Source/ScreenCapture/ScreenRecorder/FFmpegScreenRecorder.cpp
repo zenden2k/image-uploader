@@ -20,6 +20,7 @@
 #include "Sources/DDAGrabSource.h"
 #include "Sources/GDIGrabSource.h"
 #include "VideoCodecs/FFmpegVideoCodec.h"
+#include "VideoCodecs/GifVideoCodec.h"
 #include "AudioCodecs/AudioCodec.h"
 #include "Core/TaskDispatcher.h"
 /*
@@ -44,6 +45,35 @@ void async_wait_future(
         }
     });
 }*/
+
+namespace {
+
+std::string EscapeArgument(const std::string& arg) {
+    if (arg.empty() || arg.find_first_of(" \t\n\v\"") != std::string::npos) {
+        std::string escaped = "\"";
+        for (char c : arg) {
+            if (c == '\"')
+                escaped += "\\\"";
+            else
+                escaped += c;
+        }
+        escaped += "\"";
+        return escaped;
+    }
+    return arg;
+}
+
+std::string BuildCommandLine(const std::vector<std::string>& args) {
+    if (args.empty())
+        return "";
+
+    std::string command_line = EscapeArgument(args[0]);
+    for (size_t i = 1; i < args.size(); ++i) {
+        command_line += " " + EscapeArgument(args[i]);
+    }
+    return command_line;
+}
+}
 
 constexpr auto FFMPEG_RETURN_CODE_NO_OUTPUT = -22;
 
@@ -79,7 +109,13 @@ void FFmpegScreenRecorder::start() {
 
     if (ext.empty()) {
         ext = codec->extension();
-        outFilePath_ += "." + ext;
+        if (options_.codec == GifVideoCodec::CODEC_ID) {
+            outFilePath_ += ".gif"; 
+        } else {
+            outFilePath_ += "." + ext;
+        }
+    } else if (ext == "gif") {
+        ext = codec->extension();
     }
 
     if (fileNoExt_.empty()) { 
@@ -107,9 +143,11 @@ void FFmpegScreenRecorder::start() {
         .addArg("-hide_banner")
         .addArg("thread_queue_size", 1024)
         .addArg("rtbufsize", "256M");
+       // .addArg("f", "lavfi");
 
     auto& input = argsBuilder.addInputFile("");
     auto& output = argsBuilder.addOutputFile(currentOutFilePath_);
+
     //auto outputArgs = argsBuilder.
 
     auto videoSource = optionsManager_.createSource(options_.source);
@@ -142,31 +180,8 @@ void FFmpegScreenRecorder::start() {
         }
         audioCodec->apply(options_, output);
     }
-    /***/
-        
+
     std::vector<std::string> args = argsBuilder.getArgs();
-
-    std::string s;
-    for (const auto& piece : args) {
-        s += piece;
-        s += " ";
-    }
-    LOG(INFO) << ffmpegPath_ << std::endl << s;
-
-   /*-{
-            "-hide_banner",
-            "-init_hw_device", "d3d11va",
-            //"-framerate","60",
-            /*"-offset_x",std::to_string(captureRect_.left),
-            "-offset_y",std::to_string(captureRect_.top),
-            "-video_size",std::to_string(captureRect_.Width())+"x" + std::to_string(captureRect_.Height()),*
-            "-filter_complex", filterComplex,
-            /*,video_size = "+ std::to_string(captureRect_.Width()) + "x" + std::to_string(captureRect_.Height())
-            + ",offset_x=" + std::to_string(captureRect_.left),
-            + ",offset_y=" + std::to_string(captureRect_.top),**
-            "-c:v", "h264_nvenc",
-            "-cq:v", "20", outFilePath_
-    };*/
 
     if (isRunning()) {
         return;
@@ -188,6 +203,11 @@ std::future<int> FFmpegScreenRecorder::launchFFmpeg(const std::vector<std::strin
     std::string command = ffmpegPath_;
     isRunning_ = true;
     //auto self = shared_from_this();
+
+    LOG(INFO)
+        << ffmpegPath_ << std::endl
+        << BuildCommandLine(args);
+
     return std::async(std::launch::async, [this, command, args, onFinish] {
         std::string output;
         std::string errOutput;
@@ -305,14 +325,26 @@ void FFmpegScreenRecorder::stop() {
             self->changeStatus(Status::Canceled);
             return;
         }
-
+        const auto gifFilterComplex = "[0:v] framestep=2,split [a][b];[a] palettegen=stats_mode=diff [p];[b][p] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle";
+        bool isGif = self->options_.codec == GifVideoCodec::CODEC_ID;
         if (self->parts_.size() == 1) {
-            try {
-                std::filesystem::rename(std::filesystem::u8path(self->currentOutFilePath_), std::filesystem::u8path(self->outFilePath_));
-            } catch (const std::exception& ex) {
-                LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
+            if (isGif) {
+                self->changeStatus(Status::RunningConversion);
+
+                self->future_ = self->launchFFmpeg({ "-hide_banner", "-i", self->currentOutFilePath_, "-filter_complex", gifFilterComplex, "-c:v", "gif", self->outFilePath_ }, [self](int res) {
+                    self->changeStatus(res == 0 ? Status::Finished : Status::Failed);
+                    if (res == 0) {
+                        self->cleanupAfter();
+                    }
+                });
+            } else {
+                try {
+                    std::filesystem::rename(std::filesystem::u8path(self->currentOutFilePath_), std::filesystem::u8path(self->outFilePath_));
+                } catch (const std::exception& ex) {
+                    LOG(ERROR) << IuCoreUtils::SystemLocaleToUtf8(ex.what());
+                }
+                self->changeStatus(Status::Finished);
             }
-            self->changeStatus(Status::Finished);
         } else {
             const char* tempFileName = std::tmpnam(nullptr);
 
@@ -333,15 +365,19 @@ void FFmpegScreenRecorder::stop() {
                 }
             }
             f.close();
-
-            self->changeStatus(Status::RunningConcatenation);
-           
-            self->future_ = self->launchFFmpeg({ "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", self->outFilePath_ }, [self](int res) {
+            self->changeStatus(isGif ? Status::RunningConversion : Status::RunningConcatenation);
+            auto cb = [self](int res) {
                 self->changeStatus(res == 0 ? Status::Finished : Status::Failed);
                 if (res == 0) {
                     self->cleanupAfter();
                 }
-            });
+            };
+            if (isGif) {
+                self->future_ = self->launchFFmpeg({ "-hide_banner", "-f", "concat", "-safe", "0", "-i", tempFile, "-filter_complex", gifFilterComplex, "-c:v", "gif", self->outFilePath_ }, cb);
+            } else {
+                self->future_ = self->launchFFmpeg({ "-hide_banner", "-f", "concat", "-safe", "0", "-i", tempFile, "-c", "copy", self->outFilePath_ }, cb);
+            }
+
         }
     };
 

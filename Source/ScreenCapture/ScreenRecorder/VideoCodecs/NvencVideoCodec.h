@@ -20,6 +20,7 @@ public:
 
     void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {
         outputArgs.addArg("c:v", ffmpegCodecName_)
+            .setFrameRate(Settings.framerate)
             .addArg("cq:v", 20)
             .addArg("b:v", std::to_string(Settings.bitrate) + "k")
             .addArg("tune", "ll") // low latency

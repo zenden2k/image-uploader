@@ -17,7 +17,14 @@ class ScreenRecorder
 public:
     enum class Status
     {
-        Invalid, Recording, Paused, RunningConcatenation, Finished, Canceled, Failed
+        Invalid,
+        Recording,
+        Paused,
+        RunningConcatenation,
+        RunningConversion,
+        Finished,
+        Canceled,
+        Failed
     };
     ScreenRecorder(std::string outFile, CRect rect);
     virtual ~ScreenRecorder();

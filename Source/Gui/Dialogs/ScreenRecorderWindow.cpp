@@ -174,11 +174,11 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
                 if (GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo)) {
                     rect = monitorInfo.rcMonitor;
                 }
-            } else if (options.source == DDAGrabSource::SOURCE_ID && screenRecordingParams_.monitorIndex == -1) {
+            } /* else if (options.source == DDAGrabSource::SOURCE_ID && screenRecordingParams_.monitorIndex == -1) {
                 screenRecordingParams_.setMonitor(MonitorFromRect(rect, MONITOR_DEFAULTTONEAREST));
                 GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
                 rect.OffsetRect(-monitorInfo.rcMonitor.left, -monitorInfo.rcMonitor.top);
-            }
+            }*/
             options.outputIdx = screenRecordingParams_.monitorIndex;
             //options.outputIdx = screenRecordingParams_.monitorIndex;
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
@@ -231,10 +231,7 @@ LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 
 ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, const ScreenRecordingRuntimeParams& params) {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
-    /*if (captureRect.IsRectEmpty()) {
-        LOG(ERROR) << "Capture rectangle is empty";
-        return drCancel;
-    }*/
+
     CWindowDC hdc(nullptr);
     int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
     int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
@@ -244,7 +241,7 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
     if (!screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
         && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)
         ) {
-        screenRecordingParams_.setMonitor(MonitorFromRect(captureRect_, MONITOR_DEFAULTTONULL));
+        screenRecordingParams_.setMonitor(MonitorFromRect(captureRect, MONITOR_DEFAULTTONULL));
         MONITORINFO info;
         memset(&info, 0, sizeof(info));
         info.cbSize = sizeof(MONITORINFO);
@@ -477,6 +474,12 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
             item->hint = newTitle;
             item->icon = status == ScreenRecorder::Status::Paused ? iconResume_ : iconPause_;
             toolbar_.update();
+        }
+
+        if (status == ScreenRecorder::Status::RunningConversion) {
+            timeDelegate_->setText(TR("Converting..."));
+        } else if (status == ScreenRecorder::Status::RunningConcatenation) {
+            timeDelegate_->setText(TR("Concatenation..."));
         }
 
     }, true);

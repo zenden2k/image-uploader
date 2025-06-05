@@ -47,7 +47,7 @@ struct ScreenRecordingRuntimeParams {
     void setMonitor(HMONITOR mon, int index = -1) {
         monitor_ = mon;
         MonitorEnumerator monitorEnumerator_;
-
+        monitorEnumerator_.enumDisplayMonitors(NULL, nullptr);
         if (index == -1) {
             auto it = std::find_if(monitorEnumerator_.begin(), monitorEnumerator_.end(), [mon](const MonitorEnumerator::MonitorInfo& info) {
                 return info.monitor == mon;

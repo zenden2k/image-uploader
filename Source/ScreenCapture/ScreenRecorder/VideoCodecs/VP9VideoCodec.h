@@ -20,6 +20,7 @@ public:
 
     void apply(const FFmpegOptions& Settings, FFmpegOutputArgs& outputArgs) override {
         outputArgs.addArg("vcodec", "libvpx-vp9")
+            .setFrameRate(Settings.framerate)
             .addArg("deadline", "realtime");
        
         if (Settings.useQuality) {

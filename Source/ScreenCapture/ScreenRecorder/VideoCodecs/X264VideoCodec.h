@@ -32,7 +32,7 @@ public:
             outputArgs.addArg("b:v", std::to_string(Settings.bitrate) + "k");
         }
 
-        outputArgs.addArg("r", Settings.framerate)
+        outputArgs.setFrameRate(Settings.framerate)
             .addArg("pix_fmt", /*Settings.X264.PixelFormat*/ "yuv420p")
             .addArg("preset", Settings.preset.empty() ? defaultPreset() : Settings.preset)
             .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
