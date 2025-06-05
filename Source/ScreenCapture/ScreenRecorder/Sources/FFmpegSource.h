@@ -4,6 +4,7 @@
 
 class FFmpegInputArgs;
 class FFmpegOptions;
+class GlobalFFmpegArgs;
 
 class FFmpegSource {
 

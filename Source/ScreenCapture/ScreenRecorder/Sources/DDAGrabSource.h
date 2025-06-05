@@ -24,7 +24,8 @@ public:
         const std::string dimensions = (settings.width == 0 || settings.height == 0) ? "" :
             str(boost::format("video_size=%dx%d:offset_x=%d:offset_y=%d:") % settings.width % settings.height % settings.offsetX % settings.offsetY);
 
-        std::string filterComplex = boost::str(boost::format("ddagrab=%sframerate=%d:draw_mouse=%d:output_idx=%d") % dimensions % settings.framerate % settings.showCursor % settings.outputIdx);
+        std::string filterComplex = boost::str(boost::format("ddagrab=%sframerate=%d:draw_mouse=%d:output_idx=%d") % dimensions % settings.framerate
+            % settings.showCursor % std::max(0, settings.outputIdx));
 
         if (!hwEncoder) {
             filterComplex += ",hwdownload,format=bgra";

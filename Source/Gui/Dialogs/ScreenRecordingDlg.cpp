@@ -231,14 +231,24 @@ LRESULT CScreenRecordingDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     settings->ScreenRecordingSettings.CaptureCursor = GuiTools::GetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX);
     settings->ScreenRecordingSettings.Delay = delaySpin_.GetPos();
 
-    //recordingParams_.monitor = monitorCombobox_.GetCurSel();
     const int itemIndex = monitorCombobox_.GetCurSel();
     if (itemIndex >= 0) {
-        int monitorIndex = std::max(0, itemIndex - 1);
-        auto info = monitorEnumerator_.getByIndex(monitorIndex);
+        MonitorMode monitorMode = static_cast<MonitorMode>(monitorCombobox_.GetItemData(itemIndex));
 
-        recordingParams_.monitorIndex = monitorIndex;
-        recordingParams_.monitor = info ? info->monitor : NULL;
+        HMONITOR monitor {};
+        int monitorIndex = -1;
+        if (monitorMode == kCurrentMonitor) {
+            monitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTOPRIMARY);
+            recordingParams_.setMonitor(monitor);
+        } else {
+            monitorIndex = std::max(0, itemIndex - 1);
+            auto info = monitorEnumerator_.getByIndex(monitorIndex);
+            if (info) {
+                monitor = info->monitor;
+                recordingParams_.setMonitor(monitor, monitorIndex);
+            }
+        }
+
     }
     
     return 0;

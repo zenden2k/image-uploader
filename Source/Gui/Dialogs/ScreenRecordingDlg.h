@@ -40,9 +40,32 @@ class IconBitmapUtils;
 struct ScreenRecordingRuntimeParams {
     HWND selectedWindow {};
     CRect selectedRegion;
-    int adapterIndex = -1;
+    //int adapterIndex = -1;
     int monitorIndex = -1;
-    HMONITOR monitor {};
+    HMONITOR monitor_;
+
+    void setMonitor(HMONITOR mon, int index = -1) {
+        monitor_ = mon;
+        MonitorEnumerator monitorEnumerator_;
+
+        if (index == -1) {
+            auto it = std::find_if(monitorEnumerator_.begin(), monitorEnumerator_.end(), [mon](const MonitorEnumerator::MonitorInfo& info) {
+                return info.monitor == mon;
+            });
+            if (it != monitorEnumerator_.end()) {
+                monitorIndex = std::distance(monitorEnumerator_.begin(), it);
+            } else {
+                monitorIndex = -1;
+            }
+        } else {
+            monitorIndex = index;
+        }
+    }
+
+    HMONITOR monitor() const {
+        return monitor_;
+    }
+
 };
 
 class CScreenRecordingDlg : 

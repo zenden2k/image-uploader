@@ -2241,7 +2241,19 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
             if (!lastCrop.IsEmptyArea()) {
                 screenRecordingParams_ = {};
-                screenRecordingParams_.selectedRegion = CRect(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
+                CRect selectedRegion(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
+                MONITORINFO info;
+                memset(&info, 0, sizeof(info));
+                info.cbSize = sizeof(MONITORINFO);
+                if (monitor) {
+                    GetMonitorInfo(monitor, &info);
+                    screenRecordingParams_.setMonitor(monitor);
+                } /*else {
+                    screenRecordingParams_.monitor = MonitorFromRect(selectedRegion, MONITOR_DEFAULTTONEAREST);
+                    GetMonitorInfo(monitor, &info);
+                    selectedRegion.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+                }*/
+                screenRecordingParams_.selectedRegion = selectedRegion;
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }

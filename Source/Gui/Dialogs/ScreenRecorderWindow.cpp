@@ -11,6 +11,8 @@
 #include "Core/TaskDispatcher.h"
 #include "ScreenCapture/ScreenRecorder/FFmpegScreenRecorder.h"
 #include "ScreenCapture/ScreenRecorder/DXGIScreenRecorder.h"
+#include "ScreenCapture/ScreenRecorder/Sources/GDIGrabSource.h"
+#include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -121,13 +123,17 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         }
     }
 
+    if (!folder.IsEmpty() && folder[folder.GetLength() - 1] != '\\' && folder[folder.GetLength() - 1] != '/') {
+        folder += "\\";
+    }
+
     time_t now = time(nullptr);
     tm timeStruct;
     localtime_s(&timeStruct, &now);
 
     CString fileName;
     fileName.Format(
-        _T("%s\\capture %04d-%02d-%02d %02d-%02d-%02d"),
+        _T("%scapture %04d-%02d-%02d %02d-%02d-%02d"),
         folder.GetString(),
         timeStruct.tm_year + 1900, 
         timeStruct.tm_mon + 1, 
@@ -143,10 +149,12 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             ffmpegCLIPath = FFMpegOptionsManager::findFFmpegExecutable();
         }
         if (!ffmpegCLIPath.empty()) {
+            CRect rect = captureRect_;
             FFmpegOptions options;
             const auto& ffmpegSettings = settings->ScreenRecordingSettings.FFmpegSettings;
 
             options.framerate = settings->ScreenRecordingSettings.FrameRate;
+
             options.source = ffmpegSettings.VideoSourceId;
             options.codec = ffmpegSettings.VideoCodecId;
             options.preset = ffmpegSettings.VideoPresetId;
@@ -157,12 +165,27 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioCodec = ffmpegSettings.AudioCodecId;
             options.audioQuality = ffmpegSettings.AudioQuality;
             options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
+
+            MONITORINFO monitorInfo;
+            memset(&monitorInfo, 0, sizeof(MONITORINFO));
+            monitorInfo.cbSize = sizeof(monitorInfo); 
+            if (options.source == GDIGrabSource::SOURCE_ID && screenRecordingParams_.monitor_ && rect.IsRectEmpty()) {
+
+                if (GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo)) {
+                    rect = monitorInfo.rcMonitor;
+                }
+            } else if (options.source == DDAGrabSource::SOURCE_ID && screenRecordingParams_.monitorIndex == -1) {
+                screenRecordingParams_.setMonitor(MonitorFromRect(rect, MONITOR_DEFAULTTONEAREST));
+                GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
+                rect.OffsetRect(-monitorInfo.rcMonitor.left, -monitorInfo.rcMonitor.top);
+            }
+            options.outputIdx = screenRecordingParams_.monitorIndex;
             //options.outputIdx = screenRecordingParams_.monitorIndex;
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
                 options.source = DDAGrabSource::SOURCE_ID;
             }*/
 
-            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), captureRect_, std::move(options));
+            screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), rect, std::move(options));
         } else {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
         }
@@ -181,7 +204,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioBitrate = dxgiSettings.AudioBitrate;
             options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
 
-            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), screenRecordingParams_.selectedWindow, captureRect_, screenRecordingParams_.monitor, std::move(options));
+            screenRecorder_ = std::make_shared<DXGIScreenRecorder>(W2U(fileName), screenRecordingParams_.selectedWindow, captureRect_, screenRecordingParams_.monitor(), std::move(options));
     }
     if (!screenRecorder_) {
         return -1;
@@ -207,6 +230,7 @@ LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
 }
 
 ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, const ScreenRecordingRuntimeParams& params) {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     /*if (captureRect.IsRectEmpty()) {
         LOG(ERROR) << "Capture rectangle is empty";
         return drCancel;
@@ -216,6 +240,20 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
     int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
     screenRecordingParams_ = params;
     CRect captureRect = params.selectedRegion;
+
+    if (!screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
+        && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)
+        ) {
+        screenRecordingParams_.setMonitor(MonitorFromRect(captureRect_, MONITOR_DEFAULTTONULL));
+        MONITORINFO info;
+        memset(&info, 0, sizeof(info));
+        info.cbSize = sizeof(MONITORINFO);
+        if (GetMonitorInfo(screenRecordingParams_.monitor(), &info)) {
+            captureRect_.IntersectRect(captureRect_, &info.rcMonitor);
+            captureRect_.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+        }
+    }
+
     captureRect.right = captureRect.left + (captureRect.Width() & ~1);
     captureRect.bottom = captureRect.top + (captureRect.Height() & ~1);
 
