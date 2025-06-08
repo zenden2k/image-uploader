@@ -30,7 +30,7 @@ public:
     enum {
         ID_UNDO = 1000, ID_CLOSE, ID_ADDTOWIZARD, ID_UPLOAD, ID_SHARE, ID_SAVE, ID_SAVEAS, ID_COPYBITMAPTOCLIBOARD, ID_COPYBITMAPTOCLIBOARDASDATAURI,
         ID_COPYBITMAPTOCLIBOARDASDATAURIHTML, ID_UNSELECTALL, ID_INCREASEPENSIZE, ID_DECREASEPENSIZE, ID_PRINTIMAGE, ID_SEARCHBYIMAGE, ID_ROTATECLOCKWISE,
-        ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS,
+        ID_ROTATECOUNTERCLOCKWISE, ID_FLIPVERTICAL, ID_FLIPHORIZONTAL, ID_MOREACTIONS, ID_CONTINUE,
         ID_SEARCHBYIMAGE_START = 1400,
         ID_SEARCHBYIMAGE_END = 1499,
         ID_DELETESELECTED, ID_RECORDSCREEN,
@@ -58,7 +58,7 @@ public:
     enum { kCanvasMargin = 4 , kToolbarOffset = 6}; // margin between toolbars and canvas in windowed mode
 
     enum DialogResult{
-        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen
+        drCancel, drAddToWizard, drUpload, drShare, drSave, drCopiedToClipboard, drPrintRequested, drSearch, drRecordScreen, drContinue
     };
     enum class ClipboardFormat{ None, Bitmap, DataUri, DataUriHtml };
     enum WindowDisplayMode {
@@ -67,7 +67,7 @@ public:
 
     CImageEditorView m_view;
 
-    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/);
+    ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider/* = 0*/, bool onlySelectRegion = false);
     ImageEditorWindow(CString imageFileName, ConfigurationProvider* configurationProvider/* = 0*/);
     ~ImageEditorWindow() override;
     void setInitialDrawingTool(DrawingToolType dt);
@@ -114,6 +114,7 @@ public:
         COMMAND_ID_HANDLER( ID_UNDO, OnUndoClick )
         COMMAND_ID_HANDLER( ID_CLOSE, OnClickedClose )
         COMMAND_ID_HANDLER( ID_ADDTOWIZARD, OnClickedAddToWizard )
+        COMMAND_ID_HANDLER(ID_CONTINUE, OnClickedContinue)
         COMMAND_ID_HANDLER( ID_UPLOAD, OnClickedUpload )
         COMMAND_ID_HANDLER( ID_SHARE, OnClickedShare )
         COMMAND_ID_HANDLER( ID_SAVE, OnClickedSave )
@@ -193,6 +194,7 @@ public:
         LRESULT OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         //LRESULT ReflectedCommandHandler(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnRecordScreen(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
 
         Toolbar horizontalToolbar_;
         Toolbar verticalToolbar_;
@@ -229,6 +231,7 @@ public:
         HACCEL accelerators_;
         HMODULE richeditLib_;
         CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
+        bool onlySelectRegion_ = false;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);
         void OnCropFinished(int x, int y, int w, int h);

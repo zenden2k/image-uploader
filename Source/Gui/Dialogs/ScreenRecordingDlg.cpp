@@ -32,7 +32,8 @@
 #include "ScreenCapture/ScreenRecorder/DXGIOptionsManager.h"
 #include "ScreenCapture/ScreenRecorder/FFMpegOptionsManager.h"
 #include "RegionSelect.h"
-
+#include "ImageEditor/Gui/ImageEditorWindow.h"
+#include "Func/ImageEditorConfigurationProvider.h"
 using namespace ScreenCapture;
 
 namespace {
@@ -223,8 +224,34 @@ LRESULT CScreenRecordingDlg::OnBnDropdownRegionSelectButton(int idCtrl, LPNMHDR 
 }
 
 LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
-    recordingParams_.selectedWindow = NULL;
-    updateRegionSelectButtonTitle();
+    using namespace ImageEditor;
+    ImageEditorConfigurationProvider configProvider;
+
+    CScreenCaptureEngine engine;
+    engine.captureScreen(false);
+    engine.setMonitorMode(kAllMonitors, NULL);
+  
+    std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
+
+    if (!res) {
+        return 0;
+    }
+    ImageEditorWindow imageEditor(res, false, &configProvider, true);
+    imageEditor.setInitialDrawingTool(ImageEditor::DrawingToolType::dtCrop);
+        
+    auto dialogResult = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmFullscreen);
+
+    if (dialogResult == ImageEditorWindow::drContinue) {
+        Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
+
+        if (!lastCrop.IsEmptyArea()) {
+            CRect selectedRegion(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
+            recordingParams_.selectedWindow = NULL;
+            recordingParams_.selectedRegion = selectedRegion;
+            updateRegionSelectButtonTitle();
+        }
+    }
+
     return 0;
 }
 
@@ -394,7 +421,7 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
     } else if (recordingParams_.selectedRegion.IsRectEmpty()) {
         title = TR("Full screen");
     } else {
-        title.Format(_T("%d,%d %dx%d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
+        title.Format(_T("%d,%d - %dx%d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
     }
     regionSelectButton_.SetWindowText(title);
 }

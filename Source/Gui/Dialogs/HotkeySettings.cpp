@@ -199,6 +199,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Capture Selected Window"), _T("topwindowscreenshot"), IDM_TOPWINDOWSCREENSHOT, false);
     AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
     AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT, false);
+    AddItem(TR("Screen Recording Window"), _T("screenrecordingdlg"), IDM_SCREENRECORDINGDIALOG, false);
     AddItem(TR("Show program window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);

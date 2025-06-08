@@ -797,6 +797,11 @@ LRESULT CFloatingWindow::OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HW
     return 0;
 }
 
+LRESULT CFloatingWindow::OnScreenRecordingDialog(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("screenrecordingdlg"));
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();

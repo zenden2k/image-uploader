@@ -110,7 +110,7 @@ LRESULT CDXGISettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     TranslateUI();
     DoDataExchange(FALSE);
     const auto& recordingSettings = settings_->ScreenRecordingSettings.DXGISettings;
-    audioSourcesListView_.AddColumn(TR(""), 0);
+    audioSourcesListView_.AddColumn(_T(""), 0);
     audioSourcesListView_.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
     audioSourcesListView_.SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT, LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
     audioSources_ = optionsManager_->getAudioSources();

@@ -19,12 +19,15 @@
 
 namespace ImageEditor {
 
-ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider ):horizontalToolbar_(Toolbar::orHorizontal, true),verticalToolbar_(Toolbar::orVertical)
+ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider, bool onlySelectRegion)
+    : horizontalToolbar_(Toolbar::orHorizontal, true)
+    , verticalToolbar_(Toolbar::orVertical)
 {
     currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
     configurationProvider_ = configurationProvider;
     askBeforeClose_ = true;
     allowAltTab_ = false;
+    onlySelectRegion_ = onlySelectRegion;
 
     init();
 }
@@ -448,7 +451,6 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         { FVIRTKEY | FCONTROL, 'C', ID_COPYBITMAPTOCLIBOARD },
         { FVIRTKEY | FCONTROL, 'F', ID_SEARCHBYIMAGE },
         { FVIRTKEY | FCONTROL, 'P', ID_PRINTIMAGE },
-        { FVIRTKEY, VK_ESCAPE, ID_CLOSE },
         { FVIRTKEY, VK_RETURN, IDOK },
         { FVIRTKEY, VK_DELETE, ID_DELETESELECTED },
     };
@@ -462,6 +464,12 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
             { FVIRTKEY, static_cast<WORD>(k), static_cast<WORD>(v) }
         );
     }
+
+    if (onlySelectRegion_) {
+        accels.clear();
+        accels.push_back({ FVIRTKEY, VK_RETURN, ID_CONTINUE });
+    }
+    accels.push_back({ FVIRTKEY, VK_ESCAPE, ID_CLOSE });
 
     accelerators_ = CreateAcceleratorTable(accels.data(), accels.size());
 
@@ -513,18 +521,18 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
     m_view.SetWindowPos(0, &rc, SWP_NOSIZE);
 
     using namespace std::placeholders;
-    canvas_->onDrawingToolChanged.connect(std::bind(&ImageEditorWindow::OnDrawingToolChanged, this, _1));
-    canvas_->onForegroundColorChanged.connect(std::bind(&ImageEditorWindow::OnForegroundColorChanged, this, _1));
-    canvas_->onBackgroundColorChanged.connect(std::bind(&ImageEditorWindow::OnBackgroundColorChanged, this, _1));
-    canvas_->onCropChanged.connect(std::bind(&ImageEditorWindow::OnCropChanged, this, _1, _2, _3, _4));
-    canvas_->onFontChanged.connect(std::bind(&ImageEditorWindow::onFontChanged, this,  _1));
-    canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
-    canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
-    canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
-    /*if (displayMode_ != wdmWindowed)*/ {
-        canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
-    }
 
+    if (!onlySelectRegion_) {
+        canvas_->onDrawingToolChanged.connect(std::bind(&ImageEditorWindow::OnDrawingToolChanged, this, _1));
+        canvas_->onForegroundColorChanged.connect(std::bind(&ImageEditorWindow::OnForegroundColorChanged, this, _1));
+        canvas_->onBackgroundColorChanged.connect(std::bind(&ImageEditorWindow::OnBackgroundColorChanged, this, _1));
+        canvas_->onFontChanged.connect(std::bind(&ImageEditorWindow::onFontChanged, this, _1));
+        canvas_->onTextEditStarted.connect(std::bind(&ImageEditorWindow::OnTextEditStarted, this, _1));
+        canvas_->onTextEditFinished.connect(std::bind(&ImageEditorWindow::OnTextEditFinished, this, _1));
+        canvas_->onSelectionChanged.connect(std::bind(&ImageEditorWindow::OnSelectionChanged, this));
+    }
+    canvas_->onCropChanged.connect(std::bind(&ImageEditorWindow::OnCropChanged, this, _1, _2, _3, _4));
+    canvas_->onCropFinished.connect(std::bind(&ImageEditorWindow::OnCropFinished, this, _1, _2, _3, _4));
     canvas_->onDocumentModified.connect([this] { updateWindowTitle();  });
 
     if (initialDrawingTool_ != DrawingToolType::dtCrop) {
@@ -722,9 +730,11 @@ LRESULT ImageEditorWindow::OnClickedOK(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
 }
 
 LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
-     std::map<DrawingToolHotkey, DrawingToolType>::iterator it;
-     if (wParam == VK_OEM_6) { // ']'
+{   
+    if (onlySelectRegion_) {
+        return 0;
+    }
+    if (wParam == VK_OEM_6) { // ']'
          canvas_->beginPenSizeChanging();
          canvas_->setPenSize(canvas_->getPenSize()+1);
          horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
@@ -741,8 +751,10 @@ LRESULT ImageEditorWindow::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     return 0;
 }
 
-LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
+    if (onlySelectRegion_) {
+        return 0;
+    }
     if (wParam == VK_OEM_4 || wParam == VK_OEM_6) {
         canvas_->endPenSizeChanging(canvas_->getPenSize());
     }
@@ -902,40 +914,46 @@ void ImageEditorWindow::createToolbars()
     if (displayMode_ ==  wdmFullscreen && rc.Width() < MulDiv(800, dpiX, USER_DEFAULT_SCREEN_DPI)) {
         horizontalToolbar_.setShowButtonText(false);
     }
-    if ( showAddToWizardButton_ ) {
+    if (showAddToWizardButton_ && !onlySelectRegion_) {
         CString buttonHint= CString(TR("Add to the list")) + (showUploadButton_ ? _T("") : _T(" (Enter)"));
         horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Add to the list")), loadToolbarIcon(IDB_ICONADDPNG),ID_ADDTOWIZARD, buttonHint));
     }
-    if ( showUploadButton_ ) {
-        CString fullUploadButtonText, uploadButtonText;
-        if ( serverDisplayName_.IsEmpty() ) {
-            fullUploadButtonText = uploadButtonText = TR("Upload to Web");
-        } else {
-            fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverDisplayName_));
-            uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
+
+    if (onlySelectRegion_) {
+        CString buttonHint = CString(TR("Continue")) + _T(" (Enter)");
+        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONADDPNG), ID_CONTINUE, buttonHint));
+    } else {
+        if (showUploadButton_) {
+            CString fullUploadButtonText, uploadButtonText;
+            if (serverDisplayName_.IsEmpty()) {
+                fullUploadButtonText = uploadButtonText = TR("Upload to Web");
+            } else {
+                fullUploadButtonText.Format(TR("Upload to %s"), static_cast<LPCTSTR>(serverDisplayName_));
+                uploadButtonText = WinUtils::TrimStringEnd(fullUploadButtonText, 35);
+            }
+            horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
         }
-        horizontalToolbar_.addButton(Toolbar::Item(uploadButtonText, loadToolbarIcon(IDB_ICONUPLOADPNG), ID_UPLOAD, fullUploadButtonText + _T(" (Enter)"), Toolbar::itButton));
+        //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Save"), loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")), sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
+
+        std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
+        horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
+
+        if (displayMode_ == wdmFullscreen) {
+            horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONRECORD), ID_RECORDSCREEN, TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
+        }
+        CString itemText;
+        CString searchEngineName = U2W(searchEngine_.serverName());
+        itemText.Format(TR("Search on %s"), searchEngineName.GetString());
+
+        horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
+        horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
+
+        horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
     }
-    //horizontalToolbar_.addButton(Toolbar::Item(TR("Share"),0,ID_SHARE, CString(),Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Save"),loadToolbarIcon(IDB_ICONSAVEPNG), ID_SAVE, TR("Save") + CString(_T(" (Ctrl+S)")),sourceFileName_.IsEmpty() ? Toolbar::itButton : Toolbar::itComboButton));
-
-    std::wstring copyButtonHint = str(boost::wformat(TR("Copy to clipboard and close (%s)")) % L"Ctrl+C");
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Copy"), loadToolbarIcon(IDB_ICONCLIPBOARDPNG), ID_COPYBITMAPTOCLIBOARD, copyButtonHint.c_str(), Toolbar::itComboButton));
-
-    if (displayMode_ == wdmFullscreen) {
-        horizontalToolbar_.addButton(Toolbar::Item(TR("Record"), loadToolbarIcon(IDB_ICONRECORD), ID_RECORDSCREEN, TR("Record") + CString(_T(" (Ctrl+R)")), Toolbar::itButton));
-    }
-    CString itemText;
-    CString searchEngineName = U2W(searchEngine_.serverName());
-    itemText.Format(TR("Search on %s"), searchEngineName.GetString());
-
-    horizontalToolbar_.addButton(Toolbar::Item(itemText, loadToolbarIcon(IDB_ICONSEARCH), ID_SEARCHBYIMAGE, itemText + CString(_T(" (Ctrl+F)")), Toolbar::itComboButton));
-    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONROTATEFLIP), ID_MOREACTIONS, TR("Rotate or flip"), Toolbar::itComboButton));
-
-    horizontalToolbar_.addButton(Toolbar::Item({}, loadToolbarIcon(IDB_ICONPRINT), ID_PRINTIMAGE, TR("Print...") + CString(_T(" (Ctrl+P)")), Toolbar::itButton));
-
-    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"),std::shared_ptr<Gdiplus::Bitmap> () ,ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
+    horizontalToolbar_.addButton(Toolbar::Item(TR("Close"), std::shared_ptr<Gdiplus::Bitmap>(), ID_CLOSE, TR("Close") + CString(_T(" (Esc)"))));
     horizontalToolbar_.AutoSize();
+
     if ( displayMode_ != wdmFullscreen ) {
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
@@ -944,50 +962,53 @@ void ImageEditorWindow::createToolbars()
         LOG(ERROR) << "Failed to create vertical toolbar";
 
     }
-    /* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
-    kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L'
-    };
-    */
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLMOVEICONPNG),ID_MOVE,TR("Move") + CString(_T(" (")) + (char)kMoveKey  + CString(_T(")")), Toolbar::itButton, true, 1));
-    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP,TR("Crop")+ CString(_T(" (")) + (char)kCropKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH,TR("Brush")+ CString(_T(" (")) + (char)kBrushKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER,TR("Highlight")+ CString(_T(" (")) + (char)kMarkerKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE,TR("Line")+ CString(_T(" (")) + (char)kLineKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW,TR("Arrow")+ CString(_T(" (")) + (char)kArrowKey  + CString(_T(")")), Toolbar::itButton, true,1));
+    if (!onlySelectRegion_) {
+        /* enum DrawingToolHotkey {kMoveKey = 'V', kBrushKey = 'B', kTextKey = 'T', kRectangleKey = 'U', kColorPickerKey = 'I', kCropKey = 'C', // photoshop keys
+        kMarkerKey = 'H', kBlurringRectangleKey = 'R', kArrowKey = 'A', kLineKey = 'L'
+        };
+        */
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLMOVEICONPNG), ID_MOVE, TR("Move") + CString(_T(" (")) + (char)kMoveKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSELECTION),ID_SELECTION,TR("Selection"), Toolbar::itButton, true, 1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE,TR("Rectangle")+ CString(_T(" (")) + (char)kRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE,TR("Filled rectangle")+ CString(_T(" (")) + (char)kFilledRectangle  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT,TR("Text")+ CString(_T(" (")) + (char)kTextKey  + CString(_T(")")), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER,TR("Step")+ CString(_T(" (")) + (char)kStepNumber  + CString(_T(")")), Toolbar::itButton, true,1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_TOOLCROPPING), ID_CROP, TR("Crop") + CString(_T(" (")) + (char)kCropKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BRUSH, TR("Brush") + CString(_T(" (")) + (char)kBrushKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLMARKER), ID_MARKER, TR("Highlight") + CString(_T(" (")) + (char)kMarkerKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLLINE), ID_LINE, TR("Line") + CString(_T(" (")) + (char)kLineKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLARROWPNG), ID_ARROW, TR("Arrow") + CString(_T(" (")) + (char)kArrowKey + CString(_T(")")), Toolbar::itButton, true, 1));
 
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE,TR("Blurring rectangle")+ CString(_T(" (")) + (char)kBlurringRectangleKey  + CString(_T(")")), Toolbar::itTinyCombo, true,1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLRECTANGLEPNG), ID_RECTANGLE, TR("Rectangle") + CString(_T(" (")) + (char)kRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLFILLEDRECTANGLE), ID_FILLEDRECTANGLE, TR("Filled rectangle") + CString(_T(" (")) + (char)kFilledRectangle + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLTEXTPNG), ID_TEXT, TR("Text") + CString(_T(" (")) + (char)kTextKey + CString(_T(")")), Toolbar::itButton, true, 1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLSTEP), ID_STEPNUMBER, TR("Step") + CString(_T(" (")) + (char)kStepNumber + CString(_T(")")), Toolbar::itButton, true, 1));
 
-    //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
-    verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER,TR("Color chooser")+ CString(_T(" (")) + (char)kColorPickerKey  + CString(_T(")")), Toolbar::itButton, true,1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONTOOLBLURINGRECTANGLEPNG), ID_BLURRINGRECTANGLE, TR("Blurring rectangle") + CString(_T(" (")) + (char)kBlurringRectangleKey + CString(_T(")")), Toolbar::itTinyCombo, true, 1));
 
-    int index = verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO,TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
+        //verticalToolbar_.addButton(Toolbar::Item(CString(),  loadToolbarIcon(IDB_ICONTOOLBRUSHPNG), ID_BLUR,TR("Blur"), Toolbar::itButton, true,1));
+        verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONCOLORPICKERPNG), ID_COLORPICKER, TR("Color chooser") + CString(_T(" (")) + (char)kColorPickerKey + CString(_T(")")), Toolbar::itButton, true, 1));
 
-    Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
-    colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index+1, canvas_.get());
-    colorsButton.itemDelegate = colorsDelegate_.get();
-    colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
-    colorsDelegate_->setForegroundColor(canvas_->getForegroundColor());
-    verticalToolbar_.addButton(colorsButton);
+        int index = verticalToolbar_.addButton(Toolbar::Item(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, TR("Undo") + CString(L" (Ctrl+Z)"), Toolbar::itButton, false));
 
-    verticalToolbar_.AutoSize();
-    if ( displayMode_ != wdmFullscreen ) {
-        verticalToolbar_.ShowWindow(SW_SHOW);
+        Toolbar::Item colorsButton(CString(), loadToolbarIcon(IDB_ICONUNDOPNG), ID_UNDO, {}, Toolbar::itButton, false);
+        colorsDelegate_ = std::make_unique<ColorsDelegate>(&verticalToolbar_, index + 1, canvas_.get());
+        colorsButton.itemDelegate = colorsDelegate_.get();
+        colorsDelegate_->setBackgroundColor(canvas_->getBackgroundColor());
+        colorsDelegate_->setForegroundColor(canvas_->getForegroundColor());
+        verticalToolbar_.addButton(colorsButton);
+
+        verticalToolbar_.AutoSize();
+        if (displayMode_ != wdmFullscreen) {
+            verticalToolbar_.ShowWindow(SW_SHOW);
+        }
+        horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
+        horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
+        horizontalToolbar_.blurRadiusSlider_.SetPos(round(canvas_->getBlurRadius() * BLUR_RADIUS_PRECISION));
+        horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
+        horizontalToolbar_.setStepInitialValue(1);
+        horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
+        horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
+        horizontalToolbar_.setInvertSelectionCheckbox(canvas_->getInvertSelection());
     }
-    horizontalToolbar_.penSizeSlider_.SetPos(canvas_->getPenSize());
-    horizontalToolbar_.roundRadiusSlider_.SetPos(canvas_->getRoundingRadius());
-    horizontalToolbar_.blurRadiusSlider_.SetPos(round(canvas_->getBlurRadius()*BLUR_RADIUS_PRECISION));
-    horizontalToolbar_.setStepFontSize(canvas_->getStepFontSize());
-    horizontalToolbar_.setStepInitialValue(1);
-    horizontalToolbar_.setArrowType(static_cast<int>(canvas_->getArrowMode()));
-    horizontalToolbar_.setFillBackgroundCheckbox(canvas_->getFillTextBackground());
-    horizontalToolbar_.setInvertSelectionCheckbox(canvas_->getInvertSelection());
 }
 
 
@@ -1094,7 +1115,7 @@ void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
     if (displayMode_ != wdmFullscreen) {
         return;
     }
-    if ( !verticalToolbar_.IsWindowVisible() ) {
+    if ( !horizontalToolbar_.IsWindowVisible() || !verticalToolbar_.IsWindowVisible() ) {
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
@@ -1245,7 +1266,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 
 void ImageEditorWindow::onClose() {
     DialogResult dr = drCancel;
-    if (askBeforeClose_ && canvas_->isDocumentModified()) {
+    if (askBeforeClose_ && !onlySelectRegion_ && canvas_->isDocumentModified()) {
         int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if (msgBoxResult == IDYES) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
@@ -1825,10 +1846,17 @@ LRESULT ImageEditorWindow::OnMoreActionsClicked(WORD /*wNotifyCode*/, WORD /*wID
 }
 
 
-LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT ImageEditorWindow::OnRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     EndDialog(drRecordScreen);
+    return 0;
+}
 
+
+LRESULT ImageEditorWindow::OnClickedContinue(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    // This ensures lastCrop is stored
+    //resultingBitmap_ = canvas_->getBitmapForExport();
+
+    EndDialog(drContinue);
     return 0;
 }
 
