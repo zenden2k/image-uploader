@@ -14,5 +14,5 @@ void AbstractFrameGrabber::abort() {
 }
 
 std::optional<AbstractFrameGrabber::StreamInfo> AbstractFrameGrabber::getInfo() {
-    return {};
+    return std::nullopt;
 }

@@ -91,6 +91,7 @@ struct ScreenRecordingStruct {
     int FrameRate = 30;
     int Delay = 0;
     bool CaptureCursor = true;
+    int MonitorMode = -1; // kAllMonitors
     //std::string Preset;
     std::string OutDirectory;
     FFMpegSettingsStruct FFmpegSettings;

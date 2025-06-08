@@ -68,7 +68,7 @@ std::optional<DXGIOptionsManager::AudioSource> DXGIOptionsManager::getAudioSourc
     if (it != audioSources_.end()) {
         return it->second;
     }
-    return {};
+    return std::nullopt;
 }
 
 IdNameArray DXGIOptionsManager::getVideoCodecs() {

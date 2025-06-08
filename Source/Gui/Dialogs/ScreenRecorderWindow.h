@@ -65,7 +65,7 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
         drCancel, drSuccess
     };
 
-    const int kTimer = 1;
+    inline static constexpr auto kTimer = 1, kStartTimer = 2;
 
     DialogResult doModal(HWND parent, const ScreenRecordingRuntimeParams& params);
     BOOL PreTranslateMessage(MSG* pMsg) override;
@@ -103,10 +103,11 @@ private:
     std::shared_ptr<ScreenRecorder> screenRecorder_;
     void statusChangeCallback(ScreenRecorder::Status status);
     ScreenRecorder::Status previousStatus_ = ScreenRecorder::Status::Invalid;
-    unsigned int elapsedTime_ = 0;
+    uint64_t elapsedTime_ = 0;
     bool cancelRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;
     GUID trayIconGuid_;
+    bool hasStarted_ = false;
     ScreenRecordingRuntimeParams screenRecordingParams_;
 }; 
 

@@ -842,6 +842,18 @@ CWindowHandlesRegion::~CWindowHandlesRegion()
 {
 }
 
+std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::const_iterator CWindowHandlesRegion::cbegin() const {
+    return m_hWnds.cbegin();
+}
+
+std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::const_iterator CWindowHandlesRegion::cend() const {
+    return m_hWnds.cend();
+}
+
+std::vector<ScreenCapture::CWindowHandlesRegion::CWindowHandlesRegionItem>::size_type CWindowHandlesRegion::size() const {
+    return m_hWnds.size();
+}
+
 void CWindowHandlesRegion::AddWindow(HWND wnd, bool Include)
 {
     CWindowHandlesRegionItem newItem;

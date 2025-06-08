@@ -114,19 +114,18 @@ LRESULT CDXGISettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
     audioSourcesListView_.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
     audioSourcesListView_.SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT, LVS_EX_DOUBLEBUFFER | LVS_EX_CHECKBOXES | LVS_EX_FULLROWSELECT);
     audioSources_ = optionsManager_->getAudioSources();
-    //audioSources_.insert(audioSources_.begin(), { "", tr("None") });
+
     int selectedItemIndex = -1;
     int i = 0;
     for (const auto& source : audioSources_) {
         CString str = U2W(source.second);
         int index = audioSourcesListView_.AddItem(i++, 0, str);
-         //= audioSourceCombobox_.AddString(U2WC(source.second));
         if (std::find(recordingSettings.AudioSources.begin(), recordingSettings.AudioSources.end(), source.first) != recordingSettings.AudioSources.end()) {
             audioSourcesListView_.SetCheckState(index, TRUE);
-            //selectedItemIndex = index;
+
         }
     }
-    //audioSourceCombobox_.SetCurSel(selectedItemIndex);
+
 
     videoQualityTrackBar_.SetPos(recordingSettings.VideoQuality);
     updateVideoQualityLabel();

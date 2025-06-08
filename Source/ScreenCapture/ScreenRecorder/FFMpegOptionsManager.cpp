@@ -116,7 +116,7 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
 std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVideoCodecInfo(const std::string& codecId) {
     auto codec = createVideoCodec(codecId);
     if (!codec) {
-        return {};
+        return std::nullopt;
     }
     VideoCodecInfo info;
     info.CodecId = codecId;
@@ -131,7 +131,7 @@ std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVid
 std::optional<FFMpegOptionsManager::AudioCodecInfo> FFMpegOptionsManager::getAudioCodecInfo(const std::string& codecId) {
     auto codec = createAudioCodec(codecId);
     if (!codec) {
-        return {};
+        return std::nullopt;
     }
     AudioCodecInfo info;
     info.CodecId = codecId;

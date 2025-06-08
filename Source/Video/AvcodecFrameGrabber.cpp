@@ -511,7 +511,7 @@ int64_t AvcodecFrameGrabber::duration() {
 
 std::optional<AbstractFrameGrabber::StreamInfo> AvcodecFrameGrabber::getInfo() {
     if (!d_ptr->streamInfo_) {
-        return {};
+        return std::nullopt;
     }
     return *d_ptr->streamInfo_;
 }

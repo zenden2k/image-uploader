@@ -24,10 +24,14 @@
 
 #include "Gui/GuiTools.h"
 #include "Func/MyUtils.h"
+#include "Core/Utils/StringUtils.h"
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/ScreenCapture.h"
 #include "Gui/IconBitmapUtils.h"
+#include "ScreenCapture/ScreenRecorder/DXGIOptionsManager.h"
+#include "ScreenCapture/ScreenRecorder/FFMpegOptionsManager.h"
+#include "RegionSelect.h"
 
 using namespace ScreenCapture;
 
@@ -59,8 +63,14 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
 }
 
 CScreenRecordingDlg::CScreenRecordingDlg() {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
+    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendDirectX) {
+        dxgiOptionsManager_ = std::make_unique<DXGIOptionsManager>();
+    } else if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
+        ffmpegOptionsManager_ = std::make_unique<FFMpegOptionsManager>();
+    }
 }
 
 CScreenRecordingDlg::~CScreenRecordingDlg() {
@@ -92,7 +102,8 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     SetIcon(iconSmall_, FALSE);
 
     SetWindowText(TR("Screen Recoding"));
-
+    std::wstring labelText = str(IuStringUtils::FormatWideNoExcept(TR("Screen recording backend: %s")) % IuCoreUtils::Utf8ToWstring(settings->ScreenRecordingSettings.Backend));
+    SetDlgItemText(IDC_BACKENDLABEL, labelText.c_str());
     regionSelectButton_.SetButtonStyle(BS_SPLITBUTTON);
     updateRegionSelectButtonTitle();
 
@@ -100,55 +111,67 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     delaySpin_.SetPos(settings->ScreenRecordingSettings.Delay);
 
     GuiTools::SetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX, settings->ScreenRecordingSettings.CaptureCursor);
-    /*
-    CComPtr<IDXGIFactory1> pFactory;
-        HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory);
-        if (FAILED(hr))
-            return hr;
 
-        CComPtr<IDXGIAdapter1> pAdapter;
-        for (UINT i = 0; pFactory->EnumAdapters1(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i) {
-            DXGI_ADAPTER_DESC1 desc;
-            hr = pAdapter->GetDesc1(&desc);
-            if (SUCCEEDED(hr)) {
-                auto monitors = GetMonitorsForAdapter(pAdapter);
-                CString title = desc.Description;
-                if (!monitors.empty()) {
-                    title += " (" + monitors[0] + ")";
-                }
-                monitorCombobox_.AddString(title);
-                /*wprintf(L"Adapter %d: %s\n", i, desc.Description);
-                wprintf(L"VendorId: %04X, DeviceId: %04X\n",
-                    desc.VendorId, desc.DeviceId);
+    audioSourcesListView_.AddColumn(_T(""), 0);
+    audioSourcesListView_.SetColumnWidth(0, LVSCW_AUTOSIZE_USEHEADER);
+    DWORD listViewStyle = LVS_EX_DOUBLEBUFFER | LVS_EX_FULLROWSELECT;
+    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendDirectX) {
+        listViewStyle |= LVS_EX_CHECKBOXES;
+    } else {
+        audioSourcesListView_.ModifyStyle(0, LVS_SHOWSELALWAYS | LVS_SINGLESEL);
+    }
+    audioSourcesListView_.SetExtendedListViewStyle(listViewStyle, listViewStyle);
+
+    if (dxgiOptionsManager_) {
+        const auto& recordingSettings = settings->ScreenRecordingSettings.DXGISettings;
+
+        audioSources_ = dxgiOptionsManager_->getAudioSources();
+
+        int selectedItemIndex = -1;
+        int i = 0;
+        for (const auto& source : audioSources_) {
+            const CString str = U2W(source.second);
+            int index = audioSourcesListView_.AddItem(i++, 0, str);
+            if (std::find(recordingSettings.AudioSources.begin(), recordingSettings.AudioSources.end(), source.first) != recordingSettings.AudioSources.end()) {
+                audioSourcesListView_.SetCheckState(index, TRUE);
             }
-
-            pAdapter.Release();
         }
-    
-*/
+    } else {
+        const auto& recordingSettings = settings->ScreenRecordingSettings.FFmpegSettings;
 
+        audioSources_ = ffmpegOptionsManager_->getAudioSources();
 
-   /*m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
-   */
+        int selectedItemIndex = -1;
+        int i = 0;
+        for (const auto& source : audioSources_) {
+            const CString str = U2W(source.second);
+            int index = audioSourcesListView_.AddItem(i++, 0, str);
+            if (source.first == recordingSettings.AudioSourceId) {
+                selectedItemIndex = index;
+            }
+        }
+        audioSourcesListView_.SelectItem(selectedItemIndex);
+    }
+
     int selectedIndex = 0;
     
     int itemIndex = monitorCombobox_.AddString(TR("Current monitor"));
 
     if (itemIndex >= 0) {
         monitorCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(kCurrentMonitor));
-        if (settings->ScreenshotSettings.MonitorMode == kCurrentMonitor) {
+        if (settings->ScreenRecordingSettings.MonitorMode == kCurrentMonitor) {
             selectedIndex = itemIndex;
         }
     }
 
-    /*itemIndex = monitorCombobox_.AddString(TR("All monitors"));
+    itemIndex = monitorCombobox_.AddString(TR("All monitors"));
 
     if (itemIndex >= 0) {
         monitorCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(kAllMonitors));
-        if (settings->ScreenshotSettings.MonitorMode == kAllMonitors) {
+        if (settings->ScreenRecordingSettings.MonitorMode == kAllMonitors) {
             selectedIndex = itemIndex;
         }
-    }*/
+    }
 
     int i = 0;
 
@@ -160,7 +183,7 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
             itemIndex = monitorCombobox_.AddString(itemTitle);
             if (itemIndex >= 0) {
                 monitorCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(kSelectedMonitor + i));
-                if (settings->ScreenshotSettings.MonitorMode == kSelectedMonitor + i) {
+                if (settings->ScreenRecordingSettings.MonitorMode == kSelectedMonitor + i) {
                     selectedIndex = itemIndex;
                 }
             }
@@ -222,6 +245,37 @@ LRESULT CScreenRecordingDlg::OnClickedWindow(WORD wNotifyCode, WORD wID, HWND hW
     return 0;
 }
 
+LRESULT CScreenRecordingDlg::OnClickedSelectWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    bool onlyTopWindows = true;
+    CScreenCaptureEngine engine;
+    engine.captureScreen(false);
+    //const auto [monitorMode, monitor] = getSelectedMonitor();
+    engine.setMonitorMode(kAllMonitors, NULL);
+    RegionSelect.setSelectionMode(SelectionMode::smWindowHandles, onlyTopWindows);
+    std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
+    if (res) {
+        HBITMAP gdiBitmap = 0;
+        res->GetHBITMAP(Gdiplus::Color(255, 255, 255), &gdiBitmap);
+        if (RegionSelect.Execute(gdiBitmap, res->GetWidth(), res->GetHeight(), NULL)) {
+            auto rgn = RegionSelect.region();
+            if (rgn) {
+                auto* whr = dynamic_cast<CWindowHandlesRegion*>(rgn.get());
+                if (whr) {
+                    if (whr->size()) {
+                        recordingParams_.selectedWindow = whr->cbegin()->wnd;
+                    }
+
+                    updateRegionSelectButtonTitle();
+                }
+
+                DeleteObject(gdiBitmap);
+            }
+        } 
+    }
+
+    return 0;
+}
+
 ScreenRecordingRuntimeParams CScreenRecordingDlg::recordingParams() const {
     return recordingParams_;
 }
@@ -231,24 +285,28 @@ LRESULT CScreenRecordingDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     settings->ScreenRecordingSettings.CaptureCursor = GuiTools::GetCheck(m_hWnd, IDC_CAPTURECURSORCHECKBOX);
     settings->ScreenRecordingSettings.Delay = delaySpin_.GetPos();
 
-    const int itemIndex = monitorCombobox_.GetCurSel();
-    if (itemIndex >= 0) {
-        MonitorMode monitorMode = static_cast<MonitorMode>(monitorCombobox_.GetItemData(itemIndex));
+    if (!recordingParams_.selectedWindow && recordingParams_.selectedRegion.IsRectEmpty()) {
+        const auto [monitorMode, monitor] = getSelectedMonitor();
+        recordingParams_.setMonitor(monitor);
+        settings->ScreenRecordingSettings.MonitorMode = monitorMode;
+    }
 
-        HMONITOR monitor {};
-        int monitorIndex = -1;
-        if (monitorMode == kCurrentMonitor) {
-            monitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTOPRIMARY);
-            recordingParams_.setMonitor(monitor);
-        } else {
-            monitorIndex = std::max(0, itemIndex - 1);
-            auto info = monitorEnumerator_.getByIndex(monitorIndex);
-            if (info) {
-                monitor = info->monitor;
-                recordingParams_.setMonitor(monitor, monitorIndex);
+    if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendDirectX) {
+        auto& recordingSettings = settings->ScreenRecordingSettings.DXGISettings;
+        recordingSettings.AudioSources.clear();
+        for (int i = 0; i < audioSources_.size(); i++) {
+            if (audioSourcesListView_.GetCheckState(i)) {
+                recordingSettings.AudioSources.push_back(audioSources_[i].first);
             }
         }
-
+    } else if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
+        auto& recordingSettings = settings->ScreenRecordingSettings.FFmpegSettings;
+        const int selectedItemIndex = audioSourcesListView_.GetNextItem(-1, LVNI_SELECTED);
+        if (selectedItemIndex >= 0 && selectedItemIndex < audioSources_.size()) {
+            recordingSettings.AudioSourceId = audioSources_[selectedItemIndex].first;
+        } else {
+            recordingSettings.AudioSourceId.clear();
+        }
     }
     
     return 0;
@@ -265,7 +323,6 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
     POINT menuOrigin = { rc.left, rc.bottom };
     CMenu windowsMenu;
     windowsMenu.CreatePopupMenu();
-
     hwnds_.clear();
     clearBitmaps();
 
@@ -278,9 +335,13 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
         return hwnds->size() < IDM_WINDOW_LIST_LAST - IDM_WINDOW_LIST_FIRST + 1;
     }, reinterpret_cast<LPARAM>(&hwnds_));
 
-    int i = 0;
-
-    for (const auto& hwnd : hwnds_) {
+    int i = -1;
+    HWND parent = GetParent();
+    for (const auto& hwnd: hwnds_) {
+        i++;
+        if (hwnd == m_hWnd || hwnd == parent) {
+            continue;
+        }
         const CString windowTitle = GuiTools::GetWindowText(hwnd);
         HICON ico = GuiTools::GetWindowIcon(hwnd);
         CString itemTitle;
@@ -300,7 +361,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
             bitmaps_.push_back(bm);
         }
         windowsMenu.InsertMenuItem(i, true, &mi);
-        i++;
+
         if (i > IDM_WINDOW_LIST_LAST) {
             break;
         }
@@ -309,8 +370,9 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
     CMenu popupMenu;
     popupMenu.CreatePopupMenu();
 
-    popupMenu.AppendMenu(MF_STRING, IDM_SELECT_REGION, TR("Select region..."));
     popupMenu.AppendMenu(MF_STRING, IDM_FULL_SCREEN, TR("Full screen"));
+    popupMenu.AppendMenu(MF_STRING, IDM_SELECT_REGION, TR("Select region..."));
+    popupMenu.AppendMenu(MF_STRING, IDM_SELECT_WINDOW, TR("Select window..."));
     popupMenu.AppendMenu(0, windowsMenu.Detach(), TR("Window"));
 
     TPMPARAMS excludeArea;
@@ -324,13 +386,44 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
     CString title;
     if (recordingParams_.selectedWindow) {
         CString text = GuiTools::GetWindowText(recordingParams_.selectedWindow);
-        title = WinUtils::TrimString(text, 45);
+        if (text.IsEmpty()) {
+            title.Format(_T("[%d]"), reinterpret_cast<int>(recordingParams_.selectedWindow));
+        } else {
+            title = WinUtils::TrimString(text, 45);
+        }
     } else if (recordingParams_.selectedRegion.IsRectEmpty()) {
         title = TR("Full screen");
     } else {
         title.Format(_T("%d,%d %dx%d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
     }
     regionSelectButton_.SetWindowText(title);
+}
+
+std::pair<ScreenCapture::MonitorMode, HMONITOR> CScreenRecordingDlg::getSelectedMonitor() {
+    const int itemIndex = monitorCombobox_.GetCurSel();
+    if (itemIndex >= 0) {
+        ScreenCapture::MonitorMode monitorMode = static_cast<MonitorMode>(monitorCombobox_.GetItemData(itemIndex));
+
+        HMONITOR monitor {};
+        int monitorIndex = -1;
+        if (monitorMode == kCurrentMonitor) {
+            return {
+                monitorMode, MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTOPRIMARY)
+            };
+            //recordingParams_.setMonitor(monitor);
+        } else if (monitorMode >= kSelectedMonitor) {
+            //monitorIndex = std::max(0, monitorMode);
+            auto info = monitorEnumerator_.getByIndex(monitorMode - kSelectedMonitor);
+            if (info) {
+                return {
+                    monitorMode, info->monitor
+                };
+                //recordingParams_.setMonitor(monitor, monitorIndex);
+            }
+        }
+        return { monitorMode , NULL};
+    }
+    return {};
 }
 
 void CScreenRecordingDlg::clearBitmaps(){

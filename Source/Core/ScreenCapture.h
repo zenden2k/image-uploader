@@ -86,6 +86,11 @@ public:
         bool RemoveBackground;
     };
 
+    struct CWindowHandlesRegionItem {
+        HWND wnd;
+        bool Include;
+    };
+
     CWindowHandlesRegion();
     explicit CWindowHandlesRegion(HWND wnd);
     void AddWindow(HWND wnd, bool Include);
@@ -96,11 +101,12 @@ public:
     std::shared_ptr<Gdiplus::Bitmap> GetImage(HDC src) override;
     bool IsEmpty() override;
     ~CWindowHandlesRegion() override;
+    std::vector<CWindowHandlesRegionItem>::const_iterator cbegin() const;
+    std::vector<CWindowHandlesRegionItem>::const_iterator cend() const;
+    std::vector<CWindowHandlesRegionItem>::size_type size() const;
+
 protected:
-    struct CWindowHandlesRegionItem {
-        HWND wnd;
-        bool Include;
-    };
+
 
     std::shared_ptr<Gdiplus::Bitmap> CaptureWithTransparencyUsingDWM();
     HWND topWindow;

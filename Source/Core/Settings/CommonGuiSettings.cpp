@@ -197,6 +197,8 @@ void CommonGuiSettings::BindToManager() {
     screenRecording.nm_bind(ScreenRecordingSettings, OutDirectory);
     screenRecording.nm_bind(ScreenRecordingSettings, FrameRate);
     screenRecording.nm_bind(ScreenRecordingSettings, CaptureCursor);
+    screenRecording.nm_bind(ScreenRecordingSettings, Delay);
+    screenRecording.nm_bind(ScreenRecordingSettings, MonitorMode);
 
     ScreenRecordingSettings.FFmpegSettings.bind(screenRecording["FFmpeg"]);
     ScreenRecordingSettings.DXGISettings.bind(screenRecording["DirectX"]);

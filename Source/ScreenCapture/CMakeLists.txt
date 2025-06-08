@@ -6,6 +6,7 @@ set(SRC_LIST
 )
 
 set(HEADER_LIST 
+    ScreenRecorder/Common.h
     ScreenRecorder/ScreenRecorder.h
     ScreenRecorder/FFmpegScreenRecorder.h
     ScreenRecorder/FFmpegOptionsManager.h
@@ -41,6 +42,7 @@ if(WIN32)
     list(APPEND HEADER_LIST 
         ScreenRecorder/DXGIScreenRecorder.h
         ScreenRecorder/DXGIOptionsManager.h
+        ScreenRecorder/DXGIOptions.h
         3rdpart/capture.hpp
     )
      list(APPEND LIB_LIST 

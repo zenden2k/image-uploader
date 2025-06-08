@@ -2247,7 +2247,9 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 info.cbSize = sizeof(MONITORINFO);
                 if (monitor) {
                     GetMonitorInfo(monitor, &info);
-                    screenRecordingParams_.setMonitor(monitor);
+                    selectedRegion.OffsetRect(info.rcMonitor.left, info.rcMonitor.top);
+
+                   // screenRecordingParams_.setMonitor(monitor);
                 } /*else {
                     screenRecordingParams_.monitor = MonitorFromRect(selectedRegion, MONITOR_DEFAULTTONEAREST);
                     GetMonitorInfo(monitor, &info);

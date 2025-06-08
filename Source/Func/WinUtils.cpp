@@ -1645,24 +1645,24 @@ std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID) {
 
     if (!CryptAcquireContext(&hProv, nullptr, nullptr, PROV_RSA_AES, CRYPT_VERIFYCONTEXT)) {
         // Failed to acquire crypto context
-        return {};
+        return std::nullopt;
     }
 
     if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash)) {
         CryptReleaseContext(hProv, 0);
-        return {};
+        return std::nullopt;
     }
 
     if (!CryptHashData(hHash, reinterpret_cast<const BYTE*>(input.data()), static_cast<DWORD>(input.size()), 0)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
-        return {};
+        return std::nullopt;
     }
 
     if (!CryptGetHashParam(hHash, HP_HASHVAL, hash, &hashLen, 0) || hashLen < sizeof(GUID)) {
         CryptDestroyHash(hHash);
         CryptReleaseContext(hProv, 0);
-        return {};
+        return std::nullopt;
     }
 
     CryptDestroyHash(hHash);
