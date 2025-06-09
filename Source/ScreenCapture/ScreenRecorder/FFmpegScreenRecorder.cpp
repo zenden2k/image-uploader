@@ -106,10 +106,10 @@ void FFmpegScreenRecorder::start() {
         return;
     }
     std::string ext = IuCoreUtils::ExtractFileExt(outFilePath_);
-
+    bool isGif = options_.codec == GifVideoCodec::CODEC_ID;
     if (ext.empty()) {
         ext = codec->extension();
-        if (options_.codec == GifVideoCodec::CODEC_ID) {
+        if (isGif) {
             outFilePath_ += ".gif"; 
         } else {
             outFilePath_ += "." + ext;
@@ -159,7 +159,7 @@ void FFmpegScreenRecorder::start() {
 
     videoSource->apply(options_, input, argsBuilder.globalArgs());
 
-    if (!options_.audioSource.empty()) {
+    if (!isGif && !options_.audioSource.empty()) {
         auto audioSource = optionsManager_.createSource(options_.audioSource);
 
         if (!audioSource) {
@@ -172,7 +172,7 @@ void FFmpegScreenRecorder::start() {
 
     codec->apply(options_, output);
 
-    if (!options_.audioCodec.empty()) {
+    if (!isGif && !options_.audioCodec.empty()) {
         auto audioCodec = optionsManager_.createAudioCodec(options_.audioCodec);
         if (!audioCodec) {
             LOG(ERROR) << "Failed to create audio codec " << options_.audioCodec;

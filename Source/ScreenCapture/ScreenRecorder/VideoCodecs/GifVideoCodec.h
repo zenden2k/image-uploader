@@ -11,7 +11,7 @@ public:
     inline static auto CODEC_ID = "gif";
 
     GifVideoCodec()
-        : FFmpegVideoCodec("GIF", "mp4", ""){
+        : FFmpegVideoCodec("GIF", "mp4", "", false, false){
         //name_ = "GIF";
     }
 
@@ -19,14 +19,14 @@ public:
     {
         outputArgs.addArg("vcodec", "libx264");
 
-        if (Settings.useQuality) {
+        /* if (Settings.useQuality) {
             // quality: 51 (lowest) to 0 (highest)
             int crf = (51 * (100 - Settings.quality)) / 99;
             outputArgs.addArg("crf", crf);
         } else {
             outputArgs.addArg("b:v", std::to_string(Settings.bitrate) + "k");
-        }
-
+        }*/
+        outputArgs.addArg("qp", 0);
         outputArgs.setFrameRate(Settings.framerate)
             .addArg("pix_fmt", "yuv420p")
             .addArg("preset", "fast")

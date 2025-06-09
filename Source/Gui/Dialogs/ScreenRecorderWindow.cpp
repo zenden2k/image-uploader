@@ -446,7 +446,7 @@ LRESULT ScreenRecorderWindow::onTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
         CMenu trayIconMenu;
         trayIconMenu.CreatePopupMenu();
         trayIconMenu.AppendMenu(MF_STRING, ID_STOP, TR("Finish"));
-        trayIconMenu.EnableMenuItem(ID_PAUSE, MF_BYCOMMAND | (hasStarted_ ? MF_ENABLED : MF_DISABLED));
+        trayIconMenu.EnableMenuItem(ID_STOP, MF_BYCOMMAND | (hasStarted_ ? MF_ENABLED : MF_DISABLED));
 
         CString msg;
         bool enablePauseItem = true;
@@ -466,7 +466,11 @@ LRESULT ScreenRecorderWindow::onTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
         trayIconMenu.AppendMenu(MF_STRING, IDCANCEL, TR("Cancel"));
         trayIconMenu.SetMenuDefaultItem(ID_STOP);
 
+        // Ensure the window is foreground to handle menu messages correctly
+        // and allow the menu to close properly 
+        ::SetForegroundWindow(m_hWnd);
         trayIconMenu.TrackPopupMenu( TPM_LEFTALIGN | TPM_RIGHTBUTTON, pos.x, pos.y, m_hWnd);
+        PostMessage(WM_NULL);
     } else if (msg == WM_LBUTTONDBLCLK || msg == WM_LBUTTONUP) {
         SendMessage(WM_COMMAND, MAKEWPARAM(ID_STOP, 0));
     }

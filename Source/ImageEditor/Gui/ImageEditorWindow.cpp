@@ -20,7 +20,7 @@
 namespace ImageEditor {
 
 ImageEditorWindow::ImageEditorWindow(std::shared_ptr<Gdiplus::Bitmap> bitmap, bool hasTransparentPixels, ConfigurationProvider* configurationProvider, bool onlySelectRegion)
-    : horizontalToolbar_(Toolbar::orHorizontal, true)
+    : horizontalToolbar_(Toolbar::orHorizontal, !onlySelectRegion)
     , verticalToolbar_(Toolbar::orVertical)
 {
     currentDoc_ =  std::make_unique<ImageEditor::Document>(std::move(bitmap), hasTransparentPixels);
@@ -424,7 +424,7 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         HWND insertAfter = nullptr;
 //#ifndef _DEBUG
         if (!allowAltTab_) {
-            SetWindowLong(GWL_EXSTYLE, WS_EX_TOPMOST);
+            SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_TOPMOST);
         }
         insertAfter = HWND_TOPMOST;
 //#endif
@@ -539,11 +539,13 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         verticalToolbar_.ShowWindow(SW_SHOW);
         horizontalToolbar_.ShowWindow(SW_SHOW);
     }
-
-    updatePixelLabels();
-
+    if (!onlySelectRegion_) {
+        updatePixelLabels();
+    }
     canvas_->setDrawingToolType(initialDrawingTool_);
-    updateToolbarDrawingTool(initialDrawingTool_);
+    if (!onlySelectRegion_) {
+        updateToolbarDrawingTool(initialDrawingTool_);
+    }
     if (displayMode_ == wdmWindowed) {
         MONITORINFO mi;
         mi.cbSize = sizeof(mi);
@@ -921,7 +923,7 @@ void ImageEditorWindow::createToolbars()
 
     if (onlySelectRegion_) {
         CString buttonHint = CString(TR("Continue")) + _T(" (Enter)");
-        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONADDPNG), ID_CONTINUE, buttonHint));
+        horizontalToolbar_.addButton(Toolbar::Item(CString(TR("Continue")), loadToolbarIcon(IDB_ICONOK), ID_CONTINUE, buttonHint));
     } else {
         if (showUploadButton_) {
             CString fullUploadButtonText, uploadButtonText;
@@ -1109,7 +1111,9 @@ void ImageEditorWindow::OnCropChanged(int x, int y, int w, int h)
 
 void ImageEditorWindow::OnCropFinished(int x, int y, int w, int h)
 {
-    showApplyButtons();
+    if (!onlySelectRegion_) {
+        showApplyButtons();
+    }
 
     OnCropChanged(x,y,w,h);
     if (displayMode_ != wdmFullscreen) {
