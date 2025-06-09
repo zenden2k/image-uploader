@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-06-08 18:08+0300\n"
-"PO-Revision-Date: 2025-04-28 14:08+0000\n"
+"PO-Revision-Date: 2025-06-09 09:51+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/image-uploader/"
 "image-uploader/ru/>\n"
@@ -11,8 +11,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Weblate 5.12-dev\n"
 
 #: ../Source/ScreenCapture/ScreenRecorder/AudioCodecs/Mp3AudioCodec.h:35
@@ -463,7 +463,7 @@ msgstr "Аудио"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:23
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:26
 msgid "Audio codec:"
-msgstr "Аудио кодек"
+msgstr "Аудио кодек:"
 
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1935
 msgid "Audio files"
@@ -631,12 +631,12 @@ msgid "Cannot load thumbnail for image."
 msgstr "Невозможно загрузить миниатюру к файлу."
 
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1513
-#, fuzzy
-#| msgid "Cannot copy file "
 msgid ""
 "Cannot open folder '%1%'.\n"
 "%2%"
-msgstr "Не могу скопировать файл "
+msgstr ""
+"Не могу открыть папку '%1%'.\n"
+"%2%"
 
 #: ../Source/Gui/Dialogs/FloatingWindow.cpp:719
 #, c-format
@@ -835,7 +835,7 @@ msgstr "Очистить список"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:28
 msgid "Clear log"
-msgstr "Очистить"
+msgstr "Очистить лог"
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:47
 msgid "Clear server settings"
@@ -905,10 +905,8 @@ msgid "Components:"
 msgstr "Компоненты:"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:519
-#, fuzzy
-#| msgid "Documentation"
 msgid "Concatenation..."
-msgstr "Документация"
+msgstr "Склеивание..."
 
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:64
 msgid "Connection"
@@ -951,10 +949,8 @@ msgid "Converting history"
 msgstr "Конвертирование истории"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:517
-#, fuzzy
-#| msgid "Settings..."
 msgid "Converting..."
-msgstr "Параметры..."
+msgstr "Конвертирование..."
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
@@ -1054,10 +1050,8 @@ msgid "Could not find a video stream."
 msgstr "Не могу найти видеопоток."
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:203
-#, fuzzy
-#| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
-msgstr "Не найдено ссылок на изображения!"
+msgstr "Не могу найти исполняемый файл ffmpeg!"
 
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:418
 msgid "Could not find links in the given text!"
@@ -1468,10 +1462,9 @@ msgid "FTP"
 msgstr "FTP"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:122
-#, fuzzy, c-format
-#| msgid "Failed to open video file '%s'."
+#, c-format
 msgid "Failed to create the directory '%s'."
-msgstr "Не удалось открыть видеофайл '%s'."
+msgstr "Не удалось создать папку '%s'."
 
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:227
 msgid "Failed to load folder list."
@@ -2477,7 +2470,7 @@ msgstr "Свойства"
 
 #: ../Source/Gui/Dialogs/ConnectionSettingsPage.cpp:28
 msgid "Proxy type:"
-msgstr "Тип сервера:"
+msgstr "Тип прокси:"
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:18
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:24
@@ -3014,7 +3007,7 @@ msgstr "Старт"
 
 #: ../Source/Core/Upload/FileQueueUploaderPrivate.cpp:396
 msgid "Starting upload"
-msgstr "Начало загрузки"
+msgstr "Начинаю загрузку"
 
 #: ../Source/Gui/Controls/ResultsListView.cpp:22
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:58
@@ -3479,7 +3472,7 @@ msgstr "Видео бэкенд"
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:17
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:20
 msgid "Video codec:"
-msgstr "Видеокодек"
+msgstr "Видеокодек:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1702
@@ -3494,7 +3487,7 @@ msgstr "Папка для видео:"
 
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:19
 msgid "Video source:"
-msgstr "Видеоисточник"
+msgstr "Видеоисточник:"
 
 #: ../Source/Func/MediaInfoHelper.cpp:163
 msgid "Video: "
@@ -3524,10 +3517,8 @@ msgid "Waiting for child tasks"
 msgstr "Ожидание дочерних задач"
 
 #: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:232
-#, fuzzy
-#| msgid "Loading..."
 msgid "Waiting..."
-msgstr "Загрузка..."
+msgstr "Ожидание..."
 
 #: ../Source/Gui/Dialogs/ImageDownloaderDlg.cpp:91
 msgid "Watch Clipboard for URLs"
