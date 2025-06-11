@@ -1593,6 +1593,9 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
 bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 {
+    static const std::unordered_set<std::wstring> functionsBypassEnabledCheck = {
+        L"screenrecording"
+    };
     defer d([this]{
         CString func = funcToExecuteLater_;
         funcToExecuteLater_.Empty();
@@ -1607,12 +1610,12 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
     }
     if (CurPage == 3) ShowPage(wpMainPage);
 
-    if (!IsWindowEnabled()) {
-        LaunchCopy = true;
-    }
-
     CString funcName = WinUtils::StringSection(funcBody, _T(','), 0);
     CString funcParam1 = WinUtils::StringSection(funcBody, _T(','), 1);
+
+    if (!IsWindowEnabled() && functionsBypassEnabledCheck.find(funcName.GetString()) == functionsBypassEnabledCheck.end()) {
+        LaunchCopy = true;
+    }
 
     if (!funcParam1.IsEmpty()) {
         screenshotInitiator_ = static_cast<ScreenshotInitiator>(_ttoi(funcParam1));
@@ -1641,6 +1644,8 @@ bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
         return funcScreenshotDlg();
     else if (funcName == _T("screenrecordingdlg"))
         return funcScreenRecordingDlg();
+    else if (funcName == _T("screenrecording"))
+        return funcScreenRecording();
     else if (funcName == _T("regionscreenshot"))
         return funcRegionScreenshot();
     else if (funcName == _T("regionscreenshot_dontshow"))
@@ -1731,14 +1736,19 @@ bool CWizardDlg::funcScreenshotDlg()
 
 bool CWizardDlg::funcScreenRecordingDlg()
 {
-    CScreenRecordingDlg dlg;
+    CScreenRecordingDlg dlg(screenRecordingParams_);
 
     if (dlg.DoModal(m_hWnd) != IDOK) {
         return false;
     }
 
-    startScreenRecording(dlg.recordingParams());
+    screenRecordingParams_ = dlg.recordingParams();
+    onRepeatScreenRecordingAvailabilityChanged_(true); // notify subscribers
+    return funcScreenRecording();
+}
 
+bool CWizardDlg::funcScreenRecording() {
+    startScreenRecording(screenRecordingParams_);
     m_bShowWindow = true;
     return true;
 }
@@ -2054,7 +2064,17 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 }
 
 void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params) {
+    if (auto recorderWindow = screenRecorderWindow_.lock()) {
+        recorderWindow->stop();
+        return;
+    }
+
+    if (!IsWindowEnabled()) {
+        return;
+    }
+
     auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
+    screenRecorderWindow_ = screenRecorderWindow;
 
     bool isVisible = IsWindowVisible();
     ShowWindow(SW_HIDE);
@@ -2266,6 +2286,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
              CanceledByUser = true;
              //needToShow = false;
              ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
+                 onRepeatScreenRecordingAvailabilityChanged_(true);
                 startScreenRecording(screenRecordingParams_);
              }, true);
         }

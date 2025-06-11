@@ -25,7 +25,7 @@
 
 #include "atlheaders.h"
 #include "resource.h"
-#include "regionselect.h"
+#include "RegionSelect.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/WizardCommon.h"
 #include "ScreenCapture/ScreenRecorder/Common.h"
@@ -77,7 +77,7 @@ class CScreenRecordingDlg :
     public /*aero::*/CCustomDialogIndirectImpl<CScreenRecordingDlg>,
     public CWinDataExchange<CScreenRecordingDlg> {
     public:
-        CScreenRecordingDlg();
+        CScreenRecordingDlg(ScreenRecordingRuntimeParams params);
         ~CScreenRecordingDlg();
 
         enum { IDD = IDD_SCREENRECODINGDLG };

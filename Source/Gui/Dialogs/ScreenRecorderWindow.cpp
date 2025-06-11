@@ -14,6 +14,7 @@
 #include "ScreenCapture/ScreenRecorder/Sources/GDIGrabSource.h"
 #include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
+#include "Gui/Dialogs/HotkeyEditor.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -31,6 +32,7 @@ ScreenRecorderWindow::ScreenRecorderWindow():
         toolbar_(ImageEditor::Toolbar::orHorizontal, false) {
     transparentColor_ = RGB(255, 50, 56);
     memset(&trayIconGuid_, 0, sizeof(GUID));
+    hotkeys_ = std::make_unique<CHotkeyList>();
 }
 
 ScreenRecorderWindow::~ScreenRecorderWindow() {
@@ -230,12 +232,14 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         .track(shared_from_this())
     );
     timeDelegate_->setText(TR("Waiting..."));
+    registerHotkeys();
     SetTimer(kStartTimer, settings->ScreenRecordingSettings.Delay * 1000);
     return 0;
 }
 
 LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     GuiTools::ClearWindowPointer(m_hWnd);
+    unRegisterHotkeys();
     return 0;
 }
 
@@ -425,10 +429,7 @@ void ScreenRecorderWindow::updateTimeLabel() {
 }
 
 LRESULT ScreenRecorderWindow::onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
-    if (!hasStarted_) {
-        return 0;
-    }
-    screenRecorder_->stop();
+    stop();
     return 0;
 }
 
@@ -529,6 +530,57 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
 
 CString ScreenRecorderWindow::outFileName() const {
     return outFileName_;
+}
+
+void ScreenRecorderWindow::stop() {
+    if (!hasStarted_) {
+        return;
+    }
+    screenRecorder_->stop();
+}
+
+void ScreenRecorderWindow::registerHotkeys() {
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    *hotkeys_ = settings->Hotkeys;
+
+    for (size_t i = 0; i < hotkeys_->size(); i++) {
+        const auto& hotkey = (*hotkeys_)[i];
+        if (hotkey.groupId == HOTKEY_GROUP_SCREEN_RECORDER_WINDOW && hotkey.globalKey.keyCode) {
+            if (!RegisterHotKey(m_hWnd, i, hotkey.globalKey.keyModifier, hotkey.globalKey.keyCode)) {
+                const std::wstring msg = str(IuStringUtils::FormatWideNoExcept(
+                    TR("Cannot register global hotkey:\n%s.\n Maybe it is being used by another process."))
+                    % hotkey.globalKey.toString().GetString()
+                );
+
+                ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Screen Recorder Hotkeys"), msg.c_str());
+            }
+        }
+    }
+}
+
+void ScreenRecorderWindow::unRegisterHotkeys() {
+    for (size_t i = 0; i < hotkeys_->size(); i++) {
+        const auto& hotkey = (*hotkeys_)[i];
+        if (hotkey.groupId == HOTKEY_GROUP_SCREEN_RECORDER_WINDOW && hotkey.globalKey.keyCode) {
+            UnregisterHotKey(m_hWnd, i);
+        }
+    }
+    hotkeys_->clear();
+}
+
+LRESULT ScreenRecorderWindow::OnHotKey(int hotKeyID, UINT flags, UINT vk) {
+    if (hotKeyID < 0 || hotKeyID >= hotkeys_->size()) {
+        return 0;
+    }
+
+    const auto& hotkey = (*hotkeys_)[hotKeyID];
+    if (hotkey.setForegroundWindow) {
+        SetActiveWindow();
+        SetForegroundWindow(m_hWnd);
+    }
+        
+    SendMessage(WM_COMMAND, MAKEWPARAM(hotkey.commandId, 0));
+    return 0;
 }
 
 TimeDelegate::TimeDelegate(ImageEditor::Toolbar* toolbar, int itemIndex):  toolbarItemIndex_(itemIndex),

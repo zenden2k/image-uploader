@@ -28,6 +28,9 @@
 #include "HotkeySettings.h"
 #include "Gui/Controls/DialogIndirect.h"
 
+constexpr auto HOTKEY_GROUP_APP = 0;
+constexpr auto HOTKEY_GROUP_SCREEN_RECORDER_WINDOW = 1;
+
 // CHotkeyEditor
 struct MYHOTKEY
 {
@@ -142,6 +145,7 @@ class CHotkeyItem
         DWORD commandId;
         CString name;
         bool setForegroundWindow;
+        int groupId;
 
         CString GetDisplayName() const;
 
@@ -152,6 +156,7 @@ class CHotkeyItem
             globalKey.keyModifier = 0;
             setForegroundWindow = true;
             commandId = 0;
+            groupId = 0;
         }
         void Clear()
         {

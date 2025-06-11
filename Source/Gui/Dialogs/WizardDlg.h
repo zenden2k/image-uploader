@@ -44,6 +44,8 @@
 #include "Gui/Dialogs/ScreenRecordingDlg.h"
 
 class WinToastHandler;
+class ScreenRecorderWindow;
+
 constexpr int ID_PASTE = 9888;
 constexpr int ID_HOTKEY_BASE = 10000;
 constexpr int WM_MY_ADDIMAGE = WM_USER + 222;
@@ -213,6 +215,7 @@ public:
     bool funcImportVideo();
     bool funcScreenshotDlg();
     bool funcScreenRecordingDlg();
+    bool funcScreenRecording();
     bool funcRegionScreenshot(bool ShowAfter = true);
     bool funcFullScreenshot();
     bool funcWindowHandleScreenshot();
@@ -347,6 +350,7 @@ protected:
     CMyEngineList* enginelist_;
     std::unique_ptr<WinServerIconCache> serverIconCache_;
     boost::signals2::connection settingsChangedConnection_;
+    boost::signals2::signal<void(bool)> onRepeatScreenRecordingAvailabilityChanged_;
     CDragndropOverlay dragndropOverlay_;
     bool enableDragndropOverlay_ = false;
     CDragndropOverlay::ItemId dragndropOverlaySelectedItem_ = CDragndropOverlay::ItemId::kInvalid;
@@ -354,6 +358,7 @@ protected:
     std::unique_ptr<CNetworkDebugDlg> networkDebugDlg_;
 #endif
     ScreenRecordingRuntimeParams screenRecordingParams_;
+    boost::weak_ptr<ScreenRecorderWindow> screenRecorderWindow_;
 };
 
 

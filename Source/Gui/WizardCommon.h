@@ -36,7 +36,8 @@ constexpr int IDC_DOWNLOADIMAGES = IU_IDC_CONST + 7;
 constexpr int IDC_REUPLOADIMAGES = IU_IDC_CONST + 8;
 constexpr int IDC_SHORTENURL = IU_IDC_CONST + 9;
 constexpr int IDC_LASTREGIONSCREENSHOT = IU_IDC_CONST + 10;
-constexpr int IDC_RECORDSCREEN = IU_IDC_CONST + 11;
+constexpr int IDC_RECORDSCREENDLG = IU_IDC_CONST + 11;
+constexpr int IDC_RECORDSCREEN = IU_IDC_CONST + 12;
 
 enum ScreenshotInitiator {
     siDefault = 0,

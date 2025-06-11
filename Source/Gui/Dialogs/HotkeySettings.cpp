@@ -23,6 +23,7 @@
 #include "TraySettings.h"
 #include "HotkeyEditor.h"
 #include "Gui/GuiTools.h"
+#include "Gui/Dialogs/ScreenRecorderWindow.h"
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
@@ -200,6 +201,9 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Capture Last Region"), _T("lastregionscreenshot"), IDM_LASTREGIONSCREENSHOT, false);
     AddItem(TR("Freehand Capture"),_T("freeformscreenshot"), IDM_FREEFORMSCREENSHOT, false);
     AddItem(TR("Screen Recording Window"), _T("screenrecordingdlg"), IDM_SCREENRECORDINGDIALOG, false);
+    AddItem(TR("Screen Recording (start)"), _T("screenrecording"), IDM_SCREENRECORDINGSTART, false);
+    AddItem(TR("Screen Recording (stop)"), _T("screenrecording_stop"), ScreenRecorderWindow::ID_STOP, false, 0, 0, HOTKEY_GROUP_SCREEN_RECORDER_WINDOW);
+    AddItem(TR("Screen Recording (pause)"), _T("screenrecording_pause"), ScreenRecorderWindow::ID_PAUSE, false, 0, 0, HOTKEY_GROUP_SCREEN_RECORDER_WINDOW);
     AddItem(TR("Show program window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);
@@ -242,7 +246,7 @@ bool CHotkeyList::operator==( const CHotkeyList& c)
     return false;
 }
 
-void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow, WORD code, WORD modif)
+void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow, WORD code, WORD modif, int groupId)
 {
     CHotkeyItem hi;
     hi.localKey.keyCode = code;
@@ -252,6 +256,7 @@ void CHotkeyList::AddItem(CString name, CString func, DWORD commandId, bool setF
     hi.name = name;
     hi.commandId = commandId;
     hi.setForegroundWindow = setForegroundWindow;
+    hi.groupId = groupId;
     push_back(hi);
 }
 

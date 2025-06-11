@@ -63,7 +63,9 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
 
 }
 
-CScreenRecordingDlg::CScreenRecordingDlg() {
+CScreenRecordingDlg::CScreenRecordingDlg(ScreenRecordingRuntimeParams params)
+    : recordingParams_(std::move(params))
+{
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     m_WhiteBr.CreateSolidBrush(RGB(255,255,255));
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();

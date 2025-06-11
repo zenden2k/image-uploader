@@ -13,6 +13,8 @@
 #include "Gui/Components/trayicon.h"
 #include "Gui/Dialogs/ScreenRecordingDlg.h"
 
+class CHotkeyList;
+
 class TimeDelegate : public ImageEditor::Toolbar::ToolbarItemDelegate {
 public:
    // enum { kOffset = 7, kSquareSize = 16, kPadding = 3 };
@@ -57,6 +59,7 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
         COMMAND_ID_HANDLER(IDCANCEL, onCancel)
         COMMAND_ID_HANDLER(ID_STOP, onStop)
         COMMAND_ID_HANDLER(ID_PAUSE, onPause)
+        MSG_WM_HOTKEY(OnHotKey)
         //REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -70,6 +73,8 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
     DialogResult doModal(HWND parent, const ScreenRecordingRuntimeParams& params);
     BOOL PreTranslateMessage(MSG* pMsg) override;
     CString outFileName() const;
+    void stop();
+
 private:
 
     // Handler prototypes (uncomment arguments if needed):
@@ -88,12 +93,15 @@ private:
     LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onTrayIcon(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnHotKey(int HotKeyID, UINT flags, UINT vk);
 
     DialogResult dialogResult_;
     void endDialog(DialogResult dr);
     void createToolbar();
     void updateTimeLabel();
-
+    void registerHotkeys();
+    void unRegisterHotkeys();
+    
     CIcon icon_, iconSmall_;
     CRect captureRect_;
     COLORREF transparentColor_;
@@ -109,6 +117,7 @@ private:
     GUID trayIconGuid_;
     bool hasStarted_ = false;
     ScreenRecordingRuntimeParams screenRecordingParams_;
+    std::unique_ptr<CHotkeyList> hotkeys_;
 }; 
 
 #endif

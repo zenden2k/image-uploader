@@ -2048,6 +2048,8 @@ IDI_ICONEXTERNALLINK    ICON                    "res\\icon-external-link.ico"
 
 IDI_ICONRECORD          ICON                    "res\\icon_record.ico"
 
+IDI_ICONSTARTRECORD     ICON                    "res\\icon_start_record.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

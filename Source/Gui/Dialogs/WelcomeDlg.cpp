@@ -97,7 +97,8 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
     ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
-    ListBox.AddString(TR("Screen Recording..."), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONRECORD), true, 0, true);
+    ListBox.AddString(TR("Screen Recording..."), 0, IDC_RECORDSCREENDLG, loadSmallIcon(IDI_ICONRECORD), true, 0, true);
+    ListBox.AddString(TR("Start Recording"), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONSTARTRECORD));
 
     ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
 #ifdef IU_ENABLE_MEDIAINFO
@@ -176,8 +177,13 @@ LRESULT CWelcomeDlg::OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, H
     return 0;
 }
 
-LRESULT CWelcomeDlg::OnBnClickedRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+LRESULT CWelcomeDlg::OnBnClickedRecordScreenDlg(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     WizardDlg->executeFunc(_T("screenrecordingdlg"));
+    return 0;
+}
+
+LRESULT CWelcomeDlg::OnBnClickedRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
+    WizardDlg->executeFunc(_T("screenrecording"));
     return 0;
 }
 

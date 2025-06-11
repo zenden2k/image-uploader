@@ -45,7 +45,7 @@ class CHotkeyList: public std::vector<CHotkeyItem>
         bool Changed() const;
 
         CHotkeyItem& getByFunc(const CString &func);
-        void AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow = true, WORD Code = 0, WORD modif = 0);
+        void AddItem(CString name, CString func, DWORD commandId, bool setForegroundWindow = true, WORD Code = 0, WORD modif = 0, int groupId = 0);
         CHotkeyList& operator=( const CHotkeyList& );
         bool operator==( const CHotkeyList& );
         CString toString() const;

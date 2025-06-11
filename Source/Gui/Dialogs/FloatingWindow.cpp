@@ -711,13 +711,14 @@ void CFloatingWindow::RegisterHotkeys()
 
     for (size_t i = 0; i < m_hotkeys.size(); i++)
     {
-        if (m_hotkeys[i].globalKey.keyCode)
+        const auto& hotkey = m_hotkeys[i];
+        if (hotkey.groupId == HOTKEY_GROUP_APP && hotkey.globalKey.keyCode)
         {
-            if (!RegisterHotKey(m_hWnd, i, m_hotkeys[i].globalKey.keyModifier, m_hotkeys[i].globalKey.keyCode))
+            if (!RegisterHotKey(m_hWnd, i, hotkey.globalKey.keyModifier, hotkey.globalKey.keyCode))
             {
                 CString msg;
                 msg.Format(TR("Cannot register global hotkey:\n%s.\n Maybe it is being used by another process."),
-                           static_cast<LPCTSTR>(m_hotkeys[i].globalKey.toString()));
+                    static_cast<LPCTSTR>(hotkey.globalKey.toString()));
                 ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Hotkeys"), msg);
             }
         }
@@ -726,7 +727,7 @@ void CFloatingWindow::RegisterHotkeys()
 
 LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 {
-    if (HotKeyID < 0 || HotKeyID > static_cast<int>(m_hotkeys.size()) - 1)
+    if (HotKeyID < 0 || HotKeyID >= m_hotkeys.size())
         return 0;
     if (m_bIsUploading)
         return 0;
@@ -750,10 +751,11 @@ LRESULT CFloatingWindow::OnHotKey(int HotKeyID, UINT flags, UINT vk)
 
 void CFloatingWindow::UnRegisterHotkeys()
 {
-    for (size_t i = 0; i < m_hotkeys.size(); i++)
-    {
-        if (m_hotkeys[i].globalKey.keyCode)
+    for (size_t i = 0; i < m_hotkeys.size(); i++) {
+        const auto& hotkey = m_hotkeys[i];
+        if (hotkey.groupId == HOTKEY_GROUP_APP && hotkey.globalKey.keyCode) {
             UnregisterHotKey(m_hWnd, i);
+        }
     }
     m_hotkeys.clear();
 }
@@ -799,6 +801,11 @@ LRESULT CFloatingWindow::OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HW
 
 LRESULT CFloatingWindow::OnScreenRecordingDialog(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     wizardDlg_->executeFunc(_T("screenrecordingdlg"));
+    return 0;
+}
+
+LRESULT CFloatingWindow::OnScreenRecordingStart(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->executeFunc(_T("screenrecording"));
     return 0;
 }
 
