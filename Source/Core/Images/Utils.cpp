@@ -1375,7 +1375,7 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
     BitmapData bdSrc;
     Rect r(0, 0, img->GetWidth(), img->GetHeight());
     if (img->LockBits(&r, ImageLockModeRead, PixelFormat32bppARGB, &bdSrc) == Ok) {
-        defer<void> t([img, &bdSrc] {
+        defer d([img, &bdSrc] {
             img->UnlockBits(&bdSrc);
         });
 
@@ -1391,7 +1391,7 @@ bool SaveBitmapAsWebp(Gdiplus::Bitmap* img, CString fileName, IStream* stream, b
         if (!outDataSize || !outData) {
             throw IOException("WebPEncodeRGBA failed");
         }
-        defer<void> d([outData] {
+        defer d2([outData] {
             WebPFree(outData);
         });
         bool result = true;

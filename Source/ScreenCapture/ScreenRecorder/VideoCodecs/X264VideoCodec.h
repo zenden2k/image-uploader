@@ -38,7 +38,7 @@ public:
             .addArg("movflags", /*Settings.X264.Preset*/"+faststart");
     }
 
-    std::vector<std::pair<std::string, std::string>> presets() const override {
+    IdNameArray presets() const override {
         return {
             { "ultrafast", "ultrafast" },
             { "superfast", "superfast" },

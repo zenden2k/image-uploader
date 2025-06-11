@@ -323,7 +323,7 @@ int func() {
         free(cacheDir);
     }
 #endif
-    defer<void> d([] {
+    defer d([] {
         xdg_mime_set_dirs(nullptr);
         xdg_mime_shutdown();
     });

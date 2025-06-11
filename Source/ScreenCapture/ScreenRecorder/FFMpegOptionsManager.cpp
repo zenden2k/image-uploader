@@ -10,10 +10,14 @@
 #include "VideoCodecs/NvencVideoCodec.h"
 #include "VideoCodecs/QsvVideoCodec.h"
 #include "VideoCodecs/AmfVideoCodec.h"
+#include "VideoCodecs/VP8VideoCodec.h"
 #include "VideoCodecs/VP9VideoCodec.h"
+#include "VideoCodecs/XvidVideoCodec.h"
+#include "VideoCodecs/WebPVideoCodec.h"
 #include "VideoCodecs/GifVideoCodec.h"
 #include "AudioCodecs/AacAudioCodec.h"
 #include "AudioCodecs/Mp3AudioCodec.h"
+#include "AudioCodecs/OpusAudioCodec.h"
 #include "Sources/DDAGrabSource.h"
 #include "Sources/GDIGrabSource.h"
 
@@ -92,7 +96,9 @@ IdNameArray GetDirectshowInputDevices(const IID& inputCategory) {
 
 FFMpegOptionsManager::FFMpegOptionsManager() {
     videoCodecFactories_[X264VideoCodec::CODEC_ID] = [] { return std::make_unique<X264VideoCodec>(); };
+    videoCodecFactories_[VP8VideoCodec::CODEC_ID] = [] { return std::make_unique<VP8VideoCodec>(); };
     videoCodecFactories_[VP9VideoCodec::CODEC_ID] = [] { return std::make_unique<VP9VideoCodec>(); };
+    videoCodecFactories_[XvidVideoCodec::CODEC_ID] = [] { return std::make_unique<XvidVideoCodec>(); };
     videoCodecFactories_[NvencVideoCodec::H264_CODEC_ID] = [] { return NvencVideoCodec::createH264(); };
     videoCodecFactories_[NvencVideoCodec::HEVC_CODEC_ID] = [] { return NvencVideoCodec::createHevc(); };
     videoCodecFactories_[QsvVideoCodec::H264_CODEC_ID] = [] { return QsvVideoCodec::createH264(); };
@@ -100,6 +106,7 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
     videoCodecFactories_[AmfVideoCodec::H264_CODEC_ID] = [] { return AmfVideoCodec::createH264(); };
     videoCodecFactories_[AmfVideoCodec::HEVC_CODEC_ID] = [] { return AmfVideoCodec::createHevc(); };
     videoCodecFactories_[GifVideoCodec::CODEC_ID] = [] { return std::make_unique<GifVideoCodec>(); };
+    videoCodecFactories_[WebPVideoCodec::CODEC_ID] = [] { return std::make_unique<WebPVideoCodec>(); };
 
     videoSourceFactories_[GDIGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<GDIGrabSource>(); };
     videoSourceFactories_[DDAGrabSource::SOURCE_ID] = [](const std::string & param) { return std::make_unique<DDAGrabSource>(); };
@@ -111,6 +118,7 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
 
     audioCodecFactories_[AacAudioCodec::CODEC_ID] = [] { return std::make_unique<AacAudioCodec>(); };
     audioCodecFactories_[Mp3AudioCodec::CODEC_ID] = [] { return std::make_unique<Mp3AudioCodec>(); };
+    audioCodecFactories_[OpusAudioCodec::CODEC_ID] = [] { return std::make_unique<OpusAudioCodec>(); };
 }
 
 std::optional<FFMpegOptionsManager::VideoCodecInfo> FFMpegOptionsManager::getVideoCodecInfo(const std::string& codecId) {

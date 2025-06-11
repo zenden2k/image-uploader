@@ -1593,7 +1593,7 @@ bool CWizardDlg::funcAddImages(bool AnyFiles)
 
 bool CWizardDlg::executeFunc(CString funcBody, bool fromCmdLine)
 {
-    defer<void> f([this]{
+    defer d([this]{
         CString func = funcToExecuteLater_;
         funcToExecuteLater_.Empty();
         if (!func.IsEmpty()) {

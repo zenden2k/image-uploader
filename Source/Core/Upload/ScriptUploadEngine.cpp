@@ -659,7 +659,7 @@ int CScriptUploadEngine::checkAuth() {
         }
     }
 
-    defer<void> d([&] { // Run at function exit
+    defer d([&] { // Run at function exit
         if (newAuthMode_) {
             serverSync_->endAuth();
         }

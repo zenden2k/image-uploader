@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <string>
 #include <thread>
+#include <utility>
 #include <functional>
 
 #include "CoreTypes.h"
@@ -38,22 +39,34 @@ long round(float number);
 int gettimeofday(struct timeval * tp, struct timezone * tzp);
 #endif
 
+#ifndef defer
+
 template <typename T>
 class defer {
-    std::function<T()> mFunctor;
+    T mFunctor;
 public:
     defer& operator=(const defer&) = delete;
     defer(const defer&) = delete;
 
-    defer(std::function<T()> functor) : mFunctor(functor) {}
-    ~defer() {
+    defer(T functor) : mFunctor(std::move(functor)) {
+    }
+
+    ~defer() noexcept {
         try {
             mFunctor();
         } catch (const std::exception& ex) {
             LOG(ERROR) << ex.what();
+        } catch (...) {
+            LOG(ERROR) << "Unknown exception";
         }
     }
 };
+
+/* #define TOKEN_CONCAT_NX(a, b) a##b
+#define TOKEN_CONCAT(a, b) TOKEN_CONCAT_NX(a, b)
+#define defer(f) deferrer TOKEN_CONCAT(__deferred, __COUNTER__)(f)
+*/
+#endif
 
 struct freer
 {

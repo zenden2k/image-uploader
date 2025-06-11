@@ -21,10 +21,14 @@ set(HEADER_LIST
     ScreenRecorder/VideoCodecs/QsvVideoCodec.h
     ScreenRecorder/VideoCodecs/AmfVideoCodec.h
     ScreenRecorder/VideoCodecs/X264VideoCodec.h
+    ScreenRecorder/VideoCodecs/VP8VideoCodec.h
     ScreenRecorder/VideoCodecs/VP9VideoCodec.h
+    ScreenRecorder/VideoCodecs/XvidVideoCodec.h
     ScreenRecorder/VideoCodecs/GifVideoCodec.h
+    ScreenRecorder/VideoCodecs/WebPVideoCodec.h
     ScreenRecorder/AudioCodecs/AacAudioCodec.h
     ScreenRecorder/AudioCodecs/Mp3AudioCodec.h
+    ScreenRecorder/AudioCodecs/OpusAudioCodec.h
     ScreenRecorder/Sources/FFmpegSource.h
     ScreenRecorder/Sources/DDAGrabSource.h
     ScreenRecorder/Sources/GDIGrabSource.h

@@ -33,7 +33,7 @@ public:
         return std::make_unique<QsvVideoCodec>("HEVC (Intel Quick Sync)", HEVC_CODEC_ID, "");
     }
 
-    std::vector<std::pair<std::string, std::string>> presets() const override {
+    IdNameArray presets() const override {
         return {
             { "6", "faster" },
             { "5", "fast" },

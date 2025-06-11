@@ -39,7 +39,7 @@ public:
         return res;
     }
 
-    virtual std::string defaultQuality() const {
+    std::string defaultQuality() const override {
         return "5";
     }
 };

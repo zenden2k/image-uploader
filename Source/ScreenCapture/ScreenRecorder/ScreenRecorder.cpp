@@ -1,24 +1,5 @@
 #include "ScreenRecorder.h"
 
-
-#include <filesystem>
-#include <chrono>
-#include <fstream>
-
-#include <boost/process.hpp>
-#include <boost/asio.hpp>
-//#include <boost/process/windows.hpp>
-#include <boost/format.hpp>
-
-
-#include "ArgsBuilder/FFmpegArgsBuilder.h"
-#include "Core/Logging.h"
-#include "Core/Utils/CoreUtils.h"
-#include "Sources/DDAGrabSource.h"
-#include "Sources/GDIGrabSource.h"
-#include "VideoCodecs/NvencVideoCodec.h"
-#include "VideoCodecs/X264VideoCodec.h"
-
 ScreenRecorder::ScreenRecorder(std::string outFile, CRect rect):
                                     outFilePath_(std::move(outFile)),
                                     captureRect_(rect){

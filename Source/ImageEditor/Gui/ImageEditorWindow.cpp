@@ -1514,7 +1514,7 @@ bool ImageEditorWindow::CopyBitmapToClipboardAndClose(ClipboardFormat format) {
         ::SetFocus(m_view.m_hWnd);
     }
     const bool res = saveDocument(format);
-    if (res && displayMode_ == wdmFullscreen &&  !(GetKeyState(VK_SHIFT) & 0x8000)) {
+    if (res && displayMode_ == wdmFullscreen &&  (GetKeyState(VK_SHIFT) & 0x8000)) {
         EndDialog(drCopiedToClipboard);
     }
     return res;

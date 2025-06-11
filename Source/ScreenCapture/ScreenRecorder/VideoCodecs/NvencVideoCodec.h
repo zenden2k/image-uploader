@@ -37,7 +37,7 @@ public:
         return std::make_unique<NvencVideoCodec>("HEVC (NVENC)", "hevc_nvenc", "Encode to Mp4: HEVC with AAC audio using NVenc");
     }
 
-    std::vector<std::pair<std::string, std::string>> presets() const override {
+    IdNameArray presets() const override {
         return {
             { "0", "default" }, // default
             { "1", "slow" }, // hq 2 passes

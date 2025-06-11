@@ -267,54 +267,130 @@ std::string StrReplace(std::string text, std::string s, std::string d)
 
 bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
 {
-    FILE *stream = FopenUtf8(utf8Filename.c_str(), "rb");
-    if (!stream) {
+    std::ifstream file(utf8Filename, std::ios::binary);
+    if (!file) {
         return false;
     }
-    fseek(stream, 0L, SEEK_END);
-    size_t size = ftell(stream);
-    rewind(stream);
 
-    unsigned char buf[3]={0,0,0};
-    size_t bytesRead = fread(buf, 1, 3, stream);    
-
-    if (bytesRead == 3 && buf[0] == 0xEF && buf[1] == 0xBB && buf[2] == 0xBF) // UTF8 Byte Order Mark (BOM)
-    {    
-        size -= 3;    
+    // Get file size
+    file.seekg(0, std::ios::end);
+    if (!file) {
+        return false;
     }
-    else if (bytesRead >=2 && buf[0] == 0xFF && buf[1] == 0xFE) {
-        // UTF-16LE encoding
-        size -= 2;
-        fseek( stream, 2L,  SEEK_SET );
-        std::u16string res;
-        int charCount = size/2;
-        res.resize(charCount);
-        size_t charsRead = fread(&res[0], 2, charCount, stream);    
-        res[charsRead]=0;
-        fclose(stream);
-        data = Utf16ToUtf8(res);
+
+    auto fileSize = static_cast<size_t>(file.tellg());
+    file.seekg(0, std::ios::beg);
+    if (!file) {
+        return false;
+    }
+
+    if (fileSize == 0) {
+        data.clear();
         return true;
-    } 
-    else {
-        // no BOM was found; seeking backward
-        fseek( stream, 0L,  SEEK_SET );
     }
+
+    // Read first bytes to determine encoding
+    std::vector<unsigned char> header(std::min(fileSize, size_t { 4 }));
+    file.read(reinterpret_cast<char*>(header.data()), header.size());
+    if (!file && !file.eof()) {
+        return false;
+    }
+
+    size_t headerBytesRead = static_cast<size_t>(file.gcount());
+    if (headerBytesRead == 0) {
+        return false;
+    }
+
+    size_t contentOffset = 0;
+    bool isUtf16Le = false;
+    bool isUtf16Be = false;
+
+    // Check BOM
+    if (headerBytesRead >= 3 && header[0] == 0xEF && header[1] == 0xBB && header[2] == 0xBF) {
+        // UTF-8 BOM
+        contentOffset = 3;
+    } else if (headerBytesRead >= 2) {
+        if (header[0] == 0xFF && header[1] == 0xFE) {
+            // UTF-16 LE BOM
+            isUtf16Le = true;
+            contentOffset = 2;
+        } else if (header[0] == 0xFE && header[1] == 0xFF) {
+            // UTF-16 BE BOM
+            isUtf16Be = true;
+            contentOffset = 2;
+        }
+    }
+
+    // Handle UTF-16
+    if (isUtf16Le || isUtf16Be) {
+        if (fileSize < contentOffset) {
+            data.clear();
+            return true;
+        }
+
+        size_t utf16Size = fileSize - contentOffset;
+        // For odd size, read only even number of bytes
+        size_t utf16BytesToRead = utf16Size - (utf16Size % 2);
+
+        if (utf16BytesToRead == 0) {
+            data.clear();
+            return true;
+        }
+
+        file.seekg(contentOffset, std::ios::beg);
+        if (!file) {
+            return false;
+        }
+
+        std::vector<char16_t> utf16Data(utf16BytesToRead / 2);
+        file.read(reinterpret_cast<char*>(utf16Data.data()), utf16BytesToRead);
+
+        size_t charsRead = static_cast<size_t>(file.gcount()) / 2;
+        // Resize to actual read size
+        utf16Data.resize(charsRead);
+
+        // Convert byte order for UTF-16 BE
+        if (isUtf16Be) {
+            for (auto& ch : utf16Data) {
+                ch = (ch << 8) | (ch >> 8); // swap bytes
+            }
+        }
+
+        std::u16string utf16Str(utf16Data.begin(), utf16Data.end());
+
+        try {
+            data = Utf16ToUtf8(utf16Str);
+            return true;
+        } catch (const std::exception& ex) {
+            LOG(ERROR) << "UTF-16 to UTF-8 conversion failed: " << ex.what();
+            return false;
+        }
+    }
+
+    // Handle UTF-8 (or file without BOM)
+    file.seekg(contentOffset, std::ios::beg);
+    if (!file) {
+        return false;
+    }
+
+    size_t contentSize = fileSize - contentOffset;
+
     try {
-        data.resize(size);
-    } catch ( std::exception& ex ) {
-        LOG(ERROR) << ex.what();
-        fclose(stream);
+        data.resize(contentSize);
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << "Failed to allocate memory: " << ex.what();
         return false;
     }
-   
-    size_t bytesRead2 = fread(&data[0], 1, size, stream); 
-    if (bytesRead2 == size) {
-        fclose(stream);
-        return true;
+
+    if (contentSize > 0) {
+        file.read(data.data(), contentSize);
+
+        // Use actual bytes read, not expected size
+        size_t bytesRead = static_cast<size_t>(file.gcount());
+        data.resize(bytesRead);
     }
 
-    fclose(stream);
-    return false;
+    return true;
 }
 
 bool PutFileContents(const std::string& utf8Filename, const std::string& content)
@@ -515,11 +591,6 @@ void OnThreadExit(void (*func)()) {
                 func();
             }
             exitFuncs_.clear();
-            /*while (!exit_funcs.empty())
-            {
-                exit_funcs.top()();
-                exit_funcs.pop();
-            }*/
         }
         void add(ThreadExitFunctionPointer func)
         {

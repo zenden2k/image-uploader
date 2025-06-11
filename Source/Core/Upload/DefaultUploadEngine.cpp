@@ -409,7 +409,7 @@ bool CDefaultUploadEngine::DoAction(UploadAction& Action)
         }
     }
 
-    defer<void>([this] {
+    defer d([this] {
         m_NetworkClient->setReferer({});
         m_NetworkClient->cleanupAfter();
     });
