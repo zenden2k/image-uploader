@@ -33,8 +33,9 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
     HistorySettings.EnableDownloading = true;
     HistorySettings.HistoryConverted = false;
 #endif
+#ifdef _WIN32
     ScreenRecordingSettings.Backend = IsWindows8OrGreater() ? ScreenRecordingStruct::ScreenRecordingBackendDirectX: ScreenRecordingStruct::ScreenRecordingBackendFFmpeg;
-    //ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath = "ffmpeg";
+#endif
 }
 
 CommonGuiSettings::~CommonGuiSettings() {
@@ -218,7 +219,9 @@ bool CommonGuiSettings::PostSaveSettings(SimpleXml &xml) {
 
 
 FFMpegSettingsStruct::FFMpegSettingsStruct() {
+#ifdef _WIN32
     VideoSourceId = IsWindows8OrGreater() ? "ddagrab" : "gdigrab";
+#endif
 }
 
 void FFMpegSettingsStruct::bind(SettingsNode& node) {
