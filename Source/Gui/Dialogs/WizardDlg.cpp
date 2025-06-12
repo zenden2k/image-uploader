@@ -79,6 +79,7 @@
 #ifdef IU_ENABLE_NETWORK_DEBUGGER
     #include "Gui/Dialogs/NetworkDebugDlg.h"
 #endif
+#include "ScreenCapture/WindowsHider.h"
 
 using namespace Gdiplus;
 namespace
@@ -673,6 +674,7 @@ LRESULT CWizardDlg::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*
     HICON oldIcon = helpButton_.SetIcon(nullptr);
     DestroyIcon(oldIcon);
     using namespace WinToastLib;
+    // TODO: do not use WinToast singleton
     if (WinToast::isCompatible() && WinToast::instance()->isInitialized()) {
         WinToast::instance()->clear();
     }
@@ -2076,20 +2078,17 @@ void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params
     auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
     screenRecorderWindow_ = screenRecorderWindow;
 
-    bool isVisible = IsWindowVisible();
-    ShowWindow(SW_HIDE);
+    WindowsHider hider(m_hWnd);
+
     if (screenRecorderWindow->doModal(m_hWnd, params) == ScreenRecorderWindow::drSuccess) {
         CreatePage(wpMainPage);
         CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
         mainDlg->AddToFileList(screenRecorderWindow->outFileName());
         mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
         mainDlg->ThumbsView.SelectLastItem();
+        ShowWindow(SW_SHOWNORMAL);
         mainDlg->ThumbsView.SetFocus();
-
         ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
-    }
-    /*if (isVisible)*/ {
-        ShowWindow(SW_SHOW);
     }
 }
 
@@ -2122,8 +2121,15 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     }
     bool CanceledByUser = false;
     bool Result = false;
-    if(needToShow)
+    defer d([&] {
+        if (needToShow) {
+            GuiTools::DisableDwmAnimations(m_hWnd, FALSE);
+        }
+    });
+    if (needToShow) {
+        GuiTools::DisableDwmAnimations(m_hWnd);
         ShowWindow(SW_HIDE);
+    }
     EnableWindow(false);
     CScreenCaptureEngine engine;
 
@@ -2693,4 +2699,14 @@ void CWizardDlg::showHelpButtonMenu(HWND hWndCtl) {
     excludeArea.cbSize = sizeof(excludeArea);
     excludeArea.rcExclude = rc;
     popupMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd, &excludeArea);
+}
+
+bool CWizardDlg::isScreenRecorderRunning() const {
+    return !screenRecorderWindow_.expired();
+}
+
+void CWizardDlg::stopScreenRecording() {
+    if (auto recorderWindow = screenRecorderWindow_.lock()) {
+        recorderWindow->stop();
+    }
 }

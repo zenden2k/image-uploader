@@ -510,7 +510,7 @@ WtlGuiSettings::WtlGuiSettings() :
 
     ScreenshotSettings.Format = 1;
     ScreenshotSettings.Quality = 85;
-    ScreenshotSettings.WindowHidingDelay = 450;
+    ScreenshotSettings.WindowHidingDelay = 200;
     ScreenshotSettings.Delay = 1;
     ScreenshotSettings.BrushColor = RGB(255, 0, 0);
     ScreenshotSettings.ShowForeground = false;

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:46+0300\n"
+"POT-Creation-Date: 2025-06-12 17:59+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -108,7 +108,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr "%s - швидке налаштування"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:885
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:887
 #, c-format
 msgid "%s - Updates available"
 msgstr "%s - доступні оновлення"
@@ -153,18 +153,18 @@ msgstr "&Відвантажити"
 msgid "(edited)"
 msgstr "(змінено)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:980
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1012
 #, fuzzy
 #| msgid "(the link has been copied to the clipboard)"
 msgid "(the code has been copied to the clipboard)"
 msgstr "(посилання скопійовано до буфера обміну)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:957
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:936
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:989
 msgid "(the link has been copied to the clipboard)"
 msgstr "(посилання скопійовано до буфера обміну)"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:427
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:428
 msgid "< Back"
 msgstr "< Назад"
 
@@ -181,7 +181,7 @@ msgstr "Доступна нова версія:"
 msgid "About Image Uploader"
 msgstr "Про Image Uploader"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2676
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2682
 msgid "About..."
 msgstr "Про програму ..."
 
@@ -300,7 +300,7 @@ msgstr "Додавати текст до ескізів"
 msgid "Add text to image"
 msgstr "Додавати текст до зображення"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:608
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:631
 msgid "Add to Wizard"
 msgstr "Додати до майстра"
 
@@ -364,8 +364,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1708
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1946
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1710
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1948
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1458
 msgid "All files"
 msgstr "Усі файли"
@@ -374,8 +374,8 @@ msgstr "Усі файли"
 msgid "All files have been successfully uploaded."
 msgstr "Усі файли було успішно відвантажено."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:559
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:170
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:171
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:98
 msgid "All monitors"
 msgstr "Усі монітори"
@@ -408,14 +408,14 @@ msgstr "Під час завантаження сценарію сталася �
 msgid "An error occured while receiving update information from server."
 msgstr "Сталася помилка при отриманні інформації оновлення з сервера."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:504
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:512
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1470
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1974
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1472
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1976
 msgid "Any file"
 msgstr "Будь-який файл"
 
@@ -435,7 +435,7 @@ msgstr ""
 "Ви справді хочете розмістити текст і логотип в одному й тому ж місці на "
 "зображенні?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1854
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1856
 msgid "Are you sure to quit?"
 msgstr "Ви дійсно хочете вийти?"
 
@@ -486,13 +486,13 @@ msgstr "Аудіо"
 msgid "Audio codec:"
 msgstr "Звукові файли"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1945
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1947
 msgid "Audio files"
 msgstr "Звукові файли"
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:25
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:28
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:89
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:91
 msgid "Audio source:"
 msgstr ""
 
@@ -614,9 +614,9 @@ msgstr "Типово"
 #: ../Source/Gui/Dialogs/InputDialog.cpp:54
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:90
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:467
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:85
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:69
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:87
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
@@ -663,8 +663,8 @@ msgid ""
 "%2%"
 msgstr "Не вдалося скопіювати файл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:720
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:746
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:561
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -675,7 +675,7 @@ msgstr ""
 "%s.\n"
 " Можеливо воно використовується іншим процесом."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:544
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:66
 msgid "Capture Last Region"
@@ -685,24 +685,24 @@ msgstr "Знімок останньої області"
 msgid "Capture Rectangular Region"
 msgstr "Знімок прямокутної області"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:542
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:60
 msgid "Capture Selected Area"
 msgstr "Знімок прямокутної області..."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:63
 msgid "Capture Selected Object"
 msgstr "Знімок вибраного об'єкта..."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:548
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:62
 msgid "Capture Selected Window"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:88
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:90
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:73
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:63
 #, fuzzy
@@ -710,14 +710,14 @@ msgstr ""
 msgid "Capture cursor"
 msgstr "Знімок останньої області"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:59
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Знімок активного вікна..."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:546
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:569
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:58
 #: ../Source/Gui/Win7JumpList.cpp:243
@@ -757,7 +757,7 @@ msgstr "Змінювати ширину:"
 msgid "Check file types before upload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2678
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2684
 msgid "Check for Updates"
 msgstr "Перевірити наявність оновлень"
 
@@ -774,12 +774,12 @@ msgstr "Перевірка оновлень..."
 msgid "Choose executable file"
 msgstr "Виберіть виконуваний файл"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1976
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1978
 msgid "Choose files"
 msgstr "Виберіть файли"
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1827
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1829
 msgid "Choose folder"
 msgstr "Вибрати папку"
 
@@ -787,11 +787,11 @@ msgstr "Вибрати папку"
 msgid "Choose folder..."
 msgstr "Виберіть папку..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1949
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1951
 msgid "Choose media file"
 msgstr "Виберіть мультимедійний файл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:603
 msgid "Choose monitor"
 msgstr "Виберіть монітор"
 
@@ -827,7 +827,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1711
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1713
 msgid "Choose video file"
 msgstr "Виберіть відеофайл"
 
@@ -881,7 +881,7 @@ msgstr "Очищати тло вікна"
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "Натисніть кнопку \"Відвантажити\", щоб почати процес відвантаження."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:986
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1018
 msgid "Click on this message to view details..."
 msgstr "Клацніть це повідомлення, щоб переглянути подробиці..."
 
@@ -932,7 +932,7 @@ msgstr "Назва компонента"
 msgid "Components:"
 msgstr "Компоненти:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:524
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:533
 #, fuzzy
 #| msgid "Documentation"
 msgid "Concatenation..."
@@ -974,11 +974,11 @@ msgstr "Контрибуторам:"
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr "Перетворення UNC шляху \"\\\\\" на \"file://\""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:400
 msgid "Converting history"
 msgstr "Конвертування історії"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1049,7 +1049,7 @@ msgstr ""
 msgid "Copy link to view page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:600
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:623
 msgid "Copy to Clipboard"
 msgstr "Копіювати до буфера обміну"
 
@@ -1087,7 +1087,7 @@ msgstr "Не вдалося прочитати пакет %s"
 msgid "Could not find a video stream."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:205
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:208
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1102,17 +1102,17 @@ msgstr "У цьому тексті знайти посилання не вдал
 msgid "Could not read package %s"
 msgstr "Не вдалося прочитати пакет %s"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:947
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:949
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 "Не вдалося зберегти файл параметрів. Для отримання додаткової інформації "
 "перегляньте журнал помилок."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:929
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:961
 msgid "Could not upload screenshot :("
 msgstr "Не вдалося відвантажити знімок екрана :("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:336
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:337
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1168,8 +1168,8 @@ msgstr "Створення нового шаблона ескізу"
 msgid "Crop"
 msgstr "Обрізати"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:561
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:161
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:162
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:89
 msgid "Current monitor"
 msgstr "Поточний монітор"
@@ -1252,7 +1252,7 @@ msgstr "Вимкнути локалізацію"
 msgid "Display video file information on resulting picture"
 msgstr "Відображати інформацію про відеофайл на зображенні"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1852
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1854
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:345
 msgid "Do not ask again"
 msgstr ""
@@ -1265,7 +1265,7 @@ msgstr "Не запускати нові копії програми з трею
 msgid "Do nothing"
 msgstr "Нічого не робити"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2677
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2683
 msgid "Documentation"
 msgstr "Документація (російською)"
 
@@ -1392,9 +1392,9 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:268
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:273
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:125
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:205
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:504
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:127
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:208
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:512
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:131
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:149
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
@@ -1464,11 +1464,11 @@ msgstr "Виконувані"
 msgid "Execute Squirrel script for each task (file)"
 msgstr "Виконувати сценарій Squirrel для кожного завдання (файлу)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:251
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:633
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:422
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1840
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:273
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:660
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:423
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
 msgid "Exit"
 msgstr "Вихід"
 
@@ -1508,7 +1508,7 @@ msgstr ""
 msgid "FTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:124
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:126
 #, c-format
 msgid "Failed to create the directory '%s'."
 msgstr ""
@@ -1536,7 +1536,7 @@ msgstr "Отримання файлової системи..."
 msgid "File"
 msgstr "Файл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:837
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:869
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "Файл \"%s\" відвантажено на сервер %s..."
@@ -1647,8 +1647,8 @@ msgstr "Зафарбований прямокутник"
 msgid "Filters"
 msgstr "Фільтри"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:62
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:449
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:64
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:456
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 msgid "Finish"
 msgstr "Готово"
@@ -1656,6 +1656,12 @@ msgstr "Готово"
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:289
 msgid "Finish >"
 msgstr "Готово >"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:534
+#, fuzzy
+#| msgid "Screenshot Action"
+msgid "Finish Screen Recording"
+msgstr "Дія зі знімком екрана"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
 #: ../Source/Gui/UploadListModel.cpp:161
@@ -1750,7 +1756,7 @@ msgstr "Колір рамки:"
 msgid "Frames layout"
 msgstr "Макет розташування кадрів"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:551
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:61
 msgid "Freehand Capture"
@@ -1768,8 +1774,8 @@ msgstr "З Інтернету"
 msgid "Full information"
 msgstr "Детально"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:402
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:424
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:416
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:439
 msgid "Full screen"
 msgstr ""
 
@@ -1840,13 +1846,13 @@ msgstr "Усі файли"
 msgid "Height:"
 msgstr "Висота:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:315
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:316
 msgid "Help"
 msgstr "Довідка"
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:424
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:425
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1844
 msgid "Hide"
 msgstr "Сховати"
 
@@ -1908,11 +1914,11 @@ msgstr ""
 "Редактор зображень не вміє працювати з анімованими зображеннями. Якщо ви "
 "відредагуєте цей файл, анімацію буде втрачено. Бажаєте продовжити?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:928
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:930
 msgid "Image Settings and Server Selection"
 msgstr "Параметри зображення та вибір сервера"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:95
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:97
 #, fuzzy
 #| msgid "Image Uploader Updates"
 msgid "Image Uploader (screen recording)"
@@ -1940,8 +1946,8 @@ msgstr "Параметри зображення"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1468
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1972
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1470
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1974
 msgid "Images"
 msgstr "Зображення"
 
@@ -1949,7 +1955,7 @@ msgstr "Зображення"
 msgid "Images editor:"
 msgstr "Редактор зображень:"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
 msgid "Images from web"
 msgstr "Зображення з Інтернету"
 
@@ -1967,7 +1973,7 @@ msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:562
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:103 ../Source/Gui/Win7JumpList.cpp:267
@@ -1979,7 +1985,7 @@ msgstr "Імпортувати відеофайл"
 msgid "In queue"
 msgstr "У черзі"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1828
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1830
 msgid "Including subdirectories"
 msgstr "Включаючи підкаталоги"
 
@@ -2174,7 +2180,7 @@ msgstr "Помилка перевірки MD5 для файлу"
 msgid "MD5 check of the update package failed "
 msgstr "Помилка перевірки MD5 пакету оновлення"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:418
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:419
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2190,12 +2196,12 @@ msgstr "Середньою кнопкою:"
 msgid "Mime-type"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:588
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:115
 msgid "Monitor"
 msgstr "Монітор"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:90
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:92
 #, fuzzy
 #| msgid "Monitor"
 msgid "Monitor:"
@@ -2237,7 +2243,7 @@ msgid "Name:"
 msgstr "Ім'я:"
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2683
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2689
 msgid "Network Debugger"
 msgstr ""
 
@@ -2254,7 +2260,7 @@ msgid "New profile"
 msgstr "Новий профіль"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:717
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:719
 msgid "Next >"
 msgstr "Далі >"
 
@@ -2345,7 +2351,7 @@ msgstr "Відкрити сторінку завантаження"
 msgid "Open in Web Browser"
 msgstr "Відкрити у веб-браузері"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:604
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:627
 msgid "Open in Wizard"
 msgstr "Відкрити у майстрі"
 
@@ -2358,7 +2364,7 @@ msgstr "Відкрити в зовнішньому редакторі"
 msgid "Open in folder"
 msgstr "Відкрити у папці"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:615
 msgid "Open in the editor"
 msgstr "Відкрити в редакторі"
 
@@ -2366,9 +2372,9 @@ msgstr "Відкрити в редакторі"
 msgid "Open screenshot in the editor"
 msgstr "Відкрити знімок у редакторі"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:626
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2680
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:653
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2686
 msgid "Open screenshots folder"
 msgstr "Відкрити папку зі знімками екрана"
 
@@ -2393,6 +2399,12 @@ msgstr ""
 msgid "Open with..."
 msgstr ""
 
+#: ../Source/Core/Upload/DefaultUploadEngine.cpp:70
+#, fuzzy
+#| msgid "File uploading was cancelled by user."
+msgid "Operation was cancelled by user."
+msgstr "Відвантаження файлу скасовано користувачем."
+
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:145
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
@@ -2415,8 +2427,8 @@ msgstr "Параметри:"
 msgid "Password:"
 msgstr "Пароль:"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:533
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:556
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
 #: ../Source/Gui/Dialogs/MainDlg.cpp:168
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
@@ -2434,9 +2446,9 @@ msgstr "Вставляти HTML за Ctrl+V"
 msgid "Paste a link to shorten it:"
 msgstr "Введіть посилання, яке слід скоротити:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:65
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:454
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:513
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:461
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
 msgid "Pause"
 msgstr ""
 
@@ -2470,7 +2482,7 @@ msgstr ""
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Вкажіть параметри перевірки автентичності для сервера '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:400
 msgid "Please wait while your history is being converted..."
 msgstr "Зачекайте, поки історія конвертується..."
 
@@ -2525,7 +2537,7 @@ msgstr "Обробляти зображення перед відвантаже�
 msgid "Processing folder:"
 msgstr "Обробка папки:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:542
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:543
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2574,8 +2586,8 @@ msgstr "Якість:"
 msgid "Queued"
 msgstr "Черга"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:559
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
 msgid "Quick upload image from clipboard"
 msgstr "Відвантажити зображення з буфера"
 
@@ -2642,8 +2654,8 @@ msgstr "Видалити цей обліковий запис зі списку 
 msgid "Resize mode:"
 msgstr "Режим зміни розміру:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:459
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:513
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:466
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
 msgid "Resume"
 msgstr ""
 
@@ -2660,7 +2672,7 @@ msgstr "Повторити"
 msgid "Reupload"
 msgstr "Перевідвантажити"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
 msgid "Reupload images"
 msgstr "Перевідвантажити зображення"
 
@@ -2754,7 +2766,7 @@ msgstr "Масштабувати до:"
 msgid "Screen Capture"
 msgstr "Знімок екрана"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:107
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:109
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recoding"
@@ -2764,6 +2776,12 @@ msgstr "Дія зі знімком екрана"
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording"
+msgstr "Дія зі знімком екрана"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#, fuzzy
+#| msgid "Screenshot Action"
+msgid "Screen Recording (cancel)"
 msgstr "Дія зі знімком екрана"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
@@ -2790,35 +2808,36 @@ msgstr "Дія зі знімком екрана"
 msgid "Screen Recording Window"
 msgstr "Дія зі знімком екрана"
 
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:646
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording..."
 msgstr "Дія зі знімком екрана"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:110
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "Screen recording backend: %s"
 msgstr "Дія зі знімком екрана"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:564
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 msgid "Screenshot"
 msgstr "Знімок екрана"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:616
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:639
 msgid "Screenshot Action"
 msgstr "Дія зі знімком екрана"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:994
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2385
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1026
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2391
 msgid "Screenshot has been copied to clipboard."
 msgstr "Знімок екрана збережено до буфера обміну."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:987
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:988
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1019
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1020
 msgid "Screenshot was uploaded"
 msgstr "Знімок екрана відвантажено"
 
@@ -2879,13 +2898,13 @@ msgstr "Виберіть папку"
 msgid "Select region"
 msgstr "Виберіть область"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:403
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:417
 #, fuzzy
 #| msgid "Select Region..."
 msgid "Select region..."
 msgstr "Вибір області..."
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:404
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:418
 #, fuzzy
 #| msgid "Select Region..."
 msgid "Select window..."
@@ -2985,8 +3004,8 @@ msgid "Session total:"
 msgstr "Усього за сесію:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:631
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:81
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:108
 msgid "Settings"
@@ -3008,7 +3027,7 @@ msgstr "Налаштування..."
 msgid "Shell context menu integration"
 msgstr "Інтегрувати до контекстного меню оболонки"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:905
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:937
 msgid "Short URL"
 msgstr "Коротка URL-адреса"
 
@@ -3030,17 +3049,17 @@ msgstr "Скоротити посилання через %s"
 msgid "Shorten URLs"
 msgstr "Скорочені URL-адреси"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:623
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:650
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:95
 msgid "Shorten a link"
 msgstr "Скоротити посилання"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
 msgid "Shorten a link from the clipboard"
 msgstr "Скоротити посилання з буфера"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:433
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:456
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr "Скорочення URL-адреси \"%s\" через %s"
@@ -3055,7 +3074,7 @@ msgstr "Знімок вибраної прямокутної ділянки..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2689
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2695
 msgid "Show Error Log"
 msgstr "Показати журнал помилок"
 
@@ -3075,12 +3094,12 @@ msgstr "Показати журнал для цього файлу"
 msgid "Show preview for video files in file list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:625
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:652
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 msgid "Show program window"
 msgstr "Відобразити вікно програми"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
 msgid "Show results of last upload"
 msgstr "Показати результати останнього відвантаження"
 
@@ -3125,10 +3144,11 @@ msgstr "Початковий код"
 msgid "Specify account..."
 msgstr "Вкажіть обліковий запис..."
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:84
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:86
 msgid "Start"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:647
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:101
 #, fuzzy
 #| msgid "Screenshot Action"
@@ -3156,7 +3176,7 @@ msgstr "Крок"
 msgid "Stop"
 msgstr "Зупинити"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:641
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
 msgid "Stop uploading"
 msgstr "Припинити відвантаження"
 
@@ -3333,7 +3353,7 @@ msgstr "Ескізи"
 msgid "Time"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:86
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:88
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:70
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Timeout:"
@@ -3407,11 +3427,11 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "Неможливо відвантажити зображення"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2354
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2360
 msgid "Unable to make screenshot!"
 msgstr "Не вдається зробити знімок екрана!"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:908
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:940
 msgid "Unable to shorten the link..."
 msgstr "Не вдалося скоротити посилання..."
 
@@ -3460,12 +3480,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr "Відвантаження не вдалося. Ще одна спроба (%d) ..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:515
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:538
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
 msgid "Upload files"
 msgstr "Відвантажити файли"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:516
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
 msgid "Upload folder"
 msgstr "Відвантажити папку"
@@ -3497,7 +3517,7 @@ msgstr "Обмеження швидкості завантаження (на п�
 msgid "Upload to %s"
 msgstr "Відвантажити на %s"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:596
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:619
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:931
 msgid "Upload to Web"
 msgstr "Відвантажити до Інтернету"
@@ -3521,7 +3541,7 @@ msgstr "Відвантажені зображення:"
 msgid "Uploading"
 msgstr "Відвантаження"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:930
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:932
 msgid "Uploading Files to Server"
 msgstr "Відвантаження файлів на сервер"
 
@@ -3545,7 +3565,7 @@ msgstr ""
 msgid "Uploading module"
 msgstr "Відвантаження модуля"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:842
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:874
 msgid "Uploading screenshot"
 msgstr "Відвантаження знімка екрана"
 
@@ -3611,9 +3631,9 @@ msgid "Video codec:"
 msgstr "Відео:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1707
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1944
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1973
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1709
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1946
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1975
 msgid "Video files"
 msgstr "Відеофайли"
 
@@ -3642,13 +3662,13 @@ msgstr "Переглянути"
 msgid "View BBCode/HTML codes"
 msgstr "Переглянути BBCode/HTML-коди"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:106
 msgid "View Media File Information"
 msgstr "Інформація про медіафайл"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:909
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:930
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:941
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 msgid "View log for details."
 msgstr "Щоб отримати додаткову інформацію, перегляньте журнал помилок."
 
@@ -3656,7 +3676,7 @@ msgstr "Щоб отримати додаткову інформацію, пер�
 msgid "Waiting for child tasks"
 msgstr "Очікування дочірніх завдань"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:234
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:237
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -3695,7 +3715,7 @@ msgstr ""
 msgid "Width:"
 msgstr "Ширина:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:405
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:419
 #, fuzzy
 #| msgid "Preview Window"
 msgid "Window"
@@ -3705,7 +3725,7 @@ msgstr "Вікно попереднього перегляду"
 msgid "Windows Explorer integration"
 msgstr "Інтеграція до провідника Windows"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2562
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2568
 #, fuzzy
 #| msgid "Upload progress"
 msgid "Work in progress"
@@ -3810,7 +3830,7 @@ msgstr "кілька файлів"
 msgid "not selected"
 msgstr "не вибрано"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:87
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:89
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "sec"
@@ -3835,6 +3855,16 @@ msgstr "Юрій Петрашко (a.k.a. YuriPet)"
 #| msgid "Random server"
 msgid "unknown server"
 msgstr "Випадкові сервера"
+
+#, fuzzy
+#~| msgid "File uploading was cancelled by user."
+#~ msgid "Upload canceled by user"
+#~ msgstr "Відвантаження файлу скасовано користувачем."
+
+#, fuzzy
+#~| msgid "Screenshot Action"
+#~ msgid "Start/Stop Recording"
+#~ msgstr "Дія зі знімком екрана"
 
 #~ msgid "Select an action:"
 #~ msgstr "Виберіть дію:"

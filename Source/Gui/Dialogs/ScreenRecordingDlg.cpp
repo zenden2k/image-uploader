@@ -34,6 +34,8 @@
 #include "RegionSelect.h"
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
+#include "ScreenCapture/WindowsHider.h"
+
 using namespace ScreenCapture;
 
 namespace {
@@ -60,31 +62,6 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
     }
     return result;
 }
-
-class WindowsHider {
-    HWND hwnd_ {}, parent_ {};
-    bool isParentVisible_ = false;
-
-public:
-    WindowsHider(HWND hwnd) {
-        hwnd_ = hwnd;
-        parent_ = ::GetParent(hwnd);
-
-        ::ShowWindow(hwnd_, SW_HIDE);
-        if (parent_) {
-            isParentVisible_ = ::IsWindowVisible(parent_);
-            ::ShowWindow(parent_, SW_HIDE);
-        }
-    }
-
-    ~WindowsHider() {
-        if (isParentVisible_) {
-            ::ShowWindow(parent_, SW_SHOW);
-          
-        }
-        ::ShowWindow(hwnd_, SW_SHOW);
-    }
-};
 
 }
 
@@ -254,13 +231,13 @@ LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, H
     using namespace ImageEditor;
 
     WindowsHider hider(m_hWnd);
-
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     ImageEditorConfigurationProvider configProvider;
 
     CScreenCaptureEngine engine;
     engine.captureScreen(false);
     engine.setMonitorMode(kAllMonitors, NULL);
-    engine.setDelay(50);
+    engine.setDelay(settings->ScreenshotSettings.WindowHidingDelay);
 
     std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
 
@@ -305,10 +282,10 @@ LRESULT CScreenRecordingDlg::OnClickedWindow(WORD wNotifyCode, WORD wID, HWND hW
 
 LRESULT CScreenRecordingDlg::OnClickedSelectWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     WindowsHider hider(m_hWnd);
-
+    auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     bool onlyTopWindows = true;
     CScreenCaptureEngine engine;
-    engine.setDelay(50);
+    engine.setDelay(settings->ScreenshotSettings.WindowHidingDelay);
     engine.setMonitorMode(kAllMonitors, NULL);
     engine.captureScreen(false);
     //const auto [monitorMode, monitor] = getSelectedMonitor();
@@ -378,6 +355,7 @@ LRESULT CScreenRecordingDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 }
 
 LRESULT CScreenRecordingDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled){
+    GuiTools::DisableDwmAnimations(m_hWnd);
     EndDialog(IDOK);
     return 0;
 }

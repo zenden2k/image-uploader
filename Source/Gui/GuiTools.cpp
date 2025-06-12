@@ -875,4 +875,11 @@ HICON GetWindowIcon(HWND hwnd) {
     return hIcon;
 }
 
+bool DisableDwmAnimations(HWND hwnd, BOOL disable) {
+    return SUCCEEDED(DwmSetWindowAttribute(hwnd,
+        DWMWA_TRANSITIONS_FORCEDISABLED,
+        &disable,
+        sizeof(disable)));
+}
+
 }

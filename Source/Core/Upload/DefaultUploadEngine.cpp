@@ -32,6 +32,7 @@
 #include "ServerSync.h"
 #include "Core/Utils/TextUtils.h"
 #include "Core/Utils/DesktopUtils.h"
+#include "Core/i18n/Translator.h"
 
 CDefaultUploadEngine::CDefaultUploadEngine(ServerSync* serverSync, ErrorMessageCallback errorCallback) : CAbstractUploadEngine(serverSync, std::move(errorCallback)), mt_(randomDevice_())
 {
@@ -63,10 +64,13 @@ int CDefaultUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParam
         } else if (task->type() == UploadTask::TypeSearchByImageUrl) {
             res = doSearchImageByUrl(std::dynamic_pointer_cast<SearchByImageUrlTask>(task), params);
         } else {
-            UploadError(ErrorInfo::mtError, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
+            UploadError(true, "Upload task of type '" + task->toString() + "' is not supported", 0, false);
         }
+    } catch (const INetworkClient::AbortedException& ex) {
+        UploadError(false, _("Operation was cancelled by user."), 0, false);
+        res = 0;
     } catch(std::exception& ex) {
-        UploadError(ErrorInfo::mtError, ex.what(), 0, false);
+        UploadError(false, ex.what(), 0, false);
         res = 0;
     }
     if (!res && fatalError_)
@@ -235,8 +239,9 @@ bool CDefaultUploadEngine::DoUploadAction(UploadAction& Action, bool bUpload)
         }
 
         return ReadServerResponse(Action);
-    }
-    catch (std::exception& ex) {
+    } catch (const INetworkClient::AbortedException& ex) {
+        throw;
+    } catch (const std::exception& ex) {
         LOG(ERROR) << ex.what() << std::endl;
         return false;
     }
@@ -252,9 +257,10 @@ bool CDefaultUploadEngine::DoGetAction(UploadAction& Action)
             return false;
         }
         Result = ReadServerResponse(Action);
-    }
-    catch (...)
-    {
+    } catch (const INetworkClient::AbortedException& ex) {
+        throw;
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what() << std::endl;
         return false;
     }
     return Result;

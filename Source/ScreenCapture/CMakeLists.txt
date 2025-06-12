@@ -41,11 +41,13 @@ set(LIB_LIST )
     
 if(WIN32)
     SET(OPTIONS WIN32)
-    list(APPEND SRC_LIST 
+    list(APPEND SRC_LIST
+        WindowsHider.cpp
         ScreenRecorder/DXGIScreenRecorder.cpp
         ScreenRecorder/DXGIOptionsManager.cpp
     )
-    list(APPEND HEADER_LIST 
+    list(APPEND HEADER_LIST
+        WindowsHider.h
         ScreenRecorder/DXGIScreenRecorder.h
         ScreenRecorder/DXGIOptionsManager.h
         ScreenRecorder/DXGIOptions.h

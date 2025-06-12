@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 09:46+0300\n"
+"POT-Creation-Date: 2025-06-12 17:59+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Croatian <https://hosted.weblate.org/projects/image-uploader/"
@@ -104,7 +104,7 @@ msgstr ""
 msgid "%s - Quick Setup"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:885
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:887
 #, c-format
 msgid "%s - Updates available"
 msgstr ""
@@ -150,16 +150,16 @@ msgstr "&Pošalji"
 msgid "(edited)"
 msgstr "(uređen)"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:980
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1012
 msgid "(the code has been copied to the clipboard)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:904
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:957
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:936
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:989
 msgid "(the link has been copied to the clipboard)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:427
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:428
 msgid "< Back"
 msgstr "< Nazad"
 
@@ -176,7 +176,7 @@ msgstr ""
 msgid "About Image Uploader"
 msgstr "O 'Image Uploader'"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2676
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2682
 msgid "About..."
 msgstr "O programu"
 
@@ -303,7 +303,7 @@ msgstr "Dodaj tekst na minijaturu"
 msgid "Add text to image"
 msgstr "Dodaj tekst slici"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:608
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:631
 msgid "Add to Wizard"
 msgstr "Dodaj u čarobnjaka"
 
@@ -369,8 +369,8 @@ msgstr ""
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:349
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1708
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1946
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1710
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1948
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:1458
 msgid "All files"
 msgstr "Sve datoteke"
@@ -379,8 +379,8 @@ msgstr "Sve datoteke"
 msgid "All files have been successfully uploaded."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:559
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:170
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:582
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:171
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:98
 msgid "All monitors"
 msgstr ""
@@ -415,14 +415,14 @@ msgstr ""
 msgid "An error occured while receiving update information from server."
 msgstr "Greška pri preuzimanju obnove sa poslužitelja."
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:504
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:512
 msgid ""
 "An error occurred during screen recording. For details, please check the "
 "error log."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1470
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1974
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1472
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1976
 msgid "Any file"
 msgstr "Neka datoteka"
 
@@ -440,7 +440,7 @@ msgstr "Primjeni"
 msgid "Are you sure to place text and logo in the same position on image?"
 msgstr "Postavljanje teksta i logotipa na isto mjesto?"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1854
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1856
 msgid "Are you sure to quit?"
 msgstr "Sigurni ste da želite prekinuti rad?"
 
@@ -489,13 +489,13 @@ msgstr ""
 msgid "Audio codec:"
 msgstr "Zvučne datoteke"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1945
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1947
 msgid "Audio files"
 msgstr "Zvučne datoteke"
 
 #: ../Source/Gui/Dialogs/DXGISettingsPage.cpp:25
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:28
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:89
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:91
 msgid "Audio source:"
 msgstr ""
 
@@ -617,9 +617,9 @@ msgstr ""
 #: ../Source/Gui/Dialogs/InputDialog.cpp:54
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:90
 #: ../Source/Gui/Dialogs/NewFolderDlg.cpp:38
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:467
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:85
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:69
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:474
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:87
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:51
 #: ../Source/Gui/Dialogs/ServerFolderSelect.cpp:79
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
@@ -662,8 +662,8 @@ msgid ""
 "%2%"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:720
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:551
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:746
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:561
 #, c-format
 msgid ""
 "Cannot register global hotkey:\n"
@@ -674,7 +674,7 @@ msgstr ""
 "%s.\n"
 " Možda ga rabi drugi proces."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:544
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:567
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:201
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:66
 msgid "Capture Last Region"
@@ -684,18 +684,18 @@ msgstr ""
 msgid "Capture Rectangular Region"
 msgstr "Uhvati pravokutnik"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:542
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:60
 msgid "Capture Selected Area"
 msgstr "Uhvati odabrano područje"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:550
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:573
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:199
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:63
 msgid "Capture Selected Object"
 msgstr "Uhvati odabrani objekt"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:548
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:571
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:200
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:62
 #, fuzzy
@@ -703,7 +703,7 @@ msgstr "Uhvati odabrani objekt"
 msgid "Capture Selected Window"
 msgstr "Snimi aktivni prozor"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:88
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:90
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:73
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:63
 #, fuzzy
@@ -711,14 +711,14 @@ msgstr "Snimi aktivni prozor"
 msgid "Capture cursor"
 msgstr "Uhvati sa sjenom"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:547
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:570
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:198
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:59
 #: ../Source/Gui/Win7JumpList.cpp:251
 msgid "Capture the Active Window"
 msgstr "Snimi aktivni prozor"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:546
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:569
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:197
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:58
 #: ../Source/Gui/Win7JumpList.cpp:243
@@ -760,7 +760,7 @@ msgstr "Promjeni širinu:"
 msgid "Check file types before upload"
 msgstr "Obradi slike prije slanja"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2678
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2684
 msgid "Check for Updates"
 msgstr "Provjera ažuriranja"
 
@@ -779,12 +779,12 @@ msgstr "Provjera dostupnih ažuriranja..."
 msgid "Choose executable file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1976
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1978
 msgid "Choose files"
 msgstr ""
 
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:181
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1827
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1829
 msgid "Choose folder"
 msgstr ""
 
@@ -792,11 +792,11 @@ msgstr ""
 msgid "Choose folder..."
 msgstr "Odabir mape..."
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1949
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1951
 msgid "Choose media file"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:580
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:603
 msgid "Choose monitor"
 msgstr ""
 
@@ -832,7 +832,7 @@ msgid "Choose servers"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:352
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1711
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1713
 msgid "Choose video file"
 msgstr ""
 
@@ -892,7 +892,7 @@ msgstr "Očisti pozadinu prozora"
 msgid "Click button \"Upload\" for starting process of uploading."
 msgstr "Kliknite \"Pošalji\" za početak slanja."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:986
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1018
 msgid "Click on this message to view details..."
 msgstr "Klikni ovdje za detalje..."
 
@@ -943,7 +943,7 @@ msgstr "Ime komponente"
 msgid "Components:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:524
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:533
 #, fuzzy
 #| msgid "Connection settings"
 msgid "Concatenation..."
@@ -987,11 +987,11 @@ msgstr ""
 msgid "Convert UNC path \"\\\\\" to \"file://\""
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:400
 msgid "Converting history"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:531
 #, fuzzy
 #| msgid "Settings..."
 msgid "Converting..."
@@ -1068,7 +1068,7 @@ msgstr "Klikabilne sličice"
 msgid "Copy link to view page"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:600
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:623
 msgid "Copy to Clipboard"
 msgstr "Kopiraj u međuspremnik"
 
@@ -1110,7 +1110,7 @@ msgstr "Neuspješno učitavanje popisa mape."
 msgid "Could not find a video stream."
 msgstr "Could not find links in given text!"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:205
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:208
 #, fuzzy
 #| msgid "Could not find links in the given text!"
 msgid "Could not find ffmpeg executable!"
@@ -1125,15 +1125,15 @@ msgstr "Could not find links in given text!"
 msgid "Could not read package %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:947
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:949
 msgid "Could not save settings file. See error log for details."
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:929
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:961
 msgid "Could not upload screenshot :("
 msgstr "Ne mogu poslati snimku ekrana:("
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:336
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:337
 #, c-format
 msgid ""
 "Couldn't load servers list file \"servers.xml\"!\n"
@@ -1189,8 +1189,8 @@ msgstr ""
 msgid "Crop"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:561
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:161
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:584
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:162
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:89
 msgid "Current monitor"
 msgstr ""
@@ -1273,7 +1273,7 @@ msgstr ""
 msgid "Display video file information on resulting picture"
 msgstr "Pokaži info o videu na završnoj slici"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1852
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1854
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:345
 msgid "Do not ask again"
 msgstr ""
@@ -1286,7 +1286,7 @@ msgstr "Ne pokreći novu instancu programa iz statusnog retka"
 msgid "Do nothing"
 msgstr "Ne radi ništa"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2677
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2683
 msgid "Documentation"
 msgstr ""
 
@@ -1409,9 +1409,9 @@ msgstr "Unos proizvoljnog teksta:"
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:268
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:273
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:194
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:125
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:205
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:504
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:127
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:208
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:512
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:131
 #: ../Source/Gui/Dialogs/ScreenRecordingSettingsPage.cpp:149
 #: ../Source/Gui/Dialogs/SearchByImageDlg.cpp:74
@@ -1481,11 +1481,11 @@ msgstr "Izvršne"
 msgid "Execute Squirrel script for each task (file)"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:251
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:633
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:422
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1840
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:273
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:660
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:218
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:423
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
 msgid "Exit"
 msgstr "Izlaz"
 
@@ -1525,7 +1525,7 @@ msgstr ""
 msgid "FTP"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:124
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:126
 #, fuzzy, c-format
 #| msgid "Failed to load folder list."
 msgid "Failed to create the directory '%s'."
@@ -1555,7 +1555,7 @@ msgstr ""
 msgid "File"
 msgstr "Datoteka"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:837
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:869
 #, c-format
 msgid "File \"%s\" is beeing uploaded to server %s.."
 msgstr "Datoteka \"%s\" je slana na poslužitelj %s.."
@@ -1657,8 +1657,8 @@ msgstr ""
 msgid "Filters"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:62
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:449
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:64
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:456
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:229
 msgid "Finish"
 msgstr "Završi"
@@ -1666,6 +1666,12 @@ msgstr "Završi"
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:289
 msgid "Finish >"
 msgstr "Završi >"
+
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:534
+#, fuzzy
+#| msgid "Screenshot Action"
+msgid "Finish Screen Recording"
+msgstr "Akcija uslikavanja"
 
 #: ../Source/Core/Upload/UploadTask.cpp:376
 #: ../Source/Gui/UploadListModel.cpp:161
@@ -1759,7 +1765,7 @@ msgstr "Boja okvira:"
 msgid "Frames layout"
 msgstr "Izgled okvira"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:551
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:574
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:202
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:61
 msgid "Freehand Capture"
@@ -1777,8 +1783,8 @@ msgstr "Sa interneta"
 msgid "Full information"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:402
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:424
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:416
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:439
 msgid "Full screen"
 msgstr ""
 
@@ -1847,13 +1853,13 @@ msgstr "Video datoteke"
 msgid "Height:"
 msgstr "Visina:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:315
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:316
 msgid "Help"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/LogWindow.cpp:205
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:424
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:425
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1844
 msgid "Hide"
 msgstr "Sakrij"
 
@@ -1915,11 +1921,11 @@ msgid ""
 "animation will be lost. Do you wish to continue?"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:928
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:930
 msgid "Image Settings and Server Selection"
 msgstr "Postavke slika i odabir poslužitelja"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:95
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:97
 #, fuzzy
 #| msgid "Image Uploader Updates"
 msgid "Image Uploader (screen recording)"
@@ -1947,8 +1953,8 @@ msgstr "Postavke slike"
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:162
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:165
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:59
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1468
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1972
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1470
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1974
 msgid "Images"
 msgstr "Slike"
 
@@ -1956,7 +1962,7 @@ msgstr "Slike"
 msgid "Images editor:"
 msgstr "Uređivač slika:"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
 msgid "Images from web"
 msgstr "Slike sa interneta"
 
@@ -1974,7 +1980,7 @@ msgstr ""
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:243
 #: ../Source/Gui/Components/DragndropOverlay.cpp:34
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:562
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:194
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:103 ../Source/Gui/Win7JumpList.cpp:267
@@ -1986,7 +1992,7 @@ msgstr "Uvezi video datoteku"
 msgid "In queue"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1828
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1830
 msgid "Including subdirectories"
 msgstr "Ubaci i podmape"
 
@@ -2181,7 +2187,7 @@ msgstr ""
 msgid "MD5 check of the update package failed "
 msgstr ""
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:418
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:419
 msgid ""
 "MediaInfo.dll Not found! \n"
 "Getting technical information of media files will not be accessible."
@@ -2197,12 +2203,12 @@ msgstr "Srednji gumb klik:"
 msgid "Mime-type"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:565
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:588
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:115
 msgid "Monitor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:90
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:92
 msgid "Monitor:"
 msgstr ""
 
@@ -2242,7 +2248,7 @@ msgid "Name:"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:23
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2683
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2689
 msgid "Network Debugger"
 msgstr ""
 
@@ -2259,7 +2265,7 @@ msgid "New profile"
 msgstr ""
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:171
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:717
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:719
 msgid "Next >"
 msgstr "Dalje >"
 
@@ -2352,7 +2358,7 @@ msgstr ""
 msgid "Open in Web Browser"
 msgstr "Otvori u Web pretraživaču"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:604
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:627
 msgid "Open in Wizard"
 msgstr "Otvori u čarobnjaku"
 
@@ -2365,7 +2371,7 @@ msgstr ""
 msgid "Open in folder"
 msgstr "Otvori u mapi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:592
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:615
 msgid "Open in the editor"
 msgstr ""
 
@@ -2373,9 +2379,9 @@ msgstr ""
 msgid "Open screenshot in the editor"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:626
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2680
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:653
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2686
 msgid "Open screenshots folder"
 msgstr ""
 
@@ -2400,6 +2406,12 @@ msgstr ""
 msgid "Open with..."
 msgstr ""
 
+#: ../Source/Core/Upload/DefaultUploadEngine.cpp:70
+#, fuzzy
+#| msgid "File uploading was cancelled by user."
+msgid "Operation was cancelled by user."
+msgstr "Korisnik je prekinuo slanje."
+
 #: ../Source/Gui/Dialogs/ResultsPanel.cpp:145
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:87
 msgid "Options"
@@ -2422,8 +2434,8 @@ msgstr ""
 msgid "Password:"
 msgstr "Zaporka:"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:533
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:556
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:211
 #: ../Source/Gui/Dialogs/MainDlg.cpp:168
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:239
 msgid "Paste"
@@ -2441,9 +2453,9 @@ msgstr ""
 msgid "Paste a link to shorten it:"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:65
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:454
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:513
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:67
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:461
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
 msgid "Pause"
 msgstr ""
 
@@ -2475,7 +2487,7 @@ msgstr "Ponovo pokrenite aplikaciju kako bi primjenili novi jezik."
 msgid "Please specify authentication settings for '%s' server!"
 msgstr "Odrediti dozvole za poslužitelj '%s'!"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:399
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:400
 msgid "Please wait while your history is being converted..."
 msgstr ""
 
@@ -2530,7 +2542,7 @@ msgstr "Obradi slike prije slanja"
 msgid "Processing folder:"
 msgstr "Obrada mape:"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:542
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:543
 #, c-format
 msgid ""
 "Profile \"%s\" not found.\n"
@@ -2576,8 +2588,8 @@ msgstr "Kvaliteta:"
 msgid "Queued"
 msgstr "U nizu"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:559
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
 msgid "Quick upload image from clipboard"
 msgstr ""
 
@@ -2644,8 +2656,8 @@ msgstr ""
 msgid "Resize mode:"
 msgstr "Promjena veličine:"
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:459
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:513
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:466
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:522
 msgid "Resume"
 msgstr ""
 
@@ -2662,7 +2674,7 @@ msgstr ""
 msgid "Reupload"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:217
 msgid "Reupload images"
 msgstr ""
 
@@ -2759,7 +2771,7 @@ msgstr "Scaling"
 msgid "Screen Capture"
 msgstr "Uslikavanje ekrana"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:107
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:109
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recoding"
@@ -2769,6 +2781,12 @@ msgstr "Akcija uslikavanja"
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording"
+msgstr "Akcija uslikavanja"
+
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#, fuzzy
+#| msgid "Screenshot Action"
+msgid "Screen Recording (cancel)"
 msgstr "Akcija uslikavanja"
 
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:206
@@ -2795,37 +2813,38 @@ msgstr "Akcija uslikavanja"
 msgid "Screen Recording Window"
 msgstr "Akcija uslikavanja"
 
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:646
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:100
 #, fuzzy
 #| msgid "Screenshot Action"
 msgid "Screen Recording..."
 msgstr "Akcija uslikavanja"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:108
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:110
 #, fuzzy, c-format
 #| msgid "Screenshot Action"
 msgid "Screen recording backend: %s"
 msgstr "Akcija uslikavanja"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:541
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:564
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:195
 #: ../Source/Gui/Dialogs/MainDlg.cpp:74
 msgid "Screenshot"
 msgstr "Snimak ekrana"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:616
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:639
 msgid "Screenshot Action"
 msgstr "Akcija uslikavanja"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:994
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2385
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1026
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2391
 #, fuzzy
 #| msgid "Screenshot was saved to clipboard."
 msgid "Screenshot has been copied to clipboard."
 msgstr "Snimka ekrana je spremljena u međuspremnik."
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:987
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:988
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1019
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:1020
 msgid "Screenshot was uploaded"
 msgstr "Snimka ekrana je poslana"
 
@@ -2888,13 +2907,13 @@ msgstr "Odabir mape"
 msgid "Select region"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:403
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:417
 #, fuzzy
 #| msgid "Shot of Selected Region..."
 msgid "Select region..."
 msgstr "Snimak odabranog dijela..."
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:404
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:418
 #, fuzzy
 #| msgid "Capture the Active Window"
 msgid "Select window..."
@@ -2994,8 +3013,8 @@ msgid "Session total:"
 msgstr "Ukupno sesija:"
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:175
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:631
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:209
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:658
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:210
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:81
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:108
 msgid "Settings"
@@ -3017,7 +3036,7 @@ msgstr "Postavke..."
 msgid "Shell context menu integration"
 msgstr "Integracija školjke kontekstualnog izbornika"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:905
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:937
 msgid "Short URL"
 msgstr ""
 
@@ -3039,17 +3058,17 @@ msgstr ""
 msgid "Shorten URLs"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:623
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:214
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:650
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:95
 msgid "Shorten a link"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:215
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:216
 msgid "Shorten a link from the clipboard"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:433
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:456
 #, c-format
 msgid "Shortening URL \"%s\" using %s"
 msgstr ""
@@ -3064,7 +3083,7 @@ msgstr "Snimak odabranog dijela..."
 
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:37
 #: ../Source/Gui/Dialogs/ImageReuploaderDlg.cpp:86
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2689
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2695
 msgid "Show Error Log"
 msgstr "Pokaži zapis pogreške"
 
@@ -3084,14 +3103,14 @@ msgstr ""
 msgid "Show preview for video files in file list"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:625
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:207
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:652
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:208
 #, fuzzy
 #| msgid "Show program's window"
 msgid "Show program window"
 msgstr "Prikaži prozor programa"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:628
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:655
 msgid "Show results of last upload"
 msgstr ""
 
@@ -3136,10 +3155,11 @@ msgstr ""
 msgid "Specify account..."
 msgstr "Odredite račun..."
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:84
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:86
 msgid "Start"
 msgstr ""
 
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:647
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:101
 #, fuzzy
 #| msgid "Screenshot Action"
@@ -3167,7 +3187,7 @@ msgstr ""
 msgid "Stop"
 msgstr "Zaustavi"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:641
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:536
 msgid "Stop uploading"
 msgstr "Zaustavi slanje"
 
@@ -3352,7 +3372,7 @@ msgstr "Sličice"
 msgid "Time"
 msgstr "Prekoračenje vremena:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:86
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:88
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:70
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:43
 msgid "Timeout:"
@@ -3426,11 +3446,11 @@ msgstr ""
 msgid "Unable to load picture"
 msgstr "Ne mogu poslati sliku"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2354
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2360
 msgid "Unable to make screenshot!"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:908
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:940
 msgid "Unable to shorten the link..."
 msgstr ""
 
@@ -3479,12 +3499,12 @@ msgid "Upload failed. Another retry (%d)..."
 msgstr "Pogreška u slanju. Drugi pokušaj (%d)..."
 
 #: ../Source/Core/Settings/WtlGuiSettings.cpp:241
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:515
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:538
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:192
 msgid "Upload files"
 msgstr "Slanje datoteka"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:516
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:539
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:193
 msgid "Upload folder"
 msgstr "Šalji mapu"
@@ -3516,7 +3536,7 @@ msgstr ""
 msgid "Upload to %s"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:596
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:619
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:931
 msgid "Upload to Web"
 msgstr "Pošalji na internet"
@@ -3540,7 +3560,7 @@ msgstr ""
 msgid "Uploading"
 msgstr "Slanje"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:930
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:932
 msgid "Uploading Files to Server"
 msgstr "Slanje na poslužitelj"
 
@@ -3566,7 +3586,7 @@ msgstr "Greška slanja"
 msgid "Uploading module"
 msgstr "Način slanja"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:842
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:874
 msgid "Uploading screenshot"
 msgstr "Slanje snimke ekrana"
 
@@ -3632,9 +3652,9 @@ msgid "Video codec:"
 msgstr "Obrada mape:"
 
 #: ../Source/Gui/Dialogs/VideoGrabberPage.cpp:348
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1707
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1944
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:1973
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1709
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1946
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:1975
 msgid "Video files"
 msgstr "Video datoteke"
 
@@ -3661,13 +3681,13 @@ msgstr "Pogled"
 msgid "View BBCode/HTML codes"
 msgstr "Pregled BBCode/HTML koda"
 
-#: ../Source/Gui/Dialogs/HotkeySettings.cpp:212
+#: ../Source/Gui/Dialogs/HotkeySettings.cpp:213
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:106
 msgid "View Media File Information"
 msgstr "Vidi informacije o datoteci"
 
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:909
-#: ../Source/Gui/Dialogs/FloatingWindow.cpp:930
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:941
+#: ../Source/Gui/Dialogs/FloatingWindow.cpp:962
 msgid "View log for details."
 msgstr ""
 
@@ -3675,7 +3695,7 @@ msgstr ""
 msgid "Waiting for child tasks"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:234
+#: ../Source/Gui/Dialogs/ScreenRecorderWindow.cpp:237
 #, fuzzy
 #| msgid "Loading..."
 msgid "Waiting..."
@@ -3712,7 +3732,7 @@ msgstr "Dobrodošli u čarobnog pomoćnika za objavu slika na internetu!"
 msgid "Width:"
 msgstr "Širina:"
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:405
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:419
 msgid "Window"
 msgstr ""
 
@@ -3720,7 +3740,7 @@ msgstr ""
 msgid "Windows Explorer integration"
 msgstr "Udruživanje sa 'Windows Explorer'-om"
 
-#: ../Source/Gui/Dialogs/WizardDlg.cpp:2562
+#: ../Source/Gui/Dialogs/WizardDlg.cpp:2568
 msgid "Work in progress"
 msgstr ""
 
@@ -3831,7 +3851,7 @@ msgstr "Više datoteka"
 msgid "not selected"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:87
+#: ../Source/Gui/Dialogs/ScreenRecordingDlg.cpp:89
 #: ../Source/Gui/Dialogs/ScreenshotDlg.cpp:71
 #: ../Source/Gui/Dialogs/ScreenshotSettingsPage.cpp:45
 msgid "sec"
@@ -3854,6 +3874,16 @@ msgstr ""
 #: ../Source/Gui/Controls/HistoryTreeControl.cpp:212
 msgid "unknown server"
 msgstr ""
+
+#, fuzzy
+#~| msgid "File uploading was cancelled by user."
+#~ msgid "Upload canceled by user"
+#~ msgstr "Korisnik je prekinuo slanje."
+
+#, fuzzy
+#~| msgid "Screenshot Action"
+#~ msgid "Start/Stop Recording"
+#~ msgstr "Akcija uslikavanja"
 
 #, fuzzy
 #~| msgid "Select action:"

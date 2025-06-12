@@ -16,6 +16,7 @@
 #include "Core/ScreenCapture/ScreenshotHelper.h"
 #include "Gui/Dialogs/HotkeyEditor.h"
 #include "ScreenCapture/ScreenRecorder/ScreenRecorderUtils.h"
+#include "Func/Common.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -149,19 +150,19 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
      CRect rect = captureRect_;
      bool isPrimaryMonitor = true;
-     MONITORINFO info;
-     memset(&info, 0, sizeof(info));
-     info.cbSize = sizeof(MONITORINFO);
-     bool monitorInfoSuccess = GetMonitorInfo(screenRecordingParams_.monitor(), &info);
+     MONITORINFO monitorInfo;
+     memset(&monitorInfo, 0, sizeof(monitorInfo));
+     monitorInfo.cbSize = sizeof(MONITORINFO);
+     bool monitorInfoSuccess = GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
      if (monitorInfoSuccess) {
-         isPrimaryMonitor = info.dwFlags & MONITORINFOF_PRIMARY;
+         isPrimaryMonitor = monitorInfo.dwFlags & MONITORINFOF_PRIMARY;
      }
 
      if (screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
          && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)
          && monitorInfoSuccess
          ) {
-        rect.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+        rect.OffsetRect(-monitorInfo.rcMonitor.left, -monitorInfo.rcMonitor.top);
      }
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
@@ -187,18 +188,11 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             options.audioQuality = ffmpegSettings.AudioQuality;
             options.showCursor = settings->ScreenRecordingSettings.CaptureCursor;
 
-            MONITORINFO monitorInfo;
-            memset(&monitorInfo, 0, sizeof(MONITORINFO));
-            monitorInfo.cbSize = sizeof(monitorInfo); 
             if (options.source == GDIGrabSource::SOURCE_ID && screenRecordingParams_.monitor() && rect.IsRectEmpty()) {
                 if (monitorInfoSuccess) {
                     rect = monitorInfo.rcMonitor;
                 }
-            } /* else if (options.source == DDAGrabSource::SOURCE_ID && screenRecordingParams_.monitorIndex == -1) {
-                screenRecordingParams_.setMonitor(MonitorFromRect(rect, MONITOR_DEFAULTTONEAREST));
-                GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
-                rect.OffsetRect(-monitorInfo.rcMonitor.left, -monitorInfo.rcMonitor.top);
-            }*/
+            } 
            
             UINT adapterIndex = 0, outputIndex = 0;
             auto ad = GetAdapterForMonitor(screenRecordingParams_.monitor(), &adapterIndex, &outputIndex);
@@ -209,12 +203,6 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
                 options.outputIdx = outputIndex;
             }
                
-            //options.outputIdx = screenRecordingParams_.monitorIndex;
-            //options.outputIdx = screenRecordingParams_.monitorIndex;
-            /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
-                options.source = DDAGrabSource::SOURCE_ID;
-            }*/
-
             screenRecorder_ = std::make_shared<FFmpegScreenRecorder>(ffmpegCLIPath, W2U(fileName), rect, std::move(options));
         } else {
             GuiTools::LocalizedMessageBox(m_hWnd, TR("Could not find ffmpeg executable!"), TR("Error"), MB_ICONERROR);
@@ -248,7 +236,11 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     );
     timeDelegate_->setText(TR("Waiting..."));
     registerHotkeys();
-    SetTimer(kStartTimer, settings->ScreenRecordingSettings.Delay * 1000);
+    int windowHidingDelay = 0;
+    if (::IsWindowVisible(GetParent())) {
+        windowHidingDelay = settings->ScreenshotSettings.WindowHidingDelay;
+    }
+    SetTimer(kStartTimer, std::max(windowHidingDelay, settings->ScreenRecordingSettings.Delay * 1000));
     return 0;
 }
 
@@ -273,8 +265,8 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
         captureRect.bottom = captureRect.top + ((captureRect.Height() + 1) & ~1);
     }
 
-    if (!screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
-        && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)
+    if (!screenRecordingParams_.monitor() && (settings->ScreenRecordingSettings.Backend != ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
+        || settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId != GDIGrabSource::SOURCE_ID)
         ) {
         screenRecordingParams_.setMonitor(MonitorFromRect(captureRect, MONITOR_DEFAULTTONULL));
         MONITORINFO info;
@@ -461,7 +453,7 @@ LRESULT ScreenRecorderWindow::onTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
         
         CMenu trayIconMenu;
         trayIconMenu.CreatePopupMenu();
-        trayIconMenu.AppendMenu(MF_STRING, ID_STOP, TR("Finish"));
+        trayIconMenu.AppendMenu(MF_STRING, ID_STOP, HotkeyToString("screenrecording_stop", TR("Finish")));
         trayIconMenu.EnableMenuItem(ID_STOP, MF_BYCOMMAND | (hasStarted_ ? MF_ENABLED : MF_DISABLED));
 
         CString msg;
@@ -477,9 +469,9 @@ LRESULT ScreenRecorderWindow::onTrayIcon(UINT /*uMsg*/, WPARAM wParam, LPARAM lP
             enablePauseItem = false;
         }
 
-        trayIconMenu.AppendMenu(MF_STRING, ID_PAUSE, msg);
+        trayIconMenu.AppendMenu(MF_STRING, ID_PAUSE, HotkeyToString("screenrecording_pause", msg));
         trayIconMenu.EnableMenuItem(ID_PAUSE, MF_BYCOMMAND | ( enablePauseItem ? MF_ENABLED : MF_DISABLED));
-        trayIconMenu.AppendMenu(MF_STRING, IDCANCEL, TR("Cancel"));
+        trayIconMenu.AppendMenu(MF_STRING, IDCANCEL, HotkeyToString("screenrecording_cancel", TR("Cancel")));
         trayIconMenu.SetMenuDefaultItem(ID_STOP);
 
         // Ensure the window is foreground to handle menu messages correctly

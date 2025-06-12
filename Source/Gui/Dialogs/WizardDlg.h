@@ -298,6 +298,8 @@ public:
     void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
     bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer);
     void showHelpButtonMenu(HWND control);
+    bool isScreenRecorderRunning() const;
+    void stopScreenRecording();
 
 protected:
     bool acceptsDragnDrop() const;

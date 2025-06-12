@@ -100,6 +100,7 @@ class CScreenshotDlg :
         LRESULT OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
+        BOOL endDialogOK();
         CBrush m_WhiteBr;
         CHyperLinkControl CommandBox;
         ScreenCapture::CaptureMode m_CaptureMode;

@@ -139,13 +139,15 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 LRESULT CScreenshotDlg::OnClickedFullscreenCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmFullScreen;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
 
 LRESULT CScreenshotDlg::OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmRectangles;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
 
 LRESULT CScreenshotDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -167,28 +169,38 @@ LRESULT CScreenshotDlg::OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& 
 LRESULT CScreenshotDlg::OnBnClickedFreeFormRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmFreeform;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
 
 LRESULT CScreenshotDlg::OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmActiveWindow;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
         
 LRESULT CScreenshotDlg::OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmWindowHandles;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
 
 LRESULT CScreenshotDlg::OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     m_CaptureMode = cmTopWindowHandles;
-    return EndDialog(IDOK);
+    endDialogOK();
+    return 0;
 }
         
 LRESULT CScreenshotDlg::OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     m_CaptureMode = cmLastRegion;
+    endDialogOK();
+    return 0;
+}
+
+BOOL CScreenshotDlg::endDialogOK() {
+    GuiTools::DisableDwmAnimations(m_hWnd);
     return EndDialog(IDOK);
 }
 

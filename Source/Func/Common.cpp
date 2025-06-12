@@ -23,6 +23,8 @@
 #include "atlheaders.h"
 #include "Func/CmdLine.h"
 #include "Func/WinUtils.h"
+#include "Core/ServiceLocator.h"
+#include "Core/Settings/WtlGuiSettings.h"
 
 bool IULaunchCopy(CString additionalParams)
 {
@@ -264,4 +266,19 @@ BOOL IU_CreateFilePath(LPCTSTR szFilePath)
     free(szPath);
 
     return bRes;
+}
+
+CString HotkeyToString(CString funcName, CString menuItemText) {
+    auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    int cur = settings->Hotkeys.getFuncIndex(funcName);
+    if (cur < 0) {
+        return menuItemText;
+    }
+
+    CHotkeyItem item = settings->Hotkeys[cur];
+    CString hotkeyStr = item.globalKey.toString();
+    if (hotkeyStr.IsEmpty()) {
+        return menuItemText;
+    }
+    return menuItemText + _T("\t") + hotkeyStr;
 }

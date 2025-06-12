@@ -38,6 +38,8 @@
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
 #include "Core/OutputGenerator/XmlTemplateGenerator.h"
 #include "Func/IuCommonFunctions.h"
+#include "Func/Common.h"
+#include "Gui/IconBitmapUtils.h"
 
 namespace {
 
@@ -88,6 +90,26 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     iconAnimationCounter_ = 0;
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
+    iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
+
+    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+
+    auto loadSmallIconBitmap = [&](int resourceId) -> HBITMAP {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        if (!icon) {
+            return nullptr;
+        }
+        return iconBitmapUtils_->HIconToBitmapPARGB32(icon);
+    };
+
+    screenshotBitmap_ = loadSmallIconBitmap(IDI_SCREENSHOT);
+    screenRecordingBitmap_ = loadSmallIconBitmap(IDI_ICONRECORD);
+    startRecordingBitmap_ = loadSmallIconBitmap(IDI_ICONSTARTRECORD);
+    regionScreenshotBitmap_ = loadSmallIconBitmap(IDI_ICONREGION);
+    addFilesBitmap_ = loadSmallIconBitmap(IDI_ICONADD);
+    settingsBitmap_ = loadSmallIconBitmap(IDI_ICONSETTINGS);
 }
 
 CFloatingWindow::~CFloatingWindow()
@@ -427,6 +449,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(lastUrlShorteningTask_);
     currentUploadSession_->addSessionFinishedCallback(std::bind(&CFloatingWindow::onUploadSessionFinished, this, _1));
+    m_bIsUploading = true;
     uploadManager_->addSession(currentUploadSession_);
 
     CString msg;
@@ -498,21 +521,21 @@ LRESULT CFloatingWindow::OnOpenScreenshotsFolder(WORD wNotifyCode, WORD wID, HWN
     return 0;
 }
 
-LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
-{
+LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    if (!IsWindowEnabled())
+    if (!IsWindowEnabled()) {
         return 0;
+    }
 
     CMenu TrayMenu;
     TrayMenu.CreatePopupMenu();
-
-    if (!m_bIsUploading)
-    {
-
-        // Inserting menu items
-        int i = 0;
-        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, HotkeyToString("addimages", TR("Upload files") + CString(_T("..."))));
+    int i = 0;
+    if (wizardDlg_->isScreenRecorderRunning()) {
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENRECORDINGSTOP, HotkeyToString("screenrecording_stop", TR("Finish Screen Recording")));
+    } else if (m_bIsUploading) {
+        MyInsertMenu(TrayMenu, i++, IDM_STOPUPLOAD, TR("Stop uploading"));
+    } else {
+        MyInsertMenu(TrayMenu, i++, IDM_UPLOADFILES, HotkeyToString("addimages", TR("Upload files") + CString(_T("..."))), addFilesBitmap_);
         MyInsertMenu(TrayMenu, i++, IDM_ADDFOLDERS, HotkeyToString("addfolder", TR("Upload folder") + CString(_T("..."))));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         bool isBitmapInClipboard = false;
@@ -538,8 +561,8 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
         }
         MyInsertMenu(TrayMenu, i++, IDM_IMPORTVIDEO, HotkeyToString("importvideo", TR("Import Video File")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, HotkeyToString("screenshotdlg", TR("Screenshot") + CString(_T("..."))));
-        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, HotkeyToString("regionscreenshot", TR("Capture Selected Area")));
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENSHOTDLG, HotkeyToString("screenshotdlg", TR("Screenshot") + CString(_T("..."))), screenshotBitmap_);
+        MyInsertMenu(TrayMenu, i++, IDM_REGIONSCREENSHOT, HotkeyToString("regionscreenshot", TR("Capture Selected Area")), regionScreenshotBitmap_);
         if (wizardDlg_->hasLastScreenshotRegion()) {
             MyInsertMenu(TrayMenu, i++, IDM_LASTREGIONSCREENSHOT, HotkeyToString("lastregionscreenshot", TR("Capture Last Region")));
         }
@@ -620,6 +643,10 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
         SubMenu.Detach();
         MyInsertMenu(TrayMenu, i++, 0, 0);
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENRECORDINGDIALOG, HotkeyToString("screenrecordingdlg", TR("Screen Recording...")), screenRecordingBitmap_);
+        MyInsertMenu(TrayMenu, i++, IDM_SCREENRECORDINGSTART, HotkeyToString("screenrecording", TR("Start Recording")), startRecordingBitmap_);
+
+        MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SHORTENURL, HotkeyToString("shortenurl",TR("Shorten a link")));
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_SHOWAPPWINDOW, HotkeyToString("showmainwindow", TR("Show program window")));
@@ -628,7 +655,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
             MyInsertMenu(TrayMenu, i++, IDM_SHOWLASTUPLOADRESULTS, TR("Show results of last upload"));
         }
         MyInsertMenu(TrayMenu, i++, 0, 0);
-        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings",TR("Settings") + CString(_T("..."))));
+        MyInsertMenu(TrayMenu, i++, IDM_SETTINGS, HotkeyToString("settings", TR("Settings") + CString(_T("..."))), settingsBitmap_);
         MyInsertMenu(TrayMenu, i++, 0, 0);
         MyInsertMenu(TrayMenu, i++, IDM_EXIT, TR("Exit"));
         if (Settings.Hotkeys.getByFunc(Settings.TrayIconSettings.LeftDoubleClickCommandStr).commandId)
@@ -637,8 +664,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                                FALSE);
         }
     }
-    else
-        MyInsertMenu(TrayMenu, 0, IDM_STOPUPLOAD, TR("Stop uploading"));
+  
     m_hTrayIconMenu = TrayMenu;
     CMenuHandle oPopup(m_hTrayIconMenu);
     PrepareMenu(oPopup);
@@ -809,6 +835,11 @@ LRESULT CFloatingWindow::OnScreenRecordingStart(WORD wNotifyCode, WORD wID, HWND
     return 0;
 }
 
+LRESULT CFloatingWindow::OnScreenRecordingStop(WORD wNotifyCode, WORD wID, HWND hWndCtl) {
+    wizardDlg_->stopScreenRecording();
+    return 0;
+}
+
 LRESULT CFloatingWindow::OnScreenshotActionChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 {
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -830,6 +861,7 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
     currentUploadSession_ = std::make_shared<UploadSession>();
     currentUploadSession_->addTask(task);
     currentUploadSession_->addSessionFinishedCallback(std::bind(&CFloatingWindow::onUploadSessionFinished, this, std::placeholders::_1));
+    m_bIsUploading = true;
     uploadManager_->addSession(currentUploadSession_);
 
     CString msg;
@@ -994,21 +1026,6 @@ void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
     CString statusText = TR("Screenshot has been copied to clipboard.");
     ShowBaloonTip(statusText, APPNAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
-}
-
-CString CFloatingWindow::HotkeyToString(CString funcName, CString menuItemText) {
-    WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
-    int cur = Settings.Hotkeys.getFuncIndex(funcName);
-    if (cur<0) {
-        return menuItemText;
-    }
-
-    CHotkeyItem item = Settings.Hotkeys[cur];
-    CString hotkeyStr = item.globalKey.toString();
-    if (hotkeyStr.IsEmpty()) {
-        return menuItemText;
-    }
-    return menuItemText + _T("\t") + hotkeyStr;
 }
 
 void  CFloatingWindow::onUploadSessionFinished(UploadSession* session) {

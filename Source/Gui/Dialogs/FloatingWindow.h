@@ -71,6 +71,7 @@ constexpr int IDM_LASTREGIONSCREENSHOT = IDM_UPLOADFILES + 32;
 constexpr int IDM_TOPWINDOWSCREENSHOT = IDM_UPLOADFILES + 33;
 constexpr int IDM_SCREENRECORDINGDIALOG = IDM_UPLOADFILES + 34;
 constexpr int IDM_SCREENRECORDINGSTART = IDM_UPLOADFILES + 35;
+constexpr int IDM_SCREENRECORDINGSTOP = IDM_UPLOADFILES + 36;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_FIRST = IDM_REUPLOADIMAGES + 50;
 constexpr int IDM_MONITOR_SELECTEDMONITOR_LAST = IDM_REUPLOADIMAGES + 50 + 25;
 
@@ -84,6 +85,7 @@ struct UploadObject;
 }
 
 class UrlShorteningTask;
+class IconBitmapUtils;
 
 class CFloatingWindow :
     public CWindowImpl<CFloatingWindow>, 
@@ -106,8 +108,7 @@ public:
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
 
-    CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadManager, 
-        UploadEngineManager* uploadEngineManager);
+    CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadManager, UploadEngineManager* uploadEngineManager);
     ~CFloatingWindow();
 
     DECLARE_WND_CLASS(_T("CFloatingWindow"))
@@ -151,6 +152,7 @@ public:
         COMMAND_RANGE_HANDLER(IDM_MONITOR_SELECTEDMONITOR_FIRST, IDM_MONITOR_SELECTEDMONITOR_LAST, OnMonitorSelectedMonitor)
         COMMAND_ID_HANDLER_EX(IDM_SCREENRECORDINGDIALOG, OnScreenRecordingDialog)
         COMMAND_ID_HANDLER_EX(IDM_SCREENRECORDINGSTART, OnScreenRecordingStart)
+        COMMAND_ID_HANDLER_EX(IDM_SCREENRECORDINGSTOP, OnScreenRecordingStop)
         MESSAGE_HANDLER(WM_TRAYICON, OnTrayIcon)
         MESSAGE_HANDLER_EX(WM_CLOSETRAYWND, OnCloseTray)
         MESSAGE_HANDLER_EX(WM_RELOADSETTINGS, OnReloadSettings)
@@ -205,6 +207,7 @@ public:
      LRESULT OnMonitorSelectedMonitor(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL&);
      LRESULT OnScreenRecordingDialog(WORD wNotifyCode, WORD wID, HWND hWndCtl);
      LRESULT OnScreenRecordingStart(WORD wNotifyCode, WORD wID, HWND hWndCtl);
+     LRESULT OnScreenRecordingStop(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 
      LRESULT OnTimer(UINT id);
      void CreateTrayIcon();
@@ -253,7 +256,8 @@ public:
     std::function<void()> balloonClickFunction_;
     std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
-    static CString HotkeyToString(CString funcName, CString menuItemText);
+    std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
+    CBitmap addFilesBitmap_, screenshotBitmap_, regionScreenshotBitmap_, screenRecordingBitmap_, startRecordingBitmap_, settingsBitmap_;
 };
 
 #endif

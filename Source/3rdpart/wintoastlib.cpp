@@ -415,7 +415,7 @@ WinToast::WinToast() : _isInitialized(false), _hasCoInitialized(false) {
 }
 
 WinToast::~WinToast() {
-    clear();
+    //clear();
 
     if (_hasCoInitialized) {
         CoUninitialize();

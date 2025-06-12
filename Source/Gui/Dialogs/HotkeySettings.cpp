@@ -204,6 +204,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Screen Recording (start)"), _T("screenrecording"), IDM_SCREENRECORDINGSTART, false);
     AddItem(TR("Screen Recording (stop)"), _T("screenrecording_stop"), ScreenRecorderWindow::ID_STOP, false, 0, 0, HOTKEY_GROUP_SCREEN_RECORDER_WINDOW);
     AddItem(TR("Screen Recording (pause)"), _T("screenrecording_pause"), ScreenRecorderWindow::ID_PAUSE, false, 0, 0, HOTKEY_GROUP_SCREEN_RECORDER_WINDOW);
+    AddItem(TR("Screen Recording (cancel)"), _T("screenrecording_cancel"), IDCANCEL, false, 0, 0, HOTKEY_GROUP_SCREEN_RECORDER_WINDOW);
     AddItem(TR("Show program window"),_T("showmainwindow"), IDM_SHOWAPPWINDOW);
     AddItem(TR("Open screenshots folder"), _T("open_screenshot_folder"), IDM_OPENSCREENSHOTSFOLDER);
     AddItem(TR("Settings"),_T("settings"), IDM_SETTINGS);

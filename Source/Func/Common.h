@@ -66,6 +66,7 @@ void IU_RunElevated(CString params);
 
 void DecodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
 void EncodeString(LPCTSTR szSource, CString &Result, LPSTR code = "{DAb[]=_T('')+b/16;H3N SHJ");
+CString HotkeyToString(CString funcName, CString menuItemText);
 
 typedef CAtlArray<CString> CStringList;
 #endif

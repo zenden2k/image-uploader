@@ -51,12 +51,40 @@
 #include "Gui/Helpers/LangHelper.h"
 #include "Video/MediaFoundationFrameGrabber.h"
 #include "Core/3rdpart/dotenv.h"
+#include "3rdpart/wintoastlib.h"
 
 #ifndef NDEBUG
 //#include <vld.h>
 #endif
 
 CAppModule _Module;
+
+// If oleInitializer is destroyed before the WinToast singleton, this will cause an application crash. 
+// The linking order in C++ does NOT guarantee the destruction order of static objects across
+// different translation units. So we need to call WinToast::instance()->clear() before exit and
+// disable 'clear' function call in the WinToast destructor.
+// TODO: do not use WinToast singleton at all
+
+class COleInitialize {
+public:
+    COleInitialize() {
+        m_hr = ::OleInitialize(NULL);
+    }
+
+    ~COleInitialize() {
+        if (SUCCEEDED(m_hr)) {
+            ::OleUninitialize();
+        }
+    }
+
+    operator HRESULT() const { return m_hr; }
+    HRESULT GetResult() const { return m_hr; }
+
+private:
+    HRESULT m_hr;
+};
+
+COleInitialize oleInitializer;
 
 class Application {
     CMessageLoop theLoop_;
@@ -406,7 +434,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
 #endif
     FLAGS_logtostderr = true;
     google::InitGoogleLogging(WCstringToUtf8(WinUtils::GetAppFileName()).c_str());
-    OleInitialize(NULL);
 
     // this resolves ATL window thunking problem when Microsoft Layer for Unicode (MSLU) is used
     ::DefWindowProc( NULL, 0, 0, 0L );
@@ -422,7 +449,6 @@ int WINAPI _tWinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPTSTR lp
     }
     _Module.Term();
 
-    OleUninitialize();
     //google::RemoveLogSink(&logSink);
     google::ShutdownGoogleLogging();
     return nRet;

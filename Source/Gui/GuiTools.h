@@ -114,5 +114,6 @@ namespace GuiTools
     void ClearControlAccessibleName(HWND hwnd);
 
     HICON GetWindowIcon(HWND hwnd);
-    }
+    bool DisableDwmAnimations(HWND hwnd, BOOL disable = TRUE);
+}
 #endif
