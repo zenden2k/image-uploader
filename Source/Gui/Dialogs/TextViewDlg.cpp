@@ -20,6 +20,10 @@
 
 #include "TextViewDlg.h"
 
+#include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/StringUtils.h"
+#include "Core/CommonDefs.h"
+
 // CTextViewDlg
 CTextViewDlg::CTextViewDlg(const CString &text, const CString &title, const CString &info, const CString &question , const CString &okCaption,const CString &cancelCaption)
 {
@@ -29,6 +33,11 @@ CTextViewDlg::CTextViewDlg(const CString &text, const CString &title, const CStr
     m_question = question;
     m_info = info;
     m_title = title;
+}
+
+void CTextViewDlg::setFileDialogOptions(IMyFileDialog::FileFilterArray filters, CString suggestedFileName) {
+    fileDialogFilters_ = std::move(filters);
+    suggestedFileName_ = suggestedFileName;
 }
 
 CTextViewDlg::~CTextViewDlg()
@@ -41,7 +50,9 @@ LRESULT CTextViewDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     CenterWindow(GetParent());
     SetDlgItemText(IDOK, m_okCaption);
     SetDlgItemText(IDCANCEL, m_cancelCaption);
-    SetDlgItemText(IDC_TEXTEDIT, m_text);
+    const CString normalizedText = WinUtils::NormalizLineEndings(m_text);
+
+    SetDlgItemText(IDC_TEXTEDIT, normalizedText);
     SetDlgItemText(IDC_QUESTIONLABEL, m_question);
     SetDlgItemText(IDC_TITLETEXT,m_info);
     SetWindowText(m_title);
@@ -60,8 +71,19 @@ LRESULT CTextViewDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
     return 0;
 }
 
-LRESULT CTextViewDlg::OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{
-    EndDialog(IDOK);
+LRESULT CTextViewDlg::OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    auto dlg = MyFileDialogFactory::createFileDialog(m_hWnd, CString(), CString(), fileDialogFilters_, false, false);
+    dlg->setFileName(suggestedFileName_);
+    CString ext = WinUtils::GetFileExt(suggestedFileName_);
+    ext.MakeLower();
+    dlg->setDefaultExtension(ext);
+
+    if (dlg->DoModal(m_hWnd) == IDOK) {
+        if (!IuCoreUtils::PutFileContents(W2U(dlg->getFile()), W2U(m_text))) {
+            const std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Could not create file '%s'.")) % dlg->getFile());
+            GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
+        }
+    }
+
     return 0;
 }

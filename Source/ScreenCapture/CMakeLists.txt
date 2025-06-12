@@ -1,5 +1,6 @@
 set(SRC_LIST    
     ScreenRecorder/ScreenRecorder.cpp
+    ScreenRecorder/ScreenRecorderUtils.cpp
     ScreenRecorder/FFmpegScreenRecorder.cpp
     ScreenRecorder/FFmpegOptionsManager.cpp
     ScreenRecorder/ArgsBuilder/FFmpegInputArgs.cpp
@@ -8,6 +9,7 @@ set(SRC_LIST
 set(HEADER_LIST 
     ScreenRecorder/Common.h
     ScreenRecorder/ScreenRecorder.h
+    ScreenRecorder/ScreenRecorderUtils.h
     ScreenRecorder/FFmpegScreenRecorder.h
     ScreenRecorder/FFmpegOptionsManager.h
     ScreenRecorder/FFmpegOptions.h

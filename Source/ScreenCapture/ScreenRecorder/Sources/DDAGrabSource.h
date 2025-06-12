@@ -17,8 +17,13 @@ public:
     void apply(const FFmpegOptions& settings, FFmpegInputArgs& inputArgs, GlobalFFmpegArgs& globalArgs) override {
         bool hwEncoder = settings.codec.find("_nvenc") != std::string::npos;
 
-        if (hwEncoder) {
-            inputArgs.addArg("init_hw_device", "d3d11va");
+        if (hwEncoder || settings.hwAdapterIndex) {
+            std::string arg = "d3d11va";
+            if (settings.hwAdapterIndex) {
+                arg += ":";
+                arg += std::to_string(*settings.hwAdapterIndex);
+            }
+            inputArgs.addArg("init_hw_device", arg);
         }
 
         const std::string dimensions = (settings.width == 0 || settings.height == 0) ? "" :

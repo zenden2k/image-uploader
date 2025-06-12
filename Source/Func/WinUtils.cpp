@@ -1687,6 +1687,36 @@ CString GUIDToString(const GUID& guid) {
     return guidStr;
 }
 
+CString NormalizLineEndings(const CString& text) {
+    CString result;
+    result.Preallocate(text.GetLength() + text.GetLength() / 10); // Reserve memory
+
+    for (int i = 0; i < text.GetLength(); i++) {
+        TCHAR ch = text[i];
+
+        if (ch == _T('\n')) {
+            // Check if there's a \r character before \n
+            if (i == 0 || text[i - 1] != _T('\r')) {
+                result += _T('\r'); // Add \r before \n
+            }
+            result += ch;
+        } else if (ch == _T('\r')) {
+            result += ch;
+            // Check if \n follows after \r
+            if (i + 1 < text.GetLength() && text[i + 1] == _T('\n')) {
+                // Leave as is, \n will be processed on next iteration
+            } else {
+                // Standalone \r, add \n
+                result += _T('\n');
+            }
+        } else {
+            result += ch;
+        }
+    }
+
+    return result;
+}
+
 }
 
 std::wstring Utf8ToWstring(const std::string &str)

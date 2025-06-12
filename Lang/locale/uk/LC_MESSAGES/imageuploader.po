@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-11 17:48+0300\n"
+"POT-Creation-Date: 2025-06-12 09:46+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/image-uploader/"
@@ -353,11 +353,13 @@ msgid ""
 "settings. The following server types' settings will also be deleted: %s."
 msgstr ""
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:96
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:283
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
+#: ../Source/Gui/Dialogs/LogWindow.cpp:181
 #: ../Source/Gui/Dialogs/MainDlg.cpp:725
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
@@ -620,7 +622,7 @@ msgstr "Типово"
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:84
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:78
-#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
@@ -835,7 +837,7 @@ msgstr "Виберіть..."
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
-#: ../Source/Gui/Dialogs/LogWindow.cpp:173
+#: ../Source/Gui/Dialogs/LogWindow.cpp:206
 msgid "Clear"
 msgstr "Очистити"
 
@@ -855,7 +857,7 @@ msgstr "Очистити всі"
 msgid "Clear filters"
 msgstr "Очистити фільтри"
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:133
+#: ../Source/Gui/Dialogs/LogWindow.cpp:134
 msgid "Clear list"
 msgstr "Очистити список"
 
@@ -984,7 +986,7 @@ msgstr "Налаштування..."
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
-#: ../Source/Gui/Dialogs/LogWindow.cpp:130
+#: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:222
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:942
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
@@ -1074,6 +1076,12 @@ msgstr "Не вдалося додати сервер."
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:330
 msgid "Could not authenticate. Please try again."
 msgstr "Не вдалося автентифікуватися. Спробуйте ще раз."
+
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:83
+#, fuzzy, c-format
+#| msgid "Could not read package %s"
+msgid "Could not create file '%s'."
+msgstr "Не вдалося прочитати пакет %s"
 
 #: ../Source/Video/AvcodecFrameGrabber.cpp:202
 msgid "Could not find a video stream."
@@ -1398,6 +1406,7 @@ msgstr "Введіть текст:"
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:84
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:339
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:358
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1517
@@ -1425,7 +1434,7 @@ msgstr "Помилка в полі '%s': значення має бути в м�
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr "Помилка в полі '%s': значення має бути більшим за нуль."
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:174
+#: ../Source/Gui/Dialogs/LogWindow.cpp:207
 msgid "Error log"
 msgstr "Журнал помилок"
 
@@ -1821,6 +1830,12 @@ msgstr ""
 msgid "HTML code"
 msgstr "HTML-код"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:93
+#, fuzzy
+#| msgid "All files"
+msgid "HTML files"
+msgstr "Усі файли"
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
 msgid "Height:"
 msgstr "Висота:"
@@ -1829,7 +1844,7 @@ msgstr "Висота:"
 msgid "Help"
 msgstr "Довідка"
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:172
+#: ../Source/Gui/Dialogs/LogWindow.cpp:205
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:424
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
 msgid "Hide"
@@ -2021,6 +2036,12 @@ msgstr ""
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr " JPEG, PNG, GIF, BMP або будь-які інші файли"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:95
+#, fuzzy
+#| msgid "All files"
+msgid "JSON files"
+msgstr "Усі файли"
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:31
 #, fuzzy
 #| msgid "List of URLs"
@@ -2114,6 +2135,11 @@ msgstr "Локальне сполучення клавіш:"
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:460
 msgid "Log"
 msgstr "Журнал помилок"
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:176
+#, c-format
+msgid "Log Record [%s]"
+msgstr ""
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:371
 msgid "Logging in..."
@@ -2295,7 +2321,7 @@ msgstr "Кількість кадрів:"
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:85
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
-#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
 msgid "OK"
@@ -2838,7 +2864,7 @@ msgstr "Вибір області..."
 msgid "Select action:"
 msgstr "Виберіть дію:"
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:132
+#: ../Source/Gui/Dialogs/LogWindow.cpp:133
 msgid "Select all"
 msgstr "Виділити все"
 
@@ -3203,6 +3229,8 @@ msgstr "Колір тексту:"
 msgid "Text contains forbidden characters!"
 msgstr "Текст містить заборонені символи!"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:94
+#: ../Source/Gui/Dialogs/LogWindow.cpp:180
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:180
 msgid "Text files"
 msgstr ""

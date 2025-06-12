@@ -119,6 +119,7 @@ namespace WinUtils {
     BOOL TranslateAcceleratorForWindow(HWND hwnd, HACCEL hacc, LPMSG pmsg);
     std::optional<GUID> GenerateFakeUUIDv4(const GUID& baseGUID);
     CString GUIDToString(const GUID& guid);
+    CString NormalizLineEndings(const CString& text);
 }
 
 #endif

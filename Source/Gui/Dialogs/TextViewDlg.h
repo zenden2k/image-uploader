@@ -23,6 +23,7 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Controls/DialogIndirect.h"
+#include "Gui/Components/MyFileDialog.h"
 
 // CTextViewDlg
 
@@ -34,6 +35,9 @@ class CTextViewDlg :
         CTextViewDlg(const CString& text, const CString& title, const CString& info, const CString& question,
                      const CString& okCaption = TR(
                            "OK"), const CString& cancelCaption = TR("Cancel"));
+
+        void setFileDialogOptions(IMyFileDialog::FileFilterArray filters, CString suggestedFileName);
+
         ~CTextViewDlg();
         enum { IDD = IDD_TEXTVIEWDLG };
 
@@ -62,4 +66,7 @@ class CTextViewDlg :
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CString m_okCaption, m_cancelCaption, m_text, m_title, m_info, m_question;
+
+        IMyFileDialog::FileFilterArray fileDialogFilters_;
+        CString suggestedFileName_;
 };

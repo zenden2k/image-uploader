@@ -290,3 +290,16 @@ void CLogListBox::SelectAll() {
 LogListBoxItem* CLogListBox::getItemFromIndex(int index) const {
     return static_cast<LogListBoxItem *>(GetItemDataPtr(index));
 }
+
+int CLogListBox::getFirstSelectedItem() const {
+    int nSelCount = GetSelCount();
+    if (nSelCount <= 0) {
+        return LB_ERR;
+    }
+
+    std::vector<int> selItems(nSelCount);
+
+    int nActualCount = GetSelItems(nSelCount, selItems.data());
+
+    return (nActualCount > 0) ? selItems[0] : LB_ERR;
+}

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: imageuploader\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-11 17:48+0300\n"
+"POT-Creation-Date: 2025-06-12 09:46+0300\n"
 "PO-Revision-Date: 2025-03-20 05:43+0000\n"
 "Last-Translator: Sergey Svistunov <zenden2k@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/image-uploader/"
@@ -355,11 +355,13 @@ msgid ""
 "settings. The following server types' settings will also be deleted: %s."
 msgstr ""
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:96
 #: ../Source/Gui/Components/ParameterListAdapter.cpp:169
 #: ../Source/Gui/Dialogs/AddFtpServerDialog.cpp:207
 #: ../Source/Gui/Dialogs/FFmpegSettingsPage.cpp:283
 #: ../Source/Gui/Dialogs/GeneralSettings.cpp:89
 #: ../Source/Gui/Dialogs/LogoSettings.cpp:163
+#: ../Source/Gui/Dialogs/LogWindow.cpp:181
 #: ../Source/Gui/Dialogs/MainDlg.cpp:725
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:181
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:121
@@ -618,7 +620,7 @@ msgstr "기본적으로"
 #: ../Source/Gui/Dialogs/ServerParamsDlg.cpp:48
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:84
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:78
-#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:39
 #: ../Source/Gui/Dialogs/UpdateDlg.cpp:66
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:66
@@ -832,7 +834,7 @@ msgstr ""
 
 #: ../Source/3rdpart/WinHotkeyCtrl.cpp:265
 #: ../Source/Gui/Dialogs/HotkeySettings.cpp:154
-#: ../Source/Gui/Dialogs/LogWindow.cpp:173
+#: ../Source/Gui/Dialogs/LogWindow.cpp:206
 msgid "Clear"
 msgstr "지우기"
 
@@ -852,7 +854,7 @@ msgstr "모두 지우기"
 msgid "Clear filters"
 msgstr ""
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:133
+#: ../Source/Gui/Dialogs/LogWindow.cpp:134
 msgid "Clear list"
 msgstr "목록 지우기"
 
@@ -989,7 +991,7 @@ msgstr "설정..."
 
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:43
 #: ../Source/Gui/Dialogs/ColorCodeDialog.cpp:44
-#: ../Source/Gui/Dialogs/LogWindow.cpp:130
+#: ../Source/Gui/Dialogs/LogWindow.cpp:131
 #: ../Source/Gui/Dialogs/MainDlg.cpp:222
 #: ../Source/ImageEditor/Gui/ImageEditorWindow.cpp:942
 #: ../Source/ImageEditor/Gui/InputBoxControl.cpp:238
@@ -1087,6 +1089,12 @@ msgstr "서버를 추가할 수 없습니다."
 #: ../Source/Gui/Dialogs/LoginDlg.cpp:330
 msgid "Could not authenticate. Please try again."
 msgstr "인증할 수 없습니다. 다시 시도하십시오."
+
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:83
+#, fuzzy, c-format
+#| msgid "Could not read "
+msgid "Could not create file '%s'."
+msgstr "읽을 수 없습니다. "
 
 #: ../Source/Video/AvcodecFrameGrabber.cpp:202
 msgid "Could not find a video stream."
@@ -1406,6 +1414,7 @@ msgstr "텍스트 입력:"
 #: ../Source/Gui/Dialogs/ShortenUrlDlg.cpp:118
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:136
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:142
+#: ../Source/Gui/Dialogs/TextViewDlg.cpp:84
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:339
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:358
 #: ../Source/Gui/Dialogs/UploadSettings.cpp:1517
@@ -1433,7 +1442,7 @@ msgstr "'%s' 필드의 오류: 값은 %d와 %d 사이여야 합니다."
 msgid "Error in the field '%s': value should be greater than zero"
 msgstr "'%s' 필드의 오류: 값이 0보다 커야 합니다."
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:174
+#: ../Source/Gui/Dialogs/LogWindow.cpp:207
 msgid "Error log"
 msgstr "오류 로그"
 
@@ -1821,6 +1830,12 @@ msgstr ""
 msgid "HTML code"
 msgstr "HTML 코드"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:93
+#, fuzzy
+#| msgid "Video files"
+msgid "HTML files"
+msgstr "비디오 파일"
+
 #: ../Source/Gui/Dialogs/ThumbSettingsPage.cpp:55
 msgid "Height:"
 msgstr "높이:"
@@ -1829,7 +1844,7 @@ msgstr "높이:"
 msgid "Help"
 msgstr "도움말"
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:172
+#: ../Source/Gui/Dialogs/LogWindow.cpp:205
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:424
 #: ../Source/Gui/Dialogs/WizardDlg.cpp:1842
 msgid "Hide"
@@ -2021,6 +2036,12 @@ msgstr ""
 msgid "JPEG, PNG, GIF, BMP or any other file"
 msgstr "JPEG, PNG, GIF, BMP 또는 기타 파일"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:95
+#, fuzzy
+#| msgid "%d files"
+msgid "JSON files"
+msgstr "%d 파일"
+
 #: ../Source/Gui/Dialogs/TransferSettingsPage.cpp:31
 #, fuzzy
 #| msgid "List of URLs"
@@ -2116,6 +2137,11 @@ msgstr "로컬 단축키:"
 #: ../Source/Gui/Dialogs/UploadDlg.cpp:460
 msgid "Log"
 msgstr "로그"
+
+#: ../Source/Gui/Dialogs/LogWindow.cpp:176
+#, c-format
+msgid "Log Record [%s]"
+msgstr ""
 
 #: ../Source/Core/Upload/MegaNzUploadEngine.cpp:371
 msgid "Logging in..."
@@ -2299,7 +2325,7 @@ msgstr "프레임 수:"
 #: ../Source/Gui/Dialogs/ServerProfileGroupSelectDialog.cpp:85
 #: ../Source/Gui/Dialogs/SettingsDlg.cpp:77
 #: ../Source/Gui/Dialogs/SizeExceed.cpp:45
-#: ../Source/Gui/Dialogs/TextViewDlg.h:36
+#: ../Source/Gui/Dialogs/TextViewDlg.h:37
 #: ../Source/Gui/Dialogs/ThumbEditor.cpp:40
 #: ../Source/Gui/Dialogs/UploadParamsDlg.cpp:65
 msgid "OK"
@@ -2846,7 +2872,7 @@ msgstr ""
 msgid "Select action:"
 msgstr "작업 선택:"
 
-#: ../Source/Gui/Dialogs/LogWindow.cpp:132
+#: ../Source/Gui/Dialogs/LogWindow.cpp:133
 msgid "Select all"
 msgstr "모두 선택"
 
@@ -3217,6 +3243,8 @@ msgstr "택스트 색상:"
 msgid "Text contains forbidden characters!"
 msgstr "텍스트에는 금지된 문자가 포함되어 있습니다!"
 
+#: ../Source/Func/DefaultUploadErrorHandler.cpp:94
+#: ../Source/Gui/Dialogs/LogWindow.cpp:180
 #: ../Source/Gui/Dialogs/NetworkDebugDlg.cpp:180
 #, fuzzy
 #| msgid "Video files"
@@ -3923,9 +3951,6 @@ msgstr ""
 #~ msgid "Unable to unpack archive "
 #~ msgstr "아카이브의 압축을 풀 수 없음"
 
-#~ msgid "Could not read "
-#~ msgstr "읽을 수 없습니다. "
-
 #~ msgid "SCRIPT"
 #~ msgstr "스크립트"
 
@@ -3961,9 +3986,6 @@ msgstr ""
 
 #~ msgid "%1% files selected/%2% files total"
 #~ msgstr "전체 %2% 파일 중 %1% 파일 선택됨"
-
-#~ msgid "%d files"
-#~ msgstr "%d 파일"
 
 #~ msgid "Copy &as..."
 #~ msgstr "따로 복사..."

@@ -108,10 +108,12 @@ FFMpegOptionsManager::FFMpegOptionsManager() {
     videoCodecFactories_[GifVideoCodec::CODEC_ID] = [] { return std::make_unique<GifVideoCodec>(); };
     videoCodecFactories_[WebPVideoCodec::CODEC_ID] = [] { return std::make_unique<WebPVideoCodec>(); };
 
-    videoSourceFactories_[GDIGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<GDIGrabSource>(); };
-    videoSourceFactories_[DDAGrabSource::SOURCE_ID] = [](const std::string & param) { return std::make_unique<DDAGrabSource>(); };
-
 #ifdef _WIN32
+    videoSourceFactories_[GDIGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<GDIGrabSource>(); };
+    if (IsWindows8OrGreater()) {
+        videoSourceFactories_[DDAGrabSource::SOURCE_ID] = [](const std::string& param) { return std::make_unique<DDAGrabSource>(); };
+    }
+
     videoSourceFactories_[DirectShowSource::SOURCE_ID] = [](const std::string& deviceId) { return std::make_unique<DirectShowSource>(deviceId); };
     audioSourceFactories_[DirectShowSource::SOURCE_ID] = [](const std::string& deviceId) { return std::make_unique<FFmpegSource>("DirectShow (fake)", true); };
 #endif

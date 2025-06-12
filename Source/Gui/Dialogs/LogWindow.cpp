@@ -22,6 +22,7 @@
 #include "Func/WinUtils.h"
 #include "Core/i18n/Translator.h"
 #include "Core/Settings/BasicSettings.h"
+#include "TextViewDlg.h"
 
 // CLogWindow
 CLogWindow::CLogWindow(): mainThreadId_(GetCurrentThreadId()), logger_(nullptr)
@@ -157,6 +158,38 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     
     return 0;
 }
+
+LRESULT CLogWindow::OnDblClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
+{
+    int nSel = MsgList.getFirstSelectedItem();
+    if (nSel == LB_ERR) {
+        return 0;
+    }
+    LogListBoxItem* item = MsgList.getItemFromIndex(nSel);
+    if (!item) {
+        return 0;
+    }
+    CString text;
+    text.Format(_T("[%s] %s\r\n%s\r\n\r\n%s"), item->Time.GetString(), item->Info.GetString(),
+        item->strTitle.GetString(), item->strText.GetString());
+
+    const std::wstring title = str(IuStringUtils::FormatWideNoExcept(TR("Log Record [%s]")) % item->Time.GetString());
+    CTextViewDlg dlg(text, title.c_str(), item->Info.GetString(), _T(""));
+
+    IMyFileDialog::FileFilterArray filters = {
+        { TR("Text files"), CString(_T("*.txt")) },
+        { TR("All files"), _T("*.*") }
+    };
+    CString fileName;
+    CString time = item->Time;
+    time.Replace(_T(':'), _T('_'));
+    fileName.Format(_T("log_record_%s.txt"), time.GetString());
+    dlg.setFileDialogOptions(filters, fileName);
+    dlg.DoModal(m_hWnd);
+
+    return 0;
+}
+
 
 LRESULT CLogWindow::OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     MsgList.SelectAll();

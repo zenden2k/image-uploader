@@ -15,6 +15,7 @@
 #include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
 #include "Gui/Dialogs/HotkeyEditor.h"
+#include "ScreenCapture/ScreenRecorder/ScreenRecorderUtils.h"
 
 constexpr auto PANEL_HEIGHT = 40;
 
@@ -147,16 +148,21 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
      );
 
      CRect rect = captureRect_;
+     bool isPrimaryMonitor = true;
+     MONITORINFO info;
+     memset(&info, 0, sizeof(info));
+     info.cbSize = sizeof(MONITORINFO);
+     bool monitorInfoSuccess = GetMonitorInfo(screenRecordingParams_.monitor(), &info);
+     if (monitorInfoSuccess) {
+         isPrimaryMonitor = info.dwFlags & MONITORINFOF_PRIMARY;
+     }
 
-     if (screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)) {
-        MONITORINFO info;
-        memset(&info, 0, sizeof(info));
-        info.cbSize = sizeof(MONITORINFO);
-        if (GetMonitorInfo(screenRecordingParams_.monitor(), &info)) {
-            //rect.IntersectRect(captureRect, &info.rcMonitor);
-            rect.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
-        }
-    }
+     if (screenRecordingParams_.monitor() && !(settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg
+         && settings->ScreenRecordingSettings.FFmpegSettings.VideoSourceId == GDIGrabSource::SOURCE_ID)
+         && monitorInfoSuccess
+         ) {
+        rect.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
+     }
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
         std::string ffmpegCLIPath = settings->ScreenRecordingSettings.FFmpegSettings.FFmpegCLIPath;
@@ -184,9 +190,8 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
             MONITORINFO monitorInfo;
             memset(&monitorInfo, 0, sizeof(MONITORINFO));
             monitorInfo.cbSize = sizeof(monitorInfo); 
-            if (options.source == GDIGrabSource::SOURCE_ID && screenRecordingParams_.monitor_ && rect.IsRectEmpty()) {
-
-                if (GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo)) {
+            if (options.source == GDIGrabSource::SOURCE_ID && screenRecordingParams_.monitor() && rect.IsRectEmpty()) {
+                if (monitorInfoSuccess) {
                     rect = monitorInfo.rcMonitor;
                 }
             } /* else if (options.source == DDAGrabSource::SOURCE_ID && screenRecordingParams_.monitorIndex == -1) {
@@ -194,7 +199,17 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
                 GetMonitorInfo(screenRecordingParams_.monitor(), &monitorInfo);
                 rect.OffsetRect(-monitorInfo.rcMonitor.left, -monitorInfo.rcMonitor.top);
             }*/
-            options.outputIdx = screenRecordingParams_.monitorIndex;
+           
+            UINT adapterIndex = 0, outputIndex = 0;
+            auto ad = GetAdapterForMonitor(screenRecordingParams_.monitor(), &adapterIndex, &outputIndex);
+            if (ad) {
+                if (!isPrimaryMonitor) {
+                    options.hwAdapterIndex = adapterIndex;
+                }
+                options.outputIdx = outputIndex;
+            }
+               
+            //options.outputIdx = screenRecordingParams_.monitorIndex;
             //options.outputIdx = screenRecordingParams_.monitorIndex;
             /* if (options.codec == NvencVideoCodec::H264_CODEC_ID) {
                 options.source = DDAGrabSource::SOURCE_ID;
@@ -408,7 +423,7 @@ LRESULT ScreenRecorderWindow::onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
     screenRecorder_->setOffset(clientRect.left + 1, clientRect.top + 1);
 
-    if (!hasStarted_) {
+    if (!hasStarted_ || stopRequested_ || cancelRequested_) {
         return 0;
     }
     if (screenRecorder_->status() == ScreenRecorder::Status::Recording) {
@@ -500,11 +515,13 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
             || status == ScreenRecorder::Status::Failed
             || status == ScreenRecorder::Status::Paused
         ) {
-            if (status == ScreenRecorder::Status::Failed) {
+            bool failed = status == ScreenRecorder::Status::Failed;
+            if (failed) {
                 GuiTools::LocalizedMessageBox(wnd, TR("An error occurred during screen recording. For details, please check the error log."), TR("Error"), MB_ICONERROR);
             }
-            if (cancelRequested_) {
+            if (cancelRequested_ || failed) {
                 endDialog(drCancel);
+                return;
             }
         }
 
@@ -533,9 +550,10 @@ CString ScreenRecorderWindow::outFileName() const {
 }
 
 void ScreenRecorderWindow::stop() {
-    if (!hasStarted_) {
+    if (!hasStarted_ || stopRequested_) {
         return;
     }
+    stopRequested_ = true;
     screenRecorder_->stop();
 }
 

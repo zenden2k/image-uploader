@@ -60,11 +60,12 @@ struct FFMpegSettingsStruct {
     int VideoBitrate = 3000; // kbps
     bool UseQuality = true;
     std::string VideoCodecId = "x264", VideoPresetId;
-    std::string VideoSourceId = "gdigrab";
+    std::string VideoSourceId;
     std::string AudioSourceId;
     std::string AudioCodecId;
     std::string AudioQuality;
 
+    FFMpegSettingsStruct();
     void bind(SettingsNode& n);
 };
 

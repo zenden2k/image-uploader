@@ -113,6 +113,7 @@ private:
     ScreenRecorder::Status previousStatus_ = ScreenRecorder::Status::Invalid;
     uint64_t elapsedTime_ = 0;
     bool cancelRequested_ = false;
+    bool stopRequested_ = false;
     std::shared_ptr<Gdiplus::Bitmap> iconResume_, iconPause_;
     GUID trayIconGuid_;
     bool hasStarted_ = false;

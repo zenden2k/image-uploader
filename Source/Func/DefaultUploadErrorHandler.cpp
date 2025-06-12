@@ -89,25 +89,20 @@ void DefaultUploadErrorHandler::DebugMessage(const std::string& msg, bool isResp
         IProgramWindow* appWindow = ServiceLocator::instance()->programWindow();
         HWND hwndParent = appWindow ? appWindow->getNativeHandle() : GetActiveWindow();
 
-        CTextViewDlg TextViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
+        IMyFileDialog::FileFilterArray filters = {
+            { TR("HTML files"), CString(_T("*.html;*.htm")) },
+            { TR("Text files"), CString(_T("*.txt")) },
+            { TR("JSON files"), CString(_T("*.json")) },
+            { TR("All files"), _T("*.*") }
+        };
+        CString fileName;
+        fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
+
+        CTextViewDlg textViewDlg(Utf8ToWstring(msg).c_str(), CString(_T("Server reponse")), CString(_T("Server reponse:")),
             _T("Save to file?"));
 
-        if (TextViewDlg.DoModal(hwndParent) == IDOK) {
-            CFileDialog fd(false, 0, 0, 4 | 2, _T("*.html\0*.html\0\0"), hwndParent);
-            CString fileName;
-            fileName.Format(_T("response_%02d.html"), responseFileIndex_++);
-            StringCchCopy(fd.m_szFileName, ARRAY_SIZE(fd.m_szFileName), fileName);
-
-            if (fd.DoModal() == IDOK) {
-                FILE* f = _tfopen(fd.m_szFileName, _T("wb"));
-                if (f) {
-                    // WORD BOM = 0xFEFF;
-                    // fwrite(&BOM, sizeof(BOM),1,f);
-                    fwrite(msg.c_str(), msg.size(), sizeof(char), f);
-                    fclose(f);
-                }
-            }
-        }
+        textViewDlg.setFileDialogOptions(filters, fileName);
+        textViewDlg.DoModal(hwndParent);
 #endif
     }
 }

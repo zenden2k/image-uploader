@@ -67,6 +67,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
             COMMAND_ID_HANDLER(IDC_CLEARLIST, OnClearList)
             COMMAND_ID_HANDLER(IDC_SELECTALLITEMS, OnSelectAllItems)
             COMMAND_HANDLER(IDC_CLEARLOGBUTTON, BN_CLICKED, OnBnClickedClearLogButtonClicked)
+            COMMAND_HANDLER(IDC_MSGLIST, LBN_DBLCLK, OnDblClick)
             CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
             REFLECT_NOTIFICATIONS() 
         END_MSG_MAP()
@@ -91,6 +92,9 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
         LRESULT OnClearList(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
         LRESULT OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL & /*bHandled*/);
         LRESULT OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnDblClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+
+
         void TranslateUI();
         LRESULT OnBnClickedClearLogButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         void WriteLog(const DefaultLogger::LogEntry& entry);

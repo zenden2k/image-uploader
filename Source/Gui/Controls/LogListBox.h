@@ -56,7 +56,9 @@ class CLogListBox :
         LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled);
         LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
         int AddString(ILogger::LogMsgType Type, const CString& strTitle, const CString& strText, const CString& szInfo, const CString& Time);
+        int getFirstSelectedItem() const;
         LogListBoxItem* getItemFromIndex(int index) const;
         LRESULT OnKillFocus(HWND hwndNewFocus);
         CIconHandle ErrorIcon, WarningIcon, InfoIcon;

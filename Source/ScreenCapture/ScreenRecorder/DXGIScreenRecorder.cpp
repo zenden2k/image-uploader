@@ -2,88 +2,12 @@
 
 #include <numeric>
 
-#include "atlheaders.h"
 #include <ComDef.h>
 
+#include "ScreenRecorderUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "../3rdpart/capture.hpp"
-#include "Core/3rdpart/dxerr.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
-
-namespace {
-
-bool StringToGUID(const std::string& str, GUID& guid)
-{
-    HRESULT hr = CLSIDFromString(IuCoreUtils::Utf8ToWstring(str).c_str(), &guid);
-    return SUCCEEDED(hr);
-}
-
-CString GetMessageForHresult(HRESULT hr)
-{
-    //_com_error error(hr);
-    CString cs;
-    WCHAR descr[1024] = L"";
-    DXGetErrorDescriptionW(hr, descr, std::size(descr));
-    cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr);
-    return cs;
-}
-
-CComPtr<IDXGIAdapter1> getAdapterByIndex(int index) {
-    CComPtr<IDXGIAdapter1> pAdapter;
-    if (index < 0) {
-        return pAdapter;
-    }
-
-    CComPtr<IDXGIFactory1> pFactory;
-    HRESULT hr = CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory);
-
-    if (FAILED(hr)) {
-        return pAdapter;
-    }
-
-    for (UINT i = 0; pFactory->EnumAdapters1(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i) {
-        if (i == index) {
-            DXGI_ADAPTER_DESC1 desc;
-            hr = pAdapter->GetDesc1(&desc);
-            if (SUCCEEDED(hr)) {
-                LOG(ERROR) << "Adapter " << i <<  desc.Description << std::endl;
-                /*wprintf(L"VendorId: %04X, DeviceId: %04X\n",
-                    desc.VendorId, desc.DeviceId);
-                */
-            }
-            return pAdapter;
-        }
-        
-
-        pAdapter.Release();
-    }
-    return pAdapter;
-}
-
-
-CComPtr<IDXGIAdapter1> GetAdapterForMonitor(HMONITOR hMonitor) {
-    CComPtr<IDXGIFactory1> pFactory;
-    CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)&pFactory);
-
-    CComPtr<IDXGIAdapter1> pAdapter;
-    for (UINT i = 0; pFactory->EnumAdapters1(i, &pAdapter) != DXGI_ERROR_NOT_FOUND; ++i) {
-        CComPtr<IDXGIOutput> pOutput;
-        for (UINT j = 0; pAdapter->EnumOutputs(j, &pOutput) != DXGI_ERROR_NOT_FOUND; ++j) {
-            DXGI_OUTPUT_DESC outputDesc;
-            pOutput->GetDesc(&outputDesc);
-
-            if (outputDesc.Monitor == hMonitor) {
-                return pAdapter; 
-            }
-            pOutput.Release();
-        }
-        pAdapter.Release();
-    }
-
-    return nullptr; 
-}
-
-}
 
 DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect, HMONITOR monitor, DXGIOptions options)
     : ScreenRecorder(std::move(outFile), rect), options_(std::move(options))
@@ -92,7 +16,7 @@ DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect
 
     std::string ext = IuCoreUtils::ExtractFileExt(outFilePath_);
 
-    adapter_ = GetAdapterForMonitor(monitor);
+    adapter_ = GetAdapterForMonitor(monitor, nullptr, &dp_->nOutput);
 
     dp_->VIDEO_ENCODING_FORMAT = MFVideoFormat_H264;
     dp_->AUDIO_ENCODING_FORMAT = MFAudioFormat_AAC;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <optional>
 
 #include "Common.h"
 
@@ -28,4 +29,5 @@ public:
     int width = 0;
     int height = 0;
     int outputIdx = 0;
+    std::optional<int> hwAdapterIndex;
 };

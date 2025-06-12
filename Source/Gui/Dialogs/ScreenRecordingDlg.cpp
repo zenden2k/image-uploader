@@ -61,6 +61,31 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
     return result;
 }
 
+class WindowsHider {
+    HWND hwnd_ {}, parent_ {};
+    bool isParentVisible_ = false;
+
+public:
+    WindowsHider(HWND hwnd) {
+        hwnd_ = hwnd;
+        parent_ = ::GetParent(hwnd);
+
+        ::ShowWindow(hwnd_, SW_HIDE);
+        if (parent_) {
+            isParentVisible_ = ::IsWindowVisible(parent_);
+            ::ShowWindow(parent_, SW_HIDE);
+        }
+    }
+
+    ~WindowsHider() {
+        if (isParentVisible_) {
+            ::ShowWindow(parent_, SW_SHOW);
+          
+        }
+        ::ShowWindow(hwnd_, SW_SHOW);
+    }
+};
+
 }
 
 CScreenRecordingDlg::CScreenRecordingDlg(ScreenRecordingRuntimeParams params)
@@ -108,7 +133,6 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     std::wstring labelText = str(IuStringUtils::FormatWideNoExcept(TR("Screen recording backend: %s")) % IuCoreUtils::Utf8ToWstring(settings->ScreenRecordingSettings.Backend));
     SetDlgItemText(IDC_BACKENDLABEL, labelText.c_str());
     regionSelectButton_.SetButtonStyle(BS_SPLITBUTTON);
-    updateRegionSelectButtonTitle();
 
     delaySpin_.SetRange(0, 90);
     delaySpin_.SetPos(settings->ScreenRecordingSettings.Delay);
@@ -201,7 +225,8 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     } else {
         monitorCombobox_.SetCurSel(selectedIndex);
     }
-    
+
+    updateRegionSelectButtonTitle();
     return 0; 
 }
 
@@ -227,12 +252,16 @@ LRESULT CScreenRecordingDlg::OnBnDropdownRegionSelectButton(int idCtrl, LPNMHDR 
 
 LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     using namespace ImageEditor;
+
+    WindowsHider hider(m_hWnd);
+
     ImageEditorConfigurationProvider configProvider;
 
     CScreenCaptureEngine engine;
     engine.captureScreen(false);
     engine.setMonitorMode(kAllMonitors, NULL);
-  
+    engine.setDelay(50);
+
     std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
 
     if (!res) {
@@ -275,11 +304,15 @@ LRESULT CScreenRecordingDlg::OnClickedWindow(WORD wNotifyCode, WORD wID, HWND hW
 }
 
 LRESULT CScreenRecordingDlg::OnClickedSelectWindow(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    WindowsHider hider(m_hWnd);
+
     bool onlyTopWindows = true;
     CScreenCaptureEngine engine;
+    engine.setDelay(50);
+    engine.setMonitorMode(kAllMonitors, NULL);
     engine.captureScreen(false);
     //const auto [monitorMode, monitor] = getSelectedMonitor();
-    engine.setMonitorMode(kAllMonitors, NULL);
+
     RegionSelect.setSelectionMode(SelectionMode::smWindowHandles, onlyTopWindows);
     std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
     if (res) {
@@ -318,6 +351,9 @@ LRESULT CScreenRecordingDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
         const auto [monitorMode, monitor] = getSelectedMonitor();
         recordingParams_.setMonitor(monitor);
         settings->ScreenRecordingSettings.MonitorMode = monitorMode;
+    } else {
+        recordingParams_.setMonitor(nullptr);
+        settings->ScreenRecordingSettings.MonitorMode = kAllMonitors;
     }
 
     if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendDirectX) {
@@ -371,7 +407,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
         if (hwnd == m_hWnd || hwnd == parent) {
             continue;
         }
-        const CString windowTitle = GuiTools::GetWindowText(hwnd);
+        const CString windowTitle = WinUtils::TrimString(GuiTools::GetWindowText(hwnd), 120);
         HICON ico = GuiTools::GetWindowIcon(hwnd);
         CString itemTitle;
         itemTitle.Format(_T("[%u] %s"), (uint32_t)hwnd, windowTitle.GetString());
@@ -413,6 +449,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
 
 void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
     CString title;
+    bool enableMonitorComboBox = false;
     if (recordingParams_.selectedWindow) {
         CString text = GuiTools::GetWindowText(recordingParams_.selectedWindow);
         if (text.IsEmpty()) {
@@ -422,10 +459,15 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
         }
     } else if (recordingParams_.selectedRegion.IsRectEmpty()) {
         title = TR("Full screen");
+        enableMonitorComboBox = true;
     } else {
         title.Format(_T("%d,%d - %dx%d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
     }
     regionSelectButton_.SetWindowText(title);
+    if (!enableMonitorComboBox) {
+        monitorCombobox_.SetCurSel(1); // 'All monitors'
+    }
+    monitorCombobox_.EnableWindow(enableMonitorComboBox);
 }
 
 std::pair<ScreenCapture::MonitorMode, HMONITOR> CScreenRecordingDlg::getSelectedMonitor() {
