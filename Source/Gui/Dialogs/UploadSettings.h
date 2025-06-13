@@ -27,6 +27,7 @@
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/IconButton.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Func/Common.h"
 
 constexpr unsigned int IDC_SELECTFOLDER = 4050;
 constexpr unsigned int IDC_SERVERBUTTON = 4000;
@@ -86,6 +87,7 @@ class CUploadSettings :
     BEGIN_MSG_MAP(CUploadSettings)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
 
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -146,6 +148,7 @@ class CUploadSettings :
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnBnClickedKeepasis(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -185,6 +188,7 @@ class CUploadSettings :
     void UpdateAllPlaceSelectors();
     void UpdatePlaceSelector(bool ImageServer);
     void UpdateToolbarIcons();
+    void initToolbars();
     CImageListManaged m_PlaceSelectorImageList, m_profileEditToolbarImageList;
 
     int nImageIndex;

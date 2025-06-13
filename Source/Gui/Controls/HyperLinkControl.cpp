@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "Gui/GuiTools.h"
+#include "Gui/Helpers/DPIHelper.h"
 #include "HyperLinkControlAccessible.h"
 
 namespace {
@@ -161,8 +162,8 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
-    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    int dpiX = DPIHelper::GetDpiForWindow(m_hWnd); //dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dpiX; //dc.GetDeviceCaps(LOGPIXELSY);
 
     auto scaleX = [dpiX](int x) {
         return MulDiv(x, dpiX, 96);
@@ -645,6 +646,23 @@ int CHyperLinkControl::desiredHeight() const {
     };
 
     return BottomY + scaleY(3);
+}
+
+void CHyperLinkControl::resetContent(bool invalidate) {
+    for (size_t i = 0; i < Items.GetCount(); i++) {
+        if (Items[i].hIcon) {
+            DestroyIcon(Items[i].hIcon);
+        }
+    }
+    Items.RemoveAll();
+    BottomY = 1;
+    SubItemRightY = -1;
+    selectedItemIndex_ = -1;
+    mouseDownItemIndex_ = -1;
+    hoverItemIndex_ = -1;
+    if (invalidate) {
+        Invalidate();
+    }
 }
 
 BOOL CHyperLinkControl::OnSetCursor(CWindow/* wnd*/, UINT/* nHitTest*/, UINT/* message*/)

@@ -1848,14 +1848,17 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 
 LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     if (CurPage >= 0 && CurPage <= std::size(Pages)) {
-        RECT rc {};
-        ::SendMessage(Pages[CurPage]->PageWnd, WM_MY_DPICHANGED, wParam, 0);
+       
     }
 
     for (size_t i = 0; i < std::size(Pages); i++) {
         auto* page = Pages[i];
-        if (page && page->HeadBitmap) {
-            page->HeadBitmap.DeleteObject();
+        if (page ) {
+            RECT rc {};
+            ::SendMessage(page->PageWnd, WM_MY_DPICHANGED, wParam, 0);
+            if (page->HeadBitmap) {
+                page->HeadBitmap.DeleteObject();
+            }
         }
     }
     if (CurPage >= 0 && CurPage < std::size(Pages)) {

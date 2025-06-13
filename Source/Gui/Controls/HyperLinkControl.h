@@ -100,6 +100,7 @@ public:
     HyperLinkControlItem* getItem(int index);
     int selectedItemIndex() const;
     int desiredHeight() const;
+    void resetContent(bool invalidate = true);
 
 protected:
     CAtlArray<HyperLinkControlItem> Items;

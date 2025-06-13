@@ -1134,6 +1134,16 @@ LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
     return FALSE;
 }
 
+
+LRESULT Toolbar::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    int dpiX = LOWORD(wParam);
+    int dpiY = HIWORD(wParam);
+    setDPI(dpiX, dpiY);
+    AutoSize();
+    update();
+    return 0;
+}
+
 void Toolbar::showFillBackgroundCheckbox(bool show) {
     fillBackgroundCheckbox_.ShowWindow(show ? SW_SHOW : SW_HIDE);
 }

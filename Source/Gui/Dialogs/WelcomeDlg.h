@@ -110,6 +110,7 @@ public:
     bool OnShow() override;
     void SetInitialFocus() override;
     void updateImages(int dpiX, int dpiY);
+    void fillHyperLinksControl(int dpiX, int dpiY);
     bool QuickRegionPrint;
 private:
     CMyImage LeftImage;

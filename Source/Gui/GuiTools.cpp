@@ -362,11 +362,11 @@ HFONT GetSystemDialogFont(UINT dpi) {
                             &ncm, 
                             0)) {
         
-        if (dpi) {
+        /*if (dpi) {
             ncm.lfMessageFont.lfHeight = MulDiv(ncm.lfMessageFont.lfHeight, 
                                                (int)dpi, 
                                                USER_DEFAULT_SCREEN_DPI);
-        }
+        }*/
         
         return CreateFontIndirect(&ncm.lfMessageFont);
     }

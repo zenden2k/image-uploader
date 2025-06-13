@@ -43,6 +43,7 @@
 #include "StatusDlg.h"
 #include "Core/FileTypeCheckTask.h"
 #include "Gui/Dialogs/FileFormatCheckErrorDlg.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 namespace {
     struct ResizePreset {
@@ -154,33 +155,6 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     CClientDC dc(m_hWnd);
     const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
-
-
-    //CClientDC dc(HWND_DESKTOP);
-    // Get color depth (minimum requirement is 32-bits for alpha blended images).
-    //int iBitsPixel = GetDeviceCaps(dc,BITSPIXEL);
-    /*if (iBitsPixel >= 32)
-    {
-        hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_BITMAP5));
-        m_PlaceSelectorImageList.Create(16,16,ILC_COLOR32,0,6);
-        m_PlaceSelectorImageList.Add(hBitmap, (HBITMAP) NULL);
-    }
-    else*/ {
-        //hBitmap = LoadBitmap(_Module.GetResourceInstance(),MAKEINTRESOURCE(IDB_SERVERTOOLBARBMP2));
-        m_PlaceSelectorImageList.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
-        CIcon iconUser;
-        iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
-        m_PlaceSelectorImageList.AddIcon(iconUser);
-        CIcon iconFolder;
-        iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
-        m_PlaceSelectorImageList.AddIcon(iconFolder);
-
-        CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, GuiTools::ARROW_RIGHT); //GuiTools::GetMenuArrowIcon();
-       // iconSeparator.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSEPARATOR), iconWidth, iconHeight);
-        m_PlaceSelectorImageList.AddIcon(iconSeparator);
-
-        //m_PlaceSelectorImageList.Add(hBitmap,RGB(255,0,255));
-    }
     
     //iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);  
 
@@ -201,57 +175,14 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
     m_ProfileEditToolbar.SetButtonStructSize();
     m_ProfileEditToolbar.SetButtonSize(iconWidth + 2, iconHeight + 2);
-
+    
     m_profileEditToolbarImageList.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
     m_profileEditToolbarImageList.AddIcon(iconEdit_);
 
     m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
     m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
 
-    RECT Toolbar1Rect;
-    ::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
-  
-    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar1Rect), 2);
-    Toolbar1Rect.top += GuiTools::dlgY(9);
-    Toolbar1Rect.bottom -= GuiTools::dlgY(3);
-    Toolbar1Rect.left += GuiTools::dlgX(6);
-    Toolbar1Rect.right -= GuiTools::dlgX(6);
-
-    RECT Toolbar2Rect;
-    ::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
-    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar2Rect), 2);
-    Toolbar2Rect.top += GuiTools::dlgY(9);
-    Toolbar2Rect.bottom -= GuiTools::dlgY(3);
-    Toolbar2Rect.left += GuiTools::dlgX(6);
-    Toolbar2Rect.right -= GuiTools::dlgX(6);
-
-    for(int i = 0; i<2; i++)
-    {
-        CToolBarCtrl& CurrentToolbar = (i == 0) ? Toolbar: FileServerSelectBar;
-        CurrentToolbar.Create(m_hWnd,i?Toolbar2Rect:Toolbar1Rect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD |WS_TABSTOP| TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
-        
-        CurrentToolbar.SetButtonStructSize();
-
-        CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
-        
-        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON, TBSTATE_ENABLED, 2, _T(""), 0);
-        
-        CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, _T(""), 0);
-        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON, TBSTATE_ENABLED, 2, _T(""), 0);
-        
-        CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
-        CurrentToolbar.SetButtonSize(MulDiv(20, dpiX, USER_DEFAULT_SCREEN_DPI), MulDiv(24, dpiY, USER_DEFAULT_SCREEN_DPI));
-        CurrentToolbar.AutoSize();
-        CurrentToolbar.SetWindowPos(i == 0 ? GetDlgItem(IDC_IMAGESERVERGROUPBOX) : Toolbar.m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-        SIZE toolbarSize;
-        if (CurrentToolbar.GetMaxSize(&toolbarSize)) {
-            RECT rc = i ? Toolbar2Rect : Toolbar1Rect;
-            rc.top = rc.top + (rc.bottom - rc.top - toolbarSize.cy) / 2;
-            CurrentToolbar.SetWindowPos(nullptr, &rc, SWP_NOZORDER);
-        }
-
-    }
+    initToolbars();
 
     Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
     FileServerSelectBar.SetWindowLong(GWL_ID, IDC_FILETOOLBAR);
@@ -271,6 +202,14 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     UpdateProfileList();
     UpdateAllPlaceSelectors();
     return FALSE; 
+}
+
+LRESULT CUploadSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    initToolbars();
+    UpdateAllPlaceSelectors();
+    UpdateToolbarIcons();
+
+    return 0;
 }
 
 LRESULT CUploadSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -569,6 +508,76 @@ void CUploadSettings::UpdateToolbarIcons()
 
     Toolbar.ChangeBitmap(IDC_SERVERBUTTON, nImageIndex);
     FileServerSelectBar.ChangeBitmap(IDC_SERVERBUTTON, nFileIndex);
+}
+
+void CUploadSettings::initToolbars() {
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    int iconWidth = GuiTools::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = GuiTools::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (m_PlaceSelectorImageList) {
+        m_PlaceSelectorImageList.Destroy();
+    }
+    m_PlaceSelectorImageList.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
+    CIcon iconUser;
+    iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
+    m_PlaceSelectorImageList.AddIcon(iconUser);
+    CIcon iconFolder;
+    iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
+    m_PlaceSelectorImageList.AddIcon(iconFolder);
+
+    CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, GuiTools::ARROW_RIGHT);
+
+    m_PlaceSelectorImageList.AddIcon(iconSeparator);
+       
+    RECT Toolbar1Rect;
+    ::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
+
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar1Rect), 2);
+    Toolbar1Rect.top += MulDiv(9, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar1Rect.bottom -= MulDiv(3, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar1Rect.left += MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar1Rect.right -= MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+
+    RECT Toolbar2Rect;
+    ::GetWindowRect(GetDlgItem(IDC_FILESERVERGROUPBOX), &Toolbar2Rect);
+    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&Toolbar2Rect), 2);
+    Toolbar2Rect.top += MulDiv(9, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar2Rect.bottom -= MulDiv(3, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar2Rect.left += MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+    Toolbar2Rect.right -= MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+
+    for (int i = 0; i < 2; i++) {
+        CToolBarCtrl& CurrentToolbar = (i == 0) ? Toolbar : FileServerSelectBar;
+        if (!CurrentToolbar) {
+            CurrentToolbar.Create(m_hWnd, i ? Toolbar2Rect : Toolbar1Rect, _T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+            CurrentToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS | TBSTYLE_EX_DOUBLEBUFFER);
+            CurrentToolbar.SetButtonStructSize();
+        }
+        int buttonCount = CurrentToolbar.GetButtonCount();
+
+        for (int i = buttonCount - 1; i >= 0; i--) {
+            CurrentToolbar.DeleteButton(i);
+        }
+        CurrentToolbar.SetImageList(m_PlaceSelectorImageList);
+
+        CurrentToolbar.AddButton(IDC_SERVERBUTTON, TBSTYLE_DROPDOWN | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, -1, TR("Choose server..."), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR1, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
+
+        CurrentToolbar.AddButton(IDC_LOGINTOOLBUTTON + !i, /*TBSTYLE_BUTTON*/ TBSTYLE_DROPDOWN | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, 0, _T(""), 0);
+        CurrentToolbar.AddButton(IDC_TOOLBARSEPARATOR2, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, _T(""), 0);
+
+        CurrentToolbar.AddButton(IDC_SELECTFOLDER, TBSTYLE_BUTTON | BTNS_AUTOSIZE | BTNS_SHOWTEXT, TBSTATE_ENABLED, 1, TR("Choose folder..."), 0);
+        //CurrentToolbar.SetButtonSize(MulDiv(20, dpiX, USER_DEFAULT_SCREEN_DPI), MulDiv(24, dpiY, USER_DEFAULT_SCREEN_DPI));
+        CurrentToolbar.AutoSize();
+        CurrentToolbar.SetWindowPos(i == 0 ? GetDlgItem(IDC_IMAGESERVERGROUPBOX) : Toolbar.m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+        SIZE toolbarSize;
+        if (CurrentToolbar.GetMaxSize(&toolbarSize)) {
+            RECT rc = i ? Toolbar2Rect : Toolbar1Rect;
+            rc.top = rc.top + (rc.bottom - rc.top - toolbarSize.cy) / 2;
+            CurrentToolbar.SetWindowPos(nullptr, &rc, SWP_NOZORDER);
+        }
+    }
 }
 
 void CUploadSettings::UpdatePlaceSelector(bool ImageServer)

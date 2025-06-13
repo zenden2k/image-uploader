@@ -61,52 +61,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     TRC(IDC_WELCOMEMSG, "Welcome to the pictures publishing wizard, which will help you upload your images, photos, and video frames to the Internet!");
     SetDlgItemText(IDC_TITLE, APPNAME);
 
-    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
-    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
-
-    auto loadSmallIcon = [&](int resourceId) -> HICON {
-        CIconHandle icon;
-        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
-        return icon.m_hIcon;
-    };
-
-    auto loadBigIcon = [&](int resourceId) -> HICON {
-        CIconHandle icon;
-        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconBigWidth, iconBigHeight);
-        return icon.m_hIcon;
-    };
-
-    ListBox.Init(GetSysColor(COLOR_WINDOW));
-    ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
-
-    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
-
-    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, loadSmallIcon(IDI_ICONWEB), true);
-
-    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, loadSmallIcon(IDI_ICONADDFOLDER),true,0,true);
-
-    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD),true);
-
-    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
-    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
-
-    ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
-    ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
-    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
-    ListBox.AddString(TR("Screen Recording..."), 0, IDC_RECORDSCREENDLG, loadSmallIcon(IDI_ICONRECORD), true, 0, true);
-    ListBox.AddString(TR("Start Recording"), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONSTARTRECORD));
-
-    ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
-#ifdef IU_ENABLE_MEDIAINFO
-    if(MediaInfoHelper::IsMediaInfoAvailable())
-        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
-#endif
-    ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
-    ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
-
-
+    fillHyperLinksControl(dpiX, dpiY);
 
     ShowNext(false);
     ShowPrev(false);
@@ -122,7 +77,12 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 }
 
 LRESULT CWelcomeDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    updateImages(LOWORD(wParam), HIWORD(wParam));
+    int dpiX = LOWORD(wParam);
+    int dpiY = HIWORD(wParam);
+    updateImages(dpiX, dpiY);
+    ListBox.resetContent();
+    fillHyperLinksControl(dpiX, dpiY);
+    ListBox.Invalidate();
     return 0;
 }
 
@@ -339,4 +299,51 @@ void CWelcomeDlg::updateImages(int dpiX, int dpiY) {
         font2_.CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE, WM_SETFONT, (WPARAM)(HFONT)font2_, MAKELPARAM(false, 0));
     }
+}
+
+void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
+    const int iconWidth = GuiTools::GetSystemMetricsForDpi(SM_CXSMICON, dpiX);
+    const int iconHeight = GuiTools::GetSystemMetricsForDpi(SM_CYSMICON, dpiY);
+    const int iconBigWidth = GuiTools::GetSystemMetricsForDpi(SM_CXICON, dpiX);
+    const int iconBigHeight = GuiTools::GetSystemMetricsForDpi(SM_CYICON, dpiY);
+
+    auto loadSmallIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        return icon.m_hIcon;
+    };
+
+    auto loadBigIcon = [&](int resourceId) -> HICON {
+        CIconHandle icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconBigWidth, iconBigHeight);
+        return icon.m_hIcon;
+    };
+
+    ListBox.Init(GetSysColor(COLOR_WINDOW));
+    ListBox.AddString(TR("Add Images"), TR("JPEG, PNG, GIF, BMP or any other file"), IDC_ADDIMAGES, loadBigIcon(IDI_IMAGES));
+
+    ListBox.AddString(TR("Add Files..."), 0, IDC_ADDFILES, loadSmallIcon(IDI_ICONADD));
+
+    ListBox.AddString(TR("From Web"), 0, IDC_DOWNLOADIMAGES, loadSmallIcon(IDI_ICONWEB), true);
+
+    ListBox.AddString(TR("Add Folder..."), 0, IDC_ADDFOLDER, loadSmallIcon(IDI_ICONADDFOLDER), true, 0, true);
+
+    ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD), true);
+
+    ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
+    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
+
+    ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
+    ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
+    ListBox.AddString(TR("Last Region"), 0, IDC_LASTREGIONSCREENSHOT, loadSmallIcon(IDI_ICONLASTREGION));
+    ListBox.AddString(TR("Screen Recording..."), 0, IDC_RECORDSCREENDLG, loadSmallIcon(IDI_ICONRECORD), true, 0, true);
+    ListBox.AddString(TR("Start Recording"), 0, IDC_RECORDSCREEN, loadSmallIcon(IDI_ICONSTARTRECORD));
+
+    ListBox.AddString(TR("Import Video File"), TR("extracting frames from video"), IDC_ADDVIDEO, loadBigIcon(IDI_GRAB));
+#ifdef IU_ENABLE_MEDIAINFO
+    if (MediaInfoHelper::IsMediaInfoAvailable())
+        ListBox.AddString(TR("View Media File Information"), 0, IDC_MEDIAFILEINFO, loadSmallIcon(IDI_ICONINFO));
+#endif
+    ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
+    ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
 }
