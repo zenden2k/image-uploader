@@ -47,16 +47,14 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     PageWnd = m_hWnd;
     DoDataExchange(FALSE);
     using namespace std::placeholders;
+    
     CClientDC dc(m_hWnd);
-    float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
+    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
 
     WizardDlg->addLastRegionAvailabilityChangeCallback(std::bind(&CWelcomeDlg::lastRegionAvailabilityChanged, this, _1));
-    auto leftImage = createLeftImage();
-    LeftImage.loadImage(0, std::move(leftImage), 1, false, RGB(255,255,255), true);
     GuiTools::SetControlAccessibleName(LeftImage.m_hWnd, _T(""));
-    LogoImage.SetWindowPos(0, 0,0, roundf(dpiScaleX_ * 32), roundf(dpiScaleY_ * 32), SWP_NOMOVE | SWP_NOZORDER);
-    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255,255,255), true);
+    updateImages(dpiX, dpiY);
 
     TRC(IDC_SOVET, "Advice:");
     TRC(IDC_SOVET2, "Just drag and drop your files into the program window, and it will process them.");
@@ -108,18 +106,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     ListBox.AddString(TR("Settings"), TR("a tool for advanced users"), IDC_SETTINGS, loadBigIcon(IDI_ICONSETTINGS));
     ListBox.AddString(TR("History"), nullptr, ID_VIEWHISTORY, loadSmallIcon(IDI_ICONHISTORY));
 
-    HFONT font = GetFont();
-    LOGFONT alf;
 
-    bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
-
-    if(ok)
-    {
-        alf.lfWeight = FW_BOLD;
-        alf.lfHeight  =  - MulDiv(13, dc.GetDeviceCaps(LOGPIXELSY), 72);
-        font2_.CreateFontIndirect(&alf);
-        SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)font2_,MAKELPARAM(false, 0));
-    }
 
     ShowNext(false);
     ShowPrev(false);
@@ -134,11 +121,12 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     return FALSE;  // Let the system set the focus
 }
 
-std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage() {
-    CClientDC dc(m_hWnd);
-    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+LRESULT CWelcomeDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    updateImages(LOWORD(wParam), HIWORD(wParam));
+    return 0;
+}
 
+std::unique_ptr<Gdiplus::Bitmap> CWelcomeDlg::createLeftImage(int dpiX, int dpiY) {
     CRect controlRect;
     LeftImage.GetClientRect(controlRect);
 
@@ -325,4 +313,30 @@ LRESULT CWelcomeDlg::OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
 void CWelcomeDlg::SetInitialFocus() {
     ListBox.SetFocus();
+}
+
+void CWelcomeDlg::updateImages(int dpiX, int dpiY) {
+    auto leftImage = createLeftImage(dpiX, dpiY);
+    LeftImage.loadImage(0, std::move(leftImage), 1, false, RGB(255, 255, 255), true);
+
+    int sizeX = MulDiv(32, dpiX, USER_DEFAULT_SCREEN_DPI);
+    int sizeY = MulDiv(32, dpiY, USER_DEFAULT_SCREEN_DPI);
+    LogoImage.SetWindowPos(0, 0, 0, sizeX, sizeY, SWP_NOMOVE | SWP_NOZORDER);
+    LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255, 255, 255), true);
+
+    if (font2_) {
+        font2_.DeleteObject();
+    }
+
+    HFONT font = GetFont();
+    LOGFONT alf;
+
+    bool ok = ::GetObject(font, sizeof(LOGFONT), &alf) == sizeof(LOGFONT);
+
+    if (ok) {
+        alf.lfWeight = FW_BOLD;
+        alf.lfHeight = -MulDiv(13, dpiY, 72);
+        font2_.CreateFontIndirect(&alf);
+        SendDlgItemMessage(IDC_TITLE, WM_SETFONT, (WPARAM)(HFONT)font2_, MAKELPARAM(false, 0));
+    }
 }

@@ -632,10 +632,15 @@ LRESULT ImageEditorWindow::OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPa
         horizontalToolbar_.GetClientRect(&horToolbarRect);
         verticalToolbar_.GetClientRect(&vertToolbarRect);
 
-        rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
-        rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
+        rc.left = displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
+        rc.top = displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin : 0;
 
-        m_view.SetWindowPos(0, 0,0, rc.right, rc.bottom, SWP_NOMOVE);
+        m_view.SetWindowPos(0, &rc, SWP_NOZORDER);
+
+        //rc.right -=  (displayMode_ == wdmWindowed ? vertToolbarRect.right+kCanvasMargin : 0);
+        //rc.bottom -=  (displayMode_ == wdmWindowed ? horToolbarRect.bottom+kCanvasMargin : 0);
+
+        m_view.SetWindowPos(0, &rc, SWP_NOZORDER);
         //m_view.Invalidate(TRUE);
     }
     return 0;
@@ -779,6 +784,33 @@ LRESULT ImageEditorWindow::OnActivateApp(UINT /*uMsg*/, WPARAM wParam, LPARAM /*
             SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
             LONG exStyle = GetWindowLong(GWL_EXSTYLE);
             SetWindowLong(GWL_EXSTYLE, exStyle | WS_EX_TOPMOST);
+        }
+    }
+    return 0;
+}
+
+
+LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    int dpiX = LOWORD(wParam);
+    int dpiY = HIWORD(wParam);
+    if (displayMode_ == wdmWindowed) {
+        horizontalToolbar_.setDPI(dpiX, dpiY);
+        horizontalToolbar_.update();
+        if (!onlySelectRegion_) {
+            verticalToolbar_.setDPI(dpiX, dpiY);
+            verticalToolbar_.update();
+        }
+        RECT horToolbarRect;
+        RECT vertToolbarRect;
+        horizontalToolbar_.GetClientRect(&horToolbarRect);
+        verticalToolbar_.GetClientRect(&vertToolbarRect);
+        RECT rc {};
+        rc.left = displayMode_ == wdmWindowed ? vertToolbarRect.right + kCanvasMargin : 0;
+        rc.top = displayMode_ == wdmWindowed ? horToolbarRect.bottom + kCanvasMargin : 0;
+
+        if (displayMode_ == wdmWindowed) {
+            horizontalToolbar_.SetWindowPos(0, rc.left, 0, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+            verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         }
     }
     return 0;

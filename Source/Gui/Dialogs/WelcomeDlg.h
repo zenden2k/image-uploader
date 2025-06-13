@@ -28,6 +28,7 @@
 #include "Gui/WizardCommon.h"
 #include "Gui/Controls/HyperLinkControl.h"
 #include "Gui/Controls/MyImage.h"
+#include "Func/Common.h"
 #include <atlcrack.h>
 #include <memory>
 
@@ -65,6 +66,7 @@ public:
         COMMAND_HANDLER(IDC_SHORTENURL, BN_CLICKED, OnBnClickedShortenUrl)
         MESSAGE_HANDLER(WM_CLIPBOARDUPDATE, OnClipboardUpdate) // Windows Vista and later
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDPICHanged)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
@@ -78,7 +80,8 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    
+    LRESULT OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
     LRESULT OnBnClickedScreenshot(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedRecordScreenDlg(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedRecordScreen(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -106,12 +109,13 @@ public:
     CBrushHandle br; 
     bool OnShow() override;
     void SetInitialFocus() override;
+    void updateImages(int dpiX, int dpiY);
     bool QuickRegionPrint;
 private:
     CMyImage LeftImage;
     CMyImage LogoImage;
     CFont NewFont, font2_;
-    std::unique_ptr<Gdiplus::Bitmap> createLeftImage();
+    std::unique_ptr<Gdiplus::Bitmap> createLeftImage(int dpiX, int dpiY);
 };
 
 

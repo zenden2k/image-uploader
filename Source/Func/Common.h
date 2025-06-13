@@ -23,6 +23,8 @@
 
 #include "atlheaders.h"
 
+constexpr int WM_MY_DPICHANGED = WM_USER + 300;
+
 class CCmdLine;
 
 struct CUrlListItem

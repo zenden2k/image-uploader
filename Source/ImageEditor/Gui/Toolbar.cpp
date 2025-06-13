@@ -11,8 +11,17 @@
 #include "Func/WinUtils.h"
 #include "../Canvas.h"
 #include "Core/i18n/Translator.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 namespace ImageEditor {
+
+constexpr auto kItemMargin = 3;
+constexpr auto kItemHorPadding = 5;
+constexpr auto kVertItemHorPadding = 4;
+constexpr auto kItemVertPadding = 3;
+constexpr auto kIconSize = 20;
+constexpr auto kTinyDropdownIconSize = 9;
+constexpr auto kDropdownIconSize = 16;
 
 Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
 {
@@ -21,9 +30,8 @@ Toolbar::Toolbar(Toolbar::Orientation orientation, bool createSubPanel)
     createSubPanel_ = createSubPanel;
     selectedItemIndex_ = -1;
     trackMouse_ = false;
-    dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG"));
-    dpiScaleX_ = 1.0f;
-    dpiScaleY_ = 1.0f;
+    //dropDownIcon_ = ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(IDB_DROPDOWNICONPNG),_T("PNG"));
+
     if ( !WinUtils::IsWine() ) {
         subpanelColor_ = Color(252,252,252);
     } else {
@@ -178,11 +186,12 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     //lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
     //::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
     CClientDC hdc(m_hWnd);
-    dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+    int dpiX = hdc.GetDeviceCaps(LOGPIXELSX);
+    int dpiY = hdc.GetDeviceCaps(LOGPIXELSY);
+    setDPI(dpiX, dpiY);
+
     backBufferDc_.CreateCompatibleDC(hdc);
 
-    systemFont_ = GuiTools::GetSystemDialogFont();
     LOGFONT logFont;
     systemFont_.GetLogFont(&logFont);
     if ( logFont.lfQuality & CLEARTYPE_QUALITY ) {
@@ -194,13 +203,6 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     tooltip_.Create(m_hWnd, rcDefault, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP, WS_EX_TOPMOST);
     tooltip_.SetWindowPos(HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
-    enum {kItemMargin = 3, kItemHorPadding = 5, kItemVertPadding = 3, kIconSize = 20};
-    itemMargin_ = static_cast<int>(kItemMargin *dpiScaleX_);
-    itemHorPadding_ = static_cast<int>(kItemHorPadding * dpiScaleX_);
-    itemVertPadding_ = static_cast<int>(kItemVertPadding * dpiScaleY_);
-    iconSizeX_ = static_cast<int>(kIconSize * dpiScaleX_);
-    iconSizeY_ = static_cast<int>(kIconSize * dpiScaleY_);
-    font_ = std::make_unique<Gdiplus::Font>(hdc, systemFont_);
     if (createSubPanel_) {
         subpanelHeight_ = static_cast<int>(27 * dpiScaleY_);
         subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
@@ -242,7 +244,7 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
 
             RECT fontSizeUpDownRect = { 0, 0, static_cast<LONG>(30 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
 
-            fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+            fontSizeUpDownCtrl_.Create(m_hWnd, fontSizeUpDownRect, _T(""), WS_CHILD | UDS_SETBUDDYINT | /* UDS_ALIGNRIGHT | */ UDS_ARROWKEYS | UDS_HOTTRACK);
             fontSizeUpDownCtrl_.SetRange(1, 100);
 
             RECT initialValueLabelRect { 0, 0, static_cast<LONG>(100 * dpiScaleX_), static_cast<LONG>(subpanelHeight_ - 4 * dpiScaleY_) };
@@ -557,13 +559,12 @@ LRESULT Toolbar::OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
     return 0;
 }
 
-SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y)
-{
+SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y, bool expand) {
     using namespace Gdiplus;
     SIZE res={0,0};
     Item &item = buttons_[index];
 
-    if ( item.itemDelegate ) {
+    if (item.itemDelegate) {
         return item.itemDelegate->CalcItemSize(item, x, y, dpiScaleX_, dpiScaleY_);
     }
 
@@ -576,41 +577,48 @@ SIZE Toolbar::CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y)
         }
     }
 
-    if ( item.icon ) {
-        res.cx += iconSizeX_  + (item.title.IsEmpty() ? 0 :itemHorPadding_ ) ;
+    if (item.icon) {
+        res.cx += iconSizeX_ + ((item.title.IsEmpty() || item.type == itTinyCombo) ? 0 : itemHorPadding_);
         res.cy = std::max<int>(iconSizeY_, res.cy);
     }
 
-    if ( item.type == itComboButton ) {
-        res.cx += static_cast<int>(dropDownIcon_ ->GetWidth()*dpiScaleX_) + itemHorPadding_;
-    }/*else if ( item.type == itTinyCombo ) {
-        res.cx += 5*dpiScaleX;
-    }*/
+    if (item.type == itComboButton) {
+        res.cx += static_cast<int>(kDropdownIconSize * dpiScaleX_);
+    } else if (item.type == itTinyCombo) {
+        //res.cx += static_cast<int>(kTinyDropdownIconSize * dpiScaleX_);
+    }
 
     res.cx += itemHorPadding_ * 2;
-    res.cy  += itemVertPadding_ * 2;
-    RECT rc = buttonsRect_;
-    if ( orientation_ == orVertical ) {
-        res.cx =  max( res.cx, rc.right - itemMargin_*2);
-    } else {
-        res.cy =  max( res.cy, rc.bottom - itemMargin_*2);
+    res.cy += itemVertPadding_ * 2;
+
+    if (expand) {
+        if (orientation_ == orVertical) {
+            res.cx = max(res.cx, buttonsRect_.right - buttonsRect_.left - itemMargin_ * 2);
+        } else {
+            res.cy = max(res.cy, buttonsRect_.bottom - buttonsRect_.top - itemMargin_ * 2);
+        }
     }
+
     return res;
 }
 
-int Toolbar::AutoSize()
-{
-    int x = itemMargin_;
-    int y = itemMargin_;
+int Toolbar::AutoSize() {
     int width = 0;
     int height = 0;
     CClientDC dc(m_hWnd);
     Gdiplus::Graphics gr(dc);
 
+    if (!dpiScaleX_ || !dpiScaleY_) {
+        setDPI(dc.GetDeviceCaps(LOGPIXELSX), dc.GetDeviceCaps(LOGPIXELSY));
+    }
+
+    int x = itemMargin_;
+    int y = itemMargin_;
+
     for (size_t i = 0; i < buttons_.size(); i++) {
         SIZE s = CalcItemSize(&gr, i, x, y);
         Item& item = buttons_[i];
-        Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
+        //Gdiplus::RectF bounds(static_cast<Gdiplus::REAL>(x), static_cast<Gdiplus::REAL>(y), float(s.cx), float(s.cy));
         item.rect.left = x;
         item.rect.top = y;
         item.rect.right = s.cx + x;
@@ -628,9 +636,23 @@ int Toolbar::AutoSize()
         }
     }
 
-    SetWindowPos(0, 0, 0, width, height,SWP_NOMOVE | SWP_NOZORDER);
+    SetWindowPos(0, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER);
 
     GetClientRect(&buttonsRect_);
+
+    for (size_t i = 0; i < buttons_.size(); i++) {
+        const RECT& rc = buttonsRect_;
+        Item& item = buttons_[i];
+        if (orientation_ == orVertical) {
+            int width = std::max(item.rect.right - item.rect.left, rc.right - itemMargin_ * 2);
+            item.rect.right = width + item.rect.left;
+        } else {
+            int height = std::max(item.rect.bottom - item.rect.top, rc.bottom - itemMargin_ * 2);
+            item.rect.bottom = height + item.rect.top;
+        }
+    }
+
+
 
     if ( orientation_ == orHorizontal && createSubPanel_) {
         SetWindowPos(0, 0,0,width,height + subpanelHeight_,SWP_NOMOVE|SWP_NOZORDER);
@@ -688,6 +710,16 @@ int Toolbar::AutoSize()
         if (!fontSizeUpDownCtrl_.GetBuddy()) {
             fontSizeUpDownCtrl_.SetBuddy(fontSizeEdit_);
         }
+        CRect editRect;
+        fontSizeEdit_.GetWindowRect(&editRect);
+        ScreenToClient(&editRect);
+
+        int spinWidth = GuiTools::GetSystemMetricsForDpi(SM_CXVSCROLL, dpiX_);
+        fontSizeUpDownCtrl_.SetWindowPos(nullptr,
+            editRect.right, editRect.top,
+            spinWidth, editRect.Height(),
+            SWP_NOZORDER | SWP_NOACTIVATE);
+
         RECT upDownRect, rect;
         fontSizeUpDownCtrl_.GetWindowRect(&upDownRect);
         ScreenToClient(&upDownRect);
@@ -730,10 +762,95 @@ int Toolbar::AutoSize()
     return 1;
 }
 
+void Toolbar::setDPI(int newDpiX, int newDpiY) {
+    if (newDpiX && newDpiY) {
+        int oldDpiX = dpiX_;
+        int oldDpiY = dpiY_;
+
+        dpiX_ = newDpiX;
+        dpiY_ = newDpiY;
+        dpiScaleX_ = newDpiX / 96.0f;
+        dpiScaleY_ = newDpiY / 96.0f;
+        iconSizeX_ = static_cast<int>(kIconSize * dpiScaleX_);
+        iconSizeY_ = static_cast<int>(kIconSize * dpiScaleY_);
+        systemFont_ = GuiTools::GetSystemDialogFont(newDpiX);
+        CClientDC dc(m_hWnd);
+        font_ = std::make_unique<Gdiplus::Font>(dc, systemFont_);
+        if (createSubPanel_) {
+            subpanelHeight_ = static_cast<int>(27 * dpiScaleY_);
+            subpanelLeftOffset_ = static_cast<int>(50 * dpiScaleX_);
+        }
+
+        itemMargin_ = static_cast<int>(kItemMargin * dpiScaleX_);
+        itemHorPadding_ = orientation_ == orHorizontal ? static_cast<int>(kItemHorPadding * dpiScaleX_) : static_cast<int>(kVertItemHorPadding * dpiScaleX_);
+        //vertItemHorPadding_ = static_cast<int>(kVertItemHorPadding * dpiScaleX_);
+        itemVertPadding_ = static_cast<int>(kItemVertPadding * dpiScaleY_);
+
+        dropDownIcon_ = GuiTools::CreateDropDownArrowBitmap(m_hWnd, kDropdownIconSize * dpiScaleX_, kDropdownIconSize * dpiScaleY_);
+        tinyDropDownIcon_ = GuiTools::CreateDropDownArrowBitmap(m_hWnd, kTinyDropdownIconSize * dpiScaleX_, kTinyDropdownIconSize * dpiScaleY_);
+
+        if (orientation_ == orHorizontal && createSubPanel_ && oldDpiX && oldDpiY) {
+            struct SomeInfo {
+                Toolbar* pthis;
+                HFONT newFont;
+                int oldDpiX, oldDpiY;
+                int newDpiX, newDpiY;
+            } si = {
+                this, systemFont_, oldDpiX, oldDpiY, newDpiX, newDpiY
+            };
+
+            EnumChildWindows(m_hWnd, [](HWND hChild, LPARAM lParam) -> BOOL {
+                auto si = reinterpret_cast<SomeInfo*>(lParam);
+                ::SendMessage(hChild, WM_SETFONT, (WPARAM)si->newFont, TRUE);
+
+                if (si->oldDpiX && si->oldDpiY) {
+                    CRect rc {};
+
+                    if (::GetWindowRect(hChild, &rc)) {
+                        si->pthis->ScreenToClient(&rc);
+                        int x = MulDiv(rc.left, si->newDpiX, si->oldDpiX);
+                        int y = MulDiv(rc.top, si->newDpiY, si->oldDpiY);
+                        int width = MulDiv(rc.Width(), si->newDpiX, si->oldDpiX);
+                        int height = MulDiv(rc.Height(), si->newDpiY, si->oldDpiY);
+                        ::SetWindowPos(hChild, nullptr, x, y, width, height, SWP_NOZORDER | SWP_NOACTIVATE);
+                    }
+                }
+
+                return TRUE; 
+            },
+            reinterpret_cast<LPARAM>(&si));
+
+            if (fontSizeUpDownCtrl_ && fontSizeEdit_) {
+                CRect editRect;
+                fontSizeEdit_.GetWindowRect(&editRect);
+                ScreenToClient(&editRect);
+
+                int spinWidth = GuiTools::GetSystemMetricsForDpi(SM_CXVSCROLL, newDpiX);
+                fontSizeUpDownCtrl_.SetWindowPos(nullptr,
+                    editRect.right, editRect.top,
+                    spinWidth, editRect.Height(),
+                    SWP_NOZORDER | SWP_NOACTIVATE);
+            }
+            /*pixelLabel_.SetFont(systemFont_);
+            roundRadiusLabel_.SetFont(systemFont_);
+            blurRadiusLabel_.SetFont(systemFont_);
+            fontSizeLabel_.SetFont(systemFont_);
+            fontSizeEdit_.SetFont(systemFont_);
+            initialValueLabel_.SetFont(systemFont_);
+            initialValueEdit_.SetFont(systemFont_);
+            fillBackgroundCheckbox_.SetFont(systemFont_);
+            invertSelectionCheckbox_.SetFont(systemFont_);
+            arrowTypeCombobox_.SetFont(systemFont_);
+            applyButton_.SetFont(systemFont_);
+            cancelOperationButton_.SetFont(systemFont_);*/
+        }
+    }
+}
+
 void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 {
     using namespace Gdiplus;
-    SIZE size = CalcItemSize(gr, itemIndex, x, y);
+    SIZE size = CalcItemSize(gr, itemIndex, x, y, true);
 
     Item& item = buttons_[itemIndex];
 
@@ -760,7 +877,7 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
             roundRect.FillRoundRect(gr,&br,Rect(x, y, size.cx, size.cy),Color(198,196,197),4);
 
             if ( item.type == itComboButton ) {
-                gr->DrawLine(&p, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - dropDownIcon_->GetWidth() * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
+                gr->DrawLine(&p, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ - 2*dpiScaleX_ ,  bounds.Y+ 1, bounds.X + bounds.Width - kDropdownIconSize * dpiScaleX_ -2 * dpiScaleX_, bounds.Y + bounds.Height - 1);
             }
 
     } /*else if ( item.state == isChecked ) {
@@ -782,14 +899,23 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
 
 //    }
 
+    REAL iconX = itemHorPadding_ + bounds.X + (item.state == isDown ? 1 : 0);
+
     if ( item.type == itComboButton ) {
-        gr->DrawImage(dropDownIcon_.get(), bounds.X + bounds.Width - 16*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height -16*dpiScaleY_ )/2 + (item.state == isDropDown ? 1 : 0), (int)16*dpiScaleX_, (int)16*dpiScaleY_);
+        gr->DrawImage(dropDownIcon_.get(), bounds.GetRight() - kDropdownIconSize * dpiScaleX_ + (item.state == isDropDown ? 1 : 0), bounds.Y + (bounds.Height - kDropdownIconSize * dpiScaleY_) / 2 + (item.state == isDropDown ? 1 : 0) /* kDropdownIconSize * dpiScaleX_, kDropdownIconSize * dpiScaleY_*/);
     } else if ( item.type == itTinyCombo ) {
-        gr->DrawImage(dropDownIcon_.get(), bounds.X + bounds.Width - 8*dpiScaleX_+ (item.state == isDropDown ? 1 : 0), bounds.Y + bounds.Height - 8*dpiScaleY_ + (item.state == isDropDown ? 1 : 0), (int)10*dpiScaleX_, (int)10*dpiScaleY_);
+        int offsetX = 0;
+        if (item.state == isDown) {
+            offsetX = -1;
+        } else if (item.state == isDropDown) {
+            offsetX = 1;
+        }
+
+        gr->DrawImage(tinyDropDownIcon_.get(), iconX + iconSizeX_ - 1 + offsetX, bounds.Y + bounds.Height - kTinyDropdownIconSize * dpiScaleY_ + (item.state == isDropDown ? 1 : 0) /*, kTinyDropdownIconSize * dpiScaleX_, kTinyDropdownIconSize * dpiScaleY_*/);
     }
 
     if (  item.icon ) {
-        gr->DrawImage(item.icon.get(),(int) (itemHorPadding_ + bounds.X+ (item.state == isDown ? 1 : 0)), (int)(bounds.Y+ (item.state == isDown ? 1 : 0)+(bounds.Height -iconSizeY_)/2),iconSizeX_, iconSizeY_);
+        gr->DrawImage(item.icon.get(), (int)iconX, (int)(bounds.Y + (item.state == isDown ? 1 : 0) + (bounds.Height - iconSizeY_) / 2), iconSizeX_, iconSizeY_);
     }
 
     if (showButtonText_) {
@@ -905,9 +1031,7 @@ LRESULT Toolbar::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BO
     return 0;
 }
 
-SIZE Toolbar::getArrowComboBoxBitmapSize(HDC hdc) {
-    int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
-    int dpiY = GetDeviceCaps(hdc, LOGPIXELSY);
+SIZE Toolbar::getArrowComboBoxBitmapSize(int dpiX, int dpiY) {
     return {
         MulDiv(70, dpiX, USER_DEFAULT_SCREEN_DPI),
         MulDiv(18, dpiY, USER_DEFAULT_SCREEN_DPI)
@@ -920,11 +1044,12 @@ void Toolbar::setArrowComboboxMode(int itemIndex, int arrowType) {
 
 LRESULT Toolbar::OnMeasureItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
     LPMEASUREITEMSTRUCT lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
-    CClientDC dc(m_hWnd);
-    int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    //CClientDC dc(m_hWnd);
+    int dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+    int dpiY = dpiX;  //dc.GetDeviceCaps(LOGPIXELSY);
     if (wParam == ID_ARROWTYPECOMBOBOX) {
-        SIZE sz = getArrowComboBoxBitmapSize(dc);
+
+        SIZE sz = getArrowComboBoxBitmapSize(dpiX, dpiY);
         int paddingY = /*/ MulDiv(2, dpiX, USER_DEFAULT_SCREEN_DPI)*/0;
         lpmis->itemWidth = std::max<int>(MulDiv(200, dpiX, USER_DEFAULT_SCREEN_DPI), sz.cx);
 
@@ -977,8 +1102,9 @@ LRESULT Toolbar::OnDrawItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /
         // Get and display the text for the list item.
         ::SendMessage(lpdis->hwndItem, CB_GETLBTEXT, lpdis->itemID, (LPARAM)b);
         buf.ReleaseBuffer(itemLength);
-
-        SIZE bitmapSize = getArrowComboBoxBitmapSize(lpdis->hDC);
+        int dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+        int dpiY = dpiX; 
+        SIZE bitmapSize = getArrowComboBoxBitmapSize(dpiX, dpiY);
         ExtTextOut(lpdis->hDC, bitmapSize.cx + 2 * x, y,
             ETO_CLIPPED | ETO_OPAQUE, &lpdis->rcItem,
             buf, buf.GetLength(), NULL);

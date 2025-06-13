@@ -35,6 +35,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/i18n/Translator.h"
 #include "3rdpart/GdiplusH.h"
+#include "Func/Library.h"
 
 // Hack: initguid.h must be included before oleacc.h but oleacc.h
 #undef INITGUID
@@ -323,20 +324,169 @@ int GetFontHeight(int nFontSize) {
     return res;
 }
 
-HFONT GetSystemDialogFont()
-{
+HFONT GetSystemDialogFont(UINT dpi) {
     NONCLIENTMETRICS ncm;
     ncm.cbSize = sizeof(NONCLIENTMETRICS);
-#if (WINVER >= 0x0600)
-    if ( !WinUtils::IsVistaOrLater() ) {
-        ncm.cbSize = sizeof(NONCLIENTMETRICS) - sizeof(int);
-    }
-#endif
 
-    if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0)) {
+    if (dpi) {
+        // Windows 10+
+        static Library user32(L"user32.dll");
+        if (user32) {
+            typedef BOOL (WINAPI *SystemParametersInfoForDpiFunc)(
+                UINT uiAction,
+                UINT uiParam,
+                PVOID pvParam,
+                UINT fWinIni,
+                UINT dpi
+            );
+            
+            static SystemParametersInfoForDpiFunc pSystemParametersInfoForDpi = 
+                user32.GetProcAddress<SystemParametersInfoForDpiFunc>("SystemParametersInfoForDpi");
+            
+            if (pSystemParametersInfoForDpi) {
+                // Windows 10 Anniversary Update (1607) и новее
+                if (pSystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, 
+                                               sizeof(NONCLIENTMETRICS), 
+                                               &ncm, 
+                                               0, 
+                                               dpi)) {
+                    return CreateFontIndirect(&ncm.lfMessageFont);
+                }
+            }
+        }
+    }
+    
+    // Fallback
+    if (SystemParametersInfo(SPI_GETNONCLIENTMETRICS, 
+                            sizeof(NONCLIENTMETRICS), 
+                            &ncm, 
+                            0)) {
+        
+        if (dpi) {
+            ncm.lfMessageFont.lfHeight = MulDiv(ncm.lfMessageFont.lfHeight, 
+                                               (int)dpi, 
+                                               USER_DEFAULT_SCREEN_DPI);
+        }
+        
         return CreateFontIndirect(&ncm.lfMessageFont);
     }
-    return 0;
+    
+    return NULL;
+}
+
+int GetSystemMetricsForDpi(int nIndex, UINT dpi) {
+    // If dpi is 0 or standard DPI, return regular metrics
+    if (dpi == 0 || dpi == USER_DEFAULT_SCREEN_DPI) {
+        return GetSystemMetrics(nIndex);
+    }
+
+    // Try to use new function for Windows 10 Anniversary Update (1607)+
+    static Library user32(L"user32.dll");
+    if (user32) {
+        typedef int(WINAPI * GetSystemMetricsForDpiFunc)(int nIndex, UINT dpi);
+
+        static GetSystemMetricsForDpiFunc pGetSystemMetricsForDpi = user32.GetProcAddress<GetSystemMetricsForDpiFunc>("GetSystemMetricsForDpi");
+
+        if (pGetSystemMetricsForDpi) {
+            return pGetSystemMetricsForDpi(nIndex, dpi);
+        }
+    }
+
+    // Fallback for Windows 7/8/8.1 - manual scaling
+    int baseValue = GetSystemMetrics(nIndex);
+
+    // Some metrics should not be scaled
+    switch (nIndex) {
+    // Quantitative metrics - do not scale
+    case SM_CMOUSEBUTTONS:
+    case SM_CMONITORS:
+    case SM_MOUSEPRESENT:
+    case SM_MOUSEHORIZONTALWHEELPRESENT:
+    case SM_MOUSEWHEELPRESENT:
+    case SM_SWAPBUTTON:
+    case SM_TABLETPC:
+    case SM_MEDIACENTER:
+    case SM_STARTER:
+    case SM_SERVERR2:
+    case SM_DIGITIZER:
+    case SM_MAXIMUMTOUCHES:
+        return baseValue;
+
+    // Boolean metrics - do not scale
+    case SM_DEBUG:
+    case SM_DBCSENABLED:
+    case SM_IMMENABLED:
+    case SM_MIDEASTENABLED:
+    case SM_NETWORK:
+    case SM_PENWINDOWS:
+    case SM_REMOTESESSION:
+    case SM_SECURE:
+    case SM_SLOWMACHINE:
+    case SM_SHUTTINGDOWN:
+        return baseValue;
+
+    // Size metrics - scale them
+    case SM_CXSCREEN:
+    case SM_CYSCREEN:
+    case SM_CXVSCROLL:
+    case SM_CYHSCROLL:
+    case SM_CYCAPTION:
+    case SM_CXBORDER:
+    case SM_CYBORDER:
+    case SM_CXDLGFRAME:
+    case SM_CYDLGFRAME:
+    case SM_CYVTHUMB:
+    case SM_CXHTHUMB:
+    case SM_CXICON:
+    case SM_CYICON:
+    case SM_CXCURSOR:
+    case SM_CYCURSOR:
+    case SM_CYMENU:
+    case SM_CXFULLSCREEN:
+    case SM_CYFULLSCREEN:
+    case SM_CYKANJIWINDOW:
+    case SM_CXMINTRACK:
+    case SM_CYMINTRACK:
+    case SM_CXDOUBLECLK:
+    case SM_CYDOUBLECLK:
+    case SM_CXICONSPACING:
+    case SM_CYICONSPACING:
+    case SM_CXMAXIMIZED:
+    case SM_CYMAXIMIZED:
+    case SM_CXMAXTRACK:
+    case SM_CYMAXTRACK:
+    case SM_CXMENUCHECK:
+    case SM_CYMENUCHECK:
+    case SM_CXMINIMIZED:
+    case SM_CYMINIMIZED:
+    case SM_CXMINSPACING:
+    case SM_CYMINSPACING:
+    case SM_CXSIZE:
+    case SM_CYSIZE:
+    case SM_CXFRAME:
+    case SM_CYFRAME:
+    case SM_CXHSCROLL:
+    case SM_CYVSCROLL:
+    case SM_CXSMICON:
+    case SM_CYSMICON:
+    case SM_CYSMCAPTION:
+    case SM_CXSMSIZE:
+    case SM_CYSMSIZE:
+    case SM_CXMENUSIZE:
+    case SM_CYMENUSIZE:
+    case SM_CXEDGE:
+    case SM_CYEDGE:
+    case SM_CXPADDEDBORDER:
+        return MulDiv(baseValue, (int)dpi, USER_DEFAULT_SCREEN_DPI);
+
+    // For unknown metrics try scaling
+    default:
+        // If value is greater than 1, it's probably a size metric
+        if (baseValue > 1) {
+            return MulDiv(baseValue, (int)dpi, USER_DEFAULT_SCREEN_DPI);
+        }
+        return baseValue;
+    }
 }
 
 int ScreenBPP(){
@@ -746,48 +896,39 @@ void ClearControlAccessibleName(HWND hwnd)
     }
 }
 
-
-HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
-    /* CClientDC dc(wnd);
-    const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
-    const float dpiXScale = dpiX / 96.0f;
-    const float dpiYScale = dpiY / 96.0f;*/
-
-    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-
+std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int iconWidth, int iconHeight, ArrowOrientation orientation /*= ARROW_DOWN*/) {
     const COLORREF sysTextColor = ::GetSysColor(COLOR_BTNTEXT);
     const Gdiplus::Color arrowColor(
         GetRValue(sysTextColor),
         GetGValue(sysTextColor),
-        GetBValue(sysTextColor)
-    );
+        GetBValue(sysTextColor));
 
-    Gdiplus::Bitmap bmp(iconWidth, iconHeight, PixelFormat32bppARGB);
-    Gdiplus::Graphics graphics(&bmp);
+    auto bmp = std::make_unique<Gdiplus::Bitmap>(iconWidth, iconHeight, PixelFormat32bppARGB);
+    Gdiplus::Graphics graphics(bmp.get());
 
     graphics.Clear(Gdiplus::Color(0, 0, 0, 0));
     graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
     graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf); // Align to pixel centers
 
-    const int baseSize = std::min(iconWidth, iconHeight) / 2;
-    int arrowWidth, arrowHeight;
-    int left, top;
+    const auto baseSize = std::min(iconWidth, iconHeight) / 2.0f;
+    float arrowWidth, arrowHeight;
+    float left, top;
 
+#define roundPt(x) (x)
+//#define roundPt(x) std::roundf(x)
     if (orientation == ARROW_LEFT || orientation == ARROW_RIGHT) {
         arrowHeight = baseSize;
-        arrowWidth = std::roundf(arrowHeight * 0.7f);
-        left = std::roundf((iconWidth - arrowWidth) * 0.6f);
+        arrowWidth = roundPt(arrowHeight * 0.7f);
+        left = roundPt((iconWidth - arrowWidth) * 0.6f);
         top = (iconHeight - arrowHeight) / 2;
     } else {
         arrowWidth = baseSize;
-        arrowHeight = std::roundf(arrowWidth * 0.7f);
+        arrowHeight = roundPt(arrowWidth * 0.7f);
         left = (iconWidth - arrowWidth) / 2;
-        top = std::roundf((iconHeight - arrowHeight) * 0.4f);
+        top = roundPt((iconHeight - arrowHeight) * 0.4f);
     }
-
-    Gdiplus::Point points[3];
+#undef roundPt
+    Gdiplus::PointF points[3];
     switch (orientation) {
     case ARROW_UP:
         points[0] = { left + arrowWidth / 2, top };
@@ -813,9 +954,15 @@ HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
 
     Gdiplus::SolidBrush brush(arrowColor);
     graphics.FillPolygon(&brush, points, 3);
+    return bmp;
+}
 
+HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
+    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
+    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    auto bmp = CreateDropDownArrowBitmap(wnd, iconWidth, iconHeight, orientation);
     HICON hIcon = nullptr;
-    bmp.GetHICON(&hIcon);
+    bmp->GetHICON(&hIcon);
 
     return hIcon;
 }

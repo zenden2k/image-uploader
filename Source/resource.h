@@ -107,7 +107,6 @@
 #define IDD_SEARCHBYIMAGEDLG            272
 #define IDB_ICONPLAY                    272
 #define IDB_PNG3                        273
-#define IDB_DROPDOWNICONPNG             273
 #define IDD_COLORCODEDIALOG             273
 #define IDB_TOO                         274
 #define IDB_TOOLMOVEICONPNG             274

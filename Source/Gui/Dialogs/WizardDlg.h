@@ -118,6 +118,7 @@ public:
         MESSAGE_HANDLER(MYWM_ENABLEDROPTARGET, OnEnableDropTarget)
         MESSAGE_HANDLER(WM_APPCOMMAND, OnAppCommand)
         MESSAGE_HANDLER(WM_QUERYENDSESSION, OnQueryEndSession)
+        MESSAGE_HANDLER(WM_DPICHANGED, OnDPICHanged)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_UPDATESLABEL, BN_CLICKED, OnUpdateClicked)
         COMMAND_HANDLER(IDM_OPENSCREENSHOTS_FOLDER, BN_CLICKED, OnOpenScreenshotFolderClicked)
@@ -150,6 +151,8 @@ public:
     LRESULT OnTaskDispatcherMsg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
     LRESULT OnUpdateClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnLocalHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

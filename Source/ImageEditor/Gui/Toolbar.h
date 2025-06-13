@@ -157,8 +157,9 @@ public:
     LRESULT OnArrowTypeComboChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnApplyButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnCancelOperationButtonClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y);
+    SIZE CalcItemSize(Gdiplus::Graphics* gr, int index, int x, int y, bool expand = false);
     int AutoSize();
+    void setDPI(int newDpiX = 0, int newDpiY = 0);
     void CreateToolTipForItem(size_t index);
     void updateTooltipForItem(size_t index);
     CCustomTrackBarControl penSizeSlider_;
@@ -185,9 +186,11 @@ protected:
     void drawItem(int itemIndex, Gdiplus::Graphics* gr, int, int y);
 
     bool trackMouse_;
-    float dpiScaleX_;
-    float dpiScaleY_;
-    std::unique_ptr<Gdiplus::Bitmap> dropDownIcon_;
+    float dpiScaleX_ = 0;
+    float dpiScaleY_ = 0;
+    int dpiX_ = 0;
+    int dpiY_ = 0;
+    std::unique_ptr<Gdiplus::Bitmap> dropDownIcon_, tinyDropDownIcon_;
     int itemMargin_;
     int itemHorPadding_;
     int itemVertPadding_;
@@ -209,7 +212,7 @@ protected:
     bool showButtonText_;
     std::vector<std::unique_ptr<Gdiplus::Bitmap>> arrowTypeBitmaps_;
     void createHintForControl(HWND slider, CString hint);
-    SIZE getArrowComboBoxBitmapSize(HDC dc);
+    SIZE getArrowComboBoxBitmapSize(int dpiX, int dpiY);
     void setArrowComboboxMode(int itemIndex, int arrowType);
     bool createSubPanel_;
     bool moveParent_;

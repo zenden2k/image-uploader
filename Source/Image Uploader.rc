@@ -245,8 +245,6 @@ IDR_topLeftShadowSquare PNG                     "res\\shadows\\topLeftShadowSqua
 
 IDR_topRightShadowSquare PNG                     "res\\shadows\\topRightShadowSquare.png"
 
-IDB_DROPDOWNICONPNG     PNG                     "res\\icon_dropdown_png.png"
-
 IDB_TOOLMOVEICONPNG     PNG                     "res\\ImageEditor\\icon_tool_move.png"
 
 IDB_TOOLCROPPING        PNG                     "res\\ImageEditor\\icon_tool_crop.png"

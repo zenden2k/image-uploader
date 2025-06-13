@@ -22,7 +22,8 @@
 #pragma once
 
 #include "atlheaders.h"
-#include <windows.h>
+#include "3rdpart/GdiplusH.h"
+#include <memory>
 
 namespace GuiTools
 {
@@ -60,7 +61,7 @@ namespace GuiTools
 
     int GetFontSize(int nFontHeight);
     int GetFontHeight(int nFontSize);
-    HFONT GetSystemDialogFont();
+    HFONT GetSystemDialogFont(UINT dpi = 0);
 
     int ScreenBPP();
     BOOL Is32BPP();
@@ -106,6 +107,7 @@ namespace GuiTools
         ARROW_LEFT, // ◀
         ARROW_RIGHT // ▶
     };
+    std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int width, int height, ArrowOrientation orientation = ARROW_DOWN);
     HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation = ARROW_DOWN);
 
     HICON GetMenuArrowIcon();
@@ -115,5 +117,6 @@ namespace GuiTools
 
     HICON GetWindowIcon(HWND hwnd);
     bool DisableDwmAnimations(HWND hwnd, BOOL disable = TRUE);
+    int GetSystemMetricsForDpi(int nIndex, UINT dpi);
 }
 #endif

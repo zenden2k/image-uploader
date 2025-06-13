@@ -322,7 +322,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
 
-        const auto aumi = WinToast::configureAUMI(L"Sergey Svistunov", APPNAME, {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        const auto aumi = WinToast::configureAUMI(L"Zenden2k", L"ImageUploader", {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);
 
         if (!toast->initialize()) {
@@ -1842,6 +1842,30 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
       TRC(IDCANCEL, "Exit");
     else
         TRC(IDCANCEL, "Hide");
+
+    return 0;
+}
+
+LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    if (CurPage >= 0 && CurPage <= std::size(Pages)) {
+        RECT rc {};
+        ::SendMessage(Pages[CurPage]->PageWnd, WM_MY_DPICHANGED, wParam, 0);
+    }
+
+    for (size_t i = 0; i < std::size(Pages); i++) {
+        auto* page = Pages[i];
+        if (page && page->HeadBitmap) {
+            page->HeadBitmap.DeleteObject();
+        }
+    }
+    if (CurPage >= 0 && CurPage < std::size(Pages)) {
+        HBITMAP bmp = GenHeadBitmap(static_cast<WizardPageId>(CurPage));
+        Pages[CurPage]->HeadBitmap = bmp;
+        CBitmapHandle oldBm = headBitmap_.SetBitmap(bmp);
+        if (oldBm) {
+            oldBm.DeleteObject();
+        }
+    }
 
     return 0;
 }
