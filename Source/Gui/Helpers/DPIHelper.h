@@ -10,9 +10,11 @@ class DPIHelper {
 private:
    typedef UINT(WINAPI* GetDpiForWindowFunc)(HWND hwnd);
    typedef HRESULT(WINAPI* GetDpiForMonitorFunc)(HMONITOR hmonitor, MONITOR_DPI_TYPE dpiType, UINT* dpiX, UINT* dpiY);
-   
+   typedef int(WINAPI* GetSystemMetricsForDpiFunc)(int nIndex, UINT dpi);
+
    static GetDpiForWindowFunc s_GetDpiForWindow;
    static GetDpiForMonitorFunc s_GetDpiForMonitor;
+   static GetSystemMetricsForDpiFunc s_GetSystemMetricsForDpi;
    static bool s_initialized;
    
    static void Initialize();

@@ -608,6 +608,7 @@ LRESULT ImageEditorWindow::OnNcCreate(UINT, WPARAM, LPARAM, BOOL&) {
 LRESULT ImageEditorWindow::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     SetWindowText(TR("Image Editor"));
+    createIcons();
     return 0;
 }
 
@@ -814,12 +815,13 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
             verticalToolbar_.SetWindowPos(0, 0, rc.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
         }
     }
+    createIcons();
     return 0;
 }
 
 LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
     if ( item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
         CMenu rectangleMenu;
@@ -1251,13 +1253,37 @@ void ImageEditorWindow::updateSearchButton() {
 std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadToolbarIcon(int resource, bool resize)
 {
     using namespace Gdiplus;
-    int cx = GetSystemMetrics(SM_CXSMICON);
-    int cy = GetSystemMetrics(SM_CYSMICON);
 
     std::shared_ptr<Bitmap> bm(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
     if (!resize) {
         return bm;
     }
+    int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+
+    int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    auto newBm = std::make_shared<Bitmap>(cx, cy, PixelFormat32bppARGB);
+    Graphics gr(newBm.get());
+    gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    gr.SetPixelOffsetMode(PixelOffsetModeHalf);
+    gr.DrawImage(bm.get(), 0, 0, cx, cy);
+
+    return newBm;
+}
+
+
+std::shared_ptr<Gdiplus::Bitmap> ImageEditorWindow::loadMenuIcon(int resource, bool resize /*= false*/) {
+    using namespace Gdiplus;
+
+    std::shared_ptr<Bitmap> bm(ImageUtils::BitmapFromResource(GetModuleHandle(0), MAKEINTRESOURCE(resource), _T("PNG")));
+    if (!resize) {
+        return bm;
+    }
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+
+    int cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     auto newBm = std::make_shared<Bitmap>(cx, cy, PixelFormat32bppARGB);
     Graphics gr(newBm.get());
     gr.SetInterpolationMode(InterpolationModeHighQualityBicubic);
@@ -1815,25 +1841,11 @@ void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
     horizontalToolbar_.ClientToScreen(&rc);
     rectangleMenu.CreatePopupMenu();
     int i = 0;
-    if (!bmIconRotateCW_) {
-        std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadToolbarIcon(IDB_ICONROTATECW, true);
-        iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
-    }
-    if (!bmIconRotate_) {
-        std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadToolbarIcon(IDB_ICONROTATE, true);
-        iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
-    }
 
-    if (!bmIconFlipHorizontal_) {
-        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPHORIZONTAL, true);
-        icon->GetHBITMAP({}, &bmIconFlipHorizontal_.m_hBitmap);
-    }
 
-    if (!bmIconFlipVertical_) {
-        std::shared_ptr<Gdiplus::Bitmap> icon = loadToolbarIcon(IDB_ICONFLIPVERTICAL, true);
-        icon->GetHBITMAP({}, &bmIconFlipVertical_.m_hBitmap);
-    }
-
+    std::shared_ptr<Gdiplus::Bitmap> icon2 = loadMenuIcon(IDB_ICONFLIPVERTICAL, true);
+    icon2->GetHBITMAP({}, &bmIconFlipVertical_.m_hBitmap);
+    
     GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECLOCKWISE, TR("Rotate clockwise (90°)"), bmIconRotateCW_);
     GuiTools::InsertMenu(rectangleMenu, i++, ID_ROTATECOUNTERCLOCKWISE, TR("Rotate counter clockwise (-90°)"), bmIconRotate_);
     GuiTools::InsertMenu(rectangleMenu, i++, ID_FLIPHORIZONTAL, TR("Flip horizontal"), bmIconFlipHorizontal_);
@@ -1844,6 +1856,32 @@ void ImageEditorWindow::showMoreActionsDropdownMenu(Toolbar::Item* item) {
     excludeArea.cbSize = sizeof(excludeArea);
     excludeArea.rcExclude = rc;
     rectangleMenu.TrackPopupMenuEx(TPM_LEFTALIGN | TPM_LEFTBUTTON | TPM_VERTICAL, rc.left, rc.bottom, m_hWnd, &excludeArea);
+}
+
+void ImageEditorWindow::createIcons() {
+    if (bmIconRotateCW_) {
+        bmIconRotateCW_.DeleteObject();
+    }
+    std::shared_ptr<Gdiplus::Bitmap> iconRotateCW = loadMenuIcon(IDB_ICONROTATECW, true);
+    iconRotateCW->GetHBITMAP({}, &bmIconRotateCW_.m_hBitmap);
+
+    if (bmIconRotate_) {
+        bmIconRotate_.DeleteObject();
+    }
+
+    std::shared_ptr<Gdiplus::Bitmap> iconRotate = loadMenuIcon(IDB_ICONROTATE, true);
+    iconRotate->GetHBITMAP({}, &bmIconRotate_.m_hBitmap);
+
+    if (bmIconFlipHorizontal_) {
+        bmIconFlipHorizontal_.DeleteObject();
+    }
+
+    std::shared_ptr<Gdiplus::Bitmap> icon = loadMenuIcon(IDB_ICONFLIPHORIZONTAL, true);
+    icon->GetHBITMAP({}, &bmIconFlipHorizontal_.m_hBitmap);
+
+    if (bmIconFlipVertical_) {
+        bmIconFlipVertical_.DeleteObject();
+    }
 }
 
 LRESULT ImageEditorWindow::OnDeleteSelected(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {

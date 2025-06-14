@@ -3,6 +3,7 @@
 // Static member definitions
 DPIHelper::GetDpiForWindowFunc DPIHelper::s_GetDpiForWindow = nullptr;
 DPIHelper::GetDpiForMonitorFunc DPIHelper::s_GetDpiForMonitor = nullptr;
+DPIHelper::GetSystemMetricsForDpiFunc DPIHelper::s_GetSystemMetricsForDpi = nullptr;
 bool DPIHelper::s_initialized = false;
 
 void DPIHelper::Initialize() {
@@ -13,10 +14,11 @@ void DPIHelper::Initialize() {
     Library user32(L"user32.dll");
     if (user32) {
         s_GetDpiForWindow = user32.GetProcAddress<GetDpiForWindowFunc>("GetDpiForWindow");
+        s_GetSystemMetricsForDpi = user32.GetProcAddress<GetSystemMetricsForDpiFunc>("GetSystemMetricsForDpi");
     }
 
     // Try to load GetDpiForMonitor from shcore.dll (Windows 8.1+)
-    Library shcore(L"shcore.dll");
+    static Library shcore(L"shcore.dll");
     if (shcore) {
         s_GetDpiForMonitor = shcore.GetProcAddress<GetDpiForMonitorFunc>("GetDpiForMonitor");
     }
@@ -60,6 +62,7 @@ UINT DPIHelper::GetDpiForWindow(HWND hwnd) {
 }
 
 UINT DPIHelper::GetDpiForDialog(HWND hwnd) {
+    Initialize();
     if (DPIHelper::IsPerMonitorDpiV2Supported()) {
         return DPIHelper::GetDpiForWindow(hwnd);
     } else {
@@ -105,16 +108,10 @@ int DPIHelper::GetSystemMetricsForDpi(int nIndex, UINT dpi) {
     }
 
     // Try to use new function for Windows 10 Anniversary Update (1607)+
-    static Library user32(L"user32.dll");
-    if (user32) {
-        typedef int(WINAPI * GetSystemMetricsForDpiFunc)(int nIndex, UINT dpi);
-
-        static GetSystemMetricsForDpiFunc pGetSystemMetricsForDpi = user32.GetProcAddress<GetSystemMetricsForDpiFunc>("GetSystemMetricsForDpi");
-
-        if (pGetSystemMetricsForDpi) {
-            return pGetSystemMetricsForDpi(nIndex, dpi);
-        }
+    if (s_GetSystemMetricsForDpi) {
+        return s_GetSystemMetricsForDpi(nIndex, dpi);
     }
+
 
     // Fallback
     HDC hdc = ::GetDC(nullptr);

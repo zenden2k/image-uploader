@@ -245,6 +245,7 @@ public:
         void updateSearchButton();
         void updateFontSizeControls();
         std::shared_ptr<Gdiplus::Bitmap>  loadToolbarIcon(int resource, bool resize = false);
+        std::shared_ptr<Gdiplus::Bitmap>  loadMenuIcon(int resource, bool resize = false);
         void EndDialog(DialogResult dr);
         void init();
         bool saveDocument(ClipboardFormat clipboardFormat = ClipboardFormat::None, bool saveAs = false);
@@ -271,6 +272,7 @@ public:
         void repositionToolbar(Toolbar& toolbar, const CRect& otherToolbarRect);
 
         void showMoreActionsDropdownMenu(Toolbar::Item* item);
+        void createIcons();
 };
 
 class ConfigurationProvider {
