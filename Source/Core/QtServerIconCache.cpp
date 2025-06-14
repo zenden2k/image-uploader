@@ -11,19 +11,19 @@ QtServerIconCache::QtServerIconCache(CUploadEngineListBase *engineList, std::str
     defaultServerIcon_ = QIcon(":/res/server.png");
 }
 
-NativeIcon QtServerIconCache::getIconForServer(const std::string &name) {
+NativeIcon QtServerIconCache::getIconForServer(const std::string &name, int dpi) {
     return tryIconLoad(name).icon;
 }
 
-NativeIcon QtServerIconCache::getBigIconForServer(const std::string &name) {
+NativeIcon QtServerIconCache::getBigIconForServer(const std::string &name, int dpi) {
     return tryIconLoad(name).icon;
 }
 
-NativeBitmap QtServerIconCache::getIconBitmapForServer(const std::string &name) {
+NativeBitmap QtServerIconCache::getIconBitmapForServer(const std::string &name, int dpi) {
     return tryIconLoad(name).bm;
 }
 
-void QtServerIconCache::preLoadIcons() {
+void QtServerIconCache::preLoadIcons(int dpi) {
     if (iconsPreload_) {
         throw std::logic_error("preLoadIcons() should not be called twice");
     }
@@ -31,7 +31,7 @@ void QtServerIconCache::preLoadIcons() {
 
     for (int i = 0; i < engineList_->count(); i++) {
         CUploadEngineData* ued = engineList_->byIndex(i);
-        [[maybe_unused]] auto icon = getIconForServer(ued->Name);
+        [[maybe_unused]] auto icon = getIconForServer(ued->Name, dpi);
     }
 }
 

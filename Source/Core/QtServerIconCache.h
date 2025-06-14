@@ -20,15 +20,15 @@ public:
     };
     QtServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir);
 
-    NativeIcon getIconForServer(const std::string& name) override;
+    NativeIcon getIconForServer(const std::string& name, int dpi) override;
 
-    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name) override;
-    NativeBitmap getIconBitmapForServer(const std::string& name) override;
+    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, int dpi) override;
+    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi) override;
 
     /**
     * @throws std::logic_error 
     */
-    void preLoadIcons() override;
+    void preLoadIcons(int dpi) override;
 private:
     std::unordered_map<std::string, CacheItem> serverIcons_;
     std::mutex cacheMutex_;

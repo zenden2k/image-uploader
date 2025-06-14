@@ -239,6 +239,7 @@ if(WIN32)
         ../Gui/Controls/WTLBrowserView.cpp
         ../Func/WinUtils.cpp
         ../Gui/GuiTools.cpp
+        ../Gui/Helpers/DPIHelper.cpp
         Images/Utils.cpp
         Images/GdiplusImageReader.cpp
         Images/WebpImageReader.cpp
@@ -275,6 +276,7 @@ if(WIN32)
         ../Gui/Controls/WTLBrowserView.h
         ../Func/WinUtils.h
         ../Gui/GuiTools.h
+        ../Gui/Helpers/DPIHelper.cpp
         Images/Utils.h
         Images/GdiplusImageReader.h
         Images/WebpImageReader.h

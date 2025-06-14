@@ -101,7 +101,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     timer->moveToThread(iconsLoadingThread_);
     timer->setSingleShot(true);
     connect(timer, &QTimer::timeout, [this, serviceLocator](){
-        serviceLocator->serverIconCache()->preLoadIcons();
+        serviceLocator->serverIconCache()->preLoadIcons(96);
         QMetaObject::invokeMethod(this, "fillServerIcons", Qt::AutoConnection);
         iconsLoadingThread_->quit();
     });

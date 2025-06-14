@@ -63,8 +63,18 @@ UINT DPIHelper::GetDpiForDialog(HWND hwnd) {
     if (DPIHelper::IsPerMonitorDpiV2Supported()) {
         return DPIHelper::GetDpiForWindow(hwnd);
     } else {
-        CClientDC dc(hwnd);
-        return dc.GetDeviceCaps(LOGPIXELSX);
+        HDC hdc = ::GetDC(hwnd);
+        if (!hdc) {
+            hdc = ::GetDC(nullptr); // Desktop DC
+        }
+
+        UINT dpi = 96; // Default DPI
+        if (hdc) {
+            dpi = ::GetDeviceCaps(hdc, LOGPIXELSX);
+            ::ReleaseDC(hwnd, hdc);
+        }
+
+        return dpi;
     }
 }
 
@@ -106,8 +116,13 @@ int DPIHelper::GetSystemMetricsForDpi(int nIndex, UINT dpi) {
         }
     }
 
-    CClientDC dc(NULL);
-    int systemDpi = dc.GetDeviceCaps(LOGPIXELSX);
+    // Fallback
+    HDC hdc = ::GetDC(nullptr);
+    UINT systemDpi = 96;
+    if (hdc) {
+        systemDpi = ::GetDeviceCaps(hdc, LOGPIXELSX);
+        ::ReleaseDC(nullptr, hdc);
+    }
 
     if (dpi == systemDpi) {
         return GetSystemMetrics(nIndex);

@@ -118,7 +118,6 @@ set(SRC_LIST
     Controls/WTLBrowserView.cpp
     Controls/FileFormatErrorView.cpp
     Helpers/LangHelper.cpp
-    Helpers/DPIHelper.cpp
     ../3rdpart/ColorButton.cpp
     ../3rdpart/MemberFunctionCallback.cpp
     ../3rdpart/vkCodes.cpp
@@ -287,7 +286,6 @@ set(HEADER_LIST
     Controls/WTLBrowserView.h
     Controls/FileFormatErrorView.h
     Helpers/LangHelper.h
-    Helpers/DPIHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h
     ../3rdpart/Registry.h
