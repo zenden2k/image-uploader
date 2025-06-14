@@ -186,8 +186,9 @@ LRESULT Toolbar::OnCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, B
     //lStyle &= ~(WS_CAPTION /*| WS_THICKFRAME | WS_MINIMIZE | WS_MAXIMIZE | WS_SYSMENU*/);
     //::SetWindowLong(m_hWnd, GWL_STYLE, lStyle);
     CClientDC hdc(m_hWnd);
-    int dpiX = hdc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = hdc.GetDeviceCaps(LOGPIXELSY);
+    int dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+    int dpiY = dpiX;
+
     setDPI(dpiX, dpiY);
 
     backBufferDc_.CreateCompatibleDC(hdc);
@@ -714,7 +715,7 @@ int Toolbar::AutoSize() {
         fontSizeEdit_.GetWindowRect(&editRect);
         ScreenToClient(&editRect);
 
-        int spinWidth = GuiTools::GetSystemMetricsForDpi(SM_CXVSCROLL, dpiX_);
+        int spinWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXVSCROLL, dpiX_);
         fontSizeUpDownCtrl_.SetWindowPos(nullptr,
             editRect.right, editRect.top,
             spinWidth, editRect.Height(),
@@ -825,7 +826,7 @@ void Toolbar::setDPI(int newDpiX, int newDpiY) {
                 fontSizeEdit_.GetWindowRect(&editRect);
                 ScreenToClient(&editRect);
 
-                int spinWidth = GuiTools::GetSystemMetricsForDpi(SM_CXVSCROLL, newDpiX);
+                int spinWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXVSCROLL, newDpiX);
                 fontSizeUpDownCtrl_.SetWindowPos(nullptr,
                     editRect.right, editRect.top,
                     spinWidth, editRect.Height(),

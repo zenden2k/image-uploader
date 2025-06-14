@@ -39,6 +39,9 @@
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/UploadListModel.h"
+#include "Gui/Helpers/DPIHelper.h"
+
+constexpr auto UPLOAD_LIST_VIEW_COLUMN_WIDTH = 170;
 
 // CUploadDlg
 CUploadDlg::CUploadDlg(CWizardDlg *dlg, UploadManager* uploadManager) : resultsWindow_(new CResultsWindow(dlg, urlList_, true))
@@ -68,6 +71,16 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     ::MapWindowPoints(0,m_hWnd, reinterpret_cast<POINT*>(&rc), 2);
 
     uploadListView_.AttachToDlgItem(m_hWnd, IDC_UPLOADTABLE);
+    uploadListView_.AddColumn(TR("File"), 1);
+    uploadListView_.AddColumn(TR("Status"), 1);
+    uploadListView_.AddColumn(TR("Thumbnail"), 2);
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+
+    int columnWidth = MulDiv(UPLOAD_LIST_VIEW_COLUMN_WIDTH, dpi, USER_DEFAULT_SCREEN_DPI);
+    uploadListView_.SetColumnWidth(0, columnWidth);
+    uploadListView_.SetColumnWidth(1, columnWidth);
+    uploadListView_.SetColumnWidth(2, columnWidth);
+
     uploadListView_.SetExtendedListViewStyle(LVS_EX_DOUBLEBUFFER, LVS_EX_DOUBLEBUFFER);
 
     createToolbar();
@@ -277,6 +290,17 @@ LRESULT CUploadDlg::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     return 0;
 }
 
+LRESULT CUploadDlg::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createToolbar();
+    int dpi = LOWORD(wParam);
+    int columnWidth = MulDiv(UPLOAD_LIST_VIEW_COLUMN_WIDTH, dpi, USER_DEFAULT_SCREEN_DPI);
+    uploadListView_.SetColumnWidth(0, columnWidth);
+    uploadListView_.SetColumnWidth(1, columnWidth);
+    uploadListView_.SetColumnWidth(2, columnWidth);
+    resultsWindow_->SendMessage(WM_MY_DPICHANGED, wParam, lParam);
+    return 0;
+}
+
 int CUploadDlg::ThreadTerminated(void)
 {
     WizardDlg->setQuickUploadMarker(false);
@@ -424,11 +448,11 @@ void CUploadDlg::onShortenUrlChanged(bool shortenUrl) {
     }
 }
 
-void CUploadDlg::createToolbar()
-{
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+void CUploadDlg::createToolbar() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     auto loadToolbarIcon = [&](int resourceId) -> int {
         CIcon icon;
@@ -436,6 +460,10 @@ void CUploadDlg::createToolbar()
         return toolbarImageList_.AddIcon(icon);
     };
 
+    if (toolbarImageList_) {
+        toolbar_.SetImageList(nullptr);
+        toolbarImageList_.Destroy();
+    }
     //if (GuiTools::Is32BPP()) {
         toolbarImageList_.Create(iconWidth, iconHeight, ILC_COLOR32 | rtlStyle, 0, 6);
     //}
@@ -447,26 +475,35 @@ void CUploadDlg::createToolbar()
     RECT rc = { 0, 0, 100, 24 };
     GetClientRect(&rc);
     rc.top = placeholderRect.top;
-    rc.bottom = rc.top + GuiTools::dlgY(16);
-    rc.left = GuiTools::dlgX(6);
-    rc.right -= GuiTools::dlgX(6);
-    toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE/*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+    rc.bottom = rc.top + MulDiv(16, dpi, USER_DEFAULT_SCREEN_DPI);
+    rc.left = MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+    rc.right -= MulDiv(6, dpi, USER_DEFAULT_SCREEN_DPI);
+    if (!toolbar_) {
+        toolbar_.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE /*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        toolbar_.SetButtonStructSize();
+        //toolbar_.SetButtonSize(30, 18);
+    }
+    int buttonCount = toolbar_.GetButtonCount();
 
-    toolbar_.SetButtonStructSize();
-    toolbar_.SetButtonSize(30, 18);
+    for (int i = buttonCount - 1; i >= 0; i--) {
+        toolbar_.DeleteButton(i);
+    }
+
     toolbar_.SetImageList(toolbarImageList_);
-    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | TBSTATE_PRESSED, loadToolbarIcon(IDI_ICONUPLOAD), TR("Upload progress"), 0);
-    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONINFO), TR("Links"), 0);
+
+    toolbar_.AddButton(IDC_UPLOADPROCESSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | (currentTab_ == IDC_UPLOADPROCESSTAB ? TBSTATE_PRESSED : 0), loadToolbarIcon(IDI_ICONUPLOAD), TR("Upload progress"), 0);
+    toolbar_.AddButton(IDC_UPLOADRESULTSTAB, BTNS_CHECK | BTNS_AUTOSIZE, TBSTATE_ENABLED | (currentTab_ == IDC_UPLOADRESULTSTAB ? TBSTATE_PRESSED : 0), loadToolbarIcon(IDI_ICONINFO), TR("Links"), 0);
     toolbar_.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONLOG), TR("Log"), 0);
 
     toolbar_.AutoSize();
     toolbar_.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
     toolbar_.SetWindowPos(GetDlgItem(IDC_PROGRESSGROUPBOX), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
     SIZE toolbarSize;
+
     if (toolbar_.GetMaxSize(&toolbarSize)) {
-       
         toolbar_.SetWindowPos(nullptr, 0, 0, rc.right - rc.left, toolbarSize.cy, SWP_NOZORDER|SWP_NOMOVE);
     }
+
     toolbar_.ShowWindow(SW_SHOW);
 }
 

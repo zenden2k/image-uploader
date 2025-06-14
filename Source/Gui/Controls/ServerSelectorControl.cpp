@@ -34,6 +34,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 namespace {
 
@@ -387,6 +388,7 @@ void CServerSelectorControl::notifyServerListChanged()
 
 void CServerSelectorControl::updateServerList()
 {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconCache = ServiceLocator::instance()->serverIconCache();
     serverComboBox_.ResetContent();
     comboBoxImageList_.Destroy();
@@ -438,7 +440,7 @@ void CServerSelectorControl::updateServerList()
             }
             int nImageIndex = -1;
             if (showServerIcons_) {
-                HICON hImageIcon = iconCache->getIconForServer(ue->Name);
+                HICON hImageIcon = iconCache->getIconForServer(ue->Name, dpi);
 
                 if (hImageIcon) {
                     nImageIndex = comboBoxImageList_.AddIcon(hImageIcon);
@@ -498,11 +500,12 @@ LRESULT CServerSelectorControl::OnAccountClick(WORD wNotifyCode, WORD wID, HWND 
     if (!uploadEngine) {
         return 0;
     }
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     std::map<std::string, ServerSettingsStruct>& serverUsers = settings->ServersSettings[serverProfile_.serverName()];
     HICON userIcon = LoadIcon(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDI_ICONUSER));
-    CBitmap bmp = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
+    CBitmap bmp = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon, dpi);
 
     if (!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end())) {
         bool addedSeparator = false;

@@ -40,6 +40,7 @@
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
 #include "Core/OutputGenerator/XmlTemplateList.h"
 #include "Core/OutputGenerator/XmlTemplateGenerator.h"
+#include "GUi/Helpers/DPIHelper.h"
 
 // CResultsPanel
 CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory):
@@ -100,18 +101,6 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     }
     CBitmap hBitmap;
 
-    //HIMAGELIST m_hToolBarImageList;
-    DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
-    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
-
-    toolbarImageList_.Create(iconWidth, iconHeight, (GuiTools::Is32BPP() ? ILC_COLOR32 : ILC_COLOR32 | ILC_MASK) | rtlStyle, 0, 6);
-    
-    auto loadToolbarIcon = [&](int resourceId) -> int {
-        CIcon icon;
-        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
-        return toolbarImageList_.AddIcon(icon);
-    };
 
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is chosen
@@ -120,39 +109,8 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         ::SetWindowLong(codeEditHwnd, GWL_EXSTYLE, styleEx & ~WS_EX_RTLREADING);
     }
 
-    CClientDC hdc(m_hWnd);
-    float dpiScaleX_ = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+    createToolbar();
 
-    RECT rc = {0,0,100,24};
-    GetClientRect(&rc);
-    rc.top = static_cast<LONG>(rc.bottom - dpiScaleY_ * 28);
-    rc.bottom -= static_cast<LONG>(dpiScaleY_ * 4);
-    rc.left = static_cast<LONG>(dpiScaleX_ * 8);
-    rc.right -= static_cast<LONG>(dpiScaleX_ * 8);
-    Toolbar.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE /*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
-    //TabBackgroundFix(Toolbar.m_hWnd);
-    
-    Toolbar.SetButtonStructSize();
-    Toolbar.SetButtonSize(iconWidth+2, iconHeight +2);
-    Toolbar.SetImageList(toolbarImageList_);
-    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON|BTNS_AUTOSIZE ,TBSTATE_ENABLED, loadToolbarIcon(IDI_CLIPBOARD), TR("Copy to clipboard"), 0);
-    
-    //bool IsLastVideo = false; 
-
-    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONINFO), TR("Info about last video"), 0);
-    //Toolbar.AddButton(IDC_VIEWLOG, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 3, TR("Error log"), 0);
-    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONSETTINGSGEAR), TR("Options"), 0);
-    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONPREVIEW), TR("Preview"), 0);
-    
-	//bool isMediaInfoAvailable = MediaInfoHelper::IsMediaInfoAvailable();
-
-	//if (!IsLastVideo || !isMediaInfoAvailable) {
-		Toolbar.HideButton(IDC_MEDIAFILEINFO);
-	//}
-        
-    Toolbar.AutoSize();
-    Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
     Toolbar.ShowWindow(SW_SHOW);
 
     codeTypeComboBox = GetDlgItem(IDC_CODETYPE);
@@ -184,6 +142,11 @@ LRESULT CResultsPanel::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
         }
     }
     
+    return 0;
+}
+
+LRESULT CResultsPanel::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createToolbar();
     return 0;
 }
 
@@ -294,6 +257,51 @@ void CResultsPanel::onCodeTypeChanged() {
     }
 }
 
+void CResultsPanel::createToolbar() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    if (toolbarImageList_) {
+        Toolbar.SetImageList(nullptr);
+        toolbarImageList_.Destroy();
+    }
+    toolbarImageList_.Create(iconWidth, iconHeight, (GuiTools::Is32BPP() ? ILC_COLOR32 : ILC_COLOR32 | ILC_MASK) | rtlStyle, 0, 6);
+
+    auto loadToolbarIcon = [&](int resourceId) -> int {
+        CIcon icon;
+        icon.LoadIconWithScaleDown(MAKEINTRESOURCE(resourceId), iconWidth, iconHeight);
+        return toolbarImageList_.AddIcon(icon);
+    };
+
+    RECT rc = { 0, 0, 100, 24 };
+    GetClientRect(&rc);
+    rc.top = rc.bottom - MulDiv(28, dpi, USER_DEFAULT_SCREEN_DPI);
+    rc.bottom -= MulDiv(4, dpi, USER_DEFAULT_SCREEN_DPI);
+    rc.left = MulDiv(8, dpi, USER_DEFAULT_SCREEN_DPI);
+    rc.right -= MulDiv(8, dpi, USER_DEFAULT_SCREEN_DPI);
+
+    if (!Toolbar) {
+        Toolbar.Create(m_hWnd, rc, _T(""), WS_CHILD | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE /*|*/ | CCS_BOTTOM | /*CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        Toolbar.SetWindowLong(GWL_ID, IDC_RESULTSTOOLBAR);
+        Toolbar.SetButtonStructSize();
+    }
+    //Toolbar.SetButtonSize(iconWidth + 2, iconHeight + 2);
+    int buttonCount = Toolbar.GetButtonCount();
+
+    for (int i = buttonCount - 1; i >= 0; i--) {
+        Toolbar.DeleteButton(i);
+    }
+    Toolbar.SetImageList(toolbarImageList_);
+    Toolbar.AddButton(IDC_COPYALL, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_CLIPBOARD), TR("Copy to clipboard"), 0);
+    Toolbar.AddButton(IDC_MEDIAFILEINFO, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONINFO), TR("Info about last video"), 0);
+    Toolbar.AddButton(IDC_OPTIONSMENU, TBSTYLE_DROPDOWN | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONSETTINGSGEAR), TR("Options"), 0);
+    Toolbar.AddButton(IDC_PREVIEWBUTTON, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, loadToolbarIcon(IDI_ICONPREVIEW), TR("Preview"), 0);
+    //Toolbar.HideButton(IDC_MEDIAFILEINFO);
+    EnableMediaInfo(isMediaInfoEnabled_);
+    Toolbar.AutoSize();
+}
+
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     namespace OG = ImageUploader::Core::OutputGenerator;
@@ -342,6 +350,7 @@ void CResultsPanel::Clear()
 void  CResultsPanel::EnableMediaInfo(bool Enable)
 {
     Toolbar.HideButton(IDC_MEDIAFILEINFO,!Enable);
+    isMediaInfoEnabled_ = Enable;
 }
 
 LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)

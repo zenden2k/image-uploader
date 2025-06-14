@@ -67,7 +67,45 @@ namespace {
         {L"50%",  L"50%",  L"50%", 3},
         {L"75%",  L"75%",  L"75%", 3}
     };
-}
+
+    void CenterToolbarInGroupBoxThemed(HWND hDialog, HWND hGroupBox, HWND hToolbar) {
+        int dpi = DPIHelper::GetDpiForWindow(hDialog);
+
+        RECT rcGroup;
+        GetWindowRect(hGroupBox, &rcGroup);
+        ScreenToClient(hDialog, (LPPOINT)&rcGroup.left);
+        ScreenToClient(hDialog, (LPPOINT)&rcGroup.right);
+
+        RECT rcToolbar;
+        GetWindowRect(hToolbar, &rcToolbar);
+        int toolbarWidth = rcToolbar.right - rcToolbar.left;
+        int toolbarHeight = rcToolbar.bottom - rcToolbar.top;
+
+        HDC hdc = GetDC(hGroupBox);
+        HFONT hFont = (HFONT)SendMessage(hGroupBox, WM_GETFONT, 0, 0);
+        HFONT hOldFont = (HFONT)SelectObject(hdc, hFont);
+
+        TEXTMETRIC tm;
+        GetTextMetrics(hdc, &tm);
+        int captionHeight = tm.tmHeight + MulDiv(2, dpi, USER_DEFAULT_SCREEN_DPI); // +4 для отступов
+
+        SelectObject(hdc, hOldFont);
+        ReleaseDC(hGroupBox, hdc);
+
+        int borderWidth = MulDiv(2, dpi, USER_DEFAULT_SCREEN_DPI);
+
+        int contentLeft = rcGroup.left + borderWidth;
+        int contentTop = rcGroup.top + captionHeight;
+        int contentWidth = (rcGroup.right - rcGroup.left) - (borderWidth * 2);
+        int contentHeight = (rcGroup.bottom - rcGroup.top) - captionHeight - borderWidth;
+
+        int x = contentLeft + (contentWidth - toolbarWidth) / 2;
+        int y = contentTop + (contentHeight - toolbarHeight) / 2;
+
+        SetWindowPos(hToolbar, NULL, x, y, 0, 0,
+            SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+    }
+    }
 
 CUploadSettings::CUploadSettings(CMyEngineList* EngineList, UploadEngineManager* uploadEngineManager, WinServerIconCache* iconCache) 
     :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles),
@@ -105,6 +143,49 @@ void CUploadSettings::settingsChanged(BasicSettings* settingsBase)
 
         }
     }
+}
+
+void CUploadSettings::updateButtonIcons() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconDropdown_) {
+        iconDropdown_.DestroyIcon();
+    }
+    iconDropdown_ = GuiTools::CreateDropDownArrowIcon(m_ResizePresetIconButton, dpi, GuiTools::ARROW_DOWN);
+    m_ResizePresetIconButton.SetIcon(iconDropdown_);
+    m_ShorteningServerButton.SetIcon(iconDropdown_);
+
+    if (iconEdit_) {
+        iconEdit_.DestroyIcon();
+    }
+    iconEdit_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEDIT), iconWidth, iconHeight);
+
+    RECT profileRect;
+    ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
+    ScreenToClient(&profileRect);
+
+    if (!m_ProfileEditToolbar) {
+        m_ProfileEditToolbar.Create(m_hWnd, profileRect, _T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/ TBSTYLE_TOOLTIPS | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
+        m_ProfileEditToolbar.SetButtonStructSize();
+    }
+    m_ProfileEditToolbar.SetButtonSize(iconWidth + 2, iconHeight + 2);
+    if (m_profileEditToolbarImageList) {
+        m_profileEditToolbarImageList.Destroy();
+    }
+    m_profileEditToolbarImageList.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
+    m_profileEditToolbarImageList.AddIcon(iconEdit_);
+
+    m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
+    int buttonCount = m_ProfileEditToolbar.GetButtonCount();
+
+    for (int i = buttonCount - 1; i >= 0; i--) {
+        m_ProfileEditToolbar.DeleteButton(i);
+    }
+    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Edit Profile"), 0);
 }
 
 void CUploadSettings::TranslateUI()
@@ -149,39 +230,10 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     //m_ThumbSizeEdit.SubclassWindow(GetDlgItem(IDC_QUALITYEDIT));
     TranslateUI();
 
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-
-    CClientDC dc(m_hWnd);
-    const int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-    const int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
-    
-    //iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_DROPDOWN), iconWidth, iconHeight);  
-
     m_ResizePresetIconButton.m_hWnd = GetDlgItem(IDC_RESIZEPRESETSBUTTON);
-    iconDropdown_ = GuiTools::CreateDropDownArrowIcon(m_ResizePresetIconButton, GuiTools::ARROW_DOWN);
-    m_ResizePresetIconButton.SetIcon(iconDropdown_);
-
     m_ShorteningServerButton.m_hWnd = GetDlgItem(IDC_SHORTENINGURLSERVERBUTTON);
-    m_ShorteningServerButton.SetIcon(iconDropdown_);
 
-    iconEdit_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEDIT), iconWidth, iconHeight);
-
-    RECT profileRect;
-    ::GetWindowRect(GetDlgItem(IDC_EDITPROFILE), &profileRect);
-    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
-
-    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
-    m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
-    m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(iconWidth + 2, iconHeight + 2);
-    
-    m_profileEditToolbarImageList.Create(iconWidth, iconHeight, ILC_COLOR32 | ILC_MASK, 0, 6);
-    m_profileEditToolbarImageList.AddIcon(iconEdit_);
-
-    m_ProfileEditToolbar.SetImageList(m_profileEditToolbarImageList);
-    m_ProfileEditToolbar.AddButton(IDC_EDITPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Edit Profile"), 0);
-
+    updateButtonIcons();
     initToolbars();
 
     Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
@@ -208,7 +260,7 @@ LRESULT CUploadSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     initToolbars();
     UpdateAllPlaceSelectors();
     UpdateToolbarIcons();
-
+    updateButtonIcons();
     return 0;
 }
 
@@ -478,13 +530,14 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 void CUploadSettings::UpdateToolbarIcons()
 {
     HICON hImageIcon = NULL, hFileIcon = NULL;
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     if (!getSessionImageServerItem().isNull()) {
-        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName());
+        hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi);
     }
         
     if (!getSessionFileServerItem().isNull()) {
-        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName());
+        hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi);
     }
     
     if(hImageIcon)
@@ -512,8 +565,8 @@ void CUploadSettings::UpdateToolbarIcons()
 
 void CUploadSettings::initToolbars() {
     int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
-    int iconWidth = GuiTools::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
-    int iconHeight = GuiTools::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     if (m_PlaceSelectorImageList) {
         m_PlaceSelectorImageList.Destroy();
@@ -526,7 +579,7 @@ void CUploadSettings::initToolbars() {
     iconFolder.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
     m_PlaceSelectorImageList.AddIcon(iconFolder);
 
-    CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, GuiTools::ARROW_RIGHT);
+    CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, dpi, GuiTools::ARROW_RIGHT);
 
     m_PlaceSelectorImageList.AddIcon(iconSeparator);
        
@@ -573,10 +626,14 @@ void CUploadSettings::initToolbars() {
         CurrentToolbar.SetWindowPos(i == 0 ? GetDlgItem(IDC_IMAGESERVERGROUPBOX) : Toolbar.m_hWnd, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
         SIZE toolbarSize;
         if (CurrentToolbar.GetMaxSize(&toolbarSize)) {
+
             RECT rc = i ? Toolbar2Rect : Toolbar1Rect;
-            rc.top = rc.top + (rc.bottom - rc.top - toolbarSize.cy) / 2;
+            //rc.right = rc.left + toolbarSize.cx;
+            rc.bottom = rc.top + toolbarSize.cy;
+           // rc.top = rc.top + (rc.bottom - rc.top - toolbarSize.cy) / 2;
             CurrentToolbar.SetWindowPos(nullptr, &rc, SWP_NOZORDER);
         }
+        CenterToolbarInGroupBoxThemed(m_hWnd, GetDlgItem(i ? IDC_FILESERVERGROUPBOX : IDC_IMAGESERVERGROUPBOX), CurrentToolbar);
     }
 }
 
@@ -676,6 +733,7 @@ LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND
     
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
@@ -718,7 +776,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 CString name = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
                 mi.cch = name.GetLength();
-                mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
+                mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
 
                 if ( mi.hbmpItem ) {
                     mi.fMask |= MIIM_BITMAP;
@@ -755,7 +813,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             CString name  = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
             mi.cch = name.GetLength();
-            mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name);
+            mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
             if ( mi.hbmpItem ) {
                 mi.fMask |= MIIM_BITMAP;
             }
@@ -871,7 +929,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
                     mi.dwTypeData  = const_cast<LPWSTR>(login.GetString());
                     mi.cch = login.GetLength();
-                    HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon);
+                    HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon, dpi);
                     bitmaps.push_back(bm);
                     
 
@@ -1065,8 +1123,10 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     if ( serverProfile.isNull() ) {
         return;
     }
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     CIcon ico;
     ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGS), iconWidth, iconHeight);
     
@@ -1077,7 +1137,7 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     mi.fMask = MIIM_ID | MIIM_STRING | MIIM_BITMAP;
     mi.wID = IDC_SERVERPARAMS + (int)isImageServerToolbar;
     CString serverSettingsStr = TR("Server settings...");
-    CBitmap bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico);
+    CBitmap bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico, dpi);
     mi.hbmpItem = bm;
     mi.dwTypeData = const_cast<LPWSTR>(serverSettingsStr.GetString());
     mi.cch = serverSettingsStr.GetLength();

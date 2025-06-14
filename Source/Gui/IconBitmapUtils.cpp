@@ -19,6 +19,7 @@
 #include "IconBitmapUtils.h"
 
 #include "Func/WinUtils.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 IconBitmapUtils::IconBitmapUtils()
     : hUxTheme(NULL)
@@ -123,13 +124,13 @@ HBITMAP IconBitmapUtils::IconToBitmap(HINSTANCE hInst, UINT uIcon)
     return bmp;
 }
 
-HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon) {
+HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon, int dpi) {
     if (pfnBeginBufferedPaint == NULL || pfnEndBufferedPaint == NULL || pfnGetBufferedPaintBits == NULL)
         return NULL;
 
     SIZE sizIcon;
-    sizIcon.cx = GetSystemMetrics(SM_CXSMICON);
-    sizIcon.cy = GetSystemMetrics(SM_CYSMICON);
+    sizIcon.cx = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    sizIcon.cy = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     RECT rcIcon;
     SetRect(&rcIcon, 0, 0, sizIcon.cx, sizIcon.cy);
@@ -175,7 +176,7 @@ HBITMAP IconBitmapUtils::HIconToBitmapPARGB32(HICON hIcon) {
 }
 
 
-HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon)
+HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, int dpi)
 {
     std::map<UINT, HBITMAP>::iterator bitmap_it = bitmaps.lower_bound(uIcon);
     if (bitmap_it != bitmaps.end() && bitmap_it->first == uIcon)
@@ -185,7 +186,7 @@ HBITMAP IconBitmapUtils::IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon)
     if (!hIcon)
         return NULL;
 
-    HBITMAP hBmp = HIconToBitmapPARGB32(hIcon);
+    HBITMAP hBmp = HIconToBitmapPARGB32(hIcon, dpi);
 
     if(hBmp)
         bitmaps.insert(bitmap_it, std::make_pair(uIcon, hBmp));

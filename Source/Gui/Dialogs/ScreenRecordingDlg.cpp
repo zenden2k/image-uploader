@@ -35,6 +35,7 @@
 #include "ImageEditor/Gui/ImageEditorWindow.h"
 #include "Func/ImageEditorConfigurationProvider.h"
 #include "ScreenCapture/WindowsHider.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 using namespace ScreenCapture;
 
@@ -361,6 +362,7 @@ LRESULT CScreenRecordingDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCt
 }
 
 void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
+    const int dpi = DPIHelper::GetDpiForWindow(hWndCtl);
     RECT rc;
     ::GetWindowRect(hWndCtl, &rc);
     POINT menuOrigin = { rc.left, rc.bottom };
@@ -397,7 +399,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
         mi.wID = IDM_WINDOW_LIST_FIRST + i;
         mi.dwTypeData = const_cast<LPWSTR>(itemTitle.GetString());
         mi.cch = itemTitle.GetLength();
-        HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico);
+        HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico, dpi);
         if (bm) { 
             mi.hbmpItem = bm;
             mi.fMask |= MIIM_BITMAP;

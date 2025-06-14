@@ -108,7 +108,7 @@ namespace GuiTools
         ARROW_RIGHT // ▶
     };
     std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int width, int height, ArrowOrientation orientation = ARROW_DOWN);
-    HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation = ARROW_DOWN);
+    HICON CreateDropDownArrowIcon(HWND wnd, int dpi, ArrowOrientation orientation = ARROW_DOWN);
 
     HICON GetMenuArrowIcon();
 
@@ -117,6 +117,5 @@ namespace GuiTools
 
     HICON GetWindowIcon(HWND hwnd);
     bool DisableDwmAnimations(HWND hwnd, BOOL disable = TRUE);
-    int GetSystemMetricsForDpi(int nIndex, UINT dpi);
 }
 #endif

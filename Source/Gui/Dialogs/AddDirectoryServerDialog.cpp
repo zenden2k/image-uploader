@@ -30,6 +30,7 @@ limitations under the License.
 #include "Core/CommonDefs.h"
 #include <Lm.h>
 #include "Gui/Components/NewStyleFolderDialog.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 CAddDirectoryServerDialog::CAddDirectoryServerDialog(CUploadEngineList* uploadEngineList)
 {
@@ -51,8 +52,10 @@ LRESULT CAddDirectoryServerDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM
     const CString addFileProcotolLabelText = TR("Convert UNC path \"\\\\\" to \"file://\"");
 
     SetDlgItemText(IDC_ADDFILEPROTOCOL, addFileProcotolLabelText);
-   
-    presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON));
+
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+
+    presetButtonIcon_ = GuiTools::CreateDropDownArrowIcon(GetDlgItem(IDC_PRESETSBUTTON), dpi);
     SendDlgItemMessage(IDC_PRESETSBUTTON, BM_SETIMAGE, IMAGE_ICON, reinterpret_cast<LPARAM>(static_cast<HICON>(presetButtonIcon_)));
     presetButton_.SubclassWindow(GetDlgItem(IDC_PRESETSBUTTON));
     ::SetFocus(GetDlgItem(IDC_CONNECTIONNAMEEDIT));

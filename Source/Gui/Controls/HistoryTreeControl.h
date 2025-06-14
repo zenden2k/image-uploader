@@ -98,7 +98,6 @@ class CHistoryTreeControl :
     private:
         std::map<CString, HICON> m_fileIconCache;
         HICON getIconForExtension(const CString& fileName);
-        static HICON getIconForServer(const CString& serverName);
         int CalcItemHeight(TreeItem* item);
 
         // If outHeight parameter is set, do not actually draw, just calculate item's dimensions

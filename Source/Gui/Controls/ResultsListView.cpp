@@ -17,17 +17,6 @@ bool CResultsListView::AttachToDlgItem(HWND parent, UINT dlgID) {
 }
 
 void CResultsListView::Init() {
-
-    AddColumn(TR("File"), 1);
-    AddColumn(TR("Status"), 1);
-    AddColumn(TR("Thumbnail"), 2);
-
-    CClientDC hdc(m_hWnd);
-    float dpiScaleX = static_cast<float>(GetDeviceCaps(hdc, LOGPIXELSX)) / 96.0f;
-    int columnWidth = static_cast<int>(170 * dpiScaleX);
-    SetColumnWidth(0, columnWidth);
-    SetColumnWidth(1, columnWidth);
-    SetColumnWidth(2, columnWidth);
 }
 
 void CResultsListView::SetModel(UploadListModel* model) {

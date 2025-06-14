@@ -46,8 +46,8 @@ public:
     ~IconBitmapUtils(void);
 
     HBITMAP IconToBitmap(HINSTANCE hInst, UINT uIcon);
-    HBITMAP HIconToBitmapPARGB32(HICON hIcon);
-    HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon);
+    HBITMAP HIconToBitmapPARGB32(HICON hIcon, int dpi);
+    HBITMAP IconToBitmapPARGB32(HINSTANCE hInst, UINT uIcon, int dpi);
     HRESULT Create32BitHBITMAP(HDC hdc, const SIZE *psize, __deref_opt_out void **ppvBits, __out HBITMAP* phBmp);
     HRESULT ConvertBufferToPARGB32(HPAINTBUFFER hPaintBuffer, HDC hdc, HICON hicon, SIZE& sizIcon);
     bool HasAlpha(__in Gdiplus::ARGB *pargb, SIZE& sizImage, int cxRow);

@@ -217,6 +217,7 @@ protected:
     void updateUrlShorteningCheckboxLabel();
     void shorteningUrlServerChanged(CServerSelectorControl* selectorControl);
     void settingsChanged(BasicSettings* settings);
+    void updateButtonIcons();
     HWND useServerThumbnailsTooltip_;
     UploadEngineManager * uploadEngineManager_;
     CIcon iconEdit_, iconDropdown_;

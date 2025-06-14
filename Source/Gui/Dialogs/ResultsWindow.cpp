@@ -187,6 +187,20 @@ LRESULT CResultsWindow::OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
     return 0;
 }
 
+LRESULT CResultsWindow::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    dpiChanged(LOWORD(wParam), HIWORD(wParam));
+    return 0;
+}
+
+LRESULT CResultsWindow::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    dpiChanged(LOWORD(wParam), HIWORD(wParam));
+    return 0;
+}
+
+void CResultsWindow::dpiChanged(int dpiX, int dpiY) {
+    ResultsPanel->SendMessage(WM_MY_DPICHANGED, MAKEWPARAM(dpiX, dpiY));
+}
+
 DLGTEMPLATE* CResultsWindow::GetTemplate()
 {
     HINSTANCE hInst =  GetModuleHandle(0);

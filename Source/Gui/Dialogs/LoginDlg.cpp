@@ -34,6 +34,7 @@
 #include "Core/Upload/UploadSession.h"
 #include "Core/Upload/UploadManager.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CLoginDlg
 CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, bool createNew) : serverProfile_(serverProfile)
@@ -61,10 +62,11 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     CenterWindow(GetParent());
     DoDataExchange(FALSE);
     serverImage_.SubclassWindow(GetDlgItem(IDC_SERVERICON));
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     auto* myEngineList = dynamic_cast<CMyEngineList*>(ServiceLocator::instance()->engineList());
     if (myEngineList) {
-        serverIcon_ = ServiceLocator::instance()->serverIconCache()->getBigIconForServer(m_UploadEngine->Name);
+        serverIcon_ = ServiceLocator::instance()->serverIconCache()->getBigIconForServer(m_UploadEngine->Name, dpi);
         if (serverIcon_) {
             int iconWidth = ::GetSystemMetrics(SM_CXICON);
             int iconHeight = ::GetSystemMetrics(SM_CYICON);

@@ -44,6 +44,7 @@
 #ifdef IU_ENABLE_MEDIAINFO
     #include "MediaInfoDlg.h"
 #endif
+#include "Gui/Helpers/DPIHelper.h"
 
 CMainDlg::CMainDlg(WinServerIconCache* iconCache):
     m_EditorProcess(nullptr),
@@ -177,6 +178,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
     }
     else
     {
+        const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
         auto* engineList = ServiceLocator::instance()->engineList();
 
         CString singleSelectedItem;
@@ -249,7 +251,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
                     mi.wID = MENUITEM_SEARCHBYIMG_START + i;
                     mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                     mi.cch = itemText.GetLength();
-                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name);
+                    mi.hbmpItem = iconCache_->getIconBitmapForServer(engine->Name, dpi);
 
                     if (mi.hbmpItem) {
                         mi.fMask |= MIIM_BITMAP;

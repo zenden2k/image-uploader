@@ -75,7 +75,7 @@ class CResultsPanel :
             COMMAND_HANDLER(IDC_SHORTENURLITEM, BN_CLICKED, OnShortenUrlClicked)
             COMMAND_HANDLER(IDC_PREVIEWBUTTON, BN_CLICKED, OnPreviewButtonClicked)
             COMMAND_HANDLER(IDC_GROUPBYFILENAME, BN_CLICKED, OnGroupByFilenameClicked)
-            
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
             //COMMAND_HANDLER(, BN_CLICKED, OnCopyFolderUrlClicked)
             COMMAND_RANGE_HANDLER(IDC_COPYFOLDERURL, IDC_COPYFOLDERURL + 1000, OnCopyFolderUrlClicked);
 
@@ -100,6 +100,7 @@ class CResultsPanel :
     LRESULT OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnCbnSelchangeCodetype(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -153,9 +154,10 @@ protected:
     bool groupByFileName_;
     ShortenUrlChangedCallback onShortenUrlChanged_;
     CImageListManaged toolbarImageList_;
-
+    bool isMediaInfoEnabled_ = false;
    
     void onCodeTypeChanged();
+    void createToolbar();
 };
 
 

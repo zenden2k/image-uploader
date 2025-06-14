@@ -16,6 +16,7 @@
 #include "Core/ScreenCapture/MonitorEnumerator.h"
 #include "Core/AbstractServerIconCache.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 namespace ImageEditor {
 
@@ -818,6 +819,7 @@ LRESULT ImageEditorWindow::OnDPICHanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*l
 
 LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
     Toolbar::Item* item = reinterpret_cast<Toolbar::Item*>(wParam);
     if ( item->command == ID_RECTANGLE || item->command == ID_ROUNDEDRECTANGLE || item->command == ID_ELLIPSE) {
         CMenu rectangleMenu;
@@ -903,7 +905,7 @@ LRESULT ImageEditorWindow::OnDropDownClicked(UINT /*uMsg*/, WPARAM wParam, LPARA
                 mi.wID = ID_SEARCHBYIMAGE_START + i;
                 mi.dwTypeData = const_cast<LPWSTR>(itemText.GetString());
                 mi.cch = itemText.GetLength();
-                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name);
+                mi.hbmpItem = serverIconCache->getIconBitmapForServer(engine->Name, dpi);
 
                 if (mi.hbmpItem) {
                     mi.fMask |= MIIM_BITMAP;

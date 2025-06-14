@@ -27,6 +27,7 @@
 #endif
 #include "WizardDlg.h"
 #include "Core/Images/Utils.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CWelcomeDlg
 CWelcomeDlg::CWelcomeDlg()
@@ -302,10 +303,10 @@ void CWelcomeDlg::updateImages(int dpiX, int dpiY) {
 }
 
 void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
-    const int iconWidth = GuiTools::GetSystemMetricsForDpi(SM_CXSMICON, dpiX);
-    const int iconHeight = GuiTools::GetSystemMetricsForDpi(SM_CYSMICON, dpiY);
-    const int iconBigWidth = GuiTools::GetSystemMetricsForDpi(SM_CXICON, dpiX);
-    const int iconBigHeight = GuiTools::GetSystemMetricsForDpi(SM_CYICON, dpiY);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpiX);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpiY);
+    const int iconBigWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpiX);
+    const int iconBigHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpiY);
 
     auto loadSmallIcon = [&](int resourceId) -> HICON {
         CIconHandle icon;

@@ -162,8 +162,15 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
-    int dpiX = DPIHelper::GetDpiForWindow(m_hWnd); //dc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = dpiX; //dc.GetDeviceCaps(LOGPIXELSY);
+    int dpiX, dpiY;
+
+    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
+        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+        dpiY = dpiX;
+    } else {
+        dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+        dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    }
 
     auto scaleX = [dpiX](int x) {
         return MulDiv(x, dpiX, 96);
@@ -421,8 +428,15 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
     CPaintDC paintDc(m_hWnd);
 
-    int dpiX = paintDc.GetDeviceCaps(LOGPIXELSX);
-    int dpiY = paintDc.GetDeviceCaps(LOGPIXELSY);
+    int dpiX, dpiY;
+
+    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
+        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+        dpiY = dpiX;
+    } else {
+        dpiX = paintDc.GetDeviceCaps(LOGPIXELSX);
+        dpiY = paintDc.GetDeviceCaps(LOGPIXELSY);
+    }
 
     auto scaleX = [dpiX](int x) {
         return MulDiv(x, dpiX, 96);
@@ -441,10 +455,11 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
     dc.FillRect(r,br);
 
     dc.SetBkMode(TRANSPARENT);
-    const int iconSmallWidth = GetSystemMetrics(SM_CXSMICON);
-    const int iconSmallHeight = GetSystemMetrics(SM_CYSMICON);
-    const int iconBigWidth = GetSystemMetrics(SM_CXICON);
-    const int iconBigHeight = GetSystemMetrics(SM_CYICON);
+    const int iconSmallWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpiX);
+    const int iconSmallHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpiY);
+    const int iconBigWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpiX);
+    const int iconBigHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpiY);
+
     for(size_t i=0; i<Items.GetCount(); i++)
     {
         const HyperLinkControlItem& item = Items[i];

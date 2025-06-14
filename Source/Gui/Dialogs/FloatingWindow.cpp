@@ -40,6 +40,7 @@
 #include "Func/IuCommonFunctions.h"
 #include "Func/Common.h"
 #include "Gui/IconBitmapUtils.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 namespace {
 
@@ -91,9 +92,9 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
     animationEnabled_ = false;
     m_hTrayIconMenu = nullptr;
     iconBitmapUtils_ = std::make_unique<IconBitmapUtils>();
-
-    const int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = GetSystemMetrics(SM_CYSMICON);
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     auto loadSmallIconBitmap = [&](int resourceId) -> HBITMAP {
         CIcon icon;
@@ -101,7 +102,7 @@ CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadMan
         if (!icon) {
             return nullptr;
         }
-        return iconBitmapUtils_->HIconToBitmapPARGB32(icon);
+        return iconBitmapUtils_->HIconToBitmapPARGB32(icon, dpi);
     };
 
     screenshotBitmap_ = loadSmallIconBitmap(IDI_SCREENSHOT);

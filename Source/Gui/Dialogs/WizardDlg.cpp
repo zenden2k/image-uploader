@@ -80,10 +80,13 @@
     #include "Gui/Dialogs/NetworkDebugDlg.h"
 #endif
 #include "ScreenCapture/WindowsHider.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 using namespace Gdiplus;
 namespace
 {
+
+constexpr auto HEAD_BITMAP_HEIGHT = 45;
 
 struct TaskDispatcherMessageStruct {
     TaskRunnerTask callback;
@@ -267,6 +270,7 @@ void CWizardDlg::setFloatWnd(std::shared_ptr<CFloatingWindow> floatWnd) {
 
 LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
+
     RECT clientRect;
     GetClientRect(&clientRect);
     auto* translator = ServiceLocator::instance()->translator();
@@ -301,6 +305,8 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     MediaInfoHelper::FindMediaInfoDllPath();
 #endif
     SetWindowText(APPNAME);
+
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
     const int iconWidth = GetSystemMetrics(SM_CXSMICON);
     const int iconHeight = GetSystemMetrics(SM_CYSMICON);
@@ -377,7 +383,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     std::string iconsDir = W2U(IuCommonFunctions::GetDataFolder() + _T("Favicons\\"));
     serverIconCache_ = std::make_unique<WinServerIconCache>(enginelist_, iconsDir);
     ServiceLocator::instance()->setServerIconCache(serverIconCache_.get());
-    serverIconCache_->preLoadIcons();
+    serverIconCache_->preLoadIcons(dpi);
 
     if ( isFirstRun_ ) {
         CQuickSetupDlg quickSetupDialog;
@@ -786,11 +792,8 @@ bool CWizardDlg::CreatePage(WizardPageId PageID)
         return true;
     }
 
-    CClientDC dc(m_hWnd);
-    //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
-    int height = static_cast<int>(roundf(45 * dpiScaleY_));
-
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int height = MulDiv(HEAD_BITMAP_HEIGHT, dpi, USER_DEFAULT_SCREEN_DPI);
 
     switch(PageID)
     {
@@ -903,9 +906,18 @@ HBITMAP CWizardDlg::GenHeadBitmap(WizardPageId PageID) const
     GetClientRect(&rc);
     int width=rc.right-rc.left;
     CClientDC dc(m_hWnd);
-    //float dpiScaleX_ = dc.GetDeviceCaps(LOGPIXELSX) / 96.0f;
-    float dpiScaleY_ = dc.GetDeviceCaps(LOGPIXELSY) / 96.0f;
-    int height = static_cast<int>(roundf(45 * dpiScaleY_));
+    int dpiX, dpiY;
+
+    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
+        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
+        dpiY = dpiX;
+    } else {
+        dpiX = dc.GetDeviceCaps(LOGPIXELSX);
+        dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    }
+
+    int height = MulDiv(HEAD_BITMAP_HEIGHT, dpiY, USER_DEFAULT_SCREEN_DPI);
+
     RectF bounds(0.0,0.0, float(width), height);
 
     Graphics g(m_hWnd,true);
@@ -1847,9 +1859,13 @@ LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
 }
 
 LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    if (CurPage >= 0 && CurPage <= std::size(Pages)) {
-       
+    // Older Windows versions (before Windows 10 1607/1703) do not support automatic
+    // DPI scaling for dialog boxes and controls. To maintain visual consistency,
+    // we avoid resizing icons and other elements, leaving the window unscaled.
+    if (!DPIHelper::IsPerMonitorDpiV2Supported()) {
+        return 0;
     }
+    const int dpi = DPIHelper::GetDpiForWindow(m_hWnd);
 
     for (size_t i = 0; i < std::size(Pages); i++) {
         auto* page = Pages[i];
@@ -1859,16 +1875,26 @@ LRESULT CWizardDlg::OnDPICHanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
             if (page->HeadBitmap) {
                 page->HeadBitmap.DeleteObject();
             }
+            page->HeadBitmap = GenHeadBitmap(static_cast<WizardPageId>(i));
+            if (page->HeadBitmap) {
+                int height = MulDiv(HEAD_BITMAP_HEIGHT, dpi, USER_DEFAULT_SCREEN_DPI);
+                ::SetWindowPos(page->PageWnd, 0, 0, height, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+            }
         }
     }
     if (CurPage >= 0 && CurPage < std::size(Pages)) {
-        HBITMAP bmp = GenHeadBitmap(static_cast<WizardPageId>(CurPage));
-        Pages[CurPage]->HeadBitmap = bmp;
-        CBitmapHandle oldBm = headBitmap_.SetBitmap(bmp);
+        CBitmapHandle oldBm = headBitmap_.SetBitmap(Pages[CurPage]->HeadBitmap);
         if (oldBm) {
             oldBm.DeleteObject();
         }
     }
+    if (helpButtonIcon_) {
+        helpButtonIcon_.DestroyIcon();
+    }
+    const int iconSmallWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconSmallHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    helpButtonIcon_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICON_HELP_DROPDOWN), iconSmallWidth, iconSmallHeight);
+    helpButton_.SetIcon(helpButtonIcon_);
 
     return 0;
 }

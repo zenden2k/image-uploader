@@ -6,6 +6,7 @@
 #include "Gui/IconBitmapUtils.h"
 #include "Core/Utils/StringUtils.h"
 #include "Func/WinUtils.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 WinServerIconCache::WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir)
     : AbstractServerIconCache(engineList, iconsDir)
@@ -23,9 +24,10 @@ WinServerIconCache::~WinServerIconCache(){
     }
 }
 
-WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name) {
+WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& name, int dpi) {
     std::lock_guard lk(cacheMutex_);
-    const auto iconIt = serverIcons_.find(name);
+    auto key = std::make_pair(dpi, name);
+    const auto iconIt = serverIcons_.find(key);
     if (iconIt != serverIcons_.end()) {
         return iconIt->second;
     }
@@ -40,14 +42,14 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
         return {};
     }*/
 
-    const int w = GetSystemMetrics(SM_CXSMICON);
-    const int h = GetSystemMetrics(SM_CYSMICON);
+    const int w = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int h = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
 
     HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
 
     if (FAILED(hr)) {
         if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND)) {
-            serverIcons_[name] = {};
+            serverIcons_[key] = {};
             return {}; 
         } else {
             _com_error err(hr);
@@ -60,30 +62,30 @@ WinServerIconCache::WinIcon WinServerIconCache::tryIconLoad(const std::string& n
     }
 
     if (!icon) {
-        serverIcons_[name] = {};
+        serverIcons_[key] = {};
         return {};
     }
-    WinIcon item(icon, iconBitmapUtils_->HIconToBitmapPARGB32(icon));
-    serverIcons_[name] = item;
+    WinIcon item(icon, iconBitmapUtils_->HIconToBitmapPARGB32(icon, dpi));
+    serverIcons_[key] = item;
     return item;
 }
 
-NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name) {
-     return tryIconLoad(name).bm;
+NativeBitmap WinServerIconCache::getIconBitmapForServer(const std::string& name, int dpi) {
+     return tryIconLoad(name, dpi).bm;
 }
 
-NativeIcon WinServerIconCache::getIconForServer(const std::string& name) {
-    return tryIconLoad(name).icon;
+NativeIcon WinServerIconCache::getIconForServer(const std::string& name, int dpi) {
+    return tryIconLoad(name, dpi).icon;
 }
 
-NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name) {
+NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name, int dpi) {
     CString iconFileName = IuCoreUtils::Utf8ToWstring(getIconNameForServer(name, true)).c_str();
 
     if (iconFileName.IsEmpty()) {
         return {};
     }
-    const int w = GetSystemMetrics(SM_CXICON);
-    const int h = GetSystemMetrics(SM_CYICON);
+    const int w = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
+    const int h = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpi);
     HICON icon {};
     HRESULT hr = LoadIconWithScaleDown(nullptr, iconFileName, w, h, &icon);
 
@@ -104,16 +106,16 @@ NativeIcon WinServerIconCache::getBigIconForServer(const std::string& name) {
     return icon;
 }
 
-void WinServerIconCache::preLoadIcons() {
+void WinServerIconCache::preLoadIcons(int dpi) {
     if (iconsPreload_) {
         throw std::logic_error("preLoadIcons() should not be called twice");
     }
     iconsPreload_ = true;
 
-    future_ = std::async(std::launch::async, [this]() -> int {
+    future_ = std::async(std::launch::async, [this, dpi]() -> int {
         for (int i = 0; i < engineList_->count(); i++) {
             CUploadEngineData* ued = engineList_->byIndex(i);
-            [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name);
+            [[maybe_unused]] auto icon = getIconBitmapForServer(ued->Name, dpi);
         }
         return 0;
     });

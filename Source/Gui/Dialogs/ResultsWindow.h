@@ -66,6 +66,8 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
             NOTIFY_HANDLER(IDC_RESULTSTAB, TCN_SELCHANGE, OnTabChanged)
         END_MSG_MAP()
     
@@ -79,12 +81,15 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         std::unique_ptr<CResultsPanel> ResultsPanel;
         bool m_childWindow;
         CTabCtrl resultsTabCtrl_;
         std::map<int, int> tabPageToCodeLang;
         CIcon iconSmall_;
         HGLOBAL hMyDlgTemplate_;
+        void dpiChanged(int dpiX, int dpiY);
 };
 
 #endif // IU_GUI_RESULTSWINDOW_H

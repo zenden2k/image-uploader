@@ -10,6 +10,33 @@
 
 class IconBitmapUtils;
 
+template <typename T>
+inline void hash_combine(std::size_t& seed, const T& val) {
+    std::hash<T> hasher;
+    seed ^= hasher(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+//  taken from https://stackoverflow.com/a/7222201/916549
+//
+template <typename S, typename T>
+struct std::hash<std::pair<S, T>> {
+    inline size_t operator()(const std::pair<S, T>& val) const {
+        size_t seed = 0;
+        hash_combine(seed, val.first);
+        hash_combine(seed, val.second);
+        return seed;
+    }
+};
+
+/*struct PairHash {
+    template <typename T1, typename T2>
+    std::size_t operator()(const std::pair<T1, T2>& p) const {
+        auto hash1 = std::hash<T1> {}(p.first);
+        auto hash2 = std::hash<T2> {}(p.second);
+        return hash1 ^ (hash2 << 1); // Combine hashes
+    }
+};*/
+
 class WinServerIconCache : public AbstractServerIconCache {
 public:
     struct WinIcon {
@@ -26,26 +53,26 @@ public:
     WinServerIconCache(CUploadEngineListBase* engineList, std::string iconsDir);
     ~WinServerIconCache() override;
 
-    NativeIcon getIconForServer(const std::string& name) override;
+    NativeIcon getIconForServer(const std::string& name, int dpi) override;
 
     /**
     * The caller of this function is responsible for destroying
     * the icon when it is no longer needed.
     */
-    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name) override;
+    [[nodiscard]] NativeIcon getBigIconForServer(const std::string& name, int dpi) override;
 
-    NativeBitmap getIconBitmapForServer(const std::string& name) override;
+    NativeBitmap getIconBitmapForServer(const std::string& name, int dpi) override;
 
     /**
     * @throws std::logic_error 
     */
-    void preLoadIcons() override;
+    void preLoadIcons(int dpi) override;
 
 private:
-    std::unordered_map<std::string, WinIcon> serverIcons_;
+    std::unordered_map<std::pair<int, std::string>, WinIcon> serverIcons_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     std::mutex cacheMutex_;
     std::future<int> future_;
     bool iconsPreload_ = false;
-    WinIcon tryIconLoad(const std::string& name);
+    WinIcon tryIconLoad(const std::string& name, int dpi);
 };

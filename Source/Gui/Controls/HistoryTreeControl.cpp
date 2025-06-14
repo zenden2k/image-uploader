@@ -37,6 +37,7 @@
 #include "Core/i18n/Translator.h"
 #include "Core/AbstractServerIconCache.h"
 #include "Core/TaskDispatcher.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CHistoryTreeControl
 CHistoryTreeControl::CHistoryTreeControl(std::shared_ptr<INetworkClientFactory> factory)
@@ -189,7 +190,7 @@ TreeItem*  CHistoryTreeControl::addEntry(CHistorySession* session, const CString
 void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RECT invRC, int* outHeight) {
     const int kPaddingX = 2;
     const int kPaddingY = 2;
-
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     CDCHandle dc(hdc);
     HFONT listboxFont = GetFont();
 
@@ -311,7 +312,8 @@ void CHistoryTreeControl::_DrawItem(TreeItem* item, HDC hdc, DWORD itemState, RE
     drawRect.bottom = drawRect.top + calcRect.Height();
     drawRect.left = rc.left + curX + 4;
     drawRect.right = drawRect.left + calcRect.Width();
-    HICON ico = getIconForServer(Utf8ToWCstring(ses->serverName()));
+    HICON ico = ServiceLocator::instance()->serverIconCache()->getIconForServer(ses->serverName(), dpi);
+
     if (ico && draw) {
         dc.DrawIconEx(drawRect.left, drawRect.top, ico, 16, 16);
     }
@@ -476,10 +478,6 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
     if (outHeight) {
         *outHeight = thumbHeight_ + kPaddingY * 2 + 2;
     }
-}
-
-HICON CHistoryTreeControl::getIconForServer(const CString& serverName) {
-    return ServiceLocator::instance()->serverIconCache()->getIconForServer(W2U(serverName));
 }
 
 bool CHistoryTreeControl::IsItemAtPos(int x, int y, bool &isRoot)

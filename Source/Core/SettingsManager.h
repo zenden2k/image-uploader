@@ -53,6 +53,7 @@ inline std::string myToString(const std::vector<std::string>& value)
 }
 
 inline void myFromString(const std::string& text, std::vector<std::string>& value) {
+    value.clear();
     IuStringUtils::Split(text, ";", value);
 }
 

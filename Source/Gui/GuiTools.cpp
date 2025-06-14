@@ -36,6 +36,7 @@
 #include "Core/i18n/Translator.h"
 #include "3rdpart/GdiplusH.h"
 #include "Func/Library.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // Hack: initguid.h must be included before oleacc.h but oleacc.h
 #undef INITGUID
@@ -361,132 +362,19 @@ HFONT GetSystemDialogFont(UINT dpi) {
                             sizeof(NONCLIENTMETRICS), 
                             &ncm, 
                             0)) {
-        
-        /*if (dpi) {
+        CClientDC dc(NULL);
+        int systemDpi = dc.GetDeviceCaps(LOGPIXELSX);
+
+        if (dpi && systemDpi != dpi) {
             ncm.lfMessageFont.lfHeight = MulDiv(ncm.lfMessageFont.lfHeight, 
-                                               (int)dpi, 
+                                               (int)systemDpi, 
                                                USER_DEFAULT_SCREEN_DPI);
-        }*/
+        }
         
         return CreateFontIndirect(&ncm.lfMessageFont);
     }
     
     return NULL;
-}
-
-int GetSystemMetricsForDpi(int nIndex, UINT dpi) {
-    // If dpi is 0 or standard DPI, return regular metrics
-    if (dpi == 0 || dpi == USER_DEFAULT_SCREEN_DPI) {
-        return GetSystemMetrics(nIndex);
-    }
-
-    // Try to use new function for Windows 10 Anniversary Update (1607)+
-    static Library user32(L"user32.dll");
-    if (user32) {
-        typedef int(WINAPI * GetSystemMetricsForDpiFunc)(int nIndex, UINT dpi);
-
-        static GetSystemMetricsForDpiFunc pGetSystemMetricsForDpi = user32.GetProcAddress<GetSystemMetricsForDpiFunc>("GetSystemMetricsForDpi");
-
-        if (pGetSystemMetricsForDpi) {
-            return pGetSystemMetricsForDpi(nIndex, dpi);
-        }
-    }
-
-    // Fallback for Windows 7/8/8.1 - manual scaling
-    int baseValue = GetSystemMetrics(nIndex);
-
-    // Some metrics should not be scaled
-    switch (nIndex) {
-    // Quantitative metrics - do not scale
-    case SM_CMOUSEBUTTONS:
-    case SM_CMONITORS:
-    case SM_MOUSEPRESENT:
-    case SM_MOUSEHORIZONTALWHEELPRESENT:
-    case SM_MOUSEWHEELPRESENT:
-    case SM_SWAPBUTTON:
-    case SM_TABLETPC:
-    case SM_MEDIACENTER:
-    case SM_STARTER:
-    case SM_SERVERR2:
-    case SM_DIGITIZER:
-    case SM_MAXIMUMTOUCHES:
-        return baseValue;
-
-    // Boolean metrics - do not scale
-    case SM_DEBUG:
-    case SM_DBCSENABLED:
-    case SM_IMMENABLED:
-    case SM_MIDEASTENABLED:
-    case SM_NETWORK:
-    case SM_PENWINDOWS:
-    case SM_REMOTESESSION:
-    case SM_SECURE:
-    case SM_SLOWMACHINE:
-    case SM_SHUTTINGDOWN:
-        return baseValue;
-
-    // Size metrics - scale them
-    case SM_CXSCREEN:
-    case SM_CYSCREEN:
-    case SM_CXVSCROLL:
-    case SM_CYHSCROLL:
-    case SM_CYCAPTION:
-    case SM_CXBORDER:
-    case SM_CYBORDER:
-    case SM_CXDLGFRAME:
-    case SM_CYDLGFRAME:
-    case SM_CYVTHUMB:
-    case SM_CXHTHUMB:
-    case SM_CXICON:
-    case SM_CYICON:
-    case SM_CXCURSOR:
-    case SM_CYCURSOR:
-    case SM_CYMENU:
-    case SM_CXFULLSCREEN:
-    case SM_CYFULLSCREEN:
-    case SM_CYKANJIWINDOW:
-    case SM_CXMINTRACK:
-    case SM_CYMINTRACK:
-    case SM_CXDOUBLECLK:
-    case SM_CYDOUBLECLK:
-    case SM_CXICONSPACING:
-    case SM_CYICONSPACING:
-    case SM_CXMAXIMIZED:
-    case SM_CYMAXIMIZED:
-    case SM_CXMAXTRACK:
-    case SM_CYMAXTRACK:
-    case SM_CXMENUCHECK:
-    case SM_CYMENUCHECK:
-    case SM_CXMINIMIZED:
-    case SM_CYMINIMIZED:
-    case SM_CXMINSPACING:
-    case SM_CYMINSPACING:
-    case SM_CXSIZE:
-    case SM_CYSIZE:
-    case SM_CXFRAME:
-    case SM_CYFRAME:
-    case SM_CXHSCROLL:
-    case SM_CYVSCROLL:
-    case SM_CXSMICON:
-    case SM_CYSMICON:
-    case SM_CYSMCAPTION:
-    case SM_CXSMSIZE:
-    case SM_CYSMSIZE:
-    case SM_CXMENUSIZE:
-    case SM_CYMENUSIZE:
-    case SM_CXEDGE:
-    case SM_CYEDGE:
-    case SM_CXPADDEDBORDER:
-        return MulDiv(baseValue, (int)dpi, USER_DEFAULT_SCREEN_DPI);
-
-    // For unknown metrics try scaling
-    default:
-        // If value is greater than 1, it's probably a size metric
-        if (baseValue > 1) {
-            return MulDiv(baseValue, (int)dpi, USER_DEFAULT_SCREEN_DPI);
-        }
-        return baseValue;
-    }
 }
 
 int ScreenBPP(){
@@ -957,9 +845,9 @@ std::unique_ptr<Gdiplus::Bitmap> CreateDropDownArrowBitmap(HWND wnd, int iconWid
     return bmp;
 }
 
-HICON CreateDropDownArrowIcon(HWND wnd, ArrowOrientation orientation) {
-    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+HICON CreateDropDownArrowIcon(HWND wnd, int dpi, ArrowOrientation orientation) {
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     auto bmp = CreateDropDownArrowBitmap(wnd, iconWidth, iconHeight, orientation);
     HICON hIcon = nullptr;
     bmp->GetHICON(&hIcon);
