@@ -251,12 +251,11 @@ LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, H
     auto dialogResult = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmFullscreen);
 
     if (dialogResult == ImageEditorWindow::drContinue) {
-        Gdiplus::Rect lastCrop = imageEditor.lastAppliedCrop();
+        CRect selectedRect = imageEditor.getSelectedRect();
 
-        if (!lastCrop.IsEmptyArea()) {
-            CRect selectedRegion(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
+        if (!selectedRect.IsRectEmpty()) {
             recordingParams_.selectedWindow = NULL;
-            recordingParams_.selectedRegion = selectedRegion;
+            recordingParams_.selectedRegion = selectedRect;
             updateRegionSelectButtonTitle();
         }
     }
@@ -441,7 +440,7 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
         title = TR("Full screen");
         enableMonitorComboBox = true;
     } else {
-        title.Format(_T("%d,%d - %dx%d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
+        title.Format(_T("(%d,%d) %d x %d"), recordingParams_.selectedRegion.left, recordingParams_.selectedRegion.top, recordingParams_.selectedRegion.Width(), recordingParams_.selectedRegion.Height());
     }
     regionSelectButton_.SetWindowText(title);
     if (!enableMonitorComboBox) {

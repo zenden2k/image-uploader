@@ -252,7 +252,7 @@ public:
 
     bool CanShowWindow() override;
     void UpdateAvailabilityChanged(bool Available) override;
-    void startScreenRecording(const ScreenRecordingRuntimeParams& params);
+    void startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter = false);
 
     //    IUnknown methods
     STDMETHODIMP_(ULONG) AddRef() override;
@@ -303,6 +303,7 @@ public:
     void showHelpButtonMenu(HWND control);
     bool isScreenRecorderRunning() const;
     void stopScreenRecording();
+    bool trayIconEnabled() const;
 
 protected:
     bool acceptsDragnDrop() const;

@@ -13,6 +13,7 @@
 #include "ScreenCapture/ScreenRecorder/DXGIScreenRecorder.h"
 #include "ScreenCapture/ScreenRecorder/Sources/GDIGrabSource.h"
 #include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
+#include "ScreenCapture/WindowsHider.h"
 #include "Core/ScreenCapture/ScreenshotHelper.h"
 #include "Gui/Dialogs/HotkeyEditor.h"
 #include "ScreenCapture/ScreenRecorder/ScreenRecorderUtils.h"
@@ -20,21 +21,21 @@
 
 constexpr auto PANEL_HEIGHT = 40;
 
-/*
+
 namespace {
 
 // {45CE8BB0-4973-4560-88DF-72A7CC407FF9}
-static const GUID ScreenRecorderBaseGUID = { 0x45ce8bb0, 0x4973, 0x4560, { 0x88, 0xdf, 0x72, 0xa7, 0xcc, 0x40, 0x7f, 0xf9 } };
+//static const GUID ScreenRecorderBaseGUID = { 0x45ce8bb0, 0x4973, 0x4560, { 0x88, 0xdf, 0x72, 0xa7, 0xcc, 0x40, 0x7f, 0xf9 } };
 
+constexpr COLORREF WINDOW_TRANSPARENT_COLOR = RGB(255, 0, 255); // Magenta
 }
-*/
 
 ScreenRecorderWindow::ScreenRecorderWindow():
         dialogResult_(drCancel),
         toolbar_(ImageEditor::Toolbar::orHorizontal, false) {
-    transparentColor_ = RGB(255, 50, 56);
     memset(&trayIconGuid_, 0, sizeof(GUID));
     hotkeys_ = std::make_unique<CHotkeyList>();
+    taskBarCreatedMsg_ = RegisterWindowMessage(_T("TaskbarCreated"));
 }
 
 ScreenRecorderWindow::~ScreenRecorderWindow() {
@@ -43,7 +44,7 @@ ScreenRecorderWindow::~ScreenRecorderWindow() {
 
 LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     GuiTools::SetWindowPointer(m_hWnd, this);
-    SetLayeredWindowAttributes(m_hWnd, transparentColor_, 0, LWA_COLORKEY);
+    SetLayeredWindowAttributes(m_hWnd, WINDOW_TRANSPARENT_COLOR, 0, LWA_COLORKEY);
 
     CWindowDC hdc(nullptr);
     int dpiX = GetDeviceCaps(hdc, LOGPIXELSX);
@@ -54,7 +55,9 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
 
     int toolbarHeight = MulDiv(PANEL_HEIGHT, dpiX, USER_DEFAULT_SCREEN_DPI);
 
-    if (toolbar_.Create(m_hWnd, false, true, transparentColor_, false)) {
+    frameRect_ = clientRect;
+
+    if (toolbar_.Create(m_hWnd, false, true, WINDOW_TRANSPARENT_COLOR, false)) {
         toolbar_.setShowButtonText(true);
 
         auto loadToolbarIcon = [](int resource)
@@ -73,8 +76,14 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
         timeDelegate_ = std::make_unique<TimeDelegate>(&toolbar_, index + 1);
         timeLabel.itemDelegate = timeDelegate_.get();
         toolbar_.addButton(timeLabel);
-        toolbar_.SetWindowPos(nullptr, clientRect.left, clientRect.bottom - toolbarHeight, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
+        toolbar_.SetWindowPos(nullptr, clientRect.left, clientRect.bottom, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
         toolbar_.AutoSize();
+
+        if (!fullScreen_) {
+            CRect toolbarRect;
+            toolbar_.GetClientRect(toolbarRect);
+            SetWindowPos(nullptr, 0, 0, std::max(toolbarRect.Width(), clientRect.Width()), toolbarRect.Height() + clientRect.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+        }
         toolbar_.ShowWindow(SW_SHOW);
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
@@ -85,34 +94,7 @@ LRESULT ScreenRecorderWindow::onCreate(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM 
     SetIcon(icon_, TRUE);
     SetIcon(iconSmall_, FALSE);
 
-    GUID* guid = nullptr;
-    
-    // Use GUID for uniquely identifying the system tray icon.
-    // Generating fake GUID ensures that the icon is consistently identified across sessions, even if the app is restarted from a different folder.
-    // Note: On Windows 7, using the same GUID but from a different path (folder) might fail to add the icon due to strict path checks.
-    // On Windows 10/11, GUID is considered the unique identifier, and the icon can be added even from a different path.
-    // trayIconGuid_ = WinUtils::GenerateFakeUUIDv4();
-    // guid = &trayIconGuid_;
-
-    CString iconTitle = TR("Image Uploader (screen recording)");
-    if (!InstallIcon(iconTitle, iconSmall_, NULL, guid)) {
-        LOG(WARNING) << "Failed to create tray icon!";
-        /*guid = nullptr;
-        if (!InstallIcon(iconTitle, icon_, NULL)) {
-            LOG(WARNING) << "Failed to create tray icon again. I give up.";
-        }*/
-    }
-
-    NOTIFYICONDATA nid;
-    ZeroMemory(&nid, sizeof(nid));
-    nid.cbSize = sizeof(NOTIFYICONDATA);
-    nid.hWnd = m_hWnd;
-    nid.uVersion = NOTIFYICON_VERSION_4;
-    if (guid){
-        nid.uFlags = NIF_GUID;
-        nid.guidItem = trayIconGuid_;
-    }
-    Shell_NotifyIcon(NIM_SETVERSION, &nid);
+    createTrayIcon();
 
     CString folder = U2W(settings->ScreenRecordingSettings.OutDirectory);
 
@@ -250,7 +232,7 @@ LRESULT ScreenRecorderWindow::onDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM
     return 0;
 }
 
-ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, const ScreenRecordingRuntimeParams& params) {
+ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, const ScreenRecordingRuntimeParams& params, bool forceShowParentAfter) {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     CWindowDC hdc(nullptr);
@@ -287,26 +269,23 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
     CRect windowRect = captureRect;
     if (!windowRect.IsRectEmpty()) {
         windowRect.InflateRect(1, 1, 1, 1);
-        windowRect.bottom += MulDiv(PANEL_HEIGHT, dpiX, USER_DEFAULT_SCREEN_DPI);
+        //windowRect.bottom += MulDiv(PANEL_HEIGHT, dpiX, USER_DEFAULT_SCREEN_DPI);
+    } else {
+        fullScreen_ = true;
     }
     CRgn exclude;
 
     // Parent window should be null here!
-    if (Create(nullptr, windowRect, _T("Screen Recorder"), initialWindowStyle, WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE  | WS_EX_LAYERED) == NULL) {
+    if (Create(nullptr, windowRect, _T("Screen Recorder"), initialWindowStyle, WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE | WS_EX_LAYERED) == NULL) {
         LOG(ERROR) << "Screen Recorder window creation failed!\n";
         return drCancel;
     }
-
-    icon_ = GuiTools::LoadBigIcon(IDR_MAINFRAME);
-    iconSmall_ = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
-
-    SetIcon(icon_, TRUE);
-    SetIcon(iconSmall_, FALSE);
     
     ShowWindow(SW_SHOW);
     SetForegroundWindow(m_hWnd);
     //BringWindowToTop();
     //m_view.Invalidate(false);
+    WindowsHider hider(parent);
 
     if (parent) {
         ::EnableWindow(parent, false);
@@ -319,6 +298,11 @@ ScreenRecorderWindow::DialogResult ScreenRecorderWindow::doModal(HWND parent, co
     if (parent) {
         ::EnableWindow(parent, true);
     }
+    hider.show();
+    if (forceShowParentAfter) {
+        ::ShowWindow(parent, SW_SHOWNORMAL);
+    }
+
     ShowWindow(SW_HIDE);
     if (parent) {
         ::SetForegroundWindow(parent);
@@ -355,7 +339,7 @@ LRESULT ScreenRecorderWindow::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
     int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
     CBrush br;
-    br.CreateSolidBrush(transparentColor_);
+    br.CreateSolidBrush(WINDOW_TRANSPARENT_COLOR);
 
     dc.FillRect(clientRect, br);
     int panelHeight = MulDiv(PANEL_HEIGHT, dpiX, USER_DEFAULT_SCREEN_DPI);
@@ -364,7 +348,7 @@ LRESULT ScreenRecorderWindow::onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /
     HPEN oldPen = dc.SelectPen(pen);
     HBRUSH oldBr = dc.SelectBrush(br);
     dc.SetBkMode(TRANSPARENT);
-    dc.Rectangle(clientRect.left, clientRect.top, clientRect.right, clientRect.bottom - panelHeight);
+    dc.Rectangle(frameRect_.left, frameRect_.top, frameRect_.right, frameRect_.bottom);
     dc.SelectBrush(oldBr);
     dc.SelectPen(oldPen);
     return 0;
@@ -408,6 +392,23 @@ LRESULT ScreenRecorderWindow::onTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lPa
     return 0;
 }
 
+LRESULT ScreenRecorderWindow::onDpiChanged(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    if (!fullScreen_) {
+        //toolbar_.SendMessage(WM_MY_DPICHANGED, wParam);
+        int dpiX = LOWORD(wParam);
+        int dpiY = HIWORD(wParam);
+        toolbar_.setDPI(dpiX, dpiY);
+        toolbar_.AutoSize();
+        updateWindowSize();
+    }
+    return 0;
+}
+
+LRESULT ScreenRecorderWindow::onTaskBarCreated(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
+    createTrayIcon();
+    return 0;
+}
+
 LRESULT ScreenRecorderWindow::onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CRect clientRect;
     GetClientRect(&clientRect);
@@ -418,6 +419,7 @@ LRESULT ScreenRecorderWindow::onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     if (!hasStarted_ || stopRequested_ || cancelRequested_) {
         return 0;
     }
+
     if (screenRecorder_->status() == ScreenRecorder::Status::Recording) {
         //LOG(ERROR) << "screenRecorder_->pause()";
         screenRecorder_->pause();
@@ -524,7 +526,12 @@ void ScreenRecorderWindow::statusChangeCallback(ScreenRecorder::Status status) {
             item->title = newTitle;
             item->hint = newTitle;
             item->icon = status == ScreenRecorder::Status::Paused ? iconResume_ : iconPause_;
-            toolbar_.update();
+            toolbar_.AutoSize();
+            CRect toolbarRect;
+            toolbar_.GetClientRect(toolbarRect);
+
+            SetWindowPos(nullptr, 0, 0, std::max(toolbarRect.Width(), frameRect_.Width()), toolbarRect.Height() + frameRect_.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+            toolbar_.Invalidate();
         }
 
         if (status == ScreenRecorder::Status::RunningConversion) {
@@ -576,6 +583,47 @@ void ScreenRecorderWindow::unRegisterHotkeys() {
         }
     }
     hotkeys_->clear();
+}
+
+void ScreenRecorderWindow::updateWindowSize() {
+    if (!fullScreen_) {
+        CRect toolbarRect;
+        toolbar_.GetClientRect(toolbarRect);
+
+        SetWindowPos(nullptr, 0, 0, std::max(toolbarRect.Width(), frameRect_.Width()), toolbarRect.Height() + frameRect_.Height(), SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+        toolbar_.Invalidate();
+    }
+}
+
+void ScreenRecorderWindow::createTrayIcon() {
+    GUID* guid = nullptr;
+
+    // Use GUID for uniquely identifying the system tray icon.
+    // Generating fake GUID ensures that the icon is consistently identified across sessions, even if the app is restarted from a different folder.
+    // Note: On Windows 7, using the same GUID but from a different path (folder) might fail to add the icon due to strict path checks.
+    // On Windows 10/11, GUID is considered the unique identifier, and the icon can be added even from a different path.
+    // trayIconGuid_ = WinUtils::GenerateFakeUUIDv4();
+    // guid = &trayIconGuid_;
+
+    CString iconTitle = TR("Image Uploader (screen recording)");
+    if (!InstallIcon(iconTitle, iconSmall_, NULL, guid)) {
+        LOG(WARNING) << "Failed to create tray icon!";
+        /*guid = nullptr;
+        if (!InstallIcon(iconTitle, icon_, NULL)) {
+            LOG(WARNING) << "Failed to create tray icon again. I give up.";
+        }*/
+    }
+
+    NOTIFYICONDATA nid;
+    ZeroMemory(&nid, sizeof(nid));
+    nid.cbSize = sizeof(NOTIFYICONDATA);
+    nid.hWnd = m_hWnd;
+    nid.uVersion = NOTIFYICON_VERSION_4;
+    if (guid) {
+        nid.uFlags = NIF_GUID;
+        nid.guidItem = trayIconGuid_;
+    }
+    Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
 LRESULT ScreenRecorderWindow::OnHotKey(int hotKeyID, UINT flags, UINT vk) {

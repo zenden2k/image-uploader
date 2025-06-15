@@ -159,7 +159,8 @@ void FFmpegScreenRecorder::start() {
 
     videoSource->apply(options_, input, argsBuilder.globalArgs());
 
-    if (!isGif && !options_.audioSource.empty()) {
+    bool needAudio = !isGif && !options_.audioSource.empty();
+    if (needAudio) {
         auto audioSource = optionsManager_.createSource(options_.audioSource);
 
         if (!audioSource) {
@@ -172,7 +173,7 @@ void FFmpegScreenRecorder::start() {
 
     codec->apply(options_, output);
 
-    if (!isGif && !options_.audioCodec.empty()) {
+    if (needAudio && !options_.audioCodec.empty()) {
         auto audioCodec = optionsManager_.createAudioCodec(options_.audioCodec);
         if (!audioCodec) {
             LOG(ERROR) << "Failed to create audio codec " << options_.audioCodec;

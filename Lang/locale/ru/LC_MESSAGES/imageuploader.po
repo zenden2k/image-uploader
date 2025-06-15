@@ -1952,7 +1952,7 @@ msgstr "Неявно"
 #: ../Source/Gui/Dialogs/MainDlg.cpp:73
 #: ../Source/Gui/Dialogs/WelcomeDlg.cpp:103 ../Source/Gui/Win7JumpList.cpp:267
 msgid "Import Video File"
-msgstr "Импорт видео"
+msgstr "Импорт видеофайла"
 
 #: ../Source/Core/Upload/UploadTask.cpp:382
 #: ../Source/Gui/UploadListModel.cpp:21

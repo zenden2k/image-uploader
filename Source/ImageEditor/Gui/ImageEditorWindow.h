@@ -76,7 +76,7 @@ public:
     void setSuggestedFileName(CString fileName);
     std::shared_ptr<Gdiplus::Bitmap> getResultingBitmap() const;
     Gdiplus::Rect lastAppliedCrop() const;
-
+    CRect getSelectedRect() const;
     /**
      * Set server name which is being displayed on upload button
      */
@@ -233,6 +233,7 @@ public:
         HACCEL accelerators_;
         HMODULE richeditLib_;
         CBitmap bmIconRotateCW_, bmIconRotate_, bmIconFlipVertical_, bmIconFlipHorizontal_;
+        CRect selectedRect_;
         bool onlySelectRegion_ = false;
         void createToolbars();
         void OnCropChanged(int x, int y, int w, int h);

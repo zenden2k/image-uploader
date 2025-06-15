@@ -46,7 +46,7 @@ CHyperLinkControl::CHyperLinkControl()
     bmpOld_ = {};
     MouseSel = false;
     Track = false;
-    BottomY = 1;
+    BottomY = 0;
     SubItemRightY = -1;
     selectedItemIndex_ = -1;
     mouseDownItemIndex_ = -1;
@@ -162,22 +162,14 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
-    int dpiX, dpiY;
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
-    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
-        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
-        dpiY = dpiX;
-    } else {
-        dpiX = dc.GetDeviceCaps(LOGPIXELSX);
-        dpiY = dc.GetDeviceCaps(LOGPIXELSY);
-    }
-
-    auto scaleX = [dpiX](int x) {
-        return MulDiv(x, dpiX, 96);
+    auto scaleX = [dpi](int x) {
+        return MulDiv(x, dpi, 96);
     };
 
-    auto scaleY = [dpiY](int y) {
-        return MulDiv(y, dpiY, 96);
+    auto scaleY = [dpi](int y) {
+        return MulDiv(y, dpi, 96);
     };
 
     SIZE tipDimensions = GetTextDimensions(dc, szTip, NormalFont);
@@ -190,7 +182,12 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
             BottomY += scaleY(12);
         }
         item.ItemRect.left = 5;
-        item.ItemRect.top = BottomY + (m_bHyperLinks ? scaleY(15) : scaleY(10));
+        item.ItemRect.top = BottomY;
+
+        if (BottomY) {
+            item.ItemRect.top += m_bHyperLinks ? scaleY(15) : scaleY(10);
+        }
+       
         item.ItemRect.right = scaleX(10) + item.ItemRect.left + item.iconWidth + TitleWidth + 1/*ClientRect.right*/;
         int height = std::max<int>(tipDimensions.cy + titleDimensions.cy + scaleY(3), item.iconHeight);
         item.ItemRect.bottom = item.ItemRect.top + height;
@@ -670,7 +667,7 @@ void CHyperLinkControl::resetContent(bool invalidate) {
         }
     }
     Items.RemoveAll();
-    BottomY = 1;
+    BottomY = 0;
     SubItemRightY = -1;
     selectedItemIndex_ = -1;
     mouseDownItemIndex_ = -1;

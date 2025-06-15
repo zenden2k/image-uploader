@@ -48,6 +48,8 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
         ID_STOP = 1000, ID_PAUSE
     };
 
+    UINT taskBarCreatedMsg_;
+
     BEGIN_MSG_MAP(ScreenRecorderWindow)
         MESSAGE_HANDLER(WM_CREATE, onCreate)
         MESSAGE_HANDLER(WM_DESTROY, onDestroy)
@@ -55,6 +57,9 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
         MESSAGE_HANDLER(WM_ERASEBKGND, onEraseBkgnd)
         MESSAGE_HANDLER(WM_TIMER, onTimer)
         MESSAGE_HANDLER(WM_TRAYICON, onTrayIcon)
+        MESSAGE_HANDLER(WM_DPICHANGED, onDpiChanged)
+        MESSAGE_HANDLER(taskBarCreatedMsg_, onTaskBarCreated)
+
         //MESSAGE_HANDLER(WM_NCHITTEST, onNcHitTest)
         COMMAND_ID_HANDLER(IDCANCEL, onCancel)
         COMMAND_ID_HANDLER(ID_STOP, onStop)
@@ -70,7 +75,7 @@ class ScreenRecorderWindow : public boost::enable_shared_from_this<ScreenRecorde
 
     inline static constexpr auto kTimer = 1, kStartTimer = 2;
 
-    DialogResult doModal(HWND parent, const ScreenRecordingRuntimeParams& params);
+    DialogResult doModal(HWND parent, const ScreenRecordingRuntimeParams& params, bool forceShowParentAfter = false);
     BOOL PreTranslateMessage(MSG* pMsg) override;
     CString outFileName() const;
     void stop();
@@ -88,6 +93,8 @@ private:
     LRESULT onPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onEraseBkgnd(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT onDpiChanged(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT onTaskBarCreated(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onStop(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT onPause(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -101,10 +108,11 @@ private:
     void updateTimeLabel();
     void registerHotkeys();
     void unRegisterHotkeys();
-    
+    void updateWindowSize();
+    void createTrayIcon();
+
     CIcon icon_, iconSmall_;
     CRect captureRect_;
-    COLORREF transparentColor_;
     CString outFileName_;
     ImageEditor::Toolbar toolbar_;
     std::unique_ptr<TimeDelegate> timeDelegate_;
@@ -119,6 +127,8 @@ private:
     bool hasStarted_ = false;
     ScreenRecordingRuntimeParams screenRecordingParams_;
     std::unique_ptr<CHotkeyList> hotkeys_;
+    CRect frameRect_;
+    bool fullScreen_ = false;
 }; 
 
 #endif

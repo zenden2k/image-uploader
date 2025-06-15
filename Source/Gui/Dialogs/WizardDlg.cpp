@@ -605,7 +605,7 @@ bool CWizardDlg::ParseCmdLine()
 
 LRESULT CWizardDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if(floatWnd_->m_hWnd)
+    if(trayIconEnabled())
     {
         ShowWindow(SW_HIDE);
         if (Pages[wpMainPage] && CurPage == wpUploadPage) {
@@ -886,7 +886,7 @@ WindowNativeHandle CWizardDlg::getNativeHandle() {
 }
 
 void CWizardDlg::ShowUpdateMessage(const CString& msg) {
-    if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && floatWnd_->m_hWnd) {
+    if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && trayIconEnabled()) {
         std::wstring title = str(boost::wformat(TR("%s - Updates available")) % APPNAME);
         floatWnd_->ShowBaloonTip(msg, title.c_str(), 8000, [&] {
             CreateUpdateDlg();
@@ -1778,7 +1778,7 @@ void CWizardDlg::OnScreenshotFinished(int Result)
 {
     EnableWindow();
 
-    if(m_bShowAfter || (Result && !floatWnd_->m_hWnd))
+    if(m_bShowAfter || (Result && !trayIconEnabled()))
     {
         m_bShowWindow = true;
         ShowWindow(SW_SHOWNORMAL);
@@ -1850,7 +1850,7 @@ bool CWizardDlg::funcAddFolder() {
 }
 LRESULT CWizardDlg::OnEnable(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    if(!floatWnd_->m_hWnd)
+    if(!trayIconEnabled())
       TRC(IDCANCEL, "Exit");
     else
         TRC(IDCANCEL, "Hide");
@@ -2118,7 +2118,7 @@ void CWizardDlg::UpdateAvailabilityChanged(bool Available)
 {
 }
 
-void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params) {
+void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params, bool forceShowWizardAfter) {
     if (auto recorderWindow = screenRecorderWindow_.lock()) {
         recorderWindow->stop();
         return;
@@ -2131,9 +2131,7 @@ void CWizardDlg::startScreenRecording(const ScreenRecordingRuntimeParams& params
     auto screenRecorderWindow = boost::make_shared<ScreenRecorderWindow>();
     screenRecorderWindow_ = screenRecorderWindow;
 
-    WindowsHider hider(m_hWnd);
-
-    if (screenRecorderWindow->doModal(m_hWnd, params) == ScreenRecorderWindow::drSuccess) {
+    if (screenRecorderWindow->doModal(m_hWnd, params, forceShowWizardAfter) == ScreenRecorderWindow::drSuccess) {
         CreatePage(wpMainPage);
         CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
         mainDlg->AddToFileList(screenRecorderWindow->outFileName());
@@ -2167,7 +2165,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     // TODO: this method is too complicated and long.
     bool needToShow = IsWindowVisible()!=FALSE;
     bool fromTray = screenshotInitiator_ == siFromTray || screenshotInitiator_ == siFromHotkey;
-    if(fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !floatWnd_->m_hWnd)
+    if(fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD   && !trayIconEnabled())
     {
         fromTray = false;
         //return false;
@@ -2320,34 +2318,25 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
             if (!lastCrop.IsEmptyArea()) {
                 screenRecordingParams_ = {};
-                CRect selectedRegion(lastCrop.GetLeft(), lastCrop.GetTop(), lastCrop.GetRight(), lastCrop.GetBottom());
-                MONITORINFO info;
-                memset(&info, 0, sizeof(info));
-                info.cbSize = sizeof(MONITORINFO);
-                if (monitor) {
-                    GetMonitorInfo(monitor, &info);
-                    selectedRegion.OffsetRect(info.rcMonitor.left, info.rcMonitor.top);
-
-                   // screenRecordingParams_.setMonitor(monitor);
-                } /*else {
-                    screenRecordingParams_.monitor = MonitorFromRect(selectedRegion, MONITOR_DEFAULTTONEAREST);
-                    GetMonitorInfo(monitor, &info);
-                    selectedRegion.OffsetRect(-info.rcMonitor.left, -info.rcMonitor.top);
-                }*/
-                screenRecordingParams_.selectedRegion = selectedRegion;
+                screenRecordingParams_.selectedRegion = imageEditor.getSelectedRect();
                 setLastScreenshotRegion(std::make_shared<CRectRegion>(lastCrop.X, lastCrop.Y, lastCrop.Width, lastCrop.Height), monitor);
             }
         }
         if ( dialogResult == ImageEditorWindow::drAddToWizard || dialogResult == ImageEditorWindow::drUpload ) {
             result = imageEditor.getResultingBitmap();
         } else if (dialogResult == ImageEditorWindow::drRecordScreen) {
-             result.reset();
-             CanceledByUser = true;
-             //needToShow = false;
-             ServiceLocator::instance()->taskRunner()->runInGuiThread([this] {
-                 onRepeatScreenRecordingAvailabilityChanged_(true);
-                startScreenRecording(screenRecordingParams_);
-             }, true);
+            result.reset();
+            CanceledByUser = true;
+
+            ServiceLocator::instance()->taskRunner()->runInGuiThread([this, needToShow] {
+                onRepeatScreenRecordingAvailabilityChanged_(true);
+                startScreenRecording(screenRecordingParams_, needToShow);
+                /*if (needToShow) {
+                    ShowWindow(SW_NORMAL);
+                }*/
+            }, true);
+
+            needToShow = false;   
         }
         else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard) {
@@ -2430,7 +2419,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 }
 
 void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap) {
-    if (floatWnd_->m_hWnd) {
+    if (trayIconEnabled()) {
         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
     } else {
         using namespace WinToastLib;
@@ -2762,4 +2751,8 @@ void CWizardDlg::stopScreenRecording() {
     if (auto recorderWindow = screenRecorderWindow_.lock()) {
         recorderWindow->stop();
     }
+}
+
+bool CWizardDlg::trayIconEnabled() const {
+    return floatWnd_ && floatWnd_->m_hWnd != nullptr;
 }

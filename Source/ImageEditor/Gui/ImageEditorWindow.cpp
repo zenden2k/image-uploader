@@ -322,6 +322,10 @@ Gdiplus::Rect ImageEditorWindow::lastAppliedCrop() const {
     return canvas_ ? canvas_->lastCrop() : Gdiplus::Rect();
 }
 
+CRect ImageEditorWindow::getSelectedRect() const {
+    return selectedRect_;
+}
+
 void ImageEditorWindow::setServerDisplayName(const CString & serverName)
 {
     serverDisplayName_ = serverName;
@@ -589,6 +593,17 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
         ::SetFocus(parent); 
     }
     loop.RemoveMessageFilter(this);
+
+    if (displayMode_ == wdmFullscreen) {
+        const Gdiplus::Rect cropRect = canvas_ ? canvas_->lastCrop() : Gdiplus::Rect();
+        CRect windowRect;
+        GetWindowRect(&windowRect);
+        selectedRect_.left = windowRect.left + cropRect.GetLeft();
+        selectedRect_.top = windowRect.top + cropRect.GetTop();
+        selectedRect_.right = selectedRect_.left + cropRect.Width;
+        selectedRect_.bottom = selectedRect_.top + cropRect.Height;
+    }
+
     DestroyWindow();
     DestroyAcceleratorTable(accelerators_);
     accelerators_ = nullptr;
@@ -596,6 +611,8 @@ ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR
 //        delete resultingBitmap_;
         //resultingBitmap_ = 0;
     }
+
+
 
     return dialogResult_;
 }
