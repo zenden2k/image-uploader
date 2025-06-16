@@ -34,7 +34,7 @@ CommonGuiSettings::CommonGuiSettings() : BasicSettings()
     HistorySettings.HistoryConverted = false;
 #endif
 #ifdef _WIN32
-    //ScreenRecordingSettings.Backend = IsWindows8OrGreater() ? ScreenRecordingStruct::ScreenRecordingBackendDirectX: ScreenRecordingStruct::ScreenRecordingBackendFFmpeg;
+    ScreenRecordingSettings.Backend = IsWindows8OrGreater() ? ScreenRecordingStruct::ScreenRecordingBackendDirectX: ScreenRecordingStruct::ScreenRecordingBackendFFmpeg;
 #endif
 }
 

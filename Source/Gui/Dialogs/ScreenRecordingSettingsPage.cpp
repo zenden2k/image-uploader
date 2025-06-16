@@ -109,6 +109,11 @@ LRESULT CScreenRecordingSettingsPage::OnBackendChanged(WORD wNotifyCode, WORD wI
     return 0;
 }
 
+LRESULT CScreenRecordingSettingsPage::OnBnClickedHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
+    WinUtils::ShellOpenFileOrUrl(_T("https://svistunov.dev/screen-recording"), m_hWnd);
+    return 0;
+}
+
 bool CScreenRecordingSettingsPage::apply() { 
     if (DoDataExchange(TRUE)) {
 

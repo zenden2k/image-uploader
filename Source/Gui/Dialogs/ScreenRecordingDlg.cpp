@@ -76,6 +76,8 @@ CScreenRecordingDlg::CScreenRecordingDlg(ScreenRecordingRuntimeParams params)
         dxgiOptionsManager_ = std::make_unique<DXGIOptionsManager>();
     } else if (settings->ScreenRecordingSettings.Backend == ScreenRecordingStruct::ScreenRecordingBackendFFmpeg) {
         ffmpegOptionsManager_ = std::make_unique<FFMpegOptionsManager>();
+    } else {
+        throw std::runtime_error("Invalid recording backend: " + settings->ScreenRecordingSettings.Backend);
     }
 }
 

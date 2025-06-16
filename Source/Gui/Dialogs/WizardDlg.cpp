@@ -1750,15 +1750,21 @@ bool CWizardDlg::funcScreenshotDlg()
 
 bool CWizardDlg::funcScreenRecordingDlg()
 {
-    CScreenRecordingDlg dlg(screenRecordingParams_);
+    try {
+        CScreenRecordingDlg dlg(screenRecordingParams_);
 
-    if (dlg.DoModal(m_hWnd) != IDOK) {
-        return false;
+        if (dlg.DoModal(m_hWnd) != IDOK) {
+            return false;
+        }
+
+        screenRecordingParams_ = dlg.recordingParams();
+        onRepeatScreenRecordingAvailabilityChanged_(true); // notify subscribers
+        return funcScreenRecording();
+    } catch (const std::exception& ex) {
+        LOG(ERROR) << ex.what();
     }
 
-    screenRecordingParams_ = dlg.recordingParams();
-    onRepeatScreenRecordingAvailabilityChanged_(true); // notify subscribers
-    return funcScreenRecording();
+    return false;
 }
 
 bool CWizardDlg::funcScreenRecording() {

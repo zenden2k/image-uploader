@@ -24,6 +24,7 @@ public:
     BEGIN_MSG_MAP(CScreenRecordingSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         COMMAND_HANDLER(IDC_OUTFOLDERBROWSEBUTTON, BN_CLICKED, OnBnClickedBrowseButton)
+        COMMAND_HANDLER(IDC_HELPBUTTON, BN_CLICKED, OnBnClickedHelpButton)
         COMMAND_HANDLER(IDC_BACKENDCOMBO, CBN_SELCHANGE, OnBackendChanged)
     END_MSG_MAP()
         
@@ -39,6 +40,7 @@ public:
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnBackendChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnBnClickedHelpButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
 
     bool apply() override;
 
