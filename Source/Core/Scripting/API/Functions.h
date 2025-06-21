@@ -9,7 +9,7 @@ class INetworkClient;
 #undef random
 
 /** @file Functions.h
-@section Globals Global functions
+@section Globals Global API functions
 @brief Global functions
 
 Note that string type is UTF-8 encoded unless otherwise stated.
