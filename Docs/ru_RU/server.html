@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="ru">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>Image Uploader - программа для быстрой загрузки изображений</title>
+	<link href="../default.css" rel="stylesheet" type="text/css" />
+	<link href="../prettify/prettify.css" rel="stylesheet" type="text/css" />
+</head>
+<body onload="prettyPrint()">
+<script type="text/javascript" src="../prettify/prettify.js"></script>
+<div id="header">
+<h1>Image Uploader</h1> <div id="version"></div>
+</div>
+ <div id="menu">
+    <ul>
+        <li><a href="index.html">Описание</a></li>        
+        <li><a href="usage.html">Использование</a></li>
+	    <li><a href="advanced.html">Дополнительно</a></li>
+	 	<li><a href="server.html">Добавление хостинга</a></li>			
+        <li><a href="../api/html/index.html">Scripting API</a></li>			
+    </ul>
+</div>
+<div id="content">
+    <div id="left">
+<h1 id="создание-xml-файлов-серверов-для-image-uploader">Создание XML файлов серверов</h1>
+<h2 id="содержание">Содержание</h2>
+<ol>
+<li><a href="#%D0%B2%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5">Введение</a></li>
+<li><a href="#%D0%B1%D1%8B%D1%81%D1%82%D1%80%D1%8B%D0%B9-%D1%81%D1%82%D0%B0%D1%80%D1%82">Быстрый старт</a></li>
+<li><a href="#%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0-xml-%D1%84%D0%B0%D0%B9%D0%BB%D0%B0">Структура XML файла</a></li>
+<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-server">Узел Server</a></li>
+<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-supportedformats">Узел SupportedFormats</a></li>
+<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-actions">Узел Actions</a></li>
+<li><a href="#%D1%83%D0%B7%D0%B5%D0%BB-result">Узел Result</a></li>
+<li><a href="#%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%B0-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85">Система переменных</a></li>
+<li><a href="#%D1%80%D0%B5%D0%B3%D1%83%D0%BB%D1%8F%D1%80%D0%BD%D1%8B%D0%B5-%D0%B2%D1%8B%D1%80%D0%B0%D0%B6%D0%B5%D0%BD%D0%B8%D1%8F">Регулярные выражения</a></li>
+<li><a href="#%D0%BF%D0%BE%D0%BB%D0%BD%D1%8B%D0%B5-%D0%BF%D1%80%D0%B8%D0%BC%D0%B5%D1%80%D1%8B">Полные примеры</a></li>
+<li><a href="#%D0%BE%D1%82%D0%BB%D0%B0%D0%B4%D0%BA%D0%B0-%D0%B8-%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5">Отладка и тестирование</a></li>
+<li><a href="#scripts">Создание скриптов</a></li>
+<li><a href="#faq">FAQ</a></li>
+</ol>
+<hr>
+<h2 id="введение">Введение</h2>
+<p>Image Uploader позволяет добавлять поддержку новых серверов через XML файлы конфигурации. Эта документация поможет вам создать собственные серверы для загрузки изображений и файлов.</p>
+<h3 id="где-размещать-файлы">Где размещать файлы</h3>
+<ul>
+<li><strong>Портативная версия</strong>: <code>Data\Servers\</code></li>
+<li><strong>Установленная версия</strong>: <code>%appdata%\Image Uploader\Servers\</code></li>
+</ul>
+<blockquote>
+<p>⚠️ <strong>Важно</strong>: Не редактируйте файл <code>servers.xml</code> напрямую - он перезаписывается при обновлениях.</p>
+</blockquote>
+<hr>
+<h2 id="быстрый-старт">Быстрый старт</h2>
+<h3 id="минимальный-пример">Минимальный пример</h3>
+<p>Создайте файл <code>myserver.xml</code> с базовой структурой:</p>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;Мой Сервер&quot;&gt;
+        &lt;Actions&gt;
+            &lt;Action Type=&quot;upload&quot; 
+                    Url=&quot;https://api.example.com/upload&quot; 
+                    PostParams=&quot;file=%filename%&quot;
+                    RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39;
+                    AssignVars=&quot;ImageUrl:0&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<h3 id="пошаговое-создание">Пошаговое создание</h3>
+<ol>
+<li><strong>Изучите API</strong> целевого сервера</li>
+<li><strong>Определите тип</strong> сервера (изображения/файлы/URL)</li>
+<li><strong>Создайте действия</strong> для загрузки</li>
+<li><strong>Настройте обработку</strong> ответов</li>
+<li><strong>Протестируйте</strong> с параметром <code>Debug=&quot;1&quot;</code></li>
+</ol>
+<hr>
+<h2 id="структура-xml-файла">Структура XML файла</h2>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;название_сервера&quot; [атрибуты]&gt;
+        &lt;SupportedFormats&gt;
+            &lt;!-- Поддерживаемые форматы файлов --&gt;
+        &lt;/SupportedFormats&gt;
+        &lt;Actions&gt;
+            &lt;!-- Действия для загрузки --&gt;
+        &lt;/Actions&gt;
+        &lt;Result ImageUrlTemplate=&quot;...&quot; ThumbUrlTemplate=&quot;...&quot; DownloadUrlTemplate=&quot;...&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<blockquote>
+<p>📝 <strong>Примечание</strong>: Файл должен быть сохранен в кодировке UTF-8.</p>
+</blockquote>
+<hr>
+<h2 id="узел-server">Узел Server</h2>
+<h3 id="обязательные-атрибуты">Обязательные атрибуты</h3>
+<ul>
+<li><code>Name</code> - отображаемое название сервера</li>
+</ul>
+<h3 id="основные-атрибуты">Основные атрибуты</h3>
+<table>
+<thead>
+<tr>
+<th>Атрибут</th>
+<th>Значения</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Type</code></td>
+<td><code>image</code>, <code>file</code>, <code>urlshortening</code>, <code>searchbyimage</code></td>
+<td>Тип сервера</td>
+</tr>
+<tr>
+<td><code>FileHost</code></td>
+<td><code>0</code>, <code>1</code></td>
+<td>0 - хостинг картинок, 1 - файловый хостинг (устаревший, используйте Type)</td>
+</tr>
+<tr>
+<td><code>Types</code></td>
+<td><code>file image urlshortening</code></td>
+<td>Список типов через пробел (версия ≥ 1.3.2)</td>
+</tr>
+<tr>
+<td><code>Authorize</code></td>
+<td><code>0</code>, <code>1</code>, <code>2</code></td>
+<td>0 - без авторизации, 1 - поддерживает, 2 - обязательна</td>
+</tr>
+<tr>
+<td><code>MaxFileSize</code></td>
+<td>число в байтах</td>
+<td>Максимальный размер файла (0 = без ограничений)</td>
+</tr>
+<tr>
+<td><code>Debug</code></td>
+<td><code>0</code>, <code>1</code></td>
+<td>Включить отладочную информацию</td>
+</tr>
+<tr>
+<td><code>MinVersion</code></td>
+<td><code>x.x.x</code> или <code>x.x.x.xxxx</code></td>
+<td>Минимальная версия программы (версия ≥ 1.3.1)</td>
+</tr>
+</tbody></table>
+<h3 id="атрибуты-авторизации">Атрибуты авторизации</h3>
+<table>
+<thead>
+<tr>
+<th>Атрибут</th>
+<th>Значения</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NeedPassword</code></td>
+<td><code>0</code>, <code>1</code></td>
+<td>1 - нужен пароль, 0 - не нужен</td>
+</tr>
+<tr>
+<td><code>LoginLabel</code></td>
+<td>текст</td>
+<td>Подпись поля логина (&quot;E-mail&quot;, &quot;Login&quot;, &quot;Username&quot;)</td>
+</tr>
+<tr>
+<td><code>PasswordLabel</code></td>
+<td>текст</td>
+<td>Подпись поля пароля (&quot;Password&quot;, &quot;API Key&quot;, &quot;Token&quot;)</td>
+</tr>
+<tr>
+<td><code>RegistrationUrl</code></td>
+<td>URL</td>
+<td>Ссылка на страницу регистрации</td>
+</tr>
+<tr>
+<td><code>WebsiteUrl</code></td>
+<td>URL</td>
+<td>Адрес веб-сайта сервера (версия ≥ 1.4.1)</td>
+</tr>
+</tbody></table>
+<h3 id="технические-атрибуты">Технические атрибуты</h3>
+<table>
+<thead>
+<tr>
+<th>Атрибут</th>
+<th>Значения</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Plugin</code></td>
+<td>имя файла</td>
+<td>Имя скрипта (.nut файл) без расширения.  Скрипт должен быть расположен в каталоге Data\Scripts, и иметь расширение .nut. Если данный атрибут не пустой, весь узел &lt;Actions&gt; игнорируется, и всё взаимодействие с серверами перекладывается на скрипт. Однако, узел Actions всё равно должен быть задан.</td>
+</tr>
+<tr>
+<td><code>Engine</code></td>
+<td><code>MegaNz</code> и др.</td>
+<td>Встроенный движок загрузки (версия ≥ 1.3.2)</td>
+</tr>
+<tr>
+<td><code>UserAgent</code></td>
+<td>строка</td>
+<td>Пользовательский User-Agent (версия ≥ 1.3.2.4432)</td>
+</tr>
+<tr>
+<td><code>MaxThreads</code></td>
+<td>число</td>
+<td>Ограничение одновременных соединений (версия ≥ 1.3.2)</td>
+</tr>
+<tr>
+<td><code>SupportsFolders</code></td>
+<td><code>0</code>, <code>1</code></td>
+<td>Поддержка альбомов скриптом загрузки</td>
+</tr>
+<tr>
+<td><code>DefaultForTypes</code></td>
+<td><code>file image</code></td>
+<td>Типы серверов, для которых этот сервер по умолчанию (версия ≥ 1.3.3)</td>
+</tr>
+<tr>
+<td><code>UploadToTempServer</code></td>
+<td><code>0</code>, <code>1</code></td>
+<td>Загружать на промежуточный сервер для поиска по изображению (версия ≥ 1.4.1)</td>
+</tr>
+</tbody></table>
+<h3 id="пример-с-атрибутами">Пример с атрибутами</h3>
+<pre class="prettyprint">&lt;Server Name=&quot;Imgur&quot; 
+        Type=&quot;image&quot; 
+        Authorize=&quot;1&quot; 
+        MaxFileSize=&quot;10485760&quot;
+        RegistrationUrl=&quot;https://imgur.com/register&quot;
+        LoginLabel=&quot;Username&quot;
+        PasswordLabel=&quot;Password&quot;&gt;
+</pre>
+<hr>
+<h2 id="узел-supportedformats">Узел SupportedFormats</h2>
+<p>Определяет поддерживаемые форматы файлов (версия ≥ 1.4.1).</p>
+<pre class="prettyprint">&lt;SupportedFormats&gt;
+    &lt;FormatGroup MaxFileSize=&quot;10485760&quot; Authorized=&quot;0&quot;&gt;
+        &lt;Format MimeType=&quot;image/jpeg,image/jpg&quot;&gt;*.jpg,*.jpeg&lt;/Format&gt;
+        &lt;Format MimeType=&quot;image/png&quot;&gt;*.png&lt;/Format&gt;
+        &lt;Format MimeType=&quot;image/gif&quot;&gt;*.gif&lt;/Format&gt;
+    &lt;/FormatGroup&gt;
+    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; Authorized=&quot;1&quot;&gt;
+        &lt;Format MimeType=&quot;video/*&quot;&gt;*.mp4,*.avi,*.mov&lt;/Format&gt;
+    &lt;/FormatGroup&gt;
+&lt;/SupportedFormats&gt;
+</pre>
+<p>В атрибуте MimeType перечисляются (через запятую) разрешенные MIME-типы файлов, которые могут содержать подстановочные символы - wildcards, 
+    а в тексте узла перечисляются расширения файлов (через запятую), которые также могут содержать подстановочные символы. Если в одном узле Format указан только MIME-тип(ы), или только расширение(-ия), то проверка файлов будет производиться только по одному признаку.</p>
+<h3 id="атрибуты-formatgroup">Атрибуты FormatGroup</h3>
+<ul>
+<li><code>MaxFileSize</code> - максимальный размер файлов в группе (в байтах)</li>
+<li><code>Authorized</code> - доступно только авторизованным пользователям (<code>0</code> или <code>1</code>)</li>
+</ul>
+<h3 id="пример-с-условиями">Пример с условиями</h3>
+<pre class="prettyprint">&lt;SupportedFormats&gt;
+    &lt;!-- Для всех пользователей --&gt;
+    &lt;FormatGroup MaxFileSize=&quot;5242880&quot;&gt;
+        &lt;Format MimeType=&quot;image/jpeg,image/jpg&quot;&gt;*.jpg,*.jpeg&lt;/Format&gt;
+        &lt;Format MimeType=&quot;image/png&quot;&gt;*.png&lt;/Format&gt;
+        &lt;Format MimeType=&quot;image/gif&quot;&gt;*.gif&lt;/Format&gt;
+    &lt;/FormatGroup&gt;
+    
+    &lt;!-- Только для авторизованных --&gt;
+    &lt;FormatGroup MaxFileSize=&quot;52428800&quot; Authorized=&quot;1&quot;&gt;
+        &lt;Format MimeType=&quot;video/mp4&quot;&gt;*.mp4&lt;/Format&gt;
+        &lt;Format MimeType=&quot;video/avi&quot;&gt;*.avi&lt;/Format&gt;
+        &lt;Format MimeType=&quot;application/*&quot;&gt;*.zip,*.rar&lt;/Format&gt;
+    &lt;/FormatGroup&gt;
+
+&lt;/SupportedFormats&gt;
+</pre>
+<hr>
+<h2 id="узел-actions">Узел Actions</h2>
+<p>Содержит последовательность действий для загрузки файла.</p>
+<h3 id="типы-действий">Типы действий</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Описание</th>
+<th>Использование</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>get</code></td>
+<td>HTTP GET запрос</td>
+<td>Получение токенов, страниц</td>
+</tr>
+<tr>
+<td><code>post</code></td>
+<td>HTTP POST запрос</td>
+<td>Отправка данных</td>
+</tr>
+<tr>
+<td><code>login</code></td>
+<td>POST для авторизации</td>
+<td>Вход в систему</td>
+</tr>
+<tr>
+<td><code>upload</code></td>
+<td>Multipart форма</td>
+<td>Загрузка файлов</td>
+</tr>
+<tr>
+<td><code>put</code></td>
+<td>HTTP PUT / FTP</td>
+<td>Прямая загрузка</td>
+</tr>
+<tr>
+<td><code>openurl</code></td>
+<td>Открыть URL</td>
+<td>Переход на страницу в браузере по-умолчанию</td>
+</tr>
+</tbody></table>
+<h3 id="полный-список-атрибутов-action">Полный список атрибутов Action</h3>
+<table>
+<thead>
+<tr>
+<th>Атрибут</th>
+<th>Обязательность</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Url</code></td>
+<td><strong>Обязательный</strong></td>
+<td>HTTP/HTTPS/FTP адрес, может содержать переменные</td>
+</tr>
+<tr>
+<td><code>Type</code></td>
+<td><strong>Обязательный</strong></td>
+<td>Тип запроса (<code>get</code>, <code>post</code>, <code>login</code>, <code>upload</code>, <code>put</code>, <code>openurl</code>)</td>
+</tr>
+<tr>
+<td><code>PostParams</code></td>
+<td>Опциональный</td>
+<td>Параметры POST через <code>;</code> (<code>param1=value1;param2=value2</code>)</td>
+</tr>
+<tr>
+<td><code>RegExp</code></td>
+<td>Опциональный</td>
+<td>Регулярное выражение в формате PCRE</td>
+</tr>
+<tr>
+<td><code>AssignVars</code></td>
+<td>Опциональный</td>
+<td>Присвоение переменных (<code>VarName:GroupNum;...</code>)</td>
+</tr>
+<tr>
+<td><code>OnlyOnce</code></td>
+<td>Опциональный</td>
+<td>Выполнить только раз за сессию (<code>0</code> или <code>1</code>)</td>
+</tr>
+<tr>
+<td><code>Referer</code></td>
+<td>Опциональный</td>
+<td>Заголовок Referer</td>
+</tr>
+<tr>
+<td><code>Description</code></td>
+<td>Опциональный</td>
+<td>Описание действия для отображения</td>
+</tr>
+<tr>
+<td><code>CustomHeaders</code></td>
+<td>Опциональный</td>
+<td>Дополнительные заголовки (<code>Header1:Value1;Header2:Value2</code>)</td>
+</tr>
+</tbody></table>
+<h3 id="примечания-по-атрибутам">Примечания по атрибутам</h3>
+<p><strong>PostParams:</strong></p>
+<ul>
+<li>Разделитель параметров: <code>;</code></li>
+<li>Экранирование точки с запятой: <code>\;</code>  </li>
+<li>Специальное значение <code>%filename%</code> = содержимое файла</li>
+<li>Поддерживает переменные: <code>file=%filename%;token=$(token)</code></li>
+</ul>
+<p><strong>CustomHeaders (версия ≥ 1.3.2.4432):</strong></p>
+<ul>
+<li>Формат: <code>Header1:Value1;Header2:Value2</code></li>
+<li>Для удаления стандартного заголовка передайте пустое значение</li>
+<li>Поддерживает переменные: <code>Authorization:Bearer $(token)</code></li>
+</ul>
+<p><strong>RegExp:</strong></p>
+<ul>
+<li>Использует синтаксис PCRE</li>
+<li>Подмаски нумеруются с 0</li>
+<li>При неудаче генерирует предупреждение и повторяет запрос</li>
+</ul>
+<h3 id="пример-последовательности-действий">Пример последовательности действий</h3>
+<pre class="prettyprint">&lt;Actions&gt;
+    &lt;!-- 1. Получение токена --&gt;
+    &lt;Action Type=&quot;get&quot; 
+            Url=&quot;https://api.example.com/token&quot;
+            RegExp=&#39;&quot;token&quot;:&quot;([^&quot;]+)&quot;&#39;
+            AssignVars=&quot;token:0&quot;
+            OnlyOnce=&quot;1&quot;
+            Description=&quot;Получение токена авторизации&quot;/&gt;
+    
+    &lt;!-- 2. Загрузка файла --&gt;
+    &lt;Action Type=&quot;upload&quot;
+            Url=&quot;https://api.example.com/upload&quot;
+            PostParams=&quot;file=%filename%;token=$(token)&quot;
+            RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;,&quot;thumb&quot;:&quot;([^&quot;]+)&quot;&#39;
+            AssignVars=&quot;ImageUrl:0;ThumbUrl:1&quot;
+            Description=&quot;Загрузка файла&quot;/&gt;
+&lt;/Actions&gt;
+</pre>
+<h3 id="вложенные-узлы-action">Вложенные узлы Action</h3>
+<h4 id="regexp-узел">RegExp узел</h4>
+<p>Дополнительные регулярные выражения для обработки ответа:</p>
+<pre class="prettyprint">&lt;Action ...&gt;
+    &lt;RegExp Pattern=&#39;&quot;delete_url&quot;:&quot;([^&quot;]+)&quot;&#39; AssignVars=&quot;DeleteUrl:0&quot; Required=&quot;1&quot;/&gt;
+    &lt;RegExp Pattern=&#39;&quot;edit_url&quot;:&quot;([^&quot;]+)&quot;&#39; AssignVars=&quot;EditUrl:0&quot; Data=&quot;$(CustomData)&quot;/&gt;
+&lt;/Action&gt;
+</pre>
+<p><strong>Атрибуты RegExp:</strong></p>
+<ul>
+<li><code>Pattern</code> - регулярное выражение (аналог атрибута RegExp у Action)</li>
+<li><code>AssignVars</code> - присвоение переменных  </li>
+<li><code>Required</code> - генерировать ошибку при неудаче (по умолчанию 0)</li>
+<li><code>Data</code> - текст для поиска, может содержать переменные (по умолчанию - ответ сервера)</li>
+</ul>
+<h4 id="call-узел-версия-≥-140">Call узел (версия ≥ 1.4.0)</h4>
+<p>Используется для вызова встроенных функций:</p>
+<pre class="prettyprint">&lt;Action ...&gt;
+    &lt;Call Function=&quot;json&quot; Arg1=&quot;data.files[0].url&quot; AssignVars=&quot;ImageUrl:0&quot; Required=&quot;1&quot;/&gt;
+    &lt;Call Function=&quot;regexp&quot; Arg1=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39; AssignVars=&quot;ImageUrl:0&quot;/&gt;
+&lt;/Action&gt;
+</pre>
+<p><strong>Атрибуты Call:</strong></p>
+<ul>
+<li><code>Function</code> - название функции (<code>json</code>, <code>regexp</code>)</li>
+<li><code>Arg0</code>, <code>Arg1</code>, <code>Arg2</code> - аргументы функции (Arg0 по умолчанию = тело ответа)</li>
+<li><code>AssignVars</code> - присвоение переменных (как в Action)</li>
+<li><code>Required</code> - генерировать ошибку при неудаче (по умолчанию 0)</li>
+</ul>
+<p><strong>Функция json:</strong></p>
+<ul>
+<li>Извлекает данные из JSON по JSON Path</li>
+<li>Примеры путей: <code>data.url</code>, <code>files[0].thumbnail</code>, <code>response.data[0].link</code></li>
+</ul>
+<p><strong>Функция regexp:</strong></p>
+<ul>
+<li>Применяет регулярное выражение к данным</li>
+<li>Аналогично атрибуту RegExp в Action</li>
+</ul>
+<hr>
+<h2 id="узел-result">Узел Result</h2>
+<p>Определяет шаблоны для генерации ссылок.</p>
+<pre class="prettyprint">&lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; 
+        ThumbUrlTemplate=&quot;$(ThumbUrl)&quot; 
+        DownloadUrlTemplate=&quot;$(ViewUrl)&quot;
+        DeleteUrl=&quot;$(DeleteUrl)&quot;
+        EditUrl=&quot;$(EditUrl)&quot;/&gt;
+</pre>
+<h3 id="атрибуты-result">Атрибуты Result</h3>
+<table>
+<thead>
+<tr>
+<th>Атрибут</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>ImageUrlTemplate</code></td>
+<td>Прямая ссылка на файл</td>
+</tr>
+<tr>
+<td><code>ThumbUrlTemplate</code></td>
+<td>Ссылка на миниатюру</td>
+</tr>
+<tr>
+<td><code>DownloadUrlTemplate</code></td>
+<td>Ссылка на страницу просмотра</td>
+</tr>
+<tr>
+<td><code>DeleteUrl</code></td>
+<td>Ссылка для удаления</td>
+</tr>
+<tr>
+<td><code>EditUrl</code></td>
+<td>Ссылка для редактирования</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>⚠️ <strong>Важно</strong>: Обязательно должен быть указан <code>ImageUrlTemplate</code> или <code>DownloadUrlTemplate</code>.
+Программа использует тот или иной атрибут в зависимости от настроек, и в зависимости от того, какой из атрибутов задан, а какой нет. По-умолчанию предпочтение отдается прямой ссылке. В случае использования скрипта (плагина - атрибут Plugin узла Server), все атрибуты всё равно должны иметь непустые значения.
+</p>
+</blockquote>
+<hr>
+<h2 id="система-переменных">Система переменных</h2>
+<p>Название переменной может содержать алфавитно-цифровые символы (A-z, 0-9) и символ подчеркивания. Имена переменных чувствительны к регистру. Если название переменной начинается с символа подчеркивания, это означает, что данная переменная не будет удалена после загрузки файла, и она останется в памяти на всю сессию загрузки. Однако это не означает, что её значение не может быть перезаписано.</p>
+<h3 id="встроенные-переменные">Встроенные переменные</h3>
+<table>
+<thead>
+<tr>
+<th>Переменная</th>
+<th>Описание</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>_FILENAME</code></td>
+<td>Имя файла с расширением</td>
+<td><code>photo.jpg</code></td>
+</tr>
+<tr>
+<td><code>_FILENAMEWITHOUTEXT</code></td>
+<td>Имя без расширения</td>
+<td><code>photo</code></td>
+</tr>
+<tr>
+<td><code>_FILEEXT</code></td>
+<td>Расширение файла</td>
+<td><code>jpg</code></td>
+</tr>
+<tr>
+<td><code>_THUMBWIDTH</code></td>
+<td>Ширина миниатюры</td>
+<td><code>150</code></td>
+</tr>
+<tr>
+<td><code>_THUMBHEIGHT</code></td>
+<td>Высота миниатюры</td>
+<td><code>150</code></td>
+</tr>
+<tr>
+<td><code>_THUMBCREATE</code></td>
+<td>Создавать миниатюру (версия ≥ 1.4.2)</td>
+<td><code>0</code> или <code>1</code></td>
+</tr>
+<tr>
+<td><code>_THUMBADDTEXT</code></td>
+<td>Добавлять текст на миниатюру (версия ≥ 1.4.2)</td>
+<td><code>0</code> или <code>1</code></td>
+</tr>
+<tr>
+<td><code>_THUMBUSESERVER</code></td>
+<td>Использовать серверные миниатюры (версия ≥ 1.4.2)</td>
+<td><code>0</code> или <code>1</code></td>
+</tr>
+<tr>
+<td><code>_RAND16BITS</code></td>
+<td>Случайное число (генерируется один раз на файл)</td>
+<td><code>0-65535</code></td>
+</tr>
+<tr>
+<td><code>_LOGIN</code></td>
+<td>Имя пользователя</td>
+<td><code>user123</code></td>
+</tr>
+<tr>
+<td><code>_PASSWORD</code></td>
+<td>Пароль пользователя</td>
+<td><code>secretpass</code></td>
+</tr>
+<tr>
+<td><code>_THREADID</code></td>
+<td>ID потока (версия &gt; 1.3.2)</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>_ORIGINALURL</code></td>
+<td>Ссылка для сокращения (только для urlshortening)</td>
+<td><code>https://example.com</code></td>
+</tr>
+<tr>
+<td><code>_IMAGEURL</code></td>
+<td>Прямая ссылка на изображение для поиска (версия &gt; 1.4.1)</td>
+<td><code>https://temp.host/img.jpg</code></td>
+</tr>
+</tbody></table>
+<h3 id="использование-переменных">Использование переменных</h3>
+<pre class="prettyprint">&lt;!-- Подстановка в URL --&gt;
+&lt;Action Url=&quot;https://api.example.com/upload?user=$(_LOGIN)&amp;amp;file=$(_FILENAME)&quot;/&gt;
+
+&lt;!-- Подстановка в параметры --&gt;
+&lt;Action PostParams=&quot;filename=$(_FILENAME);size=$(_FILESIZE)&quot;/&gt;
+
+&lt;!-- В шаблонах результата --&gt;
+&lt;Result ImageUrlTemplate=&quot;https://cdn.example.com/$(ImageId).$(_FILEEXT)&quot;/&gt;
+</pre>
+<h3 id="пользовательские-переменные">Пользовательские переменные</h3>
+<pre class="prettyprint">&lt;!-- Создание переменной --&gt;
+&lt;Action RegExp=&#39;&quot;id&quot;:(\d+)&#39; AssignVars=&quot;ImageId:0&quot;/&gt;
+
+&lt;!-- Использование --&gt;
+&lt;Action Url=&quot;https://api.example.com/info/$(ImageId)&quot;/&gt;
+</pre>
+<h3 id="глобальные-переменные">Глобальные переменные</h3>
+<p>Переменные, начинающиеся с <code>_</code>, сохраняются на всю сессию:</p>
+<pre class="prettyprint">&lt;Action RegExp=&#39;&quot;session&quot;:&quot;([^&quot;]+)&quot;&#39; AssignVars=&quot;_session:0&quot; OnlyOnce=&quot;1&quot;/&gt;
+</pre>
+<h3 id="фильтры-переменных">Фильтры переменных</h3>
+<table>
+<thead>
+<tr>
+<th>Фильтр</th>
+<th>Описание</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>urlencode</code></td>
+<td>Процентное кодирование URL</td>
+<td>$(_FILENAME|urlencode)</td>
+</tr>
+<tr>
+<td><code>htmldecode</code></td>
+<td>Декодирование HTML сущностей (версия ≥ 1.3.2)</td>
+<td>$(ImageUrl|htmldecode)</td>
+</tr>
+</tbody></table>
+<pre class="prettyprint">&lt;!-- URL кодирование --&gt;
+&lt;Action Url=&quot;https://api.example.com/search?q=$(_FILENAME|urlencode)&quot;/&gt;
+
+&lt;!-- HTML декодирование --&gt;
+&lt;Result ImageUrlTemplate=&quot;$(ImageUrl|htmldecode)&quot;/&gt;
+</pre>
+<h3 id="специальные-значения">Специальные значения</h3>
+<table>
+<thead>
+<tr>
+<th>Значение</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>%filename%</code></td>
+<td>Загружаемый файл (не путать с <code>_FILENAME</code>)</td>
+</tr>
+<tr>
+<td><code>\;</code></td>
+<td>Экранированная точка с запятой в PostParams</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="регулярные-выражения">Регулярные выражения</h2>
+<h3 id="основы-regexp-для-извлечения-данных">Основы RegExp для извлечения данных</h3>
+<h4 id="простое-извлечение">Простое извлечение</h4>
+<pre class="prettyprint">&lt;!-- Извлечение ID из JSON --&gt;
+RegExp=&#39;&quot;id&quot;:(\d+)&#39;
+AssignVars=&quot;ImageId:0&quot;
+
+&lt;!-- Извлечение URL --&gt;
+RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39;
+AssignVars=&quot;ImageUrl:0&quot;
+</pre>
+<h4 id="множественное-извлечение">Множественное извлечение</h4>
+<pre class="prettyprint">&lt;!-- Извлечение нескольких значений --&gt;
+RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;,&quot;thumb&quot;:&quot;([^&quot;]+)&quot;,&quot;view&quot;:&quot;([^&quot;]+)&quot;&#39;
+AssignVars=&quot;ImageUrl:0;ThumbUrl:1;ViewUrl:2&quot;
+</pre>
+<h4 id="работа-с-html">Работа с HTML</h4>
+<pre class="prettyprint">&lt;!-- Извлечение из HTML атрибутов --&gt;
+RegExp=&#39;src=&quot;([^&quot;]+)&quot;[^&gt;]+class=&quot;image&quot;&#39;
+AssignVars=&quot;ImageUrl:0&quot;
+
+&lt;!-- Извлечение текста между тегами --&gt;
+RegExp=&#39;&lt;title&gt;([^&lt;]+)&lt;/title&gt;&#39;
+AssignVars=&quot;Title:0&quot;
+</pre>
+<h3 id="частые-паттерны">Частые паттерны</h3>
+<table>
+<thead>
+<tr>
+<th>Задача</th>
+<th>Паттерн</th>
+<th>Описание</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Число</td>
+<td><code>(\d+)</code></td>
+<td>Любое число</td>
+</tr>
+<tr>
+<td>URL</td>
+<td><code>(https?://[^\s&quot;&#39;]+)</code></td>
+<td>HTTP/HTTPS ссылка</td>
+</tr>
+<tr>
+<td>Текст в кавычках</td>
+<td><code>&quot;([^&quot;]+)&quot;</code></td>
+<td>Текст в двойных кавычках</td>
+</tr>
+<tr>
+<td>Текст между тегами</td>
+<td><code>&lt;tag&gt;([^&lt;]+)&lt;/tag&gt;</code></td>
+<td>Содержимое тега</td>
+</tr>
+<tr>
+<td>Опциональный текст</td>
+<td><code>([^&quot;]*)&quot;</code></td>
+<td>Может быть пустым</td>
+</tr>
+</tbody></table>
+<h3 id="советы-по-regexp">Советы по RegExp</h3>
+<ul>
+<li><strong>Тестируйте</strong> выражения на сайтах вроде regex101.com</li>
+<li><strong>Используйте</strong> неадаптивные группы <code>(?:...)</code> для группировки без захвата</li>
+<li><strong>Экранируйте</strong> специальные символы: <code>\.</code>, <code>\?</code>, <code>\+</code></li>
+<li><strong>Будьте аккуратны</strong> с жадными квантификаторами <code>.*</code></li>
+</ul>
+<hr>
+<h2 id="полные-примеры">Полные примеры</h2>
+<h3 id="пример-1-простой-хостинг-изображений">Пример 1: Простой хостинг изображений</h3>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;SimpleHost&quot; Type=&quot;image&quot;&gt;
+        &lt;Actions&gt;
+            &lt;Action Type=&quot;upload&quot;
+                    Url=&quot;https://simplehost.com/api/upload&quot;
+                    PostParams=&quot;image=%filename%&quot;
+                    RegExp=&#39;&quot;success&quot;:true,&quot;data&quot;:{&quot;url&quot;:&quot;([^&quot;]+)&quot;,&quot;delete_hash&quot;:&quot;([^&quot;]+)&quot;}&#39;
+                    AssignVars=&quot;ImageUrl:0;DeleteHash:1&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; 
+                DeleteUrl=&quot;https://simplehost.com/delete/$(DeleteHash)&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<h3 id="пример-2-сервер-с-авторизацией">Пример 2: Сервер с авторизацией</h3>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;AuthHost&quot; Type=&quot;image&quot; Authorize=&quot;1&quot; 
+            LoginLabel=&quot;Username&quot; PasswordLabel=&quot;Password&quot;&gt;
+        &lt;Actions&gt;
+            &lt;!-- Авторизация --&gt;
+            &lt;Action Type=&quot;login&quot;
+                    Url=&quot;https://authhost.com/api/login&quot;
+                    PostParams=&quot;username=$(_LOGIN);password=$(_PASSWORD)&quot;
+                    RegExp=&#39;&quot;token&quot;:&quot;([^&quot;]+)&quot;&#39;
+                    AssignVars=&quot;_token:0&quot;
+                    OnlyOnce=&quot;1&quot;
+                    Description=&quot;Авторизация&quot;/&gt;
+            
+            &lt;!-- Загрузка --&gt;
+            &lt;Action Type=&quot;upload&quot;
+                    Url=&quot;https://authhost.com/api/upload&quot;
+                    PostParams=&quot;file=%filename%;token=$(_token)&quot;
+                    CustomHeaders=&quot;Authorization:Bearer $(_token)&quot;
+                    RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;,&quot;thumb&quot;:&quot;([^&quot;]+)&quot;&#39;
+                    AssignVars=&quot;ImageUrl:0;ThumbUrl:1&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result ImageUrlTemplate=&quot;$(ImageUrl)&quot; ThumbUrlTemplate=&quot;$(ThumbUrl)&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<h3 id="пример-3-файловый-хостинг">Пример 3: Файловый хостинг</h3>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;FileHost&quot; Type=&quot;file&quot; FileHost=&quot;1&quot; MaxFileSize=&quot;104857600&quot;&gt;
+        &lt;SupportedFormats&gt;
+            &lt;FormatGroup&gt;
+                &lt;Format MimeType=&quot;*/*&quot;&gt;*.*&lt;/Format&gt;
+            &lt;/FormatGroup&gt;
+        &lt;/SupportedFormats&gt;
+        &lt;Actions&gt;
+            &lt;Action Type=&quot;upload&quot;
+                    Url=&quot;https://filehost.com/upload&quot;
+                    PostParams=&quot;file=%filename%;public=1&quot;
+                    RegExp=&#39;&quot;file_url&quot;:&quot;([^&quot;]+)&quot;,&quot;download_url&quot;:&quot;([^&quot;]+)&quot;&#39;
+                    AssignVars=&quot;FileUrl:0;DownloadUrl:1&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result ImageUrlTemplate=&quot;$(FileUrl)&quot; DownloadUrlTemplate=&quot;$(DownloadUrl)&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<h3 id="пример-4-сокращение-url">Пример 4: Сокращение URL</h3>
+<pre class="prettyprint">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; standalone=&quot;yes&quot;?&gt;
+&lt;Servers&gt;
+    &lt;Server Name=&quot;ShortURL&quot; Type=&quot;urlshortening&quot;&gt;
+        &lt;Actions&gt;
+            &lt;Action Type=&quot;post&quot;
+                    Url=&quot;https://short.ly/api/shorten&quot;
+                    PostParams=&quot;url=$(_ORIGINALURL)&quot;
+                    RegExp=&#39;&quot;short_url&quot;:&quot;([^&quot;]+)&quot;&#39;
+                    AssignVars=&quot;ShortUrl:0&quot;/&gt;
+        &lt;/Actions&gt;
+        &lt;Result DownloadUrlTemplate=&quot;$(ShortUrl)&quot;/&gt;
+    &lt;/Server&gt;
+&lt;/Servers&gt;
+</pre>
+<hr>
+<h2 id="отладка-и-тестирование">Отладка и тестирование</h2>
+<h3 id="включение-отладки">Включение отладки</h3>
+<pre class="prettyprint">&lt;Server Name=&quot;TestServer&quot; Debug=&quot;1&quot;&gt;
+</pre>
+<p>При включенной отладке программа покажет:</p>
+<ul>
+<li>Отправляемые запросы</li>
+<li>Полученные ответы</li>
+<li>Результаты RegExp</li>
+<li>Значения переменных</li>
+</ul>
+<h3 id="пошаговое-тестирование">Пошаговое тестирование</h3>
+<ol>
+<li><strong>Создайте минимальный XML</strong> с одним действием</li>
+<li><strong>Включите Debug=&quot;1&quot;</strong></li>
+<li><strong>Загрузите тестовый файл</strong></li>
+<li><strong>Изучите лог</strong> в окне программы</li>
+<li><strong>Исправьте ошибки</strong> и повторите</li>
+</ol>
+<h3 id="частые-проблемы">Частые проблемы</h3>
+<table>
+<thead>
+<tr>
+<th>Проблема</th>
+<th>Причина</th>
+<th>Решение</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&quot;RegExp не найден&quot;</td>
+<td>Неверное регулярное выражение</td>
+<td>Проверьте паттерн на тестовых данных</td>
+</tr>
+<tr>
+<td>&quot;Переменная пуста&quot;</td>
+<td>Неверный номер группы</td>
+<td>Проверьте номера в AssignVars</td>
+</tr>
+<tr>
+<td>&quot;Файл не загружен&quot;</td>
+<td>Неверные параметры POST</td>
+<td>Изучите документацию API</td>
+</tr>
+<tr>
+<td>&quot;Ошибка авторизации&quot;</td>
+<td>Неверный URL или параметры</td>
+<td>Проверьте процесс авторизации</td>
+</tr>
+</tbody></table>
+<h3 id="инструменты-для-отладки">Инструменты для отладки</h3>
+<ul>
+<li><strong>RegExr.com</strong> - тестирование регулярных выражений</li>
+<li><strong>Browser DevTools</strong> - анализ сетевого трафика в браузере</li>
+<li><strong>Fiddler Classic</strong> - анализ сетевого трафика с помощью прокси</li>
+<li><strong>Postman</strong> - тестирование API запросов</li>
+</ul>
+<h3 id="scripts">Создание скриптов (плагинов)</h3> 
+<p>Для расширенной поддержки серверов в программе используются скрипты на <a href="http://www.squirrel-lang.org/" target="_blank">
+ языке Squirrel 3</a> (до версии 1.3.2 использовался Squirrel 2).</p> 
+<p>Они должны быть сохранены в кодировке utf-8 в файлах с расширением <code>.nut</code>.
+<p>
+<a href="../api/html/index.html">Scripting API reference</a><p>
+<a href="http://www.squirrel-lang.org/doc/squirrel3.html" target="_blank">Документация языка Squirrel</a><br>
+<a href="http://www.squirrel-lang.org/doc/sqstdlib3.pdf" target="_blank">Документация стандартной библиотеки языка Squirrel (PDF)</a>
+</p>
+<hr>
+<h2 id="faq">FAQ</h2>
+<h3 id="общие-вопросы">Общие вопросы</h3>
+<p><strong>Q: Где найти документацию API сервера?</strong>
+A: Обычно на сайте сервера в разделе &quot;API&quot;, &quot;Developers&quot; или &quot;Documentation&quot;.</p>
+<p><strong>Q: Как узнать формат запроса?</strong>
+A: Используйте инструменты разработчика браузера для анализа запросов при загрузке через веб-интерфейс.</p>
+<p><strong>Q: Можно ли использовать один XML для нескольких серверов?</strong>
+A: Да, один файл может содержать несколько узлов <code>&lt;Server&gt;</code>.</p>
+<p><strong>Q: Поддерживается ли HTTPS?</strong>
+A: Да, Image Uploader поддерживает HTTPS полностью.</p>
+<h3 id="технические-вопросы">Технические вопросы</h3>
+<p><strong>Q: Как передать файл в POST запросе?</strong>
+A: Используйте <code>%filename%</code> в параметре PostParams:</p>
+<pre class="prettyprint">PostParams=&quot;file=%filename%;key=value&quot;
+</pre>
+<p><strong>Q: Как работать с cookies?</strong>
+A: Cookies автоматически сохраняются и передаются между запросами в рамках одной сессии.</p>
+<p><strong>Q: Можно ли изменить User-Agent?</strong>
+A: Да, используйте атрибут <code>UserAgent</code> в узле Server.</p>
+<p><strong>Q: Как передать дополнительные заголовки?</strong>
+A: Используйте атрибут <code>CustomHeaders</code>:</p>
+<pre class="prettyprint">CustomHeaders=&quot;X-API-Key:mykey;Content-Type:application/json&quot;
+</pre>
+<h3 id="регулярные-выражения-1">Регулярные выражения</h3>
+<p><strong>Q: Как извлечь данные из JSON?</strong>
+A: Используйте узел <code>&lt;Call Function=&quot;json&quot;&gt;</code> (версия ≥ 1.4.0) или RegExp:</p>
+<pre class="prettyprint">&lt;!-- Через Call --&gt;
+&lt;Call Function=&quot;json&quot; Arg1=&quot;data.url&quot; AssignVars=&quot;ImageUrl:0&quot;/&gt;
+
+&lt;!-- Через RegExp --&gt;
+RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39;
+</pre>
+<p><strong>Q: Как работать с многострочными ответами?</strong>
+A: Используйте флаг <code>[\s\S]*?</code> для захвата переносов строк:</p>
+<pre class="prettyprint">RegExp=&#39;&lt;script&gt;([\s\S]*?)&lt;/script&gt;&#39;
+</pre>
+<p><strong>Q: RegExp не находит совпадения</strong>
+A: Проверьте:</p>
+<ul>
+<li>Правильность экранирования символов</li>
+<li>Соответствие паттерна реальному ответу</li>
+<li>Используйте инструменты тестирования RegExp</li>
+</ul>
+<h3 id="переменные">Переменные</h3>
+<p><strong>Q: Переменная не сохраняется между запросами</strong>
+A: Используйте префикс <code>_</code> для глобальных переменных:</p>
+<pre class="prettyprint">AssignVars=&quot;_token:0&quot;
+</pre>
+<p><strong>Q: Как использовать переменную в URL?</strong>
+A: Заключите в <code>$()</code>:</p>
+<pre class="prettyprint">Url=&quot;https://api.example.com/user/$(UserId)/upload&quot;
+</pre>
+<p><strong>Q: Можно ли использовать переменные в RegExp?</strong>
+A: Нет, RegExp не поддерживает переменные. Используйте фиксированные паттерны.</p>
+<hr>
+<h2 id="заключение">Заключение</h2>
+<p>Создание XML файлов для Image Uploader требует понимания API целевого сервера и базовых принципов HTTP. Следуйте этой документации, тестируйте каждый шаг и не бойтесь экспериментировать с отладкой.</p>
+<p>Для получения дополнительной помощи:</p>
+<ul>
+<li>Изучите существующие XML файлы в папке серверов</li>
+<li>Используйте режим отладки для анализа запросов</li>
+<li>Обращайтесь к документации API серверов</li>
+</ul>
+<p>Удачи в создании поддержки новых серверов! 🚀</p>
+
+
+   </div>
+</div>
+<div id="footer">
+    <p>Copyright &copy; 2007 - 2025 Sergey Svistunov</p>
+</div>
+</body>
+</html>
