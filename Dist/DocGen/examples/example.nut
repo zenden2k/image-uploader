@@ -1,7 +1,5 @@
 const BASE_URL = "http://example.com";
 
-test <- "example"; // global variable
-
 // This is the function that performs the upload of the file
 // @param string pathToFile 
 // @param UploadParams options

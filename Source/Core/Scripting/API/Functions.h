@@ -86,6 +86,9 @@ namespace ScriptAPI {
      */
     std::string RandomString(int length);
 
+
+    std::string StrReplace(const std::string& str, const std::string& find, const std::string& replace);
+
     /**
      * Returns the directory for temporary files
      * @since 1.3.0

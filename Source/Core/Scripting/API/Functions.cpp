@@ -161,7 +161,7 @@ public:
 
     std::optional<std::string> translate(const std::string& key) {
         if (!loaded()) {
-            return {};
+            return std::nullopt;
         }
         std::vector<std::string> tokens;
         IuStringUtils::Split(key, ".", tokens, -1);
@@ -180,7 +180,7 @@ public:
                 return root->asString();
             }
         }
-        return {};
+        return std::nullopt;
     }
 
 private:
@@ -609,6 +609,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("ExtractFilePath", IuCoreUtils::ExtractFilePath)
         .Func("GenerateRandomFilename", IuCoreUtils::GenerateRandomFilename)
         .Func("RandomString", IuStringUtils::RandomString)
+        .Func("StrReplace", IuStringUtils::Replace)
         .Func("CopyFile", IuCoreUtils::CopyFileToDest)
         .Func("CreateDirectory", IuCoreUtils::CreateDir)
         .Func("FileExists", IuCoreUtils::FileExists)
