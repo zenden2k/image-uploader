@@ -1,4 +1,4 @@
-﻿#include <gtest/gtest.h>
+#include <gtest/gtest.h>
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
 #include "Tests/TestHelpers.h"
@@ -112,5 +112,13 @@ TEST_F(CryptoUtilsTest, Base64EncodeFile)
         EXPECT_FALSE(res);
         EXPECT_TRUE(output.empty());
     }
-    
 }
+
+TEST_F(CryptoUtilsTest, Md5Crypt) {
+    EXPECT_EQ("$1$v0iBkPDv$H9RJWM2bdbz35rEaM78zV.", Md5Crypt("1", "v0iBkPDv"));
+    EXPECT_EQ("$1$saltsalt$mKNFfCWMzLKBEz7IDUA.F/", Md5Crypt("6WzaQ9jnl5fr39NAoEud", "saltsaltsalt"));
+    EXPECT_FALSE(Md5Crypt("6WzaQ9jnl5fr39NAoEud", "").empty());
+    EXPECT_THROW(Md5Crypt(nullptr, nullptr), std::invalid_argument);
+}
+
+

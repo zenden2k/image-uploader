@@ -270,6 +270,13 @@ namespace ScriptAPI {
     std::string md5(const std::string& data);
 
     /**
+     * @brief Calculates the hash using MD5-Crypt algorythm.
+     * Similar to the 'openssl passwd -1 -salt [salt] [password]' command.
+     * @since 1.4.3
+     */
+    std::string Md5Crypt(const std::string& password, const std::string& salt);
+
+    /**
      * @brief Calculates the md5 hash of a given file
      * @since 1.4.0
      */

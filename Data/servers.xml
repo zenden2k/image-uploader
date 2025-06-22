@@ -609,6 +609,11 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub"/>
 	</Server>
+	<Server Name="webshare.cz" FileHost="1" Authorize="1" Plugin="webshare" WebsiteUrl="https://webshare.cz">
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub"/>
+	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

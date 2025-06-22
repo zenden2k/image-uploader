@@ -484,6 +484,16 @@ std::string GetFileContentsEx(const std::string& filename, SQInteger offset, SQI
     return {};
 }
 
+std::string Md5Crypt(const std::string& password, const std::string& salt) {
+    try {
+        return IuCoreUtils::CryptoUtils::Md5Crypt(password.c_str(), salt.c_str());
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in Md5Crypt:" << std::endl
+                   << e.what();
+    }
+    return {};
+}
+
 std::string GetAppLanguage() {
     return Impl::GetAppLanguageImpl();
 }
@@ -581,8 +591,6 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Random", random)
         .Func("sleep", sleep)
         .Func("Sleep", sleep)
-        .Func("md5", md5)
-        .Func("Md5", md5)
         .Func("AnsiToUtf8", AnsiToUtf8)
         .Func("Utf8ToAnsi", scriptUtf8ToAnsi)
         .Func("ExtractFileName", ExtractFileName)
@@ -623,6 +631,9 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
 
     using namespace IuCoreUtils;
     root
+        .Func("md5", md5)
+        .Func("Md5", md5)
+        .Func("Md5Crypt", Md5Crypt)
         .Func("md5_file", &CryptoUtils::CalcMD5HashFromFile)
         .Func("Md5FromFile", &CryptoUtils::CalcMD5HashFromFile)
         .Func("sha1", &CryptoUtils::CalcSHA1HashFromString)

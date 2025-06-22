@@ -520,6 +520,11 @@
 <td><code>jpg</code></td>
 </tr>
 <tr>
+<td><code>_FILESIZE</code></td>
+<td>Размер файла в байтах (версия ≥ 1.4.3)</td>
+<td><code>1048576</code></td>
+</tr>
+<tr>
 <td><code>_THUMBWIDTH</code></td>
 <td>Ширина миниатюры</td>
 <td><code>150</code></td>
@@ -561,7 +566,7 @@
 </tr>
 <tr>
 <td><code>_THREADID</code></td>
-<td>ID потока (версия &gt; 1.3.2)</td>
+<td>ID потока (версия ≥ 1.3.2)</td>
 <td><code>1</code></td>
 </tr>
 <tr>
@@ -571,7 +576,7 @@
 </tr>
 <tr>
 <td><code>_IMAGEURL</code></td>
-<td>Прямая ссылка на изображение для поиска (версия &gt; 1.4.1)</td>
+<td>Прямая ссылка на изображение для поиска (версия ≥ 1.4.1)</td>
 <td><code>https://temp.host/img.jpg</code></td>
 </tr>
 </tbody></table>
@@ -662,7 +667,7 @@ RegExp=&#39;src=&quot;([^&quot;]+)&quot;[^&gt;]+class=&quot;image&quot;&#39;
 AssignVars=&quot;ImageUrl:0&quot;
 
 &lt;!-- Извлечение текста между тегами --&gt;
-RegExp=&#39;&lt;title&gt;([^&lt;]+)&lt;/title&gt;&#39;
+RegExp=&#39;&amp;lt;title&amp;gt;([^&amp;lt;]+)&amp;lt;/title&amp;gt;&#39;
 AssignVars=&quot;Title:0&quot;
 </pre>
 <h3 id="частые-паттерны">Частые паттерны</h3>
@@ -700,6 +705,9 @@ AssignVars=&quot;Title:0&quot;
 <td>Может быть пустым</td>
 </tr>
 </tbody></table>
+<blockquote>
+<p>⚠️ <strong>Важно</strong>: Символы <code>&lt;</code> и <code>&gt;</code> в паттернах при вставке в XML должны быть экранированы: <code>&amp;lt;</code> и <code>&amp;gt;</code> соответственно.</p>
+</blockquote>
 <h3 id="советы-по-regexp">Советы по RegExp</h3>
 <ul>
 <li><strong>Тестируйте</strong> выражения на сайтах вроде regex101.com</li>
@@ -888,14 +896,14 @@ RegExp=&#39;&quot;url&quot;:&quot;([^&quot;]+)&quot;&#39;
 </pre>
 <p><strong>Q: Как работать с многострочными ответами?</strong>
 A: Используйте флаг <code>[\s\S]*?</code> для захвата переносов строк:</p>
-<pre class="prettyprint">RegExp=&#39;&lt;script&gt;([\s\S]*?)&lt;/script&gt;&#39;
+<pre class="prettyprint">RegExp=&#39;&amp;lt;script&amp;gt;([\s\S]*?)&amp;lt;/script&amp;gt;&#39;
 </pre>
 <p><strong>Q: RegExp не находит совпадения</strong>
 A: Проверьте:</p>
 <ul>
 <li>Правильность экранирования символов</li>
 <li>Соответствие паттерна реальному ответу</li>
-<li>Используйте инструменты тестирования RegExp</li>
+<li>Используйте инструменты тестирования регулярных выражений</li>
 </ul>
 <h3 id="переменные">Переменные</h3>
 <p><strong>Q: Переменная не сохраняется между запросами</strong>

@@ -45,6 +45,16 @@ namespace IuCoreUtils::CryptoUtils {
     std::string Base64Decode(const std::string& data);
     bool Base64EncodeFile(const std::string& fileName, std::string& result);
     std::string DecryptAES(const std::string& base64cipher, const std::string& keyStr);
+
+    /**
+     * @brief 
+     * @param pw 
+     * @param salt
+     * @throw std::invalid_argument
+     * @throw std::rintime_error
+     * @return 
+    */
+    std::string Md5Crypt(const char* pw, const char* salt);
 };
 
 #endif // IU_CORE_UTILS_CRYPTOUTILS_H

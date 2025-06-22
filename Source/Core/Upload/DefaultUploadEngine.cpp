@@ -96,11 +96,11 @@ bool CDefaultUploadEngine::doUploadFile(std::shared_ptr<FileUploadTask> task, Up
     m_displayFileName = displayName;
 
     prepareUpload(params);
-    const std::string FileExt = IuCoreUtils::ExtractFileExt(displayName);
+
     m_Vars["_FILENAME"] = IuCoreUtils::ExtractFileName(displayName);
-    const std::string OnlyFname = IuCoreUtils::ExtractFileNameNoExt(displayName);
-    m_Vars["_FILENAMEWITHOUTEXT"] = OnlyFname;
-    m_Vars["_FILEEXT"] = FileExt;
+    m_Vars["_FILENAMEWITHOUTEXT"] = IuCoreUtils::ExtractFileNameNoExt(displayName);
+    m_Vars["_FILEEXT"] = IuCoreUtils::ExtractFileExt(displayName);
+    m_Vars["_FILESIZE"] = std::to_string(IuCoreUtils::GetFileSize(fileName));
 
     if ( !executeActions()) {
         return false;
