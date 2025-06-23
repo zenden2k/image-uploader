@@ -1,0 +1,16 @@
+{
+  "commands": {
+    "runTests": {
+      "fileName": "cmd.exe",
+      "workingDirectory": ".",
+      "arguments": "/c \"$(SolutionDir)\\Tests\\Debug\\Tests.exe\"",
+      "showInTaskList": false
+    }
+  },
+  "bindings": [
+    {
+      "name": "runTests",
+      "hotkey": "Ctrl+T, Ctrl+R"
+    }
+  ]
+}
