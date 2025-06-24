@@ -614,10 +614,20 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
 	</Server>
-	<Server Name="filemail.com" FileHost="1" Authorize="1" Plugin="filemail" WebsiteUrl="https://www.filemail.com/">
+	<!--<Server Name="filemail.com" FileHost="1" Authorize="1" Plugin="filemail" WebsiteUrl="https://www.filemail.com/">
 		<Actions>
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
+	</Server>-->
+	<Server Name="lobfile.com" FileHost="1" Authorize="2" Plugin="lobfile" WebsiteUrl="https://lobfile.com" NeedPassword="0" RegistrationUrl="https://lobfile.com/create-account" MaxThreads="1">
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub"/>
+	</Server>
+	<Server Name="imgpx.com" Authorize="1" Plugin="imgpx" WebsiteUrl="https://imgpx.com/" RegistrationUrl="https://imgpx.com/en/register" MaxThreads="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">

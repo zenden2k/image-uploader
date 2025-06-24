@@ -1,5 +1,13 @@
 const BASE_URL = "http://example.com";
 
+function _PrintError(t, txt) {
+    local errorMessage = "[example.com]  " + txt + " Response code: " + nm.responseCode();
+    if (t != null && "error" in t) {
+        errorMessage += "\n" + t.error;
+    }
+    WriteLog("error", errorMessage);
+}
+
 // This is the function that performs the upload of the file
 // @param string pathToFile 
 // @param UploadParams options
@@ -30,11 +38,11 @@ function UploadFile(pathToFile, options) {
     }
 
     nm.setUrl(BASE_URL + "/upload.php?fname=" + nm.urlEncode(task.getDisplayName()));
-    nm.addQueryParamFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.addQueryHeader("X-CSRF-token", csrf);
-    nm.addQueryParam("token", apiToken); // Add POST parameter
+    nm.addQueryParam("token", apiToken); // Add a POST parameter to the request
+    nm.addQueryParamFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
     nm.addQueryParam("submit", "Upload file!");
-    nm.doUploadMultipartData();
+    nm.doUploadMultipartData(); // Make multipart/form-data request
 
     if (nm.responseCode() != 200) {
         WriteLog("error", "[example.com] Upload failed. Response code:" + nm.responseCode());
@@ -54,9 +62,17 @@ function UploadFile(pathToFile, options) {
 
     // Method 2 (with parsing JSON)
     local t = ParseJSON(nm.responseBody());
+    if (nm.responseCode() != 200) {
+        _PrintError(t, "Failed to upload");
+        return ResultCode.Failure;
+    }
+
     if (t != null && "url" in t) {
         viewUrl = t.view_url;
         thumbnailUrl = t.thumb_url;
+    } else {
+        _PrintError(t, "Failed to upload");
+        return ResultCode.Failure;
     }
 
     if (directUrl == "") {
@@ -79,19 +95,23 @@ function Authenticate() {
         return ResultCode.Success;
     }
 
+    local username = ServerParams.getParam("Login"); // Predefined parameter, no need to define it in GetServerParamList
+    local password = ServerParams.getParam("Password"); // Predefined parameter, no need to define it in GetServerParamList
+
     // Performing request
     // ... 
     local t = ParseJSON(nm.responseBody());
-    ServerParams.setParam("token", t.access_token);
-
+    if ("access_token" in t) {
+        ServerParams.setParam("token", t.access_token);
+        return ResultCode.Success;
+    }
+    return ResultCode.Failure; 
 }
-
 
 // Optional function:
 // Retrieving folder (album) list from server
 // @var CFolderList list
 // @return int - success(1), failure(0) 
-//
 function GetFolderList(list) {
     nm.doGet(BASE_URL + "/albums");
     local obj = ParseJSON(nm.responseBody());
@@ -124,7 +144,6 @@ function GetFolderList(list) {
         WriteLog("error", "[example.com] response code: " + m.responseCode());
     }
 
-    // TODO: Your code
     return ResultCode.Failure;
 }
  
@@ -142,7 +161,7 @@ function CreateFolder(parentAlbum, album) {
     };
 
     nm.setUrl(BASE_URL + "/v2/albums");
-
+    nm.addQueryHeader("Content-Type", "application/json");
     nm.doPost(ToJSON(req));
 
     local obj = ParseJSON(nm.responseBody());
@@ -188,6 +207,10 @@ function GetServerParamList() {
         apiToken = "API Token",
         albumid = "Album ID",
         age = "Age",
-        striptags = "Strip Tags"
+        striptags = "Strip Tags",
+        notify = {
+            title = "Email notification on download",
+            type = "boolean" // checkbox 
+        },
     }
 }
