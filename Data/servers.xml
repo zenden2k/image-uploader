@@ -629,6 +629,71 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
+	<!-- Chevereto v4 uploader -->
+	<Server Name="freeimghost.net" Authorize="2" FileHost="1" MaxFileSize="52428800" Plugin="freeimghost.net" WebsiteUrl="https://freeimghost.net/" RegistrationUrl="https://freeimghost.net/signup" PasswordLabel="API key">
+		<SupportedFormats>
+    		<FormatGroup MaxFileSize="52428800" Authorized="1">
+        		<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+        		<Format MimeType="image/png">*.png</Format>
+        		<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+    		</FormatGroup>
+		</SupportedFormats>
+		<Actions>
+            <!--<Action Type="upload" Url="https://freeimghost.net/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
+				<Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
+				<Call Function="json" Arg1="image.url" AssignVars="DirectUrl:0;"/>
+				<Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;"/>
+			</Action>-->
+        </Actions>
+        <!--<Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>-->
+        <Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
+    </Server>
+	<Server Name="radikal.cloud" Authorize="2" MaxFileSize="10485760" WebsiteUrl="https://radikal.cloud/" RegistrationUrl="https://radikal.cloud/signup" PasswordLabel="API key">
+		<SupportedFormats>
+    		<FormatGroup MaxFileSize="10485760" Authorized="1">
+        		<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+        		<Format MimeType="image/png">*.png</Format>
+        		<Format MimeType="image/bmp">*.bmp</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/webp">*.webp</Format>
+    		</FormatGroup>
+		</SupportedFormats>
+		<Actions>
+            <Action Type="upload" Url="https://radikal.cloud/api/1/upload" PostParams="source=%filename%;" CustomHeaders="X-API-Key:$(_PASSWORD);">
+				<Call Function="json" Arg1="image.url_viewer" AssignVars="ViewUrl:0;" Required="1"/>
+				<Call Function="json" Arg1="image.url" AssignVars="DirectUrl:0;"/>
+				<Call Function="json" Arg1="image.thumb.url" AssignVars="ThumbUrl:0;"/>
+				<Call Function="json" Arg1="data.delete_url" AssignVars="DeleteUrl:0;"/>
+			</Action>
+        </Actions>
+        <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
+    </Server>
+	<Server Name="anonpic.org" Plugin="anonpic.org" WebsiteUrl="https://anonpic.org/">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
+	</Server>
+	<Server Name="fotozavr.ru" Plugin="fotozavr" WebsiteUrl="https://fotozavr.ru/" MaxThreads="1">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
+	</Server>
+	<Server Name="imgtr.ee" Authorize="1" Plugin="imgtr.ee" WebsiteUrl="https://imgtr.ee/" PasswordLabel="API key">
+		<Actions>
+		</Actions>
+		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub" DeleteUrl="stub"/>
+	</Server>
+	<!--<Server Name="imgpile.com" Authorize="1" Plugin="imgpile" WebsiteUrl="https://imgpile.com/" RegistrationUrl="https://imgpile.com/registerr">
+		<Actions>
+		</Actions>
+		<Result DownloadUrlTemplate="stub"/>
+	</Server>-->
 	<!-- 429 Too Many Requests
 		<Server Name="pasteboard.co" MaxThreads="1">
 		<Actions>

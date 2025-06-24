@@ -30,7 +30,10 @@ function UploadFile(pathToFile, options) {
 
     // Parsing HTML with Gumbo-query
     local doc = Document(nm.responseBody());
-    local csrf = doc.find("input[name=csrf]").attr("value"); 
+    local csrf = doc.find("input[name=csrf]").at(1).attr("value"); 
+    if (csrf == "") {
+        csrf = doc.find("meta[name=csrf]").attr("value"); 
+    }
     
     if (csrf == "") {
         WriteLog("error", "[example.com] Cannot obtain CSRF token.");

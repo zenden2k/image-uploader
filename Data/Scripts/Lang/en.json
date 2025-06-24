@@ -56,7 +56,8 @@
     },
     "chevereto": {
         "expiration": "Expiration",
-        "never": "Never"
+        "never": "Never",
+        "api_key_not_set": "API key not set! You must specify it in the authorization dialog."
     },
     "imgur": {
         "confirmation" : {
