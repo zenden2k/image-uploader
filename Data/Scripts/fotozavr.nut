@@ -53,8 +53,7 @@ function UploadFile(pathToFile, options) {
         
         // Generate thumbnail URL by replacing the base path with medium path
         if (directUrl != "") {
-            thumbnailUrl = directUrl;
-            thumbnailUrl = StrReplace(thumbnailUrl, "/photos/", "/photos/medium/");
+            thumbnailUrl = StrReplace(directUrl, "/photos/", "/photos/medium/");
         }
     }
 
@@ -64,7 +63,7 @@ function UploadFile(pathToFile, options) {
         local allInputs = doc.find("input[type=text]");
         for (local i = 0; i < allInputs.length(); i++) {
             local inputValue = allInputs.at(i).attr("value");
-            if (inputValue.find("/photos/") != null && inputValue.find(".jpeg") != null && inputValue.find("medium") == null) {
+            if (inputValue.find("/photos/") != null && inputValue.find("medium") == null) {
                 directUrl = inputValue;
                 break;
             }
@@ -88,7 +87,6 @@ function UploadFile(pathToFile, options) {
 
     if (directUrl == "") {
         WriteLog("error", "[fotozavr.ru] Failed to extract direct URL from response");
-        WriteLog("debug", "[fotozavr.ru] Response body: " + nm.responseBody());
         return ResultCode.Failure;
     }
 
