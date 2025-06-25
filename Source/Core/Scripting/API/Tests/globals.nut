@@ -44,6 +44,15 @@ function ParseJSONTest() {
     expect_streq("John", tbl.employees[0].firstName);
     expect_eq(3, tbl.employees.len());
 
+    // Primitive types
+    expect_eq(null, ParseJSON("null"));
+    expect_eq(123, ParseJSON("123"));
+    expect_streq("Anna Smith", ParseJSON("\"Anna Smith\""));
+    expect_eq(true, ParseJSON("true"));
+    expect_eq(false, ParseJSON("false"));
+    expect_eq(0.25, ParseJSON("0.25"));
+
+    // Errors
     expect_eq(null, ParseJSON("&-----<>"));
     expect_eq(null, ParseJSON(""));
 }

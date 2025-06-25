@@ -363,7 +363,7 @@ template<class T,class V> void setObjValues(T key, Json::Value::const_iterator i
         }
             
         }
-    } catch (std::logic_error & ex) {
+    } catch (const std::logic_error & ex) {
         LOG(WARNING) << "setObjValue()" << std::endl << ex.what();
     }
 }
@@ -384,32 +384,56 @@ void parseJSONObj(const Json::Value& root, Sqrat::Table& obj) {
     }
 }
 
-Sqrat::Object parseJSONObj(const Json::Value& root, HSQUIRRELVM vm) {
-    if (root.isArray()) {
-        Sqrat::Array obj(vm, root.size());
-        for(auto it = root.begin(); it != root.end(); ++it) {
-            int key = it.key().asInt();
-            setObjValues(key, it, obj);
+void parseJSONObj(const Json::Value& root, HSQUIRRELVM vm) {
+    using namespace Json;
+    try {
+        switch (root.type()) {
+        case intValue: // signed integer value
+        case uintValue: // unsigned integer value
+            Sqrat::PushVar(vm, static_cast<SQInteger>(root.asInt64())); 
+            break;
+        case realValue: // double value
+            Sqrat::PushVar(vm, root.asFloat()); 
+            break;
+        case stringValue: // UTF-8 string value
+            Sqrat::PushVar(vm, root.asString().data());
+            break;
+        case booleanValue: // bool value
+            Sqrat::PushVar(vm, root.asBool());
+            break;
+        case arrayValue: {// array value (ordered list)
+                Sqrat::Array obj(vm, root.size());
+                for (auto it = root.begin(); it != root.end(); ++it) {
+                    int key = it.key().asInt();
+                    setObjValues(key, it, obj);
+                }
+                Sqrat::PushVar(vm, obj);
+            }
+        break;
+        case objectValue: {
+            Sqrat::Table obj(vm);
+            for (auto it = root.begin(); it != root.end(); ++it) {
+                std::string key = it.key().asString();
+                setObjValues(key.data(), it, obj);
+            }
+            Sqrat::PushVar(vm, obj);
         }
-        return Sqrat::Object(obj);
-    } else {
-        Sqrat::Table obj(vm);
-        for(auto it = root.begin(); it != root.end(); ++it) {
-            std::string key = it.key().asString();
-            setObjValues(key.data(), it, obj);
+        break;
+        default:
+            sq_pushnull(vm);
         }
-        return Sqrat::Object(obj);
+    } catch (const std::logic_error& ex) {
+        LOG(WARNING) << "parseJSONObj()" << std::endl << ex.what();
     }
 }
 
 SQInteger ParseJSON(HSQUIRRELVM vm) {
-    Sqrat::Var<std::string> jsonStr(vm, 2); // 2 = first argument (not 'this')
+    Sqrat::Var<std::string> jsonStr(vm, 2); // 2 = first argument (JSON string)
 
     Json::Value root;
     Json::Reader reader;
     if (reader.parse(jsonStr.value, root, false)) {
-        Sqrat::Object obj = parseJSONObj(root, vm);
-        Sqrat::PushVar(vm, obj);
+        parseJSONObj(root, vm);
         return 1;
     }
     sq_pushnull(vm);
@@ -647,6 +671,8 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("HmacSha1", &CryptoUtils::CalcHMACSHA1HashFromString)
         .Func("Sha256", &CryptoUtils::CalcSHA256HashFromString)
         .Func("Sha256FromFile", &CryptoUtils::CalcSHA256HashFromFile)
+        .Func("Sha512", &CryptoUtils::CalcSHA512HashFromString)
+        .Func("Sha512FromFile", &CryptoUtils::CalcSHA512HashFromFile)
         .Func("Base64Decode", &CryptoUtils::Base64Decode)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)

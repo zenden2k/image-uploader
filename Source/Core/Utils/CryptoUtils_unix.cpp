@@ -141,11 +141,11 @@ std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* da
 }
 
 std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
-    return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
+    return CalcHMACSHA1Hash( key, data.data(), data.size(), base64 );
 }
 
 std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
-    return CalcSHA1Hash( data.c_str(), data.size() );
+    return CalcSHA1Hash( data.data(), data.size() );
 }
 
 std::string CryptoUtils::CalcSHA1HashFromFileWithPrefix(const std::string& filename, const std::string& prefix, const std::string& postfix) {
@@ -246,7 +246,71 @@ std::string CryptoUtils::CalcSHA256HashFromFile(const std::string& filename, int
 }
 
 std::string CryptoUtils::CalcSHA256HashFromString(const std::string& data) {
-    return CalcSHA256Hash(data.c_str(), data.size());
+    return CalcSHA256Hash(data.data(), data.size());
+}
+
+
+std::string CryptoUtils::CalcSHA512Hash(const void* data, size_t size) {
+    constexpr auto HashSize = 64;
+    std::string result;
+    SHA512_CTX context;
+
+    SHA512_Init(&context);
+    SHA512_Update(&context, data, size);
+
+    unsigned char buff[HashSize] = "";
+
+    SHA512_Final(buff, &context);
+
+    for (int i = 0; i < HashSize; i++) {
+        char temp[5];
+        sprintf(temp, "%02x", buff[i]);
+        result += temp;
+    }
+    return result;
+}
+
+
+std::string CryptoUtils::CalcSHA512HashFromFile(const std::string& filename, int64_t offset, size_t chunkSize) {
+    constexpr auto HashSize = 64;
+    std::string result;
+    SHA512_CTX context;
+
+    SHA512_Init(&context);
+    FILE* f = IuCoreUtils::FopenUtf8(filename.c_str(), "rb");
+
+    if (f) {
+        if (offset) {
+            IuCoreUtils::Fseek64(f, offset, SEEK_SET);
+        }
+
+        unsigned char buf[4096];
+        int64_t totalRead = 0;
+        while (!feof(f)) {
+            size_t bytesRead = fread(buf, 1, chunkSize ? std::min(chunkSize - totalRead, sizeof(buf)) : sizeof(buf), f);
+
+            SHA512_Update(&context, (unsigned char*)buf, bytesRead);
+            totalRead += bytesRead;
+            if (chunkSize && totalRead >= chunkSize) {
+                break;
+            }
+        }
+        unsigned char buff[HashSize] = "";
+        SHA512_Final(buff, &context);
+
+        fclose(f);
+
+        for (int i = 0; i < HashSize; i++) {
+            char temp[5];
+            sprintf(temp, "%02x", buff[i]);
+            result += temp;
+        }
+    }
+    return result;
+}
+
+std::string CryptoUtils::CalcSHA512HashFromString(const std::string& data) {
+    return CalcSHA512Hash(data.data(), data.size());
 }
 
 }; // end of namespace IuCoreUtils

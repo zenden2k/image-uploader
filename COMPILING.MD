@@ -1,6 +1,6 @@
 # Building Image Uploader on Windows
 
-To build Image Uploader from source files you will need:
+You will need these tools to build Image Uploader from source files:
 - Git 		https://git-scm.com/downloads
 - Microsoft Visual Studio 2019 or newer (with C++ compiler)   https://visualstudio.microsoft.com/downloads/
 - Windows 10 SDK
@@ -99,12 +99,12 @@ If you want to compile qimageuploader (GUI) you have to install Qt 5 dev librari
 sudo apt install qt5-default
 ```
 
+Pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
+
 You may also need these packages for creating a .deb package:
 ```bash
-sudo apt-get install autoconf automake libtool fakeroot
+sudo apt install autoconf automake libtool fakeroot
 ```
-
-and pass `-DIU_BUILD_QIMAGEUPLOADER=On` option to the `cmake` command.
 
 # Build packages for all platforms at once
 

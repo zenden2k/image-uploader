@@ -37,7 +37,10 @@ typedef struct _my_blob {
 
 
 enum HashType {
-    HashSha1, HashMd5, HashSha256
+    HashSha1,
+    HashMd5,
+    HashSha256,
+    HashSha512
 };
 
 std::string GetHashText(const void * data, const size_t data_size, HashType hashType)
@@ -54,6 +57,7 @@ std::string GetHashText(const void * data, const size_t data_size, HashType hash
     case HashSha1: hash_ok = CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash); break;
     case HashMd5: hash_ok = CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash); break;
     case HashSha256: hash_ok = CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash); break;
+    case HashSha512: hash_ok = CryptCreateHash(hProv, CALG_SHA_512, 0, 0, &hHash); break;
     }
 
     if (!hash_ok) {
@@ -131,6 +135,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
         case HashSha1: hash_ok = CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash); break;
         case HashMd5: hash_ok = CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash); break;
         case HashSha256: hash_ok = CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash); break;
+        case HashSha512: hash_ok = CryptCreateHash(hProv, CALG_SHA_512, 0, 0, &hHash); break;
     }
 
     if (!hash_ok) {
@@ -363,7 +368,7 @@ std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
 
 std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)
 {
-    return GetHashText(data.c_str(), data.length(), HashMd5);
+    return GetHashText(data.data(), data.length(), HashMd5);
 }
 
 std::string CryptoUtils::CalcMD5HashFromFile(const std::string& filename) {
@@ -379,11 +384,11 @@ std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* da
 }
 
 std::string CryptoUtils::CalcHMACSHA1HashFromString(const std::string& key, const std::string& data, bool base64) {
-    return CalcHMACSHA1Hash( key, data.c_str(), data.size(), base64 );
+    return CalcHMACSHA1Hash( key, data.data(), data.size(), base64 );
 }
 
 std::string CryptoUtils::CalcSHA1HashFromString(const std::string& data) {
-    return CalcSHA1Hash( data.c_str(), data.size() );
+    return CalcSHA1Hash( data.data(), data.size() );
 }
 
 std::string CryptoUtils::CalcSHA1HashFromFile(const std::string& filename) {
@@ -399,11 +404,24 @@ std::string CryptoUtils::CalcSHA256Hash(const void* data, size_t size) {
 }
 
 std::string CryptoUtils::CalcSHA256HashFromString(const std::string& data) {
-    return CalcSHA256Hash(data.c_str(), data.size());
+    return CalcSHA256Hash(data.data(), data.size());
 }
 
 std::string CryptoUtils::CalcSHA256HashFromFile(const std::string& filename, int64_t offset, size_t chunkSize) {
     return GetHashTextFromFile(filename, HashSha256, {}, {}, offset, chunkSize);
 }
+
+std::string CryptoUtils::CalcSHA512Hash(const void* data, size_t size) {
+    return GetHashText(data, size, HashSha512);
+}
+
+std::string CryptoUtils::CalcSHA512HashFromString(const std::string& data) {
+    return CalcSHA512Hash(data.data(), data.size());
+}
+
+std::string CryptoUtils::CalcSHA512HashFromFile(const std::string& filename, int64_t offset, size_t chunkSize) {
+    return GetHashTextFromFile(filename, HashSha512, {}, {}, offset, chunkSize);
+}
+
 
 } // end of namespace IuCoreUtils

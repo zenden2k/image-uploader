@@ -45,7 +45,7 @@ class CSelection: public CObject
 		CNode nodeAt(unsigned int i);
         /* @endcond */
 
-		unsigned int nodeNum();
+		unsigned int length();
 
 	private:
 

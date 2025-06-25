@@ -614,11 +614,11 @@
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
 	</Server>
-	<!--<Server Name="filemail.com" FileHost="1" Authorize="1" Plugin="filemail" WebsiteUrl="https://www.filemail.com/">
+	<Server Name="filemail.com" FileHost="1" Authorize="1" Plugin="filemail" WebsiteUrl="https://www.filemail.com/">
 		<Actions>
 		</Actions>
 		<Result DownloadUrlTemplate="stub"/>
-	</Server>-->
+	</Server>
 	<Server Name="lobfile.com" FileHost="1" Authorize="2" Plugin="lobfile" WebsiteUrl="https://lobfile.com" NeedPassword="0" RegistrationUrl="https://lobfile.com/create-account" MaxThreads="1">
 		<Actions>
 		</Actions>

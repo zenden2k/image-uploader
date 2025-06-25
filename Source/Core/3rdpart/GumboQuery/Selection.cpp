@@ -108,7 +108,7 @@ CNode CSelection::nodeAt(unsigned int i)
 	return CNode(mNodes[i]);
 }
 
-unsigned int CSelection::nodeNum()
+unsigned int CSelection::length()
 {
 	return mNodes.size();
 }

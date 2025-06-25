@@ -190,9 +190,9 @@ namespace ScriptAPI {
     std::string ToJSON(const Sqrat::Object&  obj);
 
     /**
-     * Converts text containing a JSON document, into a table 
-     * (associative container made in the form of key / value pairs) or an array.
-    *  For example, the original JSON document:
+     * Converts text containing a JSON document, into a squirrel type: a table (associative container),
+     * an array or a primitive type
+     *  For example, the original JSON document:
         @code
         {
             "result": {
@@ -348,6 +348,18 @@ namespace ScriptAPI {
      *  @since 1.4.0
      */
     std::string Sha256FromFile(const std::string& filename, int64_t offset, size_t chunkSize);
+
+    /**
+     *  Calculates the sha512-hash of a given string
+     *  @since 1.4.3
+     */
+    std::string Sha512(const std::string& data);
+
+    /**
+     *  Calculates the sha512-hash of a given file
+     *  @since 1.4.3
+     */
+    std::string Sha512FromFile(const std::string& filename, int64_t offset, size_t chunkSize);
 
 
     /**
