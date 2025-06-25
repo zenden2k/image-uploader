@@ -46,7 +46,7 @@ protected:
 class ServerProfile {
 
 public:
-    ServerProfile();
+    explicit ServerProfile(bool useDefaultSettings = true);
     explicit ServerProfile(const std::string& serverName);
 
     CUploadEngineData* uploadEngineData() const;

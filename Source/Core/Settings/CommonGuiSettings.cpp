@@ -24,8 +24,9 @@ limitations under the License.
 #include "Func/WinUtils.h"
 #endif
 
-CommonGuiSettings::CommonGuiSettings() : BasicSettings()
-{
+CommonGuiSettings::CommonGuiSettings()
+    : BasicSettings()
+    , imageServer(false) {
     // Default values of settings
     MaxThreads = 3;
     DeveloperMode = false;

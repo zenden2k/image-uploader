@@ -175,6 +175,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     scriptsManager_(scriptsManager),
     Settings(*settings),
     logger_(std::move(logger)),
+    sessionImageServer_(false), 
     enginelist_(enginelist)
 {
     mainThreadId_ = GetCurrentThreadId();

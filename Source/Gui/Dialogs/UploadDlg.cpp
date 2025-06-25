@@ -153,6 +153,8 @@ bool CUploadDlg::startUpload() {
         std::string displayName = WCstringToUtf8(MainDlg->FileList[i].VirtualFileName);
 
         bool isImage = IuCommonFunctions::IsImage(FileName);
+        bool isVideo = !isImage && IuCoreUtils::GetFileMimeType(fileNameUtf8).find("video/") != std::string::npos;
+        
         ServerProfileGroup& serverProfileGroup = isImage ? sessionImageServer_ : sessionFileServer_;
         //serverProfileGroup.addItem();
         for (const auto& item: serverProfileGroup.getItems()) {
@@ -161,6 +163,8 @@ bool CUploadDlg::startUpload() {
             task->setIndex(/*rowIndex++*/i);
             //task->setFileIndex(i);
             task->setIsImage(isImage);
+            task->setIsVideo(isVideo);
+            
             task->setServerProfile(/*isImage ? sessionImageServer_ : sessionFileServer_*/item);
             task->setUrlShorteningServer(settings->urlShorteningServer);
             using namespace std::placeholders;

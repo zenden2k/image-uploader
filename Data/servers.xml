@@ -202,8 +202,29 @@
 		</Actions>
 		<Result DownloadUrlTemplate="http://sendfile.su/$(FileId)"/>
 	</Server>
-	<Server Name="flickr.com" NeedPassword="0" Authorize="2" Debug="0" Type="image" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
+	<Server Name="flickr.com" FileHost="1" NeedPassword="0" Authorize="2" Debug="0" Plugin="flickr" SupportsFolders="1" WebsiteUrl="https://flickr.com"
 		RegistrationUrl="https://identity.flickr.com/sign-up">
+		<SupportedFormats>
+			<FormatGroup MaxFileSize="209715200" Authorized="1">
+				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
+				<Format MimeType="image/png">*.png</Format>
+				<Format MimeType="image/gif">*.gif</Format>
+				<Format MimeType="image/tiff">*.tiff,*.tif</Format>
+				<Format MimeType="image/bmp">*.bmp</Format>
+			</FormatGroup>
+			<FormatGroup MaxFileSize="1073741824" Authorized="1">
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/x-msvideo">*.avi</Format>
+				<Format MimeType="video/x-ms-wmv">*.wmv</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+				<Format MimeType="video/mpeg">*.mpeg,*.mpg</Format>
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/3gpp">*.3gp</Format>
+				<Format MimeType="video/mp2t">*.m2ts</Format>
+				<Format MimeType="video/ogg">*.ogg</Format>
+				<Format MimeType="video/ogg">*.ogv</Format>
+			</FormatGroup>
+		</SupportedFormats>
 		<Actions>
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>

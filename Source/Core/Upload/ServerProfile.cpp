@@ -7,14 +7,14 @@
 #include "Core/Settings/CommonGuiSettings.h"
 #endif
 
-ServerProfile::ServerProfile() {
-    UseDefaultSettings = true;
+ServerProfile::ServerProfile(bool useDefaultSettings) {
+    UseDefaultSettings = useDefaultSettings;
     shortenLinks_ = false;
 }
 
 ServerProfile::ServerProfile(const std::string&  newServerName){
     serverName_ = newServerName;
-    UseDefaultSettings = true;
+    UseDefaultSettings = false;
     shortenLinks_ = false;
 }
 

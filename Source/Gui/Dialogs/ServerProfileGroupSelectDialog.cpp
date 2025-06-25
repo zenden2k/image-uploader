@@ -197,7 +197,7 @@ void CServerProfileGroupSelectDialog::updateSelectorPos(size_t index, HDC dc) {
 LRESULT CServerProfileGroupSelectDialog::OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CClientDC hdc(m_hWnd);
 
-    addSelector({}, hdc);
+    addSelector(ServerProfile(), hdc);
     updateScroll();
     
     return 0;

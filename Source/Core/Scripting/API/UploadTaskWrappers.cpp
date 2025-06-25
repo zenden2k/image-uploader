@@ -349,8 +349,10 @@ void RegisterUploadTaskWrappers(Sqrat::SqratVM& vm) {
         Func("setFileName", &FileUploadTaskWrapper::setFileName).
         Func("getDisplayName", &FileUploadTaskWrapper::getDisplayName).
         Func("setDisplayName", &FileUploadTaskWrapper::setDisplayName).
-        Func("originalFileName", &FileUploadTaskWrapper::originalFileName)
-        );
+        Func("originalFileName", &FileUploadTaskWrapper::originalFileName).
+        Func("isVideo", &FileUploadTaskWrapper::isVideo).
+        Func("isImage", &FileUploadTaskWrapper::isImage)
+    );
 
     root.Bind("UrlShorteningTaskWrapper", DerivedClass<UrlShorteningTaskWrapper, UploadTaskWrapper>(hvm, "UrlShorteningTaskWrapper").
         Func("getUrl", &UrlShorteningTaskWrapper::getUrl).
