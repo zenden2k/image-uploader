@@ -9,6 +9,7 @@ import json
 import hashlib
 import time
 import xml.etree.ElementTree
+import git
 
 from contextlib import contextmanager
 
@@ -208,7 +209,7 @@ BUILD_TARGETS = [
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
-VERSION_HEADER_FILE = "versioninfo.h"
+VERSION_HEADER_FILE = "versioninfo-release.h" if IS_RELEASE else "versioninfo-nightly.h"
 ENV_FILE = ".env"
 
 def check_program(args, message=''):
@@ -223,7 +224,51 @@ def check_program(args, message=''):
         print(message)
     sys.exit(1)              
 
-
+def get_recent_commits(repo_path, max_count=10, from_commit=None, to_commit=None):
+    """
+    Gets list of commits from git repository in the same format as bash script
+    
+    Args:
+        repo_path (str): Path to git repository
+        max_count (int): Maximum number of commits to retrieve (ignored if range is specified)
+        from_commit (str): Starting commit for range retrieval (not included)
+        to_commit (str): Ending commit for range retrieval (included)
+    
+    Returns:
+        list: List of dictionaries with commit information
+    """
+    try:
+        # Open repository
+        repo = git.Repo(repo_path)
+        
+        # If commit range is specified, get commits between them
+        if from_commit and to_commit:
+            # Get commits in range (equivalent to git rev-list --ancestry-path $1..$2)
+            commits = list(repo.iter_commits(f"{from_commit}..{to_commit}"))
+        else:
+            # Get recent commits
+            commits = list(repo.iter_commits(max_count=max_count))
+        
+        commit_list = []
+        
+        for commit in commits:
+            commit_title = commit.message.strip().split('\n')[0]
+            commit_info = {
+                'commit_hash': commit.hexsha,
+                'author': commit.author.name,
+                'date': commit.committed_datetime.strftime('%a %b %d %H:%M:%S %Y %z'),
+                'commit_message': commit_title
+            }
+            commit_list.append(commit_info)
+            
+        return commit_list
+        
+    except git.exc.InvalidGitRepositoryError:
+        print(f"Error: {repo_path} is not a git repository")
+        return []
+    except Exception as e:
+        print(f"Error retrieving commits: {e}")
+        return []
 
 def write_json_header(jsonfile, json_builds_file_name, source_dir, version_header_defines, git_commit_message):
 
@@ -235,11 +280,6 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
 
         }
     last_commit_hash = json_builds_data.get("last_commit_hash")
-
-    json_builds_data["last_commit_hash"] = version_header_defines['IU_COMMIT_HASH']
-    
-    with open(json_builds_file_name, "w") as outfile:
-        json.dump(json_builds_data, outfile, indent=4)
 
     now = datetime.datetime.now()
 
@@ -260,13 +300,7 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
     if not last_commit_hash: # or last_commit_hash== version_header_defines['IU_COMMIT_HASH']:
         arg = 'HEAD~1'
 
-    git_output = subprocess.check_output(['wsl', '-e', '/bin/bash', "git_rev.sh", arg, "HEAD"],cwd=source_dir + "/Dist/").decode("utf-8").strip()
-    git_output = re.sub( r",\s*}", "}", git_output )
-    git_output = re.sub( r"}\s*(,)\s*]$", "}]", git_output )
-    git_output = git_output.replace("\"cloaked\"", "cloaked");
-    git_output = git_output.replace("\"Upload settings\"", "Upload settings");
-    print(git_output)
-    commits = json.loads(git_output)
+    commits = get_recent_commits(source_dir, 10, arg, "HEAD")
 
     dictionary['commits'] = commits
  
@@ -277,6 +311,20 @@ def write_json_header(jsonfile, json_builds_file_name, source_dir, version_heade
         json.dump(json_builds_data, outfile, indent=4)    
     
     return dictionary
+
+def write_builds_file(json_builds_file_name, version_header_defines):
+    if os.path.exists(json_builds_file_name):
+        with open(json_builds_file_name) as json_builds_file:
+            json_builds_data = json.load(json_builds_file)
+    else:
+        json_builds_data = {
+
+        }
+
+    json_builds_data["last_commit_hash"] = version_header_defines['IU_COMMIT_HASH']
+    
+    with open(json_builds_file_name, "w") as outfile:
+        json.dump(json_builds_data, outfile, indent=4)
 
 def add_output_file(dictionary, target, jsonfile, name, path, relativePath, subproduct = ''):
     if relativePath[0] == '/':
@@ -539,13 +587,13 @@ env_file_abs_path = os.path.abspath(ENV_FILE)
 
 generate_version_header(VERSION_HEADER_FILE, True)
 repo_dir_abs = os.path.abspath(repo_dir)
-shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/" + VERSION_HEADER_FILE)
+shutil.copyfile(VERSION_HEADER_FILE, repo_dir + "/Source/versioninfo.h")
 shutil.copyfile(curl_ca_bundle, repo_dir + "/Dist/curl-ca-bundle.crt")
 shutil.copyfile("../Data/" + ENV_FILE, repo_dir + "/Data/" + ENV_FILE)  
 
 dist_directory = os.path.dirname(os.path.realpath(__file__))
 #with cwd(repo_dir):
-version_header_defines = generate_version_header(repo_dir_abs + "/Source/" + VERSION_HEADER_FILE, False)
+version_header_defines = generate_version_header(repo_dir_abs + "/Source/versioninfo.h", False)
 app_ver = version_header_defines["IU_APP_VER"]
 build_number = version_header_defines["IU_BUILD_NUMBER"]
 
@@ -838,6 +886,7 @@ for idx, target in enumerate(BUILD_TARGETS):
 
 #if TEST_MODE:
 #    os.unlink(repo_dir_abs + "/Dist_Test")
+write_builds_file(json_builds_info_file, version_header_defines)
 print("Finish.")
 
   

@@ -117,7 +117,7 @@ git config --global core.autocrlf false
 conan remote add zenden2k https://conan.svistunov.dev --index 0
 ```
 
-Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11). Another way is to run Visual Studio Developer Command Prompt as Administrator.
+Allow creating symlinks (you can do it by turning on Developer Mode on Windows 11).
 
 ## Prerequisites  (on Windows)
 
@@ -133,10 +133,11 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+
 
-Add Conan remote:
+Add Conan remote and install GitPython:
 
 ```bash
 conan remote add zenden2k https://conan.svistunov.dev --index 0
+pip install GitPython
 ```
 
 ## Prerequisites On WSL (Ubuntu Linux)
