@@ -41,6 +41,7 @@ public:
         std::shared_ptr<Gdiplus::Bitmap> icon;
         CString hint;
         ItemState state;
+        bool enabled;
         bool checkable;
         RECT rect;
         ItemType type;
@@ -59,6 +60,7 @@ public:
             isChecked = false;
             this->group = group;
             itemDelegate = 0;
+            enabled = true;
         }
     };
 
@@ -100,6 +102,7 @@ public:
     void setArrowType(int type);
     void setMovable(bool value);
     void setShowButtonText(bool show);
+    void enableButton(int index, bool enable);
     Orientation orientation() const;
     void setMoveParent(bool move);
     void update();

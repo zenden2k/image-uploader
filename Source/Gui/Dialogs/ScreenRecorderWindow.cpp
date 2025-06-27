@@ -369,6 +369,7 @@ LRESULT ScreenRecorderWindow::onCancel(WORD /*wNotifyCode*/, WORD /*wID*/, HWND 
         endDialog(drCancel);
     } else {
         cancelRequested_ = true;
+        toolbar_.enableButton(toolbar_.getItemIndexByCommand(IDCANCEL), false);
         screenRecorder_->cancel();
     }
 
@@ -549,10 +550,13 @@ CString ScreenRecorderWindow::outFileName() const {
 }
 
 void ScreenRecorderWindow::stop() {
-    if (!hasStarted_ || stopRequested_) {
+    if (!hasStarted_ || stopRequested_ || cancelRequested_) {
         return;
     }
     stopRequested_ = true;
+
+    toolbar_.enableButton(toolbar_.getItemIndexByCommand(ID_STOP), false);
+
     screenRecorder_->stop();
 }
 

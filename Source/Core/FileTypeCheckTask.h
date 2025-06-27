@@ -5,7 +5,7 @@
 #include "IFileList.h"
 
 struct BadFileFormat {
-    size_t index = -1;
+    size_t index = 0;
     std::string fileName;
     std::string message;
     std::string mimeType;

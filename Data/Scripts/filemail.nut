@@ -4,6 +4,10 @@ const CHUNK_SIZE = 5242880; // 5MB chunks
 function _InitRequest() {
     nm.addQueryHeader("x-api-version", "2.0");
     nm.addQueryHeader("source", "desktop");
+    local loginToken = ServerParams.getParam("loginToken");
+    if (loginToken != "") {
+        nm.addQueryHeader("loginToken", loginToken);
+    }
 }
 
 function _PrintError(t, txt) {
@@ -90,6 +94,35 @@ function Authenticate() {
         WriteLog("error", "[Filemail.com] Authentication failed: " + nm.responseBody());
     }
     return ResultCode.Failure;
+}
+
+function IsAuthenticated() {
+    if (ServerParams.getParam("loginToken") != "") {
+        return 1;
+    }
+
+    return 0;
+}
+
+function DoLogout() {
+    if (ServerParams.getParam("loginToken") == "") {
+        return ResultCode.Success;
+    }
+    
+    nm.setUrl(BASE_URL + "/auth/logout");
+    _InitRequest();
+    nm.doPost("");
+    
+    if (nm.responseCode() != 200) {
+        WriteLog("error", "[Filemail.com] Logout request failed. Response code: " + nm.responseCode());
+        return ResultCode.Failure;
+    }
+
+    ServerParams.setParam("loginToken", "");
+    ServerParams.setParam("logintokenExpireDate", "");
+    ServerParams.setParam("refreshtoken", "");
+    
+    return ResultCode.Success;
 }
 
 // Initialize transfer and get transfer data
@@ -248,11 +281,6 @@ function CompleteTransfer(transferData) {
         transferid = transferData.transferid,
         transferkey = transferData.transferkey
     }
-    
-    /*local loginToken = ServerParams.getParam("loginToken");
-    if (loginToken != "") {
-        nm.addQueryParam("logintoken", loginToken);
-    }*/
     
     nm.addQueryHeader("Content-Type", "application/json");
     

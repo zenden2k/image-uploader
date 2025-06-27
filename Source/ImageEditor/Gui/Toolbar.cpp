@@ -413,14 +413,18 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
 
     selectedItemIndex_ = getItemAtPos(xPos, yPos);
 
-    if (  oldSelectedIndex != selectedItemIndex_  ) {
-        if ( selectedItemIndex_ != -1 ) {
-            buttons_[selectedItemIndex_].state = isHover;
-            InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
+    if (oldSelectedIndex != selectedItemIndex_ ) {
+        if (selectedItemIndex_ != -1) {
+            auto& button = buttons_[selectedItemIndex_];
+            if (button.enabled) {
+                buttons_[selectedItemIndex_].state = isHover;
+                InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
+            }
         }
-        if ( oldSelectedIndex != -1 ) {
-            buttons_[oldSelectedIndex].state = isNormal;
-            InvalidateRect(&buttons_[oldSelectedIndex].rect, false);
+        if (oldSelectedIndex != -1) {
+            auto& button = buttons_[oldSelectedIndex];
+            button.state = isNormal;
+            InvalidateRect(&button.rect, false);
         }
     }
     return 0;
@@ -450,22 +454,24 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
     if ( selectedItemIndex_ != -1 ) {
         Item& item = buttons_[selectedItemIndex_];
-        if ( item.type == Toolbar::itComboButton && xPos >  static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)  ) {
-            item.state = isDropDown;
-        } else if ( item.type == Toolbar::itTinyCombo ) {
-            if ( xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_ ) {
+        if (item.enabled) {
+            if (item.type == Toolbar::itComboButton && xPos > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)) {
                 item.state = isDropDown;
+            } else if (item.type == Toolbar::itTinyCombo) {
+                if (xPos > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && yPos > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_) {
+                    item.state = isDropDown;
+                } else {
+                    SetTimer(kTinyComboDropdownTimer, 600);
+                    item.state = isDown;
+                }
             } else {
-                SetTimer(kTinyComboDropdownTimer, 600);
                 item.state = isDown;
             }
-        } else {
-            item.state = isDown;
+
+            moveParent = moveParent && item.itemDelegate && !item.itemDelegate->needClick();
+
+            InvalidateRect(&item.rect, false);
         }
-
-        moveParent = moveParent && item.itemDelegate && !item.itemDelegate->needClick();
-
-        InvalidateRect(&item.rect, false);
     }
     if (moveParent) {
         ReleaseCapture();
@@ -499,26 +505,29 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
         return 0;
     }
     if ( selectedItemIndex_ != -1 ) {
-
         selectedItemIndex_ = getItemAtPos(xPos, yPos);
         Item& item = buttons_[selectedItemIndex_];
 
-        if ( item.itemDelegate ) {
-            clickButton(selectedItemIndex_);
-            item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
-        } else {
-            HWND parent = GetParent();
-            int command = item.command;
-            if ( item.type == Toolbar::itComboButton && xPos > static_cast<int>( item.rect.right - dropDownIcon_->GetWidth() - itemMargin_ ) ) {
-                ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
-            } else if ( item.type == Toolbar::itTinyCombo && xPos >  item.rect.right - 6*dpiScaleX_ - itemMargin_ && yPos >   item.rect.bottom - 6*dpiScaleY_ - itemMargin_  ) {
-                ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
+        if (item.enabled) {
+            if (item.itemDelegate) {
+                clickButton(selectedItemIndex_);
+                item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
             } else {
-                ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command,BN_CLICKED),(LPARAM)m_hWnd);
-            }
+                HWND parent = GetParent();
+                int command = item.command;
+                if (item.type == Toolbar::itComboButton && xPos > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)) {
+                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                } else if (item.type == Toolbar::itTinyCombo && xPos > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && yPos > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_) {
+                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                } else {
+                    ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command, BN_CLICKED), (LPARAM)m_hWnd);
+                }
 
+                selectedItemIndex_ = -1;
+                OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+            }
+        } else {
             selectedItemIndex_ = -1;
-            OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
         }
     }
 
@@ -865,7 +874,8 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
     item.rect.top = y;
     item.rect.right = size.cx + x;
     item.rect.bottom = size.cy + y;
-    SolidBrush brush(Color(0,0,0));
+
+    SolidBrush brush(item.enabled ? Color(0, 0, 0) : Color(120, 120, 120));
 
     if ( item.state == isHover ||  item.state == isDown ||  item.state == isDropDown || item.isChecked) {
             Pen p(Color(198,196,197));
@@ -915,8 +925,30 @@ void Toolbar::drawItem(int itemIndex, Gdiplus::Graphics* gr, int x, int y)
         gr->DrawImage(tinyDropDownIcon_.get(), iconX + iconSizeX_ - 1 + offsetX, bounds.Y + bounds.Height - kTinyDropdownIconSize * dpiScaleY_ + (item.state == isDropDown ? 1 : 0) /*, kTinyDropdownIconSize * dpiScaleX_, kTinyDropdownIconSize * dpiScaleY_*/);
     }
 
-    if (  item.icon ) {
-        gr->DrawImage(item.icon.get(), (int)iconX, (int)(bounds.Y + (item.state == isDown ? 1 : 0) + (bounds.Height - iconSizeY_) / 2), iconSizeX_, iconSizeY_);
+    if (item.icon) {
+        Gdiplus::ImageAttributes imageAttr;
+    
+        // Create ColorMatrix for desaturation and transparency reduction
+        Gdiplus::ColorMatrix colorMatrix = {
+            0.3f, 0.3f, 0.3f, 0.0f, 0.0f, // Red
+            0.3f, 0.3f, 0.3f, 0.0f, 0.0f, // Green
+            0.3f, 0.3f, 0.3f, 0.0f, 0.0f, // Blue
+            0.0f, 0.0f, 0.0f, 0.8f, 0.0f, // Alpha (50% opacity)
+            0.0f, 0.0f, 0.0f, 0.0f, 1.0f  // Translation
+        };
+
+        imageAttr.SetColorMatrix(&colorMatrix, Gdiplus::ColorMatrixFlagsDefault, Gdiplus::ColorAdjustTypeBitmap);
+
+        int x = static_cast<int>(iconX);
+        int y = static_cast<int>(bounds.Y + (item.state == isDown ? 1 : 0) + (bounds.Height - iconSizeY_) / 2);
+
+        if (item.enabled) {
+            gr->DrawImage(item.icon.get(), x, y, iconSizeX_, iconSizeY_);
+        } else {
+            gr->DrawImage(item.icon.get(), Gdiplus::Rect(x, y, iconSizeX_, iconSizeY_),
+                0, 0, item.icon->GetWidth(), item.icon->GetHeight(), Gdiplus::UnitPixel, &imageAttr
+            );
+        }
     }
 
     if (showButtonText_) {
@@ -1219,6 +1251,15 @@ void Toolbar::setInvertSelectionCheckbox(bool invert) {
 
 void Toolbar::setShowButtonText(bool show) {
     showButtonText_ = show;
+}
+
+void Toolbar::enableButton(int index, bool enable) {
+    if (index < 0 || index >= buttons_.size()) {
+        return;
+    }
+    auto& button = buttons_[index];
+    button.enabled = enable;
+    InvalidateRect(&button.rect, FALSE);
 }
 
 Toolbar::Orientation Toolbar::orientation() const {
