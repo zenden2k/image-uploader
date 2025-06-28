@@ -25,7 +25,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
 #ifdef IU_ENABLE_MEDIAINFO
     if (Settings.VideoSettings.ShowMediaInfo)
     {
-        onProgress(this, -1, -1, W2U(TR("Getting info about file...")));
+        onProgress(this, -1, -1, _("Getting info about file..."));
         /*bool bMediaInfoResult = */
         MediaInfoHelper::GetMediaFileInfo(mediaFile_, Report, fullInfo, Settings.MediaInfoSettings.EnableLocalization);
         Bitmap bm(100, 100, PixelFormat32bppARGB);
@@ -42,7 +42,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
 #endif
     size_t n = files_.size();
 
-    onProgress(this, 0, n, W2U(TR("Generating image...")));
+    onProgress(this, 0, n, _("Generating image..."));
 	
     int ncols = std::min<int>(Settings.VideoSettings.Columns, n);
     if (ncols <= 0) {
@@ -92,7 +92,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
             float(tileheight)), font, ColorText, ColorStroke, 3, 3);
         gr.DrawRectangle(&Framepen, Rect(x /*(tilewidth-newwidth)/2*/, (int)y, (int)tilewidth, (int)tileheight));
 
-        onProgress(this, i+1, n, W2U(TR("Generating image...")));
+        onProgress(this, i+1, n, _("Generating image..."));
     }
 
     if (infoHeight)
@@ -111,7 +111,7 @@ BackgroundTaskResult ImageGeneratorTask::doJob() {
         return BackgroundTaskResult::Canceled;
     }
 	
-    onProgress(this, -1, -1, W2U(TR("Saving image...")));
+    onProgress(this, -1, -1, _("Saving image..."));
 
     try {
         ImageUtils::MySaveImage(&BackBuffer, _T("grab_custom"), outFileName_, ImageUtils::sifPNG, 100);

@@ -335,7 +335,7 @@ int CVideoGrabberPage::GenPicture(CString& outFileName)
 		}
 	});
 	CStatusDlg dlg(task);
-	if (dlg.DoModal(m_hWnd) == IDOK) {
+	if (dlg.executeTask(m_hWnd, 0) == IDOK) {
 		return 1;
 	}
 	return 0;

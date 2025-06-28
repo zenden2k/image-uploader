@@ -26,23 +26,36 @@
 #include "Core/Utils/CoreUtils.h"
 
 CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
-    m_bNeedStop(false),
     canBeStopped_(true),
-    processFinished_(false),
-	task_(std::move(task))
-{
-    taskFinishedConnection_ = task_->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
+	task_(std::move(task)) {
+
+    init();
+
+    finishFuture_ = finishPromise_.get_future();
+
+    taskFinishedConnection_ = task_->onTaskFinished.connect([this](BackgroundTask*, BackgroundTaskResult taskResult) {
+        finishPromise_.set_value(taskResult);
+
         ServiceLocator::instance()->taskRunner()->runInGuiThread([this, taskResult] {
             ProcessFinished();
+            if (!IsWindow()) {
+                return;
+            }
             EndDialog(taskResult == BackgroundTaskResult::Success ? IDOK : IDCANCEL);
         });
     });
 
     taskProgressConnection_ = task_->onProgress.connect([&](BackgroundTask*, int pos, int max, const std::string& status) {
         CString statusW = U2W(status);
-        SetInfo(statusW, L"");
+        
+        if (!IsWindow()) {
+            SetInfo(statusW, _T(""));
+            return;
+        }
+       
         ServiceLocator::instance()->taskRunner()->runInGuiThread([=] {
-            SetDlgItemText(IDC_TITLE, statusW);
+            updateTitle(statusW);
+
             if (pos < 0) {
                 if ((progressBar_.GetStyle() & PBS_MARQUEE) == 0) {
                     progressBar_.SetWindowLong(GWL_STYLE, progressBar_.GetStyle() | PBS_MARQUEE);
@@ -59,17 +72,17 @@ CStatusDlg::CStatusDlg(std::shared_ptr<BackgroundTask> task):
                 progressBar_.SetPos(pos);
             }
         });
-        
     });
 }
 
-// CStatusDlg
-CStatusDlg::CStatusDlg(bool canBeStopped) : 
-    m_bNeedStop(false), 
-    canBeStopped_(canBeStopped), 
-    processFinished_(false)
+CStatusDlg::CStatusDlg(bool canBeStopped):  
+    canBeStopped_(canBeStopped)
 {
-        
+    init();
+}
+
+void CStatusDlg::init() {
+
 }
 
 CStatusDlg::~CStatusDlg()
@@ -80,9 +93,13 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 {
     CenterWindow(GetParent());
     progressBar_ = GetDlgItem(IDC_PROGRESSBAR);
-    m_bNeedStop = false;
-    SetDlgItemText(IDC_TITLE, m_Title);
-    SetDlgItemText(IDC_TEXT, m_Text);
+    needStop_ = false;
+
+    SetWindowTitle(TR("Process Status"));
+
+    updateTitle(title_);
+    updateText(text_);
+
     SetTimer(kUpdateTimer, 500);
     TRC(IDCANCEL, "Stop");
     ::ShowWindow(GetDlgItem(IDCANCEL), canBeStopped_ ? SW_SHOW : SW_HIDE);
@@ -91,16 +108,15 @@ LRESULT CStatusDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     progressBar_.ShowWindow(SW_SHOW);
     progressBar_.SetMarquee(TRUE);
 	
-	if (task_) {
-
+	/*if (task_) {
         ServiceLocator::instance()->taskDispatcher()->postTask(task_);
-	}
+	}*/
     return 1;  // Let the system set the focus
 }
 
 LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    m_bNeedStop = true;
+    needStop_ = true;
 
 	if (task_) {
         task_->cancel();
@@ -110,19 +126,22 @@ LRESULT CStatusDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     return 0;
 }
 
-void CStatusDlg::SetInfo(const CString& Title, const CString& Text)
+void CStatusDlg::SetInfo(const CString& title, const CString& text)
 {
-    std::lock_guard<std::mutex> lk(CriticalSection);
-    m_Title=Title;
-    m_Text = Text;
+    title_ = title;
+    text_ = text;
+    updateTitle(title_);
+    updateText(text_);
 }
 
 LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    if(!IsWindowVisible() && !m_bNeedStop)
+    if (!IsWindowVisible() && !needStop_) {
         ShowWindow(SW_SHOW);
-    SetDlgItemText(IDC_TITLE, m_Title);
-    SetDlgItemText(IDC_TEXT, m_Text);
+    }
+
+    updateTitle(title_);
+    updateText(text_);
 
     if (processFinished_) {
         EndDialog(IDOK);
@@ -132,20 +151,71 @@ LRESULT CStatusDlg::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
 
 void CStatusDlg::SetWindowTitle(const CString& WindowTitle)
 {
-    std::lock_guard<std::mutex> lk(CriticalSection);
     SetWindowText(WindowTitle);
 }
 
 bool CStatusDlg::NeedStop() const
 {
-    return m_bNeedStop;
+    return needStop_;
 }
 
 void CStatusDlg::Hide()
 {
     KillTimer(kUpdateTimer);
     ShowWindow(SW_HIDE);
-    m_bNeedStop = false;
+    needStop_ = false;
+}
+
+int CStatusDlg::executeTask(HWND parent, int timeoutMs) {
+    if (!task_) {
+        return IDCANCEL;
+    }
+
+    try {
+        ServiceLocator::instance()->taskDispatcher()->postTask(task_);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Task execution failed: " << e.what();
+        return IDCANCEL;
+    }
+
+    try {
+        if (finishFuture_.wait_for(std::chrono::milliseconds(timeoutMs)) == std::future_status::ready) {
+            // Task completed quickly - no dialog needed
+            auto result = finishFuture_.get();
+            return IDOK;
+        } 
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Wait on task failed: " << e.what();
+    }
+    
+    // Task is taking long - show dialog
+    return DoModal(parent);
+}
+
+void CStatusDlg::updateTitle(const std::string& title) {
+    if (!IsWindow() || actualTitleUtf8_ == title) {
+        return;
+    }
+    actualTitle_ = U2W(title);
+    actualTitleUtf8_ = title;
+    SetDlgItemText(IDC_TITLE, title_);
+}
+
+void CStatusDlg::updateTitle(const CString& title) {
+    if (!IsWindow() || actualTitle_ == title) {
+        return;
+    }
+    actualTitle_ = title;
+    actualTitleUtf8_ = W2U(title);
+    SetDlgItemText(IDC_TITLE, title_);
+}
+
+void CStatusDlg::updateText(const CString& text) {
+    if (!IsWindow() || actualText_ == text) {
+        return;
+    }
+    actualText_ = text;
+    SetDlgItemText(IDC_TEXT, text);
 }
 
 void CStatusDlg::ProcessFinished() {

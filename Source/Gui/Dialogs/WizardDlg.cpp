@@ -2679,22 +2679,17 @@ void  CWizardDlg::endAddFiles() {
     MainDlg->ThumbsView.endAdd();
 }
 
-bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer)
-{
+bool CWizardDlg::checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer) {
     auto* mainDlg = getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
     auto task = std::make_shared<FileTypeCheckTask>(&mainDlg->FileList, imageServer, fileServer);
-    std::string message;
-    std::vector<BadFileFormat> errors;
 
-    boost::signals2::scoped_connection taskFinishedConnection = task->onTaskFinished.connect([&](BackgroundTask*, BackgroundTaskResult taskResult) {
-        if (taskResult == BackgroundTaskResult::Success) {
-            message = task->message();
-            errors = std::move(task->errors());
-        }
-    });
     CStatusDlg dlg(task);
-    if (dlg.DoModal(m_hWnd) == IDOK) {
+
+    if (dlg.executeTask(m_hWnd) == IDOK && task->result() == BackgroundTaskResult::Success) {
+        std::string message = task->message();
+        std::vector<BadFileFormat> errors = std::move(task->errors());
+
         if (!errors.empty()) {
             CFileFormatCheckErrorDlg fileFormatDlg(&mainDlg->FileList, errors);
             if (fileFormatDlg.DoModal() != IDOK) {

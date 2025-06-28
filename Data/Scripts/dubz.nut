@@ -1,5 +1,24 @@
 const BASE_URL = "https://dubz.co";
 
+function _PrintError(t, txt) {
+    local errorMessage = "[dubz.co] " + txt + " Response code: " + nm.responseCode();
+    if (t != null && "message" in t) {
+        errorMessage += "\n" + t.message;
+        if ("errors" in t) {
+            foreach (key, value in t.errors) {
+                if (typeof(value) == "array") {
+                    foreach (s in value) {
+                        errorMessage += "\n" + s;
+                    }
+                } else {
+                    errorMessage += "\n" + value;
+                }
+            }
+        }
+    }
+    WriteLog("error", errorMessage);
+}
+
 function Authenticate() {
     local login = ServerParams.getParam("Login");
     local pass = ServerParams.getParam("Password");
@@ -69,15 +88,20 @@ function _UploadToAccount(FileName, options) {
         nm.addQueryParam("video_url", videoUrl);
         nm.setUrl(BASE_URL + "/upload");
         nm.doUploadMultipartData();
+        local t = null;
+        if (nm.responseHeaderByName("Content-Type") == "application/json") {
+            t = ParseJSON(nm.responseBody());
+        }
+
         if (nm.responseCode() == 200) {
             options.setViewUrl(videoUrl);
             options.setDirectUrl(_ObtainDirectVideoLink(FileName, videoUrl));
             return 1;
         } else {
-            WriteLog("error", "[dubz.co] Failed to upload.\nResponse code:" + nm.responseCode());
+            _PrintError(t, "Failed to upload.");
         }
     } else {
-        WriteLog("error", "[dubz.co] got error from server: \nResponse code:" + nm.responseCode());
+        _PrintError(null, "Got error from server. ");
         return 0;
     }
 
@@ -108,15 +132,20 @@ function UploadFile(FileName, options) {
         nm.addQueryParam("video_url", videoUrl);
         nm.setUrl(BASE_URL + "/upload2");
         nm.doUploadMultipartData();
+        local t = null;
+        if (nm.responseHeaderByName("Content-Type") == "application/json") {
+            t = ParseJSON(nm.responseBody());
+        }
+
         if (nm.responseCode() == 200) {
             options.setViewUrl(videoUrl);
             options.setDirectUrl(_ObtainDirectVideoLink(FileName, videoUrl));
             return 1;
         } else {
-            WriteLog("error", "[dubz.co] Failed to upload.\nResponse code:" + nm.responseCode());
+             _PrintError(t, "Failed to upload.");
         }
     } else {
-        WriteLog("error", "[dubz.co] got error from server: \nResponse code:" + nm.responseCode());
+                _PrintError(null, "Got error from server. ");
         return 0;
     }
     return 0;

@@ -8,7 +8,7 @@
 #include "TaskDispatcher.h"
 #include "Utils/CoreTypes.h"
 
-enum class BackgroundTaskResult { Success, Failed, Canceled };
+enum class BackgroundTaskResult { Invalid, Success, Failed, Canceled };
 
 class BackgroundTask: public CancellableTask {
 public:
@@ -20,10 +20,12 @@ public:
 	void cancel() override;
 	bool isCanceled() override;
 	bool isInProgress() override;
+    BackgroundTaskResult result() const;
 	DISALLOW_COPY_AND_ASSIGN(BackgroundTask);
 protected:
 	std::atomic<bool> isRunning_ = false;
     std::atomic<bool> isCanceled_ = false;
+    std::atomic<BackgroundTaskResult> result_ = BackgroundTaskResult::Invalid;
 };
 
 #endif

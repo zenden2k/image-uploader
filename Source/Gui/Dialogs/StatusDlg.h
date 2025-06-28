@@ -24,6 +24,8 @@
 #include <atomic>
 #include <mutex>
 #include <memory>
+#include <future>
+
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Core/BackgroundTask.h"
@@ -55,19 +57,32 @@ class CStatusDlg :
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         void SetInfo(const CString& Title, const CString& Text);
         void SetWindowTitle(const CString& WindowTitle);
+
         bool NeedStop() const;
         void ProcessFinished();
         void Hide();
-protected:
-    CString m_Title, m_Text;
-    std::atomic_bool m_bNeedStop;
-    CFont titleFont_;
-    bool canBeStopped_;
-    bool processFinished_;
-    std::mutex CriticalSection;
-    std::shared_ptr<BackgroundTask> task_;
-    CProgressBarCtrl progressBar_;
-    boost::signals2::scoped_connection taskFinishedConnection_, taskProgressConnection_;
+
+        int executeTask(HWND parent, int timeoutMs = 300);
+
+    private:
+        void init();
+        void updateTitle(const std::string& title);
+        void updateTitle(const CString& title);
+        void updateText(const CString& title);
+
+        CString title_, text_;
+        CString actualTitle_, actualText_;
+        std::string actualTitleUtf8_;
+        std::atomic_bool needStop_ = false;
+        CFont titleFont_;
+        bool canBeStopped_;
+        bool processFinished_ = false;
+        std::mutex mutex_;
+        std::promise<BackgroundTaskResult> finishPromise_;
+        std::future<BackgroundTaskResult> finishFuture_;
+        std::shared_ptr<BackgroundTask> task_;
+        CProgressBarCtrl progressBar_;
+        boost::signals2::scoped_connection taskFinishedConnection_, taskProgressConnection_;
 };
 
 #endif // STATUSDLG_H

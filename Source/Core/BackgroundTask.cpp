@@ -6,6 +6,10 @@ bool BackgroundTask::isInProgress() {
     return isRunning_;
 }
 
+BackgroundTaskResult BackgroundTask::result() const {
+    return result_;
+}
+
 void BackgroundTask::cancel() {
     isCanceled_ = true;
 }
@@ -18,6 +22,7 @@ void BackgroundTask::run() {
 	BackgroundTaskResult result = BackgroundTaskResult::Failed;
 	defer d([&] { // Run at function exit
 		isRunning_ = false;
+        result_ = result;
         onTaskFinished(this, result);
 	});
 	if (isCanceled_) {
