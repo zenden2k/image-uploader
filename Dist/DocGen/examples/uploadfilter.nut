@@ -1,6 +1,6 @@
 function PreUpload(taskUnion, reserved) {
     if (taskUnion.type() == "TypeFile") {
-		local task = taskUnion.getFileTask();
+        local task = taskUnion.getFileTask();
         local ext = GetFileExtension(task.getFileName());
         if ( ext.tolower() == "png" ) {
             local displayName = ExtractFileNameNoExt(task.getDisplayName());

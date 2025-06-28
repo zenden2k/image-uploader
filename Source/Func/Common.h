@@ -22,8 +22,7 @@
 #define IU_FUNC_COMMON_H
 
 #include "atlheaders.h"
-
-constexpr int WM_MY_DPICHANGED = WM_USER + 300;
+#include "Gui/Constants.h"
 
 class CCmdLine;
 

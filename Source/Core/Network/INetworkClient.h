@@ -66,8 +66,14 @@ class INetworkClient {
             AbortedException(const AbortedException& ex) = default;
         };
 
+        [[deprecated("Use addPostField() instead")]]
         virtual void addQueryParam(const std::string& name, const std::string& value){}
+        [[deprecated("Use addPostField() instead")]]
         virtual void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType){};
+
+        virtual void addPostField(const std::string& name, const std::string& value) { }
+        virtual void addPostFieldFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) { };
+
         virtual void addQueryHeader(const std::string& name, const std::string& value) {};
         virtual void setUrl(const std::string& url){};
         virtual bool doPost(const std::string& data) { return false; }

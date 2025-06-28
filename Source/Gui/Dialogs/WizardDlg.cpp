@@ -2191,7 +2191,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     EnableWindow(false);
     CScreenCaptureEngine engine;
 
-    CString buf; // file name buffer
+    CString outFileName; // file name buffer
     std::shared_ptr<Gdiplus::Bitmap> result;
     CWindowHandlesRegion::WindowCapturingFlags wcfFlags;
     wcfFlags.AddShadow = Settings.ScreenshotSettings.AddShadow;
@@ -2303,12 +2303,18 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         }
     }
     using namespace ImageEditor;
-    ImageEditorWindow::DialogResult dialogResult = ImageEditorWindow::drCancel;
+    std::optional<ImageEditorWindow::DialogResult> dialogResult;
     CString suggestingFileName;
-    if ( result ) {
+    if (result) {
         suggestingFileName = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.FilenameTemplate, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
     }
 
+    std::shared_ptr<Gdiplus::Bitmap> bitmapToCopy;
+    defer d2([&] {
+        if (bitmapToCopy) {
+            showScreenshotCopiedToClipboardMessage(bitmapToCopy, outFileName);
+        }
+    });
     if(result && ( (mode == cmRectangles && !Settings.ScreenshotSettings.UseOldRegionScreenshotMethod) || (!fromTray && Settings.ScreenshotSettings.OpenInEditor ) || (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_OPENINEDITOR) ))
     {
         ImageEditorConfigurationProvider configProvider;
@@ -2347,7 +2353,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
         }
         else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard) {
-                showScreenshotCopiedToClipboardMessage(imageEditor.getResultingBitmap());
+                bitmapToCopy = imageEditor.getResultingBitmap();
             }
             CanceledByUser = true;
         }
@@ -2364,14 +2370,14 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
 
                 CopyToClipboard = true;
             }
-            ImageUtils::SaveImageFormat savingFormat = static_cast<ImageUtils::SaveImageFormat>(Settings.ScreenshotSettings.Format);
+            auto savingFormat = static_cast<ImageUtils::SaveImageFormat>(Settings.ScreenshotSettings.Format);
             if (savingFormat == ImageUtils::sifJPEG) {
                 ImageUtils::Gdip_RemoveAlpha(*result, Color(255, 255, 255, 255));
             }
 
             CString saveFolder = IuCommonFunctions::GenerateFileName(Settings.ScreenshotSettings.Folder, IuCommonFunctions::screenshotIndex,CPoint(result->GetWidth(),result->GetHeight()));
             try {
-                ImageUtils::MySaveImage(result.get(),suggestingFileName,buf,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
+                ImageUtils::MySaveImage(result.get(),suggestingFileName,outFileName,savingFormat, Settings.ScreenshotSettings.Quality,(Settings.ScreenshotSettings.Folder.IsEmpty())?0:(LPCTSTR)saveFolder);
             } catch (const std::exception& ex) {
                 LOG(ERROR) << ex.what();
             }
@@ -2381,27 +2387,28 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 CClientDC dc(m_hWnd);
                 if (ImageUtils::CopyBitmapToClipboard(m_hWnd, dc, result.get()) ) {
                     if (fromTray && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_CLIPBOARD
-                        && dialogResult == ImageEditorWindow::drCancel) {
-                        showScreenshotCopiedToClipboardMessage(result);
+                        && !dialogResult) {
+                        bitmapToCopy = result;
                         Result = false;
                     }
                 }
             }
-            if(!fromTray || dialogResult == ImageEditorWindow::drAddToWizard || (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD || Settings.TrayIconSettings.TrayScreenshotAction== TRAY_SCREENSHOT_SHOWWIZARD))
-            {
+            if (!fromTray || dialogResult == ImageEditorWindow::drAddToWizard
+                || (!dialogResult && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_ADDTOWIZARD
+                        || Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_SHOWWIZARD)
+                   )
+            ){
                 CreatePage(wpMainPage);
-                CMainDlg* mainDlg = getPage<CMainDlg>(wpMainPage);
-                mainDlg->AddToFileList(buf);
+                auto mainDlg = getPage<CMainDlg>(wpMainPage);
+                mainDlg->AddToFileList(outFileName);
                 mainDlg->ThumbsView.EnsureVisible(mainDlg->ThumbsView.GetItemCount() - 1, true);
 //                mainDlg->ThumbsView.LoadThumbnails();
                 mainDlg->ThumbsView.SetFocus();
                 ShowPage(wpMainPage, wpWelcomePage, wpUploadSettingsPage);
-            }
-            else if(fromTray && (Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD || dialogResult == ImageEditorWindow::drUpload))
-            {
+            } else if (fromTray && (dialogResult == ImageEditorWindow::drUpload || (!dialogResult && Settings.TrayIconSettings.TrayScreenshotAction == TRAY_SCREENSHOT_UPLOAD))) {
                 Result = false;
-                CString displayFileName = WinUtils::myExtractFileName(buf);
-                floatWnd_->UploadScreenshot(buf, displayFileName);
+                CString displayFileName = WinUtils::myExtractFileName(outFileName);
+                floatWnd_->UploadScreenshot(outFileName, displayFileName);
             }
         }
         else
@@ -2425,18 +2432,21 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
     return Result;
 }
 
-void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap) {
-    if (trayIconEnabled()) {
+void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath) {
+    if (false && trayIconEnabled()) {
         floatWnd_->ShowScreenshotCopiedToClipboardMessage();
     } else {
         using namespace WinToastLib;
         if (WinToast::isCompatible()) {
             auto instance = WinToast::instance();
             if (Settings.EnableToastNotifications && instance->isInitialized()) {
+                bool withImage = !imageFilePath.IsEmpty() && GuiTools::IsToastImageFormatSupported(imageFilePath);
+                
+                WinToastTemplate templ(withImage ? WinToastTemplate::ImageAndText02 : WinToastTemplate::Text01);
+                if (withImage) {
+                    templ.setImagePath(imageFilePath.GetString());
+                }
 
-                WinToastTemplate templ(WinToastTemplate::/*ImageAndText02*/ Text01);
-                //templ.setImagePath(L"C:/example.png");
-                //templ.setTextField(APPNAME, WinToastTemplate::FirstLine);
                 templ.setTextField(TR("Screenshot has been copied to clipboard."), WinToastTemplate::FirstLine);
                 const auto toast_id = instance->showToast(templ, new WinToastHandler());
                 if (toast_id < 0) {

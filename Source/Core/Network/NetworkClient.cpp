@@ -348,8 +348,15 @@ NetworkClient::~NetworkClient()
     proxyProvider_ = nullptr;
 }
 
-void NetworkClient::addQueryParam(const std::string& name, const std::string& value)
-{
+void NetworkClient::addQueryParam(const std::string& name, const std::string& value) {
+    addPostField(name, value);
+}
+
+void NetworkClient::addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) {
+    addPostFieldFile(name, fileName, displayName, contentType);
+}
+
+void NetworkClient::addPostField(const std::string& name, const std::string& value) {
     QueryParam newParam;
     newParam.name = name;
     newParam.value = value;
@@ -357,8 +364,7 @@ void NetworkClient::addQueryParam(const std::string& name, const std::string& va
     m_QueryParams.push_back(newParam);
 }
 
-void NetworkClient::addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType)
-{
+void NetworkClient::addPostFieldFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) {
     QueryParam newParam;
     newParam.name = name;
     newParam.value = fileName;

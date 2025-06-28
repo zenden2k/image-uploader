@@ -28,7 +28,9 @@
 
 namespace {
 
-static SIZE GetTextDimensions(HDC dc, LPCTSTR Text, HFONT Font) {
+constexpr auto VERTICAL_PADDING = 5;
+
+SIZE GetTextDimensions(HDC dc, LPCTSTR Text, HFONT Font) {
     SIZE sz = {};
     if (!Text) {
         return sz;
@@ -72,10 +74,7 @@ Must be called before adding any items
 */
 void CHyperLinkControl::Init(COLORREF BkColor)
 {
-    NormalFont = GetFont();
-    BoldFont = GuiTools::MakeFontBold(NormalFont);
-    UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
-    BoldUnderLineFont = GuiTools::MakeFontUnderLine(BoldFont);
+    createGdiResources();
     m_BkColor = BkColor;
     OpenThemeData();
     CreateDoubleBuffer();
@@ -119,10 +118,10 @@ int CHyperLinkControl::ItemFromPoint(POINT pt) const {
             continue;
         }
         CRect rc(Items[i].ItemRect);
-        if (!m_bHyperLinks && !Items[i].szTip.IsEmpty()) {
+        /*if (!m_bHyperLinks && !Items[i].szTip.IsEmpty()) {
             rc.right = ClientRect.right - 6;
             rc.InflateRect(3, 6);
-        }
+        }*/
 
         if (rc.PtInRect(pt)) {
             return i;
@@ -140,8 +139,23 @@ int CHyperLinkControl::GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font)
     return sz.cx;
 }
 
-int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, HICON hIcon, bool Visible, int Align,
-                                 bool LineBreak) {
+void CHyperLinkControl::createGdiResources() {
+    NormalFont = GetFont();
+    if (BoldFont) {
+        BoldFont.DeleteObject();
+    }
+    BoldFont = GuiTools::MakeFontBold(NormalFont);
+    if (UnderlineFont) {
+        UnderlineFont.DeleteObject();
+    }
+    UnderlineFont = GuiTools::MakeFontUnderLine(NormalFont);
+    if (BoldUnderLineFont) {
+        BoldUnderLineFont.DeleteObject();
+    }
+    BoldUnderLineFont = GuiTools::MakeFontUnderLine(BoldFont);
+}
+
+int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, HICON hIcon, bool Visible, int Align, bool LineBreak) {
     // TODO: This shit should be rewritten from scratch
     RECT ClientRect;
     GetClientRect(&ClientRect);
@@ -157,19 +171,24 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
         item.iconWidth = iconInfo.nWidth;
         item.iconHeight = iconInfo.nHeight;
     }
+
     item.idCommand = idCommand;
     item.Hover = false;
     item.Visible = Visible;
     CClientDC dc(m_hWnd);
 
     int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconSmallWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconSmallHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    const int iconBigWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXICON, dpi);
+    const int iconBigHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYICON, dpi);
 
     auto scaleX = [dpi](int x) {
-        return MulDiv(x, dpi, 96);
+        return MulDiv(x, dpi, USER_DEFAULT_SCREEN_DPI);
     };
 
     auto scaleY = [dpi](int y) {
-        return MulDiv(y, dpi, 96);
+        return MulDiv(y, dpi, USER_DEFAULT_SCREEN_DPI);
     };
 
     SIZE tipDimensions = GetTextDimensions(dc, szTip, NormalFont);
@@ -177,48 +196,55 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     SIZE titleDimensions = GetTextDimensions(dc, szTitle, BoldFont);
     int TitleWidth = std::max<int>(titleDimensions.cx, szTipWidth);
 
+    auto& itemRect = item.ItemRect;
     if (szTip) {
         if (SubItemRightY != -1) {
             BottomY += scaleY(12);
         }
-        item.ItemRect.left = 5;
-        item.ItemRect.top = BottomY;
+        itemRect.left = scaleX(5);
+        itemRect.top = BottomY;
 
-        if (BottomY) {
-            item.ItemRect.top += m_bHyperLinks ? scaleY(15) : scaleY(10);
+        if (BottomY && m_bHyperLinks) {
+            itemRect.top += scaleY(15);
         }
        
-        item.ItemRect.right = scaleX(10) + item.ItemRect.left + item.iconWidth + TitleWidth + 1/*ClientRect.right*/;
-        int height = std::max<int>(tipDimensions.cy + titleDimensions.cy + scaleY(3), item.iconHeight);
-        item.ItemRect.bottom = item.ItemRect.top + height;
+        itemRect.right = scaleX(10) + itemRect.left + iconBigWidth + TitleWidth + 1 /*ClientRect.right*/;
+        int height;
+        if (m_bHyperLinks) {
+            height = std::max<int>(tipDimensions.cy + titleDimensions.cy + scaleY(3), iconBigHeight);
+        } else {
+            height = std::max<int>(tipDimensions.cy, iconBigHeight) + scaleY(VERTICAL_PADDING * 2);
+        }
 
-        BottomY = item.ItemRect.bottom;
+        itemRect.bottom = itemRect.top + height;
+
+        BottomY = itemRect.bottom;
         SubItemRightY = -1;
     } else {
         int TextWidth = GetTextWidth(dc, szTitle, NormalFont);
         if (Align == 2) { // right aligned text
-            SubItemRightY = ClientRect.right - TextWidth - 3 - 35;
+            //SubItemRightY = ClientRect.right - TextWidth - sc;
         } else {
             if (SubItemRightY == -1) {
-                SubItemRightY = 35;
+                SubItemRightY = scaleY(35);
             } else {
                 SubItemRightY += scaleY(20);
             }
         }
         if (LineBreak) {
-            SubItemRightY = 35;
+            SubItemRightY = scaleY(35);
             BottomY += scaleY(20);
         }
         {
-            item.ItemRect.left = SubItemRightY;
-            item.ItemRect.top = BottomY + ((BottomY > 1) ? scaleY(6) : 0);
+            itemRect.left = SubItemRightY;
+            itemRect.top = BottomY + ((BottomY > 1) ? scaleY(6) : 0);
         }
         if (!m_bHyperLinks) {
-            item.ItemRect.top += scaleY(5);
+            itemRect.top += scaleY(5);
         }
-        item.ItemRect.right = 1 + GetTextWidth(dc, szTitle, NormalFont) + scaleX(23) + item.ItemRect.left;
-        item.ItemRect.bottom = item.ItemRect.top + scaleY(20);
-        SubItemRightY += item.ItemRect.right - item.ItemRect.left;
+        itemRect.right = 1 + GetTextWidth(dc, szTitle, NormalFont) + iconSmallWidth + itemRect.left + scaleY(3);
+        itemRect.bottom = itemRect.top + scaleY(20);
+        SubItemRightY += itemRect.right - itemRect.left;
     }
     Items.Add(item);
     return TRUE;
@@ -425,15 +451,8 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 {
     CPaintDC paintDc(m_hWnd);
 
-    int dpiX, dpiY;
-
-    if (DPIHelper::IsPerMonitorDpiV2Supported()) {
-        dpiX = DPIHelper::GetDpiForWindow(m_hWnd);
-        dpiY = dpiX;
-    } else {
-        dpiX = paintDc.GetDeviceCaps(LOGPIXELSX);
-        dpiY = paintDc.GetDeviceCaps(LOGPIXELSY);
-    }
+    int dpiX = DPIHelper::GetDpiForDialog(m_hWnd);
+    int dpiY = dpiX;
 
     auto scaleX = [dpiX](int x) {
         return MulDiv(x, dpiX, 96);
@@ -468,17 +487,18 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
         if(*(item.szTip)) // If we draw "big" item (with tip)
         {
+            CRect itemRect = item.ItemRect;
             RECT TextRect = item.ItemRect;
             
             if(!m_bHyperLinks && isHighlighted)
             {    
                 CRect rec = item.ItemRect;
-                rec.right = rc.right-6;
-                rec.InflateRect(3,6);
+                rec.right = rc.right - scaleX(6);
+                //rec.InflateRect(scaleX(3), scaleX(6));
                 GuiTools::FillRectGradient(dc.m_hDC, rec, 0xEAE2D9, 0xD3C1AF, false);
             }
 
-            TextRect.left += item.iconWidth + scaleX(5);
+            TextRect.left += iconBigWidth + scaleX(5);
             if(!m_bHyperLinks){
                 TextRect.left +=scaleX(20);
                 TextRect.right +=scaleX(20);
@@ -494,11 +514,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             SIZE TextDims;
             GetTextExtentPoint32(dc, item.szTitle, lstrlen(item.szTitle), &TextDims);
 
-            int textY = item.ItemRect.top;
-            if(*item.szTip == _T(' '))
-            {
-                
-                textY += (33-TextDims.cy)/2;
+            int textY = itemRect.top;
+            if(*item.szTip == _T(' ')) {   
+                textY += (itemRect.Height() - TextDims.cy) / 2;
             }
 
             dc.ExtTextOutW(TextRect.left, textY, ETO_CLIPPED, &TextRect, item.szTitle, wcslen(item.szTitle), 0);
@@ -517,8 +535,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             if(m_bHyperLinks){
                 //dc.DrawIconEx(item.ItemRect.left+1, item.ItemRect.top + 2, item.hIcon, 20, 20);
                 dc.DrawIconEx(item.ItemRect.left+1,item.ItemRect.top+2,item.hIcon, iconBigWidth, iconBigHeight);
+            } else {
+                dc.DrawIconEx(item.ItemRect.left + scaleX(15), item.ItemRect.top + (itemRect.Height() - iconBigHeight) / 2, item.hIcon, iconBigWidth, iconBigHeight);
             }
-            else dc.DrawIconEx(item.ItemRect.left+15,item.ItemRect.top+2,item.hIcon, iconBigWidth, iconBigHeight);
             dc.SelectFont(oldFont);
         } // End of drawing "big" item
 
@@ -532,8 +551,11 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             }
 
             dc.DrawIconEx(item.ItemRect.left,item.ItemRect.top+1,item.hIcon, iconSmallWidth, iconSmallHeight);
-                
-            dc.ExtTextOut(item.ItemRect.left+ iconSmallWidth + scaleX(3), item.ItemRect.top+1, ETO_CLIPPED/*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
+
+            CRect textRect = item.ItemRect;
+            textRect.left += iconSmallWidth + scaleX(3);
+            textRect.top += 1;
+            dc.ExtTextOut(textRect.left, textRect.top, ETO_CLIPPED /*|ETO_OPAQUE/**/, &item.ItemRect, item.szTitle, wcslen(item.szTitle), 0);
             dc.SelectFont(oldFont);
         }
         dc.SetTextColor(oldTextColor);
@@ -649,9 +671,7 @@ int CHyperLinkControl::selectedItemIndex() const {
 }
 
 int CHyperLinkControl::desiredHeight() const {
-    CClientDC dc(m_hWnd);
-
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    int dpiY = DPIHelper::GetDpiForDialog(m_hWnd);
 
     auto scaleY = [dpiY](int y) {
         return MulDiv(y, dpiY, USER_DEFAULT_SCREEN_DPI);
@@ -719,4 +739,10 @@ LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam,
         }
     } 
     return retFlags;
+}
+
+LRESULT CHyperLinkControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createGdiResources();
+    CreateDoubleBuffer();
+    return 0;
 }

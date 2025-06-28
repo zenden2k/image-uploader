@@ -579,12 +579,12 @@ void CDefaultUploadEngine::AddQueryPostParams(UploadAction& Action)
 
         if (NewValue == "%filename%") {
             _Post += NewName + " = ** FILE CONTENTS ** \r\n";
-            m_NetworkClient->addQueryParamFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
+            m_NetworkClient->addPostFieldFile(NewName, m_FileName, IuCoreUtils::ExtractFileName(m_displayFileName),
                 IuCoreUtils::GetFileMimeType(m_FileName));
         } else {
             NewValue = ReplaceVars(NewValue);
             _Post += NewName + " = " + NewValue + "\r\n";
-            m_NetworkClient->addQueryParam(NewName, NewValue);
+            m_NetworkClient->addPostField(NewName, NewValue);
         }
     }
 

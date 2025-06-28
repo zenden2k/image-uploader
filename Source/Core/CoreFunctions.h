@@ -7,7 +7,7 @@
 
 namespace CoreFunctions {
 
-void ConfigureProxy(INetworkClient* nm);
+void ConfigureNetworkClient(INetworkClient* nm);
 
 }
 

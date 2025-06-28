@@ -191,8 +191,8 @@ namespace ScriptAPI {
 
     /**
      * Converts text containing a JSON document, into a squirrel type: a table (associative container),
-     * an array or a primitive type
-     *  For example, the original JSON document:
+     * an array or a primitive type.
+     * For example, the original JSON document:
         @code
         {
             "result": {

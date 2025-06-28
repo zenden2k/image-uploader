@@ -10,6 +10,10 @@ class MockINetworkClient : public INetworkClient {
       void(const std::string& name, const std::string& value));
   MOCK_METHOD4(addQueryParamFile,
       void(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType));
+  MOCK_METHOD2(addPostField,
+      void(const std::string& name, const std::string& value));
+  MOCK_METHOD4(addPostFieldFile,
+      void(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType));
   MOCK_METHOD2(addQueryHeader,
       void(const std::string& name, const std::string& value));
   MOCK_METHOD1(setUrl,

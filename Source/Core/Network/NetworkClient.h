@@ -58,9 +58,23 @@ class NetworkClient: public INetworkClient
         ~NetworkClient() override;
 
         /**
+         * \deprecated Since 1.4.3. Misleading name (implies URL query params, but affects POST body).
+         *             Use addPostField() instead.
+         */
+        [[deprecated("Use addPostField() instead")]]
+        void addQueryParam(const std::string& name, const std::string& value) override;
+
+        /**
+         * \deprecated Since 1.4.3. Misleading name (implies URL query params, but affects POST body).
+         *             Use addPostFieldFile() instead.
+         */
+        [[deprecated("Use addPostFieldFile() instead")]]
+        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
+        
+        /**
          * Adds a parameter to the POST request with the name and value
          */
-        void addQueryParam(const std::string& name, const std::string& value) override;
+        void addPostField(const std::string& name, const std::string& value) override;
 
         /**
          * Adds a file parameter to the MULTIPART/DATA POST request. 
@@ -74,7 +88,7 @@ class NetworkClient: public INetworkClient
          * @param contentType is the mime file type, can be an empty string or obtained using the GetFileMimeType function). 
          * The method is similar to the HTML form element - <input type = "file">.
          */
-        void addQueryParamFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
+        void addPostFieldFile(const std::string& name, const std::string& fileName, const std::string& displayName, const std::string& contentType) override;
         
         /**
          * Sets the value of the HTTP request header. To delete a header, pass in an empty string. To set an empty value, pass "\n".
@@ -109,7 +123,7 @@ class NetworkClient: public INetworkClient
         bool doUploadMultipartData() override;
 
         /**
-         * Sending a file or data directly in the body of a POST request
+         * Sending a file or data directly in the body of a PUT request
          * 
         Example 1
         @include networkclient_put.nut
@@ -149,9 +163,7 @@ class NetworkClient: public INetworkClient
          * Returns number of headers in response.
          */
         int responseHeaderCount() override;
-        /*! @cond PRIVATE */
-        void setProgressCallback(const ProgressCallback& func) override;
-        /*! @endcond */
+
         /**
          * Percent ecoding, it necessary when preparing a valid GET request.
          */
@@ -186,16 +198,8 @@ class NetworkClient: public INetworkClient
          * Allows you to manually set the type of request - POST, GET, PUT ...
          */
         void setMethod(const std::string &str) override;
-        /*! @cond PRIVATE */
-        void setProxy(const std::string &host, int port, int type) override;
-        void setProxyUserPassword(const std::string &username, const std::string& password) override;
-        void clearProxy() override;
-        /*! @endcond */
         void setReferer(const std::string &str) override;
         void setOutputFile(const std::string &str) override;
-        /*! @cond PRIVATE */
-        void setUploadBufferSize(int size) override;
-        /*! @endcond */
 
         /**
         Set the byte offset of current chunk, relative to the beginning of the full file.
@@ -203,36 +207,37 @@ class NetworkClient: public INetworkClient
         */
         void setChunkOffset(int64_t offset) override;
 
-		/**
-		@since 1.3.3
-		*/
-        void setMaxUploadSpeed(uint64_t speed) override;
-        void setMaxDownloadSpeed(uint64_t speed) override;
-
 	
         /**
         Sets size of current chunk.
         @since 1.3.0
         */
         void setChunkSize(int64_t size) override;
-        /*! @cond PRIVATE */
-        void setTreatErrorsAsWarnings(bool treat) override;
-        /*! @endcond */
+
         int getCurlResult() override;
-        /*! @cond PRIVATE */
-        CURL* getCurlHandle() override;
-        void setCurlShare(CurlShare* share) override;
-        void setTimeout(uint32_t timeout) override;
-        void setConnectionTimeout(uint32_t connection_timeout) override;
-        /*! @endcond */
 
         /**
          * Enables HTTP error logging.
          */
         void enableResponseCodeChecking(bool enable) override;
-        /*! @cond PRIVATE */
-        void setErrorLogId(const std::string &str) override;
 
+        /*! @cond PRIVATE */
+        void setProgressCallback(const ProgressCallback& func) override;
+        void setProxy(const std::string& host, int port, int type) override;
+        void setProxyUserPassword(const std::string& username, const std::string& password) override;
+        void clearProxy() override;
+        /**
+        @since 1.3.3
+        */
+        void setMaxUploadSpeed(uint64_t speed) override;
+        void setMaxDownloadSpeed(uint64_t speed) override;
+        void setUploadBufferSize(int size) override;
+        CURL* getCurlHandle() override;
+        void setCurlShare(CurlShare* share) override;
+        void setTimeout(uint32_t timeout) override;
+        void setConnectionTimeout(uint32_t connection_timeout) override;
+        void setTreatErrorsAsWarnings(bool treat) override;
+        void setErrorLogId(const std::string &str) override;
         void setLogger(Logger* logger) override;
         void setProxyProvider(std::shared_ptr<ProxyProvider> provider) override;
         void setDebugger(std::shared_ptr<Debugger> debugger) override;

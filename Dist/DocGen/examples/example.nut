@@ -9,7 +9,7 @@ function _PrintError(t, txt) {
 }
 
 // This is the function that performs the upload of the file
-// @param string pathToFile 
+// @param string pathToFile
 // @param UploadParams options
 // @return int - success(1), failure(0)
 
@@ -30,11 +30,11 @@ function UploadFile(pathToFile, options) {
 
     // Parsing HTML with Gumbo-query
     local doc = Document(nm.responseBody());
-    local csrf = doc.find("input[name=csrf]").at(1).attr("value"); 
+    local csrf = doc.find("input[name=csrf]").at(1).attr("value");
     if (csrf == "") {
-        csrf = doc.find("meta[name=csrf]").attr("value"); 
+        csrf = doc.find("meta[name=csrf]").attr("value");
     }
-    
+
     if (csrf == "") {
         WriteLog("error", "[example.com] Cannot obtain CSRF token.");
         return ResultCode.Failure;
@@ -42,9 +42,9 @@ function UploadFile(pathToFile, options) {
 
     nm.setUrl(BASE_URL + "/upload.php?fname=" + nm.urlEncode(task.getDisplayName()));
     nm.addQueryHeader("X-CSRF-token", csrf);
-    nm.addQueryParam("token", apiToken); // Add a POST parameter to the request
-    nm.addQueryParamFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
-    nm.addQueryParam("submit", "Upload file!");
+    nm.addPostField("token", apiToken); // Add a POST parameter to the request
+    nm.addPostFieldFile("file", pathToFile, task.getDisplayName(), GetFileMimeType(pathToFile));
+    nm.addPostField("submit", "Upload file!");
     nm.doUploadMultipartData(); // Make multipart/form-data request
 
     if (nm.responseCode() != 200) {
@@ -92,7 +92,7 @@ function UploadFile(pathToFile, options) {
 
 // Authenticating on remote server (optional function)
 // @var CFolderList list
-// @return int - success(1), failure(0) 
+// @return int - success(1), failure(0)
 function Authenticate() {
     if (ServerParams.getParam("token") != "") {
         return ResultCode.Success;
@@ -102,19 +102,19 @@ function Authenticate() {
     local password = ServerParams.getParam("Password"); // Predefined parameter, no need to define it in GetServerParamList
 
     // Performing request
-    // ... 
+    // ...
     local t = ParseJSON(nm.responseBody());
     if ("access_token" in t) {
         ServerParams.setParam("token", t.access_token);
         return ResultCode.Success;
     }
-    return ResultCode.Failure; 
+    return ResultCode.Failure;
 }
 
 // Optional function:
 // Retrieving folder (album) list from server
 // @var CFolderList list
-// @return int - success(1), failure(0) 
+// @return int - success(1), failure(0)
 function GetFolderList(list) {
     nm.doGet(BASE_URL + "/albums");
     local obj = ParseJSON(nm.responseBody());
@@ -149,8 +149,8 @@ function GetFolderList(list) {
 
     return ResultCode.Failure;
 }
- 
- 
+
+
 // Create an folder or an album (optional function)
 // @var CFolderItem parentAlbum
 // @var CFolderItem album
@@ -187,19 +187,19 @@ function CreateFolder(parentAlbum, album) {
     return ResultCode.Failure;
 }
 
- 
+
 // Modify a folder or an album (update name, description) (optional function)
 // @var CFolderItem album
-// @return int - success(1), failure(0) 
+// @return int - success(1), failure(0)
 //
 function ModifyFolder(album) {
     // TODO: Your code
     return ResultCode.Success;
 }
- 
+
 // A function that returns a list of types of access restrictions to an album: (optional function)
 // private, public, only for friends, etc.
-// @return array 
+// @return array
 function GetFolderAccessTypeList() {
     return ["Private", "Public"];
 }
@@ -213,7 +213,7 @@ function GetServerParamList() {
         striptags = "Strip Tags",
         notify = {
             title = "Email notification on download",
-            type = "boolean" // checkbox 
+            type = "boolean" // checkbox
         },
     }
 }

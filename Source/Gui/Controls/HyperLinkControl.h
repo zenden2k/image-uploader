@@ -22,6 +22,8 @@
 #include "atlheaders.h"
 #include <atlcrack.h>
 
+#include "Gui/Constants.h"
+
 struct HyperLinkControlItem
 {
     ~HyperLinkControlItem() {
@@ -53,6 +55,7 @@ public:
         MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkg)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_SIZE, OnSize)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         MSG_WM_MOUSEMOVE(OnMouseMove)
         MSG_WM_MOUSELEAVE(OnMouseLeave)
         MSG_WM_KILLFOCUS(OnKillFocus)
@@ -85,6 +88,7 @@ public:
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnGetObject(UINT, WPARAM wParam, LPARAM lParam);
     LRESULT OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void Init(COLORREF BkColor=RGB(255,255,255));
     size_t ItemCount() const;
     CString GetItemTitle(size_t item) const;
@@ -110,7 +114,7 @@ protected:
     int hoverItemIndex_;
     bool CursorHand;
     HCURSOR handCursor_, arrowCursor_;
-    CFont NormalFont;
+    CFontHandle NormalFont;
     COLORREF m_BkColor;
     int mouseDownItemIndex_;
     CComPtr<IAccessible> acc_;
@@ -119,6 +123,7 @@ protected:
     CBitmap bmMem_;
     HBITMAP bmpOld_;
     static int GetTextWidth(HDC dc, LPCTSTR Text, HFONT Font);
+    void createGdiResources();
 };
 
 

@@ -79,7 +79,7 @@ TEST_F(NetworkClientTest, Post) {
 
     {
         nc.setUrl(serverAddress_ + "/post");
-        nc.addQueryParam("name", "John");
+        nc.addPostField("name", "John");
         ASSERT_TRUE(nc.doPost(""));
         Json::Value root;
 
@@ -94,7 +94,7 @@ TEST_F(NetworkClientTest, Post) {
         EXPECT_STREQ("Billy", root["hello"].asCString());
 
         nc.setUrl(serverAddress_ + "/empty_post_response");
-        nc.addQueryParam("name", "John");
+        nc.addPostField("name", "John");
         EXPECT_TRUE(nc.doPost(""));
         EXPECT_EQ("", nc.responseBody());
         EXPECT_EQ(204, nc.responseCode());
@@ -134,8 +134,8 @@ TEST_F(NetworkClientTest, Upload) {
     {
         Json::Value root;
         nc.setUrl(serverAddress_ + "/upload_multipart");
-        nc.addQueryParam("name", "Bill");
-        nc.addQueryParamFile("file", resolvePath("webp-supported.webp"), "display_name.webp", "image/webp");
+        nc.addPostField("name", "Bill");
+        nc.addPostFieldFile("file", resolvePath("webp-supported.webp"), "display_name.webp", "image/webp");
         ASSERT_TRUE(nc.doUploadMultipartData());
         EXPECT_EQ(200, nc.responseCode());
         ASSERT_TRUE(reader.parse(nc.responseBody(), root, false));
@@ -166,8 +166,8 @@ TEST_F(NetworkClientTest, UploadUnicodePath) {
     {
         Json::Value root;
         nc.setUrl(serverAddress_ + "/upload_multipart");
-        nc.addQueryParamFile("file", resolvePath(fileName), "test_" + fileName, "");
-        nc.addQueryParam("name", "John");
+        nc.addPostFieldFile("file", resolvePath(fileName), "test_" + fileName, "");
+        nc.addPostField("name", "John");
 
         ASSERT_TRUE(nc.doUploadMultipartData());
         EXPECT_EQ(200, nc.responseCode());

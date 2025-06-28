@@ -117,5 +117,7 @@ namespace GuiTools
 
     HICON GetWindowIcon(HWND hwnd);
     bool DisableDwmAnimations(HWND hwnd, BOOL disable = TRUE);
+
+    bool IsToastImageFormatSupported(const CString& filePath);
 }
 #endif

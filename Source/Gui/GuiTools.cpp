@@ -668,12 +668,29 @@ int LocalizedMessageBox(HWND hWnd, LPCWSTR lpText, LPCWSTR lpCaption, UINT uType
     return MessageBox(hWnd, lpText, lpCaption, uType);
 }
 
-BOOL SetClientRect(HWND hWnd, int x, int y)
-{
-    RECT rect = {0,0,x,y}, rect2;
-    AdjustWindowRectEx(&rect, GetWindowLong(hWnd,GWL_STYLE), GetMenu(hWnd) == NULL, GetWindowLong(hWnd, GWL_EXSTYLE));
-    GetWindowRect(hWnd, &rect2);
-    return MoveWindow(hWnd, rect2.left, rect2.top, rect.right-rect.left,rect.bottom-rect.top, TRUE);
+BOOL SetClientRect(HWND hWnd, int width, int height) {
+    if (!IsWindow(hWnd)) {
+        return FALSE;
+    }
+
+    RECT windowRect;
+    GetWindowRect(hWnd, &windowRect);
+
+    RECT clientRect = { 0, 0, width, height };
+
+    DWORD style = GetWindowLong(hWnd, GWL_STYLE);
+    DWORD exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
+    BOOL hasMenu = (GetMenu(hWnd) != NULL);
+
+
+    if (!AdjustWindowRectEx(&clientRect, style, hasMenu, exStyle)) {
+        return FALSE;
+    }
+
+    int newWidth = clientRect.right - clientRect.left;
+    int newHeight = clientRect.bottom - clientRect.top;
+
+    return SetWindowPos(hWnd, NULL, windowRect.left, windowRect.top, newWidth, newHeight, SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 BOOL IsWindowCloaked(HWND hwnd) {
@@ -915,6 +932,12 @@ bool DisableDwmAnimations(HWND hwnd, BOOL disable) {
         DWMWA_TRANSITIONS_FORCEDISABLED,
         &disable,
         sizeof(disable)));
+}
+
+bool IsToastImageFormatSupported(const CString& filePath) {
+    CString ext = WinUtils::GetFileExt(filePath);
+    ext.MakeLower();
+    return ext == _T("png") || ext == _T("jpg") || ext == _T("jpeg") || ext == _T("bmp") || ext == _T("gif");
 }
 
 }

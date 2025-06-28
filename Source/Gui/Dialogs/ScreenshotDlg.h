@@ -54,6 +54,7 @@ class CScreenshotDlg :
         BEGIN_MSG_MAP(CScreenshotDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
             /*MSG_WM_CTLCOLORDLG(OnCtlColorMsgDlg)
             MSG_WM_CTLCOLORBTN(OnCtlColorMsgDlg)
             MSG_WM_CTLCOLORSTATIC(OnCtlColorMsgDlg)*/
@@ -88,6 +89,7 @@ class CScreenshotDlg :
         // Handlers:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnEnter(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
@@ -99,10 +101,11 @@ class CScreenshotDlg :
         LRESULT OnBnClickedRegionselect(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
         LRESULT OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-
+    private:
+        void fillCommandBox();
         BOOL endDialogOK();
         CBrush m_WhiteBr;
-        CHyperLinkControl CommandBox;
+        CHyperLinkControl commandBox_;
         ScreenCapture::CaptureMode m_CaptureMode;
         CComboBox m_monitorCombobox;
         bool enableLastRegionScreenshot_ = false;

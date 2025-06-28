@@ -243,7 +243,7 @@ LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, H
 
     CScreenCaptureEngine engine;
     engine.captureScreen(false);
-    engine.setMonitorMode(kAllMonitors, NULL);
+    engine.setMonitorMode(kAllMonitors);
     engine.setDelay(settings->ScreenshotSettings.WindowHidingDelay);
 
     std::shared_ptr<Gdiplus::Bitmap> res(engine.capturedBitmap());
@@ -292,7 +292,7 @@ LRESULT CScreenRecordingDlg::OnClickedSelectWindow(WORD wNotifyCode, WORD wID, H
     bool onlyTopWindows = true;
     CScreenCaptureEngine engine;
     engine.setDelay(settings->ScreenshotSettings.WindowHidingDelay);
-    engine.setMonitorMode(kAllMonitors, NULL);
+    engine.setMonitorMode(kAllMonitors);
     engine.captureScreen(false);
     //const auto [monitorMode, monitor] = getSelectedMonitor();
 

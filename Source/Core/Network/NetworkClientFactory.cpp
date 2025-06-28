@@ -25,6 +25,6 @@ limitations under the License.
 
 std::unique_ptr<INetworkClient> NetworkClientFactory::create(){
     std::unique_ptr<INetworkClient> res = std::make_unique<NetworkClient>();
-    CoreFunctions::ConfigureProxy(res.get());
+    CoreFunctions::ConfigureNetworkClient(res.get());
     return res;
 }

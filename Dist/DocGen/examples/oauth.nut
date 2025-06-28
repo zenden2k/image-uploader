@@ -65,10 +65,10 @@ function Authenticate() {
     }
 
     nm.setUrl("https://example.com/common/oauth2/v2.0/token");
-    nm.addQueryParam("code", confirmCode);
-    nm.addQueryParam("client_id", clientId);
-    nm.addQueryParam("redirect_uri", redirectUri);
-    nm.addQueryParam("grant_type", "authorization_code");
+    nm.addPostField("code", confirmCode);
+    nm.addPostField("client_id", clientId);
+    nm.addPostField("redirect_uri", redirectUri);
+    nm.addPostField("grant_type", "authorization_code");
     nm.doPost("");
     if (nm.responseCode() != 200) {
         WriteLog("error", "[example.com] Authentication failed. Response code: " + nm.responseCode());

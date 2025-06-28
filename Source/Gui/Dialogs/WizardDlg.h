@@ -298,7 +298,7 @@ public:
     bool isShowWindowSet() const;
     void beginAddFiles();
     void endAddFiles();
-    void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap);
+    void showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus::Bitmap> resultBitmap, CString imageFilePath);
     bool checkFileFormats(const ServerProfileGroup& imageServer, const ServerProfileGroup& fileServer);
     void showHelpButtonMenu(HWND control);
     bool isScreenRecorderRunning() const;

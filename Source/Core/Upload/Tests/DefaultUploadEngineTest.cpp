@@ -71,18 +71,18 @@ TEST_F(DefaultUploadEngineTest, doUpload)
         //EXPECT_CALL(networkClient, setReferer(action1.Referer));
         EXPECT_CALL(networkClient, doGet(action1.Url));
         EXPECT_CALL(networkClient, responseBody()).Times(AnyNumber());
-        EXPECT_CALL(networkClient, addQueryParam("someparam", "1"));
-        EXPECT_CALL(networkClient, addQueryParamFile("file", constSizeFileName, _, _));
-        EXPECT_CALL(networkClient, addQueryParam("thumbwidth", "160"));
-        EXPECT_CALL(networkClient, addQueryParam("thumbheight", "120"));
-        EXPECT_CALL(networkClient, addQueryParam("rnd", StrNe("")));
-        EXPECT_CALL(networkClient, addQueryParam("th", StrNe("")));
-        EXPECT_CALL(networkClient, addQueryParam("fname", displayName));
-        EXPECT_CALL(networkClient, addQueryParam("fnamenoext", fileNameNoExt));
-        EXPECT_CALL(networkClient, addQueryParam("fileext", fileExt));
-        EXPECT_CALL(networkClient, addQueryParam("createthumb", "1"));
-        EXPECT_CALL(networkClient, addQueryParam("thumbtext", "1"));
-        EXPECT_CALL(networkClient, addQueryParam("serverthumbs", "0"));
+        EXPECT_CALL(networkClient, addPostField("someparam", "1"));
+        EXPECT_CALL(networkClient, addPostFieldFile("file", constSizeFileName, _, _));
+        EXPECT_CALL(networkClient, addPostField("thumbwidth", "160"));
+        EXPECT_CALL(networkClient, addPostField("thumbheight", "120"));
+        EXPECT_CALL(networkClient, addPostField("rnd", StrNe("")));
+        EXPECT_CALL(networkClient, addPostField("th", StrNe("")));
+        EXPECT_CALL(networkClient, addPostField("fname", displayName));
+        EXPECT_CALL(networkClient, addPostField("fnamenoext", fileNameNoExt));
+        EXPECT_CALL(networkClient, addPostField("fileext", fileExt));
+        EXPECT_CALL(networkClient, addPostField("createthumb", "1"));
+        EXPECT_CALL(networkClient, addPostField("thumbtext", "1"));
+        EXPECT_CALL(networkClient, addPostField("serverthumbs", "0"));
 
         EXPECT_CALL(networkClient, doUploadMultipartData());
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("https://example.com/file_with_const_size.png"));
@@ -144,9 +144,9 @@ TEST_F(DefaultUploadEngineTest, login)
     //{
         //testing::InSequence dummy;
         EXPECT_CALL(networkClient, setReferer(action1.Referer)).Times(AtLeast(1));
-        EXPECT_CALL(networkClient, addQueryParam("password", "qwerty"));
-        EXPECT_CALL(networkClient, addQueryParam("login", "username"));
-        EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
+        EXPECT_CALL(networkClient, addPostField("password", "qwerty"));
+        EXPECT_CALL(networkClient, addPostField("login", "username"));
+        EXPECT_CALL(networkClient, addPostField("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true));
         EXPECT_CALL(networkClient, responseBody()).WillOnce(Return("<result>success</result>"));
         EXPECT_CALL(networkClient, setReferer("")).Times(AtLeast(1));
@@ -209,8 +209,8 @@ TEST_F(DefaultUploadEngineTest, shortenUrl)
     EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
     {
         testing::InSequence dummy;
-        EXPECT_CALL(networkClient, addQueryParam("url_second_time", urlToShorten));
-        EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
+        EXPECT_CALL(networkClient, addPostField("url_second_time", urlToShorten));
+        EXPECT_CALL(networkClient, addPostField("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true)); 
     }
 
@@ -280,8 +280,8 @@ TEST_F(DefaultUploadEngineTest, json)
     EXPECT_CALL(networkClient, setUrl("https://example.com/shorten?url=http%3A%2F%2Fexample.com%2Fhello%3Fsomeparam%3D1"));
     {
         testing::InSequence dummy;
-        EXPECT_CALL(networkClient, addQueryParam("url_second_time", urlToShorten));
-        EXPECT_CALL(networkClient, addQueryParam("submit", "1"));
+        EXPECT_CALL(networkClient, addPostField("url_second_time", urlToShorten));
+        EXPECT_CALL(networkClient, addPostField("submit", "1"));
         EXPECT_CALL(networkClient, doPost("")).WillOnce(Return(true));
     }
 

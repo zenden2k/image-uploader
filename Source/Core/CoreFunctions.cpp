@@ -10,7 +10,7 @@
 
 namespace CoreFunctions {
 
-void ConfigureProxy(INetworkClient* nm)
+void ConfigureNetworkClient(INetworkClient* nm)
 {
     auto debugger = ServiceLocator::instance()->networkDebugger();
     nm->setDebugger(debugger);
