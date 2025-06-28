@@ -390,83 +390,45 @@ bool NetworkClient::doUploadMultipartData()
 
     private_init_transfer();
     private_apply_method();
-    std::vector<FILE *> openedFiles;
 
-    struct curl_httppost *formpost=nullptr;
-    struct curl_httppost *lastptr=nullptr;
+    curl_mime* mime = curl_mime_init(curl_handle);
 
-    {
-        std::vector<QueryParam>::iterator it, end = m_QueryParams.end();
+    if (!mime) {
+        return false;
+    }
 
-        for(it=m_QueryParams.begin(); it!=end; ++it)
-        {
-            if(it->isFile)
-            {
-                    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
-                    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
-                                        std::string fileName = it->value;
-                    // Known bug in curl: https://github.com/curl/curl/issues/768
-                    if (/*curFileSize > LONG_MAX*/  true ) {
+    for (const auto& param : m_QueryParams) {
+        curl_mimepart* part = curl_mime_addpart(mime);
+        curl_mime_name(part, param.name.c_str());
 
-                        std::string ansiFileName = UTF8_FILENAME(fileName);
+        if (param.isFile) {
+            curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
+            curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
 
-                        if (it->contentType.empty())
-                            curl_formadd(&formpost,
-                            &lastptr,
-                            CURLFORM_COPYNAME, it->name.c_str(),
-                            CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_FILE, ansiFileName.c_str(),
-                            CURLFORM_END);
-                        else
-                            curl_formadd(&formpost,
-                            &lastptr,
-                            CURLFORM_COPYNAME, it->name.c_str(),
-                            CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_FILE, ansiFileName.c_str(),
-                            CURLFORM_CONTENTTYPE, it->contentType.c_str(),
-                            CURLFORM_END);
-                    } /*else {
-                        if (it->contentType.empty())
-                            curl_formadd(&formpost,
-                            &lastptr,
-                            CURLFORM_COPYNAME, it->name.c_str(),
-                            CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_STREAM, curFile,
-                            CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
-                            CURLFORM_END);
-                        else
-                            curl_formadd(&formpost,
-                            &lastptr,
-                            CURLFORM_COPYNAME, it->name.c_str(),
-                            CURLFORM_FILENAME, it->displayName.c_str(),
-                            CURLFORM_STREAM, curFile,
-                            CURLFORM_CONTENTSLENGTH, static_cast<long>(curFileSize),
-                            CURLFORM_CONTENTTYPE, it->contentType.c_str(),
-                            CURLFORM_END);
-                    } */ 
+            std::string ansiFileName = UTF8_FILENAME(param.value);
+
+            curl_mime_filedata(part, ansiFileName.c_str());
+            curl_mime_filename(part, param.displayName.c_str());
+
+            if (!param.contentType.empty()) {
+                curl_mime_type(part, param.contentType.c_str());
             }
-            else
-            {
-                 curl_formadd(&formpost,
-                        &lastptr,
-                        CURLFORM_COPYNAME, it->name.c_str(),
-                        CURLFORM_COPYCONTENTS, it->value.c_str(),
-                        CURLFORM_END);
-            }
+        } else {
+            curl_mime_data(part, param.value.c_str(), CURL_ZERO_TERMINATED);
         }
     }
 
-    curl_easy_setopt(curl_handle, CURLOPT_HTTPPOST, formpost);
+    curl_easy_setopt(curl_handle, CURLOPT_MIMEPOST, mime);
+
     m_currentActionType = ActionType::atUpload;
     curl_result = curl_easy_perform(curl_handle);
-    closeFileList(openedFiles);
-    curl_formfree(formpost);
+    curl_mime_free(mime);
     return private_on_finish_request();
 }
 
 bool NetworkClient::private_on_finish_request()
 {
-    private_checkResponse();
+    private_check_response();
     cleanupAfter();
     private_parse_headers();
     if (curl_result != CURLE_OK)
@@ -513,8 +475,9 @@ bool NetworkClient::doGet(const std::string &url)
 bool NetworkClient::doPost(const std::string& data)
 {
     private_init_transfer();
-    if(!private_apply_method())
-   curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
+    if (!private_apply_method()) {
+        curl_easy_setopt(curl_handle, CURLOPT_POST, 1L);
+    }
     std::string postData;
     std::vector<QueryParam>::iterator it, end = m_QueryParams.end();
 
@@ -600,7 +563,7 @@ void NetworkClient::private_init_transfer()
     }
 }
 
-void NetworkClient::private_checkResponse()
+void NetworkClient::private_check_response()
 {
     if (!enableResponseCodeChecking_ /* && curl_result == CURLE_OK*/) {
         return;
@@ -669,7 +632,7 @@ std::string NetworkClient::responseHeaderByName(const std::string& name)
             return it->value;
         }
     }
-    return std::string();
+    return {};
 }
 
 int NetworkClient::responseHeaderCount()
@@ -717,8 +680,20 @@ void NetworkClient::cleanupAfter()
     }
     m_OutFileName.clear();
     m_method.clear();
+
+    curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_MIMEPOST, nullptr);
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(-1));
     curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE_LARGE, static_cast<curl_off_t>(-1));
+    curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_UPLOAD, 0L);
+    curl_easy_setopt(curl_handle, CURLOPT_NOBODY, 0L);
+    curl_easy_setopt(curl_handle, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKFUNCTION, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_SEEKDATA, nullptr);
+    curl_easy_setopt(curl_handle, CURLOPT_READDATA, stdin);
 
     m_uploadData.clear();
     m_uploadingFile = nullptr;
@@ -726,8 +701,7 @@ void NetworkClient::cleanupAfter()
     chunkSize_ = -1;
     enableResponseCodeChecking_ = true;
     m_nUploadDataOffset = 0;
-    /*curl_easy_setopt(curl_handle, CURLOPT_READFUNCTION, 0L);
-    curl_easy_setopt(curl_handle, CURLOPT_READDATA, 0L);*/
+
     if(chunk_)
     {
         curl_slist_free_all(chunk_);

@@ -285,8 +285,7 @@ class NetworkClient: public INetworkClient
         void private_cleanup_before();
         bool private_on_finish_request();
         void private_init_transfer();
-        void private_checkResponse();
-       
+        void private_check_response();
         
         public:
         /*! @cond PRIVATE */

@@ -64,6 +64,10 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
     return result;
 }
 
+inline unsigned int HwndToUInt(HWND hwnd) {
+    return static_cast<unsigned int>(reinterpret_cast<DWORD_PTR>(hwnd));
+}
+
 }
 
 CScreenRecordingDlg::CScreenRecordingDlg(ScreenRecordingRuntimeParams params)
@@ -185,7 +189,7 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if (monitorEnumerator_.enumDisplayMonitors(0, 0)) {
         for (const MonitorEnumerator::MonitorInfo& monitor : monitorEnumerator_) {
             CString itemTitle;
-            itemTitle.Format(_T("(%dx%d) %s"), monitor.rect.Width(), monitor.rect.Height(), monitor.deviceName);
+            itemTitle.Format(_T("(%dx%d) %s"), monitor.rect.Width(), monitor.rect.Height(), monitor.deviceName.GetString());
             
             itemIndex = monitorCombobox_.AddString(itemTitle);
             if (itemIndex >= 0) {
@@ -391,7 +395,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
         const CString windowTitle = WinUtils::TrimString(GuiTools::GetWindowText(hwnd), 120);
         HICON ico = GuiTools::GetWindowIcon(hwnd);
         CString itemTitle;
-        itemTitle.Format(_T("[%u] %s"), (uint32_t)hwnd, windowTitle.GetString());
+        itemTitle.Format(_T("[%u] %s"), HwndToUInt(hwnd), windowTitle.GetString());
         MENUITEMINFO mi;
         ZeroMemory(&mi, sizeof(mi));
         mi.cbSize = sizeof(mi);
@@ -434,7 +438,7 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
     if (recordingParams_.selectedWindow) {
         CString text = GuiTools::GetWindowText(recordingParams_.selectedWindow);
         if (text.IsEmpty()) {
-            title.Format(_T("[%d]"), reinterpret_cast<int>(recordingParams_.selectedWindow));
+            title.Format(_T("[%u]"), HwndToUInt(recordingParams_.selectedWindow));
         } else {
             title = WinUtils::TrimString(text, 45);
         }
@@ -454,7 +458,7 @@ void CScreenRecordingDlg::updateRegionSelectButtonTitle() {
 std::pair<ScreenCapture::MonitorMode, HMONITOR> CScreenRecordingDlg::getSelectedMonitor() {
     const int itemIndex = monitorCombobox_.GetCurSel();
     if (itemIndex >= 0) {
-        ScreenCapture::MonitorMode monitorMode = static_cast<MonitorMode>(monitorCombobox_.GetItemData(itemIndex));
+        auto monitorMode = static_cast<MonitorMode>(monitorCombobox_.GetItemData(itemIndex));
 
         HMONITOR monitor {};
         int monitorIndex = -1;

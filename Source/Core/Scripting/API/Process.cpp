@@ -186,12 +186,12 @@ public:
     std::string executable_;
     Sqrat::Array arguments_;
     bool readProcessOutput_;
-    std::optional<bp2::process> process_;
     std::string outputEncoding_;
+    asio::io_context ctx_;
     std::unique_ptr<asio::readable_pipe> output_pipe_;
+    std::optional<bp2::process> process_;
     bool hidden_;
     int exit_code_;
-    asio::io_context ctx_;
 };
 
 Process::Process() {

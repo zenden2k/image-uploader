@@ -381,7 +381,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub"/>
 	</Server>
-	<Server Name="yourfilestore.com" FileHost="1" MaxFileSize="500000000" WebsiteUrl="https://yourfilestore.com">
+	<Server Name="yourfilestore.com" FileHost="1" MaxFileSize="500000000" WebsiteUrl="https://yourfilestore.com" MaxThreads="1">
 		<Actions>
 			<Action Type="get" Url="https://yourfilestore.com/" RegExp="UPLOAD_IDENTIFIER&quot;\s+value=&quot;(.+?)&quot;" AssignVars="UploadId:0;">
 				<RegExp Pattern="xcsrf_token&quot; value=&quot;(.+?)&quot;" AssignVars="XcsrfToken:0"/>
@@ -576,7 +576,7 @@
         </Actions>
         <Result DownloadUrlTemplate="$(FileUrl)" />
     </Server>
-	<Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register">
+	<Server Name="iimg.su" WebsiteUrl="https://iimg.su" RegistrationUrl="https://iimg.su/user/register" MaxThreads="1">
 		<Actions>
 			<Action Type="get" Url="https://iimg.su" RegExp="csrf-token&quot;\s+content=&quot;(.+?)&quot;" AssignVars="Token:0"/>
             <Action Type="upload" Url="https://iimg.su/upload" PostParams="file=%filename%;upload_file=true;_token=$(Token);">
@@ -588,7 +588,7 @@
         </Actions>
         <Result ImageUrlTemplate="$(DirectUrl)" ThumbUrlTemplate="$(ThumbUrl)" DownloadUrlTemplate="$(ViewUrl)" DeleteUrl="$(DeleteUrl)"/>
     </Server>
-	<Server Name="1file.su" FileHost="1" WebsiteUrl="https://1file.su">
+	<Server Name="1file.su" FileHost="1" WebsiteUrl="https://1file.su" MaxThreads="1">
 		<Actions>
 			<Action Type="get" Url="https://1file.su" RegExp="_token&quot;\s+value=&quot;(.+?)&quot;" AssignVars="Token:0"/>
             <Action Type="upload" Url="https://1file.su/upload-file" PostParams="_token=$(Token);files[]=%filename%;">
@@ -730,7 +730,7 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DownloadUrlTemplate="stub"/>
 	</Server>
-		<Server Name="8upload.com" Authorize="1" MaxFileSize="50331648" Plugin="8upload" WebsiteUrl="https://8upload.com/" RegistrationUrl="https://8upload.com/myaccount/registration.php" PasswordLabel="API key">
+		<Server Name="8upload.com" Authorize="1" MaxFileSize="50331648" Plugin="8upload" WebsiteUrl="https://8upload.com/" RegistrationUrl="https://8upload.com/myaccount/registration.php">
 		<SupportedFormats>
 			<FormatGroup MaxFileSize="12582912">
 				<Format MimeType="image/jpeg">*.jpg,*.jpeg</Format>
