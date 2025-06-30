@@ -22,6 +22,7 @@ public:
 
     BEGIN_MSG_MAP(CConnectionSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(IDC_USEPROXYSERVER, BN_CLICKED, OnClickedUseProxy)
@@ -42,6 +43,7 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedUseProxy(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
@@ -51,7 +53,6 @@ public:
     LRESULT OnOpenSystemConnectionSettingsClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     bool apply() override;
     void TranslateUI();
-    void proxyRadioChanged();
 protected:
     CComboBox serverTypeCombo_;
     CButton openSystemConnectionSettingsButton_, useSystemProxy_;
@@ -67,6 +68,9 @@ protected:
         { _T("SOCKS5"), 3 },
         { _T("SOCKS5(DNS)"), 4 },
     };
+
+    void proxyRadioChanged();
+    void createResources();
 };
 
 #endif // IU_GUI_DIALOGS_UPLOADSETTINGSPAGE_H

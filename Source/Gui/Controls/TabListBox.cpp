@@ -20,18 +20,23 @@ limitations under the License.
 
 #include "TabListBox.h"
 
+#include "Gui/Helpers/DPIHelper.h"
+#include "Gui/GuiTools.h"
+
 LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lParam);
     int iItemIndex = lpdis->itemID;
     CDCHandle dc(lpdis->hDC);
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     TCHAR buf[256]=_T("");
     GetText(iItemIndex, buf);
     dc.SetBkMode(TRANSPARENT);
     if(lpdis->itemState & ODS_SELECTED )
     {
         CRect roundedRect(lpdis->rcItem);
-        roundedRect.DeflateRect(3,3);
+        int padding = MulDiv(3, dpi, USER_DEFAULT_SCREEN_DPI);
+        roundedRect.DeflateRect(padding, padding);
         HPEN oldPen = 0;
         CPen pen;
         dc.FillRect(&lpdis->rcItem, COLOR_WINDOW);
@@ -44,7 +49,8 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
             dc.RoundRect(roundedRect, CPoint(2, 2));
         //}
         CRect rc(lpdis->rcItem);
-        rc.DeflateRect(4,4);
+        int padding2 = padding + 1;
+        rc.DeflateRect(padding2, padding2);
 
         COLORREF baseColor = GetSysColor(COLOR_HIGHLIGHT);
 
@@ -106,19 +112,44 @@ LRESULT CTabListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     return 0;
 }
 
-LRESULT CTabListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
-{
+/* LRESULT CTabListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
     CClientDC dc(m_hWnd);
-    int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     int iItemIndex = lpmis->itemID;
     CString buf;
     RECT r = { 0, 0, 0, 0 };
     GetText(iItemIndex, buf);
     dc.DrawText(buf, buf.GetLength(), &r, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE);
-    lpmis->itemHeight = r.bottom - r.top + MulDiv(15, dpiY, USER_DEFAULT_SCREEN_DPI);
+    lpmis->itemHeight = r.bottom - r.top + MulDiv(15, dpi, USER_DEFAULT_SCREEN_DPI);
     bHandled = true;
     return TRUE;
+}*/
+
+LRESULT CTabListBox::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    init();
+    return 0;
 }
 
+void CTabListBox::init() {
+    CClientDC dc(m_hWnd);
+    int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    CString buf;
+    int res = GetText(0, buf);
+    if (res <= 0) {
+        buf = _T("SOMETHING");
+    }
+    RECT r = { 0, 0, 0, 0 };
+    CFont font = GuiTools::GetSystemDialogFont(dpi);
+    HFONT oldFont = dc.SelectFont(font);
+    dc.DrawText(buf, buf.GetLength(), &r, DT_CALCRECT | DT_NOPREFIX | DT_SINGLELINE);
+    dc.SelectFont(oldFont);
+    int height = r.bottom - r.top + MulDiv(15, dpi, USER_DEFAULT_SCREEN_DPI);
+    SetItemHeight(0, height);
+}
 
+BOOL CTabListBox::SubclassWindow(HWND hWnd) {
+    BOOL Result = CWindowImpl<CTabListBox, CListBox, CControlWinTraits>::SubclassWindow(hWnd);
+    init();
+    return Result;
+}

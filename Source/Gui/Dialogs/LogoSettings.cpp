@@ -25,6 +25,7 @@
 #include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CLogoSettings
 CLogoSettings::CLogoSettings()
@@ -102,38 +103,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TextColor.SubclassWindow(GetDlgItem(IDC_SELECTCOLOR));
     StrokeColor.SubclassWindow(GetDlgItem(IDC_STROKECOLOR));
 
-    int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = GetSystemMetrics(SM_CYSMICON);
-    //LoadImage(GetModuleHandle(0),  MAKEINTRESOURCE(IDI_ICONWHITEPAGE), IMAGE_ICON    , 16,16,0);
-    RECT profileRect;
-    ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
-    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
-
-    m_ProfileEditToolbar.Create(m_hWnd, profileRect,_T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
-    // Put the toolbar after placeholder
-    m_ProfileEditToolbar.SetWindowPos(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
-
-    m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
-    m_ProfileEditToolbar.SetButtonStructSize();
-    m_ProfileEditToolbar.SetButtonSize(iconWidth + 1, iconHeight + 1);
-
-    CIcon ico;
-    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONWHITEPAGE), iconWidth, iconHeight);
-
-    CIcon saveIcon;
-    saveIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSAVE), iconWidth, iconHeight);
-    CIcon deleteIcon;
-    deleteIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight);
-
-    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
-    profileEditToolbarImagelist_.AddIcon(ico);
-    profileEditToolbarImagelist_.AddIcon(saveIcon);
-    profileEditToolbarImagelist_.AddIcon(deleteIcon);
-    m_ProfileEditToolbar.SetImageList(profileEditToolbarImagelist_);
-    m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Create Profile"), 0);
-    m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
-    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
-
+    createProfileToolbar();
     CString profileName = U2W(settings->imageServer.getByIndex(0).getImageUploadParams().ImageProfileName);
 
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
@@ -142,6 +112,11 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     ShowParams(profileName);
     UpdateProfileList();
     return 1; 
+}
+
+LRESULT CLogoSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createProfileToolbar();
+    return 0;
 }
 
 LRESULT CLogoSettings::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -381,6 +356,47 @@ void CLogoSettings::ProfileChanged()
         m_ProfileChanged = true;
         UpdateProfileList();
     }
+}
+
+void CLogoSettings::createProfileToolbar() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    RECT profileRect;
+    ::GetWindowRect(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), &profileRect);
+    ScreenToClient(&profileRect);
+
+    if (!m_ProfileEditToolbar) {
+        m_ProfileEditToolbar.Create(m_hWnd, profileRect, _T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/ CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        // Put the toolbar after placeholder
+        m_ProfileEditToolbar.SetWindowPos(GetDlgItem(IDC_PROFILETOOBLARPLACEBUTTON), 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+        m_ProfileEditToolbar.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
+        m_ProfileEditToolbar.SetButtonStructSize();
+    }
+    GuiTools::DeleteAllToolbarButtons(m_ProfileEditToolbar);
+
+    CIcon ico;
+    ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONWHITEPAGE), iconWidth, iconHeight);
+
+    CIcon saveIcon;
+    saveIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSAVE), iconWidth, iconHeight);
+    CIcon deleteIcon;
+    deleteIcon.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEBIG), iconWidth, iconHeight);
+
+    if (profileEditToolbarImagelist_) {
+        m_ProfileEditToolbar.SetImageList(nullptr);
+        profileEditToolbarImagelist_.Destroy();
+    }
+    profileEditToolbarImagelist_.Create(iconWidth, iconHeight, ILC_COLOR32, 0, 6);
+    profileEditToolbarImagelist_.AddIcon(ico);
+    profileEditToolbarImagelist_.AddIcon(saveIcon);
+    profileEditToolbarImagelist_.AddIcon(deleteIcon);
+    m_ProfileEditToolbar.SetImageList(profileEditToolbarImagelist_);
+    m_ProfileEditToolbar.AddButton(IDC_NEWPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 0, TR("Create Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_SAVEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 1, TR("Save Profile"), 0);
+    m_ProfileEditToolbar.AddButton(IDC_DELETEPROFILE, TBSTYLE_BUTTON | BTNS_AUTOSIZE, TBSTATE_ENABLED, 2, TR("Delete Profile"), 0);
 }
 
 LRESULT CLogoSettings::OnProfileEditedNotification(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)

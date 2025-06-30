@@ -122,6 +122,29 @@ LRESULT CDefaultServersSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     return 1;  // Let the system set the focus
 }
  
+LRESULT CDefaultServersSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    CMultiServerSelectorControl* multiSelectors[] = {
+        imageServerSelector_.get(),
+        fileServerSelector_.get(),
+        contextMenuServerSelector_.get(),
+    };
+    
+    CServerSelectorControl* selectors[] = {
+        trayServerSelector_.get(),
+        urlShortenerServerSelector_.get(),
+        temporaryServerSelector_.get()
+    };
+
+    for (auto multiSelector : multiSelectors) {
+        multiSelector->SendMessage(WM_MY_DPICHANGED, wParam);
+    }
+
+    for (auto selector : selectors) {
+        selector->SendMessage(WM_MY_DPICHANGED, wParam);
+    }
+    return 0;
+}
+
 bool CDefaultServersSettings::apply()
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();

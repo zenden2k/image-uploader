@@ -29,6 +29,7 @@
 #include "Core/Upload/ServerProfileGroup.h"
 #include "atlscrl.h"
 #include "Gui/Controls/ServerSelectorControl.h"
+#include "Gui/Constants.h"
 
 constexpr unsigned int IDC_DELETESERVER_FIRST_ID = 14000;
 constexpr unsigned int IDC_DELETESERVER_LAST_ID = 15000;
@@ -43,6 +44,7 @@ public:
     BEGIN_MSG_MAP(CMyPanel)
         COMMAND_RANGE_HANDLER(IDC_DELETESERVER_FIRST_ID, IDC_DELETESERVER_LAST_ID, OnClickedDelete)
         MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
+
         CHAIN_MSG_MAP(CScrollWindowImpl<CMyPanel>)
     END_MSG_MAP()
     void setScrollDimensions(int width, int height);
@@ -68,6 +70,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
     protected:
         BEGIN_MSG_MAP(CServerProfileGroupSelectDialog)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_ADDBUTTON, BN_CLICKED, OnClickedAdd)
@@ -84,6 +87,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         END_DLGRESIZE_MAP()
 
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedAdd(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -99,9 +103,10 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         CIcon deleteIcon_;
         CMyPanel panel_;
         int serverMask_;
-        void addSelector(const ServerProfile& profile, HDC dc);
-        void updateSelectorPos(size_t index, HDC dc);
+        void addSelector(const ServerProfile& profile, int dpi);
+        void updateSelectorPos(size_t index, int dpi);
         void updateScroll();
+        void createResources();
 };
 
 

@@ -29,10 +29,12 @@
 #include "Core/Upload/ServerProfile.h"
 #include "Gui/Controls/IconButton.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Constants.h"
 
 class UploadEngineManager;
-class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>, 
-                          public CSettingsPage    
+class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
+                             public CWinDataExchange<CIntegrationSettings>,   
+                             public CSettingsPage    
 {
     public:
         enum { IDD = IDD_INTEGRATIONSETTINGS };
@@ -54,6 +56,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
         BEGIN_MSG_MAP(CIntegrationSettings)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)    
             COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
             COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
@@ -61,29 +64,38 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
             COMMAND_HANDLER(IDC_UPBUTTON, BN_CLICKED, OnBnClickedUpbutton)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
+
+        BEGIN_DDX_MAP(CIntegrationSettings)
+        DDX_CONTROL_HANDLE(IDC_ADDITEM, addItemButton_)
+        DDX_CONTROL_HANDLE(IDC_DELETEITEM, deleteItemButton_)
+        DDX_CONTROL_HANDLE(IDC_UPBUTTON, upButton_)
+        DDX_CONTROL_HANDLE(IDC_DOWNBUTTON, downButton_)
+        END_DDX_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnShellIntegrationCheckboxChanged(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+        LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
+        LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
         void ShellIntegrationChanged();
+        void createResources();
         ServerProfilesMap serverProfiles_;
         CListBox menuItemsListBox_;
         bool menuItemsChanged_;
-        CIconButton upButton_;
-        CIconButton downButton_;
-        CIconButton addItemButton_;
-        CIconButton deleteItemButton_;
+        CButton upButton_;
+        CButton downButton_;
+        CButton addItemButton_;
+        CButton deleteItemButton_;
         UploadEngineManager *uploadEngineManager_;
-        CIcon icon_, icon2_, icon3_, icon4_;
+        CIcon iconAdd_, iconDelete_, iconUp_, iconDown_;
         CToolTipCtrl toolTipCtrl_;
-public:
-    LRESULT OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedDeleteitem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedDownbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnBnClickedUpbutton(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
-    LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
 };
 
 #endif // IntegrationSettings_H

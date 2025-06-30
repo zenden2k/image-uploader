@@ -119,5 +119,7 @@ namespace GuiTools
     bool DisableDwmAnimations(HWND hwnd, BOOL disable = TRUE);
 
     bool IsToastImageFormatSupported(const CString& filePath);
+
+    void DeleteAllToolbarButtons(CToolBarCtrl& toolbar);
 }
 #endif

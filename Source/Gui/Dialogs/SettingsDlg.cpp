@@ -53,19 +53,9 @@ LRESULT CSettingsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     {
         SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) & WS_EX_APPWINDOW);
     }
+
     m_SettingsPagesListBox.SubclassWindow(GetDlgItem(IDC_SETTINGSPAGESLIST));
-    m_SettingsPagesListBox.AddString(TR("General"));
-    m_SettingsPagesListBox.AddString(TR("Servers"));
-    m_SettingsPagesListBox.AddString(TR("Images"));
-    m_SettingsPagesListBox.AddString(TR("Thumbnails"));
-    m_SettingsPagesListBox.AddString(TR("Screen Capture"));
-    m_SettingsPagesListBox.AddString(TR("Screen Recording"));
-    m_SettingsPagesListBox.AddString(TR("Video"));
-    m_SettingsPagesListBox.AddString(TR("Connection"));
-    m_SettingsPagesListBox.AddString(TR("Uploading"));
-    m_SettingsPagesListBox.AddString(TR("Integration"));
-    m_SettingsPagesListBox.AddString(TR("Tray icon"));
-    m_SettingsPagesListBox.AddString(TR("Hotkeys"));
+    fillListBox();
     // set icons 
 
     hIcon = GuiTools::LoadBigIcon(IDR_MAINFRAME);
@@ -116,6 +106,18 @@ LRESULT CSettingsDlg::OnTimer(UINT, WPARAM, LPARAM, BOOL&)
 {
     GuiTools::ShowDialogItem(m_hWnd, IDC_SAVESTATUSLABEL, false);
     KillTimer(kStatusLabelTimer);
+    return 0;
+}
+
+LRESULT CSettingsDlg::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    m_SettingsPagesListBox.SendMessage(WM_MY_DPICHANGED, wParam);
+    //fillListBox();
+    for (int i = 0; i < SettingsPageCount; i++) {
+        const auto& page = Pages[i];
+        if (page) {
+            ::SendMessage(page->PageWnd, WM_MY_DPICHANGED, wParam, 0);
+        }
+    }
     return 0;
 }
 
@@ -196,6 +198,22 @@ bool CSettingsDlg::apply()  {
         }
     }
     return true;
+}
+
+void CSettingsDlg::fillListBox() {
+    m_SettingsPagesListBox.ResetContent();
+    m_SettingsPagesListBox.AddString(TR("General"));
+    m_SettingsPagesListBox.AddString(TR("Servers"));
+    m_SettingsPagesListBox.AddString(TR("Images"));
+    m_SettingsPagesListBox.AddString(TR("Thumbnails"));
+    m_SettingsPagesListBox.AddString(TR("Screen Capture"));
+    m_SettingsPagesListBox.AddString(TR("Screen Recording"));
+    m_SettingsPagesListBox.AddString(TR("Video"));
+    m_SettingsPagesListBox.AddString(TR("Connection"));
+    m_SettingsPagesListBox.AddString(TR("Uploading"));
+    m_SettingsPagesListBox.AddString(TR("Integration"));
+    m_SettingsPagesListBox.AddString(TR("Tray icon"));
+    m_SettingsPagesListBox.AddString(TR("Hotkeys"));
 }
 
 template<typename T, typename... Args> std::unique_ptr<T> createPageObject(HWND hWnd, RECT& rc, Args&&... args) {

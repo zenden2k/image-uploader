@@ -35,7 +35,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/ServerProfileGroup.h"
 #include "Gui/Controls/DialogIndirect.h"
-
+#include "Gui/Constants.h"
 // CServerSelectorControl
 class IconBitmapUtils;
 class UploadEngineManager;
@@ -58,6 +58,7 @@ virtual ~CServerSelectorControl();
         MESSAGE_HANDLER(WM_MOUSEACTIVATE, OnMouseActivate)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         COMMAND_ID_HANDLER(IDC_EDIT, OnClickedEdit)
         COMMAND_HANDLER(IDC_SERVERCOMBOBOX, CBN_SELCHANGE, OnServerComboSelChange)
         COMMAND_ID_HANDLER(IDC_IMAGEPROCESSINGPARAMS, OnImageProcessingParamsClicked)
@@ -75,6 +76,7 @@ virtual ~CServerSelectorControl();
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedEdit(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnServerComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnAccountClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -112,7 +114,7 @@ private:
     CHyperLink accountLink_;
     CImageListManaged comboBoxImageList_,settingsButtonImageList_;
     CToolBarCtrl settingsButtonToolbar_;
-    CStatic userPictureControl_;
+    CStatic userPictureControl_, folderPictureControl_;
     ServerProfile serverProfile_;
     bool showDefaultServerItem_;
     bool showImageProcessingParams_;
@@ -123,6 +125,7 @@ private:
     void serverChanged();
     void updateInfoLabel();
     void createSettingsButton();
+    void createResources();
     bool defaultServer_;
     std::vector<CString> menuOpenedUserNames_;
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
@@ -138,7 +141,8 @@ private:
     bool showEmptyItem_;
     bool showServerIcons_;
     boost::signals2::scoped_connection profileListChangedConnection_;
-
+    CIcon iconUser_, iconFolder_;
+    void clearServerComboBox();
     void profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers);
 };
 

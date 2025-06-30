@@ -107,15 +107,9 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
     serverGroupboxFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_SERVERGROUPBOX));
     serverComboBox_.Attach( GetDlgItem( IDC_SERVERCOMBOBOX ) );
     userPictureControl_ = GetDlgItem(IDC_USERICON);
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-    CIconHandle iconUser;
-    //iconUser.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
-    iconUser.LoadIcon(MAKEINTRESOURCE(IDI_ICONUSER));
+    folderPictureControl_ = GetDlgItem(IDC_FOLDERICON);
 
-    userPictureControl_.SetIcon(iconUser);
-    userPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER);
-
+    createResources();
     updateServerList();
 
     return FALSE;  
@@ -123,14 +117,17 @@ LRESULT CServerSelectorControl::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lP
 
 LRESULT CServerSelectorControl::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int count = serverComboBox_.GetCount();
-    for (int i = 0; i < count; i++) {
-        char * data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
-        if (data && *data != '<') {
-            delete[] data;
-        } 
-    }
+    clearServerComboBox();
 
+    return 0;
+}
+
+LRESULT CServerSelectorControl::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createSettingsButton();
+    createResources();
+
+    // Not working:
+    //updateServerList(); 
     return 0;
 }
 
@@ -390,7 +387,8 @@ void CServerSelectorControl::updateServerList()
 {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto iconCache = ServiceLocator::instance()->serverIconCache();
-    serverComboBox_.ResetContent();
+    serverComboBox_.SetImageList(nullptr);
+    clearServerComboBox();
     comboBoxImageList_.Destroy();
     if (showServerIcons_) {
         DWORD rtlStyle = ServiceLocator::instance()->translator()->isRTL() ? ILC_MIRROR | ILC_PERITEMMIRROR : 0;
@@ -658,24 +656,65 @@ LRESULT CServerSelectorControl::OnMouseActivate(UINT uMsg, WPARAM wParam, LPARAM
 }
 
 void CServerSelectorControl::createSettingsButton() {
-    int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     CIcon ico;
     ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGS), iconWidth, iconHeight);
     RECT profileRect;
     ::GetWindowRect(GetDlgItem(IDC_SETTINGSBUTTONPLACEHOLDER), &profileRect);
-    ::MapWindowPoints(0, m_hWnd, reinterpret_cast<LPPOINT>(&profileRect), 2);
+    ScreenToClient(&profileRect);
 
 
-    settingsButtonToolbar_.Create(m_hWnd,profileRect,_T(""), WS_CHILD|WS_VISIBLE|WS_CHILD | WS_TABSTOP | TBSTYLE_LIST |TBSTYLE_FLAT| CCS_NORESIZE|CCS_RIGHT|/*CCS_BOTTOM |CCS_ADJUSTABLE|*/TBSTYLE_TOOLTIPS|CCS_NODIVIDER|TBSTYLE_AUTOSIZE  );
-    settingsButtonToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
-    settingsButtonToolbar_.SetButtonStructSize();
-    settingsButtonToolbar_.SetButtonSize(iconWidth+1, iconWidth+1);
+    if (!settingsButtonToolbar_) {
+        settingsButtonToolbar_.Create(m_hWnd, profileRect, _T(""), WS_CHILD | WS_VISIBLE | WS_CHILD | WS_TABSTOP | TBSTYLE_LIST | TBSTYLE_FLAT | CCS_NORESIZE | CCS_RIGHT | /*CCS_BOTTOM |CCS_ADJUSTABLE|*/ TBSTYLE_TOOLTIPS | CCS_NODIVIDER | TBSTYLE_AUTOSIZE);
+        settingsButtonToolbar_.SetExtendedStyle(TBSTYLE_EX_MIXEDBUTTONS);
+        settingsButtonToolbar_.SetButtonStructSize();
+        //settingsButtonToolbar_.SetButtonSize(iconWidth + 1, iconWidth + 1);
+    }
+    GuiTools::DeleteAllToolbarButtons(settingsButtonToolbar_);
 
+    if (settingsButtonImageList_) {
+        settingsButtonToolbar_.SetImageList(nullptr);
+        settingsButtonImageList_.Destroy();
+    }
     settingsButtonImageList_.Create(iconWidth, iconWidth, ILC_COLOR32, 0, 6);
     settingsButtonImageList_.AddIcon(ico);
     settingsButtonToolbar_.SetImageList(settingsButtonImageList_);
     settingsButtonToolbar_.AddButton(IDC_EDIT, TBSTYLE_BUTTON |BTNS_AUTOSIZE, TBSTATE_ENABLED, 0,TR("Server and authentication settings"), 0);
+}
+
+void CServerSelectorControl::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconUser_) {
+        iconUser_.DestroyIcon();
+    }
+    iconUser_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUSER), iconWidth, iconHeight);
+
+    userPictureControl_.SetIcon(iconUser_);
+    userPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+    if (iconFolder_) {
+        iconFolder_.DestroyIcon();
+    }
+    iconFolder_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
+
+    folderPictureControl_.SetIcon(iconFolder_);
+    folderPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+void CServerSelectorControl::clearServerComboBox() {
+    int count = serverComboBox_.GetCount();
+    for (int i = 0; i < count; i++) {
+        char* data = static_cast<char*>(serverComboBox_.GetItemDataPtr(i));
+        if (data && *data != '<') {
+            delete[] data;
+        }
+    }
+    serverComboBox_.ResetContent();
 }
 
 void CServerSelectorControl::profileListChanged(BasicSettings* settings, const std::vector<std::string>& affectedServers) {

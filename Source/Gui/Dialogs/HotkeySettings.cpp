@@ -24,6 +24,7 @@
 #include "HotkeyEditor.h"
 #include "Gui/GuiTools.h"
 #include "Gui/Dialogs/ScreenRecorderWindow.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CHotkeySettingsPage
 CHotkeySettingsPage::CHotkeySettingsPage()
@@ -45,13 +46,8 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     m_HotkeyList.AddColumn(TR("Action"),0);
     m_HotkeyList.AddColumn(TR("Local"),1);
     m_HotkeyList.AddColumn(TR("Global"),2);
-    CClientDC hdc(m_hWnd);
-    float dpiScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
-    //float dpiScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
-    m_HotkeyList.SetColumnWidth(0, static_cast<int>(175 * dpiScaleX));
-    m_HotkeyList.SetColumnWidth(1, static_cast<int>(82 * dpiScaleX));
-    m_HotkeyList.SetColumnWidth(2, static_cast<int>(82 * dpiScaleX));
     m_HotkeyList.SetExtendedListViewStyle(LVS_EX_FULLROWSELECT);
+    initListView();
     hotkeyList = settings->Hotkeys;
 
     for(int i=0; i < int(hotkeyList.size())-1; i++)
@@ -61,6 +57,11 @@ LRESULT CHotkeySettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         m_HotkeyList.AddItem(i, 2, hotkeyList[i+1].globalKey.toString());
     }
     return 1;  // Let the system set the focus
+}
+
+LRESULT CHotkeySettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    initListView();
+    return 0;
 }
 
 LRESULT CHotkeySettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -106,6 +107,13 @@ void CHotkeySettingsPage::EditHotkey(int index)
         m_HotkeyList.AddItem(index,1,hotKeyDlg.m_data.localKey.toString());
         m_HotkeyList.AddItem(index,2,hotKeyDlg.m_data.globalKey.toString());
     }
+}
+
+void CHotkeySettingsPage::initListView() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    m_HotkeyList.SetColumnWidth(0, MulDiv(175, dpi, USER_DEFAULT_SCREEN_DPI));
+    m_HotkeyList.SetColumnWidth(1, MulDiv(82, dpi, USER_DEFAULT_SCREEN_DPI));
+    m_HotkeyList.SetColumnWidth(2, MulDiv(82, dpi, USER_DEFAULT_SCREEN_DPI));
 }
 
 LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)

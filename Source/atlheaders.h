@@ -35,6 +35,7 @@
 #include <atlcrack.h>
 #include "atlctrlx.h"
 #include "Core/CommonDefs.h"
+#include "Gui/Constants.h"
 
 typedef CAtlArray<CString> CStringList;
 #ifndef IU_SHELLEXT

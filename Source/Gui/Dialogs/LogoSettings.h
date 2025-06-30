@@ -29,6 +29,7 @@
 #include "SettingsPage.h"
 #include "3rdpart/ColorButton.h"
 #include "Core/Images/ImageConverter.h"
+#include "Gui/Constants.h"
 
 constexpr int IDC_NEWPROFILE = 10001;
 constexpr int IDC_SAVEPROFILE = 10002;
@@ -37,15 +38,16 @@ constexpr int IDC_DELETEPROFILE = 10003;
 class CLogoSettings : 
     public CDialogImpl<CLogoSettings>, public CSettingsPage    
 {
-public:
-    CLogoSettings();
-    ~CLogoSettings() override;
-    enum { IDD = IDD_LOGOSETTINGS };
+    public:
+        CLogoSettings();
+        ~CLogoSettings() override;
+        enum { IDD = IDD_LOGOSETTINGS };
 
-    BEGIN_MSG_MAP(CLogoSettings)
-        MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-        COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
+        BEGIN_MSG_MAP(CLogoSettings)
+            MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
+            COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_LOGOBROWSE, BN_CLICKED, OnBnClickedLogobrowse)
             COMMAND_HANDLER(IDC_SELECTFONT, BN_CLICKED, OnBnClickedSelectfont)
             COMMAND_HANDLER(IDC_THUMBFONT, BN_CLICKED, OnBnClickedThumbfont)
@@ -76,6 +78,7 @@ protected:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     CMyImage img;
@@ -106,6 +109,7 @@ protected:
     CString CurrentProfileName;
     LRESULT OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void ProfileChanged();
+    void createProfileToolbar();
     bool m_CatchChanges;
     bool m_ProfileChanged;
     CComboBox profileCombobox_;

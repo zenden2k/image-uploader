@@ -4,6 +4,7 @@
 #define IU_GUI_CONTROLS_TABLISTBOX_H
 
 #include "atlheaders.h"
+#include "Gui/Constants.h"
 #pragma once
 
 // CTabListBox
@@ -17,7 +18,8 @@ public:
     
     BEGIN_MSG_MAP(CTabListBox)
         MESSAGE_HANDLER(OCM_DRAWITEM, OnDrawitem)
-        MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem)
+        //MESSAGE_HANDLER(OCM_MEASUREITEM, OnMeasureItem)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
     END_MSG_MAP()
 
     // Handler prototypes:
@@ -25,7 +27,12 @@ public:
     //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
     LRESULT OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);  
+    //LRESULT OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    BOOL SubclassWindow(HWND hWnd);
+
+private:
+    void init();
 };
 
 

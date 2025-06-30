@@ -1133,28 +1133,12 @@ void CColorButton::SetPickerWindowSize ()
     CRect rectScreen (CPoint (0, 0), CPoint (
         ::GetSystemMetrics (SM_CXSCREEN),
         ::GetSystemMetrics (SM_CYSCREEN)));
-#if 0
-    //#if (WINVER >= 0x0500)
-    HMODULE hUser32 = ::GetModuleHandleA ("USER32.DLL");
-    if (hUser32 != NULL)
-    {
-        typedef HMONITOR (WINAPI *FN_MonitorFromWindow) (HWND hWnd, DWORD dwFlags);
-        typedef BOOL (WINAPI *FN_GetMonitorInfo) (HMONITOR hMonitor, LPMONITORINFO lpmi);
-        FN_MonitorFromWindow pfnMonitorFromWindow = (FN_MonitorFromWindow)
-            ::GetProcAddress (hUser32, "MonitorFromWindow");
-        FN_GetMonitorInfo pfnGetMonitorInfo = (FN_GetMonitorInfo)
-            ::GetProcAddress (hUser32, "GetMonitorInfoA");
-        if (pfnMonitorFromWindow != NULL && pfnGetMonitorInfo != NULL)
-        {
-            MONITORINFO mi;
-            HMONITOR hMonitor = pfnMonitorFromWindow (m_hWnd, 
-                MONITOR_DEFAULTTONEAREST);
-            mi .cbSize = sizeof (mi);
-            pfnGetMonitorInfo (hMonitor, &mi);
-            rectScreen = mi .rcWork;
-        }
-    }
-#endif
+
+    MONITORINFO mi;
+    HMONITOR hMonitor = MonitorFromWindow(m_hWnd, MONITOR_DEFAULTTONEAREST);
+    mi.cbSize = sizeof(mi);
+    GetMonitorInfo(hMonitor, &mi);
+    rectScreen = mi.rcWork;
 
     //
     // Need to check it'll fit on screen: Too far right?

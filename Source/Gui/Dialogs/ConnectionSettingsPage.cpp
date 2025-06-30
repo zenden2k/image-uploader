@@ -6,6 +6,7 @@
 #include "Func/WinUtils.h"
 #include "Gui/Components/MyFileDialog.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CConnectionSettingsPage
 CConnectionSettingsPage::CConnectionSettingsPage()
@@ -58,9 +59,6 @@ LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     SendDlgItemMessage(IDC_USESYSTEMPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kSystemProxy)?TRUE:FALSE);
     SendDlgItemMessage(IDC_NOPROXY, BM_SETCHECK, (WPARAM)(Settings.ConnectionSettings.UseProxy == ConnectionSettingsStruct::kNoProxy)?TRUE:FALSE);
 
-    int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = GetSystemMetrics(SM_CYSMICON);
-
     SIZE radioButtonSize_{};
 
     // Auto-size useSystemProxy_ radio button, then move openSystemConnectionSettingsButton_
@@ -81,7 +79,7 @@ LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
         }
     }
 
-    externalLink_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEXTERNALLINK), iconWidth, iconHeight);
+    createResources();
     openSystemConnectionSettingsButton_.SetIcon(externalLink_);
 
     // Creating tooltip control. We will use subclassing of controls to intercept their messages
@@ -106,6 +104,12 @@ LRESULT CConnectionSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM l
     SetDlgItemInt(IDC_UPLOADSPEEDLIMITEDIT, Settings.MaxUploadSpeed);
 	
     return 1;  // Let the system set the focus
+}
+
+LRESULT CConnectionSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
+    openSystemConnectionSettingsButton_.SetIcon(externalLink_);
+    return 0;
 }
 
 LRESULT CConnectionSettingsPage::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -198,6 +202,16 @@ void CConnectionSettingsPage::proxyRadioChanged() {
     if (Checked) {
         OnClickedUseProxyAuth(BN_CLICKED, IDC_NEEDSAUTH, nullptr, bHandled);
     }
+}
+
+void CConnectionSettingsPage::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+    if (externalLink_) {
+        externalLink_.DestroyIcon();
+    }
+    externalLink_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONEXTERNALLINK), iconWidth, iconHeight);
 }
 
 void CConnectionSettingsPage::CheckBounds(int controlId, int minValue, int maxValue, int labelId) const {

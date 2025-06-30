@@ -50,6 +50,7 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
             NOTIFY_HANDLER(IDC_TABCONTROL, TCN_SELCHANGE, OnTabChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
@@ -65,6 +66,7 @@ class CSettingsDlg : public CCustomDialogIndirectImpl<CSettingsDlg>
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnTimer(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnTabChanged(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
@@ -85,6 +87,7 @@ protected:
     UploadEngineManager* uploadEngineManager_;
     CBrush backgroundBrush_;
     CFont saveStatusLabelFont_;
+    void fillListBox();
 };
 
 #endif // IU_CORE_GUI_DIALOGS_SETTINGSDLG_H

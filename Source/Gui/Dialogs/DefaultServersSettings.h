@@ -27,7 +27,8 @@
 #include "atlheaders.h"
 #include "resource.h"       // main symbols
 #include "Gui/Dialogs/settingspage.h"
-#include "Gui/COntrols/ServerSelectorControl.h"
+#include "Gui/Controls/ServerSelectorControl.h"
+#include "Gui/Constants.h"
 class CServerSelectorControl;
 class CMultiServerSelectorControl;
 class UploadEngineManager;
@@ -44,7 +45,7 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
         BEGIN_MSG_MAP(CDefaultServersSettings)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED, OnServerListChanged)
-            
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         END_MSG_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -52,7 +53,8 @@ class CDefaultServersSettings : public CDialogImpl<CDefaultServersSettings>,
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnServerListChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-protected:
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    protected:
     std::unique_ptr<CMultiServerSelectorControl> imageServerSelector_, fileServerSelector_, contextMenuServerSelector_;
     std::unique_ptr<CServerSelectorControl> trayServerSelector_, urlShortenerServerSelector_, temporaryServerSelector_;
     UploadEngineManager* uploadEngineManager_;

@@ -34,6 +34,7 @@
 #define IDM_CLEARALLHOTKEYS (IDM_CLEARHOTKEY + 1)
 
 #include "hotkeyeditor.h"
+#include "Gui/Constants.h"
 
 class CHotkeyItem;
 class CHotkeyList: public std::vector<CHotkeyItem>
@@ -66,6 +67,7 @@ class CHotkeySettingsPage :
          BEGIN_MSG_MAP(CHotkeySettingsPage)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
+            MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)  
             COMMAND_HANDLER(IDC_EDITHOTKEY, BN_CLICKED, OnEditHotkeyBnClicked)
@@ -78,20 +80,22 @@ class CHotkeySettingsPage :
          //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        LRESULT OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnClearHotkey(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnClearAllHotkeys(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+         LRESULT OnHotkeylistNmDblclk(LPNMHDR pnmh);
 
-        LRESULT OnHotkeylistNmDblclk(LPNMHDR pnmh);
-        void EditHotkey(int index);
-
-        CListViewCtrl m_HotkeyList;
-        CHotkeyList hotkeyList;
-        CFont attentionLabelFont_;
+         CListViewCtrl m_HotkeyList;
+         CHotkeyList hotkeyList;
+         CFont attentionLabelFont_;
+     private:
+         void EditHotkey(int index);
+         void initListView();
 };
 
 #endif // HOTKEYSETTINGS_H

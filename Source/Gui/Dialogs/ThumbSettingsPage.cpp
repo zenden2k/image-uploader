@@ -33,6 +33,7 @@
 #include "Core/Images/GdiPlusImage.h"
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 CThumbSettingsPage::CThumbSettingsPage()
 {
@@ -76,18 +77,14 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     CString folder = IuCommonFunctions::GetDataFolder() + _T("\\Thumbnails\\");
     WinUtils::GetFolderFileList(files, folder, _T("*.xml"));
     for (const auto& fileName: files) {
-        thumbsCombo_.AddString(U2W(IuCoreUtils::ExtractFileNameNoExt(W2U(fileName))));
+        thumbsCombo_.AddString(WinUtils::GetOnlyFileName(fileName));
     }
 
-    const int iconWidth = ::GetSystemMetrics(SM_CXSMICON);
-    const int iconHeight = ::GetSystemMetrics(SM_CYSMICON);
-        
-    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
-
+  
     thumbTextMacrosesButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
-    thumbTextMacrosesButton_.SetIcon(iconDropdown_);
-
     thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
+
+    createResources();
 
     SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_SETCHECK, params_.AddImageSize);
     thumbsCombo_.SelectString(-1, U2W(params_.TemplateName));
@@ -107,6 +104,12 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), enableHeight);
     m_CatchFormChanges = true;
     return 1;  // Let the system set the focus
+}
+
+LRESULT CThumbSettingsPage::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
+    showSelectedThumbnailPreview();
+    return 0;
 }
 
 bool CThumbSettingsPage::apply()
@@ -366,6 +369,18 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     return true;
 }
 
+void CThumbSettingsPage::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconDropdown_) {
+        iconDropdown_.DestroyIcon();
+    }
+    iconDropdown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONINFO), iconWidth, iconHeight);
+    thumbTextMacrosesButton_.SetIcon(iconDropdown_);
+}
+
 LRESULT CThumbSettingsPage::OnThumbTextCheckboxClick(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     ThumbTextCheckboxChange();
@@ -378,6 +393,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
     bool bChecked = SendDlgItemMessage(IDC_THUMBTEXTCHECKBOX, BM_GETCHECK) == BST_CHECKED;
     ::EnableWindow(GetDlgItem(IDC_THUMBTEXT), bChecked);
     thumbTextMacrosesButton_.EnableWindow(bChecked);
+    params_.AddImageSize = bChecked;
     params_.AddImageSize = bChecked;
     
 }

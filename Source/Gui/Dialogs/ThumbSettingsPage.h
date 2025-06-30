@@ -31,6 +31,7 @@
 #include "SettingsPage.h"
 #include "3rdpart/ColorButton.h"
 #include "Core/Images/ImageConverter.h"
+#include "Gui/Constants.h"
 
 // CThumbSettingsPage
 
@@ -44,6 +45,7 @@ public:
 
     BEGIN_MSG_MAP(CThumbSettingsPage)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
         COMMAND_HANDLER(IDC_NEWTHUMBNAIL, BN_CLICKED, OnBnClickedNewThumbnail)
         COMMAND_HANDLER(IDC_THUMBSCOMBO, CBN_SELCHANGE, OnThumbComboChanged)
         COMMAND_HANDLER(IDC_EDITTHUMBNAILPRESET, BN_CLICKED, OnEditThumbnailPreset)
@@ -63,6 +65,7 @@ public:
         bool apply() override;
     protected:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         CMyImage img;
         std::string getSelectedThumbnailFileName() const;
@@ -76,6 +79,7 @@ public:
 
         void showSelectedThumbnailPreview();
         bool CreateNewThumbnail();
+        void createResources();
         LRESULT OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND hWndCtl);
         std::unique_ptr<Gdiplus::Bitmap> createSampleImage(int width, int height);
         ThumbCreatingParams params_;

@@ -30,6 +30,7 @@
 #include "Core/ServiceLocator.h"
 #include "Func/MyEngineList.h"
 #include "Core/AbstractServerIconCache.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CIntegrationSettings
 CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineManager)
@@ -41,6 +42,7 @@ CIntegrationSettings::CIntegrationSettings(UploadEngineManager *uploadEngineMana
 LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+    DoDataExchange(FALSE);
     serverProfiles_ = settings->ServerProfiles;
     menuItemsChanged_ = false;
     // Translating controls
@@ -65,28 +67,15 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     
     SendDlgItemMessage(IDC_STARTUPLOADINGFROMSHELL, BM_SETCHECK, settings->QuickUpload);
 
-    int iconWidth = GetSystemMetrics(SM_CXSMICON);
-    int iconHeight = GetSystemMetrics(SM_CYSMICON);
+    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_, TR("Add Item"));
 
-    icon_.LoadIconWithScaleDown( MAKEINTRESOURCE(IDI_ICONADDITEM), iconWidth, iconHeight);
-    SendDlgItemMessage(IDC_ADDITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon_);
-    addItemButton_.SubclassWindow(GetDlgItem(IDC_ADDITEM));
-    toolTipCtrl_ = GuiTools::CreateToolTipForWindow(addItemButton_.m_hWnd, TR("Add Item"));
+    GuiTools::AddToolTip(toolTipCtrl_, deleteItemButton_, TR("Remove Item"));
 
-    icon2_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEITEM), iconWidth, iconHeight);
-    SendDlgItemMessage(IDC_DELETEITEM, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon2_);
-    deleteItemButton_.SubclassWindow(GetDlgItem(IDC_DELETEITEM));
-    GuiTools::AddToolTip(toolTipCtrl_, deleteItemButton_.m_hWnd, TR("Remove Item"));
+    GuiTools::AddToolTip(toolTipCtrl_, upButton_, TR("Move Up"));
 
-    icon3_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUP), iconWidth, iconHeight);
-    SendDlgItemMessage(IDC_UPBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon3_);
-    upButton_.SubclassWindow(GetDlgItem(IDC_UPBUTTON));
-    GuiTools::AddToolTip(toolTipCtrl_, upButton_.m_hWnd, TR("Move Up"));
+    GuiTools::AddToolTip(toolTipCtrl_, downButton_, TR("Move Down"));
 
-    icon4_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDOWN), iconWidth, iconHeight);
-    SendDlgItemMessage(IDC_DOWNBUTTON, BM_SETIMAGE, IMAGE_ICON, (LPARAM)(HICON)icon4_);
-    downButton_.SubclassWindow(GetDlgItem(IDC_DOWNBUTTON));
-    GuiTools::AddToolTip(toolTipCtrl_, downButton_.m_hWnd, TR("Move Down"));
+    createResources();
 
     CRegistry Reg;
     Reg.SetRootKey( HKEY_CURRENT_USER );
@@ -118,6 +107,11 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
     ShellIntegrationChanged();
     
     return 1;  // Let the system set the focus
+}
+
+LRESULT CIntegrationSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
+    return 0;
 }
 
 bool CIntegrationSettings::apply()
@@ -208,6 +202,37 @@ void CIntegrationSettings::ShellIntegrationChanged()
     HWND contextMenuItemsLabel = GetDlgItem(IDC_CONTEXTMENUITEMSLABEL);
     ::EnableWindow(contextMenuItemsLabel, checked);
     GuiTools::EnableNextN(contextMenuItemsLabel, 5, checked);
+}
+
+void CIntegrationSettings::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconAdd_) {
+        iconAdd_.DestroyIcon();
+    }
+    iconAdd_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONADDITEM), iconWidth, iconHeight);
+    addItemButton_.SetIcon(iconAdd_);
+
+    if (iconDelete_) {
+        iconDelete_.DestroyIcon();
+    }
+    iconDelete_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDELETEITEM), iconWidth, iconHeight);
+    
+    deleteItemButton_.SetIcon(iconDelete_);
+
+    if (iconUp_) {
+        iconUp_.DestroyIcon();
+    }
+    iconUp_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONUP), iconWidth, iconHeight);
+    upButton_.SetIcon(iconUp_);
+
+    if (iconDown_) {
+        iconDown_.DestroyIcon();
+    }
+    iconDown_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONDOWN), iconWidth, iconHeight);
+    downButton_.SetIcon(iconDown_);
 }
 
 LRESULT CIntegrationSettings::OnBnClickedAdditem(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

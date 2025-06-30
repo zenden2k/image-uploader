@@ -940,4 +940,12 @@ bool IsToastImageFormatSupported(const CString& filePath) {
     return ext == _T("png") || ext == _T("jpg") || ext == _T("jpeg") || ext == _T("bmp") || ext == _T("gif");
 }
 
+void DeleteAllToolbarButtons(CToolBarCtrl& toolbar) {
+    int buttonCount = toolbar.GetButtonCount();
+
+    for (int i = buttonCount - 1; i >= 0; i--) {
+        toolbar.DeleteButton(i);
+    }
+}
+
 }
