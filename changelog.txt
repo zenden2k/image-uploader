@@ -2,6 +2,22 @@
 #
 # https://svistunov.dev/imageuploader
 
+1.4.3.5352 (2025-07-02)
+[+] Added screen recording functionality with two methods - DirectX (Desktop Duplication API) and FFmpeg.
+[+] Added hosting services TeleBox (linkbox.to), take-me-to.space, ranoz.gg, webshare.cz, lobfile.com,
+    imgpx.com, freeimghost.net, radikal.cloud, anonpic.org, fotozavr.ru, imgtr.ee, 
+    thumbsnap.com, 8upload.com, filemail.com
+[+] Added support for video uploads to flickr.com
+[+] Added French translation
+[+] Added "Information about file" item to video file context menu
+[+] Support for screen DPI changes, support for monitors with different DPI
+[~] Disabled application window animations when starting screenshot/screen recording
+[~] Fixed network client error that could cause application crashes
+[~] Fixed issue where the application could add itself to startup without permission
+[~] Fixed upload to pixeldrain.com
+[~] Fixed tray icon balloon notifications not showing
+[~] Updated APIs and documentation
+
 1.4.2.5314 (2025-05-04)
 [+] Screenshot: Added cursor capture
 [+] Added 'Options' dropdown button on the video grabber page
