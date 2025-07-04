@@ -216,15 +216,15 @@ HRESULT Win7JumpList::AddTasksToList(ICustomDestinationList *pcdl)
         }
 
 		if (SUCCEEDED(hr)) {
-			hr = CreateShellLink(L"/func=screenshotdlg", TR("Screenshot..."), IDI_SCREENSHOT, &psl);
-			if (SUCCEEDED(hr)) {
-				hr = poc->AddObject(psl);
-				psl->Release();
-			}
-		}
+            hr = CreateSeparatorLink(&psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
 
 		if (SUCCEEDED(hr)) {
-			hr = CreateSeparatorLink(&psl);
+			hr = CreateShellLink(L"/func=screenshotdlg", TR("Screenshot..."), IDI_SCREENSHOT, &psl);
 			if (SUCCEEDED(hr)) {
 				hr = poc->AddObject(psl);
 				psl->Release();
@@ -262,6 +262,30 @@ HRESULT Win7JumpList::AddTasksToList(ICustomDestinationList *pcdl)
 				psl->Release();
 			}
 		}
+
+        if (SUCCEEDED(hr)) {
+            hr = CreateShellLink(L"/func=screenrecordingdlg", TR("Screen Recording..."), IDI_ICONRECORD, &psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
+
+        if (SUCCEEDED(hr)) {
+            hr = CreateShellLink(L"/func=screenrecording", TR("Start Recording"), IDI_ICONSTARTRECORD, &psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
+
+		if (SUCCEEDED(hr)) {
+            hr = CreateSeparatorLink(&psl);
+            if (SUCCEEDED(hr)) {
+                hr = poc->AddObject(psl);
+                psl->Release();
+            }
+        }
 
 		if (SUCCEEDED(hr)) {
 			hr = CreateShellLink(L"/func=importvideo", TR("Import Video File"), IDI_GRAB, &psl);

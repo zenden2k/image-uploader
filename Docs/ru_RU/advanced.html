@@ -31,28 +31,29 @@
 <p><code>"Image Uploader.exe" [параметры] файл1 файл2 ... папка1 папка2 .. </code></p>
 <p>Поддерживаются следующие параметры:</p>
 <ul>				 	
-				<li><code>/func=addimages</code> — Add Images dialog</li>
-				<li><code>/func=addfiles</code> — Add Files dialog</li>	
-                
-				<li><code>/func=fullscreenshot</code> — capture the entire screen.</li>
-			  	<li><code>/func=windowscreenshot</code> — capture the active window.</li>
-			  	<li><code>/func=windowhandlescreenshot</code> — select and capture any window (top or child)</li>
-				<li><code>/func=topwindowscreenshot</code>(ver >= 1.4.0)  — select and capture a top window</li>
-  			  	<li><code>/func=freeformscreenshot</code> — freeform screen capture</li>
-				<li><code>/func=screenshotdlg</code> — screenshot dialog</li>
-				<li><code>/func=downloadimages</code> — Image Downloader dialog</li>
-				<li><code>/func=addfolder</code> — Add folder dialog</li>
-				<li><code>/func=paste</code> — paste from clipboard</li>
-				<li><code>/func=fromclipboard</code> — paste from clipboard</li>
-				<li><code>/func=settings</code> — settings dialog</li>
-				<li><code>/func=reuploadimages</code> — re-upload images dialog</li>
-				<li><code>/func=shortenurl</code> — URL shortening dialog</li>
-				<li><code>/func=mediainfo</code> — MediaInfo dialog</li>
+				<li><code>/func=addimages</code> — диалог добавления изображений</li>
+				<li><code>/func=addfiles</code> — диалог добавления файлов</li>	
+				<li><code>/func=fullscreenshot</code> — захват всего экрана</li>
+			  	<li><code>/func=windowscreenshot</code> — захват активного окна</li>
+			  	<li><code>/func=windowhandlescreenshot</code> — выбор и захват любого окна (главного или дочернего)</li>
+				<li><code>/func=topwindowscreenshot</code>(ver ≥ 1.4.0)  — выбор и захват главного окна</li>
+  			  	<li><code>/func=freeformscreenshot</code> — захват экрана произвольной формы</li>
+				<li><code>/func=screenshotdlg</code> — диалог создания скриншота</li>
+				<li><code>/func=downloadimages</code> — диалог загрузчика изображений</li>
+				<li><code>/func=addfolder</code> — диалог добавления папки</li>
+				<li><code>/func=paste</code> — вставка из буфера обмена</li>
+				<li><code>/func=fromclipboard</code> — вставка из буфера обмена</li>
+				<li><code>/func=settings</code> — диалог настроек</li>
+				<li><code>/func=reuploadimages</code> — диалог повторной загрузки изображений</li>
+				<li><code>/func=shortenurl</code> — диалог сокращения URL</li>
+				<li><code>/func=mediainfo</code> — диалог информации о медиафайле</li>
+				<li><code>/func=screenrecordingdlg</code> — окно записи экрана</li>
+				<li><code>/func=screenrecording</code> — начать запись экрана</li>
 				<li><code>/quickshot</code> — снимок прямоугольной области</li>
 				<li><code>/quick</code> и <code>/noquick</code> — включение и выключение режима быстрого начала загрузки (пропуск страниц мастера)</li>
 				<li><code>/mediainfo</code> — показ технической информации для первого видео файла в командной строке</li>
-				<li><code>/imageeditor</code> — open file in the image editor (version >= 1.3.1.4276)</li> 
-				<li><code>/upload</code> (>= v.1.3.2) — нужно включить эту опцию, чтобы "аплодить" первый видеофайл, а не извлекать кадры из него.</li>	
+				<li><code>/imageeditor</code> — открыть файл в редакторе изображений (version ≥ 1.3.1.4276)</li> 
+				<li><code>/upload</code> (≥ v.1.3.2) — нужно включить эту опцию, чтобы "аплодить" первый видеофайл, а не извлекать кадры из него.</li>	
 				<li><code>/fromcontextmenu</code> — при использовании этой опции будет использоваться "Сервер для загрузки из контекстного меню проводника"</li>	
 				<li><code>/serverprofile=<i>&lt;ServerProfileId&gt;</i></code> — использование профиля настроек при загрузке, имеющего соответствующий идентификатор. Нужный идентификатор можно найти в файле settings.xml,
                 в узле "ServerProfiles", имя атрибута "ServerProfileId". В профиль настроек входят: название сервера, имя пользователя, удаленный каталог (папка, альбом),
@@ -60,8 +61,8 @@
                 Данная опция командной строки предназначена для работы функции "Пользовательские элементы контекстного меню".</li>	
                 <li><code>/tray</code> — запуск программы в свернутом режиме (если включена опция "Показывать значок в трее")</li>
                 <li><code>/uninstall</code> — удаление всех записей программы в системном реестре</li>
-                <li><code>/debuglog</code> (ver >= 1.3.2) — показать лог ошибок при запуске</li>	
-				<li><code>/serverschecker</code> — (ver >= 1.4.0) запуск инструмента проверки работоспособности серверов</li>
+                <li><code>/debuglog</code> (ver ≥ 1.3.2) — показать лог ошибок при запуске</li>	
+				<li><code>/serverschecker</code> — (ver ≥ 1.4.0) запуск инструмента проверки работоспособности серверов</li>
 </ul>
 <div style="display: none">
 <h2 id="servers">Добавление и редактирование серверов</h2> 
@@ -116,44 +117,44 @@
 		<i>1</i> — сервер поддерживает авторизацию, <i>2</i> — авторизация обязательна.</li>
 	<li><code>FileHost</code> —   указывает на то, что сервер является хостингом для любых типов файлов (не только изображений). 
 		<br />Значения:  <i>0</i> (по умолчанию) — хостинг картинок (эквивалентен <code>Type="image"</code>), <i>1</i> — файловый хостинг (эквивалентен <code>Type="file"</code>) .</li>  
-	<li><code>Type</code> —  (ver >= 1.2.8 ) тип сервера. Если задан, то атрибут <code>FileHost</code> игнорируется.
+	<li><code>Type</code> —  (ver ≥ 1.2.8 ) тип сервера. Если задан, то атрибут <code>FileHost</code> игнорируется.
 		<br />Значения:  <i>image</i> (по умолчанию) — хостинг картинок, <i>file</i> — файловый хостинг (при этом <code>FileHost="1"</code> тоже обязательно нужно указывать),
 		<i>urlshortening</i> — сервис сокращения ссылок (для них вместо xml-узла <code>&lt;Server&gt;</code> следует использовать  <code>&lt;Server2&gt;</code>).<br>
 		<i>searchbyimage</i> — серис обратного поиска по изображению
 	</li>
-	<li><code>Types</code> - (ver >= 1.3.2 )  
+	<li><code>Types</code> - (ver ≥ 1.3.2 )  
 		<br>Список типов через пробел, например <code>file image urlshortening</code>
-	<li><code>NeedPassword</code> — (ver >= 1.2.9 build 4186) нужен ли пароль для авторизации. Необходимо для серверов с авторизацией через OAuth 2.0. <br />Значения:  <i>1</i> (по умолчанию) — нужен,
+	<li><code>NeedPassword</code> — (ver ≥ 1.2.9 build 4186) нужен ли пароль для авторизации. Необходимо для серверов с авторизацией через OAuth 2.0. <br />Значения:  <i>1</i> (по умолчанию) — нужен,
 		<i>0</i> - не нужен (поле ввода пароля будет не активно)</li>
 	<li><code>Debug</code>  — параметр, предназначенный для тестирования и отладки загрузки на данный сервер. 
 		При значении <i>1</i> любая загрузка на данный сервер в программе будет сопровождаться отображением информации 
 		об отправляемых запросах и принимаемых данных.</li>	
 	<li><code>MaxFileSize</code> — максимальный размер загружаемого файла, поддерживаемого сервером. Значение 
 		указывается в байтах. Значение по умолчанию — 0, что означает, что файл может быть какого угодно размера.</li>
-	<li><code>MinVersion</code> — (ver >= 1.3.1 ) Минимальная версия программы, поддерживаемая данным сервером. Следует использовать, 
+	<li><code>MinVersion</code> — (ver ≥ 1.3.1 ) Минимальная версия программы, поддерживаемая данным сервером. Следует использовать, 
               если вы используете возможности, отсутствующие в старых версиях программы. Атрибут должен иметь формат <code>x.x.x</code> или <code>x.x.x.xxxx</code>. При этом вместо узла <code>&lt;Server&gt;</code> следует использовать <code>&lt;Server3&gt;</code>.</li>
 	<li><code>Plugin</code> — содержит название файла плагина (без расширения .nut), отвечающего за загрузку на этот сервер. 
 		Скрипт должен быть расположен в каталоге Data\Scripts, и иметь расширение <code>.nut</code>. Если данный атрибут 
 		не пустой, весь узел &lt;Actions&gt; игнорируется, и всё взаимодействие с серверами перекладывается на 
 		скрипт. Однако, узел Actions всё равно может быть задан, для обратной совместимости с версиями программы 
 		&lt; 1.2.5.<br />  <a href="#scripts">Подробнее о создании плагинов...</a></li>
-	<li><code>Engine</code> — (ver >= 1.3.2 build 4551) название встроенного движка загрузки. Чтобы использовался стандартный движок, нужно оставить
+	<li><code>Engine</code> — (ver ≥ 1.3.2 build 4551) название встроенного движка загрузки. Чтобы использовался стандартный движок, нужно оставить
 поле пустым. Другие возможные значения: "MegaNz".
 	<li><code>SupportsFolders</code> — поддержка альбомов скриптом загрузки. Используется вместе с атрибутом <i>Plugin</i>.</li>
-	<li><code>WebsiteUrl</code>  — (ver >= 1.4.1 ) адрес веб-сайта.
+	<li><code>WebsiteUrl</code>  — (ver ≥ 1.4.1 ) адрес веб-сайта.
 	<li><code>RegistrationUrl</code>  — адрес, по которому можно зарегистрироваться на данном сервере.
-	<li><code>LoginLabel</code> — (ver >= 1.3.2.4616 ) — надпись перед полем ввода логина (это может быть "E-mail", "Login" и т.п.). Если текст будет слишком длинным, он не будет полностью отображен.
-    <li><code>PasswordLabel</code> — (ver >= 1.3.2.4616 ) — надпись перед полем ввода пароля (это может быть "Password", "API Key" и т.п.). Если текст будет слишком длинным, он не будет полностью отображен.
-    <li><code>UserAgent</code> — (ver >= 1.3.2.4432 ) — custom http header "User-Agent"
-    <li><code>MaxThreads</code> — (ver >= 1.3.2 ) — ограничение количества одновременных соединений (потоков) к этому серверу. 
+	<li><code>LoginLabel</code> — (ver ≥ 1.3.2.4616 ) — надпись перед полем ввода логина (это может быть "E-mail", "Login" и т.п.). Если текст будет слишком длинным, он не будет полностью отображен.
+    <li><code>PasswordLabel</code> — (ver ≥ 1.3.2.4616 ) — надпись перед полем ввода пароля (это может быть "Password", "API Key" и т.п.). Если текст будет слишком длинным, он не будет полностью отображен.
+    <li><code>UserAgent</code> — (ver ≥ 1.3.2.4432 ) — custom http header "User-Agent"
+    <li><code>MaxThreads</code> — (ver ≥ 1.3.2 ) — ограничение количества одновременных соединений (потоков) к этому серверу. 
     Этот ограничивающий параметр введен по двум причинам:
     Во-первых, некоторые серверы ограничивают и блокируют параллельные запросы к ним. Во-вторых, чтобы сохранить порядок изображений в альбоме (при MaxThreads=1).
     По-умолчанию, количество потоков не ограничено.
-    <li><code>DefaultForTypes</code> - (ver >= 1.3.3 )  
+    <li><code>DefaultForTypes</code> - (ver ≥ 1.3.3 )  
 	<br>Список типов серверов через пробел, например <code>file image</code>, для которых этот сервер является сервером по-умолчанию. 
     Если в файле servers.xml встречается несколько серверов с атрибутом DefaultForTypes и типы пересекаются, в качестве сервера по-умолчанию будет использоваться тот, что встречается в файле позже.
     </li>
-	<li><code>UploadToTempServer</code> (ver >= 1.4.1 ) — указывает, нужно ли загружать изображение на промежуточный сервер (актуально только для сервисов поиска по изображению). Эта опция может использоваться, если сервис поиска не поддерживает поиск по загруженному файлу. </li>
+	<li><code>UploadToTempServer</code> (ver ≥ 1.4.1 ) — указывает, нужно ли загружать изображение на промежуточный сервер (актуально только для сервисов поиска по изображению). Эта опция может использоваться, если сервис поиска не поддерживает поиск по загруженному файлу. </li>
 </ul>
 
 <h3 id="servers_supported_formats">Узел SupportedFormats</h3>
@@ -190,7 +191,7 @@
 		<li><i>upload</i> — POST-запрос в формате multipart/form-data. Именно этот тип запроса используется 
 			в большинстве случаев для загрузки файлов.</li>
 		<li><i>put</i> — загрузка файла с помощью HTTP PUT запроса или загрузка на FTP. Поддерживается лишь некоторыми серверами.</li>
-		<li><i>openurl</i> (version >= 1.4.1) — открытие URL в приложении по-умолчанию</li>
+		<li><i>openurl</i> (version ≥ 1.4.1) — открытие URL в приложении по-умолчанию</li>
 	</ul>
 	</li>
 <li><code>PostParams</code> — список параметров, передаваемых серверу по протоколу POST (Type=post или Type=upload), разделенных точкой с запятой.<br />
@@ -210,10 +211,10 @@
 <li><code>Referer</code> — (опциональный параметр) адрес страницы источника запроса. Используется, если сервер ограничивает запросы с чужих сайтов.
  По умолчанию программа устанавливает Referer такой же, как предыдущий адрес.</li>
 <li><code>Description</code> — опциональный параметр, содержащий описание текущего действия. Отображается в окне программы.</li>
-<li><code>CustomHeaders</code> — (ver >= 1.3.2.4432) список дополнительных полей заголовка, разделенных точкой с запятой. 
+<li><code>CustomHeaders</code> — (ver ≥ 1.3.2.4432) список дополнительных полей заголовка, разделенных точкой с запятой. 
 Список должен иметь следующий вид: <code>НазваниеПараметра1:Значение1;НазваниеПараметра2:Значение2;...</code><br />
 To remove default field, pass an empty value.
-<li>Вложенные узлы (version >= 1.3.2)<br> 
+<li>Вложенные узлы (version ≥ 1.3.2)<br> 
 <code>RegExp</code> 
 <pre class="prettyprint">
 &lt;Action Type=&quot;upload&quot; Url=&quot;http://imgur.com/api/upload.xml&quot; PostParams=&quot;image=%filename%;key=2dd16e2e19119996855ae9312b7a1305;&quot; RegExp='&amp;lt;original_image&amp;gt;(.*?)&amp;lt;\/original_image&amp;gt;([\s\S]*?)&amp;lt;small_thumbnail&amp;gt;(.*?)&amp;lt;\/small_thumbnail&amp;gt;' AssignVars=&quot;Image:0;Thumb:2&quot;&gt;
@@ -226,7 +227,7 @@ To remove default field, pass an empty value.
 	<li><code>Required</code>  - генерировать ошибку, если сопоставление регулярному выражению не удалось. (по умолчанию 0)</li>
 	<li><code>Data</code> - в каком тексте производить поиск. Может содержать переменные. (по умолчанию  - текст ответа от сервера)</li>
 </ul>
-<code>Call</code> - вызов функции (version >= 1.4.0) 
+<code>Call</code> - вызов функции (version ≥ 1.4.0) 
 <pre class="prettyprint">
 &lt;Call Function=&quot;json&quot; Arg1=&quot;files[0].url&quot; AssignVars=&quot;DownloadUrl:0;&quot;/&gt;
 </pre>	
@@ -254,8 +255,8 @@ To remove default field, pass an empty value.
 Если не задан, программа будет сама генерировать миниатюры, даже если включена опция "Использовать серверные миниатюры". 
 Генерирование миниатюры будет невозможно, если параметр ImageUrlTemplate не задан или принимает пустое значение. </li>
 <li><code>DownloadUrlTemplate</code> — строка-шаблон для генерации ссылки на страницу просмотра, скачивания и т.п.</li>
-<li><code>DeleteUrl</code> — (ver >= 1.3.2) ссылка для удаления файла</li>
-<li><code>EditUrl</code> — (ver >= 1.3.2) ссылка для редактирования файла</li>
+<li><code>DeleteUrl</code> — (ver ≥ 1.3.2) ссылка для удаления файла</li>
+<li><code>EditUrl</code> — (ver ≥ 1.3.2) ссылка для редактирования файла</li>
 </ul>
 <p>Каждый из этих атрибутов может содержать <a href="#vars">переменные</a>. </p>
 <p>Один из атрибутов — ImageUrlTemplate или DownloadUrlTemplate  — должен быть обязательно задан. Программа использует тот или иной атрибут в зависимости от настроек, и в зависимости от того, какой из атрибутов задан, а какой нет. По-умолчанию предпочтение отдается прямой ссылке.
@@ -272,9 +273,9 @@ To remove default field, pass an empty value.
 <li><code>_FILEEXT</code> — расширение файла.</li>
 <li><code>_THUMBWIDTH</code> — ширина миниатюры.</li>
 <li><code>_THUMBHEIGHT</code> — высота миниатюры.</li>
-<li><code>_THUMBCREATE</code> (ver >= 1.4.2) — создавать миниатюру (0 или 1). </li>
-<li><code>_THUMBADDTEXT</code> (ver >= 1.4.2) — добавлять текст на миниатюру (0 или 1).</li>
-<li><code>_THUMBUSESERVER</code> (ver >= 1.4.2) — использовать серверные миниатюры (0 или 1).</li>
+<li><code>_THUMBCREATE</code> (ver ≥ 1.4.2) — создавать миниатюру (0 или 1). </li>
+<li><code>_THUMBADDTEXT</code> (ver ≥ 1.4.2) — добавлять текст на миниатюру (0 или 1).</li>
+<li><code>_THUMBUSESERVER</code> (ver ≥ 1.4.2) — использовать серверные миниатюры (0 или 1).</li>
 <li><code>_RAND16BITS</code> — случайное число от 0 до 65535. Генерируется только один раз при загрузке каждого файла.</li>
 <li><code>_THREADID</code> — (ver > 1.3.2) идентификатор текущего потока (нити)</li>
 <li><code>_LOGIN</code> — имя пользователя (задана, если пользователь включил авторизацию в настройках)</li>
@@ -298,13 +299,13 @@ To remove default field, pass an empty value.
 полученное из первой подмаски регулярного выражения (например, <code>File=12345</code>). 
 Затем созданная переменная используется в параметре <code>DownloadUrlTemplate="http://slil.ru/$(File)"</code>, который в результате подстановки принимает значение <code>http://slil.ru/12345</code>. 
 Полученную ссылку пользователь видит в окне программы.</p>
-<b>Преобразование переменных с помощью фильтров (version >= 1.2.9)</b>
+<b>Преобразование переменных с помощью фильтров (version ≥ 1.2.9)</b>
 <p>
 Переменные можно преобразовывать при выводе. Пример: <code>$(Переменная|НазваниеФильтра)</code>
 <p>Список фильтров:</p>
 <p>
 <code>urlencode</code> - процентное кодирование. Пример <code>Url="http://example.com?filename=$(_FILENAME|urlencode)"</code><br>
-<code>htmldecode</code> - (version >= 1.3.2) decode HTML entities <br>
+<code>htmldecode</code> - (version ≥ 1.3.2) decode HTML entities <br>
 
 <a name="scripts"></a>
 <h2>Создание скриптов (плагинов)</h2> 

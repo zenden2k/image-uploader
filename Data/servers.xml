@@ -742,6 +742,26 @@
 		</Actions>
 		<Result ImageUrlTemplate="stub" ThumbUrlTemplate="stub" DeleteUrl="stub"/>
 	</Server>
+	<Server Name="savefiles.com" MaxFileSize="21474836480" FileHost="1" Authorize="2" Plugin="savefiles" SupportsFolders="1" WebsiteUrl="https://savefiles.com/" RegistrationUrl="https://savefiles.com/?op=registration" PasswordLabel="API key" MaxThreads="1">
+		<SupportedFormats>
+			<FormatGroup MaxFileSize="21474836480" Authorized="1">
+				<Format MimeType="video/mp4">*.mp4</Format>
+				<Format MimeType="video/x-matroska">*.mkv</Format>
+				<Format MimeType="video/x-msvideo">*.avi</Format>
+				<Format MimeType="video/webm">*.webm</Format>
+				<Format MimeType="video/mp2t">*.ts</Format>
+				<Format MimeType="video/mpeg">*.mpg,*.mpeg</Format>
+				<Format MimeType="video/x-ms-vob">*.vob</Format>
+				<Format MimeType="video/x-flv">*.flv</Format>
+				<Format MimeType="video/x-ms-wmv">*.wmv</Format>
+				<Format MimeType="video/3gpp">*.3gp</Format>
+				<Format MimeType="video/quicktime">*.mov</Format>
+			</FormatGroup>
+		</SupportedFormats>
+		<Actions>
+		</Actions>
+        <Result DownloadUrlTemplate="stub"/>
+    </Server>
 	<!--<Server Name="imgpile.com" Authorize="1" Plugin="imgpile" WebsiteUrl="https://imgpile.com/" RegistrationUrl="https://imgpile.com/registerr">
 		<Actions>
 		</Actions>
