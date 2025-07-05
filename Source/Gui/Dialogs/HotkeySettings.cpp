@@ -120,7 +120,7 @@ LRESULT CHotkeySettingsPage::OnEditHotkeyBnClicked(WORD wNotifyCode, WORD wID, H
 {
     int index = m_HotkeyList.GetSelectedIndex();
     if (index < 0) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("First you have to select an item in the list."), APPNAME);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("First you have to select an item in the list."), APP_NAME);
     } else {
         EditHotkey(index);
     }

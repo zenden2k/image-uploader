@@ -37,7 +37,7 @@ set(SOURCE_FILES
     Gui/LogWindow.cpp
     Gui/LoginDialog.cpp
     Gui/AboutDialog.cpp
-    ../Core/ScreenCapture/ScreenCapture.cpp
+    ../ScreenCapture/ScreenCaptureQt.cpp
     Gui/RegionSelect.cpp
     Gui/models/uploadtreemodel.cpp 
     Gui/controls/MyListWidget.cpp

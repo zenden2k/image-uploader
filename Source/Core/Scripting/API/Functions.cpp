@@ -499,6 +499,25 @@ int64_t ScriptGetFileSize(const std::string& filename) {
     return IuCoreUtils::GetFileSize(filename);
 }
 
+std::string GetFileContents(const std::string& filename) {
+    try {
+        return IuCoreUtils::GetFileContents(filename);
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in GetFileContents:" << std::endl << e.what();
+    }
+    return {};
+}
+
+bool PutFileContents(const std::string& filename, const std::string& content) {
+    try {
+        IuCoreUtils::PutFileContents(filename, content);
+        return true;
+    } catch (const std::exception& e) {
+        LOG(ERROR) << "Exception in PutFileContents:" << std::endl << e.what();
+    }
+    return false;
+}
+
 std::string GetFileContentsEx(const std::string& filename, SQInteger offset, SQInteger size, bool allowPartialRead) {
     try {
         return IuCoreUtils::GetFileContentsEx(filename, offset, static_cast<size_t>(size), allowPartialRead);
@@ -626,7 +645,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("ShellOpenUrl", DesktopUtils::ShellOpenUrl)
         .SquirrelFunc("ParseJSON", ParseJSON)
         .Func("ToJSON", ToJSON)
-        .Func("GetFileContents", IuCoreUtils::GetFileContents)
+        .Func("GetFileContents", GetFileContents)
         .Func("GetFileContentsEx", GetFileContentsEx)
         .Func("GetTempDirectory", GetTempDirectory)
         .Func("ExtractFileNameNoExt", IuCoreUtils::ExtractFileNameNoExt)
@@ -638,7 +657,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("CreateDirectory", IuCoreUtils::CreateDir)
         .Func("FileExists", IuCoreUtils::FileExists)
         .Func("MoveFileOrFolder", IuCoreUtils::MoveFileOrFolder)
-        .Func("PutFileContents", IuCoreUtils::PutFileContents)
+        .Func("PutFileContents", PutFileContents)
         .Func("DeleteFile", IuCoreUtils::RemoveFile)
         .Func("GetAppLanguage", GetAppLanguage)
         .Func("GetAppLocale", GetAppLocale)

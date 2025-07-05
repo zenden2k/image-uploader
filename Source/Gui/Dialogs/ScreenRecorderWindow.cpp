@@ -14,7 +14,7 @@
 #include "ScreenCapture/ScreenRecorder/Sources/GDIGrabSource.h"
 #include "ScreenCapture/ScreenRecorder/Sources/DDAGrabSource.h"
 #include "ScreenCapture/WindowsHider.h"
-#include "Core/ScreenCapture/ScreenshotHelper.h"
+#include "ScreenCapture/ScreenshotHelper.h"
 #include "Gui/Dialogs/HotkeyEditor.h"
 #include "ScreenCapture/ScreenRecorder/ScreenRecorderUtils.h"
 #include "Func/Common.h"

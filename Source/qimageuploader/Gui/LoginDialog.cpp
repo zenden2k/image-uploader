@@ -48,7 +48,7 @@ LoginDialog::~LoginDialog()
 
 QString LoginDialog::accountName() const
 {
-	return accountName_;
+    return accountName_;
 }
 
 void LoginDialog::onAccept() {

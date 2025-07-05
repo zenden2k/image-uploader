@@ -4,6 +4,7 @@
 #include <QTemporaryFile>
 #include <QDesktopServices>
 #include <QDebug>
+#include <QImageWriter>
 
 #include "ui_FrameGrabberDlg.h"
 #include "Video/VideoGrabber.h"
@@ -25,8 +26,9 @@ FrameGrabberDlg::FrameGrabberDlg(QString fileName, QWidget *parent) :
     ui->setupUi(this);
     ui->buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
     ui->numOfFramesSpinBox->setValue(settings->VideoSettings.NumOfFrames);
-	ui->stopButton->setVisible(false);
-	ui->lineEdit->setText(fileName);
+    ui->stopButton->setVisible(false);
+    ui->lineEdit->setText(fileName);
+
     for (const auto& engine: CommonGuiSettings::VideoEngines) {
         QString name = QString::fromStdString(engine);
         ui->comboBox->addItem(name, QVariant(name));
@@ -69,7 +71,11 @@ void FrameGrabberDlg::frameGrabbed(const std::string& timeStr, int64_t time, std
             f.close();
         }
         if (!uniqueFileName.isEmpty()) {
-            if (img.save(uniqueFileName)) {
+            QImageWriter writer(uniqueFileName);
+            writer.setCompression(1);
+            writer.setQuality(10);
+
+            if (writer.write(img)) {
                 QIcon ico(QPixmap::fromImage(img/*.scaledToWidth(150, Qt::SmoothTransformation)*/));
                 
                 QMetaObject::invokeMethod(this, "frameGrabbedSlot", Qt::BlockingQueuedConnection,
@@ -100,16 +106,16 @@ void FrameGrabberDlg::on_grabButton_clicked()
     grabber_->setVideoEngine(getVideoEngine());
 
     using namespace std::placeholders;
-	grabber_->setOnFrameGrabbed(std::bind(&FrameGrabberDlg::frameGrabbed, this, _1, _2, _3));
-	grabber_->setOnFinished(std::bind(&FrameGrabberDlg::onGrabFinished, this));
+    grabber_->setOnFrameGrabbed(std::bind(&FrameGrabberDlg::frameGrabbed, this, _1, _2, _3));
+    grabber_->setOnFinished(std::bind(&FrameGrabberDlg::onGrabFinished, this));
 
-	int frameCount = ui->numOfFramesSpinBox->value();
-	if (frameCount < 1) {
-		frameCount = 10;
-	}
-	grabber_->setFrameCount(frameCount);
+    int frameCount = ui->numOfFramesSpinBox->value();
+    if (frameCount < 1) {
+        frameCount = 10;
+    }
+    grabber_->setFrameCount(frameCount);
     ui->progressRing->show();
-	grabber_->grab(Q2U(ui->lineEdit->text()));
+    grabber_->grab(Q2U(ui->lineEdit->text()));
 }
 
 void FrameGrabberDlg::on_browseButton_clicked()
@@ -179,7 +185,7 @@ VideoGrabber::VideoEngine FrameGrabberDlg::getVideoEngine() const {
             videoEngine = QtGuiSettings::VideoEngineFFmpeg;
             QString fileName = ui->lineEdit->text();
             QFileInfo info(fileName);
-            const QString fileExt(info.fileName());
+            const QString fileExt = info.suffix().toLower();
             if (fileExt == "wmv" || fileExt == "asf") {
                 videoEngine = QtGuiSettings::VideoEngineDirectshow;
             }

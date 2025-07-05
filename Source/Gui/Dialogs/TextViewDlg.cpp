@@ -79,9 +79,10 @@ LRESULT CTextViewDlg::OnClickedSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     dlg->setDefaultExtension(ext);
 
     if (dlg->DoModal(m_hWnd) == IDOK) {
-        if (!IuCoreUtils::PutFileContents(W2U(dlg->getFile()), W2U(m_text))) {
-            const std::wstring msg = str(IuStringUtils::FormatWideNoExcept(TR("Could not create file '%s'.")) % dlg->getFile());
-            GuiTools::LocalizedMessageBox(m_hWnd, msg.c_str(), TR("Error"), MB_ICONERROR);
+        try {
+            IuCoreUtils::PutFileContents(W2U(dlg->getFile()), W2U(m_text));
+        } catch (const std::exception& e) {
+            GuiTools::LocalizedMessageBox(m_hWnd, U2WC(e.what()), TR("Error"), MB_ICONERROR);
         }
     }
 

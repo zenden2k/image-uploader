@@ -124,7 +124,7 @@ LRESULT CUpdateDlg::OnDownloadButtonClicked(WORD wNotifyCode, WORD wID, HWND hWn
     for (const auto& upd : m_UpdateManager.m_manualUpdatesList) {
         if (upd.isManualUpdate() && !upd.downloadPage().IsEmpty()) {
            
-            /*if (MessageBox(message, APPNAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
+            /*if (MessageBox(message, APP_NAME, MB_ICONINFORMATION | MB_YESNO) == IDYES)*/ {
                 HINSTANCE hinst = ShellExecute(0, L"open", upd.downloadPage(), NULL, NULL, SW_SHOWNORMAL);
                 if (reinterpret_cast<INT_PTR>(hinst) <= 32) {
                     LOG(ERROR) << "ShellExecute failed. Error code=" << reinterpret_cast<INT_PTR>(hinst);

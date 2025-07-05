@@ -626,7 +626,7 @@ LRESULT CServerFolderSelect::OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BO
 }
 
 void CServerFolderSelect::onSessionFinished(UploadSession* session) {
-    if (session->userData() == reinterpret_cast<void*>(INITIAL_LOAD_SESSION)) {
+    if (session->userData() == reinterpret_cast<void*>(static_cast<INT_PTR>(INITIAL_LOAD_SESSION))) {
         //m_SelectedFolder.id = 
         for (int i = 0; i < session->taskCount(); i++) {
             auto task = session->getTask(i);
@@ -683,7 +683,7 @@ void CServerFolderSelect::loadInitialTree() {
     if (!uploadSession_->taskCount()) {
         return;
     }
-    uploadSession_->setUserData(reinterpret_cast<void*>(INITIAL_LOAD_SESSION));
+    uploadSession_->setUserData(reinterpret_cast<void*>(static_cast<INT_PTR>(INITIAL_LOAD_SESSION)));
     isRunning_ = true;
     ++sessionsRunning_;
     BlockWindow(true);

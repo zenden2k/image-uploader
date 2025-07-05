@@ -112,7 +112,15 @@ namespace IuCoreUtils
     std::string StrReplace(std::string text, std::string s, std::string d);
     std::string ConvertToUtf8(const std::string &text, const std::string& codePage);
     bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data);
-    bool PutFileContents(const std::string& utf8Filename, const std::string& content);
+
+    /**
+     * @throws IOException
+     */
+    void PutFileContents(const std::string& utf8Filename, const std::string& content);
+
+    /**
+     * @throws IOException
+     */
     std::string GetFileContents(const std::string& filename);
 
     /**

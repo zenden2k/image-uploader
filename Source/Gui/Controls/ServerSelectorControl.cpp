@@ -934,7 +934,7 @@ int CServerSelectorControl::showPopup(HWND parent, POINT pt)
 bool CServerSelectorControl::exitPopup(int nCommandId)
 {
     BOOL bRet = SetProp(m_hWnd, MENU_EXIT_NOTIFY, (HANDLE)1);
-    SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, (HANDLE)nCommandId);
+    SetProp(m_hWnd, MENU_EXIT_COMMAND_ID, reinterpret_cast<HANDLE>(static_cast<INT_PTR>(nCommandId)));
     return bRet !=FALSE;
 }
 

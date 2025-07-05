@@ -88,7 +88,7 @@ LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL
 {
     CString val = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
     if (val.FindOneOf(forbiddenCharacters_) >= 0) { 
-        LocalizedMessageBox(TR("Text contains forbidden characters!"), APPNAME, MB_ICONERROR);
+        LocalizedMessageBox(TR("Text contains forbidden characters!"), APP_NAME, MB_ICONERROR);
         return 0;
     }
     value_ = val;

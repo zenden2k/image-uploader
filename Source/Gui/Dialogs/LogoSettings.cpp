@@ -315,7 +315,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
 {
     if(m_ProfileChanged)
     {
-        if (GuiTools::LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APPNAME, MB_YESNO | MB_ICONWARNING) != IDYES)
+        if (GuiTools::LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APP_NAME, MB_YESNO | MB_ICONWARNING) != IDYES)
         {
             SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(CurrentProfileName.GetString())); 
             return 0;

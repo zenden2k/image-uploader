@@ -37,26 +37,31 @@ set(HEADER_LIST
     ScreenRecorder/Sources/DirectShowSource.h
 )
 
-set(LIB_LIST )
+set(LIB_LIST)
     
 if(WIN32)
     SET(OPTIONS WIN32)
     list(APPEND SRC_LIST
         WindowsHider.cpp
+        MonitorEnumerator.cpp
+        ScreenshotHelper.cpp
+        ScreenCaptureWin.cpp
         ScreenRecorder/DXGIScreenRecorder.cpp
         ScreenRecorder/DXGIOptionsManager.cpp
     )
     list(APPEND HEADER_LIST
         WindowsHider.h
+        MonitorEnumerator.h
+        ScreenshotHelper.h
+        ScreenCaptureWin.h
         ScreenRecorder/DXGIScreenRecorder.h
         ScreenRecorder/DXGIOptionsManager.h
         ScreenRecorder/DXGIOptions.h
         3rdpart/capture.hpp
     )
-     list(APPEND LIB_LIST 
+    list(APPEND LIB_LIST 
         d3d11 Mfplat mfreadwrite mfuuid strmiids windowscodecs propsys wmcodecdspuuid dxguid d2d1 Mf dxgi
     )
-
 endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})

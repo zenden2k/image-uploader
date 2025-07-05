@@ -261,7 +261,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             int nFilesToCheck = 0;
             if (!imgUrl.empty()) {
                 ++linksToCheck_;
-                fileDownloader_->addFile(result->getDirectUrl(), reinterpret_cast<void*>(i * 10));
+                fileDownloader_->addFile(result->getDirectUrl(), reinterpret_cast<void*>(static_cast<intptr_t>(i * 10)));
                 nFilesToCheck++;
                 data.setDirectUrl(imgUrl);
 
@@ -276,7 +276,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             if (!thumbUrl.empty()) {
                 nFilesToCheck++;
                 ++linksToCheck_;
-                fileDownloader_->addFile(result->getThumbUrl(), reinterpret_cast<void*>(i * 10 + 1));
+                fileDownloader_->addFile(result->getThumbUrl(), reinterpret_cast<void*>(static_cast<intptr_t>(i * 10 + 1)));
 
                 data.setThumbUrl(thumbUrl);
             } else {
@@ -290,7 +290,7 @@ void ServersChecker::onTaskFinished(UploadTask* task, bool ok) {
             if (!viewUrl.empty()) {
                 nFilesToCheck++;
                 ++linksToCheck_;
-                fileDownloader_->addFile(result->getDownloadUrl(), reinterpret_cast<void*>(i * 10 + 2));
+                fileDownloader_->addFile(result->getDownloadUrl(), reinterpret_cast<void*>(static_cast<intptr_t>(i * 10 + 2)));
                 data.setViewUrl(viewUrl);
             } else {
 

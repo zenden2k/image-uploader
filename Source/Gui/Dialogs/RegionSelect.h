@@ -24,7 +24,7 @@
 #include "atlheaders.h"
 #include <atlcrack.h>
 #include "resource.h"       // main symbols
-#include "Core/ScreenCapture.h"
+#include "ScreenCapture/ScreenCaptureWin.h"
 
 class CRegionSelectCallback
 {

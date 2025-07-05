@@ -58,7 +58,7 @@ public :
             return false;
         }
         if (!img->loadFromRawData(AbstractImage::dfRGB888, width_, height_, data_, dataSize_,
-                                  reinterpret_cast<void*>(frame_->linesize[0]))) {
+                reinterpret_cast<void*>(static_cast<intptr_t>(frame_->linesize[0])))) {
             return false;
         }
         return img->saveToFile(fileName);
@@ -70,7 +70,7 @@ public :
             return nullptr;
         }
         if (!img->loadFromRawData(AbstractImage::dfRGB888, width_, height_, data_, dataSize_,
-                                  reinterpret_cast<void*>(frame_->linesize[0]))) {
+                reinterpret_cast<void*>(static_cast<intptr_t>(frame_->linesize[0])))) {
             return nullptr;
         }
         return img;

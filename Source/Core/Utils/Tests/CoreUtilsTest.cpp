@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "Core/Utils/CoreUtils.h"
+#include "Core/Utils/IOException.h"
 #ifdef _WIN32
 #include <WinSock.h>
 #endif
@@ -246,6 +247,9 @@ TEST_F(CoreUtilsTest, GetFileContents)
     EXPECT_EQ(constSizeFileSize, data.size());
     std::string hash = IuCoreUtils::CryptoUtils::CalcMD5Hash(&data[0], data.size());
     EXPECT_EQ("ebbd98fc18bce0e9dd774f836b5c3bf8", hash);
+
+    std::string filePath = TestHelpers::resolvePath("not_existing_file2265466576546343");
+    EXPECT_THROW(GetFileContents(filePath), IOException);
 }
 
 TEST_F(CoreUtilsTest, GetFileContentsEx_Basic)

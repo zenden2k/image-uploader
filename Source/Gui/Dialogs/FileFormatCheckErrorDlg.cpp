@@ -116,7 +116,7 @@ LRESULT CFileFormatCheckErrorDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hW
     size_t errorCount = model_.hasItemsWithStatus(FileFormatModelData::RowStatus::Error);
     if (errorCount) {
         std::string msg = str(IuStringUtils::FormatNoExcept(boost::locale::ngettext("%u error has not been fixed.", "%u errors have not been fixed.", errorCount)) % errorCount);
-        GuiTools::LocalizedMessageBox(m_hWnd, IuCoreUtils::Utf8ToWstring(msg).c_str(), APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(m_hWnd, IuCoreUtils::Utf8ToWstring(msg).c_str(), APP_NAME, MB_ICONERROR);
         return 0;
     }
 

@@ -60,7 +60,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     TRC(IDC_SOVET, "Advice:");
     TRC(IDC_SOVET2, "Just drag and drop your files into the program window, and it will process them.");
     TRC(IDC_WELCOMEMSG, "Welcome to the pictures publishing wizard, which will help you upload your images, photos, and video frames to the Internet!");
-    SetDlgItemText(IDC_TITLE, APPNAME);
+    SetDlgItemText(IDC_TITLE, APP_NAME);
 
     fillHyperLinksControl(dpiX, dpiY);
 

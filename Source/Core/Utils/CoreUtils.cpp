@@ -48,6 +48,7 @@
 #include "Core/3rdpart/xdgmime/xdgmime.h"
 #include "MimeTypeHelper.h"
 #include "StringUtils.h"
+#include "IOException.h"
 
 #ifdef _WIN32
 
@@ -113,67 +114,80 @@ int64_t Ftell64(FILE *a)
 }
 
 bool FileExists(const std::string& fileName) {
-    try {
-        return std::filesystem::exists(std::filesystem::u8path(fileName));
-    } catch (const std::exception&) {
-        return false;
-    }
+    std::error_code ec;
+    bool exists = std::filesystem::exists(std::filesystem::u8path(fileName), ec);
+    return !ec && exists;
 }
 
-typedef std::codecvt_base::result res;
-typedef std::codecvt<wchar_t, char, mbstate_t> codecvt_type;
-std::mbstate_t state;
+std::codecvt_base::result fromWstring(const std::wstring& str, const std::locale& loc, std::string& out) {
+    typedef std::codecvt<wchar_t, char, std::mbstate_t> codecvt_type;
 
-std::codecvt_base::result fromWstring (const std::wstring & str,
-   const std::locale & loc, std::string & out)
-{
-  const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-  std::codecvt_base::result r;
-
-  const wchar_t *in_next = 0;
-  char *out_next = 0;
-
-  std::wstring::size_type len = str.size () << 2;
-
-  char * chars = new char [len + 1];
-
-  r = cdcvt.out (state, str.c_str (), str.c_str () + str.size (), in_next,
-                 chars, chars + len, out_next);
-  *out_next = '\0';
-  out = chars;
-
-  delete [] chars;
-
-  return r;
-}
-
-std::codecvt_base::result toWstring (const std::string & str, 
-   const std::locale & loc, std::wstring & out)
-{ 
     const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-    std::codecvt_base::result r;
-  
-    wchar_t * wchars = new wchar_t[str.size() + 1];
- 
-    const char *in_next = 0;
-    wchar_t *out_next = 0;
-  
-    r = cdcvt.in (state, str.c_str (), str.c_str () + str.size (), in_next,
-                wchars, wchars + str.size () + 1, out_next);
-    *out_next = '\0';
-    out = wchars;    
-  
-    delete [] wchars;
-  
+    std::mbstate_t state {}; 
+
+    std::size_t max_len = str.size() * cdcvt.max_length();
+    std::vector<char> chars(max_len + 1); 
+
+    const wchar_t* in_next = nullptr;
+    char* out_next = nullptr;
+
+    std::codecvt_base::result r = cdcvt.out(
+        state,
+        str.c_str(), str.c_str() + str.size(), in_next,
+        chars.data(), chars.data() + max_len, out_next);
+
+    if (r == std::codecvt_base::ok || r == std::codecvt_base::noconv) {
+        out.assign(chars.data(), out_next - chars.data());
+    } else {
+        out.clear();
+    }
+
     return r;
 }
 
-std::string SystemLocaleToUtf8(const std::string& str)
-{
-    std::locale const oloc = std::locale ("");
-    std::wstring wideStr;
-    toWstring (str, oloc, wideStr);
-    return WstringToUtf8(wideStr);
+std::codecvt_base::result toWstring(const std::string& str, const std::locale& loc, std::wstring& out) {
+    using codecvt_type = std::codecvt<wchar_t, char, std::mbstate_t>;
+
+    const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
+    std::mbstate_t state {}; 
+
+    std::vector<wchar_t> wchars(str.size() + 1);
+
+    const char* in_next = nullptr;
+    wchar_t* out_next = nullptr;
+
+    std::codecvt_base::result r = cdcvt.in(
+        state,
+        str.c_str(),
+        str.c_str() + str.size(),
+        in_next,
+        wchars.data(),
+        wchars.data() + wchars.size(),
+        out_next);
+
+    if (r == std::codecvt_base::ok || r == std::codecvt_base::noconv) {
+        out.assign(wchars.data(), out_next);
+    }
+
+    return r;
+}
+
+std::string SystemLocaleToUtf8(const std::string& str) {
+    try {
+        std::locale const oloc = std::locale("");
+        std::wstring wideStr;
+
+        std::codecvt_base::result result = toWstring(str, oloc, wideStr);
+
+        if (result != std::codecvt_base::ok && result != std::codecvt_base::noconv) {
+            return str;
+        }
+
+        return WstringToUtf8(wideStr);
+
+    } catch (const std::exception& e) {
+        return str;
+    }
 }
 
 std::string Utf8ToSystemLocale(const std::string& str)
@@ -226,7 +240,7 @@ std::string ExtractFilePath(const std::string& fileName)
         }
             
     }
-    return std::string();
+    return {};
 }
 
 std::string ExtractFileNameNoExt(const std::string& fileName)
@@ -267,7 +281,7 @@ std::string StrReplace(std::string text, std::string s, std::string d)
 
 bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
 {
-    std::ifstream file(utf8Filename, std::ios::binary);
+    std::ifstream file(std::filesystem::u8path(utf8Filename), std::ios::binary);
     if (!file) {
         return false;
     }
@@ -393,40 +407,55 @@ bool ReadUtf8TextFile(const std::string& utf8Filename, std::string& data)
     return true;
 }
 
-bool PutFileContents(const std::string& utf8Filename, const std::string& content)
-{
-    FILE *stream = FopenUtf8(utf8Filename.c_str(), "wb");
-    if (!stream) {
-        return false;
+void PutFileContents(const std::string& utf8Filename, const std::string& content) {
+    try {
+        std::filesystem::path filepath(std::filesystem::u8path(utf8Filename));
+
+        std::ofstream file(filepath, std::ios::binary);
+        if (!file) {
+            throw IOException("Cannot open file for writing: " + utf8Filename);
+        }
+
+        file.write(content.data(), static_cast<std::streamsize>(content.size()));
+
+        if (file.bad()) {
+            throw IOException("Error writing to file: " + utf8Filename);
+        }
+
+        file.flush();
+    } catch (const std::filesystem::filesystem_error& e) {
+        throw IOException("Filesystem error for '" + utf8Filename + "': " + e.what());
     }
-    fwrite(&content[0], 1, content.length(), stream);
-    fclose(stream);
-    return true;
 }
 
 std::string GetFileContents(const std::string& filename) {
+    std::ifstream file(std::filesystem::u8path(filename), std::ios::binary);
+    if (!file) {
+        throw IOException("Cannot open file: " + filename);
+    }
+
+    file.seekg(0, std::ios::end);
+    auto size = file.tellg();
+    file.seekg(0, std::ios::beg);
+
+    if (size == -1) {
+        throw IOException("Cannot determine file size for: " + filename);
+    }
+
     std::string data;
-    FILE *stream = IuCoreUtils::FopenUtf8(filename.c_str(), "rb");
-    if (!stream) return std::string();
-    fseek(stream, 0L, SEEK_END);
-    size_t size = ftell(stream);
-    rewind(stream);
+    data.resize(static_cast<size_t>(size));
 
-    //size_t size = static_cast<size_t>(IuCoreUtils::getFileSize(filename));
+    file.read(data.data(), size);
 
-    try {
-        data.resize(size);
-    } catch (std::exception& ex) {
-        LOG(ERROR) << "Unable to allocate " << size << " bytes:" << ex.what();
-        fclose(stream);
-        return std::string();
+    if (file.bad()) {
+        throw IOException("Error reading file: " + filename);
     }
 
-    size_t bytesRead = fread(&data[0], 1, size, stream);
-    if (bytesRead != size) {
-        data.resize(bytesRead);
+    auto bytes_read = file.gcount();
+    if (bytes_read != size) {
+        data.resize(static_cast<size_t>(bytes_read));
     }
-    fclose(stream);
+
     return data;
 }
 
@@ -483,13 +512,20 @@ int64_t StringToInt64(const std::string& str)
     return strtoll(str.c_str(), nullptr, 10);
 }
 
-int64_t GetFileSize(const std::string& utf8Filename)
-{
-    try {
-        return std::filesystem::file_size(std::filesystem::u8path(utf8Filename));
-    } catch (const std::filesystem::filesystem_error&) {
+int64_t GetFileSize(const std::string& utf8Filename) {
+    if (utf8Filename.empty()) {
         return -1;
     }
+
+    std::error_code ec;
+    auto path = std::filesystem::u8path(utf8Filename);
+
+    if (!std::filesystem::is_regular_file(path, ec) || ec) {
+        return -1;
+    }
+
+    auto size = std::filesystem::file_size(path, ec);
+    return ec ? -1 : static_cast<int64_t>(size);
 }
 
 std::string FileSizeToString(int64_t nBytes)
@@ -559,22 +595,37 @@ void DatePlusDays(struct tm* date, int days){
 
 bool CopyFileToDest(const std::string& src, const std::string& dest, bool overwrite)
 {
-    try {
-        std::filesystem::copy(std::filesystem::u8path(src), std::filesystem::u8path(dest),
-            overwrite ? std::filesystem::copy_options::overwrite_existing : std::filesystem::copy_options::none
-        );
-        return true;
-    } catch (const std::filesystem::filesystem_error&) {
+    std::error_code ec;
+    std::filesystem::copy(std::filesystem::u8path(src), std::filesystem::u8path(dest),
+            overwrite ? std::filesystem::copy_options::overwrite_existing : std::filesystem::copy_options::none,
+            ec
+    );
+    return !ec;
+}
+
+bool CreateDir(const std::string& path, unsigned int mode) {
+    std::error_code ec;
+
+    std::filesystem::create_directories(std::filesystem::u8path(path), ec);
+    if (ec) {
+        return false;
     }
-    return false;
+#ifndef _WIN32
+    chmod(path.c_str(), mode);
+#endif
+    return true;
 }
 
 bool RemoveFile(const std::string& utf8Filename) {
-    try {
-        return std::filesystem::remove(std::filesystem::u8path(utf8Filename));
-    } catch (const std::filesystem::filesystem_error&) {
-    }
-    return false;
+    std::error_code ec;
+    std::filesystem::remove(std::filesystem::u8path(utf8Filename), ec);
+    return !ec;
+}
+
+bool DirectoryExists(const std::string& path) {
+    std::error_code ec;
+    bool isDir = std::filesystem::is_directory(path, ec);
+    return !ec && isDir;
 }
 
 void OnThreadExit(void (*func)()) {

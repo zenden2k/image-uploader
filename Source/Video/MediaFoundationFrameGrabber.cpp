@@ -29,7 +29,7 @@ public:
             return;
         }
         if (!img_->loadFromRawData(AbstractImage::dfRGB32bpp, width_, height_, data_, dataSize_,
-                reinterpret_cast<void*>(width_ * 4))) {
+                reinterpret_cast<void*>(static_cast<INT_PTR>(width_ * 4)))) {
         }
     }
 

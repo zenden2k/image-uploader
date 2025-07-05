@@ -338,7 +338,7 @@ bool CUploadSettings::OnNext()
         { 
             CString errorMsg;
             errorMsg.Format(TR("Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(m_EngineList->getServerDisplayName(ue)));
-            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APP_NAME, MB_ICONERROR);
             return false;
         }
     }
@@ -356,7 +356,7 @@ bool CUploadSettings::OnNext()
         {
             CString errorMsg;
             errorMsg.Format(TR("Please specify authentication settings for '%s' server!"), static_cast<LPCTSTR>(U2W(m_EngineList->getServerDisplayName(ue2))));
-            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APPNAME, MB_ICONWARNING);
+            GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APP_NAME, MB_ICONWARNING);
             return false;
         }
     }
@@ -1173,7 +1173,7 @@ LRESULT CUploadSettings::OnServerParamsClicked(WORD /*wNotifyCode*/, WORD wID, H
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     CUploadEngineData *ue = serverProfile.uploadEngineData();
     if (!ue->UsingPlugin && ue->Engine.empty()) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APPNAME, MB_ICONINFORMATION);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("This server doesn't have any settings."), APP_NAME, MB_ICONINFORMATION);
         return false;
     }
 

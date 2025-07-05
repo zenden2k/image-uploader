@@ -413,6 +413,7 @@
 #define IDC_UPLOADPROGRESS              1049
 #define IDC_DOWNLOADFILESPROGRESS       1049
 #define IDC_INFOUPLOAD                  1050
+#define IDC_IMA                         1050
 #define IDC_CODEEDIT                    1051
 #define IDC_CANCEL2                     1057
 #define IDC_SCREENSHOT                  1058
@@ -468,6 +469,7 @@
 #define IDC_IMAGEUPLOADERLABEL          1094
 #define IDC_THANKSTOLABEL               1095
 #define IDC_IMAGEUPLOADERLABEL2         1095
+#define IDC_APPNAMELABEL                1095
 #define IDC_FILEPROGRESS                1096
 #define IDC_PROGRESSLABEL               1098
 #define IDC_COMMONPROGRESS              1099

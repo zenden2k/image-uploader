@@ -1,4 +1,4 @@
-#include "ScreenCapture.h"
+#include "ScreenCaptureQt.h"
 
 #include <cmath>
 #include <deque>
@@ -140,7 +140,7 @@ bool GetScreenBounds(RECT &rect)
 
 #endif
 
-namespace ZDesktopTools
+namespace DesktopTools
 {
 #ifdef _WIN32
     HRGN Win_GetWindowRegion(HWND wnd)
@@ -190,17 +190,23 @@ namespace ZDesktopTools
     {
 #ifdef _WIN32
         return reinterpret_cast<WId>(::GetForegroundWindow());
+#else
+        // TODO:
+        return {};
 #endif
     }
 
     QRegion GetWindowVisibleRegion(WId wnd)
     {
-        #ifdef _WIN32
-            HRGN rgn = /*Win_GetWindowVisibleRegion*/Win_GetWindowRegion(reinterpret_cast<HWND>(wnd));
-            QRegion result = QRegionFromHRGN(rgn);
-            DeleteObject(rgn);
-            return result;
-        #endif
+#ifdef _WIN32
+        HRGN rgn = /*Win_GetWindowVisibleRegion*/Win_GetWindowRegion(reinterpret_cast<HWND>(wnd));
+        QRegion result = QRegionFromHRGN(rgn);
+        DeleteObject(rgn);
+        return result;
+#else
+        // TODO:
+        return {};
+#endif
     }
 };
 /*int GetScreenWidth()
@@ -481,7 +487,7 @@ bool CWindowHandlesRegion::PrepareShooting(bool fromScreen)
     m_ScreenRegion = QRegion();
     for(size_t i=0; i<m_Windows.size(); i++)
     {
-        QRegion newRegion = ZDesktopTools::GetWindowVisibleRegion(m_Windows[i].wnd);
+        QRegion newRegion = DesktopTools::GetWindowVisibleRegion(m_Windows[i].wnd);
         //if(m_Windows[i].Include )
         m_ScreenRegion|=newRegion;
         //m_ScreenRegion.CombineRgn(newRegion, m_hWnds[i].Include ? RGN_OR: RGN_DIFF);
@@ -739,7 +745,7 @@ CActiveWindowRegion::CActiveWindowRegion()
 bool CActiveWindowRegion::PrepareShooting(bool fromScreen)
 {
     Clear();
-    AddWindow(ZDesktopTools::GetActiveWindow(), true);
+    AddWindow(DesktopTools::GetActiveWindow(), true);
     return CWindowHandlesRegion::PrepareShooting(fromScreen);
 }
 

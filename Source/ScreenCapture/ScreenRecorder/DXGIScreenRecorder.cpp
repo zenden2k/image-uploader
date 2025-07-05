@@ -7,7 +7,7 @@
 #include "ScreenRecorderUtils.h"
 #include "Core/Utils/CoreUtils.h"
 #include "../3rdpart/capture.hpp"
-#include "Core/ScreenCapture/ScreenshotHelper.h"
+#include "ScreenCapture/ScreenshotHelper.h"
 
 DXGIScreenRecorder::DXGIScreenRecorder(std::string outFile, HWND wnd, CRect rect, HMONITOR monitor, DXGIOptions options)
     : ScreenRecorder(std::move(outFile), rect), options_(std::move(options))

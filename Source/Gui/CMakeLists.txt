@@ -6,14 +6,12 @@ set(SRC_LIST
     ../3rdpart/wintoastlib.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
-    ../Core/ScreenCapture/MonitorEnumerator.cpp
-    ../Core/ScreenCapture/ScreenshotHelper.cpp
+
     ../Core/SearchByImage.cpp
     ../Core/Settings/CommonGuiSettings.cpp
     ../Core/Settings/WtlGuiSettings.cpp
     ../Core/TempFileDeleter.cpp
     ../Core/FileDownloader.cpp
-    ../Core/ScreenCapture.cpp
     ../Core/ServerListManager.cpp
     ../Core/Images/ImageConverter.cpp
     ../Core/Images/Thumbnail.cpp
@@ -170,8 +168,6 @@ set(HEADER_LIST
     ../3rdpart/wintoastlib.h
     ../Core/Images/ImageConverterPrivateBase.h
     ../Core/Images/ImageConverterPrivate_gdiplus.h
-    ../Core/ScreenCapture/MonitorEnumerator.h
-    ../Core/ScreenCapture/ScreenshotHelper.h
     ../Core/Scripting/Script.h
     ../Core/Scripting/ScriptsManager.h
     ../Core/Scripting/API/ScriptFunctionsImpl.h
@@ -180,7 +176,6 @@ set(HEADER_LIST
     ../Core/Settings/WtlGuiSettings.h
     ../Core/TempFileDeleter.h
     ../Core/FileDownloader.h
-    ../Core/ScreenCapture.h
     ../Core/ServerListManager.h
     ../Core/Images/ImageConverter.h
     ../Core/Images/Thumbnail.h
@@ -285,6 +280,7 @@ set(HEADER_LIST
     Controls/ThumbsView.h
     Controls/WTLBrowserView.h
     Controls/FileFormatErrorView.h
+    Controls/DialogIndirect.h
     Helpers/LangHelper.h
     ../3rdpart/ColorButton.h
     ../3rdpart/MemberFunctionCallback.h

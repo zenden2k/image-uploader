@@ -94,7 +94,7 @@ public:
         size_t sizeDlg = ::SizeofResource(hInst, res);
         m_hDlgTemplate = ::GlobalAlloc(GPTR, sizeDlg);
         if (!m_hDlgTemplate) {
-            MessageBox(WinUtils::FormatWindowsErrorMessage(GetLastError()), APPNAME, MB_ICONERROR);
+            MessageBox(WinUtils::FormatWindowsErrorMessage(GetLastError()), APP_NAME, MB_ICONERROR);
             return nullptr;
         }
         auto pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(m_hDlgTemplate));

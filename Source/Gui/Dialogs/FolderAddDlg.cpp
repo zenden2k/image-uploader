@@ -117,7 +117,7 @@ DWORD CFolderAdd::Run()
     EnableWindow(m_pWizardDlg->m_hWnd, true);
 
     if (!count)
-        GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APPNAME, MB_ICONINFORMATION);
+        GuiTools::LocalizedMessageBox(m_pWizardDlg->m_hWnd, m_bImagesOnly ? TR("No pictures were found.") : TR("No files were found."), APP_NAME, MB_ICONINFORMATION);
     else {
         if (m_pWizardDlg->getQuickUploadMarker()) {
             if (settings->CheckFileTypesBeforeUpload && !m_pWizardDlg->checkFileFormats(m_pWizardDlg->getSessionImageServer(), m_pWizardDlg->getSessionFileServer())) {

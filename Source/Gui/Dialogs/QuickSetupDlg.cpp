@@ -41,9 +41,9 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     translateUI();
-    SetWindowText( APPNAME );
+    SetWindowText( APP_NAME );
     CString titleText;
-    titleText.Format(TR("%s - Quick Setup"), APPNAME );
+    titleText.Format(TR("%s - Quick Setup"), APP_NAME );
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
@@ -153,7 +153,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
             Settings.imageServer.getByIndex(0).setProfileName(WCstringToUtf8(login));
             CString password = GuiTools::GetDlgItemText( m_hWnd, IDC_PASSWORDEDIT );
             if ( login.IsEmpty() ) {
-                LocalizedMessageBox(TR("Enter your account information"), APPNAME, MB_ICONEXCLAMATION);
+                LocalizedMessageBox(TR("Enter your account information"), APP_NAME, MB_ICONEXCLAMATION);
                 return 0;
             }
             LoginInfo& loginInfo = Settings.ServersSettings[W2U(Settings.getServerName())][W2U(login)].authData;

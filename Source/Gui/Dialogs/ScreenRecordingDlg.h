@@ -29,8 +29,8 @@
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/WizardCommon.h"
 #include "ScreenCapture/ScreenRecorder/Common.h"
-#include "Core/ScreenCapture/MonitorEnumerator.h"
-#include "Core/ScreenCapture.h"
+#include "ScreenCapture/MonitorEnumerator.h"
+#include "ScreenCapture/ScreenCaptureWin.h"
 
 constexpr auto IDM_SELECT_REGION = 12001;
 constexpr auto IDM_FULL_SCREEN = 12002;

@@ -738,7 +738,7 @@ LRESULT CMainDlg::OnSaveAs(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/,
         }
 
         if (!CopyFile(FileName, dlg->getFile(), false)) {
-            GuiTools::LocalizedMessageBox(m_hWnd, TR("Cannot copy file: ") + WinUtils::GetLastErrorAsString(), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("Cannot copy file: ") + WinUtils::GetLastErrorAsString(), APP_NAME, MB_ICONERROR);
         }
     } else {
         CNewStyleFolderDialog dlg(m_hWnd, CString(), CString());
@@ -763,7 +763,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUri(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, false)) {
-            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APP_NAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -773,7 +773,7 @@ LRESULT CMainDlg::OnCopyFileAsDataUriHtml(WORD /*wNotifyCode*/, WORD /*wID*/, HW
     CString fileName = getSelectedFileName();
     if (!fileName.IsEmpty()) {
         if (!ImageUtils::CopyFileToClipboardInDataUriFormat(fileName, 0, 85, true)) {
-            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APP_NAME, MB_ICONERROR);
         }
     }
     return 0;
@@ -797,7 +797,7 @@ LRESULT CMainDlg::OnCopyFilePath(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWnd
 
     if (!result.IsEmpty()) {
         if (!WinUtils::CopyTextToClipboard(result)) {
-            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, _T("Failed to copy file to clipboard"), APP_NAME, MB_ICONERROR);
 		}
 	}
 	return 0;
@@ -859,11 +859,11 @@ LRESULT CMainDlg::OnListViewEndLabelEdit(int /*idCtrl*/, LPNMHDR pnmh, BOOL& /*b
         CString forbiddenCharacters { _T("\\/:*?\"<>|") };
         CString fileName { di->item.pszText };
         if (fileName.IsEmpty()) {
-            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name cannot be empty."), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name cannot be empty."), APP_NAME, MB_ICONERROR);
             return 0;
         }
         if (fileName.FindOneOf(forbiddenCharacters) != -1) {
-            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name contains forbidden characters."), APPNAME, MB_ICONERROR);
+            GuiTools::LocalizedMessageBox(m_hWnd, TR("The file name contains forbidden characters."), APP_NAME, MB_ICONERROR);
             return 0;
         }
         if (di->item.iItem >= 0 && di->item.iItem < FileList.GetCount()) {

@@ -62,7 +62,7 @@
 #include "Gui/Win7JumpList.h"
 #include "Core/AppParams.h"
 #include "Gui/Components/MyFileDialog.h"
-#include "Core/ScreenCapture/MonitorEnumerator.h"
+#include "ScreenCapture/MonitorEnumerator.h"
 #include "Core/Network/NetworkClientFactory.h"
 #include "Gui/Components/NewStyleFolderDialog.h"
 #include "StatusDlg.h"
@@ -306,7 +306,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 #ifdef IU_ENABLE_MEDIAINFO
     MediaInfoHelper::FindMediaInfoDllPath();
 #endif
-    SetWindowText(APPNAME);
+    SetWindowText(APP_NAME);
 
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
 
@@ -326,7 +326,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     if (WinToast::isCompatible()) {
         WinToast* toast = WinToast::instance();
 
-        toast->setAppName(APPNAME);
+        toast->setAppName(APP_NAME);
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
 
@@ -344,7 +344,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         CString ErrBuf;
         ErrBuf.Format(TR("Couldn't load servers list file \"servers.xml\"!\n\nThe reason is:  %s\n\nDo you wish to continue?"),(LPCTSTR)ErrorStr);
 
-        if (LocalizedMessageBox(ErrBuf, APPNAME, MB_ICONERROR | MB_YESNO) == IDNO)
+        if (LocalizedMessageBox(ErrBuf, APP_NAME, MB_ICONERROR | MB_YESNO) == IDNO)
         {
             *DlgCreationResult = 2;
             return 0;
@@ -425,7 +425,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     sessionFileServer_ = Settings.fileServer;
 #ifdef IU_ENABLE_MEDIAINFO
 	if (!MediaInfoHelper::IsMediaInfoAvailable()) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APPNAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, APP_NAME, TR("MediaInfo.dll Not found! \nGetting technical information of media files will not be accessible."));
 	}
 #endif
     if (!CmdLine.IsOption(_T("tray"))) {
@@ -551,7 +551,7 @@ bool CWizardDlg::ParseCmdLine()
                 CString msg;
                 msg.Format(TR("Profile \"%s\" not found.\nIt may be caused by a configuration error or usage of multiple versions of the application on the same computer."),
                     serverProfileName.GetString());
-                LocalizedMessageBox(msg, APPNAME, MB_ICONWARNING);
+                LocalizedMessageBox(msg, APP_NAME, MB_ICONWARNING);
                 CmdLine.RemoveOption(_T("quick"));
             } else {
                 ServerProfile & sp = Settings.ServerProfiles[serverProfileName];
@@ -890,7 +890,7 @@ WindowNativeHandle CWizardDlg::getNativeHandle() {
 
 void CWizardDlg::ShowUpdateMessage(const CString& msg) {
     if ((CurPage == wpMainPage || CurPage == wpWelcomePage) && !IsWindowVisible() && IsWindowEnabled() && trayIconEnabled()) {
-        std::wstring title = str(boost::wformat(TR("%s - Updates available")) % APPNAME);
+        std::wstring title = str(boost::wformat(TR("%s - Updates available")) % APP_NAME);
         floatWnd_->ShowBaloonTip(msg, title.c_str(), 8000, [&] {
             CreateUpdateDlg();
             if (!updateDlg->IsWindowVisible()) {
@@ -961,7 +961,7 @@ LRESULT CWizardDlg::OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 void CWizardDlg::Exit()
 {
     if (!Settings.SaveSettings()) {
-        LocalizedMessageBox(TR("Could not save settings file. See error log for details."), APPNAME, MB_ICONERROR);
+        LocalizedMessageBox(TR("Could not save settings file. See error log for details."), APP_NAME, MB_ICONERROR);
     }
 }
 
@@ -1917,7 +1917,7 @@ void CWizardDlg::CloseWizard(bool force)
         dlg.SetVerificationText(verText);
         CString contentText = TR("Are you sure to quit?");
         dlg.SetContentText(contentText);
-        CString windowTitle = APPNAME;
+        CString windowTitle = APP_NAME;
         dlg.SetWindowTitle(windowTitle);
         dlg.SetCommonButtons(TDCBF_YES_BUTTON | TDCBF_NO_BUTTON);
         // From the official Win32 style guide: don't use the question mark icon to ask questions. Don't routinely replace

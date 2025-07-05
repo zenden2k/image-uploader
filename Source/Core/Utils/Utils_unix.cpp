@@ -80,88 +80,8 @@ std::string ConvertToUtf8(const std::string &text, const std::string& codePage) 
     return text;
 }
 
-/* std::string GetFileMimeType(const std::string& name)
-{
-    std::string defaultType = "application/octet-stream";
-    FILE* stream = popen(Utf8ToSystemLocale("file -b --mime-type '" + name + "'").c_str(), "r");
-    if(!stream)
-        return defaultType;
-    std::ostringstream output;
-
-    while(!feof(stream) && !ferror(stream)) {
-        char buf[128];
-        int bytesRead = fread(buf, 1, 128, stream);
-        output.write(buf, bytesRead);
-    }
-    pclose(stream);
-    std::string result = IuStringUtils::Trim(output.str());
-    return result;
-}*/
-
-static int do_mkdir(const char *path, mode_t mode)
-{
-    Stat            st;
-    int             status = 0;
-
-    if (stat(path, &st) != 0)
-    {
-        /* Directory does not exist. EEXIST for race condition */
-        if (mkdir(path, mode) != 0 && errno != EEXIST)
-            status = -1;
-    }
-    else if (!S_ISDIR(st.st_mode))
-    {
-        errno = ENOTDIR;
-        status = -1;
-    }
-
-    return(status);
-}
-
-/**
-** mkpath - ensure all directories in path exist
-** Algorithm takes the pessimistic view and works top-down to ensure
-** each directory in path exists, rather than optimistically creating
-** the last element and working backwards.
-*/
-int mkpath(const char *path, mode_t mode)
-{
-    char           *pp;
-    char           *sp;
-    int             status;
-    char           *copypath = strdup(path);
-
-    status = 0;
-    pp = copypath;
-    while (status == 0 && (sp = strchr(pp, '/')) != 0)
-    {
-        if (sp != pp)
-        {
-            /* Neither root nor double slash in path */
-            *sp = '\0';
-            status = do_mkdir(copypath, mode);
-            *sp = '/';
-        }
-        pp = sp + 1;
-    }
-    if (status == 0)
-        status = do_mkdir(path, mode);
-    free(copypath);
-    return (status);
-}
-
-bool CreateDir(const std::string& path, unsigned int mode)
-{
-    return mkpath(path.c_str(), (mode_t)mode) == 0;
-}
-
 bool MoveFileOrFolder(const std::string& from, const std::string& to) {
     return rename(from.c_str() ,to.c_str())==0;
-}
-
-bool DirectoryExists(const std::string& path)
-{
-    return boost::filesystem::is_directory(path) && boost::filesystem::exists(path);
 }
 
 }

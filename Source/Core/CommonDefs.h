@@ -2,11 +2,8 @@
 #define IU_CORE_COMMONDEFS_H
 
 #pragma once
-//#include "Core/Utils/CoreUtils.h"
 
-#define APPNAME_ "Image Uploader"
-#define APPNAME _T(APPNAME_)
-
+#include "BasicConstants.h"
 
 // QString <-> std::string (utf-8) conversion macroses
 #define Q2U(str) str.toUtf8().data()

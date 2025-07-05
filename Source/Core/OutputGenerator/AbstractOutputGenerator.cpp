@@ -44,7 +44,12 @@ bool AbstractOutputGenerator::loadTemplate(const std::string& templateFileName){
         return true;
     }
 
-    std::string fileContents = IuCoreUtils::GetFileContents(templateFileName);
+    std::string fileContents;
+    try {
+        fileContents = IuCoreUtils::GetFileContents(templateFileName);
+    } catch (const std::exception&) {
+        return false;
+    }
 
     if (fileContents.empty()) {
         return false;

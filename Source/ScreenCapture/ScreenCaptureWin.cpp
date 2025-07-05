@@ -18,7 +18,7 @@
 
 */
 
-#include "Core/ScreenCapture.h"
+#include "ScreenCaptureWin.h"
 
 #include <cassert>
 #include <deque>
@@ -30,7 +30,7 @@
 #include "resource.h"
 #include "Core/Images/Utils.h"
 #include "Core/Logging.h"
-#include "Core/ScreenCapture/ScreenshotHelper.h"
+#include "ScreenshotHelper.h"
 #include "Gui/GuiTools.h"
 
 namespace ScreenCapture {

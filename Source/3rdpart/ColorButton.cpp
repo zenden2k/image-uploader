@@ -809,7 +809,7 @@ BOOL CColorButton::Picker ()
     CRect rcButton;
     GetWindowRect (&rcButton);
     _Module .AddCreateWndData (&m_wndPicker .m_thunk .cd, &m_wndPicker);
-    m_wndPicker .m_hWnd = ::CreateWindowEx (0, (LPCTSTR) MAKELONG (atom, 0), 
+    m_wndPicker .m_hWnd = ::CreateWindowEx (0, reinterpret_cast<LPCTSTR>(static_cast<INT_PTR>(MAKELONG (atom, 0))), 
         _T (""),  WS_POPUP, rcButton .left, rcButton .bottom, 100, 100,
         GetParent (), NULL, _Module .GetModuleInstance(), NULL);
 
@@ -977,7 +977,7 @@ BOOL CColorButton::Picker ()
     // Unregister our class
     //
 
-    ::UnregisterClass ((LPCTSTR) MAKELONG (atom, 0),
+    ::UnregisterClass (reinterpret_cast<LPCTSTR>(static_cast<INT_PTR>(MAKELONG (atom, 0))),
         _Module .GetModuleInstance());
     return fOked;
 }

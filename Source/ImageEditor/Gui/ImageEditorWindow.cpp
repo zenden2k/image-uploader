@@ -13,7 +13,7 @@
 #include "ImageEditor/MovableElements.h"
 #include "Gui/Dialogs/SearchByImageDlg.h"
 #include "Gui/Components/MyFileDialog.h"
-#include "Core/ScreenCapture/MonitorEnumerator.h"
+#include "ScreenCapture/MonitorEnumerator.h"
 #include "Core/AbstractServerIconCache.h"
 #include "Core/Settings/WtlGuiSettings.h"
 #include "Gui/Helpers/DPIHelper.h"
@@ -339,7 +339,7 @@ void ImageEditorWindow::setAskBeforeClose(bool ask)
 ImageEditorWindow::DialogResult ImageEditorWindow::DoModal(HWND parent, HMONITOR screenshotsMonitor, WindowDisplayMode mode)
 {
     if (currentDoc_->isNull()) {
-        GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(nullptr, _T("Invalid image file."), APP_NAME, MB_ICONERROR);
         return drCancel;
     }
 
@@ -1348,7 +1348,7 @@ LRESULT ImageEditorWindow::OnClickedClose(WORD /*wNotifyCode*/, WORD /*wID*/, HW
 void ImageEditorWindow::onClose() {
     DialogResult dr = drCancel;
     if (askBeforeClose_ && !onlySelectRegion_ && canvas_->isDocumentModified()) {
-        int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APPNAME, MB_YESNOCANCEL | MB_ICONQUESTION);
+        int msgBoxResult = GuiTools::LocalizedMessageBox(m_hWnd, TR("Save changes?"), APP_NAME, MB_YESNOCANCEL | MB_ICONQUESTION);
         if (msgBoxResult == IDYES) {
             dr = outFileName_.IsEmpty() ? drCancel : drSave;
             if(!OnClickedSave()) {

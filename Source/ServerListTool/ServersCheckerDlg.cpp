@@ -129,7 +129,7 @@ LRESULT CServersCheckerDlg::OnOK(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*
     try {
         validateSettings();
     } catch (const ValidationException& ex) {
-        GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(m_hWnd, ex.errors_[0].Message, APP_NAME, MB_ICONERROR);
         return 0;
     }
     CString fileName = GuiTools::GetWindowText(GetDlgItem(IDC_TOOLFILEEDIT));

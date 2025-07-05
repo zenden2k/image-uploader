@@ -28,7 +28,7 @@
 #include "resource.h"
 #include "regionselect.h"
 #include "Gui/Controls/hyperlinkcontrol.h"
-#include "Core/ScreenCapture.h"
+#include "ScreenCapture/ScreenCaptureWin.h"
 #include "Gui/Controls/DialogIndirect.h"
 #include "Gui/WizardCommon.h"
 

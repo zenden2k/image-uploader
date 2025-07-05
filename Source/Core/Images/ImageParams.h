@@ -3,9 +3,7 @@
 #include <string>
 
 #include "Core/Utils/CoreTypes.h"
-#ifdef _WIN32
-#include "Core/CommonDefs.h"
-#endif
+#include "Core/BasicConstants.h"
 
 struct ImageConvertingParams {
     enum ImageResizeMode { irmFit,
@@ -42,9 +40,7 @@ struct ImageConvertingParams {
         ResizeMode = irmFit;
         LogoPosition = 0;
         LogoBlend = 0;
-        #ifdef _WIN32
-        Text = APPNAME_;
-        #endif
+        Text = APP_NAME_A;
         TextPosition = 5;
         TextColor = 0x00ffffff;
         Font = "Tahoma,12,,204";

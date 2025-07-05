@@ -45,6 +45,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     int iconWidth = ::GetSystemMetrics(SM_CXICON);
     int iconHeight = ::GetSystemMetrics(SM_CYICON);
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
+
+    SetDlgItemText(IDC_APPNAMELABEL, APP_NAME);
+
     thanksToLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_THANKSTOLABEL));
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE|SWP_NOZORDER);

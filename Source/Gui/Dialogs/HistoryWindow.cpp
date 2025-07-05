@@ -546,7 +546,7 @@ LRESULT CHistoryWindow::OnBnClickedClearHistoryBtn(WORD /*wNotifyCode*/, WORD /*
             SetDlgItemInt(IDC_SESSIONSCOUNTLABEL, 0, false);
             SetDlgItemText(IDC_UPLOADTRAFFICLABEL, L"0");
             applyFilters();
-            LocalizedMessageBox(TR("History has been cleared successfully."), APPNAME, MB_ICONINFORMATION);
+            LocalizedMessageBox(TR("History has been cleared successfully."), APP_NAME, MB_ICONINFORMATION);
         }
     }
     return 0;

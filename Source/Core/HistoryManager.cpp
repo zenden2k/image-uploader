@@ -1,5 +1,7 @@
 #include "HistoryManager.h"
 
+#include <algorithm>
+
 CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId) 
 {
     deleteItems_ = true;

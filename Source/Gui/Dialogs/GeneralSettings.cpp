@@ -159,7 +159,7 @@ LRESULT CGeneralSettings::OnBnClickedClearServerSettings(WORD wNotifyCode, WORD 
         )
         % IuStringUtils::Join(builtInScripts, ", ")
     );
-    if (GuiTools::LocalizedMessageBox(m_hWnd, U2WC(msg), APPNAME, MB_OKCANCEL | MB_ICONWARNING) == IDOK) {
+    if (GuiTools::LocalizedMessageBox(m_hWnd, U2WC(msg), APP_NAME, MB_OKCANCEL | MB_ICONWARNING) == IDOK) {
         BasicSettings* settings = ServiceLocator::instance()->basicSettings();
         settings->clearServerSettings();
         settings->SaveSettings();

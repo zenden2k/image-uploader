@@ -32,7 +32,7 @@
 #include "Core/Upload/FileUploadTask.h"
 #include "Func/myutils.h"
 #include "Gui/Dialogs/WizardDlg.h"
-#include "Core/ScreenCapture/MonitorEnumerator.h"
+#include "ScreenCapture/MonitorEnumerator.h"
 #include "Gui/Dialogs/ImageDownloaderDlg.h"
 #include "Core/OutputGenerator/AbstractOutputGenerator.h"
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
@@ -144,7 +144,7 @@ LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
     auto trayIconGUID = WinUtils::GenerateFakeUUIDv4(MainTrayIconBaseGUID);
     //LOG(ERROR) << WinUtils::GUIDToString(*trayIconGUID);
-    if (!InstallIcon(APPNAME, m_hIconSmall, NULL, trayIconGUID ? &trayIconGUID.value() : nullptr)) {
+    if (!InstallIcon(APP_NAME, m_hIconSmall, NULL, trayIconGUID ? &trayIconGUID.value() : nullptr)) {
         LOG(WARNING) << "Failed to create tray icon!";
     }
     NOTIFYICONDATA nid;
@@ -803,7 +803,7 @@ LRESULT CFloatingWindow::OnMediaInfo(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 LRESULT CFloatingWindow::OnTaskbarCreated(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    InstallIcon(APPNAME, m_hIconSmall, 0);
+    InstallIcon(APP_NAME, m_hIconSmall, 0);
     return 0;
 }
 
@@ -882,9 +882,9 @@ void CFloatingWindow::UploadScreenshot(const CString& realName, const CString& d
 void CFloatingWindow::setStatusText(const CString& text, int timeoutMs) {
     statusText_ = text;
     if (statusText_.IsEmpty()) {
-        SetTooltipText(CString(APPNAME));
+        SetTooltipText(CString(APP_NAME));
     } else {
-        SetTooltipText(CString(APPNAME) + _T("\r\n") + statusText_);
+        SetTooltipText(CString(APP_NAME) + _T("\r\n") + statusText_);
     }
     if (timeoutMs) {
         SetTimer(kStatusTimer, timeoutMs);
@@ -1025,7 +1025,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
 
 void CFloatingWindow::ShowScreenshotCopiedToClipboardMessage() {
     CString statusText = TR("Screenshot has been copied to clipboard.");
-    ShowBaloonTip(statusText, APPNAME, 17000);
+    ShowBaloonTip(statusText, APP_NAME, 17000);
     setStatusText(statusText, kStatusHideTimeout);
 }
 

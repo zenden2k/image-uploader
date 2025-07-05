@@ -331,7 +331,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string srcFolder = IuCoreUtils::ExtractFilePath(fileName) + "/";
     std::string destination = srcFolder + newName + ".xml";
     if (IuCoreUtils::FileExists(destination)) {
-        GuiTools::LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APPNAME, MB_ICONERROR);
+        GuiTools::LocalizedMessageBox(m_hWnd, TR("Profile with such name already exists!"), APP_NAME, MB_ICONERROR);
         return false;
     }
     Thumbnail* thumb = nullptr;
