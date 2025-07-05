@@ -13,7 +13,7 @@ class IDialogProvider;
 class IUploadErrorHandler;
 class CUploadEngineListBase;
 class LocalFileCache;
-class CHistoryManager;
+class IHistoryManager;
 class ServiceLocatorPrivate;
 class ITranslator;
 class ITaskRunner;
@@ -48,7 +48,8 @@ public:
     void setEngineList(CUploadEngineListBase* engineList);
     CUploadEngineListBase* engineList();
     LocalFileCache* localFileCache();
-    CHistoryManager* historyManager();
+    IHistoryManager* historyManager();
+    void setHistoryManager(IHistoryManager* historyManager);
     IProgramWindow* programWindow();
     void setProgramWindow(IProgramWindow* window);
     CLogWindow* logWindow() const;

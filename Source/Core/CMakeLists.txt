@@ -305,9 +305,9 @@ endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
-add_library(iucore STATIC ${SRC_LIST} ${HEADER_LIST})
+add_library(iu_core STATIC ${SRC_LIST} ${HEADER_LIST})
 
-target_link_libraries(iucore PUBLIC
+target_link_libraries(iu_core PUBLIC
     CURL::libcurl
     boost::boost 
     uriparser::uriparser 
@@ -319,35 +319,35 @@ target_link_libraries(iucore PUBLIC
     squirrel::sqstdlib 
     gumbo-parser::gumbo-parser 
     aklomp::base64
-    SQLite::SQLite3
     tinyxml2::tinyxml2
     ${COMMON_LIBS_LIST}
 )
 
 if (IU_ENABLE_MEGANZ)
-    target_link_libraries(iucore PUBLIC megaio::megaio
+    target_link_libraries(iu_core PUBLIC megaio::megaio
+    SQLite::SQLite3
     #cryptopp::cryptopp-static 
     #c-ares::c-ares
     )
 endif()
 
 if (IU_USE_OPENSSL)
-    target_link_libraries(iucore PUBLIC openssl::openssl)
+    target_link_libraries(iu_core PUBLIC openssl::openssl)
 endif()
 
 if (IU_ENABLE_SFTP)
-    #target_link_libraries(iucore PUBLIC Libssh2::Libssh2)
+    #target_link_libraries(iu_core PUBLIC Libssh2::Libssh2)
 	#list(APPEND COMMON_LIBS_LIST )
 endif()
 
 if (WIN32)
-    target_link_libraries(iucore PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
+    target_link_libraries(iu_core PUBLIC minizip::minizip WebP::webpdemux WebP::webpdecoder libheif::heif gdiplus winmm urlmon Dwmapi)
 endif()
 
 if (IU_ENABLE_WEBVIEW2)
-    set_target_properties(iucore PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
-    set_target_properties(iucore PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
-    set_target_properties(iucore PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
+    set_target_properties(iu_core PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    set_target_properties(iu_core PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
+    set_target_properties(iu_core PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
 
     #find_program(NUGET_EXE NAMES nuget)
     #if(NOT NUGET_EXE)
@@ -356,14 +356,14 @@ if (IU_ENABLE_WEBVIEW2)
     #endif()
     #execute_process(COMMAND ${NUGET_EXE} install "Microsoft.Web.WebView2" -Version 1.0.2592.51 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages)
     #  execute_process(COMMAND ${NUGET_EXE} install "Microsoft.Windows.ImplementationLibrary" -Version 1.0.240122.1 -ExcludeVersion -OutputDirectory ${CMAKE_BINARY_DIR}/packages) 
-    #  set_target_properties(iucore PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
-    #   target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
-    #  target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
-    #    target_link_libraries(iucore PUBLIC WebView2LoaderStatic.lib version.lib)
+    #  set_target_properties(iu_core PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
+    #   target_link_libraries(iu_core PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
+    #  target_link_libraries(iu_core PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
+    #    target_link_libraries(iu_core PUBLIC WebView2LoaderStatic.lib version.lib)
 endif()
 
 #if(MSVC)
-#    target_compile_options(iucore PRIVATE "/MP")
+#    target_compile_options(iu_core PRIVATE "/MP")
 #endif()
 
-set_target_properties(iucore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+set_target_properties(iu_core PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

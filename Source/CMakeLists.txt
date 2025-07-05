@@ -28,6 +28,8 @@ set(IU_ENABLE_ASAN OFF CACHE BOOL "Enable address sanitizer")
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
+include(cmake/common.cmake)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
@@ -300,6 +302,7 @@ endif()
 
 add_subdirectory(Core)	
 add_subdirectory(Video)	
+add_subdirectory(History)	
 
 if(WIN32)
     add_subdirectory(Gui)

@@ -12,7 +12,7 @@ public:
     std::shared_ptr<ILogger> logger_;
     ITranslator* translator_ = nullptr;
     CUploadEngineListBase* engineList_ = nullptr;
-    CHistoryManager historyManager;
+    IHistoryManager* historyManager_ {};
     IProgramWindow* programWindow_ = nullptr;
     std::shared_ptr<IUploadErrorHandler> uploadErrorHandler_;
     IDialogProvider* dialogProvider_ = nullptr;
@@ -61,8 +61,12 @@ LocalFileCache* ServiceLocator::localFileCache() {
     return LocalFileCache::instance();
 }
 
-CHistoryManager* ServiceLocator::historyManager() {
-    return &d_ptr->historyManager;
+IHistoryManager* ServiceLocator::historyManager() {
+    return d_ptr->historyManager_;
+}
+
+void ServiceLocator::setHistoryManager(IHistoryManager* historyManager) {
+    d_ptr->historyManager_ = historyManager;
 }
 
 IProgramWindow* ServiceLocator::programWindow() {

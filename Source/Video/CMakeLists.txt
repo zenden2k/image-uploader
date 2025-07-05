@@ -43,9 +43,9 @@ endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
-add_library(iuvideo STATIC ${SRC_LIST} ${HEADER_LIST})
+add_library(iu_video STATIC ${SRC_LIST} ${HEADER_LIST})
 
-target_include_directories(iuvideo PRIVATE ${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
+target_include_directories(iu_video PRIVATE ${CMAKE_SOURCE_DIR}/../Contrib/Include/DX/)
 
 #if (WIN32)
 #    set(LIBS_LIST base-classes::base-classes)
@@ -53,26 +53,26 @@ target_include_directories(iuvideo PRIVATE ${CMAKE_SOURCE_DIR}/../Contrib/Includ
 
 if (IU_ENABLE_FFMPEG)
     if(NOT IU_FFMPEG_STANDALONE)
-        target_link_libraries(iuvideo PRIVATE ffmpeg::avcodec ffmpeg::avformat ffmpeg::avutil ffmpeg::swscale)
+        target_link_libraries(iu_video PRIVATE ffmpeg::avcodec ffmpeg::avformat ffmpeg::avutil ffmpeg::swscale)
     else()
-	    target_link_libraries(iuvideo PUBLIC avcodec avformat avutil swscale)
+	    target_link_libraries(iu_video PUBLIC avcodec avformat avutil swscale)
     endif()	
 endif()	
 
 if (WIN32)
-    target_link_libraries(iuvideo PUBLIC base-classes::base-classes Winmm.lib Mfreadwrite.lib Mfplat.lib mfuuid.lib Propsys.lib)
+    target_link_libraries(iu_video PUBLIC base-classes::base-classes Winmm.lib Mfreadwrite.lib Mfplat.lib mfuuid.lib Propsys.lib)
 endif()
 
-target_link_libraries(iuvideo PUBLIC
-    iucore
+target_link_libraries(iu_video PUBLIC
+    iu_core
 )
 
-target_link_libraries(iuvideo PRIVATE
+target_link_libraries(iu_video PRIVATE
     ${COMMON_LIBS_LIST}
 )
 
 if(MSVC)
-#    target_compile_options(iuvideo PRIVATE "/MP")
+#    target_compile_options(iu_video PRIVATE "/MP")
 endif()
 
-set_target_properties(iuvideo PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+set_target_properties(iu_video PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

@@ -471,7 +471,7 @@ bool CImageReuploaderDlg::BeginDownloading()
             GuiTools::EnableDialogItem(m_hWnd, IDOK, false);
 
             SetDlgItemText(IDCANCEL, TR("Stop"));
-            CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
+            auto mgr = ServiceLocator::instance()->historyManager();
         
             historySession_ = mgr->newSession();
             using namespace std::placeholders;

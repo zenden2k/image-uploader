@@ -1,4 +1,4 @@
-﻿#ifndef IU_CORE_UPLOADENGINE_MANAGER_H
+#ifndef IU_CORE_UPLOADENGINE_MANAGER_H
 #define IU_CORE_UPLOADENGINE_MANAGER_H
 
 #pragma once
@@ -37,6 +37,9 @@ public:
     Force unload all cached upload engines
     */
     void unloadUploadEngines();
+
+    void unloadUploadEngines(const std::string& serverName, const std::string& profileName);
+
     void setScriptsDirectory(const std::string & directory);
 
     /** 

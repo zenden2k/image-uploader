@@ -18,7 +18,7 @@
 
 */
 
-#include "HistoryManager.h"
+#include "HistoryManagerImpl.h"
 
 #include <ctime>
 #include <algorithm>
@@ -29,24 +29,26 @@
 #include "Core/Utils/SimpleXml.h"
 #include "Core/Utils/CoreUtils.h"
 #include "Core/Utils/CryptoUtils.h"
-#include "Utils/GlobalMutex.h"
+#include "Core/Utils/GlobalMutex.h"
 #include "Core/3rdpart/pcreplusplus.h"
-#include "Utils/StringUtils.h"
+#include "Core/Utils/StringUtils.h"
 
 class CHistoryReader_impl
 {
     public:
         SimpleXml m_xml;
-        std::vector<CHistorySession*> m_sessions;
+        std::vector<std::unique_ptr<CHistorySession>> m_sessions;
         std::map<std::string, int> keyToIndex_;
         CHistoryManager* mgr_;
 };
 
 const char CHistoryManager::globalMutexName[] = "IuHistoryFileSessionMutex";
 
-CHistoryManager::CHistoryManager() : db_(nullptr), mt_(rd_())
-{
+CHistoryManager::CHistoryManager(const std::string& directory)
+    : db_(nullptr)
+    , mt_(rd_()) {
     m_historyFileNamePrefix = "history";
+    m_historyFilePath = directory;
 }
 
 CHistoryManager::~CHistoryManager()
@@ -57,9 +59,6 @@ CHistoryManager::~CHistoryManager()
     sqlite3_shutdown();
 }
 
-void CHistoryManager::setHistoryDirectory(const std::string& directory) {
-    m_historyFilePath = directory; 
-}
 bool CHistoryManager::openDatabase() {
     IuCoreUtils::CreateDir(m_historyFilePath);
     if (!db_ && sqlite3_open((m_historyFilePath + "history.db").c_str(), &db_) != SQLITE_OK) {
@@ -74,9 +73,11 @@ bool CHistoryManager::openDatabase() {
         sqlite3_free(err);
         return false;
     }
-    const char* sql2 =
-        "CREATE TABLE IF NOT EXISTS uploads(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,session_id,created_at INTEGER,local_file_path,server_name,direct_url,thumb_url,"
-        "view_url,direct_url_shortened,view_url_shortened, edit_url, delete_url, display_name, size INTEGER, sort_index INTEGER)";
+    const char* sql2 = "CREATE TABLE IF NOT EXISTS uploads(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,session_id,created_at INTEGER,"
+                       "local_file_path, server_name, direct_url, thumb_url,"
+                       "view_url,direct_url_shortened,view_url_shortened, edit_url, delete_url, display_name, size INTEGER, sort_index INTEGER);"
+                       "CREATE INDEX IF NOT EXISTS idx_uploads_session_id ON uploads(session_id);"
+                       "CREATE INDEX IF NOT EXISTS idx_uploads_created_at ON uploads(created_at);";
 
     if (sqlite3_exec(db_, sql2, nullptr, nullptr, &err) != SQLITE_OK) {
         LOG(ERROR) << "SQL error: " << err;
@@ -87,11 +88,11 @@ bool CHistoryManager::openDatabase() {
 }
 
 bool CHistoryManager::saveSession(CHistorySession* session) {
-    if (session->dbEntryCreated_) {
+    if (session->dbEntryCreated()) {
         return true;
     }
     IuCoreUtils::ZGlobalMutex mutex(CHistoryManager::globalMutexName);
-    if (session->dbEntryCreated_) {
+    if (session->dbEntryCreated()) {
         return true;
     }
     const char* sql = "INSERT INTO upload_sessions(id,created_at) VALUES(?,?)";
@@ -126,7 +127,7 @@ bool CHistoryManager::saveSession(CHistorySession* session) {
     /*sqlite3_reset(stmt);
     sqlite3_clear_bindings(stmt);*/
     sqlite3_finalize(stmt);
-    session->dbEntryCreated_ = true;
+    session->setDbEntryCreated(true);
 
     return true;
 }
@@ -186,13 +187,6 @@ bool CHistoryManager::saveHistoryItem(HistoryItem* ht) {
     return true;
 }
 
-void CHistoryManager::setHistoryFileName(const std::string& filepath, const std::string& nameprefix)
-{
-    m_historyFilePath = filepath;
-    IuCoreUtils::CreateDir(m_historyFilePath);
-    m_historyFileNamePrefix = nameprefix;
-}
-
 std::shared_ptr<CHistorySession> CHistoryManager::newSession()
 {
     time_t t = time(nullptr);
@@ -207,135 +201,25 @@ std::shared_ptr<CHistorySession> CHistoryManager::newSession()
     return res;
 }
 
-CHistorySession::CHistorySession(const std::string& filename, const std::string&  sessionId) 
-{
-    deleteItems_ = true;
-    m_historyXmlFileName = filename;
-    m_sessId = sessionId;
-    time(&m_timeStamp);
-    dbEntryCreated_ = false;
-}
-
-void CHistorySession::loadFromXml(SimpleXmlNode& sessionNode)
-{
-    m_timeStamp = sessionNode.AttributeInt("TimeStamp" );
-    m_serverName = sessionNode.Attribute("ServerName" );
-    m_sessId = sessionNode.Attribute("ID");
-    std::vector<SimpleXmlNode> allEntries;
-    sessionNode.GetChilds("Entry", allEntries);
-
-    for(size_t i=0; i<allEntries.size(); i++)
-    {
-        SimpleXmlNode& item = allEntries[i];
-        HistoryItem *ht = new HistoryItem(this);
-        ht->localFilePath = item.Attribute("LocalFilePath");
-        ht->serverName = item.Attribute("ServerName");
-        ht->timeStamp = item.AttributeInt("TimeStamp");
-        ht->directUrl = item.Attribute("DirectUrl");
-        ht->thumbUrl = item.Attribute("ThumbUrl");
-        ht->viewUrl = item.Attribute("ViewUrl");
-        ht->editUrl = item.Attribute("EditUrl");
-        ht->deleteUrl = item.Attribute("DeleteUrl");
-        ht->displayName = item.Attribute("DisplayName");
-        ht->uploadFileSize = item.AttributeInt64("UploadFileSize");
-        std::string sortIndex = item.Attribute("Index");
-        ht->sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::StringToInt64(sortIndex));
-        // Fix invalid file size
-        if (ht->uploadFileSize > 1000000000000 || ht->uploadFileSize < 0) {
-            ht->uploadFileSize = 0;
-        }
-        m_entries.push_back(ht);
-    }
-}
-
-int CHistorySession::entriesCount() const
-{
-    return m_entries.size();
-}
-
-HistoryItem& CHistorySession::entry(int index) const
-{
-    return *m_entries[index];
-}
-
-void  CHistorySession::setDeleteItems(bool doDelete) {
-    deleteItems_ = doDelete;
-}
-
-CHistorySession::~CHistorySession() {
-    if (deleteItems_) {
-        for (auto it : m_entries) {
-            delete it;
-        }
-    }
-}
-
-bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index,const std::string& val) {
+bool CHistoryManager::bindString(sqlite3_stmt* stmt, int index, const std::string& val) {
     if (!val.empty()) {
-        char* str = new char[val.size()+1];
+        char* str = new char[val.size() + 1];
         strcpy(str, val.c_str());
-        if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s)
-        {
-            delete[] static_cast<char*>(s);
-        }) != SQLITE_OK) {
+        if (sqlite3_bind_text(stmt, index /*Index of wildcard*/, str, -1, [](void* s) {
+                delete[] static_cast<char*>(s);
+            })
+            != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind value.";
             return false;
         }
     } else {
-        if (sqlite3_bind_null(stmt, index ) != SQLITE_OK) {
+        if (sqlite3_bind_null(stmt, index) != SQLITE_OK) {
             LOG(ERROR) << "SQL error: Could not bind null value.";
             return false;
         }
     }
     return true;
 }
-
-void CHistorySession::sortByOrderIndex() {
-    std::sort(m_entries.begin(), m_entries.end(), [](const HistoryItem* lhs, const HistoryItem* rhs) {
-        return lhs->sortIndex < rhs->sortIndex;
-    });
-    if (!m_entries.empty()) {
-        m_serverName = m_entries[0]->serverName;
-    }
-}
-
-std::string CHistorySession::serverName() const
-{
-    return m_serverName;
-}
-
-void CHistorySession::setServerName(const std::string& name) {
-    m_serverName = name;
-}
-
-time_t CHistorySession::timeStamp() const
-{
-    return m_timeStamp;
-}
-
-void CHistorySession::setTimeStamp(time_t timeStamp) {
-    m_timeStamp = timeStamp;
-}
-
-std::string  CHistorySession::sessionId() const {
-    return m_sessId;
-}
-
-std::vector<HistoryItem*>::iterator CHistorySession::begin() {
-    return m_entries.begin();
-}
-
-std::vector<HistoryItem*>::iterator CHistorySession::end() {
-    return m_entries.end();
-}
-
-/*std::string CHistoryManager::makeFileName() const
-{
-    time_t t = time(0);
-    tm * timeinfo = localtime(&t);
-    std::string fileName = m_historyFilePath + m_historyFileNamePrefix +"_" + IuCoreUtils::toString(1900+timeinfo->tm_year)+"_" + IuCoreUtils::toString(timeinfo->tm_mon+1) + ".xml";
-    return fileName;
-}*/
 
 bool CHistoryManager::clearHistory(HistoryClearPeriod period) {
     IuCoreUtils::ZGlobalMutex mutex(globalMutexName);
@@ -394,7 +278,7 @@ bool CHistoryManager::convertHistory() {
 
             for (auto& session : reader) {
                 for (auto& item : *session) {
-                    saveHistoryItem(item);
+                    saveHistoryItem(&item);
                 }
             }
             
@@ -413,7 +297,7 @@ bool CHistoryManager::convertHistory() {
 //
 CHistoryReader::CHistoryReader(CHistoryManager* mgr)
 {
-    d_ptr.reset(new CHistoryReader_impl());
+    d_ptr = std::make_unique<CHistoryReader_impl>();
     d_ptr->mgr_ = mgr;
 }
 
@@ -424,7 +308,10 @@ int CHistoryReader::getSessionCount() const
 
 CHistorySession* CHistoryReader::getSession(size_t index) const
 {
-    return d_ptr->m_sessions[index];
+    if (index >= d_ptr->m_sessions.size()) {
+        return {};
+    }
+    return d_ptr->m_sessions[index].get();
 }
 
 bool CHistoryReader::loadFromFile(const std::string& filename)
@@ -445,9 +332,9 @@ bool CHistoryReader::loadFromFile(const std::string& filename)
     for(size_t i = 0; i<allSessions.size(); i++)
     {
         std::string fName = filename;
-        CHistorySession* session = new CHistorySession(fName, "0");
-        session->loadFromXml(allSessions[i]);
-        d_ptr->m_sessions.push_back(session);
+        auto session = std::make_unique<CHistorySession>(fName, "0");
+        loadSessionFromXml(session.get(), allSessions[i]);
+        d_ptr->m_sessions.push_back(std::move(session));
     }
     return true;
 }
@@ -511,25 +398,25 @@ int CHistoryReader::selectCallback(void* userData, int argc, char **argv, char *
 
     std::string sessionId;
     for (int i = 0; i < argc; i++) {
-        if (!strcmp(azColName[i], "id")) {
+        if (strcmp(azColName[i], "id") == 0) {
             sessionId = argv[i] ? argv[i] : "";
             break;
         }
     }
     
-    CHistorySession* session = new CHistorySession("", sessionId);
+    auto session = std::make_unique<CHistorySession>("", sessionId);
     for (int i = 0; i < argc; i++) {
         const char* val = argv[i] ? argv[i] : "";
-        if (!strcmp(azColName[i], "created_at")) {
+        if (strcmp(azColName[i], "created_at") == 0) {
             session->setTimeStamp(IuCoreUtils::StringToInt64(val));
             break;
-        } else if (!strcmp(azColName[i], "server_name")) {
+        } else if (strcmp(azColName[i], "server_name") == 0) {
             session->setServerName(val);
             break;
         }
     }
 
-    pthis->d_ptr->m_sessions.push_back(session);
+    pthis->d_ptr->m_sessions.push_back(std::move(session));
     int index = pthis->d_ptr->m_sessions.size() - 1;
     pthis->d_ptr->keyToIndex_[sessionId] = index;
     return 0;
@@ -541,7 +428,7 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
 
     std::string sessionId;
     for (int i = 0; i < argc; i++) {
-        if (!strcmp(azColName[i], "session_id")) {
+        if (strcmp(azColName[i], "session_id") == 0) {
             sessionId = argv[i] ? argv[i] : std::string();
             break;
         }
@@ -551,57 +438,83 @@ int CHistoryReader::selectCallback2(void* userData, int argc, char **argv, char 
     if (it == pthis->d_ptr->keyToIndex_.end()) {
         return 0; // No session with such id
     }
-    CHistorySession* session = pthis->d_ptr->m_sessions[it->second];
-    HistoryItem* item = new HistoryItem(session);
+    CHistorySession* session = pthis->d_ptr->m_sessions[it->second].get();
+    HistoryItem item(session);
 
     for (int i = 0; i < argc; i++) {
         const char *val = argv[i] ? argv[i] : "";
-        if (!strcmp(azColName[i], "id")) {
-            item->id = static_cast<int>(IuCoreUtils::StringToInt64(val));
-        } else if (!strcmp(azColName[i], "direct_url")) {
-            item->directUrl = val;
-        } else if (!strcmp(azColName[i], "view_url")) {
-            item->viewUrl = val;
-        } else if (!strcmp(azColName[i], "thumb_url")) {
-            item->thumbUrl = val;
-        } else if (!strcmp(azColName[i], "direct_url_shortened")) {
-            item->directUrlShortened = val;
-        } else if (!strcmp(azColName[i], "view_url_shortened")) {
-            item->viewUrlShortened = val;
-        } else if (!strcmp(azColName[i], "delete_url")) {
-            item->deleteUrl = val;
-        } else if (!strcmp(azColName[i], "edit_url")) {
-            item->editUrl = val;
-        } else if (!strcmp(azColName[i], "display_name")) {
-            item->displayName = val;
-        } else if (!strcmp(azColName[i], "local_file_path")) {
-            item->localFilePath = val;
-        } else if (!strcmp(azColName[i], "created_at")) {
-            item->timeStamp = IuCoreUtils::StringToInt64(val);
-        } else if (!strcmp(azColName[i], "sort_index")) {
-            item->sortIndex = static_cast<int>(IuCoreUtils::StringToInt64(val));
-        } else if (!strcmp(azColName[i], "size")) {
-            item->uploadFileSize = IuCoreUtils::StringToInt64(val);
-        } else if (!strcmp(azColName[i], "server_name")) {
-            item->serverName = val;
+        if (strcmp(azColName[i], "id") == 0) {
+            item.id = static_cast<int>(IuCoreUtils::StringToInt64(val));
+        } else if (strcmp(azColName[i], "direct_url") == 0) {
+            item.directUrl = val;
+        } else if (strcmp(azColName[i], "view_url") == 0) {
+            item.viewUrl = val;
+        } else if (strcmp(azColName[i], "thumb_url") == 0) {
+            item.thumbUrl = val;
+        } else if (strcmp(azColName[i], "direct_url_shortened") == 0) {
+            item.directUrlShortened = val;
+        } else if (strcmp(azColName[i], "view_url_shortened") == 0) {
+            item.viewUrlShortened = val;
+        } else if (strcmp(azColName[i], "delete_url") == 0) {
+            item.deleteUrl = val;
+        } else if (strcmp(azColName[i], "edit_url") == 0) {
+            item.editUrl = val;
+        } else if (strcmp(azColName[i], "display_name") == 0) {
+            item.displayName = val;
+        } else if (strcmp(azColName[i], "local_file_path") == 0) {
+            item.localFilePath = val;
+        } else if (strcmp(azColName[i], "created_at") == 0) {
+            item.timeStamp = IuCoreUtils::StringToInt64(val);
+        } else if (strcmp(azColName[i], "sort_index") == 0) {
+            item.sortIndex = static_cast<int>(IuCoreUtils::StringToInt64(val));
+        } else if (strcmp(azColName[i], "size") == 0) {
+            item.uploadFileSize = IuCoreUtils::StringToInt64(val);
+        } else if (strcmp(azColName[i], "server_name") == 0) {
+            item.serverName = val;
         }
     }
 
-    session->m_entries.push_back(item);
+    session->m_entries.push_back(std::move(item));
 
     return 0;
 }
 
-std::vector<CHistorySession*>::iterator CHistoryReader::begin() {
+std::vector<std::unique_ptr<CHistorySession>>::iterator CHistoryReader::begin() {
     return d_ptr->m_sessions.begin();
 }
-std::vector<CHistorySession*>::iterator CHistoryReader::end() {
+std::vector<std::unique_ptr<CHistorySession>>::iterator CHistoryReader::end() {
     return d_ptr->m_sessions.end();
 }
 
-CHistoryReader::~CHistoryReader()
-{
-    for (auto& it : d_ptr->m_sessions) {
-        delete it;
+CHistoryReader::~CHistoryReader() {
+}
+
+void CHistoryReader::loadSessionFromXml(CHistorySession* session, SimpleXmlNode& sessionNode) {
+    session->m_timeStamp = sessionNode.AttributeInt("TimeStamp");
+    session->m_serverName = sessionNode.Attribute("ServerName");
+    session->m_sessId = sessionNode.Attribute("ID");
+    std::vector<SimpleXmlNode> allEntries;
+    sessionNode.GetChilds("Entry", allEntries);
+
+    for (size_t i = 0; i < allEntries.size(); i++) {
+        SimpleXmlNode& item = allEntries[i];
+        HistoryItem ht(session);
+        ht.localFilePath = item.Attribute("LocalFilePath");
+        ht.serverName = item.Attribute("ServerName");
+        ht.timeStamp = item.AttributeInt("TimeStamp");
+        ht.directUrl = item.Attribute("DirectUrl");
+        ht.thumbUrl = item.Attribute("ThumbUrl");
+        ht.viewUrl = item.Attribute("ViewUrl");
+        ht.editUrl = item.Attribute("EditUrl");
+        ht.deleteUrl = item.Attribute("DeleteUrl");
+        ht.displayName = item.Attribute("DisplayName");
+        ht.uploadFileSize = item.AttributeInt64("UploadFileSize");
+        std::string sortIndex = item.Attribute("Index");
+        ht.sortIndex = sortIndex.empty() ? i : static_cast<int>(IuCoreUtils::StringToInt64(sortIndex));
+        // Fix invalid file size
+        if (ht.uploadFileSize > 1000000000000 || ht.uploadFileSize < 0) {
+            ht.uploadFileSize = 0;
+        }
+        session->m_entries.push_back(ht);
     }
 }

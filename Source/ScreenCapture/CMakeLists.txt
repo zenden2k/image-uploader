@@ -61,17 +61,17 @@ endif()
 
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX "Sources" FILES ${SRC_LIST} ${HEADER_LIST})
 
-add_library(iucapture STATIC ${SRC_LIST} ${HEADER_LIST})
+add_library(iu_capture STATIC ${SRC_LIST} ${HEADER_LIST})
 
-target_link_libraries(iucapture 
-    iucore
+target_link_libraries(iu_capture 
+    iu_core
     ${COMMON_LIBS_LIST}
     ${LIB_LIST}
 )
-target_compile_definitions(iucapture PRIVATE _WIN7_PLATFORM_UPDATE)
+target_compile_definitions(iu_capture PRIVATE _WIN7_PLATFORM_UPDATE)
 
 if(MSVC)
-    target_compile_options(iucapture PRIVATE "/MP")
+    target_compile_options(iu_capture PRIVATE "/MP")
 endif()
 
-set_target_properties(iucapture PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)
+set_target_properties(iu_capture PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib/)

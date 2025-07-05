@@ -120,7 +120,7 @@ void CHistoryTreeControl::Clear()
     SetRedraw(true);*/
 }
 
-void CHistoryTreeControl::addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand)
+void CHistoryTreeControl::addSubEntry(TreeItem* res, const HistoryItem* it, bool autoExpand)
 {
     auto* it2 = new HistoryTreeItem();
     TreeItem *item = AddSubItem(Utf8ToWCstring(IuCoreUtils::TimeStampToString(it->timeStamp)+ " "+ it->localFilePath), res, it2, autoExpand);
@@ -141,7 +141,7 @@ DWORD CHistoryTreeControl::OnSubItemPrePaint(int /*idCtrl*/, LPNMCUSTOMDRAW /*lp
     return CDRF_DODEFAULT;
 }
 
-HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
+const HistoryItem* CHistoryTreeControl::getItemData(const TreeItem* res)
 {
     if (!res || res->level() != 1) {
         return nullptr;
@@ -431,7 +431,7 @@ void CHistoryTreeControl::DrawSubItem(TreeItem* item, HDC hdc, DWORD itemState, 
 
     if (draw)
         dc.FrameRect(&thumbRect, br);
-    HistoryItem* it2 = getItemData(item);
+    const HistoryItem* it2 = getItemData(item);
     std::string fileName = it2 ? IuCoreUtils::ExtractFileName(it2->localFilePath) : "";
 
     CString iconSourceFileName = it2 ? Utf8ToWCstring(it2->localFilePath) : "";

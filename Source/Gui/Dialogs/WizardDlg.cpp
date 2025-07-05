@@ -81,6 +81,7 @@
 #endif
 #include "ScreenCapture/WindowsHider.h"
 #include "Gui/Helpers/DPIHelper.h"
+#include "History/HistoryManagerImpl.h"
 
 using namespace Gdiplus;
 namespace
@@ -393,9 +394,10 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 			return 0;
 		}
     }
-    auto* historyManager = ServiceLocator::instance()->historyManager();
-    historyManager->setHistoryDirectory(Settings.SettingsFolder + "\\History\\");
-    historyManager->openDatabase();
+
+    historyManager_ = std::make_unique<CHistoryManager>(Settings.SettingsFolder + "\\History\\");
+    ServiceLocator::instance()->setHistoryManager(historyManager_.get());
+    historyManager_->openDatabase();
 
     if (isFirstRun_) {
         Settings.HistorySettings.HistoryConverted = true;
@@ -407,7 +409,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         statusDlg_->SetInfo(TR("Converting history"), TR("Please wait while your history is being converted..."));
 
         std::thread t([&]() {
-            historyManager->convertHistory();
+            historyManager_->convertHistory();
             Settings.HistorySettings.HistoryConverted = true;
             ServiceLocator::instance()->taskRunner()->runInGuiThread([this]
             {

@@ -52,7 +52,7 @@ bool LocalFileCache::parseHistory() {
 }
 
 bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
-    CHistoryReader m_historyReader(ServiceLocator::instance()->historyManager());
+    /* CHistoryReader m_historyReader(ServiceLocator::instance()->historyManager());
     if ( !m_historyReader.loadFromFile(fileName) ) {
         return false;
     }
@@ -73,7 +73,7 @@ bool LocalFileCache::parseHistoryFile(const std::string&  fileName) {
                 addThumb(historyItem.thumbUrl, historyItem.localFilePath);
             }
         }
-    }
+    }*/
     return true;
 }
 

@@ -18,16 +18,12 @@
 
 */
 
-#ifndef IU_CORE_HISTORY_MANAGER_H
-#define IU_CORE_HISTORY_MANAGER_H
-
 #pragma once
 
 #include <string>
 #include <vector>
 #include <memory>
 #include <random>
-
 
 #include "Core/Utils/CoreTypes.h"
 
@@ -62,10 +58,7 @@ struct HistoryItem
 };
 
 class SimpleXmlNode;
-class CHistoryReader_impl;
 class CHistoryReader;
-struct sqlite3;
-struct sqlite3_stmt;
 
 class CHistorySession
 {
@@ -73,83 +66,59 @@ class CHistorySession
         explicit CHistorySession(const std::string& filename, const std::string& sessionId);
         ~CHistorySession();
         int entriesCount() const;
-        HistoryItem& entry(int index) const;
+        const HistoryItem& entry(int index) const;
         std::string serverName() const;
         void setServerName(const std::string& name);
         time_t timeStamp() const;
         void setTimeStamp(time_t timeStamp);
-        void loadFromXml(SimpleXmlNode& sessionNode);
         std::string sessionId() const;
-        std::vector<HistoryItem*>::iterator begin();
-        std::vector<HistoryItem*>::iterator end();
+        std::vector<HistoryItem>::iterator begin();
+        std::vector<HistoryItem>::iterator end();
         void setDeleteItems(bool doDelete);
+        bool dbEntryCreated() const;
+        void setDbEntryCreated(bool created);
+        void sortByOrderIndex();
     private:
         std::string m_historyXmlFileName;
         std::string m_sessId;
         time_t m_timeStamp;
         std::string m_serverName;
-        std::vector<HistoryItem*> m_entries;
+        std::vector<HistoryItem> m_entries;
         bool dbEntryCreated_;
         bool deleteItems_;
-        void sortByOrderIndex();
+
+        friend class IHistoryReader;
+        friend class IHistoryManager;
         friend class CHistoryReader;
-        friend class CHistoryManager;
-       
 };
 
 enum class HistoryClearPeriod { ClearAll, OlderThan30Days };
 
-class CHistoryManager
+class IHistoryManager
 {
     public:
-        CHistoryManager();
-        bool openDatabase();
-        virtual ~CHistoryManager();
-        void setHistoryDirectory(const std::string& directory);
-        void setHistoryFileName(const std::string& filepath, const std::string& nameprefix);
-        std::shared_ptr<CHistorySession> newSession();
-        //std::string makeFileName() const;
-        bool clearHistory(HistoryClearPeriod period);
-        bool saveHistoryItem(HistoryItem* item);
-        bool saveSession(CHistorySession* session);
+        virtual bool openDatabase() = 0;
+        virtual ~IHistoryManager() = default;
+        virtual std::shared_ptr<CHistorySession> newSession() = 0;
+        virtual bool clearHistory(HistoryClearPeriod period) = 0;
+        virtual bool saveHistoryItem(HistoryItem* item) = 0;
+        virtual bool saveSession(CHistorySession* session) = 0;
+
         /**
          * Load history files (*xml) into sqlite database
          */
-        bool convertHistory();
-        static const char globalMutexName[];
-    private:
-        DISALLOW_COPY_AND_ASSIGN(CHistoryManager);
-        std::string m_historyFilePath;
-        std::string m_historyFileNamePrefix;
-        sqlite3* db_;
-        std::random_device rd_;
-        std::mt19937 mt_;
-        bool bindString(sqlite3_stmt* stmt, int index, const std::string& val);
+        virtual bool convertHistory() = 0;
         friend class CHistoryReader;
 };
 
-class CHistoryReader
-{
-    public:
-        explicit CHistoryReader(CHistoryManager* mgr);
-        virtual ~CHistoryReader();
-        // filename must be utf-8 encoded
-        bool loadFromFile(const std::string& filename);
-        bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url);
-        int getSessionCount() const;
-
-        // The pointer returned by this function is only valid
-        //  during lifetime of CHistoryReader object
-        CHistorySession* getSession(size_t index) const;
-
-        std::vector<CHistorySession*>::iterator begin();
-        std::vector<CHistorySession*>::iterator end();
-
-    private:
-        DISALLOW_COPY_AND_ASSIGN(CHistoryReader);
-        std::unique_ptr<CHistoryReader_impl> d_ptr;
-
-        static int selectCallback(void* userData, int argc, char **argv, char **azColName);
-        static int selectCallback2(void* userData, int argc, char **argv, char **azColName);
+class IHistoryReader {
+public:
+    virtual ~IHistoryReader() = default;
+    // filename must be utf-8 encoded
+    virtual bool loadFromFile(const std::string& filename) = 0;
+    virtual bool loadFromDB(time_t from, time_t to, const std::string& filename, const std::string& url) = 0;
+    virtual int getSessionCount() const = 0;
+    // The pointer returned by this function is only valid
+    //  during lifetime of CHistoryReader object
+    virtual CHistorySession* getSession(size_t index) const = 0 ;
 };
-#endif

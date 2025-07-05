@@ -58,8 +58,9 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
 {
     UploadSession* uploadSession = task->session();
     std::shared_ptr<CHistorySession> session;
-    if (uploadSession->isHistoryEnabled()) {
-        CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
+    auto mgr = ServiceLocator::instance()->historyManager();
+    if (mgr && uploadSession->isHistoryEnabled()) {
+      
         std::lock_guard<std::mutex> lock(uploadSession->historySessionMutex_);
         session = uploadSession->historySession_;
         if (!session) {
@@ -84,7 +85,7 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
         return ;
     }
     
-    if (uploadSession->isHistoryEnabled()) {
+    if (mgr && uploadSession->isHistoryEnabled()) {
         HistoryItem hi(session.get());
         hi.localFilePath = fileTask->originalFileName();
         hi.serverName = fileTask->serverProfile().serverName();
@@ -103,7 +104,6 @@ void UploadManager::onTaskFinished(UploadTask* task, bool ok)
             LocalFileCache::instance()->addFile(hi.directUrl, hi.localFilePath);
         }
 
-        CHistoryManager * mgr = ServiceLocator::instance()->historyManager();
         mgr->saveHistoryItem(&hi);
         //session->addItem(hi);
     }

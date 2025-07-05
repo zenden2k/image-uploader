@@ -13,17 +13,13 @@ add_executable(CLI
     ${RESOURCE_LIST}
 )
 
-if (IU_ENABLE_WEBVIEW2)
-    set_target_properties(CLI PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
-    set_target_properties(CLI PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
-    set_target_properties(CLI PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
-endif()
+configure_webview2_target(CLI)
 
 set_target_properties(CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(CLI PRIVATE iucore ${LIBS_LIST} ${COMMON_LIBS_LIST})
+target_link_libraries(CLI PRIVATE iu_core ${LIBS_LIST} ${COMMON_LIBS_LIST})
 
 if(WIN32)
     add_custom_command(TARGET CLI

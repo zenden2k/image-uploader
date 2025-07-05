@@ -45,6 +45,7 @@
 
 class WinToastHandler;
 class ScreenRecorderWindow;
+class CHistoryManager;
 
 constexpr int ID_PASTE = 9888;
 constexpr int ID_HOTKEY_BASE = 10000;
@@ -365,6 +366,7 @@ protected:
 #endif
     ScreenRecordingRuntimeParams screenRecordingParams_;
     boost::weak_ptr<ScreenRecorderWindow> screenRecorderWindow_;
+    std::unique_ptr<CHistoryManager> historyManager_;
 };
 
 

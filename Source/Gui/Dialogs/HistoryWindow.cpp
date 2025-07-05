@@ -33,6 +33,7 @@
 #include "Core/Utils/DesktopUtils.h"
 #include "Core/ServiceLocator.h"
 #include "Core/TaskDispatcher.h"
+#include "History/HistoryManagerImpl.h"
 
 namespace {
 
@@ -197,7 +198,7 @@ LRESULT CHistoryWindow::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     }
     bool isSessionItem = item->level()==0;
     
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     CMenu menu;
     menu.CreatePopupMenu();
     if(!isSessionItem)
@@ -291,7 +292,7 @@ LRESULT CHistoryWindow::OnCopyToClipboard(WORD wNotifyCode, WORD wID, HWND hWndC
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -305,7 +306,7 @@ LRESULT CHistoryWindow::OnCopyViewLink(WORD wNotifyCode, WORD wID, HWND hWndCtl,
     if (!item) {
         return 0;
     }
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -321,7 +322,7 @@ LRESULT CHistoryWindow::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl
     if (!item) {
         return 0;
     }
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -366,7 +367,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
     }
     else
     {
-        HistoryItem* hit = CHistoryTreeControl::getItemData(item);
+        const HistoryItem* hit = CHistoryTreeControl::getItemData(item);
         if (!hit) {
             return 0;
         }
@@ -382,7 +383,7 @@ LRESULT CHistoryWindow::OnOpenFolder(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 {
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -404,7 +405,7 @@ LRESULT CHistoryWindow::OnEditFileOnServer(WORD wNotifyCode, WORD wID, HWND hWnd
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -416,7 +417,7 @@ LRESULT CHistoryWindow::OnDeleteFileOnServer(WORD wNotifyCode, WORD wID, HWND hW
 {
     TreeItem* item = m_treeView.selectedItem();
     if (!item) return 0;
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return 0;
     }
@@ -441,7 +442,9 @@ void CHistoryWindow::LoadHistory()
     {   
         m_treeView.ResetContent();
 
-        m_historyReader = std::make_unique<CHistoryReader>(ServiceLocator::instance()->historyManager());
+        auto manager = dynamic_cast<CHistoryManager*>(ServiceLocator::instance()->historyManager());
+        assert(manager);
+        m_historyReader = std::make_unique<CHistoryReader>(manager);
 
         SYSTEMTIME dateFrom, dateTo;
         time_t timeFrom = 0, timeTo = 0;
@@ -482,7 +485,7 @@ void CHistoryWindow::LoadHistory()
 }
 
 void CHistoryWindow::OpenInBrowser(const TreeItem* item) const {
-    HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
+    const HistoryItem* historyItem = CHistoryTreeControl::getItemData(item);
     if (!historyItem) {
         return;
     }

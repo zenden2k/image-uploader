@@ -16,7 +16,7 @@ class INetworkClientFactory;
 
 struct HistoryTreeItem
 {
-    HistoryItem* hi;
+    const HistoryItem* hi;
     HBITMAP thumbnail;
     bool ThumbnailRequested;
     std::string thumbnailSource;
@@ -27,7 +27,6 @@ struct HistoryTreeItem
     }
 
     ~HistoryTreeItem() {
-        delete hi;
     }
 };
 
@@ -77,7 +76,7 @@ class CHistoryTreeControl :
         void setDownloadingEnabled(bool enabled);
         bool m_bIsRunning;
         bool downloading_enabled_;
-        void addSubEntry(TreeItem* res, HistoryItem* it, bool autoExpand);
+        void addSubEntry(TreeItem* res, const HistoryItem* it, bool autoExpand);
         TreeItem*  addEntry(CHistorySession* session, const CString& text);
         void Clear();
         bool IsItemAtPos(int x, int y, bool& isRoot);
@@ -90,7 +89,7 @@ class CHistoryTreeControl :
         void CreateDownloader();
         void abortLoadingThreads();
         void ResetContent();
-        static HistoryItem* getItemData(const TreeItem* res);
+        static const HistoryItem* getItemData(const TreeItem* res);
         void setOnThreadsFinishedCallback(std::function<void()> cb);
         void setOnThreadsStartedCallback(std::function<void()> cb);
         void setOnItemDblClickCallback(std::function<void(TreeItem*)> cb);

@@ -184,6 +184,14 @@ void UploadEngineManager::unloadUploadEngines() {
     m_plugins.clear();
 }
 
+
+void UploadEngineManager::unloadUploadEngines(const std::string& serverName, const std::string& profileName) {
+    std::lock_guard<std::mutex> lock(pluginsMutex_);
+    for (auto &pr: m_plugins) {
+        pr.second.erase(serverName);
+    }
+}
+
 void UploadEngineManager::setScriptsDirectory(const std::string & directory) {
     scriptsDirectory_ = directory;
 }

@@ -391,20 +391,12 @@ endif()
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
-target_link_libraries(GUI PRIVATE iucore iuvideo iucapture
+target_link_libraries(GUI PRIVATE iu_core iu_history iu_video iu_capture
     ${LIBS_LIST}
     ${COMMON_LIBS_LIST}
 )
 
-if (IU_ENABLE_WEBVIEW2)
-    set_target_properties(GUI PROPERTIES VS_GLOBAL_WebView2LoaderPreference "Static")
-    set_target_properties(GUI PROPERTIES VS_USER_PROPS "${CMAKE_SOURCE_DIR}/ImageUploader.Core.props")
-    set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "${WEBVIEW2_PACKAGES_REFERENCES}")
-
-    #set_target_properties(GUI PROPERTIES VS_PACKAGE_REFERENCES "Microsoft.Web.WebView2_1.0.2592.51;Microsoft.Windows.ImplementationLibrary_1.0.240122.1")
-    #target_link_libraries(iucore PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Web.WebView2/build/native/Microsoft.Web.WebView2.targets)
-    #target_link_libraries(GUI PUBLIC ${CMAKE_BINARY_DIR}/packages/Microsoft.Windows.ImplementationLibrary/build/native/Microsoft.Windows.ImplementationLibrary.targets)
-endif()
+configure_webview2_target(GUI)
 
 set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
 
