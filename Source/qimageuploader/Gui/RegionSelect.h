@@ -27,7 +27,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-#include "Core/ScreenCapture/ScreenCapture.h"
+#include "ScreenCapture/ScreenCaptureQt.h"
 
 QT_BEGIN_NAMESPACE
 class QLabel;

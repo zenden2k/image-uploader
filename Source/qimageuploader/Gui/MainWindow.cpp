@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QThread>
 
+#include "Core/BasicConstants.h"
 #include "Gui/FrameGrabberDlg.h"
 #include "Gui/RegionSelect.h"
 #include "Gui/controls/ServerSelectorWidget.h"
@@ -40,6 +41,7 @@ MainWindow::MainWindow(CUploadEngineList* engineList, LogWindow* logWindow, QWid
     ui(new Ui::MainWindow),
     logWindow_(logWindow) {
     ui->setupUi(this);
+    setWindowTitle(APP_NAME_A + QStringLiteral(" (Qt GUI)"));
     auto* serviceLocator = ServiceLocator::instance();
     auto* settings = serviceLocator->settings<QtGuiSettings>();
     engineList_ = engineList;
