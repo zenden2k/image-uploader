@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -122,9 +122,9 @@ void Document::saveDocumentState(bool full) {
 
     changedSegments_.getRects( rects, srcImageWidth, srcImageHeight ); // may contain invalid segments!
     unsigned int pixels = 0;
-    
+
     pixels = rects.size() * AffectedSegments::kSegmentSize * AffectedSegments::kSegmentSize * pixelSize;
-    
+
     unsigned int dataSize    = pixels * pixelSize;
     unsigned char* imageData = nullptr;
 
@@ -170,7 +170,7 @@ void Document::saveDocumentState(bool full) {
         }
         currentImage_->UnlockBits(&bdSrc);
     }
-    
+
     HistoryItem item;
     item.data     = imageData;
     item.segments = changedSegments_;
@@ -195,7 +195,7 @@ void Document::checkTransparentPixels()
     if ( currentImage_->LockBits(&lockRect, ImageLockModeRead, PixelFormat32bppARGB, &bitmapData) == Ok) {
         auto* source = static_cast<uint8_t*>(bitmapData.Scan0);
         unsigned int stride;
-        if ( bitmapData.Stride > 0) { 
+        if ( bitmapData.Stride > 0) {
             stride = bitmapData.Stride;
         } else {
             stride = - bitmapData.Stride;
@@ -228,7 +228,7 @@ bool Document::undo() {
     std::deque<RECT> rects;
     auto image = currentImage_;
     undoItem.segments.getRects( rects, image->GetWidth(), image->GetHeight() );
-    
+
     Gdiplus::BitmapData bdSrc;
     Gdiplus::Rect r ( 0,0, image->GetWidth(), image->GetHeight() );
     if (image->LockBits( &r,  ImageLockModeWrite, PixelFormat32bppARGB, &bdSrc) != Gdiplus::Ok ) {
@@ -262,7 +262,7 @@ bool Document::undo() {
         }
     }
 
-   
+
     delete[] undoItem.data;
     image->UnlockBits( &bdSrc );
     return true;

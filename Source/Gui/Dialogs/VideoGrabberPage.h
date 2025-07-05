@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ struct SENDPARAMS
 };
 
 class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPage>, public CWinDataExchange <CVideoGrabberPage>
-{ 
+{
 	public:
 		CVideoGrabberPage(UploadEngineManager * uploadEngineManager);
 		enum { IDD = IDD_VIDEOGRABBER, ID_DEINTERLACE = 18000, ID_VIDEOSETTINGS, ID_OPENFOLDER, ID_VIDEOENGINEFIRST = 18100, ID_VIDEOENNGINELAST = 18131 };
@@ -67,7 +67,7 @@ class CVideoGrabberPage : public CWizardPage, public CDialogImpl<CVideoGrabberPa
             COMMAND_RANGE_HANDLER(ID_VIDEOENGINEFIRST, ID_VIDEOENNGINELAST, OnMenuVideoEngine)
 			REFLECT_NOTIFICATIONS()
 		END_MSG_MAP()
-        
+
         BEGIN_DDX_MAP(CVideoGrabberPage)
             DDX_CONTROL_HANDLE(IDC_FILEEDIT, fileEdit_)
             DDX_CONTROL_HANDLE(IDC_UPDOWN, frameCountUpDownCtrl_)

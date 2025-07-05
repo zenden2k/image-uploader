@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ CHyperLinkControl::~CHyperLinkControl()
 
 /* CHyperLinkControl::Init
 -----------------------
-Must be called before adding any items 
+Must be called before adding any items
 */
 void CHyperLinkControl::Init(COLORREF BkColor)
 {
@@ -86,7 +86,7 @@ size_t CHyperLinkControl::ItemCount() const {
 
 CString CHyperLinkControl::GetItemTitle(size_t item) const {
     if (item < Items.GetCount()) {
-        return Items[item].szTitle; 
+        return Items[item].szTitle;
     }
     return {};
 }
@@ -163,7 +163,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
     HyperLinkControlItem item{};
     if (szTip) {
         item.szTip =szTip;
-    } 
+    }
     item.szTitle = szTitle;
     item.hIcon = hIcon;
     if (hIcon) {
@@ -207,7 +207,7 @@ int CHyperLinkControl::AddString(LPCTSTR szTitle, LPCTSTR szTip, int idCommand, 
         if (BottomY && m_bHyperLinks) {
             itemRect.top += scaleY(15);
         }
-       
+
         itemRect.right = scaleX(10) + itemRect.left + iconBigWidth + TitleWidth + 1 /*ClientRect.right*/;
         int height;
         if (m_bHyperLinks) {
@@ -489,9 +489,9 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
         {
             CRect itemRect = item.ItemRect;
             RECT TextRect = item.ItemRect;
-            
+
             if(!m_bHyperLinks && isHighlighted)
-            {    
+            {
                 CRect rec = item.ItemRect;
                 rec.right = rc.right - scaleX(6);
                 //rec.InflateRect(scaleX(3), scaleX(6));
@@ -515,7 +515,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             GetTextExtentPoint32(dc, item.szTitle, lstrlen(item.szTitle), &TextDims);
 
             int textY = itemRect.top;
-            if(*item.szTip == _T(' ')) {   
+            if(*item.szTip == _T(' ')) {
                 textY += (itemRect.Height() - TextDims.cy) / 2;
             }
 
@@ -541,7 +541,7 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
             dc.SelectFont(oldFont);
         } // End of drawing "big" item
 
-        else 
+        else
         {
             HFONT oldFont;
             if (isHighlighted) { // If item we draw is selected
@@ -567,13 +567,13 @@ LRESULT CHyperLinkControl::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lP
 
 LRESULT CHyperLinkControl::OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& bHandled)
 {
-    bHandled = true; 
+    bHandled = true;
     return 1;
 }
 
 void CHyperLinkControl::SelectItem(int Index)
 {
-    if(Index == selectedItemIndex_) return; 
+    if(Index == selectedItemIndex_) return;
 
     RECT ClientRect;
     GetClientRect(&ClientRect);
@@ -653,7 +653,7 @@ void CHyperLinkControl::HoverItem(int Index)
 HyperLinkControlItem* CHyperLinkControl::getItemByCommand(int command) {
     for (size_t i = 0; i < Items.GetCount(); i++) {
         if (Items[i].idCommand == command) {
-            return &Items[i];  
+            return &Items[i];
         }
     }
     return nullptr;
@@ -737,7 +737,7 @@ LRESULT CHyperLinkControl::OnGetDlgCode(UINT uMsg, WPARAM wParam, LPARAM lParam,
             //NotifyParent(Selected);
             retFlags |= DLGC_DEFPUSHBUTTON;
         }
-    } 
+    }
     return retFlags;
 }
 

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -204,7 +204,7 @@ std::string Translate(const std::string& key, const std::string& originalText) {
     auto translator = ServiceLocator::instance()->translator();
     if (translator) {
         return translator->translate(originalText.c_str());
-    } 
+    }
     return originalText;
 }
 
@@ -342,7 +342,7 @@ template<class T,class V> void setObjValues(T key, Json::Value::const_iterator i
             break;
         case realValue:  // double value
             obj.SetValue(key, it->asFloat());
-            break;  
+            break;
         case stringValue:   // UTF-8 string value
             obj.SetValue(key, it->asString().data());
             break;
@@ -361,7 +361,7 @@ template<class T,class V> void setObjValues(T key, Json::Value::const_iterator i
             obj.SetValue(key, newObj);
             break;
         }
-            
+
         }
     } catch (const std::logic_error & ex) {
         LOG(WARNING) << "setObjValue()" << std::endl << ex.what();
@@ -390,10 +390,10 @@ void parseJSONObj(const Json::Value& root, HSQUIRRELVM vm) {
         switch (root.type()) {
         case intValue: // signed integer value
         case uintValue: // unsigned integer value
-            Sqrat::PushVar(vm, static_cast<SQInteger>(root.asInt64())); 
+            Sqrat::PushVar(vm, static_cast<SQInteger>(root.asInt64()));
             break;
         case realValue: // double value
-            Sqrat::PushVar(vm, root.asFloat()); 
+            Sqrat::PushVar(vm, root.asFloat());
             break;
         case stringValue: // UTF-8 string value
             Sqrat::PushVar(vm, root.asString().data());
@@ -482,7 +482,7 @@ Json::Value sqObjToJson(const Sqrat::Object& obj ) {
                 while(obj.Next(it) ) {
                     res[Sqrat::Object(it.getKey(), vm).Cast<int>()] = sqObjToJson(Sqrat::Object(it.getValue(), vm));
                 }
-                return res;            
+                return res;
     }
     return Json::Value(Json::nullValue);
 }
@@ -491,7 +491,7 @@ std::string ToJSON(const Sqrat::Object&  obj) {
     Json::Value root = sqObjToJson(obj);
     Json::StreamWriterBuilder builder;
     builder["commentStyle"] = "None";
-    builder["indentation"] = "   ";  
+    builder["indentation"] = "   ";
     return Json::writeString(builder, root);
 }
 
@@ -569,7 +569,7 @@ std::string GetFileExtension(const std::string& path) {
 SQInteger GetImageInfo(HSQUIRRELVM vm) {
     Sqrat::Table tbl(vm);
     Sqrat::Var<const SQChar*> strVar(vm, 2); // 2 = first argument (not 'this')
-    if (!strVar.value) { 
+    if (!strVar.value) {
         return sq_throwerror(vm, "Expected a string argument!");
     }
 
@@ -662,16 +662,16 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("GetAppLanguage", GetAppLanguage)
         .Func("GetAppLocale", GetAppLocale)
         .Func("HtmlEntitiesDecode", IuTextUtils::DecodeHtmlEntities)
-        .Func("GetFileSize", ScriptGetFileSize)    
+        .Func("GetFileSize", ScriptGetFileSize)
         .Func("GetFileSizeDouble", ScriptGetFileSize)
         .SquirrelFunc("GetImageInfo", GetImageInfo)
-        .SquirrelFunc("WriteLog", WriteLog)    
+        .SquirrelFunc("WriteLog", WriteLog)
         .SquirrelFunc("GetCurrentScriptFileName", GetCurrentScriptFileName)
         .Func("GetCurrentThreadId", GetCurrentThreadId)
-        .Func("MessageBox", MessageBox)   
-        .Func("GetDeviceId", GetDeviceId)  
-        .Func("GetDeviceName", GetDeviceName)    
-        .Func("GetEnvDecode", GetEnvDecode);    
+        .Func("MessageBox", MessageBox)
+        .Func("GetDeviceId", GetDeviceId)
+        .Func("GetDeviceName", GetDeviceName)
+        .Func("GetEnvDecode", GetEnvDecode);
 
     using namespace IuCoreUtils;
     root
@@ -696,7 +696,7 @@ void RegisterFunctions(Sqrat::SqratVM& vm)
         .Func("Base64Encode", &CryptoUtils::Base64Encode)
         .Func("url_encode", url_encode)
         .Func("UrlEncode", url_encode)
-        .Func("DebugMessage", DebugMessage);    
+        .Func("DebugMessage", DebugMessage);
 }
 //    atexit(&CleanUpFunctions);
 

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -80,9 +80,9 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     AddClipboardFormatListener(m_hWnd);
-    
+
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
- 
+
     ::SetFocus(GetDlgItem(IDOK));
     SetWindowText(TR("Image Downloader"));
     CString addButtonCaption = TR("Add") + CString(_T(" (Ctrl+Enter)"));
@@ -96,7 +96,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     if(!m_InitialBuffer.IsEmpty())
     {
         if (ParseBuffer(m_InitialBuffer, false) != 0) {
-            BeginDownloading(); 
+            BeginDownloading();
         }
     } else {
         CString text;
@@ -107,7 +107,7 @@ LRESULT CImageDownloaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         }
     }
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
-    return 0; 
+    return 0;
 }
 
 LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -117,7 +117,7 @@ LRESULT CImageDownloaderDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 }
 
 LRESULT CImageDownloaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     BeginDownloading();
     return 0;
 }
@@ -198,7 +198,7 @@ bool CImageDownloaderDlg::OnFileFinished(bool ok, int statusCode, const Download
                 m_downloadedFiles.push_back(ais.RealFileName);
             }
             ++m_nSuccessfullDownloads;
-            
+
         }
     }
     m_nFileDownloaded++;
@@ -232,7 +232,7 @@ bool CImageDownloaderDlg::BeginDownloading()
     m_nFilesCount =0;
     m_nFileDownloaded = 0;
     std::vector<DownloadTask::DownloadItem> downloadItems;
-    
+
     for(size_t i=0; i<tokens.size(); i++)
     {
         const std::string& token = tokens[i];
@@ -301,7 +301,7 @@ size_t CImageDownloaderDlg::ParseBuffer(CString buffer, bool OnlyImages)
     }
     std::vector<CString> links;
     ExtractLinks(buffer,links);
-    
+
     for(size_t i=0; i<links.size(); i++)
     {
         CString fileName = WinUtils::myExtractFileName(links[i]);
@@ -358,7 +358,7 @@ BOOL CImageDownloaderDlg::EmulateEndDialog(int nRetCode) {
     m_loop.RemoveMessageFilter(this);
     m_retCode = nRetCode;
     PostMessage(WM_QUIT);
-    
+
     return TRUE;
 }
 

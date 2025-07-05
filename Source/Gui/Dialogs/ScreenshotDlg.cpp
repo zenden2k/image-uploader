@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     m_monitorCombobox.m_hWnd = GetDlgItem(IDC_MONITORSCOMBOBOX);
 
     int selectedIndex = 0;
-    
+
     int itemIndex = m_monitorCombobox.AddString(TR("Current monitor"));
 
     if (itemIndex >= 0) {
@@ -91,7 +91,7 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     int i = 0;
 
     if (enumerator.enumDisplayMonitors(0, 0)) {
-        
+
         for (const MonitorEnumerator::MonitorInfo& monitor : enumerator) {
             CString itemTitle;
             itemTitle.Format(_T("%s %d (%dx%d)"), TR("Monitor"), i + 1, monitor.rect.Width(), monitor.rect.Height());
@@ -114,8 +114,8 @@ LRESULT CScreenshotDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     } else {
         m_monitorCombobox.SetCurSel(selectedIndex);
     }
-    
-    return 0; 
+
+    return 0;
 }
 
 LRESULT CScreenshotDlg::OnClickedFullscreenCapture(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -161,7 +161,7 @@ LRESULT CScreenshotDlg::OnClickedActiveWindowCapture(WORD /*wNotifyCode*/, WORD 
     endDialogOK();
     return 0;
 }
-        
+
 LRESULT CScreenshotDlg::OnBnClickedWindowHandlesRegion(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     m_CaptureMode = cmWindowHandles;
@@ -174,7 +174,7 @@ LRESULT CScreenshotDlg::OnBnClickedTopWindowRegion(WORD /*wNotifyCode*/, WORD /*
     endDialogOK();
     return 0;
 }
-        
+
 LRESULT CScreenshotDlg::OnBnClickedLastRegion(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     m_CaptureMode = cmLastRegion;
     endDialogOK();
@@ -231,7 +231,7 @@ LRESULT CScreenshotDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         auto monitorMode = static_cast<MonitorMode>(m_monitorCombobox.GetItemData(itemIndex));
         settings->ScreenshotSettings.MonitorMode = static_cast<int>(monitorMode);
     }
-    
+
     return 0;
 }
 

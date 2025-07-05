@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -81,6 +81,15 @@ int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
     return -1;  // Failure
 }
 
+std::unique_ptr<Gdiplus::Image> ImageFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType) {
+    ImageLoader loader;
+    auto res = loader.loadFromResource(hInstance, szResName, szResType);
+    if (!res) {
+        return {};
+    }
+    return std::unique_ptr<Gdiplus::Image>(res->releaseImage());
+}
+
 std::unique_ptr<Gdiplus::Bitmap> BitmapFromResource(HINSTANCE hInstance, LPCTSTR szResName, LPCTSTR szResType)
 {
     ImageLoader loader;
@@ -116,7 +125,7 @@ void PrintRichEdit(HWND hwnd, Gdiplus::Graphics* graphics, Gdiplus::Bitmap* back
     gr2.DrawImage(background,layoutArea.GetLeft(),layoutArea.GetTop(),layoutArea.GetLeft(), layoutArea.GetTop(), layoutArea.Width, layoutArea.Height,Gdiplus::UnitPixel/*gr2.GetPageUnit()*/);
 
     FORMATRANGE fmtRange;
-    fmtRange.chrg.cpMax = -1;                    //Indicate character from to character to 
+    fmtRange.chrg.cpMax = -1;                    //Indicate character from to character to
     fmtRange.chrg.cpMin = 0;
     fmtRange.hdc = hdc;                                //Use the same DC for measuring and rendering
     fmtRange.hdcTarget = hdc;                    //Point at printer hDC
@@ -149,9 +158,9 @@ void DrawRoundedRectangle(Gdiplus::Graphics* gr, Gdiplus::Rect r, int d, Gdiplus
 
 std::unique_ptr<Gdiplus::Bitmap> IconToBitmap(HICON ico)
 {
-    ICONINFO ii; 
+    ICONINFO ii;
     GetIconInfo(ico, &ii);
-    BITMAP bmp; 
+    BITMAP bmp;
     GetObject(ii.hbmColor, sizeof(bmp), &bmp);
 
     Gdiplus::Bitmap temp(ii.hbmColor, NULL);
@@ -188,11 +197,11 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
         } else {
             stride = - dataSource.Stride;
         }
-        
+
         size_t myStride = 4 * (w /*& ~3*/);
         size_t bufSize = myStride * h;
         uint8_t* buf = new uint8_t[bufSize];
-        
+
         uint8_t *bufCur = buf;
         uint8_t *sourceCur = source;
         uint8_t * temp = new uint8_t[bufSize];
@@ -210,7 +219,7 @@ void ApplyGaussianBlur(Gdiplus::Bitmap* bm, int x,int y, int w, int h, float rad
 
         //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         //LOG(ERROR) << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-       
+
         bufCur = buf;
         sourceCur = source;
         for (int i = 0; i < h; i++) {
@@ -311,7 +320,7 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageFromFileWithoutLocking(const WCHAR* fi
             uint8_t * srcBits = static_cast<uint8_t *>(srcData.Scan0);
             uint8_t * dstBits = static_cast<uint8_t *>(dstData.Scan0);
             unsigned int stride;
-            if (srcData.Stride > 0) { 
+            if (srcData.Stride > 0) {
                 stride = srcData.Stride;
             } else {
                 stride = - srcData.Stride;
@@ -356,12 +365,12 @@ Gdiplus::Color StringToColor(const std::string& str) {
             std::vector<std::string> tokens;
             IuStringUtils::Split(str.substr(4, str.length()-5 ), ",", tokens,3);
             if ( tokens.size() == 3 ) {
-                return Gdiplus::Color( static_cast<BYTE>(std::stoul(tokens[0])), static_cast<BYTE>(std::stoul(tokens[1])), 
+                return Gdiplus::Color( static_cast<BYTE>(std::stoul(tokens[0])), static_cast<BYTE>(std::stoul(tokens[1])),
                     static_cast<BYTE>(std::stoul(tokens[2])));
             }
         }
     } catch (const std::invalid_argument&) {
-    } catch (const std::out_of_range&) {    
+    } catch (const std::out_of_range&) {
     }
     return Gdiplus::Color();
 }
@@ -422,7 +431,7 @@ bool CopyBitmapToClipboard(HWND hwnd, HDC dc, Gdiplus::Bitmap* bm, bool preserve
         destDC.SelectBitmap(oldDestBmp);
         origDC.SelectBitmap(oldOrigBmp);
         SetClipboardData(CF_BITMAP, destBmp);
-        CloseClipboard(); 
+        CloseClipboard();
         DeleteObject(out);
         return true;
     } else {
@@ -552,11 +561,11 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
     } else if (Format == sifDetectByExtension) {
         Format = GetFormatByFileName(szFilename);
     }
-    
+
     TCHAR* szImgTypes[5] = { _T("jpg"), _T("png"), _T("gif"), _T("webp"), _T("webp")};
-    
+
     CString szNameBuffer, buffer2;
- 
+
     if (IuCommonFunctions::IsImage(szFilename)) {
         szNameBuffer = WinUtils::GetOnlyFileName(szFilename);
     } else {
@@ -578,7 +587,7 @@ bool MySaveImage(/* nullable */ Bitmap* img, const CString& szFilename, CString&
     CString resultFilename = WinUtils::GetUniqFileName(buffer2);
     WinUtils::CreateFilePath(resultFilename);
     bool res = SaveImageToFile(img, resultFilename, nullptr, Format, Quality);
-    
+
     szBuffer = resultFilename;
     return res;
 }
@@ -725,10 +734,10 @@ short GetImageOrientation(Image* img) {
 
         for (UINT j = 0; j < numProperties; ++j) {
             if (all_items[j].id == 0x0112) {
-                
+
                 memcpy(&orient, all_items[j].value, sizeof(orient));
 
-                
+
                 break; // only orientation
             }
         }
@@ -763,7 +772,7 @@ std::unique_ptr<GdiPlusImage> LoadImageFromFileExtended(const CString& fileName)
     auto result = loader.loadFromFile(fileName);
     if (!result) {
         ServiceLocator::instance()->logger()->write(ILogger::logWarning, _T("Image Loader"),
-            _T("Cannot load image.") + CString(L"\r\n") + loader.getLastError().c_str(), 
+            _T("Cannot load image.") + CString(L"\r\n") + loader.getLastError().c_str(),
             CString(_T("File:")) + _T(" ") + fileName);
     }
     return result;
@@ -818,7 +827,7 @@ std::unique_ptr<Gdiplus::Bitmap> BitmapFromMemory(BYTE* data, size_t imageSize) 
             }
         }
     }
-    
+
     return nullptr;
 }
 
@@ -874,7 +883,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
                 }
             }
         }
-        
+
         int originalThumbWidth = 0, originalThumbHeight = 0;
         if (compression == ThumbCompressionJPEG || compression == ThumbCompressionRGB) {
             auto thumbDataItem = GetPropertyItemFromImage(bm, PropertyTagThumbnailData);
@@ -925,7 +934,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
                             gr.DrawImage(&src, 0, 0, sz.Width, sz.Height);
                             return res;
                         }
-                        
+
                     }
 
                 } else {
@@ -933,7 +942,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetThumbnail(Gdiplus::Image* bm, int width, int
                 }
             }
         }
-    } 
+    }
     // Fallback - Load full image and draw it  (slow)
     gr.DrawImage(bm, 0, 0, sz.Width, sz.Height);
 
@@ -973,7 +982,7 @@ Gdiplus::Size ProportionalSize(const Gdiplus::Size& originalSize, const Gdiplus:
         return maximizedToHeight;
     } else {
         return maximizedToWidth;
-    } 
+    }
 }
 
 Gdiplus::Size AdaptProportionalSize(const Gdiplus::Size& szMax, const Gdiplus::Size& szReal)
@@ -1144,7 +1153,7 @@ bool CopyDataToClipboardInDataUriFormat(ULONGLONG dataSize, std::string mimeType
     }
     strncpy(encodedDataCur, "data:", 5);
     encodedDataCur += 5;
-   
+
     strncpy(encodedDataCur, mimeType.c_str(), mimeType.length());
     encodedDataCur += mimeType.length();
     strncpy(encodedDataCur, ";base64,", 8);
@@ -1202,7 +1211,7 @@ bool CopyFileToClipboardInDataUriFormat(const CString& fileName, int Format, int
         LOG(ERROR) << fileNameUtf8 << std::endl << "File is too big";
         return false;
     }
-    
+
     bool res = CopyDataToClipboardInDataUriFormat(fileSize, mimeType, html, [&](void* buffer, size_t size) -> size_t {
         if (feof(f)) {
             return 0;
@@ -1239,7 +1248,7 @@ bool CopyBitmapToClipboardInDataUriFormat(Bitmap* bm, SaveImageFormat Format, in
 
 ImageInfo GetImageInfo(const wchar_t* fileName) {
     auto img = LoadImageFromFileExtended(fileName);
-    
+
     ImageInfo res;
     if (!img) {
         return res;
@@ -1582,7 +1591,7 @@ std::pair<std::unique_ptr<Gdiplus::Bitmap>,std::unique_ptr<BYTE[]>> GetIconPixel
         if (pWrapBitmap->LockBits(&rcImage, ImageLockModeRead, pWrapBitmap->GetPixelFormat(), &bitmapData) == Ok) {
             int absStride = std::abs(bitmapData.Stride);
             size_t size = absStride * bitmapData.Height;
-            
+
             data = std::make_unique<BYTE[]>(size);
 
             for (int y = 0; y < bitmapData.Height; y++) {

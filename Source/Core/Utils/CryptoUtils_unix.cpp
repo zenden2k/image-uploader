@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ std::string CryptoUtils::CalcMD5Hash(const void* data, size_t size)
     MD5_Init(&context);
     MD5_Update(&context, data, size);
 
-    unsigned char buff[16] = "";    
+    unsigned char buff[16] = "";
 
     MD5_Final(buff, &context);
 
@@ -58,7 +58,7 @@ std::string CryptoUtils::CalcMD5HashFromString(const std::string& data)
     MD5_Init(&context);
     MD5_Update(&context, (unsigned char*)data.c_str(), data.length());
 
-    unsigned char buff[16] = "";    
+    unsigned char buff[16] = "";
 
     MD5_Final(buff, &context);
 
@@ -110,7 +110,7 @@ std::string CryptoUtils::CalcSHA1Hash(const void* data, size_t size) {
     SHA1_Init( &context );
     SHA1_Update( &context, data, size );
 
-    unsigned char buff[HashSize] = "";    
+    unsigned char buff[HashSize] = "";
 
     SHA1_Final( buff, &context);
 
@@ -127,7 +127,7 @@ std::string CryptoUtils::CalcHMACSHA1Hash(const std::string& key, const void* da
 
     // Using sha1 hash engine here.
     // You may use other hash engines. e.g EVP_md5(), EVP_sha224, EVP_sha512, etc
-    digest = HMAC(EVP_sha1(), key.c_str(), key.length(), (unsigned char*)data, size, NULL, NULL);    
+    digest = HMAC(EVP_sha1(), key.c_str(), key.length(), (unsigned char*)data, size, NULL, NULL);
 
     char mdString[50]="";
     for(int i = 0; i < 20; i++) {

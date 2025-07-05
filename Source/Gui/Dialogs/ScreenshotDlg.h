@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@
 #define IDC_HWNDSREGION WM_USER + 223
 #define IDC_TOPWINDOWREGION WM_USER + 224
 
-class CScreenshotDlg : 
+class CScreenshotDlg :
     public /*aero::*/CCustomDialogIndirectImpl<CScreenshotDlg>,
     public CWinDataExchange<CScreenshotDlg>,
     public CDialogResize<CScreenshotDlg>
@@ -49,7 +49,7 @@ class CScreenshotDlg :
         ~CScreenshotDlg() = default;
         ScreenCapture::CaptureMode captureMode() const;
         enum { IDD = IDD_SCREENSHOTDLG };
-    
+
     protected:
         BEGIN_MSG_MAP(CScreenshotDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -85,7 +85,7 @@ class CScreenshotDlg :
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        
+
         // Handlers:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

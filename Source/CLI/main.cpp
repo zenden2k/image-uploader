@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
-    
+
 */
 
 #include <chrono>
@@ -77,7 +77,7 @@
 CAppModule _Module;
 std::string dataFolder = "Data/";
 #else
-std::string dataFolder = "/usr/share/imageuploader/";
+std::string dataFolder = "/usr/share/uptooda-cli/";
 #endif
 CliSettings Settings;
 std::vector<std::string> filesToUpload;
@@ -89,7 +89,7 @@ std::map<std::string,std::string> serverParameters;
 bool printServerParameters;
 std::string proxy;
 int proxyPort;
-int proxyType; /* CURLPROXY_HTTP, CURLPROXY_HTTPS, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A, 
+int proxyType; /* CURLPROXY_HTTP, CURLPROXY_HTTPS, CURLPROXY_SOCKS4, CURLPROXY_SOCKS4A,
 			   CURLPROXY_SOCKS5, CURLPROXY_SOCKS5_HOSTNAME */
 std::string proxyUser;
 std::string proxyPassword;
@@ -178,7 +178,7 @@ void OnUploadSessionFinished(UploadSession* session) {
         auto task = session->getTask(i);
         UploadResult* res = task->uploadResult();
         //auto* fileTask = dynamic_cast<FileUploadTask*>(task.get());
-        
+
         OutputGenerator::UploadObject uo;
         uo.fillFromUploadResult(res, task.get());
         if (!task->uploadSuccess()) {
@@ -195,7 +195,7 @@ void OnUploadSessionFinished(UploadSession* session) {
     std::cerr<<std::endl<<"Result:"<<std::endl;
     std::cout<< generator->generate(uploadedList);
     std::cerr<<std::endl;
-    
+
     {
         // LOG(ERROR) << "Sending finish signal" << std::endl;
         std::lock_guard<std::mutex> lk(finishSignalMutex);
@@ -252,11 +252,11 @@ void UploadTaskProgress(UploadTask* task) {
     std::lock_guard<std::mutex> guard(ConsoleUtils::instance()->getOutputMutex());
     auto* userData = static_cast<TaskUserData*>(task->userData());
     lastProgressTime = cur;
-    
+
     if (progress->totalUpload == 0) {
         return;
     }
-   
+
     if (termcolor::_internal::is_atty(std::cerr) /* || (std::abs(fractiondownloaded - 1) <= 0.001) */ || task->isFinished()) {
         fprintf(stderr, "\r#%d ", userData->index);
         PrintProgress(task);
@@ -269,7 +269,7 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     auto* userData = static_cast<TaskUserData*>(task->userData());
     bool finished = task->status() == UploadTask::StatusFinished || task->status() == UploadTask::StatusFailure;
 
-    if (termcolor::_internal::is_atty(std::cerr)) { 
+    if (termcolor::_internal::is_atty(std::cerr)) {
         ConsoleUtils::instance()->clearLine(stderr);
         fprintf(stderr, "\r#%d ", userData->index);
     } else {
@@ -281,14 +281,14 @@ void OnUploadTaskStatusChanged(UploadTask* task) {
     }
 
     std::string statusText = progress->statusText;
-    if (finished) {   
+    if (finished) {
         if (task->status() == UploadTask::StatusFinished) {
             std::cerr << termcolor::green;
         } else {
             std::cerr << termcolor::red;
         }
         std::cerr << statusText << termcolor::reset << " ";
-      
+
     } else {
         ConsoleUtils::instance()->printUnicode(stderr, statusText);
     }
@@ -450,7 +450,7 @@ int func() {
     while (!finished) {
         finishSignal.wait(lk/*, [] {return finished;}*/);
     }
-	return funcResult;	
+	return funcResult;
 }
 
 
@@ -544,7 +544,7 @@ protected:
 
 void DoUpdates(bool force) {
 	if(force || time(0) - Settings.LastUpdateTime > 3600*24*7 /* 7 days */) {
-        CString tempFolder, commonTempFolder; 
+        CString tempFolder, commonTempFolder;
         IuCommonFunctions::CreateTempFolder(tempFolder, commonTempFolder);
         Updater upd(tempFolder);
 		upd.updateServers();
@@ -565,7 +565,7 @@ char ** convertArgv(int argc, _TCHAR* argvW[]) {
 	return result;
 }
 
-int _tmain(int argc, _TCHAR* argvW[]) {	
+int _tmain(int argc, _TCHAR* argvW[]) {
 	char **argv = convertArgv(argc, argvW);
 	FLAGS_logtostderr = true;
 #else
@@ -583,7 +583,7 @@ int main(int argc, char *argv[]){
     appVersion.BranchName = IU_BRANCH_NAME;
     AppParams::instance()->setVersionInfo(appVersion);
 
-    argparse::ArgumentParser program("imgupload", appVersion.FullVersion);
+    argparse::ArgumentParser program("uptooda-cli", appVersion.FullVersion);
     program.add_argument("-s", "--server")
         .help("Choose server by name")
         .required()
@@ -652,7 +652,7 @@ int main(int argc, char *argv[]){
         .help("The ID of remote folder/album (supported by some servers)")
         .metavar("ID")
         .store_into(folderId);
-    
+
     program.add_argument("-r", "--retries")
         .help("Maximum number of attempts (per file)")
         .store_into(maxRetries);
@@ -684,7 +684,7 @@ int main(int argc, char *argv[]){
         .default_value(false)
         .implicit_value(true)
         .nargs(0);
-    
+
     program.add_argument("-pr", "--proxy")
         .help("Proxy address (with port)")
         .action([&](const std::string& pr) {
@@ -730,7 +730,7 @@ int main(int argc, char *argv[]){
             auto it = types.find(type);
             if (it != types.end()) {
                 proxyType = it->second;
-            } else { 
+            } else {
                  throw std::invalid_argument("Invalid proxy type");
             }
          })
@@ -768,7 +768,7 @@ int main(int argc, char *argv[]){
 
     list = std::make_unique<CUploadEngineList>();
     std::shared_ptr<ConsoleLogger> defaultLogger = std::make_shared<ConsoleLogger>();
-    
+
     ServiceLocator* serviceLocator = ServiceLocator::instance();
     serviceLocator->setSettings(&Settings);
     serviceLocator->setLogger(defaultLogger);
@@ -793,10 +793,10 @@ int main(int argc, char *argv[]){
     }
 #ifndef _WIN32
     else {
-        dataFolder = "/usr/share/imgupload/";
+        dataFolder = "/usr/share/uptooda-cli/";
     }
 #ifndef __APPLE__
-    settingsFolder = getenv("HOME")+std::string("/.config/imgupload/");
+    settingsFolder = getenv("HOME")+std::string("/.config/uptooda-cli/");
     mkdir(settingsFolder.c_str(), 0700);
 #endif
 

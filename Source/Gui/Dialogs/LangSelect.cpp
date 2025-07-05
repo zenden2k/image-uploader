@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     LogoImage.SubclassWindow(GetDlgItem(IDC_STATICLOGO));
     LogoImage.SetWindowPos(0, 0,0, 48, 48, SWP_NOMOVE|SWP_NOZORDER );
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, GetSysColor(COLOR_BTNFACE));
-    
+
     boldFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_PLEASECHOOSE));
 
     auto languageList{ LangHelper::instance()->getLanguageList((WinUtils::GetAppFolder() + "Lang").GetString()) };
@@ -64,7 +64,7 @@ LRESULT CLangSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
         language_ = _T("en");
         return 0;
     }
-    
+
     return 1;
 }
 

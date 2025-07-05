@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ class BasicSettings;
 
 class CFileQueueUploader {
     public:
-        CFileQueueUploader(UploadEngineManager* uploadEngineManager, 
-            ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler, 
+        CFileQueueUploader(UploadEngineManager* uploadEngineManager,
+            ScriptsManager* scriptsManager, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
             std::shared_ptr<INetworkClientFactory> networkClientFactory, BasicSettings* settings, int maxThreads = 3);
         void addSingleTask(std::shared_ptr<UploadTask> uploadTask);
         void addSession(std::shared_ptr<UploadSession> uploadSession);

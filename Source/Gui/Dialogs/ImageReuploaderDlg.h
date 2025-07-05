@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 */
 
 // ImageDownloaderDlg.h : Declaration of the CImageReuploaderDlg
-// 
-// This dialog window shows technical information 
+//
+// This dialog window shows technical information
 // about  video/audio file that user had selected
 #ifndef IMAGEREUPLOADERDLG_H
 #define IMAGEREUPLOADERDLG_H
@@ -31,7 +31,7 @@
 #include <mutex>
 
 #include "atlheaders.h"
-#include "resource.h"       
+#include "resource.h"
 #include "Core/FileDownloader.h"
 #include "WizardDlg.h"
 #include "Core/Upload/FileQueueUploader.h"
@@ -50,18 +50,18 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
 {
     public:
         enum { IDD = IDD_IMAGEREUPLOADER };
-        CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager, 
+        CImageReuploaderDlg(CWizardDlg *wizardDlg, CMyEngineList * engineList, UploadManager *  uploadManager,
             UploadEngineManager *uploadEngineManager,const CString &initialBuffer);
         ~CImageReuploaderDlg() = default;
 
-    protected:    
+    protected:
         BEGIN_MSG_MAP(CImageReuploaderDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_PASTEHTML, BN_CLICKED, OnClickedPasteHtml)
             COMMAND_HANDLER(IDC_SOURCECODERADIO, BN_CLICKED, OnClickedOutputRadioButton)
-            COMMAND_HANDLER(IDC_LINKSLISTRADIO, BN_CLICKED, OnClickedOutputRadioButton)        
+            COMMAND_HANDLER(IDC_LINKSLISTRADIO, BN_CLICKED, OnClickedOutputRadioButton)
             COMMAND_HANDLER(IDC_COPYTOCLIPBOARD, BN_CLICKED, OnClickedCopyToClipboardButton)
             COMMAND_HANDLER(IDC_SHOWLOG, BN_CLICKED, OnShowLogClicked)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
@@ -156,7 +156,7 @@ class CImageReuploaderDlg : public CCustomDialogIndirectImpl <CImageReuploaderDl
         std::shared_ptr<UploadSession> uploadSession_;
         std::mutex uploadSessionMutex_;
         UploadEngineManager *uploadEngineManager_;
-        std::vector<std::unique_ptr<DownloadItemData>> downloadItems_; 
+        std::vector<std::unique_ptr<DownloadItemData>> downloadItems_;
         std::vector<std::unique_ptr<UploadItemData>> uploadItems_;
         std::mutex uploadItemsMutex_;
         CFont descriptionLabelFont_;

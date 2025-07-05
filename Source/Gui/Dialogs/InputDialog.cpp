@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         OffsetControl(GetDlgItem(IDOK), imgHeight );*/
     } else {
         imgControl.ShowWindow(SW_HIDE);
-        CRect temp { 0, 0, 100, 100 }; 
-        MapDialogRect(&temp); 
+        CRect temp { 0, 0, 100, 100 };
+        MapDialogRect(&temp);
 
         CRect rc;
         GetClientRect(&rc);
@@ -87,7 +87,7 @@ LRESULT CInputDialog::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 LRESULT CInputDialog::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CString val = GuiTools::GetWindowText(GetDlgItem(IDC_VALUEEDIT));
-    if (val.FindOneOf(forbiddenCharacters_) >= 0) { 
+    if (val.FindOneOf(forbiddenCharacters_) >= 0) {
         LocalizedMessageBox(TR("Text contains forbidden characters!"), APP_NAME, MB_ICONERROR);
         return 0;
     }

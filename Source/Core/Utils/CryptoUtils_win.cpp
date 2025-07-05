@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -166,7 +166,7 @@ std::string GetHashTextFromFile(const std::string& filename, HashType hashType, 
 
         //SetFilePointer(hFile, offset, nullptr, FILE_BEGIN);
     }
- 
+
     while ((bResult = ReadFile(hFile, rgbFile, chunkSize ? std::min<size_t>(chunkSize - totalRead, BUFSIZE): BUFSIZE,
         &cbRead, NULL)) != 0)
     {
@@ -326,7 +326,7 @@ std::string HMAC(const void* data, size_t size, const std::string& password, boo
         goto Exit;
     }
 
-   
+
     if (!base64)
     {
         char temp[3];

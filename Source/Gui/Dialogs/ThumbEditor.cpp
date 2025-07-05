@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ LRESULT CThumbEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     TRC(IDC_THUMBTEXTLABEL, "Text:");
     TRC(IDC_THUMBFONT, "Font...");
     TRC(IDC_ADDFILESIZE, "Add text");
-    
+
     SetWindowText(TR("Thumbnail Preset Editor"));
     FrameColor.SubclassWindow(GetDlgItem(IDC_FRAMECOLOR));
     Color1.SubclassWindow(GetDlgItem(IDC_COLOR1));
@@ -68,9 +68,9 @@ LRESULT CThumbEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT CThumbEditor::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    /*Settings.ThumbSettings.FrameColor = FrameColor.GetColor();    
+    /*Settings.ThumbSettings.FrameColor = FrameColor.GetColor();
     Settings.ThumbSettings.ThumbColor1 = Color1.GetColor();
-    Settings.ThumbSettings.ThumbColor2 = Color2.GetColor();    
+    Settings.ThumbSettings.ThumbColor2 = Color2.GetColor();
     Settings.ThumbSettings.ThumbTextColor=ThumbTextColor.GetColor();
     Settings.ImageSettings.TextColor=TextColor.GetColor();
     Settings.ImageSettings.StrokeColor=StrokeColor.GetColor();*/
@@ -100,7 +100,7 @@ void CThumbEditor::LoadParams()
 
     if(thumb_->existsParam("FrameWidth"))
         SetDlgItemInt(IDC_FRAMEWIDTH, thumb_->getParam("FrameWidth"));
-    else 
+    else
         ::EnableWindow(GetDlgItem(IDC_FRAMEWIDTH), false);
 
     if(thumb_->existsParam("DrawFrame"))
@@ -119,7 +119,7 @@ void CThumbEditor::LoadParams()
 
     if(thumb_->existsParam("FrameColor"))
         FrameColor.SetColor(WinUtils::RGB2COLORREF(thumb_->getColor("FrameColor")));
-    else 
+    else
     {
         FrameColor.EnableWindow(false);
         ::EnableWindow(GetDlgItem(IDC_FRAMECOLORLABEL), false);
@@ -175,10 +175,10 @@ void CThumbEditor::SaveParams()
 
     if(StrokeColor.IsWindowEnabled())
         thumb_->setColor("StrokeColor", WinUtils::COLORREF2RGB(StrokeColor.GetColor()));
-    
+
     if(Color2.IsWindowEnabled())
     thumb_->setColor("GradientColor2", WinUtils::COLORREF2RGB(Color2.GetColor()));
-    
+
     if(thumb_->existsParam("DrawFrame"))
     {
         bool DrawFrame = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;
@@ -186,10 +186,10 @@ void CThumbEditor::SaveParams()
     }
     if(thumb_->existsParam("FrameWidth"))
         thumb_->setParam("FrameWidth", GetDlgItemInt(IDC_FRAMEWIDTH));
-    
+
     CString text  = GuiTools::GetWindowText(GetDlgItem(IDC_THUMBTEXT));
     bool AddText  = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
-    
+
     thumb_->setParamString("Text", WCstringToUtf8(text));
     if(thumb_->existsParam("DrawText"))
         thumb_->setParam("DrawText", AddText);
@@ -208,7 +208,7 @@ LRESULT  CThumbEditor::OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
     ShowTextCheckboxChanged();
     return 0;
 }
-        
+
 void CThumbEditor::ShowTextCheckboxChanged()
 {
     bool bChecked = SendDlgItemMessage(IDC_ADDFILESIZE, BM_GETCHECK)!=0;
@@ -220,7 +220,7 @@ LRESULT CThumbEditor::OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWN
     DrawFrameCheckboxChanged();
     return 0;
 }
-        
+
 void CThumbEditor::DrawFrameCheckboxChanged()
 {
     bool bChecked = SendDlgItemMessage(IDC_DRAWFRAME, BM_GETCHECK)!=0;

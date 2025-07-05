@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ LRESULT InputBoxControl::OnEraseBkgnd(UINT uMsg, WPARAM wParam, LPARAM lParam,BO
 }
 
 LRESULT InputBoxControl::OnKillFocus(HWND hwndNewFocus) {
-    //ShowWindow( SW_HIDE ); 
+    //ShowWindow( SW_HIDE );
     return 0;
 }
 
@@ -133,7 +133,7 @@ void InputBoxControl::setRawText(const std::string& text)
     std::stringstream rawRtfText(text);
     EDITSTREAM es = {0};
     es.dwCookie = (DWORD_PTR) &rawRtfText;
-    es.pfnCallback = &EditStreamInCallback; 
+    es.pfnCallback = &EditStreamInCallback;
     SendMessage(EM_STREAMIN, SF_RTF, (LPARAM)&es);
 }
 
@@ -142,7 +142,7 @@ std::string InputBoxControl::getRawText()
     std::stringstream rawRtfText;
     EDITSTREAM es = {0};
     es.dwCookie = (DWORD_PTR) &rawRtfText;
-    es.pfnCallback = &EditStreamOutCallback; 
+    es.pfnCallback = &EditStreamOutCallback;
     /*int bytes = */SendMessage(EM_STREAMOUT, SF_RTF, (LPARAM)&es);
     return rawRtfText.str();
 }

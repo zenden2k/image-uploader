@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ LRESULT CLogWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
 	pLoop->AddMessageFilter(this);
 
     return 1;  // Let the system set the focus
-} 
+}
 
 LRESULT CLogWindow::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
     CMessageLoop* pLoop = _Module.GetMessageLoop();
@@ -142,7 +142,7 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     int selectedItems[maxItems] = {};
     int selectedItemsCount = MsgList.GetSelItems(maxItems, selectedItems);
 
-    if (selectedItemsCount >= 0) { 
+    if (selectedItemsCount >= 0) {
         CString result;
         for (int i = 0; i < selectedItemsCount; i++) {
             int itemIndex = selectedItems[i];
@@ -155,7 +155,7 @@ LRESULT CLogWindow::OnCopyToClipboard(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
         }
         WinUtils::CopyTextToClipboard(result);
     }
-    
+
     return 0;
 }
 
@@ -199,7 +199,7 @@ LRESULT CLogWindow::OnSelectAllItems(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
 void CLogWindow::TranslateUI()
 {
     if (ServiceLocator::instance()->translator()->isRTL()) {
-        SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING); 
+        SetWindowLong(GWL_EXSTYLE, GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING);
         MsgList.SetWindowLong(GWL_EXSTYLE, MsgList.GetWindowLong(GWL_EXSTYLE) | WS_EX_LAYOUTRTL | WS_EX_RTLREADING);
     }
     TRC(IDCANCEL, "Hide");
@@ -216,13 +216,13 @@ LRESULT CLogWindow::OnWmWriteLog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     std::vector<DefaultLogger::LogEntry> items;
     {
         std::lock_guard<std::mutex> lk(queueMutex_);
-        // to avoid deadlocks 
+        // to avoid deadlocks
         std::swap(items, queuedItems_);
     }
     for (const auto& item : items) {
         WriteLogImpl(item);
     }
-    
+
     return 0;
 }
 

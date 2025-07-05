@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -123,10 +123,10 @@ std::codecvt_base::result fromWstring(const std::wstring& str, const std::locale
     typedef std::codecvt<wchar_t, char, std::mbstate_t> codecvt_type;
 
     const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-    std::mbstate_t state {}; 
+    std::mbstate_t state {};
 
     std::size_t max_len = str.size() * cdcvt.max_length();
-    std::vector<char> chars(max_len + 1); 
+    std::vector<char> chars(max_len + 1);
 
     const wchar_t* in_next = nullptr;
     char* out_next = nullptr;
@@ -149,7 +149,7 @@ std::codecvt_base::result toWstring(const std::string& str, const std::locale& l
     using codecvt_type = std::codecvt<wchar_t, char, std::mbstate_t>;
 
     const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-    std::mbstate_t state {}; 
+    std::mbstate_t state {};
 
     std::vector<wchar_t> wchars(str.size() + 1);
 
@@ -201,7 +201,7 @@ std::string Utf8ToSystemLocale(const std::string& str)
 
 std::string ExtractFileName(const std::string& fileName) {
     /*std::string temp = fileName;
-    /*int Qpos = temp.find_last_of('?'); 
+    /*int Qpos = temp.find_last_of('?');
     if(Qpos>=0) temp = temp.substr(0, Qpos-1);*/
     int i, len = fileName.length();
     for (i = len - 1; i >= 0; i--) {
@@ -238,7 +238,7 @@ std::string ExtractFilePath(const std::string& fileName)
         {
             return fileName.substr(0, i+1);
         }
-            
+
     }
     return {};
 }
@@ -462,7 +462,7 @@ std::string GetFileContents(const std::string& filename) {
 std::string GetFileContentsEx(const std::string& filename, int64_t offset, size_t size, bool allowPartialRead) {
     namespace fs = std::filesystem;
 
-    fs::path filepath = fs::u8path(filename); 
+    fs::path filepath = fs::u8path(filename);
 
     std::ifstream file(filepath, std::ios::binary);
     if (!file.is_open()) {
@@ -666,10 +666,10 @@ std::string GetFileMimeType(const std::string& fileName) {
     size_t readBytes = fread(buffer, 1, sizeof(buffer), f);
     fclose(f);
     int resultPrio = 0;*/
-   
+
     /*auto* mime = xdg_mime_get_mime_type_for_data(buffer, readBytes, &resultPrio);*/
     struct stat st;
-   
+
     auto* mime = xdg_mime_get_mime_type_for_file(fileName.c_str(), &st);
     if (!mime) {
         return DefaultMimeType;

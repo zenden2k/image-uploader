@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -58,12 +58,12 @@ void CLogoSettings::TranslateUI()
     TRC(IDC_TEXTPOSITIONLABEL, "Text position:");
     TRC(IDC_PRESERVE_EXIF, "Preserve metadata (for ex. EXIF)");
     TRC(IDC_SKIPANIMATEDCHECKBOX, "Skip animated");
-    SetWindowText(TR("Additional params"));    
+    SetWindowText(TR("Additional params"));
 }
 
 CLogoSettings::~CLogoSettings()
 {
-        
+
 }
 
 LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -111,7 +111,7 @@ LRESULT CLogoSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     }
     ShowParams(profileName);
     UpdateProfileList();
-    return 1; 
+    return 1;
 }
 
 LRESULT CLogoSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -249,7 +249,7 @@ bool CLogoSettings::SaveParams(ImageConvertingParams& params)
     bool addText = SendDlgItemMessage(IDC_YOURTEXT,BM_GETCHECK) == BST_CHECKED;
     int LogoPos = SendDlgItemMessage(IDC_LOGOPOSITION, CB_GETCURSEL);
     int TextPos = SendDlgItemMessage(IDC_TEXTPOSITION, CB_GETCURSEL);
-    
+
     if(LogoPos == TextPos && addLogo && addText) {
         if(MessageBox(TR("Are you sure to place text and logo in the same position on image?"),TR("Image settings"),MB_ICONQUESTION|MB_YESNO)!=IDYES)
             return false;
@@ -317,7 +317,7 @@ LRESULT CLogoSettings::OnProfileComboSelChange(WORD wNotifyCode, WORD wID, HWND 
     {
         if (GuiTools::LocalizedMessageBox(m_hWnd, TR("Current profile's changes weren't saved. Do you want to continue?"), APP_NAME, MB_YESNO | MB_ICONWARNING) != IDYES)
         {
-            SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(CurrentProfileName.GetString())); 
+            SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1), reinterpret_cast<LPARAM>(CurrentProfileName.GetString()));
             return 0;
         }
     }
@@ -334,9 +334,9 @@ void CLogoSettings::ShowParams(const CString& profileName)
     }
 
     CurrentProfileName = profileName;
-    CurrentProfileOriginalName = profileName; 
+    CurrentProfileOriginalName = profileName;
     ShowParams(convert_profiles_[profileName]);
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(profileName.GetString())); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),reinterpret_cast<LPARAM>(profileName.GetString()));
 }
 
 LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
@@ -344,7 +344,7 @@ LRESULT CLogoSettings::OnProfileEditedCommand(WORD /*wNotifyCode*/, WORD /*wID*/
     ProfileChanged();
     return 0;
 }
-    
+
 void CLogoSettings::ProfileChanged()
 {
     if(!m_CatchChanges) return;
@@ -431,7 +431,7 @@ LRESULT CLogoSettings::OnDeleteProfile(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     if(CurrentProfileName=="Default") return 0;
     if(convert_profiles_.count(CurrentProfileName)>0)
         convert_profiles_.erase(CurrentProfileName);
-    
+
     ShowParams("Default");
     UpdateProfileList();
     return 0;

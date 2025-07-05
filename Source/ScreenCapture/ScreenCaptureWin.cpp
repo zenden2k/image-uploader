@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -229,7 +229,7 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
     tempDC.CreateCompatibleDC( dc );
     HBITMAP oldBm = tempDC.SelectBitmap( tempBm );
     ReleaseDC( 0, dc );
-    
+
     screenRegion.OffsetRgn( -regionBoundingRect.left, -regionBoundingRect.top);
 
     if (!::BitBlt(tempDC, 0, 0, bmWidth,
@@ -242,7 +242,7 @@ std::shared_ptr<Gdiplus::Bitmap> CRectRegion::GetImage(HDC src)
 
     Bitmap srcBm( tempBm, 0);
     gr.SetClip( screenRegion );
-    
+
     // Each call to the Graphics::GetHDC should be paired with a call to the Graphics::ReleaseHDC
     gr.DrawImage( &srcBm, 0, 0);
     gr.Flush();
@@ -898,7 +898,7 @@ bool CScreenCaptureEngine::captureScreen(bool drawCursor)
 {
     CRect screenBounds;
     GuiTools::GetScreenBounds(screenBounds);
-   
+
     CRect captureRect;
 
     if (monitorMode_ != kAllMonitors) {

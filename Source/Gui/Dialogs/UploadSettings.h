@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class IconBitmapUtils;
 class CServerSelectorControl;
 class WinServerIconCache;
 
-class CUploadSettings : 
+class CUploadSettings :
     public CDialogImpl<CUploadSettings>,
     public CWizardPage
 {
@@ -70,7 +70,7 @@ class CUploadSettings :
         ~CUploadSettings() override;
         enum { IDD = IDD_UPLOADSETTINGS };
 
-        enum{ 
+        enum{
             IDC_ADD_FTP_SERVER = 19001,
             IDC_ADD_FTP_SERVER_FROM_FILESERVER_LIST = 19002,
             IDC_ADD_DIRECTORY_AS_SERVER = 19003,
@@ -114,7 +114,7 @@ class CUploadSettings :
         COMMAND_HANDLER(IDC_NO_ACCOUNT, BN_CLICKED, OnNoAccountClicked)
         COMMAND_HANDLER(IDC_CHOOSEMOREIMAGESERVERSLABEL, BN_CLICKED, OnChooseMoreImageServersClicked);
         COMMAND_HANDLER(IDC_CHOOSEMOREFILESERVERS, BN_CLICKED, OnChooseMoreFileServersClicked);
-        
+
         COMMAND_HANDLER(IDC_NO_ACCOUNT_FROM_FILE_SERVER, BN_CLICKED, OnNoAccountClicked)
         NOTIFY_HANDLER(IDC_IMAGETOOLBAR, TBN_DROPDOWN, OnServerDropDown)
         NOTIFY_HANDLER(IDC_FILETOOLBAR, TBN_DROPDOWN, OnServerDropDown)

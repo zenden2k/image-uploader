@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ constexpr int BUTTON_WIDTH = 30;
 constexpr int BUTTON_HEIGHT = 30;
 constexpr int BUTTON_MARGIN = 10;
 
-// Size of the dialog IDD_SERVERSELECTORCONTROL in dialog units 
+// Size of the dialog IDD_SERVERSELECTORCONTROL in dialog units
 const int CHILD_DIALOG_WIDTH = 260;
 const int CHILD_DIALOG_HEIGHT = 46;
 
@@ -166,7 +166,7 @@ void CServerProfileGroupSelectDialog::addSelector(const ServerProfile& profile, 
     CRect rc(0, 0, 100, 100);
     control->Create(parent, rc);
     control->ShowWindow(SW_SHOW);
-    
+
     control->SetWindowPos(GetDlgItem(IDC_FILESERVERPLACEHOLDER), rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
     control->setServerProfile(profile);
     control->setTitle(TR("Server"));
@@ -213,7 +213,7 @@ LRESULT CServerProfileGroupSelectDialog::OnClickedAdd(WORD wNotifyCode, WORD wID
 
     addSelector(ServerProfile(), dpi);
     updateScroll();
-    
+
     return 0;
 }
 
@@ -243,7 +243,7 @@ void CServerProfileGroupSelectDialog::updateScroll() {
     MapDialogRect(&dlgRect);
 
     int scrollHeight = serverSelectors_.size() * dlgRect.Height();
-    
+
     int scrollWidth = dlgRect.Width() + MulDiv(BUTTON_WIDTH + BUTTON_MARGIN, dpi, USER_DEFAULT_SCREEN_DPI);
 
     // Add 1 pixel to avoid debug assertion in WTL

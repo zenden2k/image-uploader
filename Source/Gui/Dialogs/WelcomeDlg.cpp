@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ LRESULT CWelcomeDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     PageWnd = m_hWnd;
     DoDataExchange(FALSE);
     using namespace std::placeholders;
-    
+
     CClientDC dc(m_hWnd);
     int dpiX = dc.GetDeviceCaps(LOGPIXELSX);
     int dpiY = dc.GetDeviceCaps(LOGPIXELSY);
@@ -283,7 +283,19 @@ void CWelcomeDlg::updateImages(int dpiX, int dpiY) {
     int sizeX = MulDiv(32, dpiX, USER_DEFAULT_SCREEN_DPI);
     int sizeY = MulDiv(32, dpiY, USER_DEFAULT_SCREEN_DPI);
     LogoImage.SetWindowPos(0, 0, 0, sizeX, sizeY, SWP_NOMOVE | SWP_NOZORDER);
+
     LogoImage.loadImage(0, 0, IDR_ICONMAINNEW, false, RGB(255, 255, 255), true);
+
+    CRect logoImageRect;
+    LogoImage.GetWindowRect(logoImageRect);
+    ScreenToClient(logoImageRect);
+
+    int appNameWidth = MulDiv(149, dpiX, USER_DEFAULT_SCREEN_DPI);
+    int appNameHeight = MulDiv(32, dpiX, USER_DEFAULT_SCREEN_DPI);
+    int offsetX = MulDiv(50, dpiX, USER_DEFAULT_SCREEN_DPI);
+    // std::shared_ptr<Gdiplus::Image> appNameImg = ImageUtils::ImageFromResource(_Module.GetModuleInstance(), MAKEINTRESOURCE(IDR_APPNAMELOGOEMF), _T("EMF"));
+    appNameImage_.SetWindowPos(nullptr, logoImageRect.left + offsetX, logoImageRect.top, appNameWidth, appNameHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    appNameImage_.loadImage(0, 0, IDB_APPNAME, false, RGB(255, 255, 255), false, false, false);
 
     if (font2_) {
         font2_.DeleteObject();
@@ -298,7 +310,7 @@ void CWelcomeDlg::updateImages(int dpiX, int dpiY) {
         alf.lfWeight = FW_BOLD;
         alf.lfHeight = -MulDiv(13, dpiY, 72);
         font2_.CreateFontIndirect(&alf);
-        SendDlgItemMessage(IDC_TITLE, WM_SETFONT, (WPARAM)(HFONT)font2_, MAKELPARAM(false, 0));
+        //SendDlgItemMessage(IDC_TITLE, WM_SETFONT, (WPARAM)(HFONT)font2_, MAKELPARAM(false, 0));
     }
 }
 

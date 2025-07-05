@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class CStatusDlg :
         ~CStatusDlg();
         enum { IDD = IDD_STATUSDLG };
         enum { kUpdateTimer = 1};
-        
+
         BEGIN_MSG_MAP(CStatusDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_TIMER, OnTimer)

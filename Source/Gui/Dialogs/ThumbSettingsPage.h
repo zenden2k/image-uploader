@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@
 
 // CThumbSettingsPage
 
-class CThumbSettingsPage : public CDialogImpl<CThumbSettingsPage>, 
-                           public CSettingsPage    
+class CThumbSettingsPage : public CDialogImpl<CThumbSettingsPage>,
+                           public CSettingsPage
 {
 public:
     CThumbSettingsPage();
@@ -51,9 +51,9 @@ public:
         COMMAND_HANDLER(IDC_EDITTHUMBNAILPRESET, BN_CLICKED, OnEditThumbnailPreset)
         COMMAND_HANDLER(IDC_THUMBTEXTCHECKBOX, BN_CLICKED,OnThumbTextCheckboxClick )
         COMMAND_HANDLER(IDC_THUMBTEXT, EN_CHANGE, OnThumbTextChange)
-        COMMAND_HANDLER_EX(IDC_HEIGHTCHECKBOX, BN_CLICKED, OnWidthEditChange) 
-        COMMAND_HANDLER_EX(IDC_WIDTHCHECKBOX, BN_CLICKED, OnWidthEditChange) 
-        COMMAND_HANDLER_EX(IDC_HEIGHTEDIT, EN_CHANGE, OnWidthEditChange) 
+        COMMAND_HANDLER_EX(IDC_HEIGHTCHECKBOX, BN_CLICKED, OnWidthEditChange)
+        COMMAND_HANDLER_EX(IDC_WIDTHCHECKBOX, BN_CLICKED, OnWidthEditChange)
+        COMMAND_HANDLER_EX(IDC_HEIGHTEDIT, EN_CHANGE, OnWidthEditChange)
         COMMAND_HANDLER_EX(IDC_WIDTHEDIT, EN_CHANGE, OnWidthEditChange)
         COMMAND_HANDLER_EX(IDC_THUMBMACROSES, BN_CLICKED, OnThumbMacrosButtonClicked)
         REFLECT_NOTIFICATIONS()

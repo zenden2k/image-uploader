@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 */
 
 #ifndef IU_CORE_HTMLELEMENT_H
-#define IU_CORE_HTMLELEMENT_H 
+#define IU_CORE_HTMLELEMENT_H
 #include "Core/Utils/CoreTypes.h"
 #include "Core/Scripting/Squirrelnc.h"
 
@@ -50,7 +50,7 @@ public:
     void setOuterText(const std::string& text);
     /**
     Set value of an input element.
-    Note: support of <input type="file" /> in this function is considered experimental. 
+    Note: support of <input type="file" /> in this function is considered experimental.
     It works asynchronously. Do not call this function again until FileInputFilledCallback is called.
     */
     void setValue(const std::string& value);

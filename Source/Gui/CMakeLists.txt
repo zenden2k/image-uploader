@@ -6,7 +6,6 @@ set(SRC_LIST
     ../3rdpart/wintoastlib.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
     ../Core/Images/ImageConverterPrivate_gdiplus.cpp
-
     ../Core/SearchByImage.cpp
     ../Core/Settings/CommonGuiSettings.cpp
     ../Core/Settings/WtlGuiSettings.cpp
@@ -161,7 +160,7 @@ set(SRC_LIST
 )
 
 set(RESOURCE_LIST  "../Image Uploader.rc"
-    "../res/image uploader.exe.manifest")
+    "../res/GUI.exe.manifest")
 
 set(HEADER_LIST
     ../3rdpart/ShellPidl.h
@@ -394,7 +393,7 @@ target_link_libraries(GUI PRIVATE iu_core iu_history iu_video iu_capture
 
 configure_webview2_target(GUI)
 
-set_target_properties(GUI PROPERTIES OUTPUT_NAME "Image Uploader")
+set_target_properties(GUI PROPERTIES OUTPUT_NAME "uptooda")
 
 if (WIN32 AND IU_ENABLE_FFMPEG AND IU_FFMPEG_STANDALONE)
     set_target_properties(GUI PROPERTIES LINK_FLAGS "/DELAYLOAD:avcodec-59.dll /DELAYLOAD:avformat-59.dll /DELAYLOAD:avutil-57.dll /DELAYLOAD:swscale-6.dll")

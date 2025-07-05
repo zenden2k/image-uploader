@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public:
     /**
         Creating instance: local regex = CRegExp(pattern, flags);
 
-        pattern - regular expression, 
+        pattern - regular expression,
 
         flags:
 
@@ -47,38 +47,38 @@ public:
 
         <b>m</b> - PCRE_MULTILINE
 
-        By default, PCRE treats the subject string as consisting of a single "line" of characters 
+        By default, PCRE treats the subject string as consisting of a single "line" of characters
             (even if it actually contains several newlines). The "start of line" metacharacter (^)
-            matches only at the start of the string, while the "end of line" metacharacter ($) 
-            matches only at the end of the string, or before a terminating newline (unless D 
-            modifier is set). This is the same as Perl. When this modifier is set, the "start 
+            matches only at the start of the string, while the "end of line" metacharacter ($)
+            matches only at the end of the string, or before a terminating newline (unless D
+            modifier is set). This is the same as Perl. When this modifier is set, the "start
             of line" and "end of line" constructs match immediately following or immediately
-            before any newline in the subject string, respectively, as well as at the very start 
+            before any newline in the subject string, respectively, as well as at the very start
             and end. This is equivalent to Perl's /m modifier. If there are no "\n" characters in
-            a subject string, or no occurrences of ^ or $ in a pattern, setting this modifier has 
+            a subject string, or no occurrences of ^ or $ in a pattern, setting this modifier has
             no effect.
 
         <b>s</b> - PCRE_DOTALL
 
-        If this modifier is set, a dot metacharacter in the pattern matches all characters, including 
-            newlines. Without it, newlines are excluded. This modifier is equivalent to Perl's /s 
-            modifier. A negative class such as [^a] always matches a newline character, independent 
+        If this modifier is set, a dot metacharacter in the pattern matches all characters, including
+            newlines. Without it, newlines are excluded. This modifier is equivalent to Perl's /s
+            modifier. A negative class such as [^a] always matches a newline character, independent
             of the setting of this modifier.
 
         <b>x</b> - PCRE_EXTENDED
 
-        If this modifier is set, whitespace data characters in the pattern are totally ignored except 
-            when escaped or inside a character class, and characters between an unescaped # outside 
-            a character class and the next newline character, inclusive, are also ignored. This is 
-            equivalent to Perl's /x modifier, and makes it possible to include commentary inside 
-            complicated patterns. Note, however, that this applies only to data characters. 
-            Whitespace characters may never appear within special character sequences in a pattern, 
+        If this modifier is set, whitespace data characters in the pattern are totally ignored except
+            when escaped or inside a character class, and characters between an unescaped # outside
+            a character class and the next newline character, inclusive, are also ignored. This is
+            equivalent to Perl's /x modifier, and makes it possible to include commentary inside
+            complicated patterns. Note, however, that this applies only to data characters.
+            Whitespace characters may never appear within special character sequences in a pattern,
             for example within the sequence (?( which introduces a conditional subpattern.
 
         <b>u</b> - PCRE_UTF8|PCRE_UCP
 
-        This modifier turns on additional functionality of PCRE that is incompatible with Perl. 
-            Pattern and subject strings are treated as UTF-8. Five and six octet UTF-8 sequences are 
+        This modifier turns on additional functionality of PCRE that is incompatible with Perl.
+            Pattern and subject strings are treated as UTF-8. Five and six octet UTF-8 sequences are
             regarded as invalid.
 
         <b>g</b> - global

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class CContextMenuItemDlg : public CCustomDialogIndirectImpl<CContextMenuItemDlg
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             MESSAGE_HANDLER(WM_SERVERSELECTCONTROL_CHANGE, OnServerSelectControlChanged)
             COMMAND_HANDLER(IDC_MENUITEMTITLEEDIT, EN_CHANGE, OnMenuItemTitleEditChange);
-            
+
         END_MSG_MAP()
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

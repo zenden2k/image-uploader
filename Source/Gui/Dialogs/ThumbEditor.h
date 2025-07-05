@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
 class Thumbnail;
 // CThumbEditor
 
-class CThumbEditor : 
+class CThumbEditor :
     public CCustomDialogIndirectImpl<CThumbEditor>
 {
 public:
@@ -61,7 +61,7 @@ public:
         LRESULT OnShowTextCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnDrawFrameCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnFontSelect(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
-        
+
         void LoadParams();
         void SaveParams();
         CColorButton FrameColor;

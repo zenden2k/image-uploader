@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ public:
     explicit CMainDlg(WinServerIconCache* iconCache);
     BEGIN_MSG_MAP(CMainDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
-        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)        
+        MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
         MESSAGE_HANDLER(WM_TIMER, OnTimer)
         MESSAGE_HANDLER(MYWM_ENABLEDROPTARGET, OnEnableDropTarget)
@@ -107,7 +107,7 @@ public:
 //    LRESULT NotifyHandler(int /*idCtrl*/, LPNMHDR /*pnmh*/, BOOL& /*bHandled*/)
 
     LRESULT OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
-    
+
     LRESULT OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
     LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);

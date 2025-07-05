@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@
 
 class UploadEngineManager;
 class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
-                             public CWinDataExchange<CIntegrationSettings>,   
-                             public CSettingsPage    
+                             public CWinDataExchange<CIntegrationSettings>,
+                             public CSettingsPage
 {
     public:
         enum { IDD = IDD_INTEGRATIONSETTINGS };
@@ -57,7 +57,7 @@ class CIntegrationSettings : public CDialogImpl<CIntegrationSettings>,
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
             MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
-            COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)    
+            COMMAND_HANDLER(IDC_SHELLINTEGRATION, BN_CLICKED, OnShellIntegrationCheckboxChanged)
             COMMAND_HANDLER(IDC_ADDITEM, BN_CLICKED, OnBnClickedAdditem)
             COMMAND_HANDLER(IDC_DELETEITEM, BN_CLICKED, OnBnClickedDeleteitem)
             COMMAND_HANDLER(IDC_DOWNBUTTON, BN_CLICKED, OnBnClickedDownbutton)

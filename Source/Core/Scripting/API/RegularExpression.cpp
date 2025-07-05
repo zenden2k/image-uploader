@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ RegularExpression::RegularExpression()
 /*
 RegularExpression::RegularExpression(const RegularExpression& r)
 {
-    
+
 }
 */
 Sqrat::Array RegularExpression::split(const std::string& piece)
@@ -214,10 +214,10 @@ Sqrat::Array RegularExpression::findAll(const std::string& str)
     try {
         size_t pos = 0;
         Sqrat::Array res(GetCurrentThreadVM(), 0);
-        while (pos <= str.length()) 
+        while (pos <= str.length())
         {
-            if ( pcre_->search(str, pos)) 
-            { 
+            if ( pcre_->search(str, pos))
+            {
                 pos = pcre_->get_match_end()+1;
                 int count = matchesCount();
                 Sqrat::Array mat(GetCurrentThreadVM(), count);
@@ -264,7 +264,7 @@ void RegisterRegularExpressionClass(Sqrat::SqratVM& vm) {
         .Func("getEntireMatchEnd", &RegularExpression::getEntireMatchEnd)
     );
 
-    root.Func("CRegExp", CreateRegExp);    
+    root.Func("CRegExp", CreateRegExp);
 }
 
 }

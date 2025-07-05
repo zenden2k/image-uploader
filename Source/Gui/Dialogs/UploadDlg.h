@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
             kEnableNextButtonTimer = 5,
             kProgressTimer = 6,
         };
-        
+
          BEGIN_MSG_MAP(CUploadDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_TIMER, OnTimer)
@@ -73,7 +73,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
          //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        
+
         bool startUpload();
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
@@ -127,9 +127,9 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         ServerProfileGroup sessionImageServer_, sessionFileServer_;
         bool backgroundThreadStarted_;
         std::mutex backgroundThreadStartedMutex_;
-        
+
         CComPtr<ITaskbarList3> ptl_;
-        
+
         UploadManager* uploadManager_;
         CToolBarCtrl toolbar_;
         CFont commonProgressLabelFont_, commonPercentLabelFont_;

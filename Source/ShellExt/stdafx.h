@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@
 #define WINVER 0x0601        // Change this to the appropriate value to target other versions of Windows.
 #endif
 
-#ifndef _WIN32_WINNT        // Allow use of features specific to Windows XP or later.                   
+#ifndef _WIN32_WINNT        // Allow use of features specific to Windows XP or later.
 #define _WIN32_WINNT 0x0601    // Change this to the appropriate value to target other versions of Windows.
-#endif                        
+#endif
 
 #ifndef _WIN32_WINDOWS        // Allow use of features specific to Windows 98 or later.
 #define _WIN32_WINDOWS 0x0410 // Change this to the appropriate value to target Windows Me or later.

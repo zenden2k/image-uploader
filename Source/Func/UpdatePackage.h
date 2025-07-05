@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class CUpdateInfo
         bool LoadUpdateFromBuffer(const std::string& buffer);
         bool DoUpdate(const CUpdateInfo& newPackage);
         bool SaveToFile(const CString& filename) const;
-        bool Parse(SimpleXml& xml);    
+        bool Parse(SimpleXml& xml);
         bool CheckUpdates();
         CString getHash() const;
         bool CanUpdate(const CUpdateInfo& newInfo) const;
@@ -139,7 +139,7 @@ class CUpdateManager: public CUpdateStatusCallback
         CString m_TempDirectory;
         int nCurrentIndex;
         CUpdateStatusCallback *m_statusCallback;
-        
+
         std::unique_ptr<INetworkClient> nm_;
         int m_nSuccessPackageUpdates;
         std::atomic<bool> m_stop;

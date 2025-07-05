@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@
 */
 
 // ResultsWindow.h : Declaration of the CResultsWindow
-// 
-// This dialog window shows technical information 
+//
+// This dialog window shows technical information
 // about  video/audio file that user had selected
 #ifndef IU_GUI_RESULTSWINDOW_H
 #define IU_GUI_RESULTSWINDOW_H
@@ -31,11 +31,11 @@
 #include <functional>
 
 #include "atlheaders.h"
-#include "resource.h"       
+#include "resource.h"
 #include "ResultsPanel.h"
 #include "Gui/Controls/DialogIndirect.h"
 
-class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>                                
+class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
 {
     private:
         CWizardDlg *m_WizardDlg;
@@ -55,7 +55,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
         void EnableMediaInfo(bool Enable);
         DLGTEMPLATE* GetTemplate();
         std::mutex& outputMutex();
-        void setOnShortenUrlChanged(std::function<void(bool)> fd); 
+        void setOnShortenUrlChanged(std::function<void(bool)> fd);
         void setShortenUrls(bool shorten);
         bool copyResultsToClipboard();
         enum { IDD = IDD_RESULTSWINDOW };
@@ -70,7 +70,7 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
             MESSAGE_HANDLER(WM_MY_DPICHANGED, OnMyDpiChanged)
             NOTIFY_HANDLER(IDC_RESULTSTAB, TCN_SELCHANGE, OnTabChanged)
         END_MSG_MAP()
-    
+
     private:
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class CMyDataObject : public IDataObject
          HRESULT __stdcall QueryInterface(REFIID iid,void **ppvObject) override;
          ULONG __stdcall AddRef() override;
          ULONG __stdcall Release() override;
-            
+
          // IDataObject members.
          HRESULT __stdcall GetData(FORMATETC *pFormatEtc,STGMEDIUM *pStgMedium) override;
          HRESULT __stdcall GetDataHere(FORMATETC *pFormatEtc,STGMEDIUM *pmedium) override;

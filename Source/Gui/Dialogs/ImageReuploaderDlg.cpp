@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     CenterWindow(GetParent());
     AddClipboardFormatListener(m_hWnd);
- 
+
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     sourceTextEditControl.AttachToDlgItem(m_hWnd, IDC_INPUTTEXT);
 
@@ -111,20 +111,20 @@ LRESULT CImageReuploaderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     if ( IsClipboardFormatAvailable(htmlClipboardFormatId) || IsClipboardFormatAvailable(CF_TEXT ) ) {
         sourceTextEditControl.SendMessage(WM_PASTE);
-    } 
+    }
 
     SetDlgItemText(IDC_SERVENAMELABEL, CString(TR("Server")) + _T(": ") + Utf8ToWCstring(serverProfile_.serverName()));
 
     SetDlgItemText(IDC_RESULTSLABEL, _T(""));
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
-    SendDlgItemMessage(IDC_INPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0); 
+    SendDlgItemMessage(IDC_INPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0);
     SendDlgItemMessage(IDC_OUTPUTTEXT, EM_SETLIMITTEXT, 20 * 1024 * 1024, 0);
     clipboardUpdated();
-    return 1; 
+    return 1;
 }
 
 LRESULT CImageReuploaderDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     serverProfile_ = imageServerSelector_->serverProfile();
     BeginDownloading();
     return 0;
@@ -162,7 +162,7 @@ void CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
 
     //DownloadItemData* dit = reinterpret_cast<DownloadItemData*>(it.id);
 
-    if ( ok ) {        
+    if ( ok ) {
         m_nFilesDownloaded++;
         if ( addUploadTask(it, it.fileName) ) {
             updateStats();
@@ -170,7 +170,7 @@ void CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
         }
     } else {
 
-        
+
     }
 
     if ( !success ) {
@@ -179,14 +179,14 @@ void CImageReuploaderDlg::OnFileDownloadFinished(bool ok, int statusCode, const 
         if ( tryGetFileFromCache(it, cacheLogMessage ) ) {
             logMessageType = ILogger::logWarning;
         }
-        
+
         ServiceLocator::instance()->logger()->write(logMessageType, LogTitle, _T("Cannot download the image '") + Utf8ToWCstring(it.url) + _T("'.")
             + _T("\r\nStatus code:") + WinUtils::IntToStr(statusCode) + (cacheLogMessage.IsEmpty() ? _T("") : (_T("\r\n\r\n") + cacheLogMessage)) + _T("\r\n") );
 
         /*if ( !cacheLogMessage.IsEmpty() ) {
             WriteLog(logWarning, LogTitle, cacheLogMessage);
         }*/
-    } 
+    }
 }
 
 bool CImageReuploaderDlg::tryGetFileFromCache(const CFileDownloader::DownloadFileListItem& it, CString& logMessage) {
@@ -245,10 +245,10 @@ bool CImageReuploaderDlg::addUploadTask(const CFileDownloader::DownloadFileListI
         ServiceLocator::instance()->logger()->write(ILogger::logError, LogTitle, _T("File '") + U2W(it.url) +
             _T("'\r\n doesn't seems to be an image.\r\nIt has mime type '") + U2W(mimeType) + "'.");
         return false;
-    } 
+    }
 
     auto* dit = static_cast<DownloadItemData*>(it.id);
-    
+
     auto uploadItemData = std::make_unique<UploadItemData>();
     uploadItemData->sourceUrl = it.url;
     uploadItemData->sourceIndex = dit->sourceIndex;
@@ -297,25 +297,25 @@ void CImageReuploaderDlg::OnDownloaderQueueFinished()
 
 bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std::string> &result) {
     pcrepp::Pcre regExpImages("<img [^>]*src=[\"|\']([^\"|\']+)", "imcu");
-    
+
     std::string str = text;
     std::vector<Match> matches;
     std::set<int> uniqueOffsets;
 
     size_t pos = 0;
     while ( pos <= str.length() ) {
-        if ( regExpImages.search(str, pos) ) { 
+        if ( regExpImages.search(str, pos) ) {
             Match match;
             match.start = regExpImages.get_match_start(0);
             match.length = regExpImages.get_match_end(0) - match.start + 1;
-            
+
             if ( uniqueOffsets.find(match.start) == uniqueOffsets.end() ) {
                 uniqueOffsets.insert(match.start);
                 matches.push_back(match);
             }
 
             pos = regExpImages.get_match_end() + 1;
-            
+
         } else {
             break;
         }
@@ -325,7 +325,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
 
     pos = 0;
     while ( pos <= str.length() ) {
-        if ( regExpBbcode.search(str, pos) ) { 
+        if ( regExpBbcode.search(str, pos) ) {
             Match match;
             match.start = regExpBbcode.get_match_start(0);
             match.length = regExpBbcode.get_match_end(0) - match.start + 1;
@@ -346,7 +346,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
     pos = 0;
 
     while (pos <= str.length()) {
-        if( reg.search(str, pos)) { 
+        if( reg.search(str, pos)) {
             size_t questionMarkPos =  reg[1].find_last_of('?');
             std::string url;
             if ( questionMarkPos != std::string::npos ) {
@@ -365,7 +365,7 @@ bool CImageReuploaderDlg::ExtractLinks(const std::string& text, std::vector<std:
                     matches.push_back(match);
                 }
             }
-                
+
             pos = reg.get_match_end() + 1;
         }
         else {
@@ -461,9 +461,9 @@ bool CImageReuploaderDlg::BeginDownloading()
             dit->sourceIndex = i;
             void* id = dit.get();
             downloadItems_.push_back(std::move(dit));
-           
+
             m_FileDownloader.addFile( absoluteUrl, id, WCstringToUtf8(sourceUrl) );
-            m_nFilesCount ++;    
+            m_nFilesCount ++;
 
         }
         if ( m_nFilesCount ) {
@@ -472,14 +472,14 @@ bool CImageReuploaderDlg::BeginDownloading()
 
             SetDlgItemText(IDCANCEL, TR("Stop"));
             auto mgr = ServiceLocator::instance()->historyManager();
-        
+
             historySession_ = mgr->newSession();
             using namespace std::placeholders;
 
             m_FileDownloader.setOnFileFinishedCallback(std::bind(&CImageReuploaderDlg::OnFileDownloadFinished, this, _1, _2, _3));
             m_FileDownloader.setOnQueueFinishedCallback(std::bind(&CImageReuploaderDlg::OnDownloaderQueueFinished, this));
             m_FileDownloader.start();
-            
+
             updateStats();
             //SetDlgItemText( IDC_OUTPUTTEXT,  Utf8ToWCstring(result) );
         }
@@ -552,7 +552,7 @@ LRESULT CImageReuploaderDlg::OnClickedOutputRadioButton(WORD wNotifyCode, WORD w
 void CImageReuploaderDlg::updateStats() {
     CString text =  CString(TR("Uploaded images: ")) + WinUtils::IntToStr(uploadedItems_.size())
         + (m_nFilesDownloaded ? CString(_T("/")) + WinUtils::IntToStr(m_nFilesDownloaded) : CString(_T("")))
-        + CString(_T(", ")) + TR("Downloaded: ") 
+        + CString(_T(", ")) + TR("Downloaded: ")
         + WinUtils::IntToStr(m_nFilesDownloaded) + CString(_T("/")) + WinUtils::IntToStr(m_nFilesCount);
     SetDlgItemText( IDC_RESULTSLABEL,text);
 }
@@ -564,7 +564,7 @@ void CImageReuploaderDlg::processFinished() {
     m_wndAnimation.ShowWindow(SW_HIDE);
     SetDlgItemText(IDCANCEL, TR("Close"));
 }
-    
+
 LRESULT CImageReuploaderDlg::OnClickedCopyToClipboardButton(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     CString outputText = GuiTools::GetWindowText(GetDlgItem(IDC_OUTPUTTEXT));
     WinUtils::CopyTextToClipboard(outputText);
@@ -582,7 +582,7 @@ bool GetClipboardHtml(CString& text, CString& outSourceUrl)
         std::string ansiString = lpstr;
 
         std::istringstream f(ansiString);
-        std::string line;    
+        std::string line;
         int startFragment = -1;
         int endFragment = -1;
         std::string sourceUrl;
@@ -636,7 +636,7 @@ bool CImageReuploaderDlg::pasteHtml() {
             //SendDlgItemMessage(IDC_INPUTTEXT, EM_SETSEL, -1, 0);
             SetDlgItemText(IDC_SOURCEURLEDIT, sourceUrl);
             return true;
-        } 
+        }
         return false;
     }
     return false;

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -25,10 +25,11 @@
 #include "IShellContextMenu.h"
 #include "../3rdpart/Registry.h"
 #include "Helpers.h"
+#include "../Core/BasicConstants.h"
 
 HINSTANCE hDllInstance;
 
-CString GetStartMenuPath() 
+CString GetStartMenuPath()
 {
 	CString result;
 	LPITEMIDLIST pidl;
@@ -73,7 +74,7 @@ bool AreOnlyImages(const CAtlArray<CString> & files)
 bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nInternalCommand, const LPCTSTR szTitle, int firstCmd, CString commandArgument, bool UseBitmaps, HBITMAP bm,WORD resid,HICON ico)
 {
 	MENUITEMINFO MenuItem;
-	
+
 	MenuItem.cbSize = sizeof(MenuItem);
 	MenuItem.fType = MFT_STRING;
 	if ( ico ) {
@@ -81,9 +82,9 @@ bool CIShellContextMenu::MyInsertMenu(HMENU hMenu, int pos, UINT id, int nIntern
 	} else {
         MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(resid) : HBMMENU_CALLBACK;
 	}
-	
+
 	MenuItem.fMask = MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0)  | MIIM_STRING;
-	
+
 	MenuItem.wID = id;
 	MenuItem.dwTypeData = (LPWSTR)szTitle;
 	if(!InsertMenuItem(hMenu, pos, TRUE, &MenuItem))
@@ -154,8 +155,8 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 			std::map<int, Shell_ContextMenuItem>::iterator it;
 			for(it=m_nCommands.begin(); it!=m_nCommands.end();++it)
 			{
-				if(it->second.id == lpdis->itemID) 
-				{ 
+				if(it->second.id == lpdis->itemID)
+				{
 					iconID = it->second.icon;
 				}
 			}
@@ -189,7 +190,7 @@ STDMETHODIMP CIShellContextMenu::HandleMenuMsg2(UINT uMsg, WPARAM wParam, LPARAM
 	return S_OK;
 }
 
-// CIShellContextMenu 
+// CIShellContextMenu
 HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT idCmdFirst, UINT idCmdLast, UINT uFlags)
 {
     bool ExplorerCascadedMenu = true;
@@ -275,7 +276,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	CString dataFolder = Helpers::FindDataFolder();
 	for(int i =0; i < keyNames.size() ; i++ ) {
 		if ( Reg2.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
-			
+
 				if ( ! separatorInserted && ExplorerCascadedMenu ) {
 					MyInsertMenuSeparator(PopupMenu, subIndex++, 0);
 					separatorInserted = true;
@@ -313,21 +314,21 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 		MenuItem.fType = MFT_STRING;
 		MenuItem.fMask =MIIM_SUBMENU| MIIM_FTYPE | MIIM_ID | (UseBitmaps?MIIM_BITMAP:0) | MIIM_STRING;//MIIM_SUBMENU | MIIM_TYPE | MIIM_DATA|MIIM_ID|MIIM_BITMAP;//|MIIM_CHECKMARKS;
 		MenuItem.wID = currentCommandID++;
-		MenuItem.dwTypeData = _T("Image Uploader");
+		MenuItem.dwTypeData = const_cast<LPWSTR>(APP_NAME);
 		MenuItem.hSubMenu = PopupMenu;
 
 		// Inserting item in our internal list
 		Shell_ContextMenuItem InternalMenuItem;
 		InternalMenuItem.cmd =  -1;
 		InternalMenuItem.text = MenuItem.dwTypeData;
-		
+
 		InternalMenuItem.icon= IDI_ICONMAIN;
 		MenuItem.hbmpItem = Helpers::IsVistaOrLater() ? GetCachedIconToBitmapPARGB32(IDI_ICONMAIN): HBMMENU_CALLBACK;
-		
+
 		InternalMenuItem.id = MenuItem.wID;
 		if(InsertMenuItem(hmenu, indexMenu, true, &MenuItem))
 			m_nCommands[InternalMenuItem.id -idCmdFirst]= InternalMenuItem;
-			
+
 	}
 
 	if (Helpers::IsVistaOrLater())
@@ -344,34 +345,34 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	}
 	return MAKE_HRESULT(SEVERITY_SUCCESS, 0, currentCommandID - idCmdFirst);
 }
-      
+
 bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
 {
-	STARTUPINFO si; 
-	PROCESS_INFORMATION pi; 
-	
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+
 	ZeroMemory(&si, sizeof(si));
-   si.cb = sizeof(si);				 
+   si.cb = sizeof(si);
    ZeroMemory(&pi, sizeof(pi));
 
-	CString TempCmdLine = CString(_T("\""))+GetDllFolder()+_T("Image Uploader.exe")+CString(_T("\""));
+	CString TempCmdLine = CString(_T("\""))+GetDllFolder()+_T("uptooda.exe")+CString(_T("\""));
 	if(!params.IsEmpty()) TempCmdLine+=_T(" ")+params+_T(" ");
 	for(int i=0;i <CmdLine.GetCount(); i++)
 		{
 			if(!lstrcmpi(CmdLine[i], _T("-Embedding"))) continue;
-			TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\""); 
+			TempCmdLine = TempCmdLine + _T(" \"") + CmdLine[i] + _T("\"");
 		}
 
     // Start the child process.
     if( !CreateProcess(
-		NULL,                   // No module name (use command line). 
-        (LPWSTR)(LPCTSTR)TempCmdLine, // Command line. 
-        NULL,                   // Process handle not inheritable. 
-        NULL,                   // Thread handle not inheritable. 
-        FALSE,                  // Set handle inheritance to FALSE. 
-        0,                      // No creation flags. 
-        NULL,                   // Use parent's environment block. 
-        NULL,                   // Use parent's starting directory. 
+		NULL,                   // No module name (use command line).
+        (LPWSTR)(LPCTSTR)TempCmdLine, // Command line.
+        NULL,                   // Process handle not inheritable.
+        NULL,                   // Thread handle not inheritable.
+        FALSE,                  // Set handle inheritance to FALSE.
+        0,                      // No creation flags.
+        NULL,                   // Use parent's environment block.
+        NULL,                   // Use parent's starting directory.
         &si,                    // Pointer to STARTUPINFO structure.
         &pi )                   // Pointer to PROCESS_INFORMATION structure.
 		) {
@@ -381,7 +382,7 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
         return false;
 	}
 
-    // Close process and thread handles. 
+    // Close process and thread handles.
     CloseHandle( pi.hProcess );
     CloseHandle( pi.hThread );
 	return true;
@@ -390,10 +391,10 @@ bool IULaunchCopy(CAtlArray<CString> & CmdLine,const CString params=_T(""))
 HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 {
 	if(HIWORD( lpici->lpVerb ))
-		return E_INVALIDARG ;	
+		return E_INVALIDARG ;
 
 	if(m_nCommands.empty())
-		return E_INVALIDARG;	
+		return E_INVALIDARG;
 	Shell_ContextMenuItem item = m_nCommands[ LOWORD( lpici->lpVerb )];
 	switch ( item.cmd)
 	{
@@ -433,7 +434,7 @@ HRESULT CIShellContextMenu::InvokeCommand(LPCMINVOKECOMMANDINFO lpici)
 	default:
 		return E_INVALIDARG;
 		break;
-	
+
 	}
 	return S_OK;
 }

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = n
 
 // FloatingWindow
 CFloatingWindow::CFloatingWindow(CWizardDlg* wizardDlg, UploadManager* uploadManager,
-    UploadEngineManager* uploadEngineManager): 
+    UploadEngineManager* uploadEngineManager):
     uploadManager_(uploadManager),
     uploadEngineManager_(uploadEngineManager),
     wizardDlg_(wizardDlg)
@@ -384,10 +384,10 @@ LRESULT CFloatingWindow::OnQuickUploadFromClipboard(WORD wNotifyCode, WORD wID, 
                 UploadScreenshot(filePath, fileName);
             }
             return true;
-            
+
         }
     }
-    
+
     return 0;
 }
 
@@ -459,7 +459,7 @@ LRESULT CFloatingWindow::OnShortenUrlClipboard(WORD wNotifyCode, WORD wID, HWND 
 
     // Do not show the first baloon in Windows 10+ so the second baloon will appear immediately
     if (!IsWindows10OrGreater()) {
-        ShowBaloonTip(msg, _T("Image Uploader"), 6000);
+        ShowBaloonTip(msg, APP_NAME, 6000);
     }
     setStatusText(msg);
     startIconAnimation();
@@ -665,7 +665,7 @@ LRESULT CFloatingWindow::OnContextMenu(WORD wNotifyCode, WORD wID, HWND hWndCtl)
                                FALSE);
         }
     }
-  
+
     m_hTrayIconMenu = TrayMenu;
     CMenuHandle oPopup(m_hTrayIconMenu);
     PrepareMenu(oPopup);
@@ -695,7 +695,7 @@ LRESULT CFloatingWindow::OnTimer(UINT id)
         UpdateIcon(iconAnimationCounter_++ == 0 ? activeIcon_ : m_hIconSmall );
         iconAnimationCounter_ = iconAnimationCounter_ % 2;
     }
-   
+
     return 0;
 }
 
@@ -902,14 +902,14 @@ void CFloatingWindow::ShowBaloonTip(const CString& text, const CString& title, u
     CTrayIconImpl<CFloatingWindow>::ShowBaloonTip(text, title, timeout);
 }
 
-void CFloatingWindow::startIconAnimation() {    
+void CFloatingWindow::startIconAnimation() {
     animationEnabled_ = true;
     iconAnimationCounter_ = 0;
     SetTimer(kIconAnimationTimer, 400);
 }
 
 void CFloatingWindow::stopIconAnimation() {
-    // KillTimer does not remove the WM_TIMER from message queue, so we need to use a flag 
+    // KillTimer does not remove the WM_TIMER from message queue, so we need to use a flag
     animationEnabled_ = false;
     KillTimer(kIconAnimationTimer);
     UpdateIcon(m_hIconSmall);
@@ -963,7 +963,7 @@ void CFloatingWindow::OnFileFinished(UploadTask* task, bool ok)
             ShowBaloonTip(TR("View log for details."), statusText, 17000, [&] {ServiceLocator::instance()->logWindow()->Show(); });
             setStatusText(statusText, kStatusHideTimeout);
         }
-        
+
     }
     stopIconAnimation();
 }
@@ -973,7 +973,7 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
     if (m_bIsUploading && currentUploadSession_) {
         currentUploadSession_->stop();
     }
-       
+
     return 0;
 }
 
@@ -985,7 +985,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
     obj->fillFromUploadResult(task->uploadResult(), task);
 
     CString code;
-    CString message; 
+    CString message;
     if (settings->TrayResult == WtlGuiSettings::trJustURL) {
         message = TR("(the link has been copied to the clipboard)");
         code = url;
@@ -998,7 +998,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
         auto generator = factory.createOutputGenerator(generatorId, codeType);
         generator->setPreferDirectLinks(settings->UseDirectLinks);
         generator->setItemsPerLine(settings->ThumbsPerLine);
-        generator->setGroupByFile(settings->GroupByFilename);    
+        generator->setGroupByFile(settings->GroupByFilename);
         generator->setShortenUrl(task->serverProfile().shortenLinks());
 
         if (generatorId == gidXmlTemplate) {
@@ -1016,7 +1016,7 @@ void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& 
     CString trimmedCode = WinUtils::TrimString(code, 70);
 
     ShowBaloonTip(trimmedCode + CString("\r\n")
-            + message + CString("\r\n") + TR("Click on this message to view details..."), 
+            + message + CString("\r\n") + TR("Click on this message to view details..."),
         TR("Screenshot was uploaded"), 17000, [this] {showLastUploadedCode(); });
     CString statusText = TR("Screenshot was uploaded") + CString(_T("\r\n")) + trimmedCode;
     setStatusText(statusText, kStatusHideTimeout);

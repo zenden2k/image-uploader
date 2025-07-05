@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ bool GetMediaFileInfo(LPCWSTR FileName, CString &Buffer, CString& fullInfo, bool
 
     AddStr(Result, Duration, CString(_T("\r\n")), CString(TR("Duration: ")));
 
-    if (count + VideoCount > 1) // if file contains more than one audio/video stream 
+    if (count + VideoCount > 1) // if file contains more than one audio/video stream
     {
         AddStr(Result, MI.Get(Stream_General, 0, _T("OverallBitRate/String"), Info_Text, Info_Name).c_str(),
             CString(_T("\r\n")), CString(TR("Overall bitrate: ")));

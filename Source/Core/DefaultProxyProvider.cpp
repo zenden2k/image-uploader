@@ -143,7 +143,7 @@ bool DefaultProxyProvider::provideProxyForUrl(INetworkClient* client, const std:
 }
 
 bool DefaultProxyProvider::openWinHttpSession() {
-    hInternet_ = WinHttpOpen(L"Image Uploader", WinUtils::IsWindows8orLater() ? WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+    hInternet_ = WinHttpOpen(APP_NAME, WinUtils::IsWindows8orLater() ? WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY : WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
         WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
     if (!hInternet_) {
         LOG(ERROR) << "Call to WinHttpOpen failed" << std::endl;

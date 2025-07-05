@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
     LOGFONT logFont;
     WinUtils::StringToFont(_T("Courier New,8,,204"), &logFont);
-    
+
     editFont_.CreateFontIndirect(&logFont);
     SendDlgItemMessage(IDC_FILEINFOEDIT, WM_SETFONT, reinterpret_cast<WPARAM>(editFont_.m_hFont), MAKELPARAM(false, 0));
     editControl_.AttachToDlgItem(m_hWnd, IDC_FILEINFOEDIT);
@@ -63,12 +63,12 @@ LRESULT CMediaInfoDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     ::SetFocus(GetDlgItem(IDC_FILEINFOEDIT));
     FixEditRTL();
-    GenerateInfo(); 
-    return 0; 
+    GenerateInfo();
+    return 0;
 }
 
 LRESULT CMediaInfoDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     if(!IsRunning())  EndDialog(wID); // Don't allow user to close dialog before thread finishes
     return 0;
 }
@@ -89,7 +89,7 @@ DWORD CMediaInfoDlg::Run()
 {
     CString ShortFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_FileName), 40);
     if(!WinUtils::FileExists(m_FileName))
-    { 
+    {
         SetDlgItemText(IDC_FILEINFOLABEL, CString(TR("Error:")));
         std::wstring infoEditText;
         try {
@@ -108,9 +108,9 @@ DWORD CMediaInfoDlg::Run()
     } catch (std::exception& ex) {
         LOG(ERROR) << ex.what();
     }
-    
+
     SetDlgItemText(IDC_FILEINFOLABEL, fileInfoLabel.c_str());
-    
+
     MediaInfoHelper::GetMediaFileInfo(m_FileName, summary_, fullInfo_, !generateTextInEnglish_);
     bool fullInfo = GuiTools::GetCheck(m_hWnd, IDC_FULLINFORADIOBUTTON);
     SetDlgItemText(IDC_FILEINFOEDIT, fullInfo ? fullInfo_ : summary_);
@@ -165,7 +165,7 @@ LRESULT CMediaInfoDlg::OnInfoRadioButtonClicked(WORD, WORD, HWND, BOOL&) {
 
 LRESULT CMediaInfoDlg::OnShowInEnglishCheckboxClicked(WORD, WORD, HWND, BOOL&) {
     generateTextInEnglish_ = GuiTools::GetCheck(m_hWnd, IDC_GENERATETEXTINENGLISHCHECKBOX);
-    
+
     FixEditRTL();
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     settings->MediaInfoSettings.EnableLocalization = !generateTextInEnglish_;

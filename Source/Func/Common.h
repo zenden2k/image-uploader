@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,15 +41,15 @@ struct CUrlListItem
     int FileIndex = -1;
 
     CString getDownloadUrl(bool shortened = false) const {
-        return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl; 
+        return (shortened && !DownloadUrlShortened.IsEmpty()) ? DownloadUrlShortened : DownloadUrl;
     }
 
     CString getImageUrl(bool shortened = false) const {
-        return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl; 
+        return (shortened && !ImageUrlShortened.IsEmpty()) ? ImageUrlShortened : ImageUrl;
     }
 
     CString getThumbUrl(bool shortened = false) const {
-        return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl; 
+        return (shortened && !ThumbUrlShortened.IsEmpty()) ? ThumbUrlShortened : ThumbUrl;
     }
 
     bool isNull() const

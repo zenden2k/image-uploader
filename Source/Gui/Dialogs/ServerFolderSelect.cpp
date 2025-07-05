@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ LRESULT CServerFolderSelect::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
 
     m_FolderTree.SetImageList(folderTreeViewImageList);
     m_FolderMap[""] = nullptr;
-   
+
     m_FolderOperationType = FolderOperationType::foGetFolders;
     auto* uploadScript = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile_));
 
@@ -183,7 +183,7 @@ void CServerFolderSelect::onTaskFinished(UploadTask* task, bool success)
         m_SelectedFolder = folderTask->folder();
         refreshList(folderTask->folder().parentid);
         return;
-    } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) { 
+    } else if (m_FolderOperationType == FolderOperationType::foModifyFolder) {
         // Modifying an existing folder
         m_FolderOperationType = FolderOperationType::foGetFolders;
         m_newFolder.setId(folderTask->folder().getId());
@@ -612,7 +612,7 @@ LRESULT CServerFolderSelect::OnFolderTreeItemExpanding(int idCtrl, LPNMHDR pnmh,
             uploadManager->addSession(uploadSession_);
         }
     }
-   
+
     return 0;
 }
 
@@ -627,7 +627,7 @@ LRESULT CServerFolderSelect::OnFolderTreeDeleteItem(int idCtrl, LPNMHDR pnmh, BO
 
 void CServerFolderSelect::onSessionFinished(UploadSession* session) {
     if (session->userData() == reinterpret_cast<void*>(static_cast<INT_PTR>(INITIAL_LOAD_SESSION))) {
-        //m_SelectedFolder.id = 
+        //m_SelectedFolder.id =
         for (int i = 0; i < session->taskCount(); i++) {
             auto task = session->getTask(i);
             if (task->uploadSuccess()) {

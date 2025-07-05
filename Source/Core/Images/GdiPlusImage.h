@@ -10,7 +10,7 @@ class GdiPlusImage: public AbstractImage
 {
 public:
     GdiPlusImage();
-    explicit GdiPlusImage(Gdiplus::Bitmap *bm, bool takeOwnership = true);
+    explicit GdiPlusImage(Gdiplus::Image *bm, bool takeOwnership = true);
     ~GdiPlusImage() override;
     bool loadFromFile(const std::string& fileName) override;
     bool saveToFile(const std::string& fileName) const override;
@@ -19,13 +19,14 @@ public:
     bool loadFromRgb(int width, int height, uint8_t* data, size_t dataSize);
     Gdiplus::Bitmap* getBitmap() const;
     Gdiplus::Bitmap* releaseBitmap();
+    Gdiplus::Image* releaseImage();
 
     int getWidth() const override;
     int getHeight() const override;
     void setSrcMultiFrame(bool animated);
     bool isSrcMultiFrame() const;
 protected:
-    Gdiplus::Bitmap* bm_;
+    Gdiplus::Image* bm_;
     std::unique_ptr<uint8_t[]> data_;
     bool takeOwnership_;
     bool isSrcMultiFrame_;

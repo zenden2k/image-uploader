@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
             case ILogger::logInformation:
                 ico = &InfoIcon;
                 break;
-        } 
+        }
         if (ico) {
             dc.DrawIcon(iconPos.x, iconPos.y, *ico);
         }
@@ -153,7 +153,7 @@ LRESULT CLogListBox::OnDrawitem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bH
 LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL& bHandled)
 {
     auto* lpmis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lParam);
-    
+
     LogListBoxItem * item = reinterpret_cast<LogListBoxItem *>(lpmis->itemData);
     if(!item) {
         return 0;
@@ -168,11 +168,11 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
     GetClientRect(&ClientRect);
 
     int ItemWidth = ClientRect.right - ClientRect.left - 50;
-    
+
     RECT Dimensions={0, 0, ItemWidth, 0};
     DrawText(dc, item->strTitle, lstrlen(item->strTitle), &Dimensions,    DT_CALCRECT);
     item->TitleHeight = Dimensions.bottom - Dimensions.top;
-    
+
     Dimensions.bottom = 0;
     DrawText(dc, item->Info, item->Info.GetLength(), &Dimensions,    DT_CALCRECT);
     item->InfoHeight = Dimensions.bottom - Dimensions.top;
@@ -193,14 +193,14 @@ LRESULT CLogListBox::OnMeasureItem(UINT uMsg, WPARAM wParam, LPARAM lParam,BOOL&
 }
 
 LRESULT CLogListBox::OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
-    
+
     bool ctrlPressed = (GetKeyState(VK_CONTROL) & 0x80 ) != 0;
 
     if (wParam == _T('C') && ctrlPressed) {
         // Ctrl + C has been pressed
         ::SendMessage(GetParent(), WM_COMMAND, MAKELPARAM(CLogWindow::IDC_COPYTEXTTOCLIPBOARD, 0), 0);
     } else if (wParam == _T('A') && ctrlPressed) {
-        SelectAll();   
+        SelectAll();
     } else {
         bHandled = FALSE;
     }
@@ -216,7 +216,7 @@ int CLogListBox::AddString(ILogger::LogMsgType Type, const CString& strTitle, co
     LogListBoxItem* item = new LogListBoxItem;
     item->Type = Type;
 
-    
+
 
     item->strText = trim(strText);
     item->strTitle = trim(strTitle);

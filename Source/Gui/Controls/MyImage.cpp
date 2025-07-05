@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -156,7 +156,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, std::shared_ptr<Gdiplus::Image> img, 
         gr.Clear(Color(GetRValue(transp), GetGValue(transp), GetBValue(transp)));
     } else {
         gr.Clear(Color(255, 145, 145, 145));
-    } 
+    }
 
     RectF bounds(1, 1, float(width), float(height));
     if ((bm) && !bm->GetWidth() && (FileName || ResourceID)) {
@@ -194,7 +194,7 @@ bool CMyImage::loadImage(LPCTSTR FileName, std::shared_ptr<Gdiplus::Image> img, 
         }
 
         imageLoaded_ = true;
-        
+
         if (bm) {
             gr.DrawImage(bm.get(), destRect_, 0, 0, imgwidth, imgheight, UnitPixel, &attr);
         }

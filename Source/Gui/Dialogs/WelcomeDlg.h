@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,9 +33,9 @@
 #include <memory>
 
 #define ID_VIEWHISTORY 36220
-class CWelcomeDlg : 
-    public CDialogImpl<CWelcomeDlg>, 
-    public CWinDataExchange<CWelcomeDlg>, 
+class CWelcomeDlg :
+    public CDialogImpl<CWelcomeDlg>,
+    public CWinDataExchange<CWelcomeDlg>,
     public CWizardPage
 {
 public:
@@ -74,6 +74,7 @@ public:
         DDX_CONTROL(IDC_LISTBOX/*IDC_LINKSCONTROL*/, ListBox)
         DDX_CONTROL(IDC_LEFTBITMAP/*IDC_LINKSCONTROL*/, LeftImage)
         DDX_CONTROL(IDC_STATICLOGO/*IDC_LINKSCONTROL*/, LogoImage)
+        DDX_CONTROL(IDC_TITLE /*IDC_LINKSCONTROL*/, appNameImage_)
     END_DDX_MAP()
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -99,22 +100,21 @@ public:
     LRESULT OnBnClickedReuploadImages(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnBnClickedShortenUrl(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     LRESULT OnClipboardUpdate(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-    
+
     LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
     void clipboardUpdated();
     void lastRegionAvailabilityChanged(bool available);
     LRESULT OnEraseBkg(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     CHyperLinkControl ListBox;
     LRESULT OnCtlColorMsgDlg(HDC hdc, HWND hwndChild);
-    CBrushHandle br; 
+    CBrushHandle br;
     bool OnShow() override;
     void SetInitialFocus() override;
     void updateImages(int dpiX, int dpiY);
     void fillHyperLinksControl(int dpiX, int dpiY);
     bool QuickRegionPrint;
 private:
-    CMyImage LeftImage;
-    CMyImage LogoImage;
+    CMyImage LeftImage, LogoImage, appNameImage_;
     CFont NewFont, font2_;
     std::unique_ptr<Gdiplus::Bitmap> createLeftImage(int dpiX, int dpiY);
 };

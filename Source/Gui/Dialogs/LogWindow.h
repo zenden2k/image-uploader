@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ class CLogWindow : public CDialogImpl <CLogWindow>,
             COMMAND_HANDLER(IDC_CLEARLOGBUTTON, BN_CLICKED, OnBnClickedClearLogButtonClicked)
             COMMAND_HANDLER(IDC_MSGLIST, LBN_DBLCLK, OnDblClick)
             CHAIN_MSG_MAP(CDialogResize<CLogWindow>)
-            REFLECT_NOTIFICATIONS() 
+            REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
 
         BEGIN_DLGRESIZE_MAP(CLogWindow)

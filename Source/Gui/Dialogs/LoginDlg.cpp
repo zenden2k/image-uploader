@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ CLoginDlg::CLoginDlg(ServerProfile& serverProfile, UploadEngineManager* uem, boo
     serverSupportsLogout_ = false;
     isAuthenticated_ = false;
     uploadEngineManager_ = uem;
-    
+
     if (!m_UploadEngine->PluginName.empty() || !m_UploadEngine->Engine.empty()) {
         auto* plugin_ = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
         if ( plugin_ ) {
@@ -139,7 +139,7 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     ::EnableWindow(GetDlgItem(IDC_PASSWORDLABEL),m_UploadEngine->NeedPassword);
 
     deleteAccountLabel_.SubclassWindow(GetDlgItem(IDC_DELETEACCOUNTLABEL));
-    deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON; 
+    deleteAccountLabel_.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER | HLINK_COMMANDBUTTON;
 //    deleteAccountLabel_.SetLabel(deleteAccountLabelText);
     deleteAccountLabel_.m_clrLink = GuiTools::GetDefaultHyperlinkColor(deleteAccountLabel_);
     deleteAccountLabel_.SetToolTipText(TR("Remove this account from the list (not from the remote server)"));
@@ -147,11 +147,11 @@ LRESULT CLoginDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& b
     deleteAccountLabel_.ShowWindow((createNew_ || accountName_.IsEmpty()) ? SW_HIDE : SW_SHOW);
 
     ::SetFocus(GetDlgItem(IDC_LOGINEDIT));
-    return 0; 
+    return 0;
 }
 
 LRESULT CLoginDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     Accept();
     return 0;
 }
@@ -163,7 +163,7 @@ LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 	} else {
         EndDialog(wID);
 	}
-	
+
     return 0;
 }
 
@@ -210,7 +210,7 @@ void CLoginDlg::startAuthentication(AuthActionType actionType)
     if (!m_UploadEngine->PluginName.empty() ) {
 
         LoginInfo li;
-        CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT); 
+        CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
         li.Login = WCstringToUtf8(login);
         std::string serverNameA = serverProfile_.serverName();
         if ( !ignoreExistingAccount_ && createNew_ && settings->ServersSettings[serverNameA].find(li.Login ) != settings->ServersSettings[serverNameA].end() ) {

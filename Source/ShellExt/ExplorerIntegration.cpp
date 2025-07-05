@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -79,12 +79,12 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpRes
                     }
                 #endif
             }
-            
+
 
             Lang.LoadLanguage(lang);*/
         }
 
-        return _AtlModule.DllMain(dwReason, lpReserved); 
+        return _AtlModule.DllMain(dwReason, lpReserved);
     }
 
 #ifdef _MANAGED

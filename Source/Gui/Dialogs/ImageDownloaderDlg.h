@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 #include <memory>
 
 #include "atlheaders.h"
-#include "resource.h"       
+#include "resource.h"
 #include "Core/DownloadTask.h"
 #include "WizardDlg.h"
 #include "Gui/Controls/DialogIndirect.h"
@@ -44,7 +44,7 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
         const std::vector<CString>& getDownloadedFiles() const;
         int EmulateModal(HWND hWndParent = ::GetActiveWindow(), LPARAM dwInitParam = NULL);
         int successfullDownloadsCount() const;
-    protected:    
+    protected:
         BEGIN_MSG_MAP(CImageDownloaderDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             COMMAND_ID_HANDLER(IDOK, OnClickedOK)
@@ -61,8 +61,8 @@ class CImageDownloaderDlg : public CCustomDialogIndirectImpl <CImageDownloaderDl
             DLGRESIZE_CONTROL(IDC_DOWNLOADFILESPROGRESS, DLSZ_SIZE_X|DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_IMAGEDOWNLOADERTIP, DLSZ_SIZE_X)
         END_DLGRESIZE_MAP()
-        
-        
+
+
         BOOL EmulateEndDialog(int nRetCode);
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

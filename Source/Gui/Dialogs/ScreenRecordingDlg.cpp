@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ std::vector<CString> GetMonitorsForAdapter(IDXGIAdapter1* pAdapter) {
     CComPtr<IDXGIOutput> pOutput;
     for (UINT i = 0; pAdapter->EnumOutputs(i, &pOutput) != DXGI_ERROR_NOT_FOUND; ++i) {
         outputs.push_back(pOutput);
-        pOutput.Release(); 
+        pOutput.Release();
     }
 
     for (auto& output : outputs) {
@@ -165,7 +165,7 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
 
     int selectedIndex = 0;
-    
+
     int itemIndex = monitorCombobox_.AddString(TR("Current monitor"));
 
     if (itemIndex >= 0) {
@@ -190,7 +190,7 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
         for (const MonitorEnumerator::MonitorInfo& monitor : monitorEnumerator_) {
             CString itemTitle;
             itemTitle.Format(_T("(%dx%d) %s"), monitor.rect.Width(), monitor.rect.Height(), monitor.deviceName.GetString());
-            
+
             itemIndex = monitorCombobox_.AddString(itemTitle);
             if (itemIndex >= 0) {
                 monitorCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(kSelectedMonitor + i));
@@ -211,7 +211,7 @@ LRESULT CScreenRecordingDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     }
 
     updateRegionSelectButtonTitle();
-    return 0; 
+    return 0;
 }
 
 LRESULT CScreenRecordingDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -253,7 +253,7 @@ LRESULT CScreenRecordingDlg::OnClickedSelectRegion(WORD wNotifyCode, WORD wID, H
     }
     ImageEditorWindow imageEditor(res, false, &configProvider, true);
     imageEditor.setInitialDrawingTool(ImageEditor::DrawingToolType::dtCrop);
-        
+
     auto dialogResult = imageEditor.DoModal(m_hWnd, nullptr, ImageEditorWindow::wdmFullscreen);
 
     if (dialogResult == ImageEditorWindow::drContinue) {
@@ -315,7 +315,7 @@ LRESULT CScreenRecordingDlg::OnClickedSelectWindow(WORD wNotifyCode, WORD wID, H
 
                 DeleteObject(gdiBitmap);
             }
-        } 
+        }
     }
 
     return 0;
@@ -356,7 +356,7 @@ LRESULT CScreenRecordingDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, 
             recordingSettings.AudioSourceId.clear();
         }
     }
-    
+
     return 0;
 }
 
@@ -405,7 +405,7 @@ void CScreenRecordingDlg::showRegionSelectButtonMenu(HWND hWndCtl) {
         mi.dwTypeData = const_cast<LPWSTR>(itemTitle.GetString());
         mi.cch = itemTitle.GetLength();
         HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(ico, dpi);
-        if (bm) { 
+        if (bm) {
             mi.hbmpItem = bm;
             mi.fMask |= MIIM_BITMAP;
             bitmaps_.push_back(bm);

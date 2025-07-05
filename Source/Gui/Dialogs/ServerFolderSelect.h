@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -45,10 +45,10 @@ class UploadEngineManager;
 class ServerProfile;
 struct TreeItemData;
 
-class CServerFolderSelect : 
+class CServerFolderSelect :
     public CCustomDialogIndirectImpl<CServerFolderSelect>,
-    public CThreadImpl<CServerFolderSelect>, 
-    public CDialogResize<CServerFolderSelect>    
+    public CThreadImpl<CServerFolderSelect>,
+    public CDialogResize<CServerFolderSelect>
 {
     public:
         CServerFolderSelect(ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager);
@@ -61,7 +61,7 @@ class CServerFolderSelect :
         COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
         COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
         COMMAND_HANDLER(ID_OPENINBROWSER, BN_CLICKED, OnOpenInBrowser)
-        COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)      
+        COMMAND_HANDLER(ID_CREATENESTEDFOLDER, BN_CLICKED, OnCreateNestedFolder)
         COMMAND_HANDLER(IDC_NEWFOLDERBUTTON, BN_CLICKED, OnBnClickedNewfolderbutton)
         COMMAND_ID_HANDLER(ID_EDITFOLDER, OnEditFolder)
         COMMAND_HANDLER(ID_COPYFOLDERID, BN_CLICKED, OnCopyFolderId)
@@ -129,7 +129,7 @@ protected:
     void getListTaskFinished(FolderTask* task, bool success);
 
     bool isRunning_;
-public:   
+public:
 
     void BuildFolderTree(TreeItemData* treeItemData, const std::vector<CFolderItem> &list,const std::string& parentFolderId);
 };

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     TRC(IDC_USEOLDREGIONSCREENSHOTMETHOD, "Use old method of rectangular area selection");
     TRC(IDC_ALLOWFULLSCREENEDITORCHECK, "Allow editing images in fullscreen mode");
     TRC(IDC_CAPTURECURSORCHECKBOX2, "Capture cursor");
-    
+
     if (ServiceLocator::instance()->translator()->isRTL()) {
         // Removing WS_EX_RTLREADING style from some controls to look properly when RTL interface language is choosen
         HWND screenshotFolderEditHwnd = GetDlgItem(IDC_SCREENSHOTFOLDEREDIT);
@@ -74,7 +74,7 @@ LRESULT CScreenshotSettingsPagePage::OnInitDialog(UINT uMsg, WPARAM wParam, LPAR
     SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, Settings.ScreenshotSettings.Folder);
     SendDlgItemMessage(IDC_DELAYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)30, (short)0) );
     SendDlgItemMessage(IDC_QUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
-    
+
     SendDlgItemMessage(IDC_FORMATLIST, CB_ADDSTRING, 0, (LPARAM)_T("JPEG"));
     SendDlgItemMessage(IDC_FORMATLIST, CB_ADDSTRING, 0, (LPARAM)_T("PNG"));
     SendDlgItemMessage(IDC_FORMATLIST, CB_ADDSTRING, 0, (LPARAM)_T("GIF"));
@@ -123,7 +123,7 @@ bool CScreenshotSettingsPagePage::apply()
     }
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     Settings.ScreenshotSettings.FilenameTemplate = fileName;
-    
+
     Settings.ScreenshotSettings.Format = SendDlgItemMessage(IDC_FORMATLIST,CB_GETCURSEL,0,0);
     Settings.ScreenshotSettings.Quality = GetDlgItemInt(IDC_QUALITYEDIT);
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
@@ -135,7 +135,7 @@ bool CScreenshotSettingsPagePage::apply()
     Settings.ScreenshotSettings.Delay = GetDlgItemInt(IDC_DELAYEDIT);
     Settings.ScreenshotSettings.ShowForeground = SendDlgItemMessage(IDC_FOREGROUNDWHENSHOOTING, BM_GETCHECK) == BST_CHECKED;
     Settings.ScreenshotSettings.CopyToClipboard =  SendDlgItemMessage(IDC_ALWAYSCOPYTOCLIPBOARD, BM_GETCHECK) == BST_CHECKED;
-    
+
     Settings.ScreenshotSettings.WindowHidingDelay = GetDlgItemInt(IDC_WINDOWHIDINGDELAY);
 
     Settings.ScreenshotSettings.RemoveCorners = SendDlgItemMessage(IDC_REMOVECORNERS, BM_GETCHECK)!=0;
@@ -163,6 +163,6 @@ LRESULT CScreenshotSettingsPagePage::OnScreenshotsFolderSelect(WORD wNotifyCode,
         SetDlgItemText(IDC_SCREENSHOTFOLDEREDIT, fd.GetFolderPath());
         return true;
     }
-   
+
     return 0;
 }

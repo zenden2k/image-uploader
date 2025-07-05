@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@
 
 class CFolderItem;
 
-class CNewFolderDlg : 
+class CNewFolderDlg :
     public CCustomDialogIndirectImpl<CNewFolderDlg>,
-    public CDialogResize<CNewFolderDlg>    
+    public CDialogResize<CNewFolderDlg>
 {
     public:
         CNewFolderDlg(CFolderItem &folder, bool CreateNewFolder, std::vector<std::string>& accessTypeList);
@@ -44,7 +44,7 @@ class CNewFolderDlg :
               COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             CHAIN_MSG_MAP(CDialogResize<CNewFolderDlg>)
          END_MSG_MAP()
-    
+
         BEGIN_DLGRESIZE_MAP(CNewFolderDlg)
             DLGRESIZE_CONTROL(IDC_FOLDERTITLEEDIT, DLSZ_SIZE_X)
             DLGRESIZE_CONTROL(IDC_FOLDERDESCREDIT, DLSZ_SIZE_X|DLSZ_SIZE_Y)

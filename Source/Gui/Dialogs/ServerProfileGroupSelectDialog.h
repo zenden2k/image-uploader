@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ constexpr unsigned int IDC_SCROLLCONTAINER_ID = 15001;
 
 class CMyPanel : public CScrollWindowImpl<CMyPanel>
 {
-public:    
+public:
     typedef CScrollWindowImpl<CMyPanel> TBase;
     DECLARE_WND_CLASS_EX(NULL, 0, COLOR_BTNFACE)
 
@@ -65,7 +65,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
         ~CServerProfileGroupSelectDialog();
         enum { IDD = IDD_SERVERPROFILESELECT };
 
-        
+
         const ServerProfileGroup& serverProfileGroup() const;
     protected:
         BEGIN_MSG_MAP(CServerProfileGroupSelectDialog)
@@ -81,7 +81,7 @@ class CServerProfileGroupSelectDialog : public CDialogImpl<CServerProfileGroupSe
 
         BEGIN_DLGRESIZE_MAP(CServerProfileGroupSelectDialog)
             DLGRESIZE_CONTROL(IDOK, DLSZ_MOVE_Y)
-            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_Y)  
+            DLGRESIZE_CONTROL(IDCANCEL, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_ADDBUTTON, DLSZ_MOVE_X)
             //DLGRESIZE_CONTROL(IDC_SCROLLCONTAINER_ID, DLSZ_SIZE_X | DLSZ_SIZE_Y)
         END_DLGRESIZE_MAP()

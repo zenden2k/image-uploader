@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     SetDlgItemText(IDC_TITLE, titleText );
 
     CenterWindow();
-    hIcon = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME), 
+    hIcon = static_cast<HICON>(::LoadImage(_Module.GetResourceInstance(), MAKEINTRESOURCE(IDR_MAINFRAME),
         IMAGE_ICON, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON), LR_DEFAULTCOLOR));
     SetIcon(hIcon, TRUE);
     hIconSmall = GuiTools::LoadSmallIcon(IDR_MAINFRAME);
@@ -79,7 +79,7 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         NewFont = CreateFontIndirect(&alf);
         SendDlgItemMessage(IDC_TITLE,WM_SETFONT,(WPARAM)(HFONT)NewFont,MAKELPARAM(false, 0));
     }
-    
+
     comboBoxImageList_.Create(16,16,ILC_COLOR32 | ILC_MASK,0,6);
 
     int selectedIndex = 0;
@@ -117,10 +117,10 @@ LRESULT CQuickSetupDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     serverComboBox_.SetCurSel( selectedIndex );
 
     doAuthCheckboxChanged();
-    
+
     serverChanged();
 
-    return 1;  
+    return 1;
 }
 
 LRESULT CQuickSetupDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -136,7 +136,7 @@ LRESULT CQuickSetupDlg::OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
 
 LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {
     defer d([&] { // Run at function exit
-        ::EnableWindow(GetDlgItem(IDOK), TRUE); 
+        ::EnableWindow(GetDlgItem(IDOK), TRUE);
     });
 
     ::EnableWindow(GetDlgItem(IDOK), FALSE);
@@ -171,7 +171,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
     GuiTools::GetCheck(m_hWnd, IDC_AUTOSTARTUPCHECKBOX, Settings.AutoStartup);
     Settings.AutoStartup_changed = true;
 
-    
+
     Settings.ExplorerContextMenu = GuiTools::GetCheck(m_hWnd, IDC_EXPLORERINTEGRATION);
     Settings.ExplorerContextMenu_changed = Settings.ExplorerContextMenu;
 
@@ -189,7 +189,7 @@ LRESULT CQuickSetupDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         Settings.ShowTrayIcon_changed = true;
     }
     Settings.SaveSettings();
-    
+
     EndDialog(wID);
     return 0;
 }

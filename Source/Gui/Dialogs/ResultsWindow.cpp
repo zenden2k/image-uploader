@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -72,10 +72,10 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
 
     ::SetFocus(GetDlgItem(IDOK));
     SetWindowText(TR("Upload results"));
-    
+
     TRC(IDCANCEL, "Close");
     resultsTabCtrl_.m_hWnd = GetDlgItem(IDC_RESULTSTAB);
-    
+
     resultsTabCtrl_.InsertItem(0, TR("Forum code (BBCode)"));
     resultsTabCtrl_.InsertItem(1, TR("HTML code"));
     resultsTabCtrl_.InsertItem(2, _T("Markdown"));
@@ -86,7 +86,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     WINDOWPLACEMENT wp;
     resultsTabCtrl_.GetWindowPlacement(&wp);
     resultsTabCtrl_.AdjustRect(FALSE, &wp.rcNormalPosition);
-    
+
     RECT rc =  { wp.rcNormalPosition.left, wp.rcNormalPosition.top, -wp.rcNormalPosition.left+wp.rcNormalPosition.right,  -wp.rcNormalPosition.top+wp.rcNormalPosition.bottom };
     ResultsPanel->setRectNeeded(rc);
     ::MapWindowPoints(nullptr, m_hWnd, reinterpret_cast<LPPOINT>(&rc), 2);
@@ -99,12 +99,12 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     ResultsPanel->GetClientRect(&rc);
     BOOL b;
     OnTabChanged(IDC_RESULTSTAB, 0, b);
-    return 0; 
+    return 0;
 }
 
 
 LRESULT CResultsWindow::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     EndDialog(wID);
     return 0;
 }
@@ -206,7 +206,7 @@ DLGTEMPLATE* CResultsWindow::GetTemplate()
     HINSTANCE hInst =  GetModuleHandle(0);
     HRSRC res = FindResource( hInst, MAKEINTRESOURCE(IDD_RESULTSWINDOW),RT_DIALOG);
     DLGTEMPLATE* dit=(DLGTEMPLATE*)LockResource( LoadResource(hInst, res));
-    
+
     size_t sizeDlg = ::SizeofResource(hInst, res);
     hMyDlgTemplate_ = ::GlobalAlloc(GPTR, sizeDlg);
     auto *pMyDlgTemplate = reinterpret_cast<ATL::_DialogSplitHelper::DLGTEMPLATEEX*>(::GlobalLock(hMyDlgTemplate_));

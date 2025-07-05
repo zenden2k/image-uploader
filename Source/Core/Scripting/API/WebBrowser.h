@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 #ifndef IU_CORE_SCRIPTAPI_WEBBROWSER_H
 #define IU_CORE_SCRIPTAPI_WEBBROWSER_H
 
-#pragma once 
+#pragma once
 
 #include "Core/Scripting/Squirrelnc.h"
 #include "HtmlDocument.h"
@@ -29,8 +29,8 @@
 namespace ScriptAPI {;
 class WebBrowserPrivate;
     /**
-    Represents a web browser window. It is using Internet Explorer components on Windows, 
-    but is not implemented on other systems. 
+    Represents a web browser window. It is using Internet Explorer components on Windows,
+    but is not implemented on other systems.
     Creating an instance: local webBrowser = CWebBrowser();
     @since 1.3.1.4270.
     */
@@ -51,7 +51,7 @@ class WebBrowserPrivate;
             std::string title();
 
             /**
-            Show the web browser window and wait until it is closed. 
+            Show the web browser window and wait until it is closed.
             @return true (if the window was closed programatically), false - if the window was closed by user.
             */
             bool showModal();
@@ -64,12 +64,12 @@ class WebBrowserPrivate;
             void hide();
 
             /**
-            Close the window. After call to this function, 
+            Close the window. After call to this function,
             showModal() or exec() stops execution and returns true.
             */
             void close();
             void setFocus();
-                    
+
             /**
             Returns current page contents.
             */
@@ -117,7 +117,7 @@ class WebBrowserPrivate;
                 @endcode
              */
             void setOnLoadFinishedCallback(Sqrat::Function callBack, Sqrat::Object context);
-            
+
             friend class WebBrowserPrivate;
         protected:
             WebBrowserPrivate *d_;

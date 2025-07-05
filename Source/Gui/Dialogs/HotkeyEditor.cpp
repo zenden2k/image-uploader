@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ MYHOTKEY ConvertHotkeyToPair(WORD HotKey)
     if(oldModifiers&MOD_ALT) newModifiers|=HOTKEYF_ALT;
     if(oldModifiers&MOD_CONTROL) newModifiers|=HOTKEYF_CONTROL;
     if(oldModifiers&MOD_SHIFT) newModifiers|=HOTKEYF_SHIFT;
-    
+
     WORD result;
     result = MAKEWORD(key.keyCode , newModifiers);
     return result;
@@ -62,17 +62,17 @@ LRESULT CHotkeyEditor::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
 
     localHotkeyCtrl.SubclassWindow(GetDlgItem(IDC_LOCALHOTKEY));
     globalHotkeyCtrl.SubclassWindow(GetDlgItem(IDC_GLOBALHOTKEY));
-    
+
     localHotkeyCtrl.SetWinHotkey(m_data.localKey.keyCode,m_data.localKey.keyModifier);
     globalHotkeyCtrl.SetWinHotkey(m_data.globalKey.keyCode,m_data.globalKey.keyModifier);
 
-    SendDlgItemMessage(IDC_WINDOWBUTTONCHECKBOX,BM_SETCHECK,m_data.globalKey.keyModifier&MOD_WIN); 
+    SendDlgItemMessage(IDC_WINDOWBUTTONCHECKBOX,BM_SETCHECK,m_data.globalKey.keyModifier&MOD_WIN);
     return 1;  // Let the system set the focus
 }
- 
+
 
 LRESULT CHotkeyEditor::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     m_data.localKey = ConvertHotkeyToPair(static_cast<WORD>(localHotkeyCtrl.GetWinHotkey()));
     m_data.globalKey = ConvertHotkeyToPair( static_cast<WORD>(globalHotkeyCtrl.GetWinHotkey()));
     DoDataExchange(TRUE);

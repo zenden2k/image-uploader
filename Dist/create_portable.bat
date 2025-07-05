@@ -10,10 +10,10 @@ if "%IU_APP_VER%" == "" (
 	goto End
 ) 
 
-echo Creating distribution archive for Image Uploader version %IU_APP_VER% %IU_BUILD_NUMBER%
+echo Creating distribution archive for Uptooda version %IU_APP_VER% %IU_BUILD_NUMBER%
 
 set temp_dir=..\Build\portable\temp
-set filename=image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z
+set filename=uptooda-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-portable.7z
 
 if exist "%temp_dir%\*" (
 	rmdir /q /s  %temp_dir%
@@ -55,7 +55,7 @@ for %%x in (
 )
 
 rem call signcode.bat
-Copy "..\Build\Gui\Release\Image Uploader.exe" %temp_dir%\
+Copy "..\Build\Gui\Release\uptooda.exe" %temp_dir%\
 if ERRORLEVEL 1 goto CopyFailed
 xcopy "..\Lang\locale" %temp_dir%\Lang\locale /i /e /y
 if ERRORLEVEL 1 goto CopyFailed
@@ -134,13 +134,13 @@ if exist "%temp_dir%\Docs\en_US\.gitignore" (
 rem signtool sign  /t http://timestamp.digicert.com /f "d:\Backups\ImageUploader\3315593d7023a0aeb48042349dc4fd40.pem" "%temp_dir%\Image Uploader.exe" "%temp_dir%\ExplorerIntegration.dll" "%temp_dir%\ExplorerIntegration64.dll"
 
 cd %temp_dir%
-%zipcmd% a -mx9 ..\..\output\image-uploader-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
+%zipcmd% a -mx9 ..\..\output\uptooda-%IU_APP_VER%-build-%IU_BUILD_NUMBER%-openssl-portable.7z "*"
 if ERRORLEVEL 1 goto ZipFailed
 cd ..\..\
 
-del "%temp_dir%\Image Uploader.exe"
+del "%temp_dir%\uptooda.exe"
 if ERRORLEVEL 1 (
-    echo Deleting %temp_dir%\Image Uploader.exe failed
+    echo Deleting %temp_dir%\uptooda.exe failed
     goto End
 )
 rem Copy "..\Build\release openssl\Image Uploader.exe" %temp_dir%\

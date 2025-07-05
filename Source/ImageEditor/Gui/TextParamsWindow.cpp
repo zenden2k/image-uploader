@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ void TextParamsWindow::setFont(LOGFONT logFont)
 }
 
 LOGFONT TextParamsWindow::getFont() const
-{    
+{
     LOGFONT logFont;
     memset(&logFont, 0, sizeof(logFont));
     logFont.lfCharSet = DEFAULT_CHARSET;
@@ -81,9 +81,9 @@ LOGFONT TextParamsWindow::getFont() const
         logFont.lfItalic =  bi.fsState&TBSTATE_CHECKED?1:0;
         textToolbar_.GetButtonInfo(IDC_UNDERLINE, &bi);
         logFont.lfUnderline = bi.fsState&TBSTATE_CHECKED?1:0;
-    
+
         /*lf.lfStrikeOut = ( (cf.dwEffects & CFE_STRIKEOUT) == CFE_STRIKEOUT);*/
-        
+
     }
     return logFont;
 }
@@ -139,10 +139,10 @@ LRESULT TextParamsWindow::OnDestroy(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*l
 	return 0;
 }
 LRESULT TextParamsWindow::OnClose(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{    
+{
     ShowWindow(SW_HIDE);
     return 0;
-}    
+}
 
 LRESULT TextParamsWindow::OnFontSelChange(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
@@ -213,7 +213,7 @@ LRESULT CustomEdit::OnKeyUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHand
         textParamsWindow_->NotifyParent(CFM_SIZE);
         bHandled = true;
         return 1;
-    }    
+    }
     return 0;
 }
 
@@ -223,6 +223,6 @@ LRESULT CustomEdit::OnChar(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandl
     if ( wParam == VK_RETURN ) {
         bHandled = true; // stop annoying "ding" sound
         return 1;
-    }    
+    }
     return 0;
 }

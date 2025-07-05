@@ -42,28 +42,28 @@ echo "Temp directory: ${temp_dir}"
 root_dir="${temp_dir}/root"
 mkdir -p "${root_dir}"
 mkdir -p "${root_dir}/usr/bin"
-mkdir -p "${root_dir}/usr/share/imgupload/"
-mkdir -p "${root_dir}/usr/share/imgupload/Scripts/"
-#rm ./imgupload/usr/share/imgupload/Scripts/*
-#mkdir -p ./imgupload/usr/share/imgupload/Update/
+mkdir -p "${root_dir}/usr/share/uptooda-cli/"
+mkdir -p "${root_dir}/usr/share/uptooda-cli/Scripts/"
+#rm ./uptooda-cli/usr/share/uptooda-cli/Scripts/*
+#mkdir -p ./uptooda-cli/usr/share/uptooda-cli/Update/
 #set -e
-#objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/CLI/CLI "${root_dir}/usr/bin/imgupload"
-$ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI "${root_dir}/usr/bin/imgupload"
-cp ../../Data/servers.xml "${root_dir}/usr/share/imgupload/servers.xml"
-cp ../../Data/.env "${root_dir}/usr/share/imgupload/.env"
-cp ../../Data/Scripts/*.nut "${root_dir}/usr/share/imgupload/Scripts/"
-#cp ../../Data/Update/iu_serversinfo.xml ./imgupload/usr/share/imgupload/Update/iu_serversinfo.xml
+#objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/CLI/CLI "${root_dir}/usr/bin/uptooda-cli"
+$ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI "${root_dir}/usr/bin/uptooda-cli"
+cp ../../Data/servers.xml "${root_dir}/usr/share/uptooda-cli/servers.xml"
+cp ../../Data/.env "${root_dir}/usr/share/uptooda-cli/.env"
+cp ../../Data/Scripts/*.nut "${root_dir}/usr/share/uptooda-cli/Scripts/"
+#cp ../../Data/Update/iu_serversinfo.xml ./uptooda-cli/usr/share/uptooda-cli/Update/iu_serversinfo.xml
 
-if [ ! -f ~/imgupload/usr/bin/imgupload ]; then
+if [ ! -f ~/uptooda-cli/usr/bin/uptooda-cli ]; then
     echo "Executable not found!"
     exit
 fi
 
 chmod -R 0755 "${root_dir}/"
-chmod -x "${root_dir}/usr/share/imgupload/Scripts/"*.nut
-chmod -x "${root_dir}/usr/share/imgupload/servers.xml"
+chmod -x "${root_dir}/usr/share/uptooda-cli/Scripts/"*.nut
+chmod -x "${root_dir}/usr/share/uptooda-cli/servers.xml"
 
-tar_archive="${temp_dir}/imgupload-${AppVersion}-${Architecture}.tar.xz"
+tar_archive="${temp_dir}/uptooda-${AppVersion}-${Architecture}.tar.xz"
 cd "${root_dir}" && tar -cJf "${tar_archive}" * && cd -
 cp "${tar_archive}" "../../Build/Linux/"
 
@@ -71,5 +71,5 @@ mkdir -p "${root_dir}/DEBIAN"
 cp control_ "${root_dir}/DEBIAN/control"
 cp dirs "${root_dir}/DEBIAN/dirs"
 sed -i -e "s/YOUR_ARCHITECTURE/$Architecture/g" -e "s/IU_APP_VER_CLEAN/${IU_APP_VER_CLEAN}/g" -e "s/IU_BUILD_NUMBER/${IU_BUILD_NUMBER}/g" "${root_dir}/DEBIAN/control"
-fakeroot dpkg-deb --build "${root_dir}/" "../../Build/Linux/imgupload_${AppVersion}_${Architecture}.deb"
+fakeroot dpkg-deb --build "${root_dir}/" "../../Build/Linux/uptooda-cli_${AppVersion}_${Architecture}.deb"
 rm -rf "${temp_dir}"

@@ -1,6 +1,6 @@
 #pragma once
 
-#define APP_NAME_LITERAL "Image Uploader"
+#define APP_NAME_LITERAL "Uptooda"
 
 inline constexpr const char* APP_NAME_A = APP_NAME_LITERAL;
 

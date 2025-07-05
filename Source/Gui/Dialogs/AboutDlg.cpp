@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -57,13 +57,13 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     auto* translator = ServiceLocator::instance()->translator();
 
     m_WebSiteLink.SubclassWindow(GetDlgItem(IDC_SITELINK));
-    m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
+    m_WebSiteLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
 
     m_GoogleCodeLink.SubclassWindow(GetDlgItem(IDC_GOOGLECODELINK));
-    m_GoogleCodeLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
+    m_GoogleCodeLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
 
     m_ReportBugLink.SubclassWindow(GetDlgItem(IDC_FOUNDABUG));
-    m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER; 
+    m_ReportBugLink.m_dwExtendedStyle |= HLINK_UNDERLINEHOVER;
     m_ReportBugLink.SetLabel(TR("Found a bug? Send a bug report to the author."));
     m_ReportBugLink.SetHyperLink(_T("https://github.com/zenden2k/image-uploader/issues"));
 
@@ -90,7 +90,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += L"arhangelsoft\thttps://github.com/arhangelsoft\r\nTahir Yilmaz\thttps://github.com/thrylmz\r\nAlex_Qwerty\r\n"
                 "johnyxpro\thttps://github.com/johnyxpro\r\n\r\n"
         ;
-   
+
     CString translatorName = TR("translator_name");
     if ( translatorName == "translator_name") {
         translatorName.Empty();
@@ -103,7 +103,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
         trans.Format(_T("%s:"), (LPCTSTR)U2W(translator->getLanguageDisplayName()));
         translatorName.Replace(_T("\n"), _T("\r\n"));
         memoText += L"\r\n"+ trans + L"\r\n"+ translatorName +L"\r\n\r\n";
-    } 
+    }
 
     memoText += TR("Beta-testers:")+ CString("\r\n");
     memoText += L"Graf, CKA3O4H1K, Geslot, Alex_Qwerty\r\n\r\n";
@@ -124,7 +124,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"MediaInfo") + L"\thttps://mediaarea.net/\u200E\r\n";
     memoText += CString(L"pcre") + L"\t\thttps://www.pcre.org/\r\n";
     memoText += CString(L"pcre++") + L"\t\thttps://www.daemon.de/projects/pcrepp/\r\n";
-    
+
     memoText += CString(L"tinyxml") + L"\t\thttps://sourceforge.net/projects/tinyxml/\u200E\r\n";
     memoText += CString(L"tinyxml2") + L"\t\thttps://github.com/leethomason/tinyxml2\u200E\r\n";
     memoText += CString(L"gumbo parser") + L"\thttps://github.com/google/gumbo-parser\r\n";
@@ -156,7 +156,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"libuv") + L"\t\thttps://github.com/libuv/libuv\r\n";
     memoText += CString(L"WinToast") + L"\t\thttps://github.com/mohabouje/WinToast\r\n";
     memoText += CString(L"xdgmime") + L"\t\thttps://gitlab.freedesktop.org/xdg/xdgmime\r\n\r\n";
-            
+
     memoText += TR("Settings file path:") + CString(_T("\r\n")) + settings->getSettingsFileName() + _T("\r\n\r\n");
     memoText += TR("Data file path:") + CString(_T("\r\n")) + IuCommonFunctions::GetDataFolder() + _T("\r\n\r\n");
     memoText += CString(L"Build date: ") + CString(ver->BuildDate.c_str()) + _T("\r\n");
@@ -177,7 +177,7 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     CString versionLabel;
     versionLabel.Format(_T("Boost: v%s\r\n"), boostVersion.GetString());
     memoText += versionLabel;
-    
+
     int webpVersion = WebPGetDecoderVersion();
     CString webpVersionStr;
     webpVersionStr.Format(_T("%u.%u.%u"), (webpVersion >> 16) & 0xff, (webpVersion >> 8) & 0xff, webpVersion & 0xff);
@@ -244,10 +244,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     memoText += CString(L"IU_STATIC_RUNTIME\r\n");
 #endif
     SetDlgItemText(IDC_MEMO, memoText);
-   
+
     CString buildInfo;
     buildInfo.Format(_T("\u200Ebuild %lu (%lu bit)"), ver->Build, sizeof(void*) * 8);
-    
+
 /*#ifdef USE_OPENSSL
     buildInfo += _T(" (with OpenSSL)");
 #endif*/
@@ -267,8 +267,9 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     TRC(IDOK, "OK");
     TRC(IDC_AUTHORLABEL, "Author:");
     TRC(IDC_WEBSITELABEL, "Website:");
-    
-    SetWindowText(TR("About Image Uploader"));
+
+    std::wstring title = str(IuStringUtils::FormatWideNoExcept(TR("About %s")) % APP_NAME);
+    SetWindowText(title.c_str());
     return TRUE;
 }
 
@@ -295,14 +296,14 @@ LRESULT CAboutDlg::OnCtlColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam,
         SetBkColor(hdcStatic, GetSysColor(COLOR_BTNFACE));
         //SetTextColor(hdcStatic, RGB(100, 100, 100));
     }
-    
+
     return reinterpret_cast<LRESULT>(GetSysColorBrush(COLOR_BTNFACE));
 }
 
 LRESULT CAboutDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     HWND wnd = reinterpret_cast<HWND>(wParam);
     HWND authorNameLabelWnd = GetDlgItem(IDC_AUTHORNAMELABEL);
-	
+
     if (wnd == authorNameLabelWnd) {
         RECT rc;
         ::GetWindowRect(authorNameLabelWnd, &rc);

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class UploadEngineManager;
 constexpr int WM_SERVERSELECTCONTROL_CHANGE = WM_USER + 156;
 constexpr int WM_SERVERSELECTCONTROL_SERVERLIST_CHANGED = WM_USER + 157;
 
-class CServerSelectorControl : 
+class CServerSelectorControl :
     public CDialogIndirectImpl<CServerSelectorControl>
 {
 public:
@@ -68,7 +68,7 @@ virtual ~CServerSelectorControl();
         COMMAND_ID_HANDLER(IDC_NO_ACCOUNT, OnNoAccountClicked)
         COMMAND_RANGE_HANDLER(IDC_USERNAME_FIRST_ID, IDC_USERNAME_LAST_ID, OnUserNameMenuItemClick);
     END_MSG_MAP()
-        
+
     DLGTEMPLATE* GetTemplate();
     // Handler prototypes:
     //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

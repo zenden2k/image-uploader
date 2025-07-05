@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     TRC(IDC_NEWTHUMBNAIL, "Create a Copy");
     TRC(IDC_THUMBFORMATLABEL, "Format:");
     TRC(IDC_THUMBQUALITYLABEL, "Quality:");
-    
+
     ThumbBackground.SubclassWindow(GetDlgItem(IDC_THUMBBACKGROUND));
     //RECT rc = {13, 170, 290, 400};
     img.SubclassWindow(GetDlgItem(IDC_COMBOPREVIEW));
@@ -67,7 +67,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
     img.loadImage(0);
     thumbsCombo_ = GetDlgItem(IDC_THUMBSCOMBO);
 
-    SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
+    SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
     SetDlgItemText(IDC_THUMBTEXT, U2W(params_.Text));
 
     GuiTools::AddComboBoxItems(m_hWnd, IDC_THUMBFORMATLIST, 6, TR("Same format as image"),
@@ -80,7 +80,7 @@ LRESULT CThumbSettingsPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam
         thumbsCombo_.AddString(WinUtils::GetOnlyFileName(fileName));
     }
 
-  
+
     thumbTextMacrosesButton_.Attach(GetDlgItem(IDC_THUMBMACROSES));
     thumbTextEdit_.Attach(GetDlgItem(IDC_THUMBTEXT));
 
@@ -179,8 +179,8 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
     if (it != thumb_cache_.end()) {
         thumb = it->second.get();
     }
-    
-    if(!thumb) { 
+
+    if(!thumb) {
         autoPtrThumb = std::make_unique<Thumbnail>();
         thumb = autoPtrThumb.get();
         if(!thumb->loadFromFile(fileName))
@@ -195,7 +195,7 @@ LRESULT CThumbSettingsPage::OnEditThumbnailPreset(WORD wNotifyCode, WORD wID, HW
         if (autoPtrThumb) {
             thumb_cache_[fileName] = std::move(autoPtrThumb);
         }
-        
+
         showSelectedThumbnailPreview();
     }
     return 0;
@@ -244,7 +244,7 @@ void CThumbSettingsPage::showSelectedThumbnailPreview()
         thumb = it->second.get();
     }
     if(!thumb)
-    { 
+    {
         autoPtrThumb = std::make_unique<Thumbnail>();
         thumb = autoPtrThumb.get();
 
@@ -319,7 +319,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
         return false;
     }
     std::string newName = IuCoreUtils::ExtractFileNameNoExt(fileName) + "_copy";
-    
+
     CInputDialog dlg(TR("Creating new thumbnail preset"), TR("Enter new thumbnail preset name:"), Utf8ToWCstring(newName));
     dlg.setForbiddenCharacters(_T("\\/:*?\"<>|"));
 
@@ -346,7 +346,7 @@ bool CThumbSettingsPage::CreateNewThumbnail() {
     std::string sprite = thumb->getSpriteFileName();
     thumb->setSpriteFileName(newName + '.' + IuCoreUtils::ExtractFileExt(sprite));
     if (!sprite.empty()) {
-        std::string newSpriteName = srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite); 
+        std::string newSpriteName = srcFolder + newName + '.' + IuCoreUtils::ExtractFileExt(sprite);
         if (!IuCoreUtils::CopyFileToDest(sprite, newSpriteName)) {
             LOG(ERROR) << "Unable to copy file: " << std::endl << std::endl << "Source: " << sprite << std::endl << "Destination: " << newSpriteName;
             return false;
@@ -395,7 +395,7 @@ void CThumbSettingsPage::ThumbTextCheckboxChange()
     thumbTextMacrosesButton_.EnableWindow(bChecked);
     params_.AddImageSize = bChecked;
     params_.AddImageSize = bChecked;
-    
+
 }
 
 LRESULT CThumbSettingsPage::OnThumbTextChange(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
@@ -443,7 +443,7 @@ LRESULT CThumbSettingsPage::OnWidthEditChange(WORD wNotifyCode, WORD wID, HWND h
 
     ::EnableWindow(GetDlgItem(IDC_WIDTHEDIT), setWidth);
     ::EnableWindow(GetDlgItem(IDC_HEIGHTEDIT), setHeight);
-    
+
     showSelectedThumbnailPreview();
     return 0;
 }

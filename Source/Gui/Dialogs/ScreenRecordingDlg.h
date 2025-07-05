@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ struct ScreenRecordingRuntimeParams {
 
 };
 
-class CScreenRecordingDlg : 
+class CScreenRecordingDlg :
     public /*aero::*/CCustomDialogIndirectImpl<CScreenRecordingDlg>,
     public CWinDataExchange<CScreenRecordingDlg> {
     public:
@@ -81,7 +81,7 @@ class CScreenRecordingDlg :
         ~CScreenRecordingDlg();
 
         enum { IDD = IDD_SCREENRECODINGDLG };
-    
+
     protected:
         BEGIN_MSG_MAP(CScreenRecordingDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -107,7 +107,7 @@ class CScreenRecordingDlg :
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        
+
         // Handlers:
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

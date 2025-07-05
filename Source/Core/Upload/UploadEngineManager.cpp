@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -34,10 +34,10 @@ limitations under the License.
 #endif
 
 UploadEngineManager::UploadEngineManager(CUploadEngineList* uploadEngineList, std::shared_ptr<IUploadErrorHandler> uploadErrorHandler,
-    std::shared_ptr<INetworkClientFactory> factory) : 
+    std::shared_ptr<INetworkClientFactory> factory) :
         uploadEngineList_(uploadEngineList),
-        uploadErrorHandler_(std::move(uploadErrorHandler)), 
-        networkClientFactory_(std::move(factory)) 
+        uploadErrorHandler_(std::move(uploadErrorHandler)),
+        networkClientFactory_(std::move(factory))
 {
 }
 
@@ -108,10 +108,10 @@ CAbstractUploadEngine* UploadEngineManager::getUploadEngine(ServerProfile &serve
         }
         result->setServerSettings(serverSettings);
         result->setUploadData(ue);
-        
+
         m_plugins[threadId][serverName] = result;
     }
-    
+
     result->setServerSettings(serverSettings);
     result->setUploadData(ue);
     result->setOnErrorMessageCallback(std::bind(&IUploadErrorHandler::ErrorMessage,uploadErrorHandler_.get(),std::placeholders::_1));
@@ -161,7 +161,7 @@ CScriptUploadEngine* UploadEngineManager::getPlugin(ServerProfile& serverProfile
     }
     ServerSync* serverSync = getServerSync(serverProfile);
     std::string fileName = scriptsDirectory_ + pluginName + ".nut";
-    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_, 
+    CScriptUploadEngine* newPlugin = new CScriptUploadEngine(fileName, serverSync, params, networkClientFactory_,
         std::bind(&IUploadErrorHandler::ErrorMessage, uploadErrorHandler_.get(), std::placeholders::_1));
 
     if (newPlugin->isLoaded()) {

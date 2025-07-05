@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ void CropTool::endDraw(int x, int y)
             currentElement_ = nullptr;
             canvas_->showOverlay(false);
         } else {
-            
+
         }
         canvas_->updateView();
         currentElement_ = nullptr;
@@ -75,7 +75,7 @@ void CropTool::applyOperation() {
             canvas_->deleteMovableElement(cropEl);
             canvas_->showOverlay(false);
         }
-    } 
+    }
 }
 
 void CropTool::cancelOperation() {

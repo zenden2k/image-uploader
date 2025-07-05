@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ void SqTableToParameterList(Sqrat::SharedPtr<Sqrat::Table> tbl, ParameterList& l
 
 }
 
-CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings, 
+CScriptUploadEngine::CScriptUploadEngine(const std::string& fileName, ServerSync* serverSync, ServerSettingsStruct* settings,
                                          std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback) :
     CAdvancedUploadEngine(serverSync, settings, std::move(errorCallback)),
     Script(fileName, serverSync, std::move(factory), false)
@@ -162,7 +162,7 @@ int CScriptUploadEngine::processTestTask(std::shared_ptr<UploadTask> task) {
         return res;
     }
     catch (const Sqrat::Exception& e) {
-        Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + e.Message()); 
+        Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + e.Message());
     }
     catch (std::exception& e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::processTestTask\r\n" + std::string(e.what()));
@@ -194,7 +194,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     }
 
     createNewFolderIfNeeded(task);
-   
+
     params.setFolder(task->serverProfile().folder());
     params.task_ = task;
     int ival = 0;
@@ -208,7 +208,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         if (task->type() == UploadTask::TypeFile) {
             Function func(vm_.GetRootTable(), "UploadFile");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function UploadFile not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function UploadFile not found in script"));
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -219,7 +219,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
             std::shared_ptr<UrlShorteningTask> urlShorteningTask = std::dynamic_pointer_cast<UrlShorteningTask>(task);
             Function func(vm_.GetRootTable(), "ShortenUrl");
             if ( func.IsNull() ) {
-                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function ShortenUrl not found in script")); 
+                 Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string("Function ShortenUrl not found in script"));
                  currentTask_ = nullptr;
                  return -1;
             }
@@ -262,7 +262,7 @@ int CScriptUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
     catch (std::exception & e) {
         Log(ErrorInfo::mtError, "CScriptUploadEngine::doUpload\r\n" + std::string(e.what()));
     }
-    
+
     FlushSquirrelOutput();
     currentTask_ = nullptr;
     return ival;
@@ -279,7 +279,7 @@ bool CScriptUploadEngine::needStop()
 
 bool CScriptUploadEngine::preLoad()
 {
-    try {   
+    try {
         ServerSettingsStruct* par = m_ServersSettings;
         Sqrat::RootTable& rootTable = vm_.GetRootTable();
         rootTable.SetInstance("ServerParams", par);
@@ -322,7 +322,7 @@ int CScriptUploadEngine::getAccessTypeList(std::vector<std::string>& list)
         SharedPtr<Sqrat::Array> arr = func.Evaluate<Sqrat::Array>();
 
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getAccessTypeList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getAccessTypeList\r\n" + std::string(Error::Message(vm_.GetVM())));
             return 0;
         }*/
 
@@ -388,10 +388,10 @@ int CScriptUploadEngine::doLogin()
 
         serverSync_->setAuthPerformed(res == 1);
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM())));
             return 0;
         }*/
-        
+
         return res;
     }
     catch (const std::exception& e)
@@ -442,7 +442,7 @@ int CScriptUploadEngine::modifyFolder(CFolderItem& folder)
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&folder));
         res = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::doLogin\r\n" + std::string(Error::Message(vm_.GetVM())));
             return 0;
         }*/
     }
@@ -472,7 +472,7 @@ int CScriptUploadEngine::getFolderList(CFolderList& FolderList)
         auto [status, table] = GetOperationResult(func.Evaluate<Object>(&FolderList));
         ival = status;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::getFolderList\r\n" + std::string(Error::Message(vm_.GetVM())));
         }*/
     }
     catch (NetworkClient::AbortedException& ) {
@@ -511,7 +511,7 @@ int CScriptUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
 
         ival = res;
         /*if ( Error::Occurred(vm_.GetVM() ) ) {
-            Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + std::string(Error::Message(vm_.GetVM()))); 
+            Log(ErrorInfo::mtError, "CScriptUploadEngine::createFolder\r\n" + std::string(Error::Message(vm_.GetVM())));
             return false;
         }*/
     }
@@ -604,7 +604,7 @@ void CScriptUploadEngine::Log(ErrorInfo::MessageType mt, const std::string& erro
     }
     ei.ThreadId = std::this_thread::get_id();
     ei.Script = IuCoreUtils::ExtractFileName(fileName_);
-    
+
     ErrorMessage(ei);
 }
 
@@ -649,7 +649,7 @@ bool CScriptUploadEngine::supportsLogout() {
 int CScriptUploadEngine::checkAuth() {
     using namespace Sqrat;
     int res = 1, res2 = 1;
-    
+
     if (newAuthMode_) {
         try {
             serverSync_->beginAuth();
@@ -678,11 +678,11 @@ int CScriptUploadEngine::checkAuth() {
             }
         } catch (const std::exception& e) {
             Log(ErrorInfo::mtError, "CScriptUploadEngine::checkAuth\r\n" + std::string(e.what()));
-        }  
+        }
 	}
-	 
+
     if (hasRefreshTokenFunc_) {
-        res2 = refreshToken();      
+        res2 = refreshToken();
     }
     return static_cast<int>(res>=1 && res2>=1);
 }
