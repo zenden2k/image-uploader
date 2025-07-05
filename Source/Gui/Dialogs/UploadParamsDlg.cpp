@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ CUploadParamsDlg::CUploadParamsDlg(ServerProfile &serverProfile, bool showImageP
 
 CUploadParamsDlg::~CUploadParamsDlg()
 {
-    
+
 }
 
 LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -133,16 +133,16 @@ LRESULT CUploadParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
 
     //GuiTools::SetCheck(m_hWnd, IDC_DEFAULTTHUMBSETTINGSCHECKBOX, params_.);
 
-    SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );    
+    SendDlgItemMessage(IDC_THUMBQUALITYSPIN, UDM_SETRANGE, 0, (LPARAM) MAKELONG((short)100, (short)1) );
 
     createThumbnailsCheckboxChanged();
     processImagesChanged();
     defaultSettingsCheckboxChanged();
-    return 0;  
+    return 0;
 }
 
 LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     if (showImageProcessingParams_) {
         ThumbCreatingParams& thumb = params_.getThumbRef();
         GuiTools::GetCheck(m_hWnd, IDC_PROCESSIMAGESCHECKBOX, params_.ProcessImages);
@@ -152,7 +152,7 @@ LRESULT CUploadParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, 
         GuiTools::GetCheck(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX, serverProfile_.UseDefaultSettings);
         thumb.AddImageSize = GuiTools::GetCheck(m_hWnd, IDC_THUMBTEXTCHECKBOX);
         thumb.Text = W2U(GuiTools::GetDlgItemText(m_hWnd, IDC_THUMBTEXT));
-        
+
         int profileIndex = profileCombo_.GetCurSel();
         CString buf;
         profileCombo_.GetLBText(profileIndex, buf);
@@ -209,10 +209,10 @@ LRESULT CUploadParamsDlg::OnClickedCreateThumbnailsCheckbox(WORD wNotifyCode, WO
 void CUploadParamsDlg::createThumbnailsCheckboxChanged() {
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_CREATETHUMBNAILS);
     GuiTools::EnableNextN(GetDlgItem(IDC_CREATETHUMBNAILS), isChecked? 4 : 18, isChecked );
-    
+
     if ( isChecked ) {
         defaultThumbSettingsCheckboxChanged();
-        
+
     }
     thumbTextCheckboxChanged();
 }
@@ -230,7 +230,7 @@ LRESULT CUploadParamsDlg::OnClickedProcessImagesCheckbox(WORD wNotifyCode, WORD 
 void CUploadParamsDlg::defaultSettingsCheckboxChanged() {
     bool isChecked = GuiTools::IsChecked(m_hWnd, IDC_DEFAULTSETTINGSCHECKBOX);
     GuiTools::EnableNextN(GetDlgItem(IDC_DEFAULTSETTINGSCHECKBOX), 17, !isChecked );
-    
+
     if ( !isChecked ) {
         createThumbnailsCheckboxChanged();
         processImagesChanged();

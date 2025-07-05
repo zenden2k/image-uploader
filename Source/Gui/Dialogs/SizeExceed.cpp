@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if (isImage) {
         img.loadImage(m_szFileName);
     }
-    
+
     CenterWindow(GetParent());
 
     RECT serverSelectorRect = GuiTools::GetDialogItemRect(m_hWnd, IDC_SERVERPLACEHOLDER);
@@ -68,29 +68,29 @@ LRESULT CSizeExceed::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL&
     if (!fileTask_->isImage()) {
         imageServerSelector_->setServersMask(CServerSelectorControl::smFileServers);
     }
-    
+
     imageServerSelector_->ShowWindow(SW_SHOW);
-    imageServerSelector_->SetWindowPos(nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left, 
+    imageServerSelector_->SetWindowPos(nullptr, serverSelectorRect.left, serverSelectorRect.top, serverSelectorRect.right - serverSelectorRect.left,
                                         serverSelectorRect.bottom - serverSelectorRect.top, SWP_NOZORDER);
     imageServerSelector_->setServerProfile(settings->imageServer.getByIndex(0));
-    
+
     //CString serverName = U2W(fileTask_->serverProfile().serverName());
 
     fileExceedNameLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_FILEEXCEEDNAME));
-    
+
     int64_t fileSize = IuCoreUtils::GetFileSize(W2U(m_szFileName));
     WCHAR buf2[25];
     WinUtils::NewBytesToString(fileSize, buf2, 25);
 
 
-    CString params; 
+    CString params;
     CString onlyFileName = WinUtils::TrimString(WinUtils::myExtractFileName(m_szFileName), 40);
     if (isImage) {
         params.Format(_T(" %s (%dx%d, %s)"), static_cast<LPCTSTR>(onlyFileName), img.imageWidth(), img.imageHeight(), static_cast<LPCTSTR>(buf2));
     } else {
         params.Format(_T(" %s (%s)"), static_cast<LPCTSTR>(onlyFileName), static_cast<LPCTSTR>(buf2));
     }
-   
+
     CString name = TR("File") + params;
 
     SetDlgItemText(IDC_FILEEXCEEDNAME, name);
@@ -135,7 +135,7 @@ bool CSizeExceed::checkAccount() {
     if (serverName.empty()) {
         LocalizedMessageBox(TR("You have not selected server!"), TR("Error"), MB_ICONERROR);
         return false;
-    } 
+    }
     if (!imageServerSelector_->isAccountChosen()) {
         CString message;
         message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(imageServerSelector_->serverProfile().serverName()).c_str());

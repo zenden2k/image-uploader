@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,15 +35,15 @@
 #include "AdvancedUploadEngine.h"
 #include "Parameters/AbstractParameter.h"
 
-class CScriptUploadEngine : public CAdvancedUploadEngine, 
+class CScriptUploadEngine : public CAdvancedUploadEngine,
                             public Script,
                             public NetworkClient::Logger
 {
     public:
-        CScriptUploadEngine(const std::string& pluginName, ServerSync* serverSync, ServerSettingsStruct* settings, 
+        CScriptUploadEngine(const std::string& pluginName, ServerSync* serverSync, ServerSettingsStruct* settings,
             std::shared_ptr<INetworkClientFactory> factory, ErrorMessageCallback errorCallback);
         ~CScriptUploadEngine() override;
-     
+
         void setNetworkClient(INetworkClient* nm) override;
         //bool load(std::string fileName, ServerSettingsStruct& params);
         int getFolderList(CFolderList &FolderList) override;
@@ -65,7 +65,7 @@ class CScriptUploadEngine : public CAdvancedUploadEngine,
         std::string name() const;
 
         // FIXME: not working
-        void stop() override;         
+        void stop() override;
     protected:
         int doUpload(std::shared_ptr<UploadTask> task, UploadParams& params);
         void Log(ErrorInfo::MessageType mt, const std::string& error);

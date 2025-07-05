@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
 
 class CRegionSelectCallback
 {
-public: 
+public:
     virtual void OnScreenshotFinished(int Result)=0;
     virtual void OnScreenshotSaving(LPTSTR FileName, Gdiplus::Bitmap* Bm)=0;
 };
@@ -104,7 +104,7 @@ class CRegionSelect: public CWindowImpl<CRegionSelect>
         HCURSOR CrossCursor ;
         bool m_bPainted;
         HCURSOR HandCursor ;
-        
+
         bool m_bDocumentChanged;
         void Finish();
         void Cleanup();

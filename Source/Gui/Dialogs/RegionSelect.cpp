@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ BOOL CALLBACK EnumChildProc(HWND hwnd, LPARAM lParam)
         EnumChildWindows(hwnd, EnumChildProc, 0);
         WindowsListItem newItem;
         newItem.handle = hwnd;
-        GetWindowRect(hwnd, &newItem.rect); 
+        GetWindowRect(hwnd, &newItem.rect);
         windowsList.push_back(newItem);
     }
     return true;
@@ -128,7 +128,7 @@ SelectionMode CRegionSelect::selectionMode() const {
 }
 
 CRegionSelect::~CRegionSelect()
-{ 
+{
     if (DrawingPen) {
         DeleteObject(DrawingPen);
     }
@@ -248,7 +248,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
             CRgn WindowRgn;
 
             if (::GetWindowRgn(hNewSelWnd, WindowRgn) != ERROR) {
-                //WindowRegion.GetRgnBox( &WindowRect); 
+                //WindowRegion.GetRgnBox( &WindowRect);
                 WindowRgn.OffsetRgn(SelWndRect.left, SelWndRect.top);
             }
 
@@ -282,7 +282,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
         if(fwKeys & MK_LBUTTON && Down    )
         {
             HDC dc = GetDC();
-            
+
             SelectObject(dc, pen);
 
             if(m_SelectionMode!= SelectionMode::smFreeform)
@@ -297,12 +297,12 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                 bool Draw = true;
                 if(m_SelectionMode == SelectionMode::smWindowHandles)
                 {
-                
+
                     if(abs(End.x-Start.x)<7 && abs(End.y-Start.y)<7)
                     {
                         Draw=false;
                     }
-                    else     
+                    else
                     {
                         m_SelectionMode = SelectionMode::smRectangles;
                         hSelWnd = 0;
@@ -312,8 +312,8 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
                     }
                 }
                     if(Draw) Rectangle(dc, Start.x,Start.y, End.x, End.y);
-                
-                
+
+
             }
             else
             {
@@ -374,7 +374,7 @@ LRESULT CRegionSelect::OnMouseMove(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
             }
             SelectObject(memDC2, oldPen2);
             cxOld = cx;
-            cyOld = cy;    
+            cyOld = cy;
         }
 
     if(bUpdateWindow) UpdateWindow();
@@ -396,10 +396,10 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     CRgn newRegion;    RECT winRect;
     SHORT shiftState = GetAsyncKeyState(VK_SHIFT);
 
-    WPARAM fwKeys = wParam; 
+    WPARAM fwKeys = wParam;
     m_bPictureChanged = true;
 
-    if(m_SelectionMode == SelectionMode::smFreeform) 
+    if(m_SelectionMode == SelectionMode::smFreeform)
     {
         Finish();
         return 0;
@@ -428,7 +428,7 @@ LRESULT CRegionSelect::OnLButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
 
     if(fwKeys & MK_CONTROL) {
         m_SelectionRegion.CombineRgn(newRegion, RGN_DIFF);
-        
+
     } else if(shiftState& 0x8000) { // shift is down
         m_SelectionRegion.CombineRgn(newRegion, RGN_OR);
     } else {
@@ -520,13 +520,13 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR 
    ///* m_hBitmap =*/ CreateDIBSection(dstDC, (BITMAPINFO*)&bmi, DIB_RGB_COLORS, 0, NULL, NULL);
 
     alphaBm.CreateCompatibleBitmap(dstDC, m_Width, m_Height);
-    
+
     CBrush br2;
     br2.CreateSolidBrush(RGB(0,0,150));
     alphaDC.CreateCompatibleDC(dstDC);
     HBITMAP oldAlphaBm = alphaDC.SelectBitmap(alphaBm);
 
-    alphaDC.FillRect(&r, br2);    
+    alphaDC.FillRect(&r, br2);
     m_bPictureChanged = true;
 
     ::ReleaseDC(m_hWnd, dstDC);
@@ -555,12 +555,12 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR 
 
     InvalidateRect(nullptr, FALSE);
     ShowWindow(SW_SHOW);
-        
+
     MSG msg;
-    while(!m_bFinish && GetMessage(&msg, nullptr, NULL, NULL) ) 
-    {  
-        TranslateMessage(&msg);    
-        DispatchMessage(&msg); 
+    while(!m_bFinish && GetMessage(&msg, nullptr, NULL, NULL) )
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
 
     memDC2.SelectBitmap(oldBm);
@@ -574,7 +574,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR 
 
     alphaBm.DeleteObject();
 
-    
+
     ShowWindow(SW_HIDE);
     return m_bResult;
 }
@@ -582,7 +582,7 @@ bool CRegionSelect::Execute(HBITMAP screenshot, int width, int height, HMONITOR 
 void CRegionSelect::Finish()
 {
     m_bResult = true;
-    if(m_SelectionMode == SelectionMode::smRectangles 
+    if(m_SelectionMode == SelectionMode::smRectangles
         || (m_SelectionMode == SelectionMode::smWindowHandles && wasImageEdited())) {
         m_ResultRegion = std::make_shared<CRectRegion>(m_SelectionRegion);
     } else if(m_SelectionMode == SelectionMode::smFreeform) {
@@ -596,7 +596,7 @@ void CRegionSelect::Finish()
     }
 
     if(m_ResultRegion->IsEmpty()) {
-        m_bResult = false;   
+        m_bResult = false;
     }
 
     m_bFinish = true;
@@ -610,11 +610,11 @@ void CRegionSelect::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
         m_bResult = false;
     }
 
-    else if (nChar == VK_RETURN) 
+    else if (nChar == VK_RETURN)
     {
         Start.x = 0;   // If "Enter" key was pressed, we make a shot of entire screen
-        Start.y = 0; 
-        End.x = 0; 
+        Start.y = 0;
+        End.x = 0;
         End.y = 0;
         Finish();
     }
@@ -642,7 +642,7 @@ bool CRegionSelect::setDrawingParams(COLORREF color, int brushSize)
     if (brushSize < 1) {
         brushSize = 1;
     }
-    
+
     if (brushSize == m_brushSize && color == m_brushColor) {
         return true;
     }
@@ -671,7 +671,7 @@ LRESULT CRegionSelect::OnMButtonUp(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL
     ScreenPoint.y = GET_Y_LPARAM(lParam);
     ClientPoint = ScreenPoint;
     ::ScreenToClient(hwnd, &ClientPoint);
-    
+
     CColorDialog ColorDialog(m_brushColor);
     if (ColorDialog.DoModal(m_hWnd) == IDOK) {
         COLORREF newColor =  ColorDialog.GetColor();

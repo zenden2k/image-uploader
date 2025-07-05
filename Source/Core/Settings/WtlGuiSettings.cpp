@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -172,7 +172,7 @@ int AddToExplorerContextMenu(LPCTSTR Extension, LPCTSTR Title, LPCTSTR Command, 
         NULL);
 
     if (res != ERROR_SUCCESS) {
-        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"), 
+        ServiceLocator::instance()->logger()->write(ILogger::logWarning, TR("Settings"),
             CString(TR("Cannot create registry key for extension: ")) +
             Extension + _T("\r\n") + WinUtils::ErrorCodeToString(res));
         return 0;
@@ -371,7 +371,7 @@ void WtlGuiSettings::fixInvalidServers() {
         temporaryServer.setServerName(defaultImageServer);
         temporaryServer.setProfileName(defaultImageServerProfileName);
     }
-    
+
     std::string defaultFileServerName = engineList_->getDefaultServerNameForType(CUploadEngineData::TypeFileServer);
     CUploadEngineData* uploadEngineData = engineList_->byName(defaultFileServerName);
 
@@ -430,8 +430,8 @@ void WtlGuiSettings::fixInvalidServers() {
     }
 }
 
-WtlGuiSettings::WtlGuiSettings() : 
-    CommonGuiSettings(), 
+WtlGuiSettings::WtlGuiSettings() :
+    CommonGuiSettings(),
     floatWnd_(nullptr)
 {
     IsPortable = false;
@@ -465,12 +465,12 @@ WtlGuiSettings::WtlGuiSettings() :
     UseTxtTemplate = false;
     GroupByFilename = false;
     UseDirectLinks = true;
-    TrayResult = trJustURL; 
+    TrayResult = trJustURL;
     DropVideoFilesToTheList = false;
     CodeLang = 0;
     ConfirmOnExit = 1;
     EnableToastNotifications = true;
-   
+
     ExplorerContextMenu = false;
     ExplorerVideoContextMenu = true;
     ExplorerContextMenu_changed = false;
@@ -532,8 +532,8 @@ WtlGuiSettings::WtlGuiSettings() :
     TrayIconSettings.LeftClickCommandStr = _T(""); // without action
     TrayIconSettings.LeftDoubleClickCommandStr = _T("showmainwindow");
 
-    TrayIconSettings.RightClickCommandStr = _T("contextmenu"); 
-    TrayIconSettings.MiddleClickCommandStr = _T("regionscreenshot"); 
+    TrayIconSettings.RightClickCommandStr = _T("contextmenu");
+    TrayIconSettings.MiddleClickCommandStr = _T("regionscreenshot");
 
     TrayIconSettings.DontLaunchCopy = true;
     TrayIconSettings.TrayScreenshotAction = TRAY_SCREENSHOT_OPENINEDITOR;
@@ -592,7 +592,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
 
     }
 
-    // Migrating from 1.3.2 to 1.3.3 
+    // Migrating from 1.3.2 to 1.3.3
     // Keep tray icon mouse commands as strings
     if (!settingsNode["TrayIcon"].IsNull()) {
         SimpleXmlNode trayIconNode = settingsNode["TrayIcon"];
@@ -670,7 +670,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
 
     /*SaveServerProfileGroup(uploading.GetChild("UrlShorteningServerGroup"), urlShorteningServer);
     SaveServerProfileGroup(uploading.GetChild("TemporaryServerGroup"), temporaryServer);*/
-    
+
 
     //std::cerr << "Saving setting to "<< IuCoreUtils::WstringToUtf8((LPCTSTR)fileName_);
     CRegistry Reg;
@@ -702,7 +702,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
         AutoStartup_changed = false;
         BOOL b;
         if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
-            // Start new elevated process 
+            // Start new elevated process
             ApplyRegistrySettings();
         } else {
             // Process has already admin rights

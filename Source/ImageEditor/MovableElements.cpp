@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 #include "3rdpart/GdiplusH.h"
 #include "Region.h"
 #include "Canvas.h"
-#include "Core/Images/Utils.h" 
+#include "Core/Images/Utils.h"
 #include "Gui/GuiTools.h"
 
 namespace ImageEditor {
@@ -127,8 +127,8 @@ void Line::createGrips()
             grip2.bt = BoundaryType::btTopLeft;
         }
     }
-    grips_[0] = grip1;    
-    grips_[1] = grip2;    
+    grips_[0] = grip1;
+    grips_[1] = grip2;
 }
 
 bool Line::isItemAtPos(int x, int y)
@@ -181,7 +181,7 @@ TextElement::~TextElement()
 
 void TextElement::render(Painter* gr) {
     using namespace Gdiplus;
-    if ( !gr ) { 
+    if ( !gr ) {
         return;
     }
 
@@ -317,7 +317,7 @@ void TextElement::setSelected(bool selected)
     if ( inputBox_ && !selected ) {
         canvas_->onTextEditFinished(this);
         endEdit(true);
-    
+
         inputBox_->show(false);
     }
 }
@@ -448,7 +448,7 @@ void Crop::resize(int width, int height) {
 RECT Crop::getPaintBoundingRect() {
     RECT rc = MovableElement::getPaintBoundingRect();
     auto [dpiX, dpiY] = canvas_->getDpi();
-    // Offset for text with crop dimensions 
+    // Offset for text with crop dimensions
     rc.left -= static_cast<LONG>(80 * dpiX);
     rc.top -= static_cast<LONG>(80 * dpiY);
     return rc;
@@ -472,7 +472,7 @@ void CropOverlay::render(Painter* gr)
 {
     using namespace Gdiplus;
     Gdiplus::SolidBrush brush(Gdiplus::Color( 120, 0, 0, 0) );
-    
+
     std::vector<MovableElement*> crops;
     canvas_->getElementsByType(ElementType::etCrop, crops);
     Rect rc (0,0, canvas_->getWidth(), canvas_->getHeigth());
@@ -484,7 +484,7 @@ void CropOverlay::render(Painter* gr)
         rgn = rgn.subtracted(Region(crop->getX(), crop->getY(), crop->getWidth(), crop->getHeight()));
 
         isCropElementMoving = crop->isMoving();
-        
+
         cropRect = RectF(static_cast<REAL>(crop->getX()), static_cast<REAL>(crop->getY()),
             static_cast<REAL>(crop->getWidth()), static_cast<REAL>(crop->getHeight()));
     }
@@ -496,7 +496,7 @@ void CropOverlay::render(Painter* gr)
     PixelOffsetMode oldPOM = gr->GetPixelOffsetMode();
     gr->SetPixelOffsetMode(PixelOffsetModeHalf);
     gr->SetSmoothingMode(SmoothingModeNone);
-    
+
     gr->FillRectangle( &brush, rc.X, rc.Y, rc.Width, rc.Height );
     gr->SetClip(&oldRegion);
     gr->SetSmoothingMode(prevSmoothingMode);
@@ -528,7 +528,7 @@ void CropOverlay::render(Painter* gr)
             gr->FillRectangle(&textRectBrush, textRect);
             gr->DrawString(text, -1, font_.get(), point, /*&format,*/ &textBrush);
         }
-        
+
         gr->SetTextRenderingHint(oldTextHint);
     }
 }
@@ -588,13 +588,13 @@ bool Rectangle::isItemAtPos(int x, int y)
     int elementWidth = getWidth();
     int elementHeight = getHeight();
     int selectRadius = std::max<int>(kSelectRadius, penSize_);
-    return 
-        ((( x >= elementX - selectRadius && x  <= elementX  + selectRadius )  || ( x >= elementX +elementWidth - selectRadius && x  <= elementX  +elementWidth+ selectRadius ) ) 
+    return
+        ((( x >= elementX - selectRadius && x  <= elementX  + selectRadius )  || ( x >= elementX +elementWidth - selectRadius && x  <= elementX  +elementWidth+ selectRadius ) )
         && y>= elementY - selectRadius && y <= elementY + elementHeight + selectRadius )
 
-        || 
-        ((( y >= elementY - selectRadius && y  <= elementY  + selectRadius )  || ( y >= elementY +elementHeight - selectRadius && y  <= elementY  +elementHeight+ selectRadius ) ) 
-        
+        ||
+        ((( y >= elementY - selectRadius && y  <= elementY  + selectRadius )  || ( y >= elementY +elementHeight - selectRadius && y  <= elementY  +elementHeight+ selectRadius ) )
+
         && x>= elementX - selectRadius && x <= elementX + elementWidth + selectRadius );
 }
 
@@ -613,7 +613,7 @@ ImageEditor::ElementType Rectangle::getType() const
     return ElementType::etRectangle;
 }
 
-Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode mode) : 
+Arrow::Arrow(Canvas* canvas,int startX, int startY, int endX,int endY, ArrowMode mode) :
     Line(canvas, startX, startY, endX, endY),
     mode_(mode)
 {
@@ -730,7 +730,7 @@ BlurringRectangle::BlurringRectangle(Canvas* canvas, float blurRadius, int start
     isColorUsed_ = false;
     pixelate_ = pixelate;
     invertSelection_ = invertSelection;
-} 
+}
 
 BlurringRectangle::~BlurringRectangle()
 {
@@ -757,7 +757,7 @@ float BlurringRectangle::getBlurRadius() const
 RECT BlurringRectangle::getPaintBoundingRect() {
     if (invertSelection_) {
         return { 0, 0, canvas_->getWidth(), canvas_->getHeigth() };
-    } 
+    }
     return MovableElement::getPaintBoundingRect();
 }
 
@@ -776,14 +776,14 @@ void BlurringRectangle::render(Painter* gr)
         return;
     }
     // Optimization: do not apply blur while moving or resizing, can hang on slow CPUs
-    if ( !isMoving_ /* && !canvas_->manipulationStarted()*/) { 
+    if ( !isMoving_ /* && !canvas_->manipulationStarted()*/) {
         Rect excludeRect = invertSelection_ ? elRect : Rect();
         Rect applyRect = invertSelection_ ? canvasRect : elRect;
         if(pixelate_) {
             ImageUtils::ApplyPixelateEffect(background, applyRect.X, applyRect.Y, applyRect.Width, applyRect.Height, int(blurRadius_ * 4.0 /*BLUR_RADIUS_PRECISION*/), excludeRect);
         }
         else {
-#if GDIPVER >= 0x0110 
+#if GDIPVER >= 0x0110
             Blur blur;
             BlurParams blurParams;
             blurParams.radius = blurRadius_*3;
@@ -818,7 +818,7 @@ ElementType PixelateRectangle::getType() const
 }
 
 
-RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */) 
+RoundedRectangle::RoundedRectangle(Canvas* canvas, int startX, int startY, int endX,int endY,bool filled /*= false */)
                 : Rectangle(canvas, startX, startY, endX,endY, filled)
 {
     isBackgroundColorUsed_ = filled;
@@ -835,7 +835,7 @@ void RoundedRectangle::render(Painter* gr)
     SolidBrush br(backgroundColor_);
 
     Region rgn(max(getX(),0),max(0,getY()), getWidth(), getHeight());
-    
+
     gr->SetClip(rgn.toNativeRegion().get(), Gdiplus::CombineModeIntersect); // the drawed ellipse can exceed in some cases the bounding rectangle, setting the clip
     ImageUtils::DrawRoundedRectangle(gr, Rect(x,y,width,height), roundingRadius_ *2 , &pen, filled_ ? &br : 0);
     gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
@@ -878,7 +878,7 @@ void Ellipse::render(Painter* gr)
         gr->FillEllipse(&br, x,y,width,height);
     }
     gr->DrawEllipse(&pen, x,y,width,height);
-    gr->SetClip(canvas_->currentRenderingRect()); // restoring clip  
+    gr->SetClip(canvas_->currentRenderingRect()); // restoring clip
 }
 
 bool Ellipse::containsPoint(Gdiplus::Rect ellipse, Gdiplus::Point location) {
@@ -911,7 +911,7 @@ void Ellipse::createGrips()
 {
     grips_.resize(8);
     MovableElement::createGrips();
-    //btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight, 
+    //btBottomRight, btBottom,  btBottomLeft,  btRight,  btLeft,  btTopLeft, btTop, btTopRight,
         grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopRight));
         grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btTopLeft));
             grips_.erase(grips_.begin() + static_cast<int>(BoundaryType::btBottomLeft));
@@ -968,7 +968,7 @@ StepNumber::StepNumber(Canvas* canvas, int startX, int startY, int endX, int end
     number_ = number;
     fontSize_ = fontSize;
     int radius = recalcRadius();
-    
+
     startPoint_.x = startX - radius;
     startPoint_.y = startY - radius;
     endPoint_.x = startX + radius;

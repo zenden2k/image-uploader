@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
 
         createElement();
         elementJustCreated_ = true;
-        
+
         if ( currentElement_ ) {
             if (currentElement_->isResizable()) {
                 currentElement_->setStartPoint( pt );
@@ -110,7 +110,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
             canvas_->addMovableElement( currentElement_ );
             currentElement_->beginMove();
-            
+
         }
         if ( !currentElement_ || currentElement_->getType() == ElementType::etCrop ) {
             //canvas_->updateView(); // update the whole canvas
@@ -118,7 +118,7 @@ void MoveAndResizeTool::beginDraw( int x, int y ) {
             canvas_->updateView(currentElement_->getPaintBoundingRect());
         }
     } else {
-        
+
         currentElement_ = nullptr;
         if ( canvas_->unselectAllElements() ) {
             //canvas_->updateView();
@@ -163,14 +163,14 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
                     elWidth = x - elX+1;
                     break;
                 case BoundaryType::btTopLeft:
-                    
+
                     elWidth =  elX - x + elWidth;
                     elHeight = elY - y + elHeight;
                     elX = x;
                     elY = y;
                     break;
                 case BoundaryType::btLeft:
-                    
+
                     elWidth = elX - x + elWidth;
                     elX = x;
                     break;
@@ -179,25 +179,25 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
                     elY = y;
                     break;
                 case BoundaryType::btBottomLeft:
-                    
+
                     elWidth = elX - x + elWidth;
                     elHeight = y - elY+1;
                     elX = x;
                     break;
                 case BoundaryType::btTopRight:
-                    
+
                     elWidth =  x - elX+1;
                     elHeight = elY - y + elHeight;
                     elY = y;
             }
-            
+
 
             currentElement_->setPos(elX, elY);
             if (draggedBoundary_.bt != BoundaryType::btNone) {
                 currentElement_->resize(elWidth, elHeight);
             }
         }
-        
+
         if (currentElement_->getType() == ElementType::etCrop) {
             canvas_->onCropChanged(currentElement_->getX(), currentElement_->getY(), currentElement_->getWidth(), currentElement_->getHeight());
         }
@@ -210,7 +210,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
 
         return;
     }
-    
+
     if ( isMoving_ && currentElement_ ) {
         int deltaX = x - startPoint_.x;
         int deltaY = y - startPoint_.y;
@@ -239,7 +239,7 @@ void MoveAndResizeTool::continueDraw( int x, int y, DWORD flags ) {
         RECT paintBoundingRect = currentElement_->getPaintBoundingRect();
         RECT updateRect;
         UnionRect(&updateRect, &paintBoundingRect, &prevPaintBoundingRect_);
-        
+
         canvas_->updateView(updateRect);
         prevPaintBoundingRect_ = currentElement_->getPaintBoundingRect();
     }
@@ -260,7 +260,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
 
         if (!elementJustCreated_ && (memcmp(&newStartPoint_, &originalStartPoint_, sizeof(newStartPoint_)) || memcmp(
             &newEndPoint_, &originalEndPoint_, sizeof(newEndPoint_)))) {
-            
+
             auto uhi = std::make_unique<Canvas::UndoHistoryItem>();
             uhi->type = Canvas::UndoHistoryItemType::uitElementPositionChanged;
             Canvas::UndoHistoryItemElement uhie;
@@ -282,7 +282,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
         prevPaintBoundingRect_.top = -1;
         canvas_->updateView(updateRect);
         //currentElement_->setSelected(true);
-        
+
     }
 
     startPoint_.x = -1;
@@ -291,7 +291,7 @@ void MoveAndResizeTool::endDraw( int x, int y ) {
     endPoint_.y   = -1;
 
     if ( draggedBoundary_.bt!= BoundaryType::btNone ) {
-        
+
         draggedBoundary_.bt = BoundaryType::btNone;
         return;
     }
@@ -326,7 +326,7 @@ void MoveAndResizeTool::createElement() {
         case ElementType::etCrop:
             /*if ( !cropOverlay_ ) {
                 cropOverlay_ = new CropOverlay(canvas_, 0,0, canvas_->getWidth(), canvas_->getHeigth());
-                
+
                 atexit(&cleanUp);
             }*/
             canvas_->showOverlay(true);
@@ -395,7 +395,7 @@ MovableElement::Grip MoveAndResizeTool::checkElementsBoundaries( int x, int y, M
     }
 
     return {};
-}    
+}
 
 MovableElement::Grip  MoveAndResizeTool::checkElementBoundaries(MovableElement* element, int x, int y)
 {
@@ -415,7 +415,7 @@ void MoveAndResizeTool::cleanUp()
 CursorType MoveAndResizeTool::getCursor(int x, int y)
 {
     CursorType  ct = CursorType::ctDefault;
-    
+
     switch( elementType_ ) {
         case ElementType::etArrow:
             //currentElement_ = new Line( 0, 0, 0, 0 );
@@ -424,7 +424,7 @@ CursorType MoveAndResizeTool::getCursor(int x, int y)
             ct = CursorType::ctCross;
             break;
     }
-    MovableElement::Grip grip = checkElementsBoundaries( x, y); 
+    MovableElement::Grip grip = checkElementsBoundaries( x, y);
     if ( grip.bt != BoundaryType::btNone ) {
         return MovableElement::GetCursorForBoundary(grip.bt);
     }
@@ -441,11 +441,11 @@ void MoveAndResizeTool::mouseDoubleClick(int x, int y)
     MovableElement* el = canvas_->getElementAtPosition(x,y);
     if ( el &&  el->getType() == ElementType::etText && elementType_ != ElementType::etText ) {
         // WARNING!!! After this line "this" is DELETED!!!!
-        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(DrawingToolType::dtText, true);    
+        AbstractDrawingTool* dtool = canvas_->setDrawingToolType(DrawingToolType::dtText, true);
         if ( dtool ) {
             dtool->beginDraw(x,y);
         }
-    
+
     }
 }
 

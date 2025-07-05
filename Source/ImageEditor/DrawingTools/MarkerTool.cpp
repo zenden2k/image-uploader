@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -130,7 +130,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             highlightRegion(rc);
 
-            
+
             /*RectF sourceRect(rc.left, rc.top, rc.right-rc.left, rc.bottom - rc.top);
             GraphicsPath path;
             path.AddEllipse(sourceRect);
@@ -138,10 +138,10 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             Gdiplus::Region reg(&path);
 
             affectedRegion_.Union(&reg);*/
-        
+
             UnionRect(&updatedRect, &updatedRect, &rc);
             //delete circle;
-        } 
+        }
     } else if ( y1 == y0 ) {
         for( int x = xStart; x <= xEnd; x++ ) {
             int y = y0;
@@ -151,7 +151,7 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             highlightRegion(rc);
             segments_.markRect( rc );
-        } 
+        }
     } else {
         for( int a = 0; a <= len; a++ ) {
             x = x0 + a * sinA;
@@ -163,8 +163,8 @@ void MarkerTool::drawLine(int x0, int y0, int x1, int y1) {
             UnionRect(&updatedRect, &updatedRect, &rc);
             highlightRegion(rc);
             segments_.markRect( rc );
-        } 
-    }  
+        }
+    }
 
     canvas_->updateView(updatedRect);
 }
@@ -238,7 +238,7 @@ void MarkerTool::highlightRegion(RECT rc)
                 source[offset] = outR;
                 source[offset+1] = outG ;
                 source[offset+2] = outB;
-                source[offset+3] = static_cast<uint8_t>(outA * 255); 
+                source[offset+3] = static_cast<uint8_t>(outA * 255);
 
             }
         }
@@ -247,7 +247,7 @@ void MarkerTool::highlightRegion(RECT rc)
     }
 
 }
-        
+
 void MarkerTool::setPenSize(int size)
 {
     AbstractDrawingTool::setPenSize(size);
@@ -268,13 +268,13 @@ void MarkerTool::createCircle()
     } else {
         gr2.FillEllipse(&br, 0, 0, circle.GetWidth(), circle.GetHeight());
     }
-   
+
     BitmapData circleData;
 
     Rect lc(0,0,circle.GetWidth(),circle.GetHeight());
     if ( circle.LockBits(&lc, ImageLockModeRead, PixelFormat32bppARGB, & circleData) == Ok)
     {
-        if (circleData.Stride > 0) { 
+        if (circleData.Stride > 0) {
             circleStride_ = circleData.Stride;
         } else {
             circleStride_ = - circleData.Stride;

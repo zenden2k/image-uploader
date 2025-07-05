@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@
 #include "Core/AppParams.h"
 
 #define APP_KEY "0dxDFKqD"
-#define USER_AGENT "Zenden2k Image Uploader"
+#define USER_AGENT APP_NAME_A
 
 using namespace mega;
 
@@ -57,7 +57,7 @@ public:
 
     virtual ~MyGfxProcessor() override;
 protected:
-    std::unique_ptr<Gdiplus::Bitmap> bitmap_; 
+    std::unique_ptr<Gdiplus::Bitmap> bitmap_;
     HGLOBAL hGlobal_;
     CComPtr<IStream> istream_;
 };
@@ -121,7 +121,7 @@ int MyGfxProcessor::getBitmapDataSize(int width, int height, int px, int py, int
     if (!resultBmp) {
         return 0;
     }
-    
+
     HRESULT hr = CreateStreamOnHGlobal(nullptr, TRUE, &istream_);
     if (FAILED(hr)) {
         return 0;
@@ -172,7 +172,7 @@ public:
         engine_ = engine;
     }
     ~MyListener() {
-        
+
     }
     void onRequestFinish(mega::MegaApi* api, mega::MegaRequest *request, mega::MegaError* e) override;
     //Currently, this callback is only valid for the request fetchNodes()
@@ -207,7 +207,7 @@ CMegaNzUploadEngine::CMegaNzUploadEngine(ServerSync* serverSync, ServerSettingsS
     proc_ = std::make_unique<MyGfxProcessor>();
     gfxProvider_.reset(MegaGfxProvider::createExternalInstance(proc_.get()));
     megaApi_ = std::make_unique<MegaApi>(APP_KEY, gfxProvider_.get(), /* static_cast<const char*>(nullptr)*/ AppParams::instance()->tempDirectory().c_str(), USER_AGENT);
-#else 
+#else
     megaApi_.reset(new MegaApi(APP_KEY, (const char *)NULL, USER_AGENT));
 #endif
     megaApi_->setLogLevel(MegaApi::LOG_LEVEL_INFO);
@@ -253,7 +253,7 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
     folderList_ = &FolderList;
     if (ensureNodesFetched()) {
         std::string parentId = FolderList.parentFolder().getId();
-        
+
         if (parentId.empty()) {
             FolderList.AddFolder("/", "", std::string("/"), "", 0);
         } else {
@@ -269,7 +269,7 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
                             std::string nodeId = parentId;
 
                             // nodeId cannot be empty at this line, so we can avoid checking for emptiness here.
-                            if (nodeId.back() != '/') { 
+                            if (nodeId.back() != '/') {
                                 nodeId.append("/");
                             }
                             nodeId += node->getName();
@@ -282,7 +282,7 @@ int CMegaNzUploadEngine::getFolderList(CFolderList& FolderList) {
             }
         }
     }
-    
+
     return fetchNodesSuccess_ ? 1 : 0;
 }
 
@@ -306,7 +306,7 @@ int CMegaNzUploadEngine::createFolder(const CFolderItem& parent, CFolderItem& fo
         } else {
             parentNode.reset(megaApi_->getNodeByPath(parent.getId().c_str()));
         }
-       
+
         if (!parentNode || !parentNode->isFolder()) {
             log(ErrorInfo::mtError, "Unable to find parent folder");
             return 0;
@@ -339,7 +339,7 @@ int CMegaNzUploadEngine::modifyFolder(CFolderItem& folder) {
     renameFolderSuccess_ = false;
     if (ensureNodesFetched()) {
         std::unique_ptr<MegaNode> node(megaApi_->getNodeByPath(folder.getId().c_str()));
-        
+
         if (!node || !node->isFolder()) {
             log(ErrorInfo::mtError, "Unable to find folder '"+folder.getId()+"'");
             return 0;
@@ -429,7 +429,7 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
                 return 0;
             }
         }
-       
+
         std::string origFileName = IuCoreUtils::ExtractFileName(fileTask_->getFileName());
         std::string newFileName = origFileName;
         std::unique_ptr<MegaNode> node(megaApi_->getChildNode(root.get(), origFileName.c_str()));
@@ -437,7 +437,7 @@ int CMegaNzUploadEngine::doUpload(std::shared_ptr<UploadTask> task, UploadParams
         while (node) {
             newFileName = IuCoreUtils::IncrementFileName(origFileName, i++);
             node.reset(megaApi_->getChildNode(root.get(), newFileName.c_str()));
-        } 
+        }
 
         uploadFinished_ = false;
         uploadSuccess_ = false;

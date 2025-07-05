@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
 #define MEDIAINFODLG_H
 
 // MediaInfoDlg.h : Declaration of the CMediaInfoDlg
-// 
-// This dialog window shows technical information 
+//
+// This dialog window shows technical information
 // about  video/audio file that user had selected
 
 
@@ -48,7 +48,7 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
         void ShowInfo(HWND parentWnd, LPCTSTR FileName);
 
         enum { IDD = IDD_MEDIAINFODLG };
-      
+
     protected:
         BEGIN_MSG_MAP(CMediaInfoDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
@@ -69,12 +69,12 @@ class CMediaInfoDlg : public CCustomDialogIndirectImpl <CMediaInfoDlg>,
             DLGRESIZE_CONTROL(IDC_FULLINFORADIOBUTTON, DLSZ_MOVE_Y)
             DLGRESIZE_CONTROL(IDC_GENERATETEXTINENGLISHCHECKBOX, DLSZ_MOVE_Y)
         END_DLGRESIZE_MAP()
-        
+
         // Handler prototypes:
         //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
-        
+
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);

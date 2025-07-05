@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ bool CMyDataObject::IsFormatSupported(FORMATETC *pFormatEtc)
         m_FormatEtc.dwAspect == pFormatEtc->dwAspect &&
         m_FormatEtc.tymed & pFormatEtc->tymed)
         return true;
-    
+
     return false;
 }
 
@@ -90,7 +90,7 @@ ULONG __stdcall CMyDataObject::Release()
 {
     // Decrement object reference count.
     LONG lCount = InterlockedDecrement(&m_lRefCount);
-        
+
     if (lCount == 0)
     {
         delete this;
@@ -110,9 +110,9 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
     // Copy the storage medium data.
     pStgMedium->tymed = m_StgMedium.tymed;
     pStgMedium->pUnkForRelease = 0;
-    pStgMedium->hGlobal = 
+    pStgMedium->hGlobal =
         GlobalAlloc(GMEM_SHARE,sizeof(DROPFILES)+(TotalLength+1)*sizeof(TCHAR) );
-    
+
     DROPFILES *DP = static_cast<LPDROPFILES>(GlobalLock(pStgMedium->hGlobal));
     ZeroMemory(DP, sizeof(DROPFILES));
     DP->fWide = TRUE;
@@ -125,7 +125,7 @@ HRESULT __stdcall CMyDataObject::GetData(FORMATETC *pFormatEtc, STGMEDIUM *pStgM
         Files += m_FileItems[i].GetLength()+1;
     }
     *Files=0;
-    
+
     GlobalUnlock(DP);
     return S_OK;
 }
@@ -166,7 +166,7 @@ HRESULT __stdcall CMyDataObject::EnumFormatEtc(DWORD dwDirection, IEnumFORMATETC
     }
 }
 
-HRESULT CMyDataObject::DAdvise(FORMATETC *pFormatEtc, DWORD advf, IAdviseSink *pAdvSink, 
+HRESULT CMyDataObject::DAdvise(FORMATETC *pFormatEtc, DWORD advf, IAdviseSink *pAdvSink,
     DWORD *pdwConnection)
 {
     return OLE_E_ADVISENOTSUPPORTED;

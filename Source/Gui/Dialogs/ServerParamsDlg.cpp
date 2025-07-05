@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@
 
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()), serverProfile_(serverProfile)
-        
+
 {
     focusOnLoginControl_ = focusOnLoginEdit;
     uploadEngineManager_ = uploadEngineManager;
@@ -156,7 +156,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(serverProfile_);
-    
+
     CString password = GuiTools::GetDlgItemText(m_hWnd, IDC_PASSWORDEDIT);
     if (serverSettings) {
         serverSettings->authData.Login = WCstringToUtf8(login);
@@ -171,7 +171,7 @@ LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND
 
     if ( folderSelectDlg.DoModal(m_hWnd) == IDOK ) {
         CFolderItem folder = folderSelectDlg.m_SelectedFolder;
-    
+
 
         if(!folder.id.empty()){
             serverProfile_.setFolder(folder);

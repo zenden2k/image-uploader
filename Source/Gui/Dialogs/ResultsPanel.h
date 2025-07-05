@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ namespace ImageUploader::Core::OutputGenerator{
     class XmlTemplateGenerator;
 }
 
-class CResultsPanel : 
-    public CDialogImpl<CResultsPanel>    
+class CResultsPanel :
+    public CDialogImpl<CResultsPanel>
 {
     public:
         CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory = false);
@@ -155,7 +155,7 @@ protected:
     ShortenUrlChangedCallback onShortenUrlChanged_;
     CImageListManaged toolbarImageList_;
     bool isMediaInfoEnabled_ = false;
-   
+
     void onCodeTypeChanged();
     void createToolbar();
 };

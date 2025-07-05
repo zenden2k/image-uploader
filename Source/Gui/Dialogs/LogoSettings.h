@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ constexpr int IDC_NEWPROFILE = 10001;
 constexpr int IDC_SAVEPROFILE = 10002;
 constexpr int IDC_DELETEPROFILE = 10003;
 
-class CLogoSettings : 
-    public CDialogImpl<CLogoSettings>, public CSettingsPage    
+class CLogoSettings :
+    public CDialogImpl<CLogoSettings>, public CSettingsPage
 {
     public:
         CLogoSettings();

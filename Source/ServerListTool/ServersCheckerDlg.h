@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2015 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public:
         //COMMAND_HANDLER(IDC_SETTINGSBTN, BN_CLICKED, OnBnClickedSettingsButton)
         //NOTIFY_HANDLER(IDC_TOOLSERVERLIST, NM_CUSTOMDRAW, OnListViewNMCustomDraw)
         CHAIN_MSG_MAP(CDialogResize<CServersCheckerDlg>)
-        REFLECT_NOTIFICATIONS()   
+        REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
     BEGIN_DLGRESIZE_MAP(CServersCheckerDlg)

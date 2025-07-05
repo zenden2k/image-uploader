@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,14 +26,14 @@ limitations under the License.
 
 class CNewStyleFolderDialog {
 public:
-    
+
     CNewStyleFolderDialog(HWND parent, const CString& initialFolder, const CString& title, bool onlyFsDirs = true)
     {
         newStyleDialog_= std::make_unique<CShellFileOpenDialog>(/*WinUtils::myExtractFileName(initialFolder)*/nullptr, FOS_PATHMUSTEXIST | FOS_FILEMUSTEXIST | FOS_PICKFOLDERS | (onlyFsDirs ? FOS_FORCEFILESYSTEM : 0));
 
         if (!initialFolder.IsEmpty()) {
             IShellItem *psi;
-                
+
             HRESULT hresult = SHCreateItemFromParsingName(initialFolder, nullptr, IID_IShellItem, reinterpret_cast<void**>(&psi));
             if (SUCCEEDED(hresult)) {
                 newStyleDialog_->GetPtr()->SetDefaultFolder(psi);
@@ -57,13 +57,13 @@ public:
                 newStyleDialog_->GetPtr()->SetFolder(psi);
                 psi->Release();
             }
-        } 
+        }
     }
 
     INT_PTR DoModal(HWND hWndParent = ::GetActiveWindow())
     {
         return newStyleDialog_->DoModal(hWndParent);
-        
+
     }
 
     bool AddCheckbox(DWORD controlId, CString title, bool isChecked) {

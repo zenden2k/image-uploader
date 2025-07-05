@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ CResultsPanel::~CResultsPanel()
         if (webViewWindow_->m_hWnd) {
             webViewWindow_->DestroyWindow();
         }
-    }  
+    }
 }
 
 LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -121,12 +121,12 @@ LRESULT CResultsPanel::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     codeTypeComboBox.AddString(TR("Table of clickable thumbnails"));
     codeTypeComboBox.AddString(TR("Clickable thumbnails"));
     codeTypeComboBox.AddString(TR("Images"));
-    codeTypeComboBox.AddString(TR("Links to Images/Files")); 
-        
+    codeTypeComboBox.AddString(TR("Links to Images/Files"));
+
     for(size_t i=0;i<templateList_->size(); i++) {
         codeTypeComboBox.AddString(U2W(templateList_->at(i).Name));
     }
-    
+
     codeTypeComboBox.SetCurSel(0);
 
     SetTimer(kOutputTimer, 1000);
@@ -141,7 +141,7 @@ LRESULT CResultsPanel::OnTimer(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bH
             outputChanged_ = false;
         }
     }
-    
+
     return 0;
 }
 
@@ -157,11 +157,11 @@ void CResultsPanel::SetPage(TabPage Index)
     ::EnableWindow(GetDlgItem(IDC_CODETYPELABEL), Index != OG::clPlain);
     ::EnableWindow(GetDlgItem(IDC_CODETYPE), Index != OG::clPlain);
     ::EnableWindow(GetDlgItem(IDC_IMAGEUPLOADERLABEL), Index != OG::clPlain);
-    
+
     ::EnableWindow(GetDlgItem(IDC_IMAGESPERLINELABEL), Index != OG::clPlain);
     ::EnableWindow(GetDlgItem(IDC_THUMBSPERLINE), Index != OG::clPlain);
     ::EnableWindow(GetDlgItem(IDC_THUMBPERLINESPIN), Index != OG::clPlain);
-    
+
     bool enablePreview = Index != OG::clMarkdown;
     Toolbar.EnableButton(IDC_PREVIEWBUTTON, enablePreview);
     m_Page = Index;
@@ -187,7 +187,7 @@ std::string CResultsPanel::GenerateOutput()
 
     if (!Toolbar.m_hWnd) return {};
     int Index = GetCodeType();
-    
+
     CodeType codeType = static_cast<CodeType>(Index);
     std::lock_guard<std::mutex> lock(urlListMutex_);
 
@@ -213,9 +213,9 @@ std::string CResultsPanel::GenerateOutput()
         generatorId = static_cast<OG::GeneratorID>(m_Page);
         lang = m_Page;
     }
-    
+
     OG::AbstractOutputGenerator* generator = createOrGetGenerator(generatorId, lang, static_cast<OG::CodeType>(codeType));
-    
+
     generator->setPreferDirectLinks(preferDirectLinks);
     generator->setItemsPerLine(p);
     generator->setGroupByFile(groupByFileName_);
@@ -332,7 +332,7 @@ LRESULT CResultsPanel::OnBnClickedMediaInfo(WORD /*wNotifyCode*/, WORD /*wID*/, 
     return 0;
 }
 
-    
+
 int CResultsPanel::GetCodeType() const {
     return codeTypeComboBox.GetCurSel();
 }
@@ -357,15 +357,15 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 {
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto* pnmtb = reinterpret_cast<NMTOOLBAR *>(pnmh);
-    CMenu sub;    
+    CMenu sub;
     MENUITEMINFO mi {};
     mi.cbSize = sizeof(mi);
     mi.fMask = MIIM_TYPE|MIIM_ID;
     mi.fType = MFT_STRING;
     sub.CreatePopupMenu();
     RECT rc;
-    
-    ::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc); 
+
+    ::GetWindowRect(GetDlgItem(IDC_RESULTSTOOLBAR),&rc);
     int count = 0;
         mi.fType = MFT_STRING;
         mi.wID = IDC_SHORTENURLITEM;
@@ -378,7 +378,7 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
         mi.dwTypeData  = const_cast<LPWSTR>(menuItemTitle.GetString());
         mi.cch = menuItemTitle.GetLength();
         sub.InsertMenuItem(count++, true, &mi);
-    
+
 
     mi.fType = MFT_STRING;
     mi.wID = IDC_USEDIRECTLINKS;
@@ -433,9 +433,9 @@ LRESULT CResultsPanel::OnOptionsDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandle
 
     sub.CheckMenuItem(IDC_USEDIRECTLINKS, MF_BYCOMMAND    | (settings->UseDirectLinks? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_USETEMPLATE, MF_BYCOMMAND    | (settings->UseTxtTemplate? MF_CHECKED    : MF_UNCHECKED)    );
-    sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );    
+    sub.CheckMenuItem(IDC_SHORTENURLITEM, MF_BYCOMMAND    | (shortenUrl_? MF_CHECKED    : MF_UNCHECKED)    );
     sub.CheckMenuItem(IDC_GROUPBYFILENAME, MF_BYCOMMAND    | (groupByFileName_? MF_CHECKED    : MF_UNCHECKED)    );
-    
+
     ::SendMessage(Toolbar.m_hWnd,TB_GETRECT, pnmtb->iItem, reinterpret_cast<LPARAM>(&rc));
     Toolbar.ClientToScreen(&rc);
     TPMPARAMS excludeArea;
@@ -551,7 +551,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
         if (!IuTextUtils::FileSaveContents(outputTempFileName, res) ) {
             LOG(ERROR) << "Could not save temporary file " << outputTempFileName;
         }
-        url = "file:///" + outputTempFileName;   
+        url = "file:///" + outputTempFileName;
     }
 
     if (url.empty() ) {
@@ -565,7 +565,7 @@ LRESULT CResultsPanel::OnPreviewButtonClicked(WORD wNotifyCode, WORD wID, HWND h
         webViewWindow_->CenterWindow(WizardDlg->m_hWnd);
         webViewWindow_->ShowWindow(SW_SHOW);
     }
-    
+
     webViewWindow_->NavigateTo(U2W(url));
     webViewWindow_->ShowWindow(SW_SHOW);
 //    webViewWindow_->ActivateWindow();

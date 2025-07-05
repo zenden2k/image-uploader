@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -54,27 +54,27 @@ class CHotkeyList: public std::vector<CHotkeyItem>
         int getFuncIndex(const CString &func);
 };
 
-class CHotkeySettingsPage : 
-    public CDialogImpl<CHotkeySettingsPage>, public CSettingsPage    
+class CHotkeySettingsPage :
+    public CDialogImpl<CHotkeySettingsPage>, public CSettingsPage
 {
     public:
         CHotkeySettingsPage();
         ~CHotkeySettingsPage();
         bool apply() override;
         enum { IDD = IDD_HOTKEYSETTINGSPAGE};
-    
+
     protected:
          BEGIN_MSG_MAP(CHotkeySettingsPage)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             MESSAGE_HANDLER(WM_MY_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
-            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)  
+            COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_EDITHOTKEY, BN_CLICKED, OnEditHotkeyBnClicked)
             COMMAND_HANDLER(IDM_CLEARHOTKEY,BN_CLICKED, OnClearHotkey)
             COMMAND_HANDLER(IDM_CLEARALLHOTKEYS,BN_CLICKED, OnClearAllHotkeys)
             NOTIFY_HANDLER_EX(IDC_HOTKEYLIST, NM_DBLCLK, OnHotkeylistNmDblclk)
-            
+
          END_MSG_MAP()
          // Handler prototypes:
          //  LRESULT MessageHandler(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);

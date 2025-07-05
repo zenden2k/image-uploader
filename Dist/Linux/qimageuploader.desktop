@@ -1,9 +1,9 @@
 [Desktop Entry]
-Name=Image Uploader 
+Name=Uptooda
 Type=Application
-Exec=zenden2k-imageuploader
+Exec=uptooda
 Terminal=false
-Icon=zenden2k-imageuploader.png
+Icon=uptooda.png
 Comment=Image and file uploader, screenshot maker
 NoDisplay=false
 Categories=Network

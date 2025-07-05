@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ void CFileDownloader::memberThreadFunc()
         } catch (INetworkClient::AbortedException&) {
             break;
         }
-        
+
         if (stopSignal_) {
             break;
         }
@@ -139,7 +139,7 @@ void CFileDownloader::memberThreadFunc()
         }
     }
 
-    
+
     {
         std::lock_guard<std::mutex> lk(threadsStatusMutex_);
         // otherwise we may get a deadlock
@@ -169,7 +169,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
         std::string path = uri.path();
         NetworkClient nc;
         std::string fileName = nc.urlDecode(IuCoreUtils::ExtractFileName(path));
-        
+
         if (fileName.length() > 50) {
             size_t pos = fileName.find_last_of('.');
             if (pos != std::string::npos) {
@@ -178,7 +178,7 @@ bool CFileDownloader::getNextJob(DownloadFileListItem& item)
                 fileName = fileName.substr(0, 50);
             }
         }
-        
+
         CString possiblePath = U2W(tempDirectory_) + Utf8ToWstring(fileName).c_str();
         if (possiblePath.GetLength() > MAX_PATH - 4) {
             possiblePath = possiblePath.Left(MAX_PATH - 4);
@@ -231,7 +231,7 @@ bool CFileDownloader::waitForFinished()
     if (threads_.empty()) {
         return true;
     }
-       
+
     for (auto& th : threads_) {
         if (th.joinable()) {
             th.join();
@@ -244,6 +244,6 @@ int CFileDownloader::ProgressFunc(INetworkClient* userData, double dltotal, doub
     if (stopSignal_) {
         return -1;
     }
-       
+
     return 0;
 }

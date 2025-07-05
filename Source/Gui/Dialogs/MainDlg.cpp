@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@ LRESULT CMainDlg::OnContextMenu(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOO
         if (isVideoFile || isAudioFile) {
             contextMenu.AppendMenu(MF_STRING, MENUITEM_FILEINFO, TR("Information about file"));
         }
-#endif       
+#endif
         contextMenu.AppendMenu(MF_STRING, MENUITEM_OPENINFOLDER, TR("Open in folder"));
         contextMenu.AppendMenu(MF_STRING, MENUITEM_SAVEAS, TR("Save as..."));
 

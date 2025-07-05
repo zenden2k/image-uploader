@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -229,7 +229,7 @@ public:
         checkReturnCode(avcodec_parameters_to_context(pCodecCtx, pars),
             "Failed to copy video codec parameters to decoder context"
         );
-        
+
 
         //pCodecCtx->refcounted_frames = 1;
         // Open codec
@@ -301,7 +301,7 @@ public:
         while (av_read_frame(pFormatCtx, &packet) >= 0) {
             if (packet.stream_index == videoStream) {
                 //av_frame_unref(pFrame);
-         
+
                 ret = avcodec_send_packet(pCodecCtx, &packet);
                 if (ret < 0) {
                     LOG(WARNING) << "Error sending a packet for decoding" << std::endl << getFFmpegErrorMessage(ret);
@@ -316,13 +316,13 @@ public:
 
                         return false;
                     } else if (ret < 0) {
-                        
+
                         throw FrameGrabberException("Error during decoding");
                     }
                     frameFinished = true;
 
                     break;
-                }  
+                }
             }
 
             // Free the packet that was allocated by av_read_frame
@@ -397,7 +397,7 @@ public:
         }
 
         avcodec_flush_buffers(pCodecCtx);
-        // FIXME: 
+        // FIXME:
         bool isQt = AbstractImage::factoryName() == "QtImage";
         AVPixelFormat pixelFormat = isQt ? AV_PIX_FMT_RGB24 : AV_PIX_FMT_BGR24;
 

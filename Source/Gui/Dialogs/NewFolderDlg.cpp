@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
     TRC(IDC_ACCESSTYPELABEL, "Access:");
     TRC(IDCANCEL, "Cancel");
     TRC(IDOK, "OK");
-    
+
     DlgResize_Init();
     CenterWindow(GetParent());
     if (m_bCreateNewFolder) {
@@ -54,7 +54,7 @@ LRESULT CNewFolderDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOO
         SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_ADDSTRING, 0, reinterpret_cast<LPARAM>(U2W(i).GetString()));
     }
     SendDlgItemMessage(IDC_ACCESSTYPECOMBO, CB_SETCURSEL, m_folder.accessType);
-    
+
     ::SetFocus(GetDlgItem(IDC_FOLDERTITLEEDIT));
     return 0;  // Let the system set the focus
 }

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -127,13 +127,13 @@ LRESULT CVideoGrabberPage::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam,
 LRESULT CVideoGrabberPage::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     if (!Terminated) {
-    
+
         if(videoGrabber_) {
             videoGrabber_->abort();
         }
 
-        
-        CanceledByUser = true;  
+
+        CanceledByUser = true;
     }
 
     return 0;
@@ -178,7 +178,7 @@ LRESULT CVideoGrabberPage::OnBnClickedGrab(WORD /*wNotifyCode*/, WORD /*wID*/, H
     if (NumOfFrames < 1)
         NumOfFrames = 5;
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETPOS, 0);
-    
+
     SendDlgItemMessage(IDC_PROGRESSBAR, PBM_SETRANGE, 0, MAKELPARAM(0, NumOfFrames*10));
     CanceledByUser = false;
 
@@ -242,7 +242,7 @@ bool CVideoGrabberPage::OnAddImage(Gdiplus::Bitmap *bm, CString title)
     }
     CString snapshotFileTemplate = Utf8ToWCstring( IuCoreUtils::ExtractFileNameNoExt(WCstringToUtf8(settings->VideoSettings.SnapshotFileTemplate)) );
 
-    
+
     CString outFilename = GenerateFileNameFromTemplate(snapshotFileTemplate, grabbedFramesCount + 1,CPoint(bm->GetWidth(),bm->GetHeight()), videoFile);
     /*CString fullOutFileName = Settings.VideoSettings.SnapshotsFolder + "\\" + outFilename;
     std::string outDir = IuCoreUtils::ExtractFilePath(WCstringToUtf8(fullOutFileName));
@@ -458,7 +458,7 @@ void CVideoGrabberPage::optionsButtonClicked() {
     popupMenu.AppendMenu(MF_STRING | (deinterlace_ ? MF_CHECKED : MF_UNCHECKED), ID_DEINTERLACE, TR("Deinterlace"));
     popupMenu.AppendMenu(MF_STRING, ID_VIDEOSETTINGS, TR("Additional options..."));
     popupMenu.AppendMenu(MF_SEPARATOR);
-    bool enableOpenFolderMenuItem = IuCoreUtils::DirectoryExists(W2U(snapshotsFolder)); 
+    bool enableOpenFolderMenuItem = IuCoreUtils::DirectoryExists(W2U(snapshotsFolder));
     popupMenu.AppendMenu(MF_STRING | (enableOpenFolderMenuItem ? MF_ENABLED : MF_DISABLED), ID_OPENFOLDER, TR("Open containing folder"));
 
     TPMPARAMS excludeArea;
@@ -481,7 +481,7 @@ bool CVideoGrabberPage::OnNext()
         SendDlgItemMessage(IDC_GRAB, BM_CLICK);
         return false;
     }
-    
+
     WizardDlg->CreatePage(CWizardDlg::wpMainPage);
     CMainDlg* mainDlg = WizardDlg->getPage<CMainDlg>(CWizardDlg::wpMainPage);
 
@@ -537,7 +537,7 @@ CString CVideoGrabberPage::GenerateFileNameFromTemplate(const CString& templateS
 {
     std::mt19937 mt_{ std::random_device{}() };
     std::uniform_int_distribution<int> dist(0, 100);
-	
+
     CString result = templateStr;
     time_t t = time(0);
     tm* timeinfo = localtime ( &t );

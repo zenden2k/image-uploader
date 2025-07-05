@@ -1,8 +1,8 @@
 ﻿/*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
     if (plugin) {
         delete plugin;
         plugin = nullptr;
-       
+
         scripts_.erase(threadId);
     }
     ServerSync* serverSync = getServerSync(fileName);
@@ -76,7 +76,7 @@ Script* ScriptsManager::getScript(const std::string& fileName, ScriptType type)
     {
         newPlugin  = new Script(fileName, serverSync, networkClientFactory_);
     }
-  
+
     if (newPlugin->isLoaded()) {
         scripts_[threadId][fileName] = newPlugin;
         return newPlugin;

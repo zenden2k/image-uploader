@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 #ifndef NOMINMAX
 #define NOMINMAX
-#endif 
+#endif
 
 #include "NetworkClient.h"
 
@@ -64,11 +64,11 @@ size_t simple_read_callback(void *ptr, size_t size, size_t nmemb, void *stream)
 {
     if (fseek(reinterpret_cast<FILE*>(userp), offset, origin)==0) {
         return CURL_SEEKFUNC_OK;
-    } 
+    }
     return CURL_SEEKFUNC_CANTSEEK;
 }*/
 
-#if defined(USE_OPENSSL) 
+#if defined(USE_OPENSSL)
 
 /* we have this global to let the callback get easy access to it */
 static std::vector<std::mutex*> lockarray;
@@ -160,7 +160,7 @@ struct CurlInitializer {
 
 }
 
-int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose) 
+int NetworkClient::set_sockopts(void * clientp, curl_socket_t sockfd, curlsocktype purpose)
 {
     #ifdef _WIN32
         // See http://support.microsoft.com/kb/823764
@@ -196,9 +196,9 @@ void NetworkClient::setProxy(const std::string &host, int port, int type)
     }
     curl_easy_setopt(curl_handle, CURLOPT_PROXYTYPE, static_cast<long>(type));
 #ifdef NDEBUG
-    curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1"); 
+    curl_easy_setopt(curl_handle, CURLOPT_NOPROXY, "localhost,127.0.0.1");
 #endif
-} 
+}
 
 void NetworkClient::setProxyUserPassword(const std::string &username, const std::string& password) {
     if (username.empty() && password.empty()) {
@@ -226,7 +226,7 @@ size_t NetworkClient::private_writer(char *data, size_t size, size_t nmemb)
                 LOG(ERROR) << "Unable to create output file:" << std::endl << m_OutFileName;
                 throw AbortedException("Unable to create output file");
             }
-               
+
         fwrite(data, size,nmemb, m_hOutFile);
     }
     else
@@ -288,10 +288,10 @@ NetworkClient::NetworkClient()
     m_userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36";
 
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, private_static_writer);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);    
+    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &m_bodyFuncData);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, &m_headerFuncData);
     curl_easy_setopt(curl_handle, CURLOPT_ERRORBUFFER, m_errorBuffer);
-    
+
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSFUNCTION, &ProgressFunc);
     curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_PROGRESSDATA, this);
@@ -318,22 +318,22 @@ NetworkClient::NetworkClient()
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 1L);
         curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 2L);
     }
-/*#ifdef _DEBUG   
-    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L); 
+/*#ifdef _DEBUG
+    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYHOST, 0L);
 #endif*/
     //We want the referrer field set automatically when following locations
-    curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L); 
+    curl_easy_setopt(curl_handle, CURLOPT_AUTOREFERER, 1L);
     curl_easy_setopt(curl_handle, CURLOPT_MAXREDIRS, 8L);
     curl_easy_setopt(curl_handle, CURLOPT_BUFFERSIZE, 32768L);
     curl_easy_setopt(curl_handle, CURLOPT_VERBOSE, 0L);
-    
+
     /*
     // enable TCP keep-alive for this transfer
     curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPALIVE, 1L);
     // keep-alive idle time to 120 seconds
     curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPIDLE, 120L);
-    // interval time between keep-alive probes: 60 seconds 
+    // interval time between keep-alive probes: 60 seconds
     curl_easy_setopt(curl_handle, CURLOPT_TCP_KEEPIDLE, 60L);
     */
 }
@@ -504,7 +504,7 @@ bool NetworkClient::doPost(const std::string& data)
         curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDSIZE, (long)data.length());
     }
 
-    m_currentActionType = ActionType::atPost;    
+    m_currentActionType = ActionType::atPost;
     curl_result = curl_easy_perform(curl_handle);
     return private_on_finish_request();
 }
@@ -535,7 +535,7 @@ void NetworkClient::setUserAgent(const std::string& userAgentStr)
 {
     m_userAgent = userAgentStr;
 }
- 
+
 void NetworkClient::private_init_transfer()
 {
     private_cleanup_before();
@@ -554,7 +554,7 @@ void NetworkClient::private_init_transfer()
             chunk_ = curl_slist_append(chunk_, (it->name + ";" + it->value).c_str());
         } else {
             chunk_ = curl_slist_append(chunk_, (it->name + ": " + it->value).c_str());
-        } 
+        }
     }
 
     curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, chunk_);
@@ -632,7 +632,7 @@ std::string NetworkClient::responseHeaderByName(const std::string& name)
 {
     std::string lowerName = IuStringUtils::ToLower(name);
     std::vector<CustomHeaderItem>::iterator it, end = m_ResponseHeaders.end();
-    
+
     for(it = m_ResponseHeaders.begin(); it!=end; ++it) {
         if (IuStringUtils::ToLower(it->name) == lowerName) {
             return it->value;
@@ -722,12 +722,12 @@ size_t NetworkClient::read_callback(void *ptr, size_t size, size_t nmemb, void *
         return 0;
     }
     return nm->private_read_callback(ptr, size, nmemb, stream);
-} 
+}
 
 size_t NetworkClient::private_read_callback(void *ptr, size_t size, size_t nmemb, void *)
 {
     size_t retcode;
-   
+
     if (m_uploadingFile) {
         int64_t pos = IuCoreUtils::Ftell64(m_uploadingFile);
         if (chunkOffset_ != -1 && pos >= chunkOffset_ + m_currentUploadDataSize) {
@@ -800,7 +800,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
             fclose(m_uploadingFile);
             return false;
         }
-            
+
         if ( chunkSize_  >0 && chunkOffset_ >= 0 ) {
             m_currentUploadDataSize = chunkSize_;
             if ( IuCoreUtils::Fseek64(m_uploadingFile, chunkOffset_, SEEK_SET)) {
@@ -836,7 +836,7 @@ bool NetworkClient::doUpload(const std::string& fileName, const std::string &dat
     }*/
 
     curl_easy_setopt(curl_handle, CURLOPT_INFILESIZE_LARGE, static_cast<curl_off_t>(m_currentUploadDataSize));
-    
+
     curl_result = curl_easy_perform(curl_handle);
     if(m_uploadingFile)
          fclose(m_uploadingFile);
@@ -858,7 +858,7 @@ bool NetworkClient::private_apply_method()
     {
         curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,m_method.c_str());
     }
-    else 
+    else
     {
         curl_easy_setopt(curl_handle, CURLOPT_CUSTOMREQUEST,NULL);
         return false;
@@ -955,7 +955,7 @@ std::string NetworkClient::getCurlInfoString(int option)
     char* buf = nullptr;
     curl_easy_getinfo(curl_handle, static_cast<CURLINFO>(option), &buf);
     std::string res = buf ? buf : std::string();
-    return res; 
+    return res;
 }
 
 int NetworkClient::getCurlInfoInt(int option)

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CenterWindow(GetParent());
     //PrevClipboardViewer = SetClipboardViewer();
     DlgResize_Init(false, true, 0); // resizable dialog without "griper"
- 
+
     ::SetFocus(GetDlgItem(IDOK));
     SetWindowText(TR("Url Shortener"));
     TRC(IDOK, "Shorten");
@@ -88,7 +88,7 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     if(!m_InitialBuffer.IsEmpty())
     {
         ParseBuffer(m_InitialBuffer);
-        //BeginDownloading(); 
+        //BeginDownloading();
     }
 
     CString clipboardText;
@@ -97,18 +97,18 @@ LRESULT CShortenUrlDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
         ParseBuffer(clipboardText);
     }
     ::SetFocus(GetDlgItem(IDC_INPUTEDIT));
-    return 0; 
+    return 0;
 }
 
 
 LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
     if ( url.IsEmpty() ) {
         LocalizedMessageBox(TR("Please enter an URL"), TR("Error"), MB_ICONERROR);
         return 0;
     }
-    
+
     if (urlShortenerServerSelector_->serverProfile().serverName().empty()) {
         LocalizedMessageBox(TR("You have not selected server"), TR("Error"), MB_ICONERROR);
         return 0;
@@ -117,8 +117,8 @@ LRESULT CShortenUrlDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BO
         message.Format(TR("You have not selected account for server \"%s\""), IuCoreUtils::Utf8ToWstring(urlShortenerServerSelector_->serverProfile().serverName()).c_str());
         LocalizedMessageBox(message, TR("Error"), MB_ICONERROR);
         return 0;
-    } 
-    
+    }
+
     StartProcess();
     //BeginDownloading();
     return 0;
@@ -138,7 +138,7 @@ LRESULT CShortenUrlDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 /*LRESULT CShortenUrlDlg::OnChangeCbChain(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed 
+    HWND hwndRemove = reinterpret_cast<HWND>(wParam);  // handle of window being removed
     HWND hwndNext = reinterpret_cast<HWND>(lParam);
 
     if(hwndRemove == PrevClipboardViewer) PrevClipboardViewer = hwndNext;
@@ -155,10 +155,10 @@ void CShortenUrlDlg::OnDrawClipboard()
         CString str;
         WinUtils::GetClipboardText(str);
         //ParseBuffer(str, true);
-        
+
     }
     //Sending WM_DRAWCLIPBOARD msg to the next window in the chain
-    if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0); 
+    if(PrevClipboardViewer) ::SendMessage(PrevClipboardViewer, WM_DRAWCLIPBOARD, 0, 0);
 }
 */
 
@@ -180,7 +180,7 @@ bool CShortenUrlDlg::StartProcess() {
     CString url = GuiTools::GetDlgItemText(m_hWnd, IDC_INPUTEDIT);
 
     auto task = std::make_shared<UrlShorteningTask>(WCstringToUtf8(url));
-    
+
     task->setServerProfile(profile);
     using namespace std::placeholders;
     task->addTaskFinishedCallback(std::bind(&CShortenUrlDlg::OnFileFinished, this, _1, _2));
@@ -235,7 +235,7 @@ HBRUSH CShortenUrlDlg::OnCtlColorMsgDlg(HDC hdc, HWND hwnd) {
     if (hwnd == GetDlgItem(IDC_RESULTSLABEL) ) {
         SetTextColor(hdc, RGB(0,180,0));
         SetBkMode(hdc, TRANSPARENT);
-        return backgroundBrush_; 
+        return backgroundBrush_;
     }
     return nullptr;
 }

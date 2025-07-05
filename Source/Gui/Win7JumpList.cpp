@@ -1,8 +1,8 @@
 /*
 
-Image Uploader -  free application for uploading images/files to the Internet
+Uptooda - free application for uploading images/files to the Internet
 
-Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ HRESULT Win7JumpList::AddCategoryToList(ICustomDestinationList *pcdl, IObjectArr
 			// from top to bottom in the order they were appended.
 			hr = pcdl->AppendCategory(L"Screenshot", poa); // fails with E_INVALIDARG, need to register file type handler
 			poa->Release();
-			
+
 		}
 		poc->Release();
 	}

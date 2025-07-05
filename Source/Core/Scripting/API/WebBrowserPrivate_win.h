@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public:
     }
 
     ~WebBrowserPrivate() override {
-        assert(owningThread_ == std::this_thread::get_id()); 
+        assert(owningThread_ == std::this_thread::get_id());
         // WTF? WebViewWindow should be destroyed in the same thread it was created
         if ( IsWindow(webViewWindow_.m_hWnd) ) {
             webViewWindow_.destroyFromAnotherThread();
@@ -72,13 +72,13 @@ public:
         HWND parent = programWindow ? programWindow->getNativeHandle() : nullptr;
 
         create(parent);
-        
+
         if ( !initialUrl_.IsEmpty() ) {
             webViewWindow_.NavigateTo(initialUrl_);
         } else if ( !initialHtml_.IsEmpty()) {
             webViewWindow_.displayHTML(initialHtml_);
         }
-        
+
         bool res = webViewWindow_.DoModal(parent) != 0;
         clearCallbacks();
         return res;
@@ -108,7 +108,7 @@ public:
 
     void close() override {
         if (webViewWindow_.m_hWnd) {
-            webViewWindow_.close(); 
+            webViewWindow_.close();
         }
     }
 
@@ -148,7 +148,7 @@ public:
     std::string url() {
         if ( webViewWindow_.m_hWnd) {
             return IuCoreUtils::WstringToUtf8((LPCTSTR)webViewWindow_.getUrl());
-        } 
+        }
         return std::string();
     }
 
@@ -175,7 +175,7 @@ public:
         Reg.SetRootKey( HKEY_CURRENT_USER );
         if ( Reg.SetKey( CString(_T("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\ZoneMap\\Domains\\"))+domain.c_str(), true ) ) {
             Reg.WriteDword(CString(protocol.c_str()), 2);
-        }    
+        }
     }
 
     int getMajorVersion() {

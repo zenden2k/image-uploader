@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ CContextMenuItemDlg::CContextMenuItemDlg(UploadEngineManager * uploadEngineManag
 
 CContextMenuItemDlg::~CContextMenuItemDlg()
 {
-    
+
 }
 
 LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
@@ -57,13 +57,13 @@ LRESULT CContextMenuItemDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPara
     TRC(IDOK, "OK");
     TRC(IDCANCEL, "Cancel");
     generateTitle();
-    
+
     ::SetFocus(GetDlgItem(IDC_MENUITEMTITLEEDIT));
-    return 0;  
+    return 0;
 }
 
 LRESULT CContextMenuItemDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
-{    
+{
     title_ = GuiTools::GetDlgItemText(m_hWnd, IDC_MENUITEMTITLEEDIT);
     if ( title_.IsEmpty() ) {
         LocalizedMessageBox(TR("Name cannot be empty"), TR("Error"), MB_ICONERROR);
@@ -118,7 +118,7 @@ CString CContextMenuItemDlg::menuItemTitle() const
 
 void CContextMenuItemDlg::generateTitle()
 {
-    if ( !titleEdited_ ) {    
+    if ( !titleEdited_ ) {
         ServerProfile sp = imageServerSelector_->serverProfile();
         std::wstring serverName = IuCoreUtils::Utf8ToWstring(sp.serverName());
         std::wstring title = str(boost::wformat(TR("Upload to %s")) % serverName);

@@ -1,7 +1,7 @@
 /*
      Image Uploader - program for uploading images/files to the Internet
 
-     Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+     Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -43,11 +43,11 @@ void DrawingElement::setStartPoint(POINT startPoint) {
 }
 
 void DrawingElement::setEndPoint(POINT endPoint) {
-    endPoint_ = endPoint; 
+    endPoint_ = endPoint;
 }
 
 POINT DrawingElement::getStartPoint() const
-{    
+{
     return startPoint_;
 }
 
@@ -207,7 +207,7 @@ AffectedSegments& AffectedSegments::operator+= ( const AffectedSegments& segment
 }
 
 void AffectedSegments::clear() {
-    segments_.clear(); 
+    segments_.clear();
 }
 
 }

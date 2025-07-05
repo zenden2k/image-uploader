@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             MESSAGE_HANDLER(WM_CONTEXTMENU, OnContextMenu)
             MESSAGE_HANDLER(WM_MY_OPENHISTORYFILE, OnWmOpenHistoryFile)
-            MESSAGE_HANDLER(WM_VKEYTOITEM, OnHistoryTreeVkeyToItem)     
+            MESSAGE_HANDLER(WM_VKEYTOITEM, OnHistoryTreeVkeyToItem)
             COMMAND_ID_HANDLER(IDOK, OnOk)
             COMMAND_ID_HANDLER(ID_OPENINBROWSER, OnOpenInBrowser)
             COMMAND_ID_HANDLER(ID_COPYTOCLIPBOARD, OnCopyToClipboard)
@@ -74,7 +74,7 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
             COMMAND_HANDLER(IDC_CLEARHISTORYBTN, BN_CLICKED, OnBnClickedClearHistoryBtn)
             COMMAND_HANDLER(IDC_DATEFROMCHECKBOX, BN_CLICKED, OnDateFromCheckboxClicked)
             COMMAND_HANDLER(IDC_CLEARFILTERS, BN_CLICKED, OnClearFilters)
-            
+
             CHAIN_MSG_MAP(CDialogResize<CHistoryWindow>)
             REFLECT_NOTIFICATIONS()
         END_MSG_MAP()
@@ -114,14 +114,14 @@ class CHistoryWindow : public CCustomDialogIndirectImpl<CHistoryWindow>,
         LRESULT OnDateFromCheckboxClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClearFilters(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnHistoryTreeVkeyToItem(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
-        
+
         void Show();
         void FillList(CHistoryReader* mgr);
         CHistoryTreeControl m_treeView;
         std::unique_ptr<CHistoryReader> m_historyReader;
         LRESULT OnHistoryTreeCustomDraw(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnContextMenu(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL & /*bHandled*/);
-        
+
         void threadsStarted();
         void threadsFinished();
         void onItemDblClick(TreeItem* item);

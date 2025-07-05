@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,14 +41,14 @@ namespace ScriptAPI {
     /* @endcond */
 class HtmlElementPrivate {
     public:
-        
+
         HtmlElementPrivate(IHTMLElement* elem, HtmlDocumentPrivate *docPrivate) {
             elem_ = elem;
             selector_ = CComQIPtr<IElementSelector>(elem);
             elem2_ = CComQIPtr<IHTMLElement2>(elem);
             form_ = elem;
             docPrivate_= docPrivate;
-        
+
         }
 
         HtmlElementPrivate(IDispatchPtr disp, HtmlDocumentPrivate *docPrivate) {
@@ -85,7 +85,7 @@ class HtmlElementPrivate {
             elem_->put_className(CComBSTR(IuCoreUtils::Utf8ToWstring(name).c_str()));
         }
         void setAttribute(const std::string& name, const std::string& value)
-        {    
+        {
             if ( name == "class" || !IuStringUtils::stricmp(name.c_str(), "name")) {
                 return setClassName(value);
             }
@@ -243,7 +243,7 @@ class HtmlElementPrivate {
                 }
             }
             return HtmlElement();
-        }    
+        }
 
         Sqrat::Array querySelectorAll(const std::string& query)
         {
@@ -264,7 +264,7 @@ class HtmlElementPrivate {
             for ( int i = 0; i < count; i ++ ) {
                 IDispatchPtr  disp = 0;
                 collection->item(i,/*, CComVariant(0),*/ &disp);
-                // Check if object does  provide IHTMLElement interface  
+                // Check if object does  provide IHTMLElement interface
                 if ( CComQIPtr<IHTMLElement>(disp)) {
                     res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, docPrivate_)));
                 }
@@ -286,10 +286,10 @@ class HtmlElementPrivate {
                 IDispatchPtr  disp = 0;
                 form_->item(CComVariant(i), CComVariant(0), &disp);
                 //form_->item(i,/*, CComVariant(0),*/ &disp);
-                // Check if object does  provide IHTMLElement interface  
+                // Check if object does  provide IHTMLElement interface
 
                 res.SetValue(i, HtmlElement(new HtmlElementPrivate(disp, docPrivate_)));
-                
+
             }
             return res;
         }

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ CUploadEngineData::CUploadEngineData()
     SupportThumbnails = false;
     BeforehandAuthorization = false;
     NeedAuthorization = naNotAvailable;
-    NeedPassword = true; 
+    NeedPassword = true;
     MaxFileSize = 0;
     RetryLimit = 0;
     MaxThreads = 0;
@@ -118,7 +118,7 @@ CUploadEngineListBase::CUploadEngineListBase(): mt_(std::random_device()())
 CUploadEngineData* CUploadEngineListBase::byIndex(size_t index) {
     if ( index < m_list.size() ) {
         return m_list[index].get();
-    } 
+    }
     return nullptr;
 }
 
@@ -159,7 +159,7 @@ int CUploadEngineListBase::getRandomImageServer()
     if (m_suitableServers.empty()) {
         return -1;
     }
-	
+
     std::uniform_int_distribution<int> dist(0, m_suitableServers.size() - 1);
     return m_suitableServers[dist(mt_)];
 }

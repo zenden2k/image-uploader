@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -41,15 +41,15 @@
 #include "NoDirectVobSub.h"
 #include "DirectshowVideoFrame.h"
 
-inline std::string GetMessageForHresult(HRESULT hr) { 
+inline std::string GetMessageForHresult(HRESULT hr) {
 
-    //_com_error error(hr); 
-    CString cs; 
+    //_com_error error(hr);
+    CString cs;
     WCHAR descr[1024]=L"";
     DXGetErrorDescriptionW(hr,descr, ARRAY_SIZE(descr));
-    cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr); 
-    return IuCoreUtils::WstringToUtf8((LPCTSTR)cs); 
-} 
+    cs.Format(_T("\r\nError 0x%08x: %s\r\n%s"), hr, DXGetErrorStringW(hr), descr);
+    return IuCoreUtils::WstringToUtf8((LPCTSTR)cs);
+}
 
 typedef struct tagVIDEOINFOHEADER2
 {
@@ -136,7 +136,7 @@ public:
      CComQIPtr<IMediaControl, & IID_IMediaControl> pControl;
      CComQIPtr<IMediaEvent, & IID_IMediaEvent> pEvent;
      CComQIPtr<IMediaSeeking, & IID_IMediaSeeking> pSeeking;
-    
+
      CComQIPtr<IVideoWindow, & IID_IVideoWindow> pWindow;
      CComQIPtr<IBaseFilter, & IID_IBaseFilter> pGrabberBase;
      CComQIPtr<IFileSourceFilter, & IID_IFileSourceFilter> pLoad;
@@ -148,7 +148,7 @@ public:
      VIDEOINFOHEADER vih {};
 
  protected:
-     std::unique_ptr<DirectshowVideoFrame> currentFrame_; 
+     std::unique_ptr<DirectshowVideoFrame> currentFrame_;
 };
 
 
@@ -202,7 +202,7 @@ STDMETHODIMP CSampleGrabberCB::BufferCB( double SampleTime, BYTE* pBuffer, long 
     return 0;
 }
 
-DirectshowFrameGrabber::DirectshowFrameGrabber() : 
+DirectshowFrameGrabber::DirectshowFrameGrabber() :
     duration_(0),
     d_ptr(new DirectshowFrameGrabberPrivate())
 
@@ -315,7 +315,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
     }
 
     hr = d_ptr->pGraph->AddFilter( d_ptr->pGrabberBase, L"Grabber" );
-    
+
     // Load the source
     if (IsWMV)
     {
@@ -343,7 +343,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
 
    //     hr = pGrabber->SetMediaType( &GrabType );
 
-  
+
 
     // Get the output pin and the input pin
     //
@@ -357,7 +357,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
 
     // ... and connect them
     //
-    
+
     hr = d_ptr->pGraph->Connect( d_ptr->pSourcePin, d_ptr->pGrabPin );
 
     if ( FAILED( hr ) )
@@ -417,7 +417,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         return false;
     }
 
-    
+
 
     // Don't buffer the samples as they pass through
     hr = d_ptr->pGrabber->SetBufferSamples( FALSE );
@@ -450,7 +450,7 @@ bool DirectshowFrameGrabber::open(const std::string& fileName) {
         LOG(ERROR) << "Cannot determine stream's length.";
         return 0;
     }
-    
+
     duration_ = duration;
 
     int NumOfFrames = 1;
@@ -468,7 +468,7 @@ bool DirectshowFrameGrabber::seek(int64_t time) {
     long EvCode = 0;
     int i = 0;
     d_ptr->setCurrentFrame(nullptr);
-    
+
     //for ( int i = 0; i < NumOfFrames; i++ )
     {
         // set position

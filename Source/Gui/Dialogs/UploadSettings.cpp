@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ namespace {
         int menuGroup;
     };
 
-    // Maximum number of presets is limited to 100 items 
+    // Maximum number of presets is limited to 100 items
     // (IDC_RESIZEPRESETMENU_LAST_ID - IDC_RESIZEPRESETMENU_FIRST_ID)
     ResizePreset resizePresets[] = {
         {L"",     L"",     L"", 0}, // No resize at all
@@ -107,7 +107,7 @@ namespace {
     }
     }
 
-CUploadSettings::CUploadSettings(CMyEngineList* EngineList, UploadEngineManager* uploadEngineManager, WinServerIconCache* iconCache) 
+CUploadSettings::CUploadSettings(CMyEngineList* EngineList, UploadEngineManager* uploadEngineManager, WinServerIconCache* iconCache)
     :convert_profiles_(ServiceLocator::instance()->settings<WtlGuiSettings>()->ConvertProfiles),
     iconCache_(iconCache)
 {
@@ -238,12 +238,12 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
     Toolbar.SetWindowLong(GWL_ID, IDC_IMAGETOOLBAR);
     FileServerSelectBar.SetWindowLong(GWL_ID, IDC_FILETOOLBAR);
-    
+
     SendDlgItemMessage(IDC_QUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
     SendDlgItemMessage(IDC_THUMBQUALITYSPIN,UDM_SETRANGE,0,(LPARAM) MAKELONG((short)100, (short)1));
-    
+
     GuiTools::AddComboBoxItems(m_hWnd, IDC_FORMATLIST, 6, TR("Auto"), _T("JPEG"), _T("PNG"), _T("GIF"), _T("WebP"), _T("WebP (lossless)"));
-    
+
     ShowParams();
     CString profileName = sessionImageServer_.isEmpty() ? U2W(sessionImageServer_.getByIndex(0).getImageUploadParams().ImageProfileName) : _T("");
     if (convert_profiles_.find(profileName) == convert_profiles_.end()) {
@@ -253,7 +253,7 @@ LRESULT CUploadSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, B
     ShowParams(profileName);
     UpdateProfileList();
     UpdateAllPlaceSelectors();
-    return FALSE; 
+    return FALSE;
 }
 
 LRESULT CUploadSettings::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
@@ -302,7 +302,7 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
     {
         shortenLinks = shortenImages ? BST_CHECKED : BST_UNCHECKED;
         checkboxStyle = BS_AUTOCHECKBOX;
-    } 
+    }
     ::SetWindowLong(checkbox, GWL_STYLE, (::GetWindowLong(checkbox, GWL_STYLE) & ~(BS_AUTO3STATE | BS_AUTOCHECKBOX)) | checkboxStyle);
     SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_SETCHECK, shortenLinks);
     updateUrlShorteningCheckboxLabel();
@@ -311,19 +311,19 @@ void CUploadSettings::ShowParams(/*UPLOADPARAMS params*/)
 LRESULT CUploadSettings::OnBnClickedCreatethumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& bHandled)
 {
     BOOL checked = SendDlgItemMessage(IDC_CREATETHUMBNAILS, BM_GETCHECK, 0, 0);
-    
+
     ::EnableWindow(GetDlgItem(IDC_THUMBWIDTH), checked);
     ::EnableWindow(GetDlgItem(IDC_THUMBHEIGHT), checked);
     ::EnableWindow(GetDlgItem(IDC_ADDFILESIZE), checked);
     ::EnableWindow(GetDlgItem(IDC_WIDTHLABEL), checked);
     ::EnableWindow(GetDlgItem(IDC_USESERVERTHUMBNAILS), checked);
     ::EnableWindow(GetDlgItem(IDC_PXLABEL), checked);
-        
+
     return 0;
 }
 
 bool CUploadSettings::OnNext()
-{    
+{
     auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto& sessionImageServer = getSessionImageServerItem();
     if (sessionImageServer.isNull()) {
@@ -335,7 +335,7 @@ bool CUploadSettings::OnNext()
     {
         CUploadEngineData *ue = sessionImageServer.uploadEngineData();
         if (ue->NeedAuthorization == CUploadEngineData::naObligatory && sessionImageServer.profileName().empty())
-        { 
+        {
             CString errorMsg;
             errorMsg.Format(TR("Upload to server '%s' is impossible without account.\nYou should sign Up on this server and specify your account details in program settings."), (LPCTSTR)Utf8ToWCstring(m_EngineList->getServerDisplayName(ue)));
             GuiTools::LocalizedMessageBox(m_hWnd, errorMsg, APP_NAME, MB_ICONERROR);
@@ -386,7 +386,7 @@ bool CUploadSettings::OnNext()
         thumb.ResizeMode = ThumbCreatingParams::trByWidth;
     }
 
-    
+
 
     int shortenLinks = SendDlgItemMessage(IDC_SHORTENLINKSCHECKBOX, BM_GETCHECK);
     if (shortenLinks != BST_INDETERMINATE)
@@ -458,11 +458,11 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
 
     BasicSettings* Settings = ServiceLocator::instance()->basicSettings();
     ServerSettingsStruct* serverSettings = Settings->getServerSettings(ImageServer ? getSessionImageServerItem() : getSessionFileServerItem());
- 
+
     std::string UserName = serverSettings ? serverSettings->authData.Login : std::string();
     bool prevAuthEnabled = serverSettings ? serverSettings->authData.DoAuth : false;
     UINT dlgResult = dlg.DoModal(m_hWnd);
-        
+
     if (dlgResult  == IDOK) {
         ServerSettingsStruct* ss = Settings->getServerSettings(ImageServer ? getSessionImageServerItem() : getSessionFileServerItem());
         std::string newUserName = ss ? ss->authData.Login : std::string();
@@ -471,7 +471,7 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
         if(UserName != newUserName || newAuth != prevAuthEnabled) {
             serverProfile.clearFolderInfo();
         }
-            
+
         UpdateAllPlaceSelectors();
     } else if (dlgResult == CLoginDlg::ID_DELETEACCOUNT) {
         serverProfile.clearFolderInfo();
@@ -480,17 +480,17 @@ LRESULT CUploadSettings::OnBnClickedLogin(WORD /*wNotifyCode*/, WORD wID, HWND h
     }
     return 0;
 }
-    
+
 LRESULT CUploadSettings::OnBnClickedUseServerThumbnails(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     //BOOL checked=SendDlgItemMessage(IDC_USESERVERTHUMBNAILS, BM_GETCHECK, 0, 0);
     return 0;
 }
-    
+
 LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wID*/, HWND hWndCtl, BOOL& /*bHandled*/)
 {
-	bool ImageServer = (hWndCtl == Toolbar.m_hWnd);    
-    
+	bool ImageServer = (hWndCtl == Toolbar.m_hWnd);
+
     ServerProfile& serverProfile = ImageServer ? getSessionImageServerItem() : getSessionFileServerItem();
     CUploadEngineData *ue = serverProfile.uploadEngineData();
 
@@ -504,7 +504,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
 
         as.m_SelectedFolder.id = serverProfile.folderId();
         as.m_SelectedFolder.parentIds = serverProfile.parentIds();
-        
+
         if(as.DoModal(m_hWnd) == IDOK){
             BasicSettings* settings = ServiceLocator::instance()->basicSettings();
             ServerSettingsStruct* serverSettings = settings->getServerSettings(serverProfile);
@@ -526,7 +526,7 @@ LRESULT CUploadSettings::OnBnClickedSelectFolder(WORD /*wNotifyCode*/, WORD /*wI
     }
     return 0;
 }
-    
+
 void CUploadSettings::UpdateToolbarIcons()
 {
     HICON hImageIcon = NULL, hFileIcon = NULL;
@@ -535,11 +535,11 @@ void CUploadSettings::UpdateToolbarIcons()
     if (!getSessionImageServerItem().isNull()) {
         hImageIcon = iconCache_->getIconForServer(getSessionImageServerItem().serverName(), dpi);
     }
-        
+
     if (!getSessionFileServerItem().isNull()) {
         hFileIcon = iconCache_->getIconForServer(getSessionFileServerItem().serverName(), dpi);
     }
-    
+
     if(hImageIcon)
     {
         if(nImageIndex == -1)
@@ -555,7 +555,7 @@ void CUploadSettings::UpdateToolbarIcons()
         {
             nFileIndex = m_PlaceSelectorImageList.AddIcon( hFileIcon);
         }
-        else 
+        else
             nFileIndex = m_PlaceSelectorImageList.ReplaceIcon(nFileIndex, hFileIcon);
     } else nFileIndex = -1;
 
@@ -582,7 +582,7 @@ void CUploadSettings::initToolbars() {
     CIcon iconSeparator = GuiTools::CreateDropDownArrowIcon(m_hWnd, dpi, GuiTools::ARROW_RIGHT);
 
     m_PlaceSelectorImageList.AddIcon(iconSeparator);
-       
+
     RECT Toolbar1Rect;
     ::GetWindowRect(GetDlgItem(IDC_IMAGESERVERGROUPBOX), &Toolbar1Rect);
 
@@ -655,7 +655,7 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     currentToolbar.SetButtonInfo(IDC_SERVERBUTTON, &bi);
 
     if(serverProfile.isNull())
-    { 
+    {
         currentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer ,true);
         currentToolbar.HideButton(IDC_TOOLBARSEPARATOR1, true);
         currentToolbar.HideButton(IDC_SELECTFOLDER, true);
@@ -676,17 +676,17 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
     }
     LoginInfo& li = serverSettings.authData;
     CString login = WinUtils::TrimString(Utf8ToWCstring(li.Login),23);
-    
+
     currentToolbar.SetImageList(m_PlaceSelectorImageList);
     currentToolbar.HideButton(IDC_LOGINTOOLBUTTON + ImageServer,(bool)!uploadEngine->NeedAuthorization);
     currentToolbar.HideButton(IDC_TOOLBARSEPARATOR1,(bool)!uploadEngine->NeedAuthorization);
-    
+
     bool ShowLoginButton = !login.IsEmpty() && li.DoAuth;
     if(!ShowLoginButton)
     {
         if(uploadEngine->NeedAuthorization == 2)
             login = TR("Specify account...");
-        else 
+        else
             login = TR("Account is not enabled");
 
     }
@@ -697,12 +697,12 @@ void CUploadSettings::UpdatePlaceSelector(bool ImageServer)
 
     currentToolbar.HideButton(IDC_SELECTFOLDER,!ShowFolderButton);
     currentToolbar.HideButton(IDC_TOOLBARSEPARATOR2,!ShowFolderButton);
-        
+
     CString title = WinUtils::TrimString(Utf8ToWCstring(serverProfile.folderTitle()), 27);
     if(title.IsEmpty()) title = TR("No Folder Selected");
     bi.pszText = const_cast<LPWSTR>(title.GetString());
     currentToolbar.SetButtonInfo(IDC_SELECTFOLDER, &bi);
-    
+
 }
 void CUploadSettings::UpdateAllPlaceSelectors()
 {
@@ -717,7 +717,7 @@ LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWN
 {
     int nServerIndex = static_cast<int>(wID - IDC_IMAGESERVER_FIRST_ID);
     selectServer(getSessionImageServerItem(), nServerIndex);
-    
+
     UpdateAllPlaceSelectors();
     return 0;
 }
@@ -725,12 +725,12 @@ LRESULT CUploadSettings::OnImageServerSelect(WORD /*wNotifyCode*/, WORD wID, HWN
 LRESULT CUploadSettings::OnFileServerSelect(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int nServerIndex = static_cast<int>(wID - IDC_FILESERVER_FIRST_ID);
-    
+
     selectServer(getSessionFileServerItem(), nServerIndex);
     UpdateAllPlaceSelectors();
     return 0;
 }
-    
+
 LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandled)
 {
     const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
@@ -748,8 +748,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
     }
 
     CToolBarCtrl& CurrentToolbar = isImageServer ? Toolbar: FileServerSelectBar;
-    
-    CMenu sub;    
+
+    CMenu sub;
     MENUITEMINFO mi;
     ZeroMemory(&mi,sizeof(mi));
     mi.cbSize = sizeof(mi);
@@ -763,7 +763,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         int menuItemCount=0;
         int lastMenuBreakIndex = 0;
         bool nextItemBreaksLine = false;
-        
+
         if(isImageServer)
         {
             for(int i=0; i<m_EngineList->count(); i++)
@@ -773,7 +773,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeImageServer)) continue;
                 mi.wID = (isImageServer ? IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
                 CUploadEngineData* ued = m_EngineList->byIndex(i);
-                CString name = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
+                CString name = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued));
                 mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
                 mi.cch = name.GetLength();
                 mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
@@ -794,7 +794,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             mi.fMask = MIIM_TYPE|MIIM_ID;
             mi.wID = IDC_FILESERVER_LAST_ID + 1;
             mi.fType = MFT_SEPARATOR;
-            
+
             if ( menuItemCount && (menuItemCount - lastMenuBreakIndex) >= 23   ) {
                 nextItemBreaksLine = true;
             } else {
@@ -810,7 +810,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             if(!m_EngineList->byIndex(i)->hasType(CUploadEngineData::TypeFileServer)) continue;
             mi.wID = (isImageServer?IDC_IMAGESERVER_FIRST_ID: IDC_FILESERVER_FIRST_ID  ) +i;
             CUploadEngineData* ued = m_EngineList->byIndex(i);
-            CString name  = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued)); 
+            CString name  = Utf8ToWCstring(m_EngineList->getServerDisplayName(ued));
             mi.dwTypeData  = const_cast<LPWSTR>(name.GetString());
             mi.cch = name.GetLength();
             mi.hbmpItem = iconCache_->getIconBitmapForServer(ued->Name, dpi);
@@ -825,9 +825,9 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             }
             nextItemBreaksLine = false;
 
-            sub.InsertMenuItem(menuItemCount++, true, &mi);    
+            sub.InsertMenuItem(menuItemCount++, true, &mi);
         }
-        
+
         ZeroMemory(&mi, sizeof(mi));
         mi.cbSize = sizeof(mi);
         mi.wID = IDC_FILESERVER_LAST_ID + 1;
@@ -839,7 +839,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         {
             sub.InsertMenuItem(menuItemCount++, true, &mi);
         }
-    
+
         ZeroMemory(&mi, sizeof(mi));
         mi.cbSize = sizeof(mi);
         mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
@@ -855,7 +855,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.dwTypeData = const_cast<LPWSTR>(addFtpServerStr.GetString());
         mi.cch = addFtpServerStr.GetLength();
         mi.hbmpItem = 0;
-        sub.InsertMenuItem(menuItemCount++, true, &mi);    
+        sub.InsertMenuItem(menuItemCount++, true, &mi);
 
         mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
         mi.fType = MFT_STRING;
@@ -864,10 +864,10 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
         mi.dwTypeData = const_cast<LPWSTR>(addLocalFolderStr.GetString());
         mi.cch = addLocalFolderStr.GetLength();
         mi.hbmpItem = 0;
-        sub.InsertMenuItem(menuItemCount++, true, &mi);    
+        sub.InsertMenuItem(menuItemCount++, true, &mi);
 
         sub.AppendMenu(MFT_STRING, IDC_OPEN_SERVERS_FOLDER, TR("Open servers folder"));
-        sub.SetMenuDefaultItem(isImageServer ? 
+        sub.SetMenuDefaultItem(isImageServer ?
             (IDC_IMAGESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionImageServerItem().serverName()))) :
             (IDC_FILESERVER_FIRST_ID + myEngineList->getUploadEngineIndex(Utf8ToWCstring(getSessionFileServerItem().serverName()))), FALSE);
     }
@@ -878,7 +878,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 
         // Ignore account list if there is just one key "" in map (empty string, meaning no authentication at all)
         if(!serverUsers.empty() && (serverUsers.size() > 1 || serverUsers.find("") == serverUsers.end()) )
-        {    
+        {
             bool addedSeparator = false;
             CAdvancedUploadEngine* plug = dynamic_cast<CAdvancedUploadEngine*>(uploadEngineManager_->getUploadEngine(serverProfile));
             /*if(!plug) return TBDDRET_TREATPRESSED;*/
@@ -916,13 +916,13 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                         mi.fMask = MIIM_TYPE|MIIM_ID;
                         mi.wID = IDC_FILESERVER_LAST_ID + 1;
                         mi.fType = MFT_SEPARATOR;
-        
+
                         sub.InsertMenuItem(i++, true, &mi);
                         addedSeparator =  true;
                     }
                     ZeroMemory(&mi,sizeof(mi));
                     mi.cbSize = sizeof(mi);
-                
+
                     mi.fMask = MIIM_FTYPE |MIIM_ID | MIIM_STRING;
                     mi.fType = MFT_STRING;
                     mi.wID = command;
@@ -931,7 +931,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                     mi.cch = login.GetLength();
                     HBITMAP bm = iconBitmapUtils_->HIconToBitmapPARGB32(userIcon, dpi);
                     bitmaps.push_back(bm);
-                    
+
 
                     mi.hbmpItem = bm;
                     if ( mi.hbmpItem ) {
@@ -941,7 +941,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                     sub.InsertMenuItem(i++, true, &mi);
                     command++;
                 }
-                
+
             }
             if ( uploadEngine->NeedAuthorization != CUploadEngineData::naObligatory ) {
                 ZeroMemory(&mi,sizeof(mi));
@@ -954,7 +954,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
                 mi.cch = noAthenticationStr.GetLength();
                 sub.InsertMenuItem(i++, true, &mi);
             }
-  
+
             ZeroMemory(&mi,sizeof(mi));
             mi.cbSize = sizeof(mi);
             mi.fMask = MIIM_TYPE|MIIM_ID;
@@ -978,7 +978,7 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
             return TBDDRET_TREATPRESSED;
         }
     }
-        
+
     RECT rc;
     CurrentToolbar.GetRect(pnmtb->iItem, &rc);
     CurrentToolbar.MapWindowPoints(nullptr, reinterpret_cast<LPPOINT>(&rc), 2);
@@ -998,8 +998,8 @@ LRESULT CUploadSettings::OnServerDropDown(int idCtrl, LPNMHDR pnmh, BOOL& bHandl
 LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     HWND hwnd = reinterpret_cast<HWND>(wParam);
-    int xPos = LOWORD(lParam); 
-    int yPos = HIWORD(lParam); 
+    int xPos = LOWORD(lParam);
+    int yPos = HIWORD(lParam);
 
     RECT rc;
     POINT pt = {xPos, yPos};
@@ -1025,7 +1025,7 @@ LRESULT CUploadSettings::OnContextMenu(UINT uMsg, WPARAM wParam, LPARAM lParam, 
                 OnFolderButtonContextMenu(pt, ImageServer);
                 return 0;
             }
-        }    
+        }
     }
     return 0;
 }
@@ -1034,7 +1034,7 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
 {
     ServerProfile & serverProfile = isImageServerToolbar ? getSessionImageServerItem() : getSessionFileServerItem();
 
-    CMenu sub;    
+    CMenu sub;
     sub.CreatePopupMenu();
 
     sub.AppendMenu(MFT_STRING, IDC_NEWFOLDER + static_cast<int>(isImageServerToolbar), TR("New folder"));
@@ -1050,7 +1050,7 @@ void CUploadSettings::OnFolderButtonContextMenu(POINT pt, bool isImageServerTool
     if (!serverProfile.folderUrl().empty()) {
         sub.AppendMenu(MFT_STRING, IDC_OPENINBROWSER + static_cast<int>(isImageServerToolbar), TR("Open in Web Browser"));
     }
-            
+
     sub.TrackPopupMenu(TPM_LEFTALIGN|TPM_LEFTBUTTON, pt.x, pt.y, m_hWnd);
 }
 
@@ -1092,7 +1092,7 @@ LRESULT CUploadSettings::OnNewFolder(WORD /*wNotifyCode*/, WORD wID, HWND /*hWnd
      }
      return 0;
 }
-    
+
 LRESULT CUploadSettings::OnOpenInBrowser(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     bool ImageServer = (wID % 2)!=0;
@@ -1111,12 +1111,12 @@ LRESULT CUploadSettings::OnCopyFolderId(WORD /*wNotifyCode*/, WORD wID, HWND /*h
     std::string folderId = serverProfile.folderId();
     if (!folderId.empty() && folderId != CFolderItem::NewFolderMark) {
         CString str = U2W(folderId);
-   
+
         WinUtils::CopyTextToClipboard(str);
     }
     return 0;
 }
-    
+
 void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerToolbar)
 {
     ServerProfile & serverProfile = isImageServerToolbar? getSessionImageServerItem() : getSessionFileServerItem();
@@ -1129,8 +1129,8 @@ void CUploadSettings::OnServerButtonContextMenu(POINT pt, bool isImageServerTool
     int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
     CIcon ico;
     ico.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONSETTINGS), iconWidth, iconHeight);
-    
-    CMenu sub;    
+
+    CMenu sub;
     sub.CreatePopupMenu();
     MENUITEMINFO mi {};
     mi.cbSize = sizeof(mi);
@@ -1217,11 +1217,11 @@ LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID,
         if (preset.width.empty() && preset.height.empty()) {
             FolderMenu.AppendMenu(MF_STRING, id++, TR("Don't resize"));
             continue;
-        } 
+        }
 
         std::wstring menuItemTitle;
         if (preset.title.empty()) {
-            // Format menu item text like "WxH" 
+            // Format menu item text like "WxH"
             menuItemTitle  = str(boost::wformat(L"%s\u00D7%s") % preset.width % preset.height);
         } else {
             menuItemTitle = preset.title;
@@ -1229,9 +1229,9 @@ LRESULT CUploadSettings::OnResizePresetButtonClicked(WORD wNotifyCode, WORD wID,
 
         FolderMenu.AppendMenu(MF_STRING, id++, menuItemTitle.c_str());
     }
-   
+
     FolderMenu.TrackPopupMenu(TPM_LEFTALIGN | TPM_LEFTBUTTON, menuOrigin.x, menuOrigin.y, m_hWnd);
-    
+
    return 0;
 }
 
@@ -1296,7 +1296,7 @@ LRESULT CUploadSettings::OnEditProfileClicked(WORD wNotifyCode, WORD wID, HWND h
     if (!found) {
         GuiTools::AddComboBoxItem(m_hWnd, IDC_PROFILECOMBO, CurrentProfileName);
     }
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName); 
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) CurrentProfileName);
  }
 
  void CUploadSettings::selectServer(ServerProfile& sp, int serverIndex)
@@ -1376,10 +1376,10 @@ void CUploadSettings::ShowParams(const CString& profileName) {
         return;
     }
     CurrentProfileName = profileName;
-    CurrentProfileOriginalName = profileName; 
+    CurrentProfileOriginalName = profileName;
     ShowParams(convert_profiles_[profileName]);
-   
-    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName); 
+
+    SendDlgItemMessage(IDC_PROFILECOMBO, CB_SELECTSTRING, static_cast<WPARAM>(-1),(LPARAM)(LPCTSTR) profileName);
  }
 
 bool CUploadSettings::SaveParams(ImageConvertingParams& params) {
@@ -1451,7 +1451,7 @@ LRESULT CUploadSettings::OnAddAccountClicked(WORD wNotifyCode, WORD wID, HWND hW
         serverProfileCopy.clearFolderInfo();
         serverProfile = serverProfileCopy;
         UpdateAllPlaceSelectors();
-    } 
+    }
     return 0;
 }
 
@@ -1496,7 +1496,7 @@ LRESULT CUploadSettings::OnAddFtpServer(WORD wNotifyCode, WORD wID, HWND hWndCtl
 {
     CAddFtpServerDialog dlg(m_EngineList);
     if (dlg.DoModal(m_hWnd) == IDOK) {
-        
+
         if (wID == IDC_ADD_FTP_SERVER) {
             auto& sessionImageServer = getSessionImageServerItem();
             sessionImageServer.setServerName(WCstringToUtf8(dlg.createdServerName()));
@@ -1545,7 +1545,7 @@ LRESULT CUploadSettings::OnChooseMoreImageServersClicked(WORD wNotifyCode, WORD 
     CServerProfileGroupSelectDialog dlg(uploadEngineManager_, sessionImageServer_, CServerSelectorControl::smImageServers | CServerSelectorControl::smFileServers);
     if (dlg.DoModal(m_hWnd) == IDOK) {
         sessionImageServer_ = dlg.serverProfileGroup();
-        
+
         UpdateAllPlaceSelectors();
     }
     return 0;
@@ -1596,7 +1596,7 @@ void CUploadSettings::updateMoreImageServersLink() {
     } else {
         text = str(boost::wformat(TR("Selected servers: %d"))% sessionImageServer_.getCount());
     }
-        
+
     moreImageServersLink_.SetLabel(text.c_str());
 }
 

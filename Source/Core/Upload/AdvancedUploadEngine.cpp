@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@
 
 CAdvancedUploadEngine::CAdvancedUploadEngine(ServerSync* serverSync, ServerSettingsStruct* settings, ErrorMessageCallback errorCallback) :
                         CAbstractUploadEngine(serverSync, std::move(errorCallback)),
-                            m_CurrentActionIndex(0), 
+                            m_CurrentActionIndex(0),
                             m_nThumbWidth(0)
 {
     setServerSettings(settings);
@@ -130,7 +130,7 @@ void CAdvancedUploadEngine::log(ErrorInfo::MessageType mt, const std::string& er
     if (currentTask_) {
         ei.FileName = currentTask_->toString();
     }
-    
+
     ErrorMessage(ei);
 }
 

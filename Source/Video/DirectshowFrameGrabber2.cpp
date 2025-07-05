@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@
 class DirectshowVideoFrame2: public AbstractVideoFrame {
 public :
     DirectshowVideoFrame2(unsigned char *data, size_t dataSize, int64_t time, int width, int height) {
- 
+
         time_ = time;
 
         BITMAPFILEHEADER bfh;
@@ -86,7 +86,7 @@ public :
         std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
         if ( !image ) {
             return false;
-        } 
+        }
         if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_, nullptr) ) {
             return false;
         }
@@ -97,7 +97,7 @@ public :
         std::unique_ptr<AbstractImage> image(AbstractImage::createImage());
         if ( !image ) {
             return nullptr;
-        } 
+        }
         if ( !image->loadFromRawData(AbstractImage::dfBitmapRgb, width_, height_,data_, dataSize_, nullptr) ) {
             image.reset();
         }
@@ -112,7 +112,7 @@ public :
 
 namespace {
     std::string GetMessageForHresult(HRESULT hr) {
-        //_com_error error(hr); 
+        //_com_error error(hr);
         CString cs;
         WCHAR descr[1024] = L"";
         DXGetErrorDescriptionW(hr, descr, ARRAY_SIZE(descr));
@@ -192,12 +192,12 @@ public:
         //Grab = false;
     }
 protected:
-     std::unique_ptr<DirectshowVideoFrame2> currentFrame_; 
+     std::unique_ptr<DirectshowVideoFrame2> currentFrame_;
 };
 
 
 
-DirectshowFrameGrabber2::DirectshowFrameGrabber2() : 
+DirectshowFrameGrabber2::DirectshowFrameGrabber2() :
     duration_(0),
     d_ptr(new DirectshowFrameGrabber2Private())
 
@@ -213,7 +213,7 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     //d_ptr->grabFilter.reset(new CGrabFilter(nullptr));
     CGrabFilter* grabFilter = d_ptr->grab->filter();
     //grabFilter->AddRef();
-    
+
     d_ptr->pGrabberBase = grabFilter;
 
     grabFilter->SetCallback(d_ptr.get());
@@ -237,7 +237,7 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     d_ptr->pObjectWithSite->SetSite(&d_ptr->graphBuilderCallback);
     bool Error = false;
     CComPtr<IGraphBuilder>  pGraph2;
-    
+
     // Put them in the graph
     //
     hr = d_ptr->pGraph->AddFilter( d_ptr->pSource, L"Source" );
@@ -254,11 +254,11 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     if (SUCCEEDED(hr)) {
         hr = d_ptr->pGraph->AddFilter(pDumpFilter, L"CustomRenderer");
     }
-    
+
     // Load the source
     d_ptr->pLoad = (d_ptr->pSource);
     hr = d_ptr->pLoad->Load(fileNameW, NULL);
-   
+
     if ( FAILED( hr ) )
     {
         LOG(ERROR) << "Failed to load source file '"<< fileName <<"'"<<GetMessageForHresult(hr);
@@ -266,10 +266,10 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     }
 
     // Get the output pin and the input pin
-    //IPin* sourcePin = 
+    //IPin* sourcePin =
     d_ptr->pSourcePin = DirectShowUtil::GetOutPin(d_ptr->pSource, 0);;
     //sourcePin->Release();
-    //CComPtr<IPin> grabPin 
+    //CComPtr<IPin> grabPin
     d_ptr->pGrabPin = DirectShowUtil::GetInPin(d_ptr->pGrabberBase, 0);
     //grabPin->Release();
 
@@ -281,7 +281,7 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
     {
         /*d_ptr->pGraph->RemoveFilter(pDumpFilter);
         d_ptr->pGraph->RemoveFilter(d_ptr->pSource);*/
-        
+
         LOG(ERROR) << _("Cannot connect filters (format probably is not supported).\nMake sure you have the required codecs installed on your system.")
             << std::endl << GetMessageForHresult(hr);
 
@@ -307,7 +307,7 @@ bool DirectshowFrameGrabber2::open(const std::string& fileName) {
         LOG(ERROR) << "Cannot determine stream's length.";
         return false;
     }
-    
+
     duration_ = duration;
 
     d_ptr->pControl = d_ptr->pGraph;

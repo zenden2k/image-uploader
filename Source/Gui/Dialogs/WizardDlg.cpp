@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ CWizardDlg::CWizardDlg(std::shared_ptr<DefaultLogger> logger, CMyEngineList* eng
     scriptsManager_(scriptsManager),
     Settings(*settings),
     logger_(std::move(logger)),
-    sessionImageServer_(false), 
+    sessionImageServer_(false),
     enginelist_(enginelist)
 {
     mainThreadId_ = GetCurrentThreadId();
@@ -330,7 +330,7 @@ LRESULT CWizardDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
         //toast->setShortcutPolicy(Settings.IsPortable ? WinToast::SHORTCUT_POLICY_IGNORE : WinToast::SHORTCUT_POLICY_REQUIRE_CREATE);
         toast->setShortcutPolicy(WinToast::SHORTCUT_POLICY_IGNORE);
 
-        const auto aumi = WinToast::configureAUMI(L"Zenden2k", L"ImageUploader", {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
+        const auto aumi = WinToast::configureAUMI(L"SergeySvistunov", L"Uptooda", {}, IuCoreUtils::Utf8ToWstring(AppParams::instance()->GetAppVersion()->FullVersionClean));
         toast->setAppUserModelId(aumi);
 
         if (!toast->initialize()) {
@@ -2351,7 +2351,7 @@ bool CWizardDlg::CommonScreenshot(ScreenCapture::CaptureMode mode)
                 }*/
             }, true);
 
-            needToShow = false;   
+            needToShow = false;
         }
         else {
             if (dialogResult == ImageEditorWindow::drCopiedToClipboard) {
@@ -2443,7 +2443,7 @@ void CWizardDlg::showScreenshotCopiedToClipboardMessage(std::shared_ptr<Gdiplus:
             auto instance = WinToast::instance();
             if (Settings.EnableToastNotifications && instance->isInitialized()) {
                 bool withImage = !imageFilePath.IsEmpty() && GuiTools::IsToastImageFormatSupported(imageFilePath);
-                
+
                 WinToastTemplate templ(withImage ? WinToastTemplate::ImageAndText02 : WinToastTemplate::Text01);
                 if (withImage) {
                     templ.setImagePath(imageFilePath.GetString());

@@ -1,8 +1,8 @@
 /*
 
-    Image Uploader -  free application for uploading images/files to the Internet
+    Uptooda - free application for uploading images/files to the Internet
 
-    Copyright 2007-2018 Sergey Svistunov (zenden2k@gmail.com)
+    Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 */
 
 #include "StringUtils.h"
- 
+
 #include <cctype>
 #include <cstdio>
 #include <algorithm>
@@ -134,7 +134,7 @@ int stricmp(const char* s1, const char* s2)
 {
 #ifdef _WIN32
     return lstrcmpiA(s1, s2);
-#else 
+#else
     return strcasecmp(s1, s2);
     /*for (; *s1 && *s2 && (toupper((unsigned char)*s1) == toupper((unsigned char)*s2)); ++s1, ++s2)
         ;
@@ -188,7 +188,7 @@ std::string ConvertUnixLineEndingsToWindows(const std::string& text) {
             *cur = '\r';
             cur++;
             *cur = '\n';
-            
+
         } else {
             *cur = *src;
         }
