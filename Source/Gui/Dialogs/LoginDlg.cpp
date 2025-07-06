@@ -169,7 +169,8 @@ LRESULT CLoginDlg::OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOO
 
 LRESULT CLoginDlg::OnDeleteAccountClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    if (LocalizedMessageBox(TR("Are you sure you want to delete this account from Image Uploader's internal list?"), APP_NAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
+    std::wstring text = str(IuStringUtils::FormatWideNoExcept(TR("Are you sure you want to delete this account from %s's internal list?")) % APP_NAME);
+    if (LocalizedMessageBox(text.c_str(), APP_NAME, MB_ICONQUESTION | MB_YESNO) != IDYES) {
         return 0;
     }
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();

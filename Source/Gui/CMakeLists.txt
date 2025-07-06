@@ -1,7 +1,7 @@
 add_definitions(-DIU_WTL_APP -DIU_GUI -DIU_WTL)
 
 set(SRC_LIST
-    "../Image Uploader.cpp"
+    "Application.cpp"
     ../3rdpart/ShellPidl.cpp
     ../3rdpart/wintoastlib.cpp
     ../Core/Images/ImageConverterPrivateBase.cpp
@@ -159,7 +159,7 @@ set(SRC_LIST
     FileList.cpp
 )
 
-set(RESOURCE_LIST  "../Image Uploader.rc"
+set(RESOURCE_LIST  "../GUI.rc"
     "../res/GUI.exe.manifest")
 
 set(HEADER_LIST

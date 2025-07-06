@@ -48,7 +48,7 @@ mkdir -p "${root_dir}/usr/share/uptooda-cli/Scripts/"
 #mkdir -p ./uptooda-cli/usr/share/uptooda-cli/Update/
 #set -e
 #objcopy --strip-debug --strip-unneeded ../../Bld-Linux-${Architecture}/CLI/CLI "${root_dir}/usr/bin/uptooda-cli"
-$ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/CLI "${root_dir}/usr/bin/uptooda-cli"
+$ObjCopy --strip-debug --strip-unneeded ../../Build/CLI/Release/uptooda-cli "${root_dir}/usr/bin/uptooda-cli"
 cp ../../Data/servers.xml "${root_dir}/usr/share/uptooda-cli/servers.xml"
 cp ../../Data/.env "${root_dir}/usr/share/uptooda-cli/.env"
 cp ../../Data/Scripts/*.nut "${root_dir}/usr/share/uptooda-cli/Scripts/"
@@ -63,7 +63,7 @@ chmod -R 0755 "${root_dir}/"
 chmod -x "${root_dir}/usr/share/uptooda-cli/Scripts/"*.nut
 chmod -x "${root_dir}/usr/share/uptooda-cli/servers.xml"
 
-tar_archive="${temp_dir}/uptooda-${AppVersion}-${Architecture}.tar.xz"
+tar_archive="${temp_dir}/uptooda-cli-${AppVersion}-${Architecture}.tar.xz"
 cd "${root_dir}" && tar -cJf "${tar_archive}" * && cd -
 cp "${tar_archive}" "../../Build/Linux/"
 

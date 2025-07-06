@@ -797,7 +797,7 @@ int main(int argc, char *argv[]){
     }
 #ifndef __APPLE__
     settingsFolder = getenv("HOME")+std::string("/.config/uptooda-cli/");
-    mkdir(settingsFolder.c_str(), 0700);
+    IuCoreUtils::CreateDir(settingsFolder, 0700);
 #endif
 
 #endif

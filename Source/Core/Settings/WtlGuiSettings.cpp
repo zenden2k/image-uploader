@@ -71,7 +71,7 @@ void RunIuElevated(const CString& params) {
 }
 
 /*
-This function starts a new process of Image Uploader with admin rights (Windows Vista and later)
+This function starts a new process of Uptooda with admin rights (Windows Vista and later)
 The created process registers shell extensions and terminates
 */
 void ApplyRegistrySettings() {
@@ -231,12 +231,12 @@ void WtlGuiSettings::RegisterShellExtension(bool Register) {
 
     bool canCreateRegistryKey = Register;
 
-    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
+    if (Reg.SetKey("Software\\Uptooda", canCreateRegistryKey)) {
         Reg.WriteBool("ExplorerContextMenu", Register);
         CRegistry Reg2;
         Reg2.SetWOW64Flag(KEY_WOW64_64KEY); // Indicates that an application on 64-bit Windows should operate on the 64-bit registry view.
         Reg2.SetRootKey(HKEY_LOCAL_MACHINE);
-        Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\Strings", true);
+        Reg2.SetKey("Software\\Uptooda\\Strings", true);
         Reg2.WriteString(_T("UploadImages"), TR("Upload images"));
         Reg2.WriteString(_T("UploadFiles"), TR("Upload files"));
         Reg2.WriteString(_T("UploadImagesOnly"), TR("Upload images only"));
@@ -288,14 +288,14 @@ void WtlGuiSettings::FindDataFolder()
         return;
     }
 
-    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Image Uploader\\")));
+    SettingsFolder = IuCoreUtils::WstringToUtf8(static_cast<LPCTSTR>(WinUtils::GetApplicationDataPath() + _T("Uptooda\\")));
 
     params->setSettingsDirectory(SettingsFolder);
     {
         CRegistry Reg;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+        if (Reg.SetKey("Software\\Uptooda", false)) {
             CString dir = Reg.ReadString("DataPath");
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
@@ -308,7 +308,7 @@ void WtlGuiSettings::FindDataFolder()
     {
         CRegistry Reg;
         Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+        if (Reg.SetKey("Software\\Uptooda", false)) {
             CString dir = Reg.ReadString("DataPath");
 
             if (!dir.IsEmpty() && WinUtils::IsDirectory(dir)) {
@@ -320,12 +320,12 @@ void WtlGuiSettings::FindDataFolder()
     }
 
     if (WinUtils::FileExists(WinUtils::GetCommonApplicationDataPath() + SETTINGS_FILE_NAME)) {
-        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Image Uploader\\");
+        DataFolder = WinUtils::GetCommonApplicationDataPath() + _T("Uptooda\\");
         params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
     } else
 
     {
-        DataFolder = WinUtils::GetApplicationDataPath() + _T("Image Uploader\\");
+        DataFolder = WinUtils::GetApplicationDataPath() + _T("Uptooda\\");
         params->setDataDirectory(IuCoreUtils::WstringToUtf8((LPCTSTR)DataFolder));
     }
 }
@@ -629,7 +629,7 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     if (loadFromRegistry_) {
         CRegistry Reg;
         Reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+        if (Reg.SetKey("Software\\Uptooda", false)) {
             ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu", false);
 
         } else {
@@ -638,13 +638,13 @@ bool WtlGuiSettings::PostLoadSettings(SimpleXml &xml) {
     }
     CRegistry Reg;
     Reg.SetRootKey(HKEY_CURRENT_USER);
-    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+    if (Reg.SetKey("Software\\Uptooda", false)) {
         ExplorerCascadedMenu = Reg.ReadBool("ExplorerCascadedMenu", true);
         ExplorerVideoContextMenu = Reg.ReadBool("ExplorerVideoContextMenu", true);
     }
     CRegistry Reg2;
     Reg2.SetRootKey(HKEY_CURRENT_USER);
-    if (Reg2.SetKey("Software\\Zenden.ws\\Image Uploader", false)) {
+    if (Reg2.SetKey("Software\\Uptooda", false)) {
         AutoStartup = Reg2.ReadBool("AutoStartup", false);
     }
 
@@ -678,7 +678,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     // if(ExplorerContextMenu)
     {
         bool canCreateRegistryKey = (ExplorerContextMenu);
-        if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
+        if (Reg.SetKey("Software\\Uptooda", canCreateRegistryKey)) {
             if (ExplorerContextMenu) {
                 Reg.WriteBool("ExplorerCascadedMenu", ExplorerCascadedMenu);
                 Reg.WriteBool("ExplorerContextMenu", ExplorerContextMenu);
@@ -694,7 +694,7 @@ bool WtlGuiSettings::PostSaveSettings(SimpleXml &xml)
     }
     /*else
     {
-    //Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
+    //Reg.DeleteKey("Software\\Uptooda");
     }*/
     EnableAutostartup(AutoStartup);
 
@@ -905,7 +905,7 @@ void WtlGuiSettings::ApplyRegSettingsRightNow()
 
     // if(SendToContextMenu_changed)
     {
-        CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
+        CString ShortcutName = WinUtils::GetSendToPath() + _T("Uptooda.lnk");
 
         if (SendToContextMenu) {
             if (WinUtils::FileExists(ShortcutName))
@@ -1031,22 +1031,19 @@ void WtlGuiSettings::Uninstall() {
     EnableAutostartup(false);
     CRegistry Reg;
     Reg.SetRootKey(HKEY_CURRENT_USER);
-    Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
-    Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
-    Reg.DeleteKey("Software\\Zenden.ws"); // Will not delete if contains subkeys
+    Reg.DeleteWithSubkeys("Software\\Uptooda\\ContextMenuItems");
+    Reg.DeleteKey("Software\\Uptooda");
     Reg.SetRootKey(HKEY_LOCAL_MACHINE);
 
-    Reg.DeleteKey("Software\\Zenden.ws\\Image Uploader");
-    Reg.DeleteKey("Software\\Zenden.ws"); // Will not delete if contains subkeys
+    Reg.DeleteKey("Software\\Uptooda");
     WinUtils::RemoveBrowserKey();
 
     CRegistry reg3;
     reg3.SetRootKey(HKEY_CURRENT_USER);
     reg3.SetWOW64Flag(KEY_WOW64_64KEY);
-    reg3.DeleteKey("Software\\Zenden.ws\\Image Uploader\\Strings");
-    reg3.DeleteKey("Software\\Zenden.ws\\Image Uploader");
-    reg3.DeleteKey("Software\\Zenden.ws");
-    CString ShortcutName = WinUtils::GetSendToPath() + _T("Image Uploader.lnk");
+    reg3.DeleteKey("Software\\Uptooda\\Strings");
+    reg3.DeleteKey("Software\\Uptooda");
+    CString ShortcutName = WinUtils::GetSendToPath() + _T("Uptooda.lnk");
     DeleteFile(ShortcutName);
 
     Win7JumpList jumplist;
@@ -1058,7 +1055,7 @@ void WtlGuiSettings::EnableAutostartup(bool enable) {
     Reg.SetRootKey(HKEY_CURRENT_USER);
     bool canCreateRegistryKey = enable;
 
-    if (Reg.SetKey("Software\\Zenden.ws\\Image Uploader", canCreateRegistryKey)) {
+    if (Reg.SetKey("Software\\Uptooda", canCreateRegistryKey)) {
         if (enable) {
             Reg.WriteBool("AutoStartup", enable);
         } else {

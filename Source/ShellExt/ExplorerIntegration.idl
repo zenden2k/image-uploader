@@ -9,7 +9,7 @@ import "ocidl.idl";
 
 [
 	object,
-	uuid(2AAE4044-B77F-4BF2-95EB-F6AD0A3332C8),
+    uuid(B0DA607F-C6C4-4545-B0E2-C2408DC8C08A),
 	dual,
 	nonextensible,
 	helpstring("IIShellContextMenu Interface"),
@@ -26,7 +26,7 @@ library ExplorerIntegrationLib
 {
 	importlib("stdole2.tlb");
 	[
-		uuid(7CA585C4-DF37-4712-9FC7-D64BFEF801F9),
+		uuid(4B4E72F9-F01C-422E-BF65-98D12861743C),
 		helpstring("IShellContextMenu Class")
 	]
 	coclass IShellContextMenu

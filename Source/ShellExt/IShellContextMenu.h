@@ -60,7 +60,7 @@ class StringsReader
 public:
     StringsReader() {
         reg.SetRootKey(HKEY_LOCAL_MACHINE);
-        reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader\\Strings"), false);
+        reg.SetKey(_T("Software\\Uptooda\\Strings"), false);
     }
 
     CString getString(CString name, CString defaultValue) {

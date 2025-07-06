@@ -17,7 +17,8 @@
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{24F211C6-2732-4564-B602-CDA2DE2A13FC}
+AppId={{44F06965-E6A9-4147-A44A-E78403428560}
+; Old AppId: {24F211C6-2732-4564-B602-CDA2DE2A13FC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion} Build {#IU_BUILD_NUMBER}
@@ -67,7 +68,7 @@ Additional=Additional
 ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 ru.Additional=Дополнительно
 [Registry]
-Root: HKLM; Subkey: "Software\Zenden.ws\Image Uploader"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Image Uploader\"; 
+Root: HKLM; Subkey: "Software\Uptooda"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Uptooda\"; 
 ;Tasks: common;  ;
 ;Root: HKCU; Subkey: "Software\Zenden.ws\Uptooda"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Uptooda"; Tasks: installuser; 
 
@@ -89,7 +90,7 @@ Name: "{code:GetDataFolder}\Uptooda\Scripts"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Uptooda\Favicons"; Permissions: users-modify
 Name: "{code:GetDataFolder}\Uptooda\Update"; Permissions: users-modify
 [Files]
-Source: "..\Build\Gui\Release\Uptooda.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\Build\Gui\Release\uptooda.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "curl-ca-bundle.crt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\Lang\locale\*"; Excludes: "*.po"; DestDir: "{app}\Lang\locale"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\Modules\*"; DestDir: "{app}\Modules"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -117,7 +118,7 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags:
 ;Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 ;Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 #if IU_ARCH != "arm64"
-Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist uninsrestartdelete regserver 32bit; BeforeInstall: ShellExtBeforeInstall
 #endif
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}"; Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
 
@@ -232,6 +233,108 @@ begin
     Result := True;
 end;
 
+function GetUninstallString: String;
+var
+  sUnInstPath: String;
+  sUnInstallString: String;
+begin
+  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppId")}_is1');
+  sUnInstallString := '';
+  
+  if IsWin64 then
+  begin
+    if not RegQueryStringValue(HKLM64, sUnInstPath, 'UninstallString', sUnInstallString) then
+
+      if not RegQueryStringValue(HKLM32, sUnInstPath, 'UninstallString', sUnInstallString) then
+      begin
+        if not RegQueryStringValue(HKCU64, sUnInstPath, 'UninstallString', sUnInstallString) then
+          RegQueryStringValue(HKCU32, sUnInstPath, 'UninstallString', sUnInstallString);
+      end;
+  end
+  else 
+  begin
+    if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
+      RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
+  end;
+  
+  Result := sUnInstallString;
+end;
+
+function UnInstallOldVersion: Integer;
+var
+  sUnInstallString: String;
+  iResultCode: Integer;
+begin
+  Result := 0;
+  sUnInstallString := GetUninstallString();
+  if sUnInstallString <> '' then begin
+    sUnInstallString := RemoveQuotes(sUnInstallString);
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+      Result := 3
+    else
+      Result := 2;
+  end else
+    Result := 1;
+end;
+
+function ShouldRegisterShellExt: Boolean;
+var
+  RegValue: DWORD;
+begin
+  Result := False;
+  
+  // Check registry setting
+  if IsWin64 then
+  begin
+    // On 64-bit system check 64-bit registry first, then 32-bit
+    if RegQueryDWordValue(HKLM64, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1)
+    else if RegQueryDWordValue(HKLM32, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1);
+  end
+  else
+  begin
+    // On 32-bit system check only regular registry
+    if RegQueryDWordValue(HKLM, 'SOFTWARE\Zenden.ws\Image Uploader', 'ExplorerContextMenu', RegValue) then
+      Result := (RegValue = 1);
+  end;
+end;
+
+function GetShellExtDllPath: String;
+begin
+  if IsWin64 then
+  begin
+    // On 64-bit system use 64-bit DLL
+    Result := ExpandConstant('{app}\ExplorerIntegration64.dll');
+  end
+  else
+  begin
+    // On 32-bit system use 32-bit DLL
+    Result := ExpandConstant('{app}\ExplorerIntegration.dll');
+  end;
+end;
+
+procedure RegisterShellExtension;
+var
+  DllPath: String;
+  ResultCode: Integer;
+begin
+  if not ShouldRegisterShellExt then
+    Exit;
+    
+  DllPath := GetShellExtDllPath;
+  
+  if not FileExists(DllPath) then
+  begin
+    Log('DLL file not found: ' + DllPath);
+    Exit;
+  end;
+  
+  Log('Registering Shell Extension: ' + DllPath);
+  
+  RegisterServer(Is64BitInstallMode, DllPath, False);
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
   var 
     Version: TWindowsVersion;
@@ -247,5 +350,16 @@ begin
       RegWriteStringValue(HKEY_CURRENT_USER, 'Software\Wine\DllOverrides',
                           'gdiplus', 'native, builtin');
     end;
+    //else
+    //  RegisterShellExtension;
+  end
+  else if (CurStep=ssInstall) then
+  begin
+    if (UnInstallOldVersion() = 2) then
+    begin
+      //MsgBox('Error during uninstallation of the old version', mbError, MB_OK);
+      //Abort;
+    end;
   end;
 end;
+

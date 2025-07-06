@@ -16,6 +16,7 @@ add_executable(CLI
 configure_webview2_target(CLI)
 
 set_target_properties(CLI PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/CLI/)
+set_target_properties(CLI PROPERTIES OUTPUT_NAME "uptooda-cli")
 
 message("COMMON_LIBS_LIST libraries: ${COMMON_LIBS_LIST}")
 
