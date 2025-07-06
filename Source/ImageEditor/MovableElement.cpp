@@ -1,5 +1,5 @@
 /*
-     Image Uploader - program for uploading images/files to the Internet
+     Uptooda - free application for uploading images/files to the Internet
 
      Copyright 2007-2025 Sergey Svistunov (zenden2k@gmail.com)
 

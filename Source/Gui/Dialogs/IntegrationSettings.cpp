@@ -82,7 +82,7 @@ LRESULT CIntegrationSettings::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lPar
 
     serverProfiles_.clear();
     std::vector<CString> keyNames;
-    CString keyPath = "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems";
+    CString keyPath = "Software\\Uptooda\\ContextMenuItems";
     Reg.GetChildKeysNames(keyPath,keyNames);
     for (size_t i =0; i < keyNames.size(); i++) {
         if ( Reg.SetKey(keyPath + _T("\\") + keyNames[i], false) ) {
@@ -141,9 +141,9 @@ bool CIntegrationSettings::apply()
         Reg.SetRootKey( HKEY_CURRENT_USER );
 
         serverProfiles_.clear();
-        Reg.DeleteWithSubkeys("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
+        Reg.DeleteWithSubkeys("Software\\Uptooda\\ContextMenuItems");
         CString itemId;
-        if ( Reg.SetKey( "Software\\Zenden.ws\\Image Uploader\\ContextMenuItems", true ) ) {
+        if ( Reg.SetKey( "Software\\Uptooda\\ContextMenuItems", true ) ) {
             std::mt19937 mt{ std::random_device{}() };
             std::uniform_int_distribution<int> dist(0, 999999);
                 for( int i = 0; i< menuItemCount; i++ ){
@@ -163,7 +163,7 @@ bool CIntegrationSettings::apply()
                     itemId.Replace(L"\\",L"_");
                     itemId.Replace(L"//",L"_");
                     auto iconCache = ServiceLocator::instance()->serverIconCache();
-                    if ( Reg2.SetKey("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems\\" + itemId, true) ) {
+                    if ( Reg2.SetKey("Software\\Uptooda\\ContextMenuItems\\" + itemId, true) ) {
                         Reg2.WriteString( "Name", lid->name );
                         Reg2.WriteString("ServerName", Utf8ToWCstring(lid->serverProfile.serverName()));
                         Reg2.WriteString("ProfileName", Utf8ToWCstring(lid->serverProfile.profileName()));

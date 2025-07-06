@@ -1,17 +1,17 @@
 HKCR
 {
-	ExplorerIntegration.IShellContextMenu.1 = s 'Image Uploader shell extension'
+	ExplorerIntegration.IShellContextMenu.1 = s 'Uptooda shell extension'
 	{
-		CLSID = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
+		CLSID = s '{4B4E72F9-F01C-422E-BF65-98D12861743C}'
 	}
-	ExplorerIntegration.IShellContextMenu = s 'Image Uploader shell extension'
+	ExplorerIntegration.IShellContextMenu = s 'Uptooda shell extension'
 	{
-		CLSID = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
+		CLSID = s '{4B4E72F9-F01C-422E-BF65-98D12861743C}'
 		CurVer = s 'ExplorerIntegration.IShellContextMenu.1'
 	}
 	NoRemove CLSID
 	{
-		ForceRemove {7CA585C4-DF37-4712-9FC7-D64BFEF801F9} = s 'Image Uploader shell extension'
+		ForceRemove {4B4E72F9-F01C-422E-BF65-98D12861743C} = s 'Uptooda shell extension'
 		{
 			ProgID = s 'ExplorerIntegration.IShellContextMenu.1'
 			VersionIndependentProgID = s 'ExplorerIntegration.IShellContextMenu'
@@ -30,7 +30,7 @@ HKCR
 		{
 			NoRemove ContextMenuHandlers
 			{
-				ImageUploader = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
+				Uptooda = s '{4B4E72F9-F01C-422E-BF65-98D12861743C}'
 				{
 				}
 			}
@@ -43,7 +43,7 @@ HKCR
 		{
 			NoRemove ContextMenuHandlers
 			{
-				ImageUploader = s '{7CA585C4-DF37-4712-9FC7-D64BFEF801F9}'
+				Uptooda = s '{4B4E72F9-F01C-422E-BF65-98D12861743C}'
 				{
 				}
 			}
@@ -65,7 +65,7 @@ HKLM
 					{
 						NoRemove Approved
 						{
-							val {7CA585C4-DF37-4712-9FC7-D64BFEF801F9} = s 'Image Uploader shell extension'
+							val {4B4E72F9-F01C-422E-BF65-98D12861743C} = s 'Uptooda shell extension'
 						}
 					}
 				}

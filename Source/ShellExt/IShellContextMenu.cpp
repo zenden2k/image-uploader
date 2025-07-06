@@ -202,7 +202,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
     bool ExplorerVideoContextMenu = true;
     CRegistry Reg;
     Reg.SetRootKey(HKEY_CURRENT_USER);
-    if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false)) {
+    if (Reg.SetKey(_T("Software\\Uptooda"), false)) {
         ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"), true);
         //	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
         ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"), true);
@@ -216,7 +216,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 #ifdef _WIN64
     else {
         Reg.SetWOW64Flag(KEY_WOW64_32KEY);
-        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false)) {
+        if (Reg.SetKey(_T("Software\\Uptooda"), false)) {
             ExplorerCascadedMenu = Reg.ReadBool(_T("ExplorerCascadedMenu"));
             //	ExplorerContextMenu = Reg.ReadBool("ExplorerContextMenu");
             ExplorerVideoContextMenu = Reg.ReadBool(_T("ExplorerVideoContextMenu"));
@@ -269,7 +269,7 @@ HRESULT CIShellContextMenu::QueryContextMenu(HMENU hmenu, UINT indexMenu, UINT i
 	CRegistry Reg2;
 	Reg2.SetRootKey( HKEY_CURRENT_USER );
 	std::vector<CString> keyNames;
-	CString keyPath = _T("Software\\Zenden.ws\\Image Uploader\\ContextMenuItems");
+	CString keyPath = _T("Software\\Uptooda\\ContextMenuItems");
 	Reg2.GetChildKeysNames(keyPath,keyNames);
 	int w = GetSystemMetrics(SM_CXSMICON);
 	int h = GetSystemMetrics(SM_CYSMICON);

@@ -159,7 +159,7 @@ CString FindDataFolder() {
         CRegistry Reg;
 
         Reg.SetRootKey(HKEY_CURRENT_USER);
-        if (Reg.SetKey(_T("Software\\Zenden.ws\\Image Uploader"), false))
+        if (Reg.SetKey(_T("Software\\Uptooda"), false))
         {
             CString dir = Reg.ReadString(_T("DataPath"));
 
@@ -176,9 +176,9 @@ CString FindDataFolder() {
         // Unable to use wow64 flag because of Registry Virtualization enabled in the explorer.exe process
         CString keyStr =
 #ifdef _WIN64
-            _T("Software\\Wow6432Node\\Zenden.ws\\Image Uploader");
+            _T("Software\\Wow6432Node\\Uptooda");
 #else
-            _T("Software\\Zenden.ws\\Image Uploader");
+            _T("Software\\Uptooda");
 #endif
 
         if (Reg.SetKey(keyStr, false))
@@ -193,10 +193,10 @@ CString FindDataFolder() {
     }
 
     if (FileExists(GetCommonApplicationDataPath() + L"Settings.xml")) {
-        DataFolder = GetCommonApplicationDataPath() + _T("Image Uploader\\");
+        DataFolder = GetCommonApplicationDataPath() + _T("Uptooda\\");
     }
     else {
-        DataFolder = GetApplicationDataPath() + _T("Image Uploader\\");
+        DataFolder = GetApplicationDataPath() + _T("Uptooda\\");
     }
     return DataFolder;
 }

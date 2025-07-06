@@ -684,7 +684,7 @@ for idx, target in enumerate(BUILD_TARGETS):
                 shutil.copy2(os.path.join(src_dir,fname), lib_path)
             src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/include/"
             shutil.copytree(src_dir, include_path, dirs_exist_ok=True) 
-            src_dir = dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/bin/"
+            src_dir =  dist_directory + "/Libs/FFmpeg/" + target.get("arch") + "/bin/"
             dest_dir = "GUI/Release/"
             shutil.copytree(src_dir, dest_dir, dirs_exist_ok=True, ignore=shutil.ignore_patterns('*.lib')) 
 
@@ -778,7 +778,7 @@ for idx, target in enumerate(BUILD_TARGETS):
             json_data = add_output_file(json_data, target, json_file_path, "7zip archive", file_to, relative_path + filename, APP_NAME + " (GUI" + appname_suffix +")")
 
             if not target.get("lite"):
-                # Creating CLI archive (imgupload)
+                # Creating CLI archive (uptooda=cli)
                 command =  repo_dir_abs + used_dist_dir + r"create_cli.bat"
                 print("Running command:", command)
                 proc = subprocess.run(command, cwd=repo_dir_abs + used_dist_dir)
@@ -837,7 +837,7 @@ for idx, target in enumerate(BUILD_TARGETS):
             package_os_dir = new_build_dir + relative_path
             mkdir_if_not_exists(package_os_dir)
 
-            file_from = r"Linux\imgupload_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+            file_from = r"Linux\\uptooda-cli_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
@@ -848,7 +848,7 @@ for idx, target in enumerate(BUILD_TARGETS):
             shutil.copyfile(file_from, file_to)
             json_data = add_output_file(json_data, target, json_file_path, "Debian package", file_to, relative_path + filename, APP_NAME + " (CLI)")
        
-            file_from = r"Linux\uptooda-cli-{version_clean}.{build_number}-{arch}.tar.xz".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+            file_from = r"Linux\\uptooda-cli-{version_clean}.{build_number}-{arch}.tar.xz".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
@@ -870,7 +870,7 @@ for idx, target in enumerate(BUILD_TARGETS):
                     print("Failed to create debian package for Qt GUI")
                     exit(1)
 
-                file_from = r"Linux\uptooda_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
+                file_from = r"Linux\\uptooda_{version_clean}.{build_number}_{arch}.deb".format(version_clean=version_header_defines["IU_APP_VER_CLEAN"],
                                                                                                 build_number=build_number,
                                                                                                 arch=target.get("deb_package_arch")
                 )
