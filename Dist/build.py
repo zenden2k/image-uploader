@@ -12,15 +12,22 @@ import xml.etree.ElementTree
 import git
 
 from contextlib import contextmanager
+from dotenv import load_dotenv
 
-IS_RELEASE = False
-TEST_MODE = False
+def get_bool_env(env_var, default=False):
+    value = os.getenv(env_var, str(default))
+    return value.lower() in ('true', '1', 'yes', 'on')
+
+load_dotenv()
+
+IS_RELEASE = get_bool_env("UPTOODA_BUILD_RELEASE")
+TEST_MODE = get_bool_env("UPTOODA_BUILD_TEST_MODE")
 BUILD_DOCS = True
 OUTDIR = "Releases" if IS_RELEASE else "Packages" 
 APP_NAME = "Uptooda"
 IU_GIT_REPOSITORY = "https://github.com/zenden2k/image-uploader.git"
-DEFAULT_GIT_BRANCH = "master"
-PARALLEL_JOBS = "6"
+GIT_BRANCH = os.getenv("UPTOODA_BUILD_BRANCH", "master")
+PARALLEL_JOBS = os.getenv("UPTOODA_BUILD_PARALLEL_JOBS", "6")
 DOWNLOAD_CA_BUNDLE = True
 
 # --- Script requirements ---
@@ -205,7 +212,7 @@ BUILD_TARGETS = [
     },
 ]
 
-#BUILD_TARGETS = [BUILD_TARGETS[4]]
+#BUILD_TARGETS = [BUILD_TARGETS[6]]
 
 COMMON_BUILD_FOLDER = "Build_Release_Temp"
 CONAN_PROFILES_REL_PATH = "../Conan/Profiles/"
@@ -513,7 +520,7 @@ def modify_update_file(component_name, filepath, version_header_defines, json_da
 if len(sys.argv) > 1:
     git_branch = sys.argv[1]
 else:
-    git_branch = DEFAULT_GIT_BRANCH
+    git_branch = GIT_BRANCH
 
 check_program(["git", "--version"])
 
@@ -841,7 +848,7 @@ for idx, target in enumerate(BUILD_TARGETS):
                                                                                             build_number=build_number,
                                                                                             arch=target.get("deb_package_arch")
             )
-            filename = "uptooda_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
+            filename = "uptooda-cli_" + app_ver + "-build-" + build_number + "_" + target.get("deb_package_arch") +".deb"
             file_to = package_os_dir + filename
             print("Copy file from:", file_from)
             print("Copy file to:", file_to)
