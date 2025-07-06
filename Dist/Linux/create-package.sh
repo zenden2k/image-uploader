@@ -54,7 +54,7 @@ cp ../../Data/.env "${root_dir}/usr/share/uptooda-cli/.env"
 cp ../../Data/Scripts/*.nut "${root_dir}/usr/share/uptooda-cli/Scripts/"
 #cp ../../Data/Update/iu_serversinfo.xml ./uptooda-cli/usr/share/uptooda-cli/Update/iu_serversinfo.xml
 
-if [ ! -f ~/uptooda-cli/usr/bin/uptooda-cli ]; then
+if [ ! -f "${root_dir}/usr/bin/uptooda-cli" ]; then
     echo "Executable not found!"
     exit
 fi
