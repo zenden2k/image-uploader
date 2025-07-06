@@ -133,11 +133,11 @@ Allow creating symlinks (you can do it by turning on Developer Mode on Windows 1
  * Inno Setup 6 (iscc.exe)
  * WSL 2 & Ubuntu 20.04+
 
-Add Conan remote and install GitPython:
+Add Conan remote and install python libraries:
 
 ```bash
 conan remote add zenden2k https://conan.svistunov.dev --index 0
-pip install GitPython
+pip install GitPython python-dotenv
 ```
 
 ## Prerequisites On WSL (Ubuntu Linux)
