@@ -44,6 +44,7 @@ class CServerParamsDlg :
 
         BEGIN_MSG_MAP(CServerParamsDlg)
             MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+            MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
             COMMAND_HANDLER(IDOK, BN_CLICKED, OnClickedOK)
             COMMAND_HANDLER(IDCANCEL, BN_CLICKED, OnClickedCancel)
             COMMAND_HANDLER(IDC_DOAUTH, BN_CLICKED, OnClickedDoAuth)
@@ -64,6 +65,7 @@ class CServerParamsDlg :
          //  LRESULT CommandHandler(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
          //  LRESULT NotifyHandler(int idCtrl, LPNMHDR pnmh, BOOL& bHandled);
         LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+        LRESULT OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
         LRESULT OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
         LRESULT OnClickedDoAuth(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
@@ -81,7 +83,11 @@ class CServerParamsDlg :
         ServerProfile  serverProfile_;
         UploadEngineManager * uploadEngineManager_;
         std::unique_ptr<ParameterListAdapter> parameterListAdapter_;
+        CIcon iconFolder_;
+        CStatic folderPictureControl_;
+
         void doAuthChanged();
+        void createResources();
 };
 
 

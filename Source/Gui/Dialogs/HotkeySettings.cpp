@@ -220,7 +220,7 @@ CHotkeyList::CHotkeyList()
     AddItem(TR("Images from web"),_T("downloadimages"), IDM_PASTEFROMWEB);
     AddItem(TR("View Media File Information"),_T("mediainfo"), IDM_MEDIAINFO);
     AddItem(TR("Quick upload image from clipboard"), _T("uploadfromclipboard"), IDM_QUICKUPLOADFROMCLIPBOARD);
-    AddItem(TR("Shorten a link"),_T("shortenurl"), IDM_SHORTENURL);
+    AddItem(TR("Shorten a Link"),_T("shortenurl"), IDM_SHORTENURL);
     AddItem(TR("Shorten a link from the clipboard"),_T("shortenurlclipboard"), IDM_SHORTENURLCLIPBOARD);
     AddItem(TR("Reupload images"),_T("reuploadimages"), IDM_REUPLOADIMAGES);
     AddItem(TR("Exit"), _T("exit"), IDM_EXIT);

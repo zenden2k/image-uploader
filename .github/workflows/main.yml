@@ -1,4 +1,4 @@
-name: Build Image Uploader
+name: Build Uptooda
 
 on:
   pull_request:

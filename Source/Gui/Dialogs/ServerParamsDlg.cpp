@@ -28,6 +28,7 @@
 #include "Core/Settings/BasicSettings.h"
 #include "Core/Upload/Parameters/TextParameter.h"
 #include "Core/Upload/Parameters/ChoiceParameter.h"
+#include "Gui/Helpers/DPIHelper.h"
 
 // CServerParamsDlg
 CServerParamsDlg::CServerParamsDlg(const ServerProfile& serverProfile, UploadEngineManager * uploadEngineManager, bool focusOnLoginEdit) : m_ue(serverProfile.uploadEngineData()), serverProfile_(serverProfile)
@@ -54,6 +55,9 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     TRC(IDC_BROWSESERVERFOLDERS, "Select...");
     TRC(IDC_PARAMETERSLABEL, "Parameters:");
     DlgResize_Init();
+
+    folderPictureControl_ = GetDlgItem(IDC_FOLDERICON);
+    createResources();
     auto* engineList = ServiceLocator::instance()->engineList();
     CString windowTitle;
     CString serverDisplayName = Utf8ToWCstring(engineList->getServerDisplayName(m_ue));
@@ -108,6 +112,11 @@ LRESULT CServerParamsDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, 
     return 1;  // Let the system set the focus
 }
 
+LRESULT CServerParamsDlg::OnDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    createResources();
+    return 0;
+}
+
 LRESULT CServerParamsDlg::OnClickedOK(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
     CString login = GuiTools::GetDlgItemText(m_hWnd, IDC_LOGINEDIT);
@@ -148,6 +157,20 @@ void CServerParamsDlg::doAuthChanged() {
     ::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), false);
     //::EnableWindow(GetDlgItem(IDC_LOGINEDIT), IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory);
     //::EnableWindow(GetDlgItem(IDC_PASSWORDEDIT), (IS_CHECKED(IDC_DOAUTH) || m_ue->NeedAuthorization == CUploadEngineData::naObligatory) && m_ue->NeedPassword);
+}
+
+void CServerParamsDlg::createResources() {
+    const int dpi = DPIHelper::GetDpiForDialog(m_hWnd);
+    const int iconWidth = DPIHelper::GetSystemMetricsForDpi(SM_CXSMICON, dpi);
+    const int iconHeight = DPIHelper::GetSystemMetricsForDpi(SM_CYSMICON, dpi);
+
+    if (iconFolder_) {
+        iconFolder_.DestroyIcon();
+    }
+    iconFolder_.LoadIconWithScaleDown(MAKEINTRESOURCE(IDI_ICONFOLDER2), iconWidth, iconHeight);
+
+    folderPictureControl_.SetIcon(iconFolder_);
+    folderPictureControl_.SetWindowPos(0, 0, 0, iconWidth, iconHeight, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 LRESULT CServerParamsDlg::OnBrowseServerFolders(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled) {

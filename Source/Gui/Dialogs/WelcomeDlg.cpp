@@ -344,7 +344,7 @@ void CWelcomeDlg::fillHyperLinksControl(int dpiX, int dpiY) {
     ListBox.AddString(TR("From Clipboard"), 0, IDC_CLIPBOARD, loadSmallIcon(IDI_CLIPBOARD), true);
 
     ListBox.AddString(TR("Reupload"), 0, IDC_REUPLOADIMAGES, loadSmallIcon(IDI_ICONRELOAD), true, 0, true);
-    ListBox.AddString(TR("Shorten a link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
+    ListBox.AddString(TR("Shorten a Link"), 0, IDC_SHORTENURL, loadSmallIcon(IDI_ICONLINK), true, 0, false);
 
     ListBox.AddString(TR("Screen Capture"), TR("a pic of the whole screen or selected region"), IDC_SCREENSHOT, loadBigIcon(IDI_SCREENSHOT));
     ListBox.AddString(TR("Select Region..."), 0, IDC_REGIONPRINT, loadSmallIcon(IDI_ICONREGION));
