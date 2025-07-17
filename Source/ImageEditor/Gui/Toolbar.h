@@ -115,6 +115,7 @@ public:
         MESSAGE_HANDLER( WM_NCHITTEST, OnNcHitTest )
         MESSAGE_HANDLER( WM_LBUTTONDOWN, OnLButtonDown )
         MESSAGE_HANDLER( WM_LBUTTONUP, OnLButtonUp )
+        MESSAGE_HANDLER( WM_RBUTTONDOWN, OnRButtonDown )
         MESSAGE_HANDLER( WM_RBUTTONUP, OnRButtonUp )
         MESSAGE_HANDLER( WM_ERASEBKGND, OnEraseBackground )
         MESSAGE_HANDLER( WM_ACTIVATE, OnActivate )
@@ -147,6 +148,7 @@ public:
     LRESULT OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnLButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    LRESULT OnRButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnRButtonUp(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEraseBackground(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNcHitTest(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
@@ -219,6 +221,9 @@ protected:
     void createHintForControl(HWND slider, CString hint);
     SIZE getArrowComboBoxBitmapSize(int dpiX, int dpiY);
     void setArrowComboboxMode(int itemIndex, int arrowType);
+    bool isPointInComboButtonDropdownArea(int x, int y, const Item& item);
+    bool isPointInTinyComboButtonDropdownArea(int x, int y, const Item& item);
+
     bool createSubPanel_;
     bool moveParent_;
 };

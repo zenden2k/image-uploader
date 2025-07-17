@@ -409,6 +409,13 @@ LRESULT Toolbar::OnMouseMove(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BO
         trackMouse_ = true;
     }
 
+    if (selectedItemIndex_ != -1) {
+        const auto& button = buttons_[selectedItemIndex_];
+        if (button.state == isDropDown) {
+            return 0;
+        }
+    }
+
     int oldSelectedIndex  = selectedItemIndex_;
 
     selectedItemIndex_ = getItemAtPos(xPos, yPos);
@@ -436,6 +443,11 @@ LRESULT Toolbar::OnMouseLeave(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, B
     int yPos = GET_Y_LPARAM(lParam); */
     trackMouse_ = false;
     if (selectedItemIndex_ >= 0 && selectedItemIndex_ < buttons_.size()) {
+        const auto& button = buttons_[selectedItemIndex_];
+        if (button.state == isDropDown) {
+            return 0;
+        }
+        
         buttons_[selectedItemIndex_].state = isNormal;
 
         InvalidateRect(&buttons_[selectedItemIndex_].rect, false);
@@ -451,14 +463,17 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
     int xPos = GET_X_LPARAM(lParam);
     int yPos = GET_Y_LPARAM(lParam);
     bool moveParent = moveParent_;
+    HWND parent = GetParent();
 
-    if ( selectedItemIndex_ != -1 ) {
+    selectedItemIndex_ = getItemAtPos(xPos, yPos);
+
+    if (selectedItemIndex_ != -1) {
         Item& item = buttons_[selectedItemIndex_];
         if (item.enabled) {
-            if (item.type == Toolbar::itComboButton && xPos > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)) {
+            if (item.type == Toolbar::itComboButton && isPointInComboButtonDropdownArea(xPos, yPos, item)) {
                 item.state = isDropDown;
             } else if (item.type == Toolbar::itTinyCombo) {
-                if (xPos > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && yPos > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_) {
+                if (isPointInTinyComboButtonDropdownArea(xPos, yPos, item)) {
                     item.state = isDropDown;
                 } else {
                     SetTimer(kTinyComboDropdownTimer, 600);
@@ -471,11 +486,20 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
             moveParent = moveParent && item.itemDelegate && !item.itemDelegate->needClick();
 
             InvalidateRect(&item.rect, false);
+
+            if (item.state == isDropDown && (item.type == Toolbar::itComboButton || item.type == Toolbar::itTinyCombo)) {
+                // Showing a popup menu in the parent class
+                ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+                // Restoring button state
+                item.state = isNormal;
+                InvalidateRect(&item.rect, false);
+            }   
         }
     }
+
     if (moveParent) {
         ReleaseCapture();
-        SendMessage(GetParent(), WM_NCLBUTTONDOWN, HTCAPTION, 0);
+        SendMessage(parent, WM_NCLBUTTONDOWN, HTCAPTION, 0);
     }
 
     return 0;
@@ -483,9 +507,9 @@ LRESULT Toolbar::OnLButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL
 
 LRESULT Toolbar::OnTimer(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
-    if ( wParam  == kTinyComboDropdownTimer && selectedItemIndex_ != -1 ) {
+    if (wParam == kTinyComboDropdownTimer && selectedItemIndex_ != -1) {
         Item& item = buttons_[selectedItemIndex_];
-        if (  item.type == Toolbar::itTinyCombo ) {
+        if (item.type == Toolbar::itTinyCombo) {
             ::PostMessage(GetParent(), MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
         }
     }
@@ -501,10 +525,10 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
     KillTimer(kTinyComboDropdownTimer);
     GetClientRect(&clientRect);
     POINT pt = { xPos, yPos };
-    if ( !::PtInRect(&clientRect, pt)  )  {
+    if (!::PtInRect(&clientRect, pt))  {
         return 0;
     }
-    if ( selectedItemIndex_ != -1 ) {
+    if (selectedItemIndex_ != -1) {
         selectedItemIndex_ = getItemAtPos(xPos, yPos);
         Item& item = buttons_[selectedItemIndex_];
 
@@ -514,17 +538,19 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
                 item.itemDelegate->OnClick(xPos, yPos, dpiScaleX_, dpiScaleY_);
             } else {
                 HWND parent = GetParent();
-                int command = item.command;
-                if (item.type == Toolbar::itComboButton && xPos > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_)) {
-                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
-                } else if (item.type == Toolbar::itTinyCombo && xPos > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && yPos > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_) {
-                    ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
-                } else {
-                    ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(command, BN_CLICKED), (LPARAM)m_hWnd);
+                bool shouldSendCommand = true;
+
+                if (item.type == Toolbar::itComboButton) {
+                    shouldSendCommand = !isPointInComboButtonDropdownArea(xPos, yPos, item);
+                } else if (item.type == Toolbar::itTinyCombo) {
+                    shouldSendCommand = !isPointInTinyComboButtonDropdownArea(xPos, yPos, item);
                 }
 
-                selectedItemIndex_ = -1;
-                OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+                if (shouldSendCommand) {
+                    ::SendMessage(parent, WM_COMMAND, MAKEWPARAM(item.command, BN_CLICKED), (LPARAM)m_hWnd);
+                    selectedItemIndex_ = -1;
+                    OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
+                }
             }
         } else {
             selectedItemIndex_ = -1;
@@ -534,22 +560,32 @@ LRESULT Toolbar::OnLButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& 
     return 0;
 }
 
+
+LRESULT Toolbar::OnRButtonDown(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled) {
+    const int xPos = GET_X_LPARAM(lParam);
+    const int yPos = GET_Y_LPARAM(lParam);
+
+    selectedItemIndex_ = getItemAtPos(xPos, yPos);
+    if (selectedItemIndex_ == -1) {
+        return 0;
+    }
+
+    Item& item = buttons_[selectedItemIndex_];
+    if (item.type == Toolbar::itTinyCombo) {
+        item.state = isDropDown;
+        InvalidateRect(&item.rect, false);
+        HWND parent = GetParent();
+        ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item, (LPARAM)m_hWnd);
+
+        item.state = isNormal;
+        selectedItemIndex_ = -1;
+        InvalidateRect(&item.rect, false);
+    }
+    return 0;
+}
+
 LRESULT Toolbar::OnRButtonUp(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
-    int xPos = GET_X_LPARAM(lParam);
-    int yPos = GET_Y_LPARAM(lParam);
-    if ( selectedItemIndex_ != -1 ) {
-
-        selectedItemIndex_ = getItemAtPos(xPos, yPos);
-        Item& item = buttons_[selectedItemIndex_];
-
-        if ( item.type == Toolbar::itTinyCombo ) {
-            HWND parent = GetParent();
-            ::SendMessage(parent, MTBM_DROPDOWNCLICKED, (WPARAM)&item,(LPARAM)m_hWnd);
-            selectedItemIndex_ = -1;
-            OnMouseMove(WM_MOUSEMOVE, wParam, lParam, bHandled);
-        }
-    }
     return 0;
 }
 
@@ -1073,6 +1109,16 @@ SIZE Toolbar::getArrowComboBoxBitmapSize(int dpiX, int dpiY) {
 
 void Toolbar::setArrowComboboxMode(int itemIndex, int arrowType) {
     arrowTypeCombobox_.SetItemData(itemIndex, static_cast<DWORD_PTR>(arrowType));
+}
+
+
+bool Toolbar::isPointInComboButtonDropdownArea(int x, int y, const Item& item) {
+    return x > static_cast<int>(item.rect.right - dropDownIcon_->GetWidth() - itemMargin_);
+}
+
+
+bool Toolbar::isPointInTinyComboButtonDropdownArea(int x, int y, const Item& item) {
+    return x > item.rect.right - 6 * dpiScaleX_ - itemMargin_ && y > item.rect.bottom - 6 * dpiScaleY_ - itemMargin_;
 }
 
 LRESULT Toolbar::OnMeasureItem(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/) {
