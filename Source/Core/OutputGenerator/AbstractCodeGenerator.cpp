@@ -1,6 +1,6 @@
 #include "AbstractCodeGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 std::string AbstractCodeGenerator::doGenerate(const std::vector<UploadObject>& items) {
     std::string result;

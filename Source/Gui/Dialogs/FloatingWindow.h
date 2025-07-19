@@ -78,7 +78,7 @@ constexpr int IDM_MONITOR_SELECTEDMONITOR_LAST = IDM_REUPLOADIMAGES + 50 + 25;
 constexpr int WM_CLOSETRAYWND = WM_USER + 2;
 constexpr int WM_RELOADSETTINGS = WM_USER + 3;
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 class XmlTemplateList;
 class XmlTemplateGenerator;
 struct UploadObject;
@@ -103,7 +103,7 @@ public:
     CIcon activeIcon_;
     bool m_bStopCapturingWindows;
     bool m_bIsUploading;
-    std::unique_ptr<ImageUploader::Core::OutputGenerator::UploadObject> lastUploadedItem_;
+    std::unique_ptr<Uptooda::Core::OutputGenerator::UploadObject> lastUploadedItem_;
     std::shared_ptr<UrlShorteningTask> lastUrlShorteningTask_;
     CString imageUrlShortened_;
     CString downloadUrlShortened_;
@@ -254,7 +254,7 @@ public:
      };
     CWizardDlg* wizardDlg_;
     std::function<void()> balloonClickFunction_;
-    std::unique_ptr<ImageUploader::Core::OutputGenerator::XmlTemplateList> templateList_;
+    std::unique_ptr<Uptooda::Core::OutputGenerator::XmlTemplateList> templateList_;
     protected:
     std::unique_ptr<IconBitmapUtils> iconBitmapUtils_;
     CBitmap addFilesBitmap_, screenshotBitmap_, regionScreenshotBitmap_, screenRecordingBitmap_, startRecordingBitmap_, settingsBitmap_;

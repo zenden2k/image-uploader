@@ -1,4 +1,4 @@
-﻿#include "ImageConverterPrivateBase.h"
+#include "ImageConverterPrivateBase.h"
 
 #include "Core/Utils/CoreUtils.h"
 #include "Core/3rdpart/pcreplusplus.h"
@@ -47,11 +47,11 @@ std::string ImageConverterPrivateBase::ReplaceVars(const std::string& expr)
     std::string Result = expr;
 
     pcrepp::Pcre reg("\\$\\(([A-z0-9_]*?)\\)", "imc");
-    std::string str = (expr);
+
     size_t pos = 0;
-    while (pos < str.length())
+    while (pos < expr.length())
     {
-        if (reg.search(str, pos))
+        if (reg.search(expr, pos))
         {
             pos = reg.get_match_end() + 1;
             std::string vv = reg[1];

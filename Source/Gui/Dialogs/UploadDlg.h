@@ -78,7 +78,7 @@ class CUploadDlg : public CDialogImpl<CUploadDlg>,
         CMainDlg *MainDlg;
         std::unique_ptr<CResultsWindow> resultsWindow_;
         int ThreadTerminated(void);
-        std::vector<ImageUploader::Core::OutputGenerator::UploadObject> urlList_;
+        std::vector<Uptooda::Core::OutputGenerator::UploadObject> urlList_;
         bool OnShow() override;
         bool OnNext() override;
         bool OnHide() override;

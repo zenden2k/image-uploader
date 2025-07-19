@@ -2,7 +2,7 @@
 
 #include "AbstractCodeGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 class MarkdownGenerator : public AbstractCodeGenerator {
 public:

@@ -3,7 +3,7 @@
 #include <json/value.h>
 #include <json/writer.h>
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 std::string JSONGenerator::doGenerate(const std::vector<UploadObject>& items) {
     Json::Value arrValue(Json::arrayValue);

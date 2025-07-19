@@ -101,7 +101,7 @@ bool useSystemProxy = false;
 
 std::unique_ptr<CUploadEngineList> list;
 
-namespace OutputGenerator = ImageUploader::Core::OutputGenerator;
+namespace OutputGenerator = Uptooda::Core::OutputGenerator;
 OutputGenerator::CodeType codeType = OutputGenerator::ctClickableThumbnails;
 OutputGenerator::CodeLang codeLang = OutputGenerator::clPlain;
 bool autoUpdate = false;

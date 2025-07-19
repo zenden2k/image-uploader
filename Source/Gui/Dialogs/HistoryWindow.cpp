@@ -333,9 +333,9 @@ LRESULT CHistoryWindow::OnCopyThumbLink(WORD wNotifyCode, WORD wID, HWND hWndCtl
     return 0;
 }
 
-ImageUploader::Core::OutputGenerator::UploadObject fromHistoryItem(const HistoryItem& historyItem)
+Uptooda::Core::OutputGenerator::UploadObject fromHistoryItem(const HistoryItem& historyItem)
 {
-    ImageUploader::Core::OutputGenerator::UploadObject it;
+    Uptooda::Core::OutputGenerator::UploadObject it;
     it.uploadResult.directUrl = historyItem.directUrl;
     it.uploadResult.directUrlShortened = historyItem.directUrlShortened;
     it.uploadResult.thumbUrl = historyItem.thumbUrl;
@@ -351,7 +351,7 @@ ImageUploader::Core::OutputGenerator::UploadObject fromHistoryItem(const History
 
 LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled)
 {
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     TreeItem* item = m_treeView.selectedItem();
     if(!item) return 0;
     std::vector<UploadObject> items;
@@ -371,7 +371,7 @@ LRESULT CHistoryWindow::OnViewBBCode(WORD wNotifyCode, WORD wID, HWND hWndCtl, B
         if (!hit) {
             return 0;
         }
-        ImageUploader::Core::OutputGenerator::UploadObject it  = fromHistoryItem(*hit);
+        Uptooda::Core::OutputGenerator::UploadObject it  = fromHistoryItem(*hit);
         items.push_back(it);
     }
     CResultsWindow rp(wizardDlg_, items, false);

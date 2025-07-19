@@ -8,7 +8,7 @@
 #include "AbstractOutputGenerator.h"
 #include "XmlTemplateList.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 class XmlTemplateGenerator : public AbstractOutputGenerator {
 public:

@@ -43,10 +43,10 @@
 #include "GUi/Helpers/DPIHelper.h"
 
 // CResultsPanel
-CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory):
+CResultsPanel::CResultsPanel(CWizardDlg *dlg, std::vector<Uptooda::Core::OutputGenerator::UploadObject>& urlList, bool openedFromHistory):
     WizardDlg(dlg), UrlList(urlList)
 {
-    namespace OG = ImageUploader::Core::OutputGenerator;
+    namespace OG = Uptooda::Core::OutputGenerator;
     m_nImgServer = m_nFileServer = -1;
     openedFromHistory_ = openedFromHistory;
     rectNeeded = {};
@@ -152,7 +152,7 @@ LRESULT CResultsPanel::OnMyDpiChanged(UINT uMsg, WPARAM wParam, LPARAM lParam, B
 
 void CResultsPanel::SetPage(TabPage Index)
 {
-    namespace OG = ImageUploader::Core::OutputGenerator;
+    namespace OG = Uptooda::Core::OutputGenerator;
     WtlGuiSettings& Settings = *ServiceLocator::instance()->settings<WtlGuiSettings>();
     ::EnableWindow(GetDlgItem(IDC_CODETYPELABEL), Index != OG::clPlain);
     ::EnableWindow(GetDlgItem(IDC_CODETYPE), Index != OG::clPlain);
@@ -182,7 +182,7 @@ bool CResultsPanel::copyResultsToClipboard() {
 
 std::string CResultsPanel::GenerateOutput()
 {
-    namespace OG = ImageUploader::Core::OutputGenerator;
+    namespace OG = Uptooda::Core::OutputGenerator;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
 
     if (!Toolbar.m_hWnd) return {};
@@ -304,7 +304,7 @@ void CResultsPanel::createToolbar() {
 
 LRESULT CResultsPanel::OnBnClickedCopyall(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
-    namespace OG = ImageUploader::Core::OutputGenerator;
+    namespace OG = Uptooda::Core::OutputGenerator;
     CString buffer = U2W(GenerateOutput());
     WinUtils::CopyTextToClipboard(buffer);
     if (m_Page == OG::clHTML && !buffer.IsEmpty()) {
@@ -592,9 +592,9 @@ void CResultsPanel::setGroupByFilename(bool enable) {
     groupByFileName_ = enable;
 }
 
-ImageUploader::Core::OutputGenerator::AbstractOutputGenerator* CResultsPanel::createOrGetGenerator(ImageUploader::Core::OutputGenerator::GeneratorID gid,  ImageUploader::Core::OutputGenerator::CodeLang lang,
-        ImageUploader::Core::OutputGenerator::CodeType type) {
-    using namespace ImageUploader::Core::OutputGenerator;
+Uptooda::Core::OutputGenerator::AbstractOutputGenerator* CResultsPanel::createOrGetGenerator(Uptooda::Core::OutputGenerator::GeneratorID gid,  Uptooda::Core::OutputGenerator::CodeLang lang,
+        Uptooda::Core::OutputGenerator::CodeType type) {
+    using namespace Uptooda::Core::OutputGenerator;
     auto it = outputGenerators_.find(gid);
     AbstractOutputGenerator* res{};
     if (it == outputGenerators_.end()) {

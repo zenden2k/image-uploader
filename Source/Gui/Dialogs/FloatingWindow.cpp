@@ -44,8 +44,8 @@
 
 namespace {
 
-// {D1D66B08-9987-46BC-A7AE-3CF84677F885}
-static const GUID MainTrayIconBaseGUID = { 0xd1d66b08, 0x9987, 0x46bc, { 0xa7, 0xae, 0x3c, 0xf8, 0x46, 0x77, 0xf8, 0x85 } };
+// {86EE6805-4ADE-444C-9886-F67E949DFBAD}
+static const GUID MainTrayIconBaseGUID = { 0x86ee6805, 0x4ade, 0x444c, { 0x98, 0x86, 0xf6, 0x7e, 0x94, 0x9d, 0xfb, 0xad } };
 
 bool MyInsertMenu(HMENU hMenu, int pos, UINT id, LPCTSTR szTitle, HBITMAP bm = nullptr)
 {
@@ -128,7 +128,7 @@ LRESULT CFloatingWindow::OnClose(void)
 
 LRESULT CFloatingWindow::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     /*int w = ::GetSystemMetrics(SM_CXSMICON);
     if ( w > 32 ) {
@@ -916,7 +916,7 @@ void CFloatingWindow::stopIconAnimation() {
 }
 
 void CFloatingWindow::showLastUploadedCode() {
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     auto *settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     std::vector<UploadObject> items;
 
@@ -979,7 +979,7 @@ LRESULT CFloatingWindow::OnStopUpload(WORD wNotifyCode, WORD wID, HWND hWndCtl)
 
 void CFloatingWindow::ShowImageUploadedMessage(UploadTask* task, const CString& url)
 {
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     auto* settings = ServiceLocator::instance()->settings<WtlGuiSettings>();
     auto obj = std::make_unique<UploadObject>();
     obj->fillFromUploadResult(task->uploadResult(), task);

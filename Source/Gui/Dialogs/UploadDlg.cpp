@@ -107,7 +107,7 @@ LRESULT CUploadDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& 
     commonProgressLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPROGRESS));
     commonPercentLabelFont_ = GuiTools::MakeLabelBold(GetDlgItem(IDC_COMMONPERCENTS));
     PageWnd = m_hWnd;
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     resultsWindow_->SetPage(static_cast<CodeLang>(Settings.CodeLang));
     resultsWindow_->SetCodeType(Settings.CodeType);
     showUploadProgressTab();
@@ -667,7 +667,7 @@ void CUploadDlg::onTaskFinished(UploadTask* task, bool ok)
         {
             return;
         }
-        ImageUploader::Core::OutputGenerator::UploadObject item;
+        Uptooda::Core::OutputGenerator::UploadObject item;
         item.fillFromUploadResult(task->uploadResult(), task);
 
         item.fileIndex = task->index();

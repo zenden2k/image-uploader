@@ -7,7 +7,7 @@
 #include "JSONGenerator.h"
 #include "XmlTemplateGenerator.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 std::unique_ptr<AbstractOutputGenerator> OutputGeneratorFactory::createOutputGenerator(GeneratorID gid, /*CodeLang lang, */ CodeType codeType,
                                                                     XmlTemplateList* xmlTemplateList) {

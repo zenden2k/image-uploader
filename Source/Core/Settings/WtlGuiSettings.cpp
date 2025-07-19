@@ -1021,30 +1021,39 @@ void WtlGuiSettings::BindConvertProfile(SettingsNode& image, ImageConvertingPara
 
 void WtlGuiSettings::Uninstall() {
     BOOL b;
+    bool beforeInstall = CmdLine.IsOption(_T("beforeinstall"));
     if (WinUtils::IsVistaOrLater() && WinUtils::IsElevated(&b) != S_OK) {
-        RunIuElevated("/uninstall");
+        CString command = _T("/uninstall");
+        if (beforeInstall) {
+            command += _T(" /beforeinstall");
+        }
+
+        RunIuElevated(command);
         return;
     }
-    AutoStartup = false;
-    SendToContextMenu = false;
-    RegisterShellExtension(false);
-    EnableAutostartup(false);
-    CRegistry Reg;
-    Reg.SetRootKey(HKEY_CURRENT_USER);
-    Reg.DeleteWithSubkeys("Software\\Uptooda\\ContextMenuItems");
-    Reg.DeleteKey("Software\\Uptooda");
-    Reg.SetRootKey(HKEY_LOCAL_MACHINE);
 
-    Reg.DeleteKey("Software\\Uptooda");
-    WinUtils::RemoveBrowserKey();
+    if (!beforeInstall) {
+        AutoStartup = false;
+        SendToContextMenu = false;
+        RegisterShellExtension(false);
+        EnableAutostartup(false);
+        CRegistry Reg;
+        Reg.SetRootKey(HKEY_CURRENT_USER);
+        Reg.DeleteWithSubkeys("Software\\Uptooda\\ContextMenuItems");
+        Reg.DeleteKey("Software\\Uptooda");
+        Reg.SetRootKey(HKEY_LOCAL_MACHINE);
 
-    CRegistry reg3;
-    reg3.SetRootKey(HKEY_CURRENT_USER);
-    reg3.SetWOW64Flag(KEY_WOW64_64KEY);
-    reg3.DeleteKey("Software\\Uptooda\\Strings");
-    reg3.DeleteKey("Software\\Uptooda");
-    CString ShortcutName = WinUtils::GetSendToPath() + _T("Uptooda.lnk");
-    DeleteFile(ShortcutName);
+        Reg.DeleteKey("Software\\Uptooda");
+        WinUtils::RemoveBrowserKey();
+
+        CRegistry reg3;
+        reg3.SetRootKey(HKEY_CURRENT_USER);
+        reg3.SetWOW64Flag(KEY_WOW64_64KEY);
+        reg3.DeleteKey("Software\\Uptooda\\Strings");
+        reg3.DeleteKey("Software\\Uptooda");
+        CString ShortcutName = WinUtils::GetSendToPath() + _T("Uptooda.lnk");
+        DeleteFile(ShortcutName);
+    }
 
     Win7JumpList jumplist;
     jumplist.DeleteJumpList();

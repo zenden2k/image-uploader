@@ -3,7 +3,7 @@
 #include "Core/Utils/IOException.h"
 #include "Core/Utils/SimpleXml.h"
 
-namespace ImageUploader::Core::OutputGenerator {
+namespace Uptooda::Core::OutputGenerator {
 
 void XmlTemplateList::loadFromFile(const std::string& fileName) {
     SimpleXml XML;
@@ -52,7 +52,7 @@ size_t XmlTemplateList::size() const {
     return templates_.size();
 }
 
-const ImageUploader::Core::OutputGenerator::ResultTemplate& XmlTemplateList::at(size_t index) {
+const Uptooda::Core::OutputGenerator::ResultTemplate& XmlTemplateList::at(size_t index) {
     return templates_.at(index);
 }
 

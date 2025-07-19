@@ -25,7 +25,7 @@
 #include "Core/ServiceLocator.h"
 #include "Core/Settings/WtlGuiSettings.h"
 
-namespace OG = ImageUploader::Core::OutputGenerator;
+namespace OG = Uptooda::Core::OutputGenerator;
 // CResultsWindow
 CResultsWindow::CResultsWindow(CWizardDlg *wizardDlg,std::vector<OG::UploadObject>  & urlList,bool ChildWindow)
 {
@@ -93,7 +93,7 @@ LRESULT CResultsWindow::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BO
     CMyEngineList* myEngineList = ServiceLocator::instance()->myEngineList();
     ResultsPanel->setEngineList(myEngineList);
     ResultsPanel->Create(m_hWnd,rc);
-    using namespace ImageUploader::Core::OutputGenerator;
+    using namespace Uptooda::Core::OutputGenerator;
     SetPage(static_cast<CodeLang>(settings->CodeLang));
     ResultsPanel->SetCodeType(settings->CodeType);
     ResultsPanel->GetClientRect(&rc);

@@ -65,8 +65,10 @@ Name: "fr"; MessagesFile: "compiler:Languages\French.isl"
 [CustomMessages]
 InstallFFmpeg=Install FFmpeg library (for better video formats support)
 Additional=Additional
+ImportIUSettings=Import settings from Image Uploader
 ru.InstallFFmpeg=Установить библиотеку FFmpeg для лучшей поддержки форматов видео
 ru.Additional=Дополнительно
+ru.ImportIUSettings=Импортировать настройки из Image Uploader
 [Registry]
 Root: HKLM; Subkey: "Software\Uptooda"; ValueType: string; ValueName: "DataPath"; ValueData: "{code:GetDataFolder}\Uptooda\"; 
 ;Tasks: common;  ;
@@ -74,12 +76,13 @@ Root: HKLM; Subkey: "Software\Uptooda"; ValueType: string; ValueName: "DataPath"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked
-
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:Additional}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 #ifdef IU_FFMPEG_STANDALONE
 Name: "installffmpeg"; Description: "{cm:InstallFFmpeg}"; GroupDescription: "{cm:Additional}"; Flags: unchecked 
 #endif
+Name: "importiusettings"; Description: "{cm:ImportIUSettings}"; GroupDescription: "{cm:Additional}"; Check: IsIUInstalled
+
 ;Name: common; Description: All users; GroupDescription: Install for:; Flags: exclusive
 ;Name: installuser; Description: The current user only; GroupDescription: Install for:; Flags: exclusive unchecked
 [Dirs]
@@ -111,6 +114,9 @@ Source: "..\Data\Update\iu_core.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Upd
 Source: "..\Data\Update\iu_serversinfo.xml"; DestDir: "{code:GetDataFolder}\Uptooda\Update"; Flags: ignoreversion
 Source: "..\Data\Thumbnails\*.*"; DestDir: "{code:GetDataFolder}\Uptooda\Thumbnails"; Flags: ignoreversion
 Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags: ignoreversion
+Source: "{userappdata}\Image Uploader\Settings.xml"; DestDir: "{userappdata}\Uptooda"; Tasks: importiusettings; Flags: external onlyifdoesntexist 
+Source: "{userappdata}\Image Uploader\Servers\*.xml"; DestDir: "{userappdata}\Uptooda\Servers"; Tasks: importiusettings; Flags: external onlyifdoesntexist
+
 ;Source: "{tmp}\gdiplus.dll"; DestDir: "{app}"; Flags: external; 
 
 ;Flags: deleteafterinstall
@@ -118,7 +124,7 @@ Source: "..\Data\Utils\*"; DestDir: "{code:GetDataFolder}\Uptooda\Utils"; Flags:
 ;Source: "{app}\ExplorerIntegration64.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration64.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 ;Source: "{app}\ExplorerIntegration.dll"; DestDir: "{app}"; DestName: "ExplorerIntegration.dll.{code:MyRand}.old"; Flags: external skipifsourcedoesntexist
 #if IU_ARCH != "arm64"
-Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist uninsrestartdelete regserver 32bit; BeforeInstall: ShellExtBeforeInstall
+Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration.dll";DestDir: "{app}";  Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
 #endif
 Source: "..\Build\ShellExt\Release optimized\ExplorerIntegration64.dll";DestDir: "{app}"; Flags: skipifsourcedoesntexist uninsrestartdelete; BeforeInstall: ShellExtBeforeInstall
 
@@ -139,7 +145,7 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 Filename: "{app}\{#MyAppExeName}"; Parameters: "/afterinstall /language={language} {code:GetAdditionalRunParameters}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, "&", "&&")}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
-Filename: "{app}\uptooda.exe"; Parameters: "/uninstall"; Flags: runascurrentuser
+;Filename: "{app}\uptooda.exe"; Parameters: "{code:GetUninstallParameters}"; Flags: runascurrentuser
 
 [UninstallDelete]
 Type: files; Name: "{app}\av*.dll"
@@ -269,7 +275,7 @@ begin
   sUnInstallString := GetUninstallString();
   if sUnInstallString <> '' then begin
     sUnInstallString := RemoveQuotes(sUnInstallString);
-    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
+    if Exec(sUnInstallString, '/SILENT /NORESTART /SUPPRESSMSGBOXES /BEFOREINSTALL=1','', SW_HIDE, ewWaitUntilTerminated, iResultCode) then
       Result := 3
     else
       Result := 2;
@@ -361,5 +367,36 @@ begin
       //Abort;
     end;
   end;
+end;
+
+function GetUninstallParameters: String;
+var
+  Parameters: String;
+begin
+  Parameters := '/uninstall';
+  
+  if ExpandConstant('{param:BEFOREINSTALL}') = '1' then
+    Parameters := Parameters + ' /beforeinstall';
+    
+  Result := Parameters;
+end;
+
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  Parameters: String;
+  ResultCode: Integer;
+begin
+  if CurUninstallStep = usUninstall then
+  begin
+    Parameters := GetUninstallParameters;
+    
+    Exec(ExpandConstant('{app}\uptooda.exe'), Parameters, '', SW_SHOW, ewWaitUntilTerminated, ResultCode);
+  end;
+end;
+
+function IsIUInstalled: Boolean;
+begin
+  Result := FileExists(ExpandConstant('{userappdata}\Image Uploader\Settings.xml')) and not FileExists(ExpandConstant('{userappdata}\Uptooda\Settings.xml'));
 end;
 

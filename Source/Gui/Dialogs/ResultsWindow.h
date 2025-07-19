@@ -40,14 +40,14 @@ class CResultsWindow:     public CDialogIndirectImpl<CResultsWindow>
     private:
         CWizardDlg *m_WizardDlg;
     public:
-        CResultsWindow(CWizardDlg *wizardDlg, std::vector<ImageUploader::Core::OutputGenerator::UploadObject>  & urlList, bool ChildWindow);
+        CResultsWindow(CWizardDlg *wizardDlg, std::vector<Uptooda::Core::OutputGenerator::UploadObject>  & urlList, bool ChildWindow);
         ~CResultsWindow();
 
         int GetCodeType() const;
         void UpdateOutput(bool immediately = false);
         void SetCodeType(int Index);
         void Clear();
-        void SetPage(ImageUploader::Core::OutputGenerator::CodeLang Index);
+        void SetPage(Uptooda::Core::OutputGenerator::CodeLang Index);
         int GetPage();
         void AddServer(const ServerProfile& server);
         void InitUpload();
