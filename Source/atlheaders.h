@@ -43,4 +43,10 @@ extern CAppModule _Module;
 #else 
 extern HINSTANCE hDllInstance;
 #endif
+
+#ifndef EXTENDED_MAX_PATH
+#define EXTENDED_MAX_PATH 32767
 #endif
+
+#endif
+

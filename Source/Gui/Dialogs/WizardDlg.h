@@ -110,7 +110,7 @@ public:
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
         MESSAGE_HANDLER(WM_ENABLE, OnEnable)
-        MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
+        //MESSAGE_HANDLER(WM_DROPFILES, OnDropFiles)
         MESSAGE_HANDLER(WM_MY_ADDIMAGE, OnAddImages)
         MESSAGE_HANDLER(WM_MY_SHOWPAGE, OnWmShowPage)
         MESSAGE_HANDLER(WM_MY_EXIT, OnWmMyExit)
@@ -209,7 +209,7 @@ public:
     void PasteBitmap(HBITMAP);
     LRESULT OnBnClickedAbout(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/);
     void Exit();
-    LRESULT OnDropFiles(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    void ProcessDroppedFiles(HDROP hDrop);
     //CSavingOptions SavingOptions;
     bool LoadUploadEngines(const CString &filename, CString &Error);
     bool ParseCmdLine();
