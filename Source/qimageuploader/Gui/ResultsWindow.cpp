@@ -4,7 +4,7 @@
 #include "Core/OutputGenerator/OutputGeneratorFactory.h"
 
 #include "ui_ResultsWindow.h"
-namespace OutputCodeGenerator = ImageUploader::Core::OutputGenerator;
+namespace OutputCodeGenerator = Uptooda::Core::OutputGenerator;
 ResultsWindow::ResultsWindow(std::vector<OutputCodeGenerator::UploadObject> objects, QWidget* parent) :
     QDialog(parent),
     ui(new Ui::ResultsWindow),

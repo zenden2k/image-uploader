@@ -15,7 +15,7 @@ class ResultsWindow : public QDialog
     Q_OBJECT
     
 public:
-    explicit ResultsWindow(std::vector<ImageUploader::Core::OutputGenerator::UploadObject> uploadObjects, QWidget *parent = 0);
+    explicit ResultsWindow(std::vector<Uptooda::Core::OutputGenerator::UploadObject> uploadObjects, QWidget *parent = 0);
     ~ResultsWindow();
 protected:
 	
@@ -25,7 +25,7 @@ private slots:
 	void onCopyToClipboard();
 private:
     std::unique_ptr<Ui::ResultsWindow> ui;
-    std::vector<ImageUploader::Core::OutputGenerator::UploadObject> uploadObjects_;
+    std::vector<Uptooda::Core::OutputGenerator::UploadObject> uploadObjects_;
 };
 
 #endif // FRAMEGRABBERDLG_H
